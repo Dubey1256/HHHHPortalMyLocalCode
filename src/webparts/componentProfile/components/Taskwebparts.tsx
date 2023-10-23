@@ -617,6 +617,7 @@ function PortfolioTable(SelectedProp: any) {
         "DueDate",
         "Created",
         "Body",
+        "Sitestagging",
         "Item_x0020_Type",
         "Categories",
         "Short_x0020_Description_x0020_On",
@@ -888,7 +889,6 @@ function PortfolioTable(SelectedProp: any) {
       let Actatcomponent = AllSiteTasksData?.filter(
         (elem1: any) =>
           elem1?.TaskType?.Id === 1 &&
-          elem1?.ParentTask?.Id === undefined &&
           elem1?.Portfolio?.Id === SelectedProp?.props?.Id
       );
       countAllTasksData = countAllTasksData.concat(Actatcomponent);

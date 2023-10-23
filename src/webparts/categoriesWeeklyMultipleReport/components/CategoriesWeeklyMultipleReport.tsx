@@ -21,6 +21,7 @@ import FileSaver from 'file-saver';
 import PreSetDatePikerPannel from "../../../globalComponents/SmartFilterGolobalBomponents/PreSetDatePiker"
 import EditTaskPopup from '../../../globalComponents/EditTaskPopup/EditTaskPopup';
 import HighlightableCell from '../../../globalComponents/GroupByReactTableComponents/highlight';
+import PreSetDatePikerPannel2 from '../../../globalComponents/SmartFilterGolobalBomponents/PreSetDatePikerCate';
 //import alasql from 'alasql';
 let AllMasterTasks: any = [];
 let portfolioColor: any = '';
@@ -63,6 +64,9 @@ export interface ICategoriesWeeklyMultipleReportState {
   IsTask: boolean;
   checkedItems: any;
   EditTaskItem: any;
+  Preset2Popup:any;
+  StartDatePicker2: any;
+  EndDatePicker2: any;
 
 }
 
@@ -112,6 +116,9 @@ export default class CategoriesWeeklyMultipleReport extends React.Component<ICat
       IsTask: false,
       checkedItems: [],
       EditTaskItem: '',
+      Preset2Popup:false,
+      StartDatePicker2: new Date(),
+      EndDatePicker2: new Date(),
     }
     //this.GetResult();   
     this.columns = [
@@ -516,7 +523,7 @@ export default class CategoriesWeeklyMultipleReport extends React.Component<ICat
     this.setState({
       showDateTime: (
         <span className='alignCenter'>
-          <label className='ms-1'> | Time: {this?.TotalTimeEntry} | Days: ({this?.TotalTimeEntry / 8})</label>
+          <label className='ms-1'> | Time: {this?.TotalTimeEntry} | hours ({this?.TotalTimeEntry / 8} days)</label>
           <label className="mx-1">|</label>
           <label>
             <div className="">Smart Hours: {this?.SmartTotalTimeEntry} ({this?.SmartTotalTimeEntry / 8} days)</div>
@@ -991,6 +998,8 @@ export default class CategoriesWeeklyMultipleReport extends React.Component<ICat
         enddt = new Date(this.state?.StartEndPicker);
         break;
       case 'Presettime1':
+        startdt = new Date(this.state?.StartDatePicker2);
+        enddt = new Date(this.state?.EndDatePicker2);
         break;
     }
 
@@ -1670,7 +1679,7 @@ export default class CategoriesWeeklyMultipleReport extends React.Component<ICat
       this.setState({
         showDateTime: (
           <span className='alignCenter'>
-            <label className='ms-1'> | Time: {this?.TotalTimeEntry} | Days: ({this?.TotalTimeEntry / 8})</label>
+           <label className='ms-1'> | Time: {this?.TotalTimeEntry} | hours ({this?.TotalTimeEntry / 8} days)</label>
             <label className="mx-1">|</label>
             <label>
               <div className="">Smart Hours: {this?.SmartTotalTimeEntry} ({this?.SmartTotalTimeEntry / 8} days)</div>
@@ -2087,11 +2096,17 @@ export default class CategoriesWeeklyMultipleReport extends React.Component<ICat
   private cancelPresetPopup = (type: any) => {
     this.setState({ PresetPopup: false });
   }
+  private cancelPreset2Popup = (type: any) => {
+    this.setState({ Preset2Popup: false });
+  }
   private cancelAdjustedTimePopup = (type: any) => {
     this.setState({ AdjustedTimePopup: false });
   }
   private OpenPresetDatePopup = async (type: any) => {
     this.setState({ PresetPopup: true });
+  }
+  private OpenPresetDate2Popup = async (type: any) => {
+    this.setState({ Preset2Popup: true });
   }
   private OpenAdjustedTimePopup = async () => {
     this.setState({ AdjustedTimePopup: true });
@@ -2208,7 +2223,7 @@ export default class CategoriesWeeklyMultipleReport extends React.Component<ICat
     this.setState({
       showDateTime: (
         <span className='alignCenter'>
-          <label className='ms-1'> | Time: {this?.TotalTimeEntry} | Days: ({this?.TotalTimeEntry / 8})</label>
+          <label className='ms-1'> | Time: {this?.TotalTimeEntry} | hours ({this?.TotalTimeEntry / 8} days)</label>
           <label className="mx-1">|</label>
           <label>
             <div className="">Smart Hours: {this?.SmartTotalTimeEntry} ({this?.SmartTotalTimeEntry / 8} days)</div>
@@ -2465,7 +2480,7 @@ export default class CategoriesWeeklyMultipleReport extends React.Component<ICat
                   if (Firstlevel == "")
                     Firstlevel = objchild.Firstlevel;
                   else if (Firstlevel.indexOf(objchild.Firstlevel) == -1)
-                    Firstlevel += '; ' + objchild.Firstlevel;
+                    Firstlevel +=  objchild.Firstlevel;
                 }
               })
             }
@@ -2844,6 +2859,29 @@ export default class CategoriesWeeklyMultipleReport extends React.Component<ICat
       this.refreshData();
     }
   };
+  private PreSetPikerCallBack2 = (preSetStartDate: any, preSetEndDate: any) => {
+    if (preSetStartDate != undefined) {
+      this.setState({
+        startdate: preSetStartDate,
+      })
+    }
+    if (preSetEndDate != undefined) {
+      this.setState({
+        enddate: preSetEndDate,
+      })
+    }
+
+    this.setState({
+      Preset2Popup: false,
+    })
+    if (preSetStartDate != undefined || preSetEndDate != undefined) {
+      this.setState({
+        SelecteddateChoice: 'Presettime1',
+      })
+
+      this.refreshData();
+    }
+  };
   private SelectAllCategories(ev: any) {
     let filterItem = this.state.filterItems;
     let checkedItems: any = [];
@@ -3069,12 +3107,12 @@ export default class CategoriesWeeklyMultipleReport extends React.Component<ICat
                             {/* <img className="hreflink wid11 mr-5"  title="open" src="https://hhhhteams.sharepoint.com/sites/HHHH/SiteCollectionImages/ICONS/32/icon_inline.png" /> */}
                             <span title="open" onClick={(e) => this.OpenPresetDatePopup('Presettime')} className='hreflink alignIcon ms-1 svg__iconbox svg__icon--editBox'></span>
                           </span>
-                          {/* <span className='SpfxCheckRadio'>
+                          <span className='SpfxCheckRadio'>
                             <input type="radio" id="Presettime1" checked={this.state.SelecteddateChoice === 'Presettime1'} name="dateSelection" value="Presettime1" onClick={() => this.selectDate('Presettime1')} className="radio" />
                             <label>Pre-set II</label>
                            
-                            <span title="open" onClick={(e) => this.OpenPresetDatePopup('Presettime1')} className='hreflink alignIcon ms-1 svg__iconbox svg__icon--editBox'></span>
-                          </span> */}
+                            <span title="open" onClick={(e) => this.OpenPresetDate2Popup('Presettime1')} className='hreflink alignIcon ms-1 svg__iconbox svg__icon--editBox'></span>
+                          </span>
                         </div>
                         <div className='row mt-2'>
                           <div className='col-2 ps-0'>
@@ -3106,8 +3144,19 @@ export default class CategoriesWeeklyMultipleReport extends React.Component<ICat
                     <summary>
                       <label className="toggler full_width">
                         <a className="pull-left">
-                          SmartSearch - Filters
+                          SmartSearch - Filters  
                         </a>
+                        <span className='ms-3'>
+                        {this?.state?.checkedItems != null && this.state.checkedItems.length > 0 &&
+                              this.state.checkedItems.map((obj: any) => {
+                                return <span> {obj.Title}
+                                  <span className='me-1'>
+                                    : ({this.getAllSubChildenCount(obj)})
+                                  </span>
+                                </span>
+                              })
+                            }
+                        </span>
                       </label>
                       <hr className='m-0'></hr>
                     </summary>
@@ -3118,15 +3167,7 @@ export default class CategoriesWeeklyMultipleReport extends React.Component<ICat
                             <input defaultChecked={this.state.checkedAll} onClick={(e) => this.SelectAllCategories(e)} id='chkAllCategory' type="checkbox" className="form-check-input me-1 mt-1" />
                             Client Category
 
-                            {this?.state?.checkedItems != null && this.state.checkedItems.length > 0 &&
-                              this.state.checkedItems.map((obj: any) => {
-                                return <span> {obj.Title}
-                                  <span>
-                                    : ({this.getAllSubChildenCount(obj)})
-                                  </span>
-                                </span>
-                              })
-                            }
+                           
                           </label>
                           <CheckboxTree
                             nodes={this.state.filterItems}
@@ -3181,7 +3222,7 @@ export default class CategoriesWeeklyMultipleReport extends React.Component<ICat
 
               <div id="contact" className="col-sm-12 p-0">
                 <div className='table-responsive fortablee'>
-                  <GlobalCommanTable columns={this.columns} expendedTrue={true} data={this.state.AllTimeEntry} showHeader={true} showCatIcon={true} exportToExcelCategoryReport={this.exportToExcel} OpenAdjustedTimePopupCategory={this.OpenAdjustedTimePopup} callBackData={this?.callBackData} showDateTime={this.state.showDateTime} fixedWidth={true} /> </div>
+                  <GlobalCommanTable catogryDataLength={this?.state?.AllTimeEntryItem?.length} columns={this.columns} expendedTrue={true} data={this.state.AllTimeEntry} showHeader={true} showCatIcon={true} exportToExcelCategoryReport={this.exportToExcel} OpenAdjustedTimePopupCategory={this.OpenAdjustedTimePopup} callBackData={this?.callBackData} showDateTime={this.state.showDateTime} fixedWidth={true} /> </div>
               </div>
             }
 
@@ -3287,6 +3328,10 @@ export default class CategoriesWeeklyMultipleReport extends React.Component<ICat
         {
           this.state.PresetPopup &&
           (<PreSetDatePikerPannel isOpen={this.state.PresetPopup} PreSetPikerCallBack={this.PreSetPikerCallBack} portfolioColor={portfolioColor} ></PreSetDatePikerPannel>)
+        }
+         {
+          this.state.Preset2Popup &&
+          (<PreSetDatePikerPannel2 isOpen={this.state.Preset2Popup} PreSetPikerCallBack={this.PreSetPikerCallBack2} portfolioColor={portfolioColor} ></PreSetDatePikerPannel2>)
         }
         {this?.state?.IsTask && (
           <EditTaskPopup
