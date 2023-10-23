@@ -407,7 +407,7 @@ export default class UserTimeEntry extends React.Component<IUserTimeEntryProps, 
         }
       }
     }
-
+    //filterItems = filterItems.filter((type: any) => type.Title != 'Other');
     filterItems.forEach((filterItem: any) => {
       filterItem.ParentTitle = filterItem.Title;
       if (filterItem.ParentTitle == 'DA E+E')
@@ -2353,7 +2353,7 @@ export default class UserTimeEntry extends React.Component<IUserTimeEntryProps, 
                           <label>Last 3 Months</label>
                         </span>
                         <span className='SpfxCheckRadio'>
-                          <input type="radio" name="dateSelection" value="EntrieYear" checked={this.state.selectedRadio === "rdEntrieYear"} onClick={() => this.selectDate('EntrieYear')} className="radio" />
+                          <input type="radio" name="dateSelection" value="EntrieYear" checked={this.state.selectedRadio === "EntrieYear"} onClick={() => this.selectDate('EntrieYear')} className="radio" />
                           <label>This Year</label>
                         </span>
                         <span className='SpfxCheckRadio'>
