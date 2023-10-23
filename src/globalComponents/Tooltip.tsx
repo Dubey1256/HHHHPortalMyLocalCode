@@ -1,8 +1,10 @@
 import * as React from 'react';
 import Popup from 'reactjs-popup';
 import "bootstrap/dist/css/bootstrap.min.css";
+import { FaCommentAlt, FaQuestion, FaBars } from 'react-icons/fa';
 //import { MdHelp } from 'react-icons/md';
 import { BiMenu } from 'react-icons/bi';
+import { myContextValue } from './globalCommon'
 import { Web } from "sp-pnp-js";
 import Feedback from 'react-bootstrap/esm/Feedback';
 import CallNotes from './CreateMeetingPopup';
@@ -17,6 +19,9 @@ var ComponentData: any = {
   Portfolio_x0020_Type: null
 }
 function Tooltip(props: any) {
+
+
+  const [projectId, setprojectId] = React.useState(null)
   const [OpenCallNotes, setOpenCallNotes] = React.useState(false);
   const [SharewebComponent, setSharewebComponent] = React.useState('');
   const isServiceTask = props.IsServiceTask;
@@ -232,45 +237,48 @@ function Tooltip(props: any) {
     return (false);
   }
 
-  const Call = React.useCallback(() => {
+  const callNotesCallBack = () => {
     setOpenCallNotes(false);
-  }, []);
+  }
 
 
   return (
-    <>
-      <Popup
-        trigger={
-          <button type='button' className='burgerMenu'><span className="svg__iconbox svg__icon--burgerMenu"></span></button>
-        }
-        position="left top"
-        on="hover"
-        closeOnDocumentClick
-        mouseLeaveDelay={300}
-        mouseEnterDelay={0}
-        // contentStyle={{ padding: '0px', border: '1px' }}
-        arrow={false}
-        className='feedbackpanel'
-      >
-        {/* {isShown && ( */}
-        <div className={isServiceTask ? 'dropdown-menu show dropdown-menu-end toolmenubox serviepannelgreena' : 'dropdown-menu show dropdown-menu-end toolmenubox'}>
-          <a className='dropdown-item hreflink' onClick={() => feedbackInitial('HHHH Feedback SP')}> <span className="svg__iconbox  svg__icon--Comments"></span> HHHH Feedback SP</a>
-          <a className='dropdown-item hreflink' onClick={() => feedbackInitial('HHHH Bug')}> <span className="svg__iconbox  svg__icon--Comments"></span> HHHH Bug</a>
-          <a className='dropdown-item hreflink' onClick={() => feedbackInitial('HHHH Design')}> <span className="svg__iconbox  svg__icon--Comments"></span> HHHH Design</a>
-          <a className='dropdown-item hreflink' onClick={() => feedbackInitial('HHHH Quick')}> <span className="svg__iconbox  svg__icon--Comments"></span> HHHH Quick</a>
-          <a className='dropdown-item hreflink' onClick={() => feedbackInitial('HHHH Component Page')}> <span className="svg__iconbox  svg__icon--Comments"></span> HHHH Component Page</a>
+    <myContextValue.Provider value={{ ...myContextValue, createNotesCallback: callNotesCallBack }}>
+      <>
+        <Popup
+          trigger={
+            <button type='button' className='burgerMenu'><span className="svg__iconbox svg__icon--burgerMenu"></span></button>
+          }
+          position="left top"
+          on="hover"
+          closeOnDocumentClick
+          mouseLeaveDelay={300}
+          mouseEnterDelay={0}
+          // contentStyle={{ padding: '0px', border: '1px' }}
+          arrow={false}
+          className='feedbackpanel'
+        >
+          {/* {isShown && ( */}
+          <div className={isServiceTask ? 'dropdown-menu show dropdown-menu-end toolmenubox serviepannelgreena' : 'dropdown-menu show dropdown-menu-end toolmenubox'}>
+            <a className='dropdown-item hreflink' onClick={() => feedbackInitial('HHHH Feedback SP')}> <span className="svg__iconbox  svg__icon--Comments"></span> HHHH Feedback SP</a>
+            <a className='dropdown-item hreflink' onClick={() => feedbackInitial('HHHH Bug')}> <span className="svg__iconbox  svg__icon--Comments"></span> HHHH Bug</a>
+            <a className='dropdown-item hreflink' onClick={() => feedbackInitial('HHHH Design')}> <span className="svg__iconbox  svg__icon--Comments"></span> HHHH Design</a>
+            <a className='dropdown-item hreflink' onClick={() => feedbackInitial('HHHH Quick')}> <span className="svg__iconbox  svg__icon--Comments"></span> HHHH Quick</a>
+            <a className='dropdown-item hreflink' onClick={() => feedbackInitial('HHHH Component Page')}> <span className="svg__iconbox  svg__icon--Comments"></span> HHHH Component Page</a>
 
-          <a className='dropdown-item hreflink' onClick={(e) => feedbackInitial('Call Notes')}> <span className="svg__iconbox  svg__icon--Comments"></span> Call Notes</a>
+            <a className='dropdown-item hreflink' onClick={(e) => feedbackInitial('Call Notes')}> <span className="svg__iconbox  svg__icon--Comments"></span> Call Notes</a>
 
-          <a className='dropdown-item hreflink' onClick={() => feedbackInitial('Admin Help')}> <span className="svg__iconbox  svg__icon--help-fill"></span> Admin Help</a>
-          <a className='dropdown-item hreflink' onClick={() => feedbackInitial('Help')}> <span className="svg__iconbox  svg__icon--help-fill"></span> Help</a>
-        </div>
+            <a className='dropdown-item hreflink' onClick={() => feedbackInitial('Admin Help')}> <span className="svg__iconbox  svg__icon--help-fill"></span> Admin Help</a>
+            <a className='dropdown-item hreflink' onClick={() => feedbackInitial('Help')}> <span className="svg__iconbox  svg__icon--help-fill"></span> Help</a>
+          </div>
 
-      </Popup>
+        </Popup>
 
-      {OpenCallNotes && <CallNotes Item={SharewebComponent} callback={Call} />}
-    </>
+        {OpenCallNotes && <CallNotes Item={SharewebComponent} callback={callNotesCallBack} />}
+      </>
+    </myContextValue.Provider>
   )
 
 }
 export default Tooltip;
+export { myContextValue }

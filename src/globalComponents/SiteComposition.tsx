@@ -20,6 +20,7 @@ export default function Sitecomposition(datas: any) {
   const [AllSitesData, setAllSitesData] = React.useState([]);
   const [renderCount, setRenderCount] = React.useState(0);
   const [key, setKey] = React.useState(0); // Add a key state
+  const Callback: any = datas.callback;
 
 
   let BackupSiteTaggingData: any = [];
@@ -114,8 +115,10 @@ export default function Sitecomposition(datas: any) {
       .select('Id', 'Title', 'Item_x0020_Cover', 'TaxType', 'siteName', 'siteUrl', 'Item_x005F_x0020_Cover', 'listId', 'Configurations')
       .filter("TaxType eq 'Sites'").top(4000)
       .get().then((data: any) => {
+        let ShortedData:any = getSmartMetadataItemsByTaxType(data, "Sites");
+        // getSmartMetadataItemsByTaxType(data, "Sites");
         setsmartMetaDataIcon(data);
-        data?.map((site: any) => {
+        ShortedData?.map((site: any) => {
           if (site.Title !== undefined && site.Title !== 'Foundation' && site.Title !== 'Master Tasks' && site.Title !== 'DRR' && site.Title !== "SDC Sites") {
             site.BtnStatus = false;
             site.isSelected = false;
@@ -151,6 +154,17 @@ export default function Sitecomposition(datas: any) {
     })
   }
 
+  var getSmartMetadataItemsByTaxType = function (metadataItems: any, taxType: any) {
+    var Items: any = [];
+    metadataItems.map((taxItem: any) => {
+        if (taxItem.TaxType === taxType)
+            Items.push(taxItem);
+    });
+    Items.sort((a: any, b: any) => {
+        return a.SortOrder - b.SortOrder;
+    });
+    return Items;
+}
 
 
   const GetSiteIcon = (listName: string) => {
@@ -195,41 +209,36 @@ export default function Sitecomposition(datas: any) {
 
   const ClosePopupCallBack = React.useCallback(() => {
     setEditSiteCompositionStatus(false);
-    datas.callback();
-    setRenderCount(renderCount + 1);
+    Callback();
   }, [])
 
-  const SiteCompositionCallBack = React.useCallback((Data: any, Type: any) => {
-    // datas.props.Sitestagging = Data.ClientTime?.length > 0 ? JSON.stringify(Data.ClientTime) : [];
-    // datas.props.ClientCategory.results = Data.selectedClientCategory;
-    // if (datas?.props.Sitestagging != undefined) {
-    //   if (datas?.props?.ClientCategory?.length > 0 || datas?.props.Sitestagging != undefined) {
-    //     GetSmartMetaData(datas?.props?.ClientCategory, datas?.props?.Sitestagging);
-    //   } else if (datas?.props?.ClientCategory?.results?.length > 0 || datas?.props.Sitestagging != undefined)
-    //     GetSmartMetaData(datas?.props?.ClientCategory?.results, datas?.props?.Sitestagging);
-    // }
-    // setKey((prevKey) => prevKey + 1);
-  }, [])
+  // const SiteCompositionCallBack = React.useCallback((Data: any, Type: any) => {
+  //   datas.props.Sitestagging = Data.ClientTime?.length > 0 ? JSON.stringify(Data.ClientTime) : [];
+  //   datas.props.ClientCategory.results = Data.selectedClientCategory;
+  //   // if (datas?.props.Sitestagging != undefined) {
+  //   //   if (datas?.props?.ClientCategory?.length > 0 || datas?.props.Sitestagging != undefined) {
+  //   //     GetSmartMetaData(datas?.props?.ClientCategory, datas?.props?.Sitestagging);
+  //   //   } else if (datas?.props?.ClientCategory?.results?.length > 0 || datas?.props.Sitestagging != undefined)
+  //   //     GetSmartMetaData(datas?.props?.ClientCategory?.results, datas?.props?.Sitestagging);
+  //   // }
+  //   setKey((prevKey) => prevKey + 1);
+  // }, [])
   return (
     <>
-      {!isDirectPopup && (<dl key={key} className="Sitecomposition">
-        <div className='dropdown'>
-          <a className="sitebutton bg-fxdark d-flex"
-          >
-            <span onClick={() => showhideComposition()} >
-              {showComposition ? <IoMdArrowDropdown /> : <IoMdArrowDropright />}
-            </span>
-            <div className="d-flex justify-content-between full-width">
-              <p className="pb-0 mb-0">Site Composition</p>
-              <p className="input-group-text mb-0 pb-0" title="Edit Site Composition" onClick={() => setEditSiteCompositionStatus(true)}>
+      {!isDirectPopup && (<dl key={key} className="Sitecomposition PortfioP">
+      <details open>
+                          <summary className="alignCenter">
+                            <label className="toggler full_width">
+                              <a className="pull-left">
+                              Site Composition
+                              </a>
+                              <p className="input-group-text mb-0 pb-0" title="Edit Site Composition" onClick={() => setEditSiteCompositionStatus(true)}>
                 <span className="svg__iconbox svg__icon--editBox"></span>
               </p>
-            </div>
-          </a>
-          <div className="spxdropdown-menu"
-            style={{ display: showComposition ? 'block' : 'none' }}
-          >
-            <ul>
+                            </label>
+                          </summary>
+                          <div className="border border-top-0 p-2">
+                          <ul className="p-0 m-0">
               {ClientTimeArray?.map((cltime: any, i: any) => {
                 if (cltime.Title != "CompositionHistoryArray") {
                   return (
@@ -254,15 +263,16 @@ export default function Sitecomposition(datas: any) {
                 }
               })}
             </ul>
-          </div>
-        </div>
-      </dl>)}
+                          </div>
+                        </details>
+      </dl>
+      )}
 
       <Panel
         onRenderHeader={onRenderCustomCalculateSC}
         isOpen={EditSiteCompositionStatus}
         onDismiss={() => ClosePopupCallBack()}
-        isBlocking={false}
+        isBlocking={EditSiteCompositionStatus}
         type={PanelType.custom}
         customWidth="1024px"
       >
@@ -275,7 +285,7 @@ export default function Sitecomposition(datas: any) {
             ClientTime={datas?.props?.siteCompositionData != undefined ? datas.props.siteCompositionData : []}
             SiteCompositionSettings={datas?.props?.SiteCompositionSettings}
             selectedComponent={datas?.props}
-            callBack={SiteCompositionCallBack}
+            // callBack={SiteCompositionCallBack}
             isServiceTask={datas?.props?.Portfolio_x0020_Type == "Service" ? true : false}
             usedFor={"Component-Profile"}
             closePopupCallBack={ClosePopupCallBack}

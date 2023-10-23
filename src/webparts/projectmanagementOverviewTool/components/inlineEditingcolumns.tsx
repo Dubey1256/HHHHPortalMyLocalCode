@@ -926,18 +926,18 @@ const inlineEditingcolumns = (props: any) => {
 
                         <div className='d-flex flex-column mt-2 mb-2'>
                             <span className='SpfxCheckRadio'>
-                                <input className='radio' type="radio" value="Male" name="date" checked={dueDate.selectDateName == 'Today'} onClick={() => duedatechange('Today')} /> Today</span>
+                                <input className='radio' type="radio" value="Male" name="dueDateRadio" checked={dueDate.selectDateName == 'Today'} onClick={() => duedatechange('Today')} /> Today</span>
                             <span className='SpfxCheckRadio'>
-                                <input className='radio' type="radio" value="Female" name="date" checked={dueDate.selectDateName == 'Tommorow'} onClick={() => duedatechange('Tommorow')} /> Tommorow
+                                <input className='radio' type="radio" value="Female" name="dueDateRadio" checked={dueDate.selectDateName == 'Tommorow'} onClick={() => duedatechange('Tommorow')} /> Tommorow
                             </span>
                             <span className='SpfxCheckRadio'>
-                                <input className='radio' type="radio" value="Other" name="date" checked={dueDate.selectDateName == 'This Week'} onClick={() => duedatechange('This Week')} /> This Week
+                                <input className='radio' type="radio" value="Other" name="dueDateRadio" checked={dueDate.selectDateName == 'This Week'} onClick={() => duedatechange('This Week')} /> This Week
                             </span>
                             <span className='SpfxCheckRadio'>
-                                <input className='radio' type="radio" value="Female" name="date" checked={dueDate.selectDateName == 'Next Week'} onClick={() => duedatechange('Next Week')} /> Next Week
+                                <input className='radio' type="radio" value="Female" name="dueDateRadio" checked={dueDate.selectDateName == 'Next Week'} onClick={() => duedatechange('Next Week')} /> Next Week
                             </span>
                             <span className='SpfxCheckRadio'>
-                                <input className='radio' type="radio" value="Female" name="date" checked={dueDate.selectDateName == 'This Month'} onClick={() => duedatechange('This Month')} /> This Month
+                                <input className='radio' type="radio" value="Female" name="dueDateRadio" checked={dueDate.selectDateName == 'This Month'} onClick={() => duedatechange('This Month')} /> This Month
                             </span>
 
                         </div>

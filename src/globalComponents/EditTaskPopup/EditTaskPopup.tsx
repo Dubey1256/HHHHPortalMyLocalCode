@@ -98,7 +98,8 @@ const EditTaskPopup = (Items: any) => {
     const Context = Items?.context;
     const AllListIdData = Items?.AllListId;
     AllListIdData.listId = Items?.Items?.listId;
-    Items.Items.Id = Items?.Items?.ID;
+    // Items.Items.Id = Items?.Items?.ID;
+    Items.Items.Id = Items.Items.Id !=undefined ?Items.Items.Id :Items.Items.ID;
     let ShareWebConfigData: any = [];
     const [TaskImages, setTaskImages] = useState([]);
     const [SmartMetaDataAllItems, setSmartMetaDataAllItems] = useState<any>([]);
@@ -823,11 +824,14 @@ const EditTaskPopup = (Items: any) => {
                         TempData?.map((itemdata: any) => {
                             ShareWebCompositionStatus = itemdata.ClienTimeDescription;
                         })
-                        if (ShareWebConfigData != undefined || ShareWebCompositionStatus == 100) {
+                        let SCDataTemp: any = item.ClientTime?.length > 0 ? JSON.parse(item.ClientTime) : [];
+                        if ((ShareWebConfigData != undefined || ShareWebCompositionStatus == 100) && SCDataTemp?.length == 1) {
                             let siteConfigData = JSON.parse(ShareWebConfigData != undefined ? ShareWebConfigData : [{}]);
                             tempData = siteConfigData[0].SiteComposition;
                             let siteSeetingJSON = [{ "Manual": true, "Proportional": false, "Portfolio": false }]
                             item.SiteCompositionSettings = JSON.stringify(siteSeetingJSON);
+                        } else {
+                            tempData = JSON.parse(item.ClientTime)
                         }
                     } else {
                         tempData = JSON.parse(item.ClientTime)
@@ -2917,6 +2921,11 @@ const EditTaskPopup = (Items: any) => {
         let fileName: any = '';
         let tempArray: any = [];
         let SiteUrl = siteUrls;
+
+        if (Items.Items.siteType == "Offshore Tasks") {
+            Items.Items.siteType = "SharewebQA";
+        }
+
         imageList?.map(async (imgItem: any, index: number) => {
             if (imgItem.data_url != undefined && imgItem.file != undefined) {
                 let date = new Date()
