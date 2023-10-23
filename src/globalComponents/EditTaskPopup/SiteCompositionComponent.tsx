@@ -293,14 +293,14 @@ const SiteCompositionComponent = (Props: any) => {
             callBack(SiteCompositionObject, "dataExits");
             setIsPortfolioComposition(false);
             setCheckBoxStatus(false);
-           
+
             refreshSiteCompositionConfigurations();
             ChangeSiteCompositionInstant("Proportional");
-            if(IsProtectedSiteComposition){
-                setIsProtectedSiteComposition(true);
-            }else{
-                setIsProtectedSiteComposition(false);
-            }
+            // if (IsProtectedSiteComposition) {
+            //     setIsProtectedSiteComposition(true);
+            // } else {
+            //     setIsProtectedSiteComposition(false);
+            // }
         }
         if (Type == "Manual") {
             SiteCompositionSettings[0].Delux = false;
@@ -315,12 +315,16 @@ const SiteCompositionComponent = (Props: any) => {
             SiteTaggingFinalData = ClientTimeDataBackup;
             refreshSiteCompositionConfigurations();
             ChangeSiteCompositionInstant("Manual");
-            setSelectedSiteCount(ClientTimeDataBackup?.length > 0 ? ClientTimeDataBackup?.length : 0);
-            if(IsProtectedSiteComposition){
-                setIsProtectedSiteComposition(true);
-            }else{
-                setIsProtectedSiteComposition(false);
+            if (ClientTimeDataBackup?.length > 0) {
+                setSelectedSiteCount(ClientTimeDataBackup?.length);
+            } else {
+                setSelectedSiteCount(ClientTime?.length > 0 ? ClientTime?.length : 0);
             }
+            // if (IsProtectedSiteComposition) {
+            //     setIsProtectedSiteComposition(true);
+            // } else {
+            //     setIsProtectedSiteComposition(false);
+            // }
         }
         if (Type == "Portfolio") {
             SiteCompositionSettings[0].Delux = false;
@@ -361,13 +365,13 @@ const SiteCompositionComponent = (Props: any) => {
                     setIsProtectedSiteComposition(true);
                 } else {
                     SiteCompositionSettings[0].Protected = false;
-                    setIsProtectedSiteComposition(false);
+                    // setIsProtectedSiteComposition(false);
                 }
 
             } else {
                 SiteCompositionSettings[0].Protected = true;
                 SiteTaggingFinalData = ClientTimeData;
-                setIsProtectedSiteComposition(true);
+                // setIsProtectedSiteComposition(true);
             }
         }
 
@@ -1141,8 +1145,8 @@ const SiteCompositionComponent = (Props: any) => {
                                     }
                                     return (
                                         <tr
-                                        // className={siteData?.StartEndDateValidation ? "Disabled-Link bg-th" : 'hreflink border-1'}
-                                        className="hreflink border-1"
+                                            // className={siteData?.StartEndDateValidation ? "Disabled-Link bg-th" : 'hreflink border-1'}
+                                            className="hreflink border-1"
                                         >
                                             <th
                                                 scope="row"
