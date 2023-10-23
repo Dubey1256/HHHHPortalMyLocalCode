@@ -228,6 +228,22 @@ const SiteCompositionComponent = (Props: any) => {
         return Items;
     }
 
+    const makeAllGlobalVariableAsDefault = () => {
+        AutoCompleteItemsArray = [];
+        SelectedClientCategoryBackupArray = [];
+        BackupSiteTypeData = [];
+        SiteTaggingFinalData = [];
+        SiteSettingsFinalData = [];
+        SiteClientCatgeoryFinalData = [];
+        SelectedClieantCategoryGlobal = [];
+        ClientCategoryPopupSiteNameGlobal = '';
+        FinalAllDataList = [];
+        MasterTaskListData = [];
+        SiteTaskListData = [];
+        MasterTaskListId = '';
+        SelectedFromTable = [];
+        ClientTimeDataBackup = [];
+    }
 
 
     const selectSiteCompositionFunction = (e: any, Index: any) => {
@@ -437,12 +453,12 @@ const SiteCompositionComponent = (Props: any) => {
             setCheckBoxStatus(false);
             setIsSCProtected(false);
             SiteTaggingFinalData = ClientTimeDataBackup;
-            if(ClientTimeDataBackup?.length > 0){
+            if (ClientTimeDataBackup?.length > 0) {
                 setSelectedSiteCount(ClientTimeDataBackup?.length > 0 ? ClientTimeDataBackup?.length : 0);
-            }else{
+            } else {
                 setSelectedSiteCount(ClientTimeData?.length > 0 ? ClientTimeData?.length : 0);
             }
-           
+
             refreshSiteCompositionConfigurations();
             ChangeSiteCompositionInstant("Manual");
             // if (IsSCProtected) {
@@ -954,7 +970,8 @@ const SiteCompositionComponent = (Props: any) => {
                 }).then(() => {
                     console.log("Site Composition Updated !!!");
                     if (!ComponentChildExist) {
-                        Props.closePopupCallBack();
+                        // Props.closePopupCallBack();
+                        closeComponentChildrenPopup();
                         callBack(SiteCompositionObject, "dataExits");
                     }
                 })
@@ -1010,7 +1027,8 @@ const SiteCompositionComponent = (Props: any) => {
         setComponentChildrenPopupStatus(false);
         setTimeout(() => {
             Props.closePopupCallBack();
-            callBack(SiteCompositionObject, "dataExits")
+            callBack(SiteCompositionObject, "dataExits");
+            makeAllGlobalVariableAsDefault();
         }, 2000);
     }
 
@@ -1043,12 +1061,7 @@ const SiteCompositionComponent = (Props: any) => {
 
     // ******************* this is used for Childern Table section functions ****************
     const getChildDataForSelectedTask = async () => {
-        let countFirst = 0;
-        let countSecond = 0;
-        let countThird = 0;
         let GroupByData: any = [];
-        let ChildData: any = []
-        let ParentChild: any = [];
         let PropsObject: any = {
             MasterTaskListID: AllListIdData.MasterTaskListID,
             siteUrl: AllListIdData.siteUrl,
@@ -1060,19 +1073,26 @@ const SiteCompositionComponent = (Props: any) => {
             GroupByData = CallBackData.GroupByData
         }
         if (GroupByData?.length > 0) {
-            GroupByData.map((dataItem: any) => {
-                if (dataItem.Id == ItemId) {
-                    ChildData.push(dataItem);
-                    countFirst++;
-                    if (dataItem.subRows?.length > 0) {
-                        setComponentChildExist(true);
-                    }
-                }
-
-            })
+            recursiveLog(GroupByData, ItemId);
         }
-
     }
+
+    function recursiveLog(data: any, itemId: any) {
+        data.forEach((dataItem: any) => {
+            if (dataItem.Id === itemId) {
+                console.log(`Item with ID ${itemId} found.`, dataItem);
+                if (dataItem.subRows?.length > 0) {
+                    setComponentChildExist(true);
+                }
+            }
+            if (dataItem.subRows?.length > 0) {
+                recursiveLog(dataItem.subRows, itemId);
+            }
+        });
+    }
+
+
+
 
     //    ************* this is Custom Header For Client Category Popup *****************
     const onRenderCustomClientCategoryHeader = () => {
@@ -1127,7 +1147,7 @@ const SiteCompositionComponent = (Props: any) => {
             }
         } else {
             closeComponentChildrenPopup();
-            Props.closePopupCallBack();
+            // Props.closePopupCallBack();
         }
     }
 
@@ -1137,7 +1157,6 @@ const SiteCompositionComponent = (Props: any) => {
             AllTaskListData?.map(async (ItemData: any) => {
                 let TempArray: any = [];
                 let ClientCategoryIds: any = [];
-
                 if (ItemData.ClientCategory?.length > 0) {
                     ItemData.ClientCategory?.map((CCItems: any) => {
                         TempArray.push(CCItems.Id);
