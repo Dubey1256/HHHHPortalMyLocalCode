@@ -449,14 +449,20 @@ const SiteCompositionComponent = (Props: any) => {
 
         if (Type == "Protected") {
             if (SiteCompositionSettings[0]?.Protected == true) {
-                SiteCompositionSettings[0].Protected = false;
-                setIsSCProtected(false);
+                if (SiteCompositionSettings[0].Delux == true || SiteCompositionSettings[0].Standard == true) {
+                    setIsSCProtected(true);
+                } else {
+                    SiteCompositionSettings[0].Protected = false;
+                    setIsSCProtected(false);
+                }
+
             } else {
                 SiteCompositionSettings[0].Protected = true;
                 // SiteTaggingFinalData = ClientTimeData;
                 setIsSCProtected(true);
             }
         }
+
         if (Type == "Delux") {
             if (SiteCompositionSettings[0]?.Delux == true) {
                 SiteCompositionSettings[0].Delux = false;
