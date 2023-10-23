@@ -322,6 +322,7 @@ function TeamPortlioTable(SelectedProp: any) {
                             result.chekbox = false;
                             result.descriptionsSearch = '';
                             result.commentsSearch = '';
+                            result.TaskTypeValue ='';
                             if (result?.DueDate != null && result?.DueDate != undefined) {
                                 result.serverDueDate = new Date(result?.DueDate).setHours(0, 0, 0, 0)
                             }
@@ -490,6 +491,7 @@ function TeamPortlioTable(SelectedProp: any) {
             result.AllTeamName = "";
             result.descriptionsSearch = '';
             result.commentsSearch = '';
+            result.TaskTypeValue ='';
             result.TeamLeaderUser = [];
             if (result.Item_x0020_Type === 'Component') {
                 result.boldRow = 'boldClable'
@@ -739,6 +741,13 @@ function TeamPortlioTable(SelectedProp: any) {
             temp.ItemRank = "";
             temp.DueDate = "";
             temp.Project = "";
+            temp.DisplayCreateDate = null;
+            temp.DisplayDueDate = null;
+            temp.TaskTypeValue = "";
+            temp.AllTeamName = '';
+            temp.ClientCategorySearch = '';
+            temp.Created = null;
+            temp.Author = "";
             temp.subRows = allLoadeDataMasterTaskAndTask?.filter((elem1: any) => elem1?.TaskType?.Id != undefined && elem1?.ParentTask?.Id === undefined && elem1?.Portfolio?.Title === undefined);
             countAllTasksData = countAllTasksData.concat(temp.subRows);
             temp.subRows.forEach((task: any) => {
@@ -924,6 +933,13 @@ function TeamPortlioTable(SelectedProp: any) {
             temp.ItemRank = "";
             temp.DueDate = "";
             temp.Project = "";
+            temp.DisplayCreateDate = null;
+            temp.DisplayDueDate = null;
+            temp.TaskTypeValue = "";
+            temp.AllTeamName = '';
+            temp.ClientCategorySearch = '';
+            temp.Created = null;
+            temp.Author = "";
             temp.subRows = smartAllFilterData?.filter((elem1: any) => elem1?.TaskType?.Id != undefined && elem1?.ParentTask?.Id === undefined && elem1?.Portfolio?.Title === undefined);
             AfterFilterTaskCount = AfterFilterTaskCount.concat(temp.subRows);
             temp.subRows.forEach((task: any) => {
@@ -1286,7 +1302,7 @@ function TeamPortlioTable(SelectedProp: any) {
             },
             {
                 accessorFn: (row) => row?.projectStructerId + "." + row?.ProjectTitle,
-                cell: ({ row }) => (
+                cell: ({ row, column, getValue }) => (
                     <>
                         {row?.original?.ProjectTitle != (null || undefined) ?
                             <span ><a style={row?.original?.fontColorTask != undefined ? { color: `${row?.original?.fontColorTask}` } : { color: `${row?.original?.PortfolioType?.Color}` }} data-interception="off" target="_blank" className="hreflink serviceColor_Active" href={`${ContextValue.siteUrl}/SitePages/Project-Management.aspx?ProjectId=${row?.original?.ProjectId}`} >
@@ -1303,9 +1319,9 @@ function TeamPortlioTable(SelectedProp: any) {
 
             {
                 accessorFn: (row) => row?.TaskTypeValue,
-                cell: ({ row }) => (
+                cell: ({ row, column, getValue }) => (
                     <>
-                        <span className="columnFixedTaskCate"><span title={row?.original?.TaskTypeValue} className="text-content">{row?.original?.TaskTypeValue}</span></span>
+                        <span className="columnFixedTaskCate"><span title={row?.original?.TaskTypeValue} className="text-content"><HighlightableCell value={getValue()} searchTerm={column.getFilterValue() != undefined ? column.getFilterValue() : childRef?.current?.globalFilter} /></span></span>
                     </>
                 ),
                 placeholder: "Task Type",
@@ -1373,9 +1389,9 @@ function TeamPortlioTable(SelectedProp: any) {
             // },
             {
                 accessorFn: (row) => row?.DueDate,
-                cell: ({ row }) => (
-                    <span className='ms-1'>{row?.original?.DisplayDueDate} </span>
-
+                cell: ({ row, column, getValue }) => (
+                    // <span className='ms-1'>{row?.original?.DisplayDueDate}</span>
+                    <HighlightableCell value={row?.original?.DisplayDueDate} searchTerm={column.getFilterValue() != undefined ? column.getFilterValue() : childRef?.current?.globalFilter} />
                 ),
                 filterFn: (row: any, columnName: any, filterValue: any) => {
                     if (row?.original?.DisplayDueDate?.includes(filterValue)) {
@@ -1393,11 +1409,12 @@ function TeamPortlioTable(SelectedProp: any) {
             },
             {
                 accessorFn: (row) => row?.Created,
-                cell: ({ row }) => (
+                cell: ({ row, column }) => (
                     <div className="alignCenter">
                         {row?.original?.Created == null ? ("") : (
                             <>
-                                <div className='ms-1'>{row?.original?.DisplayCreateDate} </div>
+                                <HighlightableCell value={row?.original?.DisplayCreateDate} searchTerm={column.getFilterValue() != undefined ? column.getFilterValue() : childRef?.current?.globalFilter} />
+                                {/* <div className='ms-1'>{row?.original?.DisplayCreateDate} </div> */}
                                 {row?.original?.Author != undefined &&
                                     <>
                                         <a href={`${ContextValue?.siteUrl}/SitePages/TaskDashboard.aspx?UserId=${row?.original?.Author?.Id}&Name=${row?.original?.Author?.Title}`}
