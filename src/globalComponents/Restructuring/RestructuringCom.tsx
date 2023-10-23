@@ -731,10 +731,12 @@ const RestructuringCom = (props: any, ref: any) => {
         if (items?.Item_x0020_Type === "Component") {
           let checkSubCondition: boolean = true;
           let checkFeatureCondition: boolean = true;
+          let SubConditionAlert: boolean = true;
           if (items?.subRows?.length > 0 && items?.subRows != undefined) {
             items?.subRows?.map((newItems: any) => {
-              if (newItems?.Item_x0020_Type === "SubComponent") {
+              if (newItems?.Item_x0020_Type === "SubComponent" && SubConditionAlert) {
                 alert('You are not allowed to Restructure this item.');
+                SubConditionAlert=false;
                 checkSubCondition = false;
               } else if (newItems?.Item_x0020_Type === "Feature" && checkSubCondition) {
                 checkSubCondition = false;

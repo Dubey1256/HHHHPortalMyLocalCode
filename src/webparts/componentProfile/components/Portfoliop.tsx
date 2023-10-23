@@ -859,6 +859,10 @@ const  contextCall = (data: any, path: any, component: any) => {
   }
 };
 
+
+const SiteCompositionCallback = React.useCallback(() => {
+  count++;
+}, [])
   return (
     <myContextValue.Provider value={{ ...myContextValue, FunctionCall: contextCall, keyDoc:keydoc, FileDirRef: FileDirRef }}>
     <div className={TypeSite == "Service" ? "serviepannelgreena" : ""}>
@@ -869,10 +873,8 @@ const  contextCall = (data: any, path: any, component: any) => {
             <div className="d-flex justify-content-between p-0">
               <ul className="spfxbreadcrumb m-0 p-0">
                 <li>
-                <a target="_blank" 
-                  rel="noopener" 
-                  data-interception="off"
-                  href={SelectedProp.siteUrl + "/SitePages/Team-Portfolio.aspx"}>
+                <a 
+                  href="#">
                   <FaHome />{" "}
                   </a>
                 </li>
@@ -1789,10 +1791,11 @@ const  contextCall = (data: any, path: any, component: any) => {
                   {data.map((item: any, index: any) => {
                     return (
                       <Sitecomposition
-                        key={index}
-                        props={item}
-                        sitedata={SelectedProp}
-                      />
+                          key={index}
+                          props={item}
+                          sitedata={SelectedProp}
+                          callback={SiteCompositionCallback}
+                        />
                     );
                   })}
                 </div>
