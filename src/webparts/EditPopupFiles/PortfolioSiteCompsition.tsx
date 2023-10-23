@@ -214,7 +214,7 @@ const SiteCompositionComponent = (Props: any) => {
             }
         }
         getChildDataForSelectedTask()
-    }, [SelectedClientCategoryFromProps])
+    }, [SiteCompositionSettings])
 
     const getSmartMetadataItemsByTaxType = function (metadataItems: any, taxType: any) {
         let Items: any = [];
@@ -417,7 +417,12 @@ const SiteCompositionComponent = (Props: any) => {
             // CallBack(SiteCompositionObject, "dataExits");
             setIsPortfolioComposition(false);
             setCheckBoxStatus(false);
-            setIsSCProtected(false);
+            if (IsSCProtected) {
+                setIsSCProtected(true);
+            } else {
+                setIsSCProtected(false);
+            }
+
             refreshSiteCompositionConfigurations();
             ChangeSiteCompositionInstant("Proportional");
         }
@@ -435,6 +440,11 @@ const SiteCompositionComponent = (Props: any) => {
             setSelectedSiteCount(ClientTimeDataBackup?.length > 0 ? ClientTimeDataBackup?.length : 0);
             refreshSiteCompositionConfigurations();
             ChangeSiteCompositionInstant("Manual");
+            if (IsSCProtected) {
+                setIsSCProtected(true);
+            } else {
+                setIsSCProtected(false);
+            }
         }
 
         if (Type == "Protected") {
@@ -922,6 +932,7 @@ const SiteCompositionComponent = (Props: any) => {
                     console.log("Site Composition Updated !!!");
                     if (!ComponentChildExist) {
                         Props.closePopupCallBack();
+                        callBack(SiteCompositionObject, "dataExits");
                     }
                 })
             } catch (error) {
@@ -976,6 +987,7 @@ const SiteCompositionComponent = (Props: any) => {
         setComponentChildrenPopupStatus(false);
         setTimeout(() => {
             Props.closePopupCallBack();
+            callBack(SiteCompositionObject, "dataExits")
         }, 1000);
     }
 
