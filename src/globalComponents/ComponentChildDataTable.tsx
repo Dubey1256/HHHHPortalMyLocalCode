@@ -908,7 +908,6 @@ function ComponentChildDataTable(SelectedProp: any) {
       let Actatcomponent = AllSiteTasksDataGlobal?.filter(
         (elem1: any) =>
           elem1?.TaskType?.Id === 1 &&
-          elem1?.ParentTask?.Id === undefined &&
           elem1?.Portfolio?.Id === SelectedProp?.props?.Id
       );
       countAllTasksDataGlobal = countAllTasksDataGlobal.concat(Actatcomponent);
