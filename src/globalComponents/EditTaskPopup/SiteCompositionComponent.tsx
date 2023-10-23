@@ -357,8 +357,13 @@ const SiteCompositionComponent = (Props: any) => {
         // }
         if (Type == "Protected") {
             if (SiteCompositionSettings[0]?.Protected == true) {
-                SiteCompositionSettings[0].Protected = false;
-                setIsProtectedSiteComposition(false);
+                if (SiteCompositionSettings[0].Delux == true || SiteCompositionSettings[0].Standard == true) {
+                    setIsProtectedSiteComposition(true);
+                } else {
+                    SiteCompositionSettings[0].Protected = false;
+                    setIsProtectedSiteComposition(false);
+                }
+
             } else {
                 SiteCompositionSettings[0].Protected = true;
                 SiteTaggingFinalData = ClientTimeData;
