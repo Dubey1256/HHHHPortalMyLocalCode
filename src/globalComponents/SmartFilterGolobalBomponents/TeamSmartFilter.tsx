@@ -254,14 +254,6 @@ const TeamSmartFilter = (item: any) => {
         smartmetaDataDetails.forEach((element: any) => {
             element.label = element.Title;
             element.value = element.Id;
-            // if (element.TaxType == 'Task Types') {
-            //     filterGroups[0].values.push(element);
-            //     filterGroups[0].checked.push(element.Id)
-            // }
-            // if (element.TaxType == 'Type') {
-            //     filterGroups[1].values.push(element);
-            //     filterGroups[1].checked.push(element.Id)
-            // }
             if (element.TaxType == 'Task Types') {
                 Type.push(element)
             }
@@ -434,17 +426,6 @@ const TeamSmartFilter = (item: any) => {
             filterGroups[0].checked.push(item.Id)
         }
     }
-    // const getFilterInfo = () => {
-    //     let filterInfo = '';
-    //     let tempFilterInfo: any = []
-    //     filterGroups.forEach((element: any) => {
-    //         if (element.checked.length > 0)
-    //             tempFilterInfo.push(element.Title + ' : (' + element.checked.length + ')')
-    //     });
-    //     filterInfo = tempFilterInfo.join(' | ');
-    //     setFilterInfo(filterInfo)
-    // }
-
     const headerCountData = (() => {
         let filterInfo = '';
         let CategoriesandStatus = "";
@@ -700,164 +681,6 @@ const TeamSmartFilter = (item: any) => {
         }
         headerCountData();
     }
-
-    // const FilterDataOnCheck = function () {
-    //     let portFolio: any[] = [];
-    //     let site: any[] = [];
-    //     let type: any[] = [];
-    //     let teamMember: any[] = [];
-    //     let priorityType: any[] = [];
-    //     let percentComplete: any[] = [];
-    //     let updateArray: any[] = [];
-    //     let finalUpdateArray: any[] = [];
-    //     let clientCategory: any[] = [];
-    //     let Categories: any[] = [];
-    //     // let PortfolioType:any[]=[];
-    //     filterGroupsData.forEach(function (filter) {
-    //         if (filter.Title === 'Portfolio' && filter.checked.length > 0 && filter.checkedObj.length > 0) {
-    //             filter.checkedObj.map(function (port: any) { return portFolio.push(port); });
-    //         }
-    //         else if (filter.Title === 'Type' && filter.checked.length > 0 && filter.checkedObj.length > 0) {
-    //             filter.checkedObj.map(function (elem1: any) { return type.push(elem1); });
-    //         }
-    //         else if (filter.Title === 'Client Category' && filter.checked.length > 0 && filter.checkedObj.length > 0) {
-    //             filter.checkedObj.map(function (elem: any) { return clientCategory.push(elem); });
-    //         }
-    //         else if (filter.Title === 'Categories' && filter.checked.length > 0 && filter.checkedObj.length > 0) {
-    //             filter.checkedObj.map(function (elem2: any) { return Categories.push(elem2); });
-    //         }
-    //         else if (filter.Title === 'Priority' && filter.checked.length > 0 && filter.checkedObj.length > 0) {
-    //             filter.checkedObj.map(function (elem3: any) {
-    //                 if (elem3.Title != '(1) High' && elem3.Title != '(2) Normal' && elem3.Title != '(3) Low') {
-    //                     elem3.Title = parseInt(elem3.Title);
-    //                 }
-    //                 priorityType.push(elem3);
-    //             });
-    //         }
-    //         else if (filter.Title === 'Status' && filter.checked.length > 0 && filter.checkedObj.length > 0) {
-    //             filter.checkedObj.map(function (elem4: any) {
-    //                 if (elem4.Title) {
-    //                     const match = elem4.Title.match(/(\d+)%/);
-    //                     if (match) {
-    //                         elem4.TaskStatus = parseInt(match[1]);
-    //                     }
-    //                 }
-    //                 return percentComplete.push(elem4);
-    //             });
-    //         }
-    //         // else if(filter.Title === 'Portfolio Type' && filter.checked.length > 0 && filter.checkedObj.length > 0) {
-    //         //     filter.checkedObj.map(function (portType: any) { return PortfolioType.push(portType); });
-    //         // }
-    //     });
-    //     if (allStites.length > 0) {
-    //         site = allStites.reduce((acc, item) => [...acc, ...item.checkedObj], []);
-    //     }
-    //     if (TaskUsersData.length > 0) {
-    //         teamMember = TaskUsersData.reduce((acc, item) => [...acc, ...item.checkedObj], []);
-    //         if (isCreatedBy === true) { teamMember.push(isCreatedBy) } else if (isModifiedby === true) { teamMember.push(isModifiedby) } else if (isAssignedto === true) { teamMember.push(isAssignedto) }
-    //     }
-    //     allMasterTasksData?.map((data: any) => {
-    //         if (checkPortfolioMatch(data, portFolio)) {
-    //             updateArray.push(data);
-    //         }
-    //     });
-    //     /// old code///
-    //     allTastsData?.map((data: any) => {
-    //         if (checkSiteMatch(data, site) && checkTypeMatch(data, type)) {
-    //             if (percentCompleteMatch(data, percentComplete)) {
-    //                 data.TotalTaskTime = data?.TotalTaskTime;
-    //                 updateArray.push(data);
-    //             }
-    //         }
-    //     });
-
-    //     let updateArrayCopyData: any[] = [];
-    //     let updateFinalData: any[] = [];
-    //     if (updateArray.length > 0) {
-    //         updateArray.map((filData) => {
-    //             filData.TeamLeaderUser?.map((TeamData: any) => {
-    //                 if (checkTeamMember(TeamData, teamMember)) {
-    //                     updateArrayCopyData.push(filData);
-    //                 }
-    //             });
-    //         });
-    //     }
-    //     if (updateArrayCopyData.length > 0) {
-    //         updateArrayCopyData.map((priorityData) => {
-    //             if (checkPriority(priorityData, priorityType)) {
-    //                 updateFinalData.push(priorityData);
-    //             }
-    //         });
-    //     }
-
-    //     if (updateFinalData.length > 0) {
-    //         setFinalArray(updateFinalData);
-    //         finalArrayData = updateFinalData;
-    //     } else if (updateArrayCopyData.length > 0) {
-    //         setFinalArray(updateArrayCopyData);
-    //         finalArrayData = updateArrayCopyData;
-    //     } else {
-    //         setFinalArray(updateArray);
-    //         finalArrayData = updateArray;
-    //     }
-    //     console.log('finalArrayDatafinalArrayData', finalArrayData)
-    //     setFirstTimecallFilterGroup(false);
-    // };
-    // const checkPortfolioMatch = (data: any, portfolioFilter: any): boolean => {
-    //     if (portfolioFilter.length === 0) {
-    //         return false;
-    //     } else {
-    //         return portfolioFilter.some((filter: any) => filter.Title === data.Item_x0020_Type);
-    //     }
-    // };
-
-    // const checkSiteMatch = (data: any, siteFilter: any): boolean => {
-    //     if (siteFilter.length === 0) {
-    //         return false;
-    //     } else {
-    //         return siteFilter.some((fil: any) => fil.Title === data.siteType);
-    //     }
-    // };
-
-    // const checkTypeMatch = (data: any, typeSite: any): boolean => {
-    //     if (typeSite.length === 0) {
-    //         return false;
-    //     } else {
-    //         return typeSite.some((value: any) => data?.TaskType?.Title === value.Title);
-    //     }
-    // };
-
-    // const checkTeamMember = (data: any, teamMember: any): boolean => {
-    //     if (teamMember.length === 0) {
-    //         return false;
-    //     } else {
-    //         return teamMember.some((value: any) => value.Title === data.Title);
-    //     }
-    // };
-
-    // const checkPriority = (data: any, checkPriority: any): boolean => {
-    //     if (checkPriority.length === 0) {
-    //         return false;
-    //     } else {
-    //         if (data.Priority !== undefined && data.Priority !== '' && data.Priority !== null) {
-    //             return checkPriority.some((value: any) => value.Title === data.Priority || value.Title === data.PriorityRank);
-    //         }
-    //     }
-    //     return false;
-    // };
-    // const percentCompleteMatch = (percentData: any, percentComplete: any): boolean => {
-    //     if (percentComplete.length === 0) {
-    //         return false;
-    //     } else {
-    //         if (percentData.PercentComplete !== undefined && percentData.PercentComplete !== '' && percentData.PercentComplete !== null) {
-    //             const percentCompleteValue = parseInt(percentData?.PercentComplete);
-    //             return percentComplete.some((value: any) => percentCompleteValue === value?.TaskStatus);
-    //         }
-    //     }
-    //     return false;
-    // };
-
-
     const FilterDataOnCheck = function () {
         let portFolio: any[] = [];
         let site: any[] = [];
@@ -885,9 +708,6 @@ const TeamSmartFilter = (item: any) => {
                     }
                 })
             }
-            // else if (filter.Title === 'Client Category' && filter.checked.length > 0 && filter.checkedObj.length > 0) {
-            //     filter.checkedObj.map(function (elem: any) { return clientCategory.push(elem); });
-            // }
             else if (filter.Title === 'Categories' && filter.checked.length > 0 && filter.checkedObj.length > 0) {
                 filter.checkedObj.map(function (elem2: any) { return Categories.push(elem2); });
             }
@@ -1367,48 +1187,6 @@ const TeamSmartFilter = (item: any) => {
     ];
 
     //*************************************************** Portfolio Items & Task Items selected ***************************************************************** */
-    // React.useEffect(() => {
-    //     if (isPortfolioItems === true) {
-    //         filterGroups?.map((elem: any) => {
-    //             if (elem?.Title === "Portfolio Type") {
-    //                 smartmetaDataDetails.forEach((element: any) => {
-    //                     if (element.TaxType == 'Task Types') {
-    //                         filterGroups[0].values.push(element);
-    //                         filterGroups[0].checked.push(element.Id)
-    //                     }
-    //                     filterGroups[0].checkedObj = GetCheckedObject(filterGroups[0].values, filterGroups[0].checked);
-    //                 })
-    //             }
-    //         })
-    //     } else {
-    //         filterGroups[0].checkedObj = filterGroups[0].checkedObj=[];
-    //         filterGroups[0].checked= filterGroups[0].checked=[];
-    //     }
-    //     // if (isTaskItems === true) {
-    //     //     filterGroups?.map((elem: any) => {
-    //     //         if (elem?.Title === "Task Type") {
-    //     //             smartmetaDataDetails.forEach((element: any) => {
-    //     //                 if (element.TaxType == 'Task Types') {
-    //     //                     filterGroups[0].values.push(element);
-    //     //                     filterGroups[0].checked.push(element.Id)
-    //     //                 }
-    //     //                 filterGroups[0].checkedObj = GetCheckedObject(filterGroups[0].values, filterGroups[0].checked);
-    //     //                 AllSites?.forEach((element: any, index: any) => {
-    //     //                     element.checkedObj = GetCheckedObject(element.values, element.checked)
-    //     //                 });
-    //     //                 if (element.TaxType == 'Task Type') {
-    //     //                     filterGroups[1].values.push(element);
-    //     //                     filterGroups[1].checked.push(element.Id)
-    //     //                 }
-    //     //                 filterGroups[0].checkedObj = GetCheckedObject(filterGroups[0].values, filterGroups[0].checked);
-    //     //             })
-    //     //         }
-    //     //     })
-    //     // }
-    //     // filterGroupsData
-    //     // setFilterGroups
-    //     // isTaskItems
-    // }, [isPortfolioItems])
     //*************************************************** Portfolio Items & Task Items End ***************************************************************** */
 
     //*************************************************************smartTimeTotal*********************************************************************/
@@ -1788,13 +1566,25 @@ const TeamSmartFilter = (item: any) => {
                 size: 100,
             },
             {
-                accessorKey: "DueDate",
-                placeholder: "Due Date",
-                header: "",
+                accessorFn: (row) => row?.DueDate,
+                cell: ({ row }) => (
+                    <span className='ms-1'>{row?.original?.DisplayDueDate} </span>
+
+                ),
+                filterFn: (row: any, columnName: any, filterValue: any) => {
+                    if (row?.original?.DisplayDueDate?.includes(filterValue)) {
+                        return true
+                    } else {
+                        return false
+                    }
+                },
+                id: 'DueDate',
                 resetColumnFilters: false,
+                resetSorting: false,
+                placeholder: "DueDate",
+                header: "",
                 size: 91,
-                id: "DueDate",
-            }
+            },
         ],
         [item?.ProjectData]
     );
@@ -2069,9 +1859,6 @@ const TeamSmartFilter = (item: any) => {
                                                                                 showNodeIcon={false}
                                                                                 checkModel={'all'}
                                                                                 icons={{
-                                                                                    // check: (<AiFillCheckSquare style={{ color: `${portfolioColor}`, height: "18px", width: "18px" }} />),
-                                                                                    // uncheck: (<AiOutlineBorder style={{ height: "18px", color: "rgba(0,0,0,.29)", width: "18px" }} />),
-                                                                                    // halfCheck: (<AiFillMinusSquare style={{ color: `${portfolioColor}`, height: "18px", width: "18px" }} />),
                                                                                     check: (<div className='checkBoxIcons' dangerouslySetInnerHTML={{ __html: checkIcons }} />),
                                                                                     uncheck: (<div className='checkBoxIcons' dangerouslySetInnerHTML={{ __html: checkBoxIcon }} />),
                                                                                     halfCheck: (<div className='checkBoxIcons' dangerouslySetInnerHTML={{ __html: halfCheckBoxIcons }} />),
@@ -2144,10 +1931,6 @@ const TeamSmartFilter = (item: any) => {
                                                                             showNodeIcon={false}
                                                                             checkModel={'all'}
                                                                             icons={{
-
-                                                                                // check: (<AiFillCheckSquare style={{ color: `${portfolioColor}`, height: "18px", width: "18px" }} />),
-                                                                                // uncheck: (<AiOutlineBorder style={{ height: "18px", color: "rgba(0,0,0,.29)", width: "18px" }} />),
-                                                                                // halfCheck: (<AiFillMinusSquare style={{ color: `${portfolioColor}`, height: "18px", width: "18px" }} />),
                                                                                 check: (<div className='checkBoxIcons' dangerouslySetInnerHTML={{ __html: checkIcons }} />),
                                                                                 uncheck: (<div className='checkBoxIcons' dangerouslySetInnerHTML={{ __html: checkBoxIcon }} />),
                                                                                 halfCheck: (<div className='checkBoxIcons' dangerouslySetInnerHTML={{ __html: halfCheckBoxIcons }} />),
@@ -2220,9 +2003,6 @@ const TeamSmartFilter = (item: any) => {
                                                                                 showNodeIcon={false}
                                                                                 checkModel={'all'}
                                                                                 icons={{
-                                                                                    // check: (<AiFillCheckSquare style={{ color: `${portfolioColor}`, height: "18px", width: "18px" }} />),
-                                                                                    // uncheck: (<AiOutlineBorder style={{ height: "18px", color: "rgba(0,0,0,.29)", width: "18px" }} />),
-                                                                                    // halfCheck: (<AiFillMinusSquare style={{ color: `${portfolioColor}`, height: "18px", width: "18px" }} />),
                                                                                     check: (<div className='checkBoxIcons' dangerouslySetInnerHTML={{ __html: checkIcons }} />),
                                                                                     uncheck: (<div className='checkBoxIcons' dangerouslySetInnerHTML={{ __html: checkBoxIcon }} />),
                                                                                     halfCheck: (<div className='checkBoxIcons' dangerouslySetInnerHTML={{ __html: halfCheckBoxIcons }} />),
@@ -2318,9 +2098,6 @@ const TeamSmartFilter = (item: any) => {
                                                                                 showNodeIcon={false}
                                                                                 checkModel={'all'}
                                                                                 icons={{
-                                                                                    // check: (<AiFillCheckSquare style={{ color: `${portfolioColor}`, height: "18px", width: "18px" }} />),
-                                                                                    // uncheck: (<AiOutlineBorder style={{ height: "18px", color: "rgba(0,0,0,.29)", width: "18px" }} />),
-                                                                                    // halfCheck: (<AiFillMinusSquare style={{ color: `${portfolioColor}`, height: "18px", width: "18px" }} />),
                                                                                     check: (<div dangerouslySetInnerHTML={{ __html: checkIcons }} />),
                                                                                     uncheck: (<div dangerouslySetInnerHTML={{ __html: checkBoxIcon }} />),
                                                                                     halfCheck: (<div dangerouslySetInnerHTML={{ __html: halfCheckBoxIcons }} />),
