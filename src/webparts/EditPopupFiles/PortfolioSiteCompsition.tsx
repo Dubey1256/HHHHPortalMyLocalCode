@@ -993,8 +993,7 @@ const SiteCompositionComponent = (Props: any) => {
         setComponentChildrenPopupStatus(false);
         setTimeout(() => {
             Props.closePopupCallBack();
-            callBack(SiteCompositionObject, "dataExits")
-        }, 1000);
+        }, 2000);
     }
 
     const autoSuggestionsForClientCategoryIdividual = (e: any, siteType: any, SiteId: any) => {
@@ -1126,7 +1125,7 @@ const SiteCompositionComponent = (Props: any) => {
                     return array.indexOf(val) == id;
                 })
                 if (ItemData.IsSCProtected == false || ItemData.IsSCProtected == undefined || ItemData.IsSCProtected == null) {
-                    UpdateOnBackendSide(web, ItemData.listId, ClientCategoryIds, ItemData.Id, "SiteTasks");
+                    UpdateOnBackendSide(web, ItemData.listId, ClientCategoryIds, ItemData.Id, "MasterTask");
                 }
             })
         }
