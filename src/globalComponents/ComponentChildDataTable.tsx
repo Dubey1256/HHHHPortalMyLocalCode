@@ -1394,23 +1394,31 @@ function ComponentChildDataTable(SelectedProp: any) {
         resetColumnFilters: false,
         size: 100
       },
+      // {
+      //   accessorFn: (row) => row?.AllTeamName,
+      //   cell: ({ row }) => (
+      //     <div className="alignCenter">
+      //       <ShowTaskTeamMembers
+      //         key={row?.original?.Id}
+      //         props={row?.original}
+      //         TaskUsers={AllUsers}
+      //         Context={SelectedProp?.NextProp}
+      //       />
+      //     </div>
+      //   ),
+      //   id: "AllTeamName",
+      //   placeholder: "Team",
+      //   resetColumnFilters: false,
+      //   header: "",
+      //   size: 131
+      // },
       {
-        accessorFn: (row) => row?.AllTeamName,
-        cell: ({ row }) => (
-          <div className="alignCenter">
-            <ShowTaskTeamMembers
-              key={row?.original?.Id}
-              props={row?.original}
-              TaskUsers={AllUsers}
-              Context={SelectedProp?.NextProp}
-            />
-          </div>
-        ),
-        id: "AllTeamName",
-        placeholder: "Team",
-        resetColumnFilters: false,
+        accessorKey: "PercentComplete",
+        placeholder: "Status",
         header: "",
-        size: 131
+        resetColumnFilters: false,
+        size: 42,
+        id: "PercentComplete"
       },
       {
         accessorFn: (row) => row?.IsSCProtected,
@@ -1425,15 +1433,6 @@ function ComponentChildDataTable(SelectedProp: any) {
         size: 100,
       },
       {
-        accessorKey: "PercentComplete",
-        placeholder: "Status",
-        header: "",
-        resetColumnFilters: false,
-        size: 42,
-        id: "PercentComplete"
-      },
-
-      {
         accessorFn: (row) => row?.compositionType,
         cell: ({ row }) => (
           <span>{row?.original?.compositionType}</span>
@@ -1445,26 +1444,26 @@ function ComponentChildDataTable(SelectedProp: any) {
         resetSorting: false,
         size: 100,
       },
-      {
-        accessorFn: (row) => row?.DueDate,
-        cell: ({ row }) => (
-          <span className='ms-1'>{row?.original?.DisplayDueDate} </span>
+      // {
+      //   accessorFn: (row) => row?.DueDate,
+      //   cell: ({ row }) => (
+      //     <span className='ms-1'>{row?.original?.DisplayDueDate} </span>
 
-        ),
-        id: 'DueDate',
-        filterFn: (row: any, columnName: any, filterValue: any) => {
-          if (row?.original?.DisplayDueDate?.includes(filterValue)) {
-            return true
-          } else {
-            return false
-          }
-        },
-        resetColumnFilters: false,
-        resetSorting: false,
-        placeholder: "DueDate",
-        header: "",
-        size: 100
-      },
+      //   ),
+      //   id: 'DueDate',
+      //   filterFn: (row: any, columnName: any, filterValue: any) => {
+      //     if (row?.original?.DisplayDueDate?.includes(filterValue)) {
+      //       return true
+      //     } else {
+      //       return false
+      //     }
+      //   },
+      //   resetColumnFilters: false,
+      //   resetSorting: false,
+      //   placeholder: "DueDate",
+      //   header: "",
+      //   size: 100
+      // },
       {
         accessorFn: (row) => row?.Created,
         cell: ({ row }) => (

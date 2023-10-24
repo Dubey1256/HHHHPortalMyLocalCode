@@ -4118,7 +4118,7 @@ const EditTaskPopup = (Items: any) => {
                                     {StatusOptions?.map((item: any, index: any) => {
                                         return (
                                             <li key={index}>
-                                                <div className="form-check ">
+                                                <div className={IsUserFromHHHHTeam ? "form-check" : (!IsUserFromHHHHTeam && item.value == 100 ? "form-check Disabled-Link bg-e9 py-1" : "form-check")}>
                                                     <label className="SpfxCheckRadio">
                                                         <input className="radio"
                                                             type="radio" checked={(PercentCompleteCheck ? EditData.PercentComplete : UpdateTaskInfo.PercentCompleteStatus) == item.value}
