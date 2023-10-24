@@ -2,7 +2,6 @@ import * as React from "react";
 import { useState, useEffect } from 'react';
 import { Panel, PanelType } from 'office-ui-fabric-react';
 import { ImPriceTags } from 'react-icons/im';
-import { SlCalender } from 'react-icons/sl'
 import Tooltip from "../../globalComponents/Tooltip";
 import { Web } from "sp-pnp-js";
 import * as Moment from 'moment';
@@ -1166,7 +1165,7 @@ const SiteCompositionComponent = (Props: any) => {
                     return array.indexOf(val) == id;
                 })
                 if (ItemData.IsSCProtected == false || ItemData.IsSCProtected == undefined || ItemData.IsSCProtected == null) {
-                    UpdateOnBackendSide(web, ItemData.listId, ClientCategoryIds, ItemData.Id, "MasterTask");
+                    UpdateOnBackendSide(web, ItemData.listId, ClientCategoryIds, ItemData.Id, "MasterTask", "");
                 }
             })
         }
@@ -1184,18 +1183,20 @@ const SiteCompositionComponent = (Props: any) => {
                     return array.indexOf(val) == id;
                 })
                 if (ItemData.IsSCProtected == false || ItemData.IsSCProtected == undefined || ItemData.IsSCProtected == null) {
-                    UpdateOnBackendSide(web, ItemData.listId, ClientCategoryIds, ItemData.Id, "SiteTasks");
+                    UpdateOnBackendSide(web, ItemData.listId, ClientCategoryIds, ItemData.Id, "SiteTasks", ItemData.siteType);
                 }
             })
         }
         closeComponentChildrenPopup();
-        Props.closePopupCallBack();
+        // Props.closePopupCallBack();
     }
 
-    const UpdateOnBackendSide = async (siteUrl: any, ListId: any, ClientCategoryIds: any, ItemId: any, TaskType: any) => {
+    const UpdateOnBackendSide = async (siteUrl: any, ListId: any, ClientCategoryIds: any, ItemId: any, TaskType: any, siteType: any) => {
         let finalSiteCompositionJSON: any = [];
         let finalClientCategoryData: any = [];
         let finalSiteCompositionSettingData: any = [];
+        let SiteClientCategories: any = [];
+
         if (SiteTaggingFinalData?.length > 0) {
             finalSiteCompositionJSON = SiteTaggingFinalData
         } else {
@@ -1211,25 +1212,43 @@ const SiteCompositionComponent = (Props: any) => {
         } else {
             finalSiteCompositionSettingData = SiteCompositionSettings;
         }
+        if (siteType?.length > 1 && siteType != 'Shareweb') {
+            finalSiteCompositionSettingData = [{ Proportional: false, Manual: true, Protected: false, Delux: false, Standard: false }]
+        }
         let SiteCompositionDataForTask: any = [];
         if (TaskType == "SiteTasks") {
-            finalSiteCompositionJSON?.map((SCData: any) => {
+            if (siteType == "Shareweb") {
+                finalSiteCompositionJSON?.map((SCData: any) => {
+                    let SCObject: any = {
+                        SiteName: SCData.Title,
+                        ClienTimeDescription: SCData.ClienTimeDescription,
+                        siteIcons: SCData.SiteImages,
+                        localSiteComposition: true
+                    }
+                    SiteCompositionDataForTask.push(SCObject);
+                })
+            } else {
                 let SCObject: any = {
-                    SiteName: SCData.Title,
-                    ClienTimeDescription: SCData.ClienTimeDescription,
-                    siteIcons: SCData.SiteImages,
+                    SiteName: siteType,
+                    ClienTimeDescription: "100",
                     localSiteComposition: true
                 }
                 SiteCompositionDataForTask.push(SCObject);
-            })
+            }
         }
 
         let TempArray: any = [];
         let TempClientCategoryIds: any = [];
 
         if (finalClientCategoryData?.length > 0) {
+            let count: any = 0;
             finalClientCategoryData?.map((CCItems: any) => {
-                TempArray.push(CCItems.Id);
+                if (CCItems.siteName == siteType) {
+                    count++;
+                    TempArray.push(CCItems.Id);
+                } else if (count == 0) {
+                    TempArray.push(CCItems.Id);
+                }
             })
         }
         TempClientCategoryIds = TempArray.filter((val: any, id: any, array: any) => {
@@ -2025,7 +2044,7 @@ const SiteCompositionComponent = (Props: any) => {
                     onDismiss={closeComponentChildrenPopup}
                     isBlocking={false}
                     type={PanelType.custom}
-                    customWidth="950px"
+                    customWidth="1100px"
                     onRenderFooter={onRenderFooterComponentChildren}
                 >
                     <div className={ServicesTaskCheck ? "serviepannelgreena SelectProjectTable " : 'SelectProjectTable '}>
