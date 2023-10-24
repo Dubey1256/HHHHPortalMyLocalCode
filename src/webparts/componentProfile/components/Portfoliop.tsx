@@ -1102,7 +1102,7 @@ const  contextCall = (data: any, path: any, component: any) => {
                   <div className="row mb-2">
                     <div className="col-md-6 pe-0">
                     <dl>
-                        <dt className="bg-fxdark">ID</dt>
+                        <dt className="bg-fxdark" title="Structure ID ">ID</dt>
                         <dd className="bg-light">
                           <span>
                             {data.map((item, index) => (
@@ -1112,7 +1112,7 @@ const  contextCall = (data: any, path: any, component: any) => {
                         </dd>
                       </dl>
                       <dl>
-                        <dt className="bg-fxdark">Start Date</dt>
+                        <dt className="bg-fxdark" title="Start Date">Start Date</dt>
                         <dd className="bg-light">
                           {data.map((item, index) => (
                             <a >
@@ -1138,7 +1138,7 @@ const  contextCall = (data: any, path: any, component: any) => {
                       </dl>
                    
                       <dl>
-                        <dt className="bg-fxdark">Status</dt>
+                        <dt className="bg-fxdark" title="Status">Status</dt>
                         <dd className="bg-light">
                           {data.map((item) => (
                             <a>{item?.mergedStatus}</a>
@@ -1146,7 +1146,7 @@ const  contextCall = (data: any, path: any, component: any) => {
                         </dd>
                       </dl>
                       <dl>
-                    <dt className="bg-fxdark">Team Members</dt>
+                    <dt className="bg-fxdark" title="Assigned Person">Team Members</dt>
                     <dd className="bg-light d-flex">
                       {AllTaskuser?.length > 0 && (
                         <ShowTaskTeamMembers
@@ -1164,7 +1164,7 @@ const  contextCall = (data: any, path: any, component: any) => {
                     {data.map((item: any) => {
                         return (
                           <><dl>
-                                <dt className="bg-fxdark">Parent</dt>
+                                <dt className="bg-fxdark" title="Tagged Parent">Parent</dt>
                                 <dd className="bg-light">
                                 {item?.Parent?.Title != undefined && (
                                   <>
@@ -1235,7 +1235,7 @@ const  contextCall = (data: any, path: any, component: any) => {
                         );
                       })}
                       <dl>
-                        <dt className="bg-fxdark">Due Date</dt>
+                        <dt className="bg-fxdark" title="Due date">Due Date</dt>
                         <dd className="bg-light">
                           <span>
                             {data.map((item, index) => (
@@ -1262,7 +1262,7 @@ const  contextCall = (data: any, path: any, component: any) => {
                         </dd>
                       </dl>
                       <dl>
-                        <dt className="bg-fxdark">Item Rank</dt>
+                        <dt className="bg-fxdark" title="Item Rank">Item Rank</dt>
                         <dd className="bg-light">
                           {data.map((item, index) => (
                             <EditableField
@@ -1287,7 +1287,7 @@ const  contextCall = (data: any, path: any, component: any) => {
                       <>
                         {item?.PortfolioType?.Title && (
                           <dl>
-                            <dt className="bg-fxdark">Portfolio Item</dt>
+                            <dt className="bg-fxdark" title="Tagged Component">Portfolio Item</dt>
                             <dd className={`bg-light `}>
                               <div
                                 className="ps-1"
@@ -1325,7 +1325,7 @@ const  contextCall = (data: any, path: any, component: any) => {
                   </div>
                 <div className="col-md-4 p-0">    
                      <dl>
-                        <dt className="bg-fxdark">Priority</dt>
+                        <dt className="bg-fxdark" title="Priority of Task">Priority</dt>
                         <dd className="bg-light">
                           {data.map((item, index) => (
                             <EditableField
@@ -1346,7 +1346,7 @@ const  contextCall = (data: any, path: any, component: any) => {
                         </dd>
                       </dl>
                       <dl>
-                        <dt className="bg-fxdark">Completion Date</dt>
+                        <dt className="bg-fxdark" title="Completion Date">Completion Date</dt>
                         <dd className="bg-light">
                           {data.map((item, index) => (
                             <a>
@@ -1371,7 +1371,7 @@ const  contextCall = (data: any, path: any, component: any) => {
                         </dd>
                       </dl>
                       <dl>
-                        <dt className="bg-fxdark">Categories</dt>
+                        <dt className="bg-fxdark" title="Task Category">Categories</dt>
                         <dd className="bg-light text-break">
                           {data.map((item) => (
                             <a>{item?.Categories}</a>
@@ -1380,7 +1380,7 @@ const  contextCall = (data: any, path: any, component: any) => {
                       </dl>
 
                   <dl>
-                    <dt className="bg-fxdark">% Complete</dt>
+                    <dt className="bg-fxdark" title="% Complete">% Complete</dt>
                     <dd className="bg-light">
                       {data.map((item, index) => (
                         <EditableField
@@ -1480,7 +1480,7 @@ const  contextCall = (data: any, path: any, component: any) => {
                       {/* Question description */}
                       {AllQuestion?.length != 0 && (
                         <details open>
-                          <summary className="alignCenter">
+                          <summary className="alignCenter">``
                             <label className="toggler full_width">
                           Question Description
                             </label>
