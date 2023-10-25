@@ -22,6 +22,7 @@ import PreSetDatePikerPannel from "../../../globalComponents/SmartFilterGolobalB
 import EditTaskPopup from '../../../globalComponents/EditTaskPopup/EditTaskPopup';
 import HighlightableCell from '../../../globalComponents/GroupByReactTableComponents/highlight';
 import PreSetDatePikerPannel2 from '../../../globalComponents/SmartFilterGolobalBomponents/PreSetDatePikerCate';
+import ShowClintCatogory from '../../../globalComponents/ShowClintCatogory';
 //import alasql from 'alasql';
 let AllMasterTasks: any = [];
 let portfolioColor: any = '';
@@ -64,9 +65,11 @@ export interface ICategoriesWeeklyMultipleReportState {
   IsTask: boolean;
   checkedItems: any;
   EditTaskItem: any;
-  Preset2Popup:any;
+  Preset2Popup: any;
   StartDatePicker2: any;
   EndDatePicker2: any;
+  AllMetadata: any;
+  columns: any;
 
 }
 
@@ -116,14 +119,14 @@ export default class CategoriesWeeklyMultipleReport extends React.Component<ICat
       IsTask: false,
       checkedItems: [],
       EditTaskItem: '',
-      Preset2Popup:false,
+      Preset2Popup: false,
       StartDatePicker2: new Date(),
       EndDatePicker2: new Date(),
+      AllMetadata: [],
+      columns: [],
     }
     //this.GetResult();   
     this.columns = [
-
-
       {
         accessorKey: "",
         placeholder: "",
@@ -196,6 +199,12 @@ export default class CategoriesWeeklyMultipleReport extends React.Component<ICat
             </span>
           </div>
         ),
+        // accessorFn: (row: any) => row?.ClientCategorySearch,
+        // cell: ({ row }: any) => (
+        //   <>
+        //     {row?.original?.ClientCategory && <ShowClintCatogory clintData={row?.original} AllMetadata={this.state.AllMetadata} />}
+        //   </>
+        // ),
         accessorKey: "clientCategory",
         placeholder: "Categories",
         header: "",
@@ -298,7 +307,7 @@ export default class CategoriesWeeklyMultipleReport extends React.Component<ICat
         hasCustomExpanded: false,
         hasExpanded: false,
         isHeaderNotAvlable: true,
-        size: 55,
+        size: 5,
         id: 'Id',
       },
       {
@@ -317,14 +326,14 @@ export default class CategoriesWeeklyMultipleReport extends React.Component<ICat
         id: "row?.original.Id",
         canSort: false,
         placeholder: "",
-        size: 95,
+        size: 42,
       },
       {
         accessorKey: "TaskID",
         placeholder: "Task ID",
         header: "",
         resetColumnFilters: false,
-        size: 91,
+        size: 120,
         id: "TaskID",
       },
       {
@@ -345,30 +354,35 @@ export default class CategoriesWeeklyMultipleReport extends React.Component<ICat
         placeholder: "Title",
         header: "",
         resetColumnFilters: false,
-        size: 91,
         id: "TaskTitle",
       },
       {
-        accessorFn: (row: any) => row?.clientCategory,
+        // accessorFn: (row: any) => row?.clientCategory,
+        // cell: ({ row }: any) => (
+        //   <div className="alignCenter">
+        //     <span className="columnFixedTitle">
+        //       {row?.original?.clientCategory !== undefined ? (
+        //         <span>
+        //           {row?.original?.clientCategory}
+        //         </span>
+        //       ) : (
+        //         <span>{row?.original?.clientCategory}</span>
+        //       )}
+        //     </span>
+        //   </div>
+        // ),
+        accessorFn: (row: any) => row?.ClientCategorySearch,
         cell: ({ row }: any) => (
-          <div className="alignCenter">
-            <span className="columnFixedTitle">
-              {row?.original?.clientCategory !== undefined ? (
-                <span>
-                  {row?.original?.clientCategory}
-                </span>
-              ) : (
-                <span>{row?.original?.clientCategory}</span>
-              )}
-            </span>
-          </div>
+          <>
+            {row?.original?.clientCategory && <ShowClintCatogory clintData={row?.original} AllMetadata={this.state.AllMetadata} />}
+          </>
         ),
-        accessorKey: "clientCategory",
+        accessorKey: "ClientCategory",
         placeholder: "Categories",
         header: "",
         resetColumnFilters: false,
         size: 91,
-        id: "clientCategory",
+        id: "ClientCategory",
       },
       {
         accessorFn: (row: any) => row?.TaskDate,
@@ -411,7 +425,7 @@ export default class CategoriesWeeklyMultipleReport extends React.Component<ICat
         placeholder: "Effort",
         header: "",
         resetColumnFilters: false,
-        size: 91,
+        size: 42,
         id: "Effort",
       },
       {
@@ -431,7 +445,7 @@ export default class CategoriesWeeklyMultipleReport extends React.Component<ICat
         placeholder: "Smart Time",
         header: "",
         resetColumnFilters: false,
-        size: 50,
+        size: 42,
       }, {
         cell: ({ row }: any) => (
           <>
@@ -457,7 +471,7 @@ export default class CategoriesWeeklyMultipleReport extends React.Component<ICat
         canSort: false,
         placeholder: "",
         header: "",
-        size: 30,
+        size: 10,
       },
 
 
@@ -471,7 +485,7 @@ export default class CategoriesWeeklyMultipleReport extends React.Component<ICat
     this.SelectedPortfolioItem = this.SelectedPortfolioItem.bind(this);
     this.GetAllSiteTaskData = this.GetAllSiteTaskData.bind(this);
     this.callBackData = this.callBackData.bind(this);
-    
+
   }
   rerender = () => {
     this.setState({});
@@ -550,7 +564,7 @@ export default class CategoriesWeeklyMultipleReport extends React.Component<ICat
     let web = new Web(this.props.Context.pageContext.web.absoluteUrl);
     let componentDetails = [];
     componentDetails = await web.lists
-     // .getByTitle('Master Tasks')
+      // .getByTitle('Master Tasks')
       .getById(this.props.MasterTaskListID)
       .items
       .select("ID", "Id", "Title", "PortfolioType/Id", "PortfolioType/Color", "PortfolioType/IdRange", "PortfolioType/Title",
@@ -571,7 +585,7 @@ export default class CategoriesWeeklyMultipleReport extends React.Component<ICat
     let taskUsers = [];
     let results = [];
     results = await web.lists
-     // .getByTitle('Task Users')
+      // .getByTitle('Task Users')
       .getById(this.props.TaskUsertListID)
       .items
       .select('Id', 'IsShowReportPage', 'UserGroupId', 'UserGroup/Title', 'Suffix', 'SmartTime', 'Title', 'Email', 'SortOrder', 'Role', 'Company', 'ParentID1', 'TaskStatusNotification', 'Status', 'Item_x0020_Cover', 'AssingedToUserId', 'isDeleted', 'AssingedToUser/Title', 'AssingedToUser/Id', 'AssingedToUser/EMail', 'ItemType')
@@ -649,6 +663,7 @@ export default class CategoriesWeeklyMultipleReport extends React.Component<ICat
     });
 
     this.setState({
+      AllMetadata: results,
       SitesConfig: sitesResult
     }, () => this.loadSmartFilters(ccResults))
 
@@ -677,7 +692,7 @@ export default class CategoriesWeeklyMultipleReport extends React.Component<ICat
 
     for (let index = 0; index < items.length; index++) {
       let filterItem = items[index];
-      if (filterItem.SmartFilters != undefined && filterItem.SmartFilters.indexOf('Dashboard') > -1) {
+      if (filterItem.Title != "Other" && filterItem.SmartFilters != undefined && filterItem.SmartFilters.indexOf('Dashboard') > -1) {
         let item: any = {};
         item.ID = filterItem.Id;
         item.Id = filterItem.Id;
@@ -694,7 +709,7 @@ export default class CategoriesWeeklyMultipleReport extends React.Component<ICat
           if (item.children != undefined && item.children.length > 0) {
             for (let j = 0; j < item.children.length; j++) {
               let obj = item.children[j];
-              if (obj.Title == 'Other')
+              if (obj.Title == 'Blank')
                 obj.ParentTitle = item.Title;
             }
           }
@@ -796,6 +811,178 @@ export default class CategoriesWeeklyMultipleReport extends React.Component<ICat
     this.rerender();
 
   }
+  //   private columnsnew = React.useMemo<ColumnDef<any, unknown>[]>(
+  //     () => [
+  //       {
+  //         accessorKey: "",
+  //         placeholder: "",
+  //         hasCheckbox: false,
+  //         hasCustomExpanded: true,
+  //         hasExpanded: true,
+  //         size: 55,
+  //         id: 'Id',
+  //       },
+  //       {
+  //         accessorKey: "getUserName",
+  //         placeholder: "User Name",
+  //         header: "",
+  //         resetColumnFilters: false,
+  //         size: 190,
+  //         id: "getUserName",
+  //       },
+  //       {
+  //         accessorKey: "Firstlevel",
+  //         placeholder: "Site",
+  //         header: "",
+  //         resetColumnFilters: false,
+  //         size: 91,
+  //         id: "Firstlevel",
+  //       },
+  //       {
+
+  //         accessorKey: "Secondlevel",
+  //         placeholder: "First level",
+  //         header: "",
+  //         resetColumnFilters: false,
+  //         size: 91,
+  //         id: "Secondlevel",
+  //       },
+  //       {
+  //         accessorFn: (row: any) => row?.Secondlevel,
+  //         cell: ({ row }: any) => (
+  //           <div className="alignCenter">
+  //             <span className="columnFixedTitle">
+  //               {row?.original?.childs?.length === 0 ? (
+  //                 <a className="text-content hreflink" title={row?.original?.Title} data-interception="off" target="_blank"
+  //                   onClick={(e) => this.ShowAllTask(e, row)} >
+  //                   {row?.original?.TotalValue}
+  //                 </a>
+  //               ) : (
+  //                 <span>{row?.original?.TotalValue}</span>
+  //               )}
+  //             </span>
+  //           </div>
+  //         ),
+  //         accessorKey: "TotalValue",
+  //         placeholder: "Time",
+  //         header: "",
+  //         resetColumnFilters: false,
+  //         size: 91,
+  //         id: "TotalValue",
+  //       },
+  //       {
+  //         // accessorFn: (row: any) => row?.CategoriesItems,
+  //         // cell: ({ row }: any) => (
+  //         //   <div className="alignCenter">
+  //         //     <span className="columnFixedTitle">
+  //         //       {row?.original?.CategoriesItems !== undefined ? (
+  //         //         <span>
+  //         //           {row?.original?.CategoriesItems}
+  //         //         </span>
+  //         //       ) : (
+  //         //         <span>{row?.original?.clientCategory}</span>
+  //         //       )}
+  //         //     </span>
+  //         //   </div>
+  //         // ),
+  //         accessorFn: (row: any) => row?.ClientCategorySearch,
+  //         cell: ({ row }: any) => (
+  //           <>
+  //             {row?.original?.ClientCategory && <ShowClintCatogory clintData={row?.original} AllMetadata={this.state.AllMetadata} />}
+  //           </>
+  //         ),
+  //         id: "ClientCategorySearch",
+  //         placeholder: "Client Category",
+  //         header: "",
+  //         resetColumnFilters: false,
+  //         size: 90,
+  //       },
+  //       {
+  //         accessorFn: (row: any) => row?.TotalValue,
+  //         cell: ({ row }: any) => (
+  //           <div className="alignCenter">
+  //             <span className="columnFixedTitle">
+  //               {row?.original?.TotalValue !== undefined ? (
+  //                 <span>
+  //                   {row?.original?.TotalValue}
+  //                 </span>
+  //               ) : (
+  //                 <span>{row?.original?.TotalSmartTime}</span>
+  //               )}
+  //             </span>
+  //           </div>
+  //         ),
+  //         accessorKey: "TotalSmartTime",
+  //         placeholder: "Smart Hours",
+  //         header: "",
+  //         resetColumnFilters: false,
+  //         size: 91,
+  //         id: "TotalSmartTime",
+  //       },
+  //       {
+  //         accessorFn: (row: any) => row?.SmartHoursTotal,
+  //         cell: ({ row }: any) => (
+  //           <div className="alignCenter">
+  //             <span className="columnFixedTitle">
+  //               {row?.original?.SmartHoursTotal !== undefined ? (
+  //                 <span>
+  //                   {row?.original?.SmartHoursTotal}
+  //                 </span>
+  //               ) : (
+  //                 <span>{row?.original?.SmartHoursTime}</span>
+  //               )}
+  //             </span>
+  //           </div>
+  //         ),
+  //         accessorKey: "SmartHoursTime",
+  //         placeholder: "Smart Hours (Roundup)",
+  //         header: "",
+  //         resetColumnFilters: false,
+  //         size: 91,
+  //         id: "SmartHoursTime",
+  //       },
+  //       {
+  //         accessorKey: "AdjustedTime",
+  //         placeholder: "Adjusted Hours ",
+  //         header: "",
+  //         resetColumnFilters: false,
+  //         size: 91,
+  //         id: "AdjustedTime",
+  //       },
+  //       {
+  //         accessorFn: (row: any) => row?.SmartHoursTotal,
+  //         cell: ({ row }: any) => (
+  //           <div className="alignCenter" >
+  //             {/* //  */}
+  //             <span className="columnFixedTitle">
+  //               {row?.original?.RoundAdjustedTime !== undefined ? (
+
+  //                 <span  >
+  //                   {row?.original?.RoundAdjustedTime}
+  //                 </span>
+
+
+  //               ) : (
+  //                 <span>
+  //                   {row?.original?.QuickEditItem != undefined && row?.original?.QuickEditItem === false && <span className={row?.original?.IsColor === true ? "NumberchangeGreen" : ""} onDoubleClick={(e) => this.InlineUpdate(e, row?.original, row)}>{row?.original?.Rountfiguretime}</span>}
+  //                   {row?.original?.QuickEditItem != undefined && row?.original?.QuickEditItem === true && <span>
+  //                     <input type="text" className="width-75" defaultValue={row?.original?.Rountfiguretime} onMouseOut={(e) => this.hideItems(e, row)} onChange={(e) => { this.changeRoutfigureTime(e, row?.original) }}></input>
+  //                   </span>}
+  //                 </span>
+  //               )}
+  //             </span>
+  //           </div>
+  //         ),
+  //         accessorKey: "Rountfiguretime",
+  //         placeholder: "Adjusted Hours (Roundup)",
+  //         header: "",
+  //         resetColumnFilters: false,
+  //         size: 91,
+  //         id: "Rountfiguretime",
+  //       },
+  //     ],
+  //     [this?.state?.AllTimeEntry]
+  // );
 
   private SelectUserImage(ev: any, item: any, Parent: any) {
     console.log(`The option ${ev.currentTarget.title}.`);
@@ -1231,10 +1418,10 @@ export default class CategoriesWeeklyMultipleReport extends React.Component<ICat
         for (let j = 0; j < itemtype.Query.length; j++) {
           let queryType = itemtype.Query[j];
           let results = await web.lists
-           // .getByTitle(itemtype.ListName)
+            // .getByTitle(itemtype.ListName)
             .getById(itemtype.listId)
             .items
-            .select('ParentTask/Title', 'ParentTask/Id','TaskID', 'Portfolio/ItemType', 'Portfolio/PortfolioStructureID', 'ClientTime', 'Portfolio/Id', 'Portfolio/Title', 'ItemRank', 'Portfolio_x0020_Type', 'SiteCompositionSettings', 'TimeSpent', 'BasicImageInfo', 'OffshoreComments', 'OffshoreImageUrl', 'CompletedDate', 'ResponsibleTeam/Id', 'ResponsibleTeam/Title', 'ClientCategory/Id', 'ClientCategory/Title', 'TaskCategories/Id', 'TaskCategories/Title', 'ParentTask/TaskID', 'TaskType/Id', 'TaskType/Title', 'TaskType/Level', 'TaskType/Prefix', 'Priority_x0020_Rank', 'Reference_x0020_Item_x0020_Json', 'TeamMembers/Title', 'TeamMembers/Name', 'TeamMembers/Id', 'Item_x002d_Image', 'component_x0020_link', 'IsTodaysTask', 'AssignedTo/Title', 'AssignedTo/Name', 'AssignedTo/Id', 'AttachmentFiles/FileName', 'FileLeafRef', 'FeedBack', 'Title', 'Id', 'PercentComplete', 'Company', 'StartDate', 'DueDate', 'Comments', 'Categories', 'Status', 'WebpartId', 'Body', 'Mileage', 'PercentComplete', 'Attachments', 'Priority', 'Created', 'Modified', 'Author/Id', 'Author/Title', 'Editor/Id', 'Editor/Title')
+            .select('ParentTask/Title', 'ParentTask/Id', 'TaskID', 'Portfolio/ItemType', 'Portfolio/PortfolioStructureID', 'ClientTime', 'Portfolio/Id', 'Portfolio/Title', 'ItemRank', 'Portfolio_x0020_Type', 'SiteCompositionSettings', 'TimeSpent', 'BasicImageInfo', 'OffshoreComments', 'OffshoreImageUrl', 'CompletedDate', 'ResponsibleTeam/Id', 'ResponsibleTeam/Title', 'ClientCategory/Id', 'ClientCategory/Title', 'TaskCategories/Id', 'TaskCategories/Title', 'ParentTask/TaskID', 'TaskType/Id', 'TaskType/Title', 'TaskType/Level', 'TaskType/Prefix', 'Priority_x0020_Rank', 'Reference_x0020_Item_x0020_Json', 'TeamMembers/Title', 'TeamMembers/Name', 'TeamMembers/Id', 'Item_x002d_Image', 'component_x0020_link', 'IsTodaysTask', 'AssignedTo/Title', 'AssignedTo/Name', 'AssignedTo/Id', 'AttachmentFiles/FileName', 'FileLeafRef', 'FeedBack', 'Title', 'Id', 'PercentComplete', 'Company', 'StartDate', 'DueDate', 'Comments', 'Categories', 'Status', 'WebpartId', 'Body', 'Mileage', 'PercentComplete', 'Attachments', 'Priority', 'Created', 'Modified', 'Author/Id', 'Author/Title', 'Editor/Id', 'Editor/Title')
             .filter(queryType.replace('filter=', '').trim())
             .expand('ParentTask', 'Portfolio', 'TaskType', 'AssignedTo', 'AttachmentFiles', 'Author', 'Editor', 'TeamMembers', 'ResponsibleTeam', 'ClientCategory', 'TaskCategories')
             .orderBy('Id', false)
@@ -1253,12 +1440,17 @@ export default class CategoriesWeeklyMultipleReport extends React.Component<ICat
               Item.listId = itemtype.listId
               Item.ComponentIDs = Item?.Portfolio?.Id;
               let ProtFolioData = AllMasterTasks?.filter((comp: any) => comp?.Id === Item?.Portfolio?.Id);
-              Item.Portfoliotype = ProtFolioData[0]?.PortfolioType.Title;;
-              if (Item.Portfoliotype === 'Component')
+              Item.Portfoliotype = ProtFolioData[0]?.PortfolioType?.Title;;
+              if (Item?.Portfoliotype === 'Component')
                 Item.IsCheckedComponent = true;
-              else if (Item.Portfoliotype === 'Service') Item.IsCheckedService = true
+              else if (Item?.Portfoliotype === 'Service') Item.IsCheckedService = true
               if (Item.IsCheckedComponent === isCheckedComponent || Item.IsCheckedService === IsCheckedService) {
                 Item.siteName = itemtype.ListName;
+                if (Item?.ClientCategory?.length > 0) {
+                  Item.ClientCategorySearch = Item?.ClientCategory?.map((elem: any) => elem.Title).join(" ")
+                } else {
+                  Item.ClientCategorySearch = ''
+                }
                 Item.siteImage = itemtype.siteImage;
                 Item.TaskID = globalCommon.GetTaskId(Item);
                 Item.PercentComplete = Item.PercentComplete <= 1 ? Item.PercentComplete * 100 : Item.PercentComplete;
@@ -1295,39 +1487,61 @@ export default class CategoriesWeeklyMultipleReport extends React.Component<ICat
             filterItem.clientCategory = '';
             filterItem.clientCategoryIds = '';
             //if ()
-            getItem.ClientCategory.forEach(function (client: any) {
-              if (client.Title != undefined && filterItem.clientCategoryIds.indexOf(client.Id.toString()) == -1) {
-                filterItems.forEach(function (filt: any) {
-                  if (filt.Title != undefined && client.Title != undefined && client.Title != '' && filt.checked == true && filt.Title.toLowerCase().indexOf(client.Title.toLowerCase()) > -1) {
-                    filterItem.clientCategory += client.Title + ';';
-                    filterItem.clientCategoryIds += client.Id + ';';
-                  }
-                  if (filt.children != undefined && filt.children.length > 0) {
-                    filt.children.forEach(function (child: any) {
-                      if (child.Title != undefined && client.Title != undefined && client.Title != '' && child.checked == true && child.Title.toLowerCase().indexOf(client.Title.toLowerCase()) > -1) {
-                        filterItem.clientCategory += client.Title + ';';
-                        filterItem.clientCategoryIds += client.Id + ';';
-                      }
-                      if (child.children != undefined && child.children.length > 0) {
-                        child.children.forEach(function (subchild: any) {
-                          if (subchild.Title != undefined && client.Title != undefined && client.Title != '' && subchild.checked == true && subchild.Title.toLowerCase().indexOf(client.Title.toLowerCase()) > -1) {
-                            filterItem.clientCategory += client.Title + ';';
-                            filterItem.clientCategoryIds += client.Id + ';';
-                          }
-                        })
-                      }
-                    })
-                  }
+            if (getItem?.ClientCategory?.length > 0) {
+              getItem?.ClientCategory?.forEach(function (client: any) {
+                if (client.Title != undefined && filterItem.clientCategoryIds.indexOf(client.Id.toString()) == -1) {
+                  filterItems.forEach(function (filt: any) {
+                    if (filt.Title != undefined && client.Title != undefined && client.Title != '' && filt.checked == true && filt.Title.toLowerCase().indexOf(client.Title.toLowerCase()) > -1) {
+                      filterItem.clientCategory += client.Title + ';';
+                      filterItem.clientCategoryIds += client.Id + ';';
+                    }
+                    if (filt.children != undefined && filt.children.length > 0) {
+                      filt.children.forEach(function (child: any) {
+                        if (child.Title != undefined && client.Title != undefined && client.Title != '' && child.checked == true && child.Title.toLowerCase().indexOf(client.Title.toLowerCase()) > -1) {
+                          filterItem.clientCategory += client.Title + ';';
+                          filterItem.clientCategoryIds += client.Id + ';';
+                        }
+                        if (child.children != undefined && child.children.length > 0) {
+                          child.children.forEach(function (subchild: any) {
+                            if (subchild.Title != undefined && client.Title != undefined && client.Title != '' && subchild.checked == true && subchild.Title.toLowerCase().indexOf(client.Title.toLowerCase()) > -1) {
+                              filterItem.clientCategory += client.Title + ';';
+                              filterItem.clientCategoryIds += client.Id + ';';
+                            }
+                          })
+                        }
+                      })
+                    }
 
-                })
-              }
-            })
+                  })
+                }
+              })
+            }
+            // else {
+            //   if(getItem?.siteName?.toLowerCase() ==='eps'){
+            //     filterItem.clientCategory +='Blank'+ ';';
+            //     filterItem.clientCategoryIds = 602+ ';';
+            //   }
+            //   if(getItem?.siteName?.toLowerCase() ==='ei'){
+            //     filterItem.clientCategory +='Blank'+ ';';
+            //     filterItem.clientCategoryIds += 601+ ';';
+            //   }
+            //   if(getItem?.siteName?.toLowerCase() ==='migration'){
+            //     filterItem.clientCategory += 'Blank'+ ';';
+            //     filterItem.clientCategoryIds += 576+ ';';
+            //   }
+            //   if(getItem?.siteName?.toLowerCase() ==='education'){
+            //     filterItem.clientCategory += 'Blank'+ ';';
+            //     filterItem.clientCategoryIds += 921+ ';';
+            //   }
+            // }
 
             filterItem.flag = true;
             if (getItem.ClientTime != undefined && getItem.ClientTime.length > 0) {
               let Client = JSON.parse(getItem.ClientTime);
               filterItem.ClientTime = Client;
             }
+            filterItem.ClientCategory = getItem.ClientCategory;
+            filterItem.ClientCategorySearch = getItem.ClientCategorySearch;
             filterItem.PercentComplete = getItem.PercentComplete;
             filterItem.Priority_x0020_Rank = getItem.Priority_x0020_Rank;
             filterItem.TaskID = getItem.TaskID;
@@ -1342,16 +1556,19 @@ export default class CategoriesWeeklyMultipleReport extends React.Component<ICat
       })
 
       AllTimeEntryItem = getAllTimeEntry;
+
       console.log('All Time Entry');
       console.log(AllTimeEntryItem);
       console.log('Filtered Items after all entry');
       console.log(filterItems);
+
       this.setState({
         filterItems: filterItems,
         AllTimeEntryItem: AllTimeEntryItem
       }, () => {
         this.getFilterTask(AllTimeEntryItem);
-      })
+        // this.createTableColumns();
+      },)
     }
 
   }
@@ -1403,7 +1620,7 @@ export default class CategoriesWeeklyMultipleReport extends React.Component<ICat
           let flag = false;
           switch (selectedFilters[i].TaxType) {
             case 'Client Category':
-              if (selectedFilters[i].Title != 'Other' && item.clientCategoryIds != undefined && item.clientCategoryIds != '') {
+              if (selectedFilters[i].Title != "Blank" && item.clientCategoryIds != undefined && item.clientCategoryIds != '') {
 
                 if (item.Id === 2883) {
                   console.log(item);
@@ -1412,6 +1629,11 @@ export default class CategoriesWeeklyMultipleReport extends React.Component<ICat
                 for (let j = 0; j < Category.length; j++) {
                   let type = Category[j];
                   if (type == selectedFilters[i].ID) {
+                    item.ParentTitle = this.getParentTitle(item, selectedFilters[i]);
+                    flag = true;
+                    item.Secondlevel = item.ParentTitle;
+                  }
+                  else if (selectedFilters[i].ID == '132' && item.siteType == "Shareweb") {
                     item.ParentTitle = this.getParentTitle(item, selectedFilters[i]);
                     flag = true;
                     item.Secondlevel = item.ParentTitle;
@@ -1450,56 +1672,72 @@ export default class CategoriesWeeklyMultipleReport extends React.Component<ICat
                   //  return false;
                 }
               }
-              if (selectedFilters[i].Title == 'Other' && (item.clientCategoryIds == undefined || item.clientCategoryIds == '')) {
-                let title = selectedFilters[i].ParentTitle == 'PSE' ? 'EPS' : (selectedFilters[i].ParentTitle == 'e+i' ? 'EI' : selectedFilters[i].ParentTitle);
-                if (selectedFilters[i].Title == 'Other') {
-                  if ((item.siteType != undefined && item.siteType == title)) {
-                    CategoryItems.push(item);
-                  } else if ((item.siteType != undefined && title === undefined)) {
-                    item.ParentTitle = this.getParentTitle(item, selectedFilters[i]);
-                    flag = true;
-                    item.Secondlevel = item.ParentTitle;
-                    CategoryItems.push(item);
+              if (selectedFilters[i].Title == "Blank" && (item.clientCategoryIds == undefined || item.clientCategoryIds == '')) {
+                // item.ParentTitle = this.getParentTitle(item, selectedFilters[i]);
+                // flag = true;
+                // item.Secondlevel = item.ParentTitle;
+                // if (!this.isItemExistsTimeEntry(CategoryItems, item.TimeEntryIDunique, item.siteType))
+                //   CategoryItems.push(item);
+                  let title = selectedFilters[i].ParentTitle == 'PSE' ? 'EPS' : (selectedFilters[i].ParentTitle == 'e+i' ? 'EI' : selectedFilters[i].ParentTitle);
+                  if (selectedFilters[i].Title == 'Blank' && item?.ClientCategory?.length ==0) {
+                    if ((item.siteType != undefined && item.siteType == title)) {
+                      item.ParentTitle = this.getParentTitle(item, selectedFilters[i]);
+                      flag = true;
+                      item.Secondlevel = item.ParentTitle;
+                      CategoryItems.push(item);
+                    } else if ((item.siteType != undefined && title === undefined)) {
+                      item.ParentTitle = this.getParentTitle(item, selectedFilters[i]);
+                      flag = true;
+                      item.Secondlevel = item.ParentTitle;
+                      CategoryItems.push(item);
+                    }
                   }
-                }
+
+                // else if (selectedFilters[i].ID == '132' && item.siteType == "Shareweb") {
+                //   item.ParentTitle = this.getParentTitle(item, selectedFilters[i]);
+                //   flag = true;
+                //   item.Secondlevel = item.ParentTitle;
+                //   if (!this.isItemExistsTimeEntry(CategoryItems, item.TimeEntryIDunique, item.siteType))
+                //     CategoryItems.push(item);
+                // }
+                // else if (selectedFilters[i].ID == '569' && item.siteType == "Migration") {
+                //   item.ParentTitle = this.getParentTitle(item, selectedFilters[i]);
+                //   flag = true;
+                //   item.Secondlevel = item.ParentTitle;
+                //   if (!this.isItemExistsTimeEntry(CategoryItems, item.TimeEntryIDunique, item.siteType))
+                //     CategoryItems.push(item);
+                // }
+                // else if (selectedFilters[i].ID == '572' && item.siteType == "ALAKDigital") {
+                //   item.ParentTitle = this.getParentTitle(item, selectedFilters[i]);
+                //   flag = true;
+                //   item.Secondlevel = item.ParentTitle;
+                //   if (!this.isItemExistsTimeEntry(CategoryItems, item.TimeEntryIDunique, item.siteType))
+                //     CategoryItems.push(item);
+                // }
+                // else if (selectedFilters[i].ID == '574' && item.siteType == "Gruene") {
+                //   item.ParentTitle = this.getParentTitle(item, selectedFilters[i]);
+                //   flag = true;
+                //   item.Secondlevel = item.ParentTitle;
+                //   if (!this.isItemExistsTimeEntry(CategoryItems, item.TimeEntryIDunique, item.siteType))
+                //     CategoryItems.push(item);
+                // }
+                // else if (selectedFilters[i].ID == '575' && item.siteType == "HHHH") {
+                //   item.ParentTitle = this.getParentTitle(item, selectedFilters[i]);
+                //   flag = true;
+                //   item.Secondlevel = item.ParentTitle;
+                //   if (!this.isItemExistsTimeEntry(CategoryItems, item.TimeEntryIDunique, item.siteType))
+                //     CategoryItems.push(item);
+                // }
+                // else if (selectedFilters[i].ID == '573' && item.siteType == "KathaBeck") {
+                //   item.ParentTitle = this.getParentTitle(item, selectedFilters[i]);
+                //   flag = true;
+                //   item.Secondlevel = item.ParentTitle;
+                //   if (!this.isItemExistsTimeEntry(CategoryItems, item.TimeEntryIDunique, item.siteType))
+                //     CategoryItems.push(item);
+                // }
+                isCategorySelected = true;
+                break;
               }
-              else if (selectedFilters[i].ID == '569' && item.siteType == "Migration") {
-                item.ParentTitle = this.getParentTitle(item, selectedFilters[i]);
-                flag = true;
-                item.Secondlevel = item.ParentTitle;
-                if (!this.isItemExistsTimeEntry(CategoryItems, item.TimeEntryIDunique, item.siteType))
-                  CategoryItems.push(item);
-              }
-              else if (selectedFilters[i].ID == '572' && item.siteType == "ALAKDigital") {
-                item.ParentTitle = this.getParentTitle(item, selectedFilters[i]);
-                flag = true;
-                item.Secondlevel = item.ParentTitle;
-                if (!this.isItemExistsTimeEntry(CategoryItems, item.TimeEntryIDunique, item.siteType))
-                  CategoryItems.push(item);
-              }
-              else if (selectedFilters[i].ID == '574' && item.siteType == "Gruene") {
-                item.ParentTitle = this.getParentTitle(item, selectedFilters[i]);
-                flag = true;
-                item.Secondlevel = item.ParentTitle;
-                if (!this.isItemExistsTimeEntry(CategoryItems, item.TimeEntryIDunique, item.siteType))
-                  CategoryItems.push(item);
-              }
-              else if (selectedFilters[i].ID == '575' && item.siteType == "HHHH") {
-                item.ParentTitle = this.getParentTitle(item, selectedFilters[i]);
-                flag = true;
-                item.Secondlevel = item.ParentTitle;
-                if (!this.isItemExistsTimeEntry(CategoryItems, item.TimeEntryIDunique, item.siteType))
-                  CategoryItems.push(item);
-              }
-              else if (selectedFilters[i].ID == '573' && item.siteType == "KathaBeck") {
-                item.ParentTitle = this.getParentTitle(item, selectedFilters[i]);
-                flag = true;
-                item.Secondlevel = item.ParentTitle;
-                if (!this.isItemExistsTimeEntry(CategoryItems, item.TimeEntryIDunique, item.siteType))
-                  CategoryItems.push(item);
-              }
-              isCategorySelected = true;
-              break;
           }
           //}
         }
@@ -1572,6 +1810,15 @@ export default class CategoriesWeeklyMultipleReport extends React.Component<ICat
                         totalnew += ((time.Effort * client.ClienTimeDescription) / 100)
                       if (client.SiteName != undefined && client.SiteName == 'Education' && time.First?.indexOf('Education') > -1)
                         totalnew += ((time.Effort * client.ClienTimeDescription) / 100)
+                      // if (client.SiteName != undefined && client.SiteName == 'Shareweb' && time?.First?.indexOf('PSE') > -1)
+                      //   totalnew += ((time.Effort * 25) / 100)
+                      // if (client.SiteName != undefined && client.SiteName == 'Shareweb' && time?.First?.indexOf('e+i') > -1)
+                      //   totalnew += ((time.Effort * 60) / 100)
+                      // if (client.SiteName != undefined && client.SiteName == 'Shareweb' && time?.First?.indexOf('Migration') > -1)
+                      //   totalnew += ((time.Effort * 5) / 100)
+                      // if (client.SiteName != undefined && client.SiteName == 'Shareweb' && time?.First?.indexOf('Education') > -1)
+                      //   totalnew += ((time.Effort * 10) / 100)
+
                     })
                   } else totalnew += time.Effort;
                 })
@@ -1679,7 +1926,7 @@ export default class CategoriesWeeklyMultipleReport extends React.Component<ICat
       this.setState({
         showDateTime: (
           <span className='alignCenter'>
-           <label className='ms-1'> | Time: {this?.TotalTimeEntry} | hours ({this?.TotalTimeEntry / 8} days)</label>
+            <label className='ms-1'> | Time: {this?.TotalTimeEntry} | hours ({this?.TotalTimeEntry / 8} days)</label>
             <label className="mx-1">|</label>
             <label>
               <div className="">Smart Hours: {this?.SmartTotalTimeEntry} ({this?.SmartTotalTimeEntry / 8} days)</div>
@@ -1699,9 +1946,11 @@ export default class CategoriesWeeklyMultipleReport extends React.Component<ICat
       this.setState({
         AllTimeEntry: this.AllTimeEntry,
         AllTimeEntryBackup: JSON.parse(JSON.stringify(this.AllTimeEntry))
-      })
+      });
+
       // this.AllTimeEntryBackup = JSON.parse(JSON.stringify(this.AllTimeEntry));
-      this.rerender();
+      this.rerenderEntire(this.AllTimeEntry);
+      //this.rerender();
       //$scope.CopyAllTimeEntry = SharewebCommonFactoryService.ArrayCopy($scope.AllTimeEntry);
 
     }
@@ -2051,35 +2300,50 @@ export default class CategoriesWeeklyMultipleReport extends React.Component<ICat
   private onCheck = (checked: any, item: any) => {
     let filterGroups = this.state.filterItems;
     let checkedItems: any = [];
-    filterGroups[item.index].checked = item.checked;
-    filterGroups[item.index].checkedObj = this.GetCheckedObject(filterGroups[item.index]?.children, checked, item.checked)
-    // //// demo////
-    if (filterGroups[item.index]?.children?.length > 0) {
-      const childrenLength = filterGroups[item.index]?.children?.reduce((total: any, obj: any) => total + (obj?.children?.length || 0), 0) + (filterGroups[item.index]?.children?.length ? filterGroups[item.index]?.children?.length : 0);
-      filterGroups[item.index].selectAllChecked = childrenLength === checked?.length;
-    }
+    // filterGroups[item.index].checked = item.checked;
+    // filterGroups[item.index].checkedObj = this.GetCheckedObject(filterGroups[item.index]?.children, checked, item.checked)
+    // // //// demo////
+    // if (filterGroups[item.index]?.children?.length > 0) {
+    //   const childrenLength = filterGroups[item.index]?.children?.reduce((total: any, obj: any) => total + (obj?.children?.length || 0), 0) + (filterGroups[item.index]?.children?.length ? filterGroups[item.index]?.children?.length : 0);
+    //   filterGroups[item.index].selectAllChecked = childrenLength === checked?.length;
+    // }
+    filterGroups.forEach((NewItem: any, index: any) => {
+      if (NewItem?.value === item?.value) {
+        filterGroups[item.index].checked = item.checked;
+        filterGroups[item.index].checkedObj = this.GetCheckedObject(filterGroups[item.index]?.children, checked, item.checked)
+        // //// demo////
+        if (filterGroups[item.index]?.children?.length > 0) {
+          const childrenLength = filterGroups[item.index]?.children?.reduce((total: any, obj: any) => total + (obj?.children?.length || 0), 0) + (filterGroups[item.index]?.children?.length ? filterGroups[item.index]?.children?.length : 0);
+          filterGroups[item.index].selectAllChecked = childrenLength === checked?.length;
+        }
+      }
+      NewItem?.children?.forEach((ObjItem: any, newIndex: any) => {
+        if (ObjItem?.value === item?.value) {
+          NewItem.children[newIndex].checked = item.checked;
+          NewItem.children[newIndex].checkedObj = this.GetCheckedObject(NewItem.children[newIndex]?.children, checked, item.checked)
+          if (NewItem.children[newIndex]?.children?.length > 0) {
+            const childrenLength = NewItem.children[newIndex]?.children?.reduce((total: any, obj: any) => total + (obj?.children?.length || 0), 0) + (NewItem.children[newIndex]?.children?.length ? NewItem.children[newIndex]?.children?.length : 0);
+            NewItem.children[newIndex].selectAllChecked = childrenLength === checked?.length;
+          }
+        }
+        ObjItem?.children?.forEach((LastItem: any, lastindex: any) => {
+          if (LastItem?.value === item?.value) {
+            ObjItem.children[lastindex].checked = item.checked;
+            ObjItem.children[lastindex].checkedObj = this.GetCheckedObject(ObjItem.children[lastindex]?.children, checked, item.checked)
+            if (ObjItem.children[lastindex]?.children?.length > 0) {
+              const childrenLength = ObjItem.children[lastindex]?.children?.reduce((total: any, obj: any) => total + (obj?.children?.length || 0), 0) + (ObjItem.children[lastindex]?.children?.length ? ObjItem.children[lastindex]?.children?.length : 0);
+              ObjItem.children[lastindex].selectAllChecked = childrenLength === checked?.length;
+            }
+          }
+        })
+      })
+    })
     filterGroups.forEach((obj: any) => {
       if (obj?.checked === true && !this.IsExistsData(checkedItems, obj.Id)) {
         checkedItems.push(obj);
         return;
       }
-      // if (obj?.children?.length > 0) {
-      //   obj?.children?.forEach((subobj:any)=>{
-      //     if(subobj?.checked ===true && !this.IsExistsData(checkedItems,obj.Id)){
-      //       checkedItems.push(obj);
-      //       return;
-      //     }
-      //     if (subobj?.children?.length > 0) {
-      //       subobj?.children?.forEach((subchildobj:any)=>{
-      //         if(subchildobj?.checked ===true && !this.IsExistsData(checkedItems,obj.Id)){
-      //           checkedItems.push(obj);
-      //         }
-      //       })
-      //     }
-      //   })
-      // }
     })
-
 
     this.setState({
       filterItems: filterGroups,
@@ -2114,17 +2378,8 @@ export default class CategoriesWeeklyMultipleReport extends React.Component<ICat
   private onRenderCustomHeaderMain = () => {
     return (
       <div className="d-flex full-width pb-1">
-        <div
-          style={{
-            marginRight: "auto",
-            fontSize: "20px",
-            fontWeight: "600",
-            marginLeft: "20px",
-          }}
-        >
-          <span> <h3>
-            Task Details {this?.state?.openTaggedTaskArray?.getParentRow().original?.getUserName}
-          </h3></span>
+        <div className='subheading siteColor'>
+          Task Details {this?.state?.openTaggedTaskArray?.getParentRow().original?.getUserName}
         </div>
         <Tooltip ComponentId={1746} />
       </div>
@@ -2480,7 +2735,7 @@ export default class CategoriesWeeklyMultipleReport extends React.Component<ICat
                   if (Firstlevel == "")
                     Firstlevel = objchild.Firstlevel;
                   else if (Firstlevel.indexOf(objchild.Firstlevel) == -1)
-                    Firstlevel +=  objchild.Firstlevel;
+                    Firstlevel += objchild.Firstlevel;
                 }
               })
             }
@@ -3110,7 +3365,7 @@ export default class CategoriesWeeklyMultipleReport extends React.Component<ICat
                           <span className='SpfxCheckRadio'>
                             <input type="radio" id="Presettime1" checked={this.state.SelecteddateChoice === 'Presettime1'} name="dateSelection" value="Presettime1" onClick={() => this.selectDate('Presettime1')} className="radio" />
                             <label>Pre-set II</label>
-                           
+
                             <span title="open" onClick={(e) => this.OpenPresetDate2Popup('Presettime1')} className='hreflink alignIcon ms-1 svg__iconbox svg__icon--editBox'></span>
                           </span>
                         </div>
@@ -3144,18 +3399,18 @@ export default class CategoriesWeeklyMultipleReport extends React.Component<ICat
                     <summary>
                       <label className="toggler full_width">
                         <a className="pull-left">
-                          SmartSearch - Filters  
+                          SmartSearch - Filters
                         </a>
                         <span className='ms-3'>
-                        {this?.state?.checkedItems != null && this.state.checkedItems.length > 0 &&
-                              this.state.checkedItems.map((obj: any) => {
-                                return <span> {obj.Title}
-                                  <span className='me-1'>
-                                    : ({this.getAllSubChildenCount(obj)})
-                                  </span>
+                          {this?.state?.checkedItems != null && this.state.checkedItems.length > 0 &&
+                            this.state.checkedItems.map((obj: any) => {
+                              return <span> {obj.Title}
+                                <span className='me-1'>
+                                  : ({this.getAllSubChildenCount(obj)})
                                 </span>
-                              })
-                            }
+                              </span>
+                            })
+                          }
                         </span>
                       </label>
                       <hr className='m-0'></hr>
@@ -3167,7 +3422,7 @@ export default class CategoriesWeeklyMultipleReport extends React.Component<ICat
                             <input defaultChecked={this.state.checkedAll} onClick={(e) => this.SelectAllCategories(e)} id='chkAllCategory' type="checkbox" className="form-check-input me-1 mt-1" />
                             Client Category
 
-                           
+
                           </label>
                           <CheckboxTree
                             nodes={this.state.filterItems}
@@ -3222,7 +3477,7 @@ export default class CategoriesWeeklyMultipleReport extends React.Component<ICat
 
               <div id="contact" className="col-sm-12 p-0">
                 <div className='table-responsive fortablee'>
-                  <GlobalCommanTable catogryDataLength={this?.state?.AllTimeEntryItem?.length} columns={this.columns} expendedTrue={true} data={this.state.AllTimeEntry} showHeader={true} showCatIcon={true} exportToExcelCategoryReport={this.exportToExcel} OpenAdjustedTimePopupCategory={this.OpenAdjustedTimePopup} callBackData={this?.callBackData} showDateTime={this.state.showDateTime} fixedWidth={true} /> </div>
+                  <GlobalCommanTable catogryDataLength={this?.state?.AllTimeEntryItem?.length} columns={this?.columns} expendedTrue={true} data={this.state.AllTimeEntry} showHeader={true} showCatIcon={true} exportToExcelCategoryReport={this.exportToExcel} OpenAdjustedTimePopupCategory={this.OpenAdjustedTimePopup} callBackData={this?.callBackData} showDateTime={this.state.showDateTime} fixedWidth={true} /> </div>
               </div>
             }
 
@@ -3233,7 +3488,7 @@ export default class CategoriesWeeklyMultipleReport extends React.Component<ICat
         <Panel
           onRenderHeader={this.onRenderCustomHeaderMain}
           type={PanelType.custom}
-          customWidth="800px"
+          customWidth="950px"
           isOpen={this.state.opentaggedtask}
           onDismiss={this.cancelsmarttablePopup}
           isBlocking={false}
@@ -3241,7 +3496,7 @@ export default class CategoriesWeeklyMultipleReport extends React.Component<ICat
           <div>
             <div className="modal-body">
               <div className="col-sm-12 tab-content bdrbox  mb-10">
-                <div className=" mb-10">
+                <div className="Alltable mb-10">
                   <div className="container-new">
                     <GlobalCommanTable columns={this.timePopup} data={this?.state?.openTaggedTaskArray?.original?.AllTask} showCatIcon={true} callBackData={this?.callBackData} fixedWidth={true} />
 
@@ -3260,7 +3515,7 @@ export default class CategoriesWeeklyMultipleReport extends React.Component<ICat
         {this?.state?.IsTimeEntry && (
           <TimeEntryPopup
             props={this?.state?.SharewebTimeComponent}
-             CallBackTimeEntry={this?.TimeEntryCallBack}
+            CallBackTimeEntry={this?.TimeEntryCallBack}
             Context={AllListId.Context}
           ></TimeEntryPopup>
         )}
@@ -3329,7 +3584,7 @@ export default class CategoriesWeeklyMultipleReport extends React.Component<ICat
           this.state.PresetPopup &&
           (<PreSetDatePikerPannel isOpen={this.state.PresetPopup} PreSetPikerCallBack={this.PreSetPikerCallBack} portfolioColor={portfolioColor} ></PreSetDatePikerPannel>)
         }
-         {
+        {
           this.state.Preset2Popup &&
           (<PreSetDatePikerPannel2 isOpen={this.state.Preset2Popup} PreSetPikerCallBack={this.PreSetPikerCallBack2} portfolioColor={portfolioColor} ></PreSetDatePikerPannel2>)
         }
