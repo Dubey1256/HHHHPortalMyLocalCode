@@ -772,7 +772,7 @@ QATime = 0.00;
                 id: 'TaskID',
                 header: '',
                 placeholder: "TaskID",
-               
+                size: 125,
  
 
             },
@@ -848,14 +848,14 @@ QATime = 0.00;
                 header: '',
                 accessorFn: (row) => row?.Features,
                 placeholder: "Features",
-                size: 250,
+                size: 200,
 
             },
             {
                 header: '',
                 accessorKey: 'Effort',
                 placeholder: "Effort",
-                size: 60,
+                size: 42,
 
 
             },
@@ -1312,7 +1312,7 @@ var ReportDate = new Date(a1)
                         </thead>
                         <tbody>
                             <tr>
-                                <td className='border bg-light'>Design</td>                                
+                                <td className='border fw-bold bg-light'>Design</td>                                
                                 <td className='border'>{TotalDesignMember}</td>
                                 <td className='border'>{DesignMembers}</td>
                                 <td className='border'>{DesignTime.toFixed(2)}</td>
