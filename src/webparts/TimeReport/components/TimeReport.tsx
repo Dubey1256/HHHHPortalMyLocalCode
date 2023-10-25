@@ -772,12 +772,17 @@ QATime = 0.00;
                 id: 'TaskID',
                 header: '',
                 placeholder: "TaskID",
-               
+                size: 100,
  
-
             },
             {
+                header: '',
+                accessorKey: 'siteType',
+                placeholder: "Sites",
+                size: 90,
+            },
 
+            {
                 accessorFn: (row) => row?.Task,
                 cell: ({ row, getValue }) => (
                     <>
@@ -792,9 +797,8 @@ QATime = 0.00;
                 id: 'Task',
                 header: '',
                 placeholder: "Task",
+                size: 125,
                
- 
-
             },
             {
                 cell: ({ row, getValue }) => (
@@ -811,8 +815,7 @@ QATime = 0.00;
                 header: '',
                 accessorFn: (row) => row?.Components,
                 placeholder: "Components",
-                size: 155,
-
+                size: 90,
 
             },
             {
@@ -820,7 +823,7 @@ QATime = 0.00;
                 header: '',
                 accessorFn: (row) => row?.SubComponents,
                 placeholder: "SubComponents",
-                size: 135,
+                size: 90,
                 cell: ({ row, getValue }) => (
                     <>
                         <a data-interception="off" target="_blank" className="hreflink serviceColor_Active"
@@ -848,7 +851,7 @@ QATime = 0.00;
                 header: '',
                 accessorFn: (row) => row?.Features,
                 placeholder: "Features",
-                size: 250,
+                size: 130,
 
             },
             {
@@ -859,14 +862,7 @@ QATime = 0.00;
 
 
             },
-            {
-                header: '',
-                accessorKey: 'siteType',
-                placeholder: "Sites",
-                size: 110,
-
-
-            },
+           
             {
                 header: '',
                 accessorKey: 'PercentComplete',
@@ -1284,7 +1280,7 @@ var ReportDate = new Date(a1)
                 </div>
             </div>
             <div className='row' style={{padding: "0px 2px"}}>
-                <div className='col-7 showDate ps-0'>
+                <div className='col-6 showDate ps-0'>
                     <input type='date' value={Moment(selectdate!= undefined?selectdate:defaultDate).format("YYYY-MM-DD")} max="9999-12-31" className='me-2' onChange={(e) => setSelectDate(e.target.value)} />
                     <label className='SpfxCheckRadio'>
                         <input type="radio" name="Custom" checked={checkedCustom} onClick={() => selectType('Custom')} className="radio" />Custom
@@ -1299,7 +1295,7 @@ var ReportDate = new Date(a1)
 
 
                 </div>
-                <div className='col-sm-5 pe-0'>
+                <div className='col-sm-6 pe-0'>
                     <table className='table table-hover showTime'>
                         <thead>
                             <tr>
@@ -1312,7 +1308,7 @@ var ReportDate = new Date(a1)
                         </thead>
                         <tbody>
                             <tr>
-                                <td className='border bg-light'>Design</td>                                
+                                <td className='border bg-light fw-bold'>Design</td>                                
                                 <td className='border'>{TotalDesignMember}</td>
                                 <td className='border'>{DesignMembers}</td>
                                 <td className='border'>{DesignTime.toFixed(2)}</td>
