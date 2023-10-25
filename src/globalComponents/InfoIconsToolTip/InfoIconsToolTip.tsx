@@ -70,7 +70,17 @@ export default function InfoIconsToolTip({ Discription, row }: any) {
                             setshowHoverTitle(hoverTitleShow?.Title)
                         }
                     }
+                   
                 }
+                if(row?.Short_x0020_Description_x0020_On==undefined){
+                    let   hovertitle:any;
+                if (newAction == "hover" ) {
+                    if(hoverTitleShow==undefined){
+                       hovertitle="Short Description is not available in this. Please click to see other details" 
+                    }
+                    setshowHoverTitle(hovertitle)
+                }
+            }
                 if(row?.Short_x0020_Description_x0020_On!=undefined){
                     addToFeedbackArray(row?.Short_x0020_Description_x0020_On, "Short Description");
                 }
