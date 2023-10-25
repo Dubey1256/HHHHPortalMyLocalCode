@@ -2270,7 +2270,7 @@ const TaskDashboard = (props: any) => {
                                         {
                                             <>
                                              <span className="align-autoplay d-flex float-end" onClick={() => sendEmail()}><span className="svg__iconbox svg__icon--mail mx-1" ></span>Send EOD Email</span>
-                                            <span className="align-autoplay d-flex float-end" onClick={() => shareTaskInEmail('today working tasks')}><span className="svg__iconbox svg__icon--mail mx-1" ></span>Share Today Working Tasks</span> : ""
+                                            <span className="align-autoplay d-flex float-end" onClick={() => shareTaskInEmail('today working tasks')}><span className="svg__iconbox svg__icon--mail mx-1" ></span>Share Today Working Tasks</span> 
                                             </>}</summary>
                                     <div className='AccordionContent mx-height'>
                                         {workingTodayTasks?.length > 0 ?
