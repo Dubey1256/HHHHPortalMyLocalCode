@@ -144,7 +144,7 @@ const EditSiteComposition = (Props: any) => {
                 <div className="subheading siteColor">
                     Edit Site Composition
                 </div>
-                <Tooltip ComponentId="1626" />
+                <Tooltip ComponentId="1268" />
             </div>
         )
     }
