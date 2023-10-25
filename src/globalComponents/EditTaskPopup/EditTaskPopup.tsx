@@ -2222,6 +2222,7 @@ const EditTaskPopup = (Items: any) => {
                         }
                         if (ApproverData != undefined && ApproverData.length > 0) {
                             if (ApproverData[0].Id == currentUserId) {
+                               // EditData.TaskApprovers = EditData.TaskCreatorData
                                 EditData.TaskApprovers = []
                             }
                         }
@@ -2341,32 +2342,40 @@ const EditTaskPopup = (Items: any) => {
 
         if (PrecentStatus == 1) {
             let tempArrayApprover: any = [];
-
-            if (TaskApproverBackupArray != undefined && TaskApproverBackupArray.length > 0) {
-                if (TaskApproverBackupArray?.length > 0) {
-                    TaskApproverBackupArray.map((dataItem: any) => {
-                        tempArrayApprover.push(dataItem);
-                    })
+           
+                if (TaskApproverBackupArray != undefined && TaskApproverBackupArray.length > 0) {
+                    if (TaskApproverBackupArray?.length > 0) {
+                        TaskApproverBackupArray.map((dataItem: any) => {
+                            tempArrayApprover.push(dataItem);
+                        })
+                    }
+                } else if (TaskCreatorApproverBackupArray != undefined && TaskCreatorApproverBackupArray.length > 0) {
+                    if (TaskCreatorApproverBackupArray?.length > 0) {
+                        TaskCreatorApproverBackupArray.map((dataItem: any) => {
+                            tempArrayApprover.push(dataItem);
+                        })
+                    }
                 }
-            } else if (TaskCreatorApproverBackupArray != undefined && TaskCreatorApproverBackupArray.length > 0) {
-                if (TaskCreatorApproverBackupArray?.length > 0) {
-                    TaskCreatorApproverBackupArray.map((dataItem: any) => {
-                        tempArrayApprover.push(dataItem);
-                    })
-                }
-            }
+            
+           
             StatusOptions?.map((item: any) => {
                 if (PrecentStatus == item.value) {
                     setPercentCompleteStatus(item.status);
                     setTaskStatus(item.taskStatusComment);
                 }
             })
+            if(ApproverData == undefined && ApproverData.length == 0){
             const finalData = tempArrayApprover.filter((val: any, id: any, array: any) => {
                 return array.indexOf(val) == id;
             });
             TaskAssignedTo = finalData;
             TaskTeamMembers = finalData;
-            ApproverData = finalData;
+        }
+        else{
+            TaskAssignedTo = ApproverData;
+            TaskTeamMembers = ApproverData;
+        }
+            
 
         }
 
@@ -4118,7 +4127,7 @@ const EditTaskPopup = (Items: any) => {
                                     {StatusOptions?.map((item: any, index: any) => {
                                         return (
                                             <li key={index}>
-                                                <div className={IsUserFromHHHHTeam ? "form-check" : (!IsUserFromHHHHTeam && item.value == 100 ? "form-check Disabled-Link bg-e9 py-1" : "form-check")}>
+                                                <div className="form-check ">
                                                     <label className="SpfxCheckRadio">
                                                         <input className="radio"
                                                             type="radio" checked={(PercentCompleteCheck ? EditData.PercentComplete : UpdateTaskInfo.PercentCompleteStatus) == item.value}
