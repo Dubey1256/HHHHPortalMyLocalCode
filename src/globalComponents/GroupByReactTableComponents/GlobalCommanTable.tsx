@@ -940,7 +940,7 @@ const GlobalCommanTable = (items: any, ref: any) => {
                         return (
                             <tr
                                 // className={row?.original?.lableColor}
-                                className={row?.original?.IsSCProtected != undefined && row?.original?.IsSCProtected == true ? `Disabled-Link opacity-75 ${row?.original?.lableColor}` : row?.original?.lableColor}
+                                className={row?.original?.IsSCProtected != undefined && row?.original?.IsSCProtected == true ? `Disabled-Link opacity-75 ${row?.original?.lableColor}` : `${row?.original?.lableColor}`}
                                 key={row.id}
                             >
                                 {row.getVisibleCells().map((cell: any) => {
