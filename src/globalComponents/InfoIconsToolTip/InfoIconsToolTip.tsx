@@ -44,7 +44,13 @@ export default function InfoIconsToolTip({ Discription, row }: any) {
 
         return div.innerHTML;
     }
-
+    function removeHtmlAndNewline(text:any) {
+        if (text) {
+            return text.replace(/(<([^>]+)>)/gi, "").replace(/\n/g, '');
+        } else {
+            return ''; // or any other default value you prefer
+        }
+    }
     const handlAction = (newAction: any) => {
         if (action === "click" && newAction === "hover") return;
         let feedback: any = [];
@@ -54,7 +60,7 @@ export default function InfoIconsToolTip({ Discription, row }: any) {
 
             try {
                 let addToFeedbackArray = (value: any, heading: any) => {
-                   value=  cleanHTML(value)
+                   value=  removeHtmlAndNewline(value)
                     if (value !== undefined && value != null) {
                         const obj = {
                             Title: value,
@@ -70,7 +76,17 @@ export default function InfoIconsToolTip({ Discription, row }: any) {
                             setshowHoverTitle(hoverTitleShow?.Title)
                         }
                     }
+                   
                 }
+                if(row?.Short_x0020_Description_x0020_On==undefined){
+                    let   hovertitle:any;
+                if (newAction == "hover" ) {
+                    if(hoverTitleShow==undefined){
+                       hovertitle="Short Description is not available in this. Please click to see other details" 
+                    }
+                    setshowHoverTitle(hovertitle)
+                }
+            }
                 if(row?.Short_x0020_Description_x0020_On!=undefined){
                     addToFeedbackArray(row?.Short_x0020_Description_x0020_On, "Short Description");
                 }
@@ -87,7 +103,7 @@ export default function InfoIconsToolTip({ Discription, row }: any) {
                     addToFeedbackArray(row?.Deliverables, "Deliverables");
                 }
                 if(row?.Deliverables!=undefined){
-                    addToFeedbackArray(row?.Deliverables, "Idea");
+                    addToFeedbackArray(row?.Idea, "Idea");
                 }
                 if(row?.ValueAdded!=undefined){
                     addToFeedbackArray(row?.ValueAdded, "ValueAdded");

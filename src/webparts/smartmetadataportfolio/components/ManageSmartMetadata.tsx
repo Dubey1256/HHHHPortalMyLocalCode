@@ -5,7 +5,7 @@ import GlobalCommanTable from './GlobalCommanTableSmartmetadata';
 import { Panel, PanelType } from 'office-ui-fabric-react';
 import SmartMetadataEditPopup from "./SmartMetadataEditPopup";
 import DeleteSmartMetadata from "./DeleteSmartMetadata";
-let ParentMetaDataItems: any = [];
+import BraedCrum from './BreadCrumb';
 let SmartmetadataItems: any = [];
 let TabSelected: string;
 let compareSeletected: any = [];
@@ -20,9 +20,43 @@ export default function ManageSmartMetadata(selectedProps: any) {
     const [SmartMetadataDeletePopupOpen, setSmartMetadataDeletePopupOpen]: any = useState(false);
     const [SelectedSmartMetadataItem, setSelectedSmartMetadataItem]: any = useState({});
     const [SelectedItem, setSelectedItem] = useState<any>({});
+    const [smartMetadataCount, setSmartMetadataCount] = useState<any>()
     const [Tabs, setTabs] = useState([]);
     var [TabsFilter]: any = useState([]);
     const childRef: any = useRef<any>();
+    //...........................................................Start Filter SmartMetadata Items counts....................................................
+
+    const getFilterMetadataItems = (Metadata: any) => {
+        var Count: any = 0
+        Metadata.filter((item: any) => {
+            if (item?.flag === true) {
+                Count++
+            }
+            if (item?.subRows?.length > 0) {
+                item?.subRows.filter((child: any) => {
+                    if (child?.flag === true) {
+                        Count++
+                    }
+                    if (child?.subRows?.length > 0) {
+                        child?.subRows.filter((subchild: any) => {
+                            if (subchild?.flag === true) {
+                                Count++
+                            }
+                            if (subchild?.subRows?.length > 0) {
+                                subchild?.subRows.filter((subSubchild: any) => {
+                                    if (subSubchild?.flag === true) {
+                                        Count++
+                                    }
+                                })
+                            }
+                        })
+                    }
+                })
+            }
+        })
+        setSmartMetadataCount(Count);
+    }
+    //...........................................................End Filter SmartMetadata Items counts....................................................
     const GetAdminConfig = async () => {
         try {
             let web = new Web(selectedProps.AllList.SPSitesListUrl);
@@ -39,7 +73,9 @@ export default function ManageSmartMetadata(selectedProps: any) {
     const LoadSmartMetadata = async () => {
         try {
             let web = new Web(selectedProps.AllList.SPSitesListUrl);
-            const AllMetaDataItems = await web.lists.getById(selectedProps.AllList.SPSmartMetadataListID).items.select("*,Author/Title,Editor/Title,Parent/Id,Parent/Title&$expand=Parent,Author,Editor&$orderBy=SortOrder&$filter=isDeleted ne 1").getAll();
+
+            const AllMetaDataItems = await web.lists.getById(selectedProps.AllList.SPSmartMetadataListID).items.select("*,Author/Title,Editor/Title,Parent/Id,Parent/Title&$expand=Parent,Author,Editor&$orderby=Title&$filter=isDeleted ne 1").getAll();
+
             SmartmetadataItems = SmartmetadataItems.concat(AllMetaDataItems)
             ShowingTabsData('Categories')
         } catch (error) {
@@ -53,6 +89,7 @@ export default function ManageSmartMetadata(selectedProps: any) {
     }
     const GroupByItems = function (item: any, AllMetaItems: any) {
         AllMetaItems.filter((child: any) => {
+            child['flag'] = true;
             if (child?.ParentId === item?.Id) {
                 if (item['subRows'] === undefined)
                     item['subRows'] = []
@@ -65,17 +102,25 @@ export default function ManageSmartMetadata(selectedProps: any) {
     }
     const ShowingTabsData = async (Tab: any) => {
         TabsFilter = [];
+        var ParentMetaDataItems: any = [];
         TabSelected = Tab;
-        ParentMetaDataItems = SmartmetadataItems?.filter((comp: any) => comp?.TaxType === Tab && comp?.ParentId === null);
+        SmartmetadataItems?.filter((comp: any) => {
+            if (comp?.TaxType === Tab && comp?.ParentId === null) {
+                comp['flag'] = true;
+                ParentMetaDataItems.push(comp)
+            }
+        });
         ParentMetaDataItems.filter((item: any) => {
             GroupByItems(item, SmartmetadataItems);
         })
         ParentMetaDataItems.filter((item: any) => {
             if (item.TaxType && item.TaxType === Tab) {
                 TabsFilter.push(item);
+                getFilterMetadataItems(TabsFilter);
             }
         });
         setSmartmetadata(TabsFilter);
+
     };
     const EditSmartMetadataPopup = (item: any) => {
         setSelectedSmartMetadataItem(item);
@@ -102,6 +147,7 @@ export default function ManageSmartMetadata(selectedProps: any) {
             accessorKey: 'Title',
             placeholder: 'Title',
             header: '',
+            id: 'Title',
             size: 10,
             cell: ({ row }) => (
                 <>
@@ -110,7 +156,8 @@ export default function ManageSmartMetadata(selectedProps: any) {
                             row?.original?.Title != null &&
                             row?.original?.Title != '' ? (
                             <a>
-                                {row?.original?.Title}
+                                {row?.original?.Title}{row?.original?.subRows?.length > 0 ? '(' + row?.original?.subRows?.length + ')' : ''}
+
                             </a>
                         ) : null}
                     </div>
@@ -120,6 +167,7 @@ export default function ManageSmartMetadata(selectedProps: any) {
         {
             accessorKey: 'SmartFilters',
             placeholder: 'SmartFilters',
+            id: 'SmartFilters',
             header: '',
             size: 10,
             cell: ({ row }) => (
@@ -137,6 +185,7 @@ export default function ManageSmartMetadata(selectedProps: any) {
         {
             accessorKey: 'Status',
             placeholder: 'Status',
+            id: 'Status',
             header: '',
             size: 10,
             cell: ({ row }) => (
@@ -154,6 +203,7 @@ export default function ManageSmartMetadata(selectedProps: any) {
         {
             accessorKey: 'SortOrder',
             placeholder: 'SortOrder',
+            id: 'SortOrder',
             header: '',
             size: 10,
             cell: ({ row }) => (
@@ -321,6 +371,20 @@ export default function ManageSmartMetadata(selectedProps: any) {
     //-------------------------------------------------- GENERATE JSON FUNCTION end---------------------------------------------------------------
     return (
         <>
+            {<BraedCrum AllList={selectedProps.AllList} />}
+            <section className='ContentSection'>
+                <div className='row'>
+                    <div className='col-sm-3 text-primary'>
+                        <h3 className="heading">ManageSmartMetaData
+                        </h3>
+                    </div>
+                    <div className='col-sm-9 text-primary'>
+                        <h6 className='pull-right'><b><a data-interception="off"
+                            target="_blank" href="https://hhhhteams.sharepoint.com/sites/HHHH/SP/SitePages/managesmartmetadata.aspx">Old Manage SmartMetadata</a></b>
+                        </h6>
+                    </div>
+                </div>
+            </section>
             <span className='pull-right'>
                 <a className='text-end hyperlink ' onClick={() => generateJSONOfTaskLists()}>Generate JSON </a>
             </span>
@@ -339,7 +403,10 @@ export default function ManageSmartMetadata(selectedProps: any) {
                 <div className="tab-pane Alltable mx-height show active" id="URLTasks" role="tabpanel" aria-labelledby="URLTasks">
                     {
                         Smartmetadata &&
-                        <GlobalCommanTable compareSeletected={compareSeletected} CloseEditSmartMetaPopup={CloseEditSmartMetaPopup} SelectedItem={SelectedItem} setName={setName} ParentItem={Smartmetadata} AllList={selectedProps.AllList} data={Smartmetadata} TabSelected={TabSelected} ref={childRef} callChildFunction={callChildFunction} callBackSmartMetaData={callBackSmartMetaData} columns={columns} showHeader={true} expandIcon={true} showPagination={true} callBackData={callBackData} />
+
+                      
+                        <GlobalCommanTable smartMetadataCount={smartMetadataCount} Tabs={Tabs} compareSeletected={compareSeletected} CloseEditSmartMetaPopup={CloseEditSmartMetaPopup} SelectedItem={SelectedItem} setName={setName} ParentItem={Smartmetadata} AllList={selectedProps.AllList} data={Smartmetadata} TabSelected={TabSelected} ref={childRef} callChildFunction={callChildFunction} callBackSmartMetaData={callBackSmartMetaData} columns={columns} showHeader={true} expandIcon={true} showPagination={true} callBackData={callBackData} />
+
                     }
                 </div>
             </div>
@@ -375,5 +442,3 @@ export default function ManageSmartMetadata(selectedProps: any) {
         </>
     );
 }
-
-

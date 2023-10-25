@@ -16,7 +16,9 @@ export interface ISmartmetadataportfolioWebPartProps {
   SPSiteConfigListID: string;
   SPSitesListUrl: string;
   SPSmartMetadataListID: string;
+  SPTopNavigationListID: string
   description: string;
+  PageUrl: any
 }
 
 export default class SmartmetadataportfolioWebPart extends BaseClientSideWebPart<ISmartmetadataportfolioWebPartProps> {
@@ -36,6 +38,8 @@ export default class SmartmetadataportfolioWebPart extends BaseClientSideWebPart
         SPSitesListUrl: this.context.pageContext.web.absoluteUrl,
         SPSiteConfigListID: this.properties.SPSiteConfigListID,
         SPSmartMetadataListID: this.properties.SPSmartMetadataListID,
+        SPTopNavigationListID: this.properties.SPTopNavigationListID,
+        PageUrl: this.context?.pageContext?.site?.serverRequestPath
       }
     );
 
@@ -98,7 +102,11 @@ export default class SmartmetadataportfolioWebPart extends BaseClientSideWebPart
                 }),
                 PropertyPaneTextField('SPSmartMetadataListID', {
                   label: 'SPSmartMetadataListID'
+                }),
+                PropertyPaneTextField('SPTopNavigationListID', {
+                  label: 'SPTopNavigationListID'
                 })
+                
               ]
             }
           ]
