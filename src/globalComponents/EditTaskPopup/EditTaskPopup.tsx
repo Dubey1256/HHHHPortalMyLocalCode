@@ -5162,7 +5162,6 @@ const EditTaskPopup = (Items: any) => {
                             ServicesTaskCheck={ServicesTaskCheck}
                             AllListId={AllListIdData}
                             SmartTotalTimeData={SmartTotalTimeData}
-                            
                             Call={closeSiteCompsotionPanelFunction}
                         /> : null}
                     {sendEmailComponentStatus ?
