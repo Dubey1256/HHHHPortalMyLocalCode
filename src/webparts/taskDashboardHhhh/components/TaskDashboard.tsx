@@ -14,19 +14,21 @@ import { IEmailProperties } from "@pnp/sp/sputilities";
 import { SPFI, spfi, SPFx as spSPFx } from "@pnp/sp";
 import { Accordion, Card, Button } from "react-bootstrap";
 import EditTaskPopup from "../../../globalComponents/EditTaskPopup/EditTaskPopup";
+import { BsXCircleFill, BsCheckCircleFill } from "react-icons/bs";
 import * as Moment from "moment";
 import pnp, { sp, Web } from "sp-pnp-js";
 import * as globalCommon from "../../../globalComponents/globalCommon";
-import InlineEditingcolumns from '../../projectmanagementOverviewTool/components/inlineEditingcolumns';
+//import InlineEditingcolumns from '../../projectmanagementOverviewTool/components/inlineEditingcolumns';
 import { Table, Row, Col, Pagination, PaginationLink, PaginationItem, Input, } from "reactstrap";
 import {
     FaAngleDoubleLeft, FaAngleDoubleRight, FaAngleLeft, FaAngleRight, FaChevronDown,
     FaChevronRight, FaCaretDown, FaCaretRight, FaSort, FaSortDown, FaSortUp,
 } from "react-icons/fa";
 import { useTable, useSortBy, useFilters, useExpanded, usePagination, HeaderGroup, } from "react-table";
-import { Filter, DefaultColumnFilter, } from "../../projectmanagementOverviewTool/components/filters";
+//import { Filter, DefaultColumnFilter, } from "../../projectmanagementOverviewTool/components/filters";
 import PageLoader from '../../../globalComponents/pageLoader';
 import ShowClintCatogory from '../../../globalComponents/ShowClintCatogory';
+import SendEmailEODReport from './SendEmailEODReport';
 var taskUsers: any = [];
 var userGroups: any = [];
 var siteConfig: any = [];
@@ -50,13 +52,14 @@ var backupTaskArray: any = {
 };
 var AllMetadata: any = [];
 var AllListId: any = {}
+var AllWorkingDayData: any = []
 var selectedInlineTask: any = {};
 var isShowTimeEntry: any;
 var isShowSiteCompostion: any;
 const TaskDashboard = (props: any) => {
     const [updateContent, setUpdateContent] = React.useState(false);
     const [createTaskId, setCreateTaskId] = React.useState({});
-    const [isOpenCreateTask, setisOpenCreateTask] = React.useState(false);
+    const [isSendEODReport, setisSendEODReport] = React.useState(false);
     const [selectedTimeReport, setSelectedTimeReport] = React.useState('');
     const [timeEntryTotal, setTimeEntryTotal] = React.useState(0);
     const [currentView, setCurrentView] = React.useState('Home');
@@ -773,10 +776,10 @@ const TaskDashboard = (props: any) => {
                 accessor: "PriorityRank",
                 style: { width: '100px' },
                 showSortIcon: true,
-                Cell: ({ row }: any) => (
-                    <InlineEditingcolumns AllListId={AllListId} type='Task' rowIndex={row?.index} callBack={inlineCallBack} TaskUsers={taskUsers} columnName='Priority' item={row?.original} />
+                // Cell: ({ row }: any) => (
+                //     <InlineEditingcolumns AllListId={AllListId} type='Task' rowIndex={row?.index} callBack={inlineCallBack} TaskUsers={taskUsers} columnName='Priority' item={row?.original} />
 
-                ),
+                // ),
             },
 
             {
@@ -784,13 +787,13 @@ const TaskDashboard = (props: any) => {
                 showSortIcon: true,
                 accessor: "DueDate",
                 style: { width: '80px' },
-                Cell: ({ row }: any) => <InlineEditingcolumns
-                    AllListId={AllListId}
-                    callBack={inlineCallBack}
-                    columnName="DueDate"
-                    item={row?.original}
-                    TaskUsers={taskUsers}
-                />,
+                // Cell: ({ row }: any) => <InlineEditingcolumns
+                //     AllListId={AllListId}
+                //     callBack={inlineCallBack}
+                //     columnName="DueDate"
+                //     item={row?.original}
+                //     TaskUsers={taskUsers}
+                // />,
             },
             {
                 internalHeader: "Estimated Time",
@@ -808,23 +811,23 @@ const TaskDashboard = (props: any) => {
                 accessor: "PercentComplete",
                 style: { width: '55px' },
                 showSortIcon: true,
-                Cell: ({ row }: any) => (
+                // Cell: ({ row }: any) => (
 
 
-                    <InlineEditingcolumns AllListId={AllListId} rowIndex={row?.index} callBack={inlineCallBack} columnName='PercentComplete' TaskUsers={taskUsers} item={row?.original} />
+                //     <InlineEditingcolumns AllListId={AllListId} rowIndex={row?.index} callBack={inlineCallBack} columnName='PercentComplete' TaskUsers={taskUsers} item={row?.original} />
 
-                ),
+                // ),
             },
             {
                 internalHeader: "Team Members",
                 accessor: "TeamMembersSearch",
                 style: { width: '150px' },
                 showSortIcon: true,
-                Cell: ({ row }: any) => (
+                // Cell: ({ row }: any) => (
 
-                    <InlineEditingcolumns AllListId={AllListId} rowIndex={row?.index} callBack={inlineCallBack} columnName='Team' item={row?.original} TaskUsers={taskUsers} />
+                //     <InlineEditingcolumns AllListId={AllListId} rowIndex={row?.index} callBack={inlineCallBack} columnName='Team' item={row?.original} TaskUsers={taskUsers} />
 
-                ),
+                // ),
             },
             {
                 internalHeader: "Created",
@@ -980,12 +983,12 @@ const TaskDashboard = (props: any) => {
                 accessor: "PercentComplete",
                 style: { width: '55px' },
                 showSortIcon: true,
-                Cell: ({ row }: any) => (
+                // Cell: ({ row }: any) => (
 
-                    <span>
-                        <InlineEditingcolumns AllListId={AllListId} rowIndex={row?.index} callBack={inlineCallBack} columnName='PercentComplete' TaskUsers={taskUsers} item={row?.original} />
-                    </span>
-                ),
+                //     <span>
+                //         <InlineEditingcolumns AllListId={AllListId} rowIndex={row?.index} callBack={inlineCallBack} columnName='PercentComplete' TaskUsers={taskUsers} item={row?.original} />
+                //     </span>
+                // ),
             },
             {
                 internalHeader: "Created",
@@ -1070,7 +1073,7 @@ const TaskDashboard = (props: any) => {
         {
             columns: columns,
             data: workingTodayTasks,
-            defaultColumn: { Filter: DefaultColumnFilter },
+            //defaultColumn: { Filter: DefaultColumnFilter },
             initialState: { pageIndex: 0, pageSize: 100000 },
         },
         useFilters,
@@ -1091,7 +1094,7 @@ const TaskDashboard = (props: any) => {
         {
             columns: columnTimeReport,
             data: weeklyTimeReport,
-            defaultColumn: { Filter: DefaultColumnFilter },
+            //defaultColumn: { Filter: DefaultColumnFilter },
             initialState: { pageIndex: 0, pageSize: 100000 },
         },
         useFilters,
@@ -1113,7 +1116,7 @@ const TaskDashboard = (props: any) => {
         {
             columns: columns,
             data: bottleneckTasks,
-            defaultColumn: { Filter: DefaultColumnFilter },
+            //defaultColumn: { Filter: DefaultColumnFilter },
             initialState: { pageIndex: 0, pageSize: 100000 },
         },
         useFilters,
@@ -1141,7 +1144,7 @@ const TaskDashboard = (props: any) => {
         {
             columns: columns,
             data: assignedApproverTasks,
-            defaultColumn: { Filter: DefaultColumnFilter },
+            //defaultColumn: { Filter: DefaultColumnFilter },
             initialState: { pageIndex: 0, pageSize: 30 },
         },
         useFilters,
@@ -1169,7 +1172,7 @@ const TaskDashboard = (props: any) => {
         {
             columns: columns,
             data: AllPriorityTasks,
-            defaultColumn: { Filter: DefaultColumnFilter },
+            //defaultColumn: { Filter: DefaultColumnFilter },
             initialState: { pageIndex: 0, pageSize: 30 },
         },
         useFilters,
@@ -1191,7 +1194,7 @@ const TaskDashboard = (props: any) => {
         {
             columns: columns,
             data: UserImmediateTasks,
-            defaultColumn: { Filter: DefaultColumnFilter },
+           // defaultColumn: { Filter: DefaultColumnFilter },
             initialState: { pageIndex: 0, pageSize: 100000 },
         },
         useFilters,
@@ -1213,7 +1216,7 @@ const TaskDashboard = (props: any) => {
         {
             columns: columns,
             data: thisWeekTasks,
-            defaultColumn: { Filter: DefaultColumnFilter },
+            //defaultColumn: { Filter: DefaultColumnFilter },
             initialState: { pageIndex: 0, pageSize: 100000 },
         },
         useFilters,
@@ -1241,7 +1244,7 @@ const TaskDashboard = (props: any) => {
         {
             columns: columns,
             data: AllAssignedTasks,
-            defaultColumn: { Filter: DefaultColumnFilter },
+            //defaultColumn: { Filter: DefaultColumnFilter },
             initialState: { pageIndex: 0, pageSize: 10 },
         },
         useFilters,
@@ -1269,7 +1272,7 @@ const TaskDashboard = (props: any) => {
         {
             columns: columns,
             data: AllSitesTask,
-            defaultColumn: { Filter: DefaultColumnFilter },
+            //defaultColumn: { Filter: DefaultColumnFilter },
             initialState: { pageIndex: 0, pageSize: 30 },
         },
         useFilters,
@@ -1296,7 +1299,7 @@ const TaskDashboard = (props: any) => {
         {
             columns: columns,
             data: AllImmediateTasks,
-            defaultColumn: { Filter: DefaultColumnFilter },
+            //defaultColumn: { Filter: DefaultColumnFilter },
             initialState: { pageIndex: 0, pageSize: 30 },
         },
         useFilters,
@@ -1323,7 +1326,7 @@ const TaskDashboard = (props: any) => {
         {
             columns: columns,
             data: AllEmailTasks,
-            defaultColumn: { Filter: DefaultColumnFilter },
+            //defaultColumn: { Filter: DefaultColumnFilter },
             initialState: { pageIndex: 0, pageSize: 30 },
         },
         useFilters,
@@ -1350,7 +1353,7 @@ const TaskDashboard = (props: any) => {
         {
             columns: columns,
             data: AllBottleNeck,
-            defaultColumn: { Filter: DefaultColumnFilter },
+            //defaultColumn: { Filter: DefaultColumnFilter },
             initialState: { pageIndex: 0, pageSize: 30 },
         },
         useFilters,
@@ -1377,7 +1380,7 @@ const TaskDashboard = (props: any) => {
         {
             columns: columns,
             data: sharewebTasks,
-            defaultColumn: { Filter: DefaultColumnFilter },
+            //defaultColumn: { Filter: DefaultColumnFilter },
             initialState: { pageIndex: 0, pageSize: 30 },
         },
         useFilters,
@@ -1684,7 +1687,84 @@ const TaskDashboard = (props: any) => {
     //End
 
     //Shareworking Today's Task In Email
+
+
+    const sendEmail=()=>{
+        var RemarksData:any = []
+        workingTodayTasks?.forEach((item: any) => {
+            item.TeamMember = ''
+            item.Category = ''
+            item.NewJSONData = []
+            
+            if (item.Title != undefined) {
+                item.Title = item.Title?.replace(/<[^>]*><p>/g, '')
+            }
+            if (item.FeedBack != undefined) {
+                item.FeedBackJSONData = JSON.parse(item.FeedBack)
+            }
+            if (item.FeedBackJSONData != undefined) {
+                item.FeedBackJSONData[0]?.FeedBackDescriptions?.forEach((items: any) => {
+                    items.Title?.replace(/<[^>]*><p>/g, '')
+                    item.NewJSONData.push(items)
+                })
+            }
+            item.NewJSONData?.forEach((ele: any) => {
+                item.subTitle = ele?.Title?.replaceAll(/<[^>]*><p>/g, '')
+                item.subCompleted = ele?.Completed
+                item.subDeployed = ele?.Deployed
+                item.subQAReviews = ele?.QAReviews
+                item.subInProgress = ele?.InProgress
+                item.subRemarks = ele?.Remarks
+                item.subChild = ele?.Subtext
+            })
+            if (item.TeamMembers != undefined) {
+                item?.TeamMembers.forEach((val: any) => {
+                    item.TeamMember += val.Title + ';'
+                })
+            }
+
+            if (item.TaskCategories != undefined) {
+                item?.TaskCategories.forEach((val: any) => {
+                    item.Category += val.Title + ';'
+                })
+            }
+            if (item.Body == null) {
+                item.Body = ''
+            }
+            RemarksData.push(item)
+        })
+        RemarksData?.forEach((val:any)=>{
+            val.subChilds=[]
+            if(val.subRemarks != undefined && val.subRemarks != '' ){
+                AllWorkingDayData.push(val)
+            }
+        })
+        AllWorkingDayData?.forEach((val:any)=>{
+            if(val.subCompleted == true){
+                val.subDeployed = true
+                val.subQAReviews = true
+                val.subInProgress = true
+            }
+            
+            val.subChild?.forEach((ele:any)=>{
+                ele.subTitle = ele?.Title?.replaceAll(/<[^>]*><p>/g, '')
+                ele.subCompleted = ele?.Completed
+                ele.subDeployed = ele?.Deployed
+                ele.subQAReviews = ele?.QAReviews
+                ele.subInProgress = ele?.InProgress
+                ele.subRemarks = ele?.Remarks
+            })
+        })
+        
+        setisSendEODReport(true)
+      
+    }
+    const closeEODReport=()=>{
+        setisSendEODReport(false)
+    }
+  
     const shareTaskInEmail = (input: any) => {
+       
         let currentLoginUser = currentUserData?.Title;
         let CurrentUserSpace = currentLoginUser.replace(' ', '%20');
         let body: any = '';
@@ -2188,8 +2268,10 @@ const TaskDashboard = (props: any) => {
                                     onDragOver={(e: any) => e.preventDefault()}>
                                     <summary> Working Today Tasks {'(' + pageToday?.length + ')'}
                                         {
-                                            currentUserId == currentUserData?.AssingedToUserId ? <span className="align-autoplay d-flex float-end" onClick={() => shareTaskInEmail('today working tasks')}><span className="svg__iconbox svg__icon--mail mx-1" ></span>Share Today Working Tasks</span> : ""
-                                        }</summary>
+                                            <>
+                                             <span className="align-autoplay d-flex float-end" onClick={() => sendEmail()}><span className="svg__iconbox svg__icon--mail mx-1" ></span>Send EOD Email</span>
+                                            <span className="align-autoplay d-flex float-end" onClick={() => shareTaskInEmail('today working tasks')}><span className="svg__iconbox svg__icon--mail mx-1" ></span>Share Today Working Tasks</span> : ""
+                                            </>}</summary>
                                     <div className='AccordionContent mx-height'>
                                         {workingTodayTasks?.length > 0 ?
                                             <Table className={updateContent ? "SortingTable mb-0" : "SortingTable mb-0"} hover  {...getTablePropsToday()}>
@@ -2206,7 +2288,7 @@ const TaskDashboard = (props: any) => {
                                                                         {column.render("Header")}
                                                                         {generateSortingIndicator(column)}
                                                                     </span>
-                                                                    <Filter column={column} />
+                                                                    {/* <Filter column={column} /> */}
                                                                 </th>
                                                             ))}
                                                         </tr>
@@ -2276,7 +2358,7 @@ const TaskDashboard = (props: any) => {
                                                                         {column.render("Header")}
                                                                         {generateSortingIndicator(column)}
                                                                     </span>
-                                                                    <Filter column={column} />
+                                                                    {/* <Filter column={column} /> */}
                                                                 </th>
                                                             ))}
                                                         </tr>
@@ -2344,7 +2426,7 @@ const TaskDashboard = (props: any) => {
                                                                         {column.render("Header")}
                                                                         {generateSortingIndicator(column)}
                                                                     </span>
-                                                                    <Filter column={column} />
+                                                                    {/* <Filter column={column} /> */}
                                                                 </th>
                                                             ))}
                                                         </tr>
@@ -2411,7 +2493,7 @@ const TaskDashboard = (props: any) => {
                                                                         {column.render("Header")}
                                                                         {generateSortingIndicator(column)}
                                                                     </span>
-                                                                    <Filter column={column} />
+                                                                    {/* <Filter column={column} /> */}
                                                                 </th>
                                                             ))}
                                                         </tr>
@@ -2482,7 +2564,7 @@ const TaskDashboard = (props: any) => {
                                                                             {column.render("Header")}
                                                                             {generateSortingIndicator(column)}
                                                                         </span>
-                                                                        <Filter column={column} />
+                                                                        {/* <Filter column={column} /> */}
                                                                     </th>
                                                                 ))}
                                                             </tr>
@@ -2630,7 +2712,7 @@ const TaskDashboard = (props: any) => {
                                                                                     {column.render("Header")}
                                                                                     {generateSortingIndicator(column)}
                                                                                 </span>
-                                                                                <Filter column={column} />
+                                                                                {/* <Filter column={column} /> */}
                                                                             </th>
                                                                         ))}
                                                                     </tr>
@@ -2711,7 +2793,7 @@ const TaskDashboard = (props: any) => {
                                                                         {column.render("Header")}
                                                                         {generateSortingIndicator(column)}
                                                                     </span>
-                                                                    <Filter column={column} />
+                                                                    {/* <Filter column={column} /> */}
                                                                 </th>
                                                             ))}
                                                         </tr>
@@ -2827,7 +2909,7 @@ const TaskDashboard = (props: any) => {
                                                                         {column.render("Header")}
                                                                         {generateSortingIndicator(column)}
                                                                     </span>
-                                                                    <Filter column={column} />
+                                                                    {/* <Filter column={column} /> */}
                                                                 </th>
                                                             ))}
                                                         </tr>
@@ -2942,7 +3024,7 @@ const TaskDashboard = (props: any) => {
                                                                     {column.render("Header")}
                                                                     {generateSortingIndicator(column)}
                                                                 </span>
-                                                                <Filter column={column} />
+                                                                {/* <Filter column={column} /> */}
                                                             </th>
                                                         ))}
                                                     </tr>
@@ -3059,7 +3141,7 @@ const TaskDashboard = (props: any) => {
                                                                     {column.render("Header")}
                                                                     {generateSortingIndicator(column)}
                                                                 </span>
-                                                                <Filter column={column} />
+                                                                {/* <Filter column={column} /> */}
                                                             </th>
                                                         ))}
                                                     </tr>
@@ -3177,7 +3259,7 @@ const TaskDashboard = (props: any) => {
                                                                         {column.render("Header")}
                                                                         {generateSortingIndicator(column)}
                                                                     </span>
-                                                                    <Filter column={column} />
+                                                                    {/* <Filter column={column} /> */}
                                                                 </th>
                                                             ))}
                                                         </tr>
@@ -3293,7 +3375,7 @@ const TaskDashboard = (props: any) => {
                                                                         {column.render("Header")}
                                                                         {generateSortingIndicator(column)}
                                                                     </span>
-                                                                    <Filter column={column} />
+                                                                    {/* <Filter column={column} /> */}
                                                                 </th>
                                                             ))}
                                                         </tr>
@@ -3409,7 +3491,7 @@ const TaskDashboard = (props: any) => {
                                                                         {column.render("Header")}
                                                                         {generateSortingIndicator(column)}
                                                                     </span>
-                                                                    <Filter column={column} />
+                                                                    {/* <Filter column={column} /> */}
                                                                 </th>
                                                             ))}
                                                         </tr>
@@ -3514,6 +3596,7 @@ const TaskDashboard = (props: any) => {
             </div>
             {pageLoaderActive ? <PageLoader /> : ''}
             {openTimeEntryPopup && (<TimeEntryPopup props={taskTimeDetails} CallBackTimeEntry={TimeEntryCallBack} Context={props?.props?.Context} />)}
+            {isSendEODReport && (<SendEmailEODReport WorkingTask={AllWorkingDayData} close={closeEODReport} Context={props?.props?.Context}/>)}
 
         </>
     )
