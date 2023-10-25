@@ -7,4 +7,6 @@ export interface ISmartmetadataportfolioProps {
   SPSiteConfigListID: string;
   SPSitesListUrl: string;
   SPSmartMetadataListID: string;
+  SPTopNavigationListID:string
+  PageUrl: any
 }

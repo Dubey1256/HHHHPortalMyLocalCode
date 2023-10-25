@@ -65,7 +65,7 @@ const SiteCompositionComponent = (Props: any) => {
     const StandardComposition =
         [
             {
-                ClienTimeDescription: "40",
+                ClienTimeDescription: "60",
                 SiteName: "EI",
                 localSiteComposition: true,
                 siteIcons: "https://hhhhteams.sharepoint.com/sites/HHHH/SiteCollectionImages/ICONS/Shareweb/site_ei.png",
@@ -79,14 +79,14 @@ const SiteCompositionComponent = (Props: any) => {
                 Date: Moment(new Date()).tz("Europe/Berlin").format("DD/MM/YYYY")
             },
             {
-                ClienTimeDescription: "15",
+                ClienTimeDescription: "5",
                 SiteName: "Migration",
                 localSiteComposition: true,
                 siteIcons: "https://hhhhteams.sharepoint.com/sites/HHHH/SiteCollectionImages/ICONS/Shareweb/site_migration.png",
                 Date: Moment(new Date()).tz("Europe/Berlin").format("DD/MM/YYYY")
             },
             {
-                ClienTimeDescription: "15",
+                ClienTimeDescription: "5",
                 SiteName: "Education",
                 localSiteComposition: true,
                 siteIcons: "https://hhhhteams.sharepoint.com/sites/HHHH/SiteCollectionImages/ICONS/Shareweb/site_education.png",
@@ -245,9 +245,9 @@ const SiteCompositionComponent = (Props: any) => {
                         // }
 
                     } else {
-                        if (DataItem.StartEndDateValidation) {
-                            alert("This site has an end date so you cannot add it to Site Composition.")
-                        } else {
+                        // if (DataItem.StartEndDateValidation) {
+                        //     alert("This site has an end date so you cannot add it to Site Composition.")
+                        // } else {
                             DataItem.BtnStatus = true
                             setSelectedSiteCount(selectedSiteCount + 1);
                             const object = {
@@ -267,7 +267,7 @@ const SiteCompositionComponent = (Props: any) => {
                             SiteTaggingFinalData = tempData;
                             SiteCompositionObject.selectedClientCategory = SelectedClientCategoryBackupArray;
                             // callBack(SiteCompositionObject, "dataExits");
-                        }
+                        // }
                     }
                 }
                 TempArray.push(DataItem)
@@ -293,14 +293,14 @@ const SiteCompositionComponent = (Props: any) => {
             callBack(SiteCompositionObject, "dataExits");
             setIsPortfolioComposition(false);
             setCheckBoxStatus(false);
-           
+
             refreshSiteCompositionConfigurations();
             ChangeSiteCompositionInstant("Proportional");
-            if(IsProtectedSiteComposition){
-                setIsProtectedSiteComposition(true);
-            }else{
-                setIsProtectedSiteComposition(false);
-            }
+            // if (IsProtectedSiteComposition) {
+            //     setIsProtectedSiteComposition(true);
+            // } else {
+            //     setIsProtectedSiteComposition(false);
+            // }
         }
         if (Type == "Manual") {
             SiteCompositionSettings[0].Delux = false;
@@ -315,12 +315,16 @@ const SiteCompositionComponent = (Props: any) => {
             SiteTaggingFinalData = ClientTimeDataBackup;
             refreshSiteCompositionConfigurations();
             ChangeSiteCompositionInstant("Manual");
-            setSelectedSiteCount(ClientTimeDataBackup?.length > 0 ? ClientTimeDataBackup?.length : 0);
-            if(IsProtectedSiteComposition){
-                setIsProtectedSiteComposition(true);
-            }else{
-                setIsProtectedSiteComposition(false);
+            if (ClientTimeDataBackup?.length > 0) {
+                setSelectedSiteCount(ClientTimeDataBackup?.length);
+            } else {
+                setSelectedSiteCount(ClientTime?.length > 0 ? ClientTime?.length : 0);
             }
+            // if (IsProtectedSiteComposition) {
+            //     setIsProtectedSiteComposition(true);
+            // } else {
+            //     setIsProtectedSiteComposition(false);
+            // }
         }
         if (Type == "Portfolio") {
             SiteCompositionSettings[0].Delux = false;
@@ -361,13 +365,13 @@ const SiteCompositionComponent = (Props: any) => {
                     setIsProtectedSiteComposition(true);
                 } else {
                     SiteCompositionSettings[0].Protected = false;
-                    setIsProtectedSiteComposition(false);
+                    // setIsProtectedSiteComposition(false);
                 }
 
             } else {
                 SiteCompositionSettings[0].Protected = true;
                 SiteTaggingFinalData = ClientTimeData;
-                setIsProtectedSiteComposition(true);
+                // setIsProtectedSiteComposition(true);
             }
         }
 
@@ -1082,7 +1086,7 @@ const SiteCompositionComponent = (Props: any) => {
                         value={SiteCompositionSettings ? SiteCompositionSettings[0]?.Delux : false}
                         onChange={() => ChangeSiteCompositionSettings("Delux")}
                     />
-                    Delux</label>
+                    Deluxe</label>
                 <label className="SpfxCheckRadio">
                     <input
                         type="radio"
@@ -1141,8 +1145,8 @@ const SiteCompositionComponent = (Props: any) => {
                                     }
                                     return (
                                         <tr
-                                        // className={siteData?.StartEndDateValidation ? "Disabled-Link bg-th" : 'hreflink border-1'}
-                                        className="hreflink border-1"
+                                            // className={siteData?.StartEndDateValidation ? "Disabled-Link bg-th" : 'hreflink border-1'}
+                                            className="hreflink border-1"
                                         >
                                             <th
                                                 scope="row"

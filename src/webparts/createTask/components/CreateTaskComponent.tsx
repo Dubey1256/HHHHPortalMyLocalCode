@@ -20,6 +20,7 @@ let AssignedToUsers: any = []
 let AllClientCategories: any = [];
 let SitesTypes: any = []
 let subCategories: any = []
+let TeamMessagearray: any = [];
 let AllComponents: any = []
 let taskUsers: any = [];
 let ClientActivityJson: any = null;
@@ -50,6 +51,7 @@ function CreateTaskComponent(props: any) {
     const [priorityRank, setpriorityRank] = React.useState([])
     const [openPortfolioType, setOpenPortfolioType] = React.useState("");
     const [taskCat, setTaskCat] = React.useState([]);
+    const [UserEmailNotify, setUserEmailNotify] = React.useState(false);
     const [IsOpenPortfolio, setIsOpenPortfolio] = React.useState(false);
     const [smartComponentData, setSmartComponentData] = React.useState([]);
     const [Timing, setTiming] = React.useState([])
@@ -304,7 +306,12 @@ function CreateTaskComponent(props: any) {
                 if (SDCCreatedBy != undefined && SDCCreatedDate != undefined && SDCTaskUrl != undefined) {
 
                     let saveValue = save;
-                    SDCTaskUrl = `https://www.shareweb.ch/site/${SDCSiteType}/Team/Pages/Manage/TaskProfile.aspx?TaskId=${SDCTaskId}`
+                    if (SDCSiteType?.toLowerCase() == 'alakdigital') {
+                        SDCTaskUrl = `https://www.shareweb.ch/site/EI/DigitalAdministration/Team/Pages/Manage/TaskProfile.aspx?TaskId=${SDCTaskId}`
+                    } else {
+                        SDCTaskUrl = `https://www.shareweb.ch/site/${SDCSiteType}/Team/Pages/Manage/TaskProfile.aspx?TaskId=${SDCTaskId}`
+                    }
+
                     let isTaskFound = false;
                     const creatSDCTas = () => {
                         let e = {
@@ -315,7 +322,7 @@ function CreateTaskComponent(props: any) {
                         UrlPasteTitle(e);
                         saveValue.taskName = SDCTitle;
                         saveValue.taskUrl = SDCTaskUrl;
-                        if (SDCDueDate != undefined && SDCDueDate != '' && SDCDueDate != null) {
+                        if (SDCDueDate != undefined && SDCDueDate != '' && SDCDueDate != null && SDCDueDate != "null") {
                             saveValue.DueDate = SDCDueDate
                         }
                         setSave(saveValue);
@@ -785,7 +792,7 @@ function CreateTaskComponent(props: any) {
                                 selectedComponent.push(smart.Id);
                                 portfolioId = smart?.Id
                                 if (selectedSite?.Parent?.Title == "SDC Sites") {
-                                    postClientTime = JSON.parse(smart?.Sitestagging);
+
                                     siteCompositionDetails = smart?.SiteCompositionSettings;
                                     smart?.ClientCategory?.map((cc: any) => {
                                         if (cc.Id != undefined) {
@@ -801,7 +808,13 @@ function CreateTaskComponent(props: any) {
                             })
                         }
                         if (save?.siteType?.toLowerCase() == "shareweb" && smartComponentData?.length > 0) {
-                            postClientTime = JSON.parse(smartComponentData[0]?.Sitestagging);
+                            postClientTime = JSON.parse(smartComponentData[0]?.Sitestagging)
+                            postClientTime?.map((sitecomp: any) => {
+                                if (sitecomp.Title != undefined && sitecomp.Title != "" && sitecomp.SiteName == undefined) {
+                                    sitecomp.SiteName = sitecomp.Title
+                                }
+
+                            })
                             siteCompositionDetails = smartComponentData[0]?.SiteCompositionSettings;
                         } else {
                             var siteComp: any = {};
@@ -929,6 +942,9 @@ function CreateTaskComponent(props: any) {
                                     if (User?.Title?.toLowerCase() == 'robert ungethuem' || User?.Title?.toLowerCase() == 'stefan hochhuth') {
                                         SDCRecipientMail.push(User);
                                     }
+                                    // if (User?.Title?.toLowerCase() == 'abhishek tiwari') {
+                                    //     SDCRecipientMail.push(User);
+                                    // }
                                 });
                                 globalCommon.sendImmediateEmailNotifications(data?.data?.Id, selectedSite?.siteUrl?.Url, selectedSite?.listId, data?.data, SDCRecipientMail, 'Client Task', taskUsers, props?.SelectedProp?.Context).then((response: any) => {
                                     console.log(response);
@@ -957,6 +973,9 @@ function CreateTaskComponent(props: any) {
                         createdTask.siteType = save.siteType
                         data.data.SiteIcon = selectedSite?.Item_x005F_x0020_Cover?.Url;
                         createdTask.SiteIcon = selectedSite?.Item_x005F_x0020_Cover?.Url;
+                        if (UserEmailNotify) {
+                            EmailNotificationOnTeams(data.data.siteUrl, data.data.Id, data.data.Title, save.siteType);
+                        }
                         if (props?.projectId != undefined) {
                             EditPopup(data?.data)
                             props?.callBack
@@ -1078,17 +1097,20 @@ function CreateTaskComponent(props: any) {
             // TestUrl = $scope.ComponentLink;
             var item = '';
             if (TestUrl !== undefined) {
+                if (TestUrl.toLowerCase().indexOf('.com') > -1)
+                    TestUrl = TestUrl.split('.com')[1];
+                else if (TestUrl.toLowerCase().indexOf('.ch') > -1)
+                    TestUrl = TestUrl.split('.ch')[1];
+                else if (TestUrl.toLowerCase().indexOf('.de') > -1)
+                    TestUrl = TestUrl.split('.de')[1];
+                let URLDataArr: any = TestUrl.split('/');
                 for (let index = 0; index < SitesTypes?.length; index++) {
                     let site = SitesTypes[index];
-                    if (TestUrl.toLowerCase().indexOf('.com') > -1)
-                        TestUrl = TestUrl.split('.com')[1];
-                    else if (TestUrl.toLowerCase().indexOf('.ch') > -1)
-                        TestUrl = TestUrl.split('.ch')[1];
-                    else if (TestUrl.toLowerCase().indexOf('.de') > -1)
-                        TestUrl = TestUrl.split('.de')[1];
+
 
                     let Isfound = false;
-                    if (TestUrl !== undefined && ((TestUrl?.toLowerCase()?.indexOf('/' + site?.Title?.toLowerCase())) > -1 || (site?.AlternativeTitle != null && (TestUrl?.toLowerCase()?.indexOf(site?.AlternativeTitle?.toLowerCase())) > -1))) {
+
+                    if (TestUrl !== undefined && URLDataArr?.find((urlItem: any) => urlItem?.toLowerCase() == site?.Title?.toLowerCase()) || (site?.AlternativeTitle != null && URLDataArr?.find((urlItem: any) => urlItem?.toLowerCase() == site?.AlternativeTitle?.toLowerCase()))) {
                         item = site.Title;
                         selectedSiteTitle = site.Title;
                         Isfound = true;
@@ -1099,7 +1121,7 @@ function CreateTaskComponent(props: any) {
                             let sitesAlterNatives = site.AlternativeTitle.toLowerCase().split(';');
                             for (let j = 0; j < sitesAlterNatives.length; j++) {
                                 let element = sitesAlterNatives[j];
-                                if (TestUrl.toLowerCase().indexOf(element) > -1) {
+                                if (URLDataArr?.find((urlItem: any) => urlItem?.toLowerCase() == element?.toLowerCase())) {
                                     item = site.Title;
                                     selectedSiteTitle = site.Title;
                                     Isfound = true;
@@ -1163,6 +1185,9 @@ function CreateTaskComponent(props: any) {
     }
 
     const selectSubTaskCategory = (title: any, Id: any, item: any) => {
+        if (item?.IsSendAttentionEmail != undefined) {
+            TeamMessagearray.push(item.IsSendAttentionEmail);
+        }
         if (loggedInUser?.IsApprovalMail?.toLowerCase() == 'approve all but selected items' && !IsapprovalTask) {
             try {
                 let selectedApprovalCat = JSON.parse(loggedInUser?.CategoriesItemsJson)
@@ -1256,7 +1281,16 @@ function CreateTaskComponent(props: any) {
         setTaskCat(TaskCategories)
 
     }
-
+    const EmailNotificationOnTeams = async (sitename: any, taskId: any, TaskTitle: any, CreateSite: any) => {
+        let TaskUrl: any = `${base_Url}/SitePages/Task-Profile.aspx?taskId=${taskId}&Site=${CreateSite}`
+        let txtComment = `You have been tagged as Attention in the below task by ${props.SelectedProp.pageContext._user.displayName}`;
+        let TeamMsg = txtComment + `</br> <a href=${TaskUrl}>${taskId}-${TaskTitle}</a>`
+        TeamMessagearray.map((mail: any) => {
+            if (mail?.EMail?.length > 0) {
+                globalCommon.SendTeamMessage([mail.EMail], TeamMsg, props.SelectedProp.Context);
+            }
+        })
+    }
 
     const inlineCallBack = React.useCallback((item: any) => {
 
@@ -1521,12 +1555,12 @@ function CreateTaskComponent(props: any) {
             <div className='creatTaskPage'>
                 <div className='generalInfo'>
                     {/* {props?.projectId == undefined ?
-                        <div className='heading d-flex justify-content-between align-items-center'>
-                            <h2>Create Task </h2>
-                            <span className='text-end fs-6'>
-                             <a data-interception="off" className=' text-end pull-right' target='_blank' href={oldTaskIrl} style={{ cursor: "pointer", fontSize: "14px" }}>Old Create Task</a>
-                             </span>
-                        </div>  : ''} */}
+                            <div className='heading d-flex justify-content-between align-items-center'>
+                                <h2>Create Task </h2>
+                                <span className='text-end fs-6'>
+                                <a data-interception="off" className=' text-end pull-right' target='_blank' href={oldTaskIrl} style={{ cursor: "pointer", fontSize: "14px" }}>Old Create Task</a>
+                                </span>
+                            </div>  : ''} */}
                     <div>
                         {props?.projectId == undefined ?
                             <h4 className="titleBorder">General Information</h4> : ''}
@@ -1574,9 +1608,9 @@ function CreateTaskComponent(props: any) {
                                             )
                                         }) : null}
                                         <span className="input-group-text">
-                                            <span onClick={(e) => EditPortfolio(save, 'Component')} style={{ backgroundColor: 'white' }} className="svg__iconbox svg__icon--edit"></span>
+                                            <span onClick={(e) => EditPortfolio(save, 'Component')} style={{ backgroundColor: 'white' }} className="svg__iconbox svg__icon--editBox dark"></span>
                                             {/* <img src="https://hhhhteams.sharepoint.com/_layouts/images/edititem.gif"
-                                        onClick={(e) => EditComponent(save, 'Component')} /> */}
+                                            onClick={(e) => EditComponent(save, 'Component')} /> */}
                                         </span>
                                     </div> : ''
                             }
@@ -1662,7 +1696,7 @@ function CreateTaskComponent(props: any) {
 
 
                 {/*---------------- Sites -------------
-            -------------------------------*/}
+                -------------------------------*/}
                 {siteType?.length > 1 ?
                     <div className='col mt-4'>
                         <h4 className="titleBorder ">Websites</h4>
@@ -1696,7 +1730,7 @@ function CreateTaskComponent(props: any) {
                 {props?.projectId == undefined ? <>
                     <div className="clearfix"></div>
                     {/*---- Task Categories ---------
-            -------------------------------*/}
+                -------------------------------*/}
                     <div className="col" >
                         {TaskTypes?.map((Task: any) => {
                             return (
@@ -1740,7 +1774,7 @@ function CreateTaskComponent(props: any) {
                     </div>
                     <div className="clearfix"></div>
                     {/*-----Time --------
-            -------------------------------*/}
+                -------------------------------*/}
 
                     <div className='col mt-4 clearfix'>
                         <h4 className="titleBorder">Time</h4>
@@ -1754,7 +1788,7 @@ function CreateTaskComponent(props: any) {
                     </div>
                     <div className="clearfix"></div>
                     {/*-----Due date --------
-            -------------------------------*/}
+                -------------------------------*/}
                     <div className='col mt-4'>
                         <h4 className="titleBorder ">Due Date</h4>
                         <div className="taskcatgoryPannel">
