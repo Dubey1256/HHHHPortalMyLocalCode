@@ -1059,7 +1059,7 @@ const CreateActivity = (props: any) => {
             <Panel
                 onRenderHeader={onRenderCustomHeaderMain}
                 type={PanelType.custom}
-                customWidth="1300px"
+                customWidth="1280px"
                 isOpen={true}
                 onDismiss={() => closePopup("item")}
                 isBlocking={false}

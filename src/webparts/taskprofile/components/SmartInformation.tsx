@@ -508,6 +508,9 @@ const SmartInformation = (props: any, ref: any) => {
               backupremarkdata?.SmartInformation.splice(0, 1, restdata);
               if (props?.setRemark != undefined) {
                 props.setRemark(false)
+                if(props?.callSmartInformation!=undefined){
+                  props.callSmartInformation("update")
+                  }
               }
 
 
