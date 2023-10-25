@@ -99,7 +99,7 @@ const EditTaskPopup = (Items: any) => {
     const AllListIdData = Items?.AllListId;
     AllListIdData.listId = Items?.Items?.listId;
     // Items.Items.Id = Items?.Items?.ID;
-    Items.Items.Id = Items.Items.Id !=undefined ?Items.Items.Id :Items.Items.ID;
+    Items.Items.Id = Items.Items.Id != undefined ? Items.Items.Id : Items.Items.ID;
     let ShareWebConfigData: any = [];
     const [TaskImages, setTaskImages] = useState([]);
     const [SmartMetaDataAllItems, setSmartMetaDataAllItems] = useState<any>([]);
@@ -1847,6 +1847,17 @@ const EditTaskPopup = (Items: any) => {
                         }
                     })
                 }
+                if (StatusInput == 70) {
+                    if (EditData.TeamMembers != undefined && EditData.TeamMembers?.length > 0) {
+                        setWorkingMemberFromTeam(EditData.TeamMembers, "Development", 0);
+                    }
+                    StatusOptions?.map((item: any) => {
+                        if (StatusInput == item.value) {
+                            setPercentCompleteStatus(item.status);
+                            setTaskStatus(item.taskStatusComment);
+                        }
+                    })
+                }
                 if (StatusInput == 5) {
                     EditData.CompletedDate = undefined;
                     EditData.IsTodaysTask = false;
@@ -1980,6 +1991,13 @@ const EditTaskPopup = (Items: any) => {
                 }
                 EditData.IsTodaysTask = false;
                 EditData.CompletedDate = undefined;
+            }
+            if (StatusData.value == 70) {
+                if (EditData.TeamMembers != undefined && EditData.TeamMembers?.length > 0) {
+                    setWorkingMemberFromTeam(EditData.TeamMembers, "Development", 0);
+                } else {
+                    setWorkingMember(0);
+                }
             }
 
             if (StatusData.value == 5) {
@@ -4100,7 +4118,7 @@ const EditTaskPopup = (Items: any) => {
                                     {StatusOptions?.map((item: any, index: any) => {
                                         return (
                                             <li key={index}>
-                                                <div className="form-check ">
+                                                <div className={IsUserFromHHHHTeam ? "form-check" : (!IsUserFromHHHHTeam && item.value == 100 ? "form-check Disabled-Link bg-e9 py-1" : "form-check")}>
                                                     <label className="SpfxCheckRadio">
                                                         <input className="radio"
                                                             type="radio" checked={(PercentCompleteCheck ? EditData.PercentComplete : UpdateTaskInfo.PercentCompleteStatus) == item.value}
