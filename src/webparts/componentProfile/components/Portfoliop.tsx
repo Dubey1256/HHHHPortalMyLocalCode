@@ -26,7 +26,7 @@ const sp = spfi();
 // Work the Inline Editing
 interface EditableFieldProps {
   listName: string;
-  itemId: number;
+  itemId: any;
   fieldName: string;
   value: any;
   onChange: (value: string) => void;
@@ -192,6 +192,18 @@ export const EditableField: React.FC<EditableFieldProps> = ({
       // Update the field value in your state when the input is valid
       setFieldValue(inputValue);
     };
+    let selectedStatus:any;
+    const ChangeStatus = (event: React.ChangeEvent<HTMLSelectElement>, EditData: any) => {
+      // Get the selected status value from the event
+       selectedStatus = event.target.value;
+    
+      // Update the AdminStatus property in EditData with the selected value
+      // const updatedEditData = { ...EditData, AdminStatus: selectedStatus };
+    
+      // Call the parent component's onChange function to save the updated EditData
+      // onChange(updatedEditData);
+    };
+    
     const handleSave = async () => {
       try {
         setFieldValue((prevValue:any) => parseInt(fieldValue));
@@ -203,9 +215,10 @@ export const EditableField: React.FC<EditableFieldProps> = ({
         let webs = new Web(web);
         await webs.lists
           .getByTitle(listName)
-          .items.getById(itemId)
+          .items.getById(itemId.Id)
           .update({
-            [fieldName]: valpercent / 100
+            PercentComplete: valpercent / 100,
+            Status:selectedStatus
           });
 
         setEditing(false);
@@ -226,6 +239,17 @@ export const EditableField: React.FC<EditableFieldProps> = ({
               onChange={handleInputChange}
             />
           </span>
+          <select
+              className="form-control"
+              value={itemId?.AdminStatus}
+              onChange={(e) => ChangeStatus(e, itemId)}
+            >
+              <option value="Not Started">Not Started</option>
+              <option value="In Preparation">In Preparation</option>
+              <option value="In Development">In Development</option>
+              <option value="Active">Active</option>
+              <option value="Archived">Archived</option>
+            </select>
           <span>
             <a onClick={handleSave}>
               <span className="svg__iconbox svg__icon--Save "></span>
@@ -240,7 +264,7 @@ export const EditableField: React.FC<EditableFieldProps> = ({
 
     return (
       <div key={key}>
-        <span>{fieldValue}</span>
+        <span title={fieldValue}>{fieldValue}</span>
         <a className="pancil-icons" onClick={handleEdit}>
           <span className="svg__iconbox svg__icon--editBox"></span>
         </a>
@@ -302,7 +326,7 @@ export const EditableField: React.FC<EditableFieldProps> = ({
 
     return (
       <div>
-        <span>{fieldValue}</span>
+        <span title={fieldValue}>{fieldValue}</span>
         <a className="pancil-icons" onClick={handleEdit}>
           <span className="svg__iconbox svg__icon--editBox"></span>
         </a>
@@ -352,7 +376,7 @@ const handleSave = async () => {
 
   return (
     <div>
-      <span>{fieldValue}</span>
+      <span title={fieldValue}>{fieldValue}</span>
       <a className="pancil-icons" onClick={handleEdit}>
         <span className="svg__iconbox svg__icon--editBox"></span>
       </a>
@@ -1386,7 +1410,7 @@ const  contextCall = (data: any, path: any, component: any) => {
                         <EditableField
                           key={index}
                           listName="Master Tasks"
-                          itemId={item?.Id}
+                          itemId={item}
                           fieldName="PercentComplete"
                           value={
                             item?.PercentComplete != undefined
@@ -1783,97 +1807,20 @@ const  contextCall = (data: any, path: any, component: any) => {
                     </>
                   );
                 })}
-                {/* <div className="mb-3 card">
-                  {data.map((item) => {
-                    return (
-                      <SmartInformation
-                        Id={item?.Id}
-                        siteurl={"${web}"}
-                        spPageContext={"/sites/HHHH/SP"}
-                        AllListId={SelectedProp}
-                        Context={SelectedProp?.Context}
-                        taskTitle={item?.Title}
-                        listName={"Master Tasks"}
-                      />
-                    );
-                  })}
-                </div> */}
-                {/* <div className='mb-3 card' ng-if="isOwner==true">
-                                        <div className='card-header'>
-                                            <div className='card-actions float-end'>  <Tooltip ComponentId='324'/></div>
-                                            <div className="mb-0 card-title h5">Add & Connect Tool</div>
-                                        </div> 
-                                        <div className='card-body'>
-                                            <div className="border-bottom pb-2"> <a ng-click="TagItems();">
-                                                Click here to add more content
-                                            </a></div>
-                                        </div>
-                                    </div> */}
-                {/* {Folderdatas != undefined && (
-                  <>
-                    {Folderdatas.map((item: any) => {
-                      return (
-                        <div className="mb-3 card">
-                          <div className="card-header">
-                            <div className="card-actions float-end">
-                              {" "}
-                              <Tooltip
-                                ComponentId="1748"
-                                IsServiceTask={
-                                  TypeSite == "Service" ? true : false
-                                }
-                              />
-                            </div>
-                            <div className="mb-0 card-title h5">
-                              Main Folder
-                            </div>
-                          </div>
-                          <div className="card-body">
-                            <div className="border-bottom pb-2">
-                              <div>
-                                <img
-                                  data-themekey="#"
-                                  src="/_layouts/15/images/folder.gif?rev=23"
-                                />
-                                <a
-                                  target="_blank"
-                                  data-interception="off"
-                                  href={item?.EncodedAbsUrl}
-                                >
-                                  {item?.FileLeafRef}
-                                </a>
-                              </div>
-                            </div>
-                          </div>
-                        </div>
-                      );
-                    })}{" "}
-                  </>
-                )} */}
+            
                 <div className="mb-3 mt-1">
                   {data.map((item: any, index: any) => {
-                    return (
+                    {item.Sitestagging != undefined&&
                       <Sitecomposition
                         key={index}
                         props={item}
                         sitedata={SelectedProp}
                       />
-                    );
+                    }
+                  
                   })}
                 </div>
 
-                  <>
-                    {data?.map((item) => (
-                      <CommentCard
-                        siteUrl={SelectedProp.siteUrl}
-                        AllListId={SelectedProp}
-                        userDisplayName={item?.userDisplayName}
-                        itemID={item?.Id}
-                        listName={"Master Tasks"}
-                        Context={SelectedProp.Context}
-                      ></CommentCard>
-                    ))}
-                  </>
                   <>
                     {data?.map((item) => (
                       <AncTool item={item} callBack={AncCallback} AllListId={SelectedProp} Context={SelectedProp?.Context}  listName={"Master Tasks"} />
@@ -1902,6 +1849,18 @@ const  contextCall = (data: any, path: any, component: any) => {
                         siteName={"Master Tasks"}
                          folderName={item?.Title}
                           ></RelevantDocuments>
+                    ))}
+                  </>
+                  <>
+                    {data?.map((item) => (
+                      <CommentCard
+                        siteUrl={SelectedProp.siteUrl}
+                        AllListId={SelectedProp}
+                        userDisplayName={item?.userDisplayName}
+                        itemID={item?.Id}
+                        listName={"Master Tasks"}
+                        Context={SelectedProp.Context}
+                      ></CommentCard>
                     ))}
                   </>
               </aside>
