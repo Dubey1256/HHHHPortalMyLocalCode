@@ -1246,10 +1246,13 @@ const SiteCompositionComponent = (Props: any) => {
                 if (CCItems.siteName == siteType) {
                     count++;
                     TempArray.push(CCItems.Id);
-                } else if (count == 0) {
-                    TempArray.push(CCItems.Id);
                 }
             })
+            if (count == 0) {
+                finalClientCategoryData?.map((CCItems: any) => {
+                    TempArray.push(CCItems.Id);
+                })
+            }
         }
         TempClientCategoryIds = TempArray.filter((val: any, id: any, array: any) => {
             return array.indexOf(val) == id;
@@ -2059,7 +2062,6 @@ const SiteCompositionComponent = (Props: any) => {
                                 />
                             </div>
                         </div>
-
                     </div>
                 </Panel>
                 : null
