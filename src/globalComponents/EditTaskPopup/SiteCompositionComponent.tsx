@@ -245,9 +245,9 @@ const SiteCompositionComponent = (Props: any) => {
                         // }
 
                     } else {
-                        if (DataItem.StartEndDateValidation) {
-                            alert("This site has an end date so you cannot add it to Site Composition.")
-                        } else {
+                        // if (DataItem.StartEndDateValidation) {
+                        //     alert("This site has an end date so you cannot add it to Site Composition.")
+                        // } else {
                             DataItem.BtnStatus = true
                             setSelectedSiteCount(selectedSiteCount + 1);
                             const object = {
@@ -267,7 +267,7 @@ const SiteCompositionComponent = (Props: any) => {
                             SiteTaggingFinalData = tempData;
                             SiteCompositionObject.selectedClientCategory = SelectedClientCategoryBackupArray;
                             // callBack(SiteCompositionObject, "dataExits");
-                        }
+                        // }
                     }
                 }
                 TempArray.push(DataItem)

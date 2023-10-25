@@ -288,9 +288,9 @@ const SiteCompositionComponent = (Props: any) => {
                         }
 
                     } else {
-                        if (DataItem.StartEndDateValidation) {
-                            alert("This site has an end date so you cannot add it to Site Composition.")
-                        } else {
+                        // if (DataItem.StartEndDateValidation) {
+                        //     alert("This site has an end date so you cannot add it to Site Composition.")
+                        // } else {
                             DataItem.BtnStatus = true
                             DataItem.Date = Moment(new Date()).tz("Europe/Berlin").format("DD/MM/YYYY")
                             DataItem.readOnly = true
@@ -316,7 +316,7 @@ const SiteCompositionComponent = (Props: any) => {
                             // callBack(SiteCompositionObject, "dataExits");
                             // callBack(SiteCompositionObject);
 
-                        }
+                        // }
                     }
                 }
                 TempArray.push(DataItem)
