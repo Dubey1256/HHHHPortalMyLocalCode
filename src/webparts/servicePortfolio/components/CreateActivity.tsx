@@ -271,15 +271,9 @@ const CreateActivity = (props: any) => {
     const onRenderCustomHeaderMain = () => {
         return (
             <>
-                <div
-                    style={{
-                        marginRight: "auto",
-                        fontSize: "20px",
-                        fontWeight: "600",
-                        marginLeft: "20px"
-                    }}
+                <div className="subheading"
                 >
-                    <h2 className="heading">
+                    <h2 className="siteColor">
                         {`Create Quick Option - ${selectedItem?.NoteCall}`}
                     </h2>
                 </div>
@@ -1158,9 +1152,7 @@ const CreateActivity = (props: any) => {
                                                     data-bs-toggle="tooltip"
                                                     data-bs-placement="auto"
                                                 >
-                                                    <span
-                                                        title="Edit"
-                                                        className="alignIcon svg__icon--info svg__iconbox"
+                                                    <span title="Edit" className="alignIcon svg__icon--info svg__iconbox"
                                                     ></span>
 
                                                     <div className="popover__content">
@@ -1186,10 +1178,10 @@ const CreateActivity = (props: any) => {
                                             />
                                         </div>
 
-                                        <ul className="p-0 mt-1">
-                                            <li className="form-check l-radio">
+                                        <ul className="p-0 mt-1 list-none">
+                                            <li className="SpfxCheckRadio">
                                                 <input
-                                                    className="form-check-input"
+                                                    className="radio"
                                                     name="radioPriority"
                                                     type="radio"
                                                     checked={
@@ -1200,9 +1192,9 @@ const CreateActivity = (props: any) => {
                                                 />
                                                 <label className="form-check-label">High</label>
                                             </li>
-                                            <li className="form-check l-radio">
+                                            <li className="SpfxCheckRadio">
                                                 <input
-                                                    className="form-check-input"
+                                                    className="radio"
                                                     name="radioPriority"
                                                     type="radio"
                                                     checked={
@@ -1213,9 +1205,9 @@ const CreateActivity = (props: any) => {
                                                 />
                                                 <label className="form-check-label">Normal</label>
                                             </li>
-                                            <li className="form-check l-radio">
+                                            <li className="SpfxCheckRadio">
                                                 <input
-                                                    className="form-check-input"
+                                                    className="radio"
                                                     name="radioPriority"
                                                     type="radio"
                                                     checked={
@@ -1377,7 +1369,7 @@ const CreateActivity = (props: any) => {
 
 
                     </div>
-                    <footer className={refreshData ? 'col text-end mt-3 lkjhgfds' : 'col text-end mt-3 kkkkk'}>
+                    <footer className={refreshData ? 'col text-end mt-3 ' : 'col text-end mt-3 '}>
                         {
                             selectedSites?.map((site: any) => {
                                 return (
