@@ -2047,7 +2047,7 @@ const SiteCompositionComponent = (Props: any) => {
                     onDismiss={closeComponentChildrenPopup}
                     isBlocking={false}
                     type={PanelType.custom}
-                    customWidth="1100px"
+                    customWidth="1200px"
                     onRenderFooter={onRenderFooterComponentChildren}
                 >
                     <div className={ServicesTaskCheck ? "serviepannelgreena SelectProjectTable " : 'SelectProjectTable '}>
