@@ -720,6 +720,11 @@ const CreateActivity = (props: any) => {
                     if (selectedItem?.ClientTime != undefined) {
                         if (typeof selectedItem?.ClientTime == "object") {
                             if (site?.Title?.toLowerCase() == "shareweb") {
+                                selectedItem?.ClientTime?.map((sitecomp:any)=>{
+                                    if(sitecomp.Title!=undefined && sitecomp.Title!=""&& sitecomp.SiteName==undefined){
+                                        sitecomp.SiteName=sitecomp.Title
+                                    }
+                                })
                                 clientTime = JSON.stringify(selectedItem?.ClientTime);
                             } else {
                                 var siteComp: any = {};
@@ -731,9 +736,17 @@ const CreateActivity = (props: any) => {
                                 clientTime = JSON?.stringify([siteComp]);
                             }
                             // clientTime = JSON.stringify(selectedItem?.ClientTime);
-                        } else {
-                            if (site?.Title?.toLowerCase() == "shareweb") {
-                                clientTime = selectedItem?.ClientTime
+                        } 
+                          else {
+                           if (site?.Title?.toLowerCase() == "shareweb") {
+                            var sitetag=JSON.parse(selectedItem?.ClientTime)
+                            sitetag?.map((sitecomp:any)=>{
+                                if(sitecomp.Title!=undefined && sitecomp.Title!=""&& sitecomp.SiteName==undefined){
+                                    sitecomp.SiteName=sitecomp.Title
+                                }
+                            
+                            }) 
+                             clientTime = JSON.stringify(sitetag)
                             } else {
                                 var siteComp: any = {};
                                 siteComp.SiteName = site?.Title,
