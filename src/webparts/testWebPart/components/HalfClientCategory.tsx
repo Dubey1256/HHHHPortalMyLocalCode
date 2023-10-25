@@ -362,8 +362,15 @@ const HalfClientCategory = (props: any) => {
                                 if (items?.SiteCompositionSettings != undefined) {
                                     items.compositionType = siteCompositionType(items?.SiteCompositionSettings);
                                     items.isProtectedItem = itemProtected(items?.SiteCompositionSettings)
+                                    if(items.isProtectedItem){
+                                        items.isProtectedValue = 'Protected'
+                                    }else{
+                                        items.isProtectedValue = ''
+                                    }
+                                   
                                 } else {
                                     items.compositionType = '';
+                                    items.isProtectedValue='';
                                     items.isProtectedItem = false;
                                 }
                                 if (items?.ClientTime != undefined) {
@@ -482,8 +489,14 @@ const HalfClientCategory = (props: any) => {
                         if (items?.SiteCompositionSettings != undefined) {
                             items.compositionType = siteCompositionType(items?.SiteCompositionSettings);
                             items.isProtectedItem = itemProtected(items?.SiteCompositionSettings)
+                            if(items.isProtectedItem){
+                                items.isProtectedValue = 'Protected'
+                            }else{
+                                items.isProtectedValue = ''
+                            }
                         } else {
                             items.compositionType = '';
+                            items.isProtectedValue = ''
                             items.isProtectedItem = false;
                         }
                         if (items?.Sitestagging != undefined) {
@@ -726,6 +739,18 @@ const HalfClientCategory = (props: any) => {
                 size: 100,
             },
             {
+                accessorFn: (row) => row?.isProtectedValue,
+                cell: ({ row }) => (
+                    <span>{row?.original?.isProtectedValue}</span>
+                ),
+                id: 'Type',
+                placeholder: "Protected",
+                header: "",
+                resetColumnFilters: false,
+                resetSorting: false,
+                size: 100,
+            },
+            {
                 accessorFn: (row) => row?.Created,
                 cell: ({ row }) => (
                     <span className="d-flex">
@@ -903,6 +928,18 @@ const HalfClientCategory = (props: any) => {
                 size: 100,
             },
             {
+                accessorFn: (row) => row?.isProtectedValue,
+                cell: ({ row }) => (
+                    <span>{row?.original?.isProtectedValue}</span>
+                ),
+                id: 'Type',
+                placeholder: "Protected",
+                header: "",
+                resetColumnFilters: false,
+                resetSorting: false,
+                size: 100,
+            },
+            {
                 accessorFn: (row) => row?.Created,
                 cell: ({ row }) => (
                     <span className="d-flex">
@@ -987,7 +1024,7 @@ const HalfClientCategory = (props: any) => {
             />
 
 
-            <section className="ContentSection SmartFilterWidth smartFilterSection">
+            <section className="ContentSection smartFilterSection">
                 <div className="togglecontent mt-1">
                     {filterCounters == true ? <TeamSmartFilter ProjectData={ProjectData} setLoaded={setLoaded} AllSiteTasksData={AllSiteTasksData} AllMasterTasksData={AllMasterTasksData} ContextValue={AllListId} smartFiltercallBackData={smartFiltercallBackData} portfolioColor={portfolioColor} /> : ''}
                 </div>
@@ -1006,7 +1043,7 @@ const HalfClientCategory = (props: any) => {
 
                 </dl>
             </div>
-            <div className="Alltable">
+            <div className="Alltable p-2">
                 {selectedView == 'MasterTask' ? <div>
                     <GlobalCommanTable headerOptions={headerOptions} AllListId={AllListId} columns={columnsMaster} data={AllMasterTasks} showPagination={true} callBackData={CallBack} pageName={"ProjectOverviewGrouped"} TaskUsers={AllTaskUser} showHeader={true} />
 

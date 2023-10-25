@@ -4,16 +4,19 @@ import { Panel, PanelType } from 'office-ui-fabric-react';
 import EditComponentProtfolio from '../../webparts/EditPopupFiles/EditComponent';
 import Tooltip from "../Tooltip";
 import { Web } from "sp-pnp-js";
+import * as Moment from 'moment';
 
 var AutoCompleteItemsArray: any = [];
 var SelectedClientCategoryBackupArray: any = [];
 var BackupSiteTypeData: any = [];
+var SiteTaggingFinalData: any = [];
+let ClientTimeDataBackup: any = [];
 
 const SiteCompositionComponent = (Props: any) => {
     const SiteData = Props.SiteTypes;
     const SelectedTaskDetails: any = Props?.SelectedItemDetails;
     var ClientTime = SelectedTaskDetails?.ClientTime != undefined && SelectedTaskDetails?.ClientTime != false ? SelectedTaskDetails?.ClientTime : [];
-    var SitesTaggingData: any = Props.SitesTaggingData
+    // var SitesTaggingData: any = SelectedTaskDetails.Portfolio?.length > 0 ? SelectedTaskDetails.Portfolio[0] : [] ;
     const isPortfolioConncted = Props.isPortfolioConncted;
     const AllListIdData: any = Props.AllListId
     const siteUrls = Props.siteUrls;
@@ -24,7 +27,7 @@ const SiteCompositionComponent = (Props: any) => {
     const usedFor = Props.usedFor;
     const ItemId = SelectedTaskDetails?.Id;
     const ServicesTaskCheck = Props.isServiceTask;
-    const SiteCompositionSettings = (SelectedTaskDetails?.SiteCompositionSettings != undefined ? JSON.parse(SelectedTaskDetails?.SiteCompositionSettings) : [{ Proportional: false, Manual: true, Portfolio: false, localSiteComposition: false }]);
+    const [SiteCompositionSettings, setSiteCompositionSettings] = useState<any>(SelectedTaskDetails?.SiteCompositionSettings != undefined ? JSON.parse(SelectedTaskDetails?.SiteCompositionSettings) : [{ Proportional: false, Manual: true, Portfolio: false, localSiteComposition: false, Delux: false, Standard: false }]);
     const SelectedClientCategoryFromProps = SelectedTaskDetails?.ClientCategory;
     const [SiteTypes, setSiteTypes] = useState([]);
     const [selectedSiteCount, setSelectedSiteCount] = useState(Props.ClientTime != undefined || Props.ClientTime != null ? Props.ClientTime?.length : 0);
@@ -48,6 +51,7 @@ const SiteCompositionComponent = (Props: any) => {
     const [EducationClientCategory, setEducationClientCategory] = useState([]);
     const [MigrationClientCategory, setMigrationClientCategory] = useState([]);
     const [isPortfolioComposition, setIsPortfolioComposition] = useState(false);
+    const [IsProtectedSiteComposition, setIsProtectedSiteComposition] = useState(false);
     const [EditComponentPanelStaus, setEditComponentPanelStaus] = useState(false);
     const [checkBoxStatus, setCheckBoxStatus] = useState(false);
     const [selectedComponentData, setSelectedComponentData] = useState<any>([]);
@@ -57,8 +61,59 @@ const SiteCompositionComponent = (Props: any) => {
         selectedClientCategory: [],
         SiteCompositionSettings: []
     }
+
+    const StandardComposition =
+        [
+            {
+                ClienTimeDescription: "60",
+                SiteName: "EI",
+                localSiteComposition: true,
+                siteIcons: "https://hhhhteams.sharepoint.com/sites/HHHH/SiteCollectionImages/ICONS/Shareweb/site_ei.png",
+                Date: Moment(new Date()).tz("Europe/Berlin").format("DD/MM/YYYY")
+            },
+            {
+                ClienTimeDescription: "30",
+                SiteName: "EPS",
+                localSiteComposition: true,
+                siteIcons: "https://hhhhteams.sharepoint.com/sites/HHHH/SiteCollectionImages/ICONS/Shareweb/site_eps.png",
+                Date: Moment(new Date()).tz("Europe/Berlin").format("DD/MM/YYYY")
+            },
+            {
+                ClienTimeDescription: "5",
+                SiteName: "Migration",
+                localSiteComposition: true,
+                siteIcons: "https://hhhhteams.sharepoint.com/sites/HHHH/SiteCollectionImages/ICONS/Shareweb/site_migration.png",
+                Date: Moment(new Date()).tz("Europe/Berlin").format("DD/MM/YYYY")
+            },
+            {
+                ClienTimeDescription: "5",
+                SiteName: "Education",
+                localSiteComposition: true,
+                siteIcons: "https://hhhhteams.sharepoint.com/sites/HHHH/SiteCollectionImages/ICONS/Shareweb/site_education.png",
+                Date: Moment(new Date()).tz("Europe/Berlin").format("DD/MM/YYYY")
+            }
+        ]
+
+    const DeluxComposition = [
+        {
+            ClienTimeDescription: "50",
+            SiteName: "EI",
+            localSiteComposition: true,
+            siteIcons: "https://hhhhteams.sharepoint.com/sites/HHHH/SiteCollectionImages/ICONS/Shareweb/site_ei.png",
+            Date: Moment(new Date()).tz("Europe/Berlin").format("DD/MM/YYYY")
+        },
+        {
+            ClienTimeDescription: "50",
+            SiteName: "EPS",
+            localSiteComposition: true,
+            siteIcons: "https://hhhhteams.sharepoint.com/sites/HHHH/SiteCollectionImages/ICONS/Shareweb/site_eps.png",
+            Date: Moment(new Date()).tz("Europe/Berlin").format("DD/MM/YYYY")
+        },
+    ]
+
     useEffect(() => {
         setSiteTypes(SiteData);
+        ClientTimeDataBackup = ClientTime != undefined ? JSON.parse(JSON.stringify(ClientTime)) : [];
         let tempData: any = [];
         let tempData2: any = [];
         BackupSiteTypeData = []
@@ -71,9 +126,11 @@ const SiteCompositionComponent = (Props: any) => {
             }
             setClientTimeData([CompositionObject]);
             ClientTime = [CompositionObject];
+            SiteTaggingFinalData = [CompositionObject];
             setSelectedSiteCount(1)
         } else {
             setClientTimeData(ClientTime);
+            setSelectedSiteCount(ClientTime?.length);
         }
         loadAllCategoryData();
         if (SelectedClientCategoryFromProps != undefined && SelectedClientCategoryFromProps.length > 0) {
@@ -128,6 +185,8 @@ const SiteCompositionComponent = (Props: any) => {
             if (SiteCompositionSettings[0].Manual || SiteCompositionSettings[0].Delux || SiteCompositionSettings[0].Standard) {
                 if (SiteCompositionSettings[0].Delux || SiteCompositionSettings[0].Standard) {
                     setIsPortfolioComposition(true);
+                    setIsProtectedSiteComposition(true);
+                    setProportionalStatus(true);
                 }
                 setProportionalStatus(false);
             }
@@ -135,17 +194,15 @@ const SiteCompositionComponent = (Props: any) => {
                 setIsPortfolioComposition(true);
                 setCheckBoxStatus(true)
             }
+            if (SiteCompositionSettings[0].Protected) {
+                setIsProtectedSiteComposition(true);
+
+            }
         }
 
-        if (Props.selectedServicesData?.length > 0 || Props.selectedComponentData?.length > 0) {
-            let tempArray: any = [];
-            if (Props.selectedServicesData?.length > 0) {
-                tempArray = Props.selectedServicesData;
-            }
-            if (Props.selectedComponentData?.length > 0) {
-                tempArray = Props.selectedComponentData;
-            }
-            setSelectedComponentData(tempArray[0])
+        if (SelectedTaskDetails.Portfolio?.length > 0) {
+            setSelectedComponentData(SelectedTaskDetails.Portfolio);
+
         } else {
             setSelectedComponentData([]);
         }
@@ -157,7 +214,8 @@ const SiteCompositionComponent = (Props: any) => {
             SiteTypes.map((DataItem: any, DataIndex: any) => {
                 if (DataIndex == Index) {
                     if (DataItem.BtnStatus) {
-                        DataItem.BtnStatus = false
+                        DataItem.BtnStatus = false;
+                        DataItem.ClienTimeDescription = 0;
                         setSelectedSiteCount(selectedSiteCount - 1);
                         let TempArray: any = [];
                         if (ClientTimeData != undefined && ClientTimeData.length > 0) {
@@ -168,53 +226,62 @@ const SiteCompositionComponent = (Props: any) => {
                             })
                         }
                         let tempDataForRemove: any = [];
-                        TempArray?.map((dataItem: any) => {
-                            dataItem.ClienTimeDescription = (100 / (selectedSiteCount - 1)).toFixed(1);
-                            tempDataForRemove.push(dataItem);
-                        })
+                        if (ProportionalStatus) {
+                            TempArray?.map((dataItem: any) => {
+                                dataItem.ClienTimeDescription = (100 / (selectedSiteCount - 1)).toFixed(1);
+                                tempDataForRemove.push(dataItem);
+                            })
+                        }
+
                         setClientTimeData(tempDataForRemove);
                         SiteCompositionObject.ClientTime = tempDataForRemove;
                         SiteCompositionObject.selectedClientCategory = SelectedClientCategoryBackupArray;
                         ClientTime = tempDataForRemove;
-                        if (tempDataForRemove?.length > 0) {
-                            callBack(SiteCompositionObject, "dataExits");
-                        } else {
-                            callBack(SiteCompositionObject, "dataDeleted")
-                        }
+                        SiteTaggingFinalData = tempDataForRemove;
+                        // if (tempDataForRemove?.length > 0) {
+                        //     callBack(SiteCompositionObject, "dataExits");
+                        // } else {
+                        //     callBack(SiteCompositionObject, "dataDeleted")
+                        // }
 
                     } else {
-                        DataItem.BtnStatus = true
-                        setSelectedSiteCount(selectedSiteCount + 1);
-                        const object = {
-                            SiteName: DataItem.Title,
-                            ClienTimeDescription: (100 / (selectedSiteCount + 1)).toFixed(1),
-                            localSiteComposition: true,
-                            siteIcons: DataItem.Item_x005F_x0020_Cover
+                        if (DataItem.StartEndDateValidation) {
+                            alert("This site has an end date so you cannot add it to Site Composition.")
+                        } else {
+                            DataItem.BtnStatus = true
+                            setSelectedSiteCount(selectedSiteCount + 1);
+                            const object = {
+                                SiteName: DataItem.Title,
+                                ClienTimeDescription: (100 / (selectedSiteCount + 1)).toFixed(1),
+                                localSiteComposition: true,
+                                siteIcons: DataItem.Item_x005F_x0020_Cover
+                            }
+                            ClientTimeData.push(object);
+                            let tempData: any = [];
+                            ClientTimeData?.map((TimeData: any) => {
+                                TimeData.ClienTimeDescription = (100 / (selectedSiteCount + 1)).toFixed(1);
+                                tempData.push(TimeData);
+                            })
+                            setClientTimeData(tempData);
+                            SiteCompositionObject.ClientTime = tempData;
+                            SiteTaggingFinalData = tempData;
+                            SiteCompositionObject.selectedClientCategory = SelectedClientCategoryBackupArray;
+                            // callBack(SiteCompositionObject, "dataExits");
                         }
-                        ClientTimeData.push(object);
-                        let tempData: any = [];
-                        ClientTimeData?.map((TimeData: any) => {
-                            TimeData.ClienTimeDescription = (100 / (selectedSiteCount + 1)).toFixed(1);
-                            tempData.push(TimeData);
-                        })
-                        setClientTimeData(tempData);
-                        SiteCompositionObject.ClientTime = tempData;
-                        SiteCompositionObject.selectedClientCategory = SelectedClientCategoryBackupArray;
-                        callBack(SiteCompositionObject, "dataExits");
                     }
                 }
                 TempArray.push(DataItem)
             })
         }
-        setSiteTypes(TempArray);
+        setSiteTypes([...TempArray]);
     }
     const ChangeSiteCompositionSettings = (Type: any) => {
-        // if (!isPortfolioConncted) {
-        //     alert("There are No Tagged Component/Services")
-        // } else {
         if (Type == "Proportional") {
-            const object = { ...SiteCompositionSettings[0], Proportional: true, Manual: false, Portfolio: false }
-            SiteCompositionSettings[0] = object;
+            SiteCompositionSettings[0].Delux = false;
+            SiteCompositionSettings[0].Standard = false;
+            SiteCompositionSettings[0].Proportional = true;
+            SiteCompositionSettings[0].Manual = false;
+            SiteCompositionSettings[0].Portfolio = false;
             setProportionalStatus(true);
             let tempData: any = [];
             ClientTime?.map((TimeData: any) => {
@@ -222,47 +289,202 @@ const SiteCompositionComponent = (Props: any) => {
                 tempData.push(TimeData);
             })
             SiteCompositionObject.ClientTime = tempData;
+            SiteTaggingFinalData = tempData;
             callBack(SiteCompositionObject, "dataExits");
             setIsPortfolioComposition(false);
             setCheckBoxStatus(false);
+
+            refreshSiteCompositionConfigurations();
+            ChangeSiteCompositionInstant("Proportional");
+            // if (IsProtectedSiteComposition) {
+            //     setIsProtectedSiteComposition(true);
+            // } else {
+            //     setIsProtectedSiteComposition(false);
+            // }
         }
         if (Type == "Manual") {
-            const object = { ...SiteCompositionSettings[0], Proportional: false, Manual: true, Portfolio: false }
-            SiteCompositionSettings[0] = object;
+            SiteCompositionSettings[0].Delux = false;
+            SiteCompositionSettings[0].Standard = false;
+            SiteCompositionSettings[0].Proportional = false;
+            SiteCompositionSettings[0].Manual = true;
+            SiteCompositionSettings[0].Portfolio = false;
             setProportionalStatus(false);
             setIsPortfolioComposition(false);
             setCheckBoxStatus(false);
+            setIsProtectedSiteComposition(false);
+            SiteTaggingFinalData = ClientTimeDataBackup;
+            refreshSiteCompositionConfigurations();
+            ChangeSiteCompositionInstant("Manual");
+            if (ClientTimeDataBackup?.length > 0) {
+                setSelectedSiteCount(ClientTimeDataBackup?.length);
+            } else {
+                setSelectedSiteCount(ClientTime?.length > 0 ? ClientTime?.length : 0);
+            }
+            // if (IsProtectedSiteComposition) {
+            //     setIsProtectedSiteComposition(true);
+            // } else {
+            //     setIsProtectedSiteComposition(false);
+            // }
         }
         if (Type == "Portfolio") {
-            const object = { ...SiteCompositionSettings[0], Proportional: false, Manual: false, Portfolio: true }
-            SiteCompositionSettings[0] = object;
-            if (SitesTaggingData != undefined && SitesTaggingData.length > 0 || ClientTime != undefined && ClientTime.length > 0) {
-                ClientTimeData = SitesTaggingData != undefined ? SitesTaggingData : ClientTime;
-                setIsPortfolioComposition(true);
-                setProportionalStatus(true);
-                setCheckBoxStatus(true);
-                onChangeCompositionSetting()
+            SiteCompositionSettings[0].Delux = false;
+            SiteCompositionSettings[0].Standard = false;
+            SiteCompositionSettings[0].Proportional = false;
+            SiteCompositionSettings[0].Manual = false;
+            SiteCompositionSettings[0].Portfolio = true;
+            refreshSiteCompositionConfigurations();
+            if (selectedComponentData?.Id != undefined) {
+                // if (SitesTaggingData != undefined && SitesTaggingData.length > 0 || ClientTime != undefined && ClientTime.length > 0) {
+                //     ClientTimeData = SitesTaggingData != undefined ? SitesTaggingData : ClientTime;
+                //     SiteTaggingFinalData = SitesTaggingData != undefined ? SitesTaggingData : ClientTime;
+                //     setIsPortfolioComposition(true);
+                //     setProportionalStatus(true);
+                //     setCheckBoxStatus(true);
+                //     onChangeCompositionSetting()
+                // } else {
+                //     setIsPortfolioComposition(false);
+                //     setCheckBoxStatus(false);
+                //     setClientTimeData([])
+                // }
             } else {
-                setIsPortfolioComposition(false);
-                setCheckBoxStatus(false);
-                setClientTimeData([])
+                alert("There are No Tagged Portfolio Item");
             }
-
         }
-        if (Type == "Overridden") {
-            let object: any;
-            if (SiteCompositionSettings[0].localSiteComposition == true) {
-                object = { ...SiteCompositionSettings[0], localSiteComposition: false }
+        // if (Type == "Overridden") {
+        //     let object: any;
+        //     if (SiteCompositionSettings[0].localSiteComposition == true) {
+        //         SiteCompositionSettings[0].localSiteComposition = false;
+        //     } else {
+        //         SiteCompositionSettings[0].localSiteComposition = true;
+        //     }
+        //     SiteCompositionSettings[0] = object;
+        // }
+        if (Type == "Protected") {
+            if (SiteCompositionSettings[0]?.Protected == true) {
+                if (SiteCompositionSettings[0].Delux == true || SiteCompositionSettings[0].Standard == true) {
+                    setIsProtectedSiteComposition(true);
+                } else {
+                    SiteCompositionSettings[0].Protected = false;
+                    // setIsProtectedSiteComposition(false);
+                }
+
             } else {
-                object = { ...SiteCompositionSettings[0], localSiteComposition: true }
+                SiteCompositionSettings[0].Protected = true;
+                SiteTaggingFinalData = ClientTimeData;
+                // setIsProtectedSiteComposition(true);
             }
-            SiteCompositionSettings[0] = object;
+        }
+
+        if (Type == "Delux") {
+            if (SiteCompositionSettings[0]?.Delux == true) {
+                SiteCompositionSettings[0].Delux = false;
+                setIsProtectedSiteComposition(false);
+            } else {
+                SiteCompositionSettings[0].Delux = true;
+                SiteCompositionSettings[0].Standard = false;
+                SiteCompositionSettings[0].Proportional = false;
+                SiteCompositionSettings[0].Manual = false;
+                SiteCompositionSettings[0].Portfolio = false;
+                refreshSiteCompositionConfigurations();
+                ChangeSiteCompositionInstant("Delux");
+                SiteTaggingFinalData = DeluxComposition;
+                setProportionalStatus(true);
+                setIsPortfolioComposition(true);
+                setIsProtectedSiteComposition(true);
+            }
+        }
+        if (Type == "Standard") {
+            if (SiteCompositionSettings[0]?.Standard == true) {
+                SiteCompositionSettings[0].Standard = false;
+                setIsProtectedSiteComposition(false);
+            } else {
+                SiteCompositionSettings[0].Delux = false;
+                SiteCompositionSettings[0].Standard = true;
+                SiteCompositionSettings[0].Proportional = false;
+                SiteCompositionSettings[0].Manual = false;
+                SiteCompositionSettings[0].Portfolio = false;
+                refreshSiteCompositionConfigurations();
+                ChangeSiteCompositionInstant("Standard");
+                SiteTaggingFinalData = StandardComposition;
+                setProportionalStatus(true);
+                setIsPortfolioComposition(true);
+                setIsProtectedSiteComposition(true);
+            }
         }
         SiteCompositionObject.SiteCompositionSettings = SiteCompositionSettings;
         SiteCompositionObject.ClientTime = ClientTimeData;
-        callBack(SiteCompositionObject, "dataExits");
-        // }
 
+        // callBack(SiteCompositionObject, "dataExits");
+        // }
+    }
+
+    const refreshSiteCompositionConfigurations = () => {
+        let TempArray: any = [];
+        SiteTypes?.map((ItemData: any) => {
+            ItemData.ClienTimeDescription = "";
+            ItemData.BtnStatus = false;
+            ItemData.Date = '';
+            ItemData.readOnly = false;
+            TempArray.push(ItemData);
+        })
+        setSiteTypes([...TempArray])
+    }
+
+    const ChangeSiteCompositionInstant = (UsedFor: any) => {
+        let TempSiteCompsotion: any = [];
+        if (UsedFor == "Standard") {
+            SiteTypes?.map((SiteData: any) => {
+                StandardComposition?.map((STItems: any) => {
+                    if (SiteData.Title == STItems.SiteName || (STItems.SiteName ==
+                        "DA E+E" && STItems.SiteName == "ALAKDigital")) {
+                        SiteData.ClienTimeDescription = STItems.ClienTimeDescription;
+                        SiteData.BtnStatus = true;
+                        SiteData.Date = STItems.Date;
+                    }
+                })
+                TempSiteCompsotion.push(SiteData)
+            })
+        }
+        if (UsedFor == "Delux") {
+            SiteTypes?.map((SiteData: any) => {
+                DeluxComposition?.map((STItems: any) => {
+                    if (SiteData.Title == STItems.SiteName || (STItems.SiteName ==
+                        "DA E+E" && STItems.SiteName == "ALAKDigital")) {
+                        SiteData.ClienTimeDescription = STItems.ClienTimeDescription;
+                        SiteData.BtnStatus = true;
+                        SiteData.Date = STItems.Date;
+                    }
+                })
+                TempSiteCompsotion.push(SiteData)
+            })
+        }
+        if (UsedFor == "Proportional") {
+            SiteTypes?.map((SiteData: any) => {
+                ClientTimeDataBackup?.map((STItems: any) => {
+                    if (SiteData.Title == STItems.SiteName || (STItems.SiteName ==
+                        "DA E+E" && STItems.SiteName == "ALAKDigital")) {
+                        SiteData.ClienTimeDescription = (100 / (ClientTimeDataBackup?.length)).toFixed(1);
+                        SiteData.BtnStatus = true;
+                        SiteData.Date = STItems.Date;
+                    }
+                })
+                TempSiteCompsotion.push(SiteData)
+            })
+        }
+        if (UsedFor == "Manual") {
+            SiteTypes?.map((SiteData: any) => {
+                ClientTimeDataBackup?.map((STItems: any) => {
+                    if (SiteData.Title == STItems.SiteName || (STItems.SiteName ==
+                        "DA E+E" && STItems.SiteName == "ALAKDigital")) {
+                        SiteData.ClienTimeDescription = STItems.ClienTimeDescription;
+                        SiteData.BtnStatus = true;
+                        SiteData.Date = STItems.Date;
+                    }
+                })
+                TempSiteCompsotion.push(SiteData)
+            })
+        }
+        setSiteTypes([...TempSiteCompsotion]);
     }
 
     const onChangeCompositionSetting = () => {
@@ -279,7 +501,7 @@ const SiteCompositionComponent = (Props: any) => {
                 TempArray.push(data);
             })
             setSiteTypes(TempArray)
-            setSelectedSiteCount(ClientTimeData?.length)
+            // setSelectedSiteCount(ClientTimeData?.length)
         }
     }
 
@@ -621,10 +843,11 @@ const SiteCompositionComponent = (Props: any) => {
                 }
             })
             SiteCompositionObject.ClientTime = ClientTimeTemp;
+            SiteTaggingFinalData = ClientTimeTemp;
             SiteCompositionObject.selectedClientCategory = SelectedClientCategoryBackupArray;
             SiteCompositionObject.SiteCompositionSettings = SiteCompositionSettings;
         }
-        callBack(SiteCompositionObject, "dataExits");
+        // callBack(SiteCompositionObject, "dataExits");
     }
 
     // ************************ this is for the auto Suggestion fuction for all Client Category ******************
@@ -669,10 +892,10 @@ const SiteCompositionComponent = (Props: any) => {
         let TotalPercentageCount: any = 0;
         let TaskShuoldBeUpdate: any = true;
 
-        if (ClientTimeData.length > 0) {
-            SitesTaggingData = ClientTimeData;
+        if (SiteTaggingFinalData.length > 0) {
+            SitesTaggingData = SiteTaggingFinalData;
         } else {
-            SitesTaggingData = ClientTime;
+            SitesTaggingData = ClientTimeDataBackup;
         }
         if (SelectedClientCategoryBackupArray?.length > 0) {
             ClientCategoryData = SelectedClientCategoryBackupArray;
@@ -692,9 +915,9 @@ const SiteCompositionComponent = (Props: any) => {
             ClientCategoryIDs = [];
         }
 
-        if (ClientTimeData != undefined && ClientTimeData.length > 0) {
+        if (SitesTaggingData != undefined && SitesTaggingData.length > 0) {
             let SiteIconStatus: any = false
-            ClientTimeData?.map((ClientTimeItems: any) => {
+            SitesTaggingData?.map((ClientTimeItems: any) => {
                 if (ClientTimeItems.siteIcons != undefined) {
                     if (ClientTimeItems.siteIcons?.length > 0 || ClientTimeItems.siteIcons?.Url?.length > 0) {
                         SiteIconStatus = true;
@@ -739,13 +962,14 @@ const SiteCompositionComponent = (Props: any) => {
             try {
                 let web = new Web(AllListIdData.siteUrl);
                 await web.lists.getById(ListId).items.getById(ItemId).update({
-                    ClientTime: SiteTaggingJSON?.length > 0 ? JSON.stringify(SiteTaggingJSON) : JSON.stringify(ClientTimeData),
+                    ClientTime: SiteTaggingJSON?.length > 0 ? JSON.stringify(SiteTaggingJSON) : JSON.stringify(ClientTimeDataBackup),
                     ClientCategoryId: { "results": (ClientCategoryIDs != undefined && ClientCategoryIDs.length > 0) ? ClientCategoryIDs : [] },
-                    SiteCompositionSettings: (SiteCompositionSettingData != undefined && SiteCompositionSettingData.length > 0) ? JSON.stringify(SiteCompositionSettingData) : JSON.stringify(SiteCompositionSettings),
+                    SiteCompositionSettings: (SiteCompositionSettingData != undefined && SiteCompositionSettingData.length > 0) ? JSON.stringify(SiteCompositionSettingData) : SiteCompositionSettings,
                 }).then(() => {
                     console.log("Site Composition Updated !!!");
                     alert("save successfully !!!");
                     ClientTimeData = [];
+                    ClientTimeDataBackup = [];
                     closePopupCallBack();
                 })
             } catch (error) {
@@ -766,7 +990,7 @@ const SiteCompositionComponent = (Props: any) => {
         if (selectedComponentData?.Id != undefined) {
             setEditComponentPanelStaus(true);
         } else {
-            alert("There are No Tagged Component/Services");
+            alert("There are No Tagged Portfolio Item");
         }
 
     }
@@ -826,19 +1050,6 @@ const SiteCompositionComponent = (Props: any) => {
                 <span className="SpfxCheckRadio">
                     <input
                         type="radio"
-                        id="Proportional"
-                        defaultChecked={SiteCompositionSettings ? SiteCompositionSettings[0]?.Proportional : false}
-                        onChange={() => ChangeSiteCompositionSettings("Proportional")}
-                        name="SiteCompositions"
-                        value={SiteCompositionSettings ? SiteCompositionSettings[0]?.Proportional : false}
-                        title="add Proportional Time"
-                        className="radio"
-                    />
-                    Proportional
-                </span>
-                <span className="SpfxCheckRadio">
-                    <input
-                        type="radio"
                         id="Manual"
                         name="SiteCompositions"
                         defaultChecked={SiteCompositionSettings ? SiteCompositionSettings[0]?.Manual : false}
@@ -852,36 +1063,78 @@ const SiteCompositionComponent = (Props: any) => {
                 <span className="SpfxCheckRadio">
                     <input
                         type="radio"
+                        id="Proportional"
+                        defaultChecked={SiteCompositionSettings ? SiteCompositionSettings[0]?.Proportional : false}
+                        onChange={() => ChangeSiteCompositionSettings("Proportional")}
+                        name="SiteCompositions"
+                        value={SiteCompositionSettings ? SiteCompositionSettings[0]?.Proportional : false}
+                        title="add Proportional Time"
+                        className="radio"
+                    />
+                    Proportional
+                </span>
+
+
+                <label className="SpfxCheckRadio me-2">
+                    <input
+                        type="radio"
+                        id="Delux"
+                        name="SiteCompositions"
+                        defaultChecked={SiteCompositionSettings ? SiteCompositionSettings[0]?.Delux : false}
+                        title="add Delux Time"
+                        className="radio"
+                        value={SiteCompositionSettings ? SiteCompositionSettings[0]?.Delux : false}
+                        onChange={() => ChangeSiteCompositionSettings("Delux")}
+                    />
+                    Deluxe</label>
+                <label className="SpfxCheckRadio">
+                    <input
+                        type="radio"
+                        id="Standard"
+                        defaultChecked={SiteCompositionSettings ? SiteCompositionSettings[0].Standard : false}
+                        onChange={() => ChangeSiteCompositionSettings("Standard")}
+                        name="SiteCompositions"
+                        value={SiteCompositionSettings ? SiteCompositionSettings[0].Standard : false}
+                        title="add Standard Time"
+                        className="radio"
+                    />
+                    Standard</label>
+                {/* <span className="SpfxCheckRadio">
+                    <input
+                        type="radio"
                         id="Portfolio"
                         name="SiteCompositions"
                         defaultChecked={SiteCompositionSettings ? SiteCompositionSettings[0]?.Portfolio : false}
                         title="Portfolio"
                         value={SiteCompositionSettings ? SiteCompositionSettings[0]?.Portfolio : false}
-                        onChange={() => ChangeSiteCompositionSettings("Portfolio")}
+                        // onChange={() => ChangeSiteCompositionSettings("Portfolio")}
+                        onChange={() => alert("We are working on it. This feature will be live soon..")}
                         className="radio" />
                     <label>
                         Portfolio
                     </label>
                 </span>
-                <span className="alignIcon"><span className="svg__iconbox svg__icon--editBox" onClick={openEditComponentPanelFunction} title="Click here to edit tagged portfolio site composition."></span></span>
+                <span className="alignIcon"><span className="svg__iconbox svg__icon--editBox" onClick={openEditComponentPanelFunction} title="Click here to edit tagged portfolio site composition."></span></span> */}
                 <span className="alignCenter justify-content-center pull-right">
                     <input type="checkbox" className="form-check-input mx-1"
-                        defaultChecked={SiteCompositionSettings ? SiteCompositionSettings[0]?.localSiteComposition : false}
-                        onChange={() => ChangeSiteCompositionSettings("Overridden")}
+                        defaultChecked={SiteCompositionSettings ? SiteCompositionSettings[0]?.Protected : false}
+                        onChange={() => ChangeSiteCompositionSettings("Protected")}
                     />
                     <label className="alignCenter">
-                        Overridden
-                        <span className="hover-text alignIcon">
+                        Protected
+                        {/* <span className="hover-text alignIcon">
                             <span className="svg__iconbox svg__icon--info dark"></span>
                             <span className="tooltip-text pop-left">
                                 If this is checked then it should consider site allocations in Time Entry from Task otherwise from tagged component.
                             </span>
-                        </span>
+                        </span> */}
                     </label>
                 </span>
             </div>
             <div className="my-2">
-                <table className="table table-bordered mb-1">
+                <table
+                    className={"table table-bordered mb-1"}
+                >
                     {SiteTypes != undefined && SiteTypes.length > 0 ?
                         <tbody>
                             {SiteTypes?.map((siteData: any, index: any) => {
@@ -892,9 +1145,14 @@ const SiteCompositionComponent = (Props: any) => {
                                     }
                                     return (
                                         <tr
-                                            className={siteData?.StartEndDateValidation ? "Disabled-Link bg-th" : 'hreflink border-1'}
+                                            // className={siteData?.StartEndDateValidation ? "Disabled-Link bg-th" : 'hreflink border-1'}
+                                            className="hreflink border-1"
                                         >
-                                            <th scope="row" style={{ width: "3%" }}>
+                                            <th
+                                                scope="row"
+                                                className={IsProtectedSiteComposition == true ? "Disabled-Link opacity-75 m-0 p-1 align-middle" : "m-0 p-1 align-middle"}
+                                                style={{ width: "3%" }}
+                                            >
                                                 <div className="m-0 p-1 align-middle">
                                                     {checkBoxStatus ? <input
                                                         className="form-check-input" type="checkbox"
@@ -911,16 +1169,22 @@ const SiteCompositionComponent = (Props: any) => {
                                                     />}
                                                 </div>
                                             </th>
-                                            <td className="m-0 p-1 align-middle" style={{ width: "30%" }}>
+                                            <td
+                                                className={IsProtectedSiteComposition == true ? "Disabled-Link m-0 p-1 align-middle opacity-75" : "m-0 p-1 align-middle"}
+                                                // className="m-0 p-1 align-middle" 
+                                                style={{ width: "30%" }}>
                                                 <div className="alignCenter">
                                                     <img src={siteData.Item_x005F_x0020_Cover ? siteData.Item_x005F_x0020_Cover.Url : ""} style={{ width: '25px' }} className="mx-2" />
                                                     {siteData.Title}
                                                 </div>
                                             </td>
-                                            <td style={{ width: "12%" }}>
+                                            <td
+                                                style={{ width: "12%" }}
+                                                className={IsProtectedSiteComposition == true ? "Disabled-Link opacity-75 m-0 p-1 align-middle" : "m-0 p-1 align-middle"}
+                                            >
                                                 <div className="alignCenter">
                                                     {ProportionalStatus ?
-                                                        <>{isPortfolioComposition ? <input
+                                                        <>{isPortfolioComposition && siteData.BtnStatus ? <input
                                                             type="number" min="1" max='100'
                                                             value={siteData.ClienTimeDescription ? Number(siteData.ClienTimeDescription).toFixed(2) : null}
                                                             className="form-control p-1" readOnly={true} style={{ cursor: "not-allowed" }}
@@ -937,7 +1201,7 @@ const SiteCompositionComponent = (Props: any) => {
                                                                 defaultValue={siteData.ClienTimeDescription ? Number(siteData.ClienTimeDescription).toFixed(2) : null}
                                                                 className="form-control p-1" style={{ width: "100%" }}
                                                                 onChange={(e) => ChangeTimeManuallyFunction(e, siteData.Title)}
-                                                            /> : <input type="number" readOnly={true} style={{ cursor: "not-allowed", width: "100%" }}
+                                                            /> : <input type="number" className="form-control" value={''} readOnly={true} style={{ cursor: "not-allowed", width: "100%" }}
                                                             />}</>
                                                     }
                                                 </div>
@@ -1220,7 +1484,7 @@ const SiteCompositionComponent = (Props: any) => {
                         </tbody>
                         : null}
                 </table>
-               
+
                 <footer className="bg-e9 alignCenter justify-content-between p-1">
                     <div className="col-sm-6">
                         <a className="hreflink ms-2" target="_blank" data-interception="off" href={`${siteUrls}/Lists/${currentListName}/EditForm.aspx?ID=${ItemId}&?#ClientTime`}>

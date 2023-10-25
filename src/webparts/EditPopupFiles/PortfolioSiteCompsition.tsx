@@ -2,7 +2,6 @@ import * as React from "react";
 import { useState, useEffect } from 'react';
 import { Panel, PanelType } from 'office-ui-fabric-react';
 import { ImPriceTags } from 'react-icons/im';
-import { SlCalender } from 'react-icons/sl'
 import Tooltip from "../../globalComponents/Tooltip";
 import { Web } from "sp-pnp-js";
 import * as Moment from 'moment';
@@ -80,7 +79,7 @@ const SiteCompositionComponent = (Props: any) => {
     const StandardComposition =
         [
             {
-                ClienTimeDescription: "40",
+                ClienTimeDescription: "60",
                 Title: "EI",
                 localSiteComposition: true,
                 SiteImages: "https://hhhhteams.sharepoint.com/sites/HHHH/SiteCollectionImages/ICONS/Shareweb/site_ei.png",
@@ -94,14 +93,14 @@ const SiteCompositionComponent = (Props: any) => {
                 Date: Moment(new Date()).tz("Europe/Berlin").format("DD/MM/YYYY")
             },
             {
-                ClienTimeDescription: "15",
+                ClienTimeDescription: "5",
                 Title: "Migration",
                 localSiteComposition: true,
                 SiteImages: "https://hhhhteams.sharepoint.com/sites/HHHH/SiteCollectionImages/ICONS/Shareweb/site_migration.png",
                 Date: Moment(new Date()).tz("Europe/Berlin").format("DD/MM/YYYY")
             },
             {
-                ClienTimeDescription: "15",
+                ClienTimeDescription: "5",
                 Title: "Education",
                 localSiteComposition: true,
                 SiteImages: "https://hhhhteams.sharepoint.com/sites/HHHH/SiteCollectionImages/ICONS/Shareweb/site_education.png",
@@ -133,7 +132,8 @@ const SiteCompositionComponent = (Props: any) => {
 
     useEffect(() => {
         ClientTimeDataBackup = Props.ClientTime != undefined ? JSON.parse(JSON.stringify(Props.ClientTime)) : [];
-        setSiteTypes(SiteData);
+        const ShortedData = getSmartMetadataItemsByTaxType(SiteData, 'Sites');
+        setSiteTypes(ShortedData);
         let tempData: any = [];
         let tempData2: any = [];
         BackupSiteTypeData = []
@@ -208,11 +208,41 @@ const SiteCompositionComponent = (Props: any) => {
                     setProportionalStatus(false);
                 }
             }
+            // if (SiteCompositionSettings[0].Protected) {
+            //     setIsSCProtected(true);
+            // }
         }
         getChildDataForSelectedTask()
-    }, [SelectedClientCategoryFromProps])
+    }, [SiteCompositionSettings])
 
+    const getSmartMetadataItemsByTaxType = function (metadataItems: any, taxType: any) {
+        let Items: any = [];
+        metadataItems.map((taxItem: any) => {
+            if (taxItem.TaxType === taxType)
+                Items.push(taxItem);
+        });
+        Items.sort((a: any, b: any) => {
+            return a.SortOrder - b.SortOrder;
+        });
+        return Items;
+    }
 
+    const makeAllGlobalVariableAsDefault = () => {
+        AutoCompleteItemsArray = [];
+        SelectedClientCategoryBackupArray = [];
+        BackupSiteTypeData = [];
+        SiteTaggingFinalData = [];
+        SiteSettingsFinalData = [];
+        SiteClientCatgeoryFinalData = [];
+        SelectedClieantCategoryGlobal = [];
+        ClientCategoryPopupSiteNameGlobal = '';
+        FinalAllDataList = [];
+        MasterTaskListData = [];
+        SiteTaskListData = [];
+        MasterTaskListId = '';
+        SelectedFromTable = [];
+        ClientTimeDataBackup = [];
+    }
 
 
     const selectSiteCompositionFunction = (e: any, Index: any) => {
@@ -220,8 +250,10 @@ const SiteCompositionComponent = (Props: any) => {
         if (SiteTypes != undefined && SiteTypes.length > 0) {
             SiteTypes.map((DataItem: any, DataIndex: any) => {
                 if (DataIndex == Index) {
+
                     if (DataItem.BtnStatus) {
                         DataItem.BtnStatus = false
+                        DataItem.ClienTimeDescription = 0;
                         setSelectedSiteCount(selectedSiteCount - 1);
                         let TempArray: any = [];
                         if (ClientTimeData != undefined && ClientTimeData.length > 0) {
@@ -232,10 +264,18 @@ const SiteCompositionComponent = (Props: any) => {
                             })
                         }
                         let tempDataForRemove: any = [];
-                        TempArray?.map((dataItem: any) => {
-                            dataItem.ClienTimeDescription = (100 / (selectedSiteCount - 1)).toFixed(1);
-                            tempDataForRemove.push(dataItem);
-                        })
+                        if (ProportionalStatus) {
+                            TempArray?.map((dataItem: any) => {
+                                dataItem.ClienTimeDescription = (100 / (selectedSiteCount - 1)).toFixed(1);
+                                tempDataForRemove.push(dataItem);
+                            })
+                        }
+                        // else {
+                        //     TempArray?.map((dataItem: any) => {
+                        //         dataItem.ClienTimeDescription = 0;
+                        //         tempDataForRemove.push(dataItem);
+                        //     })
+                        // }
                         setClientTimeData(tempDataForRemove);
                         SiteCompositionObject.ClientTime = tempDataForRemove;
                         SiteCompositionObject.selectedClientCategory = SelectedClientCategoryBackupArray;
@@ -248,30 +288,35 @@ const SiteCompositionComponent = (Props: any) => {
                         }
 
                     } else {
-                        DataItem.BtnStatus = true
-                        DataItem.Date = Moment(new Date()).tz("Europe/Berlin").format("DD/MM/YYYY")
-                        DataItem.readOnly = true
-                        setSelectedSiteCount(selectedSiteCount + 1);
-                        const object = {
-                            Title: DataItem.Title,
-                            ClienTimeDescription: (100 / (selectedSiteCount + 1)).toFixed(1),
-                            localSiteComposition: true,
-                            SiteImages: DataItem.Item_x005F_x0020_Cover?.Url,
-                            Date: DataItem.Date
+                        if (DataItem.StartEndDateValidation) {
+                            alert("This site has an end date so you cannot add it to Site Composition.")
+                        } else {
+                            DataItem.BtnStatus = true
+                            DataItem.Date = Moment(new Date()).tz("Europe/Berlin").format("DD/MM/YYYY")
+                            DataItem.readOnly = true
+                            setSelectedSiteCount(selectedSiteCount + 1);
+                            const object = {
+                                Title: DataItem.Title,
+                                ClienTimeDescription: (100 / (selectedSiteCount + 1)).toFixed(1),
+                                localSiteComposition: true,
+                                SiteImages: DataItem.Item_x005F_x0020_Cover?.Url,
+                                Date: DataItem.Date
+                            }
+                            ClientTimeData.push(object);
+                            let tempData: any = [];
+                            ClientTimeData?.map((TimeData: any) => {
+                                TimeData.ClienTimeDescription = (100 / (selectedSiteCount + 1)).toFixed(1);
+                                tempData.push(TimeData);
+                            })
+                            setClientTimeData(tempData);
+                            SiteTaggingFinalData = tempData;
+                            SiteCompositionObject.ClientTime = tempData;
+                            SiteCompositionObject.selectedClientCategory = SelectedClientCategoryBackupArray;
+                            SiteCompositionObject.SiteCompositionSettings = SiteCompositionSettings;
+                            // callBack(SiteCompositionObject, "dataExits");
+                            // callBack(SiteCompositionObject);
+
                         }
-                        ClientTimeData.push(object);
-                        let tempData: any = [];
-                        ClientTimeData?.map((TimeData: any) => {
-                            TimeData.ClienTimeDescription = (100 / (selectedSiteCount + 1)).toFixed(1);
-                            tempData.push(TimeData);
-                        })
-                        setClientTimeData(tempData);
-                        SiteTaggingFinalData = tempData;
-                        SiteCompositionObject.ClientTime = tempData;
-                        SiteCompositionObject.selectedClientCategory = SelectedClientCategoryBackupArray;
-                        SiteCompositionObject.SiteCompositionSettings = SiteCompositionSettings;
-                        // callBack(SiteCompositionObject, "dataExits");
-                        // callBack(SiteCompositionObject);
                     }
                 }
                 TempArray.push(DataItem)
@@ -280,6 +325,7 @@ const SiteCompositionComponent = (Props: any) => {
         setSiteTypes(TempArray);
     }
     // ########### this is used for changing the Client Time Descriptions of slected Site Composition ######################
+
     const ChangeTimeManuallyFunction = (e: any, SiteName: any) => {
         let TempArray: any = [];
         if (SiteTypes != undefined && SiteTypes) {
@@ -386,7 +432,12 @@ const SiteCompositionComponent = (Props: any) => {
             // CallBack(SiteCompositionObject, "dataExits");
             setIsPortfolioComposition(false);
             setCheckBoxStatus(false);
-            setIsSCProtected(false);
+            // if (IsSCProtected) {
+            //     setIsSCProtected(true);
+            // } else {
+            //     setIsSCProtected(false);
+            // }
+
             refreshSiteCompositionConfigurations();
             ChangeSiteCompositionInstant("Proportional");
         }
@@ -401,17 +452,33 @@ const SiteCompositionComponent = (Props: any) => {
             setCheckBoxStatus(false);
             setIsSCProtected(false);
             SiteTaggingFinalData = ClientTimeDataBackup;
+            if (ClientTimeDataBackup?.length > 0) {
+                setSelectedSiteCount(ClientTimeDataBackup?.length > 0 ? ClientTimeDataBackup?.length : 0);
+            } else {
+                setSelectedSiteCount(ClientTimeData?.length > 0 ? ClientTimeData?.length : 0);
+            }
+
             refreshSiteCompositionConfigurations();
             ChangeSiteCompositionInstant("Manual");
+            // if (IsSCProtected) {
+            //     setIsSCProtected(true);
+            // } else {
+            //     setIsSCProtected(false);
+            // }
         }
 
         if (Type == "Protected") {
             if (SiteCompositionSettings[0]?.Protected == true) {
-                SiteCompositionSettings[0].Protected = false;
-                setIsSCProtected(false);
+                if (SiteCompositionSettings[0].Delux == true || SiteCompositionSettings[0].Standard == true) {
+                    // setIsSCProtected(true);
+                } else {
+                    SiteCompositionSettings[0].Protected = false;
+                    // setIsSCProtected(false);
+                }
+
             } else {
                 SiteCompositionSettings[0].Protected = true;
-                SiteTaggingFinalData = ClientTimeData;
+                // SiteTaggingFinalData = ClientTimeData;
                 setIsSCProtected(true);
             }
         }
@@ -535,15 +602,28 @@ const SiteCompositionComponent = (Props: any) => {
         }
         if (UsedFor == "Manual") {
             SiteTypes?.map((SiteData: any) => {
-                ClientTimeDataBackup?.map((STItems: any) => {
-                    if (SiteData.Title == STItems.Title || (SiteData.Title ==
-                        "DA E+E" && STItems.Title == "ALAKDigital")) {
-                        SiteData.ClienTimeDescription = STItems.ClienTimeDescription;
-                        SiteData.BtnStatus = true;
-                        SiteData.Date = STItems.Date;
-                    }
-                })
-                TempSiteCompsotion.push(SiteData)
+                if (ClientTimeDataBackup?.length > 0) {
+                    ClientTimeDataBackup?.map((STItems: any) => {
+                        if (SiteData.Title == STItems.Title || (SiteData.Title ==
+                            "DA E+E" && STItems.Title == "ALAKDigital")) {
+                            SiteData.ClienTimeDescription = STItems.ClienTimeDescription;
+                            SiteData.BtnStatus = true;
+                            SiteData.Date = STItems.Date;
+                        }
+                    })
+                    TempSiteCompsotion.push(SiteData)
+                } else {
+                    ClientTimeData?.map((STItems: any) => {
+                        if (SiteData.Title == STItems.Title || (SiteData.Title ==
+                            "DA E+E" && STItems.Title == "ALAKDigital")) {
+                            SiteData.ClienTimeDescription = STItems.ClienTimeDescription;
+                            SiteData.BtnStatus = true;
+                            SiteData.Date = STItems.Date;
+                        }
+                    })
+                    TempSiteCompsotion.push(SiteData)
+                }
+
             })
         }
         setSiteTypes([...TempSiteCompsotion]);
@@ -786,10 +866,6 @@ const SiteCompositionComponent = (Props: any) => {
     }
 
     const UpdateSiteTaggingAndClientCategory = async () => {
-        if (ComponentChildExist) {
-            setComponentChildrenPopupStatus(true);
-        }
-
         let SitesTaggingData: any = [];
         let ClientCategoryIDs: any = [];
         let ClientCategoryData: any = [];
@@ -867,6 +943,9 @@ const SiteCompositionComponent = (Props: any) => {
             }
         }
         if (TaskShuoldBeUpdate) {
+            if (ComponentChildExist) {
+                setComponentChildrenPopupStatus(true);
+            }
             let UpdateSiteInSMD: any = [];
             if (SiteTypes?.length > 0) {
                 SiteTypes.map((siteData: any) => {
@@ -890,7 +969,9 @@ const SiteCompositionComponent = (Props: any) => {
                 }).then(() => {
                     console.log("Site Composition Updated !!!");
                     if (!ComponentChildExist) {
-                        Props.closePopupCallBack();
+                        // Props.closePopupCallBack();
+                        closeComponentChildrenPopup();
+                        callBack(SiteCompositionObject, "dataExits");
                     }
                 })
             } catch (error) {
@@ -943,7 +1024,11 @@ const SiteCompositionComponent = (Props: any) => {
     // ************************ this is for the auto Suggestion fuction for all Client Category ******************
     const closeComponentChildrenPopup = () => {
         setComponentChildrenPopupStatus(false);
-        Props.closePopupCallBack();
+        setTimeout(() => {
+            Props.closePopupCallBack();
+            callBack(SiteCompositionObject, "dataExits");
+            makeAllGlobalVariableAsDefault();
+        }, 2000);
     }
 
     const autoSuggestionsForClientCategoryIdividual = (e: any, siteType: any, SiteId: any) => {
@@ -975,12 +1060,7 @@ const SiteCompositionComponent = (Props: any) => {
 
     // ******************* this is used for Childern Table section functions ****************
     const getChildDataForSelectedTask = async () => {
-        let countFirst = 0;
-        let countSecond = 0;
-        let countThird = 0;
         let GroupByData: any = [];
-        let ChildData: any = []
-        let ParentChild: any = [];
         let PropsObject: any = {
             MasterTaskListID: AllListIdData.MasterTaskListID,
             siteUrl: AllListIdData.siteUrl,
@@ -992,19 +1072,26 @@ const SiteCompositionComponent = (Props: any) => {
             GroupByData = CallBackData.GroupByData
         }
         if (GroupByData?.length > 0) {
-            GroupByData.map((dataItem: any) => {
-                if (dataItem.Id == ItemId) {
-                    ChildData.push(dataItem);
-                    countFirst++;
-                    if (dataItem.subRows?.length > 0) {
-                        setComponentChildExist(true);
-                    }
-                }
-
-            })
+            recursiveLog(GroupByData, ItemId);
         }
-
     }
+
+    function recursiveLog(data: any, itemId: any) {
+        data.forEach((dataItem: any) => {
+            if (dataItem.Id === itemId) {
+                console.log(`Item with ID ${itemId} found.`, dataItem);
+                if (dataItem.subRows?.length > 0) {
+                    setComponentChildExist(true);
+                }
+            }
+            if (dataItem.subRows?.length > 0) {
+                recursiveLog(dataItem.subRows, itemId);
+            }
+        });
+    }
+
+
+
 
     //    ************* this is Custom Header For Client Category Popup *****************
     const onRenderCustomClientCategoryHeader = () => {
@@ -1026,37 +1113,41 @@ const SiteCompositionComponent = (Props: any) => {
 
 
     const SaveClientCategoryFunction = () => {
-        let AllChildData: any = [];
         if (SelectedFromTable?.length > 0) {
-            SelectedFromTable?.map((itemData: any) => {
-                AllChildData.push(itemData.original)
-            })
-        }
-        let MasterTaskTempArray: any = []
-        let SiteTaskTempArray: any = []
-        if (AllChildData?.length > 0) {
-            if (AllChildData?.length > 0) {
-                AllChildData?.map((finalItems: any) => {
-                    if (finalItems.Item_x0020_Type == "SubComponent" || finalItems.Item_x0020_Type == "Feature" || finalItems.Item_x0020_Type == "Component") {
-                        finalItems.listId = AllListIdData.MasterTaskListID;
-                        MasterTaskTempArray.push(finalItems);
-                    }
-                    if (finalItems.TaskType?.Title == "Task" || finalItems.TaskType?.Title == "Activities" || finalItems.TaskType?.Title == "Workstream") {
-                        SiteTaskTempArray.push(finalItems);
-                    }
+            let AllChildData: any = [];
+            if (SelectedFromTable?.length > 0) {
+                SelectedFromTable?.map((itemData: any) => {
+                    AllChildData.push(itemData.original)
                 })
             }
-            if (MasterTaskTempArray?.length > 0) {
-                MasterTaskListData = MasterTaskTempArray;
+            let MasterTaskTempArray: any = []
+            let SiteTaskTempArray: any = []
+            if (AllChildData?.length > 0) {
+                if (AllChildData?.length > 0) {
+                    AllChildData?.map((finalItems: any) => {
+                        if (finalItems.Item_x0020_Type == "SubComponent" || finalItems.Item_x0020_Type == "Feature" || finalItems.Item_x0020_Type == "Component") {
+                            finalItems.listId = AllListIdData.MasterTaskListID;
+                            MasterTaskTempArray.push(finalItems);
+                        }
+                        if (finalItems.TaskType?.Title == "Task" || finalItems.TaskType?.Title == "Activities" || finalItems.TaskType?.Title == "Workstream") {
+                            SiteTaskTempArray.push(finalItems);
+                        }
+                    })
+                }
+                if (MasterTaskTempArray?.length > 0) {
+                    MasterTaskListData = MasterTaskTempArray;
+                }
+                if (SiteTaskTempArray?.length > 0) {
+                    SiteTaskListData = SiteTaskTempArray;
+                }
             }
-            if (SiteTaskTempArray?.length > 0) {
-                SiteTaskListData = SiteTaskTempArray;
+            if (MasterTaskListData?.length > 0) {
+                CommonFunctionForUpdateCC(MasterTaskListData, SiteTaskListData)
             }
+        } else {
+            closeComponentChildrenPopup();
+            // Props.closePopupCallBack();
         }
-        if (MasterTaskListData?.length > 0) {
-            CommonFunctionForUpdateCC(MasterTaskListData, SiteTaskListData)
-        }
-
     }
 
     const CommonFunctionForUpdateCC = (AllTaskListData: any, SiteTaskListData: any) => {
@@ -1065,7 +1156,6 @@ const SiteCompositionComponent = (Props: any) => {
             AllTaskListData?.map(async (ItemData: any) => {
                 let TempArray: any = [];
                 let ClientCategoryIds: any = [];
-
                 if (ItemData.ClientCategory?.length > 0) {
                     ItemData.ClientCategory?.map((CCItems: any) => {
                         TempArray.push(CCItems.Id);
@@ -1074,7 +1164,9 @@ const SiteCompositionComponent = (Props: any) => {
                 ClientCategoryIds = TempArray.filter((val: any, id: any, array: any) => {
                     return array.indexOf(val) == id;
                 })
-                UpdateOnBackendSide(web, ItemData.listId, ClientCategoryIds, ItemData.Id, "MasterTask");
+                if (ItemData.IsSCProtected == false || ItemData.IsSCProtected == undefined || ItemData.IsSCProtected == null) {
+                    UpdateOnBackendSide(web, ItemData.listId, ClientCategoryIds, ItemData.Id, "MasterTask", "");
+                }
             })
         }
         if (SiteTaskListData?.length > 0) {
@@ -1090,17 +1182,21 @@ const SiteCompositionComponent = (Props: any) => {
                 ClientCategoryIds = TempArray.filter((val: any, id: any, array: any) => {
                     return array.indexOf(val) == id;
                 })
-                UpdateOnBackendSide(web, ItemData.listId, ClientCategoryIds, ItemData.Id, "SiteTasks");
+                if (ItemData.IsSCProtected == false || ItemData.IsSCProtected == undefined || ItemData.IsSCProtected == null) {
+                    UpdateOnBackendSide(web, ItemData.listId, ClientCategoryIds, ItemData.Id, "SiteTasks", ItemData.siteType);
+                }
             })
         }
         closeComponentChildrenPopup();
-        Props.closePopupCallBack();
+        // Props.closePopupCallBack();
     }
 
-    const UpdateOnBackendSide = async (siteUrl: any, ListId: any, ClientCategoryIds: any, ItemId: any, TaskType: any) => {
+    const UpdateOnBackendSide = async (siteUrl: any, ListId: any, ClientCategoryIds: any, ItemId: any, TaskType: any, siteType: any) => {
         let finalSiteCompositionJSON: any = [];
         let finalClientCategoryData: any = [];
         let finalSiteCompositionSettingData: any = [];
+        let SiteClientCategories: any = [];
+
         if (SiteTaggingFinalData?.length > 0) {
             finalSiteCompositionJSON = SiteTaggingFinalData
         } else {
@@ -1116,25 +1212,43 @@ const SiteCompositionComponent = (Props: any) => {
         } else {
             finalSiteCompositionSettingData = SiteCompositionSettings;
         }
+        if (siteType?.length > 1 && siteType != 'Shareweb') {
+            finalSiteCompositionSettingData = [{ Proportional: false, Manual: true, Protected: false, Delux: false, Standard: false }]
+        }
         let SiteCompositionDataForTask: any = [];
         if (TaskType == "SiteTasks") {
-            finalSiteCompositionJSON?.map((SCData: any) => {
+            if (siteType == "Shareweb") {
+                finalSiteCompositionJSON?.map((SCData: any) => {
+                    let SCObject: any = {
+                        SiteName: SCData.Title,
+                        ClienTimeDescription: SCData.ClienTimeDescription,
+                        siteIcons: SCData.SiteImages,
+                        localSiteComposition: true
+                    }
+                    SiteCompositionDataForTask.push(SCObject);
+                })
+            } else {
                 let SCObject: any = {
-                    SiteName: SCData.Title,
-                    ClienTimeDescription: SCData.ClienTimeDescription,
-                    siteIcons: SCData.SiteImages,
+                    SiteName: siteType,
+                    ClienTimeDescription: "100",
                     localSiteComposition: true
                 }
                 SiteCompositionDataForTask.push(SCObject);
-            })
+            }
         }
 
         let TempArray: any = [];
         let TempClientCategoryIds: any = [];
 
         if (finalClientCategoryData?.length > 0) {
+            let count: any = 0;
             finalClientCategoryData?.map((CCItems: any) => {
-                TempArray.push(CCItems.Id);
+                if (CCItems.siteName == siteType) {
+                    count++;
+                    TempArray.push(CCItems.Id);
+                } else if (count == 0) {
+                    TempArray.push(CCItems.Id);
+                }
             })
         }
         TempClientCategoryIds = TempArray.filter((val: any, id: any, array: any) => {
@@ -1275,7 +1389,7 @@ const SiteCompositionComponent = (Props: any) => {
                         value={SiteCompositionSettings ? SiteCompositionSettings[0]?.Delux : false}
                         onChange={() => ChangeSiteCompositionSettings("Delux")}
                     />
-                    Delux</label>
+                    Deluxe</label>
                 <label className="SpfxCheckRadio">
                     <input
                         type="radio"
@@ -1308,7 +1422,9 @@ const SiteCompositionComponent = (Props: any) => {
                 </span>
             </div>
             <div className="my-2 ">
-                <table className={IsSCProtected == true ? "Disabled-Link table table-bordered mb-1 opacity-75" : "table table-bordered mb-1"}>
+                <table
+                    className="table table-bordered mb-1"
+                >
                     {SiteTypes != undefined && SiteTypes.length > 0 ?
                         <tbody>
                             {SiteTypes?.map((siteData: any, index: any) => {
@@ -1319,9 +1435,15 @@ const SiteCompositionComponent = (Props: any) => {
                                     }
                                     return (
                                         <tr
-                                            className={siteData?.StartEndDateValidation ? "Disabled-Link border-1 bg-th" : 'hreflink border-1'}
+                                            // className={siteData?.StartEndDateValidation ? "Disabled-Link border-1 bg-th" : 'hreflink border-1'}
+                                            className={'hreflink border-1'}
                                         >
-                                            <td scope="row" className="m-0 p-1 align-middle" style={{ width: "3%" }}>
+                                            <td
+                                                scope="row"
+                                                className={IsSCProtected == true ? "Disabled-Link m-0 p-1 align-middle opacity-75" : "m-0 p-1 align-middle"}
+                                                // className="m-0 p-1 align-middle"
+                                                style={{ width: "3%" }}
+                                            >
                                                 {checkBoxStatus ? <input
                                                     className="form-check-input rounded-0 hreflink" type="checkbox"
                                                     checked={siteData.BtnStatus}
@@ -1341,7 +1463,11 @@ const SiteCompositionComponent = (Props: any) => {
                                                 <img src={siteData.Item_x005F_x0020_Cover ? siteData.Item_x005F_x0020_Cover.Url : ""} style={{ width: '25px' }} className="mx-2" />
                                                 {siteData.Title}
                                             </td>
-                                            <td className="m-0 p-1" style={{ width: "10%" }}>
+                                            <td
+                                                // className="m-0 p-1"
+                                                className={IsSCProtected == true ? "Disabled-Link m-0 p-1 opacity-75" : "m-0 p-1"}
+                                                style={{ width: "10%" }}
+                                            >
                                                 {ProportionalStatus ?
                                                     <>{isPortfolioComposition && siteData.BtnStatus ? <input
                                                         type="number" min="1"
@@ -1367,11 +1493,15 @@ const SiteCompositionComponent = (Props: any) => {
                                             <td className="m-0 p-1 align-middle" style={{ width: "3%" }}>
                                                 <span>{siteData.BtnStatus ? "%" : ''}</span>
                                             </td>
-                                            <td className="m-0 p-1 align-middle" style={checkBoxStatus ? { width: "35%", cursor: "not-allowed", pointerEvents: "none" } : { width: "35%" }}>
+                                            {/* <td
+                                                sclassName="m-0 p-1 align-middle"
+                                                className={IsSCProtected == true ? "Disabled-Link m-0 p-1 align-middle opacity-75" : "m-0 p-1 align-middle"}
+
+                                                style={checkBoxStatus ? { width: "35%", cursor: "not-allowed", pointerEvents: "none" } : { width: "35%" }}>
                                                 <div>
                                                     {siteData?.StartEndDateValidation ?
                                                         <div>
-                                                            {/* <span>{`${siteData?.ConfigurationsData[0]?.StartDate?.length > 3 ? siteData?.ConfigurationsData[0]?.StartDate : "NA"} To ${siteData?.ConfigurationsData[0]?.EndDate?.length > 3 ? siteData?.ConfigurationsData[0]?.EndDate : "NA"}`}</span> */}
+                                                            s<span>{`${siteData?.ConfigurationsData[0]?.StartDate?.length > 3 ? siteData?.ConfigurationsData[0]?.StartDate : "NA"} To ${siteData?.ConfigurationsData[0]?.EndDate?.length > 3 ? siteData?.ConfigurationsData[0]?.EndDate : "NA"}`}</span>
                                                             <span>Start Date - {siteData?.ConfigurationsData[0]?.StartDate?.length > 3 ? siteData?.ConfigurationsData[0]?.StartDate : "NA"}</span>
                                                             <span className="mx-1"></span>
                                                             <span>End Date - {siteData?.ConfigurationsData[0]?.EndDate?.length > 3 ? siteData?.ConfigurationsData[0]?.EndDate : "NA"}</span>
@@ -1380,7 +1510,7 @@ const SiteCompositionComponent = (Props: any) => {
                                                             {
                                                                 siteData.BtnStatus ?
                                                                     <div className="d-flex">
-                                                                        {/* <span>{`${siteData.Date?.length > 3 ? siteData.Date : "NA"} ${siteData.EndDate?.length > 3 ? siteData.EndDate : "NA"}`}</span> */}
+                                                                        s<span>{`${siteData.Date?.length > 3 ? siteData.Date : "NA"} ${siteData.EndDate?.length > 3 ? siteData.EndDate : "NA"}`}</span>
                                                                         <span className="mt-1">
                                                                             <span>Start Date - {siteData.Date?.length > 3 ? siteData.Date : "NA"}</span>
                                                                             <span className="mx-1"></span>
@@ -1400,8 +1530,7 @@ const SiteCompositionComponent = (Props: any) => {
 
                                                     }
                                                 </div>
-
-                                            </td>
+                                            </td> */}
                                             <td className="m-0 p-1 align-middle" style={{ width: "35%" }}>
                                                 {siteData.Title == "EI" ?
                                                     <>
@@ -1617,8 +1746,6 @@ const SiteCompositionComponent = (Props: any) => {
                                                                     }
                                                                 </>
                                                             }
-
-
                                                         </div>
                                                         {SearchedClientCategoryDataForInput?.length > 0 && ClientCategoryPopupSiteName == "Education" ? (
                                                             <div className="SearchTableClientCategoryComponent">
@@ -1632,7 +1759,8 @@ const SiteCompositionComponent = (Props: any) => {
                                                                     }
                                                                     )}
                                                                 </ul>
-                                                            </div>) : null}
+                                                            </div>) :
+                                                            null}
                                                     </>
                                                     : null}
                                                 {siteData.Title == "Migration" ?
@@ -1916,7 +2044,7 @@ const SiteCompositionComponent = (Props: any) => {
                     onDismiss={closeComponentChildrenPopup}
                     isBlocking={false}
                     type={PanelType.custom}
-                    customWidth="950px"
+                    customWidth="1100px"
                     onRenderFooter={onRenderFooterComponentChildren}
                 >
                     <div className={ServicesTaskCheck ? "serviepannelgreena SelectProjectTable " : 'SelectProjectTable '}>

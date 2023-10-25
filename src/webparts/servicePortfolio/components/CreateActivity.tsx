@@ -494,6 +494,11 @@ const CreateActivity = (props: any) => {
                     if (selectedItem?.Sitestagging != undefined) {
                         if (typeof selectedItem?.Sitestagging == "object") {
                             if (site?.Title?.toLowerCase() == "shareweb") {
+                                selectedItem?. Sitestagging((sitecomp:any)=>{
+                                    if(sitecomp.Title!=undefined && sitecomp.Title!=""&& sitecomp.SiteName==undefined){
+                                        sitecomp.SiteName=sitecomp.Title
+                                    }   
+                                })
                                 Sitestagging = JSON.stringify(selectedItem?.Sitestagging);
                             } else {
                                 var siteComp: any = {};
@@ -507,7 +512,14 @@ const CreateActivity = (props: any) => {
                             // clientTime = JSON.stringify(selectedItem?.ClientTime);
                         } else {
                             if (site?.Title?.toLowerCase() == "shareweb") {
-                                Sitestagging = selectedItem?.Sitestagging
+                                var sitetag=JSON.parse(selectedItem?.Sitestagging)
+                                sitetag?.map((sitecomp:any)=>{
+                                    if(sitecomp.Title!=undefined && sitecomp.Title!=""&& sitecomp.SiteName==undefined){
+                                        sitecomp.SiteName=sitecomp.Title
+                                    }
+                                   
+                                }) 
+                                 Sitestagging = JSON.stringify(sitetag)
                             } else {
                                 var siteComp: any = {};
                                 siteComp.SiteName = site?.Title,
@@ -530,7 +542,7 @@ const CreateActivity = (props: any) => {
                         .getById(site.listId)
                         .items.select("Id,Title,TaskType/Id,TaskType/Title,TaskLevel")
                         .expand("TaskType")
-                        .orderBy("Id", false)
+                        .orderBy("TaskLevel", false)
                         .filter("TaskType/Title eq 'Activities'")
                         .top(1)
                         .get();
@@ -603,13 +615,13 @@ const CreateActivity = (props: any) => {
                                         DisplayDueDate: moment(item.DueDate).format("DD/MM/YYYY"),
                                         Portfolio: selectedItem?.Portfolio,
                                         TaskID: TaskID,
+                                        siteUrl: site?.siteUrl?.Url,
+                                        siteType: site?.Title,
+                                        listId: site?.listId,
                                         FeedBack:
                                         FeedbackPost?.length > 0
                                             ? JSON.stringify(FeedbackPost)
                                             : null,
-                                        siteUrl: site?.siteUrl?.Url,
-                                        siteType: site?.Title,
-                                        listId: site?.listId,
                                         SiteIcon: site?.Item_x005F_x0020_Cover?.Url,
                                         ResponsibleTeam: TaskResponsibleTeam,
                                         TeamMembers: TaskTeamMembers,
@@ -711,6 +723,11 @@ const CreateActivity = (props: any) => {
                     if (selectedItem?.ClientTime != undefined) {
                         if (typeof selectedItem?.ClientTime == "object") {
                             if (site?.Title?.toLowerCase() == "shareweb") {
+                                selectedItem?.ClientTime?.map((sitecomp:any)=>{
+                                    if(sitecomp.Title!=undefined && sitecomp.Title!=""&& sitecomp.SiteName==undefined){
+                                        sitecomp.SiteName=sitecomp.Title
+                                    }
+                                })
                                 clientTime = JSON.stringify(selectedItem?.ClientTime);
                             } else {
                                 var siteComp: any = {};
@@ -722,9 +739,17 @@ const CreateActivity = (props: any) => {
                                 clientTime = JSON?.stringify([siteComp]);
                             }
                             // clientTime = JSON.stringify(selectedItem?.ClientTime);
-                        } else {
-                            if (site?.Title?.toLowerCase() == "shareweb") {
-                                clientTime = selectedItem?.ClientTime
+                        } 
+                          else {
+                           if (site?.Title?.toLowerCase() == "shareweb") {
+                            var sitetag=JSON.parse(selectedItem?.ClientTime)
+                            sitetag?.map((sitecomp:any)=>{
+                                if(sitecomp.Title!=undefined && sitecomp.Title!=""&& sitecomp.SiteName==undefined){
+                                    sitecomp.SiteName=sitecomp.Title
+                                }
+                            
+                            }) 
+                             clientTime = JSON.stringify(sitetag)
                             } else {
                                 var siteComp: any = {};
                                 siteComp.SiteName = site?.Title,
@@ -806,9 +831,9 @@ const CreateActivity = (props: any) => {
                                     SiteIcon: site?.Item_x005F_x0020_Cover?.Url,
                                     ResponsibleTeam: TaskResponsibleTeam,
                                     FeedBack:
-                                        FeedbackPost?.length > 0
-                                            ? JSON.stringify([FeedbackPost])
-                                            : null,
+                                    FeedbackPost?.length > 0
+                                        ? JSON.stringify(FeedbackPost)
+                                        : null,
                                     TeamMembers: TaskTeamMembers,
                                     TeamLeader: TaskResponsibleTeam,
                                     Author: {
@@ -821,7 +846,8 @@ const CreateActivity = (props: any) => {
                                     }
 
                                 }
-                                if (item?.FeedBack != undefined) {
+                             
+                                        if (item?.FeedBack != undefined) {
                                     let DiscriptionSearchData: any = '';
                                     let feedbackdata: any =JSON.parse(item?.FeedBack);
                                     DiscriptionSearchData = feedbackdata[0]?.FeedBackDescriptions?.map((child: any) => {
@@ -1049,17 +1075,13 @@ const CreateActivity = (props: any) => {
             <Panel
                 onRenderHeader={onRenderCustomHeaderMain}
                 type={PanelType.custom}
-                customWidth="1348px"
+                customWidth="1280px"
                 isOpen={true}
                 onDismiss={() => closePopup("item")}
                 isBlocking={false}
                 className={props?.props?.PortfolioType?.Color}
             >
                 <div className="modal-body active">
-
-                </div>
-
-                <div className="modal-footer">
                     {siteType?.length > 1 && selectedItem?.TaskType?.Title != "Workstream" ?
                         <div className='col mt-4'>
                             <h4 className="titleBorder ">Websites</h4>
@@ -1092,32 +1114,35 @@ const CreateActivity = (props: any) => {
                     <div className="row">
                         <div className="col-sm-10">
                             <div className="row">
-                                <div className="col-sm-10 mb-10 mt-2">
+                                <div className="col-sm-10 mb-10 mt-3">
                                     <div className='input-group'>
                                         <label className='full-width'>Task Name</label>
                                         <input type="text" placeholder='Enter task Name' className='form-control' value={TaskTitle} onChange={(e) => { changeTitle(e) }}></input>
                                     </div>
 
                                 </div>
-                                <div className="col-sm-2 mb-10 padL-0 mt-2">
-                                    <label>Due Date</label>
-                                    <input
-                                        type="date"
-                                        className="form-control"
-                                        value={save.DueDate}
-                                        // defaultValue={Moment(save.DueDate).format("YYYY/MM/DD/")}
-                                        onChange={handleDatedue}
-                                    />
+                                <div className="col-sm-2 mb-10 padL-0 mt-3">
+                                    <div className="input-group">
+                                        <label className='full-width'>Due Date</label>
+                                        <input
+                                            type="date"
+                                            className="form-control"
+                                            value={save.DueDate}
+                                            // defaultValue={Moment(save.DueDate).format("YYYY/MM/DD/")}
+                                            onChange={handleDatedue}
+                                        />
+                                    </div>
+                                    
                                 </div>
                             </div>
-                            <div className="row mt-2">
+                            <div className="row mt-3">
                                 <TeamConfigurationCard
                                     ItemInfo={selectedItem}
                                     AllListId={AllListId}
                                     parentCallback={DDComponentCallBack}
                                 ></TeamConfigurationCard>
                             </div>
-                            <div className="row">
+                            <div className="row mt-3">
                                 <div className="col-sm-5">
                                     {/* <FroalaImageUploadComponent 
                                      callBack={copyImage} /> */}
@@ -1130,7 +1155,7 @@ const CreateActivity = (props: any) => {
                                         </div>
                                     </div>
                                 </div>
-                                <div className="col-sm-7">
+                                <div className="col-sm-7 ps-0">
                                     <HtmlEditorCard
                                         editorValue={
                                             save?.Body != undefined ? save?.Body : ""
@@ -1170,7 +1195,7 @@ const CreateActivity = (props: any) => {
 
                                         <div className="input-group">
                                             <input
-                                                type="text"
+                                                type="text" 
                                                 className="form-control"
                                                 placeholder="Enter Priority"
                                                 value={selectPriority ? selectPriority : ""}
@@ -1226,23 +1251,12 @@ const CreateActivity = (props: any) => {
                                 <div className="col-sm-12">
                                     <div className="col-sm-12 padding-0 input-group">
                                         <label className="full_width">Categories</label>
-
-                                        <input
-                                            type="text"
-                                            className="ui-autocomplete-input form-control"
-                                            id="txtCategories"
-                                            value={categorySearchKey}
-                                            onChange={(e) => autoSuggestionsForCategory(e)}
-                                        />
+                                        <input type="text" className="ui-autocomplete-input form-control"
+                                            id="txtCategories" value={categorySearchKey}
+                                            onChange={(e) => autoSuggestionsForCategory(e)} />
                                         <span className="input-group-text">
-                                            <a className="hreflink" title="Edit Categories">
-                                                <img
-                                                    src="https://hhhhteams.sharepoint.com/sites/HHHH/SP/_layouts/15/images/EMMCopyTerm.png"
-                                                    onClick={() => EditComponentPicker(selectedItem)}
-                                                />
-                                            </a>
+                                            <span onClick={() => EditComponentPicker(selectedItem)} title="Edit Categories" className="hreflink svg__iconbox svg__icon--editBox"></span>
                                         </span>
-
                                     </div>
                                     {
                                         instantCategories?.map((item: any) => {
@@ -1289,7 +1303,7 @@ const CreateActivity = (props: any) => {
                                                 <>
                                                     {!instantCategories?.some((selectedCat: any) => selectedCat?.Title == type?.Title) && (
                                                         <div className="block d-flex full-width justify-content-between mb-1 p-2">
-                                                            <a
+                                                            <a className="wid90"
                                                                 style={{ color: "#fff !important" }}
                                                                 target="_blank"
                                                                 data-interception="off"
@@ -1383,21 +1397,20 @@ const CreateActivity = (props: any) => {
                         }
                         <button
                             type="button"
-                            className="btn btn-primary m-2"
+                            className="btn btn-primary mx-2"
                             onClick={() => saveNoteCall()}
                         >
                             Submit
                         </button>
                         <button
                             type="button"
-                            className="btn btn-default m-2"
+                            className="btn btn-default"
                             onClick={() => closeTaskStatusUpdatePoup("item")}
                         >
                             Cancel
                         </button>
                     </footer>
-
-                </div>
+                    </div>
             </Panel>
 
 

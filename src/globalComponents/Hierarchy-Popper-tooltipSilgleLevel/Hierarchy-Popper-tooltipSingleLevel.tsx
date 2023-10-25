@@ -166,7 +166,7 @@ export default function ReactPopperTooltipSingleLevel({ ShareWebId, row, masterT
                             {row?.original?.SiteIcon != undefined ?
                                 <a
                                     className="hreflink"
-                                    href={`${AllListId?.siteUrl}/SitePages/Task-Profile.aspx?taskId=${row?.original?.Id}&Site=${row?.original?.siteType}`}
+                                    href={`${row?.original?.siteUrl}/SitePages/Task-Profile.aspx?taskId=${row?.original?.Id}&Site=${row?.original?.siteType}`}
                                     data-interception="off"
                                     target="_blank"
                                 >
@@ -175,7 +175,7 @@ export default function ReactPopperTooltipSingleLevel({ ShareWebId, row, masterT
                                     className="hreflink"
                                     data-interception="off"
                                     target="blank"
-                                    href={`${AllListId?.siteUrl}/SitePages/Portfolio-Profile.aspx?taskId=${row?.original?.Id}`}
+                                    href={`${row?.original?.siteUrl}/SitePages/Portfolio-Profile.aspx?taskId=${row?.original?.Id}`}
                                 >
                                     <span className="d-flex">
                                         {row?.original?.Title}
@@ -234,7 +234,6 @@ export default function ReactPopperTooltipSingleLevel({ ShareWebId, row, masterT
                         <div className="tootltip-title">{row?.Title}</div>
                         <button className="toolTipCross" onClick={handleCloseClick}><div className="popHoverCross">×</div></button>
                     </div>
-
                     <div className={scrollToolitem === true ? "tool-Wrapper toolWrapper-Th scroll-toolitem" : "tool-Wrapper toolWrapper-Th"}  >
                         <GlobalCommanTable columns={columns} data={tooltiphierarchy} callBackDataToolTip={callBackDataToolTip} callBackData={callBackData} pageName={pageName} expendedTrue={true} />
                     </div>
@@ -251,7 +250,7 @@ export default function ReactPopperTooltipSingleLevel({ ShareWebId, row, masterT
                     <div {...getArrowProps({ className: "tooltip-arrow" })} />
                 </div>
             )}
-            {openActivity && (
+             {openActivity && (
                 <CreateActivity
                     selectedItem={checkedData}
                     Call={Call}

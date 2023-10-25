@@ -302,24 +302,16 @@ function CreateTaskComponent(props: any) {
                     }
                 })
                 if (SDCCreatedBy != undefined && SDCCreatedDate != undefined && SDCTaskUrl != undefined) {
+
                     let saveValue = save;
-                    SDCTaskUrl = `https://www.shareweb.ch/site/${SDCSiteType}/Team/Pages/Manage/TaskProfile.aspx?TaskId=${SDCTaskId}`
+                    if (SDCSiteType?.toLowerCase() == 'alakdigital') {
+                        SDCTaskUrl = `https://www.shareweb.ch/site/EI/DigitalAdministration/Team/Pages/Manage/TaskProfile.aspx?TaskId=${SDCTaskId}`
+                    } else {
+                        SDCTaskUrl = `https://www.shareweb.ch/site/${SDCSiteType}/Team/Pages/Manage/TaskProfile.aspx?TaskId=${SDCTaskId}`
+                    }
+
                     let isTaskFound = false;
-                    const web = new Web(AllListId?.siteUrl);
-                    SitesTypes?.map((site: any) => {
-                        if (site?.Title?.toLowerCase() == SDCSiteType?.toLowerCase()) {
-                            const lists = web.lists.getById(site?.listId)
-                            lists.items.select('Id,Title,ComponentLink').getAll().then((data: any) => {
-                                data?.map((task: any) => {
-                                    if (task?.ComponentLink?.Url == SDCTaskUrl) {
-                                        window.open(base_Url + "/SitePages/Task-Profile.aspx?taskId=" + task?.Id + "&Site=" + site?.Title, "_self")
-                                        isTaskFound = true;
-                                    }
-                                })
-                            })
-                        }
-                    })
-                    if (!isTaskFound) {
+                    const creatSDCTas = () => {
                         let e = {
                             target: {
                                 value: SDCTaskUrl
@@ -328,7 +320,7 @@ function CreateTaskComponent(props: any) {
                         UrlPasteTitle(e);
                         saveValue.taskName = SDCTitle;
                         saveValue.taskUrl = SDCTaskUrl;
-                        if (SDCDueDate != undefined && SDCDueDate != '' && SDCDueDate != null) {
+                        if (SDCDueDate != undefined && SDCDueDate != '' && SDCDueDate != null && SDCDueDate!="null") {
                             saveValue.DueDate = SDCDueDate
                         }
                         setSave(saveValue);
@@ -339,8 +331,30 @@ function CreateTaskComponent(props: any) {
                             setActiveTile("rank", "rank", SDCPriority)
                         }
                         createTask()
-
                     }
+                    const web = new Web(AllListId?.siteUrl);
+                    SitesTypes?.map(async (site: any) => {
+                        if (site?.Title?.toLowerCase() == SDCSiteType?.toLowerCase()) {
+                            const lists = web.lists.getById(site?.listId)
+                            await lists.items.select('Id,Title,ComponentLink,component_x0020_link').getAll().then((data: any) => {
+                                data?.map((task: any, index: any) => {
+                                    if (task?.ComponentLink?.Url == SDCTaskUrl) {
+                                        window.open(base_Url + "/SitePages/Task-Profile.aspx?taskId=" + task?.Id + "&Site=" + site?.Title, "_self")
+                                        isTaskFound = true;
+                                    } else if (task?.component_x0020_link?.Url == SDCTaskUrl) {
+                                        window.open(base_Url + "/SitePages/Task-Profile.aspx?taskId=" + task?.Id + "&Site=" + site?.Title, "_self")
+                                        isTaskFound = true;
+                                    } else if (index == data?.length - 1 && !isTaskFound) {
+                                        creatSDCTas();
+                                    }
+                                })
+                                if (data?.length == 0 && !isTaskFound) {
+                                    creatSDCTas();
+                                }
+                            })
+                        }
+                    })
+
                 }
                 else if (paramTaskType == 'Bug') {
                     DirectTask = true;
@@ -742,9 +756,7 @@ function CreateTaskComponent(props: any) {
                             if (MailName?.Title == 'Design' && loggedInUser?.AssingedToUserId != 49 && User?.Title == 'Robert Ungethuem') {
                                 RecipientMail.push(User);
                             }
-                            if (burgerMenuTaskDetails?.SDCTaskId?.length > 0 && (User?.Title == 'Stefan Hochhuth' || User?.Title == 'Robert Ungethuem')) {
-                                RecipientMail.push(User);
-                            }
+
                         });
                     }
                 });
@@ -915,16 +927,22 @@ function CreateTaskComponent(props: any) {
                             setSendApproverMail(true);
                         }
                         let SDCRecipientMail: any = []
-                        // if (burgerMenuTaskDetails?.SDCTaskId?.length > 0) {
-                        //     taskUsers?.map((User: any) => {
-                        //         if (User?.Title == 'Stefan Hochhuth' || User?.Title == 'Robert Ungethuem') {
-                        //             SDCRecipientMail.push(User);
-                        //         }
-                        //     });
-                        //     globalCommon.sendImmediateEmailNotifications(data?.data?.Id, selectedSite?.siteUrl?.Url, selectedSite?.listId, data?.data, SDCRecipientMail, 'Client Task', taskUsers, props?.SelectedProp?.Context).then((response: any) => {
-                        //         console.log(response);
-                        //     });
-                        // }
+                        if (burgerMenuTaskDetails?.SDCTaskId?.length > 0) {
+                            if (data?.data != undefined) {
+                                data.data.SDCAuthor = burgerMenuTaskDetails?.SDCCreatedBy;
+                                taskUsers?.map((User: any) => {
+                                    if (User?.Title?.toLowerCase() == 'robert ungethuem' || User?.Title?.toLowerCase() == 'stefan hochhuth') {
+                                        SDCRecipientMail.push(User);
+                                    }
+                                    // if (User?.Title?.toLowerCase() == 'abhishek tiwari') {
+                                    //     SDCRecipientMail.push(User);
+                                    // }
+                                });
+                                globalCommon.sendImmediateEmailNotifications(data?.data?.Id, selectedSite?.siteUrl?.Url, selectedSite?.listId, data?.data, SDCRecipientMail, 'Client Task', taskUsers, props?.SelectedProp?.Context).then((response: any) => {
+                                    console.log(response);
+                                });
+                            }
+                        }
                         if (CategoryTitle?.indexOf("Design") > -1) {
                             setSendApproverMail(true);
                             globalCommon.sendImmediateEmailNotifications(data?.data?.Id, selectedSite?.siteUrl?.Url, selectedSite?.listId, data?.data, RecipientMail, 'DesignMail', taskUsers, props?.SelectedProp?.Context).then((response: any) => {
@@ -1068,17 +1086,20 @@ function CreateTaskComponent(props: any) {
             // TestUrl = $scope.ComponentLink;
             var item = '';
             if (TestUrl !== undefined) {
+                if (TestUrl.toLowerCase().indexOf('.com') > -1)
+                    TestUrl = TestUrl.split('.com')[1];
+                else if (TestUrl.toLowerCase().indexOf('.ch') > -1)
+                    TestUrl = TestUrl.split('.ch')[1];
+                else if (TestUrl.toLowerCase().indexOf('.de') > -1)
+                    TestUrl = TestUrl.split('.de')[1];
+                let URLDataArr: any = TestUrl.split('/');
                 for (let index = 0; index < SitesTypes?.length; index++) {
                     let site = SitesTypes[index];
-                    if (TestUrl.toLowerCase().indexOf('.com') > -1)
-                        TestUrl = TestUrl.split('.com')[1];
-                    else if (TestUrl.toLowerCase().indexOf('.ch') > -1)
-                        TestUrl = TestUrl.split('.ch')[1];
-                    else if (TestUrl.toLowerCase().indexOf('.de') > -1)
-                        TestUrl = TestUrl.split('.de')[1];
+
 
                     let Isfound = false;
-                    if (TestUrl !== undefined && ((TestUrl?.toLowerCase()?.indexOf('/' + site?.Title?.toLowerCase())) > -1 || (site?.AlternativeTitle != null && (TestUrl?.toLowerCase()?.indexOf(site?.AlternativeTitle?.toLowerCase())) > -1))) {
+
+                    if (TestUrl !== undefined && URLDataArr?.find((urlItem: any) => urlItem?.toLowerCase() == site?.Title?.toLowerCase()) || (site?.AlternativeTitle != null && URLDataArr?.find((urlItem: any) => urlItem?.toLowerCase() == site?.AlternativeTitle?.toLowerCase()))) {
                         item = site.Title;
                         selectedSiteTitle = site.Title;
                         Isfound = true;
@@ -1089,7 +1110,7 @@ function CreateTaskComponent(props: any) {
                             let sitesAlterNatives = site.AlternativeTitle.toLowerCase().split(';');
                             for (let j = 0; j < sitesAlterNatives.length; j++) {
                                 let element = sitesAlterNatives[j];
-                                if (TestUrl.toLowerCase().indexOf(element) > -1) {
+                                if (URLDataArr?.find((urlItem: any) => urlItem?.toLowerCase() == element?.toLowerCase())) {
                                     item = site.Title;
                                     selectedSiteTitle = site.Title;
                                     Isfound = true;
@@ -1511,12 +1532,12 @@ function CreateTaskComponent(props: any) {
             <div className='creatTaskPage'>
                 <div className='generalInfo'>
                     {/* {props?.projectId == undefined ?
-                        <div className='heading d-flex justify-content-between align-items-center'>
-                            <h2>Create Task </h2>
-                            <span className='text-end fs-6'>
-                             <a data-interception="off" className=' text-end pull-right' target='_blank' href={oldTaskIrl} style={{ cursor: "pointer", fontSize: "14px" }}>Old Create Task</a>
-                             </span>
-                        </div>  : ''} */}
+                            <div className='heading d-flex justify-content-between align-items-center'>
+                                <h2>Create Task </h2>
+                                <span className='text-end fs-6'>
+                                <a data-interception="off" className=' text-end pull-right' target='_blank' href={oldTaskIrl} style={{ cursor: "pointer", fontSize: "14px" }}>Old Create Task</a>
+                                </span>
+                            </div>  : ''} */}
                     <div>
                         {props?.projectId == undefined ?
                             <h4 className="titleBorder">General Information</h4> : ''}
@@ -1564,9 +1585,9 @@ function CreateTaskComponent(props: any) {
                                             )
                                         }) : null}
                                         <span className="input-group-text">
-                                            <span onClick={(e) => EditPortfolio(save, 'Component')} style={{ backgroundColor: 'white' }} className="svg__iconbox svg__icon--edit"></span>
+                                            <span onClick={(e) => EditPortfolio(save, 'Component')} style={{ backgroundColor: 'white' }} className="svg__iconbox svg__icon--editBox dark"></span>
                                             {/* <img src="https://hhhhteams.sharepoint.com/_layouts/images/edititem.gif"
-                                        onClick={(e) => EditComponent(save, 'Component')} /> */}
+                                            onClick={(e) => EditComponent(save, 'Component')} /> */}
                                         </span>
                                     </div> : ''
                             }
@@ -1652,7 +1673,7 @@ function CreateTaskComponent(props: any) {
 
 
                 {/*---------------- Sites -------------
-            -------------------------------*/}
+                -------------------------------*/}
                 {siteType?.length > 1 ?
                     <div className='col mt-4'>
                         <h4 className="titleBorder ">Websites</h4>
@@ -1686,7 +1707,7 @@ function CreateTaskComponent(props: any) {
                 {props?.projectId == undefined ? <>
                     <div className="clearfix"></div>
                     {/*---- Task Categories ---------
-            -------------------------------*/}
+                -------------------------------*/}
                     <div className="col" >
                         {TaskTypes?.map((Task: any) => {
                             return (
@@ -1730,7 +1751,7 @@ function CreateTaskComponent(props: any) {
                     </div>
                     <div className="clearfix"></div>
                     {/*-----Time --------
-            -------------------------------*/}
+                -------------------------------*/}
 
                     <div className='col mt-4 clearfix'>
                         <h4 className="titleBorder">Time</h4>
@@ -1744,7 +1765,7 @@ function CreateTaskComponent(props: any) {
                     </div>
                     <div className="clearfix"></div>
                     {/*-----Due date --------
-            -------------------------------*/}
+                -------------------------------*/}
                     <div className='col mt-4'>
                         <h4 className="titleBorder ">Due Date</h4>
                         <div className="taskcatgoryPannel">
