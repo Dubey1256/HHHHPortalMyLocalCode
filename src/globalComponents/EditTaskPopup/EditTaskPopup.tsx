@@ -2960,7 +2960,7 @@ const EditTaskPopup = (Items: any) => {
                 let date = new Date()
                 let timeStamp = date.getTime();
                 let imageIndex = index + 1
-                fileName = "T" + EditData.Id + '-Image' + imageIndex + "-" + EditData.Title?.replace(/["/':]/g, '')?.slice(0, 40) + " " + timeStamp + ".jpg";
+                fileName = "T" + EditData.Id + '-Image' + imageIndex + "-" + EditData.Title?.replace(/["/':?]/g, '')?.slice(0, 40) + " " + timeStamp + ".jpg";
                 let currentUserDataObject: any;
                 if (currentUserBackupArray != null && currentUserBackupArray.length > 0) {
                     currentUserDataObject = currentUserBackupArray[0];
