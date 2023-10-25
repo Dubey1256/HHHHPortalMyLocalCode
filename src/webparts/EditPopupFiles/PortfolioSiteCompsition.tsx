@@ -1246,10 +1246,13 @@ const SiteCompositionComponent = (Props: any) => {
                 if (CCItems.siteName == siteType) {
                     count++;
                     TempArray.push(CCItems.Id);
-                } else if (count == 0) {
-                    TempArray.push(CCItems.Id);
                 }
             })
+            if (count == 0) {
+                finalClientCategoryData?.map((CCItems: any) => {
+                    TempArray.push(CCItems.Id);
+                })
+            }
         }
         TempClientCategoryIds = TempArray.filter((val: any, id: any, array: any) => {
             return array.indexOf(val) == id;
@@ -2044,7 +2047,7 @@ const SiteCompositionComponent = (Props: any) => {
                     onDismiss={closeComponentChildrenPopup}
                     isBlocking={false}
                     type={PanelType.custom}
-                    customWidth="1100px"
+                    customWidth="1200px"
                     onRenderFooter={onRenderFooterComponentChildren}
                 >
                     <div className={ServicesTaskCheck ? "serviepannelgreena SelectProjectTable " : 'SelectProjectTable '}>
@@ -2059,7 +2062,6 @@ const SiteCompositionComponent = (Props: any) => {
                                 />
                             </div>
                         </div>
-
                     </div>
                 </Panel>
                 : null
