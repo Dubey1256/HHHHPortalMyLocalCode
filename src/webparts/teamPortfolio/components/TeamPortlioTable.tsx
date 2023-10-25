@@ -43,6 +43,8 @@ let renderData: any = [];
 let countAllTasksData: any = [];
 let AfterFilterTaskCount: any = [];
 let allLoadeDataMasterTaskAndTask: any = [];
+let allMasterTaskDataFlatLoadeViewBackup: any = [];
+let allTaskDataFlatLoadeViewBackup: any = [];
 let hasCustomExpanded: any = true
 let hasExpanded: any = true
 let isHeaderNotAvlable: any = false
@@ -198,7 +200,8 @@ function TeamPortlioTable(SelectedProp: any) {
             .top(4999).expand("Parent").get();
         setAllClientCategory(smartmetaDetails?.filter((metadata: any) => metadata?.TaxType == 'Client Category'));
         smartmetaDetails?.map((newtest: any) => {
-            if (newtest.Title == "SDC Sites" || newtest.Title == "DRR" || newtest.Title == "Small Projects" || newtest.Title == "Shareweb Old" || newtest.Title == "Master Tasks")
+            // if (newtest.Title == "SDC Sites" || newtest.Title == "DRR" || newtest.Title == "Small Projects" || newtest.Title == "Shareweb Old" || newtest.Title == "Master Tasks")
+            if (newtest.Title == "SDC Sites" || newtest.Title == "Shareweb Old" || newtest.Title == "Master Tasks")
                 newtest.DataLoadNew = false;
             else if (newtest.TaxType == 'Sites') {
                 siteConfigSites.push(newtest)
@@ -289,10 +292,7 @@ function TeamPortlioTable(SelectedProp: any) {
                     .expand(
                         "ParentTask", "Portfolio", "TaskType", "ClientCategory", "TeamMembers", "ResponsibleTeam", "AssignedTo", "Editor", "Author",
                         "TaskCategories", "Project",
-                    )
-                    .filter("Status ne 'Completed'")
-                    .orderBy("orderby", false)
-                    .getAll(4000);
+                    ).orderBy("orderby", false).getAll(4000);
 
                 console.log(AllTasksMatches);
                 Counter++;
@@ -308,11 +308,11 @@ function TeamPortlioTable(SelectedProp: any) {
                         item.siteUrl = ContextValue.siteUrl;
                         item["SiteIcon"] = config?.Item_x005F_x0020_Cover?.Url;
                         item.fontColorTask = "#000"
-                        if (item?.TaskCategories?.some((category: any) => category.Title.toLowerCase() === "draft")) { item.isDrafted = true; }
+                        // if (item?.TaskCategories?.some((category: any) => category.Title.toLowerCase() === "draft")) { item.isDrafted = true; }
                     });
                     AllTasks = AllTasks.concat(AllTasksMatches);
                     if (Counter == siteConfig.length) {
-                        AllTasks = AllTasks?.filter((type: any) => type.isDrafted === false);
+                        // AllTasks = AllTasks?.filter((type: any) => type.isDrafted === false);
                         map(AllTasks, (result: any) => {
                             result.Id = result.Id != undefined ? result.Id : result.ID;
                             result.TeamLeaderUser = [];
@@ -320,7 +320,8 @@ function TeamPortlioTable(SelectedProp: any) {
                             result.chekbox = false;
                             result.descriptionsSearch = '';
                             result.commentsSearch = '';
-                            result.TaskTypeValue ='';
+                            result.TaskTypeValue = '';
+                            result.portfolioItemsSearch = ''
                             if (result?.DueDate != null && result?.DueDate != undefined) {
                                 result.serverDueDate = new Date(result?.DueDate).setHours(0, 0, 0, 0)
                             }
@@ -340,6 +341,9 @@ function TeamPortlioTable(SelectedProp: any) {
                             result.DisplayDueDate = Moment(result?.DueDate).format("DD/MM/YYYY");
                             if (result.DisplayDueDate == "Invalid date" || "") {
                                 result.DisplayDueDate = result?.DisplayDueDate.replaceAll("Invalid date", "");
+                            }
+                            if (result?.TaskType) {
+                                result.portfolioItemsSearch = result?.TaskType?.Title;
                             }
 
                             result.PercentComplete = (result.PercentComplete * 100).toFixed(0);
@@ -448,6 +452,7 @@ function TeamPortlioTable(SelectedProp: any) {
                         });
                         setAllSiteTasksData(AllTasksData);
                         let taskBackup = JSON.parse(JSON.stringify(AllTasksData));
+                        allTaskDataFlatLoadeViewBackup = JSON.parse(JSON.stringify(AllTasksData))
                         allLoadeDataMasterTaskAndTask = allLoadeDataMasterTaskAndTask.concat(taskBackup);
                     }
                 }
@@ -489,7 +494,8 @@ function TeamPortlioTable(SelectedProp: any) {
             result.AllTeamName = "";
             result.descriptionsSearch = '';
             result.commentsSearch = '';
-            result.TaskTypeValue ='';
+            result.TaskTypeValue = '';
+            result.portfolioItemsSearch = result.Item_x0020_Type;
             result.TeamLeaderUser = [];
             if (result.Item_x0020_Type === 'Component') {
                 result.boldRow = 'boldClable'
@@ -601,6 +607,7 @@ function TeamPortlioTable(SelectedProp: any) {
             }
         });
         setAllMasterTasks(componentDetails)
+        allMasterTaskDataFlatLoadeViewBackup = JSON.parse(JSON.stringify(componentDetails));
         allLoadeDataMasterTaskAndTask = JSON.parse(JSON.stringify(componentDetails));
         AllComponetsData = componentDetails;
         ComponetsData["allComponets"] = componentDetails;
@@ -1213,6 +1220,7 @@ function TeamPortlioTable(SelectedProp: any) {
                 id: 'Id',
             },
             {
+                accessorFn: (row) => row?.portfolioItemsSearch,
                 cell: ({ row, getValue }) => (
                     <div className="alignCenter">
                         {row?.original?.SiteIcon != undefined ? (
@@ -1236,20 +1244,19 @@ function TeamPortlioTable(SelectedProp: any) {
                                 )}
                             </>
                         )}
-                        {getValue()}
                     </div>
                 ),
-                accessorKey: "",
-                id: "row?.original.Id",
-                canSort: false,
-                placeholder: "",
+                id: "portfolioItemsSearch",
+                placeholder: "Type",
+                header: "",
+                resetColumnFilters: false,
                 size: 95,
             },
             {
                 accessorFn: (row) => row?.TaskID,
                 cell: ({ row, getValue }) => (
                     <>
-                        <ReactPopperTooltipSingleLevel ShareWebId={getValue()} row={row?.original} singleLevel={true} masterTaskData={AllMasterTasksData} AllSitesTaskData={AllSiteTasksData} />
+                        <ReactPopperTooltipSingleLevel ShareWebId={getValue()} row={row?.original} singleLevel={true} masterTaskData={allMasterTaskDataFlatLoadeViewBackup} AllSitesTaskData={allTaskDataFlatLoadeViewBackup} />
                     </>
                 ),
                 id: "TaskID",
@@ -1761,9 +1768,8 @@ function TeamPortlioTable(SelectedProp: any) {
             setIsOpenWorkstream(false)
             setActivityPopup(false)
             copyDtaArray?.forEach((val: any) => {
-                if (res?.data?.PortfolioId == val.Id) {
+                if (res?.data?.PortfolioId === val.Id) {
                     val.subRows = val.subRows === undefined ? [] : val.subRows;
-
                     val.subRows.push(res.data)
                 }
                 else if (val?.subRows != undefined && val?.subRows.length > 0) {
@@ -1873,6 +1879,18 @@ function TeamPortlioTable(SelectedProp: any) {
             </div>
         );
     };
+
+
+    React.useEffect(() => {
+        const checkbox: any = document.querySelector('input[type="checkbox"]');
+        checkbox.addEventListener('change', function () {
+            if (checkbox.indeterminate) {
+                checkbox.style.backgroundColor = '#ffcc00'; // Change this to your desired color
+            } else {
+                checkbox.style.backgroundColor = ''; // Reset the background color for checked/unchecked state
+            }
+        });
+    }, [])
     //-------------------------------------------------------------End---------------------------------------------------------------------------------
 
 
