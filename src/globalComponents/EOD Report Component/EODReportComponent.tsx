@@ -4,6 +4,7 @@ import { Panel, PanelType } from 'office-ui-fabric-react';
 import Tooltip from "../Tooltip";
 import { BsXCircleFill, BsCheckCircleFill } from "react-icons/bs";
 import { BiCommentDetail } from "react-icons/bi";
+import { SPFI, spfi, SPFx as spSPFx } from "@pnp/sp";
 import { Web } from "sp-pnp-js";
 var FeedBackArrayDataBackup: any = [];
 const EODReportComponent = (TaskDetails: any) => {
@@ -96,48 +97,65 @@ const EODReportComponent = (TaskDetails: any) => {
     }
 
     const saveUpdatedFeedbackJSON = async () => {
+      var isRemark:any = false;
+      if(FeedBackArrayDataBackup != undefined && FeedBackArrayDataBackup.length >0){
+        FeedBackArrayDataBackup?.forEach((val:any)=>{
+            if(val.Remarks == '' || val.Remarks == undefined){
+                isRemark = true;
+            }
+             
+        })
+      }
+
         let FinalFeedbackJSON: any = []
-        if (FeedBackArrayDataBackup?.length > 0) {
-            let ParentComments: any = [];
-            FeedBackArrayDataBackup?.map((ItemData: any) => {
-                if (ItemData.parentIndex == undefined) {
-                    ItemData.Child = []
-                    ParentComments.push(ItemData);
-                }
-            })
-            if (ParentComments?.length > 0) {
-                FeedBackArrayDataBackup.map((childComment: any) => {
-                    if (childComment.parentIndex != undefined) {
-                        ParentComments[childComment.parentIndex].Child.push(childComment);
+        if(isRemark == true){
+           alert('Please add remark')
+        }
+        else{
+            if (FeedBackArrayDataBackup?.length > 0) {
+                let ParentComments: any = [];
+                FeedBackArrayDataBackup?.map((ItemData: any) => {
+                    if (ItemData.parentIndex == undefined) {
+                        ItemData.Child = []
+                        ParentComments.push(ItemData);
                     }
                 })
-            }
-            ParentComments?.map((FinlData: any) => {
-                if (FinlData?.Child?.length > 0) {
-                    FinlData.Subtext = FinlData?.Child
-                    delete FinlData.Child;
-                    FinalFeedbackJSON.push(FinlData)
-                } else {
-                    FinalFeedbackJSON.push(FinlData)
+                if (ParentComments?.length > 0) {
+                    FeedBackArrayDataBackup.map((childComment: any) => {
+                        if (childComment.parentIndex != undefined) {
+                            ParentComments[childComment.parentIndex].Child.push(childComment);
+                        }
+                    })
                 }
-            })
-            let UpdatedJSON: any = FeedbackDataCopyArray;
-            UpdatedJSON[0].FeedBackDescriptions = FinalFeedbackJSON;
-            const web = new Web(siteUrl)
-            try {
-                await web.lists.getById(selectedTaskDetails?.listId).items.getById(selectedTaskDetails.Id).update({
-                    FeedBack: UpdatedJSON?.length > 0 ? JSON.stringify(UpdatedJSON) : null,
-                }).then(async (res: any) => {
-                    console.log("Feed Back Submited");
-                    closeEODPanelPopupFunction();
+                ParentComments?.map((FinlData: any) => {
+                    if (FinlData?.Child?.length > 0) {
+                        FinlData.Subtext = FinlData?.Child
+                        delete FinlData.Child;
+                        FinalFeedbackJSON.push(FinlData)
+                    } else {
+                        FinalFeedbackJSON.push(FinlData)
+                    }
                 })
-            } catch (error) {
-                console.log("Error:", error.message)
+               
+                let UpdatedJSON: any = FeedbackDataCopyArray;
+                UpdatedJSON[0].FeedBackDescriptions = FinalFeedbackJSON;
+                const web = new Web(siteUrl)
+                try {
+                    await web.lists.getById(selectedTaskDetails?.listId).items.getById(selectedTaskDetails.Id).update({
+                        FeedBack: UpdatedJSON?.length > 0 ? JSON.stringify(UpdatedJSON) : null,
+                    }).then(async (res: any) => {
+                        console.log("Feed Back Submited");
+                        closeEODPanelPopupFunction();
+                    })
+                } catch (error) {
+                    console.log("Error:", error.message)
+                }
             }
         }
+      
     }
 
-
+   
     const onRenderCustomHeader = () => {
         return (
             <div className="d-flex full-width pb-1" >
@@ -156,7 +174,13 @@ const EODReportComponent = (TaskDetails: any) => {
 
     const UpdateRemarksCommentFunction = () => {
         FeedBackArrayDataBackup[updateRemarksIndex].Remarks = RemarksText;
-        setFeedBackArrayData(FeedBackArrayDataBackup);
+        if(RemarksText != undefined && RemarksText != ''){
+            setFeedBackArrayData(FeedBackArrayDataBackup);
+        }
+        else{
+            alert('Please add remarks')
+        }
+        
         closeRemarksPanelPopup();
     }
 
@@ -181,7 +205,7 @@ const EODReportComponent = (TaskDetails: any) => {
                                 <td scope="col">Deployed</td>
                                 <td scope="col">QA Review</td>
                                 <td scope="col">In Progress</td>
-                                <td scope="col">Remarks</td>
+                                <td scope="col">Remarkss</td>
                             </tr>
                         </thead>
                         {FeedBackArrayData?.length > 0 ?
@@ -190,13 +214,14 @@ const EODReportComponent = (TaskDetails: any) => {
                                     return (
                                         <tr className="border-bottom">
                                             <td style={{ width: "10%" }} className="p-1 ps-3 fw-bold" scope="row">{FeedbackItem.CommentIndex}</td>
-                                            <td style={{ width: "30%" }} className="p-1" dangerouslySetInnerHTML={{
+                                            <td style={{ width: "40%" }} className="p-1" dangerouslySetInnerHTML={{
                                                 __html: FeedbackItem.Title?.replace(/<[^>]*>/g, '')
                                             }} ></td>
                                             <td
                                                 style={{ width: "10%" }}
                                                 className="text-center p-1"
                                                 onClick={() => updateFeedbackJSON("Completed", FeedbackItem.Completed ? false : true, Index, FeedbackItem)}
+
                                             >
                                                 {FeedbackItem.Completed != undefined ? FeedbackItem.Completed ? <span className="checkCircleFill"><BsCheckCircleFill /></span>
                                                     :
@@ -217,7 +242,7 @@ const EODReportComponent = (TaskDetails: any) => {
                                                 }
                                             </td>
                                             <td
-                                                style={{ width: "16%" }}
+                                                style={{ width: "10%" }}
                                                 className="text-center p-1"
                                                 onClick={() => updateFeedbackJSON("QAReview", FeedbackItem.QAReview ? false : true, Index, FeedbackItem)}
                                             >
@@ -227,7 +252,7 @@ const EODReportComponent = (TaskDetails: any) => {
                                                     : <span className="xCircleFill"><BsXCircleFill /></span>}
                                             </td>
                                             <td
-                                                style={{ width: "14%" }}
+                                                style={{ width: "10%" }}
                                                 className="text-center p-1"
                                                 onClick={() => updateFeedbackJSON("InProgress", FeedbackItem.InProgress ? false : true, Index, FeedbackItem)}
 
@@ -310,3 +335,7 @@ const EODReportComponent = (TaskDetails: any) => {
     )
 }
 export default EODReportComponent;
+
+function Moment(ReportDate: Date) {
+    throw new Error("Function not implemented.");
+}

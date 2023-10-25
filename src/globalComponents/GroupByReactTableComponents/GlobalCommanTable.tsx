@@ -794,9 +794,9 @@ const GlobalCommanTable = (items: any, ref: any) => {
                             </span>
                         </span>
                     </div> :
-                        <span style={{ color: `${portfolioColor}` }} className='Header-Showing-Items'>{`Showing ${table?.getFilteredRowModel()?.rows?.length} of ${data?.length} `}</span>}
-                    <span>{items?.showDateTime}</span>
-                    <DebouncedInput
+                        <span style={{ color: `${portfolioColor}` }} className='Header-Showing-Items'>{`Showing ${table?.getFilteredRowModel()?.rows?.length} of ${items?.catogryDataLength ? items?.catogryDataLength :data?.length}`}</span>}
+                        <span className="mx-1">{items?.showDateTime}</span>
+                        <DebouncedInput
                         value={globalFilter ?? ""}
                         onChange={(value) => setGlobalFilter(String(value))}
                         placeholder="Search All..."

@@ -407,6 +407,27 @@ export default class UserTimeEntry extends React.Component<IUserTimeEntryProps, 
         }
       }
     }
+
+    filterItems.forEach((filterItem: any) => {
+      filterItem.ParentTitle = filterItem.Title;
+      if (filterItem.ParentTitle == 'DA E+E')
+        filterItem.ParentTitle = 'ALAKDigital';
+      if (filterItem.children != undefined && filterItem.children.length > 0) {
+        filterItem.children.forEach((child: any) => {
+          child.ParentTitle = filterItem.Title;
+          if (child.ParentTitle == 'DA E+E')
+            child.ParentTitle = 'ALAKDigital';
+          if (child.children != undefined && child.children.length > 0) {
+            child.children.forEach((subchild: any) => {
+              subchild.ParentTitle = filterItem.Title;
+              if (subchild.ParentTitle == 'DA E+E')
+                subchild.ParentTitle = 'ALAKDigital';
+            });
+          }
+        });
+      }
+    });
+
     this.setState({
       filterItems, filterSites
     })
@@ -1343,7 +1364,7 @@ export default class UserTimeEntry extends React.Component<IUserTimeEntryProps, 
             case 'Client Category':
               if (item.clientCategoryIds != undefined && item.clientCategoryIds != '') {
                 let Category = item.clientCategoryIds.split(';');
-                let title = selectedFilters[i].Title == 'PSE' ? 'EPS' : (selectedFilters[i].Title == 'e+i' ? 'EI' : selectedFilters[i].Title);
+                let title = selectedFilters[i].ParentTitle == 'PSE' ? 'EPS' : (selectedFilters[i].ParentTitle == 'e+i' ? 'EI' : selectedFilters[i].ParentTitle);
                 for (let j = 0; j < Category.length; j++) {
                   let type = Category[j]
                   if ((type == selectedFilters[i].Id) && !this.issmartExistsIds(CategoryItems, item)) {
@@ -1375,9 +1396,22 @@ export default class UserTimeEntry extends React.Component<IUserTimeEntryProps, 
                 }
               }
               if (item.clientCategoryIds == '') {
-                let title = selectedFilters[i].Title == 'PSE' ? 'EPS' : (selectedFilters[i].Title == 'e+i' ? 'EI' : selectedFilters[i].Title);
+                let title = selectedFilters[i].ParentTitle == 'PSE' ? 'EPS' : (selectedFilters[i].ParentTitle == 'e+i' ? 'EI' : selectedFilters[i].ParentTitle);
                 if (selectedFilters[i].Title == 'Other') {
-                  if ((item.siteType != undefined && item.siteType == title && (item.ClientCategory == undefined || item.ClientCategory.length == 0) && !this.issmartExistsIds(CategoryItems, item))) {
+                  if (selectedFilters[i]?.ParentTitle == 'Other' && (item.ClientCategory == undefined || item.ClientCategory.length == 0) && !this.issmartExistsIds(CategoryItems, item)) {
+                    if (item.clientTimeInfo != undefined && item.clientTimeInfo.length > 0) {
+                      for (let k = 0; k < item.clientTimeInfo.length; k++) {
+                        let obj = item.clientTimeInfo[k];
+                        if (obj.SiteName == title && obj.releventTime != undefined) {
+                          item.Effort = obj.releventTime;
+                        }
+                      }
+                    }
+                    item['uniqueTimeId'] = count
+                    CategoryItems.push(item);
+                    count++;
+                  }
+                  if ((item.siteType != undefined && selectedFilters[i]?.ParentTitle != undefined && selectedFilters[i]?.ParentTitle != '' && selectedFilters[i]?.ParentTitle != 'Other' && item.siteType == title && (item.ClientCategory == undefined || item.ClientCategory.length == 0) && !this.issmartExistsIds(CategoryItems, item))) {
                     if (item.clientTimeInfo != undefined && item.clientTimeInfo.length > 0) {
                       for (let k = 0; k < item.clientTimeInfo.length; k++) {
                         let obj = item.clientTimeInfo[k];
@@ -1392,11 +1426,11 @@ export default class UserTimeEntry extends React.Component<IUserTimeEntryProps, 
                   }
                 }
               }
-              if (item.siteType != undefined && selectedFilters[i].TaxType == 'Client Category' && item.siteType == selectedFilters[i].Title) {
-                item['uniqueTimeId'] = count
-                CategoryItems.push(item);
-                count++;
-              }
+              // if (item.siteType != undefined && selectedFilters[i].TaxType == 'Client Category' && item.siteType == selectedFilters[i].ParentTitle && !this.issmartExistsIds(CategoryItems, item)) {
+              //   item['uniqueTimeId'] = count
+              //   CategoryItems.push(item);
+              //   count++;
+              // }
               isCategorySelected = true;
               const ids: any = CategoryItems.map(o => o.uniqueTimeId);
               CategoryItems = CategoryItems.filter(({ uniqueTimeId }, index) => !ids.includes(uniqueTimeId, index + 1))
@@ -2213,7 +2247,7 @@ export default class UserTimeEntry extends React.Component<IUserTimeEntryProps, 
       isDarkTheme,
       environmentMessage,
       hasTeamsContext,
-      userDisplayName
+      userDisplayName,
     } = this.props;
     return (
       <div id="TimeSheet-Section">
@@ -2222,9 +2256,11 @@ export default class UserTimeEntry extends React.Component<IUserTimeEntryProps, 
           <details className='p-0 m-0 allfilter' open>
             <summary className='hyperlink'><a className="fw-semibold hreflink mr-5 pe-2 pull-left ">All Filters - <span className='me-1 fw-normal'>Task User :</span> </a>
               {this.state.ImageSelectedUsers != null && this.state.ImageSelectedUsers.length > 0 && this.state.ImageSelectedUsers.map((user: any, i: number) => {
-                return <span>
-                  <img className="AssignUserPhoto mr-5" title={user.AssingedToUser.Title} src={user?.Item_x0020_Cover?.Url} />
-                </span>
+                return user?.Item_x0020_Cover != undefined && user.Item_x0020_Cover?.Url != undefined ?
+                  <span>
+                    <img className="AssignUserPhoto mr-5" title={user.AssingedToUser.Title} src={user?.Item_x0020_Cover?.Url} />
+                  </span> :
+                  <span className="suffix_Usericon showSuffixIcon m-1" title={user?.Title} >{user?.Suffix}</span>
               })
               }
               {/* <span className="pull-right"><a href="#">Add Smart Favorite</a></span> */}
@@ -2262,7 +2298,7 @@ export default class UserTimeEntry extends React.Component<IUserTimeEntryProps, 
                                         title={item.AssingedToUser.Title}
                                         src={item.Item_x0020_Cover.Url} />
                                     </span> :
-                                    <span className={item?.AssingedToUserId == user?.Id ? 'activeimg seclected-Image suffix_Usericon' : 'suffix_Usericon'} title={item.Title} onClick={(e) => this.SelectUserImage(e, item)} ui-draggable="true" on-drop-success="dropSuccessHandler($event, $index, user.childs)"
+                                    <span id={"UserImg" + item.Id} className={item?.AssingedToUserId == user?.Id ? 'activeimg seclected-Image suffix_Usericon showSuffixIcon' : 'suffix_Usericon showSuffixIcon'} title={item.Title} onClick={(e) => this.SelectUserImage(e, item)} ui-draggable="true" on-drop-success="dropSuccessHandler($event, $index, user.childs)"
                                     >{item?.Suffix}</span>
                                   }
                                 </div>

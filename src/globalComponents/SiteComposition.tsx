@@ -115,7 +115,7 @@ export default function Sitecomposition(datas: any) {
       .select('Id', 'Title', 'Item_x0020_Cover', 'TaxType', 'siteName', 'siteUrl', 'Item_x005F_x0020_Cover', 'listId', 'Configurations')
       .filter("TaxType eq 'Sites'").top(4000)
       .get().then((data: any) => {
-        let ShortedData:any = getSmartMetadataItemsByTaxType(data, "Sites");
+        let ShortedData: any = getSmartMetadataItemsByTaxType(data, "Sites");
         // getSmartMetadataItemsByTaxType(data, "Sites");
         setsmartMetaDataIcon(data);
         ShortedData?.map((site: any) => {
@@ -157,14 +157,14 @@ export default function Sitecomposition(datas: any) {
   var getSmartMetadataItemsByTaxType = function (metadataItems: any, taxType: any) {
     var Items: any = [];
     metadataItems.map((taxItem: any) => {
-        if (taxItem.TaxType === taxType)
-            Items.push(taxItem);
+      if (taxItem.TaxType === taxType)
+        Items.push(taxItem);
     });
     Items.sort((a: any, b: any) => {
-        return a.SortOrder - b.SortOrder;
+      return a.SortOrder - b.SortOrder;
     });
     return Items;
-}
+  }
 
 
   const GetSiteIcon = (listName: string) => {
@@ -226,19 +226,19 @@ export default function Sitecomposition(datas: any) {
   return (
     <>
       {!isDirectPopup && (<dl key={key} className="Sitecomposition PortfioP">
-      <details open>
-                          <summary className="alignCenter">
-                            <label className="toggler full_width">
-                              <a className="pull-left">
-                              Site Composition
-                              </a>
-                              <p className="input-group-text mb-0 pb-0" title="Edit Site Composition" onClick={() => setEditSiteCompositionStatus(true)}>
+        <details open>
+          <summary className="alignCenter">
+            <label className="toggler full_width">
+              <a className="pull-left">
+                Site Composition
+              </a>
+              <p className="input-group-text mb-0 pb-0" title="Edit Site Composition" onClick={() => setEditSiteCompositionStatus(true)}>
                 <span className="svg__iconbox svg__icon--editBox"></span>
               </p>
-                            </label>
-                          </summary>
-                          <div className="border border-top-0 p-2">
-                          <ul className="p-0 m-0">
+            </label>
+          </summary>
+          <div className="border border-top-0 p-2">
+            <ul className="p-0 m-0">
               {ClientTimeArray?.map((cltime: any, i: any) => {
                 if (cltime.Title != "CompositionHistoryArray") {
                   return (
@@ -263,8 +263,8 @@ export default function Sitecomposition(datas: any) {
                 }
               })}
             </ul>
-                          </div>
-                        </details>
+          </div>
+        </details>
       </dl>
       )}
 
@@ -274,7 +274,7 @@ export default function Sitecomposition(datas: any) {
         onDismiss={() => ClosePopupCallBack()}
         isBlocking={EditSiteCompositionStatus}
         type={PanelType.custom}
-        customWidth="1024px"
+        customWidth="900px"
       >
         <div className={ServicesTaskCheck ? "serviepannelgreena pt-3" : "pt-3"}>
           {EditSiteCompositionStatus && AllSitesData?.length > 0 ? <SiteCompositionComponent
