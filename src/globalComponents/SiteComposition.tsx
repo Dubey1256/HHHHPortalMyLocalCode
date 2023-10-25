@@ -112,7 +112,7 @@ export default function Sitecomposition(datas: any) {
     await web.lists
       .getById(datas?.sitedata?.SmartMetadataListID)
       .items
-      .select('Id', 'Title', 'Item_x0020_Cover', 'TaxType', 'siteName', 'siteUrl', 'Item_x005F_x0020_Cover', 'listId', 'Configurations')
+      .select('Id', 'Title', 'Item_x0020_Cover', 'TaxType',"SortOrder", 'siteName', 'siteUrl', 'Item_x005F_x0020_Cover', 'listId', 'Configurations')
       .filter("TaxType eq 'Sites'").top(4000)
       .get().then((data: any) => {
         let ShortedData: any = getSmartMetadataItemsByTaxType(data, "Sites");
