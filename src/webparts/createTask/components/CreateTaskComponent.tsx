@@ -20,6 +20,7 @@ let AssignedToUsers: any = []
 let AllClientCategories: any = [];
 let SitesTypes: any = []
 let subCategories: any = []
+let TeamMessagearray: any = [];
 let AllComponents: any = []
 let taskUsers: any = [];
 let ClientActivityJson: any = null;
@@ -50,6 +51,7 @@ function CreateTaskComponent(props: any) {
     const [priorityRank, setpriorityRank] = React.useState([])
     const [openPortfolioType, setOpenPortfolioType] = React.useState("");
     const [taskCat, setTaskCat] = React.useState([]);
+    const [UserEmailNotify, setUserEmailNotify] = React.useState(false);
     const [IsOpenPortfolio, setIsOpenPortfolio] = React.useState(false);
     const [smartComponentData, setSmartComponentData] = React.useState([]);
     const [Timing, setTiming] = React.useState([])
@@ -320,7 +322,7 @@ function CreateTaskComponent(props: any) {
                         UrlPasteTitle(e);
                         saveValue.taskName = SDCTitle;
                         saveValue.taskUrl = SDCTaskUrl;
-                        if (SDCDueDate != undefined && SDCDueDate != '' && SDCDueDate != null && SDCDueDate!="null") {
+                        if (SDCDueDate != undefined && SDCDueDate != '' && SDCDueDate != null && SDCDueDate != "null") {
                             saveValue.DueDate = SDCDueDate
                         }
                         setSave(saveValue);
@@ -790,7 +792,7 @@ function CreateTaskComponent(props: any) {
                                 selectedComponent.push(smart.Id);
                                 portfolioId = smart?.Id
                                 if (selectedSite?.Parent?.Title == "SDC Sites") {
-                                    postClientTime = JSON.parse(smart?.Sitestagging);
+
                                     siteCompositionDetails = smart?.SiteCompositionSettings;
                                     smart?.ClientCategory?.map((cc: any) => {
                                         if (cc.Id != undefined) {
@@ -806,7 +808,13 @@ function CreateTaskComponent(props: any) {
                             })
                         }
                         if (save?.siteType?.toLowerCase() == "shareweb" && smartComponentData?.length > 0) {
-                            postClientTime = JSON.parse(smartComponentData[0]?.Sitestagging);
+                            postClientTime = JSON.parse(smartComponentData[0]?.Sitestagging)
+                            postClientTime?.map((sitecomp: any) => {
+                                if (sitecomp.Title != undefined && sitecomp.Title != "" && sitecomp.SiteName == undefined) {
+                                    sitecomp.SiteName = sitecomp.Title
+                                }
+
+                            })
                             siteCompositionDetails = smartComponentData[0]?.SiteCompositionSettings;
                         } else {
                             var siteComp: any = {};
@@ -965,6 +973,9 @@ function CreateTaskComponent(props: any) {
                         createdTask.siteType = save.siteType
                         data.data.SiteIcon = selectedSite?.Item_x005F_x0020_Cover?.Url;
                         createdTask.SiteIcon = selectedSite?.Item_x005F_x0020_Cover?.Url;
+                        if (UserEmailNotify) {
+                            EmailNotificationOnTeams(data.data.siteUrl, data.data.Id, data.data.Title, save.siteType);
+                        }
                         if (props?.projectId != undefined) {
                             EditPopup(data?.data)
                             props?.callBack
@@ -1174,6 +1185,9 @@ function CreateTaskComponent(props: any) {
     }
 
     const selectSubTaskCategory = (title: any, Id: any, item: any) => {
+        if (item?.IsSendAttentionEmail != undefined) {
+            TeamMessagearray.push(item.IsSendAttentionEmail);
+        }
         if (loggedInUser?.IsApprovalMail?.toLowerCase() == 'approve all but selected items' && !IsapprovalTask) {
             try {
                 let selectedApprovalCat = JSON.parse(loggedInUser?.CategoriesItemsJson)
@@ -1267,7 +1281,16 @@ function CreateTaskComponent(props: any) {
         setTaskCat(TaskCategories)
 
     }
-
+    const EmailNotificationOnTeams = async (sitename: any, taskId: any, TaskTitle: any, CreateSite: any) => {
+        let TaskUrl: any = `${base_Url}/SitePages/Task-Profile.aspx?taskId=${taskId}&Site=${CreateSite}`
+        let txtComment = `You have been tagged as Attention in the below task by ${props.SelectedProp.pageContext._user.displayName}`;
+        let TeamMsg = txtComment + `</br> <a href=${TaskUrl}>${taskId}-${TaskTitle}</a>`
+        TeamMessagearray.map((mail: any) => {
+            if (mail?.EMail?.length > 0) {
+                globalCommon.SendTeamMessage([mail.EMail], TeamMsg, props.SelectedProp.Context);
+            }
+        })
+    }
 
     const inlineCallBack = React.useCallback((item: any) => {
 

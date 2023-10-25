@@ -2222,6 +2222,7 @@ const EditTaskPopup = (Items: any) => {
                         }
                         if (ApproverData != undefined && ApproverData.length > 0) {
                             if (ApproverData[0].Id == currentUserId) {
+                                // EditData.TaskApprovers = EditData.TaskCreatorData
                                 EditData.TaskApprovers = []
                             }
                         }
@@ -2355,18 +2356,26 @@ const EditTaskPopup = (Items: any) => {
                     })
                 }
             }
+
+
             StatusOptions?.map((item: any) => {
                 if (PrecentStatus == item.value) {
                     setPercentCompleteStatus(item.status);
                     setTaskStatus(item.taskStatusComment);
                 }
             })
-            const finalData = tempArrayApprover.filter((val: any, id: any, array: any) => {
-                return array.indexOf(val) == id;
-            });
-            TaskAssignedTo = finalData;
-            TaskTeamMembers = finalData;
-            ApproverData = finalData;
+            if (ApproverData == undefined && ApproverData.length == 0) {
+                const finalData = tempArrayApprover.filter((val: any, id: any, array: any) => {
+                    return array.indexOf(val) == id;
+                });
+                TaskAssignedTo = finalData;
+                TaskTeamMembers = finalData;
+            }
+            else {
+                TaskAssignedTo = ApproverData;
+                TaskTeamMembers = ApproverData;
+            }
+
 
         }
 
