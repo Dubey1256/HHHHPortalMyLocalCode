@@ -2960,7 +2960,7 @@ const EditTaskPopup = (Items: any) => {
                 let date = new Date()
                 let timeStamp = date.getTime();
                 let imageIndex = index + 1
-                fileName = "T" + EditData.Id + '-Image' + imageIndex + "-" + EditData.Title?.replace(/["/':]/g, '')?.slice(0, 40) + " " + timeStamp + ".jpg";
+                fileName = "T" + EditData.Id + '-Image' + imageIndex + "-" + EditData.Title?.replace(/["/':?]/g, '')?.slice(0, 40) + " " + timeStamp + ".jpg";
                 let currentUserDataObject: any;
                 if (currentUserBackupArray != null && currentUserBackupArray.length > 0) {
                     currentUserDataObject = currentUserBackupArray[0];
@@ -6399,14 +6399,15 @@ const EditTaskPopup = (Items: any) => {
                             </ul>
                         </div>
                     </div>
-                    <footer className="float-end mt-1">
-                        <button type="button" className="btn btn-primary px-3 mx-1" onClick={UpdateApproverFunction}>
-                            Save
-                        </button>
-                        <button type="button" className="btn btn-default px-3" onClick={closeApproverPopup}>
-                            Cancel
-                        </button>
-
+                    <footer className="fixed-bottom">
+                        <div className="align-items-center d-flex me-3 pull-right px-4 py-2">
+                            <button type="button" className="btn btn-primary px-3 mx-1" onClick={UpdateApproverFunction}>
+                                Save
+                            </button>
+                            <button type="button" className="btn btn-default px-3" onClick={closeApproverPopup}>
+                                Cancel
+                            </button>
+                        </div>
                     </footer>
                 </div>
             </Panel>
