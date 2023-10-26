@@ -29,6 +29,8 @@ let SiteTaskListData: any = [];
 var MasterTaskListId: any;
 let SelectedFromTable: any = [];
 let ClientTimeDataBackup: any = [];
+let GloablChangeCountCC: any = 0;
+let GloablChangeCountSC: any = 0;
 const SiteCompositionComponent = (Props: any) => {
     const SiteData = Props.SiteTypes;
     var SitesTaggingData: any = Props.SitesTaggingData;
@@ -42,8 +44,8 @@ const SiteCompositionComponent = (Props: any) => {
     const callBack = Props.callBack;
     const currentListName = Props.currentListName;
     const ServicesTaskCheck = Props.isServiceTask;
-    const [SiteCompositionSettings, setSiteCompositionSettings] = useState<any>(Props.SiteCompositionSettings != undefined ? JSON.parse(Props.SiteCompositionSettings) : [{ Proportional: false, Manual: true, Protected: false, Delux: false, Standard: false }]);
-    const SiteCompositionSettingsBackup: any = Props.SiteCompositionSettings != undefined ? JSON.parse(Props.SiteCompositionSettings) : [{ Proportional: false, Manual: true, Protected: false, Delux: false, Standard: false }]
+    const [SiteCompositionSettings, setSiteCompositionSettings] = useState<any>(Props.SiteCompositionSettings != undefined ? JSON.parse(Props.SiteCompositionSettings) : [{ Proportional: false, Manual: true, Protected: false, Deluxe: false, Standard: false }]);
+    const SiteCompositionSettingsBackup: any = Props.SiteCompositionSettings != undefined ? JSON.parse(Props.SiteCompositionSettings) : [{ Proportional: false, Manual: true, Protected: false, Deluxe: false, Standard: false }]
     const SelectedClientCategoryFromProps = Props.SelectedClientCategory;
     const [SiteTypes, setSiteTypes] = useState<any>([]);
     const [selectedSiteCount, setSelectedSiteCount] = useState(Props.ClientTime?.length ? Props.ClientTime.length : 0);
@@ -108,7 +110,7 @@ const SiteCompositionComponent = (Props: any) => {
             }
         ]
 
-    const DeluxComposition = [
+    const DeluxeComposition = [
         {
             ClienTimeDescription: "50",
             Title: "EI",
@@ -199,8 +201,8 @@ const SiteCompositionComponent = (Props: any) => {
             if (SiteCompositionSettings[0].Proportional) {
                 setProportionalStatus(true);
             }
-            if (SiteCompositionSettings[0].Manual || SiteCompositionSettings[0].Delux || SiteCompositionSettings[0].Standard) {
-                if (SiteCompositionSettings[0].Delux || SiteCompositionSettings[0].Standard) {
+            if (SiteCompositionSettings[0].Manual || SiteCompositionSettings[0].Deluxe || SiteCompositionSettings[0].Standard) {
+                if (SiteCompositionSettings[0].Deluxe || SiteCompositionSettings[0].Standard) {
                     setProportionalStatus(true);
                     setIsPortfolioComposition(true);
                     setIsSCProtected(true);
@@ -213,7 +215,7 @@ const SiteCompositionComponent = (Props: any) => {
             // }
         }
         getChildDataForSelectedTask()
-    }, [SiteCompositionSettings])
+    }, [Props.SelectedClientCategory])
 
     const getSmartMetadataItemsByTaxType = function (metadataItems: any, taxType: any) {
         let Items: any = [];
@@ -250,8 +252,8 @@ const SiteCompositionComponent = (Props: any) => {
         if (SiteTypes != undefined && SiteTypes.length > 0) {
             SiteTypes.map((DataItem: any, DataIndex: any) => {
                 if (DataIndex == Index) {
-
                     if (DataItem.BtnStatus) {
+                        GloablChangeCountSC++;
                         DataItem.BtnStatus = false
                         DataItem.ClienTimeDescription = 0;
                         setSelectedSiteCount(selectedSiteCount - 1);
@@ -291,30 +293,30 @@ const SiteCompositionComponent = (Props: any) => {
                         // if (DataItem.StartEndDateValidation) {
                         //     alert("This site has an end date so you cannot add it to Site Composition.")
                         // } else {
-                            DataItem.BtnStatus = true
-                            DataItem.Date = Moment(new Date()).tz("Europe/Berlin").format("DD/MM/YYYY")
-                            DataItem.readOnly = true
-                            setSelectedSiteCount(selectedSiteCount + 1);
-                            const object = {
-                                Title: DataItem.Title,
-                                ClienTimeDescription: (100 / (selectedSiteCount + 1)).toFixed(1),
-                                localSiteComposition: true,
-                                SiteImages: DataItem.Item_x005F_x0020_Cover?.Url,
-                                Date: DataItem.Date
-                            }
-                            ClientTimeData.push(object);
-                            let tempData: any = [];
-                            ClientTimeData?.map((TimeData: any) => {
-                                TimeData.ClienTimeDescription = (100 / (selectedSiteCount + 1)).toFixed(1);
-                                tempData.push(TimeData);
-                            })
-                            setClientTimeData(tempData);
-                            SiteTaggingFinalData = tempData;
-                            SiteCompositionObject.ClientTime = tempData;
-                            SiteCompositionObject.selectedClientCategory = SelectedClientCategoryBackupArray;
-                            SiteCompositionObject.SiteCompositionSettings = SiteCompositionSettings;
-                            // callBack(SiteCompositionObject, "dataExits");
-                            // callBack(SiteCompositionObject);
+                        DataItem.BtnStatus = true
+                        DataItem.Date = Moment(new Date()).tz("Europe/Berlin").format("DD/MM/YYYY")
+                        DataItem.readOnly = true
+                        setSelectedSiteCount(selectedSiteCount + 1);
+                        const object = {
+                            Title: DataItem.Title,
+                            ClienTimeDescription: (100 / (selectedSiteCount + 1)).toFixed(1),
+                            localSiteComposition: true,
+                            SiteImages: DataItem.Item_x005F_x0020_Cover?.Url,
+                            Date: DataItem.Date
+                        }
+                        ClientTimeData.push(object);
+                        let tempData: any = [];
+                        ClientTimeData?.map((TimeData: any) => {
+                            TimeData.ClienTimeDescription = (100 / (selectedSiteCount + 1)).toFixed(1);
+                            tempData.push(TimeData);
+                        })
+                        setClientTimeData(tempData);
+                        SiteTaggingFinalData = tempData;
+                        SiteCompositionObject.ClientTime = tempData;
+                        SiteCompositionObject.selectedClientCategory = SelectedClientCategoryBackupArray;
+                        SiteCompositionObject.SiteCompositionSettings = SiteCompositionSettings;
+                        // callBack(SiteCompositionObject, "dataExits");
+                        // callBack(SiteCompositionObject);
 
                         // }
                     }
@@ -418,7 +420,7 @@ const SiteCompositionComponent = (Props: any) => {
             SiteCompositionSettings[0].Proportional = true;
             SiteCompositionSettings[0].Manual = false;
             SiteCompositionSettings[0].Standard = false;
-            SiteCompositionSettings[0].Delux = false;
+            SiteCompositionSettings[0].Deluxe = false;
             // setSiteCompositionSettings();
             // makeSiteCompositionConfigurations();
             setProportionalStatus(true);
@@ -446,7 +448,7 @@ const SiteCompositionComponent = (Props: any) => {
             SiteCompositionSettings[0].Manual = true;
             SiteCompositionSettings[0].Proportional = false;
             SiteCompositionSettings[0].Standard = false;
-            SiteCompositionSettings[0].Delux = false;
+            SiteCompositionSettings[0].Deluxe = false;
             setProportionalStatus(false);
             setIsPortfolioComposition(false);
             setCheckBoxStatus(false);
@@ -469,7 +471,7 @@ const SiteCompositionComponent = (Props: any) => {
 
         if (Type == "Protected") {
             if (SiteCompositionSettings[0]?.Protected == true) {
-                if (SiteCompositionSettings[0].Delux == true || SiteCompositionSettings[0].Standard == true) {
+                if (SiteCompositionSettings[0].Deluxe == true || SiteCompositionSettings[0].Standard == true) {
                     // setIsSCProtected(true);
                 } else {
                     SiteCompositionSettings[0].Protected = false;
@@ -482,18 +484,18 @@ const SiteCompositionComponent = (Props: any) => {
                 setIsSCProtected(true);
             }
         }
-        if (Type == "Delux") {
-            if (SiteCompositionSettings[0]?.Delux == true) {
-                SiteCompositionSettings[0].Delux = false;
+        if (Type == "Deluxe") {
+            if (SiteCompositionSettings[0]?.Deluxe == true) {
+                SiteCompositionSettings[0].Deluxe = false;
                 setIsSCProtected(false);
             } else {
-                SiteCompositionSettings[0].Delux = true;
+                SiteCompositionSettings[0].Deluxe = true;
                 SiteCompositionSettings[0].Standard = false;
                 SiteCompositionSettings[0].Proportional = false;
                 SiteCompositionSettings[0].Manual = false;
                 refreshSiteCompositionConfigurations();
-                ChangeSiteCompositionInstant("Delux");
-                SiteTaggingFinalData = DeluxComposition;
+                ChangeSiteCompositionInstant("Deluxe");
+                SiteTaggingFinalData = DeluxeComposition;
                 setProportionalStatus(true);
                 setIsPortfolioComposition(true);
                 setIsSCProtected(true);
@@ -505,7 +507,7 @@ const SiteCompositionComponent = (Props: any) => {
                 setIsSCProtected(false);
             } else {
                 SiteCompositionSettings[0].Standard = true;
-                SiteCompositionSettings[0].Delux = false;
+                SiteCompositionSettings[0].Deluxe = false;
                 SiteCompositionSettings[0].Proportional = false;
                 SiteCompositionSettings[0].Manual = false;
                 refreshSiteCompositionConfigurations();
@@ -574,9 +576,9 @@ const SiteCompositionComponent = (Props: any) => {
                 TempSiteCompsotion.push(SiteData)
             })
         }
-        if (UsedFor == "Delux") {
+        if (UsedFor == "Deluxe") {
             SiteTypes?.map((SiteData: any) => {
-                DeluxComposition?.map((STItems: any) => {
+                DeluxeComposition?.map((STItems: any) => {
                     if (SiteData.Title == STItems.Title || (SiteData.Title ==
                         "DA E+E" && STItems.Title == "ALAKDigital")) {
                         SiteData.ClienTimeDescription = STItems.ClienTimeDescription;
@@ -874,12 +876,12 @@ const SiteCompositionComponent = (Props: any) => {
         let TotalPercentageCount: any = 0;
         let TaskShuoldBeUpdate: any = true;
 
-        if (SiteTaggingFinalData?.length > 0) {
+        if (SiteTaggingFinalData?.length > 0 || GloablChangeCountSC > 0) {
             SitesTaggingData = SiteTaggingFinalData
         } else {
             SitesTaggingData = ClientTimeDataBackup;
         }
-        if (SiteClientCatgeoryFinalData?.length > 0) {
+        if (SiteClientCatgeoryFinalData?.length > 0 || GloablChangeCountCC > 0) {
             ClientCategoryData = SiteClientCatgeoryFinalData
         } else {
             ClientCategoryData = SelectedClientCategoryFromProps;
@@ -963,14 +965,14 @@ const SiteCompositionComponent = (Props: any) => {
             try {
                 let web = new Web(AllListIdData.siteUrl);
                 await web.lists.getById(AllListIdData.MasterTaskListID).items.getById(ItemId).update({
-                    Sitestagging: SiteTaggingJSON?.length > 0 ? JSON.stringify(SiteTaggingJSON) : JSON.stringify(ClientTimeDataBackup),
+                    Sitestagging: SiteTaggingJSON?.length > 0 ? JSON.stringify(SiteTaggingJSON) : null,
                     ClientCategoryId: { "results": (ClientCategoryIDs != undefined && ClientCategoryIDs.length > 0) ? ClientCategoryIDs : [] },
                     SiteCompositionSettings: (SiteCompositionSettingData != undefined && SiteCompositionSettingData.length > 0) ? JSON.stringify(SiteCompositionSettingData) : SiteCompositionSettings,
                 }).then(() => {
                     console.log("Site Composition Updated !!!");
                     if (!ComponentChildExist) {
                         // Props.closePopupCallBack();
-                        closeComponentChildrenPopup();
+                        closeComponentChildrenPopup("Save");
                         callBack(SiteCompositionObject, "dataExits");
                     }
                 })
@@ -997,6 +999,7 @@ const SiteCompositionComponent = (Props: any) => {
     }
 
     const removeSelectedClientCategory = (SiteType: any) => {
+        GloablChangeCountCC++;
         if (SiteType == "EPS") {
             setEPSClientCategory([])
             EPSClientCategory.pop();
@@ -1022,13 +1025,13 @@ const SiteCompositionComponent = (Props: any) => {
     }
 
     // ************************ this is for the auto Suggestion fuction for all Client Category ******************
-    const closeComponentChildrenPopup = () => {
+    const closeComponentChildrenPopup = (FnType: any) => {
         setComponentChildrenPopupStatus(false);
         setTimeout(() => {
-            Props.closePopupCallBack();
-            callBack(SiteCompositionObject, "dataExits");
+            Props.closePopupCallBack(FnType);
+            // callBack(SiteCompositionObject, "dataExits");
             makeAllGlobalVariableAsDefault();
-        }, 2000);
+        }, 1500);
     }
 
     const autoSuggestionsForClientCategoryIdividual = (e: any, siteType: any, SiteId: any) => {
@@ -1145,7 +1148,7 @@ const SiteCompositionComponent = (Props: any) => {
                 CommonFunctionForUpdateCC(MasterTaskListData, SiteTaskListData)
             }
         } else {
-            closeComponentChildrenPopup();
+            closeComponentChildrenPopup("Save");
             // Props.closePopupCallBack();
         }
     }
@@ -1187,7 +1190,7 @@ const SiteCompositionComponent = (Props: any) => {
                 }
             })
         }
-        closeComponentChildrenPopup();
+        closeComponentChildrenPopup("save");
         // Props.closePopupCallBack();
     }
 
@@ -1213,7 +1216,7 @@ const SiteCompositionComponent = (Props: any) => {
             finalSiteCompositionSettingData = SiteCompositionSettings;
         }
         if (siteType?.length > 1 && siteType != 'Shareweb') {
-            finalSiteCompositionSettingData = [{ Proportional: false, Manual: true, Protected: false, Delux: false, Standard: false }]
+            finalSiteCompositionSettingData = [{ Proportional: false, Manual: true, Protected: false, Deluxe: false, Standard: false }]
         }
         let SiteCompositionDataForTask: any = [];
         if (TaskType == "SiteTasks") {
@@ -1307,7 +1310,7 @@ const SiteCompositionComponent = (Props: any) => {
                 <button type="button" className="btn btn-primary px-3 mx-1" onClick={SaveClientCategoryFunction}>
                     Save
                 </button>
-                <button type="button" className="btn btn-default px-3 mx-1" onClick={closeComponentChildrenPopup} >
+                <button type="button" className="btn btn-default px-3 mx-1" onClick={() => closeComponentChildrenPopup("Save")} >
                     Cancel
                 </button>
             </footer>
@@ -1384,13 +1387,13 @@ const SiteCompositionComponent = (Props: any) => {
                 <label className="SpfxCheckRadio me-2">
                     <input
                         type="radio"
-                        id="Delux"
+                        id="Deluxe"
                         name="SiteCompositions"
-                        defaultChecked={SiteCompositionSettings ? SiteCompositionSettings[0]?.Delux : false}
-                        title="add Delux Time"
+                        defaultChecked={SiteCompositionSettings ? SiteCompositionSettings[0]?.Deluxe : false}
+                        title="add Deluxe Time"
                         className="radio"
-                        value={SiteCompositionSettings ? SiteCompositionSettings[0]?.Delux : false}
-                        onChange={() => ChangeSiteCompositionSettings("Delux")}
+                        value={SiteCompositionSettings ? SiteCompositionSettings[0]?.Deluxe : false}
+                        onChange={() => ChangeSiteCompositionSettings("Deluxe")}
                     />
                     Deluxe</label>
                 <label className="SpfxCheckRadio">
@@ -1463,35 +1466,40 @@ const SiteCompositionComponent = (Props: any) => {
 
                                             </td>
                                             <td className="m-0 p-0 align-middle" style={{ width: "15%" }}>
-                                                <img src={siteData.Item_x005F_x0020_Cover ? siteData.Item_x005F_x0020_Cover.Url : ""} style={{ width: '25px' }} className="mx-2" />
-                                                {siteData.Title}
+                                                <div className="alignCenter">
+                                                    <img src={siteData.Item_x005F_x0020_Cover ? siteData.Item_x005F_x0020_Cover.Url : ""} className="mx-2 workmember" />
+                                                    {siteData.Title}
+                                                    <span></span>
+                                                </div>
                                             </td>
                                             <td
                                                 // className="m-0 p-1"
                                                 className={IsSCProtected == true ? "Disabled-Link m-0 p-1 opacity-75" : "m-0 p-1"}
                                                 style={{ width: "10%" }}
                                             >
-                                                {ProportionalStatus ?
-                                                    <>{isPortfolioComposition && siteData.BtnStatus ? <input
-                                                        type="number" min="1"
-                                                        value={siteData.ClienTimeDescription ? Number(siteData.ClienTimeDescription).toFixed(1) : null}
-                                                        className="form-control p-1" readOnly={true} style={{ cursor: "not-allowed", width: '100%' }}
-                                                        onChange={(e) => ChangeTimeManuallyFunction(e, siteData.Title)}
-                                                    /> : <input type="number" min="1"
-                                                        style={ProportionalStatus && siteData.BtnStatus ? { cursor: "not-allowed", width: "100%" } : {}}
-                                                        defaultValue={siteData.BtnStatus ? (100 / selectedSiteCount).toFixed(1) : ""}
-                                                        value={siteData.BtnStatus ? (100 / selectedSiteCount).toFixed(1) : ""}
-                                                        className="form-control p-1" readOnly={ProportionalStatus}
-                                                    />}  </>
-                                                    : <> {siteData.BtnStatus ?
-                                                        <input
-                                                            type="number" min="1" style={{ width: '100%' }}
-                                                            defaultValue={siteData.ClienTimeDescription ? Number(siteData.ClienTimeDescription).toFixed(2) : null}
-                                                            className="form-control p-1"
+                                                <div className="input-group alignCenter">
+                                                    {ProportionalStatus ?
+                                                        <>{isPortfolioComposition && siteData.BtnStatus ? <input
+                                                            type="number" min="1"
+                                                            value={siteData.ClienTimeDescription ? Number(siteData.ClienTimeDescription).toFixed(1) : null}
+                                                            className="form-control p-1" readOnly={true} style={{ cursor: "not-allowed", width: '100%' }}
                                                             onChange={(e) => ChangeTimeManuallyFunction(e, siteData.Title)}
-                                                        /> : <input type="number" className="form-control" value={''} readOnly={true} style={{ cursor: "not-allowed", width: "100%" }}
-                                                        />}</>
-                                                }
+                                                        /> : <input type="number" min="1"
+                                                            style={ProportionalStatus && siteData.BtnStatus ? { cursor: "not-allowed", width: "100%" } : {}}
+                                                            defaultValue={siteData.BtnStatus ? (100 / selectedSiteCount).toFixed(1) : ""}
+                                                            value={siteData.BtnStatus ? (100 / selectedSiteCount).toFixed(1) : ""}
+                                                            className="form-control p-1" readOnly={ProportionalStatus}
+                                                        />}  </>
+                                                        : <> {siteData.BtnStatus ?
+                                                            <input
+                                                                type="number" min="1" style={{ width: '100%' }}
+                                                                defaultValue={siteData.ClienTimeDescription ? Number(siteData.ClienTimeDescription).toFixed(2) : null}
+                                                                className="form-control p-1"
+                                                                onChange={(e) => ChangeTimeManuallyFunction(e, siteData.Title)}
+                                                            /> : <input type="number" className="form-control" value={''} readOnly={true} style={{ cursor: "not-allowed", width: "100%" }}
+                                                            />}</>
+                                                    }
+                                                </div>
                                             </td>
                                             <td className="m-0 p-1 align-middle" style={{ width: "3%" }}>
                                                 <span>{siteData.BtnStatus ? "%" : ''}</span>

@@ -176,6 +176,8 @@ let AllAvailableTitle: any = [];
             })
         }
        setsmartTimeTotal(TotalTime)
+
+       item?.callbackTotalTime(TotalTime)
         setAdditionalTime(newArray)
         setTimeSheet(TaskTimeSheetCategoriesGrouping);
     }

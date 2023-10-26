@@ -514,7 +514,7 @@ function EditProjectPopup(item: any) {
         "Author/Id",
         "Author/Title",
         "Editor/Id",
-        "ResponsibleTeam/Id","ResponsibleTeam/Title",
+        "ResponsibleTeam/Id", "ResponsibleTeam/Title",
         "Editor/Title",
         "ClientCategory/Id",
         "ClientCategory/Title"
@@ -617,12 +617,16 @@ function EditProjectPopup(item: any) {
       }
       item.siteType = "Master Tasks";
       item.taskLeader = "None";
-      if (
-        item.AssignedTo != undefined &&
-        item.AssignedTo.results != undefined &&
-        item.AssignedTo.results.length > 0
-      )
-        item.taskLeader = getMultiUserValues(item);
+      if (item?.AssignedTo?.length > 0) {
+        setTaskAssignedTo(item?.AssignedTo);
+      }
+      if (item?.ResponsibleTeam?.length > 0) {
+        setTaskResponsibleTeam(item?.ResponsibleTeam);
+      }
+      if (item?.TeamMembers?.length > 0) {
+        setTaskTeamMembers(item?.TeamMembers);
+      }
+      item.taskLeader = getMultiUserValues(item);
       if (item.Task_x0020_Type == undefined)
         item.Task_x0020_Type = "Activity Tasks";
       if (item.DueDate != undefined) {
@@ -1040,21 +1044,21 @@ function EditProjectPopup(item: any) {
     });
     if (TaskAssignedTo != undefined && TaskAssignedTo?.length > 0) {
       TaskAssignedTo?.map((taskInfo) => {
-          AssignedToIds.push(taskInfo.Id);
+        AssignedToIds.push(taskInfo.Id);
       })
-  }
+    }
 
-  if (TaskTeamMembers != undefined && TaskTeamMembers?.length > 0) {
-    TaskTeamMembers?.map((taskInfo) => {
+    if (TaskTeamMembers != undefined && TaskTeamMembers?.length > 0) {
+      TaskTeamMembers?.map((taskInfo) => {
         TeamMemberIds.push(taskInfo.Id);
-    })
-}
+      })
+    }
 
-if (TaskResponsibleTeam != undefined && TaskResponsibleTeam?.length > 0) {
-  TaskResponsibleTeam?.map((taskInfo) => {
-      ResponsibleTeamIds.push(taskInfo.Id);
-  })
-}
+    if (TaskResponsibleTeam != undefined && TaskResponsibleTeam?.length > 0) {
+      TaskResponsibleTeam?.map((taskInfo) => {
+        ResponsibleTeamIds.push(taskInfo.Id);
+      })
+    }
     let selectedPortfoliosData: any[] = [];
     if (projectTaggedPortfolios !== undefined && projectTaggedPortfolios.length > 0) {
       $.each(projectTaggedPortfolios, function (index: any, smart: any) {
@@ -1202,55 +1206,55 @@ if (TaskResponsibleTeam != undefined && TaskResponsibleTeam?.length > 0) {
   const DDComponentCallBack = (dt: any) => {
     setTeamConfig(dt);
     console.log(TeamConfig);
-  //  Changes
-  if (dt?.AssignedTo?.length > 0) {
-    let tempArray: any = [];
-    dt.AssignedTo?.map((arrayData: any) => {
+    //  Changes
+    if (dt?.AssignedTo?.length > 0) {
+      let tempArray: any = [];
+      dt.AssignedTo?.map((arrayData: any) => {
         if (arrayData.AssingedToUser != null) {
-            tempArray.push(arrayData.AssingedToUser)
+          tempArray.push(arrayData.AssingedToUser)
         } else {
-            tempArray.push(arrayData);
+          tempArray.push(arrayData);
         }
-    })
-    setTaskAssignedTo(tempArray);
-    EditData.AssignedTo = tempArray;
-} else {
-    setTaskAssignedTo([]);
-    EditData.AssignedTo = [];
-}
-if (dt?.TeamMemberUsers?.length > 0) {
-    let tempArray: any = [];
-    dt.TeamMemberUsers?.map((arrayData: any) => {
+      })
+      setTaskAssignedTo(tempArray);
+      EditData.AssignedTo = tempArray;
+    } else {
+      setTaskAssignedTo([]);
+      EditData.AssignedTo = [];
+    }
+    if (dt?.TeamMemberUsers?.length > 0) {
+      let tempArray: any = [];
+      dt.TeamMemberUsers?.map((arrayData: any) => {
         if (arrayData.AssingedToUser != null) {
-            tempArray.push(arrayData.AssingedToUser)
+          tempArray.push(arrayData.AssingedToUser)
         } else {
-            tempArray.push(arrayData);
+          tempArray.push(arrayData);
         }
-    })
-    setTaskTeamMembers(tempArray);
-    EditData.TeamMembers = tempArray;
-} else {
-    setTaskTeamMembers([]);
-    EditData.TeamMembers = [];
-}
-if (dt?.ResponsibleTeam?.length > 0) {
-    let tempArray: any = [];
-    dt.ResponsibleTeam?.map((arrayData: any) => {
+      })
+      setTaskTeamMembers(tempArray);
+      EditData.TeamMembers = tempArray;
+    } else {
+      setTaskTeamMembers([]);
+      EditData.TeamMembers = [];
+    }
+    if (dt?.ResponsibleTeam?.length > 0) {
+      let tempArray: any = [];
+      dt.ResponsibleTeam?.map((arrayData: any) => {
         if (arrayData.AssingedToUser != null) {
-            tempArray.push(arrayData.AssingedToUser)
+          tempArray.push(arrayData.AssingedToUser)
         } else {
-            tempArray.push(arrayData);
+          tempArray.push(arrayData);
         }
-    })
-    setTaskResponsibleTeam(tempArray);
-    EditData.ResponsibleTeam = tempArray;
-} else {
-    setTaskResponsibleTeam([]);
-    EditData.ResponsibleTeam = [];
-}
+      })
+      setTaskResponsibleTeam(tempArray);
+      EditData.ResponsibleTeam = tempArray;
+    } else {
+      setTaskResponsibleTeam([]);
+      EditData.ResponsibleTeam = [];
+    }
 
 
-  // ChangesEnd
+    // ChangesEnd
 
   };
   const deleteCategories = (id: any) => {
@@ -1479,16 +1483,16 @@ if (dt?.ResponsibleTeam?.length > 0) {
                               <div className="row">
                                 <div className="col-sm-6">
                                   <div className="input-group">
-                                  <label className="form-label full-width">Status</label>
-                                  <input type="text" maxLength={3} placeholder="% Complete" className="form-control px-2"
-                                    defaultValue={EditData?.PercentComplete != undefined ? Number(EditData.PercentComplete).toFixed(0) : null}
-                                    value={EditData?.PercentComplete != undefined ? Number(EditData.PercentComplete).toFixed(0) : null}
-                                    onChange={(e) => StatusAutoSuggestion(e.target.value)} />
-                                     <span className="input-group-text" title="Status Popup" onClick={() => setTaskStatusPopup(true)}>
-                                    <span title="Edit Task" className="svg__iconbox svg__icon--editBox"></span>
-                                     </span>
-                                    </div>
-                               
+                                    <label className="form-label full-width">Status</label>
+                                    <input type="text" maxLength={3} placeholder="% Complete" className="form-control px-2"
+                                      defaultValue={EditData?.PercentComplete != undefined ? Number(EditData.PercentComplete).toFixed(0) : null}
+                                      value={EditData?.PercentComplete != undefined ? Number(EditData.PercentComplete).toFixed(0) : null}
+                                      onChange={(e) => StatusAutoSuggestion(e.target.value)} />
+                                    <span className="input-group-text" title="Status Popup" onClick={() => setTaskStatusPopup(true)}>
+                                      <span title="Edit Task" className="svg__iconbox svg__icon--editBox"></span>
+                                    </span>
+                                  </div>
+
                                   {PercentCompleteStatus?.length > 0 ?
                                     <span className="full-width SpfxCheckRadio">
                                       <input type='radio' className="radio" checked />
@@ -1507,15 +1511,15 @@ if (dt?.ResponsibleTeam?.length > 0) {
                                       (userDtl: any, index: any) => {
                                         return (
                                           <div className="TaskUsers">
-                                          <a target="_blank"
-                                          >
-                                            <img className="ProirityAssignedUserPhoto ms-2" src={
+                                            <a target="_blank"
+                                            >
+                                              <img className="ProirityAssignedUserPhoto ms-2" src={
                                                 userDtl?.Item_x0020_Cover?.Url
                                                   ? userDtl?.Item_x0020_Cover?.Url
                                                   : "https://hhhhteams.sharepoint.com/sites/HHHH/GmBH/SiteCollectionImages/ICONS/32/icon_user.jpg"
                                               }
-                                            />
-                                          </a>
+                                              />
+                                            </a>
                                           </div>
                                         );
                                       }
@@ -1619,104 +1623,104 @@ if (dt?.ResponsibleTeam?.length > 0) {
                             </div>
                             <ul className="p-0 mt-1 mb-0">
 
-                            <li className="form-check">
-                              <label className="SpfxCheckRadio">
-                              <input
-                                className="radio"
-                                name="NotStarted"
-                                type="radio"
-                                value="Not Started"
-                                checked={
-                                  EditData.AdminStatus === "Not Started"
-                                    ? true
-                                    : false
-                                }
-                                onChange={(e) =>
-                                  setStatus(EditData, "Not Started")
-                                }
-                              ></input>
-                                 Not Started{" "}
-                              </label>
+                              <li className="form-check">
+                                <label className="SpfxCheckRadio">
+                                  <input
+                                    className="radio"
+                                    name="NotStarted"
+                                    type="radio"
+                                    value="Not Started"
+                                    checked={
+                                      EditData.AdminStatus === "Not Started"
+                                        ? true
+                                        : false
+                                    }
+                                    onChange={(e) =>
+                                      setStatus(EditData, "Not Started")
+                                    }
+                                  ></input>
+                                  Not Started{" "}
+                                </label>
 
-                            </li>
-                            <li className="form-check"> 
-                            <label className="SpfxCheckRadio">
-                              <input
-                                className="radio"
-                                name="NotStarted"
-                                type="radio"
-                                value="In Preparation"
-                                onChange={(e) =>
-                                  setStatus(EditData, "In Preparation")
-                                }
-                                checked={
-                                  EditData.AdminStatus === "In Preparation"
-                                    ? true
-                                    : false
-                                }
-                              ></input>
-                             
-                                {" "}
-                                In Preparation
-                              </label>
-                            </li>
-                            <li className="form-check">  
-                            <label className="SpfxCheckRadio">
-                              <input
-                                className="radio"
-                                name="NotStarted"
-                                type="radio"
-                                value="In Development"
-                                onChange={(e) =>
-                                  setStatus(EditData, "In Development")
-                                }
-                                checked={
-                                  EditData.AdminStatus === "In Development"
-                                    ? true
-                                    : false
-                                }
-                              ></input>
-                            
-                                {" "}
-                                In Development{" "}
-                              </label>
-                            </li>
-                            <li className="form-check"> 
-                            <label className="SpfxCheckRadio">
-                              <input
-                                className="radio"
-                                name="NotStarted"
-                                type="radio"
-                                value="Active"
-                                onChange={(e) => setStatus(EditData, "Active")}
-                                checked={
-                                  EditData.AdminStatus === "Active"
-                                    ? true
-                                    : false
-                                }
-                              ></input>
-                             Active</label>
-                            </li>
-                            <li className="form-check">  
-                            <label className="SpfxCheckRadio">
-                              <input
-                                className="radio"
-                                name="NotStarted"
-                                type="radio"
-                                value="Archived"
-                                onChange={(e) =>
-                                  setStatus(EditData, "Archived")
-                                }
-                                checked={
-                                  EditData.AdminStatus === "Archived"
-                                    ? true
-                                    : false
-                                }
-                              ></input>
-                            
-                                Archived{" "}
-                              </label>
-                            </li>
+                              </li>
+                              <li className="form-check">
+                                <label className="SpfxCheckRadio">
+                                  <input
+                                    className="radio"
+                                    name="NotStarted"
+                                    type="radio"
+                                    value="In Preparation"
+                                    onChange={(e) =>
+                                      setStatus(EditData, "In Preparation")
+                                    }
+                                    checked={
+                                      EditData.AdminStatus === "In Preparation"
+                                        ? true
+                                        : false
+                                    }
+                                  ></input>
+
+                                  {" "}
+                                  In Preparation
+                                </label>
+                              </li>
+                              <li className="form-check">
+                                <label className="SpfxCheckRadio">
+                                  <input
+                                    className="radio"
+                                    name="NotStarted"
+                                    type="radio"
+                                    value="In Development"
+                                    onChange={(e) =>
+                                      setStatus(EditData, "In Development")
+                                    }
+                                    checked={
+                                      EditData.AdminStatus === "In Development"
+                                        ? true
+                                        : false
+                                    }
+                                  ></input>
+
+                                  {" "}
+                                  In Development{" "}
+                                </label>
+                              </li>
+                              <li className="form-check">
+                                <label className="SpfxCheckRadio">
+                                  <input
+                                    className="radio"
+                                    name="NotStarted"
+                                    type="radio"
+                                    value="Active"
+                                    onChange={(e) => setStatus(EditData, "Active")}
+                                    checked={
+                                      EditData.AdminStatus === "Active"
+                                        ? true
+                                        : false
+                                    }
+                                  ></input>
+                                  Active</label>
+                              </li>
+                              <li className="form-check">
+                                <label className="SpfxCheckRadio">
+                                  <input
+                                    className="radio"
+                                    name="NotStarted"
+                                    type="radio"
+                                    value="Archived"
+                                    onChange={(e) =>
+                                      setStatus(EditData, "Archived")
+                                    }
+                                    checked={
+                                      EditData.AdminStatus === "Archived"
+                                        ? true
+                                        : false
+                                    }
+                                  ></input>
+
+                                  Archived{" "}
+                                </label>
+                              </li>
                             </ul>
                           </div>
                           <div className="col-sm-6 pe-0">
@@ -1817,7 +1821,7 @@ if (dt?.ResponsibleTeam?.length > 0) {
                           </div>
 
                         </div>
-                       
+
                       </div>
                       <div className="col-sm-3 ">
                         <div className="col time-status">
@@ -1834,50 +1838,50 @@ if (dt?.ResponsibleTeam?.length > 0) {
                             />
                           </div>
                           <ul className="p-0 mt-1 mb-0">
-                              <li className="form-check">
-                          <label className="SpfxCheckRadio">
-                            <input
-                              className="radio"
-                              name="radioPriority"
-                              type="radio"
-                              value="(1) High"
-                              onChange={(e) => setPriority(EditData, 8)}
-                              checked={
-                                EditData.Priority === "(1) High" ? true : false
-                              }
-                            ></input>
-                            High</label>
-                              </li>
-                              <li className="form-check">
-                          <label className="SpfxCheckRadio">
-                            <input
-                              className="radio"
-                              name="radioPriority"
-                              type="radio"
-                              value="(2) Normal"
-                              onChange={(e) => setPriority(EditData, 4)}
-                              checked={
-                                EditData.Priority === "(2) Normal"
-                                  ? true
-                                  : false
-                              }
-                            ></input>
-                            Normal</label>
-                              </li>
-                              <li className="form-check">
-                          <label className="SpfxCheckRadio">
-                            <input
-                              className="radio"
-                              name="radioPriority"
-                              type="radio"
-                              value="(3) Low"
-                              onChange={(e) => setPriority(EditData, 1)}
-                              checked={
-                                EditData.Priority === "(3) Low" ? true : false
-                              }
-                            ></input>
-                           Low</label>
-                             </li>
+                            <li className="form-check">
+                              <label className="SpfxCheckRadio">
+                                <input
+                                  className="radio"
+                                  name="radioPriority"
+                                  type="radio"
+                                  value="(1) High"
+                                  onChange={(e) => setPriority(EditData, 8)}
+                                  checked={
+                                    EditData.Priority === "(1) High" ? true : false
+                                  }
+                                ></input>
+                                High</label>
+                            </li>
+                            <li className="form-check">
+                              <label className="SpfxCheckRadio">
+                                <input
+                                  className="radio"
+                                  name="radioPriority"
+                                  type="radio"
+                                  value="(2) Normal"
+                                  onChange={(e) => setPriority(EditData, 4)}
+                                  checked={
+                                    EditData.Priority === "(2) Normal"
+                                      ? true
+                                      : false
+                                  }
+                                ></input>
+                                Normal</label>
+                            </li>
+                            <li className="form-check">
+                              <label className="SpfxCheckRadio">
+                                <input
+                                  className="radio"
+                                  name="radioPriority"
+                                  type="radio"
+                                  value="(3) Low"
+                                  onChange={(e) => setPriority(EditData, 1)}
+                                  checked={
+                                    EditData.Priority === "(3) Low" ? true : false
+                                  }
+                                ></input>
+                                Low</label>
+                            </li>
                           </ul>
                           <div className="col mt-2">
                             <div className="input-group full-width">
@@ -1901,9 +1905,9 @@ if (dt?.ResponsibleTeam?.length > 0) {
                                       return (
                                         <>
                                           <span style={{ backgroundColor: com?.PortfolioType?.Color }} className="block w-100" >
-                                            <a className='hreflink wid90' target="_blank" href={`${AllListId?.siteUrl}/SitePages/Portfolio-Profile.aspx?taskId=${com.ID}`}>{com.Title}</a>                                     
-                                              <span  onClick={() => RemoveSelectedServiceComponent(com.Id, "Portfolios")} className="bg-light hreflink ml-auto svg__icon--cross svg__iconbox"></span>
-      
+                                            <a className='hreflink wid90' target="_blank" href={`${AllListId?.siteUrl}/SitePages/Portfolio-Profile.aspx?taskId=${com.ID}`}>{com.Title}</a>
+                                            <span onClick={() => RemoveSelectedServiceComponent(com.Id, "Portfolios")} className="bg-light hreflink ml-auto svg__icon--cross svg__iconbox"></span>
+
                                           </span>
                                         </>
                                       )
@@ -1933,7 +1937,7 @@ if (dt?.ResponsibleTeam?.length > 0) {
                           AllListId={item?.AllListId}
                         ></CommentCard>
                       </div>
-                      <div className="col-sm-8">
+                      <div className="col-sm-12">
                         <div className="input-group mb-2">
                           <label className="form-label  full-width">Relevant URL</label>
                           <input
@@ -2066,7 +2070,7 @@ if (dt?.ResponsibleTeam?.length > 0) {
                                     >
                                       <span className="pull-right">
                                         <input
-                                        className="form-check-input"
+                                          className="form-check-input"
                                           type="checkbox"
                                           defaultChecked={
                                             EditData.BackgroundVerified === true
@@ -2127,7 +2131,7 @@ if (dt?.ResponsibleTeam?.length > 0) {
                                     >
                                       <span className="pull-right">
                                         <input
-                                        className="form-check-input"
+                                          className="form-check-input"
                                           type="checkbox"
                                           defaultChecked={
                                             EditData.IdeaVerified === true
@@ -2188,7 +2192,7 @@ if (dt?.ResponsibleTeam?.length > 0) {
                                     >
                                       <span className="pull-right">
                                         <input
-                                        className="form-check-input"
+                                          className="form-check-input"
                                           type="checkbox"
                                           defaultChecked={
                                             EditData.DeliverablesVerified ===
@@ -2222,7 +2226,7 @@ if (dt?.ResponsibleTeam?.length > 0) {
               </div>
             </div>
 
-            <footer className="bg-f4" style={{position:"absolute", bottom:"0", width:"100%", zIndex:"9"}}>
+            <footer className="bg-f4" style={{ position: "absolute", bottom: "0", width: "100%", zIndex: "9" }}>
               <div className="align-items-center d-flex justify-content-between me-3 px-4 py-2">
                 <div>
                   <div>
@@ -2256,9 +2260,9 @@ if (dt?.ResponsibleTeam?.length > 0) {
                   </div>
                   <div>
                     <a className="hreflink siteColor" onClick={() => deleteTask()}>
-                    <span className="alignIcon svg__iconbox hreflink mini svg__icon--trash"></span>
-                     {" "}
-                     <span> Delete this item</span>
+                      <span className="alignIcon svg__iconbox hreflink mini svg__icon--trash"></span>
+                      {" "}
+                      <span> Delete this item</span>
                     </a>
                     <span>
                       {" "}
@@ -2277,7 +2281,7 @@ if (dt?.ResponsibleTeam?.length > 0) {
                 <div>
                   <div className="footer-right">
                     <span>
-                      <a  className="mx-2 siteColor"
+                      <a className="mx-2 siteColor"
                         target="_blank"
                         data-interception="off"
                         href={`${AllListId?.siteUrl}/SitePages/Project-Management.aspx?ProjectId=${EditData.Id}`}                     >
@@ -2285,7 +2289,7 @@ if (dt?.ResponsibleTeam?.length > 0) {
                         Go to Profile page
                       </a>
                       ||
-                      <span className="hreflink mx-2 siteColor f-mailicons"><span title="Edit Task" className="svg__iconbox svg__icon--mail"></span>Share This Task</span>                    
+                      <span className="hreflink mx-2 siteColor f-mailicons"><span title="Edit Task" className="svg__iconbox svg__icon--mail"></span>Share This Task</span>
                       <a
                         target="_blank"
                         data-interception="off"
@@ -2374,7 +2378,7 @@ if (dt?.ResponsibleTeam?.length > 0) {
               </tbody>
             </table>
           </div>
-       
+
         </div>
       </Panel>
     </>

@@ -13,10 +13,8 @@ import ShowTaskTeamMembers from "../../../globalComponents/ShowTaskTeamMembers";
 import { PortfolioStructureCreationCard } from "../../../globalComponents/tableControls/PortfolioStructureCreation";
 import CreateActivity from "../../servicePortfolio/components/CreateActivity";
 import CreateWS from "../../servicePortfolio/components/CreateWS";
-import "bootstrap/dist/css/bootstrap.min.css";
 import Tooltip from "../../../globalComponents/Tooltip";
 import { ColumnDef } from "@tanstack/react-table";
-import "bootstrap/dist/css/bootstrap.min.css";
 import HighlightableCell from "../../../globalComponents/GroupByReactTableComponents/highlight";
 import Loader from "react-loader";
 import { Bars } from 'react-loader-spinner'
@@ -1281,7 +1279,7 @@ function TeamPortlioTable(SelectedProp: any) {
                 accessorFn: (row) => row?.TaskID,
                 cell: ({ row, getValue }) => (
                     <>
-                        <ReactPopperTooltipSingleLevel ShareWebId={getValue()} row={row?.original} singleLevel={true} masterTaskData={allMasterTaskDataFlatLoadeViewBackup} AllSitesTaskData={allTaskDataFlatLoadeViewBackup} />
+                        <ReactPopperTooltipSingleLevel ShareWebId={getValue()} row={row?.original} singleLevel={true} masterTaskData={allMasterTaskDataFlatLoadeViewBackup} AllSitesTaskData={allTaskDataFlatLoadeViewBackup} AllListId={ContextValue} />
                     </>
                 ),
                 id: "TaskID",

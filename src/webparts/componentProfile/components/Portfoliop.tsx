@@ -1809,15 +1809,14 @@ const  contextCall = (data: any, path: any, component: any) => {
                 })}
             
                 <div className="mb-3 mt-1">
-                  {data.map((item: any, index: any) => {
-                    {item.Sitestagging != undefined&&
+                {data.map((item: any, index: any) => {
+                    return (
                       <Sitecomposition
                         key={index}
                         props={item}
                         sitedata={SelectedProp}
                       />
-                    }
-                  
+                    );
                   })}
                 </div>
 

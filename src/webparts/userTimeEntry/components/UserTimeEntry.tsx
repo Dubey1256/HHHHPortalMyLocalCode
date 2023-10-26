@@ -24,6 +24,7 @@ import Tooltip from '../../../globalComponents/Tooltip';
 import PreSetDatePikerPannel from "../../../globalComponents/SmartFilterGolobalBomponents/PreSetDatePiker"
 import TimeEntryPopup from "../../../globalComponents/TimeEntry/TimeEntryComponent";
 import ShowClintCatogory from "../../../globalComponents/ShowClintCatogory";
+import Sitecomposition from "../../../globalComponents/SiteComposition";
 var AllListId: any;
 var siteConfig: any[] = []
 var AllPortfolios: any[] = [];
@@ -68,6 +69,7 @@ export interface IUserTimeEntryState {
   IsTimeEntry: boolean,
   SharewebTimeComponent: any,
   AllMetadata: any,
+  isDirectPopup: boolean,
 }
 var user: any = ''
 var userIdByQuery: any = ''
@@ -115,12 +117,12 @@ export default class UserTimeEntry extends React.Component<IUserTimeEntryProps, 
       IsTimeEntry: false,
       SharewebTimeComponent: {},
       AllMetadata: [],
+      isDirectPopup: false
     }
     this.OpenPresetDatePopup = this.OpenPresetDatePopup.bind(this);
     this.SelectedPortfolioItem = this.SelectedPortfolioItem.bind(this);
     this.EditDataTimeEntryData = this.EditDataTimeEntryData.bind(this);
     this.TimeEntryCallBack = this.TimeEntryCallBack.bind(this);
-
     this.GetResult();
   }
   private SelectedProp = this.props;
@@ -202,29 +204,73 @@ export default class UserTimeEntry extends React.Component<IUserTimeEntryProps, 
       console.log(e)
     }
   };
-  private checkBoxColor = () => {
-    setTimeout(() => {
-      const inputElement = document.getElementsByClassName('custom-checkbox-tree');
-      if (inputElement) {
-        for (let j = 0; j < inputElement.length; j++) {
-          const checkboxContainer = inputElement[j]
-          const childElements = checkboxContainer.getElementsByTagName('input');
-          const childElements2 = checkboxContainer.getElementsByClassName('rct-title');
-          for (let i = 0; i < childElements.length; i++) {
-            const checkbox = childElements[i];
-            const lable: any = childElements2[i];
-            if (lable?.style) {
-              lable.style.color = portfolioColor;
-            }
-            checkbox.classList.add('form-check-input', 'cursor-pointer');
-            if (lable?.innerHTML === "DE" || lable?.innerHTML === "QA" || lable?.innerHTML === "Health" || lable?.innerHTML === "DA E+E" || lable?.innerHTML === "Kathabeck"
-              || lable?.innerHTML === "Gruene" || lable?.innerHTML === "HHHH" || lable?.innerHTML === "Other") {
-              checkbox.classList.add('smartFilterAlignMarginQD');
+  private checkBoxColor = (className: any) => {
+    try {
+      if (className != undefined) {
+        setTimeout(() => {
+          const inputElement = document.getElementsByClassName(className);
+          if (inputElement) {
+            for (let j = 0; j < inputElement.length; j++) {
+              const checkboxContainer = inputElement[j]
+              const childElements = checkboxContainer.getElementsByTagName('input');
+              const childElements2 = checkboxContainer.getElementsByClassName('rct-title');
+              for (let i = 0; i < childElements.length; i++) {
+                const checkbox = childElements[i];
+                const lable: any = childElements2[i];
+                if (lable?.style) {
+                  lable.style.color = portfolioColor;
+                }
+                checkbox.classList.add('form-check-input', 'cursor-pointer');
+                if (lable?.innerHTML === "DE" || lable?.innerHTML === "QA" || lable?.innerHTML === "Health" || lable?.innerHTML === "DA E+E" || lable?.innerHTML === "Kathabeck"
+                  || lable?.innerHTML === "Gruene" || lable?.innerHTML === "HHHH" || lable?.innerHTML === "Other") {
+                  checkbox.classList.add('smartFilterAlignMarginQD');
+                }
+              }
             }
           }
-        }
+
+        }, 1000);
       }
-    }, 1000);
+      else {
+        setTimeout(() => {
+          const inputElementSubchild = document.getElementsByClassName('rct-node rct-node-parent rct-node-collapsed');
+          if (inputElementSubchild) {
+            for (let j = 0; j < inputElementSubchild.length; j++) {
+              const checkboxContainer = inputElementSubchild[j]
+              const childElements = checkboxContainer.getElementsByTagName('input');
+              const childElements2 = checkboxContainer.getElementsByClassName('rct-title');
+              for (let i = 0; i < childElements.length; i++) {
+                const checkbox = childElements[i];
+                const lable: any = childElements2[i];
+                if (lable?.style) {
+                  lable.style.color = portfolioColor;
+                }
+                checkbox.classList.add('form-check-input', 'cursor-pointer');
+              }
+            }
+          }
+
+          const inputElementleaf = document.getElementsByClassName('rct-node rct-node-leaf');
+          if (inputElementleaf) {
+            for (let j = 0; j < inputElementleaf.length; j++) {
+              const checkboxContainer = inputElementleaf[j]
+              const childElements = checkboxContainer.getElementsByTagName('input');
+              const childElements2 = checkboxContainer.getElementsByClassName('rct-title');
+              for (let i = 0; i < childElements.length; i++) {
+                const checkbox = childElements[i];
+                const lable: any = childElements2[i];
+                if (lable?.style) {
+                  lable.style.color = portfolioColor;
+                }
+                checkbox.classList.add('form-check-input', 'cursor-pointer');
+              }
+            }
+          }
+        }, 30);
+      }
+    } catch (e: any) {
+      console.log(e)
+    }
   }
   private async DefaultValues() {
     let web = new Web(this.props.Context.pageContext.web.absoluteUrl);
@@ -313,6 +359,7 @@ export default class UserTimeEntry extends React.Component<IUserTimeEntryProps, 
     let ccResults: any = [];
     let sitesResult: any = [];
     let results = [];
+    let className: any = "custom-checkbox-tree"
     results = await web.lists
       .getById(this.props.SmartMetadataListID)
       .items
@@ -322,7 +369,8 @@ export default class UserTimeEntry extends React.Component<IUserTimeEntryProps, 
       .orderBy("Title", true)
       .top(4999)
       .get();
-    this.checkBoxColor()
+
+    this.checkBoxColor(className)
     //seperate the items Client Category and Sites
     results.forEach(function (obj: any, index: any) {
       if (obj.TaxType == 'Client Category')
@@ -372,7 +420,7 @@ export default class UserTimeEntry extends React.Component<IUserTimeEntryProps, 
           if (item.children != undefined && item.children.length > 0) {
             for (let j = 0; j < item.children.length; j++) {
               let obj = item.children[j];
-              if (obj.Title == 'Other')
+              if (obj.Title == 'Blank')
                 obj.ParentTitle = item.Title;
             }
           }
@@ -399,7 +447,7 @@ export default class UserTimeEntry extends React.Component<IUserTimeEntryProps, 
           if (item.children != undefined && item.children.length > 0) {
             for (let j = 0; j < item.children.length; j++) {
               let obj = item.children[j];
-              if (obj.Title == 'Other')
+              if (obj.Title == 'Blank')
                 obj.ParentTitle = item.Title;
             }
           }
@@ -407,7 +455,7 @@ export default class UserTimeEntry extends React.Component<IUserTimeEntryProps, 
         }
       }
     }
-
+    filterItems = filterItems.filter((type: any) => type.Title != 'Other');
     filterItems.forEach((filterItem: any) => {
       filterItem.ParentTitle = filterItem.Title;
       if (filterItem.ParentTitle == 'DA E+E')
@@ -995,17 +1043,17 @@ export default class UserTimeEntry extends React.Component<IUserTimeEntryProps, 
           TimeTaskId = TimeTaskId + 1;
           sortArray.forEach(function (first: { ID: any; }, index: any) {
             let count = 0;
-            Additionaltimeentry.forEach(function (second: { ID: number; TimeEntryId: number; }) {
+            Additionaltimeentry.forEach(function (second: { ID: number; TimeEntryId: number; }, TimeEntryIndex: any) {
               if (second.ID != 0 && second.ID == undefined) {
-                second.TimeEntryId = TimeTaskId;
+                second.TimeEntryId = TimeTaskId + i + TimeEntryIndex;
                 TimeTaskId = TimeTaskId + 1;
               }
               else if (second.ID != undefined && first.ID == second.ID) {
                 if (count != 0) {
-                  second.TimeEntryId = TimeTaskId;
+                  second.TimeEntryId = TimeTaskId + i + TimeEntryIndex;
                   TimeTaskId = TimeTaskId + 1;
                 }
-                second.TimeEntryId = second.ID;
+                second.TimeEntryId = second.ID + i + TimeEntryIndex;
                 count++;
               }
             })
@@ -1060,6 +1108,9 @@ export default class UserTimeEntry extends React.Component<IUserTimeEntryProps, 
         }
       }
     }
+    getAllTimeEntry?.forEach(function (item: any, index: any) {
+      item.TimeEntryId = index;
+    })
     this.getJSONTimeEntry(getAllTimeEntry);
     if (getAllTimeEntry == undefined || getAllTimeEntry?.length == 0) {
       this.setState({
@@ -1133,12 +1184,15 @@ export default class UserTimeEntry extends React.Component<IUserTimeEntryProps, 
     }
     return '';
   }
-  private Call = (res: any) => {
+  private Call = (Type: any) => {
     this.updatefilter(false);
     this.setState({
       IsTask: '',
-      IsMasterTask: ''
+      IsMasterTask: '',
+      isDirectPopup: false
     })
+    if (Type == 'Master Task')
+      this.LoadPortfolio()
   }
   private async GetAllSiteTaskData(filterItemTimeTab: any, getAllTimeEntry: any) {
     let callcount = 0;
@@ -1411,7 +1465,9 @@ export default class UserTimeEntry extends React.Component<IUserTimeEntryProps, 
                     CategoryItems.push(item);
                     count++;
                   }
-                  if ((item.siteType != undefined && selectedFilters[i]?.ParentTitle != undefined && selectedFilters[i]?.ParentTitle != '' && selectedFilters[i]?.ParentTitle != 'Other' && item.siteType == title && (item.ClientCategory == undefined || item.ClientCategory.length == 0) && !this.issmartExistsIds(CategoryItems, item))) {
+                }
+                if (selectedFilters[i].Title != 'Other') {
+                  if ((item.siteType != undefined && item.siteType == title && (item.ClientCategory == undefined || item.ClientCategory.length == 0) && !this.issmartExistsIds(CategoryItems, item))) {
                     if (item.clientTimeInfo != undefined && item.clientTimeInfo.length > 0) {
                       for (let k = 0; k < item.clientTimeInfo.length; k++) {
                         let obj = item.clientTimeInfo[k];
@@ -1945,10 +2001,12 @@ export default class UserTimeEntry extends React.Component<IUserTimeEntryProps, 
     })
   }
   private EditComponentPopup = (item: any) => {
-    item["siteUrl"] = this.props?.Context?.pageContext?.web?.absoluteUrl;
-    item["listName"] = "Master Tasks";
+    let PortfolioItem = AllPortfolios.filter(type => type?.Id == item?.Id)[0]
+    PortfolioItem["siteUrl"] = this.props?.Context?.pageContext?.web?.absoluteUrl;
+    PortfolioItem["listName"] = "Master Tasks";
     this.setState({
-      IsMasterTask: item
+      IsMasterTask: PortfolioItem,
+      isDirectPopup: true
     });
   };
   private EditPopup = (item: any) => {
@@ -2065,7 +2123,7 @@ export default class UserTimeEntry extends React.Component<IUserTimeEntryProps, 
           href={this.props.Context.pageContext.web.absoluteUrl + "/SitePages/Portfolio-Profile.aspx?taskId=" + info.row?.original?.ComponentIDs}>
           {info.row?.original?.ComponentTitle}
         </a><span
-          className="svg__iconbox svg__icon--edit alignIcon"
+          className="svg__iconbox svg__icon--edit alignIcon hreflink"
           onClick={(e) => this.EditComponentPopup(info.row?.original?.PortfolioItem)}>
           </span></>,
         size: 275,
@@ -2235,7 +2293,14 @@ export default class UserTimeEntry extends React.Component<IUserTimeEntryProps, 
       IsPresetPopup: false,
     })
   };
-
+  private ExpandClientCategory = (expanded: any) => {
+    this.checkBoxColor(undefined)
+    this.setState({ expanded })
+  }
+  private ExpandSite = (expandedSites: any) => {
+    this.checkBoxColor(undefined)
+    this.setState({ expandedSites })
+  }
   callBackData = (elem: any, ShowingData: any) => {
     this.setState({
       ShowingAllData: ShowingData
@@ -2250,7 +2315,7 @@ export default class UserTimeEntry extends React.Component<IUserTimeEntryProps, 
       userDisplayName,
     } = this.props;
     return (
-      <div id="TimeSheet-Section">
+      <div id="TimeSheet-Section" >
         <div className="p-0  " style={{ verticalAlign: "top" }}><h2 className="heading d-flex justify-content-between align-items-center"><span> <a>All Timesheets</a> </span><span className="text-end fs-6"><a target="_blank" data-interception="off" href={`${this.props.Context.pageContext.web.absoluteUrl}/SitePages/UserTimeEntry-Old.aspx`}>Old UserTimeEntry</a></span></h2></div>
         <Col className='smartFilter bg-light border mb-3 '>
           <details className='p-0 m-0 allfilter' open>
@@ -2353,7 +2418,7 @@ export default class UserTimeEntry extends React.Component<IUserTimeEntryProps, 
                           <label>Last 3 Months</label>
                         </span>
                         <span className='SpfxCheckRadio'>
-                          <input type="radio" name="dateSelection" value="EntrieYear" checked={this.state.selectedRadio === "rdEntrieYear"} onClick={() => this.selectDate('EntrieYear')} className="radio" />
+                          <input type="radio" name="dateSelection" value="EntrieYear" checked={this.state.selectedRadio === "EntrieYear"} onClick={() => this.selectDate('EntrieYear')} className="radio" />
                           <label>This Year</label>
                         </span>
                         <span className='SpfxCheckRadio'>
@@ -2440,7 +2505,7 @@ export default class UserTimeEntry extends React.Component<IUserTimeEntryProps, 
                           }
                         </span>
                       </summary>
-                      <div className="togglecontent ps-30" style={{ display: "block" }}>
+                      <div className="togglecontent" style={{ display: "block", paddingLeft: "24px" }}>
                         <div className="smartSearch-Filter-Section">
                           <table width="100%" className="indicator_search">
                             <Loader loaded={this.state.loaded} lines={13} length={20} width={10} radius={30} corners={1} rotate={0} direction={1} color={portfolioColor ? portfolioColor : "#000066"}
@@ -2448,52 +2513,53 @@ export default class UserTimeEntry extends React.Component<IUserTimeEntryProps, 
                             <tbody>
                               <tr>
                                 <td valign="top">
-                                  <div>
-                                    <label className='border-bottom full-width pb-1'>
-                                      <input id='chkAllCategory' defaultChecked={this.state.checkedAll} onClick={(e) => this.SelectAllCategories(e)} type="checkbox" className="form-check-input me-1" />
-                                      Client Category
-                                    </label>
-                                    <div className="custom-checkbox-tree">
-                                      <CheckboxTree
-                                        nodes={this.state.filterItems}
-                                        checked={this.state.checked}
-                                        expanded={this.state.expanded}
-                                        onCheck={checked => this.setState({ checked })}
-                                        onExpand={expanded => this.setState({ expanded })}
-                                        nativeCheckboxes={true}
-                                        showNodeIcon={false}
-                                        checkModel={'all'}
-                                        icons={{ expandOpen: <SlArrowDown />, expandClose: <SlArrowRight />, parentClose: null, parentOpen: null, leaf: null, }}
-                                      />
+                                  <div className='row'>
+                                    <div className='col-md-6'>
+                                      <label className='border-bottom full-width pb-1'>
+                                        <input id='chkAllCategory' defaultChecked={this.state.checkedAll} onClick={(e) => this.SelectAllCategories(e)} type="checkbox" className="form-check-input me-1" />
+                                        Client Category
+                                      </label>
+                                      <div className="custom-checkbox-tree">
+                                        <CheckboxTree
+                                          nodes={this.state.filterItems}
+                                          checked={this.state.checked}
+                                          expanded={this.state.expanded}
+                                          onCheck={checked => this.setState({ checked })}
+                                          onExpand={expanded => this.ExpandClientCategory(expanded)}
+                                          nativeCheckboxes={true}
+                                          showNodeIcon={false}
+                                          checkModel={'all'}
+                                          icons={{ expandOpen: <SlArrowDown />, expandClose: <SlArrowRight />, parentClose: null, parentOpen: null, leaf: null, }}
+                                        />
+                                      </div>
+                                    </div>
+                                    <div className='col-md-6'>
+                                      <label className='border-bottom full-width pb-1'>
+                                        <input type="checkbox" id='chkAllSites' defaultChecked={this.state.checkedAllSites} onClick={(e) => this.SelectAllSits(e)} className="form-check-input me-1" />
+                                        Sites
+                                      </label>
+                                      <div className="custom-checkbox-tree">
+                                        <CheckboxTree
+                                          nodes={this.state.filterSites}
+                                          checked={this.state.checkedSites}
+                                          expanded={this.state.expandedSites}
+                                          onCheck={checkedSites => this.setState({ checkedSites })}
+                                          onExpand={expandedSites => this.ExpandSite(expandedSites)}
+                                          nativeCheckboxes={true}
+                                          showNodeIcon={false}
+                                          checkModel={'all'}
+                                          icons={{
+                                            expandOpen: <SlArrowDown />,
+                                            expandClose: <SlArrowRight />,
+                                            parentClose: null,
+                                            parentOpen: null,
+                                            leaf: null,
+                                          }}
+                                        />
+                                      </div>
                                     </div>
                                   </div>
-                                </td>
-                                <td valign="top">
-                                  <div>
-                                    <label className='border-bottom full-width pb-1'>
-                                      <input type="checkbox" id='chkAllSites' defaultChecked={this.state.checkedAllSites} onClick={(e) => this.SelectAllSits(e)} className="form-check-input me-1" />
-                                      Sites
-                                    </label>
-                                    <div className="custom-checkbox-tree">
-                                      <CheckboxTree
-                                        nodes={this.state.filterSites}
-                                        checked={this.state.checkedSites}
-                                        expanded={this.state.expandedSites}
-                                        onCheck={checkedSites => this.setState({ checkedSites })}
-                                        onExpand={expandedSites => this.setState({ expandedSites })}
-                                        nativeCheckboxes={true}
-                                        showNodeIcon={false}
-                                        checkModel={'all'}
-                                        icons={{
-                                          expandOpen: <SlArrowDown />,
-                                          expandClose: <SlArrowRight />,
-                                          parentClose: null,
-                                          parentOpen: null,
-                                          leaf: null,
-                                        }}
-                                      />
-                                    </div>
-                                  </div>
+
                                 </td>
                               </tr>
                             </tbody>
@@ -2523,20 +2589,18 @@ export default class UserTimeEntry extends React.Component<IUserTimeEntryProps, 
                 <GlobalCommanTable expandIcon={true} showHeader={true} showDateTime={' | Time: ' + this.state.resultSummary.totalTime + ' | Days: (' + this.state.resultSummary.totalDays + ')'} columns={this.state.columns} data={this.state.AllTimeEntry} callBackData={this.callBackData} TaskUsers={AllTaskUser} AllListId={this?.props} portfolioColor={portfolioColor} />
               </div>
             </div></section>
-
           </div>
         }
         {
           this.state.IsTask && (
-            <EditTaskPopup
-              Items={this.state.IsTask}
-              Call={this.Call}
-              AllListId={AllListId}
-              context={this?.props?.Context}
-            ></EditTaskPopup>
+            <EditTaskPopup Items={this.state.IsTask} Call={() => { this.Call(undefined) }} AllListId={AllListId} context={this?.props?.Context} ></EditTaskPopup>
           )
         }
-        {
+        {this.state?.IsMasterTask &&
+          (<Sitecomposition props={this.state?.IsMasterTask} isDirectPopup={this.state?.isDirectPopup} callback={() => { this.Call('Master Task') }} sitedata={AllListId} ></Sitecomposition>
+          )
+        }
+        {/* {
           this.state?.IsMasterTask && (
             <EditInstituton
               item={this.state.IsMasterTask}
@@ -2546,20 +2610,18 @@ export default class UserTimeEntry extends React.Component<IUserTimeEntryProps, 
               {" "}
             </EditInstituton>
           )
-        }
+        } */}
         {
           this.state.IsPresetPopup &&
-          (<PreSetDatePikerPannel isOpen={this.state.IsPresetPopup} PreSetPikerCallBack={this.PreSetPikerCallBack} portfolioColor={portfolioColor} ></PreSetDatePikerPannel>)
+          (<PreSetDatePikerPannel isOpen={this.state.IsPresetPopup} PreSetPikerCallBack={this.PreSetPikerCallBack} portfolioColor={portfolioColor}></PreSetDatePikerPannel>)
         }
-        {this.state.IsTimeEntry && (
-          <TimeEntryPopup
-            props={this.state.SharewebTimeComponent}
-            CallBackTimeEntry={this.TimeEntryCallBack}
-            Context={this?.props?.Context}
-          ></TimeEntryPopup>
-        )}
+        {
+          this.state.IsTimeEntry && (
+            <TimeEntryPopup props={this.state.SharewebTimeComponent} CallBackTimeEntry={this.TimeEntryCallBack} Context={this?.props?.Context}></TimeEntryPopup>
+          )
+        }
 
-      </div>
+      </div >
     );
   }
 }

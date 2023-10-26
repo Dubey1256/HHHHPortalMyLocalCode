@@ -192,6 +192,7 @@ const EditTaskPopup = (Items: any) => {
     const [TotalEstimatedTime, setTotalEstimatedTime] = useState(0);
     const [SiteCompositionShow, setSiteCompositionShow] = useState(false);
     const [IsSendAttentionMsgStatus, setIsSendAttentionMsgStatus] = useState(false);
+    const [IsTaskCompleted, setIsTaskCompleted] = useState(false);
     const [SendCategoryName, setSendCategoryName] = useState('');
     const [OpenEODReportPopup, setOpenEODReportPopup] = useState(false);
     let [StatusOptions, setStatusOptions] = useState([
@@ -587,20 +588,20 @@ const EditTaskPopup = (Items: any) => {
                 extraLookupColumnData = await web.lists
                     .getById(Items.Items.listId)
                     .items
-                    .select("Project/Id, Project/Title,SmartInformation/Id, AttachmentFiles, Approver/Id, Approver/Title, ClientCategory/Id,ClientCategory/Title, ApproverHistory")
+                    .select("Project/Id, Project/Title,SmartInformation/Id, AttachmentFiles, Approver/Id, Approver/Title,ApproverHistory")
                     .top(5000)
                     .filter(`Id eq ${Items.Items.Id}`)
-                    .expand('Project, Approver,SmartInformation, ClientCategory,AttachmentFiles')
+                    .expand('Project, Approver,SmartInformation,AttachmentFiles')
                     .get();
                 if (extraLookupColumnData.length > 0) {
                     let Data: any;
                     let ApproverData: any;
                     let ApproverHistoryData: any;
-                    let ClientCategory: any;
+
                     Data = extraLookupColumnData[0]?.Project;
                     ApproverHistoryData = extraLookupColumnData[0]?.ApproverHistory;
                     ApproverData = extraLookupColumnData[0]?.Approver;
-                    ClientCategory = extraLookupColumnData[0].ClientCategory
+
                     if (Data != undefined && Data != null) {
                         let TempArray: any = [];
                         AllProjectBackupArray.map((ProjectData: any) => {
@@ -648,23 +649,7 @@ const EditTaskPopup = (Items: any) => {
                             TempSmartInformationIds.push(smartInfo.Id)
                         })
                     }
-                    if (ClientCategory != undefined && ClientCategory.length > 0) {
-                        let selectedCC: any = [];
-                        ClientCategory.map((ClientData: any) => {
-                            if (AllClientCategoryDataBackup != undefined && AllClientCategoryDataBackup.length > 0) {
-                                AllClientCategoryDataBackup.map((clientCategoryData: any) => {
-                                    if (ClientData.Id == clientCategoryData.ID) {
-                                        ClientData.siteName = clientCategoryData.siteName;
-                                        ClientData.ParentID = clientCategoryData.ParentID;
-                                        selectedCC.push(ClientData)
-                                    }
-                                })
 
-                            }
-                        })
-                        setSelectedClientCategory(selectedCC);
-                        selectedClientCategoryData = selectedCC;
-                    }
                 }
                 GetSelectedTaskDetails();
             } else {
@@ -678,13 +663,13 @@ const EditTaskPopup = (Items: any) => {
                     .get();
                 if (extraLookupColumnData.length > 0) {
                     let Data: any;
-                    let ClientCategory: any;
+
                     let ApproverData: any;
                     let ApproverHistoryData: any;
                     Data = extraLookupColumnData[0]?.Project;
                     ApproverHistoryData = extraLookupColumnData[0]?.ApproverHistory;
                     ApproverData = extraLookupColumnData[0]?.Approver;
-                    ClientCategory = extraLookupColumnData[0].ClientCategory
+
                     if (Data != undefined && Data != null) {
                         setSelectedProject([Data])
                     }
@@ -698,9 +683,7 @@ const EditTaskPopup = (Items: any) => {
                         setApproverData(ApproverData);
                         TaskApproverBackupArray = ApproverData;
                     }
-                    if (ClientCategory != undefined && ClientCategory.length > 0) {
-                        setSelectedClientCategory(ClientCategory);
-                    }
+
                 }
                 GetSelectedTaskDetails();
             }
@@ -816,26 +799,46 @@ const EditTaskPopup = (Items: any) => {
                     let PortfolioId: any = item.Portfolio.Id;
                     GetPortfolioSiteComposition(PortfolioId, item);
                 }
+
+                let ClientCategory = item.ClientCategory
+                if (ClientCategory != undefined && ClientCategory.length > 0) {
+                    let selectedCC: any = [];
+                    ClientCategory.map((ClientData: any) => {
+                        if (AllClientCategoryDataBackup != undefined && AllClientCategoryDataBackup.length > 0) {
+                            AllClientCategoryDataBackup.map((clientCategoryData: any) => {
+                                if (ClientData.Id == clientCategoryData.ID) {
+                                    ClientData.siteName = clientCategoryData.siteName;
+                                    ClientData.ParentID = clientCategoryData.ParentID;
+                                    selectedCC.push(ClientData)
+                                }
+                            })
+
+                        }
+                    })
+                    setSelectedClientCategory(selectedCC);
+                    selectedClientCategoryData = selectedCC;
+                }
+
                 if (item.ClientTime != null && item.ClientTime != undefined) {
                     let tempData: any = [];
-                    if (Items.Items.siteType == "Shareweb") {
-                        let ShareWebCompositionStatus: any;
-                        let TempData: any = JSON.parse(item.ClientTime);
-                        TempData?.map((itemdata: any) => {
-                            ShareWebCompositionStatus = itemdata.ClienTimeDescription;
-                        })
-                        let SCDataTemp: any = item.ClientTime?.length > 0 ? JSON.parse(item.ClientTime) : [];
-                        if ((ShareWebConfigData != undefined || ShareWebCompositionStatus == 100) && SCDataTemp?.length == 1) {
-                            let siteConfigData = JSON.parse(ShareWebConfigData != undefined ? ShareWebConfigData : [{}]);
-                            tempData = siteConfigData[0].SiteComposition;
-                            let siteSeetingJSON = [{ "Manual": true, "Proportional": false, "Portfolio": false }]
-                            item.SiteCompositionSettings = JSON.stringify(siteSeetingJSON);
-                        } else {
-                            tempData = JSON.parse(item.ClientTime)
-                        }
-                    } else {
-                        tempData = JSON.parse(item.ClientTime)
-                    }
+                    // if (Items.Items.siteType == "Shareweb") {
+                    //     let ShareWebCompositionStatus: any;
+                    //     let TempData: any = JSON.parse(item.ClientTime);
+                    //     TempData?.map((itemdata: any) => {
+                    //         ShareWebCompositionStatus = itemdata.ClienTimeDescription;
+                    //     })
+                    //     let SCDataTemp: any = item.ClientTime?.length > 0 ? JSON.parse(item.ClientTime) : [];
+                    //     if ((ShareWebConfigData != undefined || ShareWebCompositionStatus == 100) && SCDataTemp?.length == 1) {
+                    //         let siteConfigData = JSON.parse(ShareWebConfigData != undefined ? ShareWebConfigData : [{}]);
+                    //         tempData = siteConfigData[0].SiteComposition;
+                    //         let siteSeetingJSON = [{ "Manual": true, "Proportional": false, "Portfolio": false }]
+                    //         item.SiteCompositionSettings = JSON.stringify(siteSeetingJSON);
+                    //     } else {
+                    //         tempData = JSON.parse(item.ClientTime)
+                    //     }
+                    // } else {
+                    tempData = JSON.parse(item.ClientTime)
+                    // }
                     // let tempData: any = JSON.parse(item.ClientTime);
                     let tempData2: any = [];
                     if (tempData != undefined && tempData.length > 0) {
@@ -893,25 +896,25 @@ const EditTaskPopup = (Items: any) => {
                     item.ClientTime = tempArray3;
                 } else {
                     let tempArray: any = [];
-                    if (Items.Items.siteType == "Shareweb") {
-                        if (ShareWebConfigData != undefined) {
-                            let siteConfigData = JSON.parse(ShareWebConfigData != undefined ? ShareWebConfigData : [{}]);
-                            tempArray = siteConfigData[0].SiteComposition;
-                            item.siteCompositionData = tempArray;
-                            setClientTimeData(tempArray);
-                            let siteSeetingJSON = [{ "Manual": true, "Proportional": false, "Portfolio": false }]
-                            item.SiteCompositionSettings = JSON.stringify(siteSeetingJSON);
-                        }
-                    } else {
-                        const object: any = {
-                            SiteName: Items.Items.siteType,
-                            ClienTimeDescription: 100,
-                            localSiteComposition: true,
-                            siteIcons: Items.Items.SiteIcon
-                        }
-                        item.siteCompositionData = [object];
-                        setClientTimeData([object]);
+                    // if (Items.Items.siteType == "Shareweb") {
+                    //     if (ShareWebConfigData != undefined) {
+                    //         let siteConfigData = JSON.parse(ShareWebConfigData != undefined ? ShareWebConfigData : [{}]);
+                    //         tempArray = siteConfigData[0].SiteComposition;
+                    //         item.siteCompositionData = tempArray;
+                    //         setClientTimeData(tempArray);
+                    //         let siteSeetingJSON = [{ "Manual": true, "Proportional": false, "Portfolio": false }]
+                    //         item.SiteCompositionSettings = JSON.stringify(siteSeetingJSON);
+                    //     }
+                    // } else {
+                    const object: any = {
+                        SiteName: Items.Items.siteType,
+                        ClienTimeDescription: 100,
+                        localSiteComposition: true,
+                        siteIcons: Items.Items.SiteIcon
                     }
+                    item.siteCompositionData = [object];
+                    setClientTimeData([object]);
+                    // }
                 }
                 if (item.Body != undefined) {
                     item.Body = item.Body.replace(/(<([^>]+)>)/ig, '');
@@ -1896,6 +1899,7 @@ const EditTaskPopup = (Items: any) => {
                 if (StatusInput == 90) {
                     EditData.IsTodaysTask = false;
                     EditData.workingThisWeek = false;
+                    setIsTaskCompleted(true);
                     if (EditData.siteType == 'Offshore Tasks') {
                         setWorkingMember(36);
                     } else if (DesignStatus) {
@@ -1903,6 +1907,7 @@ const EditTaskPopup = (Items: any) => {
                     } else {
                         setWorkingMember(42);
                     }
+
                     EditData.CompletedDate = Moment(new Date()).format("MM-DD-YYYY")
                     StatusOptions?.map((item: any) => {
                         if (StatusInput == item.value) {
@@ -2023,6 +2028,7 @@ const EditTaskPopup = (Items: any) => {
                 })
             }
             if (StatusData.value == 90) {
+                setIsTaskCompleted(true);
                 EditData.IsTodaysTask = false;
                 EditData.workingThisWeek = false;
                 if (EditData.siteType == 'Offshore Tasks') {
@@ -2132,8 +2138,6 @@ const EditTaskPopup = (Items: any) => {
             });
         }
 
-
-
         if (IsSendAttentionMsgStatus) {
             let txtComment = `You have been tagged as ${SendCategoryName} in the below task by ${Items.context.pageContext._user.displayName}`;
             let TeamMsg = txtComment + `</br> <a href=${window.location.href}>${EditData.TaskId}-${EditData.Title}</a>`
@@ -2153,6 +2157,23 @@ const EditTaskPopup = (Items: any) => {
                 await globalCommon.SendTeamMessage(userSendAttentionEmails, TeamMsg, Items.context);
             }
         }
+
+        if (IsTaskCompleted) {
+            let taskComplete = `Hi Robert, </br>The below task has been marked 90% by ${Items.context.pageContext._user.displayName} , please have a look`;
+            let TeamEmail =
+                taskComplete +
+                `</br> <a href=${siteUrls + "SitePages/Task-Profile.aspx?taskId=" + EditData.TaskId + "Site=" + Items.Items.siteType}>${EditData.TaskId}-${EditData.Title}</a>`;
+            let sendEmail: any = ["robert.ungethuem@hochhuth-consulting.de"];
+            if (sendEmail?.length > 0) {
+                await globalCommon.SendTeamMessage(
+                    sendEmail,
+                    TeamEmail,
+                    Items.context
+                );
+            }
+        }
+
+
         let TaskShuoldBeUpdate = true;
         let DataJSONUpdate: any = await MakeUpdateDataJSON();
         if (EnableSiteCompositionValidation) {
@@ -2176,6 +2197,21 @@ const EditTaskPopup = (Items: any) => {
                 let web = new Web(siteUrls);
                 await web.lists.getById(Items.Items.listId).items.getById(Items.Items.Id).update(DataJSONUpdate)
                     .then(async (res: any) => {
+                        // Added by PB************************
+                        if (Items?.SDCAuthor != undefined && Items?.SDCAuthor != '' && EditData != undefined && EditData != '') {
+                            let SDCRecipientMail: any[] = [];
+                            EditData.SDCAuthor = Items?.SDCAuthor;
+                            taskUsers?.map((User: any) => {
+                                if (User?.Title?.toLowerCase() == 'robert ungethuem' || User?.Title?.toLowerCase() == 'stefan hochhuth') {
+                                    SDCRecipientMail.push(User);
+                                }
+                            });
+                            globalCommon.sendImmediateEmailNotifications(EditData.Id, siteUrls, Items.Items.listId, EditData, SDCRecipientMail, 'Client Task', taskUsers, Context).then((response: any) => {
+                                console.log(response);
+                            });
+                        }
+                        //End Here*************************
+
                         let web = new Web(siteUrls);
                         let TaskDetailsFromCall: any;
                         if (Items.Items.listId != undefined) {
@@ -2196,20 +2232,15 @@ const EditTaskPopup = (Items: any) => {
                                 .filter(`Id eq ${Items.Items.Id}`)
                                 .expand('AssignedTo,Author,Editor,Portfolio,TaskType,TeamMembers,ResponsibleTeam,TaskCategories,ClientCategory,RelevantPortfolio,Approvee')
                                 .get();
-
                         }
                         let currentUserId = Context.pageContext._legacyPageContext.userId
 
                         if (ApproverData != undefined && ApproverData.length > 0) {
                             taskUsers.forEach((val: any) => {
-
                                 if (ApproverData[0]?.Id == val?.AssignedToUserId && ApproverData[0].Company == undefined) {
                                     EditData.TaskApprovers = ApproverData
                                 }
-
-
                             })
-
                         }
                         if (ApproverData != undefined && ApproverData.length > 0) {
                             taskUsers.forEach((val: any) => {
@@ -2218,7 +2249,6 @@ const EditTaskPopup = (Items: any) => {
                                 }
 
                             })
-
                         }
                         if (ApproverData != undefined && ApproverData.length > 0) {
                             if (ApproverData[0].Id == currentUserId) {
@@ -2226,10 +2256,6 @@ const EditTaskPopup = (Items: any) => {
                                 EditData.TaskApprovers = []
                             }
                         }
-
-
-
-
                         if (TaskDetailsFromCall != undefined && TaskDetailsFromCall.length > 0) {
                             TaskDetailsFromCall[0].TaskCreatorData = EditData.TaskCreatorData;
                             TaskDetailsFromCall[0].TaskApprovers = EditData.TaskApprovers;
@@ -2958,7 +2984,7 @@ const EditTaskPopup = (Items: any) => {
                 let date = new Date()
                 let timeStamp = date.getTime();
                 let imageIndex = index + 1
-                fileName = "T" + EditData.Id + '-Image' + imageIndex + "-" + EditData.Title?.replace(/["/':]/g, '')?.slice(0, 40) + " " + timeStamp + ".jpg";
+                fileName = "T" + EditData.Id + '-Image' + imageIndex + "-" + EditData.Title?.replace(/["/':?]/g, '')?.slice(0, 40) + " " + timeStamp + ".jpg";
                 let currentUserDataObject: any;
                 if (currentUserBackupArray != null && currentUserBackupArray.length > 0) {
                     currentUserDataObject = currentUserBackupArray[0];
@@ -5161,6 +5187,7 @@ const EditTaskPopup = (Items: any) => {
                             context={Context}
                             ServicesTaskCheck={ServicesTaskCheck}
                             AllListId={AllListIdData}
+                            SmartTotalTimeData={SmartTotalTimeData}
                             Call={closeSiteCompsotionPanelFunction}
                         /> : null}
                     {sendEmailComponentStatus ?
@@ -6396,14 +6423,15 @@ const EditTaskPopup = (Items: any) => {
                             </ul>
                         </div>
                     </div>
-                    <footer className="float-end mt-1">
-                        <button type="button" className="btn btn-primary px-3 mx-1" onClick={UpdateApproverFunction}>
-                            Save
-                        </button>
-                        <button type="button" className="btn btn-default px-3" onClick={closeApproverPopup}>
-                            Cancel
-                        </button>
-
+                    <footer className="fixed-bottom">
+                        <div className="align-items-center d-flex me-3 pull-right px-4 py-2">
+                            <button type="button" className="btn btn-primary px-3 mx-1" onClick={UpdateApproverFunction}>
+                                Save
+                            </button>
+                            <button type="button" className="btn btn-default px-3" onClick={closeApproverPopup}>
+                                Cancel
+                            </button>
+                        </div>
                     </footer>
                 </div>
             </Panel>
