@@ -1250,8 +1250,8 @@ export const sendImmediateEmailNotifications = async (itemId: any, siteUrl: any,
                             //    Subject = Subject.replaceAll('Approval', '')
                             //Subject = Subject.replaceAll(',,', ',')
                             Subject = "[" + siteType + " - " + "Approval" + "] " + UpdateItem?.Title + "";
-                            if(isLoadNotification=='Client Task'){
-                                Subject = "[" + siteType + " - Client Task ] " + UpdateItem?.Title + "";
+                            if (isLoadNotification == 'Client Task') {
+                                Subject = "[ SDC Client Task - " + siteType + " - " + item?.SDCAuthor + " ] " + UpdateItem?.Title + "";
                             }
                             if (UpdateItem?.Category?.toLowerCase()?.indexOf('email notification') > -1 && UpdateItem?.Category?.toLowerCase().indexOf('immediate') > -1) {
                                 Subject = "[" + siteType + " - " + "Approval,Email notification,Immediate" + "] " + UpdateItem?.Title + "";
@@ -1365,6 +1365,9 @@ export const sendImmediateEmailNotifications = async (itemId: any, siteUrl: any,
                                 ToEmails.push(mail.Email);
                             })
 
+                        }
+                        if (isLoadNotification == 'Client Task') {
+                            Subject = "[ SDC Client Task - " + siteType + " - " + item?.SDCAuthor + " ] " + UpdateItem?.Title + "";
                         }
                         var from = '',
                             to = ToEmails,
