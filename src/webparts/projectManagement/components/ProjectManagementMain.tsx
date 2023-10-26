@@ -293,6 +293,7 @@ const ProjectManagementMain = (props: any) => {
 
 
   const CallBack = React.useCallback((item: any) => {
+   
     setisOpenEditPopup(false);
     setIsTaggedCompTask(false);
   }, []);
@@ -607,9 +608,8 @@ const ProjectManagementMain = (props: any) => {
     setIsPortfolio(true);
   };
   const Call = (propsItems: any, type: any) => {
-    if (type === "EditPopup") {
-      GetMasterData(false);
-    }
+    GetMasterData(false);
+    setIsComponent(false);
   };
 
 
