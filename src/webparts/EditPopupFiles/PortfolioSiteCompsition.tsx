@@ -215,7 +215,7 @@ const SiteCompositionComponent = (Props: any) => {
             // }
         }
         getChildDataForSelectedTask()
-    }, [SiteCompositionSettings])
+    }, [Props.SelectedClientCategory])
 
     const getSmartMetadataItemsByTaxType = function (metadataItems: any, taxType: any) {
         let Items: any = [];
@@ -1466,8 +1466,11 @@ const SiteCompositionComponent = (Props: any) => {
 
                                             </td>
                                             <td className="m-0 p-0 align-middle" style={{ width: "15%" }}>
-                                                <img src={siteData.Item_x005F_x0020_Cover ? siteData.Item_x005F_x0020_Cover.Url : ""} style={{ width: '25px' }} className="mx-2" />
-                                                {siteData.Title}
+                                                <div className="alignCenter">
+                                                    <img src={siteData.Item_x005F_x0020_Cover ? siteData.Item_x005F_x0020_Cover.Url : ""} className="mx-2 workmember" />
+                                                    {siteData.Title}
+                                                    <span></span>
+                                                </div>
                                             </td>
                                             <td
                                                 // className="m-0 p-1"
