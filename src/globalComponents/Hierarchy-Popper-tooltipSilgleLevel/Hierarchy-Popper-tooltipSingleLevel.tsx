@@ -173,7 +173,7 @@ export default function ReactPopperTooltipSingleLevel({ ShareWebId, row, masterT
                             {row?.original?.SiteIcon != undefined ?
                                 <a
                                     className="hreflink"
-                                    href={`${row?.original?.siteUrl}/SitePages/Task-Profile.aspx?taskId=${row?.original?.Id}&Site=${row?.original?.siteType}`}
+                                    href={`${AllListId?.siteUrl}/SitePages/Task-Profile.aspx?taskId=${row?.original?.Id}&Site=${row?.original?.siteType}`}
                                     data-interception="off"
                                     target="_blank"
                                 >
@@ -182,7 +182,7 @@ export default function ReactPopperTooltipSingleLevel({ ShareWebId, row, masterT
                                     className="hreflink"
                                     data-interception="off"
                                     target="blank"
-                                    href={`${row?.original?.siteUrl}/SitePages/Portfolio-Profile.aspx?taskId=${row?.original?.Id}`}
+                                    href={`${AllListId?.siteUrl}/SitePages/Portfolio-Profile.aspx?taskId=${row?.original?.Id}`}
                                 >
                                     <span className="d-flex">
                                         {row?.original?.Title}
