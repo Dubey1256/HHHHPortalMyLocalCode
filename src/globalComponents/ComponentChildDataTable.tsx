@@ -1581,6 +1581,7 @@ function ComponentChildDataTable(SelectedProp: any) {
                       loadedClassName="loadedContent"
                     />
                     <GlobalCommanTable
+                      expendedTrue={true}
                       smartTimeTotalFunction={smartTimeTotal} SmartTimeIconShow={true}
                       ref={childRef}
                       AddStructureFeature={
