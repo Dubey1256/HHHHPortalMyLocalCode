@@ -1414,7 +1414,7 @@ var ReportDate = new Date(a1)
             </div>
          </section>
              <section className='TableContentSection'>
-            <div className='Alltable'>
+            <div className='Alltable mb-2'>
             
              {
                 data?.length >0?
