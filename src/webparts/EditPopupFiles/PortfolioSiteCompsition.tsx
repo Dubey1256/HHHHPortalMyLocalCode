@@ -900,33 +900,33 @@ const SiteCompositionComponent = (Props: any) => {
             ClientCategoryIDs = [];
         }
 
-        if (SiteTaggingFinalData != undefined && SiteTaggingFinalData.length > 0) {
-            let SiteIconStatus: any = false
-            SiteTaggingFinalData?.map((ClientTimeItems: any) => {
-                if (ClientTimeItems.siteIcons != undefined) {
-                    if (ClientTimeItems.siteIcons?.length > 0 || ClientTimeItems.siteIcons?.Url?.length > 0) {
-                        SiteIconStatus = true;
-                    }
-                }
-                if (ClientTimeItems.ClientCategory != undefined || SiteIconStatus) {
-                    let newObject: any = {
-                        Title: ClientTimeItems.SiteName != undefined ? ClientTimeItems.SiteName : ClientTimeItems.Title,
-                        ClienTimeDescription: ClientTimeItems.ClienTimeDescription,
-                        Selected: true,
-                        Date: ClientTimeItems.Date,
-                        EndDate: ClientTimeItems.EndDate,
-                        Available: true,
-                        SiteImages: ClientTimeItems.siteIcons
-                    }
-                    SiteTaggingJSON.push(newObject);
-                } else {
-                    SiteTaggingJSON.push(ClientTimeItems);
-                }
-            })
+        // if (SiteTaggingFinalData != undefined && SiteTaggingFinalData.length > 0) {
+        //     let SiteIconStatus: any = false
+        //     SiteTaggingFinalData?.map((ClientTimeItems: any) => {
+        //         if (ClientTimeItems.siteIcons != undefined) {
+        //             if (ClientTimeItems.siteIcons?.length > 0 || ClientTimeItems.siteIcons?.Url?.length > 0) {
+        //                 SiteIconStatus = true;
+        //             }
+        //         }
+        //         if (ClientTimeItems.ClientCategory != undefined || SiteIconStatus) {
+        //             let newObject: any = {
+        //                 Title: ClientTimeItems.SiteName != undefined ? ClientTimeItems.SiteName : ClientTimeItems.Title,
+        //                 ClienTimeDescription: ClientTimeItems.ClienTimeDescription,
+        //                 Selected: true,
+        //                 Date: ClientTimeItems.Date,
+        //                 EndDate: ClientTimeItems.EndDate,
+        //                 Available: true,
+        //                 SiteImages: ClientTimeItems.siteIcons
+        //             }
+        //             SiteTaggingJSON.push(newObject);
+        //         } else {
+        //             SiteTaggingJSON.push(ClientTimeItems);
+        //         }
+        //     })
 
-        }
-        if (SiteTaggingJSON?.length > 0) {
-            SiteTaggingJSON.map((itemData: any) => {
+        // }
+        if (SitesTaggingData?.length > 0) {
+            SitesTaggingData.map((itemData: any) => {
                 TotalPercentageCount = TotalPercentageCount + Number(itemData.ClienTimeDescription);
             })
         }
@@ -949,23 +949,23 @@ const SiteCompositionComponent = (Props: any) => {
                 setComponentChildrenPopupStatus(true);
             }
             let UpdateSiteInSMD: any = [];
-            if (SiteTypes?.length > 0) {
-                SiteTypes.map((siteData: any) => {
-                    SiteTaggingJSON?.map((CompositionData: any) => {
-                        if (siteData.Title == CompositionData.Title) {
-                            if (CompositionData.EndDate != undefined || CompositionData.EndDate != null) {
-                                siteData.ConfigurationsData[0].EndDate = CompositionData.EndDate;
-                                UpdateSiteInSMD.push(siteData);
-                                UpdateSmartMetaDataSiteEndDate(siteData);
-                            }
-                        }
-                    })
-                })
-            }
+            // if (SiteTypes?.length > 0) {
+            //     SiteTypes.map((siteData: any) => {
+            //         SiteTaggingJSON?.map((CompositionData: any) => {
+            //             if (siteData.Title == CompositionData.Title) {
+            //                 if (CompositionData.EndDate != undefined || CompositionData.EndDate != null) {
+            //                     siteData.ConfigurationsData[0].EndDate = CompositionData.EndDate;
+            //                     UpdateSiteInSMD.push(siteData);
+            //                     UpdateSmartMetaDataSiteEndDate(siteData);
+            //                 }
+            //             }
+            //         })
+            //     })
+            // }
             try {
                 let web = new Web(AllListIdData.siteUrl);
                 await web.lists.getById(AllListIdData.MasterTaskListID).items.getById(ItemId).update({
-                    Sitestagging: SiteTaggingJSON?.length > 0 ? JSON.stringify(SiteTaggingJSON) : null,
+                    Sitestagging: SitesTaggingData?.length > 0 ? JSON.stringify(SitesTaggingData) : null,
                     ClientCategoryId: { "results": (ClientCategoryIDs != undefined && ClientCategoryIDs.length > 0) ? ClientCategoryIDs : [] },
                     SiteCompositionSettings: (SiteCompositionSettingData != undefined && SiteCompositionSettingData.length > 0) ? JSON.stringify(SiteCompositionSettingData) : SiteCompositionSettings,
                 }).then(() => {
