@@ -5,7 +5,6 @@ import { FaCompressArrowsAlt } from "react-icons/fa";
 import pnp, { Web, sp } from "sp-pnp-js";
 import { map } from "jquery";
 import * as globalCommon from "../globalComponents/globalCommon";
-import ShowTaskTeamMembers from "../globalComponents/ShowTaskTeamMembers";
 import "bootstrap/dist/css/bootstrap.min.css";
 import { ColumnDef } from "@tanstack/react-table";
 import "bootstrap/dist/css/bootstrap.min.css";
@@ -40,19 +39,19 @@ function ComponentChildDataTable(SelectedProp: any) {
   if (childRef != null) {
     childRefdataGlobal = { ...childRef };
   }
-  try {
-    if (SelectedProp?.NextProp != undefined) {
-      SelectedProp.NextProp.isShowTimeEntry = JSON.parse(
-        SelectedProp?.NextProp?.TimeEntry
-      );
+  // try {
+  //   if (SelectedProp?.NextProp != undefined) {
+  //     SelectedProp.NextProp.isShowTimeEntry = JSON.parse(
+  //       SelectedProp?.NextProp?.TimeEntry
+  //     );
 
-      SelectedProp.NextProp.isShowSiteCompostion = JSON.parse(
-        SelectedProp?.NextProp?.SiteCompostion
-      );
-    }
-  } catch (e) {
-    console.log(e);
-  }
+  //     SelectedProp.NextProp.isShowSiteCompostion = JSON.parse(
+  //       SelectedProp?.NextProp?.SiteCompostion
+  //     );
+  //   }
+  // } catch (e) {
+  //   console.log(e);
+  // }
   ContextValueGlobal = SelectedProp?.NextProp;
 
   const refreshData = () => setData(() => renderDataGlobal);
@@ -63,6 +62,7 @@ function ComponentChildDataTable(SelectedProp: any) {
   const [AllUsers, setTaskUser] = React.useState([]);
   const [AllMetadata, setMetadata] = React.useState([]);
   const [AllClientCategory, setAllClientCategory] = React.useState([]);
+  const [AllSitesData, setAllSitesData] = React.useState([]);
   const [IsUpdated, setIsUpdated] = React.useState("");
   const [checkedList, setCheckedList] = React.useState<any>({});
   // const [AllSiteTasksDataGlobal, setAllSiteTasksData] = React.useState([]);
@@ -204,6 +204,12 @@ function ComponentChildDataTable(SelectedProp: any) {
         (metadata: any) => metadata?.TaxType == "Client Category"
       )
     );
+    setAllSitesData(
+      smartmetaDetails?.filter(
+        (metadata: any) => metadata?.TaxType == "Sites"
+      )
+    );
+    
     smartmetaDetails?.map((newtest: any) => {
       if (newtest.Title == "SDC Sites" || newtest.Title == "DRR" || newtest.Title == "Offshore Tasks" || newtest.Title == "DE" || newtest.Title == "Gender" || newtest.Title == "Small Projects" || newtest.Title == "Shareweb Old" || newtest.Title == "Master Tasks")
         newtest.DataLoadNew = false;
@@ -301,7 +307,6 @@ function ComponentChildDataTable(SelectedProp: any) {
             "Body",
             "SiteCompositionSettings",
             "PercentComplete",
-            "ClientCategory",
             "Priority",
             "TaskType/Id",
             "TaskType/Title",
@@ -366,7 +371,17 @@ function ComponentChildDataTable(SelectedProp: any) {
                   } else {
                     item.IsSCProtected = false;
                   }
-
+                  let tempArray: any = [];
+                  if (item.ClientCategory?.length > 0) {
+                    AllClientCategory?.map((AllCategory: any) => {
+                      item.ClientCategory?.map((SelectedCcategory: any) => {
+                        if (AllCategory.Id == SelectedCcategory.Id) {
+                          tempArray.push(AllCategory);
+                        }
+                      })
+                    })
+                  }
+                  item.ClientCategory = tempArray;
                   // if (item.TaskCategories.results != undefined) {
                   //     if (item.TaskCategories.results.length > 0) {
                   //         $.each(
