@@ -192,6 +192,7 @@ const EditTaskPopup = (Items: any) => {
     const [TotalEstimatedTime, setTotalEstimatedTime] = useState(0);
     const [SiteCompositionShow, setSiteCompositionShow] = useState(false);
     const [IsSendAttentionMsgStatus, setIsSendAttentionMsgStatus] = useState(false);
+    const [IsTaskCompleted, setIsTaskCompleted] = useState(false);
     const [SendCategoryName, setSendCategoryName] = useState('');
     const [OpenEODReportPopup, setOpenEODReportPopup] = useState(false);
     let [StatusOptions, setStatusOptions] = useState([
@@ -1898,6 +1899,7 @@ const EditTaskPopup = (Items: any) => {
                 if (StatusInput == 90) {
                     EditData.IsTodaysTask = false;
                     EditData.workingThisWeek = false;
+                    setIsTaskCompleted(true);
                     if (EditData.siteType == 'Offshore Tasks') {
                         setWorkingMember(36);
                     } else if (DesignStatus) {
@@ -2026,6 +2028,7 @@ const EditTaskPopup = (Items: any) => {
                 })
             }
             if (StatusData.value == 90) {
+                setIsTaskCompleted(true);
                 EditData.IsTodaysTask = false;
                 EditData.workingThisWeek = false;
                 if (EditData.siteType == 'Offshore Tasks') {
@@ -2156,6 +2159,23 @@ const EditTaskPopup = (Items: any) => {
                 await globalCommon.SendTeamMessage(userSendAttentionEmails, TeamMsg, Items.context);
             }
         }
+
+        if (IsTaskCompleted) {
+            let taskComplete = `Hi Robert, </br>The below task has been marked 90% by ${Items.context.pageContext._user.displayName} , please have a look`;
+            let TeamEmail =
+                taskComplete +
+                `</br> <a href=${siteUrls + "SitePages/Task-Profile.aspx?taskId=" + EditData.TaskId + "Site=" + Items.Items.siteType}>${EditData.TaskId}-${EditData.Title}</a>`;
+            let sendEmail: any = ["robert.ungethuem@hochhuth-consulting.de"];
+            if (sendEmail?.length > 0) {
+                await globalCommon.SendTeamMessage(
+                    sendEmail,
+                    TeamEmail,
+                    Items.context
+                );
+            }
+        }
+
+
         let TaskShuoldBeUpdate = true;
         let DataJSONUpdate: any = await MakeUpdateDataJSON();
         if (EnableSiteCompositionValidation) {
