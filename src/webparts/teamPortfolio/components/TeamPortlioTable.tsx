@@ -353,17 +353,37 @@ function TeamPortlioTable(SelectedProp: any) {
                             }
 
                             result.chekbox = false;
-                            if (result?.FeedBack != undefined) {
-                                let DiscriptionSearchData: any = '';
-                                let feedbackdata: any = JSON.parse(result?.FeedBack)
-                                DiscriptionSearchData = feedbackdata[0]?.FeedBackDescriptions?.map((child: any) => {
-                                    const childText = child?.Title?.replace(/(<([^>]+)>)/gi, '').replace(/\n/g, '');
-                                    const subtextText = (child?.Subtext || [])?.map((elem: any) =>
-                                        elem.Title?.replace(/(<([^>]+)>)/gi, '').replace(/\n/g, '')
-                                    ).join('');
-                                    return childText + subtextText;
-                                }).join('');
-                                result.descriptionsSearch = DiscriptionSearchData
+                            if (result?.FeedBack && result?.FeedBack != undefined) {
+                                const cleanText = (text: any) => text?.replace(/(<([^>]+)>)/gi, '').replace(/\n/g, '');
+                                let descriptionSearchData = '';
+                                try {
+                                    const feedbackData = JSON.parse(result.FeedBack);
+                                    descriptionSearchData = feedbackData[0]?.FeedBackDescriptions?.map((child: any) => {
+                                        const childText = cleanText(child?.Title);
+                                        const comments = (child?.Comments || [])?.map((comment: any) => {
+                                            const commentText = cleanText(comment?.Title);
+                                            const replyText = (comment?.ReplyMessages || [])?.map((val: any) => cleanText(val?.Title)).join(' ');
+                                            return [commentText, replyText]?.filter(Boolean).join(' ');
+                                        }).join(' ');
+
+                                        const subtextData = (child.Subtext || [])?.map((subtext: any) => {
+                                            const subtextComment = cleanText(subtext?.Title);
+                                            const subtextReply = (subtext.ReplyMessages || [])?.map((val: any) => cleanText(val?.Title)).join(' ');
+                                            const subtextComments = (subtext.Comments || [])?.map((subComment: any) => {
+                                                const subCommentTitle = cleanText(subComment?.Title);
+                                                const subCommentReplyText = (subComment.ReplyMessages || []).map((val: any) => cleanText(val?.Title)).join(' ');
+                                                return [subCommentTitle, subCommentReplyText]?.filter(Boolean).join(' ');
+                                            }).join(' ');
+                                            return [subtextComment, subtextReply, subtextComments].filter(Boolean).join(' ');
+                                        }).join(' ');
+
+                                        return [childText, comments, subtextData].filter(Boolean).join(' ');
+                                    }).join(' ');
+
+                                    result.descriptionsSearch = descriptionSearchData;
+                                } catch (error) {
+                                    console.error("Error:", error);
+                                }
                             }
 
                             try {
@@ -476,9 +496,9 @@ function TeamPortlioTable(SelectedProp: any) {
             .items
             .select("ID", "Id", "Title", "PortfolioLevel", "PortfolioStructureID", "Comments", "ItemRank", "Portfolio_x0020_Type", "Parent/Id", "Parent/Title",
                 "DueDate", "Body", "Item_x0020_Type", "Categories", "Short_x0020_Description_x0020_On", "PriorityRank", "Priority",
-                "TeamMembers/Id", "TeamMembers/Title", "ClientCategory/Id", "ClientCategory/Title", "PercentComplete","Sitestagging",
+                "TeamMembers/Id", "TeamMembers/Title", "ClientCategory/Id", "ClientCategory/Title", "PercentComplete",
                 "ResponsibleTeam/Id", "ResponsibleTeam/Title", "PortfolioType/Id", "PortfolioType/Color", "PortfolioType/IdRange", "PortfolioType/Title", "AssignedTo/Id", "AssignedTo/Title", "AssignedToId", "Author/Id", "Author/Title", "Editor/Id", "Editor/Title",
-                "Created", "Modified", "Deliverables", "TechnicalExplanations", "Help_x0020_Information", "AdminNotes", "Background", "Idea", "ValueAdded",
+                "Created", "Modified", "Deliverables", "TechnicalExplanations", "Help_x0020_Information", "AdminNotes", "Background", "Idea", "ValueAdded", "Sitestagging"
             )
             .expand(
                 "Parent", "PortfolioType", "AssignedTo", "ClientCategory", "TeamMembers", "ResponsibleTeam", "Editor", "Author"
@@ -840,6 +860,9 @@ function TeamPortlioTable(SelectedProp: any) {
                 return !isDuplicate;
             })
             countTaskAWTLevel(AfterFilterTaskCount, afterFilter);
+            childRef?.current?.setRowSelection({});
+            childRef?.current?.setColumnFilters([]);
+            childRef?.current?.setGlobalFilter('');
             // }
         }
         if (smartAllFilterData?.length > 0 && updatedSmartFilter === true && updatedSmartFilterFlatView === false) {
@@ -1501,7 +1524,7 @@ function TeamPortlioTable(SelectedProp: any) {
                 ),
                 cell: ({ row, getValue }) => (
                     <>
-                        {row?.original?.isRestructureActive && row?.original?.Title != "Others"&& (
+                        {row?.original?.isRestructureActive && (
                             <span className="Dyicons p-1" title="Restructure" style={{ backgroundColor: `${row?.original?.PortfolioType?.Color}` }} onClick={() => callChildFunction(row?.original)}>
                                 <span className="svg__iconbox svg__icon--re-structure"> </span>
                                 {/* <img

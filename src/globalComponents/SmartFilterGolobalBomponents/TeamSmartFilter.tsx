@@ -1277,6 +1277,17 @@ const TeamSmartFilter = (item: any) => {
         setIsTeamLead(false);
         setIsTeamMember(false);
         setIsTodaysTask(false);
+
+        setcollapseAll(true);
+        setIconIndex(0)
+        setIsSitesExpendShow(false);
+        setIsClientCategory(false)
+        setIsProjectExpendShow(false);
+        setIsKeywordsExpendShow(false)
+        setIscategoriesAndStatusExpendShow(false);
+        setIsTeamMembersExpendShow(false);
+        setIsDateExpendShow(false);
+        setIsSmartfilter(false);
         // setPreSet(false);
     };
     const UpdateFilterData = (event: any) => {
@@ -1454,7 +1465,6 @@ const TeamSmartFilter = (item: any) => {
             setIsTeamMembersExpendShow(false);
             setIsDateExpendShow(false);
             setIsSmartfilter(false);
-
         }
     };
 
