@@ -37,6 +37,7 @@ var AllTasks: any = [];
 var timesheetListConfig: any = [];
 var currentUserId:any = '';
 var DataSiteIcon: any = [];
+var RemarksData:any = []
 var currentUser: any = [];
 var weekTimeEntry: any = [];
 var today: any = [];
@@ -197,7 +198,7 @@ const TaskDashboard = (props: any) => {
         } else if (startDateOf == 'Last Month') {
             const lastMonth = new Date(startingDate.getFullYear(), startingDate.getMonth() - 1);
             const startingDateOfLastMonth = new Date(lastMonth.getFullYear(), lastMonth.getMonth(), 1);
-            var change = (Moment(startingDateOfLastMonth).add(9, 'days').format())
+            var change = (Moment(startingDateOfLastMonth).add(2, 'days').format())
             var b = new Date(change)
             formattedDate = b;
         } else if (startDateOf == 'Last Week') {
@@ -1690,11 +1691,46 @@ const TaskDashboard = (props: any) => {
 
 
     const sendEmail=()=>{
-        var RemarksData:any = []
-        workingTodayTasks?.forEach((item: any) => {
+        let tasksCopy: any = [];
+        let newData: any = [];
+        var dataa:any=[]
+        let taskUsersGroup = groupedUsers;
+        let confirmation = confirm("Are you sure you want to share the working today task of all team members?")
+        if (confirmation) {
+            var subject = "Today's Working Tasks of All Team";
+            taskUsersGroup?.map((userGroup: any) => {
+                let teamsTaskBody: any = [];
+                if (userGroup.Title == "Junior Developer Team" || userGroup.Title == "Senior Developer Team" || userGroup.Title == "Design Team" || userGroup.Title == "QA Team" || userGroup.Title == "Smalsus Lead Team" || userGroup.Title == "Business Analyst") {
+                    if (userGroup.Title == "Smalsus Lead Team") {
+                        userGroup.childBackup = userGroup?.childs;
+                        userGroup.childs = [];
+                        userGroup?.childBackup?.map((user: any) => {
+                            if (user?.Title == 'Ranu Trivedi') {
+                                userGroup.childs.push(user);
+                            }
+                        })
+                    }
+                    userGroup?.childs?.map((teamMember: any) => {
+                        if (!onLeaveEmployees.some((emp: any) => emp == teamMember?.AssingedToUserId)) {
+                            tasksCopy = filterCurrentUserWorkingTodayTask(teamMember?.AssingedToUserId)
+                            tasksCopy?.forEach((val:any)=>{
+                                newData.push(val)
+                            })
+                        }
+                    })
+                    
+                }
+            })
+          
+
+        }
+
+       
+        newData?.forEach((item: any) => {
             item.TeamMember = ''
             item.Category = ''
             item.NewJSONData = []
+           
             
             if (item.Title != undefined) {
                 item.Title = item.Title?.replace(/<[^>]*><p>/g, '')
@@ -1736,23 +1772,27 @@ const TaskDashboard = (props: any) => {
         RemarksData?.forEach((val:any)=>{
             val.subChilds=[]
             if(val.subRemarks != undefined && val.subRemarks != '' ){
-                AllWorkingDayData.push(val)
+                val.subChilds.push(val)
             }
         })
-        AllWorkingDayData?.forEach((val:any)=>{
+        RemarksData?.forEach((val:any)=>{
             if(val.subCompleted == true){
                 val.subDeployed = true
                 val.subQAReviews = true
                 val.subInProgress = true
+                AllWorkingDayData.push(val)
             }
-            
-            val.subChild?.forEach((ele:any)=>{
-                ele.subTitle = ele?.Title?.replaceAll(/<[^>]*><p>/g, '')
-                ele.subCompleted = ele?.Completed
-                ele.subDeployed = ele?.Deployed
-                ele.subQAReviews = ele?.QAReviews
-                ele.subInProgress = ele?.InProgress
-                ele.subRemarks = ele?.Remarks
+        })
+        AllWorkingDayData?.forEach((val:any)=>{
+            val.subChilds?.forEach((ele:any)=>{
+                if(ele.subCompleted == true && ele.subRemarks != undefined && ele.subRemarks != ''){
+                ele.subTitle = ele?.Title;
+                ele.subCompleted = true
+                ele.subDeployed = true
+                ele.subQAReviews = true
+                ele.subInProgress = true
+               
+                }
             })
         })
         

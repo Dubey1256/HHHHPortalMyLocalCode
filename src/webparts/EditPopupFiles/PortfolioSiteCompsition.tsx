@@ -215,7 +215,7 @@ const SiteCompositionComponent = (Props: any) => {
             // }
         }
         getChildDataForSelectedTask()
-    }, [Props?.SelectedClientCategory])
+    }, [Props.SelectedClientCategory])
 
     const getSmartMetadataItemsByTaxType = function (metadataItems: any, taxType: any) {
         let Items: any = [];
@@ -972,7 +972,7 @@ const SiteCompositionComponent = (Props: any) => {
                     console.log("Site Composition Updated !!!");
                     if (!ComponentChildExist) {
                         // Props.closePopupCallBack();
-                        closeComponentChildrenPopup();
+                        closeComponentChildrenPopup("Save");
                         callBack(SiteCompositionObject, "dataExits");
                     }
                 })
@@ -1025,13 +1025,13 @@ const SiteCompositionComponent = (Props: any) => {
     }
 
     // ************************ this is for the auto Suggestion fuction for all Client Category ******************
-    const closeComponentChildrenPopup = () => {
+    const closeComponentChildrenPopup = (FnType: any) => {
         setComponentChildrenPopupStatus(false);
         setTimeout(() => {
-            Props.closePopupCallBack();
-            callBack(SiteCompositionObject, "dataExits");
+            Props.closePopupCallBack(FnType);
+            // callBack(SiteCompositionObject, "dataExits");
             makeAllGlobalVariableAsDefault();
-        }, 2000);
+        }, 1500);
     }
 
     const autoSuggestionsForClientCategoryIdividual = (e: any, siteType: any, SiteId: any) => {
@@ -1148,7 +1148,7 @@ const SiteCompositionComponent = (Props: any) => {
                 CommonFunctionForUpdateCC(MasterTaskListData, SiteTaskListData)
             }
         } else {
-            closeComponentChildrenPopup();
+            closeComponentChildrenPopup("Save");
             // Props.closePopupCallBack();
         }
     }
@@ -1190,7 +1190,7 @@ const SiteCompositionComponent = (Props: any) => {
                 }
             })
         }
-        closeComponentChildrenPopup();
+        closeComponentChildrenPopup("save");
         // Props.closePopupCallBack();
     }
 
@@ -1310,7 +1310,7 @@ const SiteCompositionComponent = (Props: any) => {
                 <button type="button" className="btn btn-primary px-3 mx-1" onClick={SaveClientCategoryFunction}>
                     Save
                 </button>
-                <button type="button" className="btn btn-default px-3 mx-1" onClick={closeComponentChildrenPopup} >
+                <button type="button" className="btn btn-default px-3 mx-1" onClick={() => closeComponentChildrenPopup("Save")} >
                     Cancel
                 </button>
             </footer>
