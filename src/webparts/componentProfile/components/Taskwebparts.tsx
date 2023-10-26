@@ -408,7 +408,8 @@ function PortfolioTable(SelectedProp: any) {
                   result.chekbox = false;
                   result.descriptionsSearch = "";
                   result.commentsSearch = "";
-                  result.TaskTypeTitle = result?.TaskType?.Title;
+                  result.TaskTypeValue = '';
+                  result.portfolioItemsSearch = '';
                   result.DueDate = Moment(result.DueDate).format("DD/MM/YYYY");
                   result.DisplayDueDate = Moment(result.DueDate).format("DD/MM/YYYY");
                   if (result.DisplayDueDate == "Invalid date" || "") {
@@ -508,6 +509,12 @@ function PortfolioTable(SelectedProp: any) {
                       }
                     });
                   }
+                  if (result?.TaskType) {
+                    result.portfolioItemsSearch = result?.TaskType?.Title;
+                }
+                if (result?.TaskCategories?.length > 0) {
+                  result.TaskTypeValue = result?.TaskCategories?.map((val: any) => val.Title).join(",")
+              }
                   if (result?.ClientCategory?.length > 0) {
                     result.ClientCategorySearch = result?.ClientCategory?.map(
                       (elem: any) => elem.Title
@@ -589,10 +596,10 @@ function PortfolioTable(SelectedProp: any) {
     console.log("timeEntryIndex", timeEntryIndex)
     if (AllSiteTasksData?.length > 0) {
       setData([]);
-      portfolioTypeData.forEach((port, index) => {
-        componentGrouping(port?.Id, index);
+     let portfoliodata =  portfolioTypeData.filter((port)=>port.Title === SelectedProp?.props?.Item_x0020_Type)
+      
+        componentGrouping(portfoliodata[0]?.Id, portfoliodata[0]?.Id);
         countsrun++;
-      });
     }
     return AllSiteTasksData;
   };
@@ -671,9 +678,11 @@ function PortfolioTable(SelectedProp: any) {
     componentDetails.forEach((result: any) => {
       result["siteType"] = "Master Tasks";
       result.AllTeamName = "";
+      result.portfolioItemsSearch = result.Item_x0020_Type;
       result.descriptionsSearch = "";
       result.commentsSearch = "";
       result.TeamLeaderUser = [];
+      result.TaskTypeValue = '';
       if (result.Item_x0020_Type === "Component") {
         result.boldRow = "boldClable";
         result.lableColor = "f-bg";
@@ -967,6 +976,7 @@ const switchGroupbyData = () => {
       temp.PercentComplete = "";
       temp.ItemRank = "";
       temp.DueDate = null;
+      temp.TaskTypeValue = "";
       temp.Project = "";
       temp.ClientCategorySearch = "";
       temp.Created = null;
@@ -1159,7 +1169,8 @@ const switchGroupbyData = () => {
         id: 'Id',
       },
       {
-        cell: ({ row, getValue }) => (
+        accessorFn: (row) => row?.portfolioItemsSearch,
+                cell: ({ row, getValue }) => (
           <div className="alignCenter">
             {row?.original?.SiteIcon != undefined ? (
               <div className="alignCenter" title="Show All Child">
@@ -1212,14 +1223,14 @@ const switchGroupbyData = () => {
                 )}
               </>
             )}
-            {getValue()}
+           
           </div>
         ),
-        accessorKey: "",
-        id: "row?.original.Id",
-        canSort: false,
-        placeholder: "",
-        size: 95
+        id: "portfolioItemsSearch",
+        placeholder: "Type",
+        header: "",
+        resetColumnFilters: false,
+        size: 95,
       },
       {
         accessorFn: (row) => row?.TaskID,
@@ -1238,6 +1249,19 @@ const switchGroupbyData = () => {
         // isColumnDefultSortingAsc:true,
         size: 190,
       },
+      {
+        accessorFn: (row) => row?.TaskTypeValue,
+        cell: ({ row, column, getValue }) => (
+            <>
+                <span className="columnFixedTaskCate"><span title={row?.original?.TaskTypeValue} className="text-content"><HighlightableCell value={getValue()} searchTerm={column.getFilterValue() != undefined ? column.getFilterValue() : childRef?.current?.globalFilter} /></span></span>
+            </>
+        ),
+        placeholder: "Task Type",
+        header: "",
+        resetColumnFilters: false,
+        size: 130,
+        id: "TaskTypeValue",
+    },
   
       {
         accessorFn: (row) => row?.Title,
@@ -1930,6 +1954,7 @@ const switchGroupbyData = () => {
           temp.DisplayDueDate = null;
           temp.AllTeamName = "";
           temp.DueDate = "";
+          temp.portfolioItemsSearch = "";
           temp.descriptionsSearch = "";
           temp.ProjectTitle = "";
           temp.Status = "";

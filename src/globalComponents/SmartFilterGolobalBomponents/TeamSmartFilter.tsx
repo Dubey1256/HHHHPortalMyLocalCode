@@ -12,7 +12,6 @@ import { AiFillCheckSquare, AiFillMinusSquare, AiOutlineBorder, AiOutlineUp } fr
 import DatePicker from "react-datepicker";
 import "react-datepicker/dist/react-datepicker.css";
 import "react-datepicker/dist/react-datepicker-cssmodules.css";
-import '../../globalComponents/SmartFilterGolobalBomponents/Style.css'
 import Tooltip from '../Tooltip';
 import ShowTaskTeamMembers from '../ShowTaskTeamMembers';
 import { Panel, PanelType } from 'office-ui-fabric-react';

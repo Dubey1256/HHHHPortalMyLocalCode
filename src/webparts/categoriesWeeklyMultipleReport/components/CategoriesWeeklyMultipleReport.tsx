@@ -6,7 +6,7 @@ import { Web } from "sp-pnp-js";
 import CheckboxTree from 'react-checkbox-tree';
 import 'react-checkbox-tree/lib/react-checkbox-tree.css';
 import { SPComponentLoader } from '@microsoft/sp-loader';
-
+import Loader from "react-loader";
 import DatePicker from "react-datepicker";
 import "react-datepicker/dist/react-datepicker.css";
 import { ColumnDef } from '@tanstack/react-table';
@@ -23,6 +23,7 @@ import EditTaskPopup from '../../../globalComponents/EditTaskPopup/EditTaskPopup
 import HighlightableCell from '../../../globalComponents/GroupByReactTableComponents/highlight';
 import PreSetDatePikerPannel2 from '../../../globalComponents/SmartFilterGolobalBomponents/PreSetDatePikerCate';
 import ShowClintCatogory from '../../../globalComponents/ShowClintCatogory';
+import PageLoader from '../../../globalComponents/pageLoader';
 //import alasql from 'alasql';
 let AllMasterTasks: any = [];
 let portfolioColor: any = '';
@@ -70,6 +71,7 @@ export interface ICategoriesWeeklyMultipleReportState {
   EndDatePicker2: any;
   AllMetadata: any;
   columns: any;
+  loaded: any;
 
 }
 
@@ -124,6 +126,7 @@ export default class CategoriesWeeklyMultipleReport extends React.Component<ICat
       EndDatePicker2: new Date(),
       AllMetadata: [],
       columns: [],
+      loaded: false,
     }
     //this.GetResult();   
     this.columns = [
@@ -315,7 +318,7 @@ export default class CategoriesWeeklyMultipleReport extends React.Component<ICat
           <div className="alignCenter">
             {row?.original?.siteImage != undefined && (
               <div className="alignCenter" title="Show All Child">
-                <img className='Dyicons' title={row?.original?.TaskType?.Title}
+                <img className='workmember' title={row?.original?.TaskType?.Title}
                   src={row?.original?.siteImage}>
                 </img>
               </div>
@@ -561,6 +564,10 @@ export default class CategoriesWeeklyMultipleReport extends React.Component<ICat
     this.setState({ opentaggedtask: true });
   }
   private async GetComponents() {
+    this.setState({
+      loaded: false,
+    })
+    this.rerender();
     let web = new Web(this.props.Context.pageContext.web.absoluteUrl);
     let componentDetails = [];
     componentDetails = await web.lists
@@ -645,7 +652,7 @@ export default class CategoriesWeeklyMultipleReport extends React.Component<ICat
       //.getByTitle('SmartMetadata')
       .getById(this.props.SmartMetadataListID)
       .items
-      .select("Id", "Title", "IsVisible", "ParentID", "SmartSuggestions", "TaxType", "Description1", "Item_x005F_x0020_Cover", "listId", "siteName", "siteUrl", "SortOrder", "SmartFilters", "Selectable", "Parent/Id", "Parent/Title")
+      .select("Id", "Title", "IsVisible", "ParentID", "SmartSuggestions", "Color_x0020_Tag", "TaxType", "Description1", "Item_x005F_x0020_Cover", "listId", "siteName", "siteUrl", "SortOrder", "SmartFilters", "Selectable", "Parent/Id", "Parent/Title")
       .filter("TaxType eq 'Client Category' or TaxType eq 'Sites'")
       .expand('Parent')
       .orderBy('SortOrder', true)
@@ -692,7 +699,7 @@ export default class CategoriesWeeklyMultipleReport extends React.Component<ICat
 
     for (let index = 0; index < items.length; index++) {
       let filterItem = items[index];
-      if (filterItem.Title != "Other" && filterItem.SmartFilters != undefined && filterItem.SmartFilters.indexOf('Dashboard') > -1) {
+      if (filterItem.SmartFilters != undefined && filterItem.SmartFilters.indexOf('Dashboard') > -1) {
         let item: any = {};
         item.ID = filterItem.Id;
         item.Id = filterItem.Id;
@@ -710,6 +717,8 @@ export default class CategoriesWeeklyMultipleReport extends React.Component<ICat
             for (let j = 0; j < item.children.length; j++) {
               let obj = item.children[j];
               if (obj.Title == 'Blank')
+                obj.ParentTitle = item.Title;
+              if (obj.Title == 'Other')
                 obj.ParentTitle = item.Title;
             }
           }
@@ -1181,12 +1190,20 @@ export default class CategoriesWeeklyMultipleReport extends React.Component<ICat
         break;
 
       case 'Presettime':
-        startdt = new Date(this.state?.StartDatePicker);
-        enddt = new Date(this.state?.StartEndPicker);
+        let startdt1: any = JSON.parse(localStorage.getItem('startDate')); //new Date(this.state?.StartDatePicker);
+        if (startdt1 != undefined)
+          startdt = new Date(startdt1);
+        let enddt1: any = JSON.parse(localStorage.getItem('endDate'));
+        if (enddt1 != undefined)
+          enddt = new Date(enddt1);
         break;
       case 'Presettime1':
-        startdt = new Date(this.state?.StartDatePicker2);
-        enddt = new Date(this.state?.EndDatePicker2);
+        let startdt2: any = JSON.parse(localStorage.getItem('startDatePre2')); //new Date(this.state?.StartDatePicker);
+        if (startdt2 != undefined)
+          startdt = new Date(startdt2);
+        let enddt2: any = JSON.parse(localStorage.getItem('endDatePre2'));
+        if (enddt2 != undefined)
+          enddt = new Date(enddt2);
         break;
     }
 
@@ -1209,6 +1226,7 @@ export default class CategoriesWeeklyMultipleReport extends React.Component<ICat
   }
 
   private async generateTimeEntry() {
+
     //Create filter Creteria based on Dates and Selected users
     //let filters = '(('; //use when with date filter
     let filters = '('; //use when without date filter
@@ -1349,7 +1367,7 @@ export default class CategoriesWeeklyMultipleReport extends React.Component<ICat
 
     for (let index = 0; index < copysitesConfi.length; index++) {
       let confi = copysitesConfi[index];
-      if (confi['Sitee' + confi.Title].length > 7) {
+      if (confi['Sitee' + confi.Title].length > 7 || confi?.Title ==='ALAKDigital') {
         let objgre = {
           ListName: confi.CopyTitle,
           listId: confi.listId,
@@ -1435,6 +1453,7 @@ export default class CategoriesWeeklyMultipleReport extends React.Component<ICat
           results.forEach(function (Item) {
             if (Item.ID == 4090)
               console.log(Item)
+            Item.siteName = itemtype.ListName;
             if (Item?.Portfolio?.Title !== undefined) {
               Item.ComponentTitle = Item?.Portfolio?.Title;
               Item.listId = itemtype.listId
@@ -1445,7 +1464,7 @@ export default class CategoriesWeeklyMultipleReport extends React.Component<ICat
                 Item.IsCheckedComponent = true;
               else if (Item?.Portfoliotype === 'Service') Item.IsCheckedService = true
               if (Item.IsCheckedComponent === isCheckedComponent || Item.IsCheckedService === IsCheckedService) {
-                Item.siteName = itemtype.ListName;
+
                 if (Item?.ClientCategory?.length > 0) {
                   Item.ClientCategorySearch = Item?.ClientCategory?.map((elem: any) => elem.Title).join(" ")
                 } else {
@@ -1491,19 +1510,19 @@ export default class CategoriesWeeklyMultipleReport extends React.Component<ICat
               getItem?.ClientCategory?.forEach(function (client: any) {
                 if (client.Title != undefined && filterItem.clientCategoryIds.indexOf(client.Id.toString()) == -1) {
                   filterItems.forEach(function (filt: any) {
-                    if (filt.Title != undefined && client.Title != undefined && client.Title != '' && filt.checked == true && filt.Title.toLowerCase().indexOf(client.Title.toLowerCase()) > -1) {
+                    if (filt.Id != undefined && client.Id != undefined && filt.checked == true && filt.Id == client.Id) {
                       filterItem.clientCategory += client.Title + ';';
                       filterItem.clientCategoryIds += client.Id + ';';
                     }
                     if (filt.children != undefined && filt.children.length > 0) {
                       filt.children.forEach(function (child: any) {
-                        if (child.Title != undefined && client.Title != undefined && client.Title != '' && child.checked == true && child.Title.toLowerCase().indexOf(client.Title.toLowerCase()) > -1) {
+                        if (child.Id != undefined && client.Id != undefined && child.checked == true && child.Id === client.Id) {
                           filterItem.clientCategory += client.Title + ';';
                           filterItem.clientCategoryIds += client.Id + ';';
                         }
                         if (child.children != undefined && child.children.length > 0) {
                           child.children.forEach(function (subchild: any) {
-                            if (subchild.Title != undefined && client.Title != undefined && client.Title != '' && subchild.checked == true && subchild.Title.toLowerCase().indexOf(client.Title.toLowerCase()) > -1) {
+                            if (subchild.Id != undefined && client.Id != undefined && subchild.checked == true && subchild.Id === client.Id) {
                               filterItem.clientCategory += client.Title + ';';
                               filterItem.clientCategoryIds += client.Id + ';';
                             }
@@ -1620,7 +1639,7 @@ export default class CategoriesWeeklyMultipleReport extends React.Component<ICat
           let flag = false;
           switch (selectedFilters[i].TaxType) {
             case 'Client Category':
-              if (selectedFilters[i].Title != "Blank" && item.clientCategoryIds != undefined && item.clientCategoryIds != '') {
+              if (selectedFilters[i].Title != "Blank" && selectedFilters[i].Title !== "Other" && item.clientCategoryIds != undefined && item.clientCategoryIds != '') {
 
                 if (item.Id === 2883) {
                   console.log(item);
@@ -1678,20 +1697,20 @@ export default class CategoriesWeeklyMultipleReport extends React.Component<ICat
                 // item.Secondlevel = item.ParentTitle;
                 // if (!this.isItemExistsTimeEntry(CategoryItems, item.TimeEntryIDunique, item.siteType))
                 //   CategoryItems.push(item);
-                  let title = selectedFilters[i].ParentTitle == 'PSE' ? 'EPS' : (selectedFilters[i].ParentTitle == 'e+i' ? 'EI' : selectedFilters[i].ParentTitle);
-                  if (selectedFilters[i].Title == 'Blank' && item?.ClientCategory?.length ==0) {
-                    if ((item.siteType != undefined && item.siteType == title)) {
-                      item.ParentTitle = this.getParentTitle(item, selectedFilters[i]);
-                      flag = true;
-                      item.Secondlevel = item.ParentTitle;
-                      CategoryItems.push(item);
-                    } else if ((item.siteType != undefined && title === undefined)) {
-                      item.ParentTitle = this.getParentTitle(item, selectedFilters[i]);
-                      flag = true;
-                      item.Secondlevel = item.ParentTitle;
-                      CategoryItems.push(item);
-                    }
+                let title = selectedFilters[i].ParentTitle == 'PSE' ? 'EPS' : (selectedFilters[i].ParentTitle == 'e+i' ? 'EI' : selectedFilters[i].ParentTitle);
+                if (selectedFilters[i].Title == 'Blank' && item?.ClientCategory?.length == 0) {
+                  if ((item.siteType != undefined && item.siteType == title)) {
+                    item.ParentTitle = this.getParentTitle(item, selectedFilters[i]);
+                    flag = true;
+                    item.Secondlevel = item.ParentTitle;
+                    CategoryItems.push(item);
+                  } else if ((item.siteType != undefined && title === undefined)) {
+                    item.ParentTitle = this.getParentTitle(item, selectedFilters[i]);
+                    flag = true;
+                    item.Secondlevel = item.ParentTitle;
+                    CategoryItems.push(item);
                   }
+                }
 
                 // else if (selectedFilters[i].ID == '132' && item.siteType == "Shareweb") {
                 //   item.ParentTitle = this.getParentTitle(item, selectedFilters[i]);
@@ -1735,9 +1754,72 @@ export default class CategoriesWeeklyMultipleReport extends React.Component<ICat
                 //   if (!this.isItemExistsTimeEntry(CategoryItems, item.TimeEntryIDunique, item.siteType))
                 //     CategoryItems.push(item);
                 // }
-                isCategorySelected = true;
-                break;
+                // isCategorySelected = true;
+                // break;
               }
+              if (selectedFilters[i].Title == "Other" && (item.clientCategoryIds == undefined || item.clientCategoryIds == '')) {
+                let title = selectedFilters[i].ParentTitle == 'PSE' ? 'EPS' : (selectedFilters[i].ParentTitle == 'e+i' ? 'EI' : selectedFilters[i].ParentTitle);
+                if (selectedFilters[i].Title == 'Other') {
+                  if ((item.siteType != undefined && item.siteType == title)) {
+                    item.ParentTitle = this.getParentTitle(item, selectedFilters[i]);
+                    flag = true;
+                    item.Secondlevel = item.ParentTitle;
+                    CategoryItems.push(item);
+                  } else if ((item.siteType != undefined && title === undefined)) {
+                    item.ParentTitle = this.getParentTitle(item, selectedFilters[i]);
+                    flag = true;
+                    item.Secondlevel = item.ParentTitle;
+                    CategoryItems.push(item);
+                  }
+                }
+
+                else if (selectedFilters[i].ID == '132' && item.siteType == "Shareweb") {
+                  item.ParentTitle = this.getParentTitle(item, selectedFilters[i]);
+                  flag = true;
+                  item.Secondlevel = item.ParentTitle;
+                  if (!this.isItemExistsTimeEntry(CategoryItems, item.TimeEntryIDunique, item.siteType))
+                    CategoryItems.push(item);
+                }
+                else if (selectedFilters[i].ID == '569' && item.siteType == "Migration") {
+                  item.ParentTitle = this.getParentTitle(item, selectedFilters[i]);
+                  flag = true;
+                  item.Secondlevel = item.ParentTitle;
+                  if (!this.isItemExistsTimeEntry(CategoryItems, item.TimeEntryIDunique, item.siteType))
+                    CategoryItems.push(item);
+                }
+                else if (selectedFilters[i].ID == '572' && item.siteType == "ALAKDigital") {
+                  item.ParentTitle = this.getParentTitle(item, selectedFilters[i]);
+                  flag = true;
+                  item.Secondlevel = item.ParentTitle;
+                  if (!this.isItemExistsTimeEntry(CategoryItems, item.TimeEntryIDunique, item.siteType))
+                    CategoryItems.push(item);
+                }
+                else if (selectedFilters[i].ID == '574' && item.siteType == "Gruene") {
+                  item.ParentTitle = this.getParentTitle(item, selectedFilters[i]);
+                  flag = true;
+                  item.Secondlevel = item.ParentTitle;
+                  if (!this.isItemExistsTimeEntry(CategoryItems, item.TimeEntryIDunique, item.siteType))
+                    CategoryItems.push(item);
+                }
+                else if (selectedFilters[i].ID == '575' && item.siteType == "HHHH") {
+                  item.ParentTitle = this.getParentTitle(item, selectedFilters[i]);
+                  flag = true;
+                  item.Secondlevel = item.ParentTitle;
+                  if (!this.isItemExistsTimeEntry(CategoryItems, item.TimeEntryIDunique, item.siteType))
+                    CategoryItems.push(item);
+                }
+                else if (selectedFilters[i].ID == '573' && item.siteType == "KathaBeck") {
+                  item.ParentTitle = this.getParentTitle(item, selectedFilters[i]);
+                  flag = true;
+                  item.Secondlevel = item.ParentTitle;
+                  if (!this.isItemExistsTimeEntry(CategoryItems, item.TimeEntryIDunique, item.siteType))
+                    CategoryItems.push(item);
+                }
+                // isCategorySelected = true;
+                // break;
+              }
+              isCategorySelected = true;
+              break;
           }
           //}
         }
@@ -1800,16 +1882,29 @@ export default class CategoriesWeeklyMultipleReport extends React.Component<ICat
               let totalnew = 0;
               if (child.AllTask != undefined && child.AllTask.length > 0) {
                 child.AllTask.forEach(function (time: any) {
+                  if (time.Id == 199)
+                    console.log(time);
+                  if (time.Id == 3250)
+                    console.log(time);
                   if (time.ClientTime != undefined && time.ClientTime.length > 0 && time.siteType == 'Shareweb') {
                     time.ClientTime.forEach(function (client: any) {
-                      if (client.SiteName != undefined && client.SiteName == 'EI' && time?.First?.indexOf('e+i') > -1)
-                        totalnew += ((time.Effort * client.ClienTimeDescription) / 100)
-                      if (client.SiteName != undefined && client.SiteName == 'EPS' && time.First?.indexOf('PSE') > -1)
-                        totalnew += ((time.Effort * client.ClienTimeDescription) / 100)
-                      if (client.SiteName != undefined && client.SiteName == 'Migration' && time.First?.indexOf('Migration') > -1)
-                        totalnew += ((time.Effort * client.ClienTimeDescription) / 100)
-                      if (client.SiteName != undefined && client.SiteName == 'Education' && time.First?.indexOf('Education') > -1)
-                        totalnew += ((time.Effort * client.ClienTimeDescription) / 100)
+                      let sitesrray = child?.Firstlevel?.split(';');
+                      if (sitesrray != undefined && sitesrray.length > 0) {
+                        sitesrray.forEach((obj: any) => {
+                          let title1 = (obj?.indexOf('PSE') > -1 ? 'EPS' : (obj?.indexOf('e+i') > -1 ? 'EI' : obj)); {
+                            if (client.SiteName != undefined && title1?.toLowerCase() === client.SiteName?.toLowerCase())
+                              totalnew += ((time.Effort * client.ClienTimeDescription) / 100)
+                          }
+                        })
+                      }
+
+
+                      // if (client.SiteName != undefined && client.SiteName == 'EPS' && time.First?.indexOf('PSE') > -1)
+                      //   totalnew += ((time.Effort * client.ClienTimeDescription) / 100)
+                      // if (client.SiteName != undefined && client.SiteName == 'Migration' && time.First?.indexOf('Migration') > -1)
+                      //   totalnew += ((time.Effort * client.ClienTimeDescription) / 100)
+                      // if (client.SiteName != undefined && client.SiteName == 'Education' && time.First?.indexOf('Education') > -1)
+                      //   totalnew += ((time.Effort * client.ClienTimeDescription) / 100)
                       // if (client.SiteName != undefined && client.SiteName == 'Shareweb' && time?.First?.indexOf('PSE') > -1)
                       //   totalnew += ((time.Effort * 25) / 100)
                       // if (client.SiteName != undefined && client.SiteName == 'Shareweb' && time?.First?.indexOf('e+i') > -1)
@@ -1820,7 +1915,7 @@ export default class CategoriesWeeklyMultipleReport extends React.Component<ICat
                       //   totalnew += ((time.Effort * 10) / 100)
 
                     })
-                  } else totalnew += time.Effort;
+                  } else if (time.ClientTime != undefined ){ totalnew += time.Effort;}
                 })
 
               }
@@ -1942,7 +2037,9 @@ export default class CategoriesWeeklyMultipleReport extends React.Component<ICat
       });
       console.log('All Time Entry');
       console.log(this.AllTimeEntry);
-
+      this.setState({
+        loaded: false,
+      })
       this.setState({
         AllTimeEntry: this.AllTimeEntry,
         AllTimeEntryBackup: JSON.parse(JSON.stringify(this.AllTimeEntry))
@@ -1967,19 +2064,23 @@ export default class CategoriesWeeklyMultipleReport extends React.Component<ICat
   private getParentTitle(item: any, filter: any) {
     let isExistsTitle = '';
     let filterItems = this.state.filterItems;
-    if (filter.Title != undefined) {
+    if (item.TaskItemID == 199)
+      console.log(item)
+    if (item.TaskItemID == 3250)
+      console.log(item)
+    if (filter?.checked == true) {
       if (item.First === undefined) {
         item.First = '';
       }
       filterItems.forEach(function (filt: any) {
-        if (filt != undefined && filt.ID != undefined && filter.ID != undefined && filt.ID == filter.ID) {
+        if (filt != undefined && filt.ID != undefined && filt.checked === true && filter.ID != undefined && filt.ID == filter.ID) {
           isExistsTitle = filt.Title;
           item.First += filt.Title + ';';
 
         }
         if (filt.children != undefined && filt.children.length > 0) {
           filt.children.forEach(function (child: any) {
-            if (child != undefined && child.ID != undefined && filter.ID != undefined && child.ID == filter.ID) {
+            if (child != undefined && child.ID != undefined && child.checked === true && filter.ID != undefined && child.ID == filter.ID) {
               isExistsTitle = child.Title;
               item.Secondlevel = child.Title;
               if (item?.First?.indexOf(filt.Title) == -1)
@@ -1990,7 +2091,7 @@ export default class CategoriesWeeklyMultipleReport extends React.Component<ICat
             }
             if (child.children != undefined && child.children.length > 0) {
               child.children.forEach(function (subchild: any) {
-                if (subchild != undefined && subchild.ID != undefined && filter.ID != undefined && subchild.ID == filter.ID) {
+                if (subchild != undefined && subchild.ID != undefined && subchild.checked === true && filter.ID != undefined && subchild.ID == filter.ID) {
                   isExistsTitle = child.Title;
                   item.Thirdlevel = subchild.Title;
                   item.Secondlevel = child.Title;
@@ -2116,6 +2217,16 @@ export default class CategoriesWeeklyMultipleReport extends React.Component<ICat
     }
   }
 
+  private isItemExistsItemsNew(arr: any, title: any, titname: any, SiteName: any) {
+    let isExists = false;
+    arr.forEach(function (item: any) {
+      if (item[titname] == title && item?.Id === SiteName) {
+        isExists = true;
+        return false;
+      }
+    });
+    return isExists;
+  }
   private childarray(arrays: any, StartDate: any, EndDate: any) {
     let Item: any = {};
     let DateItem: any = [];
@@ -3417,6 +3528,9 @@ export default class CategoriesWeeklyMultipleReport extends React.Component<ICat
                     </summary>
                     <div className=" BdrBoxBlue ps-30 mb-3">
                       <div className="taskTeamBox mt-10">
+                        {this?.state?.loaded ? <PageLoader /> : ''}
+                        {/* <Loader loaded={this.state.loaded} lines={13} length={20} width={10} radius={30} corners={1} rotate={0} direction={1} color={portfolioColor ? portfolioColor : "#000066"}
+                          speed={2} trail={60} shadow={false} hwaccel={false} className="spinner" zIndex={2e9} top="28%" left="50%" scale={1.0} loadedClassName="loadedContent" /> */}
                         <div className="p-0 mt-10 smartSearch-Filter-Section">
                           <label className='border-bottom full-width alignCenter pb-1'>
                             <input defaultChecked={this.state.checkedAll} onClick={(e) => this.SelectAllCategories(e)} id='chkAllCategory' type="checkbox" className="form-check-input me-1 mt-1" />
@@ -3495,7 +3609,7 @@ export default class CategoriesWeeklyMultipleReport extends React.Component<ICat
         >
           <div>
             <div className="modal-body">
-              <div className="col-sm-12 tab-content bdrbox  mb-10">
+              <div className="col-sm-12">
                 <div className="Alltable mb-10">
                   <div className="container-new">
                     <GlobalCommanTable columns={this.timePopup} data={this?.state?.openTaggedTaskArray?.original?.AllTask} showCatIcon={true} callBackData={this?.callBackData} fixedWidth={true} />
