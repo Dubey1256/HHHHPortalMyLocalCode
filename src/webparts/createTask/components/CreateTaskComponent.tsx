@@ -13,7 +13,6 @@ import * as globalCommon from '../../../globalComponents/globalCommon';
 import GlobalCommanTable from '../../../globalComponents/GroupByReactTableComponents/GlobalCommanTable';
 import { ColumnDef } from '@tanstack/react-table';
 import InlineEditingcolumns from '../../projectmanagementOverviewTool/components/inlineEditingcolumns';
-import './style.css'
 let AllMetadata: any = []
 let siteConfig: any = []
 let AssignedToUsers: any = []
