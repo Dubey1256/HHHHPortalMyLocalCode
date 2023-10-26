@@ -414,8 +414,8 @@ class Taskprofile extends React.Component<ITaskprofileProps, ITaskprofileState> 
       EstimatedTimeDescriptionArray: tempEstimatedArrayData,
       TotalEstimatedTime: TotalEstimatedTime,
 
-      Portfolio: portfolio != undefined ? portfolio[0] : undefined,
-      PortfolioType:portfolio != undefined ? portfolio[0].PortfolioType : undefined ,
+      Portfolio: portfolio != undefined && portfolio.length>0 ? portfolio[0] : undefined,
+      PortfolioType:portfolio != undefined && portfolio.length>0 ? portfolio[0]?.PortfolioType : undefined ,
       Creation: taskDetails["Created"],
       Modified: taskDetails["Modified"],
       ModifiedBy: taskDetails["Editor"],
