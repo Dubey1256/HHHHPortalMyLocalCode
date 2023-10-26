@@ -2135,8 +2135,6 @@ const EditTaskPopup = (Items: any) => {
             });
         }
 
-
-
         if (IsSendAttentionMsgStatus) {
             let txtComment = `You have been tagged as ${SendCategoryName} in the below task by ${Items.context.pageContext._user.displayName}`;
             let TeamMsg = txtComment + `</br> <a href=${window.location.href}>${EditData.TaskId}-${EditData.Title}</a>`
@@ -2179,6 +2177,21 @@ const EditTaskPopup = (Items: any) => {
                 let web = new Web(siteUrls);
                 await web.lists.getById(Items.Items.listId).items.getById(Items.Items.Id).update(DataJSONUpdate)
                     .then(async (res: any) => {
+                        // Added by PB************************
+                        if (Items?.SDCAuthor != undefined && Items?.SDCAuthor != '' && EditData != undefined && EditData != '') {
+                            let SDCRecipientMail: any[] = [];
+                            EditData.SDCAuthor = Items?.SDCAuthor;
+                            taskUsers?.map((User: any) => {
+                                if (User?.Title?.toLowerCase() == 'robert ungethuem' || User?.Title?.toLowerCase() == 'stefan hochhuth') {
+                                    SDCRecipientMail.push(User);
+                                }
+                            });
+                            globalCommon.sendImmediateEmailNotifications(EditData.Id, siteUrls, Items.Items.listId, EditData, SDCRecipientMail, 'Client Task', taskUsers, Context).then((response: any) => {
+                                console.log(response);
+                            });
+                        }
+                        //End Here*************************
+
                         let web = new Web(siteUrls);
                         let TaskDetailsFromCall: any;
                         if (Items.Items.listId != undefined) {
@@ -2199,20 +2212,15 @@ const EditTaskPopup = (Items: any) => {
                                 .filter(`Id eq ${Items.Items.Id}`)
                                 .expand('AssignedTo,Author,Editor,Portfolio,TaskType,TeamMembers,ResponsibleTeam,TaskCategories,ClientCategory,RelevantPortfolio,Approvee')
                                 .get();
-
                         }
                         let currentUserId = Context.pageContext._legacyPageContext.userId
 
                         if (ApproverData != undefined && ApproverData.length > 0) {
                             taskUsers.forEach((val: any) => {
-
                                 if (ApproverData[0]?.Id == val?.AssignedToUserId && ApproverData[0].Company == undefined) {
                                     EditData.TaskApprovers = ApproverData
                                 }
-
-
                             })
-
                         }
                         if (ApproverData != undefined && ApproverData.length > 0) {
                             taskUsers.forEach((val: any) => {
@@ -2221,7 +2229,6 @@ const EditTaskPopup = (Items: any) => {
                                 }
 
                             })
-
                         }
                         if (ApproverData != undefined && ApproverData.length > 0) {
                             if (ApproverData[0].Id == currentUserId) {
@@ -2229,10 +2236,6 @@ const EditTaskPopup = (Items: any) => {
                                 EditData.TaskApprovers = []
                             }
                         }
-
-
-
-
                         if (TaskDetailsFromCall != undefined && TaskDetailsFromCall.length > 0) {
                             TaskDetailsFromCall[0].TaskCreatorData = EditData.TaskCreatorData;
                             TaskDetailsFromCall[0].TaskApprovers = EditData.TaskApprovers;
