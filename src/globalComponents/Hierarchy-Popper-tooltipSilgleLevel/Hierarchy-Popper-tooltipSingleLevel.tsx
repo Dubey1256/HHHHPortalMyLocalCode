@@ -48,7 +48,7 @@ let scrollToolitem: any = false
 let pageName: any = 'hierarchyPopperToolTip'
 export default function ReactPopperTooltipSingleLevel({ ShareWebId, row, masterTaskData, AllSitesTaskData, AllListId }: any) {
     AllMatsterAndTaskData = [...masterTaskData];
-    AllMatsterAndTaskData = JSON.parse(JSON.stringify(AllMatsterAndTaskData?.concat(AllSitesTaskData)));
+    AllMatsterAndTaskData = AllMatsterAndTaskData?.concat(AllSitesTaskData);
 
     const [controlledVisible, setControlledVisible] = React.useState(false);
     const [action, setAction] = React.useState("");
