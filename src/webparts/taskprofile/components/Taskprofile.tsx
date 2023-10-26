@@ -415,7 +415,7 @@ class Taskprofile extends React.Component<ITaskprofileProps, ITaskprofileState> 
       TotalEstimatedTime: TotalEstimatedTime,
 
       Portfolio: portfolio != undefined ? portfolio[0] : undefined,
-      PortfolioType: taskDetails["PortfolioType"],
+      PortfolioType:portfolio != undefined ? portfolio[0].PortfolioType : undefined ,
       Creation: taskDetails["Created"],
       Modified: taskDetails["Modified"],
       ModifiedBy: taskDetails["Editor"],
@@ -427,6 +427,9 @@ class Taskprofile extends React.Component<ITaskprofileProps, ITaskprofileState> 
       Approver: taskDetails.Approver != undefined ? taskDetails.Approver[0] : "",
       ParentTask: taskDetails?.ParentTask,
     };
+    if(tempTask?.ClientTime==false){
+      tempTask.ClientTime=null
+    }
     if (tempTask?.FeedBack != null && tempTask?.FeedBack.length > 0) {
       tempTask?.FeedBack[0]?.FeedBackDescriptions?.map((items: any) => {
         if (items?.Comments?.length > 0) {
@@ -563,7 +566,7 @@ class Taskprofile extends React.Component<ITaskprofileProps, ITaskprofileState> 
   private async GetSmartMetaData(ClientCategory: any, ClientTime: any) {
     let array2: any = [];
     ClientTimeArray = []
-    if (((ClientTime == null || ClientTime == "false") && ClientTimeArray?.length == 0)) {
+    if (((ClientTime == null) && ClientTimeArray?.length == 0)) {
       var siteComp: any = {};
       siteComp.SiteName = this.state?.listName,
         siteComp.ClienTimeDescription = 100,
@@ -571,7 +574,7 @@ class Taskprofile extends React.Component<ITaskprofileProps, ITaskprofileState> 
       ClientTimeArray.push(siteComp);
     }
 
-    else if (ClientTime != null && ClientTime != "false") {
+    else if (ClientTime != null) {
       ClientTimeArray = JSON.parse(ClientTime);
 
     }
@@ -1600,7 +1603,7 @@ class Taskprofile extends React.Component<ITaskprofileProps, ITaskprofileState> 
     
     return (
       <myContextValue.Provider value={{ ...myContextValue, FunctionCall: this.contextCall, keyDoc: this.state.keydoc, FileDirRef: this.state.FileDirRef }}>
-        <div
+        <div  className= {this.state?.Result?.PortfolioType?.Title=="Service"?'serviepannelgreena':""}
         //  style={{color:`${this.state.Result["serviceComponentColor"]}`}}
         >
           <section className='ContentSection'> {this.state.breadCrumData != undefined &&
