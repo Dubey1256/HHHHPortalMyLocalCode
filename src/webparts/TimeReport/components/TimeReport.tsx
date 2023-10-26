@@ -837,7 +837,7 @@ QATime = 0.00;
                 placeholder: "Sites",
                 header: "",
                 canSort: false,
-                size: 75,
+                size: 40,
             },
             {
 
@@ -845,7 +845,7 @@ QATime = 0.00;
                 id: 'TaskID',
                 header: '',
                 placeholder: "TaskID",
-                size: 200,
+                size: 180,
                
  
 
@@ -922,7 +922,7 @@ QATime = 0.00;
                 header: '',
                 accessorFn: (row) => row?.Features,
                 placeholder: "Features",
-                size: 125,
+                size: 225,
 
             },
             {
