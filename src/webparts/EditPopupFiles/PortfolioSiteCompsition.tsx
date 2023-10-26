@@ -1466,35 +1466,40 @@ const SiteCompositionComponent = (Props: any) => {
 
                                             </td>
                                             <td className="m-0 p-0 align-middle" style={{ width: "15%" }}>
-                                                <img src={siteData.Item_x005F_x0020_Cover ? siteData.Item_x005F_x0020_Cover.Url : ""} style={{ width: '25px' }} className="mx-2" />
-                                                {siteData.Title}
+                                                <div className="alignCenter">
+                                                    <img src={siteData.Item_x005F_x0020_Cover ? siteData.Item_x005F_x0020_Cover.Url : ""} className="mx-2 workmember" />
+                                                    {siteData.Title}
+                                                    <span></span>
+                                                </div>
                                             </td>
                                             <td
                                                 // className="m-0 p-1"
                                                 className={IsSCProtected == true ? "Disabled-Link m-0 p-1 opacity-75" : "m-0 p-1"}
                                                 style={{ width: "10%" }}
                                             >
-                                                {ProportionalStatus ?
-                                                    <>{isPortfolioComposition && siteData.BtnStatus ? <input
-                                                        type="number" min="1"
-                                                        value={siteData.ClienTimeDescription ? Number(siteData.ClienTimeDescription).toFixed(1) : null}
-                                                        className="form-control p-1" readOnly={true} style={{ cursor: "not-allowed", width: '100%' }}
-                                                        onChange={(e) => ChangeTimeManuallyFunction(e, siteData.Title)}
-                                                    /> : <input type="number" min="1"
-                                                        style={ProportionalStatus && siteData.BtnStatus ? { cursor: "not-allowed", width: "100%" } : {}}
-                                                        defaultValue={siteData.BtnStatus ? (100 / selectedSiteCount).toFixed(1) : ""}
-                                                        value={siteData.BtnStatus ? (100 / selectedSiteCount).toFixed(1) : ""}
-                                                        className="form-control p-1" readOnly={ProportionalStatus}
-                                                    />}  </>
-                                                    : <> {siteData.BtnStatus ?
-                                                        <input
-                                                            type="number" min="1" style={{ width: '100%' }}
-                                                            defaultValue={siteData.ClienTimeDescription ? Number(siteData.ClienTimeDescription).toFixed(2) : null}
-                                                            className="form-control p-1"
+                                                <div className="input-group alignCenter">
+                                                    {ProportionalStatus ?
+                                                        <>{isPortfolioComposition && siteData.BtnStatus ? <input
+                                                            type="number" min="1"
+                                                            value={siteData.ClienTimeDescription ? Number(siteData.ClienTimeDescription).toFixed(1) : null}
+                                                            className="form-control p-1" readOnly={true} style={{ cursor: "not-allowed", width: '100%' }}
                                                             onChange={(e) => ChangeTimeManuallyFunction(e, siteData.Title)}
-                                                        /> : <input type="number" className="form-control" value={''} readOnly={true} style={{ cursor: "not-allowed", width: "100%" }}
-                                                        />}</>
-                                                }
+                                                        /> : <input type="number" min="1"
+                                                            style={ProportionalStatus && siteData.BtnStatus ? { cursor: "not-allowed", width: "100%" } : {}}
+                                                            defaultValue={siteData.BtnStatus ? (100 / selectedSiteCount).toFixed(1) : ""}
+                                                            value={siteData.BtnStatus ? (100 / selectedSiteCount).toFixed(1) : ""}
+                                                            className="form-control p-1" readOnly={ProportionalStatus}
+                                                        />}  </>
+                                                        : <> {siteData.BtnStatus ?
+                                                            <input
+                                                                type="number" min="1" style={{ width: '100%' }}
+                                                                defaultValue={siteData.ClienTimeDescription ? Number(siteData.ClienTimeDescription).toFixed(2) : null}
+                                                                className="form-control p-1"
+                                                                onChange={(e) => ChangeTimeManuallyFunction(e, siteData.Title)}
+                                                            /> : <input type="number" className="form-control" value={''} readOnly={true} style={{ cursor: "not-allowed", width: "100%" }}
+                                                            />}</>
+                                                    }
+                                                </div>
                                             </td>
                                             <td className="m-0 p-1 align-middle" style={{ width: "3%" }}>
                                                 <span>{siteData.BtnStatus ? "%" : ''}</span>

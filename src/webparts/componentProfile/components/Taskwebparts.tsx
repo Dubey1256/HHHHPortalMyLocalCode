@@ -29,6 +29,7 @@ import CreateActivity from "../../servicePortfolio/components/CreateActivity";
 import CreateWS from '../../servicePortfolio/components/CreateWS';
 import ReactPopperTooltipSingleLevel from "../../../globalComponents/Hierarchy-Popper-tooltipSilgleLevel/Hierarchy-Popper-tooltipSingleLevel";
 //import RestructuringCom from "../../../globalComponents/Restructuring/RestructuringCom";
+
 var filt: any = "";
 var ContextValue: any = {};
 let globalFilterHighlited: any;
@@ -48,6 +49,12 @@ let TimesheetData: any = [];
 let count = 1;
 let flatviewmastertask:any =[];
 let flatviewTasklist:any =[];
+let hasExpanded: any = true;
+let isColumnDefultSortingAsc: any = false;
+let hasCustomExpanded: any = true;
+let isHeaderNotAvlable: any = false
+
+let allgroupdata:any = [];
 function PortfolioTable(SelectedProp: any) {
   const childRef = React.useRef<any>();
   if (childRef != null) {
@@ -103,6 +110,8 @@ function PortfolioTable(SelectedProp: any) {
       { Title: "SubComponent", Suffix: "S", Level: 2 },
       { Title: "Feature", Suffix: "F", Level: 3 }
     ]);
+    const [clickFlatView, setclickFlatView] = React.useState(false);
+    const [groupByButtonClickData, setGroupByButtonClickData] = React.useState([]);
   let ComponetsData: any = {};
   let Response: any = [];
   let props = undefined;
@@ -399,7 +408,7 @@ function PortfolioTable(SelectedProp: any) {
                   result.chekbox = false;
                   result.descriptionsSearch = "";
                   result.commentsSearch = "";
-
+                  result.TaskTypeTitle = result?.TaskType?.Title;
                   result.DueDate = Moment(result.DueDate).format("DD/MM/YYYY");
                   result.DisplayDueDate = Moment(result.DueDate).format("DD/MM/YYYY");
                   if (result.DisplayDueDate == "Invalid date" || "") {
@@ -523,7 +532,6 @@ function PortfolioTable(SelectedProp: any) {
                   TasksItem.push(result);
                   AllTasksData.push(result);
                 });
-                
                 flatviewTasklist = JSON.parse(JSON.stringify(AllTasksData))
                 AllSiteTasksData = AllTasksData;
                 // GetComponents();
@@ -810,6 +818,54 @@ function PortfolioTable(SelectedProp: any) {
     getTaskUsers();
     getPortFolioType();
   }, []);
+// Flatview 
+
+
+
+const switchFlatViewData = (data: any) => {
+  let groupedDataItems = JSON.parse(JSON.stringify(data));
+  const flattenedData = flattenData(groupedDataItems);
+  hasCustomExpanded = false
+  hasExpanded = false
+  isHeaderNotAvlable = true
+  isColumnDefultSortingAsc = true
+  setGroupByButtonClickData(data);
+  setclickFlatView(true);
+  setData(flattenedData);
+  // setData(smartAllFilterData);
+}
+
+function flattenData(groupedDataItems: any) {
+  const flattenedData: any = [];
+  function flatten(item: any) {
+      if (item.Title != "Others") {
+          flattenedData.push(item);
+      }
+      if (item?.subRows) {
+          item?.subRows.forEach((subItem: any) => flatten(subItem));
+          item.subRows = []
+      }
+  }
+  groupedDataItems?.forEach((item: any) => { flatten(item) });
+  return flattenedData;
+}
+const switchGroupbyData = () => {
+  count=1;
+  isColumnDefultSortingAsc = false
+  hasCustomExpanded = true
+  hasExpanded = true
+  isHeaderNotAvlable = false
+  setclickFlatView(false);
+  setData(groupByButtonClickData);
+}
+
+
+
+
+// Flatview End
+
+
+
 
   React.useEffect(() => {
     if (AllMetadata.length > 0 && portfolioTypeData.length > 0) {
@@ -938,6 +994,8 @@ function PortfolioTable(SelectedProp: any) {
       });
       if (temp?.subRows?.length > 0) {
         componentData.push(temp);
+        allgroupdata = temp?.subRows;
+        console.log("All group data "+ allgroupdata)
       }
     }
 
@@ -1094,10 +1152,11 @@ function PortfolioTable(SelectedProp: any) {
         accessorKey: "",
         placeholder: "",
         hasCheckbox: true,
-        hasCustomExpanded: true,
-        hasExpanded: true,
+        hasCustomExpanded: hasCustomExpanded,
+        hasExpanded: hasExpanded,
+        isHeaderNotAvlable: isHeaderNotAvlable,
         size: 55,
-        id: "Id"
+        id: 'Id',
       },
       {
         cell: ({ row, getValue }) => (
@@ -1166,17 +1225,20 @@ function PortfolioTable(SelectedProp: any) {
         accessorFn: (row) => row?.TaskID,
         cell: ({ row, getValue }) => (
           <>
-           <ReactPopperTooltipSingleLevel ShareWebId={row?.original?.TaskID} row={row?.original} singleLevel={true} masterTaskData={flatviewmastertask} AllSitesTaskData={flatviewTasklist} AllListId={SelectedProp?.NextProp} />
-         
+            {/* <ReactPopperTooltip ShareWebId={getValue()} row={row} /> */}
+            <ReactPopperTooltipSingleLevel ShareWebId={row?.original?.TaskID} row={row?.original} singleLevel={true} masterTaskData={flatviewmastertask} AllSitesTaskData={flatviewTasklist} AllListId={SelectedProp?.NextProp} />
+          
           </>
         ),
         id: "TaskID",
         placeholder: "ID",
-        header: "",
-        resetColumnFilters: false,
+         header: "",
+         resetColumnFilters: false,
+        isColumnDefultSortingAsc: isColumnDefultSortingAsc,
         // isColumnDefultSortingAsc:true,
-        size: 195
+        size: 190,
       },
+  
       {
         accessorFn: (row) => row?.Title,
         cell: ({ row, column, getValue }) => (
@@ -1360,6 +1422,14 @@ function PortfolioTable(SelectedProp: any) {
         resetColumnFilters: false,
         header: "",
         size: 131
+      },
+      {
+        accessorKey: "PriorityRank",
+        placeholder: "Priority",
+        header: "",
+        resetColumnFilters: false,
+        size: 42,
+        id: "PriorityRank"
       },
       {
         accessorKey: "PercentComplete",
@@ -2161,6 +2231,7 @@ function PortfolioTable(SelectedProp: any) {
                         AddStructureFeature={
                           SelectedProp?.props?.Item_x0020_Type
                         }
+                        clickFlatView={clickFlatView} switchFlatViewData={switchFlatViewData} flatView={true} switchGroupbyData={switchGroupbyData}
                         setLoaded={setLoaded}
                         queryItems={SelectedProp?.props}
                         PortfolioFeature={SelectedProp?.props?.Item_x0020_Type}
@@ -2378,3 +2449,4 @@ function PortfolioTable(SelectedProp: any) {
   );
 }
 export default PortfolioTable;
+

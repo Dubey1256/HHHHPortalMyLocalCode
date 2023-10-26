@@ -820,24 +820,24 @@ const EditTaskPopup = (Items: any) => {
 
                 if (item.ClientTime != null && item.ClientTime != undefined) {
                     let tempData: any = [];
-                    if (Items.Items.siteType == "Shareweb") {
-                        let ShareWebCompositionStatus: any;
-                        let TempData: any = JSON.parse(item.ClientTime);
-                        TempData?.map((itemdata: any) => {
-                            ShareWebCompositionStatus = itemdata.ClienTimeDescription;
-                        })
-                        let SCDataTemp: any = item.ClientTime?.length > 0 ? JSON.parse(item.ClientTime) : [];
-                        if ((ShareWebConfigData != undefined || ShareWebCompositionStatus == 100) && SCDataTemp?.length == 1) {
-                            let siteConfigData = JSON.parse(ShareWebConfigData != undefined ? ShareWebConfigData : [{}]);
-                            tempData = siteConfigData[0].SiteComposition;
-                            let siteSeetingJSON = [{ "Manual": true, "Proportional": false, "Portfolio": false }]
-                            item.SiteCompositionSettings = JSON.stringify(siteSeetingJSON);
-                        } else {
-                            tempData = JSON.parse(item.ClientTime)
-                        }
-                    } else {
-                        tempData = JSON.parse(item.ClientTime)
-                    }
+                    // if (Items.Items.siteType == "Shareweb") {
+                    //     let ShareWebCompositionStatus: any;
+                    //     let TempData: any = JSON.parse(item.ClientTime);
+                    //     TempData?.map((itemdata: any) => {
+                    //         ShareWebCompositionStatus = itemdata.ClienTimeDescription;
+                    //     })
+                    //     let SCDataTemp: any = item.ClientTime?.length > 0 ? JSON.parse(item.ClientTime) : [];
+                    //     if ((ShareWebConfigData != undefined || ShareWebCompositionStatus == 100) && SCDataTemp?.length == 1) {
+                    //         let siteConfigData = JSON.parse(ShareWebConfigData != undefined ? ShareWebConfigData : [{}]);
+                    //         tempData = siteConfigData[0].SiteComposition;
+                    //         let siteSeetingJSON = [{ "Manual": true, "Proportional": false, "Portfolio": false }]
+                    //         item.SiteCompositionSettings = JSON.stringify(siteSeetingJSON);
+                    //     } else {
+                    //         tempData = JSON.parse(item.ClientTime)
+                    //     }
+                    // } else {
+                    tempData = JSON.parse(item.ClientTime)
+                    // }
                     // let tempData: any = JSON.parse(item.ClientTime);
                     let tempData2: any = [];
                     if (tempData != undefined && tempData.length > 0) {
@@ -895,25 +895,25 @@ const EditTaskPopup = (Items: any) => {
                     item.ClientTime = tempArray3;
                 } else {
                     let tempArray: any = [];
-                    if (Items.Items.siteType == "Shareweb") {
-                        if (ShareWebConfigData != undefined) {
-                            let siteConfigData = JSON.parse(ShareWebConfigData != undefined ? ShareWebConfigData : [{}]);
-                            tempArray = siteConfigData[0].SiteComposition;
-                            item.siteCompositionData = tempArray;
-                            setClientTimeData(tempArray);
-                            let siteSeetingJSON = [{ "Manual": true, "Proportional": false, "Portfolio": false }]
-                            item.SiteCompositionSettings = JSON.stringify(siteSeetingJSON);
-                        }
-                    } else {
-                        const object: any = {
-                            SiteName: Items.Items.siteType,
-                            ClienTimeDescription: 100,
-                            localSiteComposition: true,
-                            siteIcons: Items.Items.SiteIcon
-                        }
-                        item.siteCompositionData = [object];
-                        setClientTimeData([object]);
+                    // if (Items.Items.siteType == "Shareweb") {
+                    //     if (ShareWebConfigData != undefined) {
+                    //         let siteConfigData = JSON.parse(ShareWebConfigData != undefined ? ShareWebConfigData : [{}]);
+                    //         tempArray = siteConfigData[0].SiteComposition;
+                    //         item.siteCompositionData = tempArray;
+                    //         setClientTimeData(tempArray);
+                    //         let siteSeetingJSON = [{ "Manual": true, "Proportional": false, "Portfolio": false }]
+                    //         item.SiteCompositionSettings = JSON.stringify(siteSeetingJSON);
+                    //     }
+                    // } else {
+                    const object: any = {
+                        SiteName: Items.Items.siteType,
+                        ClienTimeDescription: 100,
+                        localSiteComposition: true,
+                        siteIcons: Items.Items.SiteIcon
                     }
+                    item.siteCompositionData = [object];
+                    setClientTimeData([object]);
+                    // }
                 }
                 if (item.Body != undefined) {
                     item.Body = item.Body.replace(/(<([^>]+)>)/ig, '');
@@ -1905,6 +1905,7 @@ const EditTaskPopup = (Items: any) => {
                     } else {
                         setWorkingMember(42);
                     }
+
                     EditData.CompletedDate = Moment(new Date()).format("MM-DD-YYYY")
                     StatusOptions?.map((item: any) => {
                         if (StatusInput == item.value) {
