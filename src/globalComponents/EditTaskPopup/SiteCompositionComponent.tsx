@@ -1197,7 +1197,7 @@ const SiteCompositionComponent = (Props: any) => {
                                                 style={{ width: "12%" }}
                                                 className={IsProtectedSiteComposition == true ? "Disabled-Link opacity-75 m-0 p-1 align-middle" : "m-0 p-1 align-middle"}
                                             >
-                                                <div className="alignCenter">
+                                                <div className="alignCenter input-group">
                                                     {ProportionalStatus ?
                                                         <>{isPortfolioComposition && siteData.BtnStatus ? <input
                                                             type="number" min="1" max='100'
