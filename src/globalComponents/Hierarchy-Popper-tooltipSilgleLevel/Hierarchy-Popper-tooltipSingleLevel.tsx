@@ -12,6 +12,7 @@ let counterAllTaskCount: any = 0;
 let checkedData = ''
 
 export const getTooltiphierarchyWithoutGroupByTable = (row: any, completeTitle: any): any => {
+  
     let tempTitle = '';
     for (let i = 0; i < AllMatsterAndTaskData.length; i++) {
         const Object = AllMatsterAndTaskData[i];
@@ -47,7 +48,7 @@ let scrollToolitem: any = false
 let pageName: any = 'hierarchyPopperToolTip'
 export default function ReactPopperTooltipSingleLevel({ ShareWebId, row, masterTaskData, AllSitesTaskData, AllListId }: any) {
     AllMatsterAndTaskData = [...masterTaskData];
-    AllMatsterAndTaskData = AllMatsterAndTaskData?.concat(AllSitesTaskData);
+    AllMatsterAndTaskData = JSON.parse(JSON.stringify(AllMatsterAndTaskData?.concat(AllSitesTaskData)));
 
     const [controlledVisible, setControlledVisible] = React.useState(false);
     const [action, setAction] = React.useState("");
@@ -116,6 +117,9 @@ export default function ReactPopperTooltipSingleLevel({ ShareWebId, row, masterT
     }
     /// end////
     const tooltiphierarchy = React.useMemo(() => {
+        if(row?.subRows?.length>0){
+            row.subRows=[]
+        }
         let completeTitle = '';
         if (action === "click") {
             let result = getTooltiphierarchyWithoutGroupByTable(row, completeTitle);
@@ -234,6 +238,7 @@ export default function ReactPopperTooltipSingleLevel({ ShareWebId, row, masterT
                         <div className="tootltip-title">{row?.Title}</div>
                         <button className="toolTipCross" onClick={handleCloseClick}><div className="popHoverCross">×</div></button>
                     </div>
+
                     <div className={scrollToolitem === true ? "tool-Wrapper toolWrapper-Th scroll-toolitem" : "tool-Wrapper toolWrapper-Th"}  >
                         <GlobalCommanTable columns={columns} data={tooltiphierarchy} callBackDataToolTip={callBackDataToolTip} callBackData={callBackData} pageName={pageName} expendedTrue={true} />
                     </div>
@@ -250,7 +255,7 @@ export default function ReactPopperTooltipSingleLevel({ ShareWebId, row, masterT
                     <div {...getArrowProps({ className: "tooltip-arrow" })} />
                 </div>
             )}
-             {openActivity && (
+            {openActivity && (
                 <CreateActivity
                     selectedItem={checkedData}
                     Call={Call}
@@ -260,7 +265,7 @@ export default function ReactPopperTooltipSingleLevel({ ShareWebId, row, masterT
             )}
             {openWS && (
                 <CreateWS
-                selectedItem={checkedData}
+                    selectedItem={checkedData}
                     Call={Call}
                     AllListId={AllListId}
                     context={AllListId?.Context}
