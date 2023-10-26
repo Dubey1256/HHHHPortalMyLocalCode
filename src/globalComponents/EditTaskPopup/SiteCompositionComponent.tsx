@@ -207,17 +207,17 @@ const SiteCompositionComponent = (Props: any) => {
         } else {
             setSelectedComponentData([]);
         }
-    }, [])
+    }, [SelectedClientCategoryFromProps])
 
 
     const RefreshGlobalVariables = () => {
-        AutoCompleteItemsArray= [];
-        SelectedClientCategoryBackupArray= [];
-        BackupSiteTypeData= [];
-        SiteTaggingFinalData= [];
-        ClientTimeDataBackup= [];
-        GloablChangeCountCC= 0;
-        GloablChangeCountSC= 0;
+        AutoCompleteItemsArray = [];
+        SelectedClientCategoryBackupArray = [];
+        BackupSiteTypeData = [];
+        SiteTaggingFinalData = [];
+        ClientTimeDataBackup = [];
+        GloablChangeCountCC = 0;
+        GloablChangeCountSC = 0;
     }
 
     const selectSiteCompositionFunction = (e: any, Index: any) => {
@@ -1189,8 +1189,8 @@ const SiteCompositionComponent = (Props: any) => {
                                                 // className="m-0 p-1 align-middle" 
                                                 style={{ width: "30%" }}>
                                                 <div className="alignCenter">
-                                                    <img src={siteData.Item_x005F_x0020_Cover ? siteData.Item_x005F_x0020_Cover.Url : ""} style={{ width: '25px' }} className="mx-2" />
-                                                    {siteData.Title}
+                                                    <img src={siteData.Item_x005F_x0020_Cover ? siteData.Item_x005F_x0020_Cover.Url : ""} className="mx-2 workmember" />
+                                                    <span>{siteData.Title}</span>
                                                 </div>
                                             </td>
                                             <td
