@@ -12,7 +12,7 @@ let counterAllTaskCount: any = 0;
 let checkedData = ''
 
 export const getTooltiphierarchyWithoutGroupByTable = (row: any, completeTitle: any): any => {
-  
+
     let tempTitle = '';
     for (let i = 0; i < AllMatsterAndTaskData.length; i++) {
         const Object = AllMatsterAndTaskData[i];
@@ -48,8 +48,7 @@ let scrollToolitem: any = false
 let pageName: any = 'hierarchyPopperToolTip'
 export default function ReactPopperTooltipSingleLevel({ ShareWebId, row, masterTaskData, AllSitesTaskData, AllListId }: any) {
     AllMatsterAndTaskData = [...masterTaskData];
-    AllMatsterAndTaskData = JSON.parse(JSON.stringify(AllMatsterAndTaskData?.concat(AllSitesTaskData)));
-
+    AllMatsterAndTaskData = AllMatsterAndTaskData?.concat(AllSitesTaskData);
     const [controlledVisible, setControlledVisible] = React.useState(false);
     const [action, setAction] = React.useState("");
     const [hoverOverInfo, setHoverOverInfo] = React.useState("");
@@ -117,17 +116,21 @@ export default function ReactPopperTooltipSingleLevel({ ShareWebId, row, masterT
     }
     /// end////
     const tooltiphierarchy = React.useMemo(() => {
-        if(row?.subRows?.length>0){
-            row.subRows=[]
+        let rowOrg: any = {};
+        if (row?.subRows?.length > 0) {
+            rowOrg = { ...row };
+            rowOrg.subRows = [];
+        }else{
+            rowOrg = { ...row };
         }
         let completeTitle = '';
         if (action === "click") {
-            let result = getTooltiphierarchyWithoutGroupByTable(row, completeTitle);
+            let result = getTooltiphierarchyWithoutGroupByTable(rowOrg, completeTitle);
             console.log(row?.TaskID, ' : ', result?.structureTitle + row?.Title)
             return [result?.structureData]
         }
         if (action === "hover") {
-            let result = getTooltiphierarchyWithoutGroupByTable(row, completeTitle);
+            let result = getTooltiphierarchyWithoutGroupByTable(rowOrg, completeTitle);
             let TaskId = row?.SiteIcon != undefined ? globalCommon.GetCompleteTaskId(row) : row?.PortfolioStructureID;
             let completedID = `${TaskId} : ${result?.structureTitle}${row?.Title}`
             setHoverOverInfo(completedID);
