@@ -1992,25 +1992,25 @@ const RestructuringCom = (props: any, ref: any) => {
               arr?.map((obj : any, index : any) => {
                 if (!spliceData || !pushData) {
                   obj.isRestructureActive = false;
+
+                  if (
+                    !spliceData &&
+                    obj.Id === backupCheckedList[0]?.Id &&
+                    obj.Item_x0020_Type === backupCheckedList[0]?.Item_x0020_Type &&
+                    obj.TaskType?.Title === backupCheckedList[0]?.TaskType?.Title && obj.Portfolio?.Id == backupCheckedList[0]?.Portfolio?.Id && obj.ParentTask?.Id == backupCheckedList[0]?.ParentTask?.Id
+                  ) {
+                    arr.splice(index, 1);
+                    spliceData = true;
+                  }
             
                   if (
                     !pushData &&
                     obj.Id === newItemBackUp?.Id &&
                     obj.Item_x0020_Type === newItemBackUp?.Item_x0020_Type &&
-                    obj.TaskType?.Title === newItemBackUp?.TaskType?.Title
+                    obj.TaskType?.Title === newItemBackUp?.TaskType?.Title && obj.Portfolio?.Id == newItemBackUp?.Portfolio?.Id
                   ) {
                     obj.subRows?.push(...latestCheckedList);
                     pushData = true;
-                  }
-            
-                  if (
-                    !spliceData &&
-                    obj.Id === backupCheckedList[0]?.Id &&
-                    obj.Item_x0020_Type === backupCheckedList[0]?.Item_x0020_Type &&
-                    obj.TaskType?.Title === backupCheckedList[0]?.TaskType?.Title
-                  ) {
-                    arr.splice(index, 1);
-                    spliceData = true;
                   }
             
                   if (obj.subRows != undefined && obj.subRows?.length > 0) {
@@ -2188,26 +2188,28 @@ const RestructuringCom = (props: any, ref: any) => {
               arr?.map((obj : any, index : any) => {
                 if (!spliceData || !pushData) {
                   obj.isRestructureActive = false;
+
+                  
+                  if (
+                    !spliceData &&
+                    obj.Id === backupCheckedList[0]?.Id &&
+                    obj.Item_x0020_Type === backupCheckedList[0]?.Item_x0020_Type &&
+                    obj.TaskType?.Title === backupCheckedList[0]?.TaskType?.Title && obj.Parent?.Id == backupCheckedList[0]?.Parent?.Id && obj.Portfolio?.Id == backupCheckedList[0]?.Portfolio?.Id
+                  ) {
+                    arr.splice(index, 1);
+                    spliceData = true;
+                  }
             
                   if (
                     !pushData &&
                     obj.Id === newItemBackUp?.Id &&
                     obj.Item_x0020_Type === newItemBackUp?.Item_x0020_Type &&
-                    obj.TaskType?.Title === newItemBackUp?.TaskType?.Title
+                    obj.TaskType?.Title === newItemBackUp?.TaskType?.Title && obj.Parent?.Id == newItemBackUp?.Parent?.Id
                   ) {
                     obj.subRows?.push(...latestCheckedList);
                     pushData = true;
                   }
             
-                  if (
-                    !spliceData &&
-                    obj.Id === backupCheckedList[0]?.Id &&
-                    obj.Item_x0020_Type === backupCheckedList[0]?.Item_x0020_Type &&
-                    obj.TaskType?.Title === backupCheckedList[0]?.TaskType?.Title
-                  ) {
-                    arr.splice(index, 1);
-                    spliceData = true;
-                  }
             
                   if (obj.subRows != undefined && obj.subRows?.length > 0) {
                     processArray(obj.subRows, pushData, spliceData);
@@ -2475,6 +2477,8 @@ const RestructuringCom = (props: any, ref: any) => {
               if (!spliceData || !pushData) {
                 obj.isRestructureActive = false;
 
+                
+
                 if (
                   (newItemBackUp == undefined || newItemBackUp == null || newItemBackUp?.length == 0) &&
                   onceRender
@@ -2483,26 +2487,28 @@ const RestructuringCom = (props: any, ref: any) => {
                   pushData = true;
                   onceRender = false;
                 }
+
+                if (
+                  !spliceData &&
+                  obj.Id === backupCheckedList[0]?.Id &&
+                  obj.Item_x0020_Type === backupCheckedList[0]?.Item_x0020_Type &&
+                  obj.TaskType?.Title === backupCheckedList[0]?.TaskType?.Title && obj.Portfolio?.Id == backupCheckedList[0]?.Portfolio?.Id && obj.ParentTask?.Id == backupCheckedList[0]?.ParentTask?.Id
+                ) {
+                  arr.splice(index, 1);
+                  spliceData = true;
+                }
           
                 if (
                   !pushData &&
                   obj.Id === newItemBackUp?.Id &&
                   obj.Item_x0020_Type === newItemBackUp?.Item_x0020_Type &&
-                  obj.TaskType?.Title === newItemBackUp?.TaskType?.Title
+                  obj.TaskType?.Title === newItemBackUp?.TaskType?.Title && obj.Portfolio?.Id == newItemBackUp?.Portfolio?.Id
                 ) {
                   obj.subRows?.push(...latestCheckedList);
                   pushData = true;
                 }
           
-                if (
-                  !spliceData &&
-                  obj.Id === backupCheckedList[0]?.Id &&
-                  obj.Item_x0020_Type === backupCheckedList[0]?.Item_x0020_Type &&
-                  obj.TaskType?.Title === backupCheckedList[0]?.TaskType?.Title
-                ) {
-                  arr.splice(index, 1);
-                  spliceData = true;
-                }
+               
           
                 if (obj.subRows != undefined && obj.subRows?.length > 0) {
                   processArray(obj.subRows, pushData, spliceData);
@@ -2602,26 +2608,28 @@ const RestructuringCom = (props: any, ref: any) => {
                   pushData = true;
                   onceRender = false;
                 }
+
+                if (
+                  !spliceData &&
+                  obj.Id === backupCheckedList[0]?.Id &&
+                  obj.Item_x0020_Type === backupCheckedList[0]?.Item_x0020_Type &&
+                  obj.TaskType?.Title === backupCheckedList[0]?.TaskType?.Title && obj.Parent?.Id == backupCheckedList[0]?.Parent?.Id && obj.Portfolio?.Id == backupCheckedList[0]?.Portfolio?.Id
+                ) {
+                  arr.splice(index, 1);
+                  spliceData = true;
+                }
           
                 if (
                   !pushData &&
                   obj.Id === newItemBackUp?.Id &&
                   obj.Item_x0020_Type === newItemBackUp?.Item_x0020_Type &&
-                  obj.TaskType?.Title === newItemBackUp?.TaskType?.Title
+                  obj.TaskType?.Title === newItemBackUp?.TaskType?.Title && obj.Parent?.Id == newItemBackUp?.Parent?.Id
                 ) {
                   obj.subRows?.push(...latestCheckedList);
                   pushData = true;
                 }
           
-                if (
-                  !spliceData &&
-                  obj.Id === backupCheckedList[0]?.Id &&
-                  obj.Item_x0020_Type === backupCheckedList[0]?.Item_x0020_Type &&
-                  obj.TaskType?.Title === backupCheckedList[0]?.TaskType?.Title
-                ) {
-                  arr.splice(index, 1);
-                  spliceData = true;
-                }
+               
           
                 if (obj.subRows != undefined && obj.subRows?.length > 0) {
                   processArray(obj.subRows, pushData, spliceData);
