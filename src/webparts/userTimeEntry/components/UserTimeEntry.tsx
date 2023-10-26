@@ -24,6 +24,7 @@ import Tooltip from '../../../globalComponents/Tooltip';
 import PreSetDatePikerPannel from "../../../globalComponents/SmartFilterGolobalBomponents/PreSetDatePiker"
 import TimeEntryPopup from "../../../globalComponents/TimeEntry/TimeEntryComponent";
 import ShowClintCatogory from "../../../globalComponents/ShowClintCatogory";
+import Sitecomposition from "../../../globalComponents/SiteComposition";
 var AllListId: any;
 var siteConfig: any[] = []
 var AllPortfolios: any[] = [];
@@ -68,6 +69,7 @@ export interface IUserTimeEntryState {
   IsTimeEntry: boolean,
   SharewebTimeComponent: any,
   AllMetadata: any,
+  isDirectPopup: boolean,
 }
 var user: any = ''
 var userIdByQuery: any = ''
@@ -115,12 +117,12 @@ export default class UserTimeEntry extends React.Component<IUserTimeEntryProps, 
       IsTimeEntry: false,
       SharewebTimeComponent: {},
       AllMetadata: [],
+      isDirectPopup: false
     }
     this.OpenPresetDatePopup = this.OpenPresetDatePopup.bind(this);
     this.SelectedPortfolioItem = this.SelectedPortfolioItem.bind(this);
     this.EditDataTimeEntryData = this.EditDataTimeEntryData.bind(this);
     this.TimeEntryCallBack = this.TimeEntryCallBack.bind(this);
-
     this.GetResult();
   }
   private SelectedProp = this.props;
@@ -1182,12 +1184,15 @@ export default class UserTimeEntry extends React.Component<IUserTimeEntryProps, 
     }
     return '';
   }
-  private Call = (res: any) => {
+  private Call = (Type: any) => {
     this.updatefilter(false);
     this.setState({
       IsTask: '',
-      IsMasterTask: ''
+      IsMasterTask: '',
+      isDirectPopup: false
     })
+    if (Type == 'Master Task')
+      this.LoadPortfolio()
   }
   private async GetAllSiteTaskData(filterItemTimeTab: any, getAllTimeEntry: any) {
     let callcount = 0;
@@ -1996,10 +2001,12 @@ export default class UserTimeEntry extends React.Component<IUserTimeEntryProps, 
     })
   }
   private EditComponentPopup = (item: any) => {
-    item["siteUrl"] = this.props?.Context?.pageContext?.web?.absoluteUrl;
-    item["listName"] = "Master Tasks";
+    let PortfolioItem = AllPortfolios.filter(type => type?.Id == item?.Id)[0]
+    PortfolioItem["siteUrl"] = this.props?.Context?.pageContext?.web?.absoluteUrl;
+    PortfolioItem["listName"] = "Master Tasks";
     this.setState({
-      IsMasterTask: item
+      IsMasterTask: PortfolioItem,
+      isDirectPopup: true
     });
   };
   private EditPopup = (item: any) => {
@@ -2116,7 +2123,7 @@ export default class UserTimeEntry extends React.Component<IUserTimeEntryProps, 
           href={this.props.Context.pageContext.web.absoluteUrl + "/SitePages/Portfolio-Profile.aspx?taskId=" + info.row?.original?.ComponentIDs}>
           {info.row?.original?.ComponentTitle}
         </a><span
-          className="svg__iconbox svg__icon--edit alignIcon"
+          className="svg__iconbox svg__icon--edit alignIcon hreflink"
           onClick={(e) => this.EditComponentPopup(info.row?.original?.PortfolioItem)}>
           </span></>,
         size: 275,
@@ -2582,20 +2589,18 @@ export default class UserTimeEntry extends React.Component<IUserTimeEntryProps, 
                 <GlobalCommanTable expandIcon={true} showHeader={true} showDateTime={' | Time: ' + this.state.resultSummary.totalTime + ' | Days: (' + this.state.resultSummary.totalDays + ')'} columns={this.state.columns} data={this.state.AllTimeEntry} callBackData={this.callBackData} TaskUsers={AllTaskUser} AllListId={this?.props} portfolioColor={portfolioColor} />
               </div>
             </div></section>
-
           </div>
         }
         {
           this.state.IsTask && (
-            <EditTaskPopup
-              Items={this.state.IsTask}
-              Call={this.Call}
-              AllListId={AllListId}
-              context={this?.props?.Context}
-            ></EditTaskPopup>
+            <EditTaskPopup Items={this.state.IsTask} Call={() => { this.Call(undefined) }} AllListId={AllListId} context={this?.props?.Context} ></EditTaskPopup>
           )
         }
-        {
+        {this.state?.IsMasterTask &&
+          (<Sitecomposition props={this.state?.IsMasterTask} isDirectPopup={this.state?.isDirectPopup} callback={() => { this.Call('Master Task') }} sitedata={AllListId} ></Sitecomposition>
+          )
+        }
+        {/* {
           this.state?.IsMasterTask && (
             <EditInstituton
               item={this.state.IsMasterTask}
@@ -2605,18 +2610,14 @@ export default class UserTimeEntry extends React.Component<IUserTimeEntryProps, 
               {" "}
             </EditInstituton>
           )
-        }
+        } */}
         {
           this.state.IsPresetPopup &&
-          (<PreSetDatePikerPannel isOpen={this.state.IsPresetPopup} PreSetPikerCallBack={this.PreSetPikerCallBack} portfolioColor={portfolioColor} ></PreSetDatePikerPannel>)
+          (<PreSetDatePikerPannel isOpen={this.state.IsPresetPopup} PreSetPikerCallBack={this.PreSetPikerCallBack} portfolioColor={portfolioColor}></PreSetDatePikerPannel>)
         }
         {
           this.state.IsTimeEntry && (
-            <TimeEntryPopup
-              props={this.state.SharewebTimeComponent}
-              CallBackTimeEntry={this.TimeEntryCallBack}
-              Context={this?.props?.Context}
-            ></TimeEntryPopup>
+            <TimeEntryPopup props={this.state.SharewebTimeComponent} CallBackTimeEntry={this.TimeEntryCallBack} Context={this?.props?.Context}></TimeEntryPopup>
           )
         }
 
