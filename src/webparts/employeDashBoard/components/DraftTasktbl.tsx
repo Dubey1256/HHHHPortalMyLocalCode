@@ -12,7 +12,7 @@ import { SPFI, spfi, SPFx as spSPFx } from "@pnp/sp";
 import 'bootstrap/dist/css/bootstrap.min.css';
 import InfoIconsToolTip from "../../../globalComponents/InfoIconsToolTip/InfoIconsToolTip";
 import GlobalCommanTable from "../../../globalComponents/GroupByReactTableComponents/GlobalCommanTable";
-import HighlightableCell from "../../../globalComponents/highlight";
+import HighlightableCell from "../../../globalComponents/GroupByReactTableComponents/highlight";
 // import GlobalCommanTable from '../../../globalComponents/GlobalCommanTable';
 const DraftTasktbl = (Tile: any) => {
     const ContextData: any = React.useContext(myContextValue);
@@ -241,10 +241,10 @@ const DraftTasktbl = (Tile: any) => {
                             <span className="fw-bold">
                                 My Draft Tasks {`(${draftCatogary.length})`}
                             </span>
-                            <a className="empCol hreflink" onClick={() => sendAllWorkingTodayTasks(draftCatogary)}>Share Draft Task</a>
-                        </div>
-                        <div className="alignCenter mb-2 justify-content-between">
-                            <span>Approve</span>
+                            <span className="alignCenter">
+                                <a className="empCol hreflink me-3">Approve</a>
+                                <a className="empCol hreflink" onClick={() => sendAllWorkingTodayTasks(draftCatogary)}><span title="Share Draft Task" className="svg__iconbox svg__icon--share empBg"></span></a>
+                            </span>
                         </div>
                         <div className="Alltable maXh-300 scrollbar">
                             {draftCatogary && (
