@@ -89,8 +89,8 @@ export default function ComingBirthday() {
             <div className="">
                 <div className='alignCenter'>
                     <div className=' text-body'>Upcoming Birthday's</div>
-                    <div className='boldClable f-17 mt-1 mx-2 text-black-50'>This Week</div>
-                    <div className='boldClable f-16 siteColor' style={{ marginLeft: "auto" }}>{AllHrContactDetails.length} People</div>
+                    {/* <div className='boldClable f-17 mt-1 mx-2 text-black-50'>This Week</div> */}
+                    <div className='boldClable f-16 empCol' style={{ marginLeft: "auto" }}>{AllHrContactDetails.length} People</div>
                 </div>
                 <div className='birthDaySec'>
                     {AllHrContactDetails?.length > 0 && AllHrContactDetails.map((Item: any) => {

@@ -222,7 +222,7 @@ function getStartingDate(startDateOf: any) {
           <span className='fw-bold'>
             This Week's TimeSheet ({sumBarTime})
           </span>
-          <span className="ml-auto svg__iconbox svg__icon--refresh dark me-2" onClick={()=>GetDate()}></span>
+          <span title='Refresh TimeSheet ' className="ml-auto svg__iconbox svg__icon--refresh dark me-2" onClick={()=>GetDate()}></span>
         </div>
       <ReactApexChart options={barChartData?.options} series={barChartData?.series} type="bar" height={350} />
     

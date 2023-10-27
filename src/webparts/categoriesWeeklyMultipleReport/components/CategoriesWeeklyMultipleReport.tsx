@@ -709,7 +709,7 @@ export default class CategoriesWeeklyMultipleReport extends React.Component<ICat
         item.Group = filterItem.TaxType;
         item.TaxType = filterItem.TaxType;
         //item.Selected = true;
-        if (filterItem.ParentID == 0) {
+        if (filterItem.Parent == undefined) {
           if (!this.IsExistsData(filterItems, item))
             filterItems.push(item);
           this.getChildsOfFilter(item, items);
@@ -2565,25 +2565,41 @@ export default class CategoriesWeeklyMultipleReport extends React.Component<ICat
           } else {
             contentItem['First Level'] = '';
           }
-          if (childItem.Thirdlevel != undefined) {
-            contentItem['Second Level'] = childItem.Thirdlevel;
+          if (childItem.TotalSmartTime != undefined) {
+            contentItem['Days'] = childItem.SmartHoursTime /8;
           } else {
-            contentItem['Second Level'] = '';
+            contentItem['Days'] = '';
+          }
+          contentItem['Hours'] = '';
+          if (childItem.AdjustedTime != undefined) {
+            contentItem['Hours'] = parseFloat(childItem.Rountfiguretime);
+          }
+         
+          contentItem['Client Category'] = childItem.clientCategory != undefined ? childItem.clientCategory : '';
+          if (childItem.TotalSmartTime != undefined) {
+            contentItem['Smart Hours'] = parseFloat(childItem.TotalSmartTime);
+          } else {
+            contentItem['Smart Hours'] = '';
           }
           if (childItem.TotalValue != undefined) {
-            contentItem['Hours Actual'] = childItem.TotalValue;
-            if (contentItem['Hours Actual'] != undefined && contentItem['Hours Actual'] != '')
-              contentItem['Hours Actual'] = parseFloat(contentItem['Hours Actual']);
-            contentItem['Days Actual'] = childItem.TotalValue / 8;
-            contentItem['Days Actual'] = contentItem['Days Actual'];
-            if (contentItem['Days Actual'] != undefined && contentItem['Days Actual'] != '') {
-              contentItem['Days Actual'] = parseFloat(contentItem['Days Actual']);
-              contentItem['Smart Days'] = parseFloat(contentItem['Days Actual']);
-            }
+            contentItem['Smart Days'] = parseFloat(childItem.TotalValue);
           } else {
-            contentItem['Hours Actual'] = '';
-            contentItem['Days Actual'] = 0;
             contentItem['Smart Days'] = 0;
+          }
+         
+          if (childItem.TotalSmartTime != undefined) {
+            contentItem['Smart Hours (Roundup)'] = parseFloat(childItem.SmartHoursTime);
+
+            contentItem['Smart Days (Roundup)'] = (contentItem['Smart Hours (Roundup)'] / 8);
+          } else {
+            contentItem['Smart Hours'] = '';
+            contentItem['Smart Days (Roundup)'] = '';
+          }
+          if (childItem.AdjustedTime != undefined) {
+            contentItem['Adjusted Hours'] = parseFloat(childItem.AdjustedTime);
+          }
+          else {
+            contentItem['Adjusted Hours'] = '';
           }
           if (childItem.AdjustedTime != undefined) {
             contentItem['Adjusted Days'] = childItem.AdjustedTime / 8
@@ -2595,35 +2611,64 @@ export default class CategoriesWeeklyMultipleReport extends React.Component<ICat
             contentItem['Adjusted Days'] = ''
           }
           if (childItem.AdjustedTime != undefined) {
-            contentItem['Adjusted Hours'] = parseFloat(childItem.AdjustedTime);
-            //   if ($scope.RoundFigureNumber == true)
             contentItem['Adjusted Hours (Roundup)'] = parseFloat(childItem.Rountfiguretime);
-            contentItem['Hours'] = contentItem['Adjusted Hours (Roundup)'];
-            // if (contentItem['Adjusted Hours'] != undefined && contentItem['Adjusted Hours'] != '')
-            //     contentItem['Adjusted Hours'] = parseFloat(contentItem['Adjusted Hours'])
           }
           else {
-            contentItem['Adjusted Hours'] = '';
-            contentItem['Hours'] = '';
             contentItem['Adjusted Hours (Roundup)'] = '';
           }
-          contentItem['Client Category'] = childItem.clientCategory != undefined ? childItem.clientCategory : '';
-          if (childItem.TotalSmartTime != undefined) {
-            contentItem['Smart Hours'] = parseFloat(childItem.TotalSmartTime);
-            contentItem['Smart Hours (Roundup)'] = parseFloat(childItem.SmartHoursTime);
 
-            contentItem['Smart Days (Roundup)'] = (contentItem['Smart Hours (Roundup)'] / 8);
+           
+          if (childItem.TotalSmartTime != undefined) {
             contentItem['Adjusted Hours Roundup (In days)'] = (contentItem['Adjusted Hours (Roundup)'] / 8);
-            contentItem['Days'] = contentItem['Adjusted Hours Roundup (In days)'];
-            //childItem['Adjusted Day (Roundup)'] == undefined ? (contentItem['Smart Hours (Roundup)'] / 8) : childItem['Adjusted Day (Roundup)'];;
           } else {
-            contentItem['Smart Hours'] = '';
-            contentItem['Smart Hours (Roundup)'] = '';
-            contentItem['Days'] = '';
-            // contentItem['Hours'] = '';
-            contentItem['Smart Days (Roundup)'] = '';
             contentItem['Adjusted Hours Roundup (In days)'] = '';
           }
+
+          if (childItem.TotalValue != undefined) {
+            contentItem['Days Actual'] = childItem.TotalValue / 8;
+            contentItem['Days Actual'] = contentItem['Days Actual'];
+            if (contentItem['Days Actual'] != undefined && contentItem['Days Actual'] != '') {
+              contentItem['Days Actual'] = parseFloat(contentItem['Days Actual']);
+            }
+            contentItem['Hours Actual'] = childItem.TotalValue;
+            if (contentItem['Hours Actual'] != undefined && contentItem['Hours Actual'] != '')
+              contentItem['Hours Actual'] = parseFloat(contentItem['Hours Actual']);
+           
+          } else {
+            contentItem['Hours Actual'] = '';
+            contentItem['Days Actual'] = 0;
+            // contentItem['Smart Days'] = 0;
+          }
+
+
+        
+          // if (childItem.AdjustedTime != undefined) {
+          //   contentItem['Adjusted Days'] = childItem.AdjustedTime / 8
+          //   contentItem['Adjusted Days'] = parseFloat(contentItem['Adjusted Days']);
+          //   if (contentItem['Adjusted Days'] != undefined && contentItem['Adjusted Days'] != '')
+          //     contentItem['Adjusted Days'] = parseFloat(contentItem['Adjusted Days']);
+          // }
+          // else {
+          //   contentItem['Adjusted Days'] = ''
+          // }
+        
+          
+          // if (childItem.TotalSmartTime != undefined) {
+          //   contentItem['Smart Hours'] = parseFloat(childItem.TotalSmartTime);
+          //   contentItem['Smart Hours (Roundup)'] = parseFloat(childItem.SmartHoursTime);
+
+          //   contentItem['Smart Days (Roundup)'] = (contentItem['Smart Hours (Roundup)'] / 8);
+          //   contentItem['Adjusted Hours Roundup (In days)'] = (contentItem['Adjusted Hours (Roundup)'] / 8);
+          //  // contentItem['Days'] = contentItem['Adjusted Hours Roundup (In days)'];
+          //   //childItem['Adjusted Day (Roundup)'] == undefined ? (contentItem['Smart Hours (Roundup)'] / 8) : childItem['Adjusted Day (Roundup)'];;
+          // } else {
+          //   contentItem['Smart Hours'] = '';
+          //   contentItem['Smart Hours (Roundup)'] = '';
+          //  // contentItem['Days'] = '';
+          //   // contentItem['Hours'] = '';
+          //   contentItem['Smart Days (Roundup)'] = '';
+          //   contentItem['Adjusted Hours Roundup (In days)'] = '';
+          // }
 
           this.sheetsItems.push(contentItem);
         }
@@ -2712,19 +2757,24 @@ export default class CategoriesWeeklyMultipleReport extends React.Component<ICat
     contentItemNew['User Name'] = 'Total ' + firstTitle + ' to ' + lastTitle;
     contentItemNew['Site'] = this.state.ImageSelectedUsers.length == 1 ? this.state.ImageSelectedUsers[0].Title : '';
     contentItemNew['First Level'] = '';
-    contentItemNew['Second Level'] = '';
+    contentItemNew['Days'] =(this.RoundAdjustedTimeTimeEntry /8);
+    contentItemNew['Hours'] = parseFloat(this.RoundAdjustedTimeTimeEntry);
+    contentItemNew['Client Category'] = ''
+    contentItemNew['Smart Hours'] = parseFloat(TotalValueAll || 0);;
+    contentItemNew['Smart Days'] = (TotalValueAll / 8);
+    contentItemNew['Smart Hours (Roundup)'] = parseFloat(this.RoundSmartTotalTimeEntry);
+    contentItemNew['Smart Days (Roundup)'] = (TotalValueAll / 8);
+    contentItemNew['Adjusted Hours'] = parseFloat(this.AdjustedimeEntry);;
+    contentItemNew['Adjusted Days'] = (RoundTime / 8);
+    contentItemNew['Adjusted Hours (Roundup)'] = parseFloat(this.RoundAdjustedTimeTimeEntry);
+    
+    contentItemNew['Adjusted Hours Roundup (In days)'] = (contentItemNew['Adjusted Hours (Roundup)'] / 8)
     contentItemNew['Hours Actual'] = TotalValueAll;
     contentItemNew['Days Actual'] = (TotalValueAll / 8);
-    contentItemNew['Smart Days'] = (TotalValueAll / 8);
-    contentItemNew['Adjusted Days'] = (RoundTime / 8);
-    contentItemNew['Smart Hours'] = parseFloat(TotalValueAll || 0);;
-    contentItemNew['Smart Hours (Roundup)'] = parseFloat(this.RoundSmartTotalTimeEntry);
-    contentItemNew['Adjusted Hours'] = parseFloat(this.AdjustedimeEntry);;
-    contentItemNew['Adjusted Hours (Roundup)'] = parseFloat(this.RoundAdjustedTimeTimeEntry);
-    contentItemNew['Smart Days (Roundup)'] = (TotalValueAll / 8);
-    contentItemNew['Adjusted Hours Roundup (In days)'] = (contentItemNew['Adjusted Hours (Roundup)'] / 8)
-    contentItemNew['Days'] = contentItemNew['Adjusted Hours Roundup (In days)'];
-    contentItemNew['Hours'] = contentItemNew['Adjusted Hours (Roundup)']; //(alldaysround == 0 || alldaysround == NaN) ? parseFloat($scope.RoundSmartTotalTimeEntry / 8) : parseFloat(alldaysround);
+   
+    
+    
+    //(alldaysround == 0 || alldaysround == NaN) ? parseFloat($scope.RoundSmartTotalTimeEntry / 8) : parseFloat(alldaysround);
 
 
     this.sheetsItems.push(contentItemNew);
@@ -2732,76 +2782,52 @@ export default class CategoriesWeeklyMultipleReport extends React.Component<ICat
     contentItemNew['User Name'] = '';
     contentItemNew['Site'] = '';
     contentItemNew['First Level'] = '';
-    contentItemNew['Second Level'] = '';
+    contentItemNew['Days'] = '';
+    contentItemNew['Hours'] = '';
+    contentItemNew['Client Category'] = '';
+    contentItemNew['Smart Hours'] = '';
+    contentItemNew['Smart Days'] = '';
+    contentItemNew['Smart Hours (Roundup)'] = '';
+    contentItemNew['Smart Days (Roundup)'] = '';
+    contentItemNew['Adjusted Hours'] = '';
+    contentItemNew['Adjusted Days'] = '';
+    contentItemNew['Adjusted Hours (Roundup)'] = '';
+    contentItemNew['Adjusted Hours Roundup (In days)'] = '';
     contentItemNew['Hours Actual'] = '';
     contentItemNew['Days Actual'] = '';
+   
+    
+   
+    
+    
+ 
+   
 
     this.sheetsItems.push(contentItemNew);
     AllYearMonth.forEach((item: any, index: any) => {
       var contentItem: any = {};
+      contentItem['User Name'] = '';
       if (item.getUserName != undefined) {
-        //if (ImageSelectedUsers != undefined && ImageSelectedUsers.length <= 1) {
         contentItem['User Name'] = item.getUserName;
-        //}
-        //else {
-        //    contentItem['User Name'] = '';
-        //}
       }
-      else {
-        contentItem['User Name'] = '';
-      }
+
+      contentItem['Site'] = '';
       if (item.Firstlevel != undefined) {
         contentItem['Site'] = item.Firstlevel;
-      } else {
-        contentItem['Site'] = '';
       }
+      contentItem['First Level'] = '';
       if (item.Secondlevel != undefined) {
         contentItem['First Level'] = item.Secondlevel;
-      } else {
-        contentItem['First Level'] = '';
       }
-      if (item.Thirdlevel != undefined) {
-        contentItem['Second Level'] = item.Thirdlevel;
-      } else {
-        contentItem['Second Level'] = '';
-      }
-      if (item.TotalValue != undefined) {
-        contentItem['Hours Actual'] = item.TotalValue;
-        // contentItem['Total Time'] = contentItem['Total Time'].toFixed(2);
-        if (contentItem['Hours Actual'] != undefined && contentItem['Hours Actual'] != '')
-          contentItem['Hours Actual'] = parseFloat(contentItem['Hours Actual'])
 
-        contentItem['Days Actual'] = item.TotalValueHours / 8;
-        contentItem['Days Actual'] = contentItem['Days Actual'].toFixed(2);
-        if (contentItem['Days Actual'] != undefined && contentItem['Days Actual'] != '') {
-          contentItem['Days Actual'] = parseFloat(contentItem['Days Actual'])
-          contentItem['Smart Days'] = parseFloat(contentItem['Days Actual']);
-        }
+      contentItem['Days'] = '';
+      if (item.SmartHoursTotal != undefined && item.SmartHoursTotal != undefined) {
+        contentItem['Days'] =item.TotalValueHours/8;
       }
-      else {
-        contentItem['Hours Actual'] = '';
-        contentItem['Days Actual'] = 0;
-        contentItem['Smart Days'] = 0;
-      }
-      if (item.AdjustedTime != undefined) {
 
-        contentItem['Adjusted Hours'] = parseFloat(item.AdjustedTime);;
-        contentItem['Adjusted Hours (Roundup)'] = parseFloat(item.SmartHoursTotal);;
-        contentItem['Hours'] = contentItem['Adjusted Hours (Roundup)']
-      }
-      else {
-        contentItem['Adjusted Hours'] = ''
-        contentItem['Hours'] = '';
-        contentItem['Adjusted Hours (Roundup)'] = ''
-      }
+      contentItem['Hours'] = '';
       if (item.AdjustedTime != undefined) {
-        contentItem['Adjusted Days'] = (parseFloat(item.AdjustedTime) / 8 || 0);// parseFloat((item.AdjustedTime / 8) || 0)
-        // contentItem['Adjusted Days'] = parseFloat(contentItem['Adjusted Days'].toFixed(2));
-        if (contentItem['Adjusted Days'] != undefined && contentItem['Adjusted Days'] != '')
-          contentItem['Adjusted Days'] = parseFloat(contentItem['Adjusted Days']);
-      }
-      else {
-        contentItem['Adjusted Days'] = ''
+        contentItem['Hours'] = parseFloat(item.SmartHoursTotal);;
       }
       if (item.Categories != undefined) {
         contentItem['Client Category'] = ''
@@ -2843,23 +2869,127 @@ export default class CategoriesWeeklyMultipleReport extends React.Component<ICat
       } else {
         contentItem['Client Category'] = '';
       }
+      contentItem['Smart Hours'] = '';
       if (item.SmartHoursTotal != undefined && item.SmartHoursTotal != undefined) {
         contentItem['Smart Hours'] = parseFloat(item.TotalValueHours);
-        // contentItem['TotalSmartTime'] = contentItem['TotalSmartTime'].toFixed(2);
-        contentItem['Smart Hours (Roundup)'] = parseFloat(item.TotalValueHours);
-
-        contentItem['Smart Days (Roundup)'] = (contentItem['Smart Hours (Roundup)'] / 8);;
-
-        contentItem['Adjusted Hours Roundup (In days)'] = (contentItem['Adjusted Hours (Roundup)'] / 8);
-        contentItem['Days'] = contentItem['Adjusted Hours Roundup (In days)'];
-        //item['Adjusted Day (Roundup)'] == undefined ? (contentItem['Smart Hours (Roundup)'] / 8) : item['Adjusted Day (Roundup)'];;
-      } else {
-        contentItem['Smart Hours'] = '';
-        contentItem['Smart Hours (Roundup)'] = '';
-        contentItem['Days'] = '';
-        //contentItem['Hours'] = '';
-        contentItem['Smart Days (Roundup)'] = ''; contentItem['Adjusted Hours Roundup (In days)'] = '';
       }
+      contentItem['Smart Days'] = '';
+      if (item.TotalValue != undefined) {
+        let days:any = item.TotalValueHours / 8;
+        contentItem['Smart Days'] =parseFloat(days);
+        
+      }
+      if (item.SmartHoursTotal != undefined && item.SmartHoursTotal != undefined) {
+         contentItem['Smart Hours (Roundup)'] = parseFloat(item.TotalValueHours);
+ 
+         contentItem['Smart Days (Roundup)'] = (contentItem['Smart Hours (Roundup)'] / 8);;
+       } else {
+         contentItem['Smart Hours (Roundup)'] = '';
+         contentItem['Smart Days (Roundup)'] = ''; contentItem['Adjusted Hours Roundup (In days)'] = '';
+       }
+       if (item.AdjustedTime != undefined) {
+        contentItem['Adjusted Hours'] = parseFloat(item.AdjustedTime);;
+      }
+      else {
+        contentItem['Adjusted Hours'] = ''
+      }
+      if (item.AdjustedTime != undefined) {
+        contentItem['Adjusted Days'] = (parseFloat(item.AdjustedTime) / 8 || 0);
+        if (contentItem['Adjusted Days'] != undefined && contentItem['Adjusted Days'] != '')
+          contentItem['Adjusted Days'] = parseFloat(contentItem['Adjusted Days']);
+      }
+      else {
+        contentItem['Adjusted Days'] = ''
+      }
+
+
+      if (item.AdjustedTime != undefined) {
+        contentItem['Adjusted Hours (Roundup)'] = parseFloat(item.SmartHoursTotal);;
+      }
+      else {
+        contentItem['Adjusted Hours (Roundup)'] = ''
+      }
+
+      if (item.SmartHoursTotal != undefined && item.SmartHoursTotal != undefined) {
+         let daysround:any = (item.TotalValueHours /8);
+         contentItem['Adjusted Hours Roundup (In days)'] = (parseFloat(daysround));
+       } else {
+        contentItem['Adjusted Hours Roundup (In days)'] = '';
+       }
+       if (item.TotalValue != undefined) {
+        contentItem['Hours Actual'] = item.TotalValue;
+        if (contentItem['Hours Actual'] != undefined && contentItem['Hours Actual'] != '')
+          contentItem['Hours Actual'] = parseFloat(contentItem['Hours Actual'])
+
+        contentItem['Days Actual'] = item.TotalValueHours / 8;
+        contentItem['Days Actual'] = contentItem['Days Actual'].toFixed(2);
+        if (contentItem['Days Actual'] != undefined && contentItem['Days Actual'] != '') {
+          contentItem['Days Actual'] = parseFloat(contentItem['Days Actual'])
+        }
+      }
+      else {
+        contentItem['Hours Actual'] = '';
+        contentItem['Days Actual'] = 0;
+      }
+
+
+
+      // if (item.TotalValue != undefined) {
+      //   contentItem['Hours Actual'] = item.TotalValue;
+      //   // contentItem['Total Time'] = contentItem['Total Time'].toFixed(2);
+      //   if (contentItem['Hours Actual'] != undefined && contentItem['Hours Actual'] != '')
+      //     contentItem['Hours Actual'] = parseFloat(contentItem['Hours Actual'])
+
+      //   contentItem['Days Actual'] = item.TotalValueHours / 8;
+      //   contentItem['Days Actual'] = contentItem['Days Actual'].toFixed(2);
+      //   if (contentItem['Days Actual'] != undefined && contentItem['Days Actual'] != '') {
+      //     contentItem['Days Actual'] = parseFloat(contentItem['Days Actual'])
+      //     contentItem['Smart Days'] = parseFloat(contentItem['Days Actual']);
+      //   }
+      // }
+      // else {
+      //   contentItem['Hours Actual'] = '';
+      //   contentItem['Days Actual'] = 0;
+      //   contentItem['Smart Days'] = 0;
+      // }
+      // if (item.AdjustedTime != undefined) {
+
+      //   contentItem['Adjusted Hours'] = parseFloat(item.AdjustedTime);;
+      //   contentItem['Adjusted Hours (Roundup)'] = parseFloat(item.SmartHoursTotal);;
+      //   contentItem['Hours'] = contentItem['Adjusted Hours (Roundup)']
+      // }
+      // else {
+      //   contentItem['Adjusted Hours'] = ''
+      //   contentItem['Hours'] = '';
+      //   contentItem['Adjusted Hours (Roundup)'] = ''
+      // }
+      // if (item.AdjustedTime != undefined) {
+      //   contentItem['Adjusted Days'] = (parseFloat(item.AdjustedTime) / 8 || 0);// parseFloat((item.AdjustedTime / 8) || 0)
+      //   // contentItem['Adjusted Days'] = parseFloat(contentItem['Adjusted Days'].toFixed(2));
+      //   if (contentItem['Adjusted Days'] != undefined && contentItem['Adjusted Days'] != '')
+      //     contentItem['Adjusted Days'] = parseFloat(contentItem['Adjusted Days']);
+      // }
+      // else {
+      //   contentItem['Adjusted Days'] = ''
+      // }
+    
+      // if (item.SmartHoursTotal != undefined && item.SmartHoursTotal != undefined) {
+      //  // contentItem['Smart Hours'] = parseFloat(item.TotalValueHours);
+      //   // contentItem['TotalSmartTime'] = contentItem['TotalSmartTime'].toFixed(2);
+      //   contentItem['Smart Hours (Roundup)'] = parseFloat(item.TotalValueHours);
+
+      //   contentItem['Smart Days (Roundup)'] = (contentItem['Smart Hours (Roundup)'] / 8);;
+
+      //   contentItem['Adjusted Hours Roundup (In days)'] = (contentItem['Adjusted Hours (Roundup)'] / 8);
+      //   contentItem['Days'] = contentItem['Adjusted Hours Roundup (In days)'];
+      //   //item['Adjusted Day (Roundup)'] == undefined ? (contentItem['Smart Hours (Roundup)'] / 8) : item['Adjusted Day (Roundup)'];;
+      // } else {
+      //  // contentItem['Smart Hours'] = '';
+      //   contentItem['Smart Hours (Roundup)'] = '';
+      //   contentItem['Days'] = '';
+      //   //contentItem['Hours'] = '';
+      //   contentItem['Smart Days (Roundup)'] = ''; contentItem['Adjusted Hours Roundup (In days)'] = '';
+      // }
 
       this.sheetsItems.push(contentItem);
     })
@@ -2867,21 +2997,27 @@ export default class CategoriesWeeklyMultipleReport extends React.Component<ICat
     contentItemNew['User Name'] = '';
     contentItemNew['Site'] = '';
     contentItemNew['First Level'] = '';
-    contentItemNew['Second Level'] = '';
-    contentItemNew['Hours'] = '';
     contentItemNew['Days'] = '';
+    contentItemNew['Hours'] = '';
+    contentItemNew['Client Category'] = '';
+    contentItemNew['Smart Hours'] = '';
+    contentItemNew['Smart Days'] = '';
+    contentItemNew['Smart Hours (Roundup)'] = '';
+    contentItemNew['Smart Days (Roundup)'] = '';
+    contentItemNew['Adjusted Hours'] = '';
+    contentItemNew['Adjusted Days'] = '';
+    contentItemNew['Adjusted Hours (Roundup)'] = '';
+    contentItemNew['Adjusted Hours Roundup (In days)'] = '';
+    contentItemNew['Hours Actual'] = '';
+    contentItemNew['Days Actual'] = '';
+    
 
     this.sheetsItems.push(contentItemNew);
     console.log(this.sheetsItems);
     AllExporttoExcelData1.forEach((item: any) => {
       var contentItem: any = {};
       if (item.getUserName != undefined) {
-        //if (ImageSelectedUsers != undefined && ImageSelectedUsers.length <= 1) {
         contentItem['User Name'] = item.getUserName;
-        //}
-        //else {
-        //    contentItem['User Name'] = '';
-        //}
       }
       else {
         contentItem['User Name'] = '';
@@ -2896,48 +3032,15 @@ export default class CategoriesWeeklyMultipleReport extends React.Component<ICat
       } else {
         contentItem['First Level'] = '';
       }
-      if (item.Thirdlevel != undefined) {
-        contentItem['Second Level'] = item.Thirdlevel;
-      } else {
-        contentItem['Second Level'] = '';
-      }
-      if (item.TotalValue != undefined) {
-        contentItem['Hours Actual'] = item.TotalValue;
-        // contentItem['Total Time'] = contentItem['Total Time'].toFixed(2);
-        if (contentItem['Hours Actual'] != undefined && contentItem['Hours Actual'] != '')
-          contentItem['Hours Actual'] = parseFloat(contentItem['Hours Actual'])
+      contentItem['Days'] = '';
+      if (item.SmartHoursTotal != undefined && item.SmartHoursTotal != undefined) {
+       
+        contentItem['Days'] = item.SmartHoursTotal /8;
 
-        contentItem['Days Actual'] = item.TimeInExcel / 8;
-        contentItem['Days Actual'] = contentItem['Days Actual'].toFixed(2);
-        if (contentItem['Days Actual'] != undefined && contentItem['Days Actual'] != '') {
-          contentItem['Days Actual'] = parseFloat(contentItem['Days Actual'])
-          contentItem['Smart Days'] = parseFloat(contentItem['Days Actual']);
-        }
-      }
-      else {
-        contentItem['Hours Actual'] = '';
-        contentItem['Days Actual'] = 0;
-        contentItem['Smart Days'] = 0;
-      }
+      } 
+      contentItem['Hours'] = '';
       if (item.AdjustedTime != undefined) {
-
-        contentItem['Adjusted Hours'] = parseFloat(item.AdjustedTime);;
-        contentItem['Adjusted Hours (Roundup)'] = parseFloat(item.RoundAdjustedTime != undefined ? item.RoundAdjustedTime : item.SmartHoursTotal);;
-        contentItem['Hours'] = contentItem['Adjusted Hours (Roundup)']
-      }
-      else {
-        contentItem['Adjusted Hours'] = ''
-        contentItem['Hours'] = '';
-        contentItem['Adjusted Hours (Roundup)'] = ''
-      }
-      if (item.AdjustedTime != undefined) {
-        contentItem['Adjusted Days'] = (parseFloat(item.AdjustedTime) / 8 || 0);//parseFloat((item.AdjustedTime / 8) || 0)
-        // contentItem['Adjusted Days'] = parseFloat(contentItem['Adjusted Days'].toFixed(2));
-        if (contentItem['Adjusted Days'] != undefined && contentItem['Adjusted Days'] != '')
-          contentItem['Adjusted Days'] = parseFloat(contentItem['Adjusted Days']);
-      }
-      else {
-        contentItem['Adjusted Days'] = ''
+        contentItem['Hours'] =  parseFloat(item.RoundAdjustedTime != undefined ? item.RoundAdjustedTime : item.SmartHoursTotal);;
       }
       if (item.Categories != undefined) {
         contentItem['Client Category'] = ''
@@ -2981,24 +3084,129 @@ export default class CategoriesWeeklyMultipleReport extends React.Component<ICat
       }
       if (item.SmartHoursTotal != undefined && item.SmartHoursTotal != undefined) {
         contentItem['Smart Hours'] = parseFloat(item.AdjustedTime);
-        // contentItem['TotalSmartTime'] = contentItem['TotalSmartTime'].toFixed(2);
+      } else {
+        contentItem['Smart Hours'] = '';
+      }
+    
+      if (item.TotalValue != undefined) {
+        let days:any = item.TimeInExcel / 8;
+        contentItem['Smart Days'] = (contentItem[days]);
+      }
+      else {
+        contentItem['Smart Days'] = 0;
+      }
+      if (item.SmartHoursTotal != undefined && item.SmartHoursTotal != undefined) {
         contentItem['Smart Hours (Roundup)'] = parseFloat(item.SmartHoursTotal);
 
         contentItem['Smart Days (Roundup)'] = (contentItem['Smart Hours (Roundup)'] / 8);;
-        contentItem['Adjusted Hours Roundup (In days)'] = (contentItem['Adjusted Hours (Roundup)'] / 8);
-        contentItem['Days'] = contentItem['Adjusted Hours Roundup (In days)'];
 
       } else {
-        contentItem['Smart Hours'] = '';
         contentItem['Smart Hours (Roundup)'] = '';
-        contentItem['Days'] = '';
-        // contentItem['Hours'] = '';
-        contentItem['Smart Days (Roundup)'] = ''; contentItem['Adjusted Hours Roundup (In days)'] = '';
+        contentItem['Smart Days (Roundup)'] = '';
+      }
+      if (item.AdjustedTime != undefined) {
+
+        contentItem['Adjusted Hours'] = parseFloat(item.AdjustedTime);;
+      }
+      else {
+        contentItem['Adjusted Hours'] = ''
+      }
+      if (item.AdjustedTime != undefined) {
+        contentItem['Adjusted Days'] = (parseFloat(item.AdjustedTime) / 8 || 0);
+        if (contentItem['Adjusted Days'] != undefined && contentItem['Adjusted Days'] != '')
+          contentItem['Adjusted Days'] = parseFloat(contentItem['Adjusted Days']);
+      }
+      else {
+        contentItem['Adjusted Days'] = ''
+      }
+      if (item.AdjustedTime != undefined) {
+        contentItem['Adjusted Hours (Roundup)'] = parseFloat(item.RoundAdjustedTime != undefined ? item.RoundAdjustedTime : item.SmartHoursTotal);;
+      }
+      else {
+        contentItem['Adjusted Hours (Roundup)'] = ''
       }
 
-      this.sheetsItems.push(contentItem);
+      if (item.SmartHoursTotal != undefined && item.SmartHoursTotal != undefined) {
+        contentItem['Adjusted Hours Roundup (In days)'] = (contentItem['Adjusted Hours (Roundup)'] / 8);
+
+      } else {
+       contentItem['Adjusted Hours Roundup (In days)'] = '';
+      }
+      if (item.TotalValue != undefined) {
+        contentItem['Hours Actual'] = item.TotalValue;
+        // contentItem['Total Time'] = contentItem['Total Time'].toFixed(2);
+        if (contentItem['Hours Actual'] != undefined && contentItem['Hours Actual'] != '')
+          contentItem['Hours Actual'] = parseFloat(contentItem['Hours Actual'])
+
+        contentItem['Days Actual'] = item.TimeInExcel / 8;
+        contentItem['Days Actual'] = contentItem['Days Actual'].toFixed(2);
+      
+      }
+      else {
+        contentItem['Hours Actual'] = '';
+        contentItem['Days Actual'] = 0;
+      }
+    
+    
+      // if (item.TotalValue != undefined) {
+      //   contentItem['Hours Actual'] = item.TotalValue;
+      //   // contentItem['Total Time'] = contentItem['Total Time'].toFixed(2);
+      //   if (contentItem['Hours Actual'] != undefined && contentItem['Hours Actual'] != '')
+      //     contentItem['Hours Actual'] = parseFloat(contentItem['Hours Actual'])
+
+      //   contentItem['Days Actual'] = item.TimeInExcel / 8;
+      //   contentItem['Days Actual'] = contentItem['Days Actual'].toFixed(2);
+      //   if (contentItem['Days Actual'] != undefined && contentItem['Days Actual'] != '') {
+      //     contentItem['Days Actual'] = parseFloat(contentItem['Days Actual'])
+      //     contentItem['Smart Days'] = parseFloat(contentItem['Days Actual']);
+      //   }
+      // }
+      // else {
+      //   contentItem['Hours Actual'] = '';
+      //   contentItem['Days Actual'] = 0;
+      //   contentItem['Smart Days'] = 0;
+      // }
+      // if (item.AdjustedTime != undefined) {
+
+      //   contentItem['Adjusted Hours'] = parseFloat(item.AdjustedTime);;
+      //   contentItem['Adjusted Hours (Roundup)'] = parseFloat(item.RoundAdjustedTime != undefined ? item.RoundAdjustedTime : item.SmartHoursTotal);;
+      //   contentItem['Hours'] = contentItem['Adjusted Hours (Roundup)']
+      // }
+      // else {
+      //   contentItem['Adjusted Hours'] = ''
+      //   contentItem['Hours'] = '';
+      //   contentItem['Adjusted Hours (Roundup)'] = ''
+      // }
+      // if (item.AdjustedTime != undefined) {
+      //   contentItem['Adjusted Days'] = (parseFloat(item.AdjustedTime) / 8 || 0);//parseFloat((item.AdjustedTime / 8) || 0)
+      //   // contentItem['Adjusted Days'] = parseFloat(contentItem['Adjusted Days'].toFixed(2));
+      //   if (contentItem['Adjusted Days'] != undefined && contentItem['Adjusted Days'] != '')
+      //     contentItem['Adjusted Days'] = parseFloat(contentItem['Adjusted Days']);
+      // }
+      // else {
+      //   contentItem['Adjusted Days'] = ''
+      // }
+      
+      // if (item.SmartHoursTotal != undefined && item.SmartHoursTotal != undefined) {
+      //   contentItem['Smart Hours'] = parseFloat(item.AdjustedTime);
+      //   // contentItem['TotalSmartTime'] = contentItem['TotalSmartTime'].toFixed(2);
+      //   contentItem['Smart Hours (Roundup)'] = parseFloat(item.SmartHoursTotal);
+
+      //   contentItem['Smart Days (Roundup)'] = (contentItem['Smart Hours (Roundup)'] / 8);;
+      //   contentItem['Adjusted Hours Roundup (In days)'] = (contentItem['Adjusted Hours (Roundup)'] / 8);
+      //   contentItem['Days'] = contentItem['Adjusted Hours Roundup (In days)'];
+
+      // } else {
+      //   contentItem['Smart Hours'] = '';
+      //   contentItem['Smart Hours (Roundup)'] = '';
+      //   contentItem['Days'] = '';
+      //   // contentItem['Hours'] = '';
+      //   contentItem['Smart Days (Roundup)'] = ''; contentItem['Adjusted Hours Roundup (In days)'] = '';
+      // }
       this.getexportChilds(item.childs);
 
+      this.sheetsItems.push(contentItem);
+      
 
     });
     const fileType =
