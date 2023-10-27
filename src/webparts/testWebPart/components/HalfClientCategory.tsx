@@ -79,8 +79,6 @@ const HalfClientCategory = (props: any) => {
             DocumentsListID: props?.props?.DocumentsListID,
             SmartInformationListID: props?.props?.SmartInformationListID,
             AdminConfigrationListID: props?.props?.AdminConfigrationListID,
-            TaskTypeID: props?.props?.TaskTypeID,
-            PortFolioTypeID: props?.props?.PortFolioTypeID,
             siteUrl: props?.props?.siteUrl,
             isShowTimeEntry: isShowTimeEntry,
             isShowSiteCompostion: isShowSiteCompostion
@@ -251,7 +249,7 @@ const HalfClientCategory = (props: any) => {
                     smartmeta = await web.lists
                         .getById(config.listId)
                         .items
-                        .select("Id,Title,PriorityRank,Project/PriorityRank,Portfolio/PortfolioStructureID,Project/Id,Project/Title,workingThisWeek,ParentTask/TaskID,ParentTask/Title,ParentTask/Id,EstimatedTime,TaskLevel,TaskLevel,OffshoreImageUrl,OffshoreComments,ClientTime,Priority,Status,ItemRank,SiteCompositionSettings,IsTodaysTask,Body,Portfolio/Id,Portfolio/Title,PercentComplete,Categories,StartDate,PriorityRank,DueDate,TaskType/Id,TaskType/Title,Created,Modified,Author/Id,Author/Title,Editor/Id,Editor/Title,TaskCategories/Id,TaskCategories/Title,AssignedTo/Id,AssignedTo/Title,TeamMembers/Id,TeamMembers/Title,ResponsibleTeam/Id,ResponsibleTeam/Title,ClientCategory/Id,ClientCategory/Title")
+                        .select("Id,Title,PriorityRank,Project/PriorityRank,Portfolio/PortfolioStructureID,FeedBack,Project/Id,Project/Title,workingThisWeek,ParentTask/TaskID,ParentTask/Title,ParentTask/Id,EstimatedTime,TaskLevel,TaskLevel,OffshoreImageUrl,OffshoreComments,ClientTime,Priority,Status,ItemRank,SiteCompositionSettings,IsTodaysTask,Body,Portfolio/Id,Portfolio/Title,PercentComplete,Categories,StartDate,PriorityRank,DueDate,TaskType/Id,TaskType/Title,Created,Modified,Author/Id,Author/Title,Editor/Id,Editor/Title,TaskCategories/Id,TaskCategories/Title,AssignedTo/Id,AssignedTo/Title,TeamMembers/Id,TeamMembers/Title,ResponsibleTeam/Id,ResponsibleTeam/Title,ClientCategory/Id,ClientCategory/Title")
                         .expand('AssignedTo,Project,Author,Editor,Portfolio,TaskType,TeamMembers,ResponsibleTeam,TaskCategories,ParentTask,ClientCategory')
                         .top(4999)
                         .get();
@@ -264,9 +262,7 @@ const HalfClientCategory = (props: any) => {
                             items.AllTeamMember = [];
                             items.siteType = config.Title;
                             items.ClientCatTitle = [];
-
-
-                            items.bodys = items.Body != null && items.Body.split('<p><br></p>').join('');
+                            items.descriptionsSearch = globalCommon.descriptionSearchData(items);
                             items.listId = config.listId;
                             items.siteUrl = config.siteUrl.Url;
                             items.PercentComplete = (items.PercentComplete * 100).toFixed(0);
@@ -364,15 +360,15 @@ const HalfClientCategory = (props: any) => {
                                 if (items?.SiteCompositionSettings != undefined) {
                                     items.compositionType = siteCompositionType(items?.SiteCompositionSettings);
                                     items.isProtectedItem = itemProtected(items?.SiteCompositionSettings)
-                                    if(items.isProtectedItem){
+                                    if (items.isProtectedItem) {
                                         items.isProtectedValue = 'Protected'
-                                    }else{
+                                    } else {
                                         items.isProtectedValue = ''
                                     }
-                                   
+
                                 } else {
                                     items.compositionType = '';
-                                    items.isProtectedValue='';
+                                    items.isProtectedValue = '';
                                     items.isProtectedItem = false;
                                 }
                                 if (items?.ClientTime != undefined) {
@@ -423,7 +419,7 @@ const HalfClientCategory = (props: any) => {
             AllMasterTaskItems = [];
             // var AllUsers: any = []
             AllMasterTaskItems = await web.lists.getById(AllListId?.MasterTaskListID).items
-                .select("Deliverables,PortfolioStructureID,ClientCategory/Id,ClientCategory/Title,TechnicalExplanations,ValueAdded,Categories,Idea,Short_x0020_Description_x0020_On,Background,Help_x0020_Information,Short_x0020_Description_x0020__x,ComponentCategory/Id,ComponentCategory/Title,Comments,HelpDescription,FeedBack,Body,SiteCompositionSettings,ClientTime,ShortDescriptionVerified,Portfolio_x0020_Type,BackgroundVerified,descriptionVerified,Synonyms,BasicImageInfo,OffshoreComments,OffshoreImageUrl,HelpInformationVerified,IdeaVerified,TechnicalExplanationsVerified,Deliverables,DeliverablesVerified,ValueAddedVerified,CompletedDate,Idea,ValueAdded,TechnicalExplanations,Item_x0020_Type,Sitestagging,Package,Parent/Id,Parent/Title,Short_x0020_Description_x0020_On,Short_x0020_Description_x0020__x,Short_x0020_description_x0020__x0,AdminNotes,AdminStatus,Background,Help_x0020_Information,TaskCategories/Id,TaskCategories/Title,PriorityRank,Reference_x0020_Item_x0020_Json,TeamMembers/Title,TeamMembers/Name,TeamMembers/Id,Item_x002d_Image,ComponentLink,IsTodaysTask,AssignedTo/Title,AssignedTo/Name,AssignedTo/Id,AttachmentFiles/FileName,FileLeafRef,FeedBack,Title,Id,PercentComplete,Company,StartDate,DueDate,Comments,Categories,Status,WebpartId,Body,Mileage,PercentComplete,Attachments,Priority,Created,Modified,Author/Id,Author/Title,Editor/Id,Editor/Title,PortfolioType/Id,PortfolioType/Color,PortfolioType/IdRange,PortfolioType/Title")
+                .select("Deliverables,PortfolioStructureID,ClientCategory/Id,ClientCategory/Title,TechnicalExplanations,ValueAdded,Categories,Idea,Short_x0020_Description_x0020_On,Background,Help_x0020_Information,Short_x0020_Description_x0020__x,ComponentCategory/Id,ComponentCategory/Title,Comments,HelpDescription,Body,SiteCompositionSettings,ClientTime,ShortDescriptionVerified,Portfolio_x0020_Type,BackgroundVerified,descriptionVerified,Synonyms,BasicImageInfo,OffshoreComments,OffshoreImageUrl,HelpInformationVerified,IdeaVerified,TechnicalExplanationsVerified,Deliverables,DeliverablesVerified,ValueAddedVerified,CompletedDate,Idea,ValueAdded,TechnicalExplanations,Item_x0020_Type,Sitestagging,Package,Parent/Id,Parent/Title,Short_x0020_Description_x0020_On,Short_x0020_Description_x0020__x,Short_x0020_description_x0020__x0,AdminNotes,AdminStatus,Background,Help_x0020_Information,TaskCategories/Id,TaskCategories/Title,PriorityRank,Reference_x0020_Item_x0020_Json,TeamMembers/Title,TeamMembers/Name,TeamMembers/Id,Item_x002d_Image,ComponentLink,IsTodaysTask,AssignedTo/Title,AssignedTo/Name,AssignedTo/Id,AttachmentFiles/FileName,FileLeafRef,Title,Id,PercentComplete,Company,StartDate,DueDate,Comments,Categories,Status,WebpartId,Body,Mileage,PercentComplete,Attachments,Priority,Created,Modified,Author/Id,Author/Title,Editor/Id,Editor/Title,PortfolioType/Id,PortfolioType/Color,PortfolioType/IdRange,PortfolioType/Title")
                 .filter("Item_x0020_Type ne 'Project'")
                 .expand("ComponentCategory,ClientCategory,AssignedTo,AttachmentFiles,Author,Editor,TeamMembers,TaskCategories,Parent,PortfolioType").top(4999).getAll();
 
@@ -488,12 +484,13 @@ const HalfClientCategory = (props: any) => {
                     items.siteType = 'Master Tasks';
                     items.DisplayDueDate = items.DueDate != null ? Moment(items.DueDate).format('DD/MM/YYYY') : "";
                     try {
+                        items.descriptionsSearch = globalCommon.portfolioSearchData(items)
                         if (items?.SiteCompositionSettings != undefined) {
                             items.compositionType = siteCompositionType(items?.SiteCompositionSettings);
                             items.isProtectedItem = itemProtected(items?.SiteCompositionSettings)
-                            if(items.isProtectedItem){
+                            if (items.isProtectedItem) {
                                 items.isProtectedValue = 'Protected'
-                            }else{
+                            } else {
                                 items.isProtectedValue = ''
                             }
                         } else {
@@ -652,13 +649,16 @@ const HalfClientCategory = (props: any) => {
                             >
                                 {row?.original?.Title}
                             </a>
-                            <span className="alignIcon">
-                                {" "}
-                                <InfoIconsToolTip
-                                    Discription={row?.original?.bodys}
-                                    row={row?.original}
-                                />{" "}
-                            </span>
+                            {row?.original?.descriptionsSearch?.length > 0 ? (
+                                <span className="alignIcon">
+                                    <InfoIconsToolTip
+                                        Discription={row?.original?.bodys}
+                                        row={row?.original}
+                                    />
+                                </span>
+                            ) : (
+                                ""
+                            )}
 
                         </span> : ''}
                     </>
@@ -681,6 +681,9 @@ const HalfClientCategory = (props: any) => {
                 id: "PercentComplete",
                 placeholder: "% Complete",
                 header: "",
+                filterFn: (row: any, columnId: any, filterValue: any) => {
+                    return row?.original?.PercentComplete == filterValue
+                },
                 resetColumnFilters: false,
                 resetSorting: false,
                 size: 55,
@@ -713,6 +716,9 @@ const HalfClientCategory = (props: any) => {
                 placeholder: "Composition Total",
                 header: "",
                 resetColumnFilters: false,
+                filterFn: (row: any, columnId: any, filterValue: any) => {
+                    return row?.original?.siteCompositionTotal == filterValue
+                },
                 resetSorting: false,
                 size: 60,
             },
@@ -843,14 +849,15 @@ const HalfClientCategory = (props: any) => {
                                 {row?.original?.Title}
                             </a>
 
-                            {row?.original?.Body !== null && (
+                            {row?.original?.descriptionsSearch?.length > 0 ? (
                                 <span className="alignIcon">
-                                    {" "}
                                     <InfoIconsToolTip
                                         Discription={row?.original?.bodys}
                                         row={row?.original}
-                                    />{" "}
+                                    />
                                 </span>
+                            ) : (
+                                ""
                             )}
                         </span>
                     </>
@@ -889,6 +896,9 @@ const HalfClientCategory = (props: any) => {
                 id: 'siteCompositionTotal',
                 placeholder: "Composition Total",
                 header: "",
+                filterFn: (row: any, columnId: any, filterValue: any) => {
+                    return row?.original?.siteCompositionTotal == filterValue
+                },
                 resetColumnFilters: false,
                 resetSorting: false,
                 size: 60,
@@ -1072,7 +1082,7 @@ const HalfClientCategory = (props: any) => {
             )}
             {EditSiteCompositionStatus ? <EditSiteComposition EditData={selectedItem} context={props?.props?.Context} AllListId={AllListId} Call={() => { CallBack('SiteComp') }} /> : ''}
             {EditSiteCompositionMaster ?
-                  <Sitecomposition props={selectedItem} isDirectPopup={EditSiteCompositionMaster} callback={() => { CallBack('master') }} sitedata={AllListId} />
+                <Sitecomposition props={selectedItem} isDirectPopup={EditSiteCompositionMaster} callback={() => { CallBack('master') }} sitedata={AllListId} />
                 : null
             }
             {/* {pageLoaderActive ? <PageLoader /> : ''} */}
