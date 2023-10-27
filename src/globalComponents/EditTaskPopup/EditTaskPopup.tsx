@@ -2158,20 +2158,20 @@ const EditTaskPopup = (Items: any) => {
             }
         }
 
-        if (IsTaskCompleted) {
-            let taskComplete = `Hi Robert, </br> Below task has been marked to 90% by ${Items.context.pageContext._user.displayName}. Please review.`;
-            let TeamEmail =
-                taskComplete +
-                `</br> <a href=${siteUrls + "/SitePages/Task-Profile.aspx?taskId=" + EditData.Id + "&Site=" + Items.Items.siteType}>${EditData.TaskId}-${EditData.Title}</a>`;
-            let sendEmail: any = ["robert.ungethuem@hochhuth-consulting.de"];
-            if (sendEmail?.length > 0) {
-                await globalCommon.SendTeamMessage(
-                    sendEmail,
-                    TeamEmail,
-                    Items.context
-                );
-            }
-        }
+        // if (IsTaskCompleted) {
+        //     let taskComplete = `Hi Robert, </br> Below task has been marked to 90% by ${Items.context.pageContext._user.displayName}. Please review.`;
+        //     let TeamEmail =
+        //         taskComplete +
+        //         `</br> <a href=${siteUrls + "/SitePages/Task-Profile.aspx?taskId=" + EditData.Id + "&Site=" + Items.Items.siteType}>${EditData.TaskId}-${EditData.Title}</a>`;
+        //     let sendEmail: any = ["robert.ungethuem@hochhuth-consulting.de"];
+        //     if (sendEmail?.length > 0) {
+        //         await globalCommon.SendTeamMessage(
+        //             sendEmail,
+        //             TeamEmail,
+        //             Items.context
+        //         );
+        //     }
+        // }
 
         let TaskShuoldBeUpdate = true;
         let DataJSONUpdate: any = await MakeUpdateDataJSON();
@@ -2327,7 +2327,7 @@ const EditTaskPopup = (Items: any) => {
                                     dataEditor.data.FeedBack = JSON.stringify(dataEditor.data.FeedBack)
                                     Items.Call(dataEditor)
                                 }
-                                Items.Call(DataJSONUpdate);
+                                Items.Call(DataJSONUpdate, "UpdatedData");
                             }
                             else {
                                 Items.Call("Save");
@@ -2767,11 +2767,13 @@ const EditTaskPopup = (Items: any) => {
                 let Url = `${siteUrls}/SitePages/Task-Profile.aspx?taskId=${newGeneratedId}&Site=${site}`
                 window.location.href = Url;
             }
+            let SiteName = Items.Items.siteType;
             if (Items?.pageName == "TaskFooterTable") {
                 var ItmesDelete: any = {
                     data: {
                         Id: itemId,
-                        ItmesDelete: true
+                        ItmesDelete: true,
+                        siteName: SiteName
                     }
                 }
                 Items.Call(ItmesDelete);
