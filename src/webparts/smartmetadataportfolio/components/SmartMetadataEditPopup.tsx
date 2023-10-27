@@ -9,12 +9,17 @@ let SitesConfig: any[] = []
 let allSitesTask: any[] = []
 let Selecteditems: any[] = [];
 let allCalls: any[] = []
+var TopLevelItems: any = [];
+var SecondLevelItems: any = [];
+var ThirdLevelItems: any = [];
 let ddlParentLevel2: any;
 let TopLevel: any;
 let CurrentSiteUrl: any;
 export default function SmartMetadataEditPopup(props: any) {
     const [activeTab, setActiveTab] = useState('BasicInfo');
     const [AllSitesTask, setAllSitesTask]: any = useState([]);
+    const [dropdownArray, setDropdownArray]: any = useState([]);
+    const [openChangeParentPopup, setOpenChangeParentPopup]: any = useState(false);
     let web = new Web(props.AllList.SPSitesListUrl);
     const [SmartTaxonomyItem, setSmartTaxonomyItem] = useState({
         Id: 0,
@@ -32,7 +37,6 @@ export default function SmartMetadataEditPopup(props: any) {
         TaxType: "",
         siteName: "",
     });
-    let DropdownArray: any[] = [];
     let CategoryTitle: any;
     let SecondLevel: any;
     let Levels: any;
@@ -57,8 +61,8 @@ export default function SmartMetadataEditPopup(props: any) {
         try {
             const fieldsData = await web.lists.getById(props.AllList.SPSmartMetadataListID).fields.filter("EntityPropertyName eq 'Status'").select('Choices').get();
             if (fieldsData && fieldsData[0].Choices) {
-                DropdownArray = fieldsData[0].Choices;
-                console.log('DropdownArray', DropdownArray);
+                setDropdownArray(fieldsData[0].Choices);
+                console.log('DropdownArray', dropdownArray);
             } else {
                 console.error('No Choices found');
             }
@@ -151,6 +155,31 @@ export default function SmartMetadataEditPopup(props: any) {
             console.error(error);
             // Handle errors
         }
+    }
+    const openParent = () => {
+        setOpenChangeParentPopup(true)
+        props?.AllMetadata?.forEach((taxonomy: any) => {
+            TopLevelItems.push(taxonomy);
+            if (taxonomy?.subRows !== undefined) {
+                taxonomy?.subRows.forEach((child: any) => {
+                    SecondLevelItems.push(child)
+                    if (child?.subRows !== undefined) {
+                        child?.subRows.forEach((subChild: any) => {
+                            ThirdLevelItems.push(subChild)
+                        })
+                    }
+                })
+            }
+        })
+    }
+    const closeParentPopup = () => {
+        TopLevelItems = [];
+        SecondLevelItems = [];
+        ThirdLevelItems = [];
+        setOpenChangeParentPopup(false)
+    }
+    const changeParentMetadata = () => {
+
     }
     useEffect(() => {
         loaddropdown();
@@ -372,8 +401,85 @@ export default function SmartMetadataEditPopup(props: any) {
         }
         console.log(elem)
     }, []);
+
     return (
         <>
+            {openChangeParentPopup && <section>
+                <Panel headerText="Select Parent"
+                    isOpen={true}
+                    onDismiss={closeParentPopup}
+                    isBlocking={false}
+                    type={PanelType.large}
+                    closeButtonAriaLabel="Close">
+                    <div className='modal-body'>
+                        <div className="col-sm-12 tab-content bdrbox pad10">
+                            <div className="form-group">
+                                <div className="col-xs-3">
+                                    Top Level:
+                                </div>
+                                <div className="col-xs-9">
+                                    <select
+                                        className="form-control"
+                                        value=""
+                                    >
+                                        <option value="">Root</option>
+                                        {TopLevelItems?.map((item: any) => (
+                                            <option key={item.Id} value={item.Id}>
+                                                {item.Title}
+                                            </option>
+                                        ))}
+                                    </select>
+                                </div>
+                                <div className="clearfix"></div>
+                            </div>
+                            {SecondLevelItems.length > 0 && <div className="form-group">
+                                <div className="col-xs-3">
+                                    Second Level:
+                                    <b className="span-error">*</b>
+                                </div>
+                                <div className="col-xs-9">
+                                    <select
+                                        className="form-control"
+                                        value={ddlParentLevel2}
+                                    >
+                                        <option value="">Select</option>
+                                        {SecondLevelItems.map((item: any) => (
+                                            <option key={item.Id} value={item.Id}>
+                                                {item.Title}
+                                            </option>
+                                        ))}
+                                    </select>
+                                </div>
+                                <div className="clearfix"></div>
+                            </div>}
+                            {ThirdLevelItems.length > 0 && <div className="form-group">
+                                <div className="col-xs-3">
+                                    Third Level:
+                                    <b className="span-error">*</b>
+                                </div>
+                                <div className="col-xs-9">
+                                    <select
+                                        className="form-control"
+                                        value={ddlParentLevel2}
+                                    >
+                                        <option value="">Select</option>
+                                        {ThirdLevelItems.map((item: any) => (
+                                            <option key={item.Id} value={item.Id}>
+                                                {item.Title}
+                                            </option>
+                                        ))}
+                                    </select>
+                                </div>
+                                <div className="clearfix"></div>
+                            </div>}
+                        </div>
+                    </div>
+                    <div className='mt-2 text-end'>
+                        <button className='btn btn-primary' onClick={changeParentMetadata} >Save</button>
+                        <button className='btn btn-default ms-1'>Cancel</button>
+                    </div>
+                </Panel >
+            </section >}
             <div>
                 <Panel
                     headerText="Update SmartMetadata Item"
@@ -507,7 +613,7 @@ export default function SmartMetadataEditPopup(props: any) {
                                                         <div className=' input-group'>
                                                             <label className='full-width'>Status</label>
                                                             <select className="form-control no-padding" value={SmartTaxonomyItem.Status} onChange={(e) => setSmartTaxonomyItem({ ...SmartTaxonomyItem, Status: e.target.value })}>
-                                                                {DropdownArray.map((item, index) => (
+                                                                {dropdownArray.map((item: any, index: any) => (
                                                                     <option key={index} value={item}>
                                                                         {item}
                                                                     </option>
@@ -546,7 +652,7 @@ export default function SmartMetadataEditPopup(props: any) {
                                                 {/* <a style={{ float: 'right' }} href="javascript:void(0);" onClick={() => openparent(SecondLevel)}> */}
                                                 <a href="javascript:void(0);">
                                                     Change Parent
-                                                    <span className="alignIcon  svg__iconbox svg__icon--edit"></span>
+                                                    <span onClick={openParent} className="alignIcon  svg__iconbox svg__icon--edit"></span>
                                                 </a>
                                             </div>
                                         </div>
@@ -619,5 +725,3 @@ export default function SmartMetadataEditPopup(props: any) {
         </>
     );
 }
-
-

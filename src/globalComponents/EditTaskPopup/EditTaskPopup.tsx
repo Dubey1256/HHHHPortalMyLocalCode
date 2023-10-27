@@ -2159,10 +2159,10 @@ const EditTaskPopup = (Items: any) => {
         }
 
         if (IsTaskCompleted) {
-            let taskComplete = `Hi Robert, </br>The below task has been marked 90% by ${Items.context.pageContext._user.displayName} , please have a look`;
+            let taskComplete = `Hi Robert, </br> Below task has been marked to 90% by ${Items.context.pageContext._user.displayName}. Please review.`;
             let TeamEmail =
                 taskComplete +
-                `</br> <a href=${siteUrls + "SitePages/Task-Profile.aspx?taskId=" + EditData.TaskId + "Site=" + Items.Items.siteType}>${EditData.TaskId}-${EditData.Title}</a>`;
+                `</br> <a href=${siteUrls + "/SitePages/Task-Profile.aspx?taskId=" + EditData.Id + "&Site=" + Items.Items.siteType}>${EditData.TaskId}-${EditData.Title}</a>`;
             let sendEmail: any = ["robert.ungethuem@hochhuth-consulting.de"];
             if (sendEmail?.length > 0) {
                 await globalCommon.SendTeamMessage(
@@ -2172,7 +2172,6 @@ const EditTaskPopup = (Items: any) => {
                 );
             }
         }
-
 
         let TaskShuoldBeUpdate = true;
         let DataJSONUpdate: any = await MakeUpdateDataJSON();

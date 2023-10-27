@@ -891,15 +891,16 @@ const RestructuringCom = (props: any, ref: any) => {
           let checkFeatureCondition: boolean = true;
           let checkTasks: boolean = true;
           topCompo = true;
-          setQuery4TopIcon('Component')
-          if(props?.queryItems?.Item_x0020_Type === 'Component'){
-            topCompo = false;
-          }
-
+         
+         
 
           if (items?.subRows?.length > 0 && items?.subRows != undefined) {
             items?.subRows?.map((newItems: any) => {
               if (newItems?.Item_x0020_Type === "Feature" && checkFeatureCondition) {
+                if(props?.queryItems?.Item_x0020_Type === 'Component'){
+                  alert('You are not allowed to Restructure this item')
+                  topCompo = false;
+                }
                 checkFeatureCondition = false;
                 checkTasks = false;
                 array?.map((obj: any) => {
@@ -952,6 +953,11 @@ const RestructuringCom = (props: any, ref: any) => {
               } else {
                 if (checkFeatureCondition && checkTasks) {
                   checkTasks = false;
+                  if(props?.queryItems?.Item_x0020_Type === 'Component'){
+                    setQuery4TopIcon('Feature')
+                  }else{
+                    setQuery4TopIcon('Component')
+                  }
                   array?.map((obj: any) => {
                     let newChildarray: any = [];
                     let newarrays: any = [];
@@ -1009,6 +1015,11 @@ const RestructuringCom = (props: any, ref: any) => {
               }
             })
           } else {
+            if(props?.queryItems?.Item_x0020_Type === 'Component'){
+              setQuery4TopIcon('Feature')
+            }else{
+              setQuery4TopIcon('Component')
+            }
             array?.map((obj: any) => {
               let newChildarray: any = [];
               let newarrays: any = [];
@@ -1067,6 +1078,7 @@ const RestructuringCom = (props: any, ref: any) => {
           topCompo = true;
           setQuery4TopIcon('Component')
           if(props?.queryItems?.Item_x0020_Type === 'SubComponent'){
+            alert('You are not allowed to restructure this item');
             topCompo = false;
           } 
 
@@ -2156,7 +2168,8 @@ const RestructuringCom = (props: any, ref: any) => {
       let array: any = [...allData];
       let count: number = 0;
       restructureItem?.map(async (items: any, index: any) => {
-        let level: number = PortfolioLevel + index;
+        PortfolioLevel = PortfolioLevel + 1;
+        let level: number = PortfolioLevel;
         let web = new Web(props?.contextValue?.siteUrl);
         var postData: any = {
           ParentId: ParentTask,
@@ -2169,7 +2182,8 @@ const RestructuringCom = (props: any, ref: any) => {
           .items.getById(items.Id)
           .update(postData)
           .then(async (res: any) => {
-            let checkUpdate: number = 1;
+            // let checkUpdate: number = 1;
+            PortfolioLevel = PortfolioLevel + 1;
             let backupCheckedList: any = [];
             let latestCheckedList: any = [];
             latestCheckedList?.push({ ...items })
@@ -2181,7 +2195,7 @@ const RestructuringCom = (props: any, ref: any) => {
                 items.Item_x0020_Type = Item_x0020_Type,
                 items.SiteIconTitle = SiteIconTitle,
                 items.PortfolioStructureID = PortfolioStructureID + '-' + SiteIconTitle + PortfolioLevel,
-                items.TaskID = PortfolioStructureID + '-' + SiteIconTitle + PortfolioLevel
+                items.TaskID = PortfolioStructureID + '-' + SiteIconTitle + PortfolioLevel;
             })
 
             function processArray(arr : any, pushData : any, spliceData : any) {
@@ -2779,10 +2793,17 @@ if(restructureItem != undefined && restructureItem != undefined && restructureIt
       SiteIconTitle = 'C'
       Item_x0020_Type = 'Component'
      }else if(props?.queryItems != undefined && props?.queryItems != null && props?.queryItems?.Item_x0020_Type == 'Component'){
-      ParentTask = {Id:props?.queryItems?.Id, Title : props?.queryItems?.Title, TaskID : props?.queryItems?.TaskID};
-      PortfolioStructureIDs = props?.queryItems?.PortfolioStructureID + '-' + 'S' + PortfolioLevel;
-      SiteIconTitle = 'S';
-      Item_x0020_Type = 'SubComponent';
+      if(RestructureChecked[0]?.Item_x0020_Type == 'SubComponent'){
+        ParentTask = {Id:props?.queryItems?.Id, Title : props?.queryItems?.Title, TaskID : props?.queryItems?.TaskID};
+        PortfolioStructureIDs = props?.queryItems?.PortfolioStructureID + '-' + 'S' + PortfolioLevel;
+        SiteIconTitle = 'F';
+        Item_x0020_Type = 'Feature';
+      }else{
+        ParentTask = {Id:props?.queryItems?.Id, Title : props?.queryItems?.Title, TaskID : props?.queryItems?.TaskID};
+        PortfolioStructureIDs = props?.queryItems?.PortfolioStructureID + '-' + 'S' + PortfolioLevel;
+        SiteIconTitle = 'S';
+        Item_x0020_Type = 'SubComponent';
+      }
      }else if(props?.queryItems != undefined && props?.queryItems != null && props?.queryItems?.Item_x0020_Type == 'SubComponent'){
       ParentTask = {Id:props?.queryItems?.Id, Title : props?.queryItems?.Title, TaskID : props?.queryItems?.TaskID};
       PortfolioStructureIDs = props?.queryItems?.PortfolioStructureID + '-' + 'F' + PortfolioLevel;
