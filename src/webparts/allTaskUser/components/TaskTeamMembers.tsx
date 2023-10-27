@@ -1,5 +1,5 @@
 import { Checkbox, ChoiceGroup, CommandBar, DefaultButton, Dialog, DialogFooter, DialogType, DocumentCard, FontIcon, FontSizes, IChoiceGroupOption, ICommandBarItemProps, Icon, IContextualMenuItem, IContextualMenuProps, IDropdownOption, Image, ImageFit, Label, Link, mergeStyles, Panel, PrimaryButton, SearchBox, Text, TextField } from "office-ui-fabric-react";
-import { buildColumns, DetailsList, DetailsListLayoutMode, Dropdown, IColumn, PanelType, Pivot, PivotItem, PivotLinkFormat, PivotLinkSize, Selection, SelectionMode, ConstrainMode, Stack, IPersonaProps, PersonaSize, Persona, TooltipHost, IStackTokens } from "@fluentui/react";
+import { buildColumns, DetailsList, DetailsListLayoutMode, Dropdown, IColumn, PanelType, Pivot, PivotItem, PivotLinkFormat, PivotLinkSize, Selection, SelectionMode, ConstrainMode, Stack, IPersonaProps,  Persona, TooltipHost, IStackTokens } from "@fluentui/react";
 import * as React from "react";
 import { Component } from "react";
 import { PeoplePicker, PrincipalType } from "@pnp/spfx-controls-react/lib/PeoplePicker";
@@ -1156,13 +1156,14 @@ export default class TaskTeamMembers extends Component<ITeamMembersProps, ITeamM
 
         const elemEditTaskBasicInfo: JSX.Element = (<div className="ms-SPLegacyFabricBlock">
             <div className="ms-Grid p-0">
-                <div className="ms-Grid-row">
+                <div className="ms-Grid-row Task-User-Management mb-2">
                     <div className="ms-Grid-col ms-sm3 ms-md3 ms-lg3">
                         <TextField
                             label="Title"
                             value={this.state.taskItem.userTitle}
                             defaultValue={this.state.taskItem.userTitle}
                             onChange={this.onUserTitleChange}
+                       
                         />
                     </div>
                     <div className="ms-Grid-col ms-sm3 ms-md3 ms-lg3">
@@ -1192,8 +1193,7 @@ export default class TaskTeamMembers extends Component<ITeamMembersProps, ITeamM
                         />
                     </div>
                 </div>
-                <br />
-                <div className="ms-Grid-row">
+                <div className="ms-Grid-row Task-User-Management mb-2">
                     <div className="ms-Grid-col ms-sm4 ms-md4 ms-lg4">{elemUser}</div>
                     <div className="ms-Grid-col ms-sm4 ms-md4 ms-lg4">
                         <label className="ms-Label root-321 pb-2 pt-1 text-dark">Manage Categories</label>
@@ -1207,56 +1207,62 @@ export default class TaskTeamMembers extends Component<ITeamMembersProps, ITeamM
                     </div>
                     <div className="ms-Grid-col ms-sm4 ms-md4 ms-lg4">{elemApprover}</div>
                 </div>
-                <br />
-                <div className="ms-Grid-row">
+               
+                <div className="ms-Grid-row Task-User-Management SpfxCheckRadio mb-2">
                     <div className="ms-Grid-col ms-sm4 ms-md4 ms-lg3">
-                        <ChoiceGroup
+                        <ChoiceGroup  className="SpfxCheckRadio"
                             label="Approval Type"
                             options={appTypeOptions}
                             value={this.state.taskItem.approvalType}
                             defaultSelectedKey={this.state.taskItem.approvalType}
                             onChange={this.onApprovalTypeChange}
+                            
                         />
                     </div>
                     <div className="ms-Grid-col ms-sm4 ms-md4 ms-lg3">
-                        <ChoiceGroup
+                        <ChoiceGroup className="SpfxCheckRadio"
                             label="Company"
                             options={compOptions}
                             value={this.state.taskItem.company}
                             defaultSelectedKey={this.state.taskItem.company}
                             onChange={this.onCompanyChange}
+                           
                         />
                     </div>
                     <div className="ms-Grid-col ms-sm4 ms-md4 ms-lg3">
                         <Label>Roles</Label>
-                        <Checkbox
+                        <Checkbox  className="SpfxCheckRadio"
                             label="Component Teams"
                             checked={this.state.taskItem.roles.indexOf("Component Teams") > -1}
                             defaultChecked={this.state.taskItem.roles.indexOf("Component Teams") > -1}
                             onChange={this.onComponentTeamsChecked}
+                          
                         />
-                        <br />
-                        <Checkbox
+              
+                        <Checkbox className="SpfxCheckRadio"
                             label="Service Teams"
                             checked={this.state.taskItem.roles.indexOf("Service Teams") > -1}
                             defaultChecked={this.state.taskItem.roles.indexOf("Service Teams") > -1}
                             onChange={this.onServiceTeamsChecked}
+                           
                         />
                     </div>
                     <div className="ms-Grid-col ms-sm4 ms-md4 ms-lg3">
-                        <br />
-                        <Checkbox
+              
+                        <Checkbox   className="SpfxCheckRadio"
                             label="Active User"
                             checked={this.state.taskItem.isActive}
                             defaultChecked={this.state.taskItem.isActive}
                             onChange={this.onActiveUserChecked}
+                         
                         />
-                        <br />
-                        <Checkbox
+                  
+                        <Checkbox   className="SpfxCheckRadio"
                             label="Task Notifications"
                             checked={this.state.taskItem.isTaskNotifications}
                             defaultChecked={this.state.taskItem.isTaskNotifications}
                             onChange={this.onTaskNotificationsChecked}
+                         
                         />
                     </div>
                 </div>
@@ -1487,7 +1493,7 @@ export default class TaskTeamMembers extends Component<ITeamMembersProps, ITeamM
 
     private getUserPersona(userInfo: any) {
         const personaProps: IPersonaProps = {
-            size: PersonaSize.size24,
+         
         }
         const userImage = userInfo.ImageUrl;
         const userName = userInfo.UserName;

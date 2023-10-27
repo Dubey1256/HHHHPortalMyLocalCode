@@ -46,6 +46,8 @@ let countAllComposubData: any = [];
 let countsrun = 0;
 let TimesheetData: any = [];
 let count = 1;
+let flatviewmastertask:any =[];
+let flatviewTasklist:any =[];
 function PortfolioTable(SelectedProp: any) {
   const childRef = React.useRef<any>();
   if (childRef != null) {
@@ -521,6 +523,8 @@ function PortfolioTable(SelectedProp: any) {
                   TasksItem.push(result);
                   AllTasksData.push(result);
                 });
+                
+                flatviewTasklist = JSON.parse(JSON.stringify(AllTasksData))
                 AllSiteTasksData = AllTasksData;
                 // GetComponents();
                 if (AllSiteTasksData?.length > 0) {
@@ -617,6 +621,7 @@ function PortfolioTable(SelectedProp: any) {
         "DueDate",
         "Created",
         "Body",
+        "Sitestagging",
         "Item_x0020_Type",
         "Categories",
         "Short_x0020_Description_x0020_On",
@@ -768,6 +773,7 @@ function PortfolioTable(SelectedProp: any) {
         result.ClientCategorySearch = "";
       }
     });
+    flatviewmastertask = JSON.parse(JSON.stringify(componentDetails));
     setAllMasterTasks(componentDetails);
     AllComponetsData = componentDetails;
     ComponetsData["allComponets"] = componentDetails;
@@ -888,7 +894,6 @@ function PortfolioTable(SelectedProp: any) {
       let Actatcomponent = AllSiteTasksData?.filter(
         (elem1: any) =>
           elem1?.TaskType?.Id === 1 &&
-          elem1?.ParentTask?.Id === undefined &&
           elem1?.Portfolio?.Id === SelectedProp?.props?.Id
       );
       countAllTasksData = countAllTasksData.concat(Actatcomponent);
@@ -1161,9 +1166,8 @@ function PortfolioTable(SelectedProp: any) {
         accessorFn: (row) => row?.TaskID,
         cell: ({ row, getValue }) => (
           <>
-            {/* <ReactPopperTooltip ShareWebId={getValue()} row={row} /> */}
-            <ReactPopperTooltipSingleLevel ShareWebId={row?.original?.TaskID} row={row?.original} singleLevel={true} masterTaskData={AllMasterTasksData} AllSitesTaskData={AllSiteTasksData} AllListId={SelectedProp?.NextProp} />
-          
+           <ReactPopperTooltipSingleLevel ShareWebId={row?.original?.TaskID} row={row?.original} singleLevel={true} masterTaskData={flatviewmastertask} AllSitesTaskData={flatviewTasklist} AllListId={SelectedProp?.NextProp} />
+         
           </>
         ),
         id: "TaskID",

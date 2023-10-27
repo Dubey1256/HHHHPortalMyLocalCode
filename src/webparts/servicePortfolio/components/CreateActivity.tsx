@@ -4,6 +4,7 @@ import { Web } from "sp-pnp-js";
 import TeamConfigurationCard from "../../../globalComponents/TeamConfiguration/TeamConfiguration";
 import HtmlEditorCard from "../../../globalComponents/HtmlEditor/HtmlEditor";
 import moment, * as Moment from "moment";
+import DatePicker from "react-datepicker";
 import Picker from "../../../globalComponents/EditTaskPopup/SmartMetaDataPicker";
 import "react-datepicker/dist/react-datepicker.css";
 import "react-datepicker/dist/react-datepicker-cssmodules.css";
@@ -334,8 +335,8 @@ const CreateActivity = (props: any) => {
     }
     const handleDatedue = (date: any) => {
         // AllItems.DueDate = date;
-        var finalDate: any = Moment(date).format("YYYY-MM-DD");
-        setSave({ ...save, DueDate: finalDate });
+        // var finalDate: any = Moment(date).format("YYYY-MM-DD");
+        setSave({ ...save, DueDate: date });
     };
     const HtmlEditorCallBack = React.useCallback((EditorData: any) => {
 
@@ -1061,6 +1062,28 @@ const CreateActivity = (props: any) => {
         setCategoriesData(TaskCategories)
 
     }
+    const ExampleCustomInput = React.forwardRef(({ value, onClick }: any, ref: any) => (
+        <div style={{ position: "relative" }} onClick={onClick} ref={ref}>
+            <input
+                type="text"
+                id="datepicker"
+                className="form-control date-picker ps-2"
+                placeholder="DD/MM/YYYY"
+                defaultValue={value}
+            />
+            <span
+                style={{
+                    position: "absolute",
+                    top: "58%",
+                    right: "22px",
+                    transform: "translateY(-50%)",
+                    cursor: "pointer"
+                }}
+            >
+                <span className="svg__iconbox svg__icon--calendar"></span>
+            </span>
+        </div>
+    ));
     // const deleteCategories = (id: any) => {
     //     CategoriesData.map((catId: { Id: any }, index: any) => {
     //         if (id == catId.Id) {
@@ -1124,13 +1147,24 @@ const CreateActivity = (props: any) => {
                                 <div className="col-sm-2 mb-10 padL-0 mt-3">
                                     <div className="input-group">
                                         <label className='full-width'>Due Date</label>
-                                        <input
+                                               <DatePicker
+                                                selected={save?.DueDate}
+                                                onChange={(date) => handleDatedue(date)}
+                                                dateFormat="dd/MM/yyyy"
+                                                minDate={new Date()}
+                                                customInput={<ExampleCustomInput />}
+                                                isClearable
+                                                showYearDropdown
+                                                scrollableYearDropdown
+                                            />
+                                        {/* <DatePicker selected={save?.DueDate} onChange={(date) => handleDatedue(date)} /> */}
+                                        {/* <input
                                             type="date"
                                             className="form-control"
                                             value={save.DueDate}
                                             // defaultValue={Moment(save.DueDate).format("YYYY/MM/DD/")}
                                             onChange={handleDatedue}
-                                        />
+                                        /> */}
                                     </div>
                                     
                                 </div>
