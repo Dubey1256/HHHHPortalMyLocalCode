@@ -25,7 +25,7 @@ export default function BraedCrum(props: any) {
         };
         const breadcrumb: any = [];
         const manageSmartmetadataItem = allTopNavigationItems.find(
-            (top: any) => top?.href?.Url.indexOf(props?.AllList?.PageUrl)
+            (top: any) => top.Title === "Manage Smartmetadata"
         );
         if (manageSmartmetadataItem) {
             findBreadcrumb(manageSmartmetadataItem.Id);

@@ -3,9 +3,10 @@ import React, { useState } from 'react'
 import { Web } from "sp-pnp-js";
 import * as Moment from 'moment';
 import Button from 'react-bootstrap/Button';
-const AddMeeting = (props: any) => {
+const AddProject = (props: any) => {
     const [title, settitle] = React.useState('')
     const [lgShow, setLgShow] = useState(false);
+    const [MeetingData,setMeetingData] = React.useState({});
     const [editDate, setEditDate]: any = React.useState(undefined);
     const [selectDateName, setSelectDateName]: any = React.useState(undefined);
     const OpenCreateTaskPopup = () => {
@@ -22,7 +23,6 @@ const AddMeeting = (props: any) => {
                     if (res?.length > 0) {
                         portfolioLevel = res[0].PortfolioLevel + 1
                     }
-
                     await web.lists.getById(props?.AllListId?.MasterTaskListID).items.add({
                         Title: `${title}`,
                         Item_x0020_Type: "Meeting",
@@ -32,15 +32,24 @@ const AddMeeting = (props: any) => {
                     }).then((res: any) => {
                         closePopup()
                         props?.CallBack()
-
+                    }).catch((error: any) => {
+                        console.log(error)
                     })
-
                 })
 
         } else {
             alert("Please Enter Meeting Title")
         }
 
+    }
+    const ChangePriorityStatusFunction = (e: any) => {
+        let value = e.target.value;
+        if (Number(value) != 0 && Number(value) <= 10) {
+            setMeetingData({ ...MeetingData, PriorityRank: e.target.value })
+        } else {
+            alert("Priority Status should not be greater than 10 and should not be 0.");
+            setMeetingData({ ...MeetingData, PriorityRank: 0 })
+        }
     }
     const closePopup = () => {
         settitle('')
@@ -56,14 +65,14 @@ const AddMeeting = (props: any) => {
             setEditDate(dates)
         }
         if (item === 'Tommorow') {
-            setEditDate(dates.setDate(dates.getDate() + 1))
+            setEditDate(new Date(dates.setDate(dates.getDate() + 1)))
         }
         if (item === 'This Week') {
             setEditDate(new Date(dates.setDate(dates.getDate() - dates.getDay() + 7)))
         }
         if (item === 'Next Week') {
             let nextweek = new Date(dates.setDate(dates.getDate() - (dates.getDay() - 1) + 6));
-            setEditDate(nextweek.setDate(nextweek.getDate() - (nextweek.getDay() - 1) + 6))
+            setEditDate(new Date(nextweek.setDate(nextweek.getDate() - (nextweek.getDay() - 1) + 6)));
         }
         if (item === 'This Month') {
             let lastDay = new Date(dates.getFullYear(), dates.getMonth() + 1, 0);;
@@ -85,7 +94,7 @@ const AddMeeting = (props: any) => {
 
         return (
             <>
-                <button type="button" className='btn btn-primary mb-2 btnCol' onClick={() => OpenCreateTaskPopup()}>Create Meeting</button>
+                <button type="button" className='btn btn-primary mb-2' onClick={() => OpenCreateTaskPopup()}>Create Meeting</button>
 
                 <Panel
                     onRenderHeader={onRenderCustomHeader}
@@ -124,7 +133,6 @@ const AddMeeting = (props: any) => {
                                 <span className='SpfxCheckRadio'>
                                     <input className='radio' type="radio" value="Female" name="date" checked={selectDateName == 'This Month'} onClick={() => duedatechange('This Month')} /> This Month
                                 </span>
-
                             </div>
                         </div>
                     </div>
@@ -138,4 +146,4 @@ const AddMeeting = (props: any) => {
         )
     }
 
-    export default AddMeeting
+    export default AddProject
