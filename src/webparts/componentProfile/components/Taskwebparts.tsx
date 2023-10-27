@@ -2256,7 +2256,7 @@ const switchGroupbyData = () => {
                         AddStructureFeature={
                           SelectedProp?.props?.Item_x0020_Type
                         }
-                        clickFlatView={clickFlatView} switchFlatViewData={switchFlatViewData} flatView={true} switchGroupbyData={switchGroupbyData}
+                        clickFlatView={clickFlatView} switchFlatViewData={switchFlatViewData} flatView={true} switchGroupbyData={switchGroupbyData}  updatedSmartFilterFlatView={false}
                         setLoaded={setLoaded}
                         queryItems={SelectedProp?.props}
                         PortfolioFeature={SelectedProp?.props?.Item_x0020_Type}
