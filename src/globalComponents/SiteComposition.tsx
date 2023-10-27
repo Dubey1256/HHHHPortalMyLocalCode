@@ -112,7 +112,7 @@ export default function Sitecomposition(datas: any) {
     await web.lists
       .getById(datas?.sitedata?.SmartMetadataListID)
       .items
-      .select('Id', 'Title', 'Item_x0020_Cover', 'TaxType',"SortOrder", 'siteName', 'siteUrl', 'Item_x005F_x0020_Cover', 'listId', 'Configurations')
+      .select('Id', 'Title', 'Item_x0020_Cover', 'TaxType', "SortOrder", 'siteName', 'siteUrl', 'Item_x005F_x0020_Cover', 'listId', 'Configurations')
       .filter("TaxType eq 'Sites'").top(4000)
       .get().then((data: any) => {
         let ShortedData: any = getSmartMetadataItemsByTaxType(data, "Sites");
@@ -237,14 +237,14 @@ export default function Sitecomposition(datas: any) {
               </p>
             </label>
           </summary>
-          <div className="border border-top-0 p-2">
+          <div className="border border-top-0 p-1">
             <ul className="p-0 m-0">
               {ClientTimeArray?.map((cltime: any, i: any) => {
                 if (cltime.Title != "CompositionHistoryArray") {
                   return (
-                    <li className="Sitelist">
+                    <li className="Sitelist alignCenter">
                       <span>
-                        <img style={{ width: "22px" }} src={`${GetSiteIcon(cltime?.Title)}`} />
+                        <img className="workmember" src={`${GetSiteIcon(cltime?.Title)}`} />
                       </span>
                       {cltime?.ClienTimeDescription != undefined &&
                         <span>
@@ -254,7 +254,7 @@ export default function Sitecomposition(datas: any) {
                       <span className="d-inline">
                         {cltime.ClientCategory != undefined && cltime.ClientCategory.length > 0 ? cltime.ClientCategory?.map((clientcat: any, Index: any) => {
                           return (
-                            <p className={Index == cltime.ClientCategory?.length - 1 ? "mb-0" : "mb-0 border-bottom"}>{clientcat.Title}</p>
+                            <div className={Index == cltime.ClientCategory?.length - 1 ? "mb-0" : "mb-0 border-bottom"}>{clientcat.Title}</div>
                           )
                         }) : null}
                       </span>
