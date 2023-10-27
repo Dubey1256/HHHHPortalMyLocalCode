@@ -12,7 +12,7 @@ import { SPFI, spfi, SPFx as spSPFx } from "@pnp/sp";
 import 'bootstrap/dist/css/bootstrap.min.css';
 import InfoIconsToolTip from "../../../globalComponents/InfoIconsToolTip/InfoIconsToolTip";
 import GlobalCommanTable from "../../../globalComponents/GroupByReactTableComponents/GlobalCommanTable";
-import HighlightableCell from "../../../globalComponents/highlight";
+import HighlightableCell from "../../../globalComponents/GroupByReactTableComponents/highlight";
 // import GlobalCommanTable from '../../../globalComponents/GlobalCommanTable';
 const ImmediateTaskTbl = (Tile: any) => {
     const ContextData: any = React.useContext(myContextValue);
@@ -261,15 +261,12 @@ const ImmediateTaskTbl = (Tile: any) => {
                             <span className="fw-bold">
                                 Immediate Task {`(${immediateTask.length})`}
                             </span>
-                            <a className="empCol hreflink" onClick={() => sendAllWorkingTodayTasks(immediateTask)}>Share Ongoing Task</a>
-                        </div>
-                        <div className="alignCenter mb-2 justify-content-between">
-                            <a
-                                className="empCol hreflink"
-                                target="_blank"
-                                href="https://hhhhteams.sharepoint.com/sites/HHHH/SP/SitePages/CreateTask.aspx"
-                            >
+                            <a className="empCol hreflink me-3" target="_blank"
+                                href="https://hhhhteams.sharepoint.com/sites/HHHH/SP/SitePages/CreateTask.aspx">
                                 Create New Task
+                            </a>
+                            <a className="empCol hreflink" onClick={() => sendAllWorkingTodayTasks(immediateTask)}>
+                                <span title="Share Ongoing Task" className="svg__iconbox svg__icon--share empBg"></span>
                             </a>
                         </div>
                         <div className="Alltable maXh-300 scrollbar">
