@@ -25,6 +25,9 @@ import PreSetDatePikerPannel from "../../../globalComponents/SmartFilterGolobalB
 import TimeEntryPopup from "../../../globalComponents/TimeEntry/TimeEntryComponent";
 import ShowClintCatogory from "../../../globalComponents/ShowClintCatogory";
 import Sitecomposition from "../../../globalComponents/SiteComposition";
+import FileSaver from 'file-saver';
+import * as XLSX from "xlsx";
+import HighlightableCell from "../../../globalComponents/GroupByReactTableComponents/highlight";
 var AllListId: any;
 var siteConfig: any[] = []
 var AllPortfolios: any[] = [];
@@ -70,6 +73,7 @@ export interface IUserTimeEntryState {
   SharewebTimeComponent: any,
   AllMetadata: any,
   isDirectPopup: boolean,
+  TimeSheetLists: any
 }
 var user: any = ''
 var userIdByQuery: any = ''
@@ -78,6 +82,7 @@ let portfolioColor: any = '#000066';
 export default class UserTimeEntry extends React.Component<IUserTimeEntryProps, IUserTimeEntryState> {
   openPanel: any;
   closePanel: any;
+  sheetsItems: any[];
   public constructor(props: IUserTimeEntryProps, state: IUserTimeEntryState) {
     super(props);
     this.state = {
@@ -117,7 +122,8 @@ export default class UserTimeEntry extends React.Component<IUserTimeEntryProps, 
       IsTimeEntry: false,
       SharewebTimeComponent: {},
       AllMetadata: [],
-      isDirectPopup: false
+      isDirectPopup: false,
+      TimeSheetLists: []
     }
     this.OpenPresetDatePopup = this.OpenPresetDatePopup.bind(this);
     this.SelectedPortfolioItem = this.SelectedPortfolioItem.bind(this);
@@ -358,12 +364,13 @@ export default class UserTimeEntry extends React.Component<IUserTimeEntryProps, 
     let AllMetaData = [];
     let ccResults: any = [];
     let sitesResult: any = [];
+    let TimeSheetResult: any[] = []
     let results = [];
     let className: any = "custom-checkbox-tree"
     results = await web.lists
       .getById(this.props.SmartMetadataListID)
       .items
-      .select("Id", "Title", "IsVisible", "ParentID", "Color_x0020_Tag", "SmartSuggestions", "TaxType", "Description1", "Item_x005F_x0020_Cover", "listId", "siteName", "siteUrl", "SortOrder", "SmartFilters", "Selectable", "Parent/Id", "Parent/Title")
+      .select("Id", "Title", "IsVisible", "ParentID", "Color_x0020_Tag", "Configurations", "SmartSuggestions", "TaxType", "Description1", "Item_x005F_x0020_Cover", "listId", "siteName", "siteUrl", "SortOrder", "SmartFilters", "Selectable", "Parent/Id", "Parent/Title")
       .expand('Parent')
       .orderBy('SortOrder', true)
       .orderBy("Title", true)
@@ -373,10 +380,14 @@ export default class UserTimeEntry extends React.Component<IUserTimeEntryProps, 
     this.checkBoxColor(className)
     //seperate the items Client Category and Sites
     results.forEach(function (obj: any, index: any) {
-      if (obj.TaxType == 'Client Category')
+      if (obj.TaxType == 'Client Category') {
         ccResults.push(obj);
-      else if (obj.TaxType == 'Sites')
+      } else if (obj.TaxType == 'Sites') {
         sitesResult.push(obj)
+      } else if (obj.TaxType == 'timesheetListConfigrations' && obj.Configurations != undefined && obj.Configurations != '') {
+        TimeSheetResult = globalCommon.parseJSON(obj.Configurations)
+      }
+
     });
     if (sitesResult.length > 0) {
       sitesResult?.map((site: any) => {
@@ -390,12 +401,15 @@ export default class UserTimeEntry extends React.Component<IUserTimeEntryProps, 
     diff = startdt.getDate() - startdt.getDay() + (startdt.getDay() === 0 ? -6 : 1);
     startdt = new Date(startdt.setDate(diff));
     lastday = enddt.getDate() - (enddt.getDay() - 1) + 6;
-    enddt = new Date(enddt.setDate(lastday));;
+    enddt = new Date(enddt.setDate(lastday));
+    startdt.setHours(0, 0, 0, 0);
+    enddt.setHours(0, 0, 0, 0);
     this.setState({
       startdate: startdt,
       enddate: enddt,
       SitesConfig: sitesResult,
       AllMetadata: results,
+      TimeSheetLists: TimeSheetResult,
       loaded: true,
     }, () => this.loadSmartFilters(ccResults, sitesResult))
   }
@@ -935,30 +949,38 @@ export default class UserTimeEntry extends React.Component<IUserTimeEntryProps, 
     }
   }
   private async LoadAllTimeSheetaData() {
+    let AllTimeEntry: any = [];
+    let arraycount = 0;
     this.setState({
       loaded: false,
     })
-
     if (AllTimeSheetResult == undefined || AllTimeSheetResult?.length == 0) {
-      let web = new Web(this.props.Context.pageContext.web.absoluteUrl);
-      let resultsOfTimeSheet2 = await web.lists
-        .getById(this.props.TaskTimeSheet2ListID)
-        .items
-        .select('Id', 'Title', 'TaskDate', 'TaskTime', 'AdditionalTimeEntry', 'Description', 'Modified', 'TaskMigration/Id', 'TaskMigration/Title', 'TaskMigration/Created', 'TaskALAKDigital/Id', 'TaskALAKDigital/Title', 'TaskALAKDigital/Created', 'AuthorId')
-        .expand('TaskMigration', 'TaskALAKDigital')
-        .getAll();
-      console.log(resultsOfTimeSheet2);
-      let resultsofTimeSheetNew = await web.lists
-        .getById(this.props.TaskTimeSheetListNewListID)
-        .items
-        .select('Id', 'Title', 'TaskDate', 'TaskTime', 'AdditionalTimeEntry', 'Description', 'Modified', 'AuthorId', 'TaskGruene/Id', 'TaskGruene/Title', 'TaskGruene/Created', 'TaskDE/Id', 'TaskDE/Title', 'TaskDE/Created', 'TaskEducation/Id', 'TaskEducation/Title', 'TaskEducation/Created', 'TaskEI/Id', 'TaskEI/Title', 'TaskEI/Created', 'TaskEPS/Id', 'TaskEPS/Title', 'TaskEPS/Created', 'TaskGender/Id', 'TaskGender/Title', 'TaskGender/Created', 'TaskHealth/Id', 'TaskHealth/Title', 'TaskHealth/Created', 'TaskHHHH/Id', 'TaskHHHH/Title', 'TaskHHHH/Created', 'TaskKathaBeck/Id', 'TaskKathaBeck/Title', 'TaskKathaBeck/Created', 'TaskQA/Id', 'TaskQA/Title', 'TaskQA/Created', 'TaskShareweb/Id', 'TaskShareweb/Title', 'TaskShareweb/Created', 'TaskOffshoreTasks/Id', 'TaskOffshoreTasks/Title', 'TaskOffshoreTasks/Created')
-        .expand('TaskGruene', 'TaskDE', 'TaskEducation', 'TaskEI', 'TaskEPS', 'TaskGender', 'TaskHealth', 'TaskHHHH', 'TaskKathaBeck', 'TaskQA', 'TaskShareweb', 'TaskOffshoreTasks')
-        .getAll();
-      console.log(resultsofTimeSheetNew);
-      AllTimeSheetResult = (resultsOfTimeSheet2).concat(resultsofTimeSheetNew);
-      //await this.DefaultValues() 
-      this.LoadAllSiteAllTasks()
-      this.updatefilter(true);
+
+      try {
+        if (this?.state?.TimeSheetLists != undefined && this?.state?.TimeSheetLists.length > 0) {
+          this?.state?.TimeSheetLists.map(async (site: any) => {
+            let web = new Web(site?.siteUrl);
+            let TimeEntry = []
+            await web.lists.getById(site?.listId).items.select(site?.query).getAll().then((data: any) => {
+              TimeEntry = data
+              console.log(data);
+              TimeEntry.map((entry: any) => {
+                AllTimeEntry.push(entry)
+              });
+              arraycount++;
+            })
+            let currentCount = this?.state?.TimeSheetLists?.length;
+            if (arraycount === currentCount) {
+              AllTimeSheetResult = AllTimeEntry;
+              //await this.DefaultValues() 
+              this.LoadAllSiteAllTasks()
+              this.updatefilter(true);
+            }
+          })
+        }
+      } catch (e) {
+        console.log(e)
+      }
     }
     else {
       this.updatefilter(true);
@@ -988,6 +1010,18 @@ export default class UserTimeEntry extends React.Component<IUserTimeEntryProps, 
     console.log(AllTimeSheetResult);
     this.LoadTimeSheetData(FilterTimeEntry);
   }
+
+  private findUserByName = (name: any) => {
+    const user = AllTaskUser.filter(
+      (user: any) => user?.AssingedToUser?.Id === name
+    );
+    let Image: any;
+    if (user[0]?.Item_x0020_Cover != undefined) {
+      Image = user[0].Item_x0020_Cover.Url;
+    } else { Image = "https://hhhhteams.sharepoint.com/sites/HHHH/PublishingImages/Portraits/icon_user.jpg"; }
+    return user ? Image : null;
+  };
+
   private LoadTimeSheetData(AllTimeSheetResult: any) {
     let AllTimeSpentDetails: any = [];
     let getSites = this.state.SitesConfig;
@@ -1089,6 +1123,7 @@ export default class UserTimeEntry extends React.Component<IUserTimeEntryProps, 
               addtime.Effort = parseFloat(addtime.Effort);
               addtime.TimeEntryDate = addtime.TaskDate;
               addtime.NewTimeEntryDate = TaskDate;
+
               let datesplite = addtime.TaskDate.split("/");
               addtime.TimeEntrykDateNew = new Date(parseInt(datesplite[2], 10), parseInt(datesplite[1], 10) - 1, parseInt(datesplite[0], 10));
               //addtime.TimeEntrykDateNewback = datesplite[1] + '/' + datesplite[0] + '/' + datesplite[2];
@@ -1102,6 +1137,13 @@ export default class UserTimeEntry extends React.Component<IUserTimeEntryProps, 
               addtime.ImageUrl = time.ImageUrl;
               if (time.TaskCreated != undefined)
                 addtime.TaskCreatednew = this.ConvertLocalTOServerDate(time.TaskCreated, 'DD/MM/YYYY');
+              if (addtime.AuthorId) {
+                addtime.autherImage = this.findUserByName(addtime.AuthorId)
+              }
+              addtime.Author = {}
+              addtime.Author.Id = addtime.AuthorId
+              addtime.Author.autherImage = addtime.autherImage
+              addtime.Author.Title = addtime.AuthorName
               getAllTimeEntry.push(addtime);
             }
           }
@@ -1213,7 +1255,7 @@ export default class UserTimeEntry extends React.Component<IUserTimeEntryProps, 
           let results = await web.lists
             .getByTitle(itemtype.ListName)
             .items
-            .select('ParentTask/Title', 'ParentTask/Id', 'ClientTime', 'ItemRank', 'Portfolio/Id', 'Portfolio/Title', 'SiteCompositionSettings', 'TaskLevel', 'TaskLevel', 'TimeSpent', 'BasicImageInfo', 'OffshoreComments', 'OffshoreImageUrl', 'CompletedDate', 'TaskID', 'ResponsibleTeam/Id', 'ResponsibleTeam/Title', 'ClientCategory/Id', 'ClientCategory/Title', 'TaskCategories/Id', 'TaskCategories/Title', 'ParentTask/TaskID', 'TaskType/Id', 'TaskType/Title', 'TaskType/Level', 'TaskType/Prefix', 'PriorityRank', 'Reference_x0020_Item_x0020_Json', 'TeamMembers/Title', 'TeamMembers/Name', 'Component/Id', 'Component/Title', 'Component/ItemType', 'TeamMembers/Id', 'Item_x002d_Image', 'ComponentLink', 'IsTodaysTask', 'AssignedTo/Title', 'AssignedTo/Name', 'AssignedTo/Id', 'AttachmentFiles/FileName', 'FileLeafRef', 'FeedBack', 'Title', 'Id', 'PercentComplete', 'Company', 'StartDate', 'DueDate', 'Comments', 'Categories', 'Status', 'WebpartId', 'Body', 'Mileage', 'PercentComplete', 'Attachments', 'Priority', 'Created', 'Modified', 'Author/Id', 'Author/Title', 'Editor/Id', 'Editor/Title')
+            .select('ParentTask/Title', 'ParentTask/Id', 'ClientTime', 'ItemRank', 'Portfolio/Id', 'Portfolio/Title', 'SiteCompositionSettings', 'TaskLevel', 'TaskLevel', 'TimeSpent', 'BasicImageInfo', 'OffshoreComments', 'OffshoreImageUrl', 'CompletedDate', 'TaskID', 'ResponsibleTeam/Id', 'ResponsibleTeam/Title', 'ClientCategory/Id', 'ClientCategory/Title', 'ClientCategory/ParentID', 'TaskCategories/Id', 'TaskCategories/Title', 'ParentTask/TaskID', 'TaskType/Id', 'TaskType/Title', 'TaskType/Level', 'TaskType/Prefix', 'PriorityRank', 'Reference_x0020_Item_x0020_Json', 'TeamMembers/Title', 'TeamMembers/Name', 'Component/Id', 'Component/Title', 'Component/ItemType', 'TeamMembers/Id', 'Item_x002d_Image', 'ComponentLink', 'IsTodaysTask', 'AssignedTo/Title', 'AssignedTo/Name', 'AssignedTo/Id', 'AttachmentFiles/FileName', 'FileLeafRef', 'FeedBack', 'Title', 'Id', 'PercentComplete', 'Company', 'StartDate', 'DueDate', 'Comments', 'Categories', 'Status', 'WebpartId', 'Body', 'Mileage', 'PercentComplete', 'Attachments', 'Priority', 'Created', 'Modified', 'Author/Id', 'Author/Title', 'Editor/Id', 'Editor/Title')
             .filter(queryType.replace('filter=', '').trim())
             .expand('ParentTask', 'TaskType', 'AssignedTo', 'Component', 'AttachmentFiles', 'Author', 'Editor', 'TeamMembers', 'ResponsibleTeam', 'ClientCategory', 'TaskCategories', 'Portfolio')
             .orderBy('Id', false)
@@ -1316,7 +1358,7 @@ export default class UserTimeEntry extends React.Component<IUserTimeEntryProps, 
                   filterItem.fontColorTask = result?.PortfolioType?.Color;
                 }
               }
-              filterItem.ComponentTitle = getItem.Portfolio?.Title;
+              filterItem.ComponentName = getItem.Portfolio?.Title;
               filterItem.ComponentIDs = getItem.Portfolio?.Id;
               filterItem.PortfolioItem = getItem?.Portfolio
               //filterItem.Portfolio = getItem?.Portfolio?.Title
@@ -2115,13 +2157,13 @@ export default class UserTimeEntry extends React.Component<IUserTimeEntryProps, 
         size: 35,
       },
       {
-        accessorKey: 'ComponentTitle',
-        id: "ComponentTitle",
+        accessorKey: 'ComponentName',
+        id: "ComponentName",
         header: "",
         placeholder: "Component",
         cell: (info: any) => <><a data-interception="off" className="hreflink serviceColor_Active" target="_blank" style={info?.row?.original?.fontColorTask != undefined ? { color: `${info?.row?.original?.fontColorTask}` } : { color: `${info?.row?.original?.PortfolioType?.Color}` }}
           href={this.props.Context.pageContext.web.absoluteUrl + "/SitePages/Portfolio-Profile.aspx?taskId=" + info.row?.original?.ComponentIDs}>
-          {info.row?.original?.ComponentTitle}
+          {info.row?.original?.ComponentName}
         </a><span
           className="svg__iconbox svg__icon--edit alignIcon hreflink"
           onClick={(e) => this.EditComponentPopup(info.row?.original?.PortfolioItem)}>
@@ -2143,6 +2185,40 @@ export default class UserTimeEntry extends React.Component<IUserTimeEntryProps, 
         header: "",
         size: 91,
       },
+      // {
+      //   accessorFn: (info: any) => info?.NewTimeEntryDate,
+      //   cell: (info: any) => (
+      //     <div className="alignCenter">
+      //       {info?.row?.original?.NewTimeEntryDate == null ? ("") : (
+      //         <>
+      //           {/* <HighlightableCell value={info?.row?.original?.TimeEntryDate} searchTerm={column.getFilterValue()} /> */}
+      //           <span>{info?.row?.original?.TimeEntryDate}</span>
+      //           {info?.row?.original?.Author != undefined &&
+      //             <>
+      //               <a href={`${this.props.Context.pageContext.web.absoluteUrl}/SitePages/TaskDashboard.aspx?UserId=${info?.row?.original?.Author?.Id}&Name=${info?.row?.original?.Author?.Title}`}
+      //                 target="_blank" data-interception="off">
+      //                 <img title={info?.row?.original?.Author?.Title} className="workmember ms-1" src={info?.row?.original?.Author?.autherImage} />
+      //               </a>
+      //             </>
+      //           }
+      //         </>
+      //       )}
+      //     </div>
+      //   ),
+      //   filterFn: (info: any, columnName: any, filterValue: any) => {
+      //     if (info?.row?.original?.Author?.Title?.toLowerCase()?.includes(filterValue?.toLowerCase()) || info?.row?.original?.TimeEntryDate?.includes(filterValue)) {
+      //       return true
+      //     } else {
+      //       return false
+      //     }
+      //   },
+      //   id: 'NewTimeEntryDate',
+      //   resetColumnFilters: false,
+      //   resetSorting: false,
+      //   placeholder: "Time Entry",
+      //   header: "",
+      //   size: 91
+      // },
       {
         accessorKey: "TaskTime",
         id: "TaskTime",
@@ -2301,6 +2377,78 @@ export default class UserTimeEntry extends React.Component<IUserTimeEntryProps, 
     this.checkBoxColor(undefined)
     this.setState({ expandedSites })
   }
+  private getclientitemValue = function (client: any, item: any) {
+    this.state?.AllMetadata?.forEach((smart: any) => {
+      if (smart.Id == client.ParentID) {
+        if (smart.ParentID != undefined && smart.ParentID != 0) {
+          this.state?.AllMetadata?.forEach((child: any) => {
+            if (child.Id == smart.ParentID) {
+              if (!this.isExistsclient(item.Client, child.Title))
+                item.Client += child.Title + '; ';
+              item.CategoryLevel2 += smart.Title + '; ';
+              item.CategoryLevel3 += client.Title + '; ';
+            }
+          })
+        }
+        else {
+          if (!this.isExistsclient(item.Client, smart.Title))
+            item.Client += smart.Title + '; ';
+          if (!this.isExistsclient(item.CategoryLevel2, client.Title))
+            item.CategoryLevel2 += client.Title + '; ';
+        }
+      }
+    })
+  }
+  private exportToExcel = () => {
+    this.sheetsItems = [];
+    const fileType = "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet;charset=UTF-8";
+    var AllItems = this.state.AllTimeEntry
+    AllItems.forEach((item: any) => {
+      var contentItemNew: any = {};
+      contentItemNew['TaskTitle'] = item.TaskTitle;
+      contentItemNew['TimeEntryDate'] = item.TimeEntryDate;
+      contentItemNew['Effort'] = item.Effort;
+      contentItemNew['Client'] = '';
+      contentItemNew['CategoryLevel2'] = '';
+      contentItemNew['CategoryLevel3'] = '';
+      item['Client'] = '';
+      item['CategoryLevel2'] = '';
+      item['CategoryLevel3'] = '';
+
+      if (item.ClientCategory != undefined && item.ClientCategory.length > 0) {
+        item?.ClientCategory.forEach((client: any, index: any) => {
+          if (client.ParentID != undefined && client.ParentID != 0) {
+            this.getclientitemValue(client, item);
+            contentItemNew.CategoryLevel2 = item.CategoryLevel2;
+            contentItemNew.CategoryLevel3 = item.CategoryLevel3;
+          }
+          else {
+            if (client.ParentID != undefined && client.ParentID == 0)
+              item.Client += client.Title + '; ';
+            contentItemNew.Client += client.Title + '; ';
+          }
+
+        })
+      }
+      contentItemNew['Client'] = item.Client;
+      contentItemNew['CategoryLevel2'] = item.CategoryLevel2;
+      contentItemNew['CategoryLevel3'] = item.CategoryLevel3;
+      contentItemNew['Component Name'] = item.ComponentName;
+      this?.sheetsItems.push(contentItemNew)
+    })
+    if (this?.sheetsItems?.length > 0) {
+      var fileName = 'Time Entry';
+      const ws = XLSX.utils.json_to_sheet(this.sheetsItems);
+      const fileExtension = ".xlsx";
+      const fileType = "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet";
+      XLSX.utils.sheet_add_aoa(ws, [["TaskTitle", "TimeEntryDate", "Effort", "Client", "CategoryLevel2", "CategoryLevel3", "Component Name"]], { origin: "A1" });
+      const wb = { Sheets: { data: ws }, SheetNames: ["data"] };
+      const excelBuffer = XLSX.write(wb, { bookType: "xlsx", type: "array" });
+      const data = new Blob([excelBuffer], { type: fileType });
+      FileSaver.saveAs(data, fileName + fileExtension);
+    }
+
+  };
   callBackData = (elem: any, ShowingData: any) => {
     this.setState({
       ShowingAllData: ShowingData
@@ -2586,7 +2734,7 @@ export default class UserTimeEntry extends React.Component<IUserTimeEntryProps, 
           <div className='col'>
             <section className='TableContentSection'> <div className="Alltable p-0">
               <div className="wrapper">
-                <GlobalCommanTable expandIcon={true} showHeader={true} showDateTime={' | Time: ' + this.state.resultSummary.totalTime + ' | Days: (' + this.state.resultSummary.totalDays + ')'} columns={this.state.columns} data={this.state.AllTimeEntry} callBackData={this.callBackData} TaskUsers={AllTaskUser} AllListId={this?.props} portfolioColor={portfolioColor} />
+                <GlobalCommanTable expandIcon={true} showCatIcon={true} exportToExcelCategoryReport={this.exportToExcel} showHeader={true} showDateTime={' | Time: ' + this.state.resultSummary.totalTime + ' | Days: (' + this.state.resultSummary.totalDays + ')'} columns={this.state.columns} data={this.state.AllTimeEntry} callBackData={this.callBackData} TaskUsers={AllTaskUser} AllListId={this?.props} portfolioColor={portfolioColor} />
               </div>
             </div></section>
           </div>
@@ -2596,7 +2744,8 @@ export default class UserTimeEntry extends React.Component<IUserTimeEntryProps, 
             <EditTaskPopup Items={this.state.IsTask} Call={() => { this.Call(undefined) }} AllListId={AllListId} context={this?.props?.Context} ></EditTaskPopup>
           )
         }
-        {this.state?.IsMasterTask &&
+        {
+          this.state?.IsMasterTask &&
           (<Sitecomposition props={this.state?.IsMasterTask} isDirectPopup={this.state?.isDirectPopup} callback={() => { this.Call('Master Task') }} sitedata={AllListId} ></Sitecomposition>
           )
         }
