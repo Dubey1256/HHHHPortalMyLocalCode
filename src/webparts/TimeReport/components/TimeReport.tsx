@@ -5,7 +5,7 @@ import { arraysEqual, Modal, Panel, PanelType } from 'office-ui-fabric-react';
 import "bootstrap/dist/css/bootstrap.min.css";
 import FroalaCommentBox from '../../../globalComponents/FlorarComponents/FroalaCommentBoxComponent';
 import "@pnp/sp/sputilities";
-
+import * as globalCommon from "../../../globalComponents/globalCommon";
 import { IEmailProperties } from "@pnp/sp/sputilities";
 
 import { SPFI, spfi, SPFx as spSPFx } from "@pnp/sp";
@@ -26,7 +26,7 @@ let smartmetaDetails: any = [];
 var AllTasks: any = []
 var TaskItemRank: any = []
 var AllTime: any = []
-var AllTimeMigration: any = []
+var AllTrainee: any = []
 var DevloperTime: any = 0.00;
 var QATime: any = 0.00;
 var QAMembers: any = 0;
@@ -93,10 +93,10 @@ const TimeReport = (props:any) => {
     var datteee:any = new Date()
     // var MyYesterdayDate:any = Moment(datteee).add(-1, 'days').format()
     setDefaultDate(datteee)
-    
+    GetSmartmetadata();
         showProgressBar();
         GetTaskUsers();
-        GetSmartmetadata();
+      
 
 
     }, [])
@@ -112,6 +112,11 @@ const TimeReport = (props:any) => {
             .top(4999)
             .get();
         AllUsers = taskUsers;
+        AllUsers?.forEach((val:any)=>{
+            if(val?.Email?.indexOf('trainee') > -1){
+                AllTrainee.push(val)
+            }
+        })
 
 
     }
@@ -133,61 +138,75 @@ const TimeReport = (props:any) => {
                 smartmetaDetails.push(config)
             }
         })
-        LoadAllSiteTasks();
+        await LoadAllSiteTasks();
 
     }
     TaskItemRank.push([{ rankTitle: 'Select Item Rank', rank: null }, { rankTitle: '(8) Top Highlights', rank: 8 }, { rankTitle: '(7) Featured Item', rank: 7 }, { rankTitle: '(6) Key Item', rank: 6 }, { rankTitle: '(5) Relevant Item', rank: 5 }, { rankTitle: '(4) Background Item', rank: 4 }, { rankTitle: '(2) to be verified', rank: 2 }, { rankTitle: '(1) Archive', rank: 1 }, { rankTitle: '(0) No Show', rank: 0 }]);
 
-    const LoadAllSiteTasks = async () => {
+    const LoadAllSiteTasks =  () => {
         var Counter = 0;
+        if (smartmetaDetails != undefined && smartmetaDetails.length > 0) {
+        smartmetaDetails.forEach(async (config: any) => {
+                let web = new Web(props?.ContextData.siteUrl);
+                let AllTasksMatches: any = [];
+                AllTasksMatches = await web.lists
+                    .getById(config.listId)
+                    .items.select("ParentTask/Title", "ParentTask/Id", "ItemRank", "TaskLevel", "OffshoreComments", "TeamMembers/Id", "ClientCategory/Id", "ClientCategory/Title",
+                        "TaskID", "ResponsibleTeam/Id", "ResponsibleTeam/Title", "ParentTask/TaskID", "TaskType/Level", "PriorityRank", "TeamMembers/Title", "FeedBack", "Title", "Id", "ID", "DueDate", "Comments", "Categories", "Status", "Body",
+                        "PercentComplete", "ClientCategory", "Priority", "TaskType/Id", "TaskType/Title", "Portfolio/Id", "Portfolio/ItemType", "Portfolio/PortfolioStructureID", "Portfolio/Title",
+                        "TaskCategories/Id", "TaskCategories/Title", "TeamMembers/Name", "Project/Id", "Project/PortfolioStructureID", "Project/Title", "AssignedTo/Id", "AssignedTo/Title", "AssignedToId", "Author/Id", "Author/Title", "Editor/Id", "Editor/Title",
+                        "Created", "Modified", "IsTodaysTask", "workingThisWeek"
+                    )
+                    .expand(
+                        "ParentTask", "Portfolio", "TaskType", "ClientCategory", "TeamMembers", "ResponsibleTeam", "AssignedTo", "Editor", "Author",
+                        "TaskCategories", "Project",
+                    )
+                    .filter("Status ne 'Completed'")
+                    .orderBy("orderby", false)
+                    .getAll(4000);
 
-        // let web = new Web('https://hhhhteams.sharepoint.com/sites/HHHH/SP');
-       
-     
-        const requests = smartmetaDetails.map((listID: any) => web.lists
-            .getById(listID?.listId)
-            .items
-            .select("ID", "Title", "DueDate", "ClientCategory/Id", "ClientCategory/Title", "Categories", "Status", "StartDate", "CompletedDate", "TeamMembers/Title", "TeamMembers/Id", "ItemRank", "PercentComplete", "Priority", "Created", "Author/Title", "Author/EMail", "BasicImageInfo", "ComponentLink", "FeedBack", "ResponsibleTeam/Title", "ResponsibleTeam/Id", "TaskType/Title", "ClientTime", "Portfolio/Id", "Portfolio/Title","Portfolio/ItemType", "Editor/Title", "Modified", "Comments")
-            .expand("TeamMembers", "Author", "ClientCategory", "ResponsibleTeam", "TaskType", "Portfolio", "Editor").getAll()
-        );
-
-        try {
-            const responses = await Promise.all(requests);
-            responses.forEach((item: any) => {
-                item?.forEach((val: any) => {
-                    AllTasks.push(val)
-                })
-
-            })
-            AllTasks.forEach((result: any) => {
-                result.isDrafted = false;
-                result.flag = true;
-                result.TitleNew = result.Title;
-                result.siteUrl = 'https://hhhhteams.sharepoint.com/sites/HHHH/SP';
-                result.TaskTime = []
-                result.TimeSpent = 0 
-                result.Components = ''
-                result.SubComponents = ''
-                result.Features = ''
-                result.userName = ''
-                result.TeamLeaderUser = []
-                result.AllTeamName = result.AllTeamName === undefined ? '' : result.AllTeamName;
-                result.PercentComplete = (result.PercentComplete * 100).toFixed(0);
-                result.chekbox = false;
-                result.DueDate = Moment(result.DueDate).format('DD/MM/YYYY')
-
-                if (result.DueDate == 'Invalid date' || '') {
-                    result.DueDate = result.DueDate.replaceAll("Invalid date", "")
+                console.log(AllTasksMatches);
+                Counter++;
+                console.log(AllTasksMatches.length);
+                if (AllTasksMatches != undefined && AllTasksMatches.length > 0) {
+                    $.each(AllTasksMatches, function (index: any, item: any) {
+                        item["SiteIcon"] = config?.Item_x005F_x0020_Cover?.Url;
+                        item.listId = config?.listId;
+                        item.fontColorTask = "#000"
+                        item.isDrafted = false;
+                        item.flag = true;
+                        item.TaskTime = []
+                        item.TimeSpent = 0 
+                        item.Components = ''
+                        item.SubComponents = ''
+                        item.Features = ''
+                        item.userName = ''
+                        item.TeamLeaderUser = []
+                        item.AllTeamName = item.AllTeamName === undefined ? '' : item.AllTeamName;
+                        item.PercentComplete = (item.PercentComplete * 100).toFixed(0);
+                        item.chekbox = false;
+                        item.DueDate = Moment(item.DueDate).format('DD/MM/YYYY')
+        
+                        if (item?.TaskCategories?.some((category: any) => category.Title.toLowerCase() === "draft")) { item.isDrafted = true; }
+                    });
+                    AllTasks = AllTasks.concat(AllTasksMatches);
+                    if (Counter == smartmetaDetails.length) {
+                        AllTasks.forEach((result: any) => {
+                            if (result.DueDate == 'Invalid date' || '') {
+                                result.DueDate = result.DueDate.replaceAll("Invalid date", "")
+                            }
+                            result.TaskId =  globalCommon.GetTaskId(result);
+                        })
+                        selectType('Today')
+                    }
                 }
-
-
-
-
-            })
-            selectType('Today')
-        } catch (error) {
-            console.error(error);
+            });
+            
+           
         }
+     
+
+   
 
     }
 
@@ -369,8 +388,14 @@ QATime = 0.00;
  
                     if (TodayDate >= start && TodayDate <= End){
                         var stattime = Moment.tz(itemDate,'Europe/Berlin').format('DD/MM/YYYY HH:MM:SS Z').split(' ')[1].split(':');
-                        var endtime = Moment.tz(val.EndDate,'Europe/Berlin').format('DD/MM/YYYY HH:MM:SS Z').split(' ')[1].split(':');    
-                        val.totaltime = Math.abs(parseInt(endtime[0]) - parseInt(stattime[0]));            
+                        var endtime = Moment.tz(val.EndDate,'Europe/Berlin').format('DD/MM/YYYY HH:MM:SS Z').split(' ')[1].split(':'); 
+                        if(val?.fAllDayEvent == true) {
+                            val.totaltime = 8
+                        }
+                        else{
+                            val.totaltime = Math.abs(parseInt(endtime[0]) - parseInt(stattime[0]));
+                        }
+                                    
                         console.log(val)
                         leaveData.push(val)                       
                     }
@@ -503,7 +528,7 @@ QATime = 0.00;
 
                         if (task.TaskDE != undefined && task.TaskDE.Id != undefined) {
                             sheetDetails.Task = task.TaskDE.Title; // == undefined ? (task.Title == undefined ? '' : task.Title)  : task.TaskDE.Title;
-                            sheetDetails.TaskId = task.TaskDE.Id;
+                            sheetDetails.TaskId = task.TaskDE.Id
                             DESitee += '(Id eq ' + task.TaskDE.Id + ') or';
                             sheetDetails.siteType = 'DE'
                         }
@@ -515,73 +540,73 @@ QATime = 0.00;
                         }
                         if (task.TaskEPS != undefined && task.TaskEPS.Id != undefined) {
                             sheetDetails.Task = task.TaskEPS.Title; // == undefined ? (task.Title == undefined ? '' : task.Title)  : task.TaskEP.Title;
-                            sheetDetails.TaskId = task.TaskEPS.Id;
+                            sheetDetails.TaskId = task.TaskEPS.Id
                             EPSSitee += '(Id eq ' + task.TaskEPS.Id + ') or';
                             sheetDetails.siteType = 'EPS'
                         }
                         if (task.TaskEducation != undefined && task.TaskEducation.Id != undefined) {
-                            sheetDetails.Task = task.TaskEducation.Title; // == undefined ? (task.Title == undefined ? '' : task.Title)  : task.TaskEducation.Title;
-                            sheetDetails.TaskId = task.TaskEducation.Id;
+                            sheetDetails.Task = task.TaskEducation.Title; // =   sheetDetails.TaskId = task.TaskEducation.Id;
                             EducationSitee += '(Id eq ' + task.TaskEducation.Id + ') or';
+                            sheetDetails.TaskId = task.TaskEducation.Id
                             sheetDetails.siteType = 'Education'
                         }
                         if (task.TaskHHHH != undefined && task.TaskHHHH.Id != undefined) {
                             sheetDetails.Task = task.TaskHHHH.Title; // == undefined ? (task.Title == undefined ? '' : task.Title) : task.TaskHHHH.Title;
-                            sheetDetails.TaskId = task.TaskHHHH.Id;
+                            sheetDetails.TaskId = task.TaskHHHH.Id
                             HHHHSitee += '(Id eq ' + task.TaskHHHH.Id + ') or';
                             sheetDetails.siteType = 'HHHH'
                         }
                         if (task.TaskQA != undefined && task.TaskQA.Id != undefined) {
                             sheetDetails.Task = task.TaskQA.Title; // == undefined ? (task.Title == undefined ? '' : task.Title)  : task.TaskQA.Title;
-                            sheetDetails.TaskId = task.TaskQA.Id;
+                            sheetDetails.TaskId = task.TaskQA.Id
                             QASitee += '(Id eq ' + task.TaskQA.Id + ') or';
                             sheetDetails.siteType = 'QA'
                         }
                         if (task.TaskGender != undefined && task.TaskGender.Id != undefined) {
                             sheetDetails.Task = task.TaskGender.Title; // == undefined ? (task.Title == undefined ? '' : task.Title)  : task.TaskGender.Title;
-                            sheetDetails.TaskId = task.TaskGender.Id;
+                            sheetDetails.TaskId = task.TaskGender.Id
                             GenderSitee += '(Id eq ' + task.TaskGender.Id + ') or';
                             sheetDetails.siteType = 'Gender'
                         }
                         if (task.TaskShareweb != undefined && task.TaskShareweb.Id != undefined) {
                             sheetDetails.Task = task.TaskShareweb.Title; // == undefined ? (task.Title == undefined ? '' : task.Title)  : task.TaskShareweb.Title;
-                            sheetDetails.TaskId = task.TaskShareweb.Id;
+                            sheetDetails.TaskId = task.TaskShareweb.Id
                             SharewebSitee += '(Id eq ' + task.TaskShareweb.Id + ') or';
                             sheetDetails.siteType = 'Shareweb'
                         }
                         if (task.TaskGruene != undefined && task.TaskGruene.Id != undefined) {
                             sheetDetails.Task = task.TaskGruene.Title; // == undefined ? (task.Title == undefined ? '' : task.Title)  : task.TaskGruene.Title;
-                            sheetDetails.TaskId = task.TaskGruene.Id;
+                            sheetDetails.TaskId = task.TaskGruene.Id
                             GrueneSitee += '(Id eq ' + task.TaskGruene.Id + ') or';
                             sheetDetails.siteType = 'Gruene'
                         }
                         if (task.TaskOffshoreTasks != undefined && task.TaskOffshoreTasks.Id != undefined) {
                             sheetDetails.Task = task.TaskOffshoreTasks.Title; // == undefined ? (task.Title == undefined ? '' : task.Title)  : task.TaskOffshoreTasks.Title;
-                            sheetDetails.TaskId = task.TaskOffshoreTasks.Id;
+                            sheetDetails.TaskId = task.TaskOffshoreTasks.Id
                             OffshoreSitee += '(Id eq ' + task.TaskOffshoreTasks.Id + ') or';
                             sheetDetails.siteType = 'Offshore Tasks'
                         }
                         if (task.TaskHealth != undefined && task.TaskHealth.Id != undefined) {
                             sheetDetails.Task = task.TaskHealth.Title;
-                            sheetDetails.TaskId = task.TaskHealth.Id;
+                            sheetDetails.TaskId = task.TaskHealth.Id
                             HealthSitee += '(Id eq ' + task.TaskHealth.Id + ') or';
                             sheetDetails.siteType = 'Health'
                         }
                         if (task.TaskKathaBeck != undefined && task.TaskKathaBeck.Id != undefined) {
                             sheetDetails.Task = task.TaskKathaBeck.Title;
-                            sheetDetails.TaskId = task.TaskKathaBeck.Id;
+                            sheetDetails.TaskId = task.TaskKathaBeck.Id
                             KathaBeckSitee += '(Id eq ' + task.TaskKathaBeck.Id + ') or';
                             sheetDetails.siteType = 'KathaBeck'
                         }
                         if (task.TaskMigration != undefined && task.TaskMigration.Id != undefined) {
                             sheetDetails.Task = task.TaskMigration.Title;
-                            sheetDetails.TaskId = task.TaskMigration.Id;
+                            sheetDetails.TaskId = task.TaskMigration.Id
                             MigrationSitee += '(Id eq ' + task.TaskMigration.Id + ') or';
                             sheetDetails.siteType = 'Migration'
                         }
                         if (task.TaskALAKDigital != undefined && task.TaskALAKDigital.Id != undefined) {
                             sheetDetails.Task = task.TaskALAKDigital.Title;
-                            sheetDetails.TaskId = task.TaskALAKDigital.Id;
+                            sheetDetails.TaskId = task.TaskALAKDigital.Id
                             ALAKDigitalSitee += '(Id eq ' + task.TaskALAKDigital.Id + ') or';
                             sheetDetails.siteType = 'ALAKDigital'
                         }
@@ -641,12 +666,17 @@ QATime = 0.00;
                 if (item.TaskId === task.Id && item.Task === task.Title && item?.Company == 'Smalsus') {
 
 
-                    if (task?.Portfolio?.ItemType == 'Component') {
+                    if (task?.Portfolio?.ItemType == 'Component' || task?.Portfolio?.ItemType == 'Service') {
                         item.Components = task.Portfolio?.Title
                         item.siteUrl = task.siteUrl
+                        item.NewTaskId = task.TaskId
                         item.siteType = item.siteType
+                        item.SiteIcon = task?.SiteIcon
+                        item.SiteIconTitle = item?.siteType;
                         item.PercentComplete = task.PercentComplete
                         item.Status = task.Status
+                        item.TaskType = task.TaskType
+                        item.Component = task.Component
                         item.Title = task.Title
                         item.PriorityRank = task.PriorityRank
                         task?.ClientCategory?.forEach((cat:any)=>{
@@ -657,7 +687,11 @@ QATime = 0.00;
                         item.siteUrl = task.siteUrl
                         item.siteType = item.siteType
                         item.PercentComplete = task.PercentComplete
+                        item.TaskType = task.TaskType
+                        item.NewTaskId = task.TaskId
                         item.Status = task.Status
+                        item.SiteIcon = task?.SiteIcon
+                        item.SiteIconTitle = item?.siteType;
                         item.Title = task.Title
                         item.PriorityRank = task.PriorityRank
                         task?.ClientCategory?.forEach((cat:any)=>{
@@ -668,8 +702,12 @@ QATime = 0.00;
                         item.SubComponents = task.Portfolio.Title
                         item.siteUrl = task.siteUrl
                         item.siteType = item.siteType
+                        item.TaskType = task.TaskType
+                        item.NewTaskId = task.TaskId
                         item.PercentComplete = task.PercentComplete
                         item.Status = task.Status
+                        item.SiteIcon = task?.SiteIcon
+                        item.SiteIconTitle = item?.siteType;
                         item.Title = task.Title
                         item.PriorityRank = task.PriorityRank
                         task?.ClientCategory?.forEach((cat:any)=>{
@@ -681,6 +719,10 @@ QATime = 0.00;
                         item.siteUrl = task.siteUrl
                         item.siteType = item.siteType
                         item.PercentComplete = task.PercentComplete
+                        item.NewTaskId = task.TaskId
+                        item.TaskType = task.TaskType
+                        item.SiteIcon = task?.SiteIcon
+                        item.SiteIconTitle = item?.siteType;
                         item.Status = task.Status
                         item.Title = task.Title
                         item.PriorityRank = task.PriorityRank
@@ -688,7 +730,7 @@ QATime = 0.00;
                             item.ClientCategory = cat.Title;
                         })
                     }
-                   
+                    MyData.push(item)
 
                 }
 
@@ -699,8 +741,8 @@ QATime = 0.00;
         // const finalData = MyData.filter((val: any, TaskId: any, array: any) => {
         //         return array.indexOf(val) == TaskId;
         //      })
-        if (SelectedTime != undefined) {
-            SelectedTime.forEach((time: any) => {
+        if (MyData != undefined) {
+            MyData.forEach((time: any) => {
                 if (time?.Department == 'Developer' || time?.Department == 'Junior Developer') {
                     DevloperTime = DevloperTime + parseFloat(time.Effort)
                 }
@@ -716,9 +758,9 @@ QATime = 0.00;
             TotleTaskTime = QATime + DevloperTime + DesignTime 
         }
         finalData?.forEach((items:any)=>{
-            SelectedTime.push(items)
+            MyData.push(items)
         })
-        setData(SelectedTime)
+        setData(MyData)
         showProgressHide();
     }
 
@@ -764,21 +806,58 @@ QATime = 0.00;
 
     }
 
-    const column = React.useMemo<ColumnDef<any, unknown>[]>(
+    const column:any = React.useMemo<ColumnDef<any, unknown>[]>(
         () => [
             {
+<<<<<<< HEAD
                 header: '',
                 accessorKey: 'siteType',
                 placeholder: "Sites",
                 size: 75,
+=======
+                accessorKey: "",
+                placeholder: "",
+                hasCheckbox: false,
+                hasCustomExpanded: false,
+                hasExpanded: false,
+                isHeaderNotAvlable: true,
+                size: 10,
+                id: 'Id',
+            },
+            {
+                cell: ({ row, getValue }) => (
+                    <div className="alignCenter">
+                       
+                            <div className="alignCenter">
+                                <img title={row?.original?.TaskType?.Title}
+                                 src={row?.original?.SiteIcon}
+                                className="workmember">     
+                                  </img>
+                            </div>
+                       
+                        {getValue()}
+                    </div>
+                ),
+                accessorKey:'',
+                id: "SiteIcon",
+                placeholder: "Sites",
+                header: "",
+                canSort: false,
+                size: 40,
+>>>>>>> 747250054d8ee9af9233db80477b377e79dd9315
             },
             {
 
-                accessorFn: (row) => row?.TaskId,
+                accessorFn: (row) => row?.NewTaskId,
                 id: 'TaskID',
                 header: '',
                 placeholder: "TaskID",
+<<<<<<< HEAD
                 size: 50,
+=======
+                size: 180,
+               
+>>>>>>> 747250054d8ee9af9233db80477b377e79dd9315
  
             },
         
@@ -817,6 +896,10 @@ QATime = 0.00;
                 accessorFn: (row) => row?.Components,
                 placeholder: "Components",
                 size: 90,
+<<<<<<< HEAD
+=======
+
+>>>>>>> 747250054d8ee9af9233db80477b377e79dd9315
 
             },
             {
@@ -852,7 +935,11 @@ QATime = 0.00;
                 header: '',
                 accessorFn: (row) => row?.Features,
                 placeholder: "Features",
+<<<<<<< HEAD
                 size: 130,
+=======
+                size: 225,
+>>>>>>> 747250054d8ee9af9233db80477b377e79dd9315
 
             },
             {
@@ -1317,9 +1404,9 @@ var ReportDate = new Date(a1)
                             </tr>
                             <tr>
                                 <td className='border bg-light fw-bold'>Development</td>                                
-                                <td className='border'>{TotalDevelopmentMember}</td>
+                                <td className='border'>{TotalDevelopmentMember}<span  title='Trainee'>({AllTrainee.length}) </span></td>
                                 <td className='border'>{DevelopmentMembers}</td>
-                                <td className='border'>{DevloperTime.toFixed(2)}</td>
+                                <td className='border'>{DevloperTime.toFixed(2)} (0)</td>
                                 <td className='border'>{DevelopmentleaveHours}</td>
                             </tr>
                             <tr>
@@ -1344,7 +1431,7 @@ var ReportDate = new Date(a1)
             </div>
          </section>
              <section className='TableContentSection'>
-            <div className='Alltable'>
+            <div className='Alltable mb-2'>
             
              {
                 data?.length >0?

@@ -489,8 +489,13 @@ const CreateActivity = (props: any) => {
                             else if (val?.Id != undefined && val?.Titles != undefined && val?.Titles.length > 0 && val?.Titles[0] == site?.Title) {
                                 ClientCategory.push(val?.Id);
                             }
+                            else if (selectedItem?.TaskType?.Title == "Workstream") {
+                                ClientCategory.push(val?.Id);
+                            }
+                            
                         });
                     }
+                   
 
                     if (selectedItem?.Sitestagging != undefined) {
                         if (typeof selectedItem?.Sitestagging == "object") {

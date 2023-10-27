@@ -293,6 +293,7 @@ const ProjectManagementMain = (props: any) => {
 
 
   const CallBack = React.useCallback((item: any) => {
+   
     setisOpenEditPopup(false);
     setIsTaggedCompTask(false);
   }, []);
@@ -607,9 +608,8 @@ const ProjectManagementMain = (props: any) => {
     setIsPortfolio(true);
   };
   const Call = (propsItems: any, type: any) => {
-    if (type === "EditPopup") {
-      GetMasterData(false);
-    }
+    GetMasterData(false);
+    setIsComponent(false);
   };
 
 
@@ -1028,8 +1028,15 @@ const ProjectManagementMain = (props: any) => {
     setMasterdata(projectData);
     setData(displayTasks);
   };
+// callback smart note function 
+  const updateCallBack=(items:any)=>{
+    if(items=='update'){
+      loadAllSmartInformation();
+      LoadAllSiteTasks();
+    }
 
-
+  }
+  // End
   return (
     <div>
       {QueryId != "" ? (
@@ -1360,6 +1367,7 @@ const ProjectManagementMain = (props: any) => {
             setRemark={setRemark}
             editSmartInfo={editSmartInfo}
             RemarkData={remarkData}
+            callSmartInformation={(Type: any) => { updateCallBack(Type) }}
           />}
           {IsTaggedCompTask && (
             <TaggedComponentTask projectItem={Masterdata} SelectedItem={SelectedItem} createComponent={createTaskId} SelectedProp={props?.props} AllSitesTaskData={AllSitesAllTasks} context={props?.props?.Context} MasterListData={MasterListData} AllListId={AllListId} AllUser={AllUser} callBack={tagAndCreateCallBack}
