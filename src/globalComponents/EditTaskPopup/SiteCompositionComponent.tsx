@@ -1511,7 +1511,7 @@ const SiteCompositionComponent = (Props: any) => {
                             <div className="">{isPortfolioComposition == true || ProportionalStatus == false ? `${TotalPercent} %` : "100%"}</div>
                         </div>
                         <div className="bg-body col-sm-2 mx-1 p-1 alignCenter">
-                            <div className="">{TotalTime ? TotalTime.toFixed(0) : 0}</div>
+                            <div className="">{TotalTime ? TotalTime.toFixed(2) : 0}</div>
                         </div>
                         <div className="me-1">
                             <button className="btn btn-primary px-4 " onClick={UpdateSiteTaggingAndClientCategory} style={usedFor == 'Task-Profile' ? { display: 'block' } : { display: 'none' }}>

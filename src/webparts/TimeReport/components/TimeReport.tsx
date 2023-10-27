@@ -15,6 +15,7 @@ import GlobalCommanTable from '../../../globalComponents/GroupByReactTableCompon
 import {
     ColumnDef,
 } from "@tanstack/react-table";
+import ShowClintCatogory from "../../../globalComponents/ShowClintCatogory";
 //import { Button, Table, Row, Col, Pagination, PaginationLink, PaginationItem, Input } from "reactstrap";
 
 // import * as Moment from 'moment';
@@ -57,6 +58,7 @@ var developmenthalfdayleave:any = [];
 var designhalfdayleave:any = [];
 var QAfulldayleave:any = [];
 var developmentfulldayleave:any = [];
+var AllMetadata:any=[]
 var designfulldayleave:any = [];
 const TimeReport = (props:any) => {
    
@@ -128,14 +130,16 @@ const TimeReport = (props:any) => {
             .items
             .select('Id', 'Title', 'IsVisible', 'ParentID', 'SmartSuggestions', 'TaxType', 'Description1', 'Item_x005F_x0020_Cover', 'listId', 'siteName', 'siteUrl', 'SortOrder', 'SmartFilters', 'Selectable', 'Parent/Id', 'Parent/Title')
             .top(4999)
-            .filter("TaxType eq 'Sites'")
             .expand('Parent')
             .get()
 
         console.log(metadatItem);
         metadatItem?.forEach((config: any) => {
-            if (config.Title != 'Health' && config.Title != 'Gender' && config.Title != 'Foundation' && config.Title != 'Small Projects' && config.Title != 'Master Tasks' && config.Title != 'SDC Sites') {
+            if (config.Title != 'Health' && config.Title != 'Gender' && config.Title != 'Foundation' && config.Title != 'Small Projects' && config.Title != 'Master Tasks' && config.Title != 'SDC Sites' && config.TaxType == 'Sites') {
                 smartmetaDetails.push(config)
+            }
+            if (config.TaxType == 'Client Category') {
+                AllMetadata.push(config)
             }
         })
         await LoadAllSiteTasks();
@@ -414,7 +418,7 @@ QATime = 0.00;
                         users['Effort'] = val.totaltime !== undefined && val.totaltime <= 4 ? val.totaltime : 8
                         users['Task'] = 'Leave'
                         users['Comments'] = 'Leave'
-                        users['ClientCategory'] = 'Leave'
+                        users['ClientCategoryy'] = 'Leave'
                         users['siteType'] = ''
                         users['Date'] = ''
                         users['Status'] = ''
@@ -679,8 +683,9 @@ QATime = 0.00;
                         item.Component = task.Component
                         item.Title = task.Title
                         item.PriorityRank = task.PriorityRank
+                        item.ClientCategory = task?.ClientCategory
                         task?.ClientCategory?.forEach((cat:any)=>{
-                            item.ClientCategory = cat.Title;
+                          item.ClientCategoryy = cat.Title;
                         })
                     }
                     if (task?.Portfolio == undefined) {
@@ -694,8 +699,9 @@ QATime = 0.00;
                         item.SiteIconTitle = item?.siteType;
                         item.Title = task.Title
                         item.PriorityRank = task.PriorityRank
+                        item.ClientCategory = task?.ClientCategory
                         task?.ClientCategory?.forEach((cat:any)=>{
-                            item.ClientCategory = cat.Title;
+                            item.ClientCategoryy = cat.Title;
                         })
                     }
                     if (task?.Portfolio?.ItemType == 'SubComponent') {
@@ -710,8 +716,9 @@ QATime = 0.00;
                         item.SiteIconTitle = item?.siteType;
                         item.Title = task.Title
                         item.PriorityRank = task.PriorityRank
+                        item.ClientCategory = task?.ClientCategory
                         task?.ClientCategory?.forEach((cat:any)=>{
-                            item.ClientCategory = cat.Title;
+                            item.ClientCategoryy = cat.Title;
                         })
                     }
                     if (task?.Portfolio?.ItemType == 'Feature') {
@@ -726,8 +733,9 @@ QATime = 0.00;
                         item.Status = task.Status
                         item.Title = task.Title
                         item.PriorityRank = task.PriorityRank
+                        item.ClientCategory = task?.ClientCategory
                         task?.ClientCategory?.forEach((cat:any)=>{
-                            item.ClientCategory = cat.Title;
+                            item.ClientCategoryy = cat.Title;
                         })
                     }
                     MyData.push(item)
@@ -963,11 +971,17 @@ QATime = 0.00;
 
             },
             {
-                header: '',
-                accessorKey: 'ClientCategory',
-                placeholder: "ClientCategory",
+                accessorFn: (row) => row?.ClientCategory,
+                cell: ({ row }) => (
+                    <>
+                        <ShowClintCatogory clintData={row?.original} AllMetadata={AllMetadata}/>
+                    </>
+                ),
+                id: "ClientCategory",
+                placeholder: "Client Category",
+                header: "",
+                resetColumnFilters: false,
                 size: 95,
-
             },
 
         ],
@@ -1143,8 +1157,8 @@ QATime = 0.00;
             if (item.PriorityRank == undefined || item.PriorityRank == '') {
                 item.PriorityRank = '';
             }
-            if (item.ClientCategory == undefined || item.ClientCategory == '') {
-                item.ClientCategory = '';
+            if (item.ClientCategoryy == undefined || item.ClientCategoryy == '') {
+                item.ClientCategoryy = '';
             }
             if (item.PercentComplete == undefined || item.PercentComplete == '') {
                 item.PercentComplete = '';
@@ -1167,7 +1181,7 @@ QATime = 0.00;
             + '<td width="7%" style="border: 1px solid #aeabab;padding: 4px">' + item?.Status + '</td>'
             + '<td width="10%" style="border: 1px solid #aeabab;padding: 4px">' + item.userName + '</td>'
             + '<td style="border: 1px solid #aeabab;padding: 4px">' + item?.Department + '</td>'
-            + '<td style="border: 1px solid #aeabab;padding: 4px">' + item?.ClientCategory + '</td>'
+            + '<td style="border: 1px solid #aeabab;padding: 4px">' + item?.ClientCategoryy + '</td>'
             + '</tr>'
         body1.push(text);
         })
@@ -1414,7 +1428,7 @@ var ReportDate = new Date(a1)
             </div>
          </section>
              <section className='TableContentSection'>
-            <div className='Alltable mb-2'>
+            <div className='Alltable'>
             
              {
                 data?.length >0?
