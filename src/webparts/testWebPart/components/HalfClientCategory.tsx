@@ -559,7 +559,7 @@ const HalfClientCategory = (props: any) => {
 
     const editTaskCallBack = React.useCallback((item: any) => {
         setisOpenEditPopup(false);
-        CallBack(item)
+        TaskSiteComp(item)
     }, []);
     const EditPopup = React.useCallback((item: any) => {
         setisOpenEditPopup(true);
@@ -575,15 +575,19 @@ const HalfClientCategory = (props: any) => {
 
         setIsComponent(false);
     };
-    const CallBack = (item: any) => {
-        if (item == 'SiteComp') {
-            setEditSiteCompositionStatus(false);
-            setSelectedItem(null)
+    const TaskSiteComp=(saveType:any) =>{
+        if(saveType=="Save"){
+            LoadAllSiteTasks();
         }
-        if (item == 'master') {
-            setEditSiteCompositionMaster(false);
-            setSelectedItem(null)
+        setEditSiteCompositionStatus(false);
+        setSelectedItem(null)
+    }
+    const MasterSiteComp = (saveType: any) => {
+        if(saveType=="Save"){
+            LoadAllSiteTasks();
         }
+        setEditSiteCompositionMaster(false);
+        setSelectedItem(null)
     }
     ////////////////////////////////////////// Smart filter Part//////////////////////
     React.useEffect(() => {
@@ -698,7 +702,7 @@ const HalfClientCategory = (props: any) => {
                 accessorFn: (row) => row?.PercentComplete,
                 cell: ({ row, getValue }) => (
 
-                    <InlineEditingcolumns AllListId={AllListId} callBack={CallBack} columnName='PercentComplete' TaskUsers={AllTaskUser} item={row?.original} pageName={'ProjectOverView'} />
+                    <InlineEditingcolumns AllListId={AllListId} callBack={TaskSiteComp} columnName='PercentComplete' TaskUsers={AllTaskUser} item={row?.original} pageName={'ProjectOverView'} />
 
 
                 ),
@@ -1081,11 +1085,11 @@ const HalfClientCategory = (props: any) => {
             </div>
             <div className="Alltable p-2">
                 {selectedView == 'MasterTask' ? <div>
-                    <GlobalCommanTable headerOptions={headerOptions} AllListId={AllListId} columns={columnsMaster} data={AllMasterTasks} showPagination={true} callBackData={CallBack} pageName={"ProjectOverviewGrouped"} TaskUsers={AllTaskUser} showHeader={true} />
+                    <GlobalCommanTable headerOptions={headerOptions} AllListId={AllListId} columns={columnsMaster} data={AllMasterTasks} showPagination={true} callBackData={TaskSiteComp} pageName={"ProjectOverviewGrouped"} TaskUsers={AllTaskUser} showHeader={true} />
 
                 </div> : ''}
                 {selectedView == 'AllSiteTasks' ? <div>
-                    <GlobalCommanTable headerOptions={headerOptions} AllListId={AllListId} columns={columns} data={AllSiteTasks} showPagination={true} callBackData={CallBack} pageName={"ProjectOverviewGrouped"} TaskUsers={AllTaskUser} showHeader={true} />
+                    <GlobalCommanTable headerOptions={headerOptions} AllListId={AllListId} columns={columns} data={AllSiteTasks} showPagination={true} callBackData={TaskSiteComp} pageName={"ProjectOverviewGrouped"} TaskUsers={AllTaskUser} showHeader={true} />
 
 
                 </div> : ''}
@@ -1104,9 +1108,9 @@ const HalfClientCategory = (props: any) => {
                     {" "}
                 </EditInstituton>
             )}
-            {EditSiteCompositionStatus ? <EditSiteComposition EditData={selectedItem} context={props?.props?.Context} AllListId={AllListId} Call={() => { CallBack('SiteComp') }} /> : ''}
+            {EditSiteCompositionStatus ? <EditSiteComposition EditData={selectedItem} context={props?.props?.Context} AllListId={AllListId} Call={TaskSiteComp} /> : ''}
             {EditSiteCompositionMaster ?
-                <Sitecomposition props={selectedItem} isDirectPopup={EditSiteCompositionMaster} callback={() => { CallBack('master') }} sitedata={AllListId} />
+                <Sitecomposition props={selectedItem} isDirectPopup={EditSiteCompositionMaster} callback={MasterSiteComp} sitedata={AllListId} />
                 : null
             }
             {/* {pageLoaderActive ? <PageLoader /> : ''} */}
