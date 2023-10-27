@@ -79,6 +79,8 @@ const HalfClientCategory = (props: any) => {
             DocumentsListID: props?.props?.DocumentsListID,
             SmartInformationListID: props?.props?.SmartInformationListID,
             AdminConfigrationListID: props?.props?.AdminConfigrationListID,
+            TaskTypeID: props?.props?.TaskTypeID,
+            PortFolioTypeID: props?.props?.PortFolioTypeID,
             siteUrl: props?.props?.siteUrl,
             isShowTimeEntry: isShowTimeEntry,
             isShowSiteCompostion: isShowSiteCompostion

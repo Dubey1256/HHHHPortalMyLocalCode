@@ -933,23 +933,23 @@ function CreateTaskComponent(props: any) {
                         if (CategoryTitle?.indexOf('Immediate') < -1) {
                             setSendApproverMail(true);
                         }
-                        let SDCRecipientMail: any = []
-                        if (burgerMenuTaskDetails?.SDCTaskId?.length > 0) {
-                            if (data?.data != undefined) {
-                                data.data.SDCAuthor = burgerMenuTaskDetails?.SDCCreatedBy;
-                                taskUsers?.map((User: any) => {
-                                    if (User?.Title?.toLowerCase() == 'robert ungethuem' || User?.Title?.toLowerCase() == 'stefan hochhuth') {
-                                        SDCRecipientMail.push(User);
-                                    }
-                                    // if (User?.Title?.toLowerCase() == 'abhishek tiwari') {
-                                    //     SDCRecipientMail.push(User);
-                                    // }
-                                });
-                                globalCommon.sendImmediateEmailNotifications(data?.data?.Id, selectedSite?.siteUrl?.Url, selectedSite?.listId, data?.data, SDCRecipientMail, 'Client Task', taskUsers, props?.SelectedProp?.Context).then((response: any) => {
-                                    console.log(response);
-                                });
-                            }
-                        }
+                        // let SDCRecipientMail: any = []
+                        // if (burgerMenuTaskDetails?.SDCTaskId?.length > 0) {
+                        //     if (data?.data != undefined) {
+                        //         data.data.SDCAuthor = burgerMenuTaskDetails?.SDCCreatedBy;
+                        //         taskUsers?.map((User: any) => {
+                        //             if (User?.Title?.toLowerCase() == 'robert ungethuem' || User?.Title?.toLowerCase() == 'stefan hochhuth') {
+                        //                 SDCRecipientMail.push(User);
+                        //             }
+                        //             // if (User?.Title?.toLowerCase() == 'abhishek tiwari') {
+                        //             //     SDCRecipientMail.push(User);
+                        //             // }
+                        //         });
+                        //         globalCommon.sendImmediateEmailNotifications(data?.data?.Id, selectedSite?.siteUrl?.Url, selectedSite?.listId, data?.data, SDCRecipientMail, 'Client Task', taskUsers, props?.SelectedProp?.Context).then((response: any) => {
+                        //             console.log(response);
+                        //         });
+                        //     }
+                        // }
                         if (CategoryTitle?.indexOf("Design") > -1) {
                             setSendApproverMail(true);
                             globalCommon.sendImmediateEmailNotifications(data?.data?.Id, selectedSite?.siteUrl?.Url, selectedSite?.listId, data?.data, RecipientMail, 'DesignMail', taskUsers, props?.SelectedProp?.Context).then((response: any) => {
@@ -1826,7 +1826,7 @@ function CreateTaskComponent(props: any) {
                         groupedData={groupedComponentData}
                     />
                 }
-                {editTaskPopupData.isOpenEditPopup ? <EditTaskPopup context={props?.SelectedProp.Context}
+                {editTaskPopupData.isOpenEditPopup ? <EditTaskPopup context={props?.SelectedProp.Context} SDCAuthor={burgerMenuTaskDetails?.SDCCreatedBy}
                     sendApproverMail={sendApproverMail} AllListId={AllListId} Items={editTaskPopupData.passdata} Call={CallBack} /> : ''}
             </div>
         </div>
