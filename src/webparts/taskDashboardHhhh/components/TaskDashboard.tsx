@@ -198,7 +198,7 @@ const TaskDashboard = (props: any) => {
         } else if (startDateOf == 'Last Month') {
             const lastMonth = new Date(startingDate.getFullYear(), startingDate.getMonth() - 1);
             const startingDateOfLastMonth = new Date(lastMonth.getFullYear(), lastMonth.getMonth(), 1);
-            var change = (Moment(startingDateOfLastMonth).add(2, 'days').format())
+            var change = (Moment(startingDateOfLastMonth).add(15, 'days').format())
             var b = new Date(change)
             formattedDate = b;
         } else if (startDateOf == 'Last Week') {

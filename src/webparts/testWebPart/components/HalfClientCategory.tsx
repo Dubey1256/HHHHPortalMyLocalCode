@@ -266,6 +266,18 @@ const HalfClientCategory = (props: any) => {
                             items.listId = config.listId;
                             items.siteUrl = config.siteUrl.Url;
                             items.PercentComplete = (items.PercentComplete * 100).toFixed(0);
+                            if (items.PercentComplete != undefined && items.PercentComplete != '' && items.PercentComplete != null) {
+                                items.percentCompleteValue = parseInt(items?.PercentComplete);
+                            }
+                            if (items?.DueDate != null && items?.DueDate != undefined) {
+                                items.serverDueDate = new Date(items?.DueDate).setHours(0, 0, 0, 0)
+                            }
+                            if (items?.Modified != null && items?.Modified != undefined) {
+                                items.serverModifiedDate = new Date(items?.Modified).setHours(0, 0, 0, 0)
+                            }
+                            if (items?.Created != null && items?.Created != undefined) {
+                                items.serverCreatedDate = new Date(items?.Created).setHours(0, 0, 0, 0)
+                            }
                             items.DisplayDueDate =
                                 items.DueDate != null
                                     ? Moment(items.DueDate).format("DD/MM/YYYY")
@@ -428,6 +440,18 @@ const HalfClientCategory = (props: any) => {
                 if (items?.ClientCategory?.length > 0 || items?.SiteCompositionSettings != undefined || items?.Sitestagging != undefined) {
                     items.ShowTeamsIcon = false
                     items.PercentComplete = (items.PercentComplete * 100).toFixed(0);
+                    if (items.PercentComplete != undefined && items.PercentComplete != '' && items.PercentComplete != null) {
+                        items.percentCompleteValue = parseInt(items?.PercentComplete);
+                    }
+                    if (items?.DueDate != null && items?.DueDate != undefined) {
+                        items.serverDueDate = new Date(items?.DueDate).setHours(0, 0, 0, 0)
+                    }
+                    if (items?.Modified != null && items?.Modified != undefined) {
+                        items.serverModifiedDate = new Date(items?.Modified).setHours(0, 0, 0, 0)
+                    }
+                    if (items?.Created != null && items?.Created != undefined) {
+                        items.serverCreatedDate = new Date(items?.Created).setHours(0, 0, 0, 0)
+                    }
                     items.siteUrl = AllListId?.siteUrl;
                     items.listId = AllListId?.MasterTaskListID;
                     items.ClientCatTitle = [];

@@ -29,9 +29,8 @@ import RestructuringCom from '../../../globalComponents/Restructuring/Restructur
 import { SlArrowDown, SlArrowRight } from 'react-icons/sl';
 import { BsSearch } from 'react-icons/bs';
 import RestructureSmartMetaData from './RestructureSmartMetaData';
-import CompareSmartMetaData from './CompareSmartmetadata';
 import CreateMetadataItem from './CreateMetadataItem';
-
+import CompareSmartMetaData from './CompareSmartmetadata';
 
 // ReactTable Part/////
 declare module "@tanstack/table-core" {
@@ -629,6 +628,7 @@ const GlobalCommanTable = (items: any, ref: any) => {
 
     // Export To Excel////////
     const exportToExcel = () => {
+        let Sheet: any = '';
         const flattenedData: any[] = [];
         const flattenRowData = (row: any) => {
             const flattenedRow: any = {};
@@ -641,6 +641,7 @@ const GlobalCommanTable = (items: any, ref: any) => {
             if (row.getCanExpand()) {
                 row.subRows.forEach(flattenRowData);
             }
+            Sheet = row?.original?.TaxType;
         };
         table.getRowModel().rows.forEach(flattenRowData);
         const worksheet: any = XLSX.utils.aoa_to_sheet([]);
@@ -674,7 +675,7 @@ const GlobalCommanTable = (items: any, ref: any) => {
             }
         }
         const workbook = XLSX.utils.book_new();
-        XLSX.utils.book_append_sheet(workbook, worksheet, "Sheet1");
+        XLSX.utils.book_append_sheet(workbook, worksheet, Sheet);
         const excelBuffer = XLSX.write(workbook, {
             bookType: "xlsx",
             type: "array",
@@ -775,7 +776,7 @@ const GlobalCommanTable = (items: any, ref: any) => {
                             </span>
                         </span>
                     </div> :
-                        <span style={{ color: `${portfolioColor}` }} className='Header-Showing-Items'>{`Showing ${table?.getFilteredRowModel()?.rows?.length} out of ${data?.length}`}</span>}
+                        <span style={{ color: `${portfolioColor}` }} className='Header-Showing-Items'>{`Showing ${table?.getRowModel()?.rows?.length} out of ${items?.smartMetadataCount}`}</span>}
                     <DebouncedInput
                         value={globalFilter ?? ""}
                         onChange={(value) => setGlobalFilter(String(value))}

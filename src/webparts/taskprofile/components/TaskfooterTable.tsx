@@ -239,7 +239,7 @@ function TasksTable(props: any) {
       const batch = sp.createBatch();
       for (let i = 0; i < siteConfig?.length; i++) {
         const config = siteConfig[i];
-        var select = "TaskLevel,ParentTask/Title,ParentTask/Id,ClientTime,SiteCompositionSettings,TaskLevel,ItemRank,Project/Id,Project/PortfolioStructureID, Project/Title,PortfolioType/Id,PortfolioType/Title,PortfolioType/Color,TimeSpent,BasicImageInfo,CompletedDate,TaskID, ResponsibleTeam/Id,ResponsibleTeam/Title,TaskCategories/Id,TaskCategories/Title,ParentTask/TaskID,TaskType/Id,TaskType/Title,TaskType/Level, PriorityRank, TeamMembers/Title, TeamMembers/Name, Portfolio/Id,Portfolio/Title,Portfolio/PortfolioStructureID, TeamMembers/Id, Item_x002d_Image,ComponentLink,IsTodaysTask,AssignedTo/Title,AssignedTo/Name,AssignedTo/Id,  ClientCategory/Id, ClientCategory/Title, FileLeafRef, FeedBack, Title, Id, PercentComplete,StartDate, DueDate, Comments, Categories, Status, Body, Mileage,PercentComplete,ClientCategory,Priority,Created,Modified,Author/Id,Author/Title,Editor/Id,Editor/Title&$expand=ParentTask,Project,Portfolio,TaskType,AssignedTo,ClientCategory,Author,Editor,TeamMembers,PortfolioType,ResponsibleTeam,TaskCategories&$filter=" + filter + ""
+        var select = "TaskLevel,ParentTask/Title,ParentTask/Id,ClientTime,PriorityRank,SiteCompositionSettings,TaskLevel,ItemRank,Project/Id,Project/PortfolioStructureID, Project/Title,PortfolioType/Id,PortfolioType/Title,PortfolioType/Color,TimeSpent,BasicImageInfo,CompletedDate,TaskID, ResponsibleTeam/Id,ResponsibleTeam/Title,TaskCategories/Id,TaskCategories/Title,ParentTask/TaskID,TaskType/Id,TaskType/Title,TaskType/Level, PriorityRank, TeamMembers/Title, TeamMembers/Name, Portfolio/Id,Portfolio/Title,Portfolio/PortfolioStructureID, TeamMembers/Id, Item_x002d_Image,ComponentLink,IsTodaysTask,AssignedTo/Title,AssignedTo/Name,AssignedTo/Id,  ClientCategory/Id, ClientCategory/Title, FileLeafRef, FeedBack, Title, Id, PercentComplete,StartDate, DueDate, Comments, Categories, Status, Body, Mileage,PercentComplete,ClientCategory,Priority,Created,Modified,Author/Id,Author/Title,Editor/Id,Editor/Title&$expand=ParentTask,Project,Portfolio,TaskType,AssignedTo,ClientCategory,Author,Editor,TeamMembers,PortfolioType,ResponsibleTeam,TaskCategories&$filter=" + filter + ""
 
         const web = new Web(props?.AllListId?.siteUrl);
         const list = web.lists.getById(config.listId);
@@ -778,6 +778,14 @@ function TasksTable(props: any) {
         placeholder: "Team",
         header: "",
         size: 100,
+      },
+      {
+        accessorKey: "PriorityRank",
+        placeholder: "Priority",
+        header: "",
+        resetColumnFilters: false,
+        size: 42,
+        id: "PriorityRank"
       },
       {
         accessorKey: "PercentComplete",

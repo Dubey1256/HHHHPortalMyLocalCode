@@ -1800,32 +1800,6 @@ export const loadAllTimeEntry = async (timesheetListConfig: any) => {
     }
 }
 
-
-// export function deepCopy<T>(input: T | undefined): T | undefined {
-//     // Handle undefined case
-//     if (input === undefined && input==='' && input===null ) {
-//         return undefined;
-//     }
-
-//     // Handle object case
-//     if (typeof input === 'object' && input !== null) {
-//         if (Array.isArray(input)) {
-//             // Handle array case
-//             return input.map((item) => deepCopy(item)) as any;
-//         } else {
-//             // Handle object case
-//             const newObj: any = {};
-//             for (const key in input) {
-//                 if (input.hasOwnProperty(key)) {
-//                     newObj[key] = deepCopy(input[key]);
-//                 }
-//             }
-//             return newObj;
-//         }
-//     }
-//     // Handle primitive types
-//     return input;
-// }
 export const descriptionSearchData = (result: any) => {
     let descriptionSearchData = '';
     if (result?.FeedBack && result?.FeedBack != undefined) {
@@ -1862,26 +1836,5 @@ export const descriptionSearchData = (result: any) => {
             return descriptionSearchData
 
         }
-    }
-}
-
-export const portfolioSearchData = (items: any) => {
-    let descriptionSearch = '';
-    try {
-        if (items?.Deliverables != undefined || items.Short_x0020_Description_x0020_On != undefined || items.TechnicalExplanations != undefined || items.Body != undefined || items.AdminNotes != undefined || items.ValueAdded != undefined
-            || items.Idea != undefined || items.Background != undefined) {
-            descriptionSearch = `${removeHtmlAndNewline(items?.Deliverables)} ${removeHtmlAndNewline(items?.Short_x0020_Description_x0020_On)} ${removeHtmlAndNewline(items?.TechnicalExplanations)} ${removeHtmlAndNewline(items?.Body)} ${removeHtmlAndNewline(items?.AdminNotes)} ${removeHtmlAndNewline(items?.ValueAdded)} ${removeHtmlAndNewline(items?.Idea)} ${removeHtmlAndNewline(items?.Background)}`;
-        }
-        return descriptionSearch
-    } catch (error: any) {
-        console.log(error)
-        return descriptionSearch
-    }
-}
-function removeHtmlAndNewline(text: any) {
-    if (text) {
-        return text.replace(/(<([^>]+)>)/gi, "").replace(/\n/g, '');
-    } else {
-        return ''; // or any other default value you prefer
     }
 }

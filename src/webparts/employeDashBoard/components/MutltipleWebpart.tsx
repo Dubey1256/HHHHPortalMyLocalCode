@@ -245,10 +245,10 @@ const MultipleWebpart = (Tile: any) => {
               <span className="fw-bold">
                 Waiting for Approval {`(${draftCatogary.length})`}
               </span>
-              <a className="empCol" onClick={() => sendAllWorkingTodayTasks(approvalTask)}>Share Approver Task</a>
-            </div>
-            <div className="d-flex mb-2 justify-content-between">             
-              <span>Approve</span>
+              <span className="alignCenter">
+                <span className="empCol me-3 hreflink">Approve</span>
+                <span title="Share Approver Task" onClick={() => sendAllWorkingTodayTasks(approvalTask)} className="svg__iconbox svg__icon--share empBg"></span>
+              </span>
             </div>
             <div className="Alltable maXh-300 scrollbar">
               {approvalTask && (
@@ -268,7 +268,7 @@ const MultipleWebpart = (Tile: any) => {
             <div className="py-2 border-bottom">
               <a className="alignCenter">
                 <span className="svg__iconbox svg__icon--link empBg"></span>
-                <span className="ms-2 empCol hreflink ">Appraisal Portal</span>
+                <span className="ms-2 empCol hreflink">Appraisal Portal</span>
               </a>
             </div>
             <div className="py-2 border-bottom">
@@ -286,7 +286,7 @@ const MultipleWebpart = (Tile: any) => {
             <div className="py-2">
               <a className="alignCenter">
                 <span className="svg__iconbox svg__icon--link empBg"></span>
-                <span className="ms-2 empCol hreflink">Time Report</span>
+                <a className="ms-2 empCol hreflink" target="_blank" href="https://hhhhteams.sharepoint.com/sites/HHHH/SP/SitePages/TimeReport.aspx">Time Report</a>
               </a>
             </div>
           </div>

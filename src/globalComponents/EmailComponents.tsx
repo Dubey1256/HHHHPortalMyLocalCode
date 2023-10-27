@@ -117,10 +117,15 @@ const EmailComponent = (props: any) => {
       <div id='htmlMailBodyEmail' style={{ display: 'none' }}>
         {props.statusUpdateMailSendStatus != undefined && props.statusUpdateMailSendStatus == false ?
          <div style={{ marginTop: "2pt" }}>
+          {props?.items?.Approvee != undefined && props?.items?.Approvee?.Title != props?.items?.TaskCreatorData[0].Title ?
+          <>
          {props?.items.TaskCreatorData[0].Title} has created a Task but {props?.CurrentUser[0]?.Title}  has sent you for approval. Please take your time and review:
          Please note that you still have 1 tasks left to approve.<br /> You can find all pending approval tasks on your task dashboard or the approval page.
+         </>: <>{props?.items.TaskCreatorData[0].Title} has created a Task which requires your Approval. Please take your time and review:
+         Please note that you still have 1 tasks left to approve.<br /> You can find all pending approval tasks on your task dashboard or the approval page.
+         </>}
          <p>
-         <a href={`${props.items["siteUrl"]}/SitePages/Task-Profile.aspx?taskId=${props.items.Id}&Site=${props?.items?.siteType}`} target="_blank" data-interception="off">{props.items["Title"]}</a><ul></ul>
+         <a href={`${props.items["siteUrl"]}/SitePages/Task-Profile.aspx?taskId=${props.items.Id}&Site=${props?.items?.siteType}`} target="_blank" data-interception="off">{props.items["Title"]}</a>
            <a href={`${props.items["siteUrl"]}/SitePages/TaskDashboard.aspx`} target="_blank" data-interception="off">Your Task Dashboard</a>
            <a style={{ marginLeft: "20px" }} href={`${props.items["siteUrl"]}/SitePages/TaskManagement.aspx?SmartfavoriteId=101&smartfavorite=All%20Approval%20Tasks`} target="_blank" data-interception="off">Your Approval Page</a>
          </p>
@@ -151,7 +156,7 @@ const EmailComponent = (props: any) => {
                         <p><b><span style={{ fontSize: '10.0pt', color: 'black' }}>Task Id:</span></b><u></u><u></u></p>
                       </td>
                       <td colSpan={2} style={{ border: 'solid #cccccc 1.0pt', background: '#fafafa', padding: '.75pt .75pt .75pt .75pt' }}>
-                        <p><span style={{ fontSize: '10.0pt', color: 'black' }}>{props.items["Id"]}</span><u></u><u></u></p>
+                        <p><span style={{ fontSize: '10.0pt', color: 'black' }}>{props.items?.TaskID}</span><u></u><u></u></p>
                       </td>
                       <td style={{ border: 'solid #cccccc 1.0pt', background: '#f4f4f4', padding: '.75pt .75pt .75pt .75pt' }}>
                         <p><b><span style={{ fontSize: '10.0pt', color: 'black' }}>Component:</span></b><u></u><u></u></p>
