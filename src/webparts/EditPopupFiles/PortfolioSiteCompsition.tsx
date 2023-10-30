@@ -1246,7 +1246,7 @@ const SiteCompositionComponent = (Props: any) => {
         if (finalClientCategoryData?.length > 0) {
             let count: any = 0;
             finalClientCategoryData?.map((CCItems: any) => {
-                if (CCItems.siteName == siteType) {
+                if ("EPS" == siteType || "Education" == siteType || "Migration" == siteType || "EI" == siteType) {
                     count++;
                     TempArray.push(CCItems.Id);
                 }

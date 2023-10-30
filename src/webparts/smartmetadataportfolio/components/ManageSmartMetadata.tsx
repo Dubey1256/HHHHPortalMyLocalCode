@@ -73,9 +73,7 @@ export default function ManageSmartMetadata(selectedProps: any) {
     const LoadSmartMetadata = async () => {
         try {
             let web = new Web(selectedProps.AllList.SPSitesListUrl);
-
             const AllMetaDataItems = await web.lists.getById(selectedProps.AllList.SPSmartMetadataListID).items.select("*,Author/Title,Editor/Title,Parent/Id,Parent/Title&$expand=Parent,Author,Editor&$orderby=Title&$filter=isDeleted ne 1").getAll();
-
             SmartmetadataItems = SmartmetadataItems.concat(AllMetaDataItems)
             ShowingTabsData('Categories')
         } catch (error) {
@@ -380,7 +378,7 @@ export default function ManageSmartMetadata(selectedProps: any) {
                     </div>
                     <div className='col-sm-9 text-primary'>
                         <h6 className='pull-right'><b><a data-interception="off"
-                            target="_blank" href="https://hhhhteams.sharepoint.com/sites/HHHH/SP/SitePages/managesmartmetadata.aspx">Old Manage SmartMetadata</a></b>
+                            target="_blank" href="https://hhhhteams.sharepoint.com/sites/HHHH/SP/SitePages/managesmartmetadata-old.aspx">Old ManageSmartMetadata</a></b>
                         </h6>
                     </div>
                 </div>
@@ -403,10 +401,7 @@ export default function ManageSmartMetadata(selectedProps: any) {
                 <div className="tab-pane Alltable mx-height show active" id="URLTasks" role="tabpanel" aria-labelledby="URLTasks">
                     {
                         Smartmetadata &&
-
-                      
                         <GlobalCommanTable smartMetadataCount={smartMetadataCount} Tabs={Tabs} compareSeletected={compareSeletected} CloseEditSmartMetaPopup={CloseEditSmartMetaPopup} SelectedItem={SelectedItem} setName={setName} ParentItem={Smartmetadata} AllList={selectedProps.AllList} data={Smartmetadata} TabSelected={TabSelected} ref={childRef} callChildFunction={callChildFunction} callBackSmartMetaData={callBackSmartMetaData} columns={columns} showHeader={true} expandIcon={true} showPagination={true} callBackData={callBackData} />
-
                     }
                 </div>
             </div>
