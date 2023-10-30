@@ -5,5 +5,5 @@ export interface  IEventRecurrenceInfoWeeklyProps {
   startDate:Date;
   context: WebPartContext;
   siteUrl:string;
-  returnRecurrenceData: (startDate:Date,recurrenceData:string) => void;
+  returnRecurrenceData: (startDate:Date,endDat:Date,erecurrenceData:string) => void;
 }

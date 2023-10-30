@@ -993,7 +993,8 @@ if(res?.ClientCategory != undefined && res?.ClientCategory?.results?.length >0 )
     res.PortfolioType = item.PortfolioType;
     res.SiteIcon = undefined;
     res.siteUrl = RequireData?.siteUrl;
-    Calls(res);
+    res.data=res;
+    Calls(res.data, "UpdatedData");
   }
   }
 
@@ -1799,10 +1800,11 @@ if(res?.ClientCategory != undefined && res?.ClientCategory?.results?.length >0 )
          
           setModalIsOpenToFalse();
             var ItmesDelete: any = {
-                data: {
-                    Id: item.Id,
-                    ItmesDelete: true
-                }
+              data: {
+                Id: item.Id,
+                siteName: item.siteType,
+                ItmesDelete: true
+              }
             }
             Calls(ItmesDelete);
         
