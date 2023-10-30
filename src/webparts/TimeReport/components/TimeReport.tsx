@@ -809,12 +809,6 @@ QATime = 0.00;
     const column:any = React.useMemo<ColumnDef<any, unknown>[]>(
         () => [
             {
-<<<<<<< HEAD
-                header: '',
-                accessorKey: 'siteType',
-                placeholder: "Sites",
-                size: 75,
-=======
                 accessorKey: "",
                 placeholder: "",
                 hasCheckbox: false,
@@ -844,7 +838,6 @@ QATime = 0.00;
                 header: "",
                 canSort: false,
                 size: 40,
->>>>>>> 747250054d8ee9af9233db80477b377e79dd9315
             },
             {
 
@@ -852,12 +845,8 @@ QATime = 0.00;
                 id: 'TaskID',
                 header: '',
                 placeholder: "TaskID",
-<<<<<<< HEAD
-                size: 50,
-=======
                 size: 180,
                
->>>>>>> 747250054d8ee9af9233db80477b377e79dd9315
  
             },
         
@@ -896,10 +885,6 @@ QATime = 0.00;
                 accessorFn: (row) => row?.Components,
                 placeholder: "Components",
                 size: 90,
-<<<<<<< HEAD
-=======
-
->>>>>>> 747250054d8ee9af9233db80477b377e79dd9315
 
             },
             {
@@ -935,11 +920,7 @@ QATime = 0.00;
                 header: '',
                 accessorFn: (row) => row?.Features,
                 placeholder: "Features",
-<<<<<<< HEAD
-                size: 130,
-=======
                 size: 225,
->>>>>>> 747250054d8ee9af9233db80477b377e79dd9315
 
             },
             {

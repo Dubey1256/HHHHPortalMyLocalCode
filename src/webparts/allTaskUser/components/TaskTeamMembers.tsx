@@ -1,5 +1,5 @@
 import { Checkbox, ChoiceGroup, CommandBar, DefaultButton, Dialog, DialogFooter, DialogType, DocumentCard, FontIcon, FontSizes, IChoiceGroupOption, ICommandBarItemProps, Icon, IContextualMenuItem, IContextualMenuProps, IDropdownOption, Image, ImageFit, Label, Link, mergeStyles, Panel, PrimaryButton, SearchBox, Text, TextField } from "office-ui-fabric-react";
-import { buildColumns, DetailsList, DetailsListLayoutMode, Dropdown, IColumn, PanelType, Pivot, PivotItem, PivotLinkFormat, PivotLinkSize, Selection, SelectionMode, ConstrainMode, Stack, IPersonaProps,  Persona, TooltipHost, IStackTokens } from "@fluentui/react";
+import { buildColumns, DetailsList, DetailsListLayoutMode, Dropdown, IColumn, PanelType, Pivot, PivotItem, PivotLinkFormat, PivotLinkSize, Selection, SelectionMode, ConstrainMode, Stack, IPersonaProps, PersonaSize, Persona, TooltipHost, IStackTokens } from "@fluentui/react";
 import * as React from "react";
 import { Component } from "react";
 import { PeoplePicker, PrincipalType } from "@pnp/spfx-controls-react/lib/PeoplePicker";
@@ -1068,25 +1068,25 @@ export default class TaskTeamMembers extends Component<ITeamMembersProps, ITeamM
         const elemTaskMetadata = (this.state.showEditPanel ? <div>
             <p className="mb-0">Created {this.state.taskItem.createdOn} by {this.state.taskItem.createdBy}</p>
             <p className="mb-0">Last modified {this.state.taskItem.modifiedOn} by {this.state.taskItem.modifiedBy}</p>
-            <Link href="#" onClick={this.onDeleteTask}><Icon iconName="Delete" /><Text>Delete this user</Text></Link>
+            <Link style={{marginLeft:"-5px"}} href="#" onClick={this.onDeleteTask}><span title="Delete" className="alignIcon  svg__icon--trash hreflink  svg__iconbox"></span><Text>Delete this user</Text></Link>
 
 
         </div> : <div></div>);
 
-        const elemSaveButton = (<PrimaryButton styles={controlStyles} onClick={this.onSaveTask} disabled={!this.state.enableSave}>Save</PrimaryButton>);
-        const elemCancelButton = (<DefaultButton styles={controlStyles} onClick={this.onCancelTask}>Cancel</DefaultButton>);
+        const elemSaveButton = (<button className="btn btn-primary me-2 btnCol"  onClick={this.onSaveTask} disabled={!this.state.enableSave}>Save</button>);
+        const elemCancelButton = (<button className="btn btn-default me-3"   onClick={this.onCancelTask}>Cancel</button>);
         const elemOOTBFormLink = (
-            <span
-                className="openlink"
+            <a
+                className="pe-2"
                 onClick={this.openOOTBFormInNewTab}
                 style={{ cursor: 'pointer' }}
             >
                 Open out-of-the-box form
-            </span>
+            </a>
         );
         //const elemOOTBFormLink = (<Link href={`${this.props.context.pageContext.web.absoluteUrl}/Lists/Task%20Users/DispForm.aspx?ID=${this.state.selTaskId}`} target="_blank" className="openlink">Open out-of-the-box form</Link>);
         const elemActionButons = (<div>
-            <div className="text-end c-footer">
+            <div className="text-end footer-right">
                 {this.state.selTaskId && elemOOTBFormLink}
                 {elemSaveButton}
                 {elemCancelButton}
@@ -1247,7 +1247,7 @@ export default class TaskTeamMembers extends Component<ITeamMembersProps, ITeamM
                            
                         />
                     </div>
-                    <div className="ms-Grid-col ms-sm4 ms-md4 ms-lg3">
+                    <div className="ms-Grid-col ms-sm4 ms-md4 ms-lg3 mt-4">
               
                         <Checkbox   className="SpfxCheckRadio"
                             label="Active User"
@@ -1493,7 +1493,7 @@ export default class TaskTeamMembers extends Component<ITeamMembersProps, ITeamM
 
     private getUserPersona(userInfo: any) {
         const personaProps: IPersonaProps = {
-         
+            size: PersonaSize.size24,
         }
         const userImage = userInfo.ImageUrl;
         const userName = userInfo.UserName;
