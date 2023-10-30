@@ -43,7 +43,7 @@ import EditSiteComposition from "./EditSiteComposition";
 import SmartTotalTime from './SmartTimeTotal';
 import "react-datepicker/dist/react-datepicker.css";
 import BackgroundCommentComponent from "./BackgroundCommentComponent";
-import EODReportComponent from "../EOD Report Component/EODReportComponent";
+//import EODReportComponent from "../EOD Report Component/EODReportComponent";
 import { CurrentUser } from "sp-pnp-js/lib/sharepoint/siteusers";
 
 
@@ -2220,7 +2220,7 @@ const EditTaskPopup = (Items: any) => {
                                 .select("Id,Title,PriorityRank,workingThisWeek,waitForResponse,Approvee/Id,Approvee/Title,SiteCompositionSettings,BasicImageInfo,ClientTime,Attachments,AttachmentFiles,Priority,Mileage,CompletedDate,FeedBack,Status,ItemRank,IsTodaysTask,Body,ComponentLink,RelevantPortfolio/Title,RelevantPortfolio/Id,Portfolio/Title,Portfolio/Id,PercentComplete,Categories,TaskLevel,TaskLevel,ClientActivity,ClientActivityJson,StartDate,PriorityRank,DueDate,TaskType/Id,TaskType/Title,Created,Modified,Author/Id,Author/Title,Editor/Id,Editor/Title,TaskCategories/Id,TaskCategories/Title,AssignedTo/Id,AssignedTo/Title,TeamMembers/Id,TeamMembers/Title,ResponsibleTeam/Id,ResponsibleTeam/Title,ClientCategory/Id,ClientCategory/Title")
                                 .top(5000)
                                 .filter(`Id eq ${Items.Items.Id}`)
-                                .expand('AssignedTo,Author,Editor,Portfolio,TaskType,,TeamMembers,ResponsibleTeam,TaskCategories,ClientCategory,RelevantPortfolio,Approvee')
+                                .expand('AssignedTo,Author,Editor,Portfolio,TaskType,TeamMembers,ResponsibleTeam,TaskCategories,ClientCategory,RelevantPortfolio,Approvee')
                                 .get();
                         } else {
                             TaskDetailsFromCall = await web.lists
@@ -2233,7 +2233,7 @@ const EditTaskPopup = (Items: any) => {
                                 .get();
                         }
                         let currentUserId = Context.pageContext._legacyPageContext.userId
-
+                        TaskDetailsFromCall[0].TaskId = globalCommon.GetTaskId(TaskDetailsFromCall[0]);
                         if (ApproverData != undefined && ApproverData.length > 0) {
                             taskUsers.forEach((val: any) => {
                                 if (ApproverData[0]?.Id == val?.AssignedToUserId && ApproverData[0].Company == undefined) {
@@ -4972,7 +4972,7 @@ const EditTaskPopup = (Items: any) => {
                                                 }
                                             </div>
                                         </div>
-                                        <div className="Sitecomposition mb-3">
+                                        {/* <div className="Sitecomposition mb-3">
                                             <a className="sitebutton bg-fxdark alignCenter justify-content-between">
                                                 <span className="alignCenter">
                                                     <span className="svg__iconbox svg__icon--docx"></span>
@@ -4982,7 +4982,7 @@ const EditTaskPopup = (Items: any) => {
                                                     onClick={() => setOpenEODReportPopup(true)}>
                                                 </span>
                                             </a>
-                                        </div>
+                                        </div> */}
                                     </div>
                                     <div className="col-md-4">
                                         <div className="full_width ">
@@ -5208,7 +5208,7 @@ const EditTaskPopup = (Items: any) => {
                             ApprovalTaskStatus={ApprovalTaskStatus}
                             callBack={SendEmailNotificationCallBack}
                         /> : null}
-                    {OpenEODReportPopup ? <EODReportComponent TaskDetails={EditData} siteUrl={siteUrls} Context={Context} Callback={EODReportComponentCallback} /> : null}
+                    {/* {OpenEODReportPopup ? <EODReportComponent TaskDetails={EditData} siteUrl={siteUrls} Context={Context} Callback={EODReportComponentCallback} /> : null} */}
                 </div>
             </Panel>
             {/* ***************** this is Image compare panel *********** */}

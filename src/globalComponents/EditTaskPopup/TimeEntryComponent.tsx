@@ -2830,11 +2830,11 @@ function TimeEntryPopup(item: any) {
                       />
                     )}
 
-                    {TaskCate.length === 0 && (
+                    {/* {TaskCate.length === 0 && (
                       <div className="text-center pb-3">
                         No Timesheet Available
                       </div>
-                    )}
+                    )} */}
                   </div>
                 </div>
               </div>
