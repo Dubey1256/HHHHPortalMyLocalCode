@@ -10,6 +10,7 @@ import Tooltip from '../Tooltip';
 import { sp } from 'sp-pnp-js'
 import { Web } from "@pnp/sp/webs";
 import { IList } from "@pnp/sp/lists";
+
 import pptxgen from 'pptxgenjs';
 import { Button, Modal, ModalBody } from "react-bootstrap";
 import * as GlobalFunction from '../globalCommon';
@@ -18,6 +19,9 @@ import ExcelJS from 'exceljs';
 import { IFileAddResult } from "@pnp/sp/files";
 import { Panel, PanelType } from 'office-ui-fabric-react';
 import ConnectExistingDoc from './ConnectExistingDoc';
+import MsgReader from "@kenjiuno/msgreader"
+import { Items } from '@pnp/sp/items';
+import { AttachFile } from '@material-ui/icons';
 let backupExistingFiles: any = [];
 let backupCurrentFolder: any = [];
 let AllFilesAndFolderBackup: any = [];
@@ -43,6 +47,8 @@ const AncTool = (props: any) => {
     const [choosePathPopup, setChoosePathPopup] = React.useState(false);
     const [FileNamePopup, setFileNamePopup] = React.useState(false);
     const [ServicesTaskCheck, setServicesTaskCheck] = React.useState(false);
+    const [uploadEmailModal, setUploadEmailModal] = React.useState(false);
+
     // const [smartInfoModalIsOpen, setSmartInfoModalIsOpen] = React.useState(false);
     const [remark, setRemark] = React.useState(false)
     const [editSmartInfo, setEditSmartInfo] = React.useState(false)
@@ -328,12 +334,28 @@ const AncTool = (props: any) => {
         );
     };
     //End//
+    const ChoosePathCustomHeaderEmail = () => {
+        return (
+            <div className={ServicesTaskCheck ? "d-flex full-width pb-1 serviepannelgreena" : "d-flex full-width pb-1"}>
+                <div className='subheading'>
+                    {/* <img className="imgWid29 pe-1 mb-1 " src={Item?.SiteIcon} /> */}
+                    <span className="siteColor">
+                        Upload Email
+                    </span>
+                </div>
+                {/* <Tooltip ComponentId="528" /> */}
+            </div>
+        );
+    };
     // File Drag And Drop And Upload
     const handleFileDrop = (event: any) => {
         event.preventDefault();
         const file = event.dataTransfer.files[0];
+        console.log('Dropped file:', file); // Log the dropped file for debugging
         setSelectedFile(file);
-        handleUpload()
+        setTimeout(()=>{
+            handleUpload(file);
+        },2000)
     };
     const handleFileInputChange = (event: any) => {
         const file = event.target.files[0];
@@ -348,7 +370,26 @@ const AncTool = (props: any) => {
             setLinkDocitemRank(rank);
         }
     };
-    const handleUpload = async () => {
+    function base64ToArrayBuffer(base64String: string) {
+        try {
+            const binaryString = window.atob(base64String);
+            const len = binaryString.length;
+            const bytes = new Uint8Array(len);
+            for (let i = 0; i < len; ++i) {
+                bytes[i] = binaryString.charCodeAt(i);
+            }
+            return bytes.buffer;
+        } catch (error) {
+            console.error("Byte decoding error:", error);
+            return null;
+        }
+    }
+
+    const handleUpload = async (uploadselectedFile:any) => {
+        let emailDoc: any = [];
+        let attachmentFile = false;
+        let uploadedAttachmentFile: any = []
+        let attachmentFileIndex: any = null
         let isFolderAvailable = folderExist;
         let fileName = ''
         let uploadPath = selectedPath.displayPath;
@@ -363,7 +404,7 @@ const AncTool = (props: any) => {
         if (renamedFileName?.length > 0) {
             fileName = renamedFileName;
         } else {
-            fileName = selectedFile?.name;
+            fileName = selectedFile!=undefined?selectedFile.name:uploadselectedFile.name;
         }
         if (isFolderAvailable == false) {
             try {
@@ -380,62 +421,157 @@ const AncTool = (props: any) => {
             try {
                 // Read the file content
                 const reader = new FileReader();
+                let msgfile: any = {};
                 reader.onloadend = async () => {
                     const fileContent = reader.result as ArrayBuffer;
-                    setCreateNewDocType(getFileType(selectedFile?.name));
-                    // Upload the file
-                    await sp.web
-                        .getFolderByServerRelativeUrl(uploadPath)
-                        .files.add(fileName, fileContent, true).then(async (uploadedFile: any) => {
+                    setCreateNewDocType(getFileType(selectedFile!=undefined?selectedFile.name:uploadselectedFile.name));
+                    if (getFileType(selectedFile!=undefined?selectedFile.name:uploadselectedFile.name) == 'msg') {
 
-                            setTimeout(async () => {
-                                const fileItems = await getExistingUploadedDocuments()
-                                fileItems?.map(async (file: any) => {
-                                    if (file?.FileDirRef != undefined && file?.FileDirRef?.toLowerCase() == uploadPath?.toLowerCase() && file?.FileSystemObjectType == 0 && file?.FileLeafRef == selectedFile?.name) {
-                                        let resultArray: any = [];
-                                        resultArray.push(props?.item?.Id)
-                                        let siteColName = `${siteName}Id`
-                                        let fileSize = getSizeString(fileContent?.byteLength)
-                                        taggedDocument = {
-                                            ...taggedDocument,
-                                            fileName: fileName,
-                                            docType: getFileType(selectedFile?.name),
-                                            uploaded: true,
-                                            link: `${rootSiteName}${selectedPath.displayPath}/${fileName}?web=1`,
-                                            size: fileSize
-                                        }
-                                        taggedDocument.link = file?.EncodedAbsUrl;
-                                        // Update the document file here
-                                        let postData = {
-                                            [siteColName]: { "results": resultArray },
-                                            ItemRank: itemRank,
-                                            Title: fileName
-                                        }
-                                        await sp.web.lists.getByTitle('Documents').items.getById(file.Id)
-                                            .update(postData).then((updatedFile: any) => {
-                                                file[siteName].push({ Id: props?.item?.Id, Title: props?.item?.Title });
-                                                setAllReadytagged([...AllReadytagged, ...[file]])
-                                                pathGenerator();
-                                                props?.callBack()
-                                                taggedDocument.tagged = true;
-                                                setUploadedDocDetails(taggedDocument);
-                                                setRenamedFileName('')
-                                                return file;
-                                            })
-                                        console.log("File uploaded successfully.", file);
-                                    }
-                                })
-                            }, 2000);
+                        const reader = new FileReader();
+                        attachmentFile = true;
+                        const testMsg = new MsgReader(fileContent)
+                        const testMsgInfo = testMsg.getFileData()
+                        console.log(testMsgInfo);
+                        msgfile = testMsgInfo
+                        reader.readAsArrayBuffer(selectedFile!=undefined?selectedFile:uploadselectedFile);
+                        emailDoc = emailDoc.concat(selectedFile!=undefined?selectedFile:uploadselectedFile);
+                        emailDoc = emailDoc.concat(msgfile.attachments);
+                        emailDoc?.map((AttachFile: any, index: any) => {
+                            attachmentFileIndex = index
+                            fileName = AttachFile.fileName != undefined ? AttachFile?.fileName : AttachFile?.name;
+                            uploadFile(AttachFile)
 
-                        });
-                    setUploadedDocDetails(taggedDocument);
-                    setShowConfirmation(true)
+                        })
+                        // };
+
+                    } else {
+                       
+                        uploadFile(fileContent)
+                    }
+
 
                 };
+              
+                reader.readAsArrayBuffer(selectedFile!=undefined?selectedFile:uploadselectedFile);
+                
+              
+                const uploadFile = async (fileToUpload: any) => {
+                    return new Promise<void>(function (myResolve, myReject) {
+                        let fileItems: any;
+                        sp.web
+                            .getFolderByServerRelativeUrl(uploadPath)
+                            .files.add(fileName, fileToUpload, true).then(async (uploadedFile: any) => {
+                                console.log(uploadedFile);
+                                uploadedAttachmentFile.push(uploadedFile?.data);
+                                if (attachmentFile == true && attachmentFileIndex == uploadedAttachmentFile?.length - 1) {
+                                    console.log(uploadedAttachmentFile)
+                                    fileItems = await getExistingUploadedDocuments()
+                                    uploadedAttachmentFile?.map((attachfile: any) => {
+                                        fileItems?.map(async (file: any) => {
+                                            if (file?.FileDirRef != undefined && file?.FileDirRef?.toLowerCase() == uploadPath?.toLowerCase() && file?.FileSystemObjectType == 0 && file?.FileLeafRef == attachfile?.Name) {
+                                                let resultArray: any = [];
+                                                resultArray.push(props?.item?.Id)
+                                                let siteColName = `${siteName}Id`
+                                                let fileSize = getSizeString(fileToUpload?.byteLength)
+                                                taggedDocument = {
+                                                    ...taggedDocument,
+                                                    fileName: fileName,
+                                                    docType: getFileType(attachfile?.Name),
+                                                    uploaded: true,
+                                                    link: `${rootSiteName}${selectedPath.displayPath}/${fileName}?web=1`,
+                                                    size: fileSize
+                                                }
+                                                taggedDocument.link = file?.EncodedAbsUrl;
+                                                // Update the document file here
+                                                let postData = {
+                                                    [siteColName]: { "results": resultArray },
+                                                    ItemRank: itemRank,
+                                                    Title: attachfile?.Name
+                                                }
+                                                if (getFileType(attachfile?.Name) == 'msg') {
+                                                    postData = {
+                                                        ...postData,
+                                                        Body: msgfile?.body != undefined ? msgfile?.body : null,
+                                                        recipients: msgfile?.recipients?.length > 0 ? JSON.stringify(msgfile?.recipients) : null,
+                                                        senderEmail: msgfile?.senderEmail != undefined ? msgfile?.senderEmail : null,
+                                                        creationTime: msgfile?.creationTime != undefined ? msgfile?.creationTime : null
+                                                    }
+                                                }
+                                                await sp.web.lists.getByTitle('Documents').items.getById(file.Id)
+                                                    .update(postData).then((updatedFile: any) => {
+                                                        file[siteName].push({ Id: props?.item?.Id, Title: props?.item?.Title });
+                                                        setAllReadytagged([...AllReadytagged, ...[file]])
+                                                        msgfile.fileuploaded = true;
+                                                        myResolve()
+                                                        pathGenerator();
+                                                        cancelPathFolder()
+                                                        props?.callBack()
+                                                        taggedDocument.tagged = true;
+                                                        setUploadedDocDetails(taggedDocument);
+                                                        setRenamedFileName('')
+                                                        return file;
+                                                    })
 
-                reader.readAsArrayBuffer(selectedFile);
+                                                console.log("File uploaded successfully.", file);
+                                            }
+                                        })
+                                    }
+                                    )
+                                }else{
+                                    setTimeout(async () => {
+                                        if (attachmentFile == false) {
+                                            fileItems = await getExistingUploadedDocuments()
+                                            fileItems?.map(async (file: any) => {
+                                                if (file?.FileDirRef != undefined && file?.FileDirRef?.toLowerCase() == uploadPath?.toLowerCase() && file?.FileSystemObjectType == 0 && file?.FileLeafRef == fileName) {
+                                                    let resultArray: any = [];
+                                                    resultArray.push(props?.item?.Id)
+                                                    let siteColName = `${siteName}Id`
+                                                    let fileSize = getSizeString(fileToUpload?.byteLength)
+                                                    taggedDocument = {
+                                                        ...taggedDocument,
+                                                        fileName: fileName,
+                                                        docType: getFileType(selectedFile!=undefined?selectedFile.name:uploadselectedFile.name),
+                                                        uploaded: true,
+                                                        link: `${rootSiteName}${selectedPath.displayPath}/${fileName}?web=1`,
+                                                        size: fileSize
+                                                    }
+                                                    taggedDocument.link = file?.EncodedAbsUrl;
+                                                    // Update the document file here
+                                                    let postData = {
+                                                        [siteColName]: { "results": resultArray },
+                                                        ItemRank: itemRank,
+                                                        Title: fileName
+                                                    }
+                                                    await sp.web.lists.getByTitle('Documents').items.getById(file.Id)
+                                                        .update(postData).then((updatedFile: any) => {
+                                                            file[siteName].push({ Id: props?.item?.Id, Title: props?.item?.Title });
+                                                            setAllReadytagged([...AllReadytagged, ...[file]])
+                                                            msgfile.fileuploaded = true;
+                                                            myResolve()
+                                                            pathGenerator();
+                                                            props?.callBack()
+                                                            taggedDocument.tagged = true;
+                                                            setUploadedDocDetails(taggedDocument);
+                                                            setRenamedFileName('')
+                                                            return file;
+                                                        })
+    
+                                                    console.log("File uploaded successfully.", file);
+                                                }
+                                            })
+                                        }
+                                    }, 2000);
+                                }
+                              
+
+                            });
+                        setUploadedDocDetails(taggedDocument);
+                        setShowConfirmation(true)
+                    })
+                }
+
             } catch (error) {
-                console.log("File upload failed:", error);
+              console.log("File upload failed:", error);
             }
         }
         setSelectedFile(null);
@@ -620,6 +756,7 @@ const AncTool = (props: any) => {
         setChoosePathPopup(false);
         setNewSubFolderName('')
         showCreateFolderLocation(false);
+        setUploadEmailModal(false)
     }
     const selectFolderToUpload = () => {
         setSelectedPath({
@@ -903,6 +1040,9 @@ const AncTool = (props: any) => {
                     <Row>
                         <div className="comment-box hreflink mb-2 col-sm-12">
                             <a className='siteColor' onClick={() => { setModalIsOpen(true) }}> Upload Documents</a>
+                        </div>
+                        <div className="comment-box hreflink mb-2 col-sm-12">
+                            <a className='siteColor' onClick={() => { setUploadEmailModal(true) }}> Upload Email</a>
                         </div>
                         <div className="comment-box hreflink mb-2 col-sm-12">
                             <a className='siteColor' onClick={() => { setFileNamePopup(true) }}> Create New Item</a>
@@ -1217,6 +1357,45 @@ const AncTool = (props: any) => {
 
 
             </Panel>
+            <Panel
+                type={PanelType.medium}
+                isOpen={uploadEmailModal}
+                onDismiss={cancelPathFolder}
+                onRenderHeader={ChoosePathCustomHeaderEmail}
+                isBlocking={choosePathPopup}>
+
+                <Col>
+                    <div className="panel">
+                      <Col>
+                         
+                            <div className='dragDropbox my-3' onDragOver={(event) => event.preventDefault()} onDrop={handleFileDrop}>
+                                {selectedFile ? <p>Selected file: {selectedFile.name}</p> : <p>Drag and drop file here </p>}
+                            </div>
+
+                            <Col className='text-center pb-2'>OR</Col>
+                            <Row className='mb-2 px-2'>
+                                <input type="file" onChange={handleFileInputChange} className='full-width' />
+                            </Row>
+                            <Row className='mb-2 px-2'>
+                                <input type="text" onChange={(e) => { setRenamedFileName(e.target.value) }} value={renamedFileName} placeholder='Rename your document' className='full-width' />
+                            </Row>
+                            <div className='text-end'>
+                            <button onClick={handleUpload} disabled={selectedFile?.name?.length > 0 ? false : true} className="btnCol btn btn-primary">Upload</button>
+                            <Button className='btn btn-default mx-1' onClick={() =>setUploadEmailModal(false)}>
+                            Cancel
+                           </Button>
+                      
+                            </div>
+                          
+                        </Col>
+
+                    </div>
+                   
+                </Col>
+
+
+
+            </Panel>
 
 
             <Modal show={FileNamePopup} isOpen={FileNamePopup} size='mg' isBlocking={FileNamePopup} backdrop={true} >
@@ -1303,7 +1482,7 @@ const AncTool = (props: any) => {
                 AllListId={props.AllListId}
                 Context={props?.Context}
                 taskTitle={props?.item?.Title}
-                listName={props?.item?.siteType!=undefined?props?.item?.siteType:'Master Tasks'}
+                listName={props?.item?.siteType != undefined ? props?.item?.siteType : 'Master Tasks'}
                 showHide={"projectManagement"}
                 setRemark={setRemark}
                 editSmartInfo={editSmartInfo}
@@ -1314,3 +1493,7 @@ const AncTool = (props: any) => {
 }
 
 export default AncTool;
+
+function myReject(error: any) {
+    throw new Error('Function not implemented.');
+}

@@ -19,6 +19,7 @@ import EditTaskPopup from '../../../globalComponents/EditTaskPopup/EditTaskPopup
 import * as globalCommon from '../../../globalComponents/globalCommon'
 import { BiInfoCircle } from 'react-icons/bi'
 import SmartTimeTotal from './SmartTimeTotal';
+ import RelevantEmail from './ReleventEmails'
 import { IoMdArrowDropright, IoMdArrowDropdown } from 'react-icons/io';
 import { SlArrowDown, SlArrowRight } from 'react-icons/sl';
 import RelevantDocuments from './RelevantDocuments';
@@ -2479,7 +2480,7 @@ class Taskprofile extends React.Component<ITaskprofileProps, ITaskprofileState> 
                   </div>
                   <div>{this.state.Result.Id && <SmartInformation ref={this.smartInfoRef} Id={this.state.Result.Id} AllListId={AllListId} Context={this.props?.Context} taskTitle={this.state.Result?.Title} listName={this.state.Result?.listName} />}</div>
                   <div> {this.state.Result.Id != undefined && <RelevantDocuments ref={this?.relevantDocRef} AllListId={AllListId} Context={this.props?.Context} siteUrl={this.props.siteUrl} DocumentsListID={this.props?.DocumentsListID} ID={this.state?.itemID} siteName={this.state.listName} folderName={this.state.Result['Title']} ></RelevantDocuments>}</div>
-
+                  <div> {this.state.Result.Id != undefined && <RelevantEmail ref={this?.relevantDocRef} AllListId={AllListId} Context={this.props?.Context} siteUrl={this.props.siteUrl} DocumentsListID={this.props?.DocumentsListID} ID={this.state?.itemID} siteName={this.state.listName} folderName={this.state.Result['Title']} ></RelevantEmail>}</div>
                 </div>
 
               </div>
