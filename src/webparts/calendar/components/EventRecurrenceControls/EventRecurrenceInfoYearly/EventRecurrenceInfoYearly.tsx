@@ -467,7 +467,7 @@ export class EventRecurrenceInfoYearly extends React.Component<IEventRecurrenceI
     const recurrenceXML = `<recurrence><rule><firstDayOfWeek>su</firstDayOfWeek><repeat>` + recurrencePatern;
 
 
-    this.props.returnRecurrenceData(this.state.startDate, recurrenceXML);
+    this.props.returnRecurrenceData(this.state.startDate,this.state.endDate, recurrenceXML);
   }
   /**
    *
