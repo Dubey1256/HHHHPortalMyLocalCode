@@ -4,12 +4,14 @@ import * as React from "react";
 import { Calendar, momentLocalizer } from "react-big-calendar";
 // import * as moment from "moment";
 import moment from 'moment';
+// import './style.css';
 import "react-big-calendar/lib/css/react-big-calendar.css";
 import "moment-timezone";
 import { v4 as uuidv4 } from "uuid";
 import EmailComponenet from "./email";
 import { SPHttpClient } from "@microsoft/sp-http";
 import { FaPaperPlane } from "react-icons/fa";
+import "./style.css";
 // import { Component } from 'react';
 // import MyModal from "./MyModal";
 import { Web } from "sp-pnp-js";
@@ -432,6 +434,7 @@ const App = (props: any) => {
     sedType("");
     setInputValueReason("");
     setDisableTime(false);
+    allDay = "false";
   };
 
   const handleInputChangeName = (
@@ -611,17 +614,16 @@ const App = (props: any) => {
       let web = new Web(props.props.siteUrl);
 
       await web.lists
-        .getById(props.props.SmalsusLeaveCalendar)
-        .items.getById(eventids)
-        .delete()
-
-        .then((i: any) => {
-          //console.log(i);
-          void getData();
-          closem();
-          closeModal();
-          void getData();
-        });
+    .getById(props.props.SmalsusLeaveCalendar)
+    .items.getById(eventids)
+    .recycle()
+    .then((i: any) => {
+        // Item is recycled, you can handle any additional logic here
+        void getData();
+        closem();
+        closeModal();
+        void getData();
+    });
     }
   };
   const [details, setDetails]: any = React.useState([]);
@@ -712,6 +714,7 @@ const App = (props: any) => {
               setIsChecked(false);
               setSelectedTime(selectedTime);
               setSelectedTimeEnd(selectedTimeEnd);
+              allDay = "false";
             });
         }
       }
@@ -1222,6 +1225,7 @@ const App = (props: any) => {
         closem();
         setSelectedTime(startTime);
         setSelectedTimeEnd(endTime);
+        allDay = "false";
       });
   };
 
@@ -1339,6 +1343,7 @@ const App = (props: any) => {
     setDisableTime(false);
     maxD = new Date(8640000000000000);
   };
+
   const handleTimeChange = (time: any) => {
     time = time.target.value;
     startTime = time;
@@ -1351,6 +1356,7 @@ const App = (props: any) => {
     setSelectedTimeEnd(time);
     // console.log("time", time);
   };
+
   const handleCheckboxChange = (event: React.ChangeEvent<HTMLInputElement>) => {
     setIsChecked(event.target.checked);
     // console.log("check", isChecked);
@@ -1379,10 +1385,6 @@ const App = (props: any) => {
       maxD = date;
     }
   };
-
-  // const people = (people:any) => {
-  //   console.log("people")
-  // };
 
   const getUserInfo = async (userMail: string) => {
     const userEndPoint: any = `${props.props.context.pageContext.web.absoluteUrl}/_api/Web/EnsureUser`;

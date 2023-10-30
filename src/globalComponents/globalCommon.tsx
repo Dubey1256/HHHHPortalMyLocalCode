@@ -1800,4 +1800,41 @@ export const loadAllTimeEntry = async (timesheetListConfig: any) => {
     }
 }
 
+export const descriptionSearchData = (result: any) => {
+    let descriptionSearchData = '';
+    if (result?.FeedBack && result?.FeedBack != undefined) {
+        const cleanText = (text: any) => text?.replace(/(<([^>]+)>)/gi, '').replace(/\n/g, '');
 
+        try {
+            const feedbackData = JSON.parse(result.FeedBack);
+            descriptionSearchData = feedbackData[0]?.FeedBackDescriptions?.map((child: any) => {
+                const childText = cleanText(child?.Title);
+                const comments = (child?.Comments || [])?.map((comment: any) => {
+                    const commentText = cleanText(comment?.Title);
+                    const replyText = (comment?.ReplyMessages || [])?.map((val: any) => cleanText(val?.Title)).join(' ');
+                    return [commentText, replyText]?.filter(Boolean).join(' ');
+                }).join(' ');
+
+                const subtextData = (child.Subtext || [])?.map((subtext: any) => {
+                    const subtextComment = cleanText(subtext?.Title);
+                    const subtextReply = (subtext.ReplyMessages || [])?.map((val: any) => cleanText(val?.Title)).join(' ');
+                    const subtextComments = (subtext.Comments || [])?.map((subComment: any) => {
+                        const subCommentTitle = cleanText(subComment?.Title);
+                        const subCommentReplyText = (subComment.ReplyMessages || []).map((val: any) => cleanText(val?.Title)).join(' ');
+                        return [subCommentTitle, subCommentReplyText]?.filter(Boolean).join(' ');
+                    }).join(' ');
+                    return [subtextComment, subtextReply, subtextComments].filter(Boolean).join(' ');
+                }).join(' ');
+
+                return [childText, comments, subtextData].filter(Boolean).join(' ');
+            }).join(' ');
+
+            result.descriptionsSearch = descriptionSearchData;
+            return descriptionSearchData
+        } catch (error) {
+            console.error("Error:", error);
+            return descriptionSearchData
+
+        }
+    }
+}

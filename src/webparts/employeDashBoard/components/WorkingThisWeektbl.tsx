@@ -12,7 +12,7 @@ import { SPFI, spfi, SPFx as spSPFx } from "@pnp/sp";
 import 'bootstrap/dist/css/bootstrap.min.css';
 import InfoIconsToolTip from "../../../globalComponents/InfoIconsToolTip/InfoIconsToolTip";
 import GlobalCommanTable from "../../../globalComponents/GroupByReactTableComponents/GlobalCommanTable";
-import HighlightableCell from "../../../globalComponents/highlight";
+// import HighlightableCell from "../../../globalComponents/highlight";
 // import GlobalCommanTable from '../../../globalComponents/GlobalCommanTable';
 const WorkingThisWeektbl = (Tile: any) => {
     const ContextData: any = React.useContext(myContextValue);
@@ -219,12 +219,7 @@ const WorkingThisWeektbl = (Tile: any) => {
             SendEmailFinal(to, subject, sendAllTasks);
 
         }
-
-
     }
-
-
-
 
     const SendEmailFinal = async (to: any, subject: any, body: any) => {
         let sp = spfi().using(spSPFx(ContextData?.propsValue?.Context));
@@ -247,9 +242,6 @@ const WorkingThisWeektbl = (Tile: any) => {
             // setPageLoader(false);
             console.log(err.message);
         });
-
-
-
     }
 
     return (
@@ -261,14 +253,10 @@ const WorkingThisWeektbl = (Tile: any) => {
                             <span className="fw-bold">
                                 Working This Week {`(${thisWeekTask.length})`}
                             </span>
-                            <a className="empCol hreflink" onClick={() => sendAllWorkingTodayTasks(thisWeekTask)}>Share Ongoing Task</a>
-                        </div>
-                        <div className="alignCenter mb-2 justify-content-between">
-                            <a
-                                className="empCol hreflink"
+                            <a className="empCol hreflink" onClick={() => sendAllWorkingTodayTasks(thisWeekTask)}><span title="Share Ongoing Task" className="svg__iconbox svg__icon--share empBg"></span></a>
+                            <a className="empCol hreflink"
                                 target="_blank"
-                                href="https://hhhhteams.sharepoint.com/sites/HHHH/SP/SitePages/CreateTask.aspx"
-                            >
+                                href="https://hhhhteams.sharepoint.com/sites/HHHH/SP/SitePages/CreateTask.aspx">
                                 Create New Task
                             </a>
                         </div>

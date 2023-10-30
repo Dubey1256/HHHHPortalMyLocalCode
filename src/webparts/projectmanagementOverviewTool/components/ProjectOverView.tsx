@@ -352,7 +352,7 @@ export default function ProjectOverview(props: any) {
                 resetColumnFilters: false,
                 filterFn: (row: any, columnId: any, filterValue: any) => {
                     return row?.original?.PercentComplete == filterValue
-                  },
+                },
                 resetSorting: false,
                 size: 55,
             },
@@ -373,7 +373,7 @@ export default function ProjectOverview(props: any) {
                 header: "",
                 filterFn: (row: any, columnId: any, filterValue: any) => {
                     return row?.original?.PriorityRank == filterValue
-                  },
+                },
                 size: 100,
             },
             {
@@ -576,7 +576,7 @@ export default function ProjectOverview(props: any) {
                 enableMultiSort: true,
                 filterFn: (row: any, columnId: any, filterValue: any) => {
                     return row?.original?.ProjectPriority == filterValue
-                  },
+                },
                 isColumnDefultSortingDesc: true,
                 resetSorting: false,
                 header: "",
@@ -598,7 +598,7 @@ export default function ProjectOverview(props: any) {
                 size: 55,
                 filterFn: (row: any, columnId: any, filterValue: any) => {
                     return row?.original?.PercentComplete == filterValue
-                  },
+                },
             },
             {
                 accessorFn: (row) => row?.PriorityRank,
@@ -613,7 +613,7 @@ export default function ProjectOverview(props: any) {
                 resetColumnFilters: false,
                 filterFn: (row: any, columnId: any, filterValue: any) => {
                     return row?.original?.PriorityRank == filterValue
-                  },
+                },
                 isColumnDefultSortingDesc: true,
                 enableMultiSort: true,
                 header: "",
@@ -756,6 +756,8 @@ export default function ProjectOverview(props: any) {
                 cell: ({ row }) => (
                     <>
                         <span className='ms-1'>{row?.original?.TaskID}</span>
+
+
                     </>
                 ),
             },
@@ -789,7 +791,7 @@ export default function ProjectOverview(props: any) {
                 size: 55,
                 filterFn: (row: any, columnId: any, filterValue: any) => {
                     return row?.original?.PercentComplete == filterValue
-                  },
+                },
             },
             {
                 accessorFn: (row) => row?.PriorityRank,
@@ -805,7 +807,7 @@ export default function ProjectOverview(props: any) {
                 size: 100,
                 filterFn: (row: any, columnId: any, filterValue: any) => {
                     return row?.original?.PriorityRank == filterValue
-                  },
+                },
                 isColumnDefultSortingDesc: true,
                 resetSorting: false,
                 header: ""
@@ -1024,7 +1026,7 @@ export default function ProjectOverview(props: any) {
                 size: 55,
                 filterFn: (row: any, columnId: any, filterValue: any) => {
                     return row?.original?.PercentComplete == filterValue
-                  },
+                },
             },
             {
                 accessorFn: (row) => row?.PriorityRank,
@@ -1041,7 +1043,7 @@ export default function ProjectOverview(props: any) {
                 isColumnDefultSortingDesc: true,
                 filterFn: (row: any, columnId: any, filterValue: any) => {
                     return row?.original?.PriorityRank == filterValue
-                  },
+                },
                 sortDescFirst: true,
                 header: "",
                 size: 100,
@@ -1358,13 +1360,7 @@ export default function ProjectOverview(props: any) {
         setSharewebComponent(item);
         // <ComponentPortPolioPopup props={item}></ComponentPortPolioPopup>
     }
-    function removeHtmlAndNewline(text: any) {
-        if (text) {
-            return text.replace(/(<([^>]+)>)/gi, "").replace(/\n/g, '');
-        } else {
-            return ''; // or any other default value you prefer
-        }
-    }
+
     const GetMasterData = async () => {
         if (AllListId?.MasterTaskListID != undefined) {
             let web = new Web(`${AllListId?.siteUrl}`);
@@ -1403,11 +1399,7 @@ export default function ProjectOverview(props: any) {
                         })
                     })
                 }
-                if (items?.Deliverables != undefined || items.Short_x0020_Description_x0020_On != undefined || items.TechnicalExplanations != undefined || items.Body != undefined || items.AdminNotes != undefined || items.ValueAdded != undefined
-                    || items.Idea != undefined || items.Background != undefined) {
-                    items.descriptionsSearch = `${removeHtmlAndNewline(items?.Deliverables)} ${removeHtmlAndNewline(items?.Short_x0020_Description_x0020_On)} ${removeHtmlAndNewline(items?.TechnicalExplanations)} ${removeHtmlAndNewline(items?.Body)} ${removeHtmlAndNewline(items?.AdminNotes)} ${removeHtmlAndNewline(items?.ValueAdded)} ${removeHtmlAndNewline(items?.Idea)} ${removeHtmlAndNewline(items?.Background)}`;
-                }
-
+                items.descriptionsSearch = globalCommon.portfolioSearchData(items)
                 items.commentsSearch = items?.Comments != null && items?.Comments != undefined ? items.Comments.replace(/(<([^>]+)>)/gi, "").replace(/\n/g, '') : '';
                 items['TaskID'] = items?.PortfolioStructureID
                 items.DisplayDueDate = items.DueDate != null ? Moment(items.DueDate).format('DD/MM/YYYY') : ""
