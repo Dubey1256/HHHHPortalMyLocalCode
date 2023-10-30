@@ -2325,9 +2325,12 @@ const EditTaskPopup = (Items: any) => {
                                     dataEditor.data.TaskID = EditData.TaskId
                                     dataEditor.data.listId = Items.Items.listId
                                     dataEditor.data.FeedBack = JSON.stringify(dataEditor.data.FeedBack)
-                                    Items.Call(dataEditor)
+                                    Items.Call(dataEditor, "UpdatedData");
                                 }
-                                Items.Call(DataJSONUpdate, "UpdatedData");
+                                else{
+
+                                    Items.Call(DataJSONUpdate, "UpdatedData");
+                                }
                             }
                             else {
                                 Items.Call("Save");
