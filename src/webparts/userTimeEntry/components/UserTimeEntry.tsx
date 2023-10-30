@@ -2355,17 +2355,18 @@ export default class UserTimeEntry extends React.Component<IUserTimeEntryProps, 
     if (preSetStartDate != undefined) {
       this.setState({
         PresetStartDate: preSetStartDate,
+        selectedRadio: 'Presettime',
+        startdate: preSetStartDate,
       })
     }
     if (preSetEndDate != undefined) {
       this.setState({
         PresetEndDate: preSetEndDate,
+        selectedRadio: 'Presettime',
+        enddate: preSetEndDate,
       })
     }
     this.setState({
-      selectedRadio: 'Presettime',
-      startdate: preSetStartDate,
-      enddate: preSetEndDate,
       IsPresetPopup: false,
     })
   };
