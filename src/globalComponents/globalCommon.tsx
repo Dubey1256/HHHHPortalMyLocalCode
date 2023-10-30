@@ -1838,3 +1838,24 @@ export const descriptionSearchData = (result: any) => {
         }
     }
 }
+
+export const portfolioSearchData = (items: any) => {
+    let descriptionSearch = '';
+    try {
+        if (items?.Deliverables != undefined || items.Short_x0020_Description_x0020_On != undefined || items.TechnicalExplanations != undefined || items.Body != undefined || items.AdminNotes != undefined || items.ValueAdded != undefined
+            || items.Idea != undefined || items.Background != undefined) {
+            descriptionSearch = `${removeHtmlAndNewline(items?.Deliverables)} ${removeHtmlAndNewline(items?.Short_x0020_Description_x0020_On)} ${removeHtmlAndNewline(items?.TechnicalExplanations)} ${removeHtmlAndNewline(items?.Body)} ${removeHtmlAndNewline(items?.AdminNotes)} ${removeHtmlAndNewline(items?.ValueAdded)} ${removeHtmlAndNewline(items?.Idea)} ${removeHtmlAndNewline(items?.Background)}`;
+        }
+        return descriptionSearch
+    } catch (error: any) {
+        console.log(error)
+        return descriptionSearch
+    }
+}
+function removeHtmlAndNewline(text: any) {
+    if (text) {
+        return text.replace(/(<([^>]+)>)/gi, "").replace(/\n/g, '');
+    } else {
+        return ''; // or any other default value you prefer
+    }
+}
