@@ -154,9 +154,9 @@ const EditSiteComposition = (Props: any) => {
         callBack("Close");
     }
 
-    const closePopupCallBack = React.useCallback(() => {
+    const closePopupCallBack = React.useCallback((Type:any) => {
         setEditSiteCompositionStatus(false);
-        callBack("Close");
+        callBack("Save");
     }, [])
 
     return (
@@ -177,13 +177,13 @@ const EditSiteComposition = (Props: any) => {
                                 siteUrls={siteUrls}
                                 SiteTypes={SiteTypes}
                                 SelectedItemDetails={EditData}
-                                // ClientTime={EditData.ClientTime != false ? EditData.ClientTime : []}
-                                // SiteCompositionSettings={EditData.SiteCompositionSettings}
+                                ClientTime={EditData.ClientTime != false ? EditData.ClientTime : []}
+                                SiteCompositionSettings={EditData.SiteCompositionSettings}
                                 SmartTotalTimeData={SmartTotalTimeData}
-                                // currentListName={EditData.siteType}
+                                currentListName={EditData.siteType}
                                 callBack={SiteCompositionCallBack}
                                 isServiceTask={ServicesTaskCheck}
-                                // SelectedClientCategory={EditData.ClientCategory}
+                                SelectedClientCategory={EditData.ClientCategory}
                                 // isPortfolioConncted={ComponentTaskCheck || ServicesTaskCheck ? true : false}
                                 // SitesTaggingData={EditData}
                                 usedFor={"Task-Profile"}
