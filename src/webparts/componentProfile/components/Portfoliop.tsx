@@ -1504,7 +1504,7 @@ const  contextCall = (data: any, path: any, component: any) => {
                       {/* Question description */}
                       {AllQuestion?.length != 0 && (
                         <details open>
-                          <summary className="alignCenter">``
+                          <summary className="alignCenter">
                             <label className="toggler full_width">
                           Question Description
                             </label>

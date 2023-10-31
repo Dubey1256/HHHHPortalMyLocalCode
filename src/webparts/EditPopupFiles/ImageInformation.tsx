@@ -10,7 +10,7 @@ import ShowImagesOOTB from './showImagesootb'
 let imageOTT = false;
 
 let Imageshow: number;
-let imagesData: any[];
+
 
 let count = 20;
 const ImagetabFunction = (props: any) => {
@@ -93,7 +93,8 @@ const ImagetabFunction = (props: any) => {
                 .then(async (dataimage: any) => {
                     try {
                         if (data[i] == "Logos") {
-                            ChooseExistinglogoarray = dataimage;
+                         ChooseExistinglogoarray = dataimage;
+                            setLoadedImages(ChooseExistinglogoarray)
                             // let temp: any[] = []
                             // if (ChooseExistinglogoarray != undefined && ChooseExistinglogoarray?.length > 0) {
                             //     for (let i = 0; i < 20; i++) {
@@ -148,6 +149,43 @@ const ImagetabFunction = (props: any) => {
     const changesTabFunction = (selecttab: any) => {
 
         setSelectfolder(selecttab);
+        if(selecttab=="Images1"){
+            let imagesData:any[]=[];
+            let myimagedata: any[] = [];
+            imagesData=chooseExistingFile?.ChooseExistingImages1
+       for (let i = 0; i <11; i++) {
+           myimagedata?.push(imagesData[i]);
+       }
+       setLoadedImages(myimagedata);
+ 
+        }
+
+        if(selecttab=="Covers"){
+            let imagesData:any[]=[];
+            let myimagedata: any[] = [];
+            imagesData=chooseExistingFile?.ChooseExistingCover
+       for (let i = 0; i <10; i++) {
+           myimagedata?.push(imagesData[i]);
+       }
+       setLoadedImages(myimagedata);
+ 
+        }
+        if(selecttab=="Logos"){
+            let imagesData:any[]=[];
+            let myimagedata: any[] = [];
+            imagesData=chooseExistingFile?.ChooseExistinglogo
+            if(imagesData.length>10){
+                for (let i = 0; i <11; i++) {
+                    myimagedata?.push(imagesData[i]);
+                }
+                setLoadedImages(myimagedata);
+          
+                 }
+                 else{
+                    setLoadedImages(imagesData); 
+                 }
+            }
+      
     }
     // =============image upload input box ===================
     const UploadImageValue = (e: any, selectTab: any) => {
@@ -322,6 +360,7 @@ const ImagetabFunction = (props: any) => {
         // Load the remaining images
         count = count + 20;
         if (selectfolder == "Logos") {
+           let  imagesData:any=[]
             imagesData = chooseExistingFile?.ChooseExistinglogo;
             if (count != 0 && imagesData?.length > 0) {
                 let myimagedata: any[] = [];
@@ -331,7 +370,7 @@ const ImagetabFunction = (props: any) => {
                 setLoadedImages(myimagedata)
             }
         } else if (selectfolder == "Covers") {
-
+            let  imagesData:any=[]
             imagesData = chooseExistingFile?.ChooseExistingCover;
             if (count != 0 && imagesData?.length > 0) {
                 let myimagedata: any[] = [];
@@ -341,6 +380,7 @@ const ImagetabFunction = (props: any) => {
                 setLoadedImages(myimagedata)
             }
         } else if (selectfolder == "Images1") {
+            let  imagesData:any=[]
             imagesData = chooseExistingFile?.ChooseExistingImages1;
             if (count != 0 && imagesData?.length > 0) {
                 let myimagedata: any[] = [];

@@ -5,6 +5,7 @@ import EditComponentProtfolio from '../../webparts/EditPopupFiles/EditComponent'
 import Tooltip from "../Tooltip";
 import { Web } from "sp-pnp-js";
 import * as Moment from 'moment';
+import SmartTotalTime from "./SmartTimeTotal";
 
 var AutoCompleteItemsArray: any = [];
 var SelectedClientCategoryBackupArray: any = [];
@@ -21,7 +22,7 @@ const SiteCompositionComponent = (Props: any) => {
     const isPortfolioConncted = Props.isPortfolioConncted;
     const AllListIdData: any = Props.AllListId
     const siteUrls = Props.siteUrls;
-    const TotalTime = Props.SmartTotalTimeData;
+    const [TaskTotalTime, setTaskTotalTime] = useState(Props.SmartTotalTimeData);
     const callBack = Props.callBack;
     const ListId = SelectedTaskDetails?.listId;
     const currentListName = SelectedTaskDetails?.siteType;
@@ -209,7 +210,6 @@ const SiteCompositionComponent = (Props: any) => {
         }
     }, [SelectedClientCategoryFromProps])
 
-
     const RefreshGlobalVariables = () => {
         AutoCompleteItemsArray = [];
         SelectedClientCategoryBackupArray = [];
@@ -219,6 +219,11 @@ const SiteCompositionComponent = (Props: any) => {
         GloablChangeCountCC = 0;
         GloablChangeCountSC = 0;
     }
+
+    const SmartTotalTimeCallBack = React.useCallback((SmartTotalTime: any) => {
+        setTaskTotalTime(SmartTotalTime);
+    }, [])
+
 
     const selectSiteCompositionFunction = (e: any, Index: any) => {
         let TempArray: any = [];
@@ -984,7 +989,7 @@ const SiteCompositionComponent = (Props: any) => {
                     alert("save successfully !!!");
                     ClientTimeData = [];
                     ClientTimeDataBackup = [];
-                    closePopupCallBack();
+                    closePopupCallBack("Save");
                     RefreshGlobalVariables();
                 })
             } catch (error) {
@@ -1225,7 +1230,7 @@ const SiteCompositionComponent = (Props: any) => {
                                                 <div className="alignCenter">{siteData.BtnStatus ? "%" : ''}</div>
                                             </td>
                                             <td style={{ width: "12%" }}>
-                                                <div className="alignCenter">{ProportionalStatus ? <span>{siteData.BtnStatus && TotalTime ? (TotalTime / selectedSiteCount).toFixed(2) + " h" : siteData.BtnStatus ? "0 h" : null}</span> : <span>{siteData.BtnStatus && TotalTime ? (siteData.ClienTimeDescription ? (siteData.ClienTimeDescription * TotalTime / 100).toFixed(2) + " h" : "0 h") : siteData.BtnStatus ? "0 h" : null}</span>}</div>
+                                                <div className="alignCenter">{ProportionalStatus ? <span>{siteData.BtnStatus && TaskTotalTime ? (TaskTotalTime / selectedSiteCount).toFixed(2) + " h" : siteData.BtnStatus ? "0 h" : null}</span> : <span>{siteData.BtnStatus && TaskTotalTime ? (siteData.ClienTimeDescription ? (siteData.ClienTimeDescription * TaskTotalTime / 100).toFixed(2) + " h" : "0 h") : siteData.BtnStatus ? "0 h" : null}</span>}</div>
                                             </td>
                                             <td className="m-0 p-1 align-middle" style={{ width: "36%" }}>
                                                 {siteData.Title == "EI" ?
@@ -1511,7 +1516,7 @@ const SiteCompositionComponent = (Props: any) => {
                             <div className="">{isPortfolioComposition == true || ProportionalStatus == false ? `${TotalPercent} %` : "100%"}</div>
                         </div>
                         <div className="bg-body col-sm-2 mx-1 p-1 alignCenter">
-                            <div className="">{TotalTime ? TotalTime.toFixed(0) : 0}</div>
+                            <div className="">{TaskTotalTime ? TaskTotalTime.toFixed(0) : 0}</div>
                         </div>
                         <div className="me-1">
                             <button className="btn btn-primary px-4 " onClick={UpdateSiteTaggingAndClientCategory} style={usedFor == 'Task-Profile' ? { display: 'block' } : { display: 'none' }}>
@@ -1676,6 +1681,10 @@ const SiteCompositionComponent = (Props: any) => {
                     </div>
                 </Panel>
             </div >
+
+            <div className="" style={{ display: "None" }}>
+                <SmartTotalTime props={SelectedTaskDetails} callBack={SmartTotalTimeCallBack} />
+            </div>
             {EditComponentPanelStaus ?
                 <EditComponentProtfolio item={selectedComponentData} SelectD={AllListIdData} usedFor="Task-Popup" Calls={editComponentCallback} />
                 : null

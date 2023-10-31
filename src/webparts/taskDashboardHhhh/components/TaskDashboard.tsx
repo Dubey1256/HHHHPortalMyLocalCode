@@ -198,7 +198,7 @@ const TaskDashboard = (props: any) => {
         } else if (startDateOf == 'Last Month') {
             const lastMonth = new Date(startingDate.getFullYear(), startingDate.getMonth() - 1);
             const startingDateOfLastMonth = new Date(lastMonth.getFullYear(), lastMonth.getMonth(), 1);
-            var change = (Moment(startingDateOfLastMonth).add(2, 'days').format())
+            var change = (Moment(startingDateOfLastMonth).add(15, 'days').format())
             var b = new Date(change)
             formattedDate = b;
         } else if (startDateOf == 'Last Week') {
@@ -1730,6 +1730,7 @@ const TaskDashboard = (props: any) => {
             item.TeamMember = ''
             item.Category = ''
             item.NewJSONData = []
+            item.EODData = []
            
             
             if (item.Title != undefined) {
@@ -1744,15 +1745,6 @@ const TaskDashboard = (props: any) => {
                     item.NewJSONData.push(items)
                 })
             }
-            item.NewJSONData?.forEach((ele: any) => {
-                item.subTitle = ele?.Title?.replaceAll(/<[^>]*><p>/g, '')
-                item.subCompleted = ele?.Completed
-                item.subDeployed = ele?.Deployed
-                item.subQAReviews = ele?.QAReviews
-                item.subInProgress = ele?.InProgress
-                item.subRemarks = ele?.Remarks
-                item.subChild = ele?.Subtext
-            })
             if (item.TeamMembers != undefined) {
                 item?.TeamMembers.forEach((val: any) => {
                     item.TeamMember += val.Title + ';'
@@ -1767,21 +1759,50 @@ const TaskDashboard = (props: any) => {
             if (item.Body == null) {
                 item.Body = ''
             }
+            item.NewJSONData?.forEach((ele: any) => {
+                let data:any={}
+                if(ele?.Completed == true){
+                    data['subTitle'] = ele?.Title?.replaceAll(/<[^>]*><p>/g, '')
+                    data['subCompleted'] = ele?.Completed
+                    data['subDeployed'] = ele?.Deployed
+                    data['subQAReviews']  = ele?.QAReviews
+                    data['subInProgress'] = ele?.InProgress
+                    data['subRemarks'] = ele?.Remarks
+                    data['subChild'] = ele?.Subtext
+                    data['Title'] = item?.Title
+                    data['TaskID'] = item?.TaskID
+                    data['Category'] = item?.Category
+                    data['TeamMember'] = item?.TeamMember
+                    data['PercentComplete'] = item?.PercentComplete
+                    data['siteUrl'] = item?.siteUrl
+                    data['Id'] = item?.Id
+                    item.EODData.push(data)
+                }
+                
+               
+            })
+           
             RemarksData.push(item)
         })
-        RemarksData?.forEach((val:any)=>{
-            val.subChilds=[]
-            if(val.subRemarks != undefined && val.subRemarks != '' ){
-                val.subChilds.push(val)
-            }
+        RemarksData?.forEach((item:any)=>{
+            item?.EODData.forEach((val:any)=>{
+                val.subChilds=[]
+                if(val.subRemarks != undefined && val.subRemarks != '' ){
+                    val.subChilds.push(val)
+                }
+            })
+           
         })
-        RemarksData?.forEach((val:any)=>{
-            if(val.subCompleted == true){
-                val.subDeployed = true
-                val.subQAReviews = true
-                val.subInProgress = true
-                AllWorkingDayData.push(val)
-            }
+        RemarksData?.forEach((item:any)=>{
+            item?.EODData?.forEach((val:any)=>{
+                if(val.subCompleted == true){
+                    val.subDeployed = true
+                    val.subQAReviews = true
+                    val.subInProgress = true
+                    AllWorkingDayData.push(val)
+                }
+            })
+           
         })
         AllWorkingDayData?.forEach((val:any)=>{
             val.subChilds?.forEach((ele:any)=>{

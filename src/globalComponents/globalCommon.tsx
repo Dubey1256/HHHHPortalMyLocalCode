@@ -1800,4 +1800,62 @@ export const loadAllTimeEntry = async (timesheetListConfig: any) => {
     }
 }
 
+export const descriptionSearchData = (result: any) => {
+    let descriptionSearchData = '';
+    if (result?.FeedBack && result?.FeedBack != undefined) {
+        const cleanText = (text: any) => text?.replace(/(<([^>]+)>)/gi, '').replace(/\n/g, '');
 
+        try {
+            const feedbackData = JSON.parse(result.FeedBack);
+            descriptionSearchData = feedbackData[0]?.FeedBackDescriptions?.map((child: any) => {
+                const childText = cleanText(child?.Title);
+                const comments = (child?.Comments || [])?.map((comment: any) => {
+                    const commentText = cleanText(comment?.Title);
+                    const replyText = (comment?.ReplyMessages || [])?.map((val: any) => cleanText(val?.Title)).join(' ');
+                    return [commentText, replyText]?.filter(Boolean).join(' ');
+                }).join(' ');
+
+                const subtextData = (child.Subtext || [])?.map((subtext: any) => {
+                    const subtextComment = cleanText(subtext?.Title);
+                    const subtextReply = (subtext.ReplyMessages || [])?.map((val: any) => cleanText(val?.Title)).join(' ');
+                    const subtextComments = (subtext.Comments || [])?.map((subComment: any) => {
+                        const subCommentTitle = cleanText(subComment?.Title);
+                        const subCommentReplyText = (subComment.ReplyMessages || []).map((val: any) => cleanText(val?.Title)).join(' ');
+                        return [subCommentTitle, subCommentReplyText]?.filter(Boolean).join(' ');
+                    }).join(' ');
+                    return [subtextComment, subtextReply, subtextComments].filter(Boolean).join(' ');
+                }).join(' ');
+
+                return [childText, comments, subtextData].filter(Boolean).join(' ');
+            }).join(' ');
+
+            result.descriptionsSearch = descriptionSearchData;
+            return descriptionSearchData
+        } catch (error) {
+            console.error("Error:", error);
+            return descriptionSearchData
+
+        }
+    }
+}
+
+export const portfolioSearchData = (items: any) => {
+    let descriptionSearch = '';
+    try {
+        if (items?.Deliverables != undefined || items.Short_x0020_Description_x0020_On != undefined || items.TechnicalExplanations != undefined || items.Body != undefined || items.AdminNotes != undefined || items.ValueAdded != undefined
+            || items.Idea != undefined || items.Background != undefined) {
+            descriptionSearch = `${removeHtmlAndNewline(items?.Deliverables)} ${removeHtmlAndNewline(items?.Short_x0020_Description_x0020_On)} ${removeHtmlAndNewline(items?.TechnicalExplanations)} ${removeHtmlAndNewline(items?.Body)} ${removeHtmlAndNewline(items?.AdminNotes)} ${removeHtmlAndNewline(items?.ValueAdded)} ${removeHtmlAndNewline(items?.Idea)} ${removeHtmlAndNewline(items?.Background)}`;
+        }
+        return descriptionSearch
+    } catch (error: any) {
+        console.log(error)
+        return descriptionSearch
+    }
+}
+function removeHtmlAndNewline(text: any) {
+    if (text) {
+        return text.replace(/(<([^>]+)>)/gi, "").replace(/\n/g, '');
+    } else {
+        return ''; // or any other default value you prefer
+    }
+}

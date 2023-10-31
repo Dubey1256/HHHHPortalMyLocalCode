@@ -17,19 +17,17 @@ import { SlArrowRight, SlArrowDown } from "react-icons/sl";
 import { Col, Row } from 'react-bootstrap';
 import Loader from "react-loader";
 import EditTaskPopup from '../../../globalComponents/EditTaskPopup/EditTaskPopup';
-import EditInstituton from "../../EditPopupFiles/EditComponent";
 import * as globalCommon from "../../../globalComponents/globalCommon";
-import { Panel, PanelType } from 'office-ui-fabric-react';
-import Tooltip from '../../../globalComponents/Tooltip';
 import PreSetDatePikerPannel from "../../../globalComponents/SmartFilterGolobalBomponents/PreSetDatePiker"
 import TimeEntryPopup from "../../../globalComponents/TimeEntry/TimeEntryComponent";
 import ShowClintCatogory from "../../../globalComponents/ShowClintCatogory";
 import Sitecomposition from "../../../globalComponents/SiteComposition";
+import FileSaver from 'file-saver';
+import * as XLSX from "xlsx";
 var AllListId: any;
 var siteConfig: any[] = []
 var AllPortfolios: any[] = [];
 var AllSitesAllTasks: any[] = [];
-var AllPortfolioType = [{ 'Title': 'Component', 'Selected': true, }, { 'Title': 'Service', 'Selected': true, }];
 var AllTimeSheetResult: any[] = [];
 var AllTaskUser: any[] = []
 export interface IUserTimeEntryState {
@@ -70,14 +68,15 @@ export interface IUserTimeEntryState {
   SharewebTimeComponent: any,
   AllMetadata: any,
   isDirectPopup: boolean,
+  TimeSheetLists: any
 }
 var user: any = ''
 var userIdByQuery: any = ''
 let portfolioColor: any = '#000066';
-
 export default class UserTimeEntry extends React.Component<IUserTimeEntryProps, IUserTimeEntryState> {
   openPanel: any;
   closePanel: any;
+  sheetsItems: any[];
   public constructor(props: IUserTimeEntryProps, state: IUserTimeEntryState) {
     super(props);
     this.state = {
@@ -117,7 +116,8 @@ export default class UserTimeEntry extends React.Component<IUserTimeEntryProps, 
       IsTimeEntry: false,
       SharewebTimeComponent: {},
       AllMetadata: [],
-      isDirectPopup: false
+      isDirectPopup: false,
+      TimeSheetLists: []
     }
     this.OpenPresetDatePopup = this.OpenPresetDatePopup.bind(this);
     this.SelectedPortfolioItem = this.SelectedPortfolioItem.bind(this);
@@ -125,7 +125,6 @@ export default class UserTimeEntry extends React.Component<IUserTimeEntryProps, 
     this.TimeEntryCallBack = this.TimeEntryCallBack.bind(this);
     this.GetResult();
   }
-  private SelectedProp = this.props;
   private BackupAllTimeEntry: any = [];
   private AllTimeEntry: any = [];
   private TotalTimeEntry: any;
@@ -358,12 +357,13 @@ export default class UserTimeEntry extends React.Component<IUserTimeEntryProps, 
     let AllMetaData = [];
     let ccResults: any = [];
     let sitesResult: any = [];
+    let TimeSheetResult: any[] = []
     let results = [];
     let className: any = "custom-checkbox-tree"
     results = await web.lists
       .getById(this.props.SmartMetadataListID)
       .items
-      .select("Id", "Title", "IsVisible", "ParentID", "Color_x0020_Tag", "SmartSuggestions", "TaxType", "Description1", "Item_x005F_x0020_Cover", "listId", "siteName", "siteUrl", "SortOrder", "SmartFilters", "Selectable", "Parent/Id", "Parent/Title")
+      .select("Id", "Title", "IsVisible", "ParentID", "Color_x0020_Tag", "Configurations", "SmartSuggestions", "TaxType", "Description1", "Item_x005F_x0020_Cover", "listId", "siteName", "siteUrl", "SortOrder", "SmartFilters", "Selectable", "Parent/Id", "Parent/Title")
       .expand('Parent')
       .orderBy('SortOrder', true)
       .orderBy("Title", true)
@@ -373,10 +373,14 @@ export default class UserTimeEntry extends React.Component<IUserTimeEntryProps, 
     this.checkBoxColor(className)
     //seperate the items Client Category and Sites
     results.forEach(function (obj: any, index: any) {
-      if (obj.TaxType == 'Client Category')
+      if (obj.TaxType == 'Client Category') {
         ccResults.push(obj);
-      else if (obj.TaxType == 'Sites')
+      } else if (obj.TaxType == 'Sites') {
         sitesResult.push(obj)
+      } else if (obj.TaxType == 'timesheetListConfigrations' && obj.Configurations != undefined && obj.Configurations != '') {
+        TimeSheetResult = globalCommon.parseJSON(obj.Configurations)
+      }
+
     });
     if (sitesResult.length > 0) {
       sitesResult?.map((site: any) => {
@@ -390,12 +394,15 @@ export default class UserTimeEntry extends React.Component<IUserTimeEntryProps, 
     diff = startdt.getDate() - startdt.getDay() + (startdt.getDay() === 0 ? -6 : 1);
     startdt = new Date(startdt.setDate(diff));
     lastday = enddt.getDate() - (enddt.getDay() - 1) + 6;
-    enddt = new Date(enddt.setDate(lastday));;
+    enddt = new Date(enddt.setDate(lastday));
+    startdt.setHours(0, 0, 0, 0);
+    enddt.setHours(0, 0, 0, 0);
     this.setState({
       startdate: startdt,
       enddate: enddt,
       SitesConfig: sitesResult,
       AllMetadata: results,
+      TimeSheetLists: TimeSheetResult,
       loaded: true,
     }, () => this.loadSmartFilters(ccResults, sitesResult))
   }
@@ -654,7 +661,6 @@ export default class UserTimeEntry extends React.Component<IUserTimeEntryProps, 
         SelectGroupName = SelectGroupName + item.Title + ' ,'
     })
     SelectGroupName = SelectGroupName.replace(/.$/, "")
-
     this.setState({
       ImageSelectedUsers,
       SelectGroupName
@@ -719,18 +725,6 @@ export default class UserTimeEntry extends React.Component<IUserTimeEntryProps, 
     }
     return isExists;
   }
-  /*private isItemExists(array:any, Id:any) {
-    let isExists = false;
-    for (let index = 0; index < array.length; index++) {
-      let item = array[index];
-      if (item.Id == Id) {
-        isExists = true;
-        return true;
-      }   
-    }   
-    return isExists;
-  }
-  */
   private ChangeRadiobtn() {
     let RadioType = ''
     let startdt = new Date(), enddt = new Date(), tempdt = new Date();
@@ -838,7 +832,6 @@ export default class UserTimeEntry extends React.Component<IUserTimeEntryProps, 
       IsPresetPopup: true,
     })
   }
-
   private selectDate(type: string) {
     let startdt = new Date(), enddt = new Date(), tempdt = new Date();
     let diff: number, lastday: number;
@@ -935,30 +928,38 @@ export default class UserTimeEntry extends React.Component<IUserTimeEntryProps, 
     }
   }
   private async LoadAllTimeSheetaData() {
+    let AllTimeEntry: any = [];
+    let arraycount = 0;
     this.setState({
       loaded: false,
     })
-
     if (AllTimeSheetResult == undefined || AllTimeSheetResult?.length == 0) {
-      let web = new Web(this.props.Context.pageContext.web.absoluteUrl);
-      let resultsOfTimeSheet2 = await web.lists
-        .getById(this.props.TaskTimeSheet2ListID)
-        .items
-        .select('Id', 'Title', 'TaskDate', 'TaskTime', 'AdditionalTimeEntry', 'Description', 'Modified', 'TaskMigration/Id', 'TaskMigration/Title', 'TaskMigration/Created', 'TaskALAKDigital/Id', 'TaskALAKDigital/Title', 'TaskALAKDigital/Created', 'AuthorId')
-        .expand('TaskMigration', 'TaskALAKDigital')
-        .getAll();
-      console.log(resultsOfTimeSheet2);
-      let resultsofTimeSheetNew = await web.lists
-        .getById(this.props.TaskTimeSheetListNewListID)
-        .items
-        .select('Id', 'Title', 'TaskDate', 'TaskTime', 'AdditionalTimeEntry', 'Description', 'Modified', 'AuthorId', 'TaskGruene/Id', 'TaskGruene/Title', 'TaskGruene/Created', 'TaskDE/Id', 'TaskDE/Title', 'TaskDE/Created', 'TaskEducation/Id', 'TaskEducation/Title', 'TaskEducation/Created', 'TaskEI/Id', 'TaskEI/Title', 'TaskEI/Created', 'TaskEPS/Id', 'TaskEPS/Title', 'TaskEPS/Created', 'TaskGender/Id', 'TaskGender/Title', 'TaskGender/Created', 'TaskHealth/Id', 'TaskHealth/Title', 'TaskHealth/Created', 'TaskHHHH/Id', 'TaskHHHH/Title', 'TaskHHHH/Created', 'TaskKathaBeck/Id', 'TaskKathaBeck/Title', 'TaskKathaBeck/Created', 'TaskQA/Id', 'TaskQA/Title', 'TaskQA/Created', 'TaskShareweb/Id', 'TaskShareweb/Title', 'TaskShareweb/Created', 'TaskOffshoreTasks/Id', 'TaskOffshoreTasks/Title', 'TaskOffshoreTasks/Created')
-        .expand('TaskGruene', 'TaskDE', 'TaskEducation', 'TaskEI', 'TaskEPS', 'TaskGender', 'TaskHealth', 'TaskHHHH', 'TaskKathaBeck', 'TaskQA', 'TaskShareweb', 'TaskOffshoreTasks')
-        .getAll();
-      console.log(resultsofTimeSheetNew);
-      AllTimeSheetResult = (resultsOfTimeSheet2).concat(resultsofTimeSheetNew);
-      //await this.DefaultValues() 
-      this.LoadAllSiteAllTasks()
-      this.updatefilter(true);
+
+      try {
+        if (this?.state?.TimeSheetLists != undefined && this?.state?.TimeSheetLists.length > 0) {
+          this?.state?.TimeSheetLists.map(async (site: any) => {
+            let web = new Web(site?.siteUrl);
+            let TimeEntry = []
+            await web.lists.getById(site?.listId).items.select(site?.query).getAll().then((data: any) => {
+              TimeEntry = data
+              console.log(data);
+              TimeEntry.map((entry: any) => {
+                AllTimeEntry.push(entry)
+              });
+              arraycount++;
+            })
+            let currentCount = this?.state?.TimeSheetLists?.length;
+            if (arraycount === currentCount) {
+              AllTimeSheetResult = AllTimeEntry;
+              //await this.DefaultValues() 
+              this.LoadAllSiteAllTasks()
+              this.updatefilter(true);
+            }
+          })
+        }
+      } catch (e) {
+        console.log(e)
+      }
     }
     else {
       this.updatefilter(true);
@@ -988,6 +989,18 @@ export default class UserTimeEntry extends React.Component<IUserTimeEntryProps, 
     console.log(AllTimeSheetResult);
     this.LoadTimeSheetData(FilterTimeEntry);
   }
+
+  private findUserByName = (name: any) => {
+    const user = AllTaskUser.filter(
+      (user: any) => user?.AssingedToUser?.Id === name
+    );
+    let Image: any;
+    if (user[0]?.Item_x0020_Cover != undefined) {
+      Image = user[0].Item_x0020_Cover.Url;
+    } else { Image = "https://hhhhteams.sharepoint.com/sites/HHHH/PublishingImages/Portraits/icon_user.jpg"; }
+    return user ? Image : null;
+  };
+
   private LoadTimeSheetData(AllTimeSheetResult: any) {
     let AllTimeSpentDetails: any = [];
     let getSites = this.state.SitesConfig;
@@ -1002,8 +1015,7 @@ export default class UserTimeEntry extends React.Component<IUserTimeEntryProps, 
         if (timeTab[ColumnName] != undefined && timeTab[ColumnName].Title != undefined) {
           timeTab.selectedSiteType = config.Title;
           timeTab.siteType = config.Title;
-          //timeTab.getUserName = '';
-          timeTab.newSiteUrl = config?.siteUrl?.Url; //timeTab.__metadata.uri.split('/_api')[0]
+          timeTab.newSiteUrl = config?.siteUrl?.Url;
           timeTab.SiteUrl = timeTab.newSiteUrl;
           timeTab.SiteIcon = config?.Item_x005F_x0020_Cover?.Url;
           timeTab.listId = config?.listId;
@@ -1070,39 +1082,50 @@ export default class UserTimeEntry extends React.Component<IUserTimeEntryProps, 
             // let endDateConvert: any = this.state.enddate;
             // endDateConvert = endDateConvert.split("/");
             // let enddate = new Date(endDateConvert[0] + '/' + endDateConvert[1] + '/' + endDateConvert[2]);
-            if (TaskDate >= this.state.startdate && TaskDate <= this.state.enddate) {
-              let hours = addtime.TaskTime;
-              let minutes = hours * 60;
-              addtime.TaskItemID = time.TaskItemID;
-              addtime.DisplayTaskId = time.DisplayTaskId;
-              addtime.Body = time?.Body;
-              addtime.bodys = time?.bodys
-              addtime.FeedBack = time?.FeedBack;
-              addtime.TaskType = time?.TaskType;
-              addtime.ParentTask = time?.ParentTask
-              addtime.SiteUrl = time.SiteUrl;
-              totletimeparent = minutes;
-              addtime.MileageJson = totletimeparent;
-              addtime.getUserName = ''//$scope.getUserName;
-              addtime.Effort = parseInt(addtime.MileageJson) / 60;
-              addtime.Effort = addtime.Effort.toFixed(2);
-              addtime.Effort = parseFloat(addtime.Effort);
-              addtime.TimeEntryDate = addtime.TaskDate;
-              addtime.NewTimeEntryDate = TaskDate;
-              let datesplite = addtime.TaskDate.split("/");
-              addtime.TimeEntrykDateNew = new Date(parseInt(datesplite[2], 10), parseInt(datesplite[1], 10) - 1, parseInt(datesplite[0], 10));
-              //addtime.TimeEntrykDateNewback = datesplite[1] + '/' + datesplite[0] + '/' + datesplite[2];
-              addtime.TaskTitle = time.TaskTitle;
-              addtime.ID = time.ID;
-              addtime.Title = time.Title;
-              addtime.selectedSiteType = time.selectedSiteType;
-              addtime.siteType = time.siteType;
-              addtime.Site = time?.siteType;
-              addtime.SiteIcon = time?.SiteIcon;//SharewebCommonFactoryService.GetIconImageUrl(addtime.selectedSiteType, _spPageContextInfo.webAbsoluteUrl);
-              addtime.ImageUrl = time.ImageUrl;
-              if (time.TaskCreated != undefined)
-                addtime.TaskCreatednew = this.ConvertLocalTOServerDate(time.TaskCreated, 'DD/MM/YYYY');
-              getAllTimeEntry.push(addtime);
+            if (this.state?.ImageSelectedUsers != undefined && this.state?.ImageSelectedUsers?.length > 0) {
+              for (let userIndex = 0; userIndex < this.state.ImageSelectedUsers?.length; userIndex++) {
+                if (this.state?.ImageSelectedUsers[userIndex].AssingedToUserId != undefined && Additionaltimeentry[index]?.AuthorId != undefined && TaskDate >= this.state.startdate && TaskDate <= this.state.enddate && Additionaltimeentry[index]?.AuthorId == this.state?.ImageSelectedUsers[userIndex].AssingedToUserId) {
+                  let hours = addtime.TaskTime;
+                  let minutes = hours * 60;
+                  addtime.TaskItemID = time.TaskItemID;
+                  addtime.DisplayTaskId = time.DisplayTaskId;
+                  addtime.Body = time?.Body;
+                  addtime.bodys = time?.bodys
+                  addtime.FeedBack = time?.FeedBack;
+                  addtime.TaskType = time?.TaskType;
+                  addtime.ParentTask = time?.ParentTask
+                  addtime.SiteUrl = time.SiteUrl;
+                  totletimeparent = minutes;
+                  addtime.MileageJson = totletimeparent;
+                  addtime.getUserName = ''//$scope.getUserName;
+                  addtime.Effort = parseInt(addtime.MileageJson) / 60;
+                  addtime.Effort = addtime.Effort.toFixed(2);
+                  addtime.Effort = parseFloat(addtime.Effort);
+                  addtime.TimeEntryDate = addtime.TaskDate;
+                  addtime.NewTimeEntryDate = TaskDate;
+
+                  let datesplite = addtime.TaskDate.split("/");
+                  addtime.TimeEntrykDateNew = new Date(parseInt(datesplite[2], 10), parseInt(datesplite[1], 10) - 1, parseInt(datesplite[0], 10));
+                  //addtime.TimeEntrykDateNewback = datesplite[1] + '/' + datesplite[0] + '/' + datesplite[2];
+                  addtime.TaskTitle = time.TaskTitle;
+                  addtime.ID = time.ID;
+                  addtime.Title = time.Title;
+                  addtime.selectedSiteType = time.selectedSiteType;
+                  addtime.siteType = time.siteType;
+                  addtime.Site = time?.siteType;
+                  addtime.SiteIcon = time?.SiteIcon;
+                  addtime.ImageUrl = time.ImageUrl;
+                  if (time.TaskCreated != undefined)
+                    addtime.TaskCreatednew = this.ConvertLocalTOServerDate(time.TaskCreated, 'DD/MM/YYYY');
+                  if (addtime.AuthorId)
+                    addtime.autherImage = this.findUserByName(addtime.AuthorId)
+                  addtime.Author = {}
+                  addtime.Author.Id = addtime.AuthorId
+                  addtime.Author.autherImage = addtime.autherImage
+                  addtime.Author.Title = addtime.AuthorName
+                  getAllTimeEntry.push(addtime);
+                }
+              }
             }
           }
         }
@@ -1119,7 +1142,6 @@ export default class UserTimeEntry extends React.Component<IUserTimeEntryProps, 
     }
   }
   private getJSONTimeEntry(getAllTimeEntry: any) {
-    let requestcounter = 0;
     let filterItemTimeTab = [];
     let copysitesConfi = this.state.SitesConfig;
     copysitesConfi.forEach(function (confi: any) {
@@ -1144,7 +1166,6 @@ export default class UserTimeEntry extends React.Component<IUserTimeEntryProps, 
           ListName: confi.CopyTitle,
           ListId: confi.listId,
           Query: this.SpiltQueryString(confi['Sitee' + confi.Title].slice(0, confi['Sitee' + confi.Title].length - 2))
-          //requestcounter += objgre.Query.length;
         }
         filterItemTimeTab.push(objgre);
       }
@@ -1198,9 +1219,6 @@ export default class UserTimeEntry extends React.Component<IUserTimeEntryProps, 
     let callcount = 0;
     let AllSharewebSiteTasks: any = [];
     let AllTimeEntryItem: any = [];
-    let getAllSharewebSiteTasks = [];
-    let PortfolioComponent = true;
-    let PortfolioService = true;
     let web = new Web(this.props.Context.pageContext.web.absoluteUrl);
     if (filterItemTimeTab.length > 0) {
       for (let index = 0; index < filterItemTimeTab.length; index++) {
@@ -1213,7 +1231,7 @@ export default class UserTimeEntry extends React.Component<IUserTimeEntryProps, 
           let results = await web.lists
             .getByTitle(itemtype.ListName)
             .items
-            .select('ParentTask/Title', 'ParentTask/Id', 'ClientTime', 'ItemRank', 'Portfolio/Id', 'Portfolio/Title', 'SiteCompositionSettings', 'TaskLevel', 'TaskLevel', 'TimeSpent', 'BasicImageInfo', 'OffshoreComments', 'OffshoreImageUrl', 'CompletedDate', 'TaskID', 'ResponsibleTeam/Id', 'ResponsibleTeam/Title', 'ClientCategory/Id', 'ClientCategory/Title', 'TaskCategories/Id', 'TaskCategories/Title', 'ParentTask/TaskID', 'TaskType/Id', 'TaskType/Title', 'TaskType/Level', 'TaskType/Prefix', 'PriorityRank', 'Reference_x0020_Item_x0020_Json', 'TeamMembers/Title', 'TeamMembers/Name', 'Component/Id', 'Component/Title', 'Component/ItemType', 'TeamMembers/Id', 'Item_x002d_Image', 'ComponentLink', 'IsTodaysTask', 'AssignedTo/Title', 'AssignedTo/Name', 'AssignedTo/Id', 'AttachmentFiles/FileName', 'FileLeafRef', 'FeedBack', 'Title', 'Id', 'PercentComplete', 'Company', 'StartDate', 'DueDate', 'Comments', 'Categories', 'Status', 'WebpartId', 'Body', 'Mileage', 'PercentComplete', 'Attachments', 'Priority', 'Created', 'Modified', 'Author/Id', 'Author/Title', 'Editor/Id', 'Editor/Title')
+            .select('ParentTask/Title', 'ParentTask/Id', 'ClientTime', 'ItemRank', 'Portfolio/Id', 'Portfolio/Title', 'SiteCompositionSettings', 'TaskLevel', 'TaskLevel', 'TimeSpent', 'BasicImageInfo', 'OffshoreComments', 'OffshoreImageUrl', 'CompletedDate', 'TaskID', 'ResponsibleTeam/Id', 'ResponsibleTeam/Title', 'ClientCategory/Id', 'ClientCategory/Title', 'ClientCategory/ParentID', 'TaskCategories/Id', 'TaskCategories/Title', 'ParentTask/TaskID', 'TaskType/Id', 'TaskType/Title', 'TaskType/Level', 'TaskType/Prefix', 'PriorityRank', 'Reference_x0020_Item_x0020_Json', 'TeamMembers/Title', 'TeamMembers/Name', 'Component/Id', 'Component/Title', 'Component/ItemType', 'TeamMembers/Id', 'Item_x002d_Image', 'ComponentLink', 'IsTodaysTask', 'AssignedTo/Title', 'AssignedTo/Name', 'AssignedTo/Id', 'AttachmentFiles/FileName', 'FileLeafRef', 'FeedBack', 'Title', 'Id', 'PercentComplete', 'Company', 'StartDate', 'DueDate', 'Comments', 'Categories', 'Status', 'WebpartId', 'Body', 'Mileage', 'PercentComplete', 'Attachments', 'Priority', 'Created', 'Modified', 'Author/Id', 'Author/Title', 'Editor/Id', 'Editor/Title')
             .filter(queryType.replace('filter=', '').trim())
             .expand('ParentTask', 'TaskType', 'AssignedTo', 'Component', 'AttachmentFiles', 'Author', 'Editor', 'TeamMembers', 'ResponsibleTeam', 'ClientCategory', 'TaskCategories', 'Portfolio')
             .orderBy('Id', false)
@@ -1296,13 +1314,9 @@ export default class UserTimeEntry extends React.Component<IUserTimeEntryProps, 
             filterItem.PriorityRank = getItem?.PriorityRank;
             filterItem.TaskID = filterItem.DisplayTaskId
             filterItem.Portfolio = getItem?.Portfolio;
-
-
             filterItem.Title = getItem?.Title;
             filterItem.ID = getItem?.Id;
             filterItem.Id = getItem?.Id;
-
-
             filterItem.Created = getItem.Created;
             filterItem.listId = getItem.listId
             filterItem.PortfolioTypeTitle = "Component";
@@ -1310,17 +1324,15 @@ export default class UserTimeEntry extends React.Component<IUserTimeEntryProps, 
             if (getItem.Portfolio != undefined) {
               if (AllPortfolios != undefined && AllPortfolios?.length > 0) {
                 let result = AllPortfolios.filter((type: any) => type.Id != undefined && getItem.Portfolio != undefined && getItem.Portfolio?.Id != undefined && getItem.Portfolio?.Id == type.Id)[0];
-
                 if (result != undefined && result != '') {
                   filterItem.PortfolioTypeTitle = result?.PortfolioType?.Title;
                   filterItem.fontColorTask = result?.PortfolioType?.Color;
                 }
               }
-              filterItem.ComponentTitle = getItem.Portfolio?.Title;
+              filterItem.ComponentName = getItem.Portfolio?.Title;
               filterItem.ComponentIDs = getItem.Portfolio?.Id;
               filterItem.PortfolioItem = getItem?.Portfolio
               //filterItem.Portfolio = getItem?.Portfolio?.Title
-
             }
           }
         })
@@ -1351,7 +1363,6 @@ export default class UserTimeEntry extends React.Component<IUserTimeEntryProps, 
       })
     }
   }
-
   private getFilterTask(filterTask: any) {
     let selectedFilters: any = [];
     let filterItems = this.state.filterItems;
@@ -1406,7 +1417,6 @@ export default class UserTimeEntry extends React.Component<IUserTimeEntryProps, 
     let isSitesSelected = false;
     let CategoryItems = [];
     let isCategorySelected = false;
-    let ParentsArray = [];
     let count = 1
     if (selectedFilters.length > 0) {
       let isSitesSelected = false;
@@ -1619,50 +1629,6 @@ export default class UserTimeEntry extends React.Component<IUserTimeEntryProps, 
     }
     return isExists;
   }
-  private getParentTitle(item: any, filter: any) {
-    let isExistsTitle = '';
-    let filterItems = this.state.filterItems;
-    if (filter.Title != undefined) {
-      filterItems.forEach(function (filt: any) {
-        if (filt != undefined && filt.ID != undefined && filter.ID != undefined && filt.ID == filter.ID) {
-          isExistsTitle = filt.Title;
-          item.First = filt.Title;
-
-        }
-        if (filt.children != undefined && filt.children.length > 0) {
-          filt.children.forEach(function (child: any) {
-            if (child != undefined && child.ID != undefined && filter.ID != undefined && child.ID == filter.ID) {
-              isExistsTitle = child.Title;
-              item.Secondlevel = child.Title;
-              item.First = filt.Title;
-            }
-            if (child.children != undefined && child.children.length > 0) {
-              child.children.forEach(function (subchild: any) {
-                if (subchild != undefined && subchild.ID != undefined && filter.ID != undefined && subchild.ID == filter.ID) {
-                  isExistsTitle = child.Title;
-                  item.Thirdlevel = subchild.Title;
-                  item.Secondlevel = child.Title;
-                  item.First = filt.Title;
-                }
-              })
-            }
-          })
-        }
-
-      })
-    }
-    return isExistsTitle;
-  }
-  private isItemExistsTimeEntry(arr: any, Id: any, siteType: any) {
-    let isExists = false;
-    arr.forEach(function (item: any) {
-      if (item.TimeEntryIDunique == Id && item.siteType == siteType) {
-        isExists = true;
-        return false;
-      }
-    });
-    return isExists;
-  }
   private getAllowCommonItems(arr1: any, arr2: any) {
     let commonItems: any = [];
     arr1.forEach(function (item1: any) {
@@ -1714,39 +1680,6 @@ export default class UserTimeEntry extends React.Component<IUserTimeEntryProps, 
           let bID = b[column];
           return (aID == bID) ? 0 : (aID < bID) ? 1 : -1;
         });
-    }
-  }
-  private groupby_accordingTo_dateNew(arrays: any, StartDate: any) {
-    let dayscount = new Date(StartDate).getDay();
-    let dateEndnew = new Date(StartDate);
-    dateEndnew.setDate(dateEndnew.getDate() + (7 - dayscount));
-    let EndDate = Moment(dateEndnew).format("MM/DD/YYYY");
-    this.childarray(arrays, StartDate, EndDate);
-    let result = arrays.filter((m: any) => new Date(m.TimeEntrykDateNew) >= new Date(EndDate));
-    if (result != undefined && result.length > 0) {
-      let againStart = new Date(EndDate);
-      againStart.setDate(againStart.getDate() + 1);
-      let NewStart = Moment(againStart).format("MM/DD/YYYY");
-      this.groupby_accordingTo_date(arrays, NewStart);
-    }
-  }
-  private groupby_accordingTo_date(arrays: any, StartDate: any) {
-    let dateEndnew = new Date(StartDate);
-    dateEndnew.setDate(dateEndnew.getDate() + 6);
-    let EndDate = Moment(dateEndnew).format('MM/DD/YYYY');
-    let flag = false;
-    if (new Date(EndDate) > new Date(this.endweekday)) {
-      EndDate = Moment(new Date(this.endweekday)).format('MM/DD/YYYY');
-      flag = true;
-    }
-    this.childarray(arrays, StartDate, EndDate)
-    let result = arrays.filter((m: any) => new Date(m.TimeEntrykDateNew) >= new Date(EndDate));
-    if (result != undefined && result.length > 0) {
-      let againStart = new Date(EndDate);
-      againStart.setDate(againStart.getDate() + 1);
-      let NewStart = Moment(againStart).format('MM/DD/YYYY');
-      if (!flag)
-        this.groupby_accordingTo_date(arrays, NewStart);
     }
   }
   private childarray(arrays: any, StartDate: any, EndDate: any) {
@@ -1846,7 +1779,6 @@ export default class UserTimeEntry extends React.Component<IUserTimeEntryProps, 
     }
     let st = StartDate.split('/');
     Item['getUserName'] = 'Week ' + Moment(new Date(StartDate)).format('YYYY-MM-DD');
-    //Item['getUserName']
     Item['getMonthYearDate'] = new Date(StartDate).toLocaleDateString('en-us', { year: "numeric", month: "short" });
     if (this.AllYearMonth.length == 0) {
       let YearCollection: any = {};
@@ -2115,13 +2047,13 @@ export default class UserTimeEntry extends React.Component<IUserTimeEntryProps, 
         size: 35,
       },
       {
-        accessorKey: 'ComponentTitle',
-        id: "ComponentTitle",
+        accessorKey: 'ComponentName',
+        id: "ComponentName",
         header: "",
         placeholder: "Component",
         cell: (info: any) => <><a data-interception="off" className="hreflink serviceColor_Active" target="_blank" style={info?.row?.original?.fontColorTask != undefined ? { color: `${info?.row?.original?.fontColorTask}` } : { color: `${info?.row?.original?.PortfolioType?.Color}` }}
           href={this.props.Context.pageContext.web.absoluteUrl + "/SitePages/Portfolio-Profile.aspx?taskId=" + info.row?.original?.ComponentIDs}>
-          {info.row?.original?.ComponentTitle}
+          {info.row?.original?.ComponentName}
         </a><span
           className="svg__iconbox svg__icon--edit alignIcon hreflink"
           onClick={(e) => this.EditComponentPopup(info.row?.original?.PortfolioItem)}>
@@ -2136,12 +2068,46 @@ export default class UserTimeEntry extends React.Component<IUserTimeEntryProps, 
         header: "",
         // size: 175,
       },
+      // {
+      //   accessorKey: "TimeEntryDate",
+      //   id: "TimeEntryDate",
+      //   placeholder: "Time Entry",
+      //   header: "",
+      //   size: 91,
+      // },
       {
-        accessorKey: "TimeEntryDate",
-        id: "TimeEntryDate",
+        accessorFn: (info: any) => info?.NewTimeEntryDate,
+        cell: (info: any) => (
+          <div className="alignCenter">
+            {info?.row?.original?.NewTimeEntryDate == null ? ("") : (
+              <>
+                {/* <HighlightableCell value={info?.row?.original?.TimeEntryDate} searchTerm={column.getFilterValue()} /> */}
+                <span>{info?.row?.original?.TimeEntryDate}</span>
+                {info?.row?.original?.Author != undefined &&
+                  <>
+                    <a href={`${this.props.Context.pageContext.web.absoluteUrl}/SitePages/TaskDashboard.aspx?UserId=${info?.row?.original?.Author?.Id}&Name=${info?.row?.original?.Author?.Title}`}
+                      target="_blank" data-interception="off">
+                      <img title={info?.row?.original?.Author?.Title} className="workmember ms-1" src={info?.row?.original?.Author?.autherImage} />
+                    </a>
+                  </>
+                }
+              </>
+            )}
+          </div>
+        ),
+        filterFn: (info: any, columnName: any, filterValue: any) => {
+          if (info?.original?.Author?.Title?.toLowerCase()?.includes(filterValue?.toLowerCase()) || info?.original?.TimeEntryDate?.includes(filterValue)) {
+            return true
+          } else {
+            return false
+          }
+        },
+        id: 'NewTimeEntryDate',
+        resetColumnFilters: false,
+        resetSorting: false,
         placeholder: "Time Entry",
         header: "",
-        size: 91,
+        size: 91
       },
       {
         accessorKey: "TaskTime",
@@ -2188,28 +2154,12 @@ export default class UserTimeEntry extends React.Component<IUserTimeEntryProps, 
   }
   private ExampleCustomInput = React.forwardRef(({ value, onClick }: any, ref: any) => (
     <div style={{ position: "relative" }} onClick={onClick} ref={ref}>
-      <input
-        type="text"
-        id="datepicker"
-        className="form-control date-picker"
-        placeholder="DD/MM/YYYY"
-        value={value}
-      />
-      <span
-        style={{
-          position: "absolute",
-          top: "50%",
-          right: "5px",
-          transform: "translateY(-50%)",
-          cursor: "pointer"
-        }}
-      >
+      <input type="text" id="datepicker" className="form-control date-picker" placeholder="DD/MM/YYYY" value={value} />
+      <span style={{ position: "absolute", top: "50%", right: "5px", transform: "translateY(-50%)", cursor: "pointer" }}>
         <span className="svg__iconbox svg__icon--calendar"></span>
       </span>
     </div>
   ));
-
-
   private SelectedPortfolioItem(data: any, Type: any) {
     if (Type == 'Component') {
       this.setState({
@@ -2279,17 +2229,18 @@ export default class UserTimeEntry extends React.Component<IUserTimeEntryProps, 
     if (preSetStartDate != undefined) {
       this.setState({
         PresetStartDate: preSetStartDate,
+        selectedRadio: 'Presettime',
+        startdate: preSetStartDate,
       })
     }
     if (preSetEndDate != undefined) {
       this.setState({
         PresetEndDate: preSetEndDate,
+        selectedRadio: 'Presettime',
+        enddate: preSetEndDate,
       })
     }
     this.setState({
-      selectedRadio: 'Presettime',
-      startdate: preSetStartDate,
-      enddate: preSetEndDate,
       IsPresetPopup: false,
     })
   };
@@ -2301,6 +2252,75 @@ export default class UserTimeEntry extends React.Component<IUserTimeEntryProps, 
     this.checkBoxColor(undefined)
     this.setState({ expandedSites })
   }
+  private getclientitemValue = function (client: any, item: any) {
+    this.state?.AllMetadata?.forEach((smart: any) => {
+      if (smart.Id == client.ParentID) {
+        if (smart.ParentID != undefined && smart.ParentID != 0) {
+          this.state?.AllMetadata?.forEach((child: any) => {
+            if (child.Id == smart.ParentID) {
+              if (!this.isExistsclient(item.Client, child.Title))
+                item.Client += child.Title + '; ';
+              item.CategoryLevel2 += smart.Title + '; ';
+              item.CategoryLevel3 += client.Title + '; ';
+            }
+          })
+        }
+        else {
+          if (!this.isExistsclient(item.Client, smart.Title))
+            item.Client += smart.Title + '; ';
+          if (!this.isExistsclient(item.CategoryLevel2, client.Title))
+            item.CategoryLevel2 += client.Title + '; ';
+        }
+      }
+    })
+  }
+  private exportToExcel = () => {
+    this.sheetsItems = [];
+    const fileType = "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet;charset=UTF-8";
+    var AllItems = this.state.AllTimeEntry
+    AllItems.forEach((item: any) => {
+      var contentItemNew: any = {};
+      contentItemNew['TaskTitle'] = item.TaskTitle;
+      contentItemNew['TimeEntryDate'] = item.TimeEntryDate;
+      contentItemNew['Effort'] = item.Effort;
+      contentItemNew['Client'] = '';
+      contentItemNew['CategoryLevel2'] = '';
+      contentItemNew['CategoryLevel3'] = '';
+      item['Client'] = '';
+      item['CategoryLevel2'] = '';
+      item['CategoryLevel3'] = '';
+      if (item.ClientCategory != undefined && item.ClientCategory.length > 0) {
+        item?.ClientCategory.forEach((client: any, index: any) => {
+          if (client.ParentID != undefined && client.ParentID != 0) {
+            this.getclientitemValue(client, item);
+            contentItemNew.CategoryLevel2 = item.CategoryLevel2;
+            contentItemNew.CategoryLevel3 = item.CategoryLevel3;
+          }
+          else {
+            if (client.ParentID != undefined && client.ParentID == 0)
+              item.Client += client.Title + '; ';
+            contentItemNew.Client += client.Title + '; ';
+          }
+        })
+      }
+      contentItemNew['Client'] = item.Client;
+      contentItemNew['CategoryLevel2'] = item.CategoryLevel2;
+      contentItemNew['CategoryLevel3'] = item.CategoryLevel3;
+      contentItemNew['Component Name'] = item.ComponentName;
+      this?.sheetsItems.push(contentItemNew)
+    })
+    if (this?.sheetsItems?.length > 0) {
+      var fileName = 'Time Entry';
+      const ws = XLSX.utils.json_to_sheet(this.sheetsItems);
+      const fileExtension = ".xlsx";
+      const fileType = "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet";
+      XLSX.utils.sheet_add_aoa(ws, [["TaskTitle", "TimeEntryDate", "Effort", "Client", "CategoryLevel2", "CategoryLevel3", "Component Name"]], { origin: "A1" });
+      const wb = { Sheets: { data: ws }, SheetNames: ["data"] };
+      const excelBuffer = XLSX.write(wb, { bookType: "xlsx", type: "array" });
+      const data = new Blob([excelBuffer], { type: fileType });
+      FileSaver.saveAs(data, fileName + fileExtension);
+    }
+  };
   callBackData = (elem: any, ShowingData: any) => {
     this.setState({
       ShowingAllData: ShowingData
@@ -2328,7 +2348,6 @@ export default class UserTimeEntry extends React.Component<IUserTimeEntryProps, 
                   <span className="suffix_Usericon showSuffixIcon m-1" title={user?.Title} >{user?.Suffix}</span>
               })
               }
-              {/* <span className="pull-right"><a href="#">Add Smart Favorite</a></span> */}
             </summary>
             <Col className='allfilter'>
               <Col className='subfilters'>
@@ -2374,7 +2393,6 @@ export default class UserTimeEntry extends React.Component<IUserTimeEntryProps, 
                       })
                       }
                     </div>
-
                   </div>
                 </details>
                 <details className='m-0' open>
@@ -2434,10 +2452,8 @@ export default class UserTimeEntry extends React.Component<IUserTimeEntryProps, 
                           <label>Pre-set</label>
                           <span className="svg__iconbox svg__icon--editBox alignIcon hreflink" onClick={() => this.OpenPresetDatePopup()}></span>
                         </span>
-
                       </div>
                     </div>
-
                   </Row>
                   <Row className='ps-30 mt-2'>
                     <div className="col-2">
@@ -2584,43 +2600,34 @@ export default class UserTimeEntry extends React.Component<IUserTimeEntryProps, 
         {
           this.state.AllTimeEntry != undefined && this.state.AllTimeEntry.length > 0 &&
           <div className='col'>
-            <section className='TableContentSection'> <div className="Alltable p-0">
-              <div className="wrapper">
-                <GlobalCommanTable expandIcon={true} showHeader={true} showDateTime={' | Time: ' + this.state.resultSummary.totalTime + ' | Days: (' + this.state.resultSummary.totalDays + ')'} columns={this.state.columns} data={this.state.AllTimeEntry} callBackData={this.callBackData} TaskUsers={AllTaskUser} AllListId={this?.props} portfolioColor={portfolioColor} />
+            <section className='TableContentSection'>
+              <div className="Alltable p-0">
+                <div className="wrapper">
+                  <GlobalCommanTable expandIcon={true} showCatIcon={true} exportToExcelCategoryReport={this.exportToExcel} showHeader={true} showDateTime={' | Time: ' + this.state.resultSummary.totalTime + ' | Days: (' + this.state.resultSummary.totalDays + ')'} columns={this.state.columns} data={this.state.AllTimeEntry} callBackData={this.callBackData} TaskUsers={AllTaskUser} AllListId={this?.props} portfolioColor={portfolioColor} />
+                </div>
               </div>
-            </div></section>
+            </section>
           </div>
         }
         {
-          this.state.IsTask && (
-            <EditTaskPopup Items={this.state.IsTask} Call={() => { this.Call(undefined) }} AllListId={AllListId} context={this?.props?.Context} ></EditTaskPopup>
-          )
+          this.state.IsTask &&
+          (<EditTaskPopup Items={this.state.IsTask} Call={() => { this.Call(undefined) }} AllListId={AllListId} context={this?.props?.Context} ></EditTaskPopup>)
         }
-        {this.state?.IsMasterTask &&
+        {
+          this.state?.IsMasterTask &&
           (<Sitecomposition props={this.state?.IsMasterTask} isDirectPopup={this.state?.isDirectPopup} callback={() => { this.Call('Master Task') }} sitedata={AllListId} ></Sitecomposition>
           )
         }
-        {/* {
-          this.state?.IsMasterTask && (
-            <EditInstituton
-              item={this.state.IsMasterTask}
-              Calls={this.Call}
-              SelectD={this?.props}
-            >
-              {" "}
-            </EditInstituton>
-          )
-        } */}
+        {/* { this.state?.IsMasterTask && 
+          (<EditInstituton item={this.state.IsMasterTask} Calls={this.Call} SelectD={this?.props}> {" "}  </EditInstituton> ) } */}
         {
           this.state.IsPresetPopup &&
           (<PreSetDatePikerPannel isOpen={this.state.IsPresetPopup} PreSetPikerCallBack={this.PreSetPikerCallBack} portfolioColor={portfolioColor}></PreSetDatePikerPannel>)
         }
         {
-          this.state.IsTimeEntry && (
-            <TimeEntryPopup props={this.state.SharewebTimeComponent} CallBackTimeEntry={this.TimeEntryCallBack} Context={this?.props?.Context}></TimeEntryPopup>
-          )
+          this.state.IsTimeEntry &&
+          (<TimeEntryPopup props={this.state.SharewebTimeComponent} CallBackTimeEntry={this.TimeEntryCallBack} Context={this?.props?.Context}></TimeEntryPopup>)
         }
-
       </div >
     );
   }
