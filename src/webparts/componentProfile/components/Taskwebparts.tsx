@@ -553,6 +553,7 @@ function PortfolioTable(SelectedProp: any) {
   };
   const timeEntryIndex: any = {};
   const smartTimeTotal = async () => {
+    setLoaded(false)
     count++;
     let AllTimeEntries = [];
     if (timeSheetConfig?.Id !== undefined) {
@@ -601,6 +602,7 @@ function PortfolioTable(SelectedProp: any) {
         componentGrouping(portfoliodata[0]?.Id, portfoliodata[0]?.Id);
         countsrun++;
     }
+    setLoaded(true)
     return AllSiteTasksData;
   };
 
