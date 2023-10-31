@@ -1478,10 +1478,10 @@ const TeamSmartFilter = (item: any) => {
     //     <AiOutlineUp style={{ color: `${portfolioColor}`, width: '12px', marginTop: '-3px' }} />,
     // ];
     const icons = [
-        <AiOutlineUp style={{ color: `${portfolioColor}`, width: '12px', marginTop: '-3px' }} />,
-        <SlArrowRight style={{ color: `${portfolioColor}`, width: '12px', marginTop: '-3px' }} />,
-        <SlArrowDown style={{ color: `${portfolioColor}`, width: '12px', marginTop: '-3px' }} />,
-        <SlArrowRight style={{ color: `${portfolioColor}`, width: '12px', marginTop: '-3px' }} />,
+        <AiOutlineUp className='upSizeIcon' style={{ color: `${portfolioColor}`, width: '16px', height: "16px" }} />,
+        <SlArrowRight style={{ color: `${portfolioColor}`, width: '12px' }} />,
+        <SlArrowDown style={{ color: `${portfolioColor}`, width: '12px' }} />,
+        <SlArrowRight style={{ color: `${portfolioColor}`, width: '12px' }} />,
     ];
 
     //*************************************************** Portfolio Items & Task Items selected ***************************************************************** */
@@ -2014,6 +2014,9 @@ const TeamSmartFilter = (item: any) => {
                                         </label>
                                         <button className='btn btn-primary me-1 px-3 py-1' onClick={() => UpdateFilterData("udateClickTrue")}>Update Filter</button>
                                         <button className='btn  btn-default px-3 py-1' onClick={ClearFilter}> Clear Filters</button>
+                                        <div className="ms-1">
+                                            <Tooltip ComponentId={1651} />
+                                        </div>
                                     </div>
                                 </div>
                             </div>
@@ -2625,7 +2628,7 @@ const TeamSmartFilter = (item: any) => {
                                                     />
                                                 </div>
                                             </div>
-                                            <div className="col-sm-2 mt-2">
+                                            <div className="col-2 mt-2 pull-left m-0">
                                                 <label className="hreflink pt-4" title="Clear Date Filters" onClick={clearDateFilters} ><strong>Clear</strong></label>
                                             </div>
                                         </Row>

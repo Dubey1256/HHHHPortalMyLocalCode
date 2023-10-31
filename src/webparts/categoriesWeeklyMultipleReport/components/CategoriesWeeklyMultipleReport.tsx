@@ -1074,82 +1074,149 @@ export default class CategoriesWeeklyMultipleReport extends React.Component<ICat
 
     //Create filter Creteria based on Dates and Selected users
     //let filters = '(('; //use when with date filter
-    let filters = '('; //use when without date filter
+    // let filters = '('; //use when without date filter
     let ImageSelectedUsers = this.state.ImageSelectedUsers;
-    if (ImageSelectedUsers != undefined && ImageSelectedUsers.length > 0) {
-      ImageSelectedUsers.forEach(function (obj: any, index: any) {
-        if (obj != undefined && obj.AssingedToUserId != undefined) {
-          if (ImageSelectedUsers != undefined && ImageSelectedUsers.length - 1 == index)
-            filters += "(Author eq '" + obj.AssingedToUserId + "')";
-          else
-            filters += "(Author eq '" + obj.AssingedToUserId + "') or ";
-        }
-      });
-      //filters += ") and ((TaskDate le '"+ this.state.enddate.toISOString()  +"') and ";
-      //filters += "(TaskDate ge '"+ this.state.startdate.toISOString()  +"'))";   
-      filters += ")";
-    }
+    // if (ImageSelectedUsers != undefined && ImageSelectedUsers.length > 0) {
+    //   ImageSelectedUsers.forEach(function (obj: any, index: any) {
+    //     if (obj != undefined && obj.AssingedToUserId != undefined) {
+    //       if (ImageSelectedUsers != undefined && ImageSelectedUsers.length - 1 == index)
+    //         filters += "(Author eq '" + obj.AssingedToUserId + "')";
+    //       else
+    //         filters += "(Author eq '" + obj.AssingedToUserId + "') or ";
+    //     }
+    //   });
+    //   filters += " and ((TaskDate le '" + this.state.enddate.toISOString() + "') and ";
+    //   filters += "(TaskDate ge '" + this.state.startdate.toISOString() + "'))";
+    //   filters += ")";
+    // }
     this.setState({
       loaded: true,
     })
-    console.log(filters);
-    //let items:any = await this._pnpPagedSearchClick(filters)
-    //  let timelist =this.state.AllMetadata.filter((obj:any) => obj.TaxType =='timesheetListConfigrations');
+    // console.log(filters);
 
-    //  let columns :any ="Id, Title, TaskDate, TaskTime, AdditionalTimeEntry, Description, Modified, TaskMigration/Id, TaskMigration/Title, TaskMigration/Created, AuthorId&$expand=TaskMigration"
-    // let expended:any ='TaskMigration';
-    // let columns2 :any = "Id, Title, TaskDate, TaskTime, AdditionalTimeEntry, Description, Modified, AuthorId, TaskGruene/Id, TaskGruene/Title, TaskGruene/Created, TaskDE/Id, TaskDE/Title, TaskDE/Created, TaskEducation/Id, TaskEducation/Title, TaskEducation/Created, TaskEI/Id, TaskEI/Title, TaskEI/Created, TaskEPS/Id, TaskEPS/Title, TaskEPS/Created, TaskGender/Id, TaskGender/Title, TaskGender/Created, TaskHealth/Id, TaskHealth/Title, TaskHealth/Created, TaskHHHH/Id, TaskHHHH/Title, TaskHHHH/Created, TaskKathaBeck/Id, TaskKathaBeck/Title, TaskKathaBeck/Created, TaskQA/Id, TaskQA/Title, TaskQA/Created, TaskShareweb/Id, TaskShareweb/Title, TaskShareweb/Created, TaskOffshoreTasks/Id, TaskOffshoreTasks/Title, TaskOffshoreTasks/Created";
-    // let expen :any ="TaskGruene, TaskDE, TaskEducation, TaskEI, TaskEPS, TaskGender, TaskHealth, TaskHHHH, TaskKathaBeck, TaskQA, TaskShareweb, TaskOffshoreTasks"; 
-    // let listItems:any =[]
-    //  if(timelist?.length>0){
-
-    //   let arrayItems =JSON.parse(timelist[0].Configurations);
-    //   arrayItems.forEach(async (entry:any) =>{
-    //     if(entry?.listName ==='TasksTimesheet2')
-    //     listItems += await globalCommon._pnpPagedSearchClick(entry.siteUrl,entry.listId,columns,filters,expended);
-    //     if(entry?.listName ==='TaskTimeSheetListNew')
-    //     listItems += await globalCommon._pnpPagedSearchClick(entry.siteUrl,entry.listId,columns2,filters,expen);
-    //   })
-
-
-    //  }
-
-    let web = new Web(this.props.Context.pageContext.web.absoluteUrl);
     let array: any = [];
-    let resultsOfTimeSheet: any = await web.lists
-      .getByTitle('TasksTimesheet2')
-      .items
-      .select('Id', 'Title', 'TaskDate', 'TaskTime', 'AdditionalTimeEntry', 'Description', 'Modified', 'TaskMigration/Id', 'TaskMigration/Title', 'TaskMigration/Created', 'AuthorId')
-      // .filter(filters)
-      .expand('TaskMigration')
-      .getAll();
-    console.log(resultsOfTimeSheet);
-
-
-
-
-    let resultsofTimeSheetNew = await web.lists
-      .getByTitle('TaskTimeSheetListNew')
-      .items
-      .select('Id', 'Title', 'TaskDate', 'TaskTime', 'AdditionalTimeEntry', 'Description', 'Modified', 'AuthorId', 'TaskGruene/Id', 'TaskGruene/Title', 'TaskGruene/Created', 'TaskDE/Id', 'TaskDE/Title', 'TaskDE/Created', 'TaskEducation/Id', 'TaskEducation/Title', 'TaskEducation/Created', 'TaskEI/Id', 'TaskEI/Title', 'TaskEI/Created', 'TaskEPS/Id', 'TaskEPS/Title', 'TaskEPS/Created', 'TaskGender/Id', 'TaskGender/Title', 'TaskGender/Created', 'TaskHealth/Id', 'TaskHealth/Title', 'TaskHealth/Created', 'TaskHHHH/Id', 'TaskHHHH/Title', 'TaskHHHH/Created', 'TaskKathaBeck/Id', 'TaskKathaBeck/Title', 'TaskKathaBeck/Created', 'TaskQA/Id', 'TaskQA/Title', 'TaskQA/Created', 'TaskShareweb/Id', 'TaskShareweb/Title', 'TaskShareweb/Created', 'TaskOffshoreTasks/Id', 'TaskOffshoreTasks/Title', 'TaskOffshoreTasks/Created')
-      //.filter(filters)
-      .expand('TaskGruene', 'TaskDE', 'TaskEducation', 'TaskEI', 'TaskEPS', 'TaskGender', 'TaskHealth', 'TaskHHHH', 'TaskKathaBeck', 'TaskQA', 'TaskShareweb', 'TaskOffshoreTasks')
-      .getAll();
-    console.log(resultsofTimeSheetNew);
-
-    let AllTimeSheetResult = (resultsOfTimeSheet).concat(resultsofTimeSheetNew);
-    console.log(AllTimeSheetResult);
-    if (ImageSelectedUsers != undefined && ImageSelectedUsers.length > 0) {
-      ImageSelectedUsers.forEach(function (obj: any, index: any) {
-        if (obj != undefined && obj.AssingedToUserId != undefined) {
-          let arra = AllTimeSheetResult.filter((eleme: any) => obj.AssingedToUserId === eleme.AuthorId);
-          if (arra?.length > 0) {
-            array = array.concat(arra);
+    let timelist = this.state.AllMetadata.filter((obj: any) => obj.TaxType == 'timesheetListConfigrations');
+    //(async () => {
+      if(timelist?.length>0){
+      let AllTimeEntries: any = await globalCommon.loadAllTimeEntry(timelist[0]);
+      if (ImageSelectedUsers != undefined && ImageSelectedUsers.length > 0) {
+        ImageSelectedUsers.forEach(function (obj: any, index: any) {
+          if (obj != undefined && obj.AssingedToUserId != undefined) {
+            let arra = AllTimeEntries.filter((eleme: any) => obj.AssingedToUserId === eleme.AuthorId);
+            if (arra?.length > 0) {
+              array = array.concat(arra);
+            }
           }
-        }
-      })
-    }
+        })
+      }
+   // })();
     this.LoadTimeSheetData(array);
+      }
+    // let columns: any = "Id, Title, TaskDate, TaskTime, AdditionalTimeEntry, Description, Modified, TaskMigration/Id, TaskMigration/Title, TaskMigration/Created, AuthorId&$expand=TaskMigration"
+    // let expended: any = 'TaskMigration';
+    // let columns2: any = "Id, Title, TaskDate, TaskTime, AdditionalTimeEntry, Description, Modified, AuthorId, TaskGruene/Id, TaskGruene/Title, TaskGruene/Created, TaskDE/Id, TaskDE/Title, TaskDE/Created, TaskEducation/Id, TaskEducation/Title, TaskEducation/Created, TaskEI/Id, TaskEI/Title, TaskEI/Created, TaskEPS/Id, TaskEPS/Title, TaskEPS/Created, TaskGender/Id, TaskGender/Title, TaskGender/Created, TaskHealth/Id, TaskHealth/Title, TaskHealth/Created, TaskHHHH/Id, TaskHHHH/Title, TaskHHHH/Created, TaskKathaBeck/Id, TaskKathaBeck/Title, TaskKathaBeck/Created, TaskQA/Id, TaskQA/Title, TaskQA/Created, TaskShareweb/Id, TaskShareweb/Title, TaskShareweb/Created, TaskOffshoreTasks/Id, TaskOffshoreTasks/Title, TaskOffshoreTasks/Created";
+    // let expen: any = "TaskGruene, TaskDE, TaskEducation, TaskEI, TaskEPS, TaskGender, TaskHealth, TaskHHHH, TaskKathaBeck, TaskQA, TaskShareweb, TaskOffshoreTasks";
+    // let listItems: any = []
+    // if (timelist?.length > 0) {
+
+
+    //   let arrayItems = JSON.parse(timelist[0].Configurations);
+    //   let listsInfo: any = [];
+    //   arrayItems.forEach(async (entry: any) => {
+    //     if (entry?.listName === 'TasksTimesheet2'){
+    //       (async () => {
+    //         globalCommon.calculateBatches(entry)
+    //        .then(function (batchesInfo: any) {
+    //          batchesInfo.forEach((batchInfo: any) => {
+    //            listsInfo.push(batchInfo);
+    //          });
+    //          // LoadAllTimeSheetData(listsInfo);
+    //        });
+    //    })();
+    //     }
+    //       // listItems += await globalCommon._pnpPagedSearchClick(entry.siteUrl, entry.listId, columns, filters, expended);
+    //     if (entry?.listName === 'TaskTimeSheetListNew'){
+    //       (async () => {
+    //         globalCommon.calculateBatches(entry)
+    //        .then(function (batchesInfo: any) {
+    //          batchesInfo.forEach((batchInfo: any) => {
+    //            listsInfo.push(batchInfo);
+    //          });
+    //          // LoadAllTimeSheetData(listsInfo);
+    //        });
+    //    })();
+    //     }
+    //       // await globalCommon._pnpPagedSearchClick(entry.siteUrl, entry.listId, columns2, filters, expen).then((items) => {
+    //       //   console.log(items);
+    //       // })
+    //       //   .catch((error) => {
+    //       //     console.error(error);
+    //       //   });
+    //   })
+    // let array: any = [];
+    // arrayItems.forEach(async (entry: any) => {
+    //   if (entry?.listName === 'TasksTimesheet2') { }
+    //   array.push({ 'SiteUrl': entry.siteUrl, "listId": entry.listId, "columns": columns, "filters": filters, "expend": expended });
+    //   if (entry?.listName === 'TaskTimeSheetListNew') {
+    //     array.push({ 'SiteUrl': entry.siteUrl, "listId": entry.listId, "columns": columns2, "filters": filters, "expend": expen });
+    //   }
+    // })
+    // let listsInfo: any = [];
+    // if (array != undefined && array.length > 0) {
+    //   array.forEach(async (TimeSheet: any) => {
+    //     (async () => {
+    //        globalCommon.calculateBatches(TimeSheet)
+    //       .then(function (batchesInfo: any) {
+    //         batchesInfo.forEach((batchInfo: any) => {
+    //           listsInfo.push(batchInfo);
+    //         });
+    //         // LoadAllTimeSheetData(listsInfo);
+    //       });
+    //   })();
+
+    //   });
+    // }
+    // console.log(listsInfo);
+
+    // }
+
+
+    // let web = new Web(this.props.Context.pageContext.web.absoluteUrl);
+    // let array: any = [];
+    // let resultsOfTimeSheet: any = await web.lists
+    //   .getByTitle('TasksTimesheet2')
+    //   .items
+    //   .select('Id', 'Title', 'TaskDate', 'TaskTime', 'AdditionalTimeEntry', 'Description', 'Modified', 'TaskMigration/Id', 'TaskMigration/Title', 'TaskMigration/Created', 'AuthorId')
+    //   // .filter(filters)
+    //   .expand('TaskMigration')
+    //   .getAll();
+    // console.log(resultsOfTimeSheet);
+
+
+
+
+    // let resultsofTimeSheetNew = await web.lists
+    //   .getByTitle('TaskTimeSheetListNew')
+    //   .items
+    //   .select('Id', 'Title', 'TaskDate', 'TaskTime', 'AdditionalTimeEntry', 'Description', 'Modified', 'AuthorId', 'TaskGruene/Id', 'TaskGruene/Title', 'TaskGruene/Created', 'TaskDE/Id', 'TaskDE/Title', 'TaskDE/Created', 'TaskEducation/Id', 'TaskEducation/Title', 'TaskEducation/Created', 'TaskEI/Id', 'TaskEI/Title', 'TaskEI/Created', 'TaskEPS/Id', 'TaskEPS/Title', 'TaskEPS/Created', 'TaskGender/Id', 'TaskGender/Title', 'TaskGender/Created', 'TaskHealth/Id', 'TaskHealth/Title', 'TaskHealth/Created', 'TaskHHHH/Id', 'TaskHHHH/Title', 'TaskHHHH/Created', 'TaskKathaBeck/Id', 'TaskKathaBeck/Title', 'TaskKathaBeck/Created', 'TaskQA/Id', 'TaskQA/Title', 'TaskQA/Created', 'TaskShareweb/Id', 'TaskShareweb/Title', 'TaskShareweb/Created', 'TaskOffshoreTasks/Id', 'TaskOffshoreTasks/Title', 'TaskOffshoreTasks/Created')
+    //   //.filter(filters)
+    //   .expand('TaskGruene', 'TaskDE', 'TaskEducation', 'TaskEI', 'TaskEPS', 'TaskGender', 'TaskHealth', 'TaskHHHH', 'TaskKathaBeck', 'TaskQA', 'TaskShareweb', 'TaskOffshoreTasks')
+    //   .getAll();
+    // console.log(resultsofTimeSheetNew);
+
+    // let AllTimeSheetResult = (resultsOfTimeSheet).concat(resultsofTimeSheetNew);
+    // console.log(AllTimeSheetResult);
+    // if (ImageSelectedUsers != undefined && ImageSelectedUsers.length > 0) {
+    //   ImageSelectedUsers.forEach(function (obj: any, index: any) {
+    //     if (obj != undefined && obj.AssingedToUserId != undefined) {
+    //       let arra = AllTimeSheetResult.filter((eleme: any) => obj.AssingedToUserId === eleme.AuthorId);
+    //       if (arra?.length > 0) {
+    //         array = array.concat(arra);
+    //       }
+    //     }
+    //   })
+    // }
+    // this.LoadTimeSheetData(array);
 
   }
 
@@ -1754,8 +1821,12 @@ export default class CategoriesWeeklyMultipleReport extends React.Component<ICat
 
         this.CategoryItemsArray.forEach(function (filte: any) {
           let total = 0;
+          // let PortfolioType={Color:"#000066"}
           let Roundfigurtotal = 0;
           let SmartHoursTimetotal = 0;
+          filte.boldRow = 'boldClable'
+          //filte.PortfolioType =PortfolioType
+          filte.lableColor = 'f-bg';
           let TimeInExcel = 0;
           if (filte.childs != undefined) {
             filte.childs.forEach(function (child: any) {

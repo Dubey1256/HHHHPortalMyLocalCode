@@ -13,8 +13,10 @@ import ShowTaskTeamMembers from "../../../globalComponents/ShowTaskTeamMembers";
 import { PortfolioStructureCreationCard } from "../../../globalComponents/tableControls/PortfolioStructureCreation";
 import CreateActivity from "../../servicePortfolio/components/CreateActivity";
 import CreateWS from "../../servicePortfolio/components/CreateWS";
+import "bootstrap/dist/css/bootstrap.min.css";
 import Tooltip from "../../../globalComponents/Tooltip";
 import { ColumnDef } from "@tanstack/react-table";
+import "bootstrap/dist/css/bootstrap.min.css";
 import HighlightableCell from "../../../globalComponents/GroupByReactTableComponents/highlight";
 import Loader from "react-loader";
 import { Bars } from 'react-loader-spinner'
@@ -1279,7 +1281,7 @@ function TeamPortlioTable(SelectedProp: any) {
                 accessorFn: (row) => row?.TaskID,
                 cell: ({ row, getValue }) => (
                     <>
-                        <ReactPopperTooltipSingleLevel ShareWebId={getValue()} row={row?.original} singleLevel={true} masterTaskData={allMasterTaskDataFlatLoadeViewBackup} AllSitesTaskData={allTaskDataFlatLoadeViewBackup} AllListId={ContextValue} />
+                        <ReactPopperTooltipSingleLevel ShareWebId={getValue()} row={row?.original} AllListId={ContextValue} singleLevel={true} masterTaskData={allMasterTaskDataFlatLoadeViewBackup} AllSitesTaskData={allTaskDataFlatLoadeViewBackup} />
                     </>
                 ),
                 id: "TaskID",
@@ -1524,15 +1526,9 @@ function TeamPortlioTable(SelectedProp: any) {
                 ),
                 cell: ({ row, getValue }) => (
                     <>
-                        {row?.original?.isRestructureActive && (
+                        {row?.original?.isRestructureActive && row?.original?.Title != "Others" && (
                             <span className="Dyicons p-1" title="Restructure" style={{ backgroundColor: `${row?.original?.PortfolioType?.Color}` }} onClick={() => callChildFunction(row?.original)}>
                                 <span className="svg__iconbox svg__icon--re-structure"> </span>
-                                {/* <img
-                                    className="workmember"
-                                    src={row?.original?.Restructuring}
-                                    
-                                // onClick={()=>callChildFunction(row?.original)}
-                                /> */}
                             </span>
                         )}
                         {getValue()}
@@ -1775,74 +1771,151 @@ function TeamPortlioTable(SelectedProp: any) {
     const CreateOpenCall = React.useCallback((item) => { }, []);
     /// END ////
 
-    //----------------------------Code By Santosh---------------------------------------------------------------------------
-    const Call = (res: any) => {
+    //----------------------------Code By Anshu---------------------------------------------------------------------------
+
+    const addedCreatedDataFromAWT = (arr: any, dataToPush: any) => {
+        for (let val of arr) {
+            if (dataToPush?.PortfolioId === val.Id) {
+                val.subRows = val.subRows || [];
+                val?.subRows?.push(dataToPush);
+                return true;
+            } else if (val?.subRows) {
+                if (addedCreatedDataFromAWT(val.subRows, dataToPush)) {
+                    return true;
+                }
+            }
+        }
+        return false;
+    };
+    function deletedDataFromPortfolios(dataArray: any, idToDelete: any, siteName: any) {
+        let updatedArray = [];
+        let itemDeleted = false;
+        for (let item of dataArray) {
+            if (item.Id === idToDelete && item.siteType === siteName) {
+                itemDeleted = true;
+                continue;
+            }
+            let newItem = { ...item };
+            if (newItem.subRows && newItem.subRows.length > 0) {
+                newItem.subRows = deletedDataFromPortfolios(newItem.subRows, idToDelete, siteName);
+            }
+            updatedArray.push(newItem);
+            if (itemDeleted) {
+                return updatedArray;
+            }
+        }
+        return updatedArray;
+    }
+    const updatedDataDataFromPortfolios = (copyDtaArray: any, dataToUpdate: any) => {
+        for (let i = 0; i < copyDtaArray.length; i++) {
+            if ((dataToUpdate?.Portfolio?.Id === copyDtaArray[i]?.Portfolio?.Id && dataToUpdate?.Id === copyDtaArray[i]?.Id && copyDtaArray[i]?.siteType === dataToUpdate?.siteType) || (dataToUpdate?.Id === copyDtaArray[i]?.Id && copyDtaArray[i]?.siteType === dataToUpdate?.siteType)) {
+                copyDtaArray[i] = { ...copyDtaArray[i], ...dataToUpdate };
+                return true;
+            } else if (copyDtaArray[i].subRows) {
+                if (updatedDataDataFromPortfolios(copyDtaArray[i].subRows, dataToUpdate)) {
+                    return true;
+                }
+            }
+        }
+        return false;
+    };
+    const Call = (res: any, UpdatedData: any) => {
         if (res === "Close") {
             setIsComponent(false);
             setIsTask(false);
             setIsOpenActivity(false)
             setIsOpenWorkstream(false)
             setActivityPopup(false)
-        } else if (res?.data) {
+        } else if (res?.data && res?.data?.ItmesDelete != true && !UpdatedData) {
             childRef?.current?.setRowSelection({});
             setIsComponent(false);
             setIsTask(false);
             setIsOpenActivity(false)
             setIsOpenWorkstream(false)
             setActivityPopup(false)
-            copyDtaArray?.forEach((val: any) => {
-                if (res?.data?.PortfolioId === val.Id) {
-                    val.subRows = val.subRows === undefined ? [] : val.subRows;
-                    val.subRows.push(res.data)
-                }
-                else if (val?.subRows != undefined && val?.subRows.length > 0) {
-                    val.subRows?.forEach((ele: any) => {
-                        if (res?.data?.PortfolioId == ele?.Id) {
-                            ele.subRows = ele.subRows === undefined ? [] : ele.subRows;
-                            ele.subRows.push(res.data)
+            // copyDtaArray?.forEach((val: any) => {
+            //     if (res?.data?.PortfolioId === val.Id) {
+            //         val.subRows = val.subRows === undefined ? [] : val.subRows;
+            //         val.subRows.push(res.data)
+            //     }
+            //     else if (val?.subRows != undefined && val?.subRows.length > 0) {
+            //         val.subRows?.forEach((ele: any) => {
+            //             if (res?.data?.PortfolioId == ele?.Id) {
+            //                 ele.subRows = ele.subRows === undefined ? [] : ele.subRows;
+            //                 ele.subRows.push(res.data)
 
-                        }
-                        else {
-                            ele.subRows?.forEach((elev: any) => {
-                                if (res?.data?.PortfolioId == elev.Id) {
-                                    elev.subRows = elev.subRows === undefined ? [] : elev.subRows;
-                                    elev.subRows.push(res.data)
+            //             }
+            //             else {
+            //                 ele.subRows?.forEach((elev: any) => {
+            //                     if (res?.data?.PortfolioId == elev.Id) {
+            //                         elev.subRows = elev.subRows === undefined ? [] : elev.subRows;
+            //                         elev.subRows.push(res.data)
 
-                                }
-                                else {
-                                    elev.subRows?.forEach((child: any) => {
-                                        if (res?.data?.PortfolioId == child?.Id) {
-                                            child.subRows = child.subRows === undefined ? [] : child.subRows;
+            //                     }
+            //                     else {
+            //                         elev.subRows?.forEach((child: any) => {
+            //                             if (res?.data?.PortfolioId == child?.Id) {
+            //                                 child.subRows = child.subRows === undefined ? [] : child.subRows;
 
-                                            child.subRows.push(res.data)
+            //                                 child.subRows.push(res.data)
 
-                                        }
-                                        else {
-                                            {
-                                                child.subRows?.forEach((Sub: any) => {
-                                                    if (res?.data?.PortfolioId == Sub.Id) {
-                                                        Sub.subRows = Sub.subRows === undefined ? [] : Sub.subRows;
+            //                             }
+            //                             else {
+            //                                 {
+            //                                     child.subRows?.forEach((Sub: any) => {
+            //                                         if (res?.data?.PortfolioId == Sub.Id) {
+            //                                             Sub.subRows = Sub.subRows === undefined ? [] : Sub.subRows;
 
-                                                        Sub.subRows.push(res.data)
+            //                                             Sub.subRows.push(res.data)
 
-                                                    }
-                                                })
-                                            }
-                                        }
-                                    })
-                                }
-                            })
-                        }
-                    })
-                }
+            //                                         }
+            //                                     })
+            //                                 }
+            //                             }
+            //                         })
+            //                     }
+            //                 })
+            //             }
+            //         })
+            //     }
 
-            })
+            // })
+            if (addedCreatedDataFromAWT(copyDtaArray, res.data)) {
+                renderData = [];
+                renderData = renderData.concat(copyDtaArray)
+                refreshData();
+            }
+        } else if (res?.data?.ItmesDelete === true && res?.data?.Id && (res?.data?.siteName || res?.data?.siteType) && !UpdatedData) {
+            setIsComponent(false);
+            setIsTask(false);
+            setIsOpenActivity(false)
+            setIsOpenWorkstream(false)
+            setActivityPopup(false)
+            if (res?.data?.siteName) {
+                copyDtaArray = deletedDataFromPortfolios(copyDtaArray, res.data.Id, res.data.siteName);
+            } else {
+                copyDtaArray = deletedDataFromPortfolios(copyDtaArray, res.data.Id, res.data.siteType);
+            }
             renderData = [];
             renderData = renderData.concat(copyDtaArray)
             refreshData();
+        } else if (res?.data?.ItmesDelete != true && res?.data?.Id && res?.data?.siteType && UpdatedData) {
+            setIsComponent(false);
+            setIsTask(false);
+            setIsOpenActivity(false)
+            setIsOpenWorkstream(false)
+            setActivityPopup(false)
+            const updated = updatedDataDataFromPortfolios(copyDtaArray, res?.data);
+            if (updated) {
+                renderData = [];
+                renderData = renderData.concat(copyDtaArray)
+                refreshData();
+            } else {
+                console.log("Data with the specified PortfolioId was not found.");
+            }
+
         }
     }
-
     // new change////
     const CreateActivityPopup = (type: any) => {
         if (checkedList?.TaskType === undefined) {
@@ -2161,6 +2234,7 @@ function TeamPortlioTable(SelectedProp: any) {
                     Call={Call}
                     AllListId={SelectedProp?.SelectedProp}
                     context={SelectedProp?.SelectedProp.Context}
+                    pageName={"TaskFooterTable"}
                 ></EditTaskPopup>
             )}
             {IsComponent && (
