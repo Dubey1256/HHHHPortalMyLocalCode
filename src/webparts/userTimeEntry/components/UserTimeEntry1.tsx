@@ -676,7 +676,8 @@ export default class UserTimeEntry extends React.Component<IUserTimeEntryProps, 
 
     let web = new Web(this.props.Context.pageContext.web.absoluteUrl);
     let resultsOfTimeSheet2 = await web.lists
-      .getById(this.props.TaskTimeSheet2ListID)
+      // .getById(this?.props?.TaskTimeSheet2ListID)
+      .getByTitle('TasksTimesheet2')
       .items
       .select('Id', 'Title', 'TaskDate', 'TaskTime', 'AdditionalTimeEntry', 'Description', 'Modified', 'TaskMigration/Id', 'TaskMigration/Title', 'TaskMigration/Created', 'AuthorId')
       .filter(filters)
@@ -685,7 +686,8 @@ export default class UserTimeEntry extends React.Component<IUserTimeEntryProps, 
     console.log(resultsOfTimeSheet2);
 
     let resultsofTimeSheetNew = await web.lists
-      .getById(this.props.TaskTimeSheetListNewListID)
+      // .getById(this?.props?.TaskTimeSheetListNewListID)
+      .getByTitle('TaskTimeSheetListNew')
       .items
       .select('Id', 'Title', 'TaskDate', 'TaskTime', 'AdditionalTimeEntry', 'Description', 'Modified', 'AuthorId', 'TaskGruene/Id', 'TaskGruene/Title', 'TaskGruene/Created', 'TaskDE/Id', 'TaskDE/Title', 'TaskDE/Created', 'TaskEducation/Id', 'TaskEducation/Title', 'TaskEducation/Created', 'TaskEI/Id', 'TaskEI/Title', 'TaskEI/Created', 'TaskEPS/Id', 'TaskEPS/Title', 'TaskEPS/Created', 'TaskGender/Id', 'TaskGender/Title', 'TaskGender/Created', 'TaskHealth/Id', 'TaskHealth/Title', 'TaskHealth/Created', 'TaskHHHH/Id', 'TaskHHHH/Title', 'TaskHHHH/Created', 'TaskKathaBeck/Id', 'TaskKathaBeck/Title', 'TaskKathaBeck/Created', 'TaskQA/Id', 'TaskQA/Title', 'TaskQA/Created', 'TaskShareweb/Id', 'TaskShareweb/Title', 'TaskShareweb/Created', 'TaskOffshoreTasks/Id', 'TaskOffshoreTasks/Title', 'TaskOffshoreTasks/Created')
       .filter(filters)
