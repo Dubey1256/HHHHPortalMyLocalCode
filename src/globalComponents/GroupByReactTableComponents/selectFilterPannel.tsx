@@ -48,7 +48,7 @@ const SelectFilterPanel = (props: any) => {
         return (
             <div className="d-flex full-width pb-1">
                 <div className="alignCenter subheading">
-                    <span style={{ color: `${props?.portfolioColor}` }}>Settings Advanced Search</span>
+                    <span style={{ color: `${props?.portfolioColor}` }}  className="siteColor">Settings Advanced Search</span>
                     <span className="ms-3"><Tooltip ComponentId={839} /></span>
                 </div>
             </div>
