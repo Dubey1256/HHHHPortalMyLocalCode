@@ -2323,7 +2323,7 @@ const EditTaskPopup = (Items: any) => {
                                     dataEditor.data.FeedBack = JSON.stringify(dataEditor.data.FeedBack)
                                     Items.Call(dataEditor)
                                 }
-                                Items.Call(DataJSONUpdate);
+                                Items.Call(DataJSONUpdate, "UpdatedData");
                             }
                             else {
                                 Items.Call("Save");
