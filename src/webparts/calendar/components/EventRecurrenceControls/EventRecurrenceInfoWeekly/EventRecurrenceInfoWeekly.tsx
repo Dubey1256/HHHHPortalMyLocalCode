@@ -347,7 +347,8 @@ export class EventRecurrenceInfoWeekly extends React.Component<IEventRecurrenceI
     const recurrenceXML = `<recurrence><rule><firstDayOfWeek>su</firstDayOfWeek><repeat>` +
       `<weekly ${weekdays} weekFrequency="${this.state.numberOfWeeks.trim()}" /></repeat>${selectDateRangeOption}</rule></recurrence>`;
     console.log(recurrenceXML);
-    this.props.returnRecurrenceData(this.state.startDate, recurrenceXML);
+    //change
+    this.props.returnRecurrenceData(this.state.startDate,this.state.endDate, recurrenceXML);
   }
   /**
    *

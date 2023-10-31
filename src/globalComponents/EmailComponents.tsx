@@ -156,7 +156,7 @@ const EmailComponent = (props: any) => {
                         <p><b><span style={{ fontSize: '10.0pt', color: 'black' }}>Task Id:</span></b><u></u><u></u></p>
                       </td>
                       <td colSpan={2} style={{ border: 'solid #cccccc 1.0pt', background: '#fafafa', padding: '.75pt .75pt .75pt .75pt' }}>
-                        <p><span style={{ fontSize: '10.0pt', color: 'black' }}>{props.items?.TaskID}</span><u></u><u></u></p>
+                        <p><span style={{ fontSize: '10.0pt', color: 'black' }}>{props?.items?.TaskId}</span><u></u><u></u></p>
                       </td>
                       <td style={{ border: 'solid #cccccc 1.0pt', background: '#f4f4f4', padding: '.75pt .75pt .75pt .75pt' }}>
                         <p><b><span style={{ fontSize: '10.0pt', color: 'black' }}>Component:</span></b><u></u><u></u></p>
