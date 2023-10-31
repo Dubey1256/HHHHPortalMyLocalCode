@@ -28,6 +28,7 @@ import PageLoader from '../../../globalComponents/pageLoader';
 let AllMasterTasks: any = [];
 let portfolioColor: any = '';
 var AllListId: any;
+let loadAllTimeEntryData: any = [];
 export interface ICategoriesWeeklyMultipleReportState {
   Result: any;
   taskUsers: any;
@@ -72,7 +73,6 @@ export interface ICategoriesWeeklyMultipleReportState {
   AllMetadata: any;
   columns: any;
   loaded: any;
-
 }
 
 export default class CategoriesWeeklyMultipleReport extends React.Component<ICategoriesWeeklyMultipleReportProps, ICategoriesWeeklyMultipleReportState> {
@@ -1095,10 +1095,18 @@ export default class CategoriesWeeklyMultipleReport extends React.Component<ICat
     // console.log(filters);
 
     let array: any = [];
+    let AllTimeEntries: any;
+
     let timelist = this.state.AllMetadata.filter((obj: any) => obj.TaxType == 'timesheetListConfigrations');
-    //(async () => {
-      if(timelist?.length>0){
-      let AllTimeEntries: any = await globalCommon.loadAllTimeEntry(timelist[0]);
+
+    if (timelist?.length > 0) {
+      if (loadAllTimeEntryData?.length > 0)
+        AllTimeEntries = loadAllTimeEntryData;
+      else {
+        AllTimeEntries = await globalCommon.loadAllTimeEntry(timelist[0]);
+        loadAllTimeEntryData = AllTimeEntries;
+      }
+
       if (ImageSelectedUsers != undefined && ImageSelectedUsers.length > 0) {
         ImageSelectedUsers.forEach(function (obj: any, index: any) {
           if (obj != undefined && obj.AssingedToUserId != undefined) {
@@ -1109,9 +1117,10 @@ export default class CategoriesWeeklyMultipleReport extends React.Component<ICat
           }
         })
       }
-   // })();
-    this.LoadTimeSheetData(array);
-      }
+      this.LoadTimeSheetData(array);
+
+
+    }
     // let columns: any = "Id, Title, TaskDate, TaskTime, AdditionalTimeEntry, Description, Modified, TaskMigration/Id, TaskMigration/Title, TaskMigration/Created, AuthorId&$expand=TaskMigration"
     // let expended: any = 'TaskMigration';
     // let columns2: any = "Id, Title, TaskDate, TaskTime, AdditionalTimeEntry, Description, Modified, AuthorId, TaskGruene/Id, TaskGruene/Title, TaskGruene/Created, TaskDE/Id, TaskDE/Title, TaskDE/Created, TaskEducation/Id, TaskEducation/Title, TaskEducation/Created, TaskEI/Id, TaskEI/Title, TaskEI/Created, TaskEPS/Id, TaskEPS/Title, TaskEPS/Created, TaskGender/Id, TaskGender/Title, TaskGender/Created, TaskHealth/Id, TaskHealth/Title, TaskHealth/Created, TaskHHHH/Id, TaskHHHH/Title, TaskHHHH/Created, TaskKathaBeck/Id, TaskKathaBeck/Title, TaskKathaBeck/Created, TaskQA/Id, TaskQA/Title, TaskQA/Created, TaskShareweb/Id, TaskShareweb/Title, TaskShareweb/Created, TaskOffshoreTasks/Id, TaskOffshoreTasks/Title, TaskOffshoreTasks/Created";

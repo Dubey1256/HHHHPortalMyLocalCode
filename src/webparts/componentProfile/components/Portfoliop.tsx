@@ -5,7 +5,7 @@ let TypeSite: string;
 import { Web } from "sp-pnp-js";
 import * as Moment from "moment";
 import Tooltip from "../../../globalComponents/Tooltip";
-
+import ReactPopperTooltipSingleLevel from "../../../globalComponents/Hierarchy-Popper-tooltipSilgleLevel/Hierarchy-Popper-tooltipSingleLevel";
 import { FaHome, FaPencilAlt } from "react-icons/fa";
 import { IoMdArrowDropright, IoMdArrowDropdown } from "react-icons/io";
 import CommentCard from "../../../globalComponents/Comments/CommentCard";
@@ -369,6 +369,8 @@ let componentDetails: any = [];
 let filterdata: any = [];
 let imageArray: any = [];
 let AllTaskuser:any=[];
+let hoveroverstructureId:any;
+let combinedArray:any=[];
 function getQueryVariable(variable: any) {
   let query = window.location.search.substring(1);
   console.log(query); //"app=article&act=news_content&aid=160990"
@@ -415,7 +417,9 @@ function Portfolio({ SelectedProp,TaskUser }: any) {
   });
 
   const [portfolioTyped, setPortfolioTypeData] = React.useState([]);
-
+  const [myparentData, setParentData] = React.useState([]);
+  const [hoveredId, setHoveredId] = React.useState(null);
+  const [isTooltipOpen, setIsTooltipOpen] = React.useState(false);
   // PortfolioType
 
   const getPortFolioType = async () => {
@@ -452,7 +456,7 @@ function Portfolio({ SelectedProp,TaskUser }: any) {
     ContextValue = SelectedProp;
 
     let web = ContextValue.siteUrl;
-    let url = `${web}/_api/lists/getbyid('${ContextValue.MasterTaskListID}')/items?$select=ItemRank,Item_x0020_Type,Portfolios/Id,Portfolios/Title,PortfolioType/Id,PortfolioType/Title,PortfolioType/Color,PortfolioType/IdRange,Site,FolderID,PortfolioStructureID,ValueAdded,Idea,TaskListName,TaskListId,WorkspaceType,CompletedDate,ClientActivityJson,ClientSite,Item_x002d_Image,Sitestagging,SiteCompositionSettings,TechnicalExplanations,Deliverables,Author/Id,Author/Title,Editor/Id,Editor/Title,Package,Short_x0020_Description_x0020_On,Short_x0020_Description_x0020__x,Short_x0020_description_x0020__x0,AdminNotes,AdminStatus,Background,Help_x0020_Information,BasicImageInfo,Item_x0020_Type,AssignedTo/Title,AssignedTo/Name,AssignedTo/Id,Categories,FeedBack,ComponentLink,FileLeafRef,Title,Id,Comments,StartDate,DueDate,Status,Body,Company,Mileage,PercentComplete,FeedBack,Attachments,Priority,PriorityRank,Created,Modified,TeamMembers/Id,TeamMembers/Title,Parent/Id,Parent/Title,Parent/ItemType,TaskCategories/Id,TaskCategories/Title,ClientCategory/Id,ClientCategory/Title&$expand=Author,Editor,ClientCategory,Parent,AssignedTo,TeamMembers,PortfolioType,Portfolios,TaskCategories&$filter=Id eq ${ID}&$top=4999`;
+    let url = `${web}/_api/lists/getbyid('${ContextValue.MasterTaskListID}')/items?$select=ItemRank,Item_x0020_Type,Portfolios/Id,Portfolios/Title,PortfolioType/Id,PortfolioType/Title,PortfolioType/Color,PortfolioType/IdRange,Site,FolderID,PortfolioStructureID,ValueAdded,Idea,TaskListName,TaskListId,WorkspaceType,CompletedDate,ClientActivityJson,ClientSite,Item_x002d_Image,Sitestagging,SiteCompositionSettings,TechnicalExplanations,Deliverables,Author/Id,Author/Title,Editor/Id,Editor/Title,Package,Short_x0020_Description_x0020_On,Short_x0020_Description_x0020__x,Short_x0020_description_x0020__x0,AdminNotes,AdminStatus,Background,Help_x0020_Information,BasicImageInfo,Item_x0020_Type,AssignedTo/Title,AssignedTo/Name,AssignedTo/Id,Categories,FeedBack,ComponentLink,FileLeafRef,Title,Id,Comments,StartDate,DueDate,Status,Body,Company,Mileage,PercentComplete,FeedBack,Attachments,Priority,PriorityRank,Created,Modified,TeamMembers/Id,TeamMembers/Title,Parent/Id,Parent/Title,Parent/ItemType,Parent/Item_x0020_Type,TaskCategories/Id,TaskCategories/Title,ClientCategory/Id,ClientCategory/Title&$expand=Author,Editor,ClientCategory,Parent,AssignedTo,TeamMembers,PortfolioType,Portfolios,TaskCategories&$filter=Id eq ${ID}&$top=4999`;
     let response: any = [];
     let responsen: any = []; // this variable is used for storing list items
     function GetListItems() {
@@ -515,11 +519,12 @@ function Portfolio({ SelectedProp,TaskUser }: any) {
                 headers: {
                   Accept: "application/json; odata=verbose"
                 },
-                success: function (data) {
+                success: function (mydata) {
                   ParentData=[]
-                  ParentData.push(data?.d?.results[0]);
-                  if (data.d.__next) {
-                    urln = data.d.__next;
+                  ParentData.push(mydata?.d?.results[0]);
+                  setParentData(ParentData)
+                  if (mydata.d.__next) {
+                    urln = mydata.d.__next;
                   } else {
 
                     console.log(ParentData);
@@ -847,7 +852,20 @@ const inlineCallBack = React.useCallback((item: any) => {
  setTaskData(updatedTasks);
  count++;
 }, []);
+if (data[0]?.Item_x0020_Type === "Feature") {
+  combinedArray.push(ParentData[0]?.Parent)
+  combinedArray.push(ParentData[0])
+  combinedArray.push(data[0])
+  }
+else if(data[0]?.Item_x0020_Type == "SubComponent"){
+  combinedArray.push(data[0].Parent);
+}else if(data[0]?.Item_x0020_Type == "Component"){
+  combinedArray.push(data[0])
+}
 
+
+
+ 
   return (
     <myContextValue.Provider value={{ ...myContextValue, FunctionCall: contextCall, keyDoc:keydoc, FileDirRef: FileDirRef }}>
     <div className={TypeSite == "Service" ? "serviepannelgreena" : ""}>
@@ -1025,10 +1043,12 @@ const inlineCallBack = React.useCallback((item: any) => {
                         <dt className="bg-fxdark" title="Structure ID ">ID</dt>
                         <dd className="bg-light">
                           <span>
-                            {data.map((item, index) => (
-                             <a title={item?.PortfolioStructureID}>{item?.PortfolioStructureID}</a>
-                             ))}
+                          {data.map((item, index) => (
+
+<ReactPopperTooltipSingleLevel ShareWebId={item?.PortfolioStructureID} row={item} singleLevel={true} masterTaskData={combinedArray} AllSitesTaskData={[]} AllListId={SelectedProp?.NextProp} />
+        ))}
                           </span>
+                          {hoveredId && <span>{hoveredId}</span>}
                         </dd>
                       </dl>
                       <dl>
@@ -1727,15 +1747,13 @@ const inlineCallBack = React.useCallback((item: any) => {
             
                 <div className="mb-3 mt-1">
                 {data.map((item: any, index: any) => {
-  if (item.Sitestagging !== null) {
-    return (
-      <Sitecomposition
-        key={index}
-        props={item}
-        sitedata={SelectedProp}
-      />
-    );
-  }
+                  return (
+                    <Sitecomposition
+                      key={index}
+                      props={item}
+                      sitedata={SelectedProp}
+                    />
+                  );
   return null; // You can also use `null` to represent no rendering in case the condition is not met.
 })}
                 </div>
