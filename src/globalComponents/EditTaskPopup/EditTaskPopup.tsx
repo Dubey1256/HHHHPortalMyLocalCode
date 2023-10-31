@@ -92,6 +92,7 @@ var userSendAttentionEmails: any = [];
 var TempSmartInformationIds: any = [];
 let StatusOptionsBackupArray: any = [];
 var TaskCreatorApproverBackupArray: any = [];
+var AllSitesData: any = [];
 var TaskApproverBackupArray: any = [];
 
 const EditTaskPopup = (Items: any) => {
@@ -280,7 +281,7 @@ const EditTaskPopup = (Items: any) => {
 
     const SmartMetaDataListInformations = async () => {
         let AllSmartDataListData: any = [];
-        let AllSitesData: any = [];
+       
         let AllClientCategoryData: any = [];
         let AllCategoriesData: any = [];
         let AllTimesheetCategoriesData: any = [];
@@ -3512,7 +3513,7 @@ const EditTaskPopup = (Items: any) => {
         await web.lists.getByTitle(SelectedSite).items.select("Id,Title").filter(`Id eq ${newItem.Id}`).get().
             then(async (res) => {
                 SiteId = res[0].Id
-                siteConfig.forEach((itemss: any) => {
+                AllSitesData?.forEach((itemss: any) => {
                     if (itemss.Title == SelectedSite && itemss.TaxType == 'Sites') {
                         TimesheetConfiguration = JSON.parse(itemss.Configurations)
                     }
