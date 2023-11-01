@@ -240,7 +240,7 @@ const TaskDashboard = (props: any) => {
     //End
 
 
-    const loadAllTimeEntry = async () => {
+      const loadAllTimeEntry = async () => {
         if (isShowTimeEntry == true) {
             AllTaskTimeEntries = [];
             setPageLoader(true);
@@ -261,7 +261,7 @@ const TaskDashboard = (props: any) => {
                             const data = await web.lists
                                 .getById(list?.listId)
                                 .items.select(list?.query)
-                                .filter(`TimesheetTitle/Id ne null`)
+                                .filter(`(Modified ge '${startDate}') and (TimesheetTitle/Id ne null)`)
                                 .orderBy('Modified', false)
                                 .skip(skip)
                                 .top(batchSize)
