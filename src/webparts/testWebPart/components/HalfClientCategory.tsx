@@ -1,4 +1,5 @@
 import React from 'react'
+import { SPHttpClient, SPHttpClientResponse } from '@microsoft/sp-http';
 import {
     ColumnDef,
 } from "@tanstack/react-table";
@@ -24,6 +25,7 @@ var Idd: number;
 let AllMasterTaskItems: any = [];
 var allSitesTasks: any = [];
 var AllListId: any = {};
+let typeData: any = [];
 var currentUserId: '';
 var currentUser: any = [];
 let headerOptions: any = {
@@ -39,6 +41,7 @@ var isShowSiteCompostion: any = "";
 let ProjectData: any = [];
 let portfolioColor: any = "#000069";
 const HalfClientCategory = (props: any) => {
+    const rerender = React.useReducer(() => ({}), {})[1]
     const [pageLoaderActive, setPageLoader] = React.useState(false)
     const [protectedView, setProtectedView] = React.useState(false)
     const [AllTaskUser, setAllTaskUser] = React.useState([]);
@@ -57,8 +60,12 @@ const HalfClientCategory = (props: any) => {
     const [smartTimeTotalFunction, setSmartTimeTotalFunction] = React.useState(null);
     const [filterCounters, setFilterCounters] = React.useState(false);
     const [loaded, setLoaded] = React.useState(false);
+    const [portfolioTypeDataItem, setPortFolioTypeIcon] = React.useState([]);
     const [AllSiteTasksData, setAllSiteTasksData]: any = React.useState([]);
+    const [taskTypeData, setTaskTypeData] = React.useState([])
+    const [taskTypeDataItem, setTaskTypeDataItem] = React.useState([]);
     const [AllMasterTasksData, setAllMasterTasksData]: any = React.useState([]);
+    const [portfolioTypeConfrigration, setPortfolioTypeConfrigration] = React.useState<any>([{ Title: 'Component', Suffix: 'C', Level: 1 }, { Title: 'SubComponent', Suffix: 'S', Level: 2 }, { Title: 'Feature', Suffix: 'F', Level: 3 }]);
     React.useEffect(() => {
         try {
             $("#spPageCanvasContent").removeClass();
@@ -79,12 +86,16 @@ const HalfClientCategory = (props: any) => {
             DocumentsListID: props?.props?.DocumentsListID,
             SmartInformationListID: props?.props?.SmartInformationListID,
             AdminConfigrationListID: props?.props?.AdminConfigrationListID,
+            PortFolioTypeID: props?.props?.PortFolioTypeID,
+            TaskTypeID: props?.props?.TaskTypeID,
             siteUrl: props?.props?.siteUrl,
             isShowTimeEntry: isShowTimeEntry,
             isShowSiteCompostion: isShowSiteCompostion
         }
         TaskUser()
         GetMetaData()
+        getTaskType()
+        findPortFolioIconsAndPortfolio()
 
     }, [])
 
@@ -237,7 +248,11 @@ const HalfClientCategory = (props: any) => {
     };
 
     const LoadAllSiteTasks = function () {
+        typeData?.map((type: any) => {
+            type[type.Title + 'number'] = 0;
+        })
         allSitesTasks = [];
+        let taskTypeCount = JSON.parse(JSON.stringify(typeData));
         setPageLoader(true);
         if (siteConfig?.length > 0) {
             try {
@@ -392,6 +407,17 @@ const HalfClientCategory = (props: any) => {
                                     items.siteCompositionSearch = ' ';
                                     items.siteCompositionTotal = ' ';
                                 }
+                                taskTypeCount?.map((type: any) => {
+                                    if (items?.TaskType?.Title === type?.Title) {
+                                        type[type.Title + 'number'] += 1;
+                                        type[type.Title + 'filterNumber'] += 1;
+                                    }
+                                })
+                                typeData?.map((type: any) => {
+                                    if (items?.TaskType?.Title === type?.Title) {
+                                        type[type.Title + 'number'] += 1;
+                                    }
+                                })
                             } catch (error) {
 
                             }
@@ -407,6 +433,7 @@ const HalfClientCategory = (props: any) => {
                         console.log(BackUpAllCCTask)
                         setAllSiteTasks(BackUpAllCCTask);
                         setAllSiteTasksData(BackUpAllCCTask);
+                        setTaskTypeDataItem(taskTypeCount)
                         setPageLoader(false);
                         GetMasterData();
                         allSitesTasks = BackUpAllCCTask;
@@ -422,6 +449,10 @@ const HalfClientCategory = (props: any) => {
         }
     };
     const GetMasterData = async () => {
+        let portFoliotypeCount = JSON.parse(JSON.stringify(portfolioTypeDataItem?.map((taskLevelcount: any) => {
+            taskLevelcount[taskLevelcount.Title + 'filterNumber'] = 0; return taskLevelcount
+        }
+        )))
         setPageLoader(true);
         AllCSFMasterTasks = [];
         if (AllListId?.MasterTaskListID != undefined) {
@@ -531,6 +562,13 @@ const HalfClientCategory = (props: any) => {
                             items.siteCompositionSearch = ' ';
                             items.siteCompositionTotal = ' ';
                         }
+                        if (items?.PortfolioType?.Id != undefined && items?.TaskType === undefined) {
+                            portFoliotypeCount?.map((type: any) => {
+                                if (items?.Item_x0020_Type === type?.Title && items.PortfolioType != undefined) {
+                                    type[type.Title + 'filterNumber'] += 1;
+                                }
+                            })
+                        }
                     } catch (error) {
 
                     }
@@ -538,6 +576,7 @@ const HalfClientCategory = (props: any) => {
                 }
             })
             setPageLoader(false);
+            setPortFolioTypeIcon(portFoliotypeCount);
             setAllMasterTasks(AllCSFMasterTasks)
             setAllMasterTasksData(AllCSFMasterTasks)
             //  console.log(AllCSFMasterTasks);
@@ -575,15 +614,15 @@ const HalfClientCategory = (props: any) => {
 
         setIsComponent(false);
     };
-    const TaskSiteComp=(saveType:any) =>{
-        if(saveType=="Save"){
+    const TaskSiteComp = (saveType: any) => {
+        if (saveType == "Save") {
             LoadAllSiteTasks();
         }
         setEditSiteCompositionStatus(false);
         setSelectedItem(null)
     }
     const MasterSiteComp = (saveType: any) => {
-        if(saveType=="Save"){
+        if (saveType == "Save") {
             LoadAllSiteTasks();
         }
         setEditSiteCompositionMaster(false);
@@ -611,9 +650,36 @@ const HalfClientCategory = (props: any) => {
     }, []);
 
     React.useEffect(() => {
+        let taskTypeCount = JSON.parse(JSON.stringify(typeData));
+        let portFoliotypeCount = JSON.parse(JSON.stringify(portfolioTypeDataItem?.map((taskLevelcount: any) => {
+            taskLevelcount[taskLevelcount.Title + 'filterNumber'] = 0; return taskLevelcount
+        }
+        )))
+
         if (smartAllFilterData?.length > 0) {
-            let findAllProtFolioData = smartAllFilterData?.filter((elem: any) => elem?.PortfolioType?.Id != undefined && elem?.TaskType === undefined);
-            let findAllTaskData = smartAllFilterData?.filter((elem: any) => elem?.PortfolioType?.Id === undefined && elem?.TaskType != undefined);
+
+            let findAllProtFolioData = smartAllFilterData?.filter((elem: any) => {
+                if (elem?.PortfolioType?.Id != undefined && elem?.TaskType === undefined) {
+                    portFoliotypeCount?.map((type: any) => {
+                        if (elem?.Item_x0020_Type === type?.Title && elem.PortfolioType != undefined) {
+                            type[type.Title + 'filterNumber'] += 1;
+                        }
+                    })
+                    return elem
+                }
+            });
+            let findAllTaskData = smartAllFilterData?.filter((elem: any) => {
+                if (elem?.PortfolioType?.Id === undefined && elem?.TaskType != undefined) {
+                    taskTypeCount?.map((type: any) => {
+                        if (elem?.TaskType?.Title === type?.Title) {
+                            type[type.Title + 'filterNumber'] += 1;
+                        }
+                    })
+                    return elem
+                }
+            });
+            setTaskTypeDataItem(taskTypeCount)
+            setPortFolioTypeIcon(portFoliotypeCount);
             setAllSiteTasks(findAllTaskData);
             setAllMasterTasks(findAllProtFolioData);
             setLoaded(true);
@@ -621,7 +687,36 @@ const HalfClientCategory = (props: any) => {
     }, [smartAllFilterData]);
 
 
-
+    const countComponentLevel = (countTaskAWTLevel: any, afterFilter: any) => {
+        if (countTaskAWTLevel?.length > 0 && afterFilter === true) {
+            countTaskAWTLevel?.map((result: any) => {
+                portfolioTypeDataItem?.map((type: any) => {
+                    if (result?.Item_x0020_Type === type.Title && result.PortfolioType != undefined) {
+                        type[type.Title + 'filterNumber'] += 1;
+                    }
+                })
+            })
+        }
+    }
+    const countTaskAWTLevel = (countTaskAWTLevel: any, afterFilter: any) => {
+        if (countTaskAWTLevel.length > 0 && afterFilter !== true) {
+            countTaskAWTLevel?.map((result: any) => {
+                taskTypeDataItem?.map((type: any) => {
+                    if (result?.TaskType?.Title === type.Title) {
+                        type[type.Title + 'number'] += 1;
+                    }
+                });
+            });
+        } else if (countTaskAWTLevel?.length > 0 && afterFilter === true) {
+            countTaskAWTLevel?.map((result: any) => {
+                taskTypeDataItem?.map((type: any) => {
+                    if (result?.TaskType?.Title === type.Title) {
+                        type[type.Title + 'filterNumber'] += 1;
+                    }
+                });
+            });
+        }
+    };
 
     ////////////////////////////////////////// Smart filter Part End//////////////////////
 
@@ -1046,8 +1141,82 @@ const HalfClientCategory = (props: any) => {
             setProtectedView(!checked)
         }
     }
+    const findPortFolioIconsAndPortfolio = async () => {
+        try {
+            let newarray: any = [];
+            const ItemTypeColumn = "Item Type";
+            console.log("Fetching portfolio icons...");
+            const field = await new Web(AllListId.siteUrl)
+                .lists.getById(AllListId?.MasterTaskListID)
+                .fields.getByTitle(ItemTypeColumn)
+                .get();
+            console.log("Data fetched successfully:", field?.Choices);
+
+            if (field?.Choices?.length > 0 && field?.Choices != undefined) {
+                field?.Choices?.forEach((obj: any) => {
+                    if (obj != undefined) {
+                        let Item: any = {};
+                        Item.Title = obj;
+                        Item[obj + 'number'] = 0;
+                        Item[obj + 'filterNumber'] = 0;
+                        Item[obj + 'numberCopy'] = 0;
+                        newarray.push(Item);
+                    }
+                })
+                if (newarray.length > 0) {
+                    newarray = newarray.filter((findShowPort: any) => {
+                        let match = portfolioTypeConfrigration.find((config: any) => findShowPort.Title === config.Title);
+                        if (match) {
+                            findShowPort.Level = match?.Level;
+                            findShowPort.Suffix = match?.Suffix;
+                            return true
+                        }
+                        return false
+                    });
+                }
+                console.log("Portfolio icons retrieved:", newarray);
+                setPortFolioTypeIcon(newarray);
+            }
+        } catch (error) {
+            console.error("Error fetching portfolio icons:", error);
+        }
+    };
+    const getTaskType = async () => {
+        let web = new Web(AllListId.siteUrl);
+        let taskTypeData = [];
+        typeData = [];
+        taskTypeData = await web.lists
+            .getById(AllListId.TaskTypeID)
+            .items.select(
+                'Id',
+                'Level',
+                'Title',
+                'SortOrder',
+            )
+            .get();
+        setTaskTypeData(taskTypeData);
+        if (taskTypeData?.length > 0 && taskTypeData != undefined) {
+            taskTypeData?.forEach((obj: any) => {
+                if (obj != undefined) {
+                    let Item: any = {};
+                    Item.Title = obj.Title;
+                    Item.SortOrder = obj.SortOrder;
+                    Item[obj.Title + 'number'] = 0;
+                    Item[obj.Title + 'filterNumber'] = 0;
+                    Item[obj.Title + 'numberCopy'] = 0;
+                    typeData.push(Item);
+                }
+            })
+            console.log("Task Type retrieved:", typeData);
+            typeData = typeData.sort((elem1: any, elem2: any) => elem1.SortOrder - elem2.SortOrder);
+            let setTypeData = JSON.parse(JSON.stringify(typeData))
+            setTaskTypeDataItem(setTypeData);
+            rerender()
+        }
+    };
     return (
         <div className='TaskView-Any-CC'>
+
 
             <Loader loaded={loaded} lines={13} length={20} width={10} radius={30} corners={1} rotate={0} direction={1}
                 color={"#000069"}
@@ -1065,6 +1234,11 @@ const HalfClientCategory = (props: any) => {
 
 
             <section className="ContentSection smartFilterSection">
+                <div className="col-sm-12 clearfix">
+                    <h2 className="d-flex justify-content-between align-items-center siteColor  serviceColor_Active">
+                        Client Category Verification Tool
+                    </h2>
+                </div>
                 <div className="togglecontent mt-1">
                     {filterCounters == true ? <TeamSmartFilter ProjectData={ProjectData} setLoaded={setLoaded} AllSiteTasksData={AllSiteTasksData} AllMasterTasksData={AllMasterTasksData} ContextValue={AllListId} smartFiltercallBackData={smartFiltercallBackData} portfolioColor={portfolioColor} /> : ''}
                 </div>
@@ -1085,11 +1259,11 @@ const HalfClientCategory = (props: any) => {
             </div>
             <div className="Alltable p-2">
                 {selectedView == 'MasterTask' ? <div>
-                    <GlobalCommanTable headerOptions={headerOptions} AllListId={AllListId} columns={columnsMaster} data={AllMasterTasks} showPagination={true} callBackData={TaskSiteComp} pageName={"ProjectOverviewGrouped"} TaskUsers={AllTaskUser} showHeader={true} />
+                    <GlobalCommanTable headerOptions={headerOptions} AllListId={AllListId} columns={columnsMaster} data={AllMasterTasks} portfolioTypeData={portfolioTypeDataItem} showingAllPortFolioCount={true} showPagination={true} callBackData={TaskSiteComp} pageName={"ProjectOverviewGrouped"} TaskUsers={AllTaskUser} showHeader={true} />
 
                 </div> : ''}
                 {selectedView == 'AllSiteTasks' ? <div>
-                    <GlobalCommanTable headerOptions={headerOptions} AllListId={AllListId} columns={columns} data={AllSiteTasks} showPagination={true} callBackData={TaskSiteComp} pageName={"ProjectOverviewGrouped"} TaskUsers={AllTaskUser} showHeader={true} />
+                    <GlobalCommanTable headerOptions={headerOptions} AllListId={AllListId} columns={columns} data={AllSiteTasks} showPagination={true} callBackData={TaskSiteComp} taskTypeDataItem={taskTypeDataItem} showingAllPortFolioCount={true} pageName={"ProjectOverviewGrouped"} TaskUsers={AllTaskUser} showHeader={true} />
 
 
                 </div> : ''}
