@@ -317,17 +317,6 @@ const CreateWS = (props: any) => {
     }
     //-----------TEAM MEMBER  callback  End -----------------
 
-    const findUserByName = (Id: any) => {
-        const user = AllTaskUsers.filter((user: any) => user?.AssingedToUser?.Id == Id);
-        let Image: any;
-        if (user[0]?.Item_x0020_Cover != undefined) {
-          Image = user[0].Item_x0020_Cover.Url;
-        } else {
-          Image =
-            "https://hhhhteams.sharepoint.com/sites/HHHH/PublishingImages/Portraits/icon_user.jpg";
-        }
-        return user ? Image : null;
-      };
 
 
     // -------------Save  and CREATE WORKSTREAM AND TASK  -----------
@@ -488,8 +477,7 @@ const CreateWS = (props: any) => {
                             Item_x0020_Type: 'Task',
                             descriptionsSearch:"",
                             Author: {
-                                Id: props?.context?.pageContext?.legacyPageContext?.userId,
-                                autherImage:  findUserByName(props?.context?.pageContext?.legacyPageContext?.userId)
+                                Id: props?.context?.pageContext?.legacyPageContext?.userId
                             },
                             ParentTask:selectedItem,
                             TaskType: {
@@ -501,7 +489,13 @@ const CreateWS = (props: any) => {
                     if (item?.FeedBack != undefined) {
                         let DiscriptionSearchData: any = '';
                         let feedbackdata: any =JSON.parse(item?.FeedBack);
-                        DiscriptionSearchData =globalCommon.descriptionSearchData(feedbackdata)
+                        DiscriptionSearchData = feedbackdata[0]?.FeedBackDescriptions?.map((child: any) => {
+                            const childText = child?.Title?.replace(/(<([^>]+)>)/gi, '')?.replace(/\n/g, '');
+                            const subtextText = (child?.Subtext || [])?.map((elem: any) =>
+                                elem.Title?.replace(/(<([^>]+)>)/gi, '')?.replace(/\n/g, '')
+                            ).join('');
+                            return childText + subtextText;
+                        }).join('');
                         item.descriptionsSearch = DiscriptionSearchData
                     }
     
