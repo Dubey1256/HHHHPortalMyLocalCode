@@ -371,9 +371,6 @@ function EditInstitution({ item, SelectD, Calls, usedFor }: any) {
         "Reference_x0020_Item_x0020_Json",
         "TeamMembers/Title",
         "TeamMembers/Name",
-        "Component/Id",
-        "Component/Title",
-        "Component/ItemType",
         "TeamMembers/Id",
         "Item_x002d_Image",
         "ComponentLink",
@@ -418,7 +415,6 @@ function EditInstitution({ item, SelectD, Calls, usedFor }: any) {
       .expand(
         "ClientCategory",
         "AssignedTo",
-        "Component",
         "ComponentPortfolio",
         "ServicePortfolio",
         "AttachmentFiles",

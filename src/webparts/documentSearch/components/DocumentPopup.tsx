@@ -4,6 +4,8 @@ import { Web } from 'sp-pnp-js';
 import { Panel, PanelType } from 'office-ui-fabric-react';
 import moment from 'moment';
 import { FaArrowDown, FaArrowUp, } from "react-icons/fa";
+import ImageTabComponenet from './ImageTabComponent'
+import Tooltip from '../../../globalComponents/Tooltip';
 // var AllComponentItem: any[] = [];
 // var AllServiceItem: any[] = [];
 const DocumentPopup = (props: any) => {
@@ -51,7 +53,7 @@ const DocumentPopup = (props: any) => {
         return autoCompleteItem;
     }
     const loadComponentsData = (Type: any) => {
-        var AllComponentItem: any[] = []
+        var AllComponentItem: any = []
         let web = new Web(PageContext.context._pageContext._web.absoluteUrl + '/')
         web.lists.getById(PageContext.MasterTaskListId).items.select('ComponentCategory/Id,Portfolio_x0020_Type,ComponentCategory/Title,Id,ValueAdded,Idea,Sitestagging,TechnicalExplanations,Short_x0020_Description_x0020_On,Short_x0020_Description_x0020__x,Short_x0020_description_x0020__x0,AdminNotes,Background,Help_x0020_Information,Item_x0020_Type,Title,Parent/Id,Parent/Title').expand('Parent,ComponentCategory').filter(`Portfolio_x0020_Type eq '${Type}'`).getAll()
             .then((response: any) => {
@@ -135,11 +137,11 @@ const DocumentPopup = (props: any) => {
     }
     const LoadDocItem = () => {
         let web = new Web(PageContext.context._pageContext._web.absoluteUrl + '/')
-        web.lists.getById(PageContext.DocumentListId).items.select('Id,Url,Title,ItemRank,FileDirRef,FileLeafRef,File_x0020_Type,Year,EncodedAbsUrl,Created, Modified,Author/Name,Author/Title,Editor/Name,File/Name,Editor/Title,Gender/Id,Gender/Title,HHHH/Id,HHHH/Title,DE/Id,DE/Title,EI/Id,EI/Title,EPS/Id,EPS/Title,Education/Id,Education/Title,Shareweb/Id,Shareweb/Title,SharewebTask/Id,SharewebTask/Title').filter('Id eq ' + props.Id).expand('Author,SharewebTask,DE,EI,EPS,Education,Shareweb,Gender,HHHH,Editor,Author,Editor,File').getAll()
+        web.lists.getById(PageContext.DocumentListId).items.select('Id,Url,Title,ItemRank,FileDirRef,FileLeafRef,File_x0020_Type,Year,EncodedAbsUrl,Created, Modified,Author/Name,Author/Title,Editor/Name,File/Name,Editor/Title,Gender/Id,Gender/Title,HHHH/Id,HHHH/Title,DE/Id,DE/Title,EI/Id,EI/Title,EPS/Id,EPS/Title,Education/Id,Education/Title,Shareweb/Id,Shareweb/Title,SharewebTask/Id,SharewebTask/Title').filter('Id eq ' + props.Item.Id).expand('Author,SharewebTask,DE,EI,EPS,Education,Shareweb,Gender,HHHH,Editor,Author,Editor,File').getAll()
             .then((response: any) => {
                 let FirstOjb = response[0];
                 try {
-                    web.lists.getById(PageContext.DocumentListId).items.select('Id,Title,Foundation/Id,Foundation/Title,QA/Id,QA/Title,Health/Id,Health/Title,Gruene/Id,Gruene/Title,OffShoreTask/Id,OffShoreTask/Id,OffShoreTask/Title').filter('Id eq ' + props.Id).expand('Foundation,QA,OffShoreTask,Health,Gruene').getAll()
+                    web.lists.getById(PageContext.DocumentListId).items.select('Id,Title,Foundation/Id,Foundation/Title,QA/Id,QA/Title,Health/Id,Health/Title,Gruene/Id,Gruene/Title,OffShoreTask/Id,OffShoreTask/Id,OffShoreTask/Title').filter('Id eq ' + props.Item.Id).expand('Foundation,QA,OffShoreTask,Health,Gruene').getAll()
                         .then((response: any) => {
                             try {
                                 let SecondOjb = response[0];
@@ -579,17 +581,20 @@ const DocumentPopup = (props: any) => {
         else
             setDisplay(false);
     };
-    const CustomHeaderFunction = () => {
+    const customHeaderFunction = () => {
         return (
-            <div className={UpdatedItem.selectedValue === 'Services' ? 'serviepannelgreena d-flex full-width pb-1' : 'd-flex full-width pb-1'}>
-                <div className="subheading"> <span className="siteColor"> Edit Document Metadata - {UpdatedItem.FileReafPartialName}</span></div>
-            </div>
+            <>
+                <div className={UpdatedItem.selectedValue === 'Services' ? 'serviepannelgreena d-flex full-width pb-1' : 'd-flex full-width pb-1'}>
+                    <div className="subheading"> <span className="siteColor"> Edit Document Metadata - {UpdatedItem.FileReafPartialName}</span></div>
+                </div>
+                <Tooltip ComponentId={'5756'} />
+            </>
         )
     }
     return (
         <>
             <Panel isOpen={true} onDismiss={closePopup}
-                type={PanelType.large} isBlocking={false} onRenderHeader={CustomHeaderFunction} >
+                type={PanelType.large} isBlocking={false} onRenderHeader={customHeaderFunction} >
                 <div className={UpdatedItem.selectedValue === 'Services' ? 'serviepannelgreena' : ''}>
                     <ul className="nav nav-tabs" id="myTab" role="tablist">
                         <li className="nav-item" role="presentation">
@@ -643,16 +648,13 @@ const DocumentPopup = (props: any) => {
                                                     Services</label>
                                             </label>
                                             {(UpdatedItem.serviceComponent == undefined || UpdatedItem.serviceComponent?.length == 0) && (UpdatedItem.smartComponent == undefined || UpdatedItem.smartComponent?.length == 0) ? <input type="text" onChange={event => Update1(event.target.value)} className="form-control" id={UpdatedItem.PortfoliosID}></input> : ''}
-                                            {/* {(UpdatedItem.serviceComponent != undefined && UpdatedItem.serviceComponent.length > 0) || (UpdatedItem.smartComponent != undefined && UpdatedItem.smartComponent.length > 0) ?
-                                                <span onClick={() => openPopupSmartTaxanomy()} className="input-group-text" title="Smart Category Popup"><span className="svg__iconbox svg__icon--editBox"></span></span>
-                                                : ''} */}
                                             {(UpdatedItem.serviceComponent == undefined || UpdatedItem.serviceComponent?.length == 0) && (UpdatedItem.smartComponent == undefined || UpdatedItem.smartComponent?.length == 0) ?
                                                 <span onClick={() => openPopupSmartTaxanomy()} className="input-group-text" title="Smart Category Popup"><span className="svg__iconbox svg__icon--editBox"></span></span>
                                                 : ''}
                                         </div>
                                         {display &&
                                             <ul className="list-group mt-1 scrollbarCustom">
-                                                {AllComponent != undefined && AllComponent.length > 0 ? AllComponent.filter((item) => item.label != undefined && search != undefined && item.label.toLowerCase().indexOf(search.toLowerCase()) > -1).map((val: any) => {
+                                                {AllComponent != undefined && AllComponent.length > 0 ? AllComponent.filter((item: any) => item.label != undefined && search != undefined && item.label.toLowerCase().indexOf(search.toLowerCase()) > -1).map((val: any) => {
                                                     return (
                                                         <li onClick={() => updateSelectItem(val)} className="list-group-item" >
                                                             <span>{val.label}</span>
@@ -730,6 +732,7 @@ const DocumentPopup = (props: any) => {
                             </div>
                         </div>
                         <div className="tab-pane fade" id="profile" role="tabpanel" aria-labelledby="profile-tab">
+                            <ImageTabComponenet EditdocumentsData={props?.editData} AllListId={props?.AllListId} Context={PageContext?.context} />
                         </div>
                     </div>
                 </div>
@@ -753,7 +756,7 @@ const DocumentPopup = (props: any) => {
                             <a className="mx-1" target="_blank" href={`${PageContext.context._pageContext._web.absoluteUrl}/Documents/Forms/EditForm.aspx?ID=${UpdatedItem.ID}`}>Open out-of-the-box form</a>
                             <button className="btn btn-primary mx-2" onClick={UpdateItem}>Save</button>
                             <button className="btn btn-default" onClick={closePopup}>Cancel</button>
-                           
+
                         </div>
                     </div>
                 </div>
