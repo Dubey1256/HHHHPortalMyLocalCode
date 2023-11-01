@@ -1,4 +1,3 @@
-
 import * as React from 'react'
 import './index.css'
 import {
@@ -106,7 +105,8 @@ function TableTaskUsers(props: ITableTaskUsersProps) {
       accessorKey: "Team",
       header: "",
       id: 'Team',
-      placeholder: "Team"
+      placeholder: "Team",
+      size: 75,
     },
     {
       id: "TaskId",
