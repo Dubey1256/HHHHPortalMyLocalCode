@@ -1,4 +1,4 @@
-.contact-section {
+/* .contact-section {
     width: 100%;
     height: 100%;
     box-sizing: border-box;
@@ -98,7 +98,7 @@ background-color: #000066;
 
 
 
-/* this is for main component styling  */
+
 
 .component-section .main-search{
     border-radius: 25px 0px 0 25px;
@@ -155,4 +155,4 @@ background-color: #000066;
     color: #fff;
     font-size: 500;
     transition: all ease-in-out 0.1s;
-}
+} */

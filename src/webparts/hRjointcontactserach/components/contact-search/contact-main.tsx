@@ -1,14 +1,13 @@
 import * as React from 'react';
 import { useEffect, useState, useCallback } from 'react';
-import './style.css'
 import { Web } from 'sp-pnp-js';
 import * as FileSaver from 'file-saver';
 import * as XLSX from 'xlsx';
 import HHHHEditComponent from './popup-components/HHHHEditcontact';
 import AddToLocalDBComponent from './popup-components/addToLocalDB';
 import CreateContactComponent from './popup-components/CreateContact';
-import { BsSearch } from 'react-icons/Bs';
-import { VscClearAll } from 'react-icons/Vsc';
+// import { BsSearch } from 'react-icons/Bs';
+import { VscClearAll , VscSearch} from 'react-icons/Vsc';
 import { RiFileExcel2Fill } from 'react-icons/ri';
 import { AiFillPrinter } from 'react-icons/ai';
 // import { MdOpenInFull } from 'react-icons/md';
@@ -398,7 +397,7 @@ const ContactMainPage = (props: any) => {
                         <div className="card-header d-flex justify-content-between" >
                             <div><span className='mx-2'>Showing <b>{searchedData.length}</b> of <b>{EmployeeData.length} </b>Contacts</span>
                                 <input type='text' onChange={(e) => SearchData(e, 'Main-Search')} className="main-search" value={inputField.mainSearch} />
-                                <button className='search-button'><BsSearch /></button>
+                                <button className='search-button'><VscSearch /></button>
                             </div>
                             <div className='table-buttons'>
                                 {isDisabled ? null : <><button className='function-btns' onClick={sendEmail} disabled={isDisabled}>Bulk Email</button>
@@ -474,7 +473,7 @@ const ContactMainPage = (props: any) => {
                             <div className="card-header d-flex justify-content-between">
                                 <div><span className='mx-2'>Showing <b>{searchedInstituteData.length}</b> of <b>{institutionData.length}</b> Institutes</span>
                                     <input type='text' className="main-search" onChange={(e) => SearchData(e, 'Institute-Main-Search')} defaultValue={inputField.InstituteMainSearch} />
-                                    <button className='search-button'><BsSearch /></button>
+                                    <button className='search-button'><VscSearch /></button>
                                 </div>
                                 <div>
                                     {isDisabled ? null : <button className='function-btns' onClick={() => setAddToLocalDBStatus(true)}>Tag Institution</button>}

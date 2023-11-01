@@ -4,11 +4,11 @@ import { Web } from "sp-pnp-js";
 import moment from 'moment';
 import EditDocument from './EditDocunentPanel'
 import { useState, useEffect, forwardRef, useImperativeHandle, createContext } from 'react';
+import { myContextValue } from '../../../globalComponents/globalCommon'
 
-import { MyContext } from './Taskprofile'
 var MyContextdata:any
 const RelevantDocuments = (props: any, ref: any) => {
-   MyContextdata = React.useContext(MyContext)
+   MyContextdata = React.useContext(myContextValue)
     const [keyDocument, setKeyDocument] = useState([])
     const [Fileurl, setFileurl] = useState("");
     (true);

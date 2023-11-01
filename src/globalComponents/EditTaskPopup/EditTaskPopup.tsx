@@ -43,13 +43,15 @@ import EditSiteComposition from "./EditSiteComposition";
 import SmartTotalTime from './SmartTimeTotal';
 import "react-datepicker/dist/react-datepicker.css";
 import BackgroundCommentComponent from "./BackgroundCommentComponent";
-import EODReportComponent from "../EOD Report Component/EODReportComponent";
+//import EODReportComponent from "../EOD Report Component/EODReportComponent";
+import { CurrentUser } from "sp-pnp-js/lib/sharepoint/siteusers";
 
 
 
 
 var AllMetaData: any = []
 var taskUsers: any = []
+var AllTaskUser: any = []
 var IsShowFullViewImage = false;
 var CommentBoxData: any = [];
 var SubCommentBoxData: any = [];
@@ -90,13 +92,15 @@ var userSendAttentionEmails: any = [];
 var TempSmartInformationIds: any = [];
 let StatusOptionsBackupArray: any = [];
 var TaskCreatorApproverBackupArray: any = [];
+var AllSitesData: any = [];
 var TaskApproverBackupArray: any = [];
 
 const EditTaskPopup = (Items: any) => {
     const Context = Items?.context;
     const AllListIdData = Items?.AllListId;
     AllListIdData.listId = Items?.Items?.listId;
-    Items.Items.Id = Items?.Items?.ID;
+    // Items.Items.Id = Items?.Items?.ID;
+    Items.Items.Id = Items.Items.Id != undefined ? Items.Items.Id : Items.Items.ID;
     let ShareWebConfigData: any = [];
     const [TaskImages, setTaskImages] = useState([]);
     const [SmartMetaDataAllItems, setSmartMetaDataAllItems] = useState<any>([]);
@@ -142,6 +146,7 @@ const EditTaskPopup = (Items: any) => {
     const [ImmediateStatus, setImmediateStatus] = useState(false);
     const [ApprovalStatus, setApprovalStatus] = useState(false);
     let [ApproverData, setApproverData] = useState([]);
+    let [CheckApproverData, setCheckApproverData] = useState([]);
     const [SmartLightStatus, setSmartLightStatus] = useState(false);
     const [SmartLightPercentStatus, setSmartLightPercentStatus] = useState(false);
     const [ShowTaskDetailsStatus, setShowTaskDetailsStatus] = useState(false);
@@ -188,6 +193,7 @@ const EditTaskPopup = (Items: any) => {
     const [TotalEstimatedTime, setTotalEstimatedTime] = useState(0);
     const [SiteCompositionShow, setSiteCompositionShow] = useState(false);
     const [IsSendAttentionMsgStatus, setIsSendAttentionMsgStatus] = useState(false);
+    const [IsTaskCompleted, setIsTaskCompleted] = useState(false);
     const [SendCategoryName, setSendCategoryName] = useState('');
     const [OpenEODReportPopup, setOpenEODReportPopup] = useState(false);
     let [StatusOptions, setStatusOptions] = useState([
@@ -275,7 +281,7 @@ const EditTaskPopup = (Items: any) => {
 
     const SmartMetaDataListInformations = async () => {
         let AllSmartDataListData: any = [];
-        let AllSitesData: any = [];
+
         let AllClientCategoryData: any = [];
         let AllCategoriesData: any = [];
         let AllTimesheetCategoriesData: any = [];
@@ -583,20 +589,20 @@ const EditTaskPopup = (Items: any) => {
                 extraLookupColumnData = await web.lists
                     .getById(Items.Items.listId)
                     .items
-                    .select("Project/Id, Project/Title,SmartInformation/Id, AttachmentFiles, Approver/Id, Approver/Title, ClientCategory/Id,ClientCategory/Title, ApproverHistory")
+                    .select("Project/Id, Project/Title,SmartInformation/Id, AttachmentFiles, Approver/Id, Approver/Title,ApproverHistory")
                     .top(5000)
                     .filter(`Id eq ${Items.Items.Id}`)
-                    .expand('Project, Approver,SmartInformation, ClientCategory,AttachmentFiles')
+                    .expand('Project, Approver,SmartInformation,AttachmentFiles')
                     .get();
                 if (extraLookupColumnData.length > 0) {
                     let Data: any;
                     let ApproverData: any;
                     let ApproverHistoryData: any;
-                    let ClientCategory: any;
+
                     Data = extraLookupColumnData[0]?.Project;
                     ApproverHistoryData = extraLookupColumnData[0]?.ApproverHistory;
                     ApproverData = extraLookupColumnData[0]?.Approver;
-                    ClientCategory = extraLookupColumnData[0].ClientCategory
+
                     if (Data != undefined && Data != null) {
                         let TempArray: any = [];
                         AllProjectBackupArray.map((ProjectData: any) => {
@@ -644,23 +650,7 @@ const EditTaskPopup = (Items: any) => {
                             TempSmartInformationIds.push(smartInfo.Id)
                         })
                     }
-                    if (ClientCategory != undefined && ClientCategory.length > 0) {
-                        let selectedCC: any = [];
-                        ClientCategory.map((ClientData: any) => {
-                            if (AllClientCategoryDataBackup != undefined && AllClientCategoryDataBackup.length > 0) {
-                                AllClientCategoryDataBackup.map((clientCategoryData: any) => {
-                                    if (ClientData.Id == clientCategoryData.ID) {
-                                        ClientData.siteName = clientCategoryData.siteName;
-                                        ClientData.ParentID = clientCategoryData.ParentID;
-                                        selectedCC.push(ClientData)
-                                    }
-                                })
 
-                            }
-                        })
-                        setSelectedClientCategory(selectedCC);
-                        selectedClientCategoryData = selectedCC;
-                    }
                 }
                 GetSelectedTaskDetails();
             } else {
@@ -674,13 +664,13 @@ const EditTaskPopup = (Items: any) => {
                     .get();
                 if (extraLookupColumnData.length > 0) {
                     let Data: any;
-                    let ClientCategory: any;
+
                     let ApproverData: any;
                     let ApproverHistoryData: any;
                     Data = extraLookupColumnData[0]?.Project;
                     ApproverHistoryData = extraLookupColumnData[0]?.ApproverHistory;
                     ApproverData = extraLookupColumnData[0]?.Approver;
-                    ClientCategory = extraLookupColumnData[0].ClientCategory
+
                     if (Data != undefined && Data != null) {
                         setSelectedProject([Data])
                     }
@@ -694,9 +684,7 @@ const EditTaskPopup = (Items: any) => {
                         setApproverData(ApproverData);
                         TaskApproverBackupArray = ApproverData;
                     }
-                    if (ClientCategory != undefined && ClientCategory.length > 0) {
-                        setSelectedClientCategory(ClientCategory);
-                    }
+
                 }
                 GetSelectedTaskDetails();
             }
@@ -744,20 +732,20 @@ const EditTaskPopup = (Items: any) => {
                 smartMeta = await web.lists
                     .getById(Items.Items.listId)
                     .items
-                    .select("Id,Title,PriorityRank,Comments,workingThisWeek,EstimatedTime,EstimatedTimeDescription,waitForResponse,OffshoreImageUrl,OffshoreComments,SiteCompositionSettings,BasicImageInfo,ClientTime,Attachments,AttachmentFiles,Priority,Mileage,CompletedDate,FeedBack,Status,ItemRank,IsTodaysTask,Body,ComponentLink,RelevantPortfolio/Title,RelevantPortfolio/Id,Portfolio/Title,Portfolio/Id,Portfolio/PortfolioStructureID,PercentComplete,Categories,TaskLevel,TaskLevel,ClientActivity,ClientActivityJson,StartDate,PriorityRank,DueDate,TaskType/Id,TaskType/Title,Created,Modified,Author/Id,Author/Title,Editor/Id,Editor/Title,TaskCategories/Id,TaskCategories/Title,AssignedTo/Id,AssignedTo/Title,TeamMembers/Id,TeamMembers/Title,ResponsibleTeam/Id,ResponsibleTeam/Title,ClientCategory/Id,ClientCategory/Title, ParentTask/TaskID,ParentTask/Id,TaskID")
+                    .select("Id,Title,PriorityRank,Comments,workingThisWeek,Approvee/Id,Approvee/Title,EstimatedTime,EstimatedTimeDescription,waitForResponse,OffshoreImageUrl,OffshoreComments,SiteCompositionSettings,BasicImageInfo,ClientTime,Attachments,AttachmentFiles,Priority,Mileage,CompletedDate,FeedBack,Status,ItemRank,IsTodaysTask,Body,ComponentLink,RelevantPortfolio/Title,RelevantPortfolio/Id,Portfolio/Title,Portfolio/Id,Portfolio/PortfolioStructureID,PercentComplete,Categories,TaskLevel,TaskLevel,ClientActivity,ClientActivityJson,StartDate,PriorityRank,DueDate,TaskType/Id,TaskType/Title,Created,Modified,Author/Id,Author/Title,Editor/Id,Editor/Title,TaskCategories/Id,TaskCategories/Title,AssignedTo/Id,AssignedTo/Title,TeamMembers/Id,TeamMembers/Title,ResponsibleTeam/Id,ResponsibleTeam/Title,ClientCategory/Id,ClientCategory/Title, ParentTask/TaskID,ParentTask/Id,TaskID")
                     .top(5000)
                     .filter(`Id eq ${Items.Items.Id}`)
-                    .expand('AssignedTo,Author,ParentTask,Editor,Portfolio,TaskType,TeamMembers,ResponsibleTeam,TaskCategories,ClientCategory,RelevantPortfolio')
+                    .expand('AssignedTo,Author,ParentTask,Editor,Portfolio,TaskType,TeamMembers,ResponsibleTeam,TaskCategories,ClientCategory,RelevantPortfolio,Approvee')
                     .get();
             }
             else {
                 smartMeta = await web.lists
                     .getByTitle(Items.Items.listName)
                     .items
-                    .select("Id,Title,PriorityRank,Comments,workingThisWeek,EstimatedTime,EstimatedTimeDescription,waitForResponse,OffshoreImageUrl,OffshoreComments,SiteCompositionSettings,BasicImageInfo,ClientTime,Attachments,AttachmentFiles,Priority,Mileage,CompletedDate,FeedBack,Status,ItemRank,IsTodaysTask,Body,ComponentLink,RelevantPortfolio/Title,RelevantPortfolio/Id,Portfolio/Title,Portfolio/Id,Portfolio/PortfolioStructureID,PercentComplete,Categories,TaskLevel,TaskLevel,ClientActivity,ClientActivityJson,StartDate,PriorityRank,DueDate,TaskType/Id,TaskType/Title,Created,Modified,Author/Id,Author/Title,Editor/Id,Editor/Title,TaskCategories/Id,TaskCategories/Title,AssignedTo/Id,AssignedTo/Title,TeamMembers/Id,TeamMembers/Title,ResponsibleTeam/Id,ResponsibleTeam/Title,ClientCategory/Id,ClientCategory/Title, ParentTask/TaskID,ParentTask/Id,TaskID")
+                    .select("Id,Title,PriorityRank,Comments,workingThisWeek,Approvee/Id,Approvee/Title,EstimatedTime,EstimatedTimeDescription,waitForResponse,OffshoreImageUrl,OffshoreComments,SiteCompositionSettings,BasicImageInfo,ClientTime,Attachments,AttachmentFiles,Priority,Mileage,CompletedDate,FeedBack,Status,ItemRank,IsTodaysTask,Body,ComponentLink,RelevantPortfolio/Title,RelevantPortfolio/Id,Portfolio/Title,Portfolio/Id,Portfolio/PortfolioStructureID,PercentComplete,Categories,TaskLevel,TaskLevel,ClientActivity,ClientActivityJson,StartDate,PriorityRank,DueDate,TaskType/Id,TaskType/Title,Created,Modified,Author/Id,Author/Title,Editor/Id,Editor/Title,TaskCategories/Id,TaskCategories/Title,AssignedTo/Id,AssignedTo/Title,TeamMembers/Id,TeamMembers/Title,ResponsibleTeam/Id,ResponsibleTeam/Title,ClientCategory/Id,ClientCategory/Title, ParentTask/TaskID,ParentTask/Id,TaskID")
                     .top(5000)
                     .filter(`Id eq ${Items.Items.Id}`)
-                    .expand('AssignedTo,Author,ParentTask,Editor,Portfolio,TaskType,TeamMembers,ResponsibleTeam,TaskCategories,ClientCategory,RelevantPortfolio')
+                    .expand('AssignedTo,Author,ParentTask,Editor,Portfolio,TaskType,TeamMembers,ResponsibleTeam,TaskCategories,Approvee,ClientCategory,RelevantPortfolio')
                     .get();
             }
             let statusValue: any
@@ -772,7 +760,7 @@ const EditTaskPopup = (Items: any) => {
                     let ApprovalCheck = item.Categories.search("Approval");
                     let OnlyCompletedCheck = item.Categories.search("Only Completed");
                     let DesignCheck: any;
-                    if (item.Categories == "Design" || item.Categories == "Design;" ) {
+                    if (item.Categories == "Design") {
                         DesignCheck = item.Categories.search("Design")
                     }
                     if (phoneCheck >= 0) {
@@ -812,23 +800,46 @@ const EditTaskPopup = (Items: any) => {
                     let PortfolioId: any = item.Portfolio.Id;
                     GetPortfolioSiteComposition(PortfolioId, item);
                 }
+
+                let ClientCategory = item.ClientCategory
+                if (ClientCategory != undefined && ClientCategory.length > 0) {
+                    let selectedCC: any = [];
+                    ClientCategory.map((ClientData: any) => {
+                        if (AllClientCategoryDataBackup != undefined && AllClientCategoryDataBackup.length > 0) {
+                            AllClientCategoryDataBackup.map((clientCategoryData: any) => {
+                                if (ClientData.Id == clientCategoryData.ID) {
+                                    ClientData.siteName = clientCategoryData.siteName;
+                                    ClientData.ParentID = clientCategoryData.ParentID;
+                                    selectedCC.push(ClientData)
+                                }
+                            })
+
+                        }
+                    })
+                    setSelectedClientCategory(selectedCC);
+                    selectedClientCategoryData = selectedCC;
+                }
+
                 if (item.ClientTime != null && item.ClientTime != undefined) {
                     let tempData: any = [];
-                    if (Items.Items.siteType == "Shareweb") {
-                        let ShareWebCompositionStatus: any;
-                        let TempData: any = JSON.parse(item.ClientTime);
-                        TempData?.map((itemdata: any) => {
-                            ShareWebCompositionStatus = itemdata.ClienTimeDescription;
-                        })
-                        if (ShareWebConfigData != undefined || ShareWebCompositionStatus == 100) {
-                            let siteConfigData = JSON.parse(ShareWebConfigData != undefined ? ShareWebConfigData : [{}]);
-                            tempData = siteConfigData[0].SiteComposition;
-                            let siteSeetingJSON = [{ "Manual": true, "Proportional": false, "Portfolio": false }]
-                            item.SiteCompositionSettings = JSON.stringify(siteSeetingJSON);
-                        }
-                    } else {
-                        tempData = JSON.parse(item.ClientTime)
-                    }
+                    // if (Items.Items.siteType == "Shareweb") {
+                    //     let ShareWebCompositionStatus: any;
+                    //     let TempData: any = JSON.parse(item.ClientTime);
+                    //     TempData?.map((itemdata: any) => {
+                    //         ShareWebCompositionStatus = itemdata.ClienTimeDescription;
+                    //     })
+                    //     let SCDataTemp: any = item.ClientTime?.length > 0 ? JSON.parse(item.ClientTime) : [];
+                    //     if ((ShareWebConfigData != undefined || ShareWebCompositionStatus == 100) && SCDataTemp?.length == 1) {
+                    //         let siteConfigData = JSON.parse(ShareWebConfigData != undefined ? ShareWebConfigData : [{}]);
+                    //         tempData = siteConfigData[0].SiteComposition;
+                    //         let siteSeetingJSON = [{ "Manual": true, "Proportional": false, "Portfolio": false }]
+                    //         item.SiteCompositionSettings = JSON.stringify(siteSeetingJSON);
+                    //     } else {
+                    //         tempData = JSON.parse(item.ClientTime)
+                    //     }
+                    // } else {
+                    tempData = JSON.parse(item.ClientTime)
+                    // }
                     // let tempData: any = JSON.parse(item.ClientTime);
                     let tempData2: any = [];
                     if (tempData != undefined && tempData.length > 0) {
@@ -886,25 +897,25 @@ const EditTaskPopup = (Items: any) => {
                     item.ClientTime = tempArray3;
                 } else {
                     let tempArray: any = [];
-                    if (Items.Items.siteType == "Shareweb") {
-                        if (ShareWebConfigData != undefined) {
-                            let siteConfigData = JSON.parse(ShareWebConfigData != undefined ? ShareWebConfigData : [{}]);
-                            tempArray = siteConfigData[0].SiteComposition;
-                            item.siteCompositionData = tempArray;
-                            setClientTimeData(tempArray);
-                            let siteSeetingJSON = [{ "Manual": true, "Proportional": false, "Portfolio": false }]
-                            item.SiteCompositionSettings = JSON.stringify(siteSeetingJSON);
-                        }
-                    } else {
-                        const object: any = {
-                            SiteName: Items.Items.siteType,
-                            ClienTimeDescription: 100,
-                            localSiteComposition: true,
-                            siteIcons: Items.Items.SiteIcon
-                        }
-                        item.siteCompositionData = [object];
-                        setClientTimeData([object]);
+                    // if (Items.Items.siteType == "Shareweb") {
+                    //     if (ShareWebConfigData != undefined) {
+                    //         let siteConfigData = JSON.parse(ShareWebConfigData != undefined ? ShareWebConfigData : [{}]);
+                    //         tempArray = siteConfigData[0].SiteComposition;
+                    //         item.siteCompositionData = tempArray;
+                    //         setClientTimeData(tempArray);
+                    //         let siteSeetingJSON = [{ "Manual": true, "Proportional": false, "Portfolio": false }]
+                    //         item.SiteCompositionSettings = JSON.stringify(siteSeetingJSON);
+                    //     }
+                    // } else {
+                    const object: any = {
+                        SiteName: Items.Items.siteType,
+                        ClienTimeDescription: 100,
+                        localSiteComposition: true,
+                        siteIcons: Items.Items.SiteIcon
                     }
+                    item.siteCompositionData = [object];
+                    setClientTimeData([object]);
+                    // }
                 }
                 if (item.Body != undefined) {
                     item.Body = item.Body.replace(/(<([^>]+)>)/ig, '');
@@ -1470,11 +1481,11 @@ const EditTaskPopup = (Items: any) => {
     }
     const CategoryChange = (e: any, typeValue: any, IdValue: any) => {
         isApprovalByStatus = false;
-        if(e == 'false'){
+        if (e == 'false') {
             var statusValue: any = e
             isApprovalByStatus = true;
         }
-        else{
+        else {
             var statusValue: any = e.target.value;
         }
         let type: any = typeValue;
@@ -1502,10 +1513,10 @@ const EditTaskPopup = (Items: any) => {
             }
         } else {
             // if (tempCategoryData != undefined) {
-                if(tempCategoryData == undefined){
-                    tempCategoryData = ''
-                }
-                var CheckTaggedCategory = tempCategoryData?.includes(type)
+            if (tempCategoryData == undefined) {
+                tempCategoryData = ''
+            }
+            var CheckTaggedCategory = tempCategoryData?.includes(type)
             if (CheckTaggedCategory == false) {
                 let CheckTaagedCategory: any = true;
                 let category: any = tempCategoryData + ";" + type;
@@ -1540,16 +1551,16 @@ const EditTaskPopup = (Items: any) => {
                 }
                 if (type == "Approval") {
                     isApprovalByStatus = true;
-                  
-                    var tempArray:any=[]
+
+                    var tempArray: any = []
                     if (currentUserData != undefined && currentUserData.length > 0) {
                         currentUserData.map((dataItem: any) => {
-                            dataItem?.Approver.map((items:any)=>{
+                            dataItem?.Approver.map((items: any) => {
                                 tempArray.push(items);
                             })
-                           
+
                         })
-                    } 
+                    }
                     // else if (TaskCreatorApproverBackupArray != undefined && TaskCreatorApproverBackupArray.length > 0) {
                     //     TaskCreatorApproverBackupArray.map((dataItem: any) => {
                     //         tempArray.push(dataItem);
@@ -1559,15 +1570,17 @@ const EditTaskPopup = (Items: any) => {
                         return array.indexOf(val) == id;
                     });
 
-                  
+
                     EditData.TaskApprovers = finalData;
                     EditData.CurrentUserData = currentUserData
-                    setApproverData(finalData); 
+                    setApproverData(finalData);
+                    setCheckApproverData(finalData)
                     setApprovalStatus(true);
+                    // setApprovalTaskStatus(true)
                     // if(isApprovalByStatus == false){
                     //     setApproverData(TaskApproverBackupArray);
                     // }
-                   
+
                     Items.sendApproverMail = true;
                     StatusOptions?.map((item: any) => {
                         if (item.value == 1) {
@@ -1582,7 +1595,7 @@ const EditTaskPopup = (Items: any) => {
                 if (type == "Only Completed") {
                     setOnlyCompletedStatus(true)
                 }
-                
+
             }
             // }
         }
@@ -1620,6 +1633,7 @@ const EditTaskPopup = (Items: any) => {
                 }
                 AllTaskUsers.push(user);
             }
+            AllTaskUser = taskUsers;
             if (user.AssingedToUserId == currentUserId) {
                 let temp: any = [];
                 temp.push(user)
@@ -1837,6 +1851,17 @@ const EditTaskPopup = (Items: any) => {
                         }
                     })
                 }
+                if (StatusInput == 70) {
+                    if (EditData.TeamMembers != undefined && EditData.TeamMembers?.length > 0) {
+                        setWorkingMemberFromTeam(EditData.TeamMembers, "Development", 0);
+                    }
+                    StatusOptions?.map((item: any) => {
+                        if (StatusInput == item.value) {
+                            setPercentCompleteStatus(item.status);
+                            setTaskStatus(item.taskStatusComment);
+                        }
+                    })
+                }
                 if (StatusInput == 5) {
                     EditData.CompletedDate = undefined;
                     EditData.IsTodaysTask = false;
@@ -1875,6 +1900,7 @@ const EditTaskPopup = (Items: any) => {
                 if (StatusInput == 90) {
                     EditData.IsTodaysTask = false;
                     EditData.workingThisWeek = false;
+                    setIsTaskCompleted(true);
                     if (EditData.siteType == 'Offshore Tasks') {
                         setWorkingMember(36);
                     } else if (DesignStatus) {
@@ -1882,6 +1908,7 @@ const EditTaskPopup = (Items: any) => {
                     } else {
                         setWorkingMember(42);
                     }
+
                     EditData.CompletedDate = Moment(new Date()).format("MM-DD-YYYY")
                     StatusOptions?.map((item: any) => {
                         if (StatusInput == item.value) {
@@ -1946,7 +1973,7 @@ const EditTaskPopup = (Items: any) => {
                 setTaskAssignedTo(finalData);
                 setTaskTeamMembers(finalData);
                 setApproverData(finalData);
-                var e:any =  'false'
+                var e: any = 'false'
                 EditData.TaskApprovers = finalData;
                 EditData.CurrentUserData = currentUserData
                 CategoryChange(e, "Approval", 227)
@@ -1970,6 +1997,13 @@ const EditTaskPopup = (Items: any) => {
                 }
                 EditData.IsTodaysTask = false;
                 EditData.CompletedDate = undefined;
+            }
+            if (StatusData.value == 70) {
+                if (EditData.TeamMembers != undefined && EditData.TeamMembers?.length > 0) {
+                    setWorkingMemberFromTeam(EditData.TeamMembers, "Development", 0);
+                } else {
+                    setWorkingMember(0);
+                }
             }
 
             if (StatusData.value == 5) {
@@ -1995,6 +2029,7 @@ const EditTaskPopup = (Items: any) => {
                 })
             }
             if (StatusData.value == 90) {
+                setIsTaskCompleted(true);
                 EditData.IsTodaysTask = false;
                 EditData.workingThisWeek = false;
                 if (EditData.siteType == 'Offshore Tasks') {
@@ -2093,18 +2128,16 @@ const EditTaskPopup = (Items: any) => {
 
     const UpdateTaskInfoFunction = async (usedFor: any) => {
 
-        if(isApprovalByStatus == true){
+        if (isApprovalByStatus == true) {
             let web = new Web(siteUrls);
-            web.lists.getById(AllListIdData.listId).items.getById(Items.Items.Id).update({
+            await web.lists.getById(AllListIdData.listId).items.getById(Items.Items.Id).update({
                 ApproveeId: currentUserData[0].AssingedToUserId,
-                
+
             }).then((res: any) => {
                 console.log(res);
-    
+
             });
         }
-        
-
 
         if (IsSendAttentionMsgStatus) {
             let txtComment = `You have been tagged as ${SendCategoryName} in the below task by ${Items.context.pageContext._user.displayName}`;
@@ -2125,6 +2158,22 @@ const EditTaskPopup = (Items: any) => {
                 await globalCommon.SendTeamMessage(userSendAttentionEmails, TeamMsg, Items.context);
             }
         }
+
+        // if (IsTaskCompleted) {
+        //     let taskComplete = `Hi Robert, </br> Below task has been marked to 90% by ${Items.context.pageContext._user.displayName}. Please review.`;
+        //     let TeamEmail =
+        //         taskComplete +
+        //         `</br> <a href=${siteUrls + "/SitePages/Task-Profile.aspx?taskId=" + EditData.Id + "&Site=" + Items.Items.siteType}>${EditData.TaskId}-${EditData.Title}</a>`;
+        //     let sendEmail: any = ["robert.ungethuem@hochhuth-consulting.de"];
+        //     if (sendEmail?.length > 0) {
+        //         await globalCommon.SendTeamMessage(
+        //             sendEmail,
+        //             TeamEmail,
+        //             Items.context
+        //         );
+        //     }
+        // }
+
         let TaskShuoldBeUpdate = true;
         let DataJSONUpdate: any = await MakeUpdateDataJSON();
         if (EnableSiteCompositionValidation) {
@@ -2146,102 +2195,149 @@ const EditTaskPopup = (Items: any) => {
         if (TaskShuoldBeUpdate) {
             try {
                 let web = new Web(siteUrls);
-                await web.lists.getById(Items.Items.listId).items.getById(Items.Items.Id).update(DataJSONUpdate).then(async (res: any) => {
-                    let web = new Web(siteUrls);
-                    let TaskDetailsFromCall: any;
-                    if (Items.Items.listId != undefined) {
-                        TaskDetailsFromCall = await web.lists
-                            .getById(Items.Items.listId)
-                            .items
-                            .select("Id,Title,PriorityRank,workingThisWeek,waitForResponse,SiteCompositionSettings,BasicImageInfo,ClientTime,Attachments,AttachmentFiles,Priority,Mileage,CompletedDate,FeedBack,Status,ItemRank,IsTodaysTask,Body,ComponentLink,RelevantPortfolio/Title,RelevantPortfolio/Id,Portfolio/Title,Portfolio/Id,PercentComplete,Categories,TaskLevel,TaskLevel,ClientActivity,ClientActivityJson,StartDate,PriorityRank,DueDate,TaskType/Id,TaskType/Title,Created,Modified,Author/Id,Author/Title,Editor/Id,Editor/Title,TaskCategories/Id,TaskCategories/Title,AssignedTo/Id,AssignedTo/Title,TeamMembers/Id,TeamMembers/Title,ResponsibleTeam/Id,ResponsibleTeam/Title,ClientCategory/Id,ClientCategory/Title")
-                            .top(5000)
-                            .filter(`Id eq ${Items.Items.Id}`)
-                            .expand('AssignedTo,Author,Editor,Portfolio,TaskType,TeamMembers,ResponsibleTeam,TaskCategories,ClientCategory,RelevantPortfolio')
-                            .get();
-                    } else {
-                        TaskDetailsFromCall = await web.lists
-                            .getById(Items.Items.listName)
-                            .items
-                            .select("Id,Title,PriorityRank,workingThisWeek,waitForResponse,SiteCompositionSettings,BasicImageInfo,ClientTime,Attachments,AttachmentFiles,Priority,Mileage,CompletedDate,FeedBack,Status,ItemRank,IsTodaysTask,Body,ComponentLink,RelevantPortfolio/Title,RelevantPortfolio/Id,Portfolio/Title,Portfolio/Id,PercentComplete,Categories,TaskLevel,TaskLevel,ClientActivity,ClientActivityJson,StartDate,PriorityRank,DueDate,TaskType/Id,TaskType/Title,Created,Modified,Author/Id,Author/Title,Editor/Id,Editor/Title,TaskCategories/Id,TaskCategories/Title,AssignedTo/Id,AssignedTo/Title,TeamMembers/Id,TeamMembers/Title,ResponsibleTeam/Id,ResponsibleTeam/Title,ClientCategory/Id,ClientCategory/Title")
-                            .top(5000)
-                            .filter(`Id eq ${Items.Items.Id}`)
-                            .expand('AssignedTo,Author,Editor,Portfolio,TaskType,TeamMembers,ResponsibleTeam,TaskCategories,ClientCategory,RelevantPortfolio')
-                            .get();
+                await web.lists.getById(Items.Items.listId).items.getById(Items.Items.Id).update(DataJSONUpdate)
+                    .then(async (res: any) => {
+                        // Added by PB************************
+                        if (Items?.SDCAuthor != undefined && Items?.SDCAuthor != '' && EditData != undefined && EditData != '') {
+                            let SDCRecipientMail: any[] = [];
+                            EditData.SDCAuthor = Items?.SDCAuthor;
+                            taskUsers?.map((User: any) => {
+                                if (User?.Title?.toLowerCase() == 'robert ungethuem' || User?.Title?.toLowerCase() == 'stefan hochhuth') {
+                                    SDCRecipientMail.push(User);
+                                }
+                            });
+                            globalCommon.sendImmediateEmailNotifications(EditData.Id, siteUrls, Items.Items.listId, EditData, SDCRecipientMail, 'Client Task', taskUsers, Context).then((response: any) => {
+                                console.log(response);
+                            });
+                        }
+                        //End Here*************************
 
-                    }
-                    if (TaskDetailsFromCall != undefined && TaskDetailsFromCall.length > 0) {
-                        TaskDetailsFromCall[0].TaskCreatorData = EditData.TaskCreatorData;
-                        TaskDetailsFromCall[0].TaskApprovers = EditData.TaskApprovers;
-                        TaskDetailsFromCall[0].currentUser = EditData.CurrentUserData;
-                        TaskDetailsFromCall[0].FeedBack = JSON.parse(TaskDetailsFromCall[0].FeedBack)
-                        TaskDetailsFromCall[0].siteType = EditData.siteType;
-                        TaskDetailsFromCall[0].siteUrl = siteUrls;
-                    }
-                    setLastUpdateTaskData(TaskDetailsFromCall[0]);
-                    if (usedFor == "Image-Tab") {
-                        GetExtraLookupColumnData();
-                    } else {
-                        tempShareWebTypeData = [];
-                        AllMetaData = []
-                        taskUsers = []
-                        CommentBoxData = []
-                        SubCommentBoxData = []
-                        updateFeedbackArray = []
-                        tempShareWebTypeData = []
-                        tempCategoryData = '';
-                        SiteTypeBackupArray = []
-                        currentUserBackupArray = []
-                        AutoCompleteItemsArray = []
-                        FeedBackBackupArray = []
-                        TaskCreatorApproverBackupArray = []
-                        TaskApproverBackupArray = []
-                        ApproverIds = []
-                        TempSmartInformationIds = []
-                        userSendAttentionEmails = []
-                        SiteCompositionPrecentageValue = 0
-                        let CalculateStatusPercentage: any = TaskDetailsFromCall[0].PercentComplete ? TaskDetailsFromCall[0].PercentComplete * 100 : 0;
-                        if (Items.sendApproverMail != undefined) {
-                            if (Items.sendApproverMail) {
-                                setSendEmailComponentStatus(true)
-                            } else {
-                                setSendEmailComponentStatus(false)
-                            }
-                        }
-                        if (CalculateStatusPercentage == 5 && ImmediateStatus) {
-                            setSendEmailComponentStatus(true);
-                            Items.StatusUpdateMail = true;
+                        let web = new Web(siteUrls);
+                        let TaskDetailsFromCall: any;
+                        if (Items.Items.listId != undefined) {
+                            TaskDetailsFromCall = await web.lists
+                                .getById(Items.Items.listId)
+                                .items
+                                .select("Id,Title,PriorityRank,workingThisWeek,waitForResponse,Approvee/Id,Approvee/Title,SiteCompositionSettings,BasicImageInfo,ClientTime,Attachments,AttachmentFiles,Priority,Mileage,CompletedDate,FeedBack,Status,ItemRank,IsTodaysTask,Body,ComponentLink,RelevantPortfolio/Title,RelevantPortfolio/Id,Portfolio/Title,Portfolio/Id,PercentComplete,Categories,TaskLevel,TaskLevel,ClientActivity,ClientActivityJson,StartDate,PriorityRank,DueDate,TaskType/Id,TaskType/Title,Created,Modified,Author/Id,Author/Title,Editor/Id,Editor/Title,TaskCategories/Id,TaskCategories/Title,AssignedTo/Id,AssignedTo/Title,TeamMembers/Id,TeamMembers/Title,ResponsibleTeam/Id,ResponsibleTeam/Title,ClientCategory/Id,ClientCategory/Title")
+                                .top(5000)
+                                .filter(`Id eq ${Items.Items.Id}`)
+                                .expand('AssignedTo,Author,Editor,Portfolio,TaskType,TeamMembers,ResponsibleTeam,TaskCategories,ClientCategory,RelevantPortfolio,Approvee')
+                                .get();
                         } else {
-                            setSendEmailComponentStatus(false);
-                            Items.StatusUpdateMail = false;
+                            TaskDetailsFromCall = await web.lists
+                                .getById(Items.Items.listName)
+                                .items
+                                .select("Id,Title,PriorityRank,workingThisWeek,Approvee/Id,Approvee/Title,waitForResponse,SiteCompositionSettings,BasicImageInfo,ClientTime,Attachments,AttachmentFiles,Priority,Mileage,CompletedDate,FeedBack,Status,ItemRank,IsTodaysTask,Body,ComponentLink,RelevantPortfolio/Title,RelevantPortfolio/Id,Portfolio/Title,Portfolio/Id,PercentComplete,Categories,TaskLevel,TaskLevel,ClientActivity,ClientActivityJson,StartDate,PriorityRank,DueDate,TaskType/Id,TaskType/Title,Created,Modified,Author/Id,Author/Title,Editor/Id,Editor/Title,TaskCategories/Id,TaskCategories/Title,AssignedTo/Id,AssignedTo/Title,TeamMembers/Id,TeamMembers/Title,ResponsibleTeam/Id,ResponsibleTeam/Title,ClientCategory/Id,ClientCategory/Title")
+                                .top(5000)
+                                .filter(`Id eq ${Items.Items.Id}`)
+                                .expand('AssignedTo,Author,Editor,Portfolio,TaskType,TeamMembers,ResponsibleTeam,TaskCategories,ClientCategory,RelevantPortfolio,Approvee')
+                                .get();
                         }
-                        if (sendEmailGlobalCount > 0) {
-                            if (sendEmailStatus) {
-                                setSendEmailComponentStatus(false)
+                        let currentUserId = Context.pageContext._legacyPageContext.userId
+                        TaskDetailsFromCall[0].TaskId = globalCommon.GetTaskId(TaskDetailsFromCall[0]);
+                        if (ApproverData != undefined && ApproverData.length > 0) {
+                            taskUsers.forEach((val: any) => {
+                                if (ApproverData[0]?.Id == val?.AssignedToUserId && ApproverData[0].Company == undefined) {
+                                    EditData.TaskApprovers = ApproverData
+                                }
+                            })
+                        }
+                        if (ApproverData != undefined && ApproverData.length > 0) {
+                            taskUsers.forEach((val: any) => {
+                                if (ApproverData[0]?.AssignedToUserId == val?.AssignedToUserId && ApproverData[0].Company != undefined) {
+                                    EditData.TaskApprovers = ApproverData
+                                }
+
+                            })
+                        }
+                        if (ApproverData != undefined && ApproverData.length > 0) {
+                            if (ApproverData[0].Id == currentUserId && currentUserId != EditData?.Author.Id) {
+                                EditData.TaskApprovers = EditData.TaskCreatorData
+                                //EditData.TaskApprovers.push(EditData?.Author)
+                            }
+                        }
+
+                        if (TaskDetailsFromCall != undefined && TaskDetailsFromCall.length > 0) {
+                            TaskDetailsFromCall[0].TaskCreatorData = EditData.TaskCreatorData;
+                            TaskDetailsFromCall[0].TaskApprovers = EditData.TaskApprovers;
+                            TaskDetailsFromCall[0].Approvere = EditData.Approvere;
+                            TaskDetailsFromCall[0].currentUser = EditData.CurrentUserData;
+                            TaskDetailsFromCall[0].FeedBack = JSON.parse(TaskDetailsFromCall[0].FeedBack)
+                            TaskDetailsFromCall[0].siteType = EditData.siteType;
+                            TaskDetailsFromCall[0].siteUrl = siteUrls;
+                        }
+                        // if(TaskDetailsFromCall[0].TaskID == null && TaskDetailsFromCall[0].TaskID ==  undefined){
+                        //     TaskDetailsFromCall[0].TaskID = 'T'+ TaskDetailsFromCall[0].Id
+                        // }
+                        setLastUpdateTaskData(TaskDetailsFromCall[0]);
+                        if (usedFor == "Image-Tab") {
+                            GetExtraLookupColumnData();
+                        } else {
+                            tempShareWebTypeData = [];
+                            AllMetaData = []
+                            taskUsers = []
+                            CommentBoxData = []
+                            SubCommentBoxData = []
+                            updateFeedbackArray = []
+                            tempShareWebTypeData = []
+                            tempCategoryData = '';
+                            SiteTypeBackupArray = []
+                            currentUserBackupArray = []
+                            AutoCompleteItemsArray = []
+                            FeedBackBackupArray = []
+                            TaskCreatorApproverBackupArray = []
+                            TaskApproverBackupArray = []
+                            ApproverIds = []
+                            TempSmartInformationIds = []
+                            userSendAttentionEmails = []
+                            SiteCompositionPrecentageValue = 0
+                            let CalculateStatusPercentage: any = TaskDetailsFromCall[0].PercentComplete ? TaskDetailsFromCall[0].PercentComplete * 100 : 0;
+                            isApprovalByStatus = false;
+                            if (Items.sendApproverMail != undefined) {
+                                if (Items.sendApproverMail) {
+                                    setSendEmailComponentStatus(true)
+                                } else {
+                                    setSendEmailComponentStatus(false)
+                                }
+                            }
+                            if (CalculateStatusPercentage == 5 && ImmediateStatus) {
+                                setSendEmailComponentStatus(true);
+                                Items.StatusUpdateMail = true;
                             } else {
-                                setSendEmailComponentStatus(true)
+                                setSendEmailComponentStatus(false);
+                                Items.StatusUpdateMail = false;
+                            }
+                            if (sendEmailGlobalCount > 0) {
+                                if (sendEmailStatus) {
+                                    setSendEmailComponentStatus(false)
+                                } else {
+                                    setSendEmailComponentStatus(true)
+                                }
+                            }
+                            if (
+                                Items?.pageName == "TaskDashBoard" ||
+                                Items?.pageName == "ProjectProfile" ||
+                                Items?.pageName == "TaskFooterTable"
+                            ) {
+                                if (Items?.pageName == "TaskFooterTable") {
+                                    let dataEditor: any = {}
+                                    dataEditor.data = TaskDetailsFromCall[0]
+                                    dataEditor.data.editpopup = true;
+                                    dataEditor.data.TaskID = EditData.TaskId
+                                    dataEditor.data.listId = Items.Items.listId
+                                    dataEditor.data.FeedBack = JSON.stringify(dataEditor.data.FeedBack)
+                                    Items.Call(dataEditor, "UpdatedData");
+                                }
+                                else {
+
+                                    Items.Call(DataJSONUpdate, "UpdatedData");
+                                }
+                            }
+                            else {
+                                Items.Call("Save");
                             }
                         }
-                        if (
-                            Items?.pageName == "TaskDashBoard" ||
-                            Items?.pageName == "ProjectProfile" ||
-                            Items?.pageName == "TaskFooterTable"
-                        ) {
-                            if (Items?.pageName == "TaskFooterTable") {
-                                let dataEditor: any = {}
-                                dataEditor.data = TaskDetailsFromCall[0]
-                                dataEditor.data.editpopup = true;
-                                dataEditor.data.TaskID = EditData.TaskId
-                                dataEditor.data.listId = Items.Items.listId
-                                dataEditor.data.FeedBack = JSON.stringify(dataEditor.data.FeedBack)
-                                Items.Call(dataEditor)
-                            }
-                            Items.Call(DataJSONUpdate);
-                        }
-                        else {
-                            Items.Call("Save");
-                        }
-                    }
-                })
+                    })
             } catch (error) {
                 console.log("Error:", error.messages)
             }
@@ -2255,6 +2351,9 @@ const EditTaskPopup = (Items: any) => {
         // .attachmentFiles.get();
 
         var UploadImageArray: any = []
+        var ApprovalData: any = []
+
+
         if (TaskImages != undefined && TaskImages.length > 0) {
             TaskImages?.map((imgItem: any) => {
                 if (imgItem.ImageName != undefined && imgItem.ImageName != null) {
@@ -2291,21 +2390,56 @@ const EditTaskPopup = (Items: any) => {
                     })
                 }
             }
+
+
             StatusOptions?.map((item: any) => {
                 if (PrecentStatus == item.value) {
                     setPercentCompleteStatus(item.status);
                     setTaskStatus(item.taskStatusComment);
                 }
             })
-            const finalData = tempArrayApprover.filter((val: any, id: any, array: any) => {
-                return array.indexOf(val) == id;
-            });
-            TaskAssignedTo = finalData;
-            TaskTeamMembers = finalData;
-            ApproverData = finalData;
+            if (ApproverData == undefined && ApproverData.length == 0) {
+                const finalData = tempArrayApprover.filter((val: any, id: any, array: any) => {
+                    return array.indexOf(val) == id;
+                });
+                TaskAssignedTo = finalData;
+                TaskTeamMembers = finalData;
+            }
+            else {
+                TaskAssignedTo = ApproverData;
+                TaskTeamMembers = ApproverData;
+            }
+
 
         }
 
+
+        let currentUserId = Context.pageContext._legacyPageContext.userId
+
+        if (ApproverData != undefined && ApproverData.length > 0) {
+            if (ApproverData[0].Company == undefined) {
+                EditData.TaskApprovers = ApproverData;
+                ApprovalData = ApproverData
+            }
+
+
+
+
+        }
+        if (ApproverData != undefined && ApproverData.length > 0) {
+            if (ApproverData[0].Company != undefined) {
+                EditData.TaskApprovers = ApproverData
+                ApproverData?.map((ApproverInfo) => {
+                    if (ApproverInfo.Id == undefined) {
+                        ApproverInfo.Id = ApproverInfo.AssignedToUserId
+                    }
+                })
+                ApprovalData = ApproverData
+            }
+
+
+
+        }
         if (CommentBoxData?.length > 0 || SubCommentBoxData?.length > 0) {
             if (CommentBoxData?.length == 0 && SubCommentBoxData?.length > 0) {
                 let message = JSON.parse(EditData.FeedBack);
@@ -2395,6 +2529,9 @@ const EditTaskPopup = (Items: any) => {
 
         if (ApproverData != undefined && ApproverData?.length > 0) {
             ApproverData?.map((ApproverInfo) => {
+                if (ApproverInfo.Id == undefined) {
+                    ApproverInfo.Id = ApproverInfo.ID
+                }
                 ApproverIds.push(ApproverInfo.Id);
             })
         }
@@ -2634,11 +2771,13 @@ const EditTaskPopup = (Items: any) => {
                 let Url = `${siteUrls}/SitePages/Task-Profile.aspx?taskId=${newGeneratedId}&Site=${site}`
                 window.location.href = Url;
             }
+            let SiteName = Items.Items.siteType;
             if (Items?.pageName == "TaskFooterTable") {
                 var ItmesDelete: any = {
                     data: {
                         Id: itemId,
-                        ItmesDelete: true
+                        ItmesDelete: true,
+                        siteName: SiteName
                     }
                 }
                 Items.Call(ItmesDelete);
@@ -2845,12 +2984,17 @@ const EditTaskPopup = (Items: any) => {
         let fileName: any = '';
         let tempArray: any = [];
         let SiteUrl = siteUrls;
+
+        if (Items.Items.siteType == "Offshore Tasks") {
+            Items.Items.siteType = "SharewebQA";
+        }
+
         imageList?.map(async (imgItem: any, index: number) => {
             if (imgItem.data_url != undefined && imgItem.file != undefined) {
                 let date = new Date()
                 let timeStamp = date.getTime();
                 let imageIndex = index + 1
-                fileName = "T" + EditData.Id + '-Image' + imageIndex + "-" + EditData.Title?.replace(/["/':]/g, '')?.slice(0, 40) + " " + timeStamp + ".jpg";
+                fileName = "T" + EditData.Id + '-Image' + imageIndex + "-" + EditData.Title?.replace(/["/':?]/g, '')?.slice(0, 40) + " " + timeStamp + ".jpg";
                 let currentUserDataObject: any;
                 if (currentUserBackupArray != null && currentUserBackupArray.length > 0) {
                     currentUserDataObject = currentUserBackupArray[0];
@@ -3372,7 +3516,7 @@ const EditTaskPopup = (Items: any) => {
         await web.lists.getByTitle(SelectedSite).items.select("Id,Title").filter(`Id eq ${newItem.Id}`).get().
             then(async (res) => {
                 SiteId = res[0].Id
-                siteConfig.forEach((itemss: any) => {
+                AllSitesData?.forEach((itemss: any) => {
                     if (itemss.Title == SelectedSite && itemss.TaxType == 'Sites') {
                         TimesheetConfiguration = JSON.parse(itemss.Configurations)
                     }
@@ -3559,11 +3703,14 @@ const EditTaskPopup = (Items: any) => {
     }
 
     const UpdateApproverFunction = () => {
+        var data = ApproverData;
         setApproverPopupStatus(false);
         setTaskAssignedTo(ApproverData);
+        setApproverData(data)
         setTaskTeamMembers(ApproverData);
         StatusOptions?.map((item: any) => {
             if (item.value == 1) {
+                Items.sendApproverMail = true;
                 setUpdateTaskInfo({ ...UpdateTaskInfo, PercentCompleteStatus: '1' })
                 setPercentCompleteStatus(item.status);
                 setTaskStatus(item.taskStatusComment);
@@ -3624,6 +3771,7 @@ const EditTaskPopup = (Items: any) => {
         TaskApproverBackupArray = [ApproverData];
         StatusOptions?.map((item: any) => {
             if (item.value == 1) {
+                Items.sendApproverMail = true;
                 setUpdateTaskInfo({ ...UpdateTaskInfo, PercentCompleteStatus: '1' })
                 setPercentCompleteStatus(item.status);
                 setTaskStatus(item.taskStatusComment);
@@ -3799,6 +3947,16 @@ const EditTaskPopup = (Items: any) => {
                     <span className="siteCOlor">
                         Select Site
                     </span>
+                </div>
+                <Tooltip ComponentId="1683" isServiceTask={ServicesTaskCheck} />
+            </div>
+        );
+    };
+    const onRenderCustomHeaderAddImageDescription = () => {
+        return (
+            <div className={ServicesTaskCheck ? "d-flex full-width pb-1 serviepannelgreena" : "d-flex full-width pb-1"}>
+                <div className="subheading">
+                    Add Image Descriptions
                 </div>
                 <Tooltip ComponentId="1683" isServiceTask={ServicesTaskCheck} />
             </div>
@@ -4015,7 +4173,7 @@ const EditTaskPopup = (Items: any) => {
                                     {StatusOptions?.map((item: any, index: any) => {
                                         return (
                                             <li key={index}>
-                                                <div className="form-check ">
+                                                <div className={IsUserFromHHHHTeam ? "form-check" : (!IsUserFromHHHHTeam && item.value == 100 ? "form-check Disabled-Link bg-e9 py-1" : "form-check")}>
                                                     <label className="SpfxCheckRadio">
                                                         <input className="radio"
                                                             type="radio" checked={(PercentCompleteCheck ? EditData.PercentComplete : UpdateTaskInfo.PercentCompleteStatus) == item.value}
@@ -4828,7 +4986,7 @@ const EditTaskPopup = (Items: any) => {
                                                 }
                                             </div>
                                         </div>
-                                        <div className="Sitecomposition mb-3">
+                                        {/* <div className="Sitecomposition mb-3">
                                             <a className="sitebutton bg-fxdark alignCenter justify-content-between">
                                                 <span className="alignCenter">
                                                     <span className="svg__iconbox svg__icon--docx"></span>
@@ -4838,7 +4996,7 @@ const EditTaskPopup = (Items: any) => {
                                                     onClick={() => setOpenEODReportPopup(true)}>
                                                 </span>
                                             </a>
-                                        </div>
+                                        </div> */}
                                     </div>
                                     <div className="col-md-4">
                                         <div className="full_width ">
@@ -4902,9 +5060,9 @@ const EditTaskPopup = (Items: any) => {
                                                                             </span>
                                                                         </div>
                                                                         <div className="alignCenter">
-                                                                            <span onClick={() => openReplaceImagePopup(index)} title="Replace image"><TbReplace /> </span>
+                                                                            <span onClick={() => openReplaceImagePopup(index)} title="Replace Image"><TbReplace /> </span>
                                                                             <span className="mx-1" title="Delete" onClick={() => RemoveImageFunction(index, ImageDtl.ImageName, "Remove")}> | <RiDeleteBin6Line /> | </span>
-                                                                            <span title="Customize the width of page" onClick={() => ImageCustomizeFunction(index)}>
+                                                                            <span title="Customize the Width of Page" onClick={() => ImageCustomizeFunction(index)}>
                                                                                 <FaExpandAlt /> |
                                                                             </span>
                                                                             <span className="ms-1 m-0 img-info hover-text" onClick={() => openAddImageDescriptionFunction(index, ImageDtl, "Opne-Model")}>
@@ -5049,10 +5207,12 @@ const EditTaskPopup = (Items: any) => {
                             context={Context}
                             ServicesTaskCheck={ServicesTaskCheck}
                             AllListId={AllListIdData}
+                            SmartTotalTimeData={SmartTotalTimeData}
                             Call={closeSiteCompsotionPanelFunction}
                         /> : null}
                     {sendEmailComponentStatus ?
                         <EmailComponent
+                            AllTaskUser={AllTaskUser}
                             CurrentUser={currentUserData}
                             CreatedApprovalTask={Items.sendApproverMail}
                             statusUpdateMailSendStatus={ImmediateStatus && sendEmailComponentStatus ? true : false}
@@ -5062,7 +5222,7 @@ const EditTaskPopup = (Items: any) => {
                             ApprovalTaskStatus={ApprovalTaskStatus}
                             callBack={SendEmailNotificationCallBack}
                         /> : null}
-                    {OpenEODReportPopup ? <EODReportComponent TaskDetails={EditData} siteUrl={siteUrls} Callback={EODReportComponentCallback} /> : null}
+                    {/* {OpenEODReportPopup ? <EODReportComponent TaskDetails={EditData} siteUrl={siteUrls} Context={Context} Callback={EODReportComponentCallback} /> : null} */}
                 </div>
             </Panel>
             {/* ***************** this is Image compare panel *********** */}
@@ -5941,7 +6101,7 @@ const EditTaskPopup = (Items: any) => {
                                                                 </span>
                                                             </div>
                                                             <div className="alignCenter">
-                                                                <span onClick={() => openReplaceImagePopup(index)} title="Replace image"><TbReplace /> </span>
+                                                                <span onClick={() => openReplaceImagePopup(index)} title="Replace Image"><TbReplace /> </span>
                                                                 <span className="mx-1" title="Delete" onClick={() => RemoveImageFunction(index, imgData.ImageName, "Remove")}> | <RiDeleteBin6Line /> | </span>
                                                                 <span title={imgData.Description != undefined && imgData.Description?.length > 1 ? imgData.Description : "Add Image Description"} className="img-info" onClick={() => openAddImageDescriptionFunction(index, imgData, "Opne-Model")}>
                                                                     <span className="svg__iconbox svg__icon--info"></span>
@@ -6059,28 +6219,27 @@ const EditTaskPopup = (Items: any) => {
             </div>
 
             {/* ********************** This in Add Image Description Model ****************** */}
-            <Modal isOpen={AddImageDescriptions} isBlocking={AddImageDescriptions} containerClassName="custommodalpopup p-2">
-                <div className="modal-header mb-1">
-                    <h5 className="modal-title">Add Image Description</h5>
-                    <span className='mx-1'> <Tooltip ComponentId='5669' isServiceTask={ServicesTaskCheck} /></span>
-                    <button type="button"
-                        className="btn-close"
-                        data-bs-dismiss="modal"
-                        aria-label="Close"
-                        onClick={closeAddImageDescriptionFunction}
-                    ></button>
+            <Panel
+                isOpen={AddImageDescriptions}
+                onRenderHeader={onRenderCustomHeaderAddImageDescription}
+                type={PanelType.custom}
+                customWidth="600px"
+                onDismiss={closeAddImageDescriptionFunction}
+                isBlocking={false}
+            >
+                <div>
+                    <div className="modal-body">
+                        <div className='col'><textarea id="txtUpdateComment" rows={6}
+                            value={AddImageDescriptionsDetails != undefined ? AddImageDescriptionsDetails : ''}
+                            className="full-width"
+                            onChange={(e) => UpdateImageDescription(e)}></textarea></div>
+                    </div>
+                    <footer className='text-end mt-2'>
+                        <button className="btn btnPrimary mx-1 " onClick={SaveImageDescription}>Save</button>
+                        <button className='btn btn-default' onClick={closeAddImageDescriptionFunction}>Cancel</button>
+                    </footer>
                 </div>
-                <div className="modal-body">
-                    <div className='col mx-2'><textarea id="txtUpdateComment" rows={6}
-                        value={AddImageDescriptionsDetails != undefined ? AddImageDescriptionsDetails : ''}
-                        className="full-width"
-                        onChange={(e) => UpdateImageDescription(e)}></textarea></div>
-                </div>
-                <footer className='text-end mt-2 mx-2'>
-                    <button className="btn btnPrimary mx-1 " onClick={SaveImageDescription}>Save</button>
-                    <button className='btn btn-default' onClick={closeAddImageDescriptionFunction}>Cancel</button>
-                </footer>
-            </Modal>
+            </Panel>
 
             {/* ********************* this is Copy Task And Move Task panel ****************** */}
             <Panel
@@ -6283,14 +6442,15 @@ const EditTaskPopup = (Items: any) => {
                             </ul>
                         </div>
                     </div>
-                    <footer className="float-end mt-1">
-                        <button type="button" className="btn btn-primary px-3 mx-1" onClick={UpdateApproverFunction}>
-                            Save
-                        </button>
-                        <button type="button" className="btn btn-default px-3" onClick={closeApproverPopup}>
-                            Cancel
-                        </button>
-
+                    <footer className="fixed-bottom">
+                        <div className="align-items-center d-flex me-3 pull-right px-4 py-2">
+                            <button type="button" className="btn btn-primary px-3 mx-1" onClick={UpdateApproverFunction}>
+                                Save
+                            </button>
+                            <button type="button" className="btn btn-default px-3" onClick={closeApproverPopup}>
+                                Cancel
+                            </button>
+                        </div>
                     </footer>
                 </div>
             </Panel>

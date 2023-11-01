@@ -304,7 +304,8 @@ export class EventRecurrenceInfoDaily extends React.Component<IEventRecurrenceIn
     const recurrenceXML = `<recurrence><rule><firstDayOfWeek>su</firstDayOfWeek><repeat>` +
       `<daily ${ this.state.selectPatern === 'every' ? `dayFrequency="${this.state.numberOfDays.trim()}"/>` : 'weekday'}</repeat>${selectDateRangeOption}</rule></recurrence>`;
   //  console.log(recurrenceXML);
-    this.props.returnRecurrenceData(this.state.startDate, recurrenceXML);
+  //endDate change
+    this.props.returnRecurrenceData(this.state.startDate,this.state.endDate, recurrenceXML);
   }
   /**
    *

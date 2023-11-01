@@ -168,7 +168,7 @@ return (
               </svg>
             </span>
     </OverlayTrigger></ButtonToolbar> */}
-  <span className='hover-text mt--5 me-2'>
+  <span className='hover-text mt--2 me-2'>
     <svg xmlns="http://www.w3.org/2000/svg"
                   width="16"
                   height="16"
@@ -187,7 +187,7 @@ return (
               <div className='mx-2'>{items?.country}</div>
               <div className="rounded"style={{backgroundColor:items.currentCuntry?"green":"yellow",height:"10px",width:"10px"}}></div>
               <div className='alignCenter ml-auto'>
-                <div className="svg__iconbox svg__icon--clock dark mx-2"></div>
+                <div className="svg__iconbox svg__icon--clock dark mx-1"></div>
                 <div>{items?.Time}</div>
               </div>
             </div>

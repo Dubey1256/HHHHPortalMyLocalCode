@@ -12,7 +12,7 @@ import { SPFI, spfi, SPFx as spSPFx } from "@pnp/sp";
 import 'bootstrap/dist/css/bootstrap.min.css';
 import InfoIconsToolTip from "../../../globalComponents/InfoIconsToolTip/InfoIconsToolTip";
 import GlobalCommanTable from "../../../globalComponents/GroupByReactTableComponents/GlobalCommanTable";
-import HighlightableCell from "../../../globalComponents/highlight";
+import HighlightableCell from "../../../globalComponents/GroupByReactTableComponents/highlight";
 // import GlobalCommanTable from '../../../globalComponents/GlobalCommanTable';
 const BottleneckTasktbl = (Tile: any) => {
     const ContextData: any = React.useContext(myContextValue);
@@ -260,16 +260,16 @@ const BottleneckTasktbl = (Tile: any) => {
                             <span className="fw-bold">
                                 Bottleneck Task {`(${bottleneckTask.length})`}
                             </span>
-                            <a className="empCol hreflink" onClick={() => sendAllWorkingTodayTasks(bottleneckTask)}>Share Ongoing Task</a>
-                        </div>
-                        <div className="alignCenter mb-2 justify-content-between">
-                            <a
-                                className="empCol hreflink"
+                            <span className="alignCenter">
+                            <a className="empCol hreflink me-3"
                                 target="_blank"
-                                href="https://hhhhteams.sharepoint.com/sites/HHHH/SP/SitePages/CreateTask.aspx"
-                            >
+                                href="https://hhhhteams.sharepoint.com/sites/HHHH/SP/SitePages/CreateTask.aspx">
                                 Create New Task
                             </a>
+                            <a className="empCol hreflink" onClick={() => sendAllWorkingTodayTasks(bottleneckTask)}>
+                                <span title="Share Ongoing Task" className="svg__iconbox svg__icon--share empBg"></span>
+                            </a>
+                            </span>
                         </div>
                         <div className="Alltable maXh-300 scrollbar">
                             {bottleneckTask && (

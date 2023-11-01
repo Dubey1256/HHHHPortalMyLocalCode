@@ -8,7 +8,7 @@ import { SPFI, spfi, SPFx as spSPFx } from "@pnp/sp";
 import 'bootstrap/dist/css/bootstrap.min.css';
 import InfoIconsToolTip from "../../../globalComponents/InfoIconsToolTip/InfoIconsToolTip";
 import GlobalCommanTable from "../../../globalComponents/GroupByReactTableComponents/GlobalCommanTable";
-import HighlightableCell from "../../../globalComponents/highlight";
+import HighlightableCell from "../../../globalComponents/GroupByReactTableComponents/highlight";
 const WorkingTodaytbl = (Tile: any) => {
     const ContextData: any = React.useContext(myContextValue);
     const [todaysTask, settodaysTask] = useState(ContextData?.AlltaskData.TodaysTask);
@@ -38,8 +38,7 @@ const WorkingTodaytbl = (Tile: any) => {
             {
                 cell: ({row}) => (
                     <div>
-                        <img
-                            width={"20px"}
+                        <img width={"20px"}
                             height={"20px"}
                             className="rounded-circle"
                             src={row?.original?.siteIcon}
@@ -105,7 +104,7 @@ const WorkingTodaytbl = (Tile: any) => {
             },
             {
                 accessorKey: "percentage",
-                placeholder: "&",
+                placeholder: "Percentage",
                 header: "",
                 resetColumnFilters: false,
                 size: 42,
@@ -205,12 +204,7 @@ const WorkingTodaytbl = (Tile: any) => {
             SendEmailFinal(to, subject, sendAllTasks);
 
         }
-
-
     }
-
-
-
 
     const SendEmailFinal = async (to: any, subject: any, body: any) => {
         let sp = spfi().using(spSPFx(ContextData?.propsValue?.Context));
@@ -240,23 +234,19 @@ const WorkingTodaytbl = (Tile: any) => {
 
     return (
         <div>
-            <div className="row m-0 mb-3 empMainSec">
+            <div className="row m-0 mb-2 empMainSec">
                 <><div className="col-7 p-0">
                     <div className="workingSec empAllSec clearfix">
                         <div className="alignCenter mb-2 justify-content-between">
                             <span className="fw-bold">
                                 Working Today {`(${todaysTask.length})`}
                             </span>
-                            <a className="empCol hreflink" onClick={() => sendAllWorkingTodayTasks(todaysTask)}>Share Ongoing Task</a>
-                        </div>
-                        <div className="alignCenter mb-2 justify-content-between">
-                            <a
-                                className="empCol hreflink"
-                                target="_blank"
-                                href="https://hhhhteams.sharepoint.com/sites/HHHH/SP/SitePages/CreateTask.aspx"
-                            >
-                                Create New Task
-                            </a>
+                            <span className="alignCenter">
+                                <a className="empCol hreflink me-3" target="_blank" href="https://hhhhteams.sharepoint.com/sites/HHHH/SP/SitePages/CreateTask.aspx">
+                                 Create New Task
+                                </a>
+                                <a className="empCol hreflink" onClick={() => sendAllWorkingTodayTasks(todaysTask)}><span title="Share Ongoing Task" className="svg__iconbox svg__icon--share empBg"></span></a>
+                            </span>
                         </div>
                         <div className="Alltable maXh-300 scrollbar">
                             {todaysTask && (

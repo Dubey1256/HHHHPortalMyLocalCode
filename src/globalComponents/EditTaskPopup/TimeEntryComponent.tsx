@@ -25,6 +25,7 @@ import "bootstrap/dist/css/bootstrap.min.css";
 import Tooltip from "../Tooltip";
 import * as globalCommon from "../globalCommon";
 import { truncate } from "@microsoft/sp-lodash-subset";
+import HighlightableCell from "../highlight";
 var AllTimeSpentDetails: any = [];
 var CurntUserId = "";
 var changeTime: any = 0;
@@ -802,6 +803,7 @@ function TimeEntryPopup(item: any) {
             var dateValues = val?.TaskDate?.split("/");
             var dp = dateValues[1] + "/" + dateValues[0] + "/" + dateValues[2];
             var NewDate = new Date(dp);
+            val.sortTaskDate = NewDate;
             val.TaskDates = Moment(NewDate).format("ddd, DD/MM/YYYY");
             try {
               getDateForTimeEntry(NewDate, val);
@@ -1639,12 +1641,12 @@ function TimeEntryPopup(item: any) {
             .getFileByServerRelativeUrl(`${listUri}/${newdata.data.Id}_.000`)
             .moveTo(`${listUri}${folderUri}/${newdata.data.Id}_.000`);
           console.log(movedata);
-          if(movedata != undefined){
+          if (movedata != undefined) {
             mainParentId = newdata.data.Id;
             mainParentTitle = newdata.data.Title;
             createItemMainList();
           }
-         
+
         }
       });
     }
@@ -1776,14 +1778,14 @@ function TimeEntryPopup(item: any) {
       .moveTo(`${listUri}${folderUri}/${newdata.data.Id}_.000`);
     console.log(movedata);
 
-    if(movedata != undefined){
-        NewParentId = newdata.data.Id;
-        NewParentTitle = newdata.data.Title;
-        NewCategoryId = newdata.data.CategoryId;
-        AllTimeEntry = [];
-        EditData(item.props);
+    if (movedata != undefined) {
+      NewParentId = newdata.data.Id;
+      NewParentTitle = newdata.data.Title;
+      NewCategoryId = newdata.data.CategoryId;
+      AllTimeEntry = [];
+      EditData(item.props);
     }
-   
+
   };
   const createItemforNewUser = async (LetestFolderID: any) => {
     let web = new Web(`${CurrentSiteUrl}`);
@@ -2637,7 +2639,7 @@ function TimeEntryPopup(item: any) {
         hasCustomExpanded: true,
         hasExpanded: true,
         size: 20,
-        margin:0,
+        margin: 0,
         id: "Id"
 
       },
@@ -2657,13 +2659,13 @@ function TimeEntryPopup(item: any) {
                     <span>
                       {row?.original?.AuthorImage != "" &&
                         row?.original.AuthorImage != null ? (
-                          <img
-                            className="AssignUserPhoto1 bdrbox m-0 wid29"
-                            title={row?.original.AuthorName}
-                            data-toggle="popover"
-                            data-trigger="hover"
-                            src={row?.original.AuthorImage}
-                          ></img>
+                        <img
+                          className="AssignUserPhoto1 bdrbox m-0 wid29"
+                          title={row?.original.AuthorName}
+                          data-toggle="popover"
+                          data-trigger="hover"
+                          src={row?.original.AuthorImage}
+                        ></img>
                       ) : (
                         <>
                           {" "}
@@ -2702,10 +2704,30 @@ function TimeEntryPopup(item: any) {
       },
 
       {
-        accessorKey: "TaskDates",
-        placeholder: "TaskDate",
+        accessorFn: (row) => row?.sortTaskDate,
+        cell: ({ row, column }) => (
+          <div className="alignCenter">
+            {row?.original?.Created == null ? ("") : (
+              <>
+                <HighlightableCell value={row?.original?.TaskDates} searchTerm={column.getFilterValue() != undefined ? column.getFilterValue() : null} />
+
+              </>
+            )}
+          </div>
+        ),
+        id: 'Created',
+        resetColumnFilters: false,
+        resetSorting: false,
+        placeholder: "Created",
+        filterFn: (row: any, columnName: any, filterValue: any) => {
+          if (row?.original?.TaskDates?.toLowerCase()?.includes(filterValue)) {
+            return true
+          } else {
+            return false
+          }
+        },
         header: "",
-        size: 115
+        size: 125
       },
       {
         accessorKey: "TaskTime",
@@ -2808,11 +2830,11 @@ function TimeEntryPopup(item: any) {
                       />
                     )}
 
-                    {TaskCate.length === 0 && (
+                    {/* {TaskCate.length === 0 && (
                       <div className="text-center pb-3">
                         No Timesheet Available
                       </div>
-                    )}
+                    )} */}
                   </div>
                 </div>
               </div>
@@ -2916,14 +2938,14 @@ function TimeEntryPopup(item: any) {
                           </span>
                         </div>
                         <div className="input-group mt-1">
-                        <label className="form-label full-width">Date</label>
+                          <label className="form-label full-width">Date</label>
 
-                        <DatePicker
-                          className="form-control"
-                          selected={myDatee}
-                          onChange={handleDatedue}
-                          dateFormat="EEE, dd MMM yyyy"
-                        /></div>
+                          <DatePicker
+                            className="form-control"
+                            selected={myDatee}
+                            onChange={handleDatedue}
+                            dateFormat="EEE, dd MMM yyyy"
+                          /></div>
                       </div>
                     </div>
 
@@ -3214,14 +3236,14 @@ function TimeEntryPopup(item: any) {
                             </span>
                           </div>
                           <div className="input-group mt-1">
-                          <label className="form-label full-width">Date</label>
+                            <label className="form-label full-width">Date</label>
 
-                          <DatePicker
-                            className="form-control"
-                            selected={editeddata}
-                            onChange={handleDatedue}
-                            dateFormat="EEE, dd MMM yyyy"
-                          /></div>
+                            <DatePicker
+                              className="form-control"
+                              selected={editeddata}
+                              onChange={handleDatedue}
+                              dateFormat="EEE, dd MMM yyyy"
+                            /></div>
                         </div>
                       </div>
 
@@ -3505,14 +3527,14 @@ function TimeEntryPopup(item: any) {
                                   </span>
                                 </div>
                                 <div className="input-group mt-1">
-                                <label className="form-label full-width">Date</label>
+                                  <label className="form-label full-width">Date</label>
 
-                                <DatePicker
-                                  className="form-control"
-                                  selected={editeddata}
-                                  onChange={handleDatedue}
-                                  dateFormat="EEE, dd MMM yyyy"
-                                /></div>
+                                  <DatePicker
+                                    className="form-control"
+                                    selected={editeddata}
+                                    onChange={handleDatedue}
+                                    dateFormat="EEE, dd MMM yyyy"
+                                  /></div>
                               </div>
                             </div>
 

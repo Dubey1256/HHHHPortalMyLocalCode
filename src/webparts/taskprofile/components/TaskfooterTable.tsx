@@ -239,7 +239,7 @@ function TasksTable(props: any) {
       const batch = sp.createBatch();
       for (let i = 0; i < siteConfig?.length; i++) {
         const config = siteConfig[i];
-        var select = "TaskLevel,ParentTask/Title,ParentTask/Id,ClientTime,SiteCompositionSettings,TaskLevel,ItemRank,Project/Id,Project/PortfolioStructureID, Project/Title,PortfolioType/Id,PortfolioType/Title,PortfolioType/Color,TimeSpent,BasicImageInfo,CompletedDate,TaskID, ResponsibleTeam/Id,ResponsibleTeam/Title,TaskCategories/Id,TaskCategories/Title,ParentTask/TaskID,TaskType/Id,TaskType/Title,TaskType/Level, PriorityRank, TeamMembers/Title, TeamMembers/Name, Portfolio/Id,Portfolio/Title,Portfolio/PortfolioStructureID, TeamMembers/Id, Item_x002d_Image,ComponentLink,IsTodaysTask,AssignedTo/Title,AssignedTo/Name,AssignedTo/Id,  ClientCategory/Id, ClientCategory/Title, FileLeafRef, FeedBack, Title, Id, PercentComplete,StartDate, DueDate, Comments, Categories, Status, Body, Mileage,PercentComplete,ClientCategory,Priority,Created,Modified,Author/Id,Author/Title,Editor/Id,Editor/Title&$expand=ParentTask,Project,Portfolio,TaskType,AssignedTo,ClientCategory,Author,Editor,TeamMembers,PortfolioType,ResponsibleTeam,TaskCategories&$filter=" + filter + ""
+        var select = "TaskLevel,ParentTask/Title,ParentTask/Id,ClientTime,PriorityRank,SiteCompositionSettings,TaskLevel,ItemRank,Project/Id,Project/PortfolioStructureID, Project/Title,PortfolioType/Id,PortfolioType/Title,PortfolioType/Color,TimeSpent,BasicImageInfo,CompletedDate,TaskID, ResponsibleTeam/Id,ResponsibleTeam/Title,TaskCategories/Id,TaskCategories/Title,ParentTask/TaskID,TaskType/Id,TaskType/Title,TaskType/Level, PriorityRank, TeamMembers/Title, TeamMembers/Name, Portfolio/Id,Portfolio/Title,Portfolio/PortfolioStructureID, TeamMembers/Id, Item_x002d_Image,ComponentLink,IsTodaysTask,AssignedTo/Title,AssignedTo/Name,AssignedTo/Id,  ClientCategory/Id, ClientCategory/Title, FileLeafRef, FeedBack, Title, Id, PercentComplete,StartDate, DueDate, Comments, Categories, Status, Body, Mileage,PercentComplete,ClientCategory,Priority,Created,Modified,Author/Id,Author/Title,Editor/Id,Editor/Title&$expand=ParentTask,Project,Portfolio,TaskType,AssignedTo,ClientCategory,Author,Editor,TeamMembers,PortfolioType,ResponsibleTeam,TaskCategories&$filter=" + filter + ""
 
         const web = new Web(props?.AllListId?.siteUrl);
         const list = web.lists.getById(config.listId);
@@ -279,7 +279,7 @@ function TasksTable(props: any) {
                   result.AllTeamName =
                     result.AllTeamName === undefined ? "" : result.AllTeamName;
                   result.chekbox = false;
-                  result.descriptionsSearch = "";
+                  result.descriptionsSearch = '';
                   result.commentsSearch = "";
                   result.DueDate = moment(result.DueDate).format("DD/MM/YYYY");
                   result.DisplayDueDate = moment(result.DueDate).format("DD/MM/YYYY");
@@ -300,8 +300,6 @@ function TasksTable(props: any) {
                     result.PercentComplete * 100
                   ).toFixed(0);
                   result.chekbox = false;
-
-
                   if (result?.FeedBack != undefined) {
                     let DiscriptionSearchData: any = '';
                     let feedbackdata: any = JSON.parse(result?.FeedBack)
@@ -314,7 +312,6 @@ function TasksTable(props: any) {
                     }).join('');
                     result.descriptionsSearch = DiscriptionSearchData
                 }
-                  
 
                   if (result?.Comments != null) {
                     result.commentsSearch = result?.Comments?.replace(/(<([^>]+)>)/gi,"").replace(/\n/g, "");
@@ -731,7 +728,7 @@ function TasksTable(props: any) {
               <FaCompressArrowsAlt style={{ height: '11px', width: '20px' }} /> : ''}
             {row?.original?.subRows?.length > 0 ?
               <span className='ms-1'>{row?.original?.subRows?.length ? '(' + row?.original?.subRows?.length + ')' : ""}</span> : ''}
-            {row?.original?.descriptionsSearch?.length > 0 && <InfoIconsToolTip
+            {row?.original?.descriptionsSearch!='' && <InfoIconsToolTip
               Discription={row?.original?.descriptionsSearch}
               row={row?.original}
             />}
@@ -781,6 +778,14 @@ function TasksTable(props: any) {
         placeholder: "Team",
         header: "",
         size: 100,
+      },
+      {
+        accessorKey: "PriorityRank",
+        placeholder: "Priority",
+        header: "",
+        resetColumnFilters: false,
+        size: 42,
+        id: "PriorityRank"
       },
       {
         accessorKey: "PercentComplete",

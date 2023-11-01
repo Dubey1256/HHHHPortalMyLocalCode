@@ -179,13 +179,13 @@ const App = (props: any) => {
     setSelectedUsers(items);
   };
 
-  //  People Picker Function close
-
-  const returnRecurrenceInfo = (startDate: Date, recurrenceData: string) => {
+  //  People Picker Function clos
+  const returnRecurrenceInfo = (startDate: Date, endDate:Date, recurrenceData: string) => {
     const returnedRecurrenceInfo = {
       recurrenceData: recurrenceData,
       eventDate: startDate,
-      endDate: moment().add(20, "years").toDate()
+      endDate:endDate,
+      //  endDate: moment().add(20, "years").toDate()
     };
     setReturnedRecurrenceInfo(returnedRecurrenceInfo);
     console.log(returnedRecurrenceInfo);
@@ -438,6 +438,7 @@ const App = (props: any) => {
     // setType("");
     sedType("");
     setInputValueReason("");
+    allDay = "false";
   };
 
   const handleInputChangeName = (
@@ -501,10 +502,9 @@ const App = (props: any) => {
       UID: event.UID,
       fRecurrence: event.fRecurrence
     }));
-    // localArr = eventsFormatted;
-    // setEvents(eventsFormatted);
+   
     console.log(eventsFormatted, "dadd");
-    // return;
+   
     let localcomp = [];
     let startdate: any, enddate: any, createdAt: any, modifyAt: any;
     const web = new Web(props.props.siteUrl);
@@ -718,6 +718,7 @@ const App = (props: any) => {
               setIsChecked(false);
               setSelectedTime(selectedTime);
               setSelectedTimeEnd(selectedTimeEnd);
+              allDay = "false";
             });
         }
       }
@@ -1228,6 +1229,7 @@ const App = (props: any) => {
         closem(undefined);
         setSelectedTime(startTime);
         setSelectedTimeEnd(endTime);
+        allDay = "false";
       });
   };
 
@@ -1378,7 +1380,7 @@ const App = (props: any) => {
       console.log("allDay", allDay);
     }
   };
-  const setStartDatefunction = (date: any) => {
+   const setStartDatefunction = (date: any) => {
     setStartDate(date);
     if (isChecked == true) {
       setEndDate(date);
@@ -1722,6 +1724,7 @@ const App = (props: any) => {
                   display={true}
                   recurrenceData={recurrenceData}
                   startDate={startDate}
+                
                   siteUrl={props.props.siteUrl}
                   returnRecurrenceData={returnRecurrenceInfo}
                 ></EventRecurrenceInfo>

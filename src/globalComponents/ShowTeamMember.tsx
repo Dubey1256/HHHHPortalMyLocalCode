@@ -27,11 +27,11 @@ function ShowTeamMembers(item: any) {
   const [message, setmessage] = React.useState<any>('')
   const [Data, setData] = React.useState([]);
   const [show, setShow] = React.useState(true);
-  const [allEmployeeData, setAllEmployeeData]: any = React.useState([]); 
+  const [allEmployeeData, setAllEmployeeData]: any = React.useState([]);
   var BackupArray: any = [];
   function getTeamMembers() {
     let UsersData: any = [];
-    let Groups: any = [];  
+    let Groups: any = [];
     if (newTaskUsers != undefined && newTaskUsers?.length > 0) {
       newTaskUsers?.map((user: any, index: any) => {
         if (user?.AssingedToUser != undefined && user?.AssingedToUser?.Id != undefined && user?.AssingedToUser?.Id == item?.context?.pageContext?._legacyPageContext?.userId) {
@@ -57,8 +57,8 @@ function ShowTeamMembers(item: any) {
           }
         });
       });
-    }    
-    let array: any = [];  
+    }
+    let array: any = [];
     newTaskUsers?.map((taskuser: any) => {
       if (GroupChatMemberUser != undefined && GroupChatMemberUser?.length > 0) {
         GroupChatMemberUser?.map((item: any) => {
@@ -82,7 +82,7 @@ function ShowTeamMembers(item: any) {
       //     }
       //   });
       // }
-    });   
+    });
     const uniqueAuthors: any = array.filter(
       (value: any, index: any, self: any) =>
         index ===
@@ -109,7 +109,7 @@ function ShowTeamMembers(item: any) {
     setEmail(emailStringWithoutSpaces);
     setAllEmployeeData(Groups);
     setTeamMembers(uniqueAuthors);
-    setLoaded(true);  
+    setLoaded(true);
   };
   const dragStart = (e: any, position: any, index: any) => {
     dragItem.current = position;
@@ -161,7 +161,7 @@ function ShowTeamMembers(item: any) {
     e.preventDefault();
     const copyListItems = [...teamMembers];
     const copyListItems1 = [...allEmployeeData];
-    const dragItemContent = copyListItems1[dragItem.current1].Child[dragItem.current];    
+    const dragItemContent = copyListItems1[dragItem.current1].Child[dragItem.current];
     copyListItems1[dragItem.current1].Child.splice(dragItem.current, 1);
     copyListItems?.splice(dragOverItem.current, 0, dragItemContent);
     dragItem.current = null;
@@ -340,7 +340,7 @@ function ShowTeamMembers(item: any) {
     });
   }
   const GetTeamUserAndMembershipId = async () => {
-    try { 
+    try {
       let pageContent = await globalCommon.pageContext()
       let web = new Web(pageContent?.WebFullUrl);
       currentUser = await web.currentUser?.get()
@@ -363,7 +363,7 @@ function ShowTeamMembers(item: any) {
           })
           currentUser.ChatId = CurrentUserChatInfo[0]?.id;
         });
-      });      
+      });
     } catch (error) {
       console.log(error)
     }
@@ -374,8 +374,11 @@ function ShowTeamMembers(item: any) {
     var select: any = 'Id,Title,Comments&$filter=Id eq ' + item?.props[0]?.original?.Id;
     if (item?.props[0]?.original != undefined && item?.props[0]?.original?.siteType == 'Master Tasks')
       listID = GlobalConstants.MASTER_TASKS_LISTID;
-    else if (item?.props[0]?.original != undefined && item?.props[0]?.original?.siteType != 'Master Tasks')
+    else if (item?.props[0]?.original != undefined && item?.props[0]?.original?.siteType != 'Master Tasks' && item?.original != undefined && item?.original?.listId != undefined)
+      listID = item?.original?.listId;
+    else if (item?.props[0]?.original != undefined && item?.props[0]?.original?.siteType != 'Master Tasks' && item?.props[0]?.original?.listId != undefined)
       listID = item?.props[0]?.original?.listId;
+
     CurrentItem = await globalCommon.getData(GlobalConstants.SP_SITE_URL, listID, select);
     if (CurrentItem != undefined && CurrentItem?.length > 0) {
       if (CurrentItem[0]?.Comments != undefined && CurrentItem[0]?.Comments?.length > 0) {
@@ -421,7 +424,7 @@ function ShowTeamMembers(item: any) {
       {console.log("BackupArrayBackupArrayBackupArrayBackupArray", BackupArray)}
       <Modal
         show={show}
-        size="lg"       
+        size="lg"
         backdrop="static"
         keyboard={false}
       >

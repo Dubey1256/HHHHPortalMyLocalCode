@@ -27,7 +27,9 @@ import InfoIconsToolTip from "../../../globalComponents/InfoIconsToolTip/InfoIco
 import PageLoader from "../../../globalComponents/pageLoader";
 import CreateActivity from "../../servicePortfolio/components/CreateActivity";
 import CreateWS from '../../servicePortfolio/components/CreateWS';
+import ReactPopperTooltipSingleLevel from "../../../globalComponents/Hierarchy-Popper-tooltipSilgleLevel/Hierarchy-Popper-tooltipSingleLevel";
 //import RestructuringCom from "../../../globalComponents/Restructuring/RestructuringCom";
+
 var filt: any = "";
 var ContextValue: any = {};
 let globalFilterHighlited: any;
@@ -45,6 +47,14 @@ let countAllComposubData: any = [];
 let countsrun = 0;
 let TimesheetData: any = [];
 let count = 1;
+let flatviewmastertask:any =[];
+let flatviewTasklist:any =[];
+let hasExpanded: any = true;
+let isColumnDefultSortingAsc: any = false;
+let hasCustomExpanded: any = true;
+let isHeaderNotAvlable: any = false
+
+let allgroupdata:any = [];
 function PortfolioTable(SelectedProp: any) {
   const childRef = React.useRef<any>();
   if (childRef != null) {
@@ -100,6 +110,8 @@ function PortfolioTable(SelectedProp: any) {
       { Title: "SubComponent", Suffix: "S", Level: 2 },
       { Title: "Feature", Suffix: "F", Level: 3 }
     ]);
+    const [clickFlatView, setclickFlatView] = React.useState(false);
+    const [groupByButtonClickData, setGroupByButtonClickData] = React.useState([]);
   let ComponetsData: any = {};
   let Response: any = [];
   let props = undefined;
@@ -113,7 +125,13 @@ function PortfolioTable(SelectedProp: any) {
   // Load all time entry for smart time 
 
 
-
+  function removeHtmlAndNewline(text:any) {
+    if (text) {
+        return text.replace(/(<([^>]+)>)/gi, "").replace(/\n/g, '');
+    } else {
+        return ''; // or any other default value you prefer
+    }
+}
 
   // load all time entry end  
 
@@ -390,7 +408,8 @@ function PortfolioTable(SelectedProp: any) {
                   result.chekbox = false;
                   result.descriptionsSearch = "";
                   result.commentsSearch = "";
-
+                  result.TaskTypeValue = '';
+                  result.portfolioItemsSearch = '';
                   result.DueDate = Moment(result.DueDate).format("DD/MM/YYYY");
                   result.DisplayDueDate = Moment(result.DueDate).format("DD/MM/YYYY");
                   if (result.DisplayDueDate == "Invalid date" || "") {
@@ -490,6 +509,12 @@ function PortfolioTable(SelectedProp: any) {
                       }
                     });
                   }
+                  if (result?.TaskType) {
+                    result.portfolioItemsSearch = result?.TaskType?.Title;
+                }
+                if (result?.TaskCategories?.length > 0) {
+                  result.TaskTypeValue = result?.TaskCategories?.map((val: any) => val.Title).join(",")
+              }
                   if (result?.ClientCategory?.length > 0) {
                     result.ClientCategorySearch = result?.ClientCategory?.map(
                       (elem: any) => elem.Title
@@ -514,6 +539,7 @@ function PortfolioTable(SelectedProp: any) {
                   TasksItem.push(result);
                   AllTasksData.push(result);
                 });
+                flatviewTasklist = JSON.parse(JSON.stringify(AllTasksData))
                 AllSiteTasksData = AllTasksData;
                 // GetComponents();
                 if (AllSiteTasksData?.length > 0) {
@@ -527,6 +553,7 @@ function PortfolioTable(SelectedProp: any) {
   };
   const timeEntryIndex: any = {};
   const smartTimeTotal = async () => {
+    setLoaded(false)
     count++;
     let AllTimeEntries = [];
     if (timeSheetConfig?.Id !== undefined) {
@@ -570,11 +597,12 @@ function PortfolioTable(SelectedProp: any) {
     console.log("timeEntryIndex", timeEntryIndex)
     if (AllSiteTasksData?.length > 0) {
       setData([]);
-      portfolioTypeData.forEach((port, index) => {
-        componentGrouping(port?.Id, index);
+     let portfoliodata =  portfolioTypeData.filter((port)=>port.Title === SelectedProp?.props?.Item_x0020_Type)
+      
+        componentGrouping(portfoliodata[0]?.Id, portfoliodata[0]?.Id);
         countsrun++;
-      });
     }
+    setLoaded(true)
     return AllSiteTasksData;
   };
 
@@ -610,6 +638,7 @@ function PortfolioTable(SelectedProp: any) {
         "DueDate",
         "Created",
         "Body",
+        "Sitestagging",
         "Item_x0020_Type",
         "Categories",
         "Short_x0020_Description_x0020_On",
@@ -651,9 +680,11 @@ function PortfolioTable(SelectedProp: any) {
     componentDetails.forEach((result: any) => {
       result["siteType"] = "Master Tasks";
       result.AllTeamName = "";
+      result.portfolioItemsSearch = result.Item_x0020_Type;
       result.descriptionsSearch = "";
       result.commentsSearch = "";
       result.TeamLeaderUser = [];
+      result.TaskTypeValue = '';
       if (result.Item_x0020_Type === "Component") {
         result.boldRow = "boldClable";
         result.lableColor = "f-bg";
@@ -686,19 +717,17 @@ function PortfolioTable(SelectedProp: any) {
       result.DisplayCreateDate = Moment(result.Created).format("DD/MM/YYYY");
 
       result.PercentComplete = (result.PercentComplete * 100).toFixed(0);
-      if (result?.Short_x0020_Description_x0020_On != undefined) {
-        result.descriptionsSearch =
-          result.Short_x0020_Description_x0020_On.replace(
-            /(<([^>]+)>)/gi,
-            ""
-          ).replace(/\n/g, "");
-      }
+      if (result?.Deliverables != undefined || result.Short_x0020_Description_x0020_On != undefined || result.TechnicalExplanations != undefined || result.Body != undefined || result.AdminNotes != undefined || result.ValueAdded != undefined
+        || result.Idea != undefined || result.Background != undefined) {
+        result.descriptionsSearch = `${removeHtmlAndNewline(result.Deliverables)} ${removeHtmlAndNewline(result.Short_x0020_Description_x0020_On)} ${removeHtmlAndNewline(result.TechnicalExplanations)} ${removeHtmlAndNewline(result.Body)} ${removeHtmlAndNewline(result.AdminNotes)} ${removeHtmlAndNewline(result.ValueAdded)} ${removeHtmlAndNewline(result.Idea)} ${removeHtmlAndNewline(result.Background)}`;
+    }
       if (result?.Comments != null) {
         result.commentsSearch = result?.Comments.replace(
           /(<([^>]+)>)/gi,
           ""
         ).replace(/\n/g, "");
       }
+
       result.Id = result.Id != undefined ? result.Id : result.ID;
       if (result.AssignedTo != undefined && result.AssignedTo.length > 0) {
         map(result.AssignedTo, (Assig: any) => {
@@ -763,6 +792,7 @@ function PortfolioTable(SelectedProp: any) {
         result.ClientCategorySearch = "";
       }
     });
+    flatviewmastertask = JSON.parse(JSON.stringify(componentDetails));
     setAllMasterTasks(componentDetails);
     AllComponetsData = componentDetails;
     ComponetsData["allComponets"] = componentDetails;
@@ -799,6 +829,54 @@ function PortfolioTable(SelectedProp: any) {
     getTaskUsers();
     getPortFolioType();
   }, []);
+// Flatview 
+
+
+
+const switchFlatViewData = (data: any) => {
+  let groupedDataItems = JSON.parse(JSON.stringify(data));
+  const flattenedData = flattenData(groupedDataItems);
+  hasCustomExpanded = false
+  hasExpanded = false
+  isHeaderNotAvlable = true
+  isColumnDefultSortingAsc = true
+  setGroupByButtonClickData(data);
+  setclickFlatView(true);
+  setData(flattenedData);
+  // setData(smartAllFilterData);
+}
+
+function flattenData(groupedDataItems: any) {
+  const flattenedData: any = [];
+  function flatten(item: any) {
+      if (item.Title != "Others") {
+          flattenedData.push(item);
+      }
+      if (item?.subRows) {
+          item?.subRows.forEach((subItem: any) => flatten(subItem));
+          item.subRows = []
+      }
+  }
+  groupedDataItems?.forEach((item: any) => { flatten(item) });
+  return flattenedData;
+}
+const switchGroupbyData = () => {
+  count=1;
+  isColumnDefultSortingAsc = false
+  hasCustomExpanded = true
+  hasExpanded = true
+  isHeaderNotAvlable = false
+  setclickFlatView(false);
+  setData(groupByButtonClickData);
+}
+
+
+
+
+// Flatview End
+
+
+
 
   React.useEffect(() => {
     if (AllMetadata.length > 0 && portfolioTypeData.length > 0) {
@@ -883,7 +961,6 @@ function PortfolioTable(SelectedProp: any) {
       let Actatcomponent = AllSiteTasksData?.filter(
         (elem1: any) =>
           elem1?.TaskType?.Id === 1 &&
-          elem1?.ParentTask?.Id === undefined &&
           elem1?.Portfolio?.Id === SelectedProp?.props?.Id
       );
       countAllTasksData = countAllTasksData.concat(Actatcomponent);
@@ -901,6 +978,7 @@ function PortfolioTable(SelectedProp: any) {
       temp.PercentComplete = "";
       temp.ItemRank = "";
       temp.DueDate = null;
+      temp.TaskTypeValue = "";
       temp.Project = "";
       temp.ClientCategorySearch = "";
       temp.Created = null;
@@ -928,6 +1006,8 @@ function PortfolioTable(SelectedProp: any) {
       });
       if (temp?.subRows?.length > 0) {
         componentData.push(temp);
+        allgroupdata = temp?.subRows;
+        console.log("All group data "+ allgroupdata)
       }
     }
 
@@ -1084,13 +1164,15 @@ function PortfolioTable(SelectedProp: any) {
         accessorKey: "",
         placeholder: "",
         hasCheckbox: true,
-        hasCustomExpanded: true,
-        hasExpanded: true,
+        hasCustomExpanded: hasCustomExpanded,
+        hasExpanded: hasExpanded,
+        isHeaderNotAvlable: isHeaderNotAvlable,
         size: 55,
-        id: "Id"
+        id: 'Id',
       },
       {
-        cell: ({ row, getValue }) => (
+        accessorFn: (row) => row?.portfolioItemsSearch,
+                cell: ({ row, getValue }) => (
           <div className="alignCenter">
             {row?.original?.SiteIcon != undefined ? (
               <div className="alignCenter" title="Show All Child">
@@ -1098,17 +1180,17 @@ function PortfolioTable(SelectedProp: any) {
                   title={row?.original?.TaskType?.Title}
                   className={
                     row?.original?.Item_x0020_Type == "SubComponent"
-                      ? "ml-12 workmember ml20 me-1"
+                      ? "workmember ml20 me-1"
                       : row?.original?.Item_x0020_Type == "Feature"
-                        ? "ml-24 workmember ml20 me-1"
+                        ? "ml-12 workmember ml20 me-1"
                         : row?.original?.TaskType?.Title == "Activities"
-                          ? "ml-36 workmember ml20 me-1"
+                          ? "ml-24 workmember ml20 me-1"
                           : row?.original?.TaskType?.Title == "Workstream"
-                            ? "ml-48 workmember ml20 me-1"
+                            ? "ml-36 workmember ml20 me-1"
                             : row?.original?.TaskType?.Title == "Task" ||
                               (row?.original?.Item_x0020_Type === "Task" &&
                                 row?.original?.TaskType == undefined)
-                              ? "ml-60 workmember ml20 me-1"
+                              ? "ml-48 workmember ml20 me-1"
                               : "workmember ml20 me-1"
                   }
                   src={row?.original?.SiteIcon}
@@ -1124,15 +1206,15 @@ function PortfolioTable(SelectedProp: any) {
                     }}
                     className={
                       row?.original?.Item_x0020_Type == "SubComponent"
-                        ? "ml-12 Dyicons"
+                        ? "Dyicons"
                         : row?.original?.Item_x0020_Type == "Feature"
-                          ? "ml-24 Dyicons"
+                          ? "ml-12 Dyicons"
                           : row?.original?.TaskType?.Title == "Activities"
-                            ? "ml-36 Dyicons"
+                            ? "ml-24 Dyicons"
                             : row?.original?.TaskType?.Title == "Workstream"
-                              ? "ml-48 Dyicons"
+                              ? "ml-36 Dyicons"
                               : row?.original?.TaskType?.Title == "Task"
-                                ? "ml-60 Dyicons"
+                                ? "ml-48 Dyicons"
                                 : "Dyicons"
                     }
                   >
@@ -1143,29 +1225,46 @@ function PortfolioTable(SelectedProp: any) {
                 )}
               </>
             )}
-            {getValue()}
+           
           </div>
         ),
-        accessorKey: "",
-        id: "row?.original.Id",
-        canSort: false,
-        placeholder: "",
-        size: 95
+        id: "portfolioItemsSearch",
+        placeholder: "Type",
+        header: "",
+        resetColumnFilters: false,
+        size: 95,
       },
       {
         accessorFn: (row) => row?.TaskID,
         cell: ({ row, getValue }) => (
           <>
-            <ReactPopperTooltip ShareWebId={getValue()} row={row} />
+            {/* <ReactPopperTooltip ShareWebId={getValue()} row={row} /> */}
+            <ReactPopperTooltipSingleLevel ShareWebId={row?.original?.TaskID} row={row?.original} singleLevel={true} masterTaskData={flatviewmastertask} AllSitesTaskData={flatviewTasklist} AllListId={SelectedProp?.NextProp} />
+          
           </>
         ),
         id: "TaskID",
         placeholder: "ID",
+         header: "",
+         resetColumnFilters: false,
+        isColumnDefultSortingAsc: isColumnDefultSortingAsc,
+        // isColumnDefultSortingAsc:true,
+        size: 190,
+      },
+      {
+        accessorFn: (row) => row?.TaskTypeValue,
+        cell: ({ row, column, getValue }) => (
+            <>
+                <span className="columnFixedTaskCate"><span title={row?.original?.TaskTypeValue} className="text-content"><HighlightableCell value={getValue()} searchTerm={column.getFilterValue() != undefined ? column.getFilterValue() : childRef?.current?.globalFilter} /></span></span>
+            </>
+        ),
+        placeholder: "Task Type",
         header: "",
         resetColumnFilters: false,
-        // isColumnDefultSortingAsc:true,
-        size: 195
-      },
+        size: 130,
+        id: "TaskTypeValue",
+    },
+  
       {
         accessorFn: (row) => row?.Title,
         cell: ({ row, column, getValue }) => (
@@ -1351,6 +1450,14 @@ function PortfolioTable(SelectedProp: any) {
         size: 131
       },
       {
+        accessorKey: "PriorityRank",
+        placeholder: "Priority",
+        header: "",
+        resetColumnFilters: false,
+        size: 42,
+        id: "PriorityRank"
+      },
+      {
         accessorKey: "PercentComplete",
         placeholder: "Status",
         header: "",
@@ -1433,7 +1540,7 @@ function PortfolioTable(SelectedProp: any) {
           }
         },
         header: "",
-        size: 134
+        size: 145
       },
       {
         accessorKey: "descriptionsSearch",
@@ -1849,6 +1956,7 @@ function PortfolioTable(SelectedProp: any) {
           temp.DisplayDueDate = null;
           temp.AllTeamName = "";
           temp.DueDate = "";
+          temp.portfolioItemsSearch = "";
           temp.descriptionsSearch = "";
           temp.ProjectTitle = "";
           temp.Status = "";
@@ -2150,6 +2258,7 @@ function PortfolioTable(SelectedProp: any) {
                         AddStructureFeature={
                           SelectedProp?.props?.Item_x0020_Type
                         }
+                        clickFlatView={clickFlatView} switchFlatViewData={switchFlatViewData} flatView={true} switchGroupbyData={switchGroupbyData}  updatedSmartFilterFlatView={false}
                         setLoaded={setLoaded}
                         queryItems={SelectedProp?.props}
                         PortfolioFeature={SelectedProp?.props?.Item_x0020_Type}
@@ -2367,3 +2476,4 @@ function PortfolioTable(SelectedProp: any) {
   );
 }
 export default PortfolioTable;
+

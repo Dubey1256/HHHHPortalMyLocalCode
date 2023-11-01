@@ -356,14 +356,6 @@
         }
       ]
     },
-    "home-page-web-part": {
-      "components": [
-        {
-          "entrypoint": "./lib/webparts/homePage/HomePageWebPart.js",
-          "manifest": "./src/webparts/homePage/HomePageWebPart.manifest.json"
-        }
-      ]
-    },
      "smartmetadataportfolio-web-part": {
       "components": [
         {
@@ -419,7 +411,6 @@
     "TaskprofileWebPartStrings": "lib/webparts/taskprofile/loc/{locale}.js",
     "ComponentCommentsWebPartStrings": "lib/webparts/componentComments/loc/{locale}.js",
     "FeedbackWebPartStrings": "lib/webparts/TimeReport/loc/{locale}.js",
-    "HomePageWebPartStrings": "lib/webparts/homePage/loc/{locale}.js",
     "TaskStepsWebPartStrings": "lib/webparts/taskSteps/loc/{locale}.js",
     "SiteDataBackupToolWebPartStrings": "lib/webparts/siteDataBackupTool/loc/{locale}.js",
     "SmartmetadataportfolioWebPartStrings": "lib/webparts/smartmetadataportfolio/loc/{locale}.js",

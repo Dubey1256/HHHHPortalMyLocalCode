@@ -4,6 +4,7 @@ import { Web } from "sp-pnp-js";
 import TeamConfigurationCard from "../../../globalComponents/TeamConfiguration/TeamConfiguration";
 import HtmlEditorCard from "../../../globalComponents/HtmlEditor/HtmlEditor";
 import moment, * as Moment from "moment";
+import DatePicker from "react-datepicker";
 import Picker from "../../../globalComponents/EditTaskPopup/SmartMetaDataPicker";
 import "react-datepicker/dist/react-datepicker.css";
 import "react-datepicker/dist/react-datepicker-cssmodules.css";
@@ -271,17 +272,8 @@ const CreateActivity = (props: any) => {
     const onRenderCustomHeaderMain = () => {
         return (
             <>
-                <div
-                    style={{
-                        marginRight: "auto",
-                        fontSize: "20px",
-                        fontWeight: "600",
-                        marginLeft: "20px"
-                    }}
-                >
-                    <h2 className="heading">
-                        {`Create Quick Option - ${selectedItem?.NoteCall}`}
-                    </h2>
+                <div className="subheading sitecolor">
+                    {`Create Quick Option - ${selectedItem?.NoteCall}`}
                 </div>
                 <Tooltip ComponentId={1746} />
             </>
@@ -340,8 +332,8 @@ const CreateActivity = (props: any) => {
     }
     const handleDatedue = (date: any) => {
         // AllItems.DueDate = date;
-        var finalDate: any = Moment(date).format("YYYY-MM-DD");
-        setSave({ ...save, DueDate: finalDate });
+        // var finalDate: any = Moment(date).format("YYYY-MM-DD");
+        setSave({ ...save, DueDate: date });
     };
     const HtmlEditorCallBack = React.useCallback((EditorData: any) => {
 
@@ -494,12 +486,22 @@ const CreateActivity = (props: any) => {
                             else if (val?.Id != undefined && val?.Titles != undefined && val?.Titles.length > 0 && val?.Titles[0] == site?.Title) {
                                 ClientCategory.push(val?.Id);
                             }
+                            else if (selectedItem?.TaskType?.Title == "Workstream") {
+                                ClientCategory.push(val?.Id);
+                            }
+                            
                         });
                     }
+                   
 
                     if (selectedItem?.Sitestagging != undefined) {
                         if (typeof selectedItem?.Sitestagging == "object") {
                             if (site?.Title?.toLowerCase() == "shareweb") {
+                                selectedItem?. Sitestagging((sitecomp:any)=>{
+                                    if(sitecomp.Title!=undefined && sitecomp.Title!=""&& sitecomp.SiteName==undefined){
+                                        sitecomp.SiteName=sitecomp.Title
+                                    }   
+                                })
                                 Sitestagging = JSON.stringify(selectedItem?.Sitestagging);
                             } else {
                                 var siteComp: any = {};
@@ -513,7 +515,14 @@ const CreateActivity = (props: any) => {
                             // clientTime = JSON.stringify(selectedItem?.ClientTime);
                         } else {
                             if (site?.Title?.toLowerCase() == "shareweb") {
-                                Sitestagging = selectedItem?.Sitestagging
+                                var sitetag=JSON.parse(selectedItem?.Sitestagging)
+                                sitetag?.map((sitecomp:any)=>{
+                                    if(sitecomp.Title!=undefined && sitecomp.Title!=""&& sitecomp.SiteName==undefined){
+                                        sitecomp.SiteName=sitecomp.Title
+                                    }
+                                   
+                                }) 
+                                 Sitestagging = JSON.stringify(sitetag)
                             } else {
                                 var siteComp: any = {};
                                 siteComp.SiteName = site?.Title,
@@ -536,7 +545,7 @@ const CreateActivity = (props: any) => {
                         .getById(site.listId)
                         .items.select("Id,Title,TaskType/Id,TaskType/Title,TaskLevel")
                         .expand("TaskType")
-                        .orderBy("Id", false)
+                        .orderBy("TaskLevel", false)
                         .filter("TaskType/Title eq 'Activities'")
                         .top(1)
                         .get();
@@ -612,6 +621,10 @@ const CreateActivity = (props: any) => {
                                         siteUrl: site?.siteUrl?.Url,
                                         siteType: site?.Title,
                                         listId: site?.listId,
+                                        FeedBack:
+                                        FeedbackPost?.length > 0
+                                            ? JSON.stringify(FeedbackPost)
+                                            : null,
                                         SiteIcon: site?.Item_x005F_x0020_Cover?.Url,
                                         ResponsibleTeam: TaskResponsibleTeam,
                                         TeamMembers: TaskTeamMembers,
@@ -621,6 +634,18 @@ const CreateActivity = (props: any) => {
                                         }
 
                                     }
+                                }
+                                if (item?.FeedBack != undefined) {
+                                    let DiscriptionSearchData: any = '';
+                                    let feedbackdata: any =JSON.parse(item?.FeedBack);
+                                    DiscriptionSearchData = feedbackdata[0]?.FeedBackDescriptions?.map((child: any) => {
+                                        const childText = child?.Title?.replace(/(<([^>]+)>)/gi, '')?.replace(/\n/g, '');
+                                        const subtextText = (child?.Subtext || [])?.map((elem: any) =>
+                                            elem.Title?.replace(/(<([^>]+)>)/gi, '')?.replace(/\n/g, '')
+                                        ).join('');
+                                        return childText + subtextText;
+                                    }).join('');
+                                    item.descriptionsSearch = DiscriptionSearchData
                                 }
                                 if (categoriesItem?.indexOf('Immediate') > -1 || categoriesItem?.indexOf("Email Notification") > -1) {
                                     let listID = '3BBA0B9A-4A9F-4CE0-BC15-61F4F550D556'
@@ -701,6 +726,11 @@ const CreateActivity = (props: any) => {
                     if (selectedItem?.ClientTime != undefined) {
                         if (typeof selectedItem?.ClientTime == "object") {
                             if (site?.Title?.toLowerCase() == "shareweb") {
+                                selectedItem?.ClientTime?.map((sitecomp:any)=>{
+                                    if(sitecomp.Title!=undefined && sitecomp.Title!=""&& sitecomp.SiteName==undefined){
+                                        sitecomp.SiteName=sitecomp.Title
+                                    }
+                                })
                                 clientTime = JSON.stringify(selectedItem?.ClientTime);
                             } else {
                                 var siteComp: any = {};
@@ -712,9 +742,17 @@ const CreateActivity = (props: any) => {
                                 clientTime = JSON?.stringify([siteComp]);
                             }
                             // clientTime = JSON.stringify(selectedItem?.ClientTime);
-                        } else {
-                            if (site?.Title?.toLowerCase() == "shareweb") {
-                                clientTime = selectedItem?.ClientTime
+                        } 
+                          else {
+                           if (site?.Title?.toLowerCase() == "shareweb") {
+                            var sitetag=JSON.parse(selectedItem?.ClientTime)
+                            sitetag?.map((sitecomp:any)=>{
+                                if(sitecomp.Title!=undefined && sitecomp.Title!=""&& sitecomp.SiteName==undefined){
+                                    sitecomp.SiteName=sitecomp.Title
+                                }
+                            
+                            }) 
+                             clientTime = JSON.stringify(sitetag)
                             } else {
                                 var siteComp: any = {};
                                 siteComp.SiteName = site?.Title,
@@ -796,9 +834,9 @@ const CreateActivity = (props: any) => {
                                     SiteIcon: site?.Item_x005F_x0020_Cover?.Url,
                                     ResponsibleTeam: TaskResponsibleTeam,
                                     FeedBack:
-                                        FeedbackPost?.length > 0
-                                            ? FeedbackPost
-                                            : null,
+                                    FeedbackPost?.length > 0
+                                        ? JSON.stringify(FeedbackPost)
+                                        : null,
                                     TeamMembers: TaskTeamMembers,
                                     TeamLeader: TaskResponsibleTeam,
                                     Author: {
@@ -810,6 +848,19 @@ const CreateActivity = (props: any) => {
                                         Id: 2
                                     }
 
+                                }
+                             
+                                        if (item?.FeedBack != undefined) {
+                                    let DiscriptionSearchData: any = '';
+                                    let feedbackdata: any =JSON.parse(item?.FeedBack);
+                                    DiscriptionSearchData = feedbackdata[0]?.FeedBackDescriptions?.map((child: any) => {
+                                        const childText = child?.Title?.replace(/(<([^>]+)>)/gi, '')?.replace(/\n/g, '');
+                                        const subtextText = (child?.Subtext || [])?.map((elem: any) =>
+                                            elem.Title?.replace(/(<([^>]+)>)/gi, '')?.replace(/\n/g, '')
+                                        ).join('');
+                                        return childText + subtextText;
+                                    }).join('');
+                                    item.descriptionsSearch = DiscriptionSearchData
                                 }
                                 item.TaskID = globalCommon?.GetTaskId(item);
                                 if (categoriesItem?.indexOf('Immediate') > -1 || categoriesItem?.indexOf("Email Notification") > -1) {
@@ -1013,6 +1064,28 @@ const CreateActivity = (props: any) => {
         setCategoriesData(TaskCategories)
 
     }
+    const ExampleCustomInput = React.forwardRef(({ value, onClick }: any, ref: any) => (
+        <div style={{ position: "relative" }} onClick={onClick} ref={ref}>
+            <input
+                type="text"
+                id="datepicker"
+                className="form-control date-picker ps-2"
+                placeholder="DD/MM/YYYY"
+                defaultValue={value}
+            />
+            <span
+                style={{
+                    position: "absolute",
+                    top: "58%",
+                    right: "22px",
+                    transform: "translateY(-50%)",
+                    cursor: "pointer"
+                }}
+            >
+                <span className="svg__iconbox svg__icon--calendar"></span>
+            </span>
+        </div>
+    ));
     // const deleteCategories = (id: any) => {
     //     CategoriesData.map((catId: { Id: any }, index: any) => {
     //         if (id == catId.Id) {
@@ -1027,17 +1100,13 @@ const CreateActivity = (props: any) => {
             <Panel
                 onRenderHeader={onRenderCustomHeaderMain}
                 type={PanelType.custom}
-                customWidth="1348px"
+                customWidth="1280px"
                 isOpen={true}
                 onDismiss={() => closePopup("item")}
                 isBlocking={false}
                 className={props?.props?.PortfolioType?.Color}
             >
                 <div className="modal-body active">
-
-                </div>
-
-                <div className="modal-footer">
                     {siteType?.length > 1 && selectedItem?.TaskType?.Title != "Workstream" ?
                         <div className='col mt-4'>
                             <h4 className="titleBorder ">Websites</h4>
@@ -1070,32 +1139,46 @@ const CreateActivity = (props: any) => {
                     <div className="row">
                         <div className="col-sm-10">
                             <div className="row">
-                                <div className="col-sm-10 mb-10 mt-2">
+                                <div className="col-sm-10 mb-10 mt-3">
                                     <div className='input-group'>
                                         <label className='full-width'>Task Name</label>
                                         <input type="text" placeholder='Enter task Name' className='form-control' value={TaskTitle} onChange={(e) => { changeTitle(e) }}></input>
                                     </div>
 
                                 </div>
-                                <div className="col-sm-2 mb-10 padL-0 mt-2">
-                                    <label>Due Date</label>
-                                    <input
-                                        type="date"
-                                        className="form-control"
-                                        value={save.DueDate}
-                                        // defaultValue={Moment(save.DueDate).format("YYYY/MM/DD/")}
-                                        onChange={handleDatedue}
-                                    />
+                                <div className="col-sm-2 mb-10 padL-0 mt-3">
+                                    <div className="input-group">
+                                        <label className='full-width'>Due Date</label>
+                                               <DatePicker
+                                                selected={save?.DueDate}
+                                                onChange={(date) => handleDatedue(date)}
+                                                dateFormat="dd/MM/yyyy"
+                                                minDate={new Date()}
+                                                customInput={<ExampleCustomInput />}
+                                                isClearable
+                                                showYearDropdown
+                                                scrollableYearDropdown
+                                            />
+                                        {/* <DatePicker selected={save?.DueDate} onChange={(date) => handleDatedue(date)} /> */}
+                                        {/* <input
+                                            type="date"
+                                            className="form-control"
+                                            value={save.DueDate}
+                                            // defaultValue={Moment(save.DueDate).format("YYYY/MM/DD/")}
+                                            onChange={handleDatedue}
+                                        /> */}
+                                    </div>
+                                    
                                 </div>
                             </div>
-                            <div className="row mt-2">
+                            <div className="row mt-3">
                                 <TeamConfigurationCard
                                     ItemInfo={selectedItem}
                                     AllListId={AllListId}
                                     parentCallback={DDComponentCallBack}
                                 ></TeamConfigurationCard>
                             </div>
-                            <div className="row">
+                            <div className="row mt-3">
                                 <div className="col-sm-5">
                                     {/* <FroalaImageUploadComponent 
                                      callBack={copyImage} /> */}
@@ -1108,7 +1191,7 @@ const CreateActivity = (props: any) => {
                                         </div>
                                     </div>
                                 </div>
-                                <div className="col-sm-7">
+                                <div className="col-sm-7 ps-0">
                                     <HtmlEditorCard
                                         editorValue={
                                             save?.Body != undefined ? save?.Body : ""
@@ -1125,16 +1208,9 @@ const CreateActivity = (props: any) => {
                                         <label className="full-width">
                                             Priority
                                             <span>
-                                                <div
-                                                    className="popover__wrapper ms-1"
-                                                    data-bs-toggle="tooltip"
-                                                    data-bs-placement="auto"
-                                                >
-                                                    <span
-                                                        title="Edit"
-                                                        className="alignIcon svg__icon--info svg__iconbox"
-                                                    ></span>
-
+                                                <div className="popover__wrapper ms-1"
+                                                    data-bs-toggle="tooltip" data-bs-placement="auto" >
+                                                    <span title="Edit" className="alignIcon svg__icon--info svg__iconbox"></span>
                                                     <div className="popover__content">
                                                         <span>
                                                             8-10 = High Priority,
@@ -1150,7 +1226,7 @@ const CreateActivity = (props: any) => {
 
                                         <div className="input-group">
                                             <input
-                                                type="text"
+                                                type="text" 
                                                 className="form-control"
                                                 placeholder="Enter Priority"
                                                 value={selectPriority ? selectPriority : ""}
@@ -1159,44 +1235,35 @@ const CreateActivity = (props: any) => {
                                         </div>
 
                                         <ul className="p-0 mt-1">
-                                            <li className="form-check l-radio">
-                                                <input
-                                                    className="form-check-input"
-                                                    name="radioPriority"
-                                                    type="radio"
-                                                    checked={
-                                                        Number(selectPriority) <= 10 &&
-                                                        Number(selectPriority) >= 8
-                                                    }
-                                                    onChange={() => setselectPriority("8")}
-                                                />
-                                                <label className="form-check-label">High</label>
+                                            <li className="form-check ps-0">
+                                                <label className="SpfxCheckRadio">
+                                                    <input className="radio" name="radioPriority" type="radio"
+                                                        checked={
+                                                            Number(selectPriority) <= 10 &&
+                                                            Number(selectPriority) >= 8
+                                                        }
+                                                        onChange={() => setselectPriority("8")} />
+                                                    High</label>
                                             </li>
-                                            <li className="form-check l-radio">
-                                                <input
-                                                    className="form-check-input"
-                                                    name="radioPriority"
-                                                    type="radio"
-                                                    checked={
-                                                        Number(selectPriority) <= 7 &&
-                                                        Number(selectPriority) >= 4
-                                                    }
-                                                    onChange={() => setselectPriority("4")}
-                                                />
-                                                <label className="form-check-label">Normal</label>
+                                            <li className="form-check ps-0">
+                                                <label className="SpfxCheckRadio">
+                                                    <input className="radio" name="radioPriority" type="radio"
+                                                        checked={
+                                                            Number(selectPriority) <= 7 &&
+                                                            Number(selectPriority) >= 4
+                                                        }
+                                                        onChange={() => setselectPriority("4")} /> Normal</label>
                                             </li>
-                                            <li className="form-check l-radio">
-                                                <input
-                                                    className="form-check-input"
-                                                    name="radioPriority"
-                                                    type="radio"
-                                                    checked={
-                                                        Number(selectPriority) <= 3 &&
-                                                        Number(selectPriority) > 0
-                                                    }
-                                                    onChange={() => setselectPriority("1")}
-                                                />
-                                                <label className="form-check-label">Low</label>
+                                            <li className="form-check ps-0">
+                                                <label className="SpfxCheckRadio">
+                                                    <input className="radio" name="radioPriority" type="radio"
+                                                        checked={
+                                                            Number(selectPriority) <= 3 &&
+                                                            Number(selectPriority) > 0
+                                                        }
+                                                        onChange={() => setselectPriority("1")}
+                                                    />
+                                                    Low</label>
                                             </li>
                                         </ul>
                                     </fieldset>
@@ -1206,23 +1273,12 @@ const CreateActivity = (props: any) => {
                                 <div className="col-sm-12">
                                     <div className="col-sm-12 padding-0 input-group">
                                         <label className="full_width">Categories</label>
-
-                                        <input
-                                            type="text"
-                                            className="ui-autocomplete-input form-control"
-                                            id="txtCategories"
-                                            value={categorySearchKey}
-                                            onChange={(e) => autoSuggestionsForCategory(e)}
-                                        />
+                                        <input type="text" className="ui-autocomplete-input form-control"
+                                            id="txtCategories" value={categorySearchKey}
+                                            onChange={(e) => autoSuggestionsForCategory(e)} />
                                         <span className="input-group-text">
-                                            <a className="hreflink" title="Edit Categories">
-                                                <img
-                                                    src="https://hhhhteams.sharepoint.com/sites/HHHH/SP/_layouts/15/images/EMMCopyTerm.png"
-                                                    onClick={() => EditComponentPicker(selectedItem)}
-                                                />
-                                            </a>
+                                            <span onClick={() => EditComponentPicker(selectedItem)} title="Edit Categories" className="hreflink svg__iconbox svg__icon--editBox"></span>
                                         </span>
-
                                     </div>
                                     {
                                         instantCategories?.map((item: any) => {
@@ -1269,7 +1325,7 @@ const CreateActivity = (props: any) => {
                                                 <>
                                                     {!instantCategories?.some((selectedCat: any) => selectedCat?.Title == type?.Title) && (
                                                         <div className="block d-flex full-width justify-content-between mb-1 p-2">
-                                                            <a
+                                                            <a className="wid90"
                                                                 style={{ color: "#fff !important" }}
                                                                 target="_blank"
                                                                 data-interception="off"
@@ -1349,7 +1405,8 @@ const CreateActivity = (props: any) => {
 
 
                     </div>
-                    <footer className={refreshData ? 'col text-end mt-3 lkjhgfds' : 'col text-end mt-3 kkkkk'}>
+                </div>
+                <footer className={refreshData ? 'col text-end mt-3 lkjhgfds' : 'col text-end mt-3 kkkkk'}>
                         {
                             selectedSites?.map((site: any) => {
                                 return (
@@ -1363,21 +1420,19 @@ const CreateActivity = (props: any) => {
                         }
                         <button
                             type="button"
-                            className="btn btn-primary m-2"
+                            className="btn btn-primary mx-2"
                             onClick={() => saveNoteCall()}
                         >
                             Submit
                         </button>
                         <button
                             type="button"
-                            className="btn btn-default m-2"
+                            className="btn btn-default"
                             onClick={() => closeTaskStatusUpdatePoup("item")}
                         >
                             Cancel
                         </button>
                     </footer>
-
-                </div>
             </Panel>
 
 

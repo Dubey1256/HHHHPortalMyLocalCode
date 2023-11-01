@@ -19,6 +19,7 @@ import EditTaskPopup from '../../../globalComponents/EditTaskPopup/EditTaskPopup
 import * as globalCommon from '../../../globalComponents/globalCommon'
 import { BiInfoCircle } from 'react-icons/bi'
 import SmartTimeTotal from './SmartTimeTotal';
+ import RelevantEmail from './ReleventEmails'
 import { IoMdArrowDropright, IoMdArrowDropdown } from 'react-icons/io';
 import { SlArrowDown, SlArrowRight } from 'react-icons/sl';
 import RelevantDocuments from './RelevantDocuments';
@@ -28,7 +29,7 @@ import TasksTable from './TaskfooterTable';
 import EmailComponenet from './emailComponent';
 import EditSiteComposition from '../../../globalComponents/EditTaskPopup/EditSiteComposition'
 import AncTool from '../../../globalComponents/AncTool/AncTool'
-
+import { myContextValue } from '../../../globalComponents/globalCommon'
 import Tooltip from '../../../globalComponents/Tooltip'
 import ApprovalHistoryPopup from '../../../globalComponents/EditTaskPopup/ApprovalHistoryPopup';
 import { Modal, Panel, PanelType } from 'office-ui-fabric-react';
@@ -38,7 +39,7 @@ import EODReportComponent from '../../../globalComponents/EOD Report Component/E
 
 
 // import {MyContext} from './myContext'
-const MyContext: any = React.createContext<any>({})
+// const MyContext: any = React.createContext<any>({})
 var ClientTimeArray: any = [];
 var TaskIdCSF: any = "";
 var TaskIdAW = "";
@@ -80,6 +81,7 @@ export interface ITaskprofileState {
   ApprovalCommentcheckbox: boolean;
   CommenttoPost: string;
   maincollection: any;
+  TotalTimeEntry:any;
   breadCrumData: any;
   SharewebTimeComponent: any;
   isopenversionHistory: boolean;
@@ -146,6 +148,7 @@ class Taskprofile extends React.Component<ITaskprofileProps, ITaskprofileState> 
       subchildParentIndex: null,
       showcomment_subtext: 'none',
       subchildcomment: null,
+      TotalTimeEntry:"",
       showhideCommentBoxIndex: null,
       CommenttoUpdate: '',
       ReplyCommenttoUpdate: '',
@@ -412,8 +415,8 @@ class Taskprofile extends React.Component<ITaskprofileProps, ITaskprofileState> 
       EstimatedTimeDescriptionArray: tempEstimatedArrayData,
       TotalEstimatedTime: TotalEstimatedTime,
 
-      Portfolio: portfolio != undefined ? portfolio[0] : undefined,
-      PortfolioType: taskDetails["PortfolioType"],
+      Portfolio: portfolio != undefined && portfolio.length>0 ? portfolio[0] : undefined,
+      PortfolioType:portfolio != undefined && portfolio.length>0 ? portfolio[0]?.PortfolioType : undefined ,
       Creation: taskDetails["Created"],
       Modified: taskDetails["Modified"],
       ModifiedBy: taskDetails["Editor"],
@@ -425,6 +428,9 @@ class Taskprofile extends React.Component<ITaskprofileProps, ITaskprofileState> 
       Approver: taskDetails.Approver != undefined ? taskDetails.Approver[0] : "",
       ParentTask: taskDetails?.ParentTask,
     };
+    if(tempTask?.ClientTime==false){
+      tempTask.ClientTime=null
+    }
     if (tempTask?.FeedBack != null && tempTask?.FeedBack.length > 0) {
       tempTask?.FeedBack[0]?.FeedBackDescriptions?.map((items: any) => {
         if (items?.Comments?.length > 0) {
@@ -561,7 +567,7 @@ class Taskprofile extends React.Component<ITaskprofileProps, ITaskprofileState> 
   private async GetSmartMetaData(ClientCategory: any, ClientTime: any) {
     let array2: any = [];
     ClientTimeArray = []
-    if (((ClientTime == null || ClientTime == "false") && ClientTimeArray?.length == 0)) {
+    if (((ClientTime == null) && ClientTimeArray?.length == 0)) {
       var siteComp: any = {};
       siteComp.SiteName = this.state?.listName,
         siteComp.ClienTimeDescription = 100,
@@ -569,7 +575,7 @@ class Taskprofile extends React.Component<ITaskprofileProps, ITaskprofileState> 
       ClientTimeArray.push(siteComp);
     }
 
-    else if (ClientTime != null && ClientTime != "false") {
+    else if (ClientTime != null) {
       ClientTimeArray = JSON.parse(ClientTime);
 
     }
@@ -1571,7 +1577,12 @@ class Taskprofile extends React.Component<ITaskprofileProps, ITaskprofileState> 
     return div.innerHTML;
 }
  //******* End */
-
+  private callbackTotalTime=((Time:any)=>{
+    this.setState(({
+      TotalTimeEntry:Time
+    }))
+  
+})
   public render(): React.ReactElement<ITaskprofileProps> {
     buttonId = this.generateButtonId();
     const {
@@ -1586,9 +1597,14 @@ class Taskprofile extends React.Component<ITaskprofileProps, ITaskprofileState> 
     } else {
       document.title = "Task Profile"
     }
+
+
+
+
+    
     return (
-      <MyContext.Provider value={{ ...MyContext, FunctionCall: this.contextCall, keyDoc: this.state.keydoc, FileDirRef: this.state.FileDirRef }}>
-        <div
+      <myContextValue.Provider value={{ ...myContextValue, FunctionCall: this.contextCall, keyDoc: this.state.keydoc, FileDirRef: this.state.FileDirRef }}>
+        <div  className= {this.state?.Result?.PortfolioType?.Title=="Service"?'serviepannelgreena':""}
         //  style={{color:`${this.state.Result["serviceComponentColor"]}`}}
         >
           <section className='ContentSection'> {this.state.breadCrumData != undefined &&
@@ -1719,7 +1735,7 @@ class Taskprofile extends React.Component<ITaskprofileProps, ITaskprofileState> 
                       {isShowTimeEntry && <dl>
                         <dt className='bg-Fa'>SmartTime Total</dt>
                         <dd className='bg-Ff'>
-                          <span className="me-1 alignCenter  pull-left"> {this.state.smarttimefunction ? <SmartTimeTotal AllListId={AllListId} props={this.state.Result} Context={this.props.Context} /> : null}</span>
+                          <span className="me-1 alignCenter  pull-left"> {this.state.smarttimefunction ? <SmartTimeTotal AllListId={AllListId}callbackTotalTime={(data:any)=>this.callbackTotalTime(data)} props={this.state.Result} Context={this.props.Context} /> : null}</span>
                         </dd>
 
                       </dl>}
@@ -2464,13 +2480,13 @@ class Taskprofile extends React.Component<ITaskprofileProps, ITaskprofileState> 
                   </div>
                   <div>{this.state.Result.Id && <SmartInformation ref={this.smartInfoRef} Id={this.state.Result.Id} AllListId={AllListId} Context={this.props?.Context} taskTitle={this.state.Result?.Title} listName={this.state.Result?.listName} />}</div>
                   <div> {this.state.Result.Id != undefined && <RelevantDocuments ref={this?.relevantDocRef} AllListId={AllListId} Context={this.props?.Context} siteUrl={this.props.siteUrl} DocumentsListID={this.props?.DocumentsListID} ID={this.state?.itemID} siteName={this.state.listName} folderName={this.state.Result['Title']} ></RelevantDocuments>}</div>
-
+                  <div> {this.state.Result.Id != undefined && <RelevantEmail ref={this?.relevantDocRef} AllListId={AllListId} Context={this.props?.Context} siteUrl={this.props.siteUrl} DocumentsListID={this.props?.DocumentsListID} ID={this.state?.itemID} siteName={this.state.listName} folderName={this.state.Result['Title']} ></RelevantEmail>}</div>
                 </div>
 
               </div>
             </section></section>
           <section className='TableContentSection'>
-            {console.log("context data ================", MyContext)}
+            {console.log("context data ================", myContextValue)}
 
             <div className="row">
               {this.state.Result != undefined && this.state.Result.Id != undefined && this.state.Result.TaskType != "" && this.state.Result.TaskType != undefined && this.state.Result.TaskType != 'Task' ? <TasksTable props={this.state.Result} AllMasterTasks={this.masterTaskData} AllSiteTasks={this.allDataOfTask} AllListId={AllListId} Context={this.props?.Context} /> : ''}
@@ -2546,13 +2562,13 @@ class Taskprofile extends React.Component<ITaskprofileProps, ITaskprofileState> 
           }
           {this.state.isOpenEditPopup ? <EditTaskPopup Items={this.state.Result} context={this.props.Context} AllListId={AllListId} Call={(Type: any) => { this.CallBack(Type) }} /> : ''}
           {/* {this.state.isTimeEntry ? <TimeEntry props={this.state.Result} isopen={this.state.isTimeEntry} CallBackTimesheet={() => { this.CallBackTimesheet() }} /> : ''} */}
-          {this.state.EditSiteCompositionStatus ? <EditSiteComposition EditData={this.state.Result} context={this.props.Context} AllListId={AllListId} Call={(Type: any) => { this.CallBack(Type) }} /> : ''}
+          {this.state.EditSiteCompositionStatus ? <EditSiteComposition EditData={this.state.Result} SmartTotalTimeData={this.state.TotalTimeEntry} context={this.props.Context} AllListId={AllListId} Call={(Type: any) => { this.CallBack(Type) }} /> : ''}
           {this.state?.emailcomponentopen && countemailbutton == 0 && <EmailComponenet approvalcallback={() => { this.approvalcallback() }} Context={this.props?.Context} emailStatus={this.state?.emailComponentstatus} currentUser={this?.currentUser} items={this.state?.Result} />}
           {this.state?.OpenEODReportPopup ? <EODReportComponent TaskDetails={this.state.Result} siteUrl={this.props?.siteUrl} Callback={() => { this.EODReportComponentCallback() }} /> : null}
         </div>
-      </MyContext.Provider>
+      </myContextValue.Provider>
     );
   }
 }
 export default Taskprofile
-export { MyContext }
+export { myContextValue }

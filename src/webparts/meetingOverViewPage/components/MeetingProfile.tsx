@@ -284,9 +284,9 @@ return new Promise<void>((resolve, reject) => {
       }
     let siteTaggJson:any=  taskDetails.Sitestagging!=undefined?JSON.parse(taskDetails.Sitestagging):null
   let  siteTagg2 :any=[]
-  allData.map((item:any)=>{
-      siteTagg2= siteTagg2.concat(siteTaggJson.filter((data:any)=>data.Id==item.Id && data.siteType==item.siteType))
-  })
+  // allData.map((item:any)=>{
+  //     siteTagg2= siteTagg2.concat(siteTaggJson.filter((data:any)=>data.Id==item.Id && data.siteType==item.siteType))
+  // })
 
       var array2: any = taskDetails["AssignedTo"] != undefined ? taskDetails["AssignedTo"] : []
       if (taskDetails["TeamMembers"] != undefined) {
@@ -513,10 +513,13 @@ return new Promise<void>((resolve, reject) => {
             .getById(AllListId?.MasterTaskListID)
             // .getById(this.props.SiteTaskListID)
             .items
-            .getById(resultData?.itemId)
+            .getById(resultData?.Id)
             .update({
                 FeedBack: JSON.stringify(resultData?.FeedBack)
-            });
+            })
+            .then(() =>{
+              GetResult();
+            })
 
             // setUpdateComment((prev)=>true);
 
@@ -884,7 +887,7 @@ return new Promise<void>((resolve, reject) => {
                 </section>
             
             </div>
-
+                                
             <div className='row'>
                 <section className='col-9 ps-0'>
                     <div className='team_member row'>
@@ -1374,11 +1377,11 @@ return new Promise<void>((resolve, reject) => {
                 </section>
             </div>
             <div>
-             
             <section>
-                    <section className='col-sm-12'>
+            <div className='row'>
+                    <section className='col-sm-12 ps-0 Alltable'>
                     {resultData?.Sitestagging?.length>0&&<MettingTable data={resultData.Sitestagging}AllListId={AllListId}/>}
-                    </section>
+                    </section></div>
                      
           
           <div className='row'>

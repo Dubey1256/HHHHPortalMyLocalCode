@@ -21,6 +21,9 @@ export default function DocumentSearchPage(Props: any) {
             .then((response: any) => {
                 try {
                     response.forEach((Doc: any) => {
+                        if (Doc?.Title === null) {
+                            Doc.Title = Doc?.FileLeafRef;
+                        }
                         Doc.Created = moment(Doc.Created).format('DD/MM/YYYY');
                         Doc.Modified = moment(Doc.Modified).format('DD/MM/YYYY HH:mm')
                         Doc.SiteIcon = PageContext.context._pageContext._web.title;
@@ -121,7 +124,7 @@ export default function DocumentSearchPage(Props: any) {
                 accessorKey: "FileLeafRef", placeholder: "Document Url", header: "",
                 cell: ({ row }) => (
                     <div className='alignCenter'>
-                            {/* {row?.original?.File_x0020_Type == 'pdf' &&
+                        {/* {row?.original?.File_x0020_Type == 'pdf' &&
                             <span className="alignIcon  svg__iconbox svg__icon--folder"></span>
                         }
                         {row?.original?.File_x0020_Type == 'docx' &&
@@ -164,20 +167,20 @@ export default function DocumentSearchPage(Props: any) {
                             <span className={`alignIcon  svg__iconbox svg__icon--${row?.original?.File_x0020_Type}`}></span>
                         }
                          */}
-                            {row?.original?.File_x0020_Type != 'msg' && row?.original?.File_x0020_Type != 'docx' && row?.original?.File_x0020_Type != 'doc' && row?.original?.File_x0020_Type != 'rar' && row?.original?.File_x0020_Type != 'jpeg' && row?.original?.File_x0020_Type != 'jpg' && row?.original?.File_x0020_Type != 'aspx' && <span className={`svg__iconbox svg__icon--${row?.original?.File_x0020_Type}`}></span>}
-                            {row?.original?.File_x0020_Type == 'rar' && <span className=" svg__iconbox svg__icon--zip "></span>}
-                            {row?.original?.File_x0020_Type == 'aspx' || row?.original?.File_x0020_Type == 'msg' || row?.original?.File_x0020_Type == 'apk' ? <span className="svg__iconbox svg__icon--unknownFile "></span> : ''}
-                            {row?.original?.File_x0020_Type == 'jpeg' || row?.original?.File_x0020_Type == 'jpg' ? <span className=" svg__iconbox svg__icon--jpeg "></span> : ''}
-                            {row?.original?.File_x0020_Type == 'doc' || row?.original?.File_x0020_Type == 'docx' ? <span className=" svg__iconbox svg__icon--docx "></span> : ''}
-                            {row?.original?.File_x0020_Type == 'jfif' ? <span className="svg__iconbox svg__icon--jpeg "></span> : ''}
-                            {/* <img src={`${PageContext.context._pageContext._web.serverRelativeUrl}/SiteCollectionImages/ICONS/24/icon_pdf_16.jpg`}></img> */}
+                        {row?.original?.File_x0020_Type != 'msg' && row?.original?.File_x0020_Type != 'docx' && row?.original?.File_x0020_Type != 'doc' && row?.original?.File_x0020_Type != 'rar' && row?.original?.File_x0020_Type != 'jpeg' && row?.original?.File_x0020_Type != 'jpg' && row?.original?.File_x0020_Type != 'aspx' && <span className={`svg__iconbox svg__icon--${row?.original?.File_x0020_Type}`}></span>}
+                        {row?.original?.File_x0020_Type == 'rar' && <span className=" svg__iconbox svg__icon--zip "></span>}
+                        {row?.original?.File_x0020_Type == 'aspx' || row?.original?.File_x0020_Type == 'msg' || row?.original?.File_x0020_Type == 'apk' ? <span className="svg__iconbox svg__icon--unknownFile "></span> : ''}
+                        {row?.original?.File_x0020_Type == 'jpeg' || row?.original?.File_x0020_Type == 'jpg' ? <span className=" svg__iconbox svg__icon--jpeg "></span> : ''}
+                        {row?.original?.File_x0020_Type == 'doc' || row?.original?.File_x0020_Type == 'docx' ? <span className=" svg__iconbox svg__icon--docx "></span> : ''}
+                        {row?.original?.File_x0020_Type == 'jfif' ? <span className="svg__iconbox svg__icon--jpeg "></span> : ''}
+                        {/* <img src={`${PageContext.context._pageContext._web.serverRelativeUrl}/SiteCollectionImages/ICONS/24/icon_pdf_16.jpg`}></img> */}
 
-                            {/* {row?.original?.File_x0020_Type != 'flv' && row?.original?.File_x0020_Type != 'js' && row?.original?.File_x0020_Type != 'css' && row?.original?.File_x0020_Type != 'zip' && row?.original?.File_x0020_Type != 'aspx' && row?.original?.File_x0020_Type != 'mp4' && row?.original?.File_x0020_Type != 'pdf' && row?.original?.File_x0020_Type != 'jpg' && row?.original?.File_x0020_Type != 'png' && row?.original?.File_x0020_Type != 'gif' &&
+                        {/* {row?.original?.File_x0020_Type != 'flv' && row?.original?.File_x0020_Type != 'js' && row?.original?.File_x0020_Type != 'css' && row?.original?.File_x0020_Type != 'zip' && row?.original?.File_x0020_Type != 'aspx' && row?.original?.File_x0020_Type != 'mp4' && row?.original?.File_x0020_Type != 'pdf' && row?.original?.File_x0020_Type != 'jpg' && row?.original?.File_x0020_Type != 'png' && row?.original?.File_x0020_Type != 'gif' &&
                             <img src={`/_layouts/15/images/ic${row?.original?.File_x0020_Type}.png`}></img>} */}
 
-                            {/* {row?.original?.File_x0020_Type == 'flv' || row?.original?.File_x0020_Type == 'js' || row?.original?.File_x0020_Type == 'css' || row?.original?.File_x0020_Type == 'zip' || row?.original?.File_x0020_Type == 'aspx' || row?.original?.File_x0020_Type == 'mp4' || row?.original?.File_x0020_Type == 'jpg' || row?.original?.File_x0020_Type == 'png' || row?.original?.File_x0020_Type == 'gif' &&
+                        {/* {row?.original?.File_x0020_Type == 'flv' || row?.original?.File_x0020_Type == 'js' || row?.original?.File_x0020_Type == 'css' || row?.original?.File_x0020_Type == 'zip' || row?.original?.File_x0020_Type == 'aspx' || row?.original?.File_x0020_Type == 'mp4' || row?.original?.File_x0020_Type == 'jpg' || row?.original?.File_x0020_Type == 'png' || row?.original?.File_x0020_Type == 'gif' &&
                             <img src="/_layouts/15/images/icgen.gif?rev=23"></img>} */}
-                        
+
                         <a className='ms-1 wid90' target="_blank" href={`${row?.original?.EncodedAbsUrl}?web=1`}> {row?.original?.FileLeafRef} </a>
                     </div>
                 ),
@@ -226,7 +229,7 @@ export default function DocumentSearchPage(Props: any) {
     const callBackData = React.useCallback((elem: any, getSelectedRowModel: any, ShowingData: any) => { }, []);
     //#endregion
     return (
-        
+
         //#Jsx Part By PB
         <> {AllDocs && <div>
             <div><h2 className='mt-2 heading'>Document Search</h2></div>
@@ -241,5 +244,3 @@ export default function DocumentSearchPage(Props: any) {
         //#endregion
     )
 }
-
-

@@ -7,8 +7,8 @@ import { useState, useEffect, forwardRef, useImperativeHandle, createContext } f
 // import { MyContext } from './Taskprofile'
 import { myContextValue } from "../../../globalComponents/globalCommon";
 let mastertaskdetails: any = [];
-const RelevantDocuments = (props: any, ref: any) => {
-  const myContextData2: any = React.useContext<any>(myContextValue)
+const RelevantEmail = (props: any, ref: any) => {
+
   const [documentData, setDocumentData] = useState([]);
 
   // const [FileName, setFileName] = useState(props?.folderName);
@@ -34,7 +34,7 @@ const RelevantDocuments = (props: any, ref: any) => {
       
     }
     const web = new Web(props.siteUrl);
-    var filter = (`${props?.siteName}/Id eq ${props?.ID}`);
+    var filter = (`${props?.siteName}/Id eq ${props?.ID} and File_x0020_Type eq "msg"`);
 
     console.log(filter);
     try {
@@ -44,10 +44,11 @@ const RelevantDocuments = (props: any, ref: any) => {
         // .expand("Author,Editor").filter(`${props?.siteName}/Id eq ${props?.ID}`).top(4999)
         // .get()
         .items.select(query)
-        .filter(`(${props?.siteName}/Id eq ${props?.ID})and(File_x0020_Type ne 'msg')`).top(4999)
+       
+        .filter(`(${props?.siteName}/Id eq ${props?.ID})and(File_x0020_Type eq 'msg')`).top(4999)
         .get()
         .then((Data: any[]) => {
-          let keydoc: any = [];
+      
           Data?.map((item: any, index: any) => {
             item.Title = item.Title.replace('.', "")
             item.siteType = 'sp'
@@ -56,14 +57,13 @@ const RelevantDocuments = (props: any, ref: any) => {
             // item.Editor = item?.Editor?.Title;
             item.CreatedDate = moment(item?.Created).format("'DD/MM/YYYY HH:mm'");
             item.ModifiedDate = moment(item?.ModifiedDate).format("'DD/MM/YYYY HH:mm'");
-            if (item.ItemRank === 6) {
-              keydoc.push(item)
-            }
+           
 
           })
+       
           console.log("document data", Data);
           let smartmetadta: any = [];
-          myContextData2.FunctionCall(keydoc, Data[0]?.FileDirRef, false)
+       
           LoadMasterTaskList().then((smartData: any) => {
             smartmetadta = smartmetadta.concat(smartData)
             Data?.map((servicecomponent: any) => {
@@ -75,24 +75,19 @@ const RelevantDocuments = (props: any, ref: any) => {
                 })
               }
             })
-
-            var releventData = Data.filter((d) => d.ItemRank != 6 && d.ItemRank != 0)
-            if (releventData.length > 0) {
-              setDocumentData(releventData);
-            }
+            setDocumentData(Data);
+          
 
 
             setFileurl(Data[0]?.FileDirRef)
           }).catch((error: any) => {
-            var releventData = Data.filter((d) => d.ItemRank != 6)
-            setDocumentData(releventData);
+            // var releventData = Data.filter((d) => d.ItemRank != 6)
+            // setDocumentData(releventData);
             console.log(error)
           })
 
         })
-      // .catch((err) => {
-      //     console.log(err.message);
-      // });
+      
     } catch (e: any) {
       console.log(e)
     }
@@ -145,7 +140,7 @@ const RelevantDocuments = (props: any, ref: any) => {
       {documentData != undefined && documentData?.length > 0 && props?.keyDoc == undefined &&
         <div className='mb-3 card commentsection'>
           <div className='card-header'>
-            <div className="card-title h5 d-flex justify-content-between align-items-center  mb-0">Relevant Documents<span><Tooltip ComponentId={'359'} /></span></div>
+            <div className="card-title h5 d-flex justify-content-between align-items-center  mb-0">Relevant Emails<span><Tooltip ComponentId={'359'} /></span></div>
           </div>
 
 
@@ -158,16 +153,7 @@ const RelevantDocuments = (props: any, ref: any) => {
                                 </li> */}
                   <li>
                     <a href={item.EncodedAbsUrl}>
-                      {item?.File_x0020_Type == "pdf" && <span className='svg__iconbox svg__icon--pdf' title="pdf"></span>}
-                      {item?.File_x0020_Type == "docx" && <span className='svg__iconbox svg__icon--docx' title="docx"></span>}
-                      {item?.File_x0020_Type == "csv" && <span className='svg__iconbox svg__icon--csv' title="csv"></span>}
-                      {item?.File_x0020_Type == "xlsx" && <span className='svg__iconbox svg__icon--xlsx' title="xlsx"></span>}
-                      {item?.File_x0020_Type == "jpeg" || item?.File_x0020_Type == "jpg " && <span className='svg__iconbox svg__icon--jpeg' title="jpeg"></span>}
-                      {item?.File_x0020_Type == "ppt" || item?.File_x0020_Type == "pptx" && <span className='svg__iconbox svg__icon--ppt' title="ppt"></span>}
-                      {item?.File_x0020_Type == "svg" && <span className='svg__iconbox svg__icon--svg' title="svg"></span>}
-                      {item?.File_x0020_Type == "zip" && <span className='svg__iconbox svg__icon--zip' title="zip"></span>}
-                      {item?.File_x0020_Type == "png" && <span className='svg__iconbox svg__icon--png' title="png"></span>}
-                      {item?.File_x0020_Type == "txt" && <span className='svg__iconbox svg__icon--txt' title="txt"></span>}
+                     
                       {item?.File_x0020_Type == "smg" && <span className='svg__iconbox svg__icon--smg' title="smg"></span>}
 
                     </a>
@@ -188,7 +174,7 @@ const RelevantDocuments = (props: any, ref: any) => {
 
         </div>
       }
-
+{/* 
       {documentData?.length > 0 && props?.keyDoc == undefined && <div className='mb-3 card commentsection'>
         <div className='card-header'>
           <div className="card-title h5 d-flex justify-content-between align-items-center  mb-0">Main Folder<span><Tooltip /></span></div>
@@ -201,7 +187,7 @@ const RelevantDocuments = (props: any, ref: any) => {
           </ul>
         </div>
       </div>
-      }
+      } */}
 
       {editdocpanel && <EditDocument editData={EditdocData} AllListId={props.AllListId} Context={props.Context} editdocpanel={editdocpanel} callbackeditpopup={callbackeditpopup} />}
 
@@ -211,4 +197,4 @@ const RelevantDocuments = (props: any, ref: any) => {
 
 }
 
-export default forwardRef(RelevantDocuments);
+export default forwardRef(RelevantEmail);

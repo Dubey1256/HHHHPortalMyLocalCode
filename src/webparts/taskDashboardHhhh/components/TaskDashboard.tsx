@@ -14,6 +14,7 @@ import { IEmailProperties } from "@pnp/sp/sputilities";
 import { SPFI, spfi, SPFx as spSPFx } from "@pnp/sp";
 import { Accordion, Card, Button } from "react-bootstrap";
 import EditTaskPopup from "../../../globalComponents/EditTaskPopup/EditTaskPopup";
+import { BsXCircleFill, BsCheckCircleFill } from "react-icons/bs";
 import * as Moment from "moment";
 import pnp, { sp, Web } from "sp-pnp-js";
 import * as globalCommon from "../../../globalComponents/globalCommon";
@@ -27,14 +28,16 @@ import { useTable, useSortBy, useFilters, useExpanded, usePagination, HeaderGrou
 import { Filter, DefaultColumnFilter, } from "../../projectmanagementOverviewTool/components/filters";
 import PageLoader from '../../../globalComponents/pageLoader';
 import ShowClintCatogory from '../../../globalComponents/ShowClintCatogory';
+import SendEmailEODReport from './SendEmailEODReport';
 var taskUsers: any = [];
 var userGroups: any = [];
 var siteConfig: any = [];
 var AllTaskTimeEntries: any = [];
 var AllTasks: any = [];
 var timesheetListConfig: any = [];
-var currentUserId: '';
+var currentUserId:any = '';
 var DataSiteIcon: any = [];
+var RemarksData:any = []
 var currentUser: any = [];
 var weekTimeEntry: any = [];
 var today: any = [];
@@ -50,13 +53,14 @@ var backupTaskArray: any = {
 };
 var AllMetadata: any = [];
 var AllListId: any = {}
+var AllWorkingDayData: any = []
 var selectedInlineTask: any = {};
 var isShowTimeEntry: any;
 var isShowSiteCompostion: any;
 const TaskDashboard = (props: any) => {
     const [updateContent, setUpdateContent] = React.useState(false);
     const [createTaskId, setCreateTaskId] = React.useState({});
-    const [isOpenCreateTask, setisOpenCreateTask] = React.useState(false);
+    const [isSendEODReport, setisSendEODReport] = React.useState(false);
     const [selectedTimeReport, setSelectedTimeReport] = React.useState('');
     const [timeEntryTotal, setTimeEntryTotal] = React.useState(0);
     const [currentView, setCurrentView] = React.useState('Home');
@@ -194,7 +198,7 @@ const TaskDashboard = (props: any) => {
         } else if (startDateOf == 'Last Month') {
             const lastMonth = new Date(startingDate.getFullYear(), startingDate.getMonth() - 1);
             const startingDateOfLastMonth = new Date(lastMonth.getFullYear(), lastMonth.getMonth(), 1);
-            var change = (Moment(startingDateOfLastMonth).add(2, 'days').format())
+            var change = (Moment(startingDateOfLastMonth).add(15, 'days').format())
             var b = new Date(change)
             formattedDate = b;
         } else if (startDateOf == 'Last Week') {
@@ -1191,7 +1195,7 @@ const TaskDashboard = (props: any) => {
         {
             columns: columns,
             data: UserImmediateTasks,
-            defaultColumn: { Filter: DefaultColumnFilter },
+           defaultColumn: { Filter: DefaultColumnFilter },
             initialState: { pageIndex: 0, pageSize: 100000 },
         },
         useFilters,
@@ -1684,7 +1688,144 @@ const TaskDashboard = (props: any) => {
     //End
 
     //Shareworking Today's Task In Email
+
+
+    const sendEmail=()=>{
+        let tasksCopy: any = [];
+        let newData: any = [];
+        var dataa:any=[]
+        let taskUsersGroup = groupedUsers;
+        let confirmation = confirm("Are you sure you want to share the working today task of all team members?")
+        if (confirmation) {
+            var subject = "Today's Working Tasks of All Team";
+            taskUsersGroup?.map((userGroup: any) => {
+                let teamsTaskBody: any = [];
+                if (userGroup.Title == "Junior Developer Team" || userGroup.Title == "Senior Developer Team" || userGroup.Title == "Design Team" || userGroup.Title == "QA Team" || userGroup.Title == "Smalsus Lead Team" || userGroup.Title == "Business Analyst") {
+                    if (userGroup.Title == "Smalsus Lead Team") {
+                        userGroup.childBackup = userGroup?.childs;
+                        userGroup.childs = [];
+                        userGroup?.childBackup?.map((user: any) => {
+                            if (user?.Title == 'Ranu Trivedi') {
+                                userGroup.childs.push(user);
+                            }
+                        })
+                    }
+                    userGroup?.childs?.map((teamMember: any) => {
+                        if (!onLeaveEmployees.some((emp: any) => emp == teamMember?.AssingedToUserId)) {
+                            tasksCopy = filterCurrentUserWorkingTodayTask(teamMember?.AssingedToUserId)
+                            tasksCopy?.forEach((val:any)=>{
+                                newData.push(val)
+                            })
+                        }
+                    })
+                    
+                }
+            })
+          
+
+        }
+
+       
+        newData?.forEach((item: any) => {
+            item.TeamMember = ''
+            item.Category = ''
+            item.NewJSONData = []
+            item.EODData = []
+           
+            
+            if (item.Title != undefined) {
+                item.Title = item.Title?.replace(/<[^>]*><p>/g, '')
+            }
+            if (item.FeedBack != undefined) {
+                item.FeedBackJSONData = JSON.parse(item.FeedBack)
+            }
+            if (item.FeedBackJSONData != undefined) {
+                item.FeedBackJSONData[0]?.FeedBackDescriptions?.forEach((items: any) => {
+                    items.Title?.replace(/<[^>]*><p>/g, '')
+                    item.NewJSONData.push(items)
+                })
+            }
+            if (item.TeamMembers != undefined) {
+                item?.TeamMembers.forEach((val: any) => {
+                    item.TeamMember += val.Title + ';'
+                })
+            }
+
+            if (item.TaskCategories != undefined) {
+                item?.TaskCategories.forEach((val: any) => {
+                    item.Category += val.Title + ';'
+                })
+            }
+            if (item.Body == null) {
+                item.Body = ''
+            }
+            item.NewJSONData?.forEach((ele: any) => {
+                let data:any={}
+                if(ele?.Completed == true){
+                    data['subTitle'] = ele?.Title?.replaceAll(/<[^>]*><p>/g, '')
+                    data['subCompleted'] = ele?.Completed
+                    data['subDeployed'] = ele?.Deployed
+                    data['subQAReviews']  = ele?.QAReviews
+                    data['subInProgress'] = ele?.InProgress
+                    data['subRemarks'] = ele?.Remarks
+                    data['subChild'] = ele?.Subtext
+                    data['Title'] = item?.Title
+                    data['TaskID'] = item?.TaskID
+                    data['Category'] = item?.Category
+                    data['TeamMember'] = item?.TeamMember
+                    data['PercentComplete'] = item?.PercentComplete
+                    data['siteUrl'] = item?.siteUrl
+                    data['Id'] = item?.Id
+                    item.EODData.push(data)
+                }
+                
+               
+            })
+           
+            RemarksData.push(item)
+        })
+        RemarksData?.forEach((item:any)=>{
+            item?.EODData.forEach((val:any)=>{
+                val.subChilds=[]
+                if(val.subRemarks != undefined && val.subRemarks != '' ){
+                    val.subChilds.push(val)
+                }
+            })
+           
+        })
+        RemarksData?.forEach((item:any)=>{
+            item?.EODData?.forEach((val:any)=>{
+                if(val.subCompleted == true){
+                    val.subDeployed = true
+                    val.subQAReviews = true
+                    val.subInProgress = true
+                    AllWorkingDayData.push(val)
+                }
+            })
+           
+        })
+        AllWorkingDayData?.forEach((val:any)=>{
+            val.subChilds?.forEach((ele:any)=>{
+                if(ele.subCompleted == true && ele.subRemarks != undefined && ele.subRemarks != ''){
+                ele.subTitle = ele?.Title;
+                ele.subCompleted = true
+                ele.subDeployed = true
+                ele.subQAReviews = true
+                ele.subInProgress = true
+               
+                }
+            })
+        })
+        
+        setisSendEODReport(true)
+      
+    }
+    const closeEODReport=()=>{
+        setisSendEODReport(false)
+    }
+  
     const shareTaskInEmail = (input: any) => {
+       
         let currentLoginUser = currentUserData?.Title;
         let CurrentUserSpace = currentLoginUser.replace(' ', '%20');
         let body: any = '';
@@ -2188,8 +2329,10 @@ const TaskDashboard = (props: any) => {
                                     onDragOver={(e: any) => e.preventDefault()}>
                                     <summary> Working Today Tasks {'(' + pageToday?.length + ')'}
                                         {
-                                            currentUserId == currentUserData?.AssingedToUserId ? <span className="align-autoplay d-flex float-end" onClick={() => shareTaskInEmail('today working tasks')}><span className="svg__iconbox svg__icon--mail mx-1" ></span>Share Today Working Tasks</span> : ""
-                                        }</summary>
+                                            <>
+                                              {currentUserId == 242 && <span className="align-autoplay d-flex float-end" onClick={() => sendEmail()}><span className="svg__iconbox svg__icon--mail mx-1" ></span>Send EOD Email</span>}
+                                            <span className="align-autoplay d-flex float-end" onClick={() => shareTaskInEmail('today working tasks')}><span className="svg__iconbox svg__icon--mail mx-1" ></span>Share Today Working Tasks</span> 
+                                            </>}</summary>
                                     <div className='AccordionContent mx-height'>
                                         {workingTodayTasks?.length > 0 ?
                                             <Table className={updateContent ? "SortingTable mb-0" : "SortingTable mb-0"} hover  {...getTablePropsToday()}>
@@ -3514,6 +3657,7 @@ const TaskDashboard = (props: any) => {
             </div>
             {pageLoaderActive ? <PageLoader /> : ''}
             {openTimeEntryPopup && (<TimeEntryPopup props={taskTimeDetails} CallBackTimeEntry={TimeEntryCallBack} Context={props?.props?.Context} />)}
+            {isSendEODReport && (<SendEmailEODReport WorkingTask={AllWorkingDayData} close={closeEODReport} Context={props?.props?.Context}/>)}
 
         </>
     )

@@ -5,7 +5,6 @@ import { FaCompressArrowsAlt } from "react-icons/fa";
 import pnp, { Web, sp } from "sp-pnp-js";
 import { map } from "jquery";
 import * as globalCommon from "../globalComponents/globalCommon";
-import ShowTaskTeamMembers from "../globalComponents/ShowTaskTeamMembers";
 import "bootstrap/dist/css/bootstrap.min.css";
 import { ColumnDef } from "@tanstack/react-table";
 import "bootstrap/dist/css/bootstrap.min.css";
@@ -40,19 +39,19 @@ function ComponentChildDataTable(SelectedProp: any) {
   if (childRef != null) {
     childRefdataGlobal = { ...childRef };
   }
-  try {
-    if (SelectedProp?.NextProp != undefined) {
-      SelectedProp.NextProp.isShowTimeEntry = JSON.parse(
-        SelectedProp?.NextProp?.TimeEntry
-      );
+  // try {
+  //   if (SelectedProp?.NextProp != undefined) {
+  //     SelectedProp.NextProp.isShowTimeEntry = JSON.parse(
+  //       SelectedProp?.NextProp?.TimeEntry
+  //     );
 
-      SelectedProp.NextProp.isShowSiteCompostion = JSON.parse(
-        SelectedProp?.NextProp?.SiteCompostion
-      );
-    }
-  } catch (e) {
-    console.log(e);
-  }
+  //     SelectedProp.NextProp.isShowSiteCompostion = JSON.parse(
+  //       SelectedProp?.NextProp?.SiteCompostion
+  //     );
+  //   }
+  // } catch (e) {
+  //   console.log(e);
+  // }
   ContextValueGlobal = SelectedProp?.NextProp;
 
   const refreshData = () => setData(() => renderDataGlobal);
@@ -63,6 +62,7 @@ function ComponentChildDataTable(SelectedProp: any) {
   const [AllUsers, setTaskUser] = React.useState([]);
   const [AllMetadata, setMetadata] = React.useState([]);
   const [AllClientCategory, setAllClientCategory] = React.useState([]);
+  const [AllSitesData, setAllSitesData] = React.useState([]);
   const [IsUpdated, setIsUpdated] = React.useState("");
   const [checkedList, setCheckedList] = React.useState<any>({});
   // const [AllSiteTasksDataGlobal, setAllSiteTasksData] = React.useState([]);
@@ -204,6 +204,12 @@ function ComponentChildDataTable(SelectedProp: any) {
         (metadata: any) => metadata?.TaxType == "Client Category"
       )
     );
+    setAllSitesData(
+      smartmetaDetails?.filter(
+        (metadata: any) => metadata?.TaxType == "Sites"
+      )
+    );
+    
     smartmetaDetails?.map((newtest: any) => {
       if (newtest.Title == "SDC Sites" || newtest.Title == "DRR" || newtest.Title == "Offshore Tasks" || newtest.Title == "DE" || newtest.Title == "Gender" || newtest.Title == "Small Projects" || newtest.Title == "Shareweb Old" || newtest.Title == "Master Tasks")
         newtest.DataLoadNew = false;
@@ -301,7 +307,6 @@ function ComponentChildDataTable(SelectedProp: any) {
             "Body",
             "SiteCompositionSettings",
             "PercentComplete",
-            "ClientCategory",
             "Priority",
             "TaskType/Id",
             "TaskType/Title",
@@ -353,6 +358,30 @@ function ComponentChildDataTable(SelectedProp: any) {
                   item.siteUrl = ContextValueGlobal.siteUrl;
                   item["SiteIcon"] = config?.Item_x005F_x0020_Cover?.Url;
                   item.fontColorTask = "#000";
+                  let SCSettingsData: any = item["SiteCompositionSettings"];
+                  let checkIsSCProctected: any = false;
+                  if (SCSettingsData?.length > 0) {
+                    let TempSCSettingsData: any = JSON.parse(SCSettingsData);
+                    if (TempSCSettingsData?.length > 0) {
+                      checkIsSCProctected = TempSCSettingsData[0].Protected;
+                    }
+                  }
+                  if (checkIsSCProctected) {
+                    item.IsSCProtected = true;
+                  } else {
+                    item.IsSCProtected = false;
+                  }
+                  let tempArray: any = [];
+                  if (item.ClientCategory?.length > 0) {
+                    AllClientCategory?.map((AllCategory: any) => {
+                      item.ClientCategory?.map((SelectedCcategory: any) => {
+                        if (AllCategory.Id == SelectedCcategory.Id) {
+                          tempArray.push(AllCategory);
+                        }
+                      })
+                    })
+                  }
+                  item.ClientCategory = tempArray;
                   // if (item.TaskCategories.results != undefined) {
                   //     if (item.TaskCategories.results.length > 0) {
                   //         $.each(
@@ -590,6 +619,7 @@ function ComponentChildDataTable(SelectedProp: any) {
         "Created",
         "Body",
         "Item_x0020_Type",
+        "SiteCompositionSettings",
         "Categories",
         "Short_x0020_Description_x0020_On",
         "PriorityRank",
@@ -662,6 +692,21 @@ function ComponentChildDataTable(SelectedProp: any) {
           ""
         );
       }
+
+      let SCSettingsData: any = result["SiteCompositionSettings"];
+      let checkIsSCProctected: any = false;
+      if (SCSettingsData?.length > 0) {
+        let TempSCSettingsData: any = JSON.parse(SCSettingsData);
+        if (TempSCSettingsData?.length > 0) {
+          checkIsSCProctected = TempSCSettingsData[0].Protected;
+        }
+      }
+      if (checkIsSCProctected) {
+        result.IsSCProtected = true;
+      } else {
+        result.IsSCProtected = false;
+      }
+
       result.DisplayCreateDate = Moment(result.Created).format("DD/MM/YYYY");
 
       result.PercentComplete = (result.PercentComplete * 100).toFixed(0);
@@ -747,16 +792,16 @@ function ComponentChildDataTable(SelectedProp: any) {
     ComponetsData["allComponets"] = componentDetails;
     // AllSiteTasksDataGlobal?.length > 0 &&
     if (AllSiteTasksDataGlobal?.length > 0 && AllComponetsData?.length > 0) {
-    //   if (usedFor == "Site-Compositions" && copyDtaArrayGlobal?.length > 0) {
-    //     console.log("Data Already Exits");
-    //     setLoaded(true);
-    //     setData(componentDataGlobal);
-    //   } else {
-        portfolioTypeData.forEach((port, index) => {
-          componentGrouping(port?.Id, index);
-          countsrunGlobal++;
-        });
-    //   }
+      //   if (usedFor == "Site-Compositions" && copyDtaArrayGlobal?.length > 0) {
+      //     console.log("Data Already Exits");
+      //     setLoaded(true);
+      //     setData(componentDataGlobal);
+      //   } else {
+      portfolioTypeData.forEach((port, index) => {
+        componentGrouping(port?.Id, index);
+        countsrunGlobal++;
+      });
+      //   }
 
     }
     if (portfolioTypeData?.length === countsrunGlobal) {
@@ -782,22 +827,22 @@ function ComponentChildDataTable(SelectedProp: any) {
     // if (usedFor == "Site-Compositions" && componentDataGlobal?.length > 0) {
     //   console.log("Data Already Exits");
     // } else {
-      getTaskType();
-      findPortFolioIconsAndPortfolio();
-      GetSmartmetadata();
-      getTaskUsers();
-      getPortFolioType();
+    getTaskType();
+    findPortFolioIconsAndPortfolio();
+    GetSmartmetadata();
+    getTaskUsers();
+    getPortFolioType();
     // }
 
   }, []);
 
   React.useEffect(() => {
     if (AllMetadata.length > 0 && portfolioTypeData.length > 0) {
-    //   if (usedFor == "Site-Compositions" && componentDataGlobal?.length > 0) {
-    //     console.log("Data Already Exits");
-    //   } else {
-        LoadAllSiteTasks();
-    //   }
+      //   if (usedFor == "Site-Compositions" && componentDataGlobal?.length > 0) {
+      //     console.log("Data Already Exits");
+      //   } else {
+      LoadAllSiteTasks();
+      //   }
     }
   }, [AllMetadata.length > 0 && portfolioTypeData.length > 0]);
 
@@ -878,7 +923,6 @@ function ComponentChildDataTable(SelectedProp: any) {
       let Actatcomponent = AllSiteTasksDataGlobal?.filter(
         (elem1: any) =>
           elem1?.TaskType?.Id === 1 &&
-          elem1?.ParentTask?.Id === undefined &&
           elem1?.Portfolio?.Id === SelectedProp?.props?.Id
       );
       countAllTasksDataGlobal = countAllTasksDataGlobal.concat(Actatcomponent);
@@ -925,13 +969,51 @@ function ComponentChildDataTable(SelectedProp: any) {
         componentDataGlobal.push(temp);
       }
     }
-
     setLoaded(true);
+    componentDataGlobal?.map((ItemDataCheckSC: any) => {
+      let SCSettingsData: any = ItemDataCheckSC["SiteCompositionSettings"];
+      let checkIsSCProctected: any = false;
+      if (SCSettingsData?.length > 0) {
+        let TempSCSettingsData: any = JSON.parse(SCSettingsData);
+        if (TempSCSettingsData?.length > 0) {
+          checkIsSCProctected = TempSCSettingsData[0].Protected;
+        }
+      }
+      if (checkIsSCProctected) {
+        ItemDataCheckSC.IsSCProtected = true;
+      } else {
+        ItemDataCheckSC.IsSCProtected = false;
+      }
+      if (ItemDataCheckSC?.SiteCompositionSettings != undefined) {
+        ItemDataCheckSC.compositionType = siteCompositionType(ItemDataCheckSC?.SiteCompositionSettings);
+
+      } else {
+        ItemDataCheckSC.compositionType = '';
+
+      }
+
+    })
     setData(componentDataGlobal);
     console.log(countAllTasksDataGlobal);
   };
 
   // ComponentWS
+  function siteCompositionType(jsonStr: any) {
+    var data = JSON.parse(jsonStr);
+    try {
+      data = data[0];
+      for (var key in data) {
+        if (data?.hasOwnProperty(key) && data[key] === true) {
+          return key;
+        }
+      }
+
+      return '';
+    } catch (error) {
+      console.log(error)
+      return '';
+    }
+  }
 
   const componentWsT = (levelType: any, items: any) => {
     let findws = AllSiteTasksDataGlobal.filter(
@@ -953,7 +1035,7 @@ function ComponentChildDataTable(SelectedProp: any) {
     });
     items.subRows = items?.subRows?.concat(findws);
   };
-  
+
 
   const componentActivity = (levelType: any, items: any) => {
     let findActivity = AllSiteTasksDataGlobal?.filter(
@@ -1327,24 +1409,24 @@ function ComponentChildDataTable(SelectedProp: any) {
         resetColumnFilters: false,
         size: 100
       },
-      {
-        accessorFn: (row) => row?.AllTeamName,
-        cell: ({ row }) => (
-          <div className="alignCenter">
-            <ShowTaskTeamMembers
-              key={row?.original?.Id}
-              props={row?.original}
-              TaskUsers={AllUsers}
-              Context={SelectedProp?.NextProp}
-            />
-          </div>
-        ),
-        id: "AllTeamName",
-        placeholder: "Team",
-        resetColumnFilters: false,
-        header: "",
-        size: 131
-      },
+      // {
+      //   accessorFn: (row) => row?.AllTeamName,
+      //   cell: ({ row }) => (
+      //     <div className="alignCenter">
+      //       <ShowTaskTeamMembers
+      //         key={row?.original?.Id}
+      //         props={row?.original}
+      //         TaskUsers={AllUsers}
+      //         Context={SelectedProp?.NextProp}
+      //       />
+      //     </div>
+      //   ),
+      //   id: "AllTeamName",
+      //   placeholder: "Team",
+      //   resetColumnFilters: false,
+      //   header: "",
+      //   size: 131
+      // },
       {
         accessorKey: "PercentComplete",
         placeholder: "Status",
@@ -1354,34 +1436,49 @@ function ComponentChildDataTable(SelectedProp: any) {
         id: "PercentComplete"
       },
       {
-        accessorKey: "ItemRank",
-        placeholder: "Item Rank",
-        header: "",
-        resetColumnFilters: false,
-        size: 42,
-        id: "ItemRank"
-      },
-     
-      {
-        accessorFn: (row) => row?.DueDate,
+        accessorFn: (row) => row?.IsSCProtected,
         cell: ({ row }) => (
-          <span className='ms-1'>{row?.original?.DisplayDueDate} </span>
-
+          <span>{row?.original?.IsSCProtected == true ? "Protected" : ""}</span>
         ),
-        id: 'DueDate',
-        filterFn: (row: any, columnName: any, filterValue: any) => {
-          if (row?.original?.DisplayDueDate?.includes(filterValue)) {
-            return true
-          } else {
-            return false
-          }
-        },
+        id: 'Type',
+        placeholder: "Protected",
+        header: "",
         resetColumnFilters: false,
         resetSorting: false,
-        placeholder: "DueDate",
-        header: "",
-        size: 100
+        size: 100,
       },
+      {
+        accessorFn: (row) => row?.compositionType,
+        cell: ({ row }) => (
+          <span>{row?.original?.compositionType}</span>
+        ),
+        id: 'Type',
+        placeholder: "Composition Type",
+        header: "",
+        resetColumnFilters: false,
+        resetSorting: false,
+        size: 100,
+      },
+      // {
+      //   accessorFn: (row) => row?.DueDate,
+      //   cell: ({ row }) => (
+      //     <span className='ms-1'>{row?.original?.DisplayDueDate} </span>
+
+      //   ),
+      //   id: 'DueDate',
+      //   filterFn: (row: any, columnName: any, filterValue: any) => {
+      //     if (row?.original?.DisplayDueDate?.includes(filterValue)) {
+      //       return true
+      //     } else {
+      //       return false
+      //     }
+      //   },
+      //   resetColumnFilters: false,
+      //   resetSorting: false,
+      //   placeholder: "DueDate",
+      //   header: "",
+      //   size: 100
+      // },
       {
         accessorFn: (row) => row?.Created,
         cell: ({ row }) => (
@@ -1423,24 +1520,8 @@ function ComponentChildDataTable(SelectedProp: any) {
         header: "",
         size: 134
       },
-      {
-        accessorKey: "descriptionsSearch",
-        placeholder: "descriptionsSearch",
-        header: "",
-        resetColumnFilters: false,
-        size: 100,
-        id: "descriptionsSearch"
-      },
-      {
-        accessorKey: "commentsSearch",
-        placeholder: "commentsSearch",
-        header: "",
-        resetColumnFilters: false,
-        size: 100,
-        id: "commentsSearch"
-      },
-     
-     
+
+
     ],
     [data]
   );
@@ -1485,71 +1566,72 @@ function ComponentChildDataTable(SelectedProp: any) {
   //-------------------------------------------------- restructuring function end---------------------------------------------------------------
   //-------------------------------------------------------------End---------------------------------------------------------------------------------
   return (
-      <section className="TableContentSection taskprofilepagegreen">
-        <div className="container-fluid">
-          <section className="TableSection">
-            <div className="container p-0">
-              <div className="Alltable mt-2 ">
-                <div className="col-sm-12 p-0 smart">
-                  <div className="">
-                    <div className="wrapper">
-                      <Loader
-                        loaded={loaded}
-                        lines={13}
-                        length={20}
-                        width={10}
-                        radius={30}
-                        corners={1}
-                        rotate={0}
-                        direction={1}
-                        color={portfolioColorGlobal ? portfolioColorGlobal : "#000069"}
-                        speed={2}
-                        trail={60}
-                        shadow={false}
-                        hwaccel={false}
-                        className="spinner"
-                        zIndex={2e9}
-                        top="28%"
-                        left="50%"
-                        scale={1.0}
-                        loadedClassName="loadedContent"
-                      />
-                      <GlobalCommanTable
-                        smartTimeTotalFunction={smartTimeTotal} SmartTimeIconShow={true}
-                        ref={childRef}
-                        AddStructureFeature={
-                          SelectedProp?.props?.Item_x0020_Type
-                        }
-                        setLoaded={setLoaded}
-                        queryItems={SelectedProp?.props}
-                        PortfolioFeature={SelectedProp?.props?.Item_x0020_Type}
-                        AllMasterTasksData={AllMasterTasksData}
-                        callChildFunction={callChildFunction}
-                        AllListId={ContextValueGlobal}
-                        columns={columns}
-                        restructureCallBack={callBackData1}
-                        data={data}
-                        multiSelect={usedFor == "Site-Compositions" ? true : false}
-                        callBackData={callBackData}
-                        TaskUsers={AllUsers}
-                        showHeader={usedFor == "Site-Compositions" ? false : true}
-                        portfolioColorGlobal={portfolioColorGlobal}
-                        portfolioTypeData={portfolioTypeDataItem}
-                        taskTypeDataItem={taskTypeDataItem}
-                        fixedWidth={true}
-                        protfolioProfileButton={true}
-                        portfolioTypeConfrigration={portfolioTypeConfrigration}
-                        showingAllPortFolioCount={true}
-                        showCreationAllButton={true}
-                      />
-                    </div>
+    <section className="TableContentSection taskprofilepagegreen">
+      <div className="container-fluid">
+        <section className="TableSection">
+          <div className="container p-0">
+            <div className="Alltable mt-2 ">
+              <div className="col-sm-12 p-0 smart">
+                <div className="">
+                  <div className="wrapper">
+                    <Loader
+                      loaded={loaded}
+                      lines={13}
+                      length={20}
+                      width={10}
+                      radius={30}
+                      corners={1}
+                      rotate={0}
+                      direction={1}
+                      color={portfolioColorGlobal ? portfolioColorGlobal : "#000069"}
+                      speed={2}
+                      trail={60}
+                      shadow={false}
+                      hwaccel={false}
+                      className="spinner"
+                      zIndex={2e9}
+                      top="28%"
+                      left="50%"
+                      scale={1.0}
+                      loadedClassName="loadedContent"
+                    />
+                    <GlobalCommanTable
+                      expendedTrue={true}
+                      smartTimeTotalFunction={smartTimeTotal} SmartTimeIconShow={true}
+                      ref={childRef}
+                      AddStructureFeature={
+                        SelectedProp?.props?.Item_x0020_Type
+                      }
+                      setLoaded={setLoaded}
+                      queryItems={SelectedProp?.props}
+                      PortfolioFeature={SelectedProp?.props?.Item_x0020_Type}
+                      AllMasterTasksData={AllMasterTasksData}
+                      callChildFunction={callChildFunction}
+                      AllListId={ContextValueGlobal}
+                      columns={columns}
+                      restructureCallBack={callBackData1}
+                      data={data}
+                      multiSelect={usedFor == "Site-Compositions" ? true : false}
+                      callBackData={callBackData}
+                      TaskUsers={AllUsers}
+                      showHeader={usedFor == "Site-Compositions" ? false : true}
+                      portfolioColorGlobal={portfolioColorGlobal}
+                      portfolioTypeData={portfolioTypeDataItem}
+                      taskTypeDataItem={taskTypeDataItem}
+                      fixedWidth={true}
+                      protfolioProfileButton={true}
+                      portfolioTypeConfrigration={portfolioTypeConfrigration}
+                      showingAllPortFolioCount={true}
+                      showCreationAllButton={true}
+                    />
                   </div>
                 </div>
               </div>
             </div>
-          </section>
-        </div>
-      </section>
+          </div>
+        </section>
+      </div>
+    </section>
   );
 }
 export default ComponentChildDataTable;
