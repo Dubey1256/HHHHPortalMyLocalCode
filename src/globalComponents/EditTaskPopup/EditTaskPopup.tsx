@@ -202,7 +202,10 @@ const EditTaskPopup = (Items: any) => {
         { value: 2, status: "2% Follow Up", taskStatusComment: "Follow Up" },
         { value: 3, status: "3% Approved", taskStatusComment: "Approved" },
         { value: 5, status: "5% Acknowledged", taskStatusComment: "Acknowledged" },
-        { value: 10, status: "10% working on it", taskStatusComment: "working on it" }
+        { value: 10, status: "10% working on it", taskStatusComment: "working on it" },
+        { value: 80, status: "80% In QA Review", taskStatusComment: "In QA Review" },
+        { value: 90, status: "90% Task completed", taskStatusComment: "Task completed" },
+        { value: 100, status: "100% Closed", taskStatusComment: "Closed" }
     ]);
 
     let FeedBackCount: any = 0;
