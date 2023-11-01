@@ -26,6 +26,7 @@ import Tooltip from "../Tooltip";
 import * as globalCommon from "../globalCommon";
 import { truncate } from "@microsoft/sp-lodash-subset";
 import HighlightableCell from "../highlight";
+import { MdKeyboardArrowLeft,MdKeyboardArrowRight,MdKeyboardDoubleArrowLeft,MdKeyboardDoubleArrowRight } from "react-icons/Md";
 var AllTimeSpentDetails: any = [];
 var CurntUserId = "";
 var changeTime: any = 0;
@@ -2426,9 +2427,7 @@ function TimeEntryPopup(item: any) {
     return (
       <>
         <div
-          className="ps-4 siteColor"
-          style={{ marginRight: "auto", fontSize: "20px", fontWeight: "600" }}
-        >
+          className="subheading" >
           Add Task Time
         </div>
         <Tooltip ComponentId="1753" />
@@ -2439,9 +2438,7 @@ function TimeEntryPopup(item: any) {
     return (
       <>
         <div
-          className="ps-4 siteColor"
-          style={{ marginRight: "auto", fontSize: "20px", fontWeight: "600" }}
-        >
+          className="subheading" >
           Edit Task Time
         </div>
         <Tooltip ComponentId="1753" />
@@ -2452,9 +2449,7 @@ function TimeEntryPopup(item: any) {
     return (
       <>
         <div
-          className="ps-4 siteColor"
-          style={{ marginRight: "auto", fontSize: "20px", fontWeight: "600" }}
-        >
+          className="subheading" >
           Copy Task Time
         </div>
         <Tooltip ComponentId="1753" />
@@ -2465,9 +2460,7 @@ function TimeEntryPopup(item: any) {
     return (
       <>
         <div
-          className="ps-4 siteColor"
-          style={{ marginRight: "auto", fontSize: "20px", fontWeight: "600" }}
-        >
+          className="subheading" >
           Edit Category
         </div>
         <Tooltip ComponentId="1753" />
@@ -2796,19 +2789,23 @@ function TimeEntryPopup(item: any) {
           <span></span>
           <div className="col-sm-12 p-0 mt-10">
             <div className="col-sm-12 ps-0 pr-5 TimeTabBox mt-2">
-              <a className="hreflink pull-right mr-0"
-                onClick={openTaskStatusUpdatePoup}
-              >
-                + Add Time in New Structure
-              </a>
+              <div className="d-flex justify-content-between align-items-center mb-2">
               <div>
                 <input
                   type="checkbox"
-                  className="form-check-input pull-Left mt-1 me-1"
+                  className="form-check-input me-1"
                   onClick={(e: any) => flatviewOpen(e)}
                 />
                 FlatView
               </div>
+              <a className="mr-0 btn  btn-default"
+                onClick={openTaskStatusUpdatePoup}
+              >
+                + Add New Structure
+              </a>
+              </div>
+            
+           
             </div>
           </div>
         </div>
@@ -3788,7 +3785,7 @@ function TimeEntryPopup(item: any) {
       <Panel
         onRenderHeader={onRenderCustomHeaderAddTaskTime}
         type={PanelType.custom}
-        customWidth="850px"
+        customWidth="550px"
         isOpen={AddTaskTimepopup}
         onDismiss={closeAddTaskTimepopup}
         isBlocking={false}
@@ -3796,16 +3793,22 @@ function TimeEntryPopup(item: any) {
         <div
           className={
             PortfolioType == "Service"
-              ? "modal-body border p-3 serviepannelgreena"
-              : "modal-body border p-3"
+              ? "modal-body  p-1 serviepannelgreena"
+              : "modal-body  p-1"
           }
         >
           <div className="col-sm-12">
             <div className="col-sm-12 p-0 form-group">
-              <div className="row">
-                <div className="col-sm-6">
+              <div className="input-group mb-2">
+              <label className="full-width">Title</label>
+              <input className="form-control" type="title" placeholder="Add Title" />
+              </div>
+
+              <div className="row mb-2">
+
+                <div className="col-sm-12">
                   <div className="date-div">
-                    <div className="Date-Div-BAR d-flex">
+                    {/* <div className="Date-Div-BAR d-flex">
                       <span
                         className="href"
                         id="selectedYear"
@@ -3845,20 +3848,21 @@ function TimeEntryPopup(item: any) {
                       >
                         Today
                       </span>
-                    </div>
-                    <div className="input-group mt-1">
-                      <label className="form-label full-width">Date</label>
-
-                      <DatePicker
+                    </div> */}
+                    <div className="input-group">
+                      <label className="form-label full-width mb-2">Select date</label>
+                    <div className="d-flex w-100 mb-1">
+                      <button className="btnCol btn-primary"  onClick={() => changeDateDec("month", "AddTime")}><MdKeyboardDoubleArrowLeft></MdKeyboardDoubleArrowLeft></button> <button className="btnCol btn-primary mx-1"  onClick={() => changeDateDec("Date", "AddTime")}><MdKeyboardArrowLeft></MdKeyboardArrowLeft></button><DatePicker
                         className="form-control"
                         selected={myDatee}
                         onChange={handleDatedue}
                         dateFormat="EEE, dd MMM yyyy"
-                      /></div>
+                      /> <button  onClick={() => changeDate("Date", "AddTime")} className="btnCol btn-primary mx-1" ><MdKeyboardArrowRight></MdKeyboardArrowRight></button> <button className="btnCol btn-primary"   onClick={() => changeDate("month", "AddTime")}><MdKeyboardDoubleArrowRight></MdKeyboardDoubleArrowRight></button></div>
+                  </div>
                   </div>
                 </div>
 
-                <div className="col-sm-6 session-control-buttons">
+                {/* <div className="col-sm-6 session-control-buttons">
                   <div className="row">
                     <div className="col-sm-4 ">
                       <button
@@ -3914,11 +3918,11 @@ function TimeEntryPopup(item: any) {
                       </button>
                     </div>
                   </div>
-                </div>
+                </div> */}
               </div>
               <div className="row mb-2">
-                <div className="col-sm-3 pe-0">
-                  <label className="form-label full-width"></label>
+                <div className="col-sm-3">
+                  <label className="form-label full-width">Add task time</label>
                   <input
                     type="text"
                     autoComplete="off"
@@ -3927,7 +3931,7 @@ function TimeEntryPopup(item: any) {
                     onChange={(e) => changeTimeFunction(e, "Add")}
                   />
                 </div>
-                <div className="col-sm-3 ps-0">
+                <div className="col-sm-3">
                   <label className="form-label full-width"></label>
                   <input
                     className="form-control bg-e9"

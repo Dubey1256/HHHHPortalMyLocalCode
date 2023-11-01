@@ -2250,8 +2250,7 @@ function TeamPortlioTable(SelectedProp: any) {
                 <TimeEntryPopup
                     props={SharewebTimeComponent}
                     CallBackTimeEntry={TimeEntryCallBack}
-                    Context={SelectedProp?.SelectedProp.Context}
-                ></TimeEntryPopup>
+                    Context={SelectedProp?.SelectedProp.Context} ></TimeEntryPopup>
             )}
         </div>
     );
