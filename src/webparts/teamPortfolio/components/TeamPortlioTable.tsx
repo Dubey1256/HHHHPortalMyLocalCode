@@ -1775,7 +1775,11 @@ function TeamPortlioTable(SelectedProp: any) {
 
     const addedCreatedDataFromAWT = (arr: any, dataToPush: any) => {
         for (let val of arr) {
-            if (dataToPush?.PortfolioId === val.Id) {
+            if (dataToPush?.PortfolioId === val.Id && dataToPush?.ParentTask?.Id === undefined) {
+                val.subRows = val.subRows || [];
+                val?.subRows?.push(dataToPush);
+                return true;
+            } else if (dataToPush?.ParentTask?.Id === val.Id && dataToPush?.siteType === val?.siteType) {
                 val.subRows = val.subRows || [];
                 val?.subRows?.push(dataToPush);
                 return true;
@@ -2198,6 +2202,7 @@ function TeamPortlioTable(SelectedProp: any) {
                 <CreateActivity
                     Call={Call}
                     AllListId={ContextValue}
+                    context={SelectedProp?.SelectedProp?.Context}
                     TaskUsers={AllUsers}
                     AllClientCategory={AllClientCategory}
                     LoadAllSiteTasks={LoadAllSiteTasks}
@@ -2225,6 +2230,7 @@ function TeamPortlioTable(SelectedProp: any) {
                     selectedItem={checkedList}
                     Call={Call}
                     AllListId={ContextValue}
+                    context={SelectedProp?.SelectedProp?.Context}
                     TaskUsers={AllUsers}
                     data={data}>
                 </CreateWS>)}
@@ -2233,7 +2239,7 @@ function TeamPortlioTable(SelectedProp: any) {
                     Items={SharewebTask}
                     Call={Call}
                     AllListId={SelectedProp?.SelectedProp}
-                    context={SelectedProp?.SelectedProp.Context}
+                    context={SelectedProp?.SelectedProp?.Context}
                     pageName={"TaskFooterTable"}
                 ></EditTaskPopup>
             )}
@@ -2250,7 +2256,7 @@ function TeamPortlioTable(SelectedProp: any) {
                 <TimeEntryPopup
                     props={SharewebTimeComponent}
                     CallBackTimeEntry={TimeEntryCallBack}
-                    Context={SelectedProp?.SelectedProp.Context}
+                    Context={SelectedProp?.SelectedProp?.Context}
                 ></TimeEntryPopup>
             )}
         </div>

@@ -60,21 +60,21 @@ var change: any = new Date();
 const SP = spfi();
 
 function TimeEntryPopup(item: any) {
-  if (item?.props.siteUrl != undefined) {
+  if (item?.props?.siteUrl != undefined) {
     var Url = item?.props?.siteUrl.split("https://hhhhteams.sharepoint.com");
     RelativeUrl = Url[1];
     CurrentSiteUrl = item?.props?.siteUrl;
-    PortfolioType = item.props.Portfolio_x0020_Type;
-    CurntUserId = item.Context.pageContext._legacyPageContext.userId;
+    PortfolioType = item?.props?.Portfolio_x0020_Type;
+    CurntUserId = item?.Context?.pageContext?._legacyPageContext.userId;
     CurrentUserTitle =
-      item.Context.pageContext._legacyPageContext?.userDisplayName;
+      item?.Context?.pageContext?._legacyPageContext?.userDisplayName;
   } else {
-    PortfolioType = item.props.Portfolio_x0020_Type;
-    CurntUserId = item.Context.pageContext._legacyPageContext.userId;
+    PortfolioType = item?.props?.Portfolio_x0020_Type;
+    CurntUserId = item?.Context?.pageContext?._legacyPageContext.userId;
     CurrentUserTitle =
-      item.Context.pageContext._legacyPageContext?.userDisplayName;
-    RelativeUrl = item.Context.pageContext.web.serverRelativeUrl;
-    CurrentSiteUrl = item.Context.pageContext.web.absoluteUrl;
+      item.Context.pageContext?._legacyPageContext?.userDisplayName;
+    RelativeUrl = item?.Context?.pageContext?.web?.serverRelativeUrl;
+    CurrentSiteUrl = item?.Context?.pageContext?.web?.absoluteUrl;
   }
 
   const [AllTimeSheetDataNew, setTimeSheet] = React.useState([]);
