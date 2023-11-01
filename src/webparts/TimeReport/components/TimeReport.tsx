@@ -128,7 +128,7 @@ const TimeReport = (props:any) => {
         metadatItem = await web.lists
             .getById(props?.ContextData?.SmartMetadataListID)
             .items
-            .select('Id', 'Title', 'IsVisible', 'ParentID', 'SmartSuggestions', 'TaxType', 'Description1', 'Item_x005F_x0020_Cover', 'listId', 'siteName', 'siteUrl', 'SortOrder', 'SmartFilters', 'Selectable', 'Parent/Id', 'Parent/Title')
+            .select('Id', 'Title', 'IsVisible', 'ParentID','Color_x0020_Tag','SmartSuggestions', 'TaxType', 'Description1', 'Item_x005F_x0020_Cover', 'listId', 'siteName', 'siteUrl', 'SortOrder', 'SmartFilters', 'Selectable', 'Parent/Id', 'Parent/Title')
             .top(4999)
             .expand('Parent')
             .get()
@@ -139,7 +139,7 @@ const TimeReport = (props:any) => {
                 smartmetaDetails.push(config)
             }
             if (config.TaxType == 'Client Category') {
-                AllMetadata.push(config)
+                AllMetadata.push(config) 
             }
         })
         await LoadAllSiteTasks();
