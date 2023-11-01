@@ -43,7 +43,7 @@ import EditSiteComposition from "./EditSiteComposition";
 import SmartTotalTime from './SmartTimeTotal';
 import "react-datepicker/dist/react-datepicker.css";
 import BackgroundCommentComponent from "./BackgroundCommentComponent";
-import EODReportComponent from "../EOD Report Component/EODReportComponent";
+//import EODReportComponent from "../EOD Report Component/EODReportComponent";
 import { CurrentUser } from "sp-pnp-js/lib/sharepoint/siteusers";
 
 
@@ -92,6 +92,7 @@ var userSendAttentionEmails: any = [];
 var TempSmartInformationIds: any = [];
 let StatusOptionsBackupArray: any = [];
 var TaskCreatorApproverBackupArray: any = [];
+var AllSitesData: any = [];
 var TaskApproverBackupArray: any = [];
 
 const EditTaskPopup = (Items: any) => {
@@ -280,7 +281,7 @@ const EditTaskPopup = (Items: any) => {
 
     const SmartMetaDataListInformations = async () => {
         let AllSmartDataListData: any = [];
-        let AllSitesData: any = [];
+       
         let AllClientCategoryData: any = [];
         let AllCategoriesData: any = [];
         let AllTimesheetCategoriesData: any = [];
@@ -2233,7 +2234,7 @@ const EditTaskPopup = (Items: any) => {
                                 .get();
                         }
                         let currentUserId = Context.pageContext._legacyPageContext.userId
-
+                        TaskDetailsFromCall[0].TaskId = globalCommon.GetTaskId(TaskDetailsFromCall[0]);
                         if (ApproverData != undefined && ApproverData.length > 0) {
                             taskUsers.forEach((val: any) => {
                                 if (ApproverData[0]?.Id == val?.AssignedToUserId && ApproverData[0].Company == undefined) {
@@ -2325,9 +2326,12 @@ const EditTaskPopup = (Items: any) => {
                                     dataEditor.data.TaskID = EditData.TaskId
                                     dataEditor.data.listId = Items.Items.listId
                                     dataEditor.data.FeedBack = JSON.stringify(dataEditor.data.FeedBack)
-                                    Items.Call(dataEditor)
+                                    Items.Call(dataEditor, "UpdatedData");
                                 }
-                                Items.Call(DataJSONUpdate, "UpdatedData");
+                                else{
+
+                                    Items.Call(DataJSONUpdate, "UpdatedData");
+                                }
                             }
                             else {
                                 Items.Call("Save");
@@ -3512,7 +3516,7 @@ const EditTaskPopup = (Items: any) => {
         await web.lists.getByTitle(SelectedSite).items.select("Id,Title").filter(`Id eq ${newItem.Id}`).get().
             then(async (res) => {
                 SiteId = res[0].Id
-                siteConfig.forEach((itemss: any) => {
+                AllSitesData?.forEach((itemss: any) => {
                     if (itemss.Title == SelectedSite && itemss.TaxType == 'Sites') {
                         TimesheetConfiguration = JSON.parse(itemss.Configurations)
                     }
@@ -4972,7 +4976,7 @@ const EditTaskPopup = (Items: any) => {
                                                 }
                                             </div>
                                         </div>
-                                        <div className="Sitecomposition mb-3">
+                                        {/* <div className="Sitecomposition mb-3">
                                             <a className="sitebutton bg-fxdark alignCenter justify-content-between">
                                                 <span className="alignCenter">
                                                     <span className="svg__iconbox svg__icon--docx"></span>
@@ -4982,7 +4986,7 @@ const EditTaskPopup = (Items: any) => {
                                                     onClick={() => setOpenEODReportPopup(true)}>
                                                 </span>
                                             </a>
-                                        </div>
+                                        </div> */}
                                     </div>
                                     <div className="col-md-4">
                                         <div className="full_width ">
@@ -5208,7 +5212,7 @@ const EditTaskPopup = (Items: any) => {
                             ApprovalTaskStatus={ApprovalTaskStatus}
                             callBack={SendEmailNotificationCallBack}
                         /> : null}
-                    {OpenEODReportPopup ? <EODReportComponent TaskDetails={EditData} siteUrl={siteUrls} Context={Context} Callback={EODReportComponentCallback} /> : null}
+                    {/* {OpenEODReportPopup ? <EODReportComponent TaskDetails={EditData} siteUrl={siteUrls} Context={Context} Callback={EODReportComponentCallback} /> : null} */}
                 </div>
             </Panel>
             {/* ***************** this is Image compare panel *********** */}

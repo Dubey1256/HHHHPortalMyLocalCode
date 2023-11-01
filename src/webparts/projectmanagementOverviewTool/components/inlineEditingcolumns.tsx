@@ -5,6 +5,7 @@ import * as Moment from "moment";
 import * as globalCommon from "../../../globalComponents/globalCommon";
 import ShowTaskTeamMembers from "../../../globalComponents/ShowTaskTeamMembers";
 import TeamConfigurationCard from "../../../globalComponents/TeamConfiguration/TeamConfiguration";
+import TeamConfigurationCards from "../../EditPopupFiles/TeamConfigurationPortfolio";
 import { OverlayTrigger, Popover } from "react-bootstrap";
 import Picker from "../../../globalComponents/EditTaskPopup/SmartMetaDataPicker";
 var ChangeTaskUserStatus: any = true;
@@ -1105,6 +1106,11 @@ const inlineEditingcolumns = (props: any) => {
               />
             </span>
           </span>
+          {props?.pageName === "portfolioprofile" && (
+            <a className="pancil-icons">
+              <span className="svg__iconbox svg__icon--editBox"></span>
+            </a>
+          )}
         </>
       ) : (
         ""
@@ -1583,11 +1589,19 @@ const inlineEditingcolumns = (props: any) => {
         type={PanelType.medium}
       >
         <div>
+          {props.pageName !== "portfolioprofile" ? 
           <TeamConfigurationCard
             AllListId={props?.AllListId}
             ItemInfo={props?.item}
             parentCallback={DDComponentCallBack}
           ></TeamConfigurationCard>
+          :
+          <TeamConfigurationCards
+          ItemInfo={props?.item}
+          Sitel={props?.AllListId}
+          parentCallback={DDComponentCallBack}
+            ></TeamConfigurationCards>
+          }
           <footer className="float-end">
             <button
               type="button"
