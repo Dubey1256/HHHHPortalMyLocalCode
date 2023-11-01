@@ -581,7 +581,7 @@ const SmartInformation = (props: any, ref: any) => {
       }
     }
     else {
-      alert("plese fill the Title")
+      alert("Please Fill the Title")
       // setallSetValue({...allValue,AstricMesaage:true})
       setaddSmartInfoPopupAddlinkDoc(false)
       addSmartInfoPopupAddlinkDoc2 = false;
