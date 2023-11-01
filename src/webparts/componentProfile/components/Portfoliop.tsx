@@ -5,7 +5,7 @@ let TypeSite: string;
 import { Web } from "sp-pnp-js";
 import * as Moment from "moment";
 import Tooltip from "../../../globalComponents/Tooltip";
-
+import ReactPopperTooltipSingleLevel from "../../../globalComponents/Hierarchy-Popper-tooltipSilgleLevel/Hierarchy-Popper-tooltipSingleLevel";
 import { FaHome, FaPencilAlt } from "react-icons/fa";
 import { IoMdArrowDropright, IoMdArrowDropdown } from "react-icons/io";
 import CommentCard from "../../../globalComponents/Comments/CommentCard";
@@ -20,7 +20,7 @@ import AncTool from "../../../globalComponents/AncTool/AncTool";
 import RelevantDocuments from "../../taskprofile/components/RelevantDocuments";
 import { myContextValue } from '../../../globalComponents/globalCommon'
 import { IsAny } from "@tanstack/react-table";
-
+import InlineEditingcolumns from "../../projectmanagementOverviewTool/components/inlineEditingcolumns";
 const sp = spfi();
 
 // Work the Inline Editing
@@ -44,9 +44,10 @@ export const EditableField: React.FC<EditableFieldProps> = ({
   web
 }) => {
   const [editing, setEditing] = React.useState(false);
-  const [fieldValue, setFieldValue] = React.useState(value);
+    const [fieldValue, setFieldValue] = React.useState(value);
+  
   const [key, setKey] = React.useState(0); // Add a key state
-
+  const Call = React.useCallback((item1: any, type: any, functionType: any) => {  console.log("call back from the categories") }, []);
   React.useEffect(() => {
     setFieldValue(value); // Update the state when the prop value changes
   }, [value]);
@@ -58,7 +59,6 @@ export const EditableField: React.FC<EditableFieldProps> = ({
   const handleEdit = () => {
     setEditing(true);
   };
-
   if (fieldName == "Priority") {
     const [selectedPriority, setSelectedPriority] = React.useState(value);
     const handlePriorityClick = (event:any) => {
@@ -177,48 +177,28 @@ export const EditableField: React.FC<EditableFieldProps> = ({
   const handleInputChange = (event: React.ChangeEvent<HTMLInputElement>) => {
     setFieldValue(event.target.value);
   };
+
   if (fieldName == "PercentComplete") {
-    
-    const handleInputChange = (event:any) => {
-      // Get the input value from the event
-      const inputValue = event.target.value;
-  
-      // Check if the input is a valid number and is non-negative
-      if (isNaN(inputValue) || inputValue < 0) {
-        console.log("Invalid input. Please enter a non-negative number.");
-        return;
-      }
-  
-      // Update the field value in your state when the input is valid
-      setFieldValue(inputValue);
+
+    const [myfieldValue, setmyFieldValue] = React.useState(value);
+    const handleInputChange = (event: React.ChangeEvent<HTMLInputElement>) => {
+      setmyFieldValue(event.target.value);
     };
-    let selectedStatus:any;
-    const ChangeStatus = (event: React.ChangeEvent<HTMLSelectElement>, EditData: any) => {
-      // Get the selected status value from the event
-       selectedStatus = event.target.value;
-    
-      // Update the AdminStatus property in EditData with the selected value
-      // const updatedEditData = { ...EditData, AdminStatus: selectedStatus };
-    
-      // Call the parent component's onChange function to save the updated EditData
-      // onChange(updatedEditData);
-    };
-    
+  
     const handleSave = async () => {
       try {
-        setFieldValue((prevValue:any) => parseInt(fieldValue));
+        setmyFieldValue((prevValue:any) => parseInt(myfieldValue));
         
         // if(type == "Number"){
         //   setFieldValue(fieldValue/100);
         // }
-        let valpercent = parseInt(fieldValue);
+        let valpercent = parseInt(myfieldValue);
         let webs = new Web(web);
         await webs.lists
           .getByTitle(listName)
-          .items.getById(itemId.Id)
+          .items.getById(itemId)
           .update({
-            PercentComplete: valpercent / 100,
-            Status:selectedStatus
+            [fieldName]: valpercent / 100
           });
 
         setEditing(false);
@@ -234,22 +214,11 @@ export const EditableField: React.FC<EditableFieldProps> = ({
           <span>
             {" "}
             <input
-              type={type}
-              value={fieldValue}
+              type="number"
+              value={myfieldValue}
               onChange={handleInputChange}
             />
           </span>
-          <select
-              className="form-control"
-              value={itemId?.AdminStatus}
-              onChange={(e) => ChangeStatus(e, itemId)}
-            >
-              <option value="Not Started">Not Started</option>
-              <option value="In Preparation">In Preparation</option>
-              <option value="In Development">In Development</option>
-              <option value="Active">Active</option>
-              <option value="Archived">Archived</option>
-            </select>
           <span>
             <a onClick={handleSave}>
               <span className="svg__iconbox svg__icon--Save "></span>
@@ -261,16 +230,19 @@ export const EditableField: React.FC<EditableFieldProps> = ({
         </div>
       );
     }
-
+    let mymergedStatus = `${type} - ${(myfieldValue)}% `;
     return (
       <div key={key}>
-        <span title={fieldValue}>{fieldValue}</span>
+        <span title={mymergedStatus} style={{fontSize: "smaller"}}>{mymergedStatus}</span>
         <a className="pancil-icons" onClick={handleEdit}>
           <span className="svg__iconbox svg__icon--editBox"></span>
         </a>
       </div>
     );
   }
+
+
+
 
   if (type == "Date") {
     const handleSave = async () => {
@@ -397,6 +369,8 @@ let componentDetails: any = [];
 let filterdata: any = [];
 let imageArray: any = [];
 let AllTaskuser:any=[];
+let hoveroverstructureId:any;
+let combinedArray:any=[];
 function getQueryVariable(variable: any) {
   let query = window.location.search.substring(1);
   console.log(query); //"app=article&act=news_content&aid=160990"
@@ -425,19 +399,6 @@ function Portfolio({ SelectedProp,TaskUser }: any) {
   const   relevantDocRef:any = React.createRef();
   const   smartInfoRef :any= React.createRef();
   const [data, setTaskData] = React.useState([]);
-  const [isActive, setIsActive] = React.useState(false);
-  const [array, setArray] = React.useState([]);
-  const [datas, setdatas] = React.useState([]);
-  const [datam, setdatam] = React.useState([]);
-  const [datak, setdatak] = React.useState([]);
-  const [dataj, setdataj] = React.useState([]);
-  const [datams, setdatams] = React.useState([]);
-  const [datamb, setdatamb] = React.useState([]);
-  const [datahelp, setdatahelp] = React.useState([]);
-  const [datatech, setdatatech] = React.useState([]);
-  const [dataQues, setdataQues] = React.useState([]);
-  const [dataHelp, setdataHelp] = React.useState([]);
-  const [Projecto, setProjecto] = React.useState(true);
   const [FolderData, SetFolderData] = React.useState([]);
   const [keydoc, Setkeydoc] = React.useState([]);
   const [FileDirRef, SetFileDirRef] = React.useState('');
@@ -445,6 +406,7 @@ function Portfolio({ SelectedProp,TaskUser }: any) {
   const [SharewebComponent, setSharewebComponent] = React.useState("");
   const [showBlock, setShowBlock] = React.useState(false);
   const [IsTask, setIsTask] = React.useState(false);
+  const [enable, setenable] = React.useState(true);
   const [questionandhelp, setquestionandhelp] = React.useState([]);
   const [ImagePopover, SetImagePopover] = React.useState({
     isModalOpen: false,
@@ -455,7 +417,9 @@ function Portfolio({ SelectedProp,TaskUser }: any) {
   });
 
   const [portfolioTyped, setPortfolioTypeData] = React.useState([]);
-
+  const [myparentData, setParentData] = React.useState([]);
+  const [hoveredId, setHoveredId] = React.useState(null);
+  const [isTooltipOpen, setIsTooltipOpen] = React.useState(false);
   // PortfolioType
 
   const getPortFolioType = async () => {
@@ -468,70 +432,7 @@ function Portfolio({ SelectedProp,TaskUser }: any) {
     setPortfolioTypeData(PortFolioType);
   };
   ID = getQueryVariable("taskId");
-  const handleOpen = (item: any) => {
-    setIsActive((current) => !current);
-    item.show = !item.show;
-    setArray((array) => [...array]);
-  };
 
-  const handleOpen1 = (item: any) => {
-    item.showl = !item.showl;
-    setdatam((datam) => [...datam]);
-  };
-  const handleOpen2 = (item: any) => {
-    item.shows = !item.shows;
-    setdatas((datas) => [...datas]);
-  };
-
-  const handleOpen4 = (item: any) => {
-    setIsActive((current) => !current);
-    setIsActive(true);
-    item.showj = !item.showj;
-    setdataj((dataj) => [...dataj]);
-  };
-  const handleOpen5 = (item: any) => {
-    setIsActive((current) => !current);
-    setIsActive(true);
-    item.showm = !item.showm;
-    setdatams((datams) => [...datams]);
-  };
-  const handleOpen6 = (item: any) => {
-    setIsActive((current) => !current);
-    setIsActive(true);
-    item.showb = !item.showb;
-    setdatamb((datamb) => [...datamb]);
-  };
-  const handleOpen7 = (item: any) => {
-    setIsActive((current) => !current);
-    setIsActive(true);
-    item.showhelp = !item.showhelp;
-    setdatahelp((datahelp) => [...datahelp]);
-  };
-  const handleOpen8 = (item: any) => {
-    setIsActive((current) => !current);
-    setIsActive(true);
-    item.showQues = !item.showQues;
-    setdataQues((dataQues) => [...dataQues]);
-  };
-  const handleOpen9 = (item: any) => {
-    setIsActive((current) => !current);
-    setIsActive(true);
-    item.showtech = !item.showtech;
-    setdatatech((datatech) => [...datatech]);
-  };
-  const handleOpen10 = (item: any) => {
-    setIsActive((current) => !current);
-    setIsActive(true);
-    item.showHelp = !item.showHelp;
-    setdataHelp((dataHelp) => [...dataHelp]);
-  };
-  const showhideprojects = () => {
-    if (Projecto) {
-      setProjecto(false);
-    } else {
-      setProjecto(true);
-    }
-  };
   React.useEffect(() => {
     
     let folderId: any = "";
@@ -555,7 +456,7 @@ function Portfolio({ SelectedProp,TaskUser }: any) {
     ContextValue = SelectedProp;
 
     let web = ContextValue.siteUrl;
-    let url = `${web}/_api/lists/getbyid('${ContextValue.MasterTaskListID}')/items?$select=ItemRank,Item_x0020_Type,Portfolios/Id,Portfolios/Title,PortfolioType/Id,PortfolioType/Title,PortfolioType/Color,PortfolioType/IdRange,Site,FolderID,PortfolioStructureID,ValueAdded,Idea,TaskListName,TaskListId,WorkspaceType,CompletedDate,ClientActivityJson,ClientSite,Item_x002d_Image,Sitestagging,SiteCompositionSettings,TechnicalExplanations,Deliverables,Author/Id,Author/Title,Editor/Id,Editor/Title,Package,Short_x0020_Description_x0020_On,Short_x0020_Description_x0020__x,Short_x0020_description_x0020__x0,AdminNotes,AdminStatus,Background,Help_x0020_Information,BasicImageInfo,Item_x0020_Type,AssignedTo/Title,AssignedTo/Name,AssignedTo/Id,Categories,FeedBack,ComponentLink,FileLeafRef,Title,Id,Comments,StartDate,DueDate,Status,Body,Company,Mileage,PercentComplete,FeedBack,Attachments,Priority,PriorityRank,Created,Modified,TeamMembers/Id,TeamMembers/Title,Parent/Id,Parent/Title,Parent/ItemType,TaskCategories/Id,TaskCategories/Title,ClientCategory/Id,ClientCategory/Title&$expand=Author,Editor,ClientCategory,Parent,AssignedTo,TeamMembers,PortfolioType,Portfolios,TaskCategories&$filter=Id eq ${ID}&$top=4999`;
+    let url = `${web}/_api/lists/getbyid('${ContextValue.MasterTaskListID}')/items?$select=ItemRank,Item_x0020_Type,Portfolios/Id,Portfolios/Title,PortfolioType/Id,PortfolioType/Title,PortfolioType/Color,PortfolioType/IdRange,Site,FolderID,PortfolioStructureID,ValueAdded,Idea,TaskListName,TaskListId,WorkspaceType,CompletedDate,ClientActivityJson,ClientSite,Item_x002d_Image,Sitestagging,SiteCompositionSettings,TechnicalExplanations,Deliverables,Author/Id,Author/Title,Editor/Id,Editor/Title,Package,Short_x0020_Description_x0020_On,Short_x0020_Description_x0020__x,Short_x0020_description_x0020__x0,AdminNotes,AdminStatus,Background,Help_x0020_Information,BasicImageInfo,Item_x0020_Type,AssignedTo/Title,AssignedTo/Name,AssignedTo/Id,Categories,FeedBack,ComponentLink,FileLeafRef,Title,Id,Comments,StartDate,DueDate,Status,Body,Company,Mileage,PercentComplete,FeedBack,Attachments,Priority,PriorityRank,Created,Modified,TeamMembers/Id,TeamMembers/Title,Parent/Id,Parent/Title,Parent/ItemType,Parent/Item_x0020_Type,TaskCategories/Id,TaskCategories/Title,ClientCategory/Id,ClientCategory/Title&$expand=Author,Editor,ClientCategory,Parent,AssignedTo,TeamMembers,PortfolioType,Portfolios,TaskCategories&$filter=Id eq ${ID}&$top=4999`;
     let response: any = [];
     let responsen: any = []; // this variable is used for storing list items
     function GetListItems() {
@@ -618,11 +519,12 @@ function Portfolio({ SelectedProp,TaskUser }: any) {
                 headers: {
                   Accept: "application/json; odata=verbose"
                 },
-                success: function (data) {
+                success: function (mydata) {
                   ParentData=[]
-                  ParentData.push(data?.d?.results[0]);
-                  if (data.d.__next) {
-                    urln = data.d.__next;
+                  ParentData.push(mydata?.d?.results[0]);
+                  setParentData(ParentData)
+                  if (mydata.d.__next) {
+                    urln = mydata.d.__next;
                   } else {
 
                     console.log(ParentData);
@@ -737,6 +639,7 @@ function Portfolio({ SelectedProp,TaskUser }: any) {
     var inputString = item?.Parent?.Title; 
     item.limitedString = inputString?.substring(0, 13);
     item.mergedStatus = `${item?.Status} - ${(item?.PercentComplete * 100).toFixed(0)}% `;
+    item.TaskID = item?.PortfolioStructureID
 // Prepare Show task Teammember data 
 
 if (item.AssignedTo != undefined && item.AssignedTo.length > 0) {
@@ -880,24 +783,17 @@ if (item.TeamMembers != undefined && item.TeamMembers.length > 0) {
   }
 
   //  basic image End
-
   // ImagePopover
   const OpenModal = (e: any, item: any) => {
     if (item.Url != undefined) {
       item.ImageUrl = item?.Url;
     }
-
     //debugger;
-
     e.preventDefault();
-
     // console.log(item);
-
     SetImagePopover({
       isModalOpen: true,
-
       imageInfo: item,
-
       showPopup: "block"
     });
   };
@@ -906,12 +802,9 @@ if (item.TeamMembers != undefined && item.TeamMembers.length > 0) {
 
   const CloseModal = (e: any) => {
     e.preventDefault();
-
     SetImagePopover({
       isModalOpen: false,
-
       imageInfo: { ImageName: "", ImageUrl: "" },
-
       showPopup: "none"
     });
   };
@@ -942,16 +835,37 @@ const  AncCallback = (type: any) => {
 }
 const  contextCall = (data: any, path: any, component: any) => {
   if (data != null && path != null) {
-  
     Setkeydoc(data) 
     SetFileDirRef(path) 
-  
   }
   if (component) {
     this?.relevantDocRef?.current?.loadAllSitesDocuments()
   }
 };
 
+
+//  inline editing callback 
+const inlineCallBack = React.useCallback((item: any) => {
+ let updatedTasks = data;
+ updatedTasks[0].Categories = item?.Categories
+ updatedTasks[0].TaskCategories= item?.TaskCategories
+ setTaskData(updatedTasks);
+ count++;
+}, []);
+if (data[0]?.Item_x0020_Type === "Feature") {
+  combinedArray.push(ParentData[0]?.Parent)
+  combinedArray.push(ParentData[0])
+  combinedArray.push(data[0])
+  }
+else if(data[0]?.Item_x0020_Type == "SubComponent"){
+  combinedArray.push(data[0].Parent);
+}else if(data[0]?.Item_x0020_Type == "Component"){
+  combinedArray.push(data[0])
+}
+
+
+
+ 
   return (
     <myContextValue.Provider value={{ ...myContextValue, FunctionCall: contextCall, keyDoc:keydoc, FileDirRef: FileDirRef }}>
     <div className={TypeSite == "Service" ? "serviepannelgreena" : ""}>
@@ -1129,10 +1043,12 @@ const  contextCall = (data: any, path: any, component: any) => {
                         <dt className="bg-fxdark" title="Structure ID ">ID</dt>
                         <dd className="bg-light">
                           <span>
-                            {data.map((item, index) => (
-                             <a title={item?.PortfolioStructureID}>{item?.PortfolioStructureID}</a>
-                             ))}
+                          {data.map((item, index) => (
+
+<ReactPopperTooltipSingleLevel ShareWebId={item?.PortfolioStructureID} row={item} singleLevel={true} masterTaskData={combinedArray} AllSitesTaskData={[]} AllListId={SelectedProp?.NextProp} />
+        ))}
                           </span>
+                          {hoveredId && <span>{hoveredId}</span>}
                         </dd>
                       </dl>
                       <dl>
@@ -1164,8 +1080,21 @@ const  contextCall = (data: any, path: any, component: any) => {
                       <dl>
                         <dt className="bg-fxdark" title="Status">Status</dt>
                         <dd className="bg-light">
-                          {data.map((item) => (
-                            <a>{item?.mergedStatus}</a>
+                          {data.map((item,index) => (
+                             <EditableField
+                             key={index}
+                             listName="Master Tasks"
+                             itemId={item.Id}
+                             fieldName="PercentComplete"
+                             value={
+                               item?.PercentComplete != undefined
+                                 ? (item?.PercentComplete * 100).toFixed(0)
+                                 : ""
+                             }
+                             onChange={handleFieldChange("PercentComplete")}
+                             type={item.Status}
+                             web={ContextValue?.siteUrl}
+                           />
                           ))}
                         </dd>
                       </dl>
@@ -1173,12 +1102,15 @@ const  contextCall = (data: any, path: any, component: any) => {
                     <dt className="bg-fxdark" title="Assigned Person">Team Members</dt>
                     <dd className="bg-light d-flex">
                       {AllTaskuser?.length > 0 && (
-                        <ShowTaskTeamMembers
-                          key={data[0]?.Id}
-                          props={data[0]}
-                          TaskUsers={AllTaskuser}
-                          Context={SelectedProp}
-                        />
+
+<InlineEditingcolumns AllListId={SelectedProp} callBack={inlineCallBack} columnName='Team' item={data[0]} TaskUsers={AllTaskuser} pageName={'portfolioprofile'} />
+                    
+                        // <ShowTaskTeamMembers
+                        //   key={data[0]?.Id}
+                        //   props={data[0]}
+                        //   TaskUsers={AllTaskuser}
+                        //   Context={SelectedProp}
+                        // />
                       )}
                     </dd>
                   </dl>
@@ -1306,7 +1238,7 @@ const  contextCall = (data: any, path: any, component: any) => {
                           ))}
                         </dd>
                       </dl>
-                  {data.map((item: any) => {
+                  {/* {data.map((item: any) => {
                     return (
                       <>
                         {item?.PortfolioType?.Title && (
@@ -1343,7 +1275,7 @@ const  contextCall = (data: any, path: any, component: any) => {
                         )}
                       </>
                     );
-                  })}
+                  })} */}
                     </div>
                   </div>
                   </div>
@@ -1397,33 +1329,38 @@ const  contextCall = (data: any, path: any, component: any) => {
                       <dl>
                         <dt className="bg-fxdark" title="Task Category">Categories</dt>
                         <dd className="bg-light text-break">
-                          {data.map((item) => (
-                            <a>{item?.Categories}</a>
-                          ))}
+                      {data?.length >0 &&
+                      <>
+                        <InlineEditingcolumns
+                          AllListId={ContextValue}
+                          callBack={inlineCallBack}
+                          columnName='TaskCategories'
+                          item={data[0]}
+                          TaskUsers={AllTaskuser}
+                          pageName={'portfolioprofile'}
+                        />
+                        </>
+                      }
+                          {/* {data.map((item,index) => (
+                            
+                            <a>{item?.Categories}
+                             <EditableField
+                                key={index}
+                                listName="Master Tasks"
+                                itemId={item?.Id}
+                                fieldName="Categories"
+                                value={
+                                  item?.Categories
+                                }
+                                onChange={handleFieldChange("Categories")}
+                                type="Categories"
+                                web={ContextValue}
+                              />
+                            </a>
+                          ))} */}
                         </dd>
                       </dl>
 
-                  <dl>
-                    <dt className="bg-fxdark" title="% Complete">% Complete</dt>
-                    <dd className="bg-light">
-                      {data.map((item, index) => (
-                        <EditableField
-                          key={index}
-                          listName="Master Tasks"
-                          itemId={item}
-                          fieldName="PercentComplete"
-                          value={
-                            item?.PercentComplete != undefined
-                              ? (item?.PercentComplete * 100).toFixed(0)
-                              : ""
-                          }
-                          onChange={handleFieldChange("PercentComplete")}
-                          type="Number"
-                          web={ContextValue?.siteUrl}
-                        />
-                      ))}
-                    </dd>
-                  </dl>
                   </div>
                 <div className="col-md-12">
                   <section className="row  accordionbox">
@@ -1810,14 +1747,15 @@ const  contextCall = (data: any, path: any, component: any) => {
             
                 <div className="mb-3 mt-1">
                 {data.map((item: any, index: any) => {
-                    return (
-                      <Sitecomposition
-                        key={index}
-                        props={item}
-                        sitedata={SelectedProp}
-                      />
-                    );
-                  })}
+                  return (
+                    <Sitecomposition
+                      key={index}
+                      props={item}
+                      sitedata={SelectedProp}
+                    />
+                  );
+  return null; // You can also use `null` to represent no rendering in case the condition is not met.
+})}
                 </div>
 
                   <>
