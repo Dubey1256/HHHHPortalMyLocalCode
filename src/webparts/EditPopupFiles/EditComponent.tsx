@@ -3424,7 +3424,7 @@ if(res?.ClientCategory != undefined && res?.ClientCategory?.results?.length >0 )
                         ></TeamConfigurationCard>
                       </div>
                       <div className="row">
-                        <section className="accordionbox">
+                        <section className="accordionbox mt-2">
                           <div className="accordion p-0  overflow-hidden">
                             <div className="card shadow-none mb-2">
                               <div
