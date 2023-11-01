@@ -2901,7 +2901,7 @@ const EditTaskPopup = (Items: any) => {
                     ApprovedGlobalCount++;
                     setSendEmailGlobalCount(sendEmailGlobalCount + 1)
                     if (ApprovedStatusCount == 0) {
-                        if (Status >= 2) {
+                        if (Status >= 2 && Status < 70) {
                             setInputFieldDisable(true)
                             setStatusOnChangeSmartLight(2);
                         }
@@ -2913,7 +2913,7 @@ const EditTaskPopup = (Items: any) => {
                             ApprovedGlobalCount++;
                             setSendEmailGlobalCount(sendEmailGlobalCount + 1)
                             if (ApprovedStatusCount == 0) {
-                                if (Status <= 2) {
+                                if (Status <= 2 && Status < 70) {
                                     setInputFieldDisable(true)
                                     setStatusOnChangeSmartLight(2);
                                 }
