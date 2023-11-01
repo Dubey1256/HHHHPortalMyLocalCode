@@ -1230,7 +1230,31 @@ const SiteCompositionComponent = (Props: any) => {
                                                 <div className="alignCenter">{siteData.BtnStatus ? "%" : ''}</div>
                                             </td>
                                             <td style={{ width: "12%" }}>
-                                                <div className="alignCenter">{ProportionalStatus ? <span>{siteData.BtnStatus && TaskTotalTime ? (TaskTotalTime / selectedSiteCount).toFixed(2) + " h" : siteData.BtnStatus ? "0 h" : null}</span> : <span>{siteData.BtnStatus && TaskTotalTime ? (siteData.ClienTimeDescription ? (siteData.ClienTimeDescription * TaskTotalTime / 100).toFixed(2) + " h" : "0 h") : siteData.BtnStatus ? "0 h" : null}</span>}</div>
+                                                <div className="alignCenter">
+                                                    {
+                                                        ProportionalStatus && !IsProtectedSiteComposition ?
+                                                            <span>
+                                                                {siteData.BtnStatus && TaskTotalTime ?
+                                                                    (TaskTotalTime / selectedSiteCount).toFixed(2) + " h"
+                                                                    : siteData.BtnStatus ?
+                                                                        "0 h"
+                                                                        : null
+                                                                }
+                                                            </span>
+                                                            :
+                                                            <span>
+                                                                {
+                                                                    siteData.BtnStatus && TaskTotalTime ?
+                                                                        (siteData.ClienTimeDescription ? (siteData.ClienTimeDescription * TaskTotalTime / 100).toFixed(2) + " h"
+                                                                            : "0 h")
+                                                                        :
+                                                                        siteData.BtnStatus ? "0 h"
+                                                                            : null
+                                                                }
+                                                            </span>
+                                                    }
+                                                </div>
+                                                {/* <div className="alignCenter">{ProportionalStatus && !IsProtectedSiteComposition ? <span>{siteData.BtnStatus && TaskTotalTime ? (TaskTotalTime / selectedSiteCount).toFixed(2) + " h" : siteData.BtnStatus ? "0 h" : null}</span> : <span>{siteData.BtnStatus && TaskTotalTime ? (siteData.ClienTimeDescription ? (siteData.ClienTimeDescription * TaskTotalTime / 100).toFixed(2) + " h" : "0 h") : siteData.BtnStatus ? "0 h" : null}</span>}</div> */}
                                             </td>
                                             <td className="m-0 p-1 align-middle" style={{ width: "36%" }}>
                                                 {siteData.Title == "EI" ?
@@ -1516,7 +1540,7 @@ const SiteCompositionComponent = (Props: any) => {
                             <div className="">{isPortfolioComposition == true || ProportionalStatus == false ? `${TotalPercent} %` : "100%"}</div>
                         </div>
                         <div className="bg-body col-sm-2 mx-1 p-1 alignCenter">
-                            <div className="">{TaskTotalTime ? TaskTotalTime.toFixed(0) : 0}</div>
+                            <div className="">{TaskTotalTime ? TaskTotalTime.toFixed(2) : 0}</div>
                         </div>
                         <div className="me-1">
                             <button className="btn btn-primary px-4 " onClick={UpdateSiteTaggingAndClientCategory} style={usedFor == 'Task-Profile' ? { display: 'block' } : { display: 'none' }}>

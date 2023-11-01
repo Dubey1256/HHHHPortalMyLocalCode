@@ -5,7 +5,7 @@ let TypeSite: string;
 import { Web } from "sp-pnp-js";
 import * as Moment from "moment";
 import Tooltip from "../../../globalComponents/Tooltip";
-
+import ReactPopperTooltipSingleLevel from "../../../globalComponents/Hierarchy-Popper-tooltipSilgleLevel/Hierarchy-Popper-tooltipSingleLevel";
 import { FaHome, FaPencilAlt } from "react-icons/fa";
 import { IoMdArrowDropright, IoMdArrowDropdown } from "react-icons/io";
 import CommentCard from "../../../globalComponents/Comments/CommentCard";
@@ -369,6 +369,8 @@ let componentDetails: any = [];
 let filterdata: any = [];
 let imageArray: any = [];
 let AllTaskuser:any=[];
+let hoveroverstructureId:any;
+let combinedArray:any=[];
 function getQueryVariable(variable: any) {
   let query = window.location.search.substring(1);
   console.log(query); //"app=article&act=news_content&aid=160990"
@@ -415,7 +417,9 @@ function Portfolio({ SelectedProp,TaskUser }: any) {
   });
 
   const [portfolioTyped, setPortfolioTypeData] = React.useState([]);
-
+  const [myparentData, setParentData] = React.useState([]);
+  const [hoveredId, setHoveredId] = React.useState(null);
+  const [isTooltipOpen, setIsTooltipOpen] = React.useState(false);
   // PortfolioType
 
   const getPortFolioType = async () => {
@@ -515,11 +519,13 @@ function Portfolio({ SelectedProp,TaskUser }: any) {
                 headers: {
                   Accept: "application/json; odata=verbose"
                 },
-                success: function (data) {
+                success: function (mydata) {
                   ParentData=[]
-                  ParentData.push(data?.d?.results[0]);
-                  if (data.d.__next) {
-                    urln = data.d.__next;
+                  ParentData.push(mydata?.d?.results[0]);
+                  combinedArray = [...data, ...ParentData];
+                  setParentData(ParentData)
+                  if (mydata.d.__next) {
+                    urln = mydata.d.__next;
                   } else {
 
                     console.log(ParentData);
@@ -848,6 +854,15 @@ const inlineCallBack = React.useCallback((item: any) => {
  count++;
 }, []);
 
+ if(data[0]?.Item_x0020_Type == "SubComponent"){
+  combinedArray.push(data[0].Parent);
+}else if(data[0]?.Item_x0020_Type == "Component"){
+  combinedArray.push(data[0])
+}
+
+
+
+ 
   return (
     <myContextValue.Provider value={{ ...myContextValue, FunctionCall: contextCall, keyDoc:keydoc, FileDirRef: FileDirRef }}>
     <div className={TypeSite == "Service" ? "serviepannelgreena" : ""}>
@@ -1025,10 +1040,12 @@ const inlineCallBack = React.useCallback((item: any) => {
                         <dt className="bg-fxdark" title="Structure ID ">ID</dt>
                         <dd className="bg-light">
                           <span>
-                            {data.map((item, index) => (
-                             <a title={item?.PortfolioStructureID}>{item?.PortfolioStructureID}</a>
-                             ))}
+                          {data.map((item, index) => (
+
+<ReactPopperTooltipSingleLevel ShareWebId={item?.PortfolioStructureID} row={item} singleLevel={true} masterTaskData={combinedArray} AllSitesTaskData={[]} AllListId={SelectedProp?.NextProp} />
+        ))}
                           </span>
+                          {hoveredId && <span>{hoveredId}</span>}
                         </dd>
                       </dl>
                       <dl>
@@ -1727,15 +1744,13 @@ const inlineCallBack = React.useCallback((item: any) => {
             
                 <div className="mb-3 mt-1">
                 {data.map((item: any, index: any) => {
-  if (item.Sitestagging !== null) {
-    return (
-      <Sitecomposition
-        key={index}
-        props={item}
-        sitedata={SelectedProp}
-      />
-    );
-  }
+                  return (
+                    <Sitecomposition
+                      key={index}
+                      props={item}
+                      sitedata={SelectedProp}
+                    />
+                  );
   return null; // You can also use `null` to represent no rendering in case the condition is not met.
 })}
                 </div>
