@@ -128,7 +128,7 @@ const TimeReport = (props:any) => {
         metadatItem = await web.lists
             .getById(props?.ContextData?.SmartMetadataListID)
             .items
-            .select('Id', 'Title', 'IsVisible', 'ParentID','Color_x0020_Tag','SmartSuggestions', 'TaxType', 'Description1', 'Item_x005F_x0020_Cover', 'listId', 'siteName', 'siteUrl', 'SortOrder', 'SmartFilters', 'Selectable', 'Parent/Id', 'Parent/Title')
+            .select('Id', 'Title', 'IsVisible', 'ParentID', 'SmartSuggestions','Color_x0020_Tag', 'TaxType', 'Description1', 'Item_x005F_x0020_Cover', 'listId', 'siteName', 'siteUrl', 'SortOrder', 'SmartFilters', 'Selectable', 'Parent/Id', 'Parent/Title')
             .top(4999)
             .expand('Parent')
             .get()
@@ -139,7 +139,7 @@ const TimeReport = (props:any) => {
                 smartmetaDetails.push(config)
             }
             if (config.TaxType == 'Client Category') {
-                AllMetadata.push(config) 
+                AllMetadata.push(config)
             }
         })
         await LoadAllSiteTasks();
@@ -1363,11 +1363,7 @@ var ReportDate = new Date(a1)
                 </div>
             </div>
             <div className='row' style={{padding: "0px 2px"}}>
-<<<<<<< HEAD
-                <div className='col-7 showDate ps-0'>
-=======
                 <div className='col-6 showDate ps-0'>
->>>>>>> 7ca284e882f0192654cece807804e6d6262606fa
                     <input type='date' value={Moment(selectdate!= undefined?selectdate:defaultDate).format("YYYY-MM-DD")} max="9999-12-31" className='me-2' onChange={(e) => setSelectDate(e.target.value)} />
                     <label className='SpfxCheckRadio'>
                         <input type="radio" name="Custom" checked={checkedCustom} onClick={() => selectType('Custom')} className="radio" />Custom
