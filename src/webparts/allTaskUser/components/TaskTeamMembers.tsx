@@ -63,7 +63,7 @@ export default class TaskTeamMembers extends Component<ITeamMembersProps, ITeamM
     private _sp: any;
     private _webSerRelURL: any;
     private roleDefId: any
-    private web = new Web('https://hhhhteams.sharepoint.com/sites/HHHH/SP');
+    private web = new Web(this.props.context.pageContext.web.absoluteUrl);
     constructor(props: ITeamMembersProps) {
         super(props);
         this._sp = getSP();
@@ -526,7 +526,7 @@ export default class TaskTeamMembers extends Component<ITeamMembersProps, ITeamM
         }
     }
 
-    taskUsersListId = '9ed5c649-3b4e-42db-a186-778ba43c5c93';
+    taskUsersListId = this.props.taskUsersListId;
     querySelect: string = 'Id,Title,FileLeafRef,File_x0020_Type,Modified,Created,EncodedAbsUrl&$filter=FSObjType eq 1'
     getListItemsInBatch = async (listId: string, querySelect: string, batchSize: number) => {
         const list = sp.web.lists.getById(listId);
@@ -596,7 +596,7 @@ export default class TaskTeamMembers extends Component<ITeamMembersProps, ITeamM
             ItemType: taskItem.itemType
         }
         const newTask = await this.props.spService.createTask(this.props.taskUsersListId, newTaskItem);
-        this.getListItemsInBatch(this.taskUsersListId, this.querySelect, 100) // Use an appropriate batch size
+        this.getListItemsInBatch(this.props.taskUsersListId, this.querySelect, 100) // Use an appropriate batch size
             .then((items) => {
                 console.log(items);
                 let flag = items.filter((i) => i.Title === taskItem.userTitle);
