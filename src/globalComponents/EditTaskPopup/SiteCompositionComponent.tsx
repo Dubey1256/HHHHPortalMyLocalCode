@@ -1230,7 +1230,31 @@ const SiteCompositionComponent = (Props: any) => {
                                                 <div className="alignCenter">{siteData.BtnStatus ? "%" : ''}</div>
                                             </td>
                                             <td style={{ width: "12%" }}>
-                                                <div className="alignCenter">{ProportionalStatus && !IsProtectedSiteComposition ? <span>{siteData.BtnStatus && TaskTotalTime ? (TaskTotalTime / selectedSiteCount).toFixed(2) + " h" : siteData.BtnStatus ? "0 h" : null}</span> : <span>{siteData.BtnStatus && TaskTotalTime ? (siteData.ClienTimeDescription ? (siteData.ClienTimeDescription * TaskTotalTime / 100).toFixed(2) + " h" : "0 h") : siteData.BtnStatus ? "0 h" : null}</span>}</div>
+                                                <div className="alignCenter">
+                                                    {
+                                                        ProportionalStatus && !IsProtectedSiteComposition ?
+                                                            <span>
+                                                                {siteData.BtnStatus && TaskTotalTime ?
+                                                                    (TaskTotalTime / selectedSiteCount).toFixed(2) + " h"
+                                                                    : siteData.BtnStatus ?
+                                                                        "0 h"
+                                                                        : null
+                                                                }
+                                                            </span>
+                                                            :
+                                                            <span>
+                                                                {
+                                                                    siteData.BtnStatus && TaskTotalTime ?
+                                                                        (siteData.ClienTimeDescription ? (siteData.ClienTimeDescription * TaskTotalTime / 100).toFixed(2) + " h"
+                                                                            : "0 h")
+                                                                        :
+                                                                        siteData.BtnStatus ? "0 h"
+                                                                            : null
+                                                                }
+                                                            </span>
+                                                    }
+                                                </div>
+                                                {/* <div className="alignCenter">{ProportionalStatus && !IsProtectedSiteComposition ? <span>{siteData.BtnStatus && TaskTotalTime ? (TaskTotalTime / selectedSiteCount).toFixed(2) + " h" : siteData.BtnStatus ? "0 h" : null}</span> : <span>{siteData.BtnStatus && TaskTotalTime ? (siteData.ClienTimeDescription ? (siteData.ClienTimeDescription * TaskTotalTime / 100).toFixed(2) + " h" : "0 h") : siteData.BtnStatus ? "0 h" : null}</span>}</div> */}
                                             </td>
                                             <td className="m-0 p-1 align-middle" style={{ width: "36%" }}>
                                                 {siteData.Title == "EI" ?

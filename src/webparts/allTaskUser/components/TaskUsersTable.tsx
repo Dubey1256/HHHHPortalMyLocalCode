@@ -42,11 +42,6 @@ function TableTaskUsers(props: ITableTaskUsersProps) {
   })
   const columns = React.useMemo<ColumnDef<ITaskUser, any>[]>(
     () => [{
-      // cell: ({ row }: any) => (
-      //   <>
-      //     <img src={`${row.original.Item_x0020_Cover != null && row.original.Item_x0020_Cover.Url != null ? row.original.Item_x0020_Cover.Url : 'https://hhhhteams.sharepoint.com/sites/HHHH/GmBH/SiteCollectionImages/ICONS/32/icon_user.jpg'}`} className="workmember" />
-      //   </>
-      // ),
       accessorFn: '',
       canSort: false,
       placeholder: '',
