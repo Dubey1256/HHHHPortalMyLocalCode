@@ -414,7 +414,7 @@ export class TeamConfigurationCard extends React.Component<ITeamConfigurationPro
         return (
             <>
                 <div className="col">
-                    <div className="col bg-ee p-1 border">
+                    <div className="col bg-ee px-1 border">
                         <div ng-if="teamUserExpanded" className="alignCenter justify-content-between align-items-center commonheader" ng-click="forCollapse()">
                             <span className='alignCenter'>
                                 {this.state.TeamUserExpended ?
@@ -525,7 +525,7 @@ export class TeamConfigurationCard extends React.Component<ITeamConfigurationPro
                                         onDrop={(e) => this.onDropTeam1(e, this.state.AssignedToUsers, 'Assigned User', this.state.taskUsers, 'Assigned User')}
                                         onDragOver={(e) => e.preventDefault()}>
                                         <div className="working-box p-1" >
-                                            <div className='d-flex flex-wrap' data-placeholder="Working Members" style={{ minHeight: "30px", height: 'auto' }}>
+                                            <div className='d-flex flex-wrap' data-placeholder="Working Members">
                                                 {this.state.AssignedToUsers && this.state.AssignedToUsers.map((image: any, index: number) => {
                                                     return <img
                                                         className="ProirityAssignedUserPhoto"

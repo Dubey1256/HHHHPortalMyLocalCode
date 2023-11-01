@@ -396,7 +396,17 @@ const CreateActivity = (props: any) => {
         setSharewebCategory(item);
     };
     //-------- Edit client categrory and categrioes open popup  fuction end ------------
-
+    const findUserByName = (Id: any) => {
+        const user = AllTaskUsers.filter((user: any) => user?.AssingedToUser?.Id == Id);
+        let Image: any;
+        if (user[0]?.Item_x0020_Cover != undefined) {
+          Image = user[0].Item_x0020_Cover.Url;
+        } else {
+          Image =
+            "https://hhhhteams.sharepoint.com/sites/HHHH/PublishingImages/Portraits/icon_user.jpg";
+        }
+        return user ? Image : null;
+      };
 
     //-------------------- save function  start ---------------------
     const saveNoteCall = () => {
@@ -630,8 +640,11 @@ const CreateActivity = (props: any) => {
                                         TeamMembers: TaskTeamMembers,
                                         TeamLeader: TaskResponsibleTeam,
                                         Author: {
-                                            Id: props?.context?.pageContext?.legacyPageContext?.userId
-                                        }
+                                            Id: props?.context?.pageContext?.legacyPageContext?.userId,
+                                            autherImage:  findUserByName(props?.context?.pageContext?.legacyPageContext?.userId)
+                                        },
+                                        
+
 
                                     }
                                 }
@@ -833,6 +846,7 @@ const CreateActivity = (props: any) => {
                                     listId: site?.listId,
                                     SiteIcon: site?.Item_x005F_x0020_Cover?.Url,
                                     ResponsibleTeam: TaskResponsibleTeam,
+                                    Item_x0020_Type: 'Task',
                                     FeedBack:
                                     FeedbackPost?.length > 0
                                         ? JSON.stringify(FeedbackPost)
@@ -840,7 +854,8 @@ const CreateActivity = (props: any) => {
                                     TeamMembers: TaskTeamMembers,
                                     TeamLeader: TaskResponsibleTeam,
                                     Author: {
-                                        Id: props?.context?.pageContext?.legacyPageContext?.userId
+                                        Id: props?.context?.pageContext?.legacyPageContext?.userId,
+                                        autherImage:  findUserByName(props?.context?.pageContext?.legacyPageContext?.userId)
                                     },
                                     ParentTask: selectedItem,
                                     TaskType: {
@@ -853,14 +868,7 @@ const CreateActivity = (props: any) => {
                                         if (item?.FeedBack != undefined) {
                                     let DiscriptionSearchData: any = '';
                                     let feedbackdata: any =JSON.parse(item?.FeedBack);
-                                    DiscriptionSearchData = feedbackdata[0]?.FeedBackDescriptions?.map((child: any) => {
-                                        const childText = child?.Title?.replace(/(<([^>]+)>)/gi, '')?.replace(/\n/g, '');
-                                        const subtextText = (child?.Subtext || [])?.map((elem: any) =>
-                                            elem.Title?.replace(/(<([^>]+)>)/gi, '')?.replace(/\n/g, '')
-                                        ).join('');
-                                        return childText + subtextText;
-                                    }).join('');
-                                    item.descriptionsSearch = DiscriptionSearchData
+                                    DiscriptionSearchData = globalCommon.descriptionSearchData(feedbackdata)
                                 }
                                 item.TaskID = globalCommon?.GetTaskId(item);
                                 if (categoriesItem?.indexOf('Immediate') > -1 || categoriesItem?.indexOf("Email Notification") > -1) {

@@ -19,18 +19,7 @@ import {
   FaCompressArrowsAlt,
 } from "react-icons/fa";
 import {
-  Column,
-  Table,
-  ExpandedState,
-  useReactTable,
-  getCoreRowModel,
-  getFilteredRowModel,
-  getExpandedRowModel,
   ColumnDef,
-  flexRender,
-  getSortedRowModel,
-  SortingState,
-  ColumnFiltersState,
 } from "@tanstack/react-table";
 
 import PortfolioStructureCreationCard from '../../../globalComponents/tableControls/PortfolioStructureCreation';
@@ -59,50 +48,7 @@ let finalData: any = [];
 let childRefdata: any;
 let TasksItem: any = [];
 let AllTasksData :any=[];
-function IndeterminateCheckbox(
-  {
-    indeterminate,
-    className = "",
-    ...rest
-  }: { indeterminate?: boolean } & React.HTMLProps<HTMLInputElement>) {
-  const ref = React.useRef<HTMLInputElement>(null!);
-  React.useEffect(() => {
-    if (typeof indeterminate === "boolean") {
-      ref.current.indeterminate = !rest.checked && indeterminate;
-    }
-  }, [ref, indeterminate]);
-  return (
-    <input
-      type="checkbox"
-      ref={ref}
-      className={className + "cursor-pointer form-check-input me-1 "}
-      {...rest}
-    />
-  );
-}
-function Filter({
-  column,
-  table,
-  placeholder
-}: {
-  column: Column<any, any>;
-  table: Table<any>;
-  placeholder: any
-}): any {
-  const columnFilterValue = column.getFilterValue();
 
-  return (
-    <input style={{ width: "100%" }} className="me-1 mb-1 mt-1 on-search-cross form-control "
-
-      title={placeholder?.placeholder}
-      type="search"
-      value={(columnFilterValue ?? "") as string}
-      onChange={(e) => column.setFilterValue(e.target.value)}
-      placeholder={`${placeholder?.placeholder}`}
-
-    />
-  );
-}
 function TasksTable(props: any) {
   const childRef = React.useRef<any>();
   if (childRef != null) {
@@ -110,11 +56,6 @@ function TasksTable(props: any) {
 
   }
   const [loaded, setLoaded] = React.useState(true);
-  const [sorting, setSorting] = React.useState<SortingState>([]);
-  const [expanded, setExpanded] = React.useState<ExpandedState>({});
-
-  const [rowSelection, setRowSelection] = React.useState({});
-  const [columnFilters, setColumnFilters] = React.useState<ColumnFiltersState>([]);
   const [data, setData] = React.useState([]);
   finalData = data;
   const refreshData = () => setData(() => finalData);
@@ -295,6 +236,10 @@ function TasksTable(props: any) {
                       ""
                     );
                   }
+               
+                             if (result.Author) {
+                                result.Author.autherImage = findUserByName(result.Author?.Id)
+                            }
                   result.DisplayCreateDate = moment(result.Created).format("DD/MM/YYYY");
                   result.PercentComplete = (
                     result.PercentComplete * 100
@@ -303,13 +248,7 @@ function TasksTable(props: any) {
                   if (result?.FeedBack != undefined) {
                     let DiscriptionSearchData: any = '';
                     let feedbackdata: any = JSON.parse(result?.FeedBack)
-                    DiscriptionSearchData = feedbackdata[0]?.FeedBackDescriptions?.map((child: any) => {
-                        const childText = child?.Title?.replace(/(<([^>]+)>)/gi, '')?.replace(/\n/g, '');
-                        const subtextText = (child?.Subtext || [])?.map((elem: any) =>
-                            elem.Title?.replace(/(<([^>]+)>)/gi, '')?.replace(/\n/g, '')
-                        ).join('');
-                        return childText + subtextText;
-                    }).join('');
+                    DiscriptionSearchData = globalCommon.descriptionSearchData(feedbackdata)
                     result.descriptionsSearch = DiscriptionSearchData
                 }
 
@@ -491,7 +430,6 @@ function TasksTable(props: any) {
   const Call = React.useCallback((childItem: any) => {
     AllTasksRendar = [];
     setIsTask(false);
-    setRowSelection({});
     setMeetingPopup(false);
     setWSPopup(false);
     MeetingItems = []
@@ -836,7 +774,7 @@ function TasksTable(props: any) {
                       target="_blank"
                       data-interception="off"
                     >
-                      <img title={row?.original?.Author?.Title} className="workmember ms-1" src={findUserByName(row?.original?.Author?.Id)} />
+                      <img title={row?.original?.Author?.Title} className="workmember ms-1" src={(row?.original?.autherImage)} />
                     </a>
                   </>
                 ) : (
@@ -918,33 +856,7 @@ function TasksTable(props: any) {
     ],
     [data]
   );
-  const table: any = useReactTable({
-    data,
-    columns,
-    state: {
-      columnFilters,
-      expanded,
-      sorting,
-      rowSelection,
-    },
-    onColumnFiltersChange: setColumnFilters,
-    onSortingChange: setSorting,
-    onExpandedChange: setExpanded,
-    getSubRows: (row) => row.subRows,
-    onRowSelectionChange: setRowSelection,
-    getCoreRowModel: getCoreRowModel(),
-    getFilteredRowModel: getFilteredRowModel(),
-    getExpandedRowModel: getExpandedRowModel(),
-    getSortedRowModel: getSortedRowModel(),
-    debugTable: true,
-    filterFromLeafRows: true,
-    enableSubRowSelection: false,
-    filterFns: undefined
-  });
-
-
-
-
+ 
 
   const RestruringCloseCall = () => {
     setResturuningOpen(false);
@@ -1015,40 +927,8 @@ function TasksTable(props: any) {
   };
 
 
-  React.useEffect(() => {
-    CheckDataPrepre()
-  }, [table?.getSelectedRowModel()?.flatRows?.length])
 
-  const CheckDataPrepre = () => {
-    if (table?.getSelectedRowModel()?.flatRows?.length) {
-      let eTarget = false;
-      let itrm: any;
-      if (table?.getSelectedRowModel()?.flatRows?.length > 0) {
-        table?.getSelectedRowModel()?.flatRows?.map((value: any) => {
-          value.original.Id = value.original.ID
-          itrm = value.original;
-          if (value?.getCanSelect() == true) {
-            eTarget = true
-          } else {
-            eTarget = false
-          }
-        });
-      }
 
-    } else {
-
-      setcheckData(null)
-
-    }
-
-  }
-  React.useEffect(() => {
-    if (table.getState().columnFilters?.length) {
-      setExpanded(true);
-    } else {
-      setExpanded({});
-    }
-  }, [table.getState().columnFilters]);
   const callBackData = React.useCallback((checkData: any) => {
     let array: any = [];
     if (checkData != undefined) {
