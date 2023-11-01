@@ -426,6 +426,9 @@ const ProjectManagementMain = (props: any) => {
             if (items?.TaskCategories?.length > 0) {
               items.TaskTypeValue = items?.TaskCategories?.map((val: any) => val.Title).join(",")
             }
+            if(items?.TaskCategories?.length > 0){
+              items.Categories = items.TaskTypeValue;
+            }
             items.AllTeamMember = [];
             items.HierarchyData = [];
             items.descriptionsSearch = '';
@@ -783,7 +786,16 @@ const ProjectManagementMain = (props: any) => {
         accessorFn: (row) => row?.TaskTypeValue,
         cell: ({ row }) => (
           <>
-            <span className="columnFixedTaskCate"><span title={row?.original?.TaskTypeValue} className="text-content">{row?.original?.TaskTypeValue}</span></span>
+           <span>
+            <InlineEditingcolumns
+              AllListId={AllListId}
+              callBack={inlineCallBack}
+              columnName='TaskCategories'
+              item={row?.original}
+              TaskUsers={AllUser}
+              pageName={'ProjectManagment'}
+            />
+          </span>
           </>
         ),
         placeholder: "Task Type",
@@ -1028,15 +1040,8 @@ const ProjectManagementMain = (props: any) => {
     setMasterdata(projectData);
     setData(displayTasks);
   };
-// callback smart note function 
-  const updateCallBack=(items:any)=>{
-    if(items=='update'){
-      loadAllSmartInformation();
-      LoadAllSiteTasks();
-    }
 
-  }
-  // End
+
   return (
     <div>
       {QueryId != "" ? (
@@ -1367,7 +1372,6 @@ const ProjectManagementMain = (props: any) => {
             setRemark={setRemark}
             editSmartInfo={editSmartInfo}
             RemarkData={remarkData}
-            callSmartInformation={(Type: any) => { updateCallBack(Type) }}
           />}
           {IsTaggedCompTask && (
             <TaggedComponentTask projectItem={Masterdata} SelectedItem={SelectedItem} createComponent={createTaskId} SelectedProp={props?.props} AllSitesTaskData={AllSitesAllTasks} context={props?.props?.Context} MasterListData={MasterListData} AllListId={AllListId} AllUser={AllUser} callBack={tagAndCreateCallBack}

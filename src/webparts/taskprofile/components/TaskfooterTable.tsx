@@ -19,18 +19,7 @@ import {
   FaCompressArrowsAlt,
 } from "react-icons/fa";
 import {
-  Column,
-  Table,
-  ExpandedState,
-  useReactTable,
-  getCoreRowModel,
-  getFilteredRowModel,
-  getExpandedRowModel,
   ColumnDef,
-  flexRender,
-  getSortedRowModel,
-  SortingState,
-  ColumnFiltersState,
 } from "@tanstack/react-table";
 
 import PortfolioStructureCreationCard from '../../../globalComponents/tableControls/PortfolioStructureCreation';
@@ -59,50 +48,7 @@ let finalData: any = [];
 let childRefdata: any;
 let TasksItem: any = [];
 let AllTasksData :any=[];
-function IndeterminateCheckbox(
-  {
-    indeterminate,
-    className = "",
-    ...rest
-  }: { indeterminate?: boolean } & React.HTMLProps<HTMLInputElement>) {
-  const ref = React.useRef<HTMLInputElement>(null!);
-  React.useEffect(() => {
-    if (typeof indeterminate === "boolean") {
-      ref.current.indeterminate = !rest.checked && indeterminate;
-    }
-  }, [ref, indeterminate]);
-  return (
-    <input
-      type="checkbox"
-      ref={ref}
-      className={className + "cursor-pointer form-check-input me-1 "}
-      {...rest}
-    />
-  );
-}
-function Filter({
-  column,
-  table,
-  placeholder
-}: {
-  column: Column<any, any>;
-  table: Table<any>;
-  placeholder: any
-}): any {
-  const columnFilterValue = column.getFilterValue();
 
-  return (
-    <input style={{ width: "100%" }} className="me-1 mb-1 mt-1 on-search-cross form-control "
-
-      title={placeholder?.placeholder}
-      type="search"
-      value={(columnFilterValue ?? "") as string}
-      onChange={(e) => column.setFilterValue(e.target.value)}
-      placeholder={`${placeholder?.placeholder}`}
-
-    />
-  );
-}
 function TasksTable(props: any) {
   const childRef = React.useRef<any>();
   if (childRef != null) {
@@ -110,11 +56,6 @@ function TasksTable(props: any) {
 
   }
   const [loaded, setLoaded] = React.useState(true);
-  const [sorting, setSorting] = React.useState<SortingState>([]);
-  const [expanded, setExpanded] = React.useState<ExpandedState>({});
-
-  const [rowSelection, setRowSelection] = React.useState({});
-  const [columnFilters, setColumnFilters] = React.useState<ColumnFiltersState>([]);
   const [data, setData] = React.useState([]);
   finalData = data;
   const refreshData = () => setData(() => finalData);
@@ -182,14 +123,14 @@ function TasksTable(props: any) {
 
   const loadActivityTasks = async (task: any) => {
     let activity: any = [];
-    var select = "TaskLevel,ParentTask/Title,ParentTask/Id,ClientTime,TaskLevel,ItemRank,PortfolioType/Id,PortfolioType/Title,PortfolioType/Color,TimeSpent,BasicImageInfo,CompletedDate,TaskID, ResponsibleTeam/Id,ResponsibleTeam/Title,TaskCategories/Id,TaskCategories/Title,ParentTask/TaskID,TaskType/Id,TaskType/Title,TaskType/Level, PriorityRank, TeamMembers/Title, TeamMembers/Name, Portfolio/Id,Portfolio/Title,Portfolio/PortfolioStructureID, TeamMembers/Id, Item_x002d_Image,ComponentLink,IsTodaysTask,AssignedTo/Title,AssignedTo/Name,AssignedTo/Id,  ClientCategory/Id, ClientCategory/Title, FileLeafRef, FeedBack, Title, Id, PercentComplete,StartDate, DueDate, Comments, Categories, Status, Body, Mileage,PercentComplete,ClientCategory,Priority,Created,Modified,Author/Id,Author/Title,Editor/Id,Editor/Title&$expand=ParentTask,Portfolio,TaskType,AssignedTo,ClientCategory,Author,Editor,TeamMembers,PortfolioType,ResponsibleTeam,TaskCategories&$filter=Id eq " + task.ParentTask.Id + ""
+    var select = "TaskLevel,ParentTask/Title,ParentTask/Id,ClientTime,TaskLevel,ItemRank,TimeSpent,BasicImageInfo,CompletedDate,TaskID, ResponsibleTeam/Id,ResponsibleTeam/Title,TaskCategories/Id,TaskCategories/Title,ParentTask/TaskID,TaskType/Id,TaskType/Title,TaskType/Level, PriorityRank, TeamMembers/Title, TeamMembers/Name, Portfolio/Id,Portfolio/Title,Portfolio/PortfolioStructureID, TeamMembers/Id, Item_x002d_Image,ComponentLink,IsTodaysTask,AssignedTo/Title,AssignedTo/Name,AssignedTo/Id,  ClientCategory/Id, ClientCategory/Title, FileLeafRef, FeedBack, Title, Id, PercentComplete,StartDate, DueDate, Comments, Categories, Status, Body, Mileage,PercentComplete,ClientCategory,Priority,Created,Modified,Author/Id,Author/Title,Editor/Id,Editor/Title&$expand=ParentTask,Portfolio,TaskType,AssignedTo,ClientCategory,Author,Editor,TeamMembers,ResponsibleTeam,TaskCategories&$filter=Id eq " + task.ParentTask.Id + ""
     activity = await globalCommon.getData(props?.AllListId?.siteUrl, task.listId, select)
     if (activity?.length > 0)
       GetComponents(activity[0])
     LoadAllSiteTasks(filter);
   }
   const loadWSTasks = async (task: any) => {
-    var select = "TaskLevel,ParentTask/Title,ParentTask/Id,ClientTime,TaskLevel,ItemRank,PortfolioType/Id,PortfolioType/Title,PortfolioType/Color,TimeSpent,BasicImageInfo,CompletedDate,TaskID, ResponsibleTeam/Id,ResponsibleTeam/Title,TaskCategories/Id,TaskCategories/Title,ParentTask/TaskID,TaskType/Id,TaskType/Title,TaskType/Level, PriorityRank, TeamMembers/Title, TeamMembers/Name, Portfolio/Id,Portfolio/Title,Portfolio/PortfolioStructureID, TeamMembers/Id, Item_x002d_Image,ComponentLink,IsTodaysTask,AssignedTo/Title,AssignedTo/Name,AssignedTo/Id,  ClientCategory/Id, ClientCategory/Title, FileLeafRef, FeedBack, Title, Id, PercentComplete,StartDate, DueDate, Comments, Categories, Status, Body, Mileage,PercentComplete,ClientCategory,Priority,Created,Modified,Author/Id,Author/Title,Editor/Id,Editor/Title&$expand=ParentTask,Portfolio,TaskType,AssignedTo,ClientCategory,Author,Editor,TeamMembers,PortfolioType,ResponsibleTeam,TaskCategories&$filter=ParentTask/Id eq " + task.Id + ""
+    var select = "TaskLevel,ParentTask/Title,ParentTask/Id,ClientTime,TaskLevel,ItemRank,TimeSpent,BasicImageInfo,CompletedDate,TaskID, ResponsibleTeam/Id,ResponsibleTeam/Title,TaskCategories/Id,TaskCategories/Title,ParentTask/TaskID,TaskType/Id,TaskType/Title,TaskType/Level, PriorityRank, TeamMembers/Title, TeamMembers/Name, Portfolio/Id,Portfolio/Title,Portfolio/PortfolioStructureID, TeamMembers/Id, Item_x002d_Image,ComponentLink,IsTodaysTask,AssignedTo/Title,AssignedTo/Name,AssignedTo/Id,  ClientCategory/Id, ClientCategory/Title, FileLeafRef, FeedBack, Title, Id, PercentComplete,StartDate, DueDate, Comments, Categories, Status, Body, Mileage,PercentComplete,ClientCategory,Priority,Created,Modified,Author/Id,Author/Title,Editor/Id,Editor/Title&$expand=ParentTask,Portfolio,TaskType,AssignedTo,ClientCategory,Author,Editor,TeamMembers,ResponsibleTeam,TaskCategories&$filter=ParentTask/Id eq " + task.Id + ""
     // var select = "TaskLevel,ParentTask/Title,ParentTask/Id,Services/Title,ClientTime,TaskLevel,Services/Id,Events/Id,Events/Title,ItemRank,Portfolio_x0020_Type,TimeSpent,BasicImageInfo,CompletedDate,TaskID, ResponsibleTeam/Id,ResponsibleTeam/Title,TaskCategories/Id,TaskCategories/Title,ParentTask/TaskID,TaskType/Id,TaskType/Title,TaskType/Level, PriorityRank, TeamMembers/Title, TeamMembers/Name, Component/Id,Component/Title,Component/Item_x0020_Type, TeamMembers/Id, Item_x002d_Image,ComponentLink,IsTodaysTask,AssignedTo/Title,AssignedTo/Name,AssignedTo/Id,  ClientCategory/Id, ClientCategory/Title, FileLeafRef, FeedBack, Title, Id, PercentComplete,StartDate, DueDate, Comments, Categories, Status, Body, Mileage,PercentComplete,ClientCategory,Priority,Created,Modified,Author/Id,Author/Title,Editor/Id,Editor/Title&$expand=ParentTask,Events,Services,TaskType,AssignedTo,Component,ClientCategory,Author,Editor,TeamMembers,ResponsibleTeam,TaskCategories&$filter=ParentTask/Id eq " + task.Id + ""
     AllWSTasks = await globalCommon.getData(props?.AllListId?.siteUrl, task.listId, select)
     if (AllWSTasks?.length === 0)
@@ -239,7 +180,7 @@ function TasksTable(props: any) {
       const batch = sp.createBatch();
       for (let i = 0; i < siteConfig?.length; i++) {
         const config = siteConfig[i];
-        var select = "TaskLevel,ParentTask/Title,ParentTask/Id,ClientTime,PriorityRank,SiteCompositionSettings,TaskLevel,ItemRank,Project/Id,Project/PortfolioStructureID, Project/Title,PortfolioType/Id,PortfolioType/Title,PortfolioType/Color,TimeSpent,BasicImageInfo,CompletedDate,TaskID, ResponsibleTeam/Id,ResponsibleTeam/Title,TaskCategories/Id,TaskCategories/Title,ParentTask/TaskID,TaskType/Id,TaskType/Title,TaskType/Level, PriorityRank, TeamMembers/Title, TeamMembers/Name, Portfolio/Id,Portfolio/Title,Portfolio/PortfolioStructureID, TeamMembers/Id, Item_x002d_Image,ComponentLink,IsTodaysTask,AssignedTo/Title,AssignedTo/Name,AssignedTo/Id,  ClientCategory/Id, ClientCategory/Title, FileLeafRef, FeedBack, Title, Id, PercentComplete,StartDate, DueDate, Comments, Categories, Status, Body, Mileage,PercentComplete,ClientCategory,Priority,Created,Modified,Author/Id,Author/Title,Editor/Id,Editor/Title&$expand=ParentTask,Project,Portfolio,TaskType,AssignedTo,ClientCategory,Author,Editor,TeamMembers,PortfolioType,ResponsibleTeam,TaskCategories&$filter=" + filter + ""
+        var select = "TaskLevel,ParentTask/Title,ParentTask/Id,ClientTime,PriorityRank,SiteCompositionSettings,TaskLevel,ItemRank,Project/Id,Project/PortfolioStructureID, Project/Title,TimeSpent,BasicImageInfo,CompletedDate,TaskID, ResponsibleTeam/Id,ResponsibleTeam/Title,TaskCategories/Id,TaskCategories/Title,ParentTask/TaskID,TaskType/Id,TaskType/Title,TaskType/Level, PriorityRank, TeamMembers/Title, TeamMembers/Name, Portfolio/Id,Portfolio/Title,Portfolio/PortfolioStructureID, TeamMembers/Id, Item_x002d_Image,ComponentLink,IsTodaysTask,AssignedTo/Title,AssignedTo/Name,AssignedTo/Id,  ClientCategory/Id, ClientCategory/Title, FileLeafRef, FeedBack, Title, Id, PercentComplete,StartDate, DueDate, Comments, Categories, Status, Body, Mileage,PercentComplete,ClientCategory,Priority,Created,Modified,Author/Id,Author/Title,Editor/Id,Editor/Title&$expand=ParentTask,Project,Portfolio,TaskType,AssignedTo,ClientCategory,Author,Editor,TeamMembers,ResponsibleTeam,TaskCategories&$filter=" + filter + ""
 
         const web = new Web(props?.AllListId?.siteUrl);
         const list = web.lists.getById(config.listId);
@@ -303,13 +244,7 @@ function TasksTable(props: any) {
                   if (result?.FeedBack != undefined) {
                     let DiscriptionSearchData: any = '';
                     let feedbackdata: any = JSON.parse(result?.FeedBack)
-                    DiscriptionSearchData = feedbackdata[0]?.FeedBackDescriptions?.map((child: any) => {
-                        const childText = child?.Title?.replace(/(<([^>]+)>)/gi, '')?.replace(/\n/g, '');
-                        const subtextText = (child?.Subtext || [])?.map((elem: any) =>
-                            elem.Title?.replace(/(<([^>]+)>)/gi, '')?.replace(/\n/g, '')
-                        ).join('');
-                        return childText + subtextText;
-                    }).join('');
+                    DiscriptionSearchData = globalCommon.descriptionSearchData(feedbackdata)
                     result.descriptionsSearch = DiscriptionSearchData
                 }
 
@@ -491,7 +426,6 @@ function TasksTable(props: any) {
   const Call = React.useCallback((childItem: any) => {
     AllTasksRendar = [];
     setIsTask(false);
-    setRowSelection({});
     setMeetingPopup(false);
     setWSPopup(false);
     MeetingItems = []
@@ -918,33 +852,7 @@ function TasksTable(props: any) {
     ],
     [data]
   );
-  const table: any = useReactTable({
-    data,
-    columns,
-    state: {
-      columnFilters,
-      expanded,
-      sorting,
-      rowSelection,
-    },
-    onColumnFiltersChange: setColumnFilters,
-    onSortingChange: setSorting,
-    onExpandedChange: setExpanded,
-    getSubRows: (row) => row.subRows,
-    onRowSelectionChange: setRowSelection,
-    getCoreRowModel: getCoreRowModel(),
-    getFilteredRowModel: getFilteredRowModel(),
-    getExpandedRowModel: getExpandedRowModel(),
-    getSortedRowModel: getSortedRowModel(),
-    debugTable: true,
-    filterFromLeafRows: true,
-    enableSubRowSelection: false,
-    filterFns: undefined
-  });
-
-
-
-
+ 
 
   const RestruringCloseCall = () => {
     setResturuningOpen(false);
@@ -1015,40 +923,8 @@ function TasksTable(props: any) {
   };
 
 
-  React.useEffect(() => {
-    CheckDataPrepre()
-  }, [table?.getSelectedRowModel()?.flatRows?.length])
 
-  const CheckDataPrepre = () => {
-    if (table?.getSelectedRowModel()?.flatRows?.length) {
-      let eTarget = false;
-      let itrm: any;
-      if (table?.getSelectedRowModel()?.flatRows?.length > 0) {
-        table?.getSelectedRowModel()?.flatRows?.map((value: any) => {
-          value.original.Id = value.original.ID
-          itrm = value.original;
-          if (value?.getCanSelect() == true) {
-            eTarget = true
-          } else {
-            eTarget = false
-          }
-        });
-      }
 
-    } else {
-
-      setcheckData(null)
-
-    }
-
-  }
-  React.useEffect(() => {
-    if (table.getState().columnFilters?.length) {
-      setExpanded(true);
-    } else {
-      setExpanded({});
-    }
-  }, [table.getState().columnFilters]);
   const callBackData = React.useCallback((checkData: any) => {
     let array: any = [];
     if (checkData != undefined) {

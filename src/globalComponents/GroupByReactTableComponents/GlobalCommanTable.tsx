@@ -756,12 +756,12 @@ const GlobalCommanTable = (items: any, ref: any) => {
         <>
             {showHeader === true && <div className='tbl-headings justify-content-between fixed-Header top-0' style={{ background: '#e9e9e9' }}>
                 <span className='leftsec'>
-                    {showingAllPortFolioCount === true ? <div className='alignCenter mt--2'>
+                {showingAllPortFolioCount === true ? <div className='alignCenter mt--2'>
                         <label>
                             <label style={{ color: `${portfolioColor}` }}>
                                 Showing
                             </label>
-                            {portfolioTypeData.map((type: any, index: any) => {
+                            {portfolioTypeData?.map((type: any, index: any) => {
                                 return (
                                     <>
                                         {isShowingDataAll === true ? <><label className='ms-1' style={{ color: `${portfolioColor}` }}>{` ${type[type.Title + 'numberCopy']} `} of {" "} </label> <label style={{ color: `${portfolioColor}` }} className='ms-0'>{` ${type[type.Title + 'number']} `}</label><label style={{ color: `${portfolioColor}` }} className='ms-1'>{" "} {type.Title}</label>{index < type.length - 1 && <label style={{ color: `${portfolioColor}` }} className="ms-1"> | </label>}</> :
@@ -770,13 +770,13 @@ const GlobalCommanTable = (items: any, ref: any) => {
                                 )
                             })}
                         </label>
-                        <span className="popover__wrapper ms-1 mt--5" style={{ position: "unset" }} data-bs-toggle="tooltip" data-bs-placement="auto">
+                        {!items?.pageName ? <span className="popover__wrapper ms-1 mt--5" style={{ position: "unset" }} data-bs-toggle="tooltip" data-bs-placement="auto">
                             <span className='svg__iconbox svg__icon--info alignIcon dark mt--2'></span>
                             <span className="popover__content mt-3 m-3 mx-3" style={{ zIndex: 100 }}>
                                 <label style={{ color: `${portfolioColor}` }}>
                                     Showing
                                 </label>
-                                {portfolioTypeData.map((type: any, index: any) => {
+                                {portfolioTypeData?.map((type: any, index: any) => {
                                     return (
                                         <>
                                             {isShowingDataAll === true ? <><label className='ms-1' style={{ color: `${portfolioColor}` }}>{` ${type[type.Title + 'numberCopy']} `} of {" "} </label> <label style={{ color: `${portfolioColor}` }} className='ms-0'>{` ${type[type.Title + 'number']} `}</label><label style={{ color: `${portfolioColor}` }} className='ms-1'>{" "} {type.Title}</label><label style={{ color: `${portfolioColor}` }} className="ms-1"> | </label></> :
@@ -793,7 +793,20 @@ const GlobalCommanTable = (items: any, ref: any) => {
                                     )
                                 })}
                             </span>
-                        </span>
+                        </span> :
+                            <>
+                                <div className='alignCenter mt--2'>
+                                    {items?.taskTypeDataItem?.map((type: any, index: any) => {
+                                        return (
+                                            <>
+                                                {isShowingDataAll === true ? <><label className='ms-1' style={{ color: `${portfolioColor}` }}>{` ${type[type.Title + 'numberCopy']} `} of {" "} </label> <label style={{ color: `${portfolioColor}` }} className='ms-0'>{` ${type[type.Title + 'number']} `}</label><label style={{ color: `${portfolioColor}` }} className='ms-1'>{" "} {type.Title}</label>{index < items?.taskTypeDataItem?.length - 1 && <label style={{ color: `${portfolioColor}` }} className="ms-1"> | </label>}</> :
+                                                    <><label className='ms-1' style={{ color: `${portfolioColor}` }}>{` ${type[type.Title + 'filterNumber']} `} of {" "} </label> <label style={{ color: `${portfolioColor}` }} className='ms-0'>{` ${type[type.Title + 'number']} `}</label><label style={{ color: `${portfolioColor}` }} className='ms-1'>{" "} {type.Title}</label>{index < items?.taskTypeDataItem?.length - 1 && <label style={{ color: `${portfolioColor}` }} className="ms-1"> | </label>}</>}
+                                            </>
+                                        )
+                                    })}
+                                </div>
+                            </>}
+
                     </div> :
                         <span style={{ color: `${portfolioColor}` }} className='Header-Showing-Items'>{`Showing ${table?.getFilteredRowModel()?.rows?.length} of ${items?.catogryDataLength ? items?.catogryDataLength : data?.length}`}</span>}
                     <span className="mx-1">{items?.showDateTime}</span>

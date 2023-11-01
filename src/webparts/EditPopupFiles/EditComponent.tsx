@@ -371,9 +371,6 @@ function EditInstitution({ item, SelectD, Calls, usedFor }: any) {
         "Reference_x0020_Item_x0020_Json",
         "TeamMembers/Title",
         "TeamMembers/Name",
-        "Component/Id",
-        "Component/Title",
-        "Component/ItemType",
         "TeamMembers/Id",
         "Item_x002d_Image",
         "ComponentLink",
@@ -418,7 +415,6 @@ function EditInstitution({ item, SelectD, Calls, usedFor }: any) {
       .expand(
         "ClientCategory",
         "AssignedTo",
-        "Component",
         "ComponentPortfolio",
         "ServicePortfolio",
         "AttachmentFiles",
@@ -3428,7 +3424,7 @@ if(res?.ClientCategory != undefined && res?.ClientCategory?.results?.length >0 )
                         ></TeamConfigurationCard>
                       </div>
                       <div className="row">
-                        <section className="accordionbox">
+                        <section className="accordionbox mt-2">
                           <div className="accordion p-0  overflow-hidden">
                             <div className="card shadow-none mb-2">
                               <div

@@ -283,16 +283,11 @@ const AddCommentComponent = (FbData: any) => {
                                                     <span className="font-weight-normal">
                                                         {commentDtl.AuthorName} - {commentDtl.Created}
                                                     </span>
-                                                    <span className="align-baseline d-flex">
-                                                        <a className="ps-1" title="Comment Reply" >
-                                                            <div data-toggle="tooltip" id={buttonId + "-" + index}
-                                                                onClick={() => OpenCallOutFunction(index)}
-                                                                data-placement="bottom">
-                                                               <span className="svg__iconbox svg__icon--reply"></span>
-                                                            </div>
-                                                        </a>
-                                                        <a className="ps-1" title="Edit Comment" onClick={() => openEditModal(commentDtl.Title, index, FbData?.index, false, "ParentComment")}><span className="svg__iconbox svg__icon--editBox"></span></a>
-                                                        <a className="ps-1" title="Delete Comment" onClick={() => clearComment(true, index, FbData?.index)}><span className="svg__icon--trash svg__iconbox"></span></a>
+                                                    <span className="alignCenter">
+                                                        <span title="Comment Reply" data-toggle="tooltip" id={buttonId + "-" + index}
+                                                            onClick={() => OpenCallOutFunction(index)} data-placement="bottom" className="hreflink ps-1 svg__iconbox svg__icon--reply"></span>
+                                                        <span title="Edit Comment" onClick={() => openEditModal(commentDtl.Title, index, FbData?.index, false, "ParentComment")} className="hreflink ps-1 svg__iconbox svg__icon--edit siteColor"></span>
+                                                        <span title="Delete Comment" onClick={() => clearComment(true, index, FbData?.index)} className="ps-1 hreflink svg__iconbox svg__icon--trash"></span>
                                                     </span>
                                                 </div>
                                                 <div>
@@ -313,9 +308,9 @@ const AddCommentComponent = (FbData: any) => {
                                                                             <span className="font-weight-normal ms-2">
                                                                                 {ReplyDtl.AuthorName} - {ReplyDtl.Created}
                                                                             </span>
-                                                                            <span className="align-baseline d-flex">
-                                                                                <a className="ps-1" title="Edit Comment" onClick={() => openEditModal(ReplyDtl.Title, ReplyIndex, index, false, "ReplyComment")}><span className="svg__iconbox svg__icon--editBox"></span></a>
-                                                                                <a className="ps-1" title="Delete Comment" onClick={() => DeleteReplyMessageFunction(ReplyIndex, index)}><span className="svg__icon--trash svg__iconbox"></span></a>
+                                                                            <span className="alignCenter">
+                                                                               <span title="Edit Comment" onClick={() => openEditModal(ReplyDtl.Title, ReplyIndex, index, false, "ReplyComment")} className="ps-1 hreflink svg__iconbox svg__icon--edit siteColor"></span>
+                                                                               <span title="Delete Comment" onClick={() => DeleteReplyMessageFunction(ReplyIndex, index)} className="ps-1 hreflink svg__iconbox svg__icon--trash"></span>
                                                                             </span>
                                                                         </div>
                                                                         <div>

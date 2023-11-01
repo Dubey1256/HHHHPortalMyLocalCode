@@ -853,14 +853,7 @@ const CreateActivity = (props: any) => {
                                         if (item?.FeedBack != undefined) {
                                     let DiscriptionSearchData: any = '';
                                     let feedbackdata: any =JSON.parse(item?.FeedBack);
-                                    DiscriptionSearchData = feedbackdata[0]?.FeedBackDescriptions?.map((child: any) => {
-                                        const childText = child?.Title?.replace(/(<([^>]+)>)/gi, '')?.replace(/\n/g, '');
-                                        const subtextText = (child?.Subtext || [])?.map((elem: any) =>
-                                            elem.Title?.replace(/(<([^>]+)>)/gi, '')?.replace(/\n/g, '')
-                                        ).join('');
-                                        return childText + subtextText;
-                                    }).join('');
-                                    item.descriptionsSearch = DiscriptionSearchData
+                                    DiscriptionSearchData = globalCommon.descriptionSearchData(feedbackdata)
                                 }
                                 item.TaskID = globalCommon?.GetTaskId(item);
                                 if (categoriesItem?.indexOf('Immediate') > -1 || categoriesItem?.indexOf("Email Notification") > -1) {
