@@ -380,27 +380,15 @@ const SmartInformation = (props: any, ref: any) => {
   const onRenderCustomHeadersmartinfo = () => {
     return (
       <>
-
-        <div className='subheading'>
+         <div className='subheading'>
           {popupEdit ? `Add SmartInformation - ${allValue?.Title}` : `Add SmartInformation - ${taskInfo?.Title}`}
-        </div>
-        <Tooltip ComponentId='3299' />
+         </div>
+       <Tooltip ComponentId='3299' />
       </>
     );
   };
 
-  //=========panel header for documents upload and edit  ===================
-  const onRenderCustomHeaderDocuments = () => {
-    return (
-      <>
 
-        <div className='subheading' >
-          {Editdocpanel ? `Edit Document Metadata - ${EditdocumentsData?.FileLeafRef}` : null}
-        </div>
-        <Tooltip ComponentId='3300' />
-      </>
-    );
-  };
   // =============chnage InputField to set the Data=========================
   const changeInputField = (value: any, item: any) => {
     console.log(value);
@@ -581,7 +569,7 @@ const SmartInformation = (props: any, ref: any) => {
       }
     }
     else {
-      alert("Please Fill the Title")
+      alert("Please fill the Title")
       // setallSetValue({...allValue,AstricMesaage:true})
       setaddSmartInfoPopupAddlinkDoc(false)
       addSmartInfoPopupAddlinkDoc2 = false;
@@ -1141,7 +1129,10 @@ const SmartInformation = (props: any, ref: any) => {
         isOpen={show}
         type={PanelType.custom}
         customWidth="1091px"
-        onDismiss={handleClose}>
+        onDismiss={()=>handleClose()}
+        isBlocking={false}
+        >
+          
         <div>
           <div className="row">
             <dl className="align-items-center d-flex Hz-align ">
@@ -1229,7 +1220,10 @@ const SmartInformation = (props: any, ref: any) => {
         isOpen={showAdddocument}
         type={PanelType.custom}
         customWidth="1091px"
-        onDismiss={closeDoc}>
+        onDismiss={()=>closeDoc()}
+        isBlocking={false}
+        >
+
         <div >
 
           <div className='bg-ee d-flex justify-content-center py-4 text-center'>
@@ -1349,15 +1343,7 @@ const SmartInformation = (props: any, ref: any) => {
 
         />
       }
-      {/* {isopencomonentservicepopup && servicespopup &&
-        <ServiceComponentPortfolioPopup
-          props={allValue?.componentservicesetdata}
-          Dynamic={props.AllListId}
-          Call={ComponentServicePopupCallBack}
-          ComponentType={"Service"}
-
-        />
-      } */}
+      
     </div>
 
 
