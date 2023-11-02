@@ -252,8 +252,8 @@ class Taskprofile extends React.Component<ITaskprofileProps, ITaskprofileState> 
       .getByTitle(this.state?.listName)
       .items
       .getById(this.state?.itemID)
-      .select("ID", "Title", "Comments", "ApproverHistory", "EstimatedTime","SiteCompositionSettings" ,"TaskID", "Portfolio/Id", "Portfolio/Title", "Portfolio/PortfolioStructureID", "PortfolioType/Id", "DueDate", "IsTodaysTask", 'EstimatedTimeDescription', "Approver/Id", "Approver/Title", "ParentTask/Id", "ParentTask/TaskID", "Project/Id", "Project/Title", "ParentTask/Title", "SmartInformation/Id", "AssignedTo/Id", "TaskLevel", "TaskLevel", "OffshoreComments", "AssignedTo/Title", "OffshoreImageUrl", "TaskCategories/Id", "TaskCategories/Title", "ClientCategory/Id", "ClientCategory/Title", "Status", "StartDate", "CompletedDate", "TeamMembers/Title", "TeamMembers/Id", "ItemRank", "PercentComplete", "Priority", "Created", "Author/Title", "Author/EMail", "BasicImageInfo", "ComponentLink", "FeedBack", "ResponsibleTeam/Title", "ResponsibleTeam/Id", "TaskType/Title", "ClientTime", "Editor/Title", "Modified", "Attachments", "AttachmentFiles")
-      .expand("TeamMembers", "Project", "Approver", "ParentTask", "Portfolio", "PortfolioType", "SmartInformation", "AssignedTo", "TaskCategories", "Author", "ClientCategory", "ResponsibleTeam", "TaskType", "Editor", "AttachmentFiles")
+      .select("ID", "Title", "Comments", "ApproverHistory", "EstimatedTime", "SiteCompositionSettings","TaskID", "Portfolio/Id", "Portfolio/Title", "Portfolio/PortfolioStructureID", "DueDate", "IsTodaysTask", 'EstimatedTimeDescription', "Approver/Id", "Approver/Title", "ParentTask/Id", "ParentTask/TaskID", "Project/Id", "Project/Title", "ParentTask/Title", "SmartInformation/Id", "AssignedTo/Id", "TaskLevel", "TaskLevel", "OffshoreComments", "AssignedTo/Title", "OffshoreImageUrl", "TaskCategories/Id", "TaskCategories/Title", "ClientCategory/Id", "ClientCategory/Title", "Status", "StartDate", "CompletedDate", "TeamMembers/Title", "TeamMembers/Id", "ItemRank", "PercentComplete", "Priority", "Created", "Author/Title", "Author/EMail", "BasicImageInfo", "ComponentLink", "FeedBack", "ResponsibleTeam/Title", "ResponsibleTeam/Id", "TaskType/Title", "ClientTime", "Editor/Title", "Modified", "Attachments", "AttachmentFiles")
+      .expand("TeamMembers", "Project", "Approver", "ParentTask", "Portfolio", "SmartInformation", "AssignedTo", "TaskCategories", "Author", "ClientCategory", "ResponsibleTeam", "TaskType", "Editor", "AttachmentFiles")
       .get()
     AllListId = {
       MasterTaskListID: this.props.MasterTaskListID,
@@ -908,8 +908,8 @@ class Taskprofile extends React.Component<ITaskprofileProps, ITaskprofileState> 
       .getByTitle(this.state?.listName)
       // .getById(this.props.SiteTaskListID)
       .items
-      .select("ID", "Title", "Comments", "ApproverHistory", "TaskID","EstimatedTime", "Portfolio/Id", "Portfolio/Title", "PortfolioType/Id", "Portfolio/PortfolioStructureID", "DueDate", "IsTodaysTask", 'EstimatedTimeDescription', "ParentTask/Id", "Project/Id", "Project/Title", "ParentTask/Title", "SmartInformation/Id", "AssignedTo/Id", "TaskLevel", "TaskLevel", "OffshoreComments", "AssignedTo/Title", "OffshoreImageUrl", "TaskCategories/Id", "TaskCategories/Title", "ClientCategory/Id", "ClientCategory/Title", "Status", "StartDate", "CompletedDate", "TeamMembers/Title", "TeamMembers/Id", "ItemRank", "PercentComplete", "Priority", "Created", "Author/Title", "Author/EMail", "BasicImageInfo", "ComponentLink", "FeedBack", "ResponsibleTeam/Title", "ResponsibleTeam/Id", "TaskType/Title", "ClientTime", "Editor/Title", "Modified", "Attachments", "AttachmentFiles")
-      .expand("TeamMembers", "Project", "ParentTask",  "Portfolio", "PortfolioType", "SmartInformation", "AssignedTo", "TaskCategories", "Author", "ClientCategory", "ResponsibleTeam", "TaskType", "Editor", "AttachmentFiles")
+      .select("ID", "Title", "Comments", "ApproverHistory", "TaskID","EstimatedTime", "Portfolio/Id", "Portfolio/Title", "Portfolio/PortfolioStructureID", "DueDate", "IsTodaysTask", 'EstimatedTimeDescription', "ParentTask/Id", "Project/Id", "Project/Title", "ParentTask/Title", "SmartInformation/Id", "AssignedTo/Id", "TaskLevel", "TaskLevel", "OffshoreComments", "AssignedTo/Title", "OffshoreImageUrl", "TaskCategories/Id", "TaskCategories/Title", "ClientCategory/Id", "ClientCategory/Title", "Status", "StartDate", "CompletedDate", "TeamMembers/Title", "TeamMembers/Id", "ItemRank", "PercentComplete", "Priority", "Created", "Author/Title", "Author/EMail", "BasicImageInfo", "ComponentLink", "FeedBack", "ResponsibleTeam/Title", "ResponsibleTeam/Id", "TaskType/Title", "ClientTime", "Editor/Title", "Modified", "Attachments", "AttachmentFiles")
+      .expand("TeamMembers", "Project", "ParentTask",  "Portfolio", "SmartInformation", "AssignedTo", "TaskCategories", "Author", "ClientCategory", "ResponsibleTeam", "TaskType", "Editor", "AttachmentFiles")
       .getAll(4000);
 
     for (let index = 0; index < results.length; index++) {
@@ -1556,37 +1556,60 @@ class Taskprofile extends React.Component<ITaskprofileProps, ITaskprofileState> 
 
   //****** remove extra space in folora editor  */
 
-  private cleanHTML = (html:any,folora:any,index:any) => {
-    const div = document.createElement('div');
-    div.innerHTML = html;
-    
-    const paragraphs = div.querySelectorAll('p');
+//   private cleanHTML=(html: any) =>{
+//     const div = document.createElement('div');
+//     div.innerHTML = html;
+//     const paragraphs = div.querySelectorAll('p');
+
+//     // Filter out empty <p> tags
+//     paragraphs.forEach((p) => {
+//         if (p.innerText.trim() === '') {
+//             p.parentNode.removeChild(p); // Remove empty <p> tags
+//         }
+//     });
+//     const brTags = div.querySelectorAll('br');
+//     if (brTags.length > 1) {
+//       for (let i = brTags.length - 1; i > 0; i--) {
+//         brTags[i].parentNode.removeChild(brTags[i]);
+//       }
+//     }
   
-    // Filter out empty <p> tags
-    paragraphs.forEach((p) => {
-        if (p.innerText.trim() === '') {
-            p.parentNode.removeChild(p); // Remove empty <p> tags
-        }
-    });
+//     return div.innerHTML;
+// }
+private cleanHTML = (html:any,folora:any,index:any) => {
+  const div = document.createElement('div');
+  div.innerHTML = html;
   
-    // Replace newline characters with <br> elements
-    div.innerHTML = div.innerHTML.replace(/\n/g,'<br>');
-  if(folora=="folora"&&index==0){
-    const brTags = div.querySelectorAll('br');
-    let prevBr = null;
-  
-    for (let i = brTags.length - 1; i >= 0; i--) {
-        const br = brTags[i];
-        if (prevBr) {
-            br.parentNode.removeChild(br); // Remove consecutive <br> tags
-        }
-        prevBr = br;
-    }
+  const paragraphs = div.querySelectorAll('p');
+
+  // Filter out empty <p> tags
+  paragraphs.forEach((p) => {
+      if (p.innerText.trim() === '') {
+          p.parentNode.removeChild(p); // Remove empty <p> tags
+      }
+  });
+
+  // Replace newline characters with <br> elements
+  div.innerHTML = div.innerHTML.replace(/\n/g,'<br>');
+if(folora=="folora"&&index==0){
+  const brTags = div.querySelectorAll('br');
+  let prevBr = null;
+
+  for (let i = brTags.length - 1; i >= 0; i--) {
+      const br = brTags[i];
+      if (prevBr) {
+          br.parentNode.removeChild(br); // Remove consecutive <br> tags
+      }
+      prevBr = br;
   }
-   
-  
-    return div.innerHTML;
-  };
+}
+ 
+
+  return div.innerHTML;
+};
+
+
+
  //******* End */
   private callbackTotalTime=((Time:any)=>{
     this.setState(({
@@ -2118,7 +2141,7 @@ class Taskprofile extends React.Component<ITaskprofileProps, ITaskprofileState> 
                                             // title={fbData.ApproverData != undefined && fbData.ApproverData.length > 0 ? fbData.ApproverData[fbData.ApproverData.length - 1].isShowLight : ""}
                                             >
 
-                                              <span dangerouslySetInnerHTML={{ __html: this.cleanHTML(fbData?.Title,"folora",i)}}></span>
+                                              <span dangerouslySetInnerHTML={{ __html: this.cleanHTML(fbData?.Title,"folora",i) }}></span>
                                               <div className="col">
                                                 {fbData['Comments'] != null && fbData['Comments']?.length > 0 && fbData['Comments']?.map((fbComment: any, k: any) => {
                                                   return <div className={fbComment.isShowLight != undefined && fbComment.isApprovalComment ? `col add_cmnt my-1 ${fbComment.isShowLight}` : "col add_cmnt my-1"} title={fbComment.isShowLight != undefined ? fbComment.isShowLight : ""}>
@@ -2151,7 +2174,7 @@ class Taskprofile extends React.Component<ITaskprofileProps, ITaskprofileState> 
                                                                 <span className='svg__iconbox svg__icon--trash'></span></a>
                                                             </span>
                                                           </div>
-                                                          <div><span dangerouslySetInnerHTML={{ __html:this.cleanHTML(fbComment?.Title,null,i) }}></span></div>
+                                                          <div><span dangerouslySetInnerHTML={{ __html:this.cleanHTML(fbComment?.Title,null,i)  }}></span></div>
                                                         </div>
                                                       </div>
                                                       <div className="col-12 ps-3 pe-0 mt-1">
@@ -2179,7 +2202,7 @@ class Taskprofile extends React.Component<ITaskprofileProps, ITaskprofileState> 
                                                                       <span className='svg__iconbox svg__icon--trash'></span></a>
                                                                   </span>
                                                                 </div>
-                                                                <div><span dangerouslySetInnerHTML={{ __html:this.cleanHTML(replymessage?.Title,null,i) }}></span></div>
+                                                                <div><span dangerouslySetInnerHTML={{ __html:this.cleanHTML(replymessage?.Title,null,i)  }}></span></div>
                                                               </div>
                                                             </div>
 
