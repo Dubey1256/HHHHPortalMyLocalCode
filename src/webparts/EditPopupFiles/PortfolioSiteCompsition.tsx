@@ -900,33 +900,32 @@ const SiteCompositionComponent = (Props: any) => {
             ClientCategoryIDs = [];
         }
 
-        // if (SiteTaggingFinalData != undefined && SiteTaggingFinalData.length > 0) {
-        //     let SiteIconStatus: any = false
-        //     SiteTaggingFinalData?.map((ClientTimeItems: any) => {
-        //         if (ClientTimeItems.siteIcons != undefined) {
-        //             if (ClientTimeItems.siteIcons?.length > 0 || ClientTimeItems.siteIcons?.Url?.length > 0) {
-        //                 SiteIconStatus = true;
-        //             }
-        //         }
-        //         if (ClientTimeItems.ClientCategory != undefined || SiteIconStatus) {
-        //             let newObject: any = {
-        //                 Title: ClientTimeItems.SiteName != undefined ? ClientTimeItems.SiteName : ClientTimeItems.Title,
-        //                 ClienTimeDescription: ClientTimeItems.ClienTimeDescription,
-        //                 Selected: true,
-        //                 Date: ClientTimeItems.Date,
-        //                 EndDate: ClientTimeItems.EndDate,
-        //                 Available: true,
-        //                 SiteImages: ClientTimeItems.siteIcons
-        //             }
-        //             SiteTaggingJSON.push(newObject);
-        //         } else {
-        //             SiteTaggingJSON.push(ClientTimeItems);
-        //         }
-        //     })
-
-        // }
-        if (SitesTaggingData?.length > 0) {
-            SitesTaggingData.map((itemData: any) => {
+        if (SitesTaggingData != undefined && SitesTaggingData.length > 0) {
+            let SiteIconStatus: any = false
+            SitesTaggingData?.map((ClientTimeItems: any) => {
+                if (ClientTimeItems?.siteIcons != undefined) {
+                    if (ClientTimeItems.siteIcons?.length > 0 || ClientTimeItems.siteIcons?.Url?.length > 0) {
+                        SiteIconStatus = true;
+                    }
+                }
+                if (ClientTimeItems?.ClientCategory != undefined || SiteIconStatus) {
+                    let newObject: any = {
+                        Title: ClientTimeItems.SiteName != undefined ? ClientTimeItems.SiteName : ClientTimeItems.Title,
+                        ClienTimeDescription: ClientTimeItems.ClienTimeDescription,
+                        Selected: true,
+                        Date: ClientTimeItems.Date,
+                        EndDate: ClientTimeItems.EndDate,
+                        Available: true,
+                        SiteImages: ClientTimeItems.siteIcons ? ClientTimeItems.siteIcons : ClientTimeItems.SiteImages
+                    }
+                    SiteTaggingJSON.push(newObject);
+                } else {
+                    SiteTaggingJSON.push(ClientTimeItems);
+                }
+            })
+        }
+        if (SiteTaggingJSON?.length > 0) {
+            SiteTaggingJSON.map((itemData: any) => {
                 TotalPercentageCount = TotalPercentageCount + Number(itemData.ClienTimeDescription);
             })
         }
@@ -965,7 +964,7 @@ const SiteCompositionComponent = (Props: any) => {
             try {
                 let web = new Web(AllListIdData.siteUrl);
                 await web.lists.getById(AllListIdData.MasterTaskListID).items.getById(ItemId).update({
-                    Sitestagging: SitesTaggingData?.length > 0 ? JSON.stringify(SitesTaggingData) : null,
+                    Sitestagging: SiteTaggingJSON?.length > 0 ? JSON.stringify(SiteTaggingJSON) : null,
                     ClientCategoryId: { "results": (ClientCategoryIDs != undefined && ClientCategoryIDs.length > 0) ? ClientCategoryIDs : [] },
                     SiteCompositionSettings: (SiteCompositionSettingData != undefined && SiteCompositionSettingData.length > 0) ? JSON.stringify(SiteCompositionSettingData) : SiteCompositionSettings,
                 }).then(() => {
@@ -1144,7 +1143,7 @@ const SiteCompositionComponent = (Props: any) => {
                     SiteTaskListData = SiteTaskTempArray;
                 }
             }
-            if (MasterTaskListData?.length > 0) {
+            if (MasterTaskListData?.length > 0 || SiteTaskListData?.length > 0) {
                 CommonFunctionForUpdateCC(MasterTaskListData, SiteTaskListData)
             }
         } else {
@@ -1257,6 +1256,7 @@ const SiteCompositionComponent = (Props: any) => {
                 })
             }
         }
+
         TempClientCategoryIds = TempArray.filter((val: any, id: any, array: any) => {
             return array.indexOf(val) == id;
         })
@@ -1273,7 +1273,7 @@ const SiteCompositionComponent = (Props: any) => {
         if (TaskType == "SiteTasks") {
             MakeUpdateJSONDataObject = {
                 ClientTime: SiteCompositionDataForTask?.length > 0 ? JSON.stringify(SiteCompositionDataForTask) : null,
-                ClientCategoryId: { "results": (TempClientCategoryIds != undefined && TempClientCategoryIds.length > 0) ? TempClientCategoryIds : [] },
+                ClientCategoryId: { "results": (ClientCategoryIds != undefined && ClientCategoryIds.length > 0) ? ClientCategoryIds : [] },
                 SiteCompositionSettings: (finalSiteCompositionSettingData != undefined && finalSiteCompositionSettingData.length > 0) ? JSON.stringify(finalSiteCompositionSettingData) : null,
             }
         }
@@ -1298,7 +1298,7 @@ const SiteCompositionComponent = (Props: any) => {
                         Select Item
                     </span>
                 </div>
-                <Tooltip ComponentId="1263" />
+                <Tooltip ComponentId="7429" />
             </div>
         )
     }
@@ -2067,6 +2067,7 @@ const SiteCompositionComponent = (Props: any) => {
                                     NextProp={AllListIdData}
                                     callback={callBackData}
                                     usedFor={"Site-Compositions"}
+                                    prevSelectedCC={SiteClientCatgeoryFinalData}
                                 />
                             </div>
                         </div>
