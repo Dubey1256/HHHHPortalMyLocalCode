@@ -842,6 +842,7 @@ const CreateActivity = (props: any) => {
                                     Author: {
                                         Id: props?.context?.pageContext?.legacyPageContext?.userId
                                     },
+                                     Item_x0020_Type: 'Task',
                                     ParentTask: selectedItem,
                                     TaskType: {
                                         Title: 'Task',

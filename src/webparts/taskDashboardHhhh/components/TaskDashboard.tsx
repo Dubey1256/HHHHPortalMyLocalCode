@@ -241,66 +241,39 @@ const TaskDashboard = (props: any) => {
 
 
     const loadAllTimeEntry = async () => {
-        if (isShowTimeEntry == true) {
-            AllTaskTimeEntries = [];
-            setPageLoader(true);
+        AllTaskTimeEntries=[];
+        setPageLoader(true)
+        if (timesheetListConfig?.length > 0) {
+            let timesheetLists: any = [];
+            let startDate = getStartingDate('Last Month').toISOString();
+            timesheetLists = JSON.parse(timesheetListConfig[0]?.Configurations)
 
-            try {
-                if (timesheetListConfig?.length > 0) {
-                    const startDate = getStartingDate('Last Month').toISOString();
-                    let skip = 0;
-                    let batchSize = 250;
-                    let timesheetLists: any = [];
-                    let timeEntries: any = [];
-                    timesheetLists = JSON.parse(timesheetListConfig[0]?.Configurations);
+            if (timesheetLists?.length > 0) {
+                const fetchPromises = timesheetLists.map(async (list: any) => {
+                    let web = new Web(list?.siteUrl);
+                    try {
+                        const data = await web.lists
+                            .getById(list?.listId)
+                            .items.select(list?.query)
+                            .filter(`(Modified ge '${startDate}') and (TimesheetTitle/Id ne null)`)
+                            .getAll();
 
-                    while (true) {
-                        // Fetch the next batch of time entries
-                        const timeEntriesPromises = timesheetLists.map(async (list: any) => {
-                            const web = new Web(list?.siteUrl);
-                            const data = await web.lists
-                                .getById(list?.listId)
-                                .items.select(list?.query)
-                                .filter(`TimesheetTitle/Id ne null`)
-                                .orderBy('Modified', false)
-                                .skip(skip)
-                                .top(batchSize)
-                                .getAll();
-
-                            return data;
+                        data?.forEach((item: any) => {
+                            item.taskDetails = checkTimeEntrySite(item);
+                            AllTaskTimeEntries.push(item);
                         });
-
-                        const batches = await Promise.all(timeEntriesPromises);
-
-                        // Merge the time entries from the current batch into the overall array
-                        batches.forEach((batch) => {
-                            AllTaskTimeEntries = AllTaskTimeEntries.concat(batch);
-                        });
-
-                        // If there are no more time entries in the current batch, then we have fetched all of the time entries
-                        if (batches.some(batch => batch.length === 0)) {
-                            break;
-                        }
-
-                        // Increment the skip parameter for the next batch
-                        skip += batchSize;
+                        currentUserTimeEntry('This Week');
+                    } catch (error) {
+                        setPageLoader(false)
+                        console.log(error, 'HHHH Time');
                     }
+                });
 
-                    // Check the time entry site for each time entry
-                    AllTaskTimeEntries.forEach((timeEntry: any) => {
-                        timeEntry.taskDetails = checkTimeEntrySite(timeEntry);
-                    });
-
-                    currentUserTimeEntry('This Week');
-                }
-            } catch (error) {
-                console.error("Error fetching time entries:", error);
-                setPageLoader(false);
-            } finally {
-                setPageLoader(false);
+                await Promise.all(fetchPromises)
             }
+
         }
-    };
+    }
 
     const checkTimeEntrySite = (timeEntry: any) => {
         let result = ''
@@ -456,7 +429,11 @@ const TaskDashboard = (props: any) => {
                                             })
                                         }
                                         task.siteType = config.Title;
-                                        task.bodys = task.Body != null && task.Body.split('<p><br></p>').join('');
+                                        if (task?.FeedBack != undefined) {
+                                            task.descriptionsSearch =globalCommon.descriptionSearchData(task)
+                                        }else{
+                                            task.descriptionsSearch='';
+                                        }
                                         task.listId = config.listId;
                                         task.siteUrl = config.siteUrl.Url;
                                         task.PercentComplete = (task.PercentComplete * 100).toFixed(0);
@@ -748,8 +725,7 @@ const TaskDashboard = (props: any) => {
                         >
                             {row?.values?.Title}
                         </a>
-                        {row?.original?.Body !== null && <InfoIconsToolTip Discription={row?.original?.bodys} row={row?.original} />
-                        }
+                        {row?.original?.descriptionsSearch?.length > 0 && <span className='alignIcon  mt--5 '><InfoIconsToolTip Discription={row?.original?.descriptionsSearch} row={row?.original} /></span>}
                     </span>
                 ),
             },
