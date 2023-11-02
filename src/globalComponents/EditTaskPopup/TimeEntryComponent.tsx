@@ -471,6 +471,7 @@ function TimeEntryPopup(item: any) {
   };
 
   const openAddTasktimepopup = (val: any) => {
+    CategryTitle = ''
     setAddTaskTimepopup(true);
     setTimeInMinutes(0);
     setTimeInHours(0);
@@ -486,7 +487,7 @@ function TimeEntryPopup(item: any) {
     setPostData(undefined);
     ParentId = val;
 
-    var CategoryTitle = val.Title;
+    CategryTitle = val.Title;
   };
   let dateValue = "";
   var dp = "";
@@ -3801,7 +3802,7 @@ function TimeEntryPopup(item: any) {
             <div className="col-sm-12 p-0 form-group">
               <div className="input-group mb-2">
               <label className="full-width">Title</label>
-              <input className="form-control" type="title" placeholder="Add Title" />
+              <input className="form-control" type="title" placeholder="Add Title" disabled={true} defaultValue={CategryTitle}/>
               </div>
 
               <div className="row mb-2">
