@@ -66,7 +66,7 @@ const Header = () => {
               </svg>
             </span>
             <span className="ms-2 tabText">
-              <div>Working Today Task </div>
+              <div>Working Today Tasks </div>
               <div className="align-items-center d-flex f-18 justify-content-between tabResultText workToday">
                 <div className='alignCenter'>
                   <span title='Todays Task'>
@@ -107,7 +107,7 @@ const Header = () => {
               <span title='Bottleneck Task' className=" svg__iconbox svg__icon--bottleneck"></span>
             </span>
             <span className='ms-2'>
-              <div>Bottleneck Task </div>
+              <div>Bottleneck Tasks </div>
               <div className="f-18 fw-semibold">
                 {bottleneckTask.length}
               </div>
@@ -120,7 +120,7 @@ const Header = () => {
               <span title='Immediate Task' className=" svg__iconbox svg__icon--alert"></span>
             </span>
             <span className='ms-2'>
-              <div>Immediate Task</div>
+              <div>Immediate Tasks</div>
               <div className="f-18 fw-semibold">{immediateTask.length}</div>
             </span>
           </div>
@@ -131,7 +131,7 @@ const Header = () => {
               <span title='Draft Task' style={{width:'24px',height:'24px'}} className=" svg__iconbox svg__icon--draftOther"></span>
             </span>
             <span className='ms-2'>
-              <div>Draft Task</div>
+              <div>Draft Tasks</div>
               <div className="f-18 fw-semibold">{draftArray?.length}</div>
             </span>
           </div>
