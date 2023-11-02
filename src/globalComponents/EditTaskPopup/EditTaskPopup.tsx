@@ -2328,6 +2328,8 @@ const EditTaskPopup = (Items: any) => {
                                     dataEditor.data.editpopup = true;
                                     dataEditor.data.TaskID = EditData.TaskId
                                     dataEditor.data.listId = Items.Items.listId
+                                    dataEditor.data.SiteIcon = Items?.Items?.SiteIcon
+                                    dataEditor.data.DisplayCreateDate = Items?.Items?.DisplayCreateDate
                                     dataEditor.data.FeedBack = JSON.stringify(dataEditor.data.FeedBack)
                                     Items.Call(dataEditor, "UpdatedData");
                                 }

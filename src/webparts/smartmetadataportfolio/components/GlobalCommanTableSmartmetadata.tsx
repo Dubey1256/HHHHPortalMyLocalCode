@@ -23,9 +23,12 @@ import * as XLSX from "xlsx";
 import saveAs from "file-saver";
 import { RiFileExcel2Fill } from 'react-icons/ri';
 //import ShowTeamMembers from '../ShowTeamMember';
+
+
+
 import SelectFilterPanel from '../../../globalComponents/GroupByReactTableComponents/selectFilterPannel';
 import ExpndTable from '../../../globalComponents/ExpandTable/Expandtable';
-import RestructuringCom from '../../../globalComponents/Restructuring/RestructuringCom';
+import RestructuringCom from "../../../globalComponents/Restructuring/RestructuringCom";
 import { SlArrowDown, SlArrowRight } from 'react-icons/sl';
 import { BsSearch } from 'react-icons/bs';
 import RestructureSmartMetaData from './RestructureSmartMetaData';

@@ -856,11 +856,11 @@ function TasksTable(props: any) {
       {
         cell: ({ row, getValue }) => (
           <>
-            {row?.original?.Item_x0020_Type == "Task" && row?.original?.siteType != "Master Tasks" && (
+            
               <a className='time-icons' onClick={(e) => EditData(e, row?.original)} >
                 <span title='Time' className="svg__iconbox svg__icon--clock"></span>
               </a>
-            )}
+            
             {getValue()}
           </>
         ),
@@ -894,9 +894,9 @@ function TasksTable(props: any) {
                   <span className="svg__iconbox svg__icon--re-structure"></span>
                 </span>)}
 
-              {row?.original?.Item_x0020_Type == "Task" && row?.original?.siteType != "Master Tasks" && (
+            
                 <span title='Edit' onClick={(e) => EditItemTaskPopup(row?.original)} className="svg__iconbox svg__icon--edit"></span>
-              )}
+            
             </a>
             {getValue()}
           </>
