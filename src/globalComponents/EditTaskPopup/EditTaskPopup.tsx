@@ -3918,15 +3918,15 @@ const EditTaskPopup = (Items: any) => {
 
     const onRenderCustomHeaderMain = () => {
         return (
-            <div className={ServicesTaskCheck ? "d-flex full-width pb-1 serviepannelgreena" : "d-flex full-width pb-1"}>
-                <div className="subheading">
-                    <img className="imgWid29 pe-1 mb-1 " src={Items.Items.SiteIcon} />
+            <>
+                <div className={ServicesTaskCheck ? "serviepannelgreena subheading alignCenter" : "subheading alignCenter"}>
+                    <img className="imgWid29 pe-1" src={Items.Items.SiteIcon} />
                     <span className="siteColor">
                         {`${EditData.TaskId != undefined || EditData.TaskId != null ? EditData.TaskId : ""} ${EditData.Title != undefined || EditData.Title != null ? EditData.Title : ""}`}
                     </span>
                 </div>
                 <Tooltip ComponentId="1683" isServiceTask={ServicesTaskCheck} />
-            </div>
+            </>
         );
     };
     const onRenderStatusPanelHeader = () => {

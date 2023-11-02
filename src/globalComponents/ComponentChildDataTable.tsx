@@ -16,7 +16,6 @@ import GlobalCommanTable, {
   IndeterminateCheckbox
 } from "../globalComponents/GroupByReactTableComponents/GlobalCommanTable";
 import InfoIconsToolTip from "../globalComponents/InfoIconsToolTip/InfoIconsToolTip";
-import PageLoader from "../globalComponents/pageLoader";
 
 var filt: any = "";
 var ContextValueGlobal: any = {};
@@ -33,9 +32,15 @@ let countAllTasksDataGlobal: any = [];
 let countAllComposubDataGlobal: any = [];
 let countsrunGlobal = 0;
 let countGlobal = 1;
+let UpdatedCCCount: any = 0;
+let tempSiteAndCategoryData: any = [];
+let AllsiteClientCategories: any = [];
+let lastUpdatedAllSites: any = [];
+
 function ComponentChildDataTable(SelectedProp: any) {
   const usedFor = SelectedProp.usedFor;
   const childRef = React.useRef<any>();
+  const prevSelectedCC = SelectedProp.prevSelectedCC;
   if (childRef != null) {
     childRefdataGlobal = { ...childRef };
   }
@@ -71,16 +76,7 @@ function ComponentChildDataTable(SelectedProp: any) {
   const [taskTypeData, setTaskTypeData] = React.useState([]);
   const [portfolioTypeDataItem, setPortFolioTypeIcon] = React.useState([]);
   const [taskTypeDataItem, setTaskTypeDataItem] = React.useState([]);
-  const [OpenAddStructurePopup, setOpenAddStructurePopup] =
-    React.useState(false);
-  const [ActivityPopup, setActivityPopup] = React.useState(false);
-  const [isOpenActivity, setIsOpenActivity] = React.useState(false);
-  const [isOpenWorkstream, setIsOpenWorkstream] = React.useState(false);
-  const [IsComponent, setIsComponent] = React.useState(false);
-  const [SharewebComponent, setSharewebComponent] = React.useState("");
-  const [IsTask, setIsTask] = React.useState(false);
-  const [SharewebTask, setSharewebTask] = React.useState("");
-  const [SharewebTimeComponent, setSharewebTimeComponent] = React.useState([]);
+
   const [checkedList1, setCheckedList1] = React.useState([]);
   const [topCompoIcon, setTopCompoIcon]: any = React.useState(false);
   const [IsTimeEntry, setIsTimeEntry] = React.useState(false);
@@ -98,14 +94,6 @@ function ComponentChildDataTable(SelectedProp: any) {
 
   let TaskUsers: any = [];
   let TasksItem: any = [];
-
-
-  // Load all time entry for smart time 
-
-
-
-
-  // load all time entry end  
 
   const getTaskUsers = async () => {
     let web = new Web(ContextValueGlobal.siteUrl);
@@ -209,7 +197,7 @@ function ComponentChildDataTable(SelectedProp: any) {
         (metadata: any) => metadata?.TaxType == "Sites"
       )
     );
-    
+
     smartmetaDetails?.map((newtest: any) => {
       if (newtest.Title == "SDC Sites" || newtest.Title == "DRR" || newtest.Title == "Offshore Tasks" || newtest.Title == "DE" || newtest.Title == "Gender" || newtest.Title == "Small Projects" || newtest.Title == "Shareweb Old" || newtest.Title == "Master Tasks")
         newtest.DataLoadNew = false;
@@ -991,11 +979,141 @@ function ComponentChildDataTable(SelectedProp: any) {
         ItemDataCheckSC.compositionType = '';
 
       }
-
+      // if (ItemDataCheckSC.ClientCategory?.length > 0) {
+      //   if (ItemDataCheckSC.TaskType?.Title == "Task" || ItemDataCheckSC.TaskType?.Title == "Activities" || ItemDataCheckSC.TaskType?.Title == "Workstream") {
+      //     AllSitesData?.map((SiteData) => {
+      //       ItemDataCheckSC.ClientCategory?.map((ClientCategoryItem: any) => {
+      //         if (ClientCategoryItem.siteName == SiteData.Title) {
+      //           if (SiteData.ClientCategoryData?.length > 0) {
+      //             SiteData.ClientCategoryData?.push(ClientCategoryItem);
+      //           } else {
+      //             SiteData.ClientCategoryData = [ClientCategoryItem];
+      //           }
+      //         }
+      //       })
+      //       tempSiteAndCategoryData.push(SiteData);
+      //     })
+      //     ItemDataCheckSC.ClientCategory?.map((ClientCategoryItem: any) => {
+      //       AllsiteClientCategories.push(ClientCategoryItem)
+      //     })
+      //   }
+      // }
     })
     setData(componentDataGlobal);
+    findAllClientCategories(componentDataGlobal);
     console.log(countAllTasksDataGlobal);
+    GroupByClientCategoryData();
+    // console.log("Finter Site and Client Category Data ======", tempSiteAndCategoryData);
+    // console.log("Finter Site and Client Category Data  AllsiteClientCategoriesAllsiteClientCategoriesAllsiteClientCategories======", AllsiteClientCategories);
+
   };
+
+
+  // These are the used for the summerize the Client Category Related Functionality
+
+  const findAllClientCategories = (AllData: any) => {
+    AllData.forEach((AllDataItem: any) => {
+      if (AllDataItem.TaskType?.Title == "Task" || AllDataItem.TaskType?.Title == "Activities" || AllDataItem.TaskType?.Title == "Workstream") {
+        if (AllDataItem?.ClientCategory?.length > 0) {
+          AllDataItem?.ClientCategory?.map((CCItem: any) => {
+            AllsiteClientCategories.push(CCItem);
+          })
+        }
+      }
+      if (AllDataItem.subRows?.length > 0) {
+        AllDataItem.subRows?.map((ChildArray: any) => {
+          if (ChildArray.TaskType?.Title == "Task" || ChildArray.TaskType?.Title == "Activities" || ChildArray.TaskType?.Title == "Workstream") {
+            if (ChildArray?.ClientCategory?.length > 0) {
+              ChildArray?.ClientCategory?.map((CCItem: any) => {
+                AllsiteClientCategories.push(CCItem);
+              })
+            }
+          }
+        })
+        findAllClientCategories(AllDataItem.subRows);
+      }
+    });
+  }
+
+
+
+
+  const GroupByClientCategoryData = () => {
+    let AllClientCategoryOG: any = [];
+    if (AllsiteClientCategories?.length > 0) {
+      AllClientCategoryOG = AllsiteClientCategories.filter((val: any, id: any, array: any) => {
+        return array.indexOf(val) == id;
+      })
+      if (AllClientCategoryOG?.length > 0) {
+        AllClientCategoryOG?.map((SelectedCC: any) => {
+          AllSitesData?.map((AllSiteItem: any) => {
+            if (AllSiteItem.Title == SelectedCC.siteName) {
+              if (AllSiteItem.ClientCategories?.length > 0) {
+                AllSiteItem.ClientCategories.push(SelectedCC);
+              } else {
+                AllSiteItem.ClientCategories = [SelectedCC]
+              }
+            }
+          })
+        })
+      }
+      // Mereging the prev selected CC from Parent into the Summerize CC Array
+
+      if (prevSelectedCC?.length > 0) {
+        UpdatedCCCount++;
+        prevSelectedCC?.map((SelectedCCItem: any) => {
+          SelectedCCItem.checked = true;
+          AllSitesData?.map((AllSiteItemData: any) => {
+            if (AllSiteItemData.Title == SelectedCCItem.siteName) {
+              if (AllSiteItemData.ClientCategories?.length > 0) {
+                AllSiteItemData.ClientCategories.unshift(SelectedCCItem);
+              } else {
+                AllSiteItemData.ClientCategories = [SelectedCCItem]
+              }
+            }
+          })
+        })
+        lastUpdatedAllSites = AllSitesData;
+      }
+      // console.log("All Site Data ======", AllSitesData);
+
+      removeDuplicateClientCategories();
+    }
+  }
+
+
+  const removeDuplicateClientCategories = () => {
+    let finalData: any
+    AllSitesData?.map((CCItemData: any) => {
+      if (CCItemData.ClientCategories?.length > 0) {
+        finalData = CCItemData.ClientCategories?.filter((val: any, id: any, array: any) => {
+          return array.indexOf(val) == id;
+        })
+        CCItemData.ClientCategories = finalData;
+      }
+    })
+
+    console.log("Final Summerize All CC After All validations Final Data ====", AllSitesData);
+  }
+
+  const selectedParentClientCategory = (SelectedCCIndex: any, SiteName: any) => {
+    UpdatedCCCount++;
+    let tempArray: any = [];
+    AllSitesData?.map((ItemData: any) => {
+      if (ItemData.Title == SiteName) {
+        if (SelectedCCIndex > -1) {
+          ItemData.ClientCategories[SelectedCCIndex].checked = true;
+        } else {
+          ItemData.ClientCategories[SelectedCCIndex].checked = false;
+        }
+      }
+      tempArray.push(ItemData);
+      // lastUpdatedAllSites.push(ItemData);
+    })
+    setAllSitesData([...tempArray]);
+    lastUpdatedAllSites = tempArray;
+  }
+
 
   // ComponentWS
   function siteCompositionType(jsonStr: any) {
@@ -1104,6 +1222,7 @@ function ComponentChildDataTable(SelectedProp: any) {
       });
     }
   };
+
 
   function executeOnce() {
     if (countAllTasksDataGlobal?.length > 0) {
@@ -1459,26 +1578,7 @@ function ComponentChildDataTable(SelectedProp: any) {
         resetSorting: false,
         size: 100,
       },
-      // {
-      //   accessorFn: (row) => row?.DueDate,
-      //   cell: ({ row }) => (
-      //     <span className='ms-1'>{row?.original?.DisplayDueDate} </span>
 
-      //   ),
-      //   id: 'DueDate',
-      //   filterFn: (row: any, columnName: any, filterValue: any) => {
-      //     if (row?.original?.DisplayDueDate?.includes(filterValue)) {
-      //       return true
-      //     } else {
-      //       return false
-      //     }
-      //   },
-      //   resetColumnFilters: false,
-      //   resetSorting: false,
-      //   placeholder: "DueDate",
-      //   header: "",
-      //   size: 100
-      // },
       {
         accessorFn: (row) => row?.Created,
         cell: ({ row }) => (
@@ -1525,10 +1625,31 @@ function ComponentChildDataTable(SelectedProp: any) {
     ],
     [data]
   );
-  //-------------------------------------------------- restructuring function start---------------------------------------------------------------
+  //------------------------------------- restructuring function start-----------------------------------
 
   const callBackData = React.useCallback((checkData: any) => {
     if (usedFor == "Site-Compositions") {
+      let TempArray: any = [];
+      if (UpdatedCCCount > 0) {
+        if (checkData?.length > 0) {
+          checkData?.map((SelectedItem: any) => {
+            let OriginalData: any = SelectedItem.original;
+            if (OriginalData.TaskType?.Title == "Task" || OriginalData.TaskType?.Title == "Activities" || OriginalData.TaskType?.Title == "Workstream") {
+              lastUpdatedAllSites?.map((AllSiteItem: any) => {
+                if (OriginalData.siteType == AllSiteItem.Title) {
+                  if (AllSiteItem?.ClientCategories?.length > 0) {
+                    AllSiteItem?.ClientCategories?.map((ExistingCCItem: any) => {
+                      if (ExistingCCItem.checked == true) {
+                        OriginalData.ClientCategory = [ExistingCCItem];
+                      }
+                    })
+                  }
+                }
+              })
+            }
+          })
+        }
+      }
       SelectedProp.callback(checkData);
     }
     let array: any = [];
@@ -1562,7 +1683,7 @@ function ComponentChildDataTable(SelectedProp: any) {
       childRef.current.trueTopIcon(items);
     }
   };
-
+  let IndexCounting: any = 0;
   //-------------------------------------------------- restructuring function end---------------------------------------------------------------
   //-------------------------------------------------------------End---------------------------------------------------------------------------------
   return (
@@ -1570,8 +1691,55 @@ function ComponentChildDataTable(SelectedProp: any) {
       <div className="container-fluid">
         <section className="TableSection">
           <div className="container p-0">
-            <div className="Alltable mt-2 ">
+            <div className="Alltable mt-2">
+              <div className="p-2">
+                <table className="table table-striped">
+                  {/* AllSitesData */}
+                  <tbody>
+                    {AllSitesData?.map((CCDetails: any, Index: any) => {
+                      if (CCDetails.ClientCategories?.length > 0) {
+                        IndexCounting++;
+                        return (
+                          <tr key={IndexCounting}>
+                            <th scope="row" className="text-center">{IndexCounting}.</th>
+                            <td>{CCDetails.Title}</td>
+                            <td className="p-1">
+                              <div className="d-flex">
+                                {CCDetails.ClientCategories?.map((CCItem: any, ChildIndex: any) => {
+                                  return (
+                                    // <div className="bg-69 d-flex me-1 justify-content-between p-1 ps-2" title={CCItem.Title ? CCItem.Title : null}>
+                                    //   {CCItem.Title ? CCItem.Title : null}
+                                    //   <a className=""
+                                    //     onClick={() => selectedParentClientCategory(ChildIndex, CCDetails.Title)}
+                                    //   >
+                                    //     <span className="bg-light svg__icon--cross svg__iconbox"></span>
+                                    //   </a>
+                                    // </div>
+                                    <label className="SpfxCheckRadio">
+                                      <input
+                                        className="radio"
+                                        type="radio"
+                                        name={`Client-Category-${IndexCounting}`}
+                                        defaultChecked={CCItem.checked == true ? true : false}
+                                        checked={CCItem.checked == true ? true : false}
+                                        onClick={() => selectedParentClientCategory(ChildIndex, CCDetails.Title)}
+                                      />
+                                      {CCItem.Title ? CCItem.Title : null}
+                                    </label>
+                                  )
+                                })}
+                              </div>
+                            </td>
+                          </tr>
+                        )
+                      }
+                    })}
+                  </tbody>
+                </table>
+              </div>
               <div className="col-sm-12 p-0 smart">
+                {/* {console.log("Categories Group By Data  in div div======", tempSiteAndCategoryData)}
+                {console.log("Categories Group By AllsiteClientCategoriesAllsite  div div div ClientCategoriesAllsiteClientCategoriesAllsiteClientCategories ======", AllsiteClientCategories)} */}
                 <div className="">
                   <div className="wrapper">
                     <Loader
