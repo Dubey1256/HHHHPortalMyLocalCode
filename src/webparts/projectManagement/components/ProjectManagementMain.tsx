@@ -293,7 +293,7 @@ const ProjectManagementMain = (props: any) => {
 
 
   const CallBack = React.useCallback((item: any) => {
-   
+
     setisOpenEditPopup(false);
     setIsTaggedCompTask(false);
   }, []);
@@ -426,7 +426,7 @@ const ProjectManagementMain = (props: any) => {
             if (items?.TaskCategories?.length > 0) {
               items.TaskTypeValue = items?.TaskCategories?.map((val: any) => val.Title).join(",")
             }
-            if(items?.TaskCategories?.length > 0){
+            if (items?.TaskCategories?.length > 0) {
               items.Categories = items.TaskTypeValue;
             }
             items.AllTeamMember = [];
@@ -434,16 +434,9 @@ const ProjectManagementMain = (props: any) => {
             items.descriptionsSearch = '';
             items.siteType = config.Title;
             if (items?.FeedBack != undefined) {
-              let DiscriptionSearchData: any = '';
-              let feedbackdata: any = JSON.parse(items?.FeedBack)
-              DiscriptionSearchData = feedbackdata[0]?.FeedBackDescriptions?.map((child: any) => {
-                const childText = child?.Title?.replace(/(<([^>]+)>)/gi, '')?.replace(/\n/g, '');
-                const subtextText = (child?.Subtext || [])?.map((elem: any) =>
-                  elem.Title?.replace(/(<([^>]+)>)/gi, '')?.replace(/\n/g, '')
-                ).join('');
-                return childText + subtextText;
-              }).join('');
-              items.descriptionsSearch = DiscriptionSearchData
+              items.descriptionsSearch = globalCommon.descriptionSearchData(items)
+            } else {
+              items.descriptionsSearch = '';
             }
             items.commentsSearch = items?.Comments != null && items?.Comments != undefined ? items.Comments.replace(/(<([^>]+)>)/gi, "").replace(/\n/g, '') : '';
             items.listId = config.listId;
@@ -786,16 +779,16 @@ const ProjectManagementMain = (props: any) => {
         accessorFn: (row) => row?.TaskTypeValue,
         cell: ({ row }) => (
           <>
-           <span>
-            <InlineEditingcolumns
-              AllListId={AllListId}
-              callBack={inlineCallBack}
-              columnName='TaskCategories'
-              item={row?.original}
-              TaskUsers={AllUser}
-              pageName={'ProjectManagment'}
-            />
-          </span>
+            <span>
+              <InlineEditingcolumns
+                AllListId={AllListId}
+                callBack={inlineCallBack}
+                columnName='TaskCategories'
+                item={row?.original}
+                TaskUsers={AllUser}
+                pageName={'ProjectManagment'}
+              />
+            </span>
           </>
         ),
         placeholder: "Task Type",
@@ -1157,14 +1150,14 @@ const ProjectManagementMain = (props: any) => {
                                   src="https://hhhhteams.sharepoint.com/sites/HHHH/SiteCollectionImages/ICONS/Shareweb/Icon_Project.png"
                                 />
                                 <span>
-                                {`${Masterdata?.PortfolioStructureID} - ${Masterdata?.Title}`}
-                                <span
-                                  onClick={() => EditComponentPopup(Masterdata)}
-                                  className="mx-1 svg__iconbox svg__icon--edit alignIcon hreflink"
-                                  title="Edit Project"
-                                ></span>
+                                  {`${Masterdata?.PortfolioStructureID} - ${Masterdata?.Title}`}
+                                  <span
+                                    onClick={() => EditComponentPopup(Masterdata)}
+                                    className="mx-1 svg__iconbox svg__icon--edit alignIcon hreflink"
+                                    title="Edit Project"
+                                  ></span>
                                 </span>
-                                
+
                               </h2>
                               <div>
                                 <div className="d-flex">
