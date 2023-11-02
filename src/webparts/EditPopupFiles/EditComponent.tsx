@@ -1450,7 +1450,7 @@ if(res?.ClientCategory != undefined && res?.ClientCategory?.results?.length >0 )
 
           ItemRank: ItemRank,
           PriorityRank: Items.PriorityRank,
-          ComponentId: { results: smartComponentsIds },
+          // ComponentId: { results: smartComponentsIds },
           DeliverableSynonyms: Items.DeliverableSynonyms,
           StartDate: EditData?.StartDate
             ? moment(EditData?.StartDate).format("MM-DD-YYYY")

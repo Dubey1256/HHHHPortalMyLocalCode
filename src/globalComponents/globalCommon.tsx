@@ -3,7 +3,7 @@ import { useEffect, useState } from 'react';
 import pnp, { Web } from "sp-pnp-js";
 import "@pnp/sp/sputilities";
 import * as moment from 'moment';
-import { SPFI, SPFx as spSPFx } from "@pnp/sp";
+import { SPFI, SPFx as spSPFx, spfi } from "@pnp/sp";
 import { GlobalConstants } from '../globalComponents/LocalCommon';
 import { PageContext } from "@microsoft/sp-page-context";
 import { } from "@pnp/sp/presets/all";

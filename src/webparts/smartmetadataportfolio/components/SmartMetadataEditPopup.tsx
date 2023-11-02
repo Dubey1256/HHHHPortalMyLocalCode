@@ -4,22 +4,23 @@ import * as React from 'react';
 import { useState, useEffect, useMemo, useCallback } from 'react';
 import { Web, sp } from 'sp-pnp-js';
 import GlobalCommanTable from './GlobalCommanTableSmartmetadata';
+import Tooltip from '../../../globalComponents/Tooltip';
+import ImageTabComponenet from './ImageTabComponent'
 let modaltype: any;
 let SitesConfig: any[] = []
 let allSitesTask: any[] = []
 let Selecteditems: any[] = [];
 let allCalls: any[] = []
-var TopLevelItems: any = [];
-var SecondLevelItems: any = [];
-var ThirdLevelItems: any = [];
-let ddlParentLevel2: any;
-let TopLevel: any;
+var childItems: any = [];
 let CurrentSiteUrl: any;
 export default function SmartMetadataEditPopup(props: any) {
     const [activeTab, setActiveTab] = useState('BasicInfo');
     const [AllSitesTask, setAllSitesTask]: any = useState([]);
     const [dropdownArray, setDropdownArray]: any = useState([]);
-    const [openChangeParentPopup, setOpenChangeParentPopup]: any = useState(false);
+    const [openChangeParentPopup, setOpenChangeParentPopup] = useState(false);
+    const [selectedOptionTop, setSelectedOptionTop] = useState('');
+    const [selectedOptionSecond, setSelectedOptionSecond] = useState('');
+    const [metadatPopupBreadcrum, setMetadatPopupBreadcrum]: any = useState([]);
     let web = new Web(props.AllList.SPSitesListUrl);
     const [SmartTaxonomyItem, setSmartTaxonomyItem] = useState({
         Id: 0,
@@ -40,11 +41,9 @@ export default function SmartMetadataEditPopup(props: any) {
     let CategoryTitle: any;
     let SecondLevel: any;
     let Levels: any;
-    let thirdCurrentLevel: any;
     let ThirdLevel: any;
     let FourthLevel: any;
     let TaxType: any;
-    let changedParent = false;
     let selectedImageUrl: any;
     let Items: any
     let folderUrl: any
@@ -156,31 +155,58 @@ export default function SmartMetadataEditPopup(props: any) {
             // Handle errors
         }
     }
-    const openParent = () => {
+    const openParent = (Value: any) => {
         setOpenChangeParentPopup(true)
-        props?.AllMetadata?.forEach((taxonomy: any) => {
-            TopLevelItems.push(taxonomy);
-            if (taxonomy?.subRows !== undefined) {
-                taxonomy?.subRows.forEach((child: any) => {
-                    SecondLevelItems.push(child)
-                    if (child?.subRows !== undefined) {
-                        child?.subRows.forEach((subChild: any) => {
-                            ThirdLevelItems.push(subChild)
-                        })
-                    }
-                })
-            }
-        })
     }
+    const showingBreadcrumb = (metadata: any) => {
+        const findBreadcrumb = (itemId: any) => {
+            const item = props?.MetadataItems.find((top: any) => top.Id === itemId);
+            if (item) {
+                breadcrumb.unshift(item);
+                if (item.ParentID) {
+                    findBreadcrumb(item.ParentID);
+                }
+            }
+        };
+        const breadcrumb: any = [];
+        const manageSmartmetadataItem: any = props?.MetadataItems.find(
+            (top: any) => top.Id === metadata.Id
+        );
+        if (manageSmartmetadataItem) {
+            findBreadcrumb(manageSmartmetadataItem.Id);
+        }
+        setMetadatPopupBreadcrum(breadcrumb);
+    };
     const closeParentPopup = () => {
-        TopLevelItems = [];
-        SecondLevelItems = [];
-        ThirdLevelItems = [];
+        childItems = [];
         setOpenChangeParentPopup(false)
     }
     const changeParentMetadata = () => {
+        var subRowsChilds: any = []
+        if (selectedOptionSecond) {
+            props?.AllMetadata?.filter((meta: any) => {
+                meta?.Title === selectedOptionSecond ?
+                    SmartTaxonomyItem.ParentID = meta?.Id :
+                    subRowsChilds = [...meta?.subRows]
 
+            })
+            subRowsChilds?.filter((item: any) => {
+                item?.Title === selectedOptionSecond ? SmartTaxonomyItem.ParentID = item?.Id : null;
+            })
+            closeParentPopup()
+        }
     }
+    const handleTopOptionChange = (TopItem: any) => {
+        setSelectedOptionTop(TopItem.target.value);
+        if (TopItem.target.value) {
+            childItems = props?.AllMetadata?.filter((meta: any) => meta?.Title === TopItem.target.value)
+                .map((meta: any) => meta?.subRows);
+        }
+    };
+    const handleSecondOptionChange = (SecondItem: any) => {
+        setSelectedOptionSecond(SecondItem.target.value);
+    };
+
     useEffect(() => {
         loaddropdown();
         const getDataOfSmartMetaData = async () => {
@@ -237,13 +263,10 @@ export default function SmartMetadataEditPopup(props: any) {
             }
         }
         SecondLevel = parent;
-        TopLevel = item;
         Levels = Levels;
-        thirdCurrentLevel = item;
         ThirdLevel = firstParent;
         FourthLevel = lastparent;
         TaxType = taxType;
-        changedParent = false;
         if (item != undefined) {
             modaltype = 'Update';
             if (item.Item_x005F_x0020_Cover != undefined && item.Item_x005F_x0020_Cover.Url != undefined)
@@ -256,6 +279,7 @@ export default function SmartMetadataEditPopup(props: any) {
             obj.ParentID = parent != undefined ? parent.Id : 0;
             modaltype = 'Add';
         }
+        showingBreadcrumb(item);
     }
     const Removecategories = async () => {
         CurrentSiteUrl;
@@ -336,6 +360,7 @@ export default function SmartMetadataEditPopup(props: any) {
                 AlternativeTitle: SmartTaxonomyItem.AlternativeTitle,
                 LongTitle: SmartTaxonomyItem.LongTitle,
                 ParentID: SmartTaxonomyItem.ParentID,
+                ParentId: SmartTaxonomyItem.ParentID,
                 SortOrder: SmartTaxonomyItem.SortOrder,
                 Description1: SmartTaxonomyItem.Description1,
                 TaxType: SmartTaxonomyItem.TaxType,
@@ -401,88 +426,97 @@ export default function SmartMetadataEditPopup(props: any) {
         }
         console.log(elem)
     }, []);
-
+    const onRenderCustomHeaderMetadata = () => {
+        return (
+            <>
+                <div className='ps-4 siteColor subheading'>
+                    Update SmartMetadata Item
+                </div>
+                <Tooltip ComponentId={'1630'} />
+            </>
+        );
+    };
+    const onRenderMetadataChangeParent = () => {
+        return (
+            <>
+                <div className='ps-4 siteColor subheading'>
+                    Select Parent
+                </div>
+                <Tooltip ComponentId={'1630'} />
+            </>
+        );
+    };
     return (
         <>
-            {openChangeParentPopup && <section>
-                <Panel headerText="Select Parent"
-                    isOpen={true}
-                    onDismiss={closeParentPopup}
-                    isBlocking={false}
-                    type={PanelType.large}
-                    closeButtonAriaLabel="Close">
-                    <div className='modal-body'>
-                        <div className="col-sm-12 tab-content bdrbox pad10">
-                            <div className="form-group">
-                                <div className="col-xs-3">
-                                    Top Level:
+            <div>
+                {openChangeParentPopup && (
+                    <section>
+                        <Panel
+                            onRenderHeader={onRenderMetadataChangeParent}
+                            isOpen={true}
+                            onDismiss={closeParentPopup}
+                            isBlocking={false}
+                            type={PanelType.large}
+                            closeButtonAriaLabel="Close"
+                        >
+                            <div className="modal-body">
+                                <div className="col-sm-12 tab-content bdrbox pad10">
+                                    <div className="form-group">
+                                        <div className="col-xs-3">Top Level:</div>
+                                        <div className="col-xs-9">
+                                            <select
+                                                className="form-control"
+                                                value={selectedOptionTop}
+                                                onChange={handleTopOptionChange}
+                                            >
+                                                <option value="">Root</option>
+                                                {props?.AllMetadata?.map((item: any) => (
+                                                    <option key={item.Id} value={item.Title}>
+                                                        {item.Title}
+                                                    </option>
+                                                ))}
+                                            </select>
+                                        </div>
+                                        <div className="clearfix"></div>
+                                    </div>
+                                    <div className="form-group">
+                                        <div className="col-xs-3">
+                                            Second Level:<b className="span-error">*</b>
+                                        </div>
+                                        <div className="col-xs-9">
+                                            <select
+                                                className="form-control"
+                                                value={selectedOptionSecond}
+                                                onChange={handleSecondOptionChange}
+                                            >
+                                                <option value="">Select</option>
+                                                {childItems[0]?.map((item: any) => (
+                                                    <option key={item.Id} value={item.Title}>
+                                                        {item.Title}
+                                                    </option>
+                                                ))}
+                                            </select>
+                                        </div>
+                                        <div className="clearfix"></div>
+                                    </div>
+
                                 </div>
-                                <div className="col-xs-9">
-                                    <select
-                                        className="form-control"
-                                        value=""
-                                    >
-                                        <option value="">Root</option>
-                                        {TopLevelItems?.map((item: any) => (
-                                            <option key={item.Id} value={item.Id}>
-                                                {item.Title}
-                                            </option>
-                                        ))}
-                                    </select>
-                                </div>
-                                <div className="clearfix"></div>
                             </div>
-                            {SecondLevelItems.length > 0 && <div className="form-group">
-                                <div className="col-xs-3">
-                                    Second Level:
-                                    <b className="span-error">*</b>
-                                </div>
-                                <div className="col-xs-9">
-                                    <select
-                                        className="form-control"
-                                        value={ddlParentLevel2}
-                                    >
-                                        <option value="">Select</option>
-                                        {SecondLevelItems.map((item: any) => (
-                                            <option key={item.Id} value={item.Id}>
-                                                {item.Title}
-                                            </option>
-                                        ))}
-                                    </select>
-                                </div>
-                                <div className="clearfix"></div>
-                            </div>}
-                            {ThirdLevelItems.length > 0 && <div className="form-group">
-                                <div className="col-xs-3">
-                                    Third Level:
-                                    <b className="span-error">*</b>
-                                </div>
-                                <div className="col-xs-9">
-                                    <select
-                                        className="form-control"
-                                        value={ddlParentLevel2}
-                                    >
-                                        <option value="">Select</option>
-                                        {ThirdLevelItems.map((item: any) => (
-                                            <option key={item.Id} value={item.Id}>
-                                                {item.Title}
-                                            </option>
-                                        ))}
-                                    </select>
-                                </div>
-                                <div className="clearfix"></div>
-                            </div>}
-                        </div>
-                    </div>
-                    <div className='mt-2 text-end'>
-                        <button className='btn btn-primary' onClick={changeParentMetadata} >Save</button>
-                        <button className='btn btn-default ms-1'>Cancel</button>
-                    </div>
-                </Panel >
-            </section >}
+                            <div className="mt-2 text-end">
+                                <button className="btn btn-primary" onClick={changeParentMetadata}>
+                                    Save
+                                </button>
+                                <button className="btn btn-default ms-1" onClick={closeParentPopup}>
+                                    Cancel
+                                </button>
+                            </div>
+                        </Panel>
+                    </section>
+                )}
+            </div>
             <div>
                 <Panel
-                    headerText="Update SmartMetadata Item"
+                    onRenderHeader={onRenderCustomHeaderMetadata}
                     isOpen={true}
                     onDismiss={props.CloseEditSmartMetaPopup}
                     isBlocking={false}
@@ -507,73 +541,11 @@ export default function SmartMetadataEditPopup(props: any) {
                                         <div id="parentdiv" className="row" style={{ marginBottom: '4px' }}>
                                             <div className="col-xs-9">
                                                 <ul className=" m-0 p-0 spfxbreadcrumb">
-                                                    {!changedParent && FourthLevel == undefined && (
-                                                        <li>
-                                                            <a className={ThirdLevel == undefined && SecondLevel == undefined && TopLevel == undefined ? 'breadcrumbs__element' : ''}>
-                                                                Root
-                                                            </a>
-                                                        </li>
-                                                    )}
-                                                    {FourthLevel != undefined && (
-                                                        <li>
-                                                            <a className={FourthLevel != undefined ? 'breadcrumbs__element' : ''}>{FourthLevel.Title}</a>
-                                                        </li>
-                                                    )}
-                                                    {ThirdLevel != undefined && (
-                                                        <li>
-                                                            <a className={ThirdLevel != undefined ? 'breadcrumbs__element' : ''}>{ThirdLevel.Title}</a>
-                                                        </li>
-                                                    )}
-                                                    {SecondLevel != undefined && (
-                                                        <li>
-                                                            <a className={SecondLevel != undefined ? 'breadcrumbs__element' : ''}>{SecondLevel.Title}</a>
-                                                            {TopLevel != undefined && (<span>{TopLevel.Title}</span>)}
-
-                                                        </li>
-                                                    )}
-                                                    <li>
-                                                        {TopLevel != undefined && (<span>{TopLevel.Title}</span>)}
-                                                    </li>
-                                                </ul>
-                                                <ul className=" m-0 p-0 spfxbreadcrumb" style={{ display: changedParent ? 'block' : 'none' }}>
-                                                    {TopLevel != undefined && (
-                                                        <li>
-                                                            <span className={TopLevel != undefined ? 'breadcrumbs__element' : ''}>{TopLevel.Title}</span>
-                                                        </li>
-                                                    )}
-                                                    {SecondLevel != undefined && ddlParentLevel2 != undefined && (
-                                                        <li>
-                                                            <span className={SecondLevel != undefined && ddlParentLevel2 != undefined ? 'breadcrumbs__element' : ''}>
-                                                                {SecondLevel.Title}
-                                                            </span>
-                                                        </li>
-                                                    )}
-                                                    {SecondLevel != undefined && TopLevel != undefined && (
-                                                        <li>
-                                                            <span
-                                                                className={
-                                                                    ThirdLevel != undefined && SecondLevel != undefined && TopLevel != undefined
-                                                                        ? 'breadcrumbs__element'
-                                                                        : ''
-                                                                }
-                                                            >
-                                                                {thirdCurrentLevel.Title}
-                                                            </span>
-                                                        </li>
-                                                    )}
-                                                    {ThirdLevel != undefined && SecondLevel != undefined && TopLevel != undefined && (
-                                                        <li>
-                                                            <span
-                                                                className={
-                                                                    ThirdLevel != undefined && SecondLevel != undefined && TopLevel != undefined
-                                                                        ? 'breadcrumbs__element'
-                                                                        : ''
-                                                                }
-                                                            >
-                                                                {FourthLevel.Title}
-                                                            </span>
-                                                        </li>
-                                                    )}
+                                                    {metadatPopupBreadcrum.map((item: any) => {
+                                                        return (<li>
+                                                            <a className='breadcrumbs__element'>{item.Title}</a>
+                                                        </li>)
+                                                    })}
                                                 </ul>
                                             </div>
                                         </div>
@@ -652,7 +624,7 @@ export default function SmartMetadataEditPopup(props: any) {
                                                 {/* <a style={{ float: 'right' }} href="javascript:void(0);" onClick={() => openparent(SecondLevel)}> */}
                                                 <a href="javascript:void(0);">
                                                     Change Parent
-                                                    <span onClick={openParent} className="alignIcon  svg__iconbox svg__icon--edit"></span>
+                                                    <span onClick={() => openParent(SmartTaxonomyItem)} className="alignIcon  svg__iconbox svg__icon--edit"></span>
                                                 </a>
                                             </div>
                                         </div>
@@ -692,7 +664,7 @@ export default function SmartMetadataEditPopup(props: any) {
                         </div>
                         <div className={activeTab == 'ImageInfo' ? 'tab-pane fade show active' : 'tab-pane fade show active tab-pane fade'} id="ImageInfo" role="tabpanel" aria-labelledby="ImageInfo">   {activeTab == 'ImageInfo' && (
                             <div className="modal-body" style={{ overflowY: 'auto' }}>
-                                Image  Information
+                                <ImageTabComponenet EditSmartMetaData={props?.MetadataItems} AllListId={props?.AllList} Context={props?.AllList?.Context} callBack={callBackData} />
                             </div>
                         )}
                         </div>
