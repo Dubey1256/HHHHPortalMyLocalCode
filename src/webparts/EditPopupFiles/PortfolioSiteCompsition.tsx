@@ -1144,7 +1144,7 @@ const SiteCompositionComponent = (Props: any) => {
                     SiteTaskListData = SiteTaskTempArray;
                 }
             }
-            if (MasterTaskListData?.length > 0) {
+            if (MasterTaskListData?.length > 0 || SiteTaskListData?.length > 0) {
                 CommonFunctionForUpdateCC(MasterTaskListData, SiteTaskListData)
             }
         } else {
@@ -1257,6 +1257,7 @@ const SiteCompositionComponent = (Props: any) => {
                 })
             }
         }
+
         TempClientCategoryIds = TempArray.filter((val: any, id: any, array: any) => {
             return array.indexOf(val) == id;
         })
@@ -1273,7 +1274,7 @@ const SiteCompositionComponent = (Props: any) => {
         if (TaskType == "SiteTasks") {
             MakeUpdateJSONDataObject = {
                 ClientTime: SiteCompositionDataForTask?.length > 0 ? JSON.stringify(SiteCompositionDataForTask) : null,
-                ClientCategoryId: { "results": (TempClientCategoryIds != undefined && TempClientCategoryIds.length > 0) ? TempClientCategoryIds : [] },
+                ClientCategoryId: { "results": (ClientCategoryIds != undefined && ClientCategoryIds.length > 0) ? ClientCategoryIds : [] },
                 SiteCompositionSettings: (finalSiteCompositionSettingData != undefined && finalSiteCompositionSettingData.length > 0) ? JSON.stringify(finalSiteCompositionSettingData) : null,
             }
         }
@@ -1298,7 +1299,7 @@ const SiteCompositionComponent = (Props: any) => {
                         Select Item
                     </span>
                 </div>
-                <Tooltip ComponentId="1263" />
+                <Tooltip ComponentId="7429" />
             </div>
         )
     }
@@ -2067,6 +2068,7 @@ const SiteCompositionComponent = (Props: any) => {
                                     NextProp={AllListIdData}
                                     callback={callBackData}
                                     usedFor={"Site-Compositions"}
+                                    prevSelectedCC={SiteClientCatgeoryFinalData}
                                 />
                             </div>
                         </div>
