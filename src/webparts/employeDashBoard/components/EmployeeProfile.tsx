@@ -11,10 +11,10 @@ var taskUsers: any
 var dataLength: any = [];
 var count: number = 0;
 var AllData: any = [];
+let AllMasterTasks:any[]=[]
 var currentUserData: any
 const EmployeProfile = (props: any) => {
   let allData: any = [];
-
   const [AllSite, setAllSite] = useState([]);
   const [data, setData] = React.useState({ DraftCatogary: [], TodaysTask: [], BottleneckTask: [], ThisWeekTask: [], ImmediateTask: [], ApprovalTask: [] });
   const [currentTime, setCurrentTime]: any = useState([]);
@@ -22,11 +22,26 @@ const EmployeProfile = (props: any) => {
   const [approverEmail, setApproverEmail]: any = useState([]);
   const [timesheetListConfig, setTimesheetListConfig] = React.useState<any>()
   useEffect(() => {
+    loadMasterTask();
     loadTaskUsers();
     annouceMent();
   }, []);
 
-
+  const loadMasterTask = ()=>{
+    let web = new Web("https://hhhhteams.sharepoint.com/sites/HHHH/SP/");
+    web.lists
+      .getById("ec34b38f-0669-480a-910c-f84e92e58adf")
+      .items
+      .select('ComponentCategory/Id', 'PortfolioStructureID', 'Item_x0020_Type', 'PortfolioType/Id', 'PortfolioType/Color', 'PortfolioType/Title', 'Id', 'ValueAdded', 'Idea', 'Sitestagging', 'TechnicalExplanations', 'Short_x0020_Description_x0020_On', 'Short_x0020_Description_x0020__x', 'Short_x0020_description_x0020__x0', 'AdminNotes', 'Background', 'Help_x0020_Information', 'ItemType', 'Title', 'Parent/Id', 'Parent/Title')
+      .expand('Parent', 'ComponentCategory', "PortfolioType")
+  
+      .orderBy('Modified', false)
+      .getAll(4000).then((data: any) => {
+        AllMasterTasks = data;
+      }).catch((error: any) => {
+        console.log(error)
+      })
+  }
   const annouceMent = async () => {
     const web = new Web(props.props?.siteUrl);
     await web.lists
@@ -58,7 +73,7 @@ const EmployeProfile = (props: any) => {
         setTimesheetListConfig(timesheetListConfig)
         data?.map((item: any) => {
           if (item.TaxType == "Sites") {
-            if (item.Title != "DRR" && item.Title != "Master Tasks" && item.Title != "SDC Sites" && item.Configurations != null) {
+            if (item.Title != "DRR" && item.Title != "Master Tasks" && item.Title != "SDC Sites" && item.Title != "Offshore Tasks" && item.Configurations != null) {
               AllsiteData.push(item)
               let a: any = JSON.parse(item.Configurations);
               a?.map((newitem: any) => {
@@ -71,14 +86,9 @@ const EmployeProfile = (props: any) => {
         });
         setAllSite(AllsiteData)
       })
-
-
-
       .catch((error: any) => {
         console.log(error)
       })
-
-
   };
   const loadTaskUsers = async () => {
     // setPageLoader(true)
@@ -161,20 +171,21 @@ const EmployeProfile = (props: any) => {
           items.Team_x0020_Members?.forEach((member: any) => {
             if (member && member.Id === currentUserData.AssingedToUser.Id) {
               items.siteIcon = ConfigItem.ImageUrl;
+              items.SiteIcon = ConfigItem.ImageUrl;
               allData.push(items);
             }
           });
-
           items.Responsible_x0020_Team?.forEach((resp: any) => {
             if (resp && resp.Id === currentUserData.AssingedToUser.Id) {
               items.siteIcon = ConfigItem.ImageUrl;
+              items.SiteIcon = ConfigItem.ImageUrl;
               allData.push(items);
             }
           });
-
           items.AssignedTo?.forEach((assign: any) => {
             if (assign && assign.Id === currentUserData.AssingedToUser.Id) {
               items.siteIcon = ConfigItem.ImageUrl;
+              items.SiteIcon = ConfigItem.ImageUrl;
               allData.push(items);
             }
           });
@@ -212,7 +223,7 @@ const EmployeProfile = (props: any) => {
                   ImmediateTask.push(items);
                 } else if (items.workingThisWeek === true) {
                   ThisWeekTask.push(items);
-                } else if (items.PercentComplete === 1) {
+                } else if (items.percentage == "1%") {
                   ApprovalTask.push(items);
                 }
               }
@@ -226,14 +237,12 @@ const EmployeProfile = (props: any) => {
         console.log("then catch error", err);
       });
   };
-
   return (
-    <myContextValue.Provider value={{ ...myContextValue, approverEmail: approverEmail, propsValue: props.props, currentTime:currentTime, annouceMents: annouceMents, siteUrl: props?.props?.siteUrl, AllSite: AllSite, currentUserData: currentUserData, AlltaskData: data, timesheetListConfig: timesheetListConfig }}>
+    <myContextValue.Provider value={{ ...myContextValue, approverEmail: approverEmail, propsValue: props.props, currentTime:currentTime, annouceMents: annouceMents, siteUrl: props?.props?.siteUrl, AllSite: AllSite, currentUserData: currentUserData, AlltaskData: data, timesheetListConfig: timesheetListConfig, AllMasterTasks : AllMasterTasks }}>
       <div> <Header /></div>
       <TaskStatusTbl />
       <MultipleWebpart/>
     </myContextValue.Provider>
   );
 };
-
 export default EmployeProfile;
