@@ -8,6 +8,7 @@ import EditTaskPopup from "../../../globalComponents/EditTaskPopup/EditTaskPopup
 import { SPFI, spfi, SPFx as spSPFx } from "@pnp/sp";
 import 'bootstrap/dist/css/bootstrap.min.css';
 import GlobalCommanTable from "../../../globalComponents/GroupByReactTableComponents/GlobalCommanTable";
+import ReactPopperTooltipSingleLevel from "../../../globalComponents/Hierarchy-Popper-tooltipSilgleLevel/Hierarchy-Popper-tooltipSingleLevel";
 // import GlobalCommanTable from '../../../globalComponents/GlobalCommanTable';
 
 const MultipleWebpart = (Tile: any) => {
@@ -18,6 +19,7 @@ const MultipleWebpart = (Tile: any) => {
   const immediateTask: any = ContextData?.AlltaskData.ImmediateTask;
   const thisWeekTask: any = ContextData?.AlltaskData.ThisWeekTask;
   const approvalTask: any = ContextData?.AlltaskData.ApprovalTask;
+  const AllMasterTasks: any = ContextData?.AllMasterTasks;
   const [editPopup, setEditPopup]: any = React.useState(false);
   const [result, setResult]: any = React.useState(false);
 
@@ -131,17 +133,15 @@ const MultipleWebpart = (Tile: any) => {
         size: 95
       },
       {
-        accessorFn: (row: any) => row?.TaskID,
-        cell: ({ row, getValue }: any) => (
-          <>
-            <ReactPopperTooltip ShareWebId={getValue()} row={row} AllListId={ContextData?.propsValue?.Context} />
-          </>
-        ),
-        id: "TaskID",
+        accessorKey: "TaskID",
         placeholder: "ID",
-        header: "",
-        resetColumnFilters: false,
-        size: 195
+        id: 'TaskID',
+        size: 195,
+        cell: ({ row, getValue }) => (
+          <span className="d-flex">
+            <ReactPopperTooltipSingleLevel ShareWebId={row?.original?.TaskID} row={row?.original} singleLevel={true} masterTaskData={AllMasterTasks} AllSitesTaskData={todaysTask} AllListId={ContextData?.propsValue?.Context} />
+          </span>
+        ),
       },
       {
 
@@ -176,7 +176,7 @@ const MultipleWebpart = (Tile: any) => {
       },
       {
         accessorKey: "percentage",
-        placeholder: "&",
+        placeholder: "% Complete",
         header: "",
         resetColumnFilters: false,
         size: 42,
@@ -243,7 +243,7 @@ const MultipleWebpart = (Tile: any) => {
           <div className="empAllSec approvalSec clearfix">
             <div className="d-flex mb-2 justify-content-between">
               <span className="fw-bold">
-                Waiting for Approval {`(${draftCatogary.length})`}
+                Waiting for Approval {`(${approvalTask.length})`}
               </span>
               <span className="alignCenter">
                 <span className="empCol me-3 hreflink">Approve</span>
