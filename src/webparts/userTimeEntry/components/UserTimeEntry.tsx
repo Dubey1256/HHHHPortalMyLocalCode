@@ -227,7 +227,12 @@ export default class UserTimeEntry extends React.Component<IUserTimeEntryProps, 
               }
             }
           }
-
+          const BtnElement = document.getElementsByClassName("rct-collapse rct-collapse-btn");
+          if (BtnElement) {
+            for (let j = 0; j < BtnElement.length; j++) {
+              BtnElement[j].classList.add('mt--5');
+            }
+          }
         }, 1000);
       }
       else {
@@ -265,6 +270,19 @@ export default class UserTimeEntry extends React.Component<IUserTimeEntryProps, 
               }
             }
           }
+          const AllCheckBox = document.querySelectorAll('[type="checkbox"]')
+          if (AllCheckBox) {
+            for (let j = 0; j < AllCheckBox.length; j++) {
+              AllCheckBox[j].classList.add('form-check-input', 'cursor-pointer');
+            }
+          }
+          const BtnElement = document.getElementsByClassName("rct-collapse rct-collapse-btn");
+          if (BtnElement) {
+            for (let j = 0; j < BtnElement.length; j++) {
+              BtnElement[j].classList.add('mt--5');
+            }
+          }
+
         }, 30);
       }
     } catch (e: any) {
