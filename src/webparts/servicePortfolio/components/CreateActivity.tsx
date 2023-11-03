@@ -24,7 +24,7 @@ let AllMetadata: any = [];
 let AllTaskUsers: any = [];
 let siteConfig: any = [];
 let loggedInUser: any = {};
-let ClientCategoriesData:any=[];
+let ClientCategoriesData: any = [];
 let AutoCompleteItemsArray: any = [];
 let FeedBackItem: any = {};
 const CreateActivity = (props: any) => {
@@ -82,9 +82,9 @@ const CreateActivity = (props: any) => {
             setTaskTeamMembers(props?.selectedItem?.TeamMember)
         }
         if (props?.selectedItem?.ClientCategory?.length > 0) {
-            ClientCategoriesData=props?.selectedItem?.ClientCategory
+            ClientCategoriesData = props?.selectedItem?.ClientCategory
         } else if (props?.selectedItem?.ClientCategory?.results?.length > 0) {
-            ClientCategoriesData=props?.selectedItem?.ClientCategory?.results
+            ClientCategoriesData = props?.selectedItem?.ClientCategory?.results
         }
         setSelectedItem(props?.selectedItem)
 
@@ -208,16 +208,18 @@ const CreateActivity = (props: any) => {
                 }
             })
         }
-        
+
         if (AllMetadata?.length > 0 && ClientCategoriesData?.length > 0) {
-         ClientCategoriesData?.map((cat: any) => {
+            let a: any = [];
+            ClientCategoriesData?.map((cat: any) => {
                 let searchedCat = AllMetadata?.find((item: any) => item.Id == cat?.Id)
                 if (searchedCat) {
-                    return searchedCat
+                    a?.push(searchedCat)
                 } else {
-                    return cat
+                    a?.push(cat)
                 }
             })
+            ClientCategoriesData = a;
         }
     }
     // **************  Get smartmetadata function End ************************* 
