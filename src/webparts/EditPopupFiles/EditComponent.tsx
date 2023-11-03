@@ -371,9 +371,6 @@ function EditInstitution({ item, SelectD, Calls, usedFor }: any) {
         "Reference_x0020_Item_x0020_Json",
         "TeamMembers/Title",
         "TeamMembers/Name",
-        "Component/Id",
-        "Component/Title",
-        "Component/ItemType",
         "TeamMembers/Id",
         "Item_x002d_Image",
         "ComponentLink",
@@ -418,7 +415,6 @@ function EditInstitution({ item, SelectD, Calls, usedFor }: any) {
       .expand(
         "ClientCategory",
         "AssignedTo",
-        "Component",
         "ComponentPortfolio",
         "ServicePortfolio",
         "AttachmentFiles",
@@ -1454,7 +1450,7 @@ if(res?.ClientCategory != undefined && res?.ClientCategory?.results?.length >0 )
 
           ItemRank: ItemRank,
           PriorityRank: Items.PriorityRank,
-          ComponentId: { results: smartComponentsIds },
+          // ComponentId: { results: smartComponentsIds },
           DeliverableSynonyms: Items.DeliverableSynonyms,
           StartDate: EditData?.StartDate
             ? moment(EditData?.StartDate).format("MM-DD-YYYY")

@@ -110,7 +110,7 @@ const ImmediateTaskTbl = (Tile: any) => {
             },
             {
                 accessorKey: "percentage",
-                placeholder: "&",
+                placeholder: "% Complete",
                 header: "",
                 resetColumnFilters: false,
                 size: 42,

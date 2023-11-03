@@ -22,6 +22,7 @@ import ShowClintCatogory from "../../../globalComponents/ShowClintCatogory";
 import * as Moment from 'moment-timezone';
 import { MdEmail } from "react-icons/Md";
  import Loader from "react-loader";
+import ReactPopperTooltipSingleLevel from '../../../globalComponents/Hierarchy-Popper-tooltipSilgleLevel/Hierarchy-Popper-tooltipSingleLevel';
 var AllUsers: any = []
 let smartmetaDetails: any = [];
 var AllTasks: any = []
@@ -44,6 +45,7 @@ var TotleTaskTime:any=0.00
 var leaveUsers:any  = 0.00
 var checkDate: any = ''
 //var DevloperTime: any = 0
+let isColumnDefultSortingAsc: any = false;
 //var QATime: any = 0
 var FeedBackItemArray: any = [];
 var todayLeaveUsers:any=[]
@@ -59,6 +61,7 @@ var designhalfdayleave:any = [];
 var QAfulldayleave:any = [];
 var developmentfulldayleave:any = [];
 var AllMetadata:any=[]
+var componentDetails:any = [];
 var designfulldayleave:any = [];
 const TimeReport = (props:any) => {
    
@@ -95,6 +98,7 @@ const TimeReport = (props:any) => {
     var datteee:any = new Date()
     // var MyYesterdayDate:any = Moment(datteee).add(-1, 'days').format()
     setDefaultDate(datteee)
+    GetComponents();
     GetSmartmetadata();
         showProgressBar();
         GetTaskUsers();
@@ -128,7 +132,7 @@ const TimeReport = (props:any) => {
         metadatItem = await web.lists
             .getById(props?.ContextData?.SmartMetadataListID)
             .items
-            .select('Id', 'Title', 'IsVisible', 'ParentID', 'SmartSuggestions', 'TaxType', 'Description1', 'Item_x005F_x0020_Cover', 'listId', 'siteName', 'siteUrl', 'SortOrder', 'SmartFilters', 'Selectable', 'Parent/Id', 'Parent/Title')
+            .select('Id', 'Title', 'IsVisible', 'ParentID', 'SmartSuggestions','Color_x0020_Tag', 'TaxType', 'Description1', 'Item_x005F_x0020_Cover', 'listId', 'siteName', 'siteUrl', 'SortOrder', 'SmartFilters', 'Selectable', 'Parent/Id', 'Parent/Title')
             .top(4999)
             .expand('Parent')
             .get()
@@ -146,6 +150,59 @@ const TimeReport = (props:any) => {
 
     }
     TaskItemRank.push([{ rankTitle: 'Select Item Rank', rank: null }, { rankTitle: '(8) Top Highlights', rank: 8 }, { rankTitle: '(7) Featured Item', rank: 7 }, { rankTitle: '(6) Key Item', rank: 6 }, { rankTitle: '(5) Relevant Item', rank: 5 }, { rankTitle: '(4) Background Item', rank: 4 }, { rankTitle: '(2) to be verified', rank: 2 }, { rankTitle: '(1) Archive', rank: 1 }, { rankTitle: '(0) No Show', rank: 0 }]);
+
+
+
+    const GetComponents = async () => {
+       
+        let web = new Web(props?.ContextData?.siteUrl);
+       
+        componentDetails = await web.lists
+            .getById(props?.ContextData?.MasterTaskListID)
+            .items
+            .select("ID", "Id", "Title", "PortfolioLevel", "PortfolioStructureID", "Comments", "ItemRank", "Portfolio_x0020_Type", "Parent/Id", "Parent/Title",
+                "DueDate", "Body", "Item_x0020_Type", "Categories", "Short_x0020_Description_x0020_On", "PriorityRank", "Priority",
+                "TeamMembers/Id", "TeamMembers/Title", "ClientCategory/Id", "ClientCategory/Title", "PercentComplete",
+                "ResponsibleTeam/Id", "ResponsibleTeam/Title", "PortfolioType/Id", "PortfolioType/Color", "PortfolioType/IdRange", "PortfolioType/Title", "AssignedTo/Id", "AssignedTo/Title", "AssignedToId", "Author/Id", "Author/Title", "Editor/Id", "Editor/Title",
+                "Created", "Modified", "Deliverables", "TechnicalExplanations", "Help_x0020_Information", "AdminNotes", "Background", "Idea", "ValueAdded", "Sitestagging"
+            )
+            .expand(
+                "Parent", "PortfolioType", "AssignedTo", "ClientCategory", "TeamMembers", "ResponsibleTeam", "Editor", "Author"
+            )
+            .top(4999)
+            .get();
+
+        console.log(componentDetails);
+        componentDetails.forEach((result: any) => {
+            result["siteType"] = "Master Tasks";
+            result.AllTeamName = "";
+            result.descriptionsSearch = '';
+            result.commentsSearch = '';
+            result.TaskTypeValue = '';
+            result.portfolioItemsSearch = result.Item_x0020_Type;
+            result.TeamLeaderUser = [];
+            if (result.Item_x0020_Type === 'Component') {
+                result.boldRow = 'boldClable'
+                result.lableColor = 'f-bg';
+            }
+            if (result.Item_x0020_Type === 'SubComponent') {
+                result.lableColor = 'a-bg';
+            }
+            if (result.Item_x0020_Type === 'Feature') {
+                result.lableColor = 'w-bg';
+            }
+            if (result?.Item_x0020_Type != undefined) {
+                result.SiteIconTitle = result?.Item_x0020_Type?.charAt(0);
+            }
+            result["TaskID"] = result?.PortfolioStructureID;
+
+          
+        });
+        
+       
+    };
+
+
 
     const LoadAllSiteTasks =  () => {
         var Counter = 0;
@@ -198,6 +255,9 @@ const TimeReport = (props:any) => {
                         AllTasks.forEach((result: any) => {
                             if (result.DueDate == 'Invalid date' || '') {
                                 result.DueDate = result.DueDate.replaceAll("Invalid date", "")
+                            }
+                            if(result?.Id == '12590'){
+                                console.log('My  Data')
                             }
                             result.TaskId =  globalCommon.GetTaskId(result);
                         })
@@ -287,7 +347,7 @@ QATime = 0.00;
             var Datenew = Moment(MyYesterdayDate).format("DD/MM/YYYY")
             var myDate = new Date()
             // var final: any = (Moment(myDate).add(-2, 'days').format())
-            var final: any = (Moment(myDate).add(-1, 'days').format())
+            var final: any = (Moment(myDate).add(-2, 'days').format())
         }
         if(selectDatess == 'Today'){
             selectdate=undefined
@@ -533,18 +593,21 @@ QATime = 0.00;
                         if (task.TaskDE != undefined && task.TaskDE.Id != undefined) {
                             sheetDetails.Task = task.TaskDE.Title; // == undefined ? (task.Title == undefined ? '' : task.Title)  : task.TaskDE.Title;
                             sheetDetails.TaskId = task.TaskDE.Id
+                            sheetDetails.Id = task.TaskDE.Id
                             DESitee += '(Id eq ' + task.TaskDE.Id + ') or';
                             sheetDetails.siteType = 'DE'
                         }
                         if (task.TaskEI != undefined && task.TaskEI.Id != undefined) {
                             sheetDetails.Task = task.TaskEI.Title; // == undefined ? (task.Title == undefined ? '' : task.Title)  : task.TaskEI.Title;
                             sheetDetails.TaskId = task.TaskEI.Id;
+                            sheetDetails.Id = task.TaskEI.Id
                             EISitee += '(Id eq ' + task.TaskEI.Id + ') or';
                             sheetDetails.siteType = 'EI'
                         }
                         if (task.TaskEPS != undefined && task.TaskEPS.Id != undefined) {
                             sheetDetails.Task = task.TaskEPS.Title; // == undefined ? (task.Title == undefined ? '' : task.Title)  : task.TaskEP.Title;
                             sheetDetails.TaskId = task.TaskEPS.Id
+                            sheetDetails.Id = task.TaskEPS.Id
                             EPSSitee += '(Id eq ' + task.TaskEPS.Id + ') or';
                             sheetDetails.siteType = 'EPS'
                         }
@@ -552,65 +615,76 @@ QATime = 0.00;
                             sheetDetails.Task = task.TaskEducation.Title; // =   sheetDetails.TaskId = task.TaskEducation.Id;
                             EducationSitee += '(Id eq ' + task.TaskEducation.Id + ') or';
                             sheetDetails.TaskId = task.TaskEducation.Id
+                            sheetDetails.Id = task.TaskEducation.Id
                             sheetDetails.siteType = 'Education'
                         }
                         if (task.TaskHHHH != undefined && task.TaskHHHH.Id != undefined) {
                             sheetDetails.Task = task.TaskHHHH.Title; // == undefined ? (task.Title == undefined ? '' : task.Title) : task.TaskHHHH.Title;
                             sheetDetails.TaskId = task.TaskHHHH.Id
+                            sheetDetails.Id = task.TaskHHHH.Id
                             HHHHSitee += '(Id eq ' + task.TaskHHHH.Id + ') or';
                             sheetDetails.siteType = 'HHHH'
                         }
                         if (task.TaskQA != undefined && task.TaskQA.Id != undefined) {
                             sheetDetails.Task = task.TaskQA.Title; // == undefined ? (task.Title == undefined ? '' : task.Title)  : task.TaskQA.Title;
                             sheetDetails.TaskId = task.TaskQA.Id
+                            sheetDetails.Id = task.TaskQA.Id
                             QASitee += '(Id eq ' + task.TaskQA.Id + ') or';
                             sheetDetails.siteType = 'QA'
                         }
                         if (task.TaskGender != undefined && task.TaskGender.Id != undefined) {
                             sheetDetails.Task = task.TaskGender.Title; // == undefined ? (task.Title == undefined ? '' : task.Title)  : task.TaskGender.Title;
                             sheetDetails.TaskId = task.TaskGender.Id
+                            sheetDetails.Id = task.TaskGender.Id
                             GenderSitee += '(Id eq ' + task.TaskGender.Id + ') or';
                             sheetDetails.siteType = 'Gender'
                         }
                         if (task.TaskShareweb != undefined && task.TaskShareweb.Id != undefined) {
                             sheetDetails.Task = task.TaskShareweb.Title; // == undefined ? (task.Title == undefined ? '' : task.Title)  : task.TaskShareweb.Title;
                             sheetDetails.TaskId = task.TaskShareweb.Id
+                            sheetDetails.Id = task.TaskShareweb.Id
                             SharewebSitee += '(Id eq ' + task.TaskShareweb.Id + ') or';
                             sheetDetails.siteType = 'Shareweb'
                         }
                         if (task.TaskGruene != undefined && task.TaskGruene.Id != undefined) {
                             sheetDetails.Task = task.TaskGruene.Title; // == undefined ? (task.Title == undefined ? '' : task.Title)  : task.TaskGruene.Title;
                             sheetDetails.TaskId = task.TaskGruene.Id
+                            sheetDetails.Id = task.TaskGruene.Id
                             GrueneSitee += '(Id eq ' + task.TaskGruene.Id + ') or';
                             sheetDetails.siteType = 'Gruene'
                         }
                         if (task.TaskOffshoreTasks != undefined && task.TaskOffshoreTasks.Id != undefined) {
                             sheetDetails.Task = task.TaskOffshoreTasks.Title; // == undefined ? (task.Title == undefined ? '' : task.Title)  : task.TaskOffshoreTasks.Title;
                             sheetDetails.TaskId = task.TaskOffshoreTasks.Id
+                            sheetDetails.Id = task.TaskOffshoreTasks.Id
                             OffshoreSitee += '(Id eq ' + task.TaskOffshoreTasks.Id + ') or';
                             sheetDetails.siteType = 'Offshore Tasks'
                         }
                         if (task.TaskHealth != undefined && task.TaskHealth.Id != undefined) {
                             sheetDetails.Task = task.TaskHealth.Title;
                             sheetDetails.TaskId = task.TaskHealth.Id
+                            sheetDetails.Id = task.TaskHealth.Id
                             HealthSitee += '(Id eq ' + task.TaskHealth.Id + ') or';
                             sheetDetails.siteType = 'Health'
                         }
                         if (task.TaskKathaBeck != undefined && task.TaskKathaBeck.Id != undefined) {
                             sheetDetails.Task = task.TaskKathaBeck.Title;
                             sheetDetails.TaskId = task.TaskKathaBeck.Id
+                            sheetDetails.Id = task.TaskKathaBeck.Id
                             KathaBeckSitee += '(Id eq ' + task.TaskKathaBeck.Id + ') or';
                             sheetDetails.siteType = 'KathaBeck'
                         }
                         if (task.TaskMigration != undefined && task.TaskMigration.Id != undefined) {
                             sheetDetails.Task = task.TaskMigration.Title;
                             sheetDetails.TaskId = task.TaskMigration.Id
+                            sheetDetails.Id = task.TaskMigration.Id
                             MigrationSitee += '(Id eq ' + task.TaskMigration.Id + ') or';
                             sheetDetails.siteType = 'Migration'
                         }
                         if (task.TaskALAKDigital != undefined && task.TaskALAKDigital.Id != undefined) {
                             sheetDetails.Task = task.TaskALAKDigital.Title;
                             sheetDetails.TaskId = task.TaskALAKDigital.Id
+                            sheetDetails.Id = task.TaskALAKDigital.Id
                             ALAKDigitalSitee += '(Id eq ' + task.TaskALAKDigital.Id + ') or';
                             sheetDetails.siteType = 'ALAKDigital'
                         }
@@ -848,14 +922,19 @@ QATime = 0.00;
                 size: 40,
             },
             {
-
                 accessorFn: (row) => row?.NewTaskId,
-                id: 'TaskID',
-                header: '',
-                placeholder: "TaskID",
-                size: 180,
-               
- 
+                cell: ({ row, getValue }) => (
+                    <>
+                        <ReactPopperTooltipSingleLevel ShareWebId={getValue()} row={row?.original} AllListId={props.ContextData} singleLevel={true} masterTaskData={componentDetails} AllSitesTaskData={AllTasks} />
+                    </>
+                ),
+                id: "TaskID",
+                placeholder: "ID",
+                header: "",
+                resetColumnFilters: false,
+                isColumnDefultSortingAsc: isColumnDefultSortingAsc,
+                // isColumnDefultSortingAsc:true,
+                size: 140,
             },
         
 
@@ -892,7 +971,7 @@ QATime = 0.00;
                 header: '',
                 accessorFn: (row) => row?.Components,
                 placeholder: "Components",
-                size: 90,
+                size: 100,
 
             },
             {
@@ -900,7 +979,7 @@ QATime = 0.00;
                 header: '',
                 accessorFn: (row) => row?.SubComponents,
                 placeholder: "SubComponents",
-                size: 90,
+                size: 100,
                 cell: ({ row, getValue }) => (
                     <>
                         <a data-interception="off" target="_blank" className="hreflink serviceColor_Active"
@@ -928,7 +1007,7 @@ QATime = 0.00;
                 header: '',
                 accessorFn: (row) => row?.Features,
                 placeholder: "Features",
-                size: 225,
+                size: 100,
 
             },
             {

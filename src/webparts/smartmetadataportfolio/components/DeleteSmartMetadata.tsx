@@ -1,6 +1,7 @@
 import { Panel, PanelType } from 'office-ui-fabric-react';
 import * as React from 'react';
 import { Web } from 'sp-pnp-js';
+import Tooltip from '../../../globalComponents/Tooltip';
 export default function DeleteSmartMetadataOpenPopup(props: any) {
     let DeleteItemCallBack: any = props.DeleteItemCallBack
     let smartMetadataItem: any = props.modalInstance;
@@ -26,12 +27,13 @@ export default function DeleteSmartMetadataOpenPopup(props: any) {
             });
         }
     }
-    const onRenderCustomHeaderDocuments = () => {
+    const onRenderDeleteSmartMetadata = () => {
         return (
             <>
                 <div className='subheading siteColor'>
                     Delete SmartMetadata - {smartMetadataItem.Title}
                 </div>
+                <Tooltip ComponentId={'1630'} />
             </>
         );
     };
@@ -44,7 +46,7 @@ export default function DeleteSmartMetadataOpenPopup(props: any) {
                     onDismiss={closeDeleteSmartMetaPopup}
                     type={PanelType.custom}
                     isBlocking={false}
-                    onRenderHeader={onRenderCustomHeaderDocuments}
+                    onRenderHeader={onRenderDeleteSmartMetadata}
                     customWidth="750px"
                 >
                     <div className="modal-body bg-f5f5 bdrbox clearfix">

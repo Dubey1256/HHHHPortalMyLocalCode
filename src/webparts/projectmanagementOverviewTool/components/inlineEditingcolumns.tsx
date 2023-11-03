@@ -1660,7 +1660,7 @@ const inlineEditingcolumns = (props: any) => {
         isOpen={taskCategoriesPopup}
         customWidth="500px"
         onDismiss={() => setTaskCategoriesPopup(false)}
-        isBlocking={remark}
+        isBlocking={true}
       >
         <div>
           <div className="col-sm-12">

@@ -3,10 +3,10 @@ import { useEffect, useState } from 'react';
 import pnp, { Web } from "sp-pnp-js";
 import "@pnp/sp/sputilities";
 import * as moment from 'moment';
-import { SPFI, SPFx as spSPFx } from "@pnp/sp";
+import { SPFI, SPFx as spSPFx, spfi } from "@pnp/sp";
 import { GlobalConstants } from '../globalComponents/LocalCommon';
 import { PageContext } from "@microsoft/sp-page-context";
-import { spfi } from "@pnp/sp/presets/all";
+import { } from "@pnp/sp/presets/all";
 import { MSGraphClientV3 } from '@microsoft/sp-http';
 export const myContextValue: any = React.createContext<any>({})
 export const pageContext = async () => {

@@ -202,7 +202,10 @@ const EditTaskPopup = (Items: any) => {
         { value: 2, status: "2% Follow Up", taskStatusComment: "Follow Up" },
         { value: 3, status: "3% Approved", taskStatusComment: "Approved" },
         { value: 5, status: "5% Acknowledged", taskStatusComment: "Acknowledged" },
-        { value: 10, status: "10% working on it", taskStatusComment: "working on it" }
+        { value: 10, status: "10% working on it", taskStatusComment: "working on it" },
+        { value: 80, status: "80% In QA Review", taskStatusComment: "In QA Review" },
+        { value: 90, status: "90% Task completed", taskStatusComment: "Task completed" },
+        { value: 100, status: "100% Closed", taskStatusComment: "Closed" }
     ]);
 
     let FeedBackCount: any = 0;
@@ -281,7 +284,7 @@ const EditTaskPopup = (Items: any) => {
 
     const SmartMetaDataListInformations = async () => {
         let AllSmartDataListData: any = [];
-       
+
         let AllClientCategoryData: any = [];
         let AllCategoriesData: any = [];
         let AllTimesheetCategoriesData: any = [];
@@ -760,8 +763,8 @@ const EditTaskPopup = (Items: any) => {
                     let ApprovalCheck = item.Categories.search("Approval");
                     let OnlyCompletedCheck = item.Categories.search("Only Completed");
                     let DesignCheck: any;
-                    if (item.Categories == "Design") {
-                        DesignCheck = item.Categories.search("Design")
+                    if (item.Categories == "Design" || item.Categories == "Design;") {
+                        DesignCheck = item.Categories.search("Design");
                     }
                     if (phoneCheck >= 0) {
                         setPhoneStatus(true)
@@ -2252,7 +2255,7 @@ const EditTaskPopup = (Items: any) => {
                         }
                         if (ApproverData != undefined && ApproverData.length > 0) {
                             if (ApproverData[0].Id == currentUserId && currentUserId != EditData?.Author.Id) {
-                               EditData.TaskApprovers = EditData.TaskCreatorData
+                                EditData.TaskApprovers = EditData.TaskCreatorData
                                 //EditData.TaskApprovers.push(EditData?.Author)
                             }
                         }
@@ -2325,10 +2328,12 @@ const EditTaskPopup = (Items: any) => {
                                     dataEditor.data.editpopup = true;
                                     dataEditor.data.TaskID = EditData.TaskId
                                     dataEditor.data.listId = Items.Items.listId
+                                    dataEditor.data.SiteIcon = Items?.Items?.SiteIcon
+                                    dataEditor.data.DisplayCreateDate = Items?.Items?.DisplayCreateDate
                                     dataEditor.data.FeedBack = JSON.stringify(dataEditor.data.FeedBack)
                                     Items.Call(dataEditor, "UpdatedData");
                                 }
-                                else{
+                                else {
 
                                     Items.Call(DataJSONUpdate, "UpdatedData");
                                 }
@@ -2901,7 +2906,7 @@ const EditTaskPopup = (Items: any) => {
                     ApprovedGlobalCount++;
                     setSendEmailGlobalCount(sendEmailGlobalCount + 1)
                     if (ApprovedStatusCount == 0) {
-                        if (Status >= 2) {
+                        if (Status >= 2 && Status < 70) {
                             setInputFieldDisable(true)
                             setStatusOnChangeSmartLight(2);
                         }
@@ -2913,7 +2918,7 @@ const EditTaskPopup = (Items: any) => {
                             ApprovedGlobalCount++;
                             setSendEmailGlobalCount(sendEmailGlobalCount + 1)
                             if (ApprovedStatusCount == 0) {
-                                if (Status <= 2) {
+                                if (Status <= 2 && Status < 70) {
                                     setInputFieldDisable(true)
                                     setStatusOnChangeSmartLight(2);
                                 }
@@ -3915,15 +3920,15 @@ const EditTaskPopup = (Items: any) => {
 
     const onRenderCustomHeaderMain = () => {
         return (
-            <div className={ServicesTaskCheck ? "d-flex full-width pb-1 serviepannelgreena" : "d-flex full-width pb-1"}>
-                <div className="subheading">
-                    <img className="imgWid29 pe-1 mb-1 " src={Items.Items.SiteIcon} />
+            <>
+                <div className={ServicesTaskCheck ? "serviepannelgreena subheading alignCenter" : "subheading alignCenter"}>
+                    <img className="imgWid29 pe-1" src={Items.Items.SiteIcon} />
                     <span className="siteColor">
                         {`${EditData.TaskId != undefined || EditData.TaskId != null ? EditData.TaskId : ""} ${EditData.Title != undefined || EditData.Title != null ? EditData.Title : ""}`}
                     </span>
                 </div>
                 <Tooltip ComponentId="1683" isServiceTask={ServicesTaskCheck} />
-            </div>
+            </>
         );
     };
     const onRenderStatusPanelHeader = () => {
@@ -3947,6 +3952,16 @@ const EditTaskPopup = (Items: any) => {
                     <span className="siteCOlor">
                         Select Site
                     </span>
+                </div>
+                <Tooltip ComponentId="1683" isServiceTask={ServicesTaskCheck} />
+            </div>
+        );
+    };
+    const onRenderCustomHeaderAddImageDescription = () => {
+        return (
+            <div className={ServicesTaskCheck ? "d-flex full-width pb-1 serviepannelgreena" : "d-flex full-width pb-1"}>
+                <div className="subheading">
+                    Add Image Descriptions
                 </div>
                 <Tooltip ComponentId="1683" isServiceTask={ServicesTaskCheck} />
             </div>
@@ -5050,9 +5065,9 @@ const EditTaskPopup = (Items: any) => {
                                                                             </span>
                                                                         </div>
                                                                         <div className="alignCenter">
-                                                                            <span onClick={() => openReplaceImagePopup(index)} title="Replace image"><TbReplace /> </span>
+                                                                            <span onClick={() => openReplaceImagePopup(index)} title="Replace Image"><TbReplace /> </span>
                                                                             <span className="mx-1" title="Delete" onClick={() => RemoveImageFunction(index, ImageDtl.ImageName, "Remove")}> | <RiDeleteBin6Line /> | </span>
-                                                                            <span title="Customize the width of page" onClick={() => ImageCustomizeFunction(index)}>
+                                                                            <span title="Customize the Width of Page" onClick={() => ImageCustomizeFunction(index)}>
                                                                                 <FaExpandAlt /> |
                                                                             </span>
                                                                             <span className="ms-1 m-0 img-info hover-text" onClick={() => openAddImageDescriptionFunction(index, ImageDtl, "Opne-Model")}>
@@ -6091,7 +6106,7 @@ const EditTaskPopup = (Items: any) => {
                                                                 </span>
                                                             </div>
                                                             <div className="alignCenter">
-                                                                <span onClick={() => openReplaceImagePopup(index)} title="Replace image"><TbReplace /> </span>
+                                                                <span onClick={() => openReplaceImagePopup(index)} title="Replace Image"><TbReplace /> </span>
                                                                 <span className="mx-1" title="Delete" onClick={() => RemoveImageFunction(index, imgData.ImageName, "Remove")}> | <RiDeleteBin6Line /> | </span>
                                                                 <span title={imgData.Description != undefined && imgData.Description?.length > 1 ? imgData.Description : "Add Image Description"} className="img-info" onClick={() => openAddImageDescriptionFunction(index, imgData, "Opne-Model")}>
                                                                     <span className="svg__iconbox svg__icon--info"></span>
@@ -6209,28 +6224,27 @@ const EditTaskPopup = (Items: any) => {
             </div>
 
             {/* ********************** This in Add Image Description Model ****************** */}
-            <Modal isOpen={AddImageDescriptions} isBlocking={AddImageDescriptions} containerClassName="custommodalpopup p-2">
-                <div className="modal-header mb-1">
-                    <h5 className="modal-title">Add Image Description</h5>
-                    <span className='mx-1'> <Tooltip ComponentId='5669' isServiceTask={ServicesTaskCheck} /></span>
-                    <button type="button"
-                        className="btn-close"
-                        data-bs-dismiss="modal"
-                        aria-label="Close"
-                        onClick={closeAddImageDescriptionFunction}
-                    ></button>
+            <Panel
+                isOpen={AddImageDescriptions}
+                onRenderHeader={onRenderCustomHeaderAddImageDescription}
+                type={PanelType.custom}
+                customWidth="600px"
+                onDismiss={closeAddImageDescriptionFunction}
+                isBlocking={false}
+            >
+                <div>
+                    <div className="modal-body">
+                        <div className='col'><textarea id="txtUpdateComment" rows={6}
+                            value={AddImageDescriptionsDetails != undefined ? AddImageDescriptionsDetails : ''}
+                            className="full-width"
+                            onChange={(e) => UpdateImageDescription(e)}></textarea></div>
+                    </div>
+                    <footer className='text-end mt-2'>
+                        <button className="btn btnPrimary mx-1 " onClick={SaveImageDescription}>Save</button>
+                        <button className='btn btn-default' onClick={closeAddImageDescriptionFunction}>Cancel</button>
+                    </footer>
                 </div>
-                <div className="modal-body">
-                    <div className='col mx-2'><textarea id="txtUpdateComment" rows={6}
-                        value={AddImageDescriptionsDetails != undefined ? AddImageDescriptionsDetails : ''}
-                        className="full-width"
-                        onChange={(e) => UpdateImageDescription(e)}></textarea></div>
-                </div>
-                <footer className='text-end mt-2 mx-2'>
-                    <button className="btn btnPrimary mx-1 " onClick={SaveImageDescription}>Save</button>
-                    <button className='btn btn-default' onClick={closeAddImageDescriptionFunction}>Cancel</button>
-                </footer>
-            </Modal>
+            </Panel>
 
             {/* ********************* this is Copy Task And Move Task panel ****************** */}
             <Panel

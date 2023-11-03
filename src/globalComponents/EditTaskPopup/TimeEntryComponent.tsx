@@ -61,21 +61,21 @@ var change: any = new Date();
 const SP = spfi();
 
 function TimeEntryPopup(item: any) {
-  if (item?.props.siteUrl != undefined) {
+  if (item?.props?.siteUrl != undefined) {
     var Url = item?.props?.siteUrl.split("https://hhhhteams.sharepoint.com");
     RelativeUrl = Url[1];
     CurrentSiteUrl = item?.props?.siteUrl;
-    PortfolioType = item.props.Portfolio_x0020_Type;
-    CurntUserId = item.Context.pageContext._legacyPageContext.userId;
+    PortfolioType = item?.props?.Portfolio_x0020_Type;
+    CurntUserId = item?.Context?.pageContext?._legacyPageContext.userId;
     CurrentUserTitle =
-      item.Context.pageContext._legacyPageContext?.userDisplayName;
+      item?.Context?.pageContext?._legacyPageContext?.userDisplayName;
   } else {
-    PortfolioType = item.props.Portfolio_x0020_Type;
-    CurntUserId = item.Context.pageContext._legacyPageContext.userId;
+    PortfolioType = item?.props?.Portfolio_x0020_Type;
+    CurntUserId = item?.Context?.pageContext?._legacyPageContext.userId;
     CurrentUserTitle =
-      item.Context.pageContext._legacyPageContext?.userDisplayName;
-    RelativeUrl = item.Context.pageContext.web.serverRelativeUrl;
-    CurrentSiteUrl = item.Context.pageContext.web.absoluteUrl;
+      item.Context.pageContext?._legacyPageContext?.userDisplayName;
+    RelativeUrl = item?.Context?.pageContext?.web?.serverRelativeUrl;
+    CurrentSiteUrl = item?.Context?.pageContext?.web?.absoluteUrl;
   }
 
   const [AllTimeSheetDataNew, setTimeSheet] = React.useState([]);
@@ -471,6 +471,7 @@ function TimeEntryPopup(item: any) {
   };
 
   const openAddTasktimepopup = (val: any) => {
+    CategryTitle = ''
     setAddTaskTimepopup(true);
     setTimeInMinutes(0);
     setTimeInHours(0);
@@ -486,7 +487,7 @@ function TimeEntryPopup(item: any) {
     setPostData(undefined);
     ParentId = val;
 
-    var CategoryTitle = val.Title;
+    CategryTitle = val.Title;
   };
   let dateValue = "";
   var dp = "";
@@ -3801,7 +3802,7 @@ function TimeEntryPopup(item: any) {
             <div className="col-sm-12 p-0 form-group">
               <div className="input-group mb-2">
               <label className="full-width">Title</label>
-              <input className="form-control" type="title" placeholder="Add Title" />
+              <input className="form-control" type="title" placeholder="Add Title" disabled={true} defaultValue={CategryTitle}/>
               </div>
 
               <div className="row mb-2">
