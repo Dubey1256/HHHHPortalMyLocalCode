@@ -246,9 +246,7 @@ const TaskDashboard = (props: any) => {
         if (timesheetListConfig?.length > 0) {
             let timesheetLists: any = [];
             let startDate = getStartingDate('Last Month').toISOString();
-            let taskLists: any = [];
             timesheetLists = JSON.parse(timesheetListConfig[0]?.Configurations)
-            taskLists = JSON.parse(timesheetListConfig[0]?.Description)
 
             if (timesheetLists?.length > 0) {
                 const fetchPromises = timesheetLists.map(async (list: any) => {
@@ -431,7 +429,11 @@ const TaskDashboard = (props: any) => {
                                             })
                                         }
                                         task.siteType = config.Title;
-                                        task.bodys = task.Body != null && task.Body.split('<p><br></p>').join('');
+                                        if (task?.FeedBack != undefined) {
+                                            task.descriptionsSearch =globalCommon.descriptionSearchData(task)
+                                        }else{
+                                            task.descriptionsSearch='';
+                                        }
                                         task.listId = config.listId;
                                         task.siteUrl = config.siteUrl.Url;
                                         task.PercentComplete = (task.PercentComplete * 100).toFixed(0);
@@ -723,8 +725,7 @@ const TaskDashboard = (props: any) => {
                         >
                             {row?.values?.Title}
                         </a>
-                        {row?.original?.Body !== null && <InfoIconsToolTip Discription={row?.original?.bodys} row={row?.original} />
-                        }
+                        {row?.original?.descriptionsSearch?.length > 0 && <span className='alignIcon  mt--5 '><InfoIconsToolTip Discription={row?.original?.descriptionsSearch} row={row?.original} /></span>}
                     </span>
                 ),
             },

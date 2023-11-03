@@ -374,6 +374,8 @@ export default function ManageSmartMetadata(selectedProps: any) {
                 <div className='row'>
                     <div className='col-sm-3 text-primary'>
                         <h3 className="heading">ManageSmartMetaData
+                            <span>
+                                <img src={require('../../../Assets/ICON/edit_page.svg')} width="25" /></span>
                         </h3>
                     </div>
                     <div className='col-sm-9 text-primary'>
@@ -432,7 +434,7 @@ export default function ManageSmartMetadata(selectedProps: any) {
                     </div>
                 </Panel>
             </div>)}
-            {SmartMetadataEditPopupOpen ? <SmartMetadataEditPopup AllList={selectedProps.AllList} CloseEditSmartMetaPopup={CloseEditSmartMetaPopup} EditItemCallBack={callBackSmartMetaData} AllMetadata={Smartmetadata} modalInstance={SelectedSmartMetadataItem} /> : ''}
+            {SmartMetadataEditPopupOpen ? <SmartMetadataEditPopup AllList={selectedProps.AllList} CloseEditSmartMetaPopup={CloseEditSmartMetaPopup} EditItemCallBack={callBackSmartMetaData} AllMetadata={Smartmetadata} MetadataItems={SmartmetadataItems} modalInstance={SelectedSmartMetadataItem} /> : ''}
             {SmartMetadataDeletePopupOpen ? <DeleteSmartMetadata AllList={selectedProps.AllList} CloseDeleteSmartMetaPopup={CloseDeleteSmartMetaPopup} DeleteItemCallBack={callBackSmartMetaData} AllMetadata={Smartmetadata} modalInstance={SelectedSmartMetadataItem} /> : ''}
         </>
     );

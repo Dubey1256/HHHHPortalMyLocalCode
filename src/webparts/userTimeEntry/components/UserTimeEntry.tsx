@@ -166,7 +166,7 @@ export default class UserTimeEntry extends React.Component<IUserTimeEntryProps, 
                   task.AllTeamMember = [];
                   task.HierarchyData = [];
                   task.siteType = config.Title;
-                  task.bodys = task.Body != null && task.Body.split('<p><br></p>').join('');
+                  task.descriptionsSearch = '';
                   task.listId = config.listId;
                   task.siteUrl = config.siteUrl.Url;
                   task.PercentComplete = (task.PercentComplete * 100).toFixed(0);
@@ -227,7 +227,12 @@ export default class UserTimeEntry extends React.Component<IUserTimeEntryProps, 
               }
             }
           }
-
+          const BtnElement = document.getElementsByClassName("rct-collapse rct-collapse-btn");
+          if (BtnElement) {
+            for (let j = 0; j < BtnElement.length; j++) {
+              BtnElement[j].classList.add('mt--5');
+            }
+          }
         }, 1000);
       }
       else {
@@ -265,6 +270,19 @@ export default class UserTimeEntry extends React.Component<IUserTimeEntryProps, 
               }
             }
           }
+          const AllCheckBox = document.querySelectorAll('[type="checkbox"]')
+          if (AllCheckBox) {
+            for (let j = 0; j < AllCheckBox.length; j++) {
+              AllCheckBox[j].classList.add('form-check-input', 'cursor-pointer');
+            }
+          }
+          const BtnElement = document.getElementsByClassName("rct-collapse rct-collapse-btn");
+          if (BtnElement) {
+            for (let j = 0; j < BtnElement.length; j++) {
+              BtnElement[j].classList.add('mt--5');
+            }
+          }
+
         }, 30);
       }
     } catch (e: any) {
@@ -1034,10 +1052,7 @@ export default class UserTimeEntry extends React.Component<IUserTimeEntryProps, 
           timeTab.ImageUrl = config.ImageUrl;
           timeTab.TaskItemID = timeTab[ColumnName].Id;
           timeTab.DisplayTaskId = timeTab[ColumnName].DisplayTaskId;
-          timeTab.Body = timeTab[ColumnName]?.Body;
-          timeTab.FeedBack = timeTab[ColumnName]?.FeedBack;
           timeTab.TaskType = timeTab[ColumnName]?.TaskType;
-          timeTab.bodys = timeTab[ColumnName]?.bodys
           timeTab.ParentTask = timeTab[ColumnName]?.ParentTask
           timeTab.TaskTitle = timeTab[ColumnName].Title;
           timeTab.TaskCreated = timeTab[ColumnName].Created;
@@ -1100,9 +1115,6 @@ export default class UserTimeEntry extends React.Component<IUserTimeEntryProps, 
                   let minutes = hours * 60;
                   addtime.TaskItemID = time.TaskItemID;
                   addtime.DisplayTaskId = time.DisplayTaskId;
-                  addtime.Body = time?.Body;
-                  addtime.bodys = time?.bodys
-                  addtime.FeedBack = time?.FeedBack;
                   addtime.TaskType = time?.TaskType;
                   addtime.ParentTask = time?.ParentTask
                   addtime.SiteUrl = time.SiteUrl;
@@ -1115,7 +1127,6 @@ export default class UserTimeEntry extends React.Component<IUserTimeEntryProps, 
                   addtime.Effort = parseFloat(addtime.Effort);
                   addtime.TimeEntryDate = addtime.TaskDate;
                   addtime.NewTimeEntryDate = TaskDate;
-
                   let datesplite = addtime.TaskDate.split("/");
                   addtime.TimeEntrykDateNew = new Date(parseInt(datesplite[2], 10), parseInt(datesplite[1], 10) - 1, parseInt(datesplite[0], 10));
                   //addtime.TimeEntrykDateNewback = datesplite[1] + '/' + datesplite[0] + '/' + datesplite[2];
@@ -1272,7 +1283,6 @@ export default class UserTimeEntry extends React.Component<IUserTimeEntryProps, 
             Item.siteName = itemtype.ListName;
             Item.DisplayTaskId = globalCommon.GetTaskId(Item)
             Item.listId = itemtype.ListId;
-            Item.bodys = Item.Body != null && Item.Body.split('<p><br></p>').join('');
             Item.ClientTime = JSON.parse(Item.ClientTime);
             Item.PercentComplete = Item.PercentComplete <= 1 ? Item.PercentComplete * 100 : Item.PercentComplete;
             if (Item.PercentComplete != undefined) {
@@ -1284,6 +1294,17 @@ export default class UserTimeEntry extends React.Component<IUserTimeEntryProps, 
               Item.FiltercreatedDate = self.ConvertLocalTOServerDate(Item.Created, "DD/MM/YYYY");
             if (Item.CompletedDate != undefined)
               Item.FilterCompletedDate = self.ConvertLocalTOServerDate(Item.CompletedDate, "DD/MM/YYYY");
+            Item.descriptionsSearch = '';
+            if (Item?.FeedBack != undefined) {
+              let DiscriptionSearchData: any = '';
+              let feedbackdata: any = JSON.parse(Item?.FeedBack)
+              DiscriptionSearchData = feedbackdata[0]?.FeedBackDescriptions?.map((child: any) => {
+                const childText = child?.Title?.replace(/(<([^>]+)>)/gi, '')?.replace(/\n/g, '');
+                const subtextText = (child?.Subtext || [])?.map((elem: any) => elem.Title?.replace(/(<([^>]+)>)/gi, '')?.replace(/\n/g, '')).join('');
+                return childText + subtextText;
+              }).join('');
+              Item.descriptionsSearch = DiscriptionSearchData
+            }
             AllSharewebSiteTasks.push(Item);
           })
         }
@@ -1337,7 +1358,7 @@ export default class UserTimeEntry extends React.Component<IUserTimeEntryProps, 
             filterItem.flag = true;
             filterItem.DisplayTaskId = getItem?.DisplayTaskId;
             filterItem.Body = getItem?.Body;
-            filterItem.bodys = getItem?.bodys
+            filterItem.descriptionsSearch = getItem?.descriptionsSearch
             filterItem.FeedBack = getItem?.FeedBack;
             filterItem.TaskType = getItem?.TaskType;
             filterItem.ParentTask = getItem?.ParentTask;
@@ -2043,18 +2064,9 @@ export default class UserTimeEntry extends React.Component<IUserTimeEntryProps, 
               href={this.props.Context.pageContext.web.absoluteUrl + "/SitePages/Task-Profile.aspx?taskId=" + info.row.original.TaskItemID + "&Site=" + info.row.original.siteType}>
               {info.row.original.TaskTitle}
             </a>
-            {info?.row?.original?.Body !== null &&
-              info?.row?.original?.Body != undefined ? (
-              <span className="alignIcon">
-                {" "}
-                <InfoIconsToolTip
-                  Discription={info?.row?.original?.bodys}
-                  row={info?.row?.original}
-                />{" "}
-              </span>
-            ) : (
-              ""
-            )}
+            {info?.row?.original?.descriptionsSearch !== null && info?.row?.original?.descriptionsSearch != undefined ? (
+              <span className="alignIcon">{" "}<InfoIconsToolTip Discription={info?.row?.original?.descriptionsSearch} row={info?.row?.original} />{" "}
+              </span>) : ("")}
           </span>,
         size: 275,
       },
