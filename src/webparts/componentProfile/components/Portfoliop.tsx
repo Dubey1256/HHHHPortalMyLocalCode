@@ -230,6 +230,13 @@ export const EditableField: React.FC<EditableFieldProps> = ({
         </div>
       );
     }
+    if(myfieldValue === 0){
+      type = "Not Started"
+    }else if(myfieldValue > 0 && myfieldValue != 100){
+      type = "In Progress"
+    }else if(myfieldValue === 100){
+      type = "Completed"
+    }
     let mymergedStatus = `${type} - ${(myfieldValue)}% `;
     return (
       <div key={key}>
