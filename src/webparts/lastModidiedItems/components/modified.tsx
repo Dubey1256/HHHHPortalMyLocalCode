@@ -171,7 +171,7 @@ export const Modified = (props: any) => {
           if (allSite.TabName == 'SERVICES') {
             item.fontColorTask = '#228b22'
           }else{
-            item.fontColorTask ='#0000BC'
+            item.fontColorTask ='#000066'
           }
           
           if (item.ItemType != undefined) {
@@ -222,6 +222,7 @@ export const Modified = (props: any) => {
         data?.map((item: any) => {
           item.siteType = allSite?.TabName
           item.listId = allSite.ListId;
+          item.fontColorTask ='#000066'
           item.siteUrl = baseUrl;
           item.siteUrlOld = item.siteUrl.replace('/SP', '')
           item.siteImage = allSite?.SiteIcon;
@@ -899,11 +900,22 @@ export const Modified = (props: any) => {
       </nav>
 
 
-      <div className="tab-content lastmodifylist" id="nav-tabContent">
+      <div className="tab-content lastmodifylist px-2 clearfix" id="nav-tabContent">
         <div className="tab-pane fade show active" id={`nav-${type}`} role="tabpanel" aria-labelledby={`nav-${type}-tab`}>
-          {allSiteData && <div>
+          {allSiteData &&
+          <div className="TableSection">
+            <div className="container p-0">
+            <div className="Alltable mt-2">
+              <div className="col-md-12 p-0 smart">
+                <div className="wrapper">
             <GlobalCommanTable columns={columns} ref={childRef} data={allSiteData} showHeader={true} callBackData={callBackData} multiSelect={true} TaskUsers={allUsers} portfolioColor={portfolioColor} AllListId={editTasksLists} />
-          </div>}
+          </div>
+          </div>
+          </div>
+            </div>
+            {/* <div className="clearfix"></div> */}
+          </div>
+          }
         </div>
       </div>
       <Loader loaded={loader} lines={13} length={20} width={10} radius={30} corners={1} rotate={0} direction={1} color="#000066" speed={2} trail={60} shadow={false} hwaccel={false} className="spinner" zIndex={2e9} top="28%" left="50%" scale={1.0} loadedClassName="loadedContent" />
