@@ -1878,7 +1878,7 @@ const TeamSmartFilter = (item: any) => {
                                 </div>
                                 <div className='alignCenter col-sm-4'>
                                     <div className='ml-auto alignCenter'>
-                                        <div className="svg__iconbox svg__icon--setting  me-2" style={{ backgroundColor: `${portfolioColor}` }} ref={setTriggerRef} onClick={() => handlAction("click")} onMouseEnter={() => handlAction("hover")} onMouseLeave={() => handleMouseLeave()}>Type</div>
+                                        <div className="svg__iconbox svg__icon--setting  me-2" title='Type' style={{ backgroundColor: `${portfolioColor}` }} ref={setTriggerRef} onClick={() => handlAction("click")} onMouseEnter={() => handlAction("hover")} onMouseLeave={() => handleMouseLeave()}></div>
 
                                         {action === "click" && visible && (
                                             <div ref={setTooltipRef} {...getTooltipProps({ className: "tooltip-container m-0" })}>
