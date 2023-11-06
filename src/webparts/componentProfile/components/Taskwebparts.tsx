@@ -2041,10 +2041,28 @@ const updatedDataDataFromPortfolios = (copyDtaArray: any, dataToUpdate: any) => 
     ) {
       checkedList.NoteCall = type;
       setActivityPopup(true);
+      if (SelectedProp?.props?.PortfolioType?.Color != undefined) {
+        setTimeout(() => {
+          let targetDiv: any = document?.querySelector('.ms-Panel-main');
+          if (targetDiv) {
+            // Change the --SiteBlue variable for elements under the targetDiv
+            targetDiv?.style?.setProperty('--SiteBlue', SelectedProp?.props?.PortfolioType?.Color); // Change the color to your desired value
+          }
+        }, 1000)
+      }
     }
     if (checkedList?.TaskTypeId === 3 || checkedList?.TaskType?.Id === 3) {
       checkedList.NoteCall = "Task";
       setIsOpenActivity(true);
+      if (SelectedProp?.props?.PortfolioType?.Color != undefined) {
+        setTimeout(() => {
+          let targetDiv: any = document?.querySelector('.ms-Panel-main');
+          if (targetDiv) {
+            // Change the --SiteBlue variable for elements under the targetDiv
+            targetDiv?.style?.setProperty('--SiteBlue', SelectedProp?.props?.PortfolioType?.Color); // Change the color to your desired value
+          }
+        }, 1000)
+      }
     }
     if (checkedList?.TaskType?.Id == 1 || checkedList?.TaskTypeId == 1) {
       checkedList.NoteCall = "Workstream";

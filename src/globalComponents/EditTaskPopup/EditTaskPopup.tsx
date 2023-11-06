@@ -1764,7 +1764,7 @@ const EditTaskPopup = (Items: any) => {
                                     setTimeout(()=>{
                                         if (targetDiv ) {
                                             // Change the --SiteBlue variable for elements under the targetDiv
-                                            targetDiv?.style?.setProperty('--SiteBlue', PortfolioItem?.Color); // Change the color to your desired value
+                                            $('.ms-Panel-main').css('--SiteBlue', PortfolioItem?.Color);
                                         }
                                     },1000)
                                 }
