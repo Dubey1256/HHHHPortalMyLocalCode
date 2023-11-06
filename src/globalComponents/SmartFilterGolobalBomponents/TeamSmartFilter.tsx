@@ -2547,7 +2547,7 @@ const TeamSmartFilter = (item: any) => {
                                         </span>
 
                                     </Col>
-                                    <div className="px-2">
+                                    <div>
                                         <Row>
                                             <div className="col-2 dateformate p-0" style={{ width: "160px" }}>
                                                 <div className="input-group ps-1">

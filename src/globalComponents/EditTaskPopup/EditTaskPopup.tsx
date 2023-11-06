@@ -1760,7 +1760,15 @@ const EditTaskPopup = (Items: any) => {
                                             FeedBackCount++;
                                         }
                                     }
+                                    let targetDiv :any = document?.querySelector('.ms-Panel-main');
+                                    setTimeout(()=>{
+                                        if (targetDiv ) {
+                                            // Change the --SiteBlue variable for elements under the targetDiv
+                                            targetDiv?.style?.setProperty('--SiteBlue', PortfolioItem?.Color); // Change the color to your desired value
+                                        }
+                                    },1000)
                                 }
+                               
                             })
                         }
                     })
