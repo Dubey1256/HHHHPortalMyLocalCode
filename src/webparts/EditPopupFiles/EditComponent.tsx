@@ -43,7 +43,7 @@ var AllClientCategory: any = [];
 let ShowCategoryDatabackup: any = [];
 let subCategories: any = [];
 let IsapprovalTask = false;
-let CategoryAllData:any = [];
+let CategoryAllData: any = [];
 function EditInstitution({ item, SelectD, Calls, usedFor }: any) {
   if (SelectD != undefined && SelectD?.siteUrl != undefined) {
     web = new Web(SelectD?.siteUrl);
@@ -55,8 +55,8 @@ function EditInstitution({ item, SelectD, Calls, usedFor }: any) {
     RequireData = SelectD.SelectedProp;
     web = new Web(RequireData?.siteUrl);
   }
-  let categoryitem:any=[];
-  if(item.Categories != undefined){
+  let categoryitem: any = [];
+  if (item.Categories != undefined) {
     categoryitem = item.Categories.split(';')
   }
   const [CompoenetItem, setComponent] = React.useState([]);
@@ -680,15 +680,15 @@ function EditInstitution({ item, SelectD, Calls, usedFor }: any) {
       item["SiteIcon"] =
         item.siteType == "Master Tasks"
           ? GetIconImageUrl(
-              item.siteType,
-              "https://hhhhteams.sharepoint.com/sites/HHHH/SP/",
-              undefined
-            )
+            item.siteType,
+            "https://hhhhteams.sharepoint.com/sites/HHHH/SP/",
+            undefined
+          )
           : GetIconImageUrl(
-              item.siteType,
-              "https://hhhhteams.sharepoint.com/sites/HHHH/SP/",
-              undefined
-            );
+            item.siteType,
+            "https://hhhhteams.sharepoint.com/sites/HHHH/SP/",
+            undefined
+          );
       if (item.Synonyms != undefined && item.Synonyms.length > 0) {
         item.Synonyms = JSON.parse(item.Synonyms);
       }
@@ -757,12 +757,12 @@ function EditInstitution({ item, SelectD, Calls, usedFor }: any) {
   const TaskItemRank: any = [];
   const site: any = [];
   const siteDetail: any = [];
-  
+
   const GetSmartmetadata = async () => {
     let smartmetaDetails = [];
     subCategories = [];
-        var TaskTypes: any = []
-        var Task: any = []
+    var TaskTypes: any = []
+    var Task: any = []
     smartmetaDetails = await web.lists
       //.getById('ec34b38f-0669-480a-910c-f84e92e58adf')
       .getById(RequireData.SmartMetadataListID)
@@ -796,48 +796,48 @@ function EditInstitution({ item, SelectD, Calls, usedFor }: any) {
         }
       });
     }
-     TaskTypes = getSmartMetadataItemsByTaxType(smartmetaDetails, 'Categories');
+    TaskTypes = getSmartMetadataItemsByTaxType(smartmetaDetails, 'Categories');
     let instantCat: any = [];
-        TaskTypes?.map((cat: any) => {
-            cat.ActiveTile = false;
-            getChilds(cat, TaskTypes);
-            if (cat?.ParentID !== undefined && cat?.ParentID === 0 && cat?.Title !== 'Phone') {
-                Task.push(cat);
-            }
-            if (cat?.Title == 'Phone' || cat?.Title == 'Email Notification' || cat?.Title == 'Immediate' || cat?.Title == 'Approval') {
-                instantCat.push(cat)
-            }
-            if (cat?.Parent?.Id !== undefined && cat?.Parent?.Id !== 0 && cat?.IsVisible) {
-                subCategories.push(cat);
-            }
-        })
-        setInstantCategories(instantCat)
-        let uniqueArray: any = [];
-        AutoCompleteItemsArray.map((currentObject: any) => {
-            if (!uniqueArray.find((obj: any) => obj.Id === currentObject.Id)) {
-                uniqueArray.push(currentObject)
-            }
-        })
-        AutoCompleteItemsArray = uniqueArray;
-        Task?.map((taskItem: any) => {
-            subCategories?.map((item: any) => {
-                if (taskItem?.Id === item?.Parent?.Id) {
-                    try {
-                        item.ActiveTile = false;
-                        item.SubTaskActTile = item?.Title?.replace(/\s/g, "");
-                    } catch (error) {
-                        console.log(error);
-                    }
-                }
-            })
-        })
+    TaskTypes?.map((cat: any) => {
+      cat.ActiveTile = false;
+      getChilds(cat, TaskTypes);
+      if (cat?.ParentID !== undefined && cat?.ParentID === 0 && cat?.Title !== 'Phone') {
+        Task.push(cat);
+      }
+      if (cat?.Title == 'Phone' || cat?.Title == 'Email Notification' || cat?.Title == 'Immediate' || cat?.Title == 'Approval') {
+        instantCat.push(cat)
+      }
+      if (cat?.Parent?.Id !== undefined && cat?.Parent?.Id !== 0 && cat?.IsVisible) {
+        subCategories.push(cat);
+      }
+    })
+    setInstantCategories(instantCat)
+    let uniqueArray: any = [];
+    AutoCompleteItemsArray.map((currentObject: any) => {
+      if (!uniqueArray.find((obj: any) => obj.Id === currentObject.Id)) {
+        uniqueArray.push(currentObject)
+      }
+    })
+    AutoCompleteItemsArray = uniqueArray;
+    Task?.map((taskItem: any) => {
+      subCategories?.map((item: any) => {
+        if (taskItem?.Id === item?.Parent?.Id) {
+          try {
+            item.ActiveTile = false;
+            item.SubTaskActTile = item?.Title?.replace(/\s/g, "");
+          } catch (error) {
+            console.log(error);
+          }
+        }
+      })
+    })
 
-       
+
     setsiteDetails(siteDetail);
     getMasterTaskListTasks();
   };
- 
- 
+
+
   React.useEffect(() => {
     GetTaskUsers();
     getAllSitesData();
@@ -925,78 +925,78 @@ function EditInstitution({ item, SelectD, Calls, usedFor }: any) {
 
     console.log(componentDetails);
   };
-  function EditComponentCallback(res:any) {
-    if(res ==="Close"){
+  function EditComponentCallback(res: any) {
+    if (res === "Close") {
       Calls(res);
-    }else{
+    } else {
 
-    
-    const date = moment(res?.Created);
-    const formattedDate = date.format('DD-MM-YYYY');
-    const datedue = moment(res?.DueDate);
-    const formattedDateDue = datedue.format('DD-MM-YYYY');
-    if (TaskAssignedTo!= undefined && TaskAssignedTo?.length > 0) {
-      $.map(TaskAssignedTo, (Assig: any) => {
-        if (Assig.Id != undefined) {
-          $.map(AllUsers, (users: any) => {
-            if (
-              Assig.Id != undefined &&
-              users.AssingedToUser != undefined &&
-              Assig.Id == users.AssingedToUser.Id
-            ) {
-              users.ItemCover = users.Item_x0020_Cover;
-              res?.TeamLeaderUser?.push(users);
-            }
-          });
-        }
-      });
+
+      const date = moment(res?.Created);
+      const formattedDate = date.format('DD-MM-YYYY');
+      const datedue = moment(res?.DueDate);
+      const formattedDateDue = datedue.format('DD-MM-YYYY');
+      if (TaskAssignedTo != undefined && TaskAssignedTo?.length > 0) {
+        $.map(TaskAssignedTo, (Assig: any) => {
+          if (Assig.Id != undefined) {
+            $.map(AllUsers, (users: any) => {
+              if (
+                Assig.Id != undefined &&
+                users.AssingedToUser != undefined &&
+                Assig.Id == users.AssingedToUser.Id
+              ) {
+                users.ItemCover = users.Item_x0020_Cover;
+                res?.TeamLeaderUser?.push(users);
+              }
+            });
+          }
+        });
+      }
+
+      if (TaskTeamMembers != undefined && TaskTeamMembers.length > 0) {
+        $.map(TaskTeamMembers, (Assig: any) => {
+          if (Assig.Id != undefined) {
+            $.map(AllUsers, (users: any) => {
+              if (
+                Assig.Id != undefined &&
+                users.AssingedToUser != undefined &&
+                Assig.Id == users.AssingedToUser.Id
+              ) {
+                users.ItemCover = users.Item_x0020_Cover;
+                res?.TeamLeaderUser?.push(users);
+              }
+            });
+          }
+        });
+      }
+      // ClientCategory
+      if (res?.ClientCategory != undefined && res?.ClientCategory?.results?.length > 0) {
+        const clientarray = res?.ClientCategory?.results?.filter((item: any) => item.Title != undefined)
+        res.ClientCategory = clientarray;
+      }
+      res.DisplayCreateDate = formattedDate;
+
+      if (formattedDateDue === "Invalid date") {
+        res.DisplayDueDate = "";
+      } else {
+        res.DisplayDueDate = formattedDateDue;
+      }
+      res.TaskID = item.TaskID;
+      res.SiteIconTitle = item.SiteIconTitle;
+      res.Item_x0020_Type = item.Item_x0020_Type;
+      res.isRestructureActive = item.isRestructureActive;
+      res.ItemRank = item.ItemRank;
+      res.PercentComplete = item.PercentComplete;
+      res.PortfolioType = item.PortfolioType;
+      res.SiteIcon = undefined;
+      res.siteUrl = RequireData?.siteUrl;
+      res.data = res;
+      Calls(res.data, "UpdatedData");
     }
-   
-    if (TaskTeamMembers != undefined && TaskTeamMembers.length > 0) {
-      $.map(TaskTeamMembers, (Assig: any) => {
-        if (Assig.Id != undefined) {
-          $.map(AllUsers, (users: any) => {
-            if (
-              Assig.Id != undefined &&
-              users.AssingedToUser != undefined &&
-              Assig.Id == users.AssingedToUser.Id
-            ) {
-              users.ItemCover = users.Item_x0020_Cover;
-              res?.TeamLeaderUser?.push(users);
-            }
-          });
-        }
-      });
-    }
-// ClientCategory
-if(res?.ClientCategory != undefined && res?.ClientCategory?.results?.length >0 ){
- const clientarray= res?.ClientCategory?.results?.filter((item:any)=> item.Title != undefined)
-  res.ClientCategory =clientarray;
-}
-    res.DisplayCreateDate = formattedDate;
-    
-    if(formattedDateDue === "Invalid date"){
-      res.DisplayDueDate = "";
-    }else{
-      res.DisplayDueDate = formattedDateDue;
-    }
-    res.TaskID = item.TaskID;
-    res.SiteIconTitle = item.SiteIconTitle;
-    res.Item_x0020_Type = item.Item_x0020_Type;
-    res.isRestructureActive = item.isRestructureActive;
-    res.ItemRank = item.ItemRank;
-    res.PercentComplete = item.PercentComplete;
-    res.PortfolioType = item.PortfolioType;
-    res.SiteIcon = undefined;
-    res.siteUrl = RequireData?.siteUrl;
-    res.data=res;
-    Calls(res.data, "UpdatedData");
   }
-  }
 
 
 
-  
+
 
 
   let mentionUsers: any = [];
@@ -1241,10 +1241,10 @@ if(res?.ClientCategory != undefined && res?.ClientCategory?.results?.length >0 )
       } else item["Synonyms"] = [];
       flag
         ? item["Synonyms"].push({
-            status: true,
-            Title: item.SynonymsTitle,
-            Id: ""
-          })
+          status: true,
+          Title: item.SynonymsTitle,
+          Id: ""
+        })
         : null;
       item.SynonymsTitle = "";
     }
@@ -1266,7 +1266,7 @@ if(res?.ClientCategory != undefined && res?.ClientCategory?.results?.length >0 )
     var item: any = {};
     var smartComponentsIds: any[] = [];
     var RelevantPortfolioIds = "";
-    let PortfolioIds:any[]=[];
+    let PortfolioIds: any[] = [];
     let TotalCompositionsValue: any = 0;
     var Items = EditData;
     if (SiteTaggingData?.length > 0) {
@@ -1347,18 +1347,18 @@ if(res?.ClientCategory != undefined && res?.ClientCategory?.results?.length >0 )
 
       if (TaskTeamMembers != undefined && TaskTeamMembers?.length > 0) {
         TaskTeamMembers?.map((taskInfo) => {
-            TeamMemberIds.push(taskInfo.Id);
+          TeamMemberIds.push(taskInfo.Id);
         })
-    }else{
-      TeamMemberIds=[];
-    }
-    if (TaskAssignedTo != undefined && TaskAssignedTo?.length > 0) {
-      TaskAssignedTo?.map((taskInfo) => {
+      } else {
+        TeamMemberIds = [];
+      }
+      if (TaskAssignedTo != undefined && TaskAssignedTo?.length > 0) {
+        TaskAssignedTo?.map((taskInfo) => {
           AssignedToIds.push(taskInfo.Id);
-      })
-  }else{
-    AssignedToIds=[];
-  }
+        })
+      } else {
+        AssignedToIds = [];
+      }
 
 
       // if (isDropItemRes == true) {
@@ -1468,7 +1468,7 @@ if(res?.ClientCategory != undefined && res?.ClientCategory?.results?.length >0 )
           // ClientCategoryId: { "results": RelevantPortfolioIds },
           ServicePortfolioId:
             RelevantPortfolioIds != "" ? RelevantPortfolioIds : null,
-          PortfoliosId:{results:(PortfolioIds?.length != 0 ? PortfolioIds : [])},
+          PortfoliosId: { results: (PortfolioIds?.length != 0 ? PortfolioIds : []) },
           Synonyms: JSON.stringify(Items["Synonyms"]),
           Package: Items.Package,
           AdminStatus: Items.AdminStatus,
@@ -1497,7 +1497,7 @@ if(res?.ClientCategory != undefined && res?.ClientCategory?.results?.length >0 )
           },
           TechnicalExplanations:
             PostTechnicalExplanations != undefined &&
-            PostTechnicalExplanations != ""
+              PostTechnicalExplanations != ""
               ? PostTechnicalExplanations
               : EditData?.TechnicalExplanations,
           Deliverables:
@@ -1506,7 +1506,7 @@ if(res?.ClientCategory != undefined && res?.ClientCategory?.results?.length >0 )
               : EditData?.Deliverables,
           Short_x0020_Description_x0020_On:
             PostShort_x0020_Description_x0020_On != undefined &&
-            PostShort_x0020_Description_x0020_On != ""
+              PostShort_x0020_Description_x0020_On != ""
               ? PostShort_x0020_Description_x0020_On
               : EditData?.Short_x0020_Description_x0020_On,
           Body:
@@ -1689,36 +1689,36 @@ if(res?.ClientCategory != undefined && res?.ClientCategory?.results?.length >0 )
               </li>
               {(EditData?.Item_x0020_Type == "SubComponent" ||
                 EditData?.Item_x0020_Type == "Feature") && (
-                <>
-                  {" "}
-                  <li>
-                    {/* if="Task.Portfolio_x0020_Type=='Component'  (Task.Item_x0020_Type=='Component Category')" */}
-                    {EditData?.Parent != undefined &&
-                      ParentData != undefined &&
-                      ParentData.length != 0 && (
+                  <>
+                    {" "}
+                    <li>
+                      {/* if="Task.Portfolio_x0020_Type=='Component'  (Task.Item_x0020_Type=='Component Category')" */}
+                      {EditData?.Parent != undefined &&
+                        ParentData != undefined &&
+                        ParentData.length != 0 && (
+                          <a
+                            target="_blank"
+                            data-interception="off"
+                            href={`${RequireData.siteUrl}/SitePages/Portfolio-Profile.aspx?taskId=${ParentData[0].Parent.Id}`}
+                          >
+                            {ParentData[0].Parent.Title}
+                          </a>
+                        )}
+                    </li>
+                    <li>
+                      {/* if="Task.Portfolio_x0020_Type=='Component'  (Task.Item_x0020_Type=='Component Category')" */}
+                      {EditData?.Parent != undefined && (
                         <a
                           target="_blank"
                           data-interception="off"
-                          href={`${RequireData.siteUrl}/SitePages/Portfolio-Profile.aspx?taskId=${ParentData[0].Parent.Id}`}
+                          href={`${RequireData.siteUrl}/SitePages/Portfolio-Profile.aspx?taskId=${EditData?.Parent.Id}`}
                         >
-                          {ParentData[0].Parent.Title}
+                          {EditData?.Parent.Title}
                         </a>
                       )}
-                  </li>
-                  <li>
-                    {/* if="Task.Portfolio_x0020_Type=='Component'  (Task.Item_x0020_Type=='Component Category')" */}
-                    {EditData?.Parent != undefined && (
-                      <a
-                        target="_blank"
-                        data-interception="off"
-                        href={`${RequireData.siteUrl}/SitePages/Portfolio-Profile.aspx?taskId=${EditData?.Parent.Id}`}
-                      >
-                        {EditData?.Parent.Title}
-                      </a>
-                    )}
-                  </li>
-                </>
-              )}
+                    </li>
+                  </>
+                )}
 
               <li>
                 {EditData?.Item_x0020_Type == "Feature" && (
@@ -1793,17 +1793,17 @@ if(res?.ClientCategory != undefined && res?.ClientCategory?.results?.length >0 )
         .then((i: any) => {
           console.log(i);
           setComponent((EditData) => [...EditData]);
-         
+
           setModalIsOpenToFalse();
-            var ItmesDelete: any = {
-              data: {
-                Id: item.Id,
-                siteName: item.siteType,
-                ItmesDelete: true
-              }
+          var ItmesDelete: any = {
+            data: {
+              Id: item.Id,
+              siteName: item.siteType,
+              ItmesDelete: true
             }
-            Calls(ItmesDelete);
-        
+          }
+          Calls(ItmesDelete);
+
           item.showProgressBar();
         });
     }
@@ -1884,18 +1884,18 @@ if(res?.ClientCategory != undefined && res?.ClientCategory?.results?.length >0 )
       .top(4999)
       .expand("Author,Editor")
       .get();
-     CategoryAllData = MetaData?.filter((item:any)=> item?.TaxType === "Categories")
-     let MyCategoriesd:any = [];
-     if(CategoryAllData?.length>0 && categoryitem?.length>0){
-      CategoryAllData.map((item:any)=>{
-        categoryitem.map((items:any)=>{
-          if(item.Title===items){
-           MyCategoriesd.push(item) ;
+    CategoryAllData = MetaData?.filter((item: any) => item?.TaxType === "Categories")
+    let MyCategoriesd: any = [];
+    if (CategoryAllData?.length > 0 && categoryitem?.length > 0) {
+      CategoryAllData.map((item: any) => {
+        categoryitem.map((items: any) => {
+          if (item.Title === items) {
+            MyCategoriesd.push(item);
           }
         })
       })
-     }
-     setCategoriesData(MyCategoriesd);
+    }
+    setCategoriesData(MyCategoriesd);
     siteConfig = getSmartMetadataItemsByTaxType(MetaData, "Sites");
     siteConfig?.map((site: any) => {
       if (
@@ -2282,7 +2282,7 @@ if(res?.ClientCategory != undefined && res?.ClientCategory?.results?.length >0 )
 
     return previous;
   },
-  []);
+    []);
   const setSelectedCategoryData = (selectCategoryData: any, usedFor: any) => {
     setCategorySearchKey("");
 
@@ -2366,8 +2366,8 @@ if(res?.ClientCategory != undefined && res?.ClientCategory?.results?.length >0 )
       setApprovalStatus(false);
     }
   };
-   
-// For first time 
+
+  // For first time 
 
 
   const selectedCategoryTrue = (type: any) => {
@@ -2387,7 +2387,7 @@ if(res?.ClientCategory != undefined && res?.ClientCategory?.results?.length >0 )
       setApprovalStatus(true);
     }
   };
-  
+
 
   const imageTabCallBack = React.useCallback((data: any) => {
     setEditData(data);
@@ -2396,51 +2396,51 @@ if(res?.ClientCategory != undefined && res?.ClientCategory?.results?.length >0 )
     // setEditdocumentsData(data);
   }, []);
 
-  React.useEffect(()=>{
+  React.useEffect(() => {
     const categoryd = item?.Categories?.split(';')
-    categoryd?.map((item:any)=>{
+    categoryd?.map((item: any) => {
       selectedCategoryTrue(item);
     })
-    
-  },[])
+
+  }, [])
 
 
 
   // const selectSubTaskCategory = (title: any, Id: any, item: any) => {
   //   setCategoriesData((prevCategoriesData) => {
   //     let itemIndex = -1;
-  
+
   //     for (let i = 0; i < prevCategoriesData.length; i++) {
   //       if (prevCategoriesData[i].Id === Id) {
   //         itemIndex = i;
   //         break;
   //       }
   //     }
-  
+
   //     const updatedCategoriesData = [...prevCategoriesData];
-  
+
   //     if (itemIndex !== -1) {
   //       updatedCategoriesData[itemIndex].ActiveTile = !updatedCategoriesData[itemIndex].ActiveTile;
   //     } else {
   //       item.ActiveTile = true;
   //       updatedCategoriesData.push(item);
   //     }
-  
+
   //     return updatedCategoriesData;
   //   });
   // };
-  
-  const toggleCategorySelection = function (item:any) {
+
+  const toggleCategorySelection = function (item: any) {
     setCategoriesData(function (prevCategoriesData) {
       var itemIndex = -1;
-  
+
       for (var i = 0; i < prevCategoriesData.length; i++) {
         if (prevCategoriesData[i].Id === item.Id) {
           itemIndex = i;
           break;
         }
       }
-  
+
       if (itemIndex !== -1) {
         // Category is already selected, so remove it.
         var updatedCategoriesData = prevCategoriesData.slice(); // Create a shallow copy.
@@ -2452,16 +2452,15 @@ if(res?.ClientCategory != undefined && res?.ClientCategory?.results?.length >0 )
       }
     });
   };
-  
-    return (
+
+  return (
     <>
       {console.log("All Done")}
       <Panel
-        className={`${
-          EditData?.Portfolio_x0020_Type == "Service"
-            ? " serviepannelgreena"
-            : ""
-        }`}
+        className={`${EditData?.Portfolio_x0020_Type == "Service"
+          ? " serviepannelgreena"
+          : ""
+          }`}
         headerText={`${EditData?.Portfolio_x0020_Type}-Portfolio > ${EditData?.Title}`}
         isOpen={modalIsOpen}
         onDismiss={setModalIsOpenToFalse}
@@ -2547,8 +2546,7 @@ if(res?.ClientCategory != undefined && res?.ClientCategory?.results?.length >0 )
                   className={
                     usedFor != "Task-Popup"
                       ? "tab-pane show active"
-                      : "tab-pane"
-                  }
+                      : "tab-pane"}
                   id="home"
                   role="tabpanel"
                   aria-labelledby="home-tab"
@@ -2557,7 +2555,7 @@ if(res?.ClientCategory != undefined && res?.ClientCategory?.results?.length >0 )
                     <div className="col-sm-6 ">
                       <div className="col-12">
                         <div className="input-group">
-                          <label className="form-label  full-width">
+                          <label className="form-label full-width">
                             Title
                           </label>
                           <input
@@ -2607,7 +2605,7 @@ if(res?.ClientCategory != undefined && res?.ClientCategory?.results?.length >0 )
                             </select>
                           </div>
                         </div>
-                        <div className="col-4 ps-0  mt-2">
+                        <div className="col-4 mt-2">
                           <div className="input-group">
                             <label className="form-label full-width">
                               Deliverable-Synonyms
@@ -2627,7 +2625,7 @@ if(res?.ClientCategory != undefined && res?.ClientCategory?.results?.length >0 )
                             />
                           </div>
                         </div>
-                        <div className="col-4 ps-0 pe-0 mt-2 ">
+                        <div className="col-4 pe-0 mt-2 ">
                           {EditData?.Portfolio_x0020_Type == "Service" && (
                             <div className="input-group">
                               <label className="form-label full-width">
@@ -2635,12 +2633,12 @@ if(res?.ClientCategory != undefined && res?.ClientCategory?.results?.length >0 )
                               </label>
                               <input type="text" className="form-control" />
                               <span className="input-group-text">
-                                <span  onClick={(e) =>
-                                    EditComponent(EditData, "Component")
-                                  } className="svg__iconbox svg__icon--editBox">
+                                <span onClick={(e) =>
+                                  EditComponent(EditData, "Component")
+                                } className="svg__iconbox svg__icon--editBox">
 
-                                  </span>
-                          
+                                </span>
+
                               </span>
                             </div>
                           )}
@@ -2651,11 +2649,11 @@ if(res?.ClientCategory != undefined && res?.ClientCategory?.results?.length >0 )
                               </label>
                               <input type="text" className="form-control" />
                               <span className="input-group-text">
-                                <span  onClick={(e) =>
-                                    EditComponent(EditData, "Service")
-                                  } className="svg__iconbox svg__icon--editBox">
-                                    
-                                  </span>
+                                <span onClick={(e) =>
+                                  EditComponent(EditData, "Service")
+                                } className="svg__iconbox svg__icon--editBox">
+
+                                </span>
                               </span>
                             </div>
                           )}
@@ -2697,7 +2695,7 @@ if(res?.ClientCategory != undefined && res?.ClientCategory?.results?.length >0 )
                             </div>
                           )}
                           {EditData?.Portfolio_x0020_Type == "Service" && (
-                            <div className="col-sm-12  inner-tabb">
+                            <div className="col-sm-12 inner-tabb">
                               {linkedComponentData?.length > 0 ? (
                                 <div>
                                   {linkedComponentData?.map((com: any) => {
@@ -2714,7 +2712,7 @@ if(res?.ClientCategory != undefined && res?.ClientCategory?.results?.length >0 )
                                           </a>
                                           <a className="text-end">
                                             <span
-                                              className="bg-light svg__icon--cross svg__iconbox"
+                                              className="bg-light svg__iconbox svg__icon--cross"
                                               onClick={() =>
                                                 setLinkedComponentData([])
                                               }
@@ -2778,35 +2776,35 @@ if(res?.ClientCategory != undefined && res?.ClientCategory?.results?.length >0 )
                                                     } */}
                               {smartComponentData
                                 ? smartComponentData?.map((com: any) => {
-                                    return (
-                                      <>
-                                        <div className="">
-                                          <div
-                                            className="d-flex Component-container-edit-task block "
-                                            style={{ width: "81%" }}
+                                  return (
+                                    <>
+                                      <div className="">
+                                        <div
+                                          className="d-flex Component-container-edit-task block "
+                                          style={{ width: "81%" }}
+                                        >
+                                          <a
+                                            style={{
+                                              color: "#fff !important"
+                                            }}
+                                            target="_blank"
+                                            href={`${RequireData.siteUrl}/SitePages/Portfolio-Profile.aspx?taskId=${com.ID}`}
                                           >
-                                            <a
-                                              style={{
-                                                color: "#fff !important"
-                                              }}
-                                              target="_blank"
-                                              href={`${RequireData.siteUrl}/SitePages/Portfolio-Profile.aspx?taskId=${com.ID}`}
-                                            >
-                                              {com.Title}
-                                            </a>
-                                            <a>
-                                              <span
-                                                className="bg-light svg__icon--cross svg__iconbox"
-                                                onClick={() =>
-                                                  setSmartComponentData([])
-                                                }
-                                              ></span>
-                                            </a>
-                                          </div>
+                                            {com.Title}
+                                          </a>
+                                          <a>
+                                            <span
+                                              className="bg-light svg__iconbox svg__icon--cross"
+                                              onClick={() =>
+                                                setSmartComponentData([])
+                                              }
+                                            ></span>
+                                          </a>
                                         </div>
-                                      </>
-                                    );
-                                  })
+                                      </div>
+                                    </>
+                                  );
+                                })
                                 : null}
                             </div>
                           </div>
@@ -2815,7 +2813,7 @@ if(res?.ClientCategory != undefined && res?.ClientCategory?.results?.length >0 )
                       <div className="mx-0 row mt-2">
                         <div className="col-sm-4 ps-0 ">
                           <div className="input-group">
-                            <label className="form-label  full-width">
+                            <label className="form-label full-width">
                               Start Date
                             </label>
                             <input
@@ -2846,8 +2844,8 @@ if(res?.ClientCategory != undefined && res?.ClientCategory?.results?.length >0 )
                               defaultValue={
                                 EditData?.DueDate
                                   ? moment(EditData?.DueDate).format(
-                                      "YYYY-MM-DD"
-                                    )
+                                    "YYYY-MM-DD"
+                                  )
                                   : ""
                               }
                               onChange={(e) =>
@@ -2872,8 +2870,8 @@ if(res?.ClientCategory != undefined && res?.ClientCategory?.results?.length >0 )
                               defaultValue={
                                 EditData?.CompletedDate
                                   ? moment(EditData?.CompletedDate).format(
-                                      "YYYY-MM-DD"
-                                    )
+                                    "YYYY-MM-DD"
+                                  )
                                   : ""
                               }
                               onChange={(e) =>
@@ -2914,14 +2912,11 @@ if(res?.ClientCategory != undefined && res?.ClientCategory?.results?.length >0 )
                               map(EditData["Synonyms"], (obj, index) => {
                                 return (
                                   <>
-                                    <div className="block ">
-                                      {obj.Title}
-                                      <a
-                                        className="input-group-text"
-                                        onClick={(e) => deleteItem(EditData)}
-                                      >
-                                        <img src="/_layouts/images/delete.gif"></img>
-                                      </a>
+                                    <div className="alignCenter block">
+                                      <span className="wid90">{obj.Title}</span>
+                                      <span onClick={(e) => deleteItem(EditData)} className="bg-light ml-auto svg__iconbox svg__icon--cross"></span>
+                                      {/* <img onClick={(e) => deleteItem(EditData)} src="/_layouts/images/delete.gif"></img> */}
+
                                     </div>
                                   </>
                                 );
@@ -3251,93 +3246,94 @@ if(res?.ClientCategory != undefined && res?.ClientCategory?.results?.length >0 )
                         </div>
                       </div>
                       <div className="row mt-2">
-                                <div className="col-sm-12">
-                                    <div className="col-sm-12 padding-0 input-group">
-                                        <label className="full_width">Categories</label>
+                        <div className="col-sm-12">
+                          <div className="col-sm-12 padding-0 input-group">
+                            <label className="full_width">Categories</label>
 
-                                        <input
-                                            type="text"
-                                            className="ui-autocomplete-input form-control"
-                                            id="txtCategories"
-                                            value={categorySearchKey}
-                                            onChange={(e) => autoSuggestionsForCategory(e)}
-                                        />
-                                        <span className="input-group-text">
-                                            <a className="hreflink" title="Edit Categories">
+                            <input
+                              type="text"
+                              className="ui-autocomplete-input form-control"
+                              id="txtCategories"
+                              value={categorySearchKey}
+                              onChange={(e) => autoSuggestionsForCategory(e)}
+                            />
+                            <span className="input-group-text">
+                              {/* <a className="hreflink" title="Edit Categories">
                                                 <img
                                                     src="https://hhhhteams.sharepoint.com/sites/HHHH/SP/_layouts/15/images/EMMCopyTerm.png"
                                                     onClick={() => EditComponentPicker(item)}
                                                 />
-                                            </a>
-                                        </span>
+                                            </a> */}
+                              <span title="Edit Categories" onClick={() => EditComponentPicker(item)} className="svg__iconbox svg__icon--editBox"></span>
+                            </span>
 
-                                    </div>
-                                    {
-                                        instantCategories?.map((item: any, index: any) => {
-                                          const isChecked = CategoriesData?.some((selectedCat: any) => selectedCat?.Id === item?.Id);
+                          </div>
+                          {
+                            instantCategories?.map((item: any, index: any) => {
+                              const isChecked = CategoriesData?.some((selectedCat: any) => selectedCat?.Id === item?.Id);
 
-                                          return (
-                                            <div key={index} className="form-check">
-                                              <input
-                                                className="form-check-input rounded-0"
-                                                type="checkbox"
-                                                checked={isChecked}
-                                                onChange={() => toggleCategorySelection(item)}
-                                              />
-                                              <label>{item?.Title}</label>
-                                            </div>
-                                          );
-                                        })
-                                      }
-
-                                    {SearchedCategoryData?.length > 0 ? (
-                                        <div className="SmartTableOnTaskPopup">
-                                            <ul className="list-group">
-                                                {SearchedCategoryData.map((item: any) => {
-                                                    return (
-                                                        <li
-                                                            className="hreflink list-group-item rounded-0 list-group-item-action"
-                                                            key={item.id}
-                                                            onClick={() =>
-                                                                setSelectedCategoryData([item], "For-Auto-Search")
-                                                            }
-                                                        >
-                                                            <a>{item.Newlabel}</a>
-                                                        </li>
-                                                    );
-                                                })}
-                                            </ul>
-                                        </div>
-                                    ) : null}
+                              return (
+                                <div key={index} className="form-check">
+                                  <input
+                                    className="form-check-input rounded-0"
+                                    type="checkbox"
+                                    checked={isChecked}
+                                    onChange={() => toggleCategorySelection(item)}
+                                  />
+                                  <label>{item?.Title}</label>
                                 </div>
-                                {CategoriesData != undefined ? (
-                                    <div>
-                                        {CategoriesData?.map((type: any, index: number) => {
-                                            return (
-                                                <>
-                                                    {!instantCategories?.some((selectedCat: any) => selectedCat?.Title == type?.Title) && (
-                                                        <div className="block d-flex full-width justify-content-between mb-1 p-2">
-                                                            <a
-                                                                style={{ color: "#fff !important" }}
-                                                                target="_blank"
-                                                                data-interception="off"
-                                                                href={`${SelectD.siteUrl}/SitePages/Portfolio-Profile.aspx?${item?.Id}`}
-                                                            >
-                                                                {type.Title}
-                                                            </a>
-                                                            <span
-                                                                className="bg-light svg__iconbox svg__icon--cross"
-                                                                onClick={() => deleteCategories(type?.Id)}
-                                                            ></span>
-                                                            {/* <img src="https://hhhhteams.sharepoint.com/sites/HHHH/SP/_layouts/images/delete.gif" onClick={() => deleteCategories(type?.Id)} className="p-1" /> */}
-                                                        </div>
-                                                    )}
-                                                </>
-                                            );
-                                        })}
+                              );
+                            })
+                          }
+
+                          {SearchedCategoryData?.length > 0 ? (
+                            <div className="SmartTableOnTaskPopup">
+                              <ul className="list-group">
+                                {SearchedCategoryData.map((item: any) => {
+                                  return (
+                                    <li
+                                      className="hreflink list-group-item rounded-0 list-group-item-action"
+                                      key={item.id}
+                                      onClick={() =>
+                                        setSelectedCategoryData([item], "For-Auto-Search")
+                                      }
+                                    >
+                                      <a>{item.Newlabel}</a>
+                                    </li>
+                                  );
+                                })}
+                              </ul>
+                            </div>
+                          ) : null}
+                        </div>
+                        {CategoriesData != undefined ? (
+                          <div>
+                            {CategoriesData?.map((type: any, index: number) => {
+                              return (
+                                <>
+                                  {!instantCategories?.some((selectedCat: any) => selectedCat?.Title == type?.Title) && (
+                                    <div className="block d-flex full-width justify-content-between mb-1 p-2">
+                                      <a
+                                        style={{ color: "#fff !important" }}
+                                        target="_blank"
+                                        data-interception="off"
+                                        href={`${SelectD.siteUrl}/SitePages/Portfolio-Profile.aspx?${item?.Id}`}
+                                      >
+                                        {type.Title}
+                                      </a>
+                                      <span
+                                        className="bg-light svg__iconbox svg__icon--cross"
+                                        onClick={() => deleteCategories(type?.Id)}
+                                      ></span>
+                                      {/* <img src="https://hhhhteams.sharepoint.com/sites/HHHH/SP/_layouts/images/delete.gif" onClick={() => deleteCategories(type?.Id)} className="p-1" /> */}
                                     </div>
-                                ) : null}
-                                {/* <div className="col-sm-12">
+                                  )}
+                                </>
+                              );
+                            })}
+                          </div>
+                        ) : null}
+                        {/* <div className="col-sm-12">
                                     <div className="col-sm-12 padding-0 input-group">
                                         <label className="full_width">Client Category</label>
                                         <input
@@ -3358,8 +3354,8 @@ if(res?.ClientCategory != undefined && res?.ClientCategory?.results?.length >0 )
 
                                 </div> */}
 
-                            </div>
-                           
+                      </div>
+
                     </div>
                     <div className="col-sm-4  ">
                       <CommentCard
@@ -3426,7 +3422,27 @@ if(res?.ClientCategory != undefined && res?.ClientCategory?.results?.length >0 )
                       <div className="row">
                         <section className="accordionbox mt-2">
                           <div className="accordion p-0  overflow-hidden">
-                            <div className="card shadow-none mb-2">
+                            <details>
+                              <summary className="alignCenter">
+                                <label className="toggler full_width">
+                                  <a className="pull-left">Admin Notes</a>
+                                </label>
+                              </summary>
+                              <div className="border border-top-0 p-2">
+                              
+                                  <div className="accordion-body py-2 px-2"
+                                    id="testDiv1">
+                                    <textarea
+                                      className="full_width"
+                                      defaultValue={EditData?.AdminNotes}
+                                      onChange={(e) =>
+                                        (EditData.AdminNotes = e.target.value)
+                                      }
+                                    ></textarea>
+                                  </div>
+                              </div>
+                            </details>
+                            {/* <div className="card shadow-none mb-2">
                               <div
                                 className="accordion-item border-0"
                                 id="t_draggable1"
@@ -3474,8 +3490,42 @@ if(res?.ClientCategory != undefined && res?.ClientCategory?.results?.length >0 )
                                   )}
                                 </div>
                               </div>
-                            </div>
-                            <div className="card shadow-none  mb-2">
+                            </div> */}
+                            <details>
+                              <summary className="alignCenter">
+                                <label className="toggler full_width">
+                                  <a className="pull-left">Description</a>
+                                </label>
+                              </summary>
+                              <div className="border border-top-0 p-2">
+                                
+                                  <div
+                                    id="testDiv1">
+                                    <span className="form-check pull-right">
+                                      <input className="form-check-input rounded-0"
+                                        type="checkbox"
+                                        defaultChecked={
+                                          EditData?.descriptionVerified ===
+                                          true
+                                        }
+                                      ></input>
+                                      <span className="ps-1">Verified</span>
+                                    </span>
+                                    <HtmlEditorCard
+                                      editorValue={
+                                        EditData?.Body != undefined
+                                          ? EditData?.Body
+                                          : ""
+                                      }
+                                      HtmlEditorStateChange={
+                                        HtmlEditorCallBack
+                                      }
+                                    ></HtmlEditorCard>
+                                  </div>
+                                
+                              </div>
+                            </details>
+                            {/* <div className="card shadow-none  mb-2">
                               <div
                                 className="accordion-item border-0"
                                 id="t_draggable1"
@@ -3518,7 +3568,6 @@ if(res?.ClientCategory != undefined && res?.ClientCategory?.results?.length >0 )
                                         ></input>
                                         <span className="ps-1">Verified</span>
                                       </span>
-                                      {/* <HtmlEditorCard editorValue={this.state.editorValue} HtmlEditorStateChange={this.HtmlEditorStateChange}></HtmlEditorCard> */}
                                       <HtmlEditorCard
                                         editorValue={
                                           EditData?.Body != undefined
@@ -3533,8 +3582,44 @@ if(res?.ClientCategory != undefined && res?.ClientCategory?.results?.length >0 )
                                   )}
                                 </div>
                               </div>
-                            </div>
-                            <div className="card shadow-none  mb-2">
+                            </div> */}
+                            <details>
+                              <summary className="alignCenter">
+                                <label className="toggler full_width">
+                                  <a className="pull-left">Short Description</a>
+                                </label>
+                              </summary>
+                              <div className="border border-top-0 p-2">
+                                
+                                  <div id="testDiv1"
+                                  >
+                                    <span className="form-check pull-right">
+                                      <input
+                                        type="checkbox" className="form-check-input rounded-0"
+                                        defaultChecked={
+                                          EditData?.ShortDescriptionVerified ===
+                                          true
+                                        }
+                                      ></input>
+                                      <span className="ps-1">Verified</span>
+                                    </span>
+
+                                    <HtmlEditorCard
+                                      editorValue={
+                                        EditData?.Short_x0020_Description_x0020_On !=
+                                          undefined
+                                          ? EditData?.Short_x0020_Description_x0020_On
+                                          : ""
+                                      }
+                                      HtmlEditorStateChange={
+                                        SortHtmlEditorCallBack
+                                      }
+                                    ></HtmlEditorCard>
+                                  </div>
+                                
+                              </div>
+                            </details>
+                            {/* <div className="card shadow-none  mb-2">
                               <div
                                 className="accordion-item border-0"
                                 id="t_draggable1"
@@ -3581,7 +3666,7 @@ if(res?.ClientCategory != undefined && res?.ClientCategory?.results?.length >0 )
                                       <HtmlEditorCard
                                         editorValue={
                                           EditData?.Short_x0020_Description_x0020_On !=
-                                          undefined
+                                            undefined
                                             ? EditData?.Short_x0020_Description_x0020_On
                                             : ""
                                         }
@@ -3593,9 +3678,45 @@ if(res?.ClientCategory != undefined && res?.ClientCategory?.results?.length >0 )
                                   )}
                                 </div>
                               </div>
-                            </div>
+                            </div> */}
+                            <details>
+                              <summary className="alignCenter">
+                                <label className="toggler full_width">
+                                  <a className="pull-left">Background</a>
+                                </label>
+                              </summary>
+                              <div className="border border-top-0 p-2">
+                                
+                                  <div
+                                    className="accordion-body py-2 px-2"
+                                    id="testDiv1"
+                                  >
+                                    <span className="form-check pull-right">
+                                      <input className="form-check-input rounded-0"
+                                        type="checkbox"
+                                        defaultChecked={
+                                          EditData?.BackgroundVerified ===
+                                          true
+                                        }
+                                        onChange={(e) =>
+                                        (EditData.BackgroundVerified =
+                                          e.target.value)
+                                        }
+                                      ></input>
+                                      <span className="ps-1">Verified</span>
+                                    </span>
+                                    <textarea
+                                      className="full_width"
+                                      defaultValue={EditData?.Background}
+                                      onChange={(e) =>
+                                        (EditData.Background = e.target.value)
+                                      }
+                                    ></textarea>
+                                  </div>
+                                
+                              </div></details>
 
-                            <div className="card shadow-none  mb-2">
+                            {/* <div className="card shadow-none  mb-2">
                               <div
                                 className="accordion-item border-0"
                                 id="t_draggable1"
@@ -3637,8 +3758,8 @@ if(res?.ClientCategory != undefined && res?.ClientCategory?.results?.length >0 )
                                             true
                                           }
                                           onChange={(e) =>
-                                            (EditData.BackgroundVerified =
-                                              e.target.value)
+                                          (EditData.BackgroundVerified =
+                                            e.target.value)
                                           }
                                         ></input>
                                         <span className="ps-1">Verified</span>
@@ -3654,9 +3775,44 @@ if(res?.ClientCategory != undefined && res?.ClientCategory?.results?.length >0 )
                                   )}
                                 </div>
                               </div>
-                            </div>
+                            </div> */}
+                            <details>
+                              <summary className="alignCenter">
+                                <label className="toggler full_width">
+                                  <a className="pull-left">Idea</a>
+                                </label>
+                              </summary>
+                              <div className="border border-top-0 p-2">
+                                {EditData?.shows && (
+                                  <div
+                                    className="accordion-body py-2 px-2"
+                                    id="testDiv1"
+                                  >
+                                    <span className="form-check pull-right">
+                                      <input
+                                        type="checkbox"
+                                        defaultChecked={
+                                          EditData?.IdeaVerified === true
+                                        }
+                                        onChange={(e) =>
+                                        (EditData.BackgroundVerified =
+                                          e.target.value)
+                                        }
+                                      ></input>
+                                      <span className="ps-1">Verified</span>
+                                    </span>
+                                    <textarea
+                                      className="full_width"
+                                      defaultValue={EditData?.Idea}
+                                      onChange={(e) =>
+                                        (EditData.Idea = e.target.value)
+                                      }
+                                    ></textarea>
+                                  </div>
+                                )}
+                              </div></details>
 
-                            <div className="card shadow-none mb-2">
+                            {/* <div className="card shadow-none mb-2">
                               <div
                                 className="accordion-item border-0"
                                 id="t_draggable1"
@@ -3697,8 +3853,8 @@ if(res?.ClientCategory != undefined && res?.ClientCategory?.results?.length >0 )
                                             EditData?.IdeaVerified === true
                                           }
                                           onChange={(e) =>
-                                            (EditData.BackgroundVerified =
-                                              e.target.value)
+                                          (EditData.BackgroundVerified =
+                                            e.target.value)
                                           }
                                         ></input>
                                         <span className="ps-1">Verified</span>
@@ -3714,13 +3870,47 @@ if(res?.ClientCategory != undefined && res?.ClientCategory?.results?.length >0 )
                                   )}
                                 </div>
                               </div>
-                            </div>
-
-                            <div className="card shadow-none mb-2">
-                              <div
-                                className="accordion-item border-0"
-                                id="t_draggable1"
-                              >
+                            </div> */}
+                            <details>
+                              <summary className="alignCenter">
+                                <label className="toggler full_width">
+                                  <a className="pull-left">Value Added</a>
+                                </label>
+                              </summary>
+                              <div className="border border-top-0 p-2">
+                                
+                                  <div
+                                    className="accordion-body py-2 px-2"
+                                    id="testDiv1"
+                                  >
+                                    <span className="form-check pull-right">
+                                      <input
+                                        type="checkbox" className="form-check-input rounded-0"
+                                        defaultChecked={
+                                          EditData?.ValueAddedVerified ===
+                                          true
+                                        }
+                                        onChange={(e) =>
+                                        (EditData.ValueAddedVerified =
+                                          e.target.value)
+                                        }
+                                      ></input>
+                                      <span className="ps-1">Verified</span>
+                                    </span>
+                                    <textarea
+                                      className="full_width"
+                                      defaultValue={EditData?.ValueAdded}
+                                      onChange={(e) =>
+                                        (EditData.ValueAdded = e.target.value)
+                                      }
+                                    ></textarea>
+                                  </div>
+                               
+                              </div>
+                            </details>
+                            {/* <div className="card shadow-none mb-2">
+                              <div className="accordion-item border-0"
+                                id="t_draggable1">
                                 <div
                                   className="card-header p-0 border-bottom-0 "
                                   onClick={() =>
@@ -3758,8 +3948,8 @@ if(res?.ClientCategory != undefined && res?.ClientCategory?.results?.length >0 )
                                             true
                                           }
                                           onChange={(e) =>
-                                            (EditData.ValueAddedVerified =
-                                              e.target.value)
+                                          (EditData.ValueAddedVerified =
+                                            e.target.value)
                                           }
                                         ></input>
                                         <span className="ps-1">Verified</span>
@@ -3775,9 +3965,43 @@ if(res?.ClientCategory != undefined && res?.ClientCategory?.results?.length >0 )
                                   )}
                                 </div>
                               </div>
-                            </div>
-
-                            <div className="card shadow-none mb-2">
+                            </div> */}
+                            <details>
+                              <summary className="alignCenter">
+                                <label className="toggler full_width">
+                                  <a className="pull-left">Deliverables</a>
+                                </label>
+                              </summary>
+                              <div className="border border-top-0 p-2">
+                                
+                                  <div
+                                    className="accordion-body py-2 px-2"
+                                    id="testDiv1"
+                                  >
+                                    <span className="form-check pull-right">
+                                      <input
+                                        type="checkbox" className="form-check-input rounded-0"
+                                        defaultChecked={
+                                          EditData?.DeliverablesVerified ===
+                                          true
+                                        }
+                                      ></input>
+                                      <span className="ps-1">Verified</span>
+                                    </span>
+                                    <HtmlEditorCard
+                                      editorValue={
+                                        EditData?.Deliverables != undefined
+                                          ? EditData?.Deliverables
+                                          : ""
+                                      }
+                                      HtmlEditorStateChange={
+                                        DeliverablesHtmlEditorCallBack
+                                      }
+                                    ></HtmlEditorCard>
+                                  </div>
+                                
+                              </div></details>
+                            {/* <div className="card shadow-none mb-2">
                               <div
                                 className="accordion-item border-0"
                                 id="t_draggable1"
@@ -3835,7 +4059,7 @@ if(res?.ClientCategory != undefined && res?.ClientCategory?.results?.length >0 )
                                   )}
                                 </div>
                               </div>
-                            </div>
+                            </div> */}
                           </div>
                         </section>
                       </div>
@@ -3873,15 +4097,42 @@ if(res?.ClientCategory != undefined && res?.ClientCategory?.results?.length >0 )
                   role="tabpanel"
                   aria-labelledby="profile-tab"
                 >
-                  <div className="col  p-2">
-                    <section className="accordionbox">
+                  <div className="col p-2">
+                    <details>
+                      <summary className="alignCenter">
+                        <label className="toggler full_width">
+                          <a className="pull-left">Technical Concept</a>
+                        </label>
+                      </summary>
+                      <div className="border border-top-0 p-2">
+                        {CollapseExpend && (
+                          <div>
+                            <span className="form-check pull-right">
+                              <input
+                                type="checkbox" className="form-check-input rounded-0"
+                                defaultValue={
+                                  EditData?.TechnicalExplanationsVerified
+                                }
+                              />
+                              <span className="ps-1">Verified</span>
+                            </span>
+
+                            <HtmlEditorCard
+                              editorValue={
+                                EditData?.TechnicalExplanations != undefined
+                                  ? EditData?.TechnicalExplanations
+                                  : ""
+                              }
+                              HtmlEditorStateChange={
+                                TechnicalExplanationsHtmlEditorCallBack
+                              }
+                            ></HtmlEditorCard>
+                          </div>
+                        )}
+                      </div></details>
+                    {/* <section className="accordionbox">
                       <div className="accordion p-0  overflow-hidden">
-                        <div className="card shadow-none  mb-2">
-                          {/* <a className="btn btn-secondary p-0" title="Tap to expand the childs" onClick={() => (setCollapseExpend(CollapseExpend => !CollapseExpend))} >
-
-                                                        <span className="sign">{CollapseExpend ? <IoMdArrowDropdown /> : <IoMdArrowDropright />}</span>  Technical Concept
-
-                                                    </a> */}
+                        <div className="card shadow-none mb-2">
                           <div
                             className="card-header p-0 border-bottom-0 "
                             onClick={() =>
@@ -3934,7 +4185,7 @@ if(res?.ClientCategory != undefined && res?.ClientCategory?.results?.length >0 )
                           )}
                         </div>
                       </div>
-                    </section>
+                    </section> */}
                   </div>
                 </div>
                 <div
@@ -3958,15 +4209,9 @@ if(res?.ClientCategory != undefined && res?.ClientCategory?.results?.length >0 )
               </div>
             </div>
             <footer
-              className="bg-f4"
-              style={{
-                position: "absolute",
-                width: "100%",
-                bottom: "0px",
-                background: "#FAFAFA"
-              }}
-            >
-              <div className="align-items-center d-flex justify-content-between me-5 py-2">
+              className="bg-f4 fixed-bottom"
+              style={{ position: "absolute" }}>
+              <div className="align-items-center d-flex justify-content-between px-4 py-2">
                 <div>
                   <div className="text-left">
                     Created{" "}
@@ -3984,7 +4229,7 @@ if(res?.ClientCategory != undefined && res?.ClientCategory?.results?.length >0 )
                   <div className="text-left">
                     Last modified{" "}
                     <span>
-                    {EditData.Modified ? moment(EditData.Modified).format("DD/MM/YYYY") : ''}
+                      {EditData.Modified ? moment(EditData.Modified).format("DD/MM/YYYY") : ''}
                     </span>{" "}
                     by{" "}
                     <span className="panel-title">
@@ -4025,24 +4270,26 @@ if(res?.ClientCategory != undefined && res?.ClientCategory?.results?.length >0 )
                   </div>
                 </div>
                 <div>
-                  <div>
+                  <div className="footer-right">
                     <span>
-                      <a
+                      <a className="me-1"
                         target="_blank"
                         href={`${RequireData.siteUrl}/SitePages/Portfolio-Profile.aspx?taskId=${EditData?.Id}`}
                       >
-                        <img src="https://hhhhteams.sharepoint.com/sites/HHHH/_layouts/15/images/ichtm.gif?rev=23" />{" "}
+                        {/* <img src="https://hhhhteams.sharepoint.com/sites/HHHH/_layouts/15/images/ichtm.gif?rev=23" />{" "} */}
                         Go To Profile Page
                       </a>
                       ||
-                      <img
+                      {/* <img
                         className="mail-width mx-2"
                         src="https://hhhhteams.sharepoint.com/sites/HHHH/SP/SiteCollectionImages/ICONS/32/icon_maill.png"
-                      />
+                      /> */}
+                      <span className="hreflink mx-1 siteColor f-mailicons">
+                        <span title="Edit Task" className="alignIcon svg__iconbox svg__icon--mail"></span>
+                      </span>
                       <a
-                        href={`mailto:?subject=${"Test"}&body=${
-                          EditData?.ComponentLink
-                        }`}
+                        href={`mailto:?subject=${"Test"}&body=${EditData?.ComponentLink
+                          }`}
                       >
                         {" "}
                         Share This Task ||
@@ -4091,22 +4338,22 @@ if(res?.ClientCategory != undefined && res?.ClientCategory?.results?.length >0 )
               ></ComponentPortPolioPopup>
             )} */}
             {IsComponent ? (
-                <ServiceComponentPortfolioPopup
-                            props={SharewebComponent}
-                            Dynamic={RequireData}
-                            ComponentType={"Component"}
-                            Call={Call}
-                            selectionType={"Single"}
-                        />
+              <ServiceComponentPortfolioPopup
+                props={SharewebComponent}
+                Dynamic={RequireData}
+                ComponentType={"Component"}
+                Call={Call}
+                selectionType={"Single"}
+              />
             ) : null}
             {IsService ? (
               <ServiceComponentPortfolioPopup
-                            props={SharewebComponent}
-                            Dynamic={RequireData}
-                            Call={Call}
-                            ComponentType={"Component"}
-                            selectionType={"Multi"}
-                        />
+                props={SharewebComponent}
+                Dynamic={RequireData}
+                Call={Call}
+                ComponentType={"Component"}
+                selectionType={"Multi"}
+              />
             ) : null}
             {IsComponentPicker && (
               <Picker
