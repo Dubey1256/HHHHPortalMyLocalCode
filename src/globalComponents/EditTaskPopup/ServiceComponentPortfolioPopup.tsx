@@ -234,7 +234,7 @@ const ServiceComponentPortfolioPopup = ({ props, Dynamic, Call, ComponentType, s
                 header: "",
             },
             {
-                accessorFn: (row) => row?.ClientCategory?.map((elem: any) => elem.Title).join("-"),
+                accessorFn: (row) => row?.ClientCategory?.map((elem: any) => elem.Title)?.join("-"),
                 cell: ({ row }) => (
                     <>
                         <ShowClintCatogory clintData={row?.original} AllMetadata={AllMetadataItems} />
@@ -246,7 +246,7 @@ const ServiceComponentPortfolioPopup = ({ props, Dynamic, Call, ComponentType, s
                 size: 100,
             },
             {
-                accessorFn: (row) => row?.TeamLeaderUser?.map((val: any) => val.Title).join("-"),
+                accessorFn: (row) => row?.TeamLeaderUser?.map((val: any) => val.Title)?.join("-"),
                 cell: ({ row }) => (
                     <div>
                         <ShowTaskTeamMembers key={row?.original?.Id} props={row?.original} TaskUsers={AllUsers} />
