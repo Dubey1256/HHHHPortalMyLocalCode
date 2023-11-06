@@ -3500,7 +3500,7 @@ export default class CategoriesWeeklyMultipleReport extends React.Component<ICat
         const BtnElement = document.getElementsByClassName("rct-collapse rct-collapse-btn");
         if (BtnElement) {
           for (let j = 0; j < BtnElement.length; j++) {
-            BtnElement[j].classList.add('mt--5');
+            BtnElement[j].classList.add('mt--5', 'me-0');
           }
         }
       }, 40);
@@ -3568,7 +3568,7 @@ export default class CategoriesWeeklyMultipleReport extends React.Component<ICat
           <div className="report-taskuser ps-0 pe-1" id="TimeSheet-Section">
             <details className='pt-1 m-0 allfilter' open>
               <summary>
-                <a className="fw-semibold hreflink mr-5 pe-2 pull-left">All filters :<span className='text-dark'>Task User :</span><span>
+                <a className="fw-semibold hreflink mr-5 pe-2 pull-left">All filters :<span className='fw-normal me-1'>Task User :</span><span>
                   {this.state.SelectGroupName}
                 </span> </a>
                 {this.state.ImageSelectedUsers.length <= 3 ? (
@@ -3753,30 +3753,30 @@ export default class CategoriesWeeklyMultipleReport extends React.Component<ICat
                         {/* <Loader loaded={this.state.loaded} lines={13} length={20} width={10} radius={30} corners={1} rotate={0} direction={1} color={portfolioColor ? portfolioColor : "#000066"}
                           speed={2} trail={60} shadow={false} hwaccel={false} className="spinner" zIndex={2e9} top="28%" left="50%" scale={1.0} loadedClassName="loadedContent" /> */}
                         <div className="p-0 mt-10 smartSearch-Filter-Section">
-                          <label className='border-bottom full-width alignCenter pb-1'>
+                          <label className='border-bottom full-width alignCenter pb-1  mb-1'>
                             <input defaultChecked={this.state.checkedAll} onClick={(e) => this.SelectAllCategories(e)} id='chkAllCategory' type="checkbox" className="form-check-input me-1 mt-1" />
                             Client Category
 
 
                           </label>
                           <div className='custom-checkbox-tree'>
-                          <CheckboxTree
-                            nodes={this.state.filterItems}
-                            checked={this.state.checked}
-                            expanded={this.state.expanded}
-                            onCheck={(e, checked) => this.onCheck(e, checked)}
-                            onExpand={expanded => this.ExpandClientCategory(expanded)}
-                            nativeCheckboxes={true}
-                            showNodeIcon={false}
-                            checkModel={'all'}
-                            icons={{
-                              expandOpen: <SlArrowDown />,
-                              expandClose: <SlArrowRight />,
-                              parentClose: null,
-                              parentOpen: null,
-                              leaf: null,
-                            }}                            
-                          />
+                            <CheckboxTree
+                              nodes={this.state.filterItems}
+                              checked={this.state.checked}
+                              expanded={this.state.expanded}
+                              onCheck={(e, checked) => this.onCheck(e, checked)}
+                              onExpand={expanded => this.ExpandClientCategory(expanded)}
+                              nativeCheckboxes={true}
+                              showNodeIcon={false}
+                              checkModel={'all'}
+                              icons={{
+                                expandOpen: <SlArrowDown />,
+                                expandClose: <SlArrowRight />,
+                                parentClose: null,
+                                parentOpen: null,
+                                leaf: null,
+                              }}
+                            />
                           </div>
                         </div>
 
