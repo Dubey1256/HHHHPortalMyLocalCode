@@ -368,6 +368,10 @@ class Taskprofile extends React.Component<ITaskprofileProps, ITaskprofileState> 
     if (taskDetails?.Portfolio != undefined) {
 
       portfolio = this.masterTaskData.filter((item: any) => item.Id == taskDetails?.Portfolio?.Id)
+
+      if (portfolio?.length>0 && portfolio[0]?.PortfolioType?.Color != undefined) {
+        document?.documentElement?.style?.setProperty('--SiteBlue',portfolio[0]?.PortfolioType?.Color );
+      }
     }
     let feedBackData: any = JSON.parse(taskDetails["FeedBack"]);
     console.log(this.masterTaskData)
@@ -1638,7 +1642,8 @@ if(folora=="folora"&&index==0){
     
     return (
       <myContextValue.Provider value={{ ...myContextValue, FunctionCall: this.contextCall, keyDoc: this.state.keydoc, FileDirRef: this.state.FileDirRef }}>
-        <div  className= {this.state?.Result?.PortfolioType?.Title=="Service"?'serviepannelgreena':""}
+        <div 
+        //  className= {this.state?.Result?.PortfolioType?.Title=="Service"?'serviepannelgreena':""}
         //  style={{color:`${this.state.Result["serviceComponentColor"]}`}}
         >
           <section className='ContentSection'> {this.state.breadCrumData != undefined &&
