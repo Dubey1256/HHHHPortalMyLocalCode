@@ -146,7 +146,6 @@ export default function ManageSmartMetadata(selectedProps: any) {
             placeholder: 'Title',
             header: '',
             id: 'Title',
-            size: 10,
             cell: ({ row }) => (
                 <>
                     <div className='alignCenter'>
@@ -167,7 +166,7 @@ export default function ManageSmartMetadata(selectedProps: any) {
             placeholder: 'SmartFilters',
             id: 'SmartFilters',
             header: '',
-            size: 10,
+            size: 350,
             cell: ({ row }) => (
                 <>
                     <div className='alignCenter'>
@@ -185,7 +184,7 @@ export default function ManageSmartMetadata(selectedProps: any) {
             placeholder: 'Status',
             id: 'Status',
             header: '',
-            size: 10,
+            size: 90,
             cell: ({ row }) => (
                 <>
                     <div className='alignCenter'>
@@ -203,7 +202,7 @@ export default function ManageSmartMetadata(selectedProps: any) {
             placeholder: 'SortOrder',
             id: 'SortOrder',
             header: '',
-            size: 10,
+            size: 42,
             cell: ({ row }) => (
                 <>
                     <div className='alignCenter'>
@@ -271,7 +270,7 @@ export default function ManageSmartMetadata(selectedProps: any) {
             id: "row?.original.Id",
             canSort: false,
             placeholder: "",
-            size: 1,
+            size: 10,
         },
     ],
         [Smartmetadata]);
@@ -383,9 +382,7 @@ export default function ManageSmartMetadata(selectedProps: any) {
                     </div>
                 </div>
             </section>
-            <span className='pull-right'>
-                <a className='text-end hyperlink ' onClick={() => generateJSONOfTaskLists()}>Generate JSON </a>
-            </span>
+            
             <ul className="nav nav-tabs" role="tablist">
                 {Tabs.map((item: any, index: any) => (
                     <button className={
@@ -396,9 +393,12 @@ export default function ManageSmartMetadata(selectedProps: any) {
                         {item.Title}
                     </button>
                 ))}
+                <span className='pull-right ml-auto mt-2'>
+                <a className='text-end hreflink' onClick={() => generateJSONOfTaskLists()}>Generate JSON </a>
+            </span>
             </ul>
             <div className="border border-top-0 clearfix p-2 tab-content " id="myTabContent">
-                <div className="tab-pane Alltable mx-height show active" id="URLTasks" role="tabpanel" aria-labelledby="URLTasks">
+                <div className="tab-pane Alltable mx-height show active p-0" id="URLTasks" role="tabpanel" aria-labelledby="URLTasks">
                     {
                         Smartmetadata &&
                         <GlobalCommanTable smartMetadataCount={smartMetadataCount} Tabs={Tabs} compareSeletected={compareSeletected} CloseEditSmartMetaPopup={CloseEditSmartMetaPopup} SelectedItem={SelectedItem} setName={setName} ParentItem={Smartmetadata} AllList={selectedProps.AllList} data={Smartmetadata} TabSelected={TabSelected} ref={childRef} callChildFunction={callChildFunction} callBackSmartMetaData={callBackSmartMetaData} columns={columns} showHeader={true} expandIcon={true} showPagination={true} callBackData={callBackData} />

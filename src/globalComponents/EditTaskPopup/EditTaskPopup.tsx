@@ -1760,7 +1760,15 @@ const EditTaskPopup = (Items: any) => {
                                             FeedBackCount++;
                                         }
                                     }
+                                    let targetDiv :any = document?.querySelector('.ms-Panel-main');
+                                    setTimeout(()=>{
+                                        if (targetDiv ) {
+                                            // Change the --SiteBlue variable for elements under the targetDiv
+                                            $('.ms-Panel-main').css('--SiteBlue', PortfolioItem?.Color);
+                                        }
+                                    },1000)
                                 }
+                               
                             })
                         }
                     })
@@ -2328,6 +2336,8 @@ const EditTaskPopup = (Items: any) => {
                                     dataEditor.data.editpopup = true;
                                     dataEditor.data.TaskID = EditData.TaskId
                                     dataEditor.data.listId = Items.Items.listId
+                                    dataEditor.data.SiteIcon = Items?.Items?.SiteIcon
+                                    dataEditor.data.DisplayCreateDate = Items?.Items?.DisplayCreateDate
                                     dataEditor.data.FeedBack = JSON.stringify(dataEditor.data.FeedBack)
                                     Items.Call(dataEditor, "UpdatedData");
                                 }
