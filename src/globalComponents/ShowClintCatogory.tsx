@@ -77,7 +77,7 @@ const ShowClintCatogory = (Item: any) => {
                     +{FilterData?.ClientCategory?.slice(2)?.length}
                     <span className="tooltiptext popover__content p-2" style={{ minWidth: "200px" }}>
                       <div>
-                        {FilterData?.ClientCategory.slice(2).map((rcData: any, i: any) => {
+                        {FilterData?.ClientCategory?.slice(2).map((rcData: any, i: any) => {
                           return (
                             <span key={i} className="team_Members_Item" style={{ padding: "2px" }}>
                               <span title={rcData?.Titles?.join(' > ')} className="ClientCategory-Usericon" style={{ backgroundColor: rcData?.Color_x0020_Tag }}>

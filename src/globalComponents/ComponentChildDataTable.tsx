@@ -1009,7 +1009,7 @@ function ComponentChildDataTable(SelectedProp: any) {
   };
 
 
-  // These are the used for the summerize the Client Category Related Functionality
+  // These are the used for the summarize the Client Category Related Functionality
 
   const findAllClientCategories = (AllData: any) => {
     AllData.forEach((AllDataItem: any) => {
@@ -1034,9 +1034,6 @@ function ComponentChildDataTable(SelectedProp: any) {
       }
     });
   }
-
-
-
 
   const GroupByClientCategoryData = () => {
     let AllClientCategoryOG: any = [];
@@ -1076,7 +1073,6 @@ function ComponentChildDataTable(SelectedProp: any) {
         lastUpdatedAllSites = AllSitesData;
       }
       // console.log("All Site Data ======", AllSitesData);
-
       removeDuplicateClientCategories();
     }
   }
@@ -1084,11 +1080,13 @@ function ComponentChildDataTable(SelectedProp: any) {
 
   const removeDuplicateClientCategories = () => {
     let finalData: any
+
     AllSitesData?.map((CCItemData: any) => {
       if (CCItemData.ClientCategories?.length > 0) {
         finalData = CCItemData.ClientCategories?.filter((val: any, id: any, array: any) => {
           return array.indexOf(val) == id;
         })
+        finalData[0].checked = true;
         CCItemData.ClientCategories = finalData;
       }
     })
@@ -1693,28 +1691,22 @@ function ComponentChildDataTable(SelectedProp: any) {
           <div className="container p-0">
             <div className="Alltable mt-2">
               <div className="p-2">
-                <table className="table table-striped">
-                  {/* AllSitesData */}
+                <div className="full-width pb-2 siteColor">***The changes made through this tool are only applicable on AWT and won't make any changes in CSF</div>
+                <table className="table siteColor">
                   <tbody>
                     {AllSitesData?.map((CCDetails: any, Index: any) => {
                       if (CCDetails.ClientCategories?.length > 0) {
                         IndexCounting++;
                         return (
-                          <tr key={IndexCounting}>
+                          <tr key={IndexCounting} className="border-1 siteColor">
                             <th scope="row" className="text-center">{IndexCounting}.</th>
                             <td>{CCDetails.Title}</td>
                             <td className="p-1">
                               <div className="d-flex">
                                 {CCDetails.ClientCategories?.map((CCItem: any, ChildIndex: any) => {
                                   return (
-                                    // <div className="bg-69 d-flex me-1 justify-content-between p-1 ps-2" title={CCItem.Title ? CCItem.Title : null}>
-                                    //   {CCItem.Title ? CCItem.Title : null}
-                                    //   <a className=""
-                                    //     onClick={() => selectedParentClientCategory(ChildIndex, CCDetails.Title)}
-                                    //   >
-                                    //     <span className="bg-light svg__icon--cross svg__iconbox"></span>
-                                    //   </a>
-                                    // </div>
+
+
                                     <label className="SpfxCheckRadio">
                                       <input
                                         className="radio"
@@ -1726,6 +1718,7 @@ function ComponentChildDataTable(SelectedProp: any) {
                                       />
                                       {CCItem.Title ? CCItem.Title : null}
                                     </label>
+
                                   )
                                 })}
                               </div>
@@ -1738,8 +1731,7 @@ function ComponentChildDataTable(SelectedProp: any) {
                 </table>
               </div>
               <div className="col-sm-12 p-0 smart">
-                {/* {console.log("Categories Group By Data  in div div======", tempSiteAndCategoryData)}
-                {console.log("Categories Group By AllsiteClientCategoriesAllsite  div div div ClientCategoriesAllsiteClientCategoriesAllsiteClientCategories ======", AllsiteClientCategories)} */}
+              
                 <div className="">
                   <div className="wrapper">
                     <Loader
