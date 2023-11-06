@@ -44,7 +44,7 @@ const CreateWS = (props: any) => {
     const [inputFields, setInputFields]: any = React.useState([{
         Title: '',
         ItemRank: '',
-        Priority: '',
+        Priority: '4',
         DueDate: '',
         Description: [],
         AssignedTo: props?.selectedItem?.AssignedTo?.length > 0 ? props?.selectedItem?.AssignedTo : [],
@@ -57,7 +57,7 @@ const CreateWS = (props: any) => {
         setInputFields([...inputFields, {
             Title: '',
             ItemRank: '',
-            Priority: '',
+            Priority: '4',
             DueDate: '',
             Description: [],
             AssignedTo: props?.selectedItem?.AssignedTo?.length > 0 ? props?.selectedItem?.AssignedTo : [],
@@ -90,9 +90,10 @@ const CreateWS = (props: any) => {
         }
         setSelectedItem(props?.selectedItem)
         GetParentHierarchy(props?.selectedItem)
-        let targetDiv :any = document?.querySelector('.ms-Panel-main');
+      
         if(props?.selectedItem?.PortfolioType?.Color!=undefined){
             setTimeout(()=>{
+                let targetDiv :any = document?.querySelector('.ms-Panel-main');
                 if (targetDiv ) {
                     // Change the --SiteBlue variable for elements under the targetDiv
                     targetDiv?.style?.setProperty('--SiteBlue', props?.selectedItem?.PortfolioType?.Color); // Change the color to your desired value
@@ -177,14 +178,14 @@ const CreateWS = (props: any) => {
     //-------- header section of popup
     const onRenderCustomHeaderMain = () => {
         return (
-            <div className={props?.props?.PortFolioType?.Id == 2 ? "d-flex full-width pb-1 serviepannelgreena" : "d-flex full-width pb-1"} >
-                <div style={{ marginRight: "auto", fontSize: "20px", fontWeight: "600", marginLeft: '20px' }}>
-                    <h2 className='heading'>
+          <>
+                <div className='subheading'>
+                   
                         {`Create Item`}
-                    </h2>
+                   
                 </div>
                 <Tooltip ComponentId='1710' />
-            </div>
+                </>
         );
     };
 
