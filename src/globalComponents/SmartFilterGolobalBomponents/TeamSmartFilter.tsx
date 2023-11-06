@@ -2225,7 +2225,7 @@ const TeamSmartFilter = (item: any) => {
                                                             <td valign="top" style={{ width: '14.2%' }}>
                                                                 <fieldset className='smartFilterStyle pe-3'>
                                                                     <legend className='SmartFilterHead'>
-                                                                        <span className="mparent d-flex" style={{ borderBottom: "1.5px solid #D9D9D9", color: portfolioColor }}>
+                                                                        <span className="mparent d-flex pt-1 mt-1" style={{ borderBottom: "1.5px solid" + portfolioColor, color: portfolioColor }}>
                                                                             <input className={"form-check-input cursor-pointer"}
                                                                                 style={(Group.selectAllChecked == undefined || Group.selectAllChecked === false) && Group?.ValueLength === Group?.checked?.length ? { backgroundColor: portfolioColor, borderColor: portfolioColor } : Group?.selectAllChecked === true ? { backgroundColor: portfolioColor, borderColor: portfolioColor } : { backgroundColor: '', borderColor: '' }}
                                                                                 type="checkbox"
