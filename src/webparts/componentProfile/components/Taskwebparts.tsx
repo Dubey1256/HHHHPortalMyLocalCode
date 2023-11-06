@@ -2269,13 +2269,7 @@ const updatedDataDataFromPortfolios = (copyDtaArray: any, dataToUpdate: any) => 
       >
         <div className="modal-body bg-f5f5 clearfix">
           <div
-            className={
-              IsUpdated == "Events Portfolio"
-                ? "app component clearfix eventpannelorange"
-                : IsUpdated == "Service Portfolio"
-                  ? "app component clearfix serviepannelgreena"
-                  : "app component clearfix"
-            }
+            className= "app component clearfix"
           >
             <div id="portfolio" className="section-event pt-0">
               {checkedList != undefined &&

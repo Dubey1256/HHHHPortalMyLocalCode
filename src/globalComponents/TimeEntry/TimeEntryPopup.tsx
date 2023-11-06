@@ -1107,6 +1107,8 @@ function TimeEntryPopup(item: any) {
                 </div>
             </div>}
 
+            {/* Add Task Time */}
+
             <Modal
                 isOpen={TaskStatuspopup}
                 onDismiss={closeTaskStatusUpdatePoup}
@@ -1128,7 +1130,6 @@ function TimeEntryPopup(item: any) {
                                 </button>
                             </div>
                             <div className="modal-body bg-f5f5 clearfix">
-
 
                                 <div className="col-sm-9"
                                     style={{ borderRight: "1px solid #dfdfdf" }}>
@@ -1320,7 +1321,6 @@ function TimeEntryPopup(item: any) {
                                     </div>
                                 </div>
                                 <div className="col-sm-3 pad0">
-
                                     <div className="col-sm-12">
 
                                         <a target="_blank" className="mb-5"
@@ -1358,14 +1358,11 @@ function TimeEntryPopup(item: any) {
                                 </button>
 
                             </div>
-
-
-
-
                         </div>
                     </div>
                 </div>
             </Modal>
+            {/* Edit Task Time */}
             <Modal
                 isOpen={TaskStatuspopup2}
                 onDismiss={closeTaskStatusUpdatePoup2}
@@ -1630,6 +1627,7 @@ function TimeEntryPopup(item: any) {
                     )
                 })}
             </Modal>
+            {/* Copy Task Time */}
             <Modal
                 isOpen={CopyTaskpopup}
                 onDismiss={closeCopyTaskpopup}
@@ -1894,6 +1892,7 @@ function TimeEntryPopup(item: any) {
                     )
                 })}
             </Modal>
+            {/* Add Additional Time */}
             <Modal
                 isOpen={AddTaskTimepopup}
                 onDismiss={closeAddTaskTimepopup}

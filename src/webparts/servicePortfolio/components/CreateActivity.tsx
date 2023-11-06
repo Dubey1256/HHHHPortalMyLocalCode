@@ -87,7 +87,15 @@ const CreateActivity = (props: any) => {
             ClientCategoriesData = props?.selectedItem?.ClientCategory?.results
         }
         setSelectedItem(props?.selectedItem)
-
+        let targetDiv :any = document?.querySelector('.ms-Panel-main');
+        if(props?.selectedItem?.PortfolioType?.Color!=undefined){
+            setTimeout(()=>{
+                if (targetDiv ) {
+                    // Change the --SiteBlue variable for elements under the targetDiv
+                    targetDiv?.style?.setProperty('--SiteBlue', props?.selectedItem?.PortfolioType?.Color); // Change the color to your desired value
+                }
+            },1000)
+        }
     }, [])
     //***************** Load All task Users***************** */
     const getTaskUsers = async () => {

@@ -46,19 +46,19 @@ const SelectFilterPanel = (props: any) => {
 
     const onRenderCustomHeader = () => {
         return (
-            <div className="d-flex full-width pb-1">
+            <>
                 <div className="alignCenter subheading">
-                    <span style={{ color: `${props?.portfolioColor}` }}  className="siteColor">Settings Advanced Search</span>
-                    <span className="ms-3"><Tooltip ComponentId={839} /></span>
+                    <span style={{ color: `${props?.portfolioColor}` }} className="siteColor">Settings Advanced Search</span>
                 </div>
-            </div>
+                <Tooltip ComponentId={839} />
+            </>
         );
     };
 
     return (
         <Panel
             type={PanelType.custom}
-            customWidth="340px"
+            customWidth="450px"
             isOpen={props?.isOpen}
             onDismiss={setModalIsOpenToFalse}
             onRenderHeader={onRenderCustomHeader}
