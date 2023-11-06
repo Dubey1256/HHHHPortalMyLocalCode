@@ -611,6 +611,9 @@ const handleMouseOut = () => {
             url = data.d.__next;
             GetListItems();
           } else setTaskData(response);
+          if (response?.length > 0 && response[0]?.PortfolioType?.Color != undefined) {
+            document?.documentElement?.style?.setProperty('--SiteBlue', response[0]?.PortfolioType?.Color);
+          }
           console.log(response);
         },
         error: function (error) {
@@ -889,7 +892,7 @@ const inlineCallBack = React.useCallback((item: any) => {
  
   return (
     <myContextValue.Provider value={{ ...myContextValue, FunctionCall: contextCall, keyDoc:keydoc, FileDirRef: FileDirRef }}>
-    <div className={TypeSite == "Service" ? "serviepannelgreena" : ""}>
+    <div >
       {/* breadcrumb & title */}
       <section className="ContentSection">
         <section>
@@ -1127,14 +1130,14 @@ const inlineCallBack = React.useCallback((item: any) => {
                     <dd className="bg-light d-flex">
                       {AllTaskuser?.length > 0 && (
 
-<InlineEditingcolumns AllListId={SelectedProp} callBack={inlineCallBack} columnName='Team' item={data[0]} TaskUsers={AllTaskuser} pageName={'portfolioprofile'} />
+// <InlineEditingcolumns AllListId={SelectedProp} callBack={inlineCallBack} columnName='Team' item={data[0]} TaskUsers={AllTaskuser} pageName={'portfolioprofile'} />
                     
-                        // <ShowTaskTeamMembers
-                        //   key={data[0]?.Id}
-                        //   props={data[0]}
-                        //   TaskUsers={AllTaskuser}
-                        //   Context={SelectedProp}
-                        // />
+                        <ShowTaskTeamMembers
+                          key={data[0]?.Id}
+                          props={data[0]}
+                          TaskUsers={AllTaskuser}
+                          Context={SelectedProp}
+                        />
                       )}
                     </dd>
                   </dl>
@@ -1668,7 +1671,7 @@ const inlineCallBack = React.useCallback((item: any) => {
           )}
 
           {showOverlay && currentImage && (currentImage === item?.Item_x002d_Image?.Url) && (
-            <div className="imghover " style={{left:'400px'}}>
+            <div className="imghover " style={{left:'300px !important'}}>
               <div className="popup">
                 <div className="parentDiv">
                   <span style={{ color: 'white' }}>

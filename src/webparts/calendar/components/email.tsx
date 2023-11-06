@@ -87,7 +87,7 @@ const loadleave = async () =>  {
         Body: BindHtmlBody(),
         Subject: "HHHH - Team Attendance "+formattedDate+" "+Allteamoforganization +" available - "+Object?.keys(nameidTotals)?.length+" on leave" ,
         To: ["abhishek.tiwari@hochhuth-consulting.de","prashant.kumar@hochhuth-consulting.de","ranu.trivedi@hochhuth-consulting.de","jyoti.prasad@hochhuth-consulting.de"],
-        
+        // ,"prashant.kumar@hochhuth-consulting.de","ranu.trivedi@hochhuth-consulting.de","jyoti.prasad@hochhuth-consulting.de"
         AdditionalHeaders: {
           "content-type": "text/html",
         },
@@ -216,12 +216,12 @@ const data = props.data;
 
   const juniortotal =  AllTaskuser.filter((Junior:any)=>(Junior?.UserGroupId===8));
   const smalleadtotal =  AllTaskuser.filter((smallead:any)=>(smallead?.UserGroupId===216));
-  const hhhteamtotal =  AllTaskuser.filter((hhhteam:any)=>(hhhteam?.UserGroupId===7 && hhhteam?.AssingedToUserId != 9));
+  // const hhhteamtotal =  AllTaskuser.filter((hhhteam:any)=>(hhhteam?.UserGroupId===7 && hhhteam?.AssingedToUserId != 9));
   const seniodevtotal =  AllTaskuser.filter((seniodev:any)=>(seniodev?.UserGroupId===9));
   const qaleavetotal =  AllTaskuser.filter((qaleave:any)=>(qaleave?.UserGroupId===11));
   const designttotal =  AllTaskuser.filter((designt:any)=>(designt?.UserGroupId===10));
    
-  Allteamoforganization = juniortotal.length+smalleadtotal.length+hhhteamtotal.length+seniodevtotal.length + qaleavetotal.length+designttotal.length;
+  Allteamoforganization = juniortotal.length+smalleadtotal.length+seniodevtotal.length + qaleavetotal.length+designttotal.length;
 
 
 
@@ -230,8 +230,8 @@ const data = props.data;
   Juniordevavailabel = juniortotal.length - juniordevleave.length;
   const smalleadleave = data.filter((item:any)=> item.smalsuslead.length != 0);
   smalsusleadavailabel = smalleadtotal.length - smalleadleave.length;
-  const hhhhteamleave = data.filter((item:any)=> item.hhhhteam.length != 0);
-  hhhhteamavailabel = hhhteamtotal.length - hhhhteamleave.length;
+  // const hhhhteamleave = data.filter((item:any)=> item.hhhhteam.length != 0);
+  // hhhhteamavailabel = hhhteamtotal.length - hhhhteamleave.length;
   const seniordevleave = data.filter((item:any)=> item.seniordev.length != 0);
   seniordevavailabel = seniodevtotal.length - seniordevleave.length;
   const qateamleave = data.filter((item:any)=> item.qateam.length != 0);
@@ -257,7 +257,6 @@ const data = props.data;
       <th colSpan={8} style={{backgroundColor: "#fcd5b4",borderBottom: "1px solid #CCC", textAlign: "center"}}>{formattedDate}</th>
     </tr>
     <tr>
-      <th style={{border: "1px solid #dddddd", textAlign: "center"}}>HHHH Team</th>
       <th style={{border: "1px solid #dddddd", textAlign: "center"}}>Smalsus Lead Team</th>
       <th style={{border: "1px solid #dddddd", textAlign: "center"}}>Senior Developer Team</th>
       <th style={{border: "1px solid #dddddd", textAlign: "center"}}>Junior Developer Team</th>
@@ -268,7 +267,6 @@ const data = props.data;
   <tbody>
     
     <tr style={{backgroundColor: "#f2f2f2"}}>
-      <td style={{border: "1px solid #dddddd", textAlign: "center"}}>{hhhhteamavailabel}</td>
       <td style={{border: "1px solid #dddddd", textAlign: "center"}}>{smalsusleadavailabel}</td>
       <td style={{border: "1px solid #dddddd", textAlign: "center"}}>{seniordevavailabel}</td>
       <td style={{border: "1px solid #dddddd", textAlign: "center"}}>{Juniordevavailabel}</td>
