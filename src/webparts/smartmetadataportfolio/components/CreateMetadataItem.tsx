@@ -3,7 +3,7 @@ import * as React from 'react';
 import { useState } from 'react';
 import { Web } from 'sp-pnp-js';
 import SmartMetadataEditPopup from './SmartMetadataEditPopup';
-
+import Tooltip from '../../../globalComponents/Tooltip';
 export default function CreateMetadataItem(props: any) {
     let SelectedItem: any = props.SelectedItem;
     let Taxtype: any = props.TabSelected
@@ -172,14 +172,24 @@ export default function CreateMetadataItem(props: any) {
     const closeCreateSmartMetadataPopup = () => {
         setIsCreatePopupOpen(false);
     }
+    const onRenderDeleteSmartMetadata = () => {
+        return (
+            <>
+                <div className='subheading siteColor'>
+                    Create SmartMetadata
+                </div>
+                <Tooltip ComponentId={'1630'} />
+            </>
+        );
+    };
     return (
         <>
             <div>
-                <button type="button" title="Add" onClick={OpenCreateSmartMetadataPopup} className="btnCol btn btn-primary">+ Add</button>
+                <button type="button" title="Add" onClick={OpenCreateSmartMetadataPopup} className="btnCol btn btn-primary">Add +</button>
             </div>
             {
                 IsCreatePopupOpen === true ? <section>
-                    <Panel headerText="Create SmartMetaData" isOpen={IsCreatePopupOpen} onDismiss={closeCreateSmartMetadataPopup} isBlocking={false} closeButtonAriaLabel="Close">
+                    <Panel onRenderHeader={onRenderDeleteSmartMetadata} isOpen={IsCreatePopupOpen} onDismiss={closeCreateSmartMetadataPopup} isBlocking={false} closeButtonAriaLabel="Close">
                         {props.ParentItem.Id == undefined && (
                             <div className="col-sm-12 padL-0">
                                 <div className="row">
