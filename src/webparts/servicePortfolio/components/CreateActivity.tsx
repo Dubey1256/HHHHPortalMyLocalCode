@@ -92,11 +92,19 @@ const CreateActivity = (props: any) => {
             setTimeout(()=>{
                 if (targetDiv ) {
                     // Change the --SiteBlue variable for elements under the targetDiv
-                    targetDiv?.style?.setProperty('--SiteBlue', props?.selectedItem?.PortfolioType?.Color); // Change the color to your desired value
+                    $('.ms-Panel-main').css('--SiteBlue', props?.selectedItem?.PortfolioType?.Color);
                 }
             },1000)
         }
     }, [])
+    React.useEffect(() => {
+        setTimeout(()=>{
+         const panelMain: any = document.querySelector('.ms-Panel-main');
+         if (panelMain && props?.selectedItem?.PortfolioType?.Color) {
+             $('.ms-Panel-main').css('--SiteBlue', props?.selectedItem?.PortfolioType?.Color);; // Set the desired color value here
+         }
+        },2000)
+     }, [IsComponentPicker]);
     //***************** Load All task Users***************** */
     const getTaskUsers = async () => {
         if (AllListId?.TaskUsertListID != undefined) {

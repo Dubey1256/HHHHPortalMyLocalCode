@@ -166,7 +166,7 @@ export default function ManageSmartMetadata(selectedProps: any) {
             placeholder: 'SmartFilters',
             id: 'SmartFilters',
             header: '',
-            size: 250,
+            size: 350,
             cell: ({ row }) => (
                 <>
                     <div className='alignCenter'>
@@ -184,7 +184,7 @@ export default function ManageSmartMetadata(selectedProps: any) {
             placeholder: 'Status',
             id: 'Status',
             header: '',
-            size: 42,
+            size: 90,
             cell: ({ row }) => (
                 <>
                     <div className='alignCenter'>

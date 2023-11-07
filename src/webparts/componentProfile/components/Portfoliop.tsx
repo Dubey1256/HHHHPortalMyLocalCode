@@ -665,7 +665,7 @@ const handleMouseOut = () => {
       TypeSite = item?.PortfolioType?.Title;
     }
     var inputString = item?.Parent?.Title; 
-    item.limitedString = inputString?.substring(0, 13);
+    item.limitedString = inputString?.substring(0, 13) + "...";
     item.mergedStatus = `${item?.Status} - ${(item?.PercentComplete * 100).toFixed(0)}% `;
     item.TaskID = item?.PortfolioStructureID
 // Prepare Show task Teammember data 
