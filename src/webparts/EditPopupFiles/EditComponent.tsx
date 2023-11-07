@@ -112,55 +112,6 @@ function EditInstitution({ item, SelectD, Calls, usedFor }: any) {
 
   const [ImmediateStatus, setImmediateStatus] = React.useState(false);
 
-<<<<<<< HEAD
-    const [ApprovalStatus, setApprovalStatus] = React.useState(false);
-    const [AllCategoryData, setAllCategoryData] = React.useState([]);
-    const [categorySearchKey, setCategorySearchKey] = React.useState("");
-    const [SearchedCategoryData, setSearchedCategoryData] = React.useState([]);
-    const [imagetab, setImagetab] = React.useState(false);
-    const [instantCategories, setInstantCategories] = React.useState([])
-    const [openPopup, setOpenPopup] = React.useState(false);
-    const [isOpenPopup, setIsOpenPopup] = React.useState(false);
-    const [editPopup, setEditPopup] = React.useState(false);
-    const [editHelpPopup, setEditHelpPopup] = React.useState(false);
-    const [choice, setChoice] = React.useState("");
-    const [question, setQuestion] = React.useState("");
-    const [help, setHelp] = React.useState("");
-    const [dataUpdate, setDataUpdate] = React.useState<any>();
-    const [helpDataUpdate, setHelpDataUpdate] = React.useState<any>();
-    function imageta() {
-        setImagetab(true);
-    }
-    React.useEffect(() => {
-        setTimeout(() => {
-          const panelMain: any = document.querySelector('.ms-Panel-main');
-          if (panelMain && PortfolioTypeColor) {
-            panelMain.style.setProperty('--SiteBlue', PortfolioTypeColor); // Set the desired color value here
-          }
-        }, 2000)
-      }, [IsComponentPicker, imagetab, IsComponent, IsService,]);
-    // End of Status
-    const setModalIsOpenToTrue = (e: any) => {
-        setModalIsOpen(true);
-        let targetDiv :any = document?.querySelector('.ms-Panel-main');
-        setTimeout(()=>{
-            if (targetDiv ) {
-                // Change the --SiteBlue variable for elements under the targetDiv
-                targetDiv?.style?.setProperty('--SiteBlue', PortfolioTypeColor); // Change the color to your desired value
-            }
-        },1000)
-    };
-    const onEditorStateChange = React.useCallback(
-        (rawcontent) => {
-            setEditorState(rawcontent.blocks[0].text);
-        },
-        [editorState]
-    );
-    const setModalIsOpenToFalse = () => {
-        EditComponentCallback("Close");
-        setModalIsOpen(false);
-    };
-=======
   const [ApprovalStatus, setApprovalStatus] = React.useState(false);
   const [AllCategoryData, setAllCategoryData] = React.useState([]);
   const [categorySearchKey, setCategorySearchKey] = React.useState("");
@@ -200,7 +151,6 @@ function EditInstitution({ item, SelectD, Calls, usedFor }: any) {
       EditComponentCallback("Close");
       setModalIsOpen(false);
   };
->>>>>>> c9fc5fbcbc52b891bfae7b044576838e891d812a
 
   const Call = React.useCallback((item1: any, type: any, functionType: any) => {
       if (type == "SmartComponent") {
