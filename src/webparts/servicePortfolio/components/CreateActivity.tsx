@@ -24,6 +24,7 @@ let AllMetadata: any = [];
 let AllTaskUsers: any = [];
 let siteConfig: any = [];
 let loggedInUser: any = {};
+let ClientCategoriesData: any = [];
 let AutoCompleteItemsArray: any = [];
 let FeedBackItem: any = {};
 let uploadedImage:any;
@@ -53,9 +54,9 @@ const CreateActivity = (props: any) => {
     const [TaskTeamMembers, setTaskTeamMembers] = React.useState([]);
     const [selectPriority, setselectPriority] = React.useState("");
     const [SearchedCategoryData, setSearchedCategoryData] = React.useState([]);
-    const [ClientCategoriesData, setClientCategoriesData] = React.useState<any>(
-        []
-    );
+    // const [ClientCategoriesData, setClientCategoriesData] = React.useState<any>(
+    //     []
+    // );
     const [TaskResponsibleTeam, setTaskResponsibleTeam] = React.useState([]);
     const [editTaskPopupData, setEditTaskPopupData] = React.useState({
         isOpenEditPopup: false,
@@ -83,9 +84,9 @@ const CreateActivity = (props: any) => {
             setTaskTeamMembers(props?.selectedItem?.TeamMember)
         }
         if (props?.selectedItem?.ClientCategory?.length > 0) {
-            setClientCategoriesData(props?.selectedItem?.ClientCategory)
+            ClientCategoriesData = props?.selectedItem?.ClientCategory
         } else if (props?.selectedItem?.ClientCategory?.results?.length > 0) {
-            setClientCategoriesData(props?.selectedItem?.ClientCategory?.results)
+            ClientCategoriesData = props?.selectedItem?.ClientCategory?.results
         }
         setSelectedItem(props?.selectedItem)
         let targetDiv :any = document?.querySelector('.ms-Panel-main');
@@ -224,6 +225,19 @@ const CreateActivity = (props: any) => {
                     selectSubTaskCategory(item?.Title, item?.Id, item)
                 }
             })
+        }
+
+        if (AllMetadata?.length > 0 && ClientCategoriesData?.length > 0) {
+            let a: any = [];
+            ClientCategoriesData?.map((cat: any) => {
+                let searchedCat = AllMetadata?.find((item: any) => item.Id == cat?.Id)
+                if (searchedCat) {
+                    a?.push(searchedCat)
+                } else {
+                    a?.push(cat)
+                }
+            })
+            ClientCategoriesData = a;
         }
     }
     // **************  Get smartmetadata function End ************************* 
@@ -539,6 +553,7 @@ const CreateActivity = (props: any) => {
         else {
             let priorityRank = 4;
             let priority = '';
+            let postedCC: any = []
             if (selectPriority === '' || parseInt(selectPriority) <= 0) {
                 priority = '(2) Normal';
             }
@@ -607,31 +622,32 @@ const CreateActivity = (props: any) => {
                         ClientCategoriesData != undefined &&
                         ClientCategoriesData?.length > 0
                     ) {
+
                         ClientCategoriesData.map((val: any) => {
                             if (site?.Title?.toLowerCase() == "shareweb") {
                                 ClientCategory.push(val?.Id);
+                                postedCC.push(val)
                             }
-                            else if (val?.Id != undefined && val?.siteName == site?.Title) {
+                            else if (site.Title?.toLowerCase() == val?.siteName?.toLowerCase()) {
                                 ClientCategory.push(val?.Id);
-                            }
-                            else if (val?.Id != undefined && val?.Titles != undefined && val?.Titles.length > 0 && val?.Titles[0] == site?.Title) {
-                                ClientCategory.push(val?.Id);
+                                postedCC.push(val)
                             }
                             else if (selectedItem?.TaskType?.Title == "Workstream") {
                                 ClientCategory.push(val?.Id);
+                                postedCC.push(val)
                             }
-                            
+
                         });
                     }
-                   
+
 
                     if (selectedItem?.Sitestagging != undefined) {
                         if (typeof selectedItem?.Sitestagging == "object") {
                             if (site?.Title?.toLowerCase() == "shareweb") {
-                                selectedItem?. Sitestagging((sitecomp:any)=>{
-                                    if(sitecomp.Title!=undefined && sitecomp.Title!=""&& sitecomp.SiteName==undefined){
-                                        sitecomp.SiteName=sitecomp.Title
-                                    }   
+                                selectedItem?.Sitestagging((sitecomp: any) => {
+                                    if (sitecomp.Title != undefined && sitecomp.Title != "" && sitecomp.SiteName == undefined) {
+                                        sitecomp.SiteName = sitecomp.Title
+                                    }
                                 })
                                 Sitestagging = JSON.stringify(selectedItem?.Sitestagging);
                             } else {
@@ -646,14 +662,14 @@ const CreateActivity = (props: any) => {
                             // clientTime = JSON.stringify(selectedItem?.ClientTime);
                         } else {
                             if (site?.Title?.toLowerCase() == "shareweb") {
-                                var sitetag=JSON.parse(selectedItem?.Sitestagging)
-                                sitetag?.map((sitecomp:any)=>{
-                                    if(sitecomp.Title!=undefined && sitecomp.Title!=""&& sitecomp.SiteName==undefined){
-                                        sitecomp.SiteName=sitecomp.Title
+                                var sitetag = JSON.parse(selectedItem?.Sitestagging)
+                                sitetag?.map((sitecomp: any) => {
+                                    if (sitecomp.Title != undefined && sitecomp.Title != "" && sitecomp.SiteName == undefined) {
+                                        sitecomp.SiteName = sitecomp.Title
                                     }
-                                   
-                                }) 
-                                 Sitestagging = JSON.stringify(sitetag)
+
+                                })
+                                Sitestagging = JSON.stringify(sitetag)
                             } else {
                                 var siteComp: any = {};
                                 siteComp.SiteName = site?.Title,
@@ -743,7 +759,7 @@ const CreateActivity = (props: any) => {
                                 item = res?.data;
                                 item = {
                                     ...item, ...{
-                                        ClientCategory: ClientCategoriesData,
+                                        ClientCategory: postedCC,
                                         AssignedTo: TaskAssignedTo,
                                         DisplayCreateDate: moment(item.Created).format("DD/MM/YYYY"),
                                         DisplayDueDate: moment(item.DueDate).format("DD/MM/YYYY"),
@@ -753,9 +769,9 @@ const CreateActivity = (props: any) => {
                                         siteType: site?.Title,
                                         listId: site?.listId,
                                         FeedBack:
-                                        FeedbackPost?.length > 0
-                                            ? JSON.stringify(FeedbackPost)
-                                            : null,
+                                            FeedbackPost?.length > 0
+                                                ? JSON.stringify(FeedbackPost)
+                                                : null,
                                         SiteIcon: site?.Item_x005F_x0020_Cover?.Url,
                                         ResponsibleTeam: TaskResponsibleTeam,
                                         TeamMembers: TaskTeamMembers,
@@ -768,7 +784,7 @@ const CreateActivity = (props: any) => {
                                 }
                                 if (item?.FeedBack != undefined) {
                                     let DiscriptionSearchData: any = '';
-                                    let feedbackdata: any =JSON.parse(item?.FeedBack);
+                                    let feedbackdata: any = JSON.parse(item?.FeedBack);
                                     DiscriptionSearchData = feedbackdata[0]?.FeedBackDescriptions?.map((child: any) => {
                                         const childText = child?.Title?.replace(/(<([^>]+)>)/gi, '')?.replace(/\n/g, '');
                                         const subtextText = (child?.Subtext || [])?.map((elem: any) =>
@@ -815,7 +831,7 @@ const CreateActivity = (props: any) => {
                             if (selectedItem.PageType == "ProjectManagement") {
                                 props.Call();
                                 let url = `${AllListId.siteUrl}/SitePages/Task-Profile.aspx?taskId=${res.data.Id}&Site=${res.data.siteType}`;
-                                window.location.href = url;
+                                window.open(url, "_blank")
                             } else {
                                 console.log(res);
                                 closeTaskStatusUpdatePoup(res);
@@ -858,9 +874,9 @@ const CreateActivity = (props: any) => {
                     if (selectedItem?.ClientTime != undefined) {
                         if (typeof selectedItem?.ClientTime == "object") {
                             if (site?.Title?.toLowerCase() == "shareweb") {
-                                selectedItem?.ClientTime?.map((sitecomp:any)=>{
-                                    if(sitecomp.Title!=undefined && sitecomp.Title!=""&& sitecomp.SiteName==undefined){
-                                        sitecomp.SiteName=sitecomp.Title
+                                selectedItem?.ClientTime?.map((sitecomp: any) => {
+                                    if (sitecomp.Title != undefined && sitecomp.Title != "" && sitecomp.SiteName == undefined) {
+                                        sitecomp.SiteName = sitecomp.Title
                                     }
                                 })
                                 clientTime = JSON.stringify(selectedItem?.ClientTime);
@@ -874,17 +890,17 @@ const CreateActivity = (props: any) => {
                                 clientTime = JSON?.stringify([siteComp]);
                             }
                             // clientTime = JSON.stringify(selectedItem?.ClientTime);
-                        } 
-                          else {
-                           if (site?.Title?.toLowerCase() == "shareweb") {
-                            var sitetag=JSON.parse(selectedItem?.ClientTime)
-                            sitetag?.map((sitecomp:any)=>{
-                                if(sitecomp.Title!=undefined && sitecomp.Title!=""&& sitecomp.SiteName==undefined){
-                                    sitecomp.SiteName=sitecomp.Title
-                                }
-                            
-                            }) 
-                             clientTime = JSON.stringify(sitetag)
+                        }
+                        else {
+                            if (site?.Title?.toLowerCase() == "shareweb") {
+                                var sitetag = JSON.parse(selectedItem?.ClientTime)
+                                sitetag?.map((sitecomp: any) => {
+                                    if (sitecomp.Title != undefined && sitecomp.Title != "" && sitecomp.SiteName == undefined) {
+                                        sitecomp.SiteName = sitecomp.Title
+                                    }
+
+                                })
+                                clientTime = JSON.stringify(sitetag)
                             } else {
                                 var siteComp: any = {};
                                 siteComp.SiteName = site?.Title,
@@ -955,7 +971,7 @@ const CreateActivity = (props: any) => {
                                 item = res?.data;
                                 item = {
                                     ...item,
-                                    ClientCategory: ClientCategoriesData,
+                                    ClientCategory: postedCC,
                                     AssignedTo: TaskAssignedTo,
                                     DisplayCreateDate: moment(item.Created).format("DD/MM/YYYY"),
                                     DisplayDueDate: moment(item.DueDate).format("DD/MM/YYYY"),
@@ -966,15 +982,15 @@ const CreateActivity = (props: any) => {
                                     SiteIcon: site?.Item_x005F_x0020_Cover?.Url,
                                     ResponsibleTeam: TaskResponsibleTeam,
                                     FeedBack:
-                                    FeedbackPost?.length > 0
-                                        ? JSON.stringify(FeedbackPost)
-                                        : null,
+                                        FeedbackPost?.length > 0
+                                            ? JSON.stringify(FeedbackPost)
+                                            : null,
                                     TeamMembers: TaskTeamMembers,
                                     TeamLeader: TaskResponsibleTeam,
                                     Author: {
                                         Id: props?.context?.pageContext?.legacyPageContext?.userId
                                     },
-                                     Item_x0020_Type: 'Task',
+                                    Item_x0020_Type: 'Task',
                                     ParentTask: selectedItem,
                                     TaskType: {
                                         Title: 'Task',
@@ -982,18 +998,11 @@ const CreateActivity = (props: any) => {
                                     }
 
                                 }
-                             
-                                        if (item?.FeedBack != undefined) {
+
+                                if (item?.FeedBack != undefined) {
                                     let DiscriptionSearchData: any = '';
-                                    let feedbackdata: any =JSON.parse(item?.FeedBack);
-                                    DiscriptionSearchData = feedbackdata[0]?.FeedBackDescriptions?.map((child: any) => {
-                                        const childText = child?.Title?.replace(/(<([^>]+)>)/gi, '')?.replace(/\n/g, '');
-                                        const subtextText = (child?.Subtext || [])?.map((elem: any) =>
-                                            elem.Title?.replace(/(<([^>]+)>)/gi, '')?.replace(/\n/g, '')
-                                        ).join('');
-                                        return childText + subtextText;
-                                    }).join('');
-                                    item.descriptionsSearch = DiscriptionSearchData
+                                    let feedbackdata: any = JSON.parse(item?.FeedBack);
+                                    DiscriptionSearchData = globalCommon.descriptionSearchData(feedbackdata)
                                 }
                                 item.TaskID = globalCommon?.GetTaskId(item);
                                 onUploadImageFunction(item)
@@ -1196,7 +1205,7 @@ const CreateActivity = (props: any) => {
             }
             return selectCAT; // Return the original value if no change is needed
         }));
-      
+
         setCategoriesData(TaskCategories)
 
     }
@@ -1285,16 +1294,16 @@ const CreateActivity = (props: any) => {
                                 <div className="col-sm-2 mb-10 padL-0 mt-3">
                                     <div className="input-group">
                                         <label className='full-width'>Due Date</label>
-                                               <DatePicker
-                                                selected={save?.DueDate}
-                                                onChange={(date) => handleDatedue(date)}
-                                                dateFormat="dd/MM/yyyy"
-                                                minDate={new Date()}
-                                                customInput={<ExampleCustomInput />}
-                                                isClearable
-                                                showYearDropdown
-                                                scrollableYearDropdown
-                                            />
+                                        <DatePicker
+                                            selected={save?.DueDate}
+                                            onChange={(date) => handleDatedue(date)}
+                                            dateFormat="dd/MM/yyyy"
+                                            minDate={new Date()}
+                                            customInput={<ExampleCustomInput />}
+                                            isClearable
+                                            showYearDropdown
+                                            scrollableYearDropdown
+                                        />
                                         {/* <DatePicker selected={save?.DueDate} onChange={(date) => handleDatedue(date)} /> */}
                                         {/* <input
                                             type="date"
@@ -1304,7 +1313,7 @@ const CreateActivity = (props: any) => {
                                             onChange={handleDatedue}
                                         /> */}
                                     </div>
-                                    
+
                                 </div>
                             </div>
                             <div className="row mt-3">
@@ -1369,7 +1378,7 @@ const CreateActivity = (props: any) => {
 
                                         <div className="input-group">
                                             <input
-                                                type="text" 
+                                                type="text"
                                                 className="form-control"
                                                 placeholder="Enter Priority"
                                                 value={selectPriority ? selectPriority : ""}
@@ -1487,7 +1496,7 @@ const CreateActivity = (props: any) => {
                                                             </a>
                                                             <span
                                                                 className="bg-light svg__iconbox svg__icon--cross"
-                                                                onClick={() =>  selectSubTaskCategory(type?.Title, type?.Id, type)}
+                                                                onClick={() => selectSubTaskCategory(type?.Title, type?.Id, type)}
                                                             ></span>
                                                             {/* <img src="https://hhhhteams.sharepoint.com/sites/HHHH/SP/_layouts/images/delete.gif" onClick={() => deleteCategories(type?.Id)} className="p-1" /> */}
                                                         </div>
@@ -1557,34 +1566,34 @@ const CreateActivity = (props: any) => {
 
 
                     </div>
-                    <footer className={refreshData ? 'col text-end mt-3 ' : 'col text-end mt-3 '}>
-                        {
-                            selectedSites?.map((site: any) => {
-                                return (
-                                    <span className='ms-2'>
-                                        {(site.Item_x005F_x0020_Cover !== undefined && site.Item_x005F_x0020_Cover?.Url !== undefined) &&
-                                            <img className={refreshData ? "createTask-SiteIcon me-1 rdfgererg" : "createTask-SiteIcon me-1 erfrerg"} style={{ width: '31.5px' }} title={site?.Title} src={site.Item_x005F_x0020_Cover.Url} />
-                                        }
-                                    </span>
-                                )
-                            })
-                        }
-                        <button
-                            type="button"
-                            className="btn btn-primary mx-2"
-                            onClick={() => saveNoteCall()}
-                        >
-                            Submit
-                        </button>
-                        <button
-                            type="button"
-                            className="btn btn-default"
-                            onClick={() => closeTaskStatusUpdatePoup("item")}
-                        >
-                            Cancel
-                        </button>
-                    </footer>
-                    </div>
+                </div>
+                <footer className={refreshData ? 'col text-end mt-3 lkjhgfds' : 'col text-end mt-3 kkkkk'}>
+                    {
+                        selectedSites?.map((site: any) => {
+                            return (
+                                <span className='ms-2'>
+                                    {(site.Item_x005F_x0020_Cover !== undefined && site.Item_x005F_x0020_Cover?.Url !== undefined) &&
+                                        <img className={refreshData ? "createTask-SiteIcon me-1 rdfgererg" : "createTask-SiteIcon me-1 erfrerg"} style={{ width: '31.5px' }} title={site?.Title} src={site.Item_x005F_x0020_Cover.Url} />
+                                    }
+                                </span>
+                            )
+                        })
+                    }
+                    <button
+                        type="button"
+                        className="btn btn-primary mx-2"
+                        onClick={() => saveNoteCall()}
+                    >
+                        Submit
+                    </button>
+                    <button
+                        type="button"
+                        className="btn btn-default"
+                        onClick={() => closeTaskStatusUpdatePoup("item")}
+                    >
+                        Cancel
+                    </button>
+                </footer>
             </Panel>
 
 

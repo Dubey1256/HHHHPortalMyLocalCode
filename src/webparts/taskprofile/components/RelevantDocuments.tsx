@@ -203,7 +203,7 @@ const RelevantDocuments = (props: any, ref: any) => {
       </div>
       }
 
-      {editdocpanel && <EditDocument editData={EditdocData} AllListId={props.AllListId} Context={props.Context} editdocpanel={editdocpanel} callbackeditpopup={callbackeditpopup} />}
+      {editdocpanel && <EditDocument editData={EditdocData} ColorCode={myContextData2?.ColorCode}  AllListId={props.AllListId} Context={props.Context} editdocpanel={editdocpanel} callbackeditpopup={callbackeditpopup} />}
 
     </>
 
