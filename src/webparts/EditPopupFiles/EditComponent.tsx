@@ -130,6 +130,14 @@ function EditInstitution({ item, SelectD, Calls, usedFor }: any) {
     function imageta() {
         setImagetab(true);
     }
+    React.useEffect(() => {
+        setTimeout(() => {
+          const panelMain: any = document.querySelector('.ms-Panel-main');
+          if (panelMain && PortfolioTypeColor) {
+            panelMain.style.setProperty('--SiteBlue', PortfolioTypeColor); // Set the desired color value here
+          }
+        }, 2000)
+      }, [IsComponentPicker, imagetab, IsComponent, IsService,]);
     // End of Status
     const setModalIsOpenToTrue = (e: any) => {
         setModalIsOpen(true);
