@@ -15,7 +15,7 @@ import "froala-editor/js/froala_editor.pkgd.min.js";
 import "froala-editor/css/froala_style.min.css";
 import "froala-editor/css/froala_editor.pkgd.min.css";
 import * as globalCommon from "../../../globalComponents/globalCommon";
-import FlorarImageUploadComponent from "../../../globalComponents/FlorarComponents/FlorarImageUploadComponent";
+import FlorarImageUploadComponent from "../../EditPopupFiles/FlorarImagetabportfolio";
 let SitesTypes: any = [];
 let AllListId: any = {};
 let IsapprovalTask = false
@@ -27,6 +27,8 @@ let loggedInUser: any = {};
 let ClientCategoriesData: any = [];
 let AutoCompleteItemsArray: any = [];
 let FeedBackItem: any = {};
+let uploadedImage:any;
+let imgdefaultContent=""
 const CreateActivity = (props: any) => {
     const [isActive, setIsActive] = React.useState({
         siteType: false,
@@ -389,19 +391,129 @@ const CreateActivity = (props: any) => {
     //------------Image upload function start--------------
 
 
-    const FlorarImageUploadComponentCallBack = (dt: any) => {
-        console.log(dt)
-        // setUploadBtnStatus(false);
-        // let DataObject: any = {
-        //     data_url: dt,
-        //     file: "Image/jpg"
-        // }
-        // let arrayIndex: any = TaskImages?.length
-        // TaskImages.push(DataObject)
-        // if (dt.length > 0) {
-        //     onUploadImageFunction(TaskImages, [arrayIndex]);
-        // }
+    const FlorarImageUploadComponentCallBack = (item: any, FileName: any) => {
+        imgdefaultContent=item;
+        console.log(item)
+        let DataObject: any = {
+            fileURL: item,
+            file: "Image/jpg",
+            fileName: FileName
+        }
+        uploadedImage=DataObject;
     }
+    const onUploadImageFunction = async (
+        postData:any) => {
+      
+        let fileName: any = '';
+        let tempArray: any = [];
+        let SiteUrl = AllListId?.siteUrl;
+         let date = new Date()
+                let timeStamp = date.getTime();
+                let imageIndex = 0
+                fileName = "T" + postData.Id + '-Image' + imageIndex + "-" + postData.Title?.replace(/["/':?]/g, '')?.slice(0, 40) + " " + timeStamp + ".jpg";
+           
+              
+                let ImgArray = {
+                    ImageName: fileName,
+                    UploadeDate: Moment(new Date()).format("DD/MM/YYYY"),
+                    ImageUrl: SiteUrl + '/Lists/' + postData.siteType + '/Attachments/' + postData?.Id + '/' + fileName,
+
+                    UserImage: loggedInUser != undefined && loggedInUser.Item_x0020_Cover?.Url?.length > 0 ? loggedInUser.Item_x0020_Cover?.Url : "https://hhhhteams.sharepoint.com/sites/HHHH/SiteCollectionImages/ICONS/32/icon_user.jpg",
+                    UserName: loggedInUser != undefined && loggedInUser.Title?.length > 0 ? loggedInUser.Title : props.context.pageContext._user.displayName,
+                    Description: ''
+                };
+                tempArray.push(ImgArray);
+       
+    
+        tempArray?.map((tempItem: any) => {
+            tempItem.Checked = false
+        })
+        // setTaskImages(tempArray);
+        // UploadImageFunction(lastindexArray, fileName);
+      
+                UploadImageFunction(postData,fileName, tempArray);
+
+            
+           
+        }
+  
+    const UploadImageFunction = (postData: any, imageName: any, DataJson: any) => {
+        let listId = postData.listId;
+       
+        let Id = postData.Id
+        var src = uploadedImage?.fileURL?.split(",")[1];
+        var byteArray = new Uint8Array(atob(src)?.split("")?.map(function (c) {
+            return c.charCodeAt(0);
+        }));
+        const data: any = byteArray
+        var fileData = '';
+        for (var i = 0; i < byteArray.byteLength; i++) {
+            fileData += String.fromCharCode(byteArray[i]);
+        }
+        setTimeout(() => {
+            if (postData.listId != undefined) {
+                (async () => {
+                    let web = new Web(AllListId?.siteUrl);
+                    let item = web.lists.getById(listId).items.getById(Id);
+                    item.attachmentFiles.add(imageName, data).then(() => {
+                        console.log("Attachment added");
+                        UpdateBasicImageInfoJSON(DataJson, "Upload", 0,postData);
+                        postData.UploadedImage = DataJson;
+                    });
+                   
+                })().catch(console.log)
+            } 
+        }, 2500);
+    }
+
+
+    const UpdateBasicImageInfoJSON = async (JsonData: any, usedFor: any, ImageIndex: any,postData:any) => {
+        var UploadImageArray: any = []
+        if (JsonData != undefined && JsonData.length > 0) {
+            JsonData?.map((imgItem: any, Index: any) => {
+                if (imgItem.ImageName != undefined && imgItem.ImageName != null) {
+                    if (imgItem.imageDataUrl != undefined && imgItem.imageDataUrl != null) {
+                        let TimeStamp: any = Moment(new Date().toLocaleString())
+                        let ImageUpdatedURL: any;
+                        if (usedFor == "Update" && Index == ImageIndex) {
+                            ImageUpdatedURL = imgItem.imageDataUrl + "?Updated=" + TimeStamp;
+                        } else {
+                            ImageUpdatedURL = imgItem.imageDataUrl
+                        }
+                        let tempObject: any = {
+                            ImageName: imgItem.ImageName,
+                            ImageUrl: ImageUpdatedURL,
+                            UploadeDate: imgItem.UploadeDate,
+                            UserName: imgItem.UserName,
+                            UserImage: imgItem.UserImage,
+                            Description: imgItem.Description != undefined ? imgItem.Description : ''
+                        }
+                        UploadImageArray.push(tempObject)
+                    } else {
+                        let TimeStamp: any = Moment(new Date().toLocaleString())
+                        let ImageUpdatedURL: any;
+                        if (usedFor == "Update" && Index == ImageIndex) {
+                            ImageUpdatedURL = imgItem.ImageUrl + "?Updated=" + TimeStamp;
+                        } else {
+                            ImageUpdatedURL = imgItem.ImageUrl;
+                        }
+                        imgItem.Description = imgItem.Description != undefined ? imgItem.Description : '';
+                        imgItem.ImageUrl = ImageUpdatedURL;
+                        UploadImageArray.push(imgItem);
+                    }
+                }
+            })
+        }
+        if (UploadImageArray != undefined && UploadImageArray.length > 0) {
+            try {
+                let web = new Web(AllListId?.siteUrl);
+                await web.lists.getById(postData.listId).items.getById(postData.Id).update({ BasicImageInfo: JSON.stringify(UploadImageArray) }).then((res: any) => { console.log("Image JSON Updated !!"); })
+            } catch (error) {
+                console.log("Error Message :", error);
+            }
+        }
+    }
+
 
     //------------ Image Upload Function end -------------
 
@@ -682,6 +794,7 @@ const CreateActivity = (props: any) => {
                                     }).join('');
                                     item.descriptionsSearch = DiscriptionSearchData
                                 }
+                                onUploadImageFunction(item)
                                 if (categoriesItem?.indexOf('Immediate') > -1 || categoriesItem?.indexOf("Email Notification") > -1) {
                                     let listID = '3BBA0B9A-4A9F-4CE0-BC15-61F4F550D556'
                                     var postData = {
@@ -892,6 +1005,7 @@ const CreateActivity = (props: any) => {
                                     DiscriptionSearchData = globalCommon.descriptionSearchData(feedbackdata)
                                 }
                                 item.TaskID = globalCommon?.GetTaskId(item);
+                                onUploadImageFunction(item)
                                 if (categoriesItem?.indexOf('Immediate') > -1 || categoriesItem?.indexOf("Email Notification") > -1) {
                                     let listID = '3BBA0B9A-4A9F-4CE0-BC15-61F4F550D556'
                                     var postData = {
@@ -945,6 +1059,7 @@ const CreateActivity = (props: any) => {
         }
     };
     const closeTaskStatusUpdatePoup = (res: any) => {
+    
         if (res === "item") {
             //   setTaskStatuspopup(false);
             props.Call("Close");
@@ -952,6 +1067,7 @@ const CreateActivity = (props: any) => {
             //   setTaskStatuspopup(false);
             props.Call(res);
         }
+        imgdefaultContent=""
     };
     //----------- save function end --------------
 
@@ -1215,8 +1331,10 @@ const CreateActivity = (props: any) => {
                                         className="Florar-Editor-Image-Upload-Container"
                                         id="uploadImageFroalaEditor"
                                     >
-                                        <div>
-                                            <FlorarImageUploadComponent callBack={FlorarImageUploadComponentCallBack} />
+                                       <div>
+                                        <FlorarImageUploadComponent callBack={FlorarImageUploadComponentCallBack} 
+                                        defaultContent={imgdefaultContent}
+                                         />
                                         </div>
                                     </div>
                                 </div>
