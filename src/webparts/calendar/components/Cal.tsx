@@ -739,7 +739,7 @@ const App = (props: any) => {
         Location: location,
         Event_x002d_Type: type,
         Designation: dType,
-        Description: inputValueName,
+        Description: '',
         EventDate: new Date(start),
         EndDate: new Date(end),
         fAllDayEvent: allDay,
@@ -759,7 +759,7 @@ const App = (props: any) => {
         Location: location,
         Event_x002d_Type: type,
         Designation: dType,
-        Description: inputValueName,
+        Description: '',
         EventDate: new Date(start),
         reason: inputValueReason,
         EndDate: new Date(end),
@@ -1183,7 +1183,7 @@ const App = (props: any) => {
       const timeend = date.format();
       setSelectedTime(time);
       setSelectedTimeEnd(timeend);
-      newEvent.loc = " ";
+      newEvent.loc = "";
     }
     newEvent.title = newEvent.title.replace("Un-Planned", newEvent.type);
     newEvent.title = newEvent.title.replace("Sick", newEvent.type);
