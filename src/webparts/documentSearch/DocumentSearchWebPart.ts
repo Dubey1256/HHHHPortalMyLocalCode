@@ -14,10 +14,10 @@ import { IDocumentSearchProps } from './components/IDocumentSearchProps';
 
 export interface IDocumentSearchWebPartProps {
   description: string;
-  DocumentListId: string;
+  DocumentListID: string;
   context: any;
-  TaskUserListId:string;
-  MasterTaskListId:string,
+  TaskUserListID:string;
+  MasterTaskListID:string,
 }
 
 export default class DocumentSearchWebPart extends BaseClientSideWebPart<IDocumentSearchWebPartProps> {
@@ -34,10 +34,10 @@ export default class DocumentSearchWebPart extends BaseClientSideWebPart<IDocume
         environmentMessage: this._environmentMessage,
         hasTeamsContext: !!this.context.sdks.microsoftTeams,
         userDisplayName: this.context.pageContext.user.displayName,
-        DocumentListId: this.properties.DocumentListId,
+        DocumentListID: this.properties.DocumentListID,
         context: this.context,
-        TaskUserListId:this.properties.TaskUserListId,
-        MasterTaskListId:this.properties.MasterTaskListId,
+        TaskUserListID:this.properties.TaskUserListID,
+        MasterTaskListID:this.properties.MasterTaskListID,
       }
     );
 
@@ -98,14 +98,14 @@ export default class DocumentSearchWebPart extends BaseClientSideWebPart<IDocume
                 PropertyPaneTextField('description', {
                   label: strings.DescriptionFieldLabel
                 }),
-                PropertyPaneTextField('DocumentListId', {
-                  label: 'DocumentListId'
+                PropertyPaneTextField('DocumentListID', {
+                  label: 'DocumentListID'
                 }),
-                PropertyPaneTextField('TaskUserListId', {
-                  label: 'TaskUserListId'
+                PropertyPaneTextField('TaskUserListID', {
+                  label: 'TaskUserListID'
                 }),
-                PropertyPaneTextField('MasterTaskListId', {
-                  label: 'MasterTaskListId'
+                PropertyPaneTextField('MasterTaskListID', {
+                  label: 'MasterTaskListID'
                 })
               ]
             }
