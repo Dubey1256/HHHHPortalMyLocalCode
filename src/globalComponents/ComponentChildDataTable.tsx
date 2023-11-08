@@ -31,16 +31,18 @@ let countsrunGlobal = 0;
 let countGlobal = 1;
 let UpdatedCCCount: any = 0;
 let tempSiteAndCategoryData: any = [];
-let AllsiteClientCategories: any = [];
-let lastUpdatedAllSites: any = [];
-let allMasterTaskGlobalArray: any = [];
-let allSiteGlobalArray: any = [];
-let AllSiteTasksDataGlobal: any = [];
+
 let isUpdatedGlobal: any = "";
-let componentDataGlobal: any = [];
+
 let childRefdataGlobal: any;
 
 function ComponentChildDataTable(SelectedProp: any) {
+  let AllsiteClientCategories: any = [];
+  let lastUpdatedAllSites: any = [];
+  let allMasterTaskGlobalArray: any = [];
+  let allSiteGlobalArray: any = [];
+  let AllSiteTasksDataGlobal: any = [];
+  let componentDataGlobal: any = [];
   const usedFor = SelectedProp.usedFor;
   const childRef = React.useRef<any>();
   const prevSelectedCC = SelectedProp.prevSelectedCC;
