@@ -346,7 +346,7 @@ const TeamSmartFilter = (item: any) => {
                 element.values = [],
                     element.checked = [],
                     element.checkedObj = [],
-                    element.selectAllChecked = true,
+                    // element.selectAllChecked = true,
                     element.expanded = []
                 AllSites.push(element);
                 getChildsSites(element, SitesData);

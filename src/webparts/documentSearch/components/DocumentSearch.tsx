@@ -11,10 +11,8 @@ export default class DocumentSearch extends React.Component<IDocumentSearchProps
       environmentMessage,
       hasTeamsContext,
       userDisplayName,
-      DocumentListId,
       context,
-      TaskUserListId,
-      MasterTaskListId,
+     
     } = this.props;
 
     return (

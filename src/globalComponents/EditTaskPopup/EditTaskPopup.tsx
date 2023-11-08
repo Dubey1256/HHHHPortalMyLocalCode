@@ -4847,7 +4847,7 @@ const EditTaskPopup = (Items: any) => {
                                                 <input type="text" maxLength={3} placeholder="% Complete"
                                                     //  disabled={InputFieldDisable}
                                                     disabled readOnly
-                                                    className="form-control px-2"
+                                                    className="bg-body form-control px-2"
                                                     // defaultValue={PercentCompleteCheck ? (EditData.PercentComplete != undefined && Math.floor(EditData.PercentComplete) === EditData.PercentComplete ? Number(EditData.PercentComplete).toFixed(0) : null) : (UpdateTaskInfo.PercentCompleteStatus ? UpdateTaskInfo.PercentCompleteStatus : null)}
                                                     value={PercentCompleteStatus}
                                                     onChange={(e) => StatusAutoSuggestion(e)} />
@@ -5930,7 +5930,7 @@ const EditTaskPopup = (Items: any) => {
                                                             <input type="text" maxLength={3} placeholder="% Complete"
                                                                 //  disabled={InputFieldDisable}
                                                                 disabled readOnly
-                                                                className="form-control px-2"
+                                                                className="bg-body form-control px-2"
                                                                 // defaultValue={PercentCompleteCheck ? (EditData.PercentComplete != undefined && Math.floor(EditData.PercentComplete) === EditData.PercentComplete ? Number(EditData.PercentComplete).toFixed(0) : null) : (UpdateTaskInfo.PercentCompleteStatus ? UpdateTaskInfo.PercentCompleteStatus : null)}
                                                                 value={PercentCompleteStatus}
                                                                 onChange={(e) => StatusAutoSuggestion(e)} />

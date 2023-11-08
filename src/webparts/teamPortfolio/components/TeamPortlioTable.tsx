@@ -310,6 +310,9 @@ function TeamPortlioTable(SelectedProp: any) {
                         item.siteUrl = ContextValue.siteUrl;
                         item["SiteIcon"] = config?.Item_x005F_x0020_Cover?.Url;
                         item.fontColorTask = "#000"
+                        if (item.Author) {
+                            item.Author.autherImage = findUserByName(item.Author?.Id)
+                        }
                         // if (item?.TaskCategories?.some((category: any) => category.Title.toLowerCase() === "draft")) { item.isDrafted = true; }
                     });
                     AllTasks = AllTasks.concat(AllTasksMatches);
@@ -336,9 +339,6 @@ function TeamPortlioTable(SelectedProp: any) {
                             result.DisplayCreateDate = Moment(result.Created).format("DD/MM/YYYY");
                             if (result.DisplayCreateDate == "Invalid date" || "") {
                                 result.DisplayCreateDate = result.DisplayCreateDate.replaceAll("Invalid date", "");
-                            }
-                            if (result.Author) {
-                                result.Author.autherImage = findUserByName(result.Author?.Id)
                             }
                             result.DisplayDueDate = Moment(result?.DueDate).format("DD/MM/YYYY");
                             if (result.DisplayDueDate == "Invalid date" || "") {
@@ -519,6 +519,9 @@ function TeamPortlioTable(SelectedProp: any) {
             result.TaskTypeValue = '';
             result.portfolioItemsSearch = result.Item_x0020_Type;
             result.TeamLeaderUser = [];
+            if (result.Author) {
+                result.Author.autherImage = findUserByName(result.Author?.Id)
+            }
             if (result.Item_x0020_Type === 'Component') {
                 result.boldRow = 'boldClable'
                 result.lableColor = 'f-bg';
@@ -550,9 +553,6 @@ function TeamPortlioTable(SelectedProp: any) {
             result.DisplayDueDate = Moment(result?.DueDate).format("DD/MM/YYYY");
             if (result.DisplayDueDate == "Invalid date" || "") {
                 result.DisplayDueDate = result?.DisplayDueDate.replaceAll("Invalid date", "");
-            }
-            if (result.Author) {
-                result.Author.autherImage = findUserByName(result.Author?.Id)
             }
             result.PercentComplete = (result?.PercentComplete * 100).toFixed(0) === "0" ? "" : (result?.PercentComplete * 100).toFixed(0);
             if (result.PercentComplete != undefined && result.PercentComplete != '' && result.PercentComplete != null) {
