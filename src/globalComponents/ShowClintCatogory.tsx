@@ -14,7 +14,7 @@ const ShowClintCatogory = (Item: any) => {
         const matchingParent = AllClintCatogry?.find((elem: any) => elem.Id === parentId);
         if (matchingParent) {
           titles.unshift(matchingParent.Title);
-          if (matchingParent.Parent != null) {
+          if (matchingParent?.Parent != null) {
             getParentTitles(matchingParent.Parent.Id, titles);
           }
         }
