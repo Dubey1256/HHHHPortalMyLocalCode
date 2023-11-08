@@ -599,196 +599,16 @@ function PortfolioTable(SelectedProp: any) {
   };
 
   const GetComponents = async () => {
-    if (portfolioTypeData.length > 0) {
-      portfolioTypeData?.map((elem: any) => {
-        if (isUpdated === "") {
-          filt = "";
-        } else if (
-          isUpdated === elem.Title ||
-          isUpdated?.toLowerCase() === elem?.Title?.toLowerCase()
-        ) {
-          filt =
-            "(Item_x0020_Type eq 'SubComponent' and Item_x0020_Type eq 'Feature' )";
-        }
-      });
+    let componentDetails: any = [];
+    let results = await globalCommon.GetServiceAndComponentAllData(SelectedProp?.NextProp)
+    if (results?.AllData?.length > 0) {
+        componentDetails = results?.AllData;
+        ProjectData=results?.ProjectData;
     }
-    let web = new Web(ContextValue.siteUrl);
-    let componentDetails = [];
-    componentDetails = await web.lists
-      .getById(ContextValue.MasterTaskListID)
-      .items.select(
-        "ID",
-        "Id",
-        "Title",
-        "PortfolioLevel",
-        "PortfolioStructureID",
-        "Comments",
-        "ItemRank",
-        "Portfolio_x0020_Type",
-        "Parent/Id",
-        "Parent/Title",
-        "DueDate",
-        "Created",
-        "Body",
-        "Sitestagging",
-        "Item_x0020_Type",
-        "Categories",
-        "Short_x0020_Description_x0020_On",
-        "PriorityRank",
-        "Priority",
-        "AssignedTo/Title",
-        "TeamMembers/Id",
-        "TeamMembers/Title",
-        "ClientCategory/Id",
-        "ClientCategory/Title",
-        "PercentComplete",
-        "ResponsibleTeam/Id",
-        "Author/Id",
-        "Author/Title",
-        "Sitestagging",
-        "ResponsibleTeam/Title",
-        "PortfolioType/Id",
-        "PortfolioType/Color",
-        "PortfolioType/IdRange",
-        "PortfolioType/Title",
-        "AssignedTo/Id"
-      )
-      .expand(
-        "Parent",
-        "PortfolioType",
-        "AssignedTo",
-        "Author",
-        "ClientCategory",
-        "TeamMembers",
-        "ResponsibleTeam"
-      )
-      .top(4999)
-      .get();
-
-    console.log(componentDetails);
-    ProjectData = componentDetails.filter(
-      (projectItem: any) => projectItem.Item_x0020_Type === "Project"
-    );
-    componentDetails.forEach((result: any) => {
-      result["siteType"] = "Master Tasks";
-      result.AllTeamName = "";
-      result.portfolioItemsSearch = result.Item_x0020_Type;
-      result.descriptionsSearch = "";
-      result.commentsSearch = "";
-      result.TeamLeaderUser = [];
-      result.TaskTypeValue = '';
-      if (result.Item_x0020_Type === "Component") {
-        result.boldRow = "boldClable";
-        result.lableColor = "f-bg";
-      }
-      if (result.Item_x0020_Type === "SubComponent") {
-        result.lableColor = "a-bg";
-      }
-      if (result.Item_x0020_Type === "Feature") {
-        result.lableColor = "w-bg";
-      }
-      if (result?.Item_x0020_Type != undefined) {
-        result.SiteIconTitle = result?.Item_x0020_Type?.charAt(0);
-      }
-      result["TaskID"] = result?.PortfolioStructureID;
-
-      result.DueDate = Moment(result.DueDate).format("DD/MM/YYYY");
-      result.DisplayDueDate = Moment(result.DueDate).format("DD/MM/YYYY");
-      if (result.DisplayDueDate == "Invalid date" || "") {
-        result.DisplayDueDate = result.DisplayDueDate.replaceAll(
-          "Invalid date",
-          ""
-        );
-      }
-      if (result.DisplayCreateDate == "Invalid date" || "") {
-        result.DisplayCreateDate = result.DisplayCreateDate.replaceAll(
-          "Invalid date",
-          ""
-        );
-      }
-      result.DisplayCreateDate = Moment(result.Created).format("DD/MM/YYYY");
-
-      result.PercentComplete = (result.PercentComplete * 100).toFixed(0);
-      if (result?.Deliverables != undefined || result.Short_x0020_Description_x0020_On != undefined || result.TechnicalExplanations != undefined || result.Body != undefined || result.AdminNotes != undefined || result.ValueAdded != undefined
-        || result.Idea != undefined || result.Background != undefined) {
-        result.descriptionsSearch = `${removeHtmlAndNewline(result.Deliverables)} ${removeHtmlAndNewline(result.Short_x0020_Description_x0020_On)} ${removeHtmlAndNewline(result.TechnicalExplanations)} ${removeHtmlAndNewline(result.Body)} ${removeHtmlAndNewline(result.AdminNotes)} ${removeHtmlAndNewline(result.ValueAdded)} ${removeHtmlAndNewline(result.Idea)} ${removeHtmlAndNewline(result.Background)}`;
-    }
-      if (result?.Comments != null) {
-        result.commentsSearch = result?.Comments.replace(
-          /(<([^>]+)>)/gi,
-          ""
-        ).replace(/\n/g, "");
-      }
-
-      result.Id = result.Id != undefined ? result.Id : result.ID;
-      if (result.AssignedTo != undefined && result.AssignedTo.length > 0) {
-        map(result.AssignedTo, (Assig: any) => {
-          if (Assig.Id != undefined) {
-            map(AllUsers, (users: any) => {
-              if (
-                Assig.Id != undefined &&
-                users.AssingedToUser != undefined &&
-                Assig.Id == users.AssingedToUser.Id
-              ) {
-                users.ItemCover = users.Item_x0020_Cover;
-                result.TeamLeaderUser.push(users);
-                result.AllTeamName += users.Title + ";";
-              }
-            });
-          }
-        });
-      }
-      if (
-        result.ResponsibleTeam != undefined &&
-        result.ResponsibleTeam.length > 0
-      ) {
-        map(result.ResponsibleTeam, (Assig: any) => {
-          if (Assig.Id != undefined) {
-            map(AllUsers, (users: any) => {
-              if (
-                Assig.Id != undefined &&
-                users.AssingedToUser != undefined &&
-                Assig.Id == users.AssingedToUser.Id
-              ) {
-                users.ItemCover = users.Item_x0020_Cover;
-                result.TeamLeaderUser.push(users);
-                result.AllTeamName += users.Title + ";";
-              }
-            });
-          }
-        });
-      }
-      if (result.TeamMembers != undefined && result.TeamMembers.length > 0) {
-        map(result.TeamMembers, (Assig: any) => {
-          if (Assig.Id != undefined) {
-            map(AllUsers, (users: any) => {
-              if (
-                Assig.Id != undefined &&
-                users.AssingedToUser != undefined &&
-                Assig.Id == users.AssingedToUser.Id
-              ) {
-                users.ItemCover = users.Item_x0020_Cover;
-                result.TeamLeaderUser.push(users);
-                result.AllTeamName += users.Title + ";";
-              }
-            });
-          }
-        });
-      }
-
-      if (result?.ClientCategory?.length > 0) {
-        result.ClientCategorySearch = result?.ClientCategory?.map(
-          (elem: any) => elem.Title
-        ).join(" ");
-      } else {
-        result.ClientCategorySearch = "";
-      }
-    });
     flatviewmastertask = JSON.parse(JSON.stringify(componentDetails));
     setAllMasterTasks(componentDetails);
     AllComponetsData = componentDetails;
     ComponetsData["allComponets"] = componentDetails;
-    // AllSiteTasksData?.length > 0 &&
     if (AllSiteTasksData?.length > 0 && AllComponetsData?.length > 0) {
       portfolioTypeData.forEach((port, index) => {
         componentGrouping(port?.Id, index);
@@ -798,6 +618,7 @@ function PortfolioTable(SelectedProp: any) {
     if (portfolioTypeData?.length === countsrun) {
       executeOnce();
     }
+    // AllSiteTasksData?.length > 0 &&
   };
 
 
@@ -2041,10 +1862,28 @@ const updatedDataDataFromPortfolios = (copyDtaArray: any, dataToUpdate: any) => 
     ) {
       checkedList.NoteCall = type;
       setActivityPopup(true);
+      if (SelectedProp?.props?.PortfolioType?.Color != undefined) {
+        setTimeout(() => {
+          let targetDiv: any = document?.querySelector('.ms-Panel-main');
+          if (targetDiv) {
+            // Change the --SiteBlue variable for elements under the targetDiv
+            targetDiv?.style?.setProperty('--SiteBlue', SelectedProp?.props?.PortfolioType?.Color); // Change the color to your desired value
+          }
+        }, 1000)
+      }
     }
     if (checkedList?.TaskTypeId === 3 || checkedList?.TaskType?.Id === 3) {
       checkedList.NoteCall = "Task";
       setIsOpenActivity(true);
+      if (SelectedProp?.props?.PortfolioType?.Color != undefined) {
+        setTimeout(() => {
+          let targetDiv: any = document?.querySelector('.ms-Panel-main');
+          if (targetDiv) {
+            // Change the --SiteBlue variable for elements under the targetDiv
+            targetDiv?.style?.setProperty('--SiteBlue', SelectedProp?.props?.PortfolioType?.Color); // Change the color to your desired value
+          }
+        }, 1000)
+      }
     }
     if (checkedList?.TaskType?.Id == 1 || checkedList?.TaskTypeId == 1) {
       checkedList.NoteCall = "Workstream";
@@ -2269,13 +2108,7 @@ const updatedDataDataFromPortfolios = (copyDtaArray: any, dataToUpdate: any) => 
       >
         <div className="modal-body bg-f5f5 clearfix">
           <div
-            className={
-              IsUpdated == "Events Portfolio"
-                ? "app component clearfix eventpannelorange"
-                : IsUpdated == "Service Portfolio"
-                  ? "app component clearfix serviepannelgreena"
-                  : "app component clearfix"
-            }
+            className= "app component clearfix"
           >
             <div id="portfolio" className="section-event pt-0">
               {checkedList != undefined &&

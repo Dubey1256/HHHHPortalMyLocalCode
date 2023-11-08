@@ -494,7 +494,7 @@ const AncTool = (props: any) => {
                                                         Body: msgfile?.body != undefined ? msgfile?.body : null,
                                                         recipients: msgfile?.recipients?.length > 0 ? JSON.stringify(msgfile?.recipients) : null,
                                                         senderEmail: msgfile?.senderEmail != undefined ? msgfile?.senderEmail : null,
-                                                        creationTime: msgfile?.creationTime != undefined ? msgfile?.creationTime : null
+                                                        creationTime: msgfile?.creationTime != undefined ? new Date(msgfile?.creationTime).toISOString() : null
                                                     }
                                                 }
                                                 await sp.web.lists.getByTitle('Documents').items.getById(file.Id)

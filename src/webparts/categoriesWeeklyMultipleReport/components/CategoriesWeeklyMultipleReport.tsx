@@ -540,7 +540,7 @@ export default class CategoriesWeeklyMultipleReport extends React.Component<ICat
     this.setState({
       showDateTime: (
         <span className='alignCenter'>
-          <label className='ms-1'> | Time: {this?.TotalTimeEntry} | hours ({this?.TotalTimeEntry / 8} days)</label>
+          <label className='ms-1'> items | Time: {this?.TotalTimeEntry} | hours ({this?.TotalTimeEntry / 8} days)</label>
           <label className="mx-1">|</label>
           <label>
             <div className="">Smart Hours: {this?.SmartTotalTimeEntry} ({this?.SmartTotalTimeEntry / 8} days)</div>
@@ -1982,7 +1982,7 @@ export default class CategoriesWeeklyMultipleReport extends React.Component<ICat
       this.setState({
         showDateTime: (
           <span className='alignCenter'>
-            <label className='ms-1'> | Time: {this?.TotalTimeEntry} | hours ({this?.TotalTimeEntry / 8} days)</label>
+            <label className='ms-1'> items | Time: {this?.TotalTimeEntry} | hours ({this?.TotalTimeEntry / 8} days)</label>
             <label className="mx-1">|</label>
             <label>
               <div className="">Smart Hours: {this?.SmartTotalTimeEntry} ({this?.SmartTotalTimeEntry / 8} days)</div>
@@ -2550,7 +2550,7 @@ export default class CategoriesWeeklyMultipleReport extends React.Component<ICat
     this.setState({
       showDateTime: (
         <span className='alignCenter'>
-          <label className='ms-1'> | Time: {this?.TotalTimeEntry} | hours ({this?.TotalTimeEntry / 8} days)</label>
+          <label className='ms-1'> items | Time: {this?.TotalTimeEntry} | hours ({this?.TotalTimeEntry / 8} days)</label>
           <label className="mx-1">|</label>
           <label>
             <div className="">Smart Hours: {this?.SmartTotalTimeEntry} ({this?.SmartTotalTimeEntry / 8} days)</div>
@@ -3671,6 +3671,14 @@ export default class CategoriesWeeklyMultipleReport extends React.Component<ICat
                               </div>
                             </div>
                           </div>
+                          <div className='col'>
+                            <label className='full_width'></label>
+                            <div className=''>
+                              <button type="button" className="btnCol btn btn-primary pull-right" onClick={() => this.updatefilter()}>
+                                Update Filters
+                              </button>
+                            </div>
+                          </div>
                         </div>
                       </div>
                     </div>
@@ -3727,9 +3735,7 @@ export default class CategoriesWeeklyMultipleReport extends React.Component<ICat
                         </div>
 
                         <div className="col-sm-12 mt-10 pe-1 text-end">
-                          <button type="button" className="btnCol btn btn-primary" onClick={() => this.updatefilter()}>
-                            Update Filters
-                          </button>
+
                           <button type="button" className="btn btn-default ms-2" onClick={() => this.ClearFilters()}>
                             Clear Filters
                           </button>
