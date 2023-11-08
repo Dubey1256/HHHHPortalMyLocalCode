@@ -6,12 +6,13 @@ import "froala-editor/css/froala_editor.pkgd.min.css";
 
 import Froala from "react-froala-wysiwyg";
 
-const defaultContent = "";
+let defaultContent = "";
 let CallBackFunction:any ;
 let FileName:any;
-
+let editdatabackup=""
 export interface ITeamConfigurationProps {
     callBack: (dt: any,FileName:any) => void;
+    defaultContent:any
 }
 
 const froalaEditorConfig = {
@@ -31,7 +32,8 @@ const froalaEditorConfig = {
     events: {
         "image.beforeUpload": function (files: any, arg1: any, arg2: any) {
             var editor = this;
-            FileName=files[0].name;
+            // FileName= `pasted-image.${fileExtension}`;
+            FileName=files[0]?.name;
             if (files.length) {
                 // Create a File Reader.
                 var reader = new FileReader();
@@ -67,6 +69,12 @@ const froalaEditorConfig = {
 export default class App extends React.Component<ITeamConfigurationProps> {
     public render(): React.ReactElement<{}> {
         CallBackFunction = this.props.callBack;
+        if(this.props.defaultContent!=""&& this.props.defaultContent!=null && this.props.defaultContent!=undefined){
+            defaultContent=editdatabackup;
+        }else{
+            defaultContent="" 
+        }
+     
         return (
             <div className="Florar-Editor-Image-Upload-Container" id="uploadImageFroalaEditor">
                 <Froala
@@ -95,5 +103,6 @@ export default class App extends React.Component<ITeamConfigurationProps> {
         })
         let elem = document.createElement("img");
         elem.innerHTML = edData;
+        editdatabackup=edData;
     };
 }

@@ -48,7 +48,7 @@ import { CurrentUser } from "sp-pnp-js/lib/sharepoint/siteusers";
 
 
 
-
+let PortfolioItemColor:any='';
 var AllMetaData: any = []
 var taskUsers: any = []
 var AllTaskUser: any = []
@@ -281,7 +281,16 @@ const EditTaskPopup = (Items: any) => {
             AddImageDescriptionsIndex = undefined;
         }
     }, [FeedBackCount])
-
+    useEffect(() => {
+        setTimeout(() => {
+            const panelMain: any = document.querySelector('.ms-Panel-main');
+            if (panelMain && PortfolioItemColor!='') {
+                $('.ms-Panel-main').css('--SiteBlue', PortfolioItemColor); // Set the desired color value here
+            }
+        }, 1000)
+    }, [IsComponentPicker, openLinkedPortfolioPopup, openTeamPortfolioPopup, ImageComparePopup, modalIsOpen, TimeSheetPopup,
+        ApproverPopupStatus, ProjectManagementPopup, replaceImagePopup, CopyAndMoveTaskPopup, AddImageDescriptions, ImageCustomizePopup, SmartMedaDataUsedPanel?.length]);
+ 
     const SmartMetaDataListInformations = async () => {
         let AllSmartDataListData: any = [];
 
@@ -1760,7 +1769,16 @@ const EditTaskPopup = (Items: any) => {
                                             FeedBackCount++;
                                         }
                                     }
+                                    PortfolioItemColor= PortfolioItem?.Color;
+                                    let targetDiv :any = document?.querySelector('.ms-Panel-main');
+                                    setTimeout(()=>{
+                                        if (targetDiv ) {
+                                            // Change the --SiteBlue variable for elements under the targetDiv
+                                            $('.ms-Panel-main').css('--SiteBlue', PortfolioItem?.Color);
+                                        }
+                                    },1000)
                                 }
+                               
                             })
                         }
                     })
@@ -4829,7 +4847,7 @@ const EditTaskPopup = (Items: any) => {
                                                 <input type="text" maxLength={3} placeholder="% Complete"
                                                     //  disabled={InputFieldDisable}
                                                     disabled readOnly
-                                                    className="form-control px-2"
+                                                    className="bg-body form-control px-2"
                                                     // defaultValue={PercentCompleteCheck ? (EditData.PercentComplete != undefined && Math.floor(EditData.PercentComplete) === EditData.PercentComplete ? Number(EditData.PercentComplete).toFixed(0) : null) : (UpdateTaskInfo.PercentCompleteStatus ? UpdateTaskInfo.PercentCompleteStatus : null)}
                                                     value={PercentCompleteStatus}
                                                     onChange={(e) => StatusAutoSuggestion(e)} />
@@ -5912,7 +5930,7 @@ const EditTaskPopup = (Items: any) => {
                                                             <input type="text" maxLength={3} placeholder="% Complete"
                                                                 //  disabled={InputFieldDisable}
                                                                 disabled readOnly
-                                                                className="form-control px-2"
+                                                                className="bg-body form-control px-2"
                                                                 // defaultValue={PercentCompleteCheck ? (EditData.PercentComplete != undefined && Math.floor(EditData.PercentComplete) === EditData.PercentComplete ? Number(EditData.PercentComplete).toFixed(0) : null) : (UpdateTaskInfo.PercentCompleteStatus ? UpdateTaskInfo.PercentCompleteStatus : null)}
                                                                 value={PercentCompleteStatus}
                                                                 onChange={(e) => StatusAutoSuggestion(e)} />

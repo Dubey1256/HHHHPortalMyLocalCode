@@ -1,5 +1,5 @@
 import * as React from "react";
-import { Panel, PanelType } from "office-ui-fabric-react";
+import { Panel, PanelType, DefaultButton } from "office-ui-fabric-react";
 import "bootstrap/dist/css/bootstrap.min.css";
 import "bootstrap/js/dist/modal.js";
 import "bootstrap/js/dist/tab.js";
@@ -23,7 +23,10 @@ import Sitecomposition from "../../globalComponents/SiteComposition";
 
 import ImagesC from "./ImageInformation";
 var PostTechnicalExplanations = "";
+var PostHelp_x0020_Information = "";
+var PostQuestionDescription = "";
 var PostDeliverables = "";
+let PortfolioTypeColor: any = '';
 var PostShort_x0020_Description_x0020_On = "";
 var PostBody = "";
 var AllUsers: any = [];
@@ -43,7 +46,8 @@ var AllClientCategory: any = [];
 let ShowCategoryDatabackup: any = [];
 let subCategories: any = [];
 let IsapprovalTask = false;
-let CategoryAllData:any = [];
+let CategoryAllData: any = [];
+let ID: any;
 function EditInstitution({ item, SelectD, Calls, usedFor }: any) {
   if (SelectD != undefined && SelectD?.siteUrl != undefined) {
     web = new Web(SelectD?.siteUrl);
@@ -55,11 +59,12 @@ function EditInstitution({ item, SelectD, Calls, usedFor }: any) {
     RequireData = SelectD.SelectedProp;
     web = new Web(RequireData?.siteUrl);
   }
-  let categoryitem:any=[];
-  if(item.Categories != undefined){
+  let categoryitem: any = [];
+  if (item.Categories != undefined) {
     categoryitem = item.Categories.split(';')
   }
   const [CompoenetItem, setComponent] = React.useState([]);
+  const [SmartHelpDetails, setSmartHelpDetails] = React.useState<any>([]);
   const [update, setUpdate] = React.useState(0);
   const [isDropItem, setisDropItem] = React.useState(false);
   const [isDropItemRes, setisDropItemRes] = React.useState(false);
@@ -113,12 +118,28 @@ function EditInstitution({ item, SelectD, Calls, usedFor }: any) {
   const [SearchedCategoryData, setSearchedCategoryData] = React.useState([]);
   const [imagetab, setImagetab] = React.useState(false);
   const [instantCategories, setInstantCategories] = React.useState([])
+  const [openPopup, setOpenPopup] = React.useState(false);
+  const [isOpenPopup, setIsOpenPopup] = React.useState(false);
+  const [editPopup, setEditPopup] = React.useState(false);
+  const [editHelpPopup, setEditHelpPopup] = React.useState(false);
+  const [choice, setChoice] = React.useState("");
+  const [question, setQuestion] = React.useState("");
+  const [help, setHelp] = React.useState("");
+  const [dataUpdate, setDataUpdate] = React.useState<any>();
+  const [helpDataUpdate, setHelpDataUpdate] = React.useState<any>();
   function imageta() {
     setImagetab(true);
   }
   // End of Status
   const setModalIsOpenToTrue = (e: any) => {
     setModalIsOpen(true);
+    let targetDiv: any = document?.querySelector('.ms-Panel-main');
+    setTimeout(() => {
+      if (targetDiv) {
+        // Change the --SiteBlue variable for elements under the targetDiv
+        targetDiv?.style?.setProperty('--SiteBlue', PortfolioTypeColor); // Change the color to your desired value
+      }
+    }, 1000)
   };
   const onEditorStateChange = React.useCallback(
     (rawcontent) => {
@@ -410,7 +431,8 @@ function EditInstitution({ item, SelectD, Calls, usedFor }: any) {
         "ResponsibleTeam/Title",
         "Parent/Id",
         "Parent/Title",
-        "Parent/ItemType"
+        "Parent/ItemType",
+        "PortfolioType/Color"
       )
       .expand(
         "ClientCategory",
@@ -420,6 +442,7 @@ function EditInstitution({ item, SelectD, Calls, usedFor }: any) {
         "AttachmentFiles",
         "Author",
         "Editor",
+        "PortfolioType",
         "TeamMembers",
         "SharewebComponent",
         "TaskCategories",
@@ -429,6 +452,7 @@ function EditInstitution({ item, SelectD, Calls, usedFor }: any) {
       .filter("Id eq " + item.Id + "")
       .get();
     console.log(componentDetails);
+    //   document.documentElement.style.setProperty('--SiteBlue', '#c31929');
 
     // var query = "ComponentCategory/Id,ComponentCategory/Title,ComponentPortfolio/Id,ComponentPortfolio/Title,ServicePortfolio/Id,ServicePortfolio/Title,SiteCompositionSettings,PortfolioStructureID,ItemRank,ShortDescriptionVerified,Portfolio_x0020_Type,BackgroundVerified,descriptionVerified,Synonyms,BasicImageInfo,DeliverableSynonyms,OffshoreComments,OffshoreImageUrl,HelpInformationVerified,IdeaVerified,TechnicalExplanationsVerified,Deliverables,DeliverablesVerified,ValueAddedVerified,CompletedDate,Idea,ValueAdded,TechnicalExplanations,Item_x0020_Type,Sitestagging,Package,Parent/Id,Parent/Title,Short_x0020_Description_x0020_On,Short_x0020_Description_x0020__x,Short_x0020_description_x0020__x0,AdminNotes,AdminStatus,Background,Help_x0020_Information,SharewebComponent/Id,TaskCategories/Id,TaskCategories/Title,PriorityRank,Reference_x0020_Item_x0020_Json,TeamMembers/Title,TeamMembers/Name,Component/Id,Component/Title,Component/ItemType,TeamMembers/Id,Item_x002d_Image,ComponentLink,IsTodaysTask,AssignedTo/Title,AssignedTo/Name,AssignedTo/Id,AttachmentFiles/FileName,FileLeafRef,FeedBack,Title,Id,PercentComplete,Company,StartDate,DueDate,Comments,Categories,Status,WebpartId,Body,Mileage,PercentComplete,Attachments,Priority,Created,Modified,Author/Id,Author/Title,Editor/Id,Editor/Title,ClientCategory/Id,ClientCategory/Title&$expand=ClientCategory,ComponentCategory,AssignedTo,Component,ComponentPortfolio,ServicePortfolio,AttachmentFiles,Author,Editor,TeamMembers,SharewebComponent,TaskCategories,Parent&$filter=Id eq " + item.Id + "";
     // $.ajax({
@@ -441,6 +465,7 @@ function EditInstitution({ item, SelectD, Calls, usedFor }: any) {
     var Tasks = componentDetails;
     let ParentData: any = [];
     $.each(Tasks, function (index: any, item: any) {
+      PortfolioTypeColor = item?.PortfolioType?.Color
       item.DateTaskDueDate = new Date(item.DueDate);
       if (item.DueDate != null)
         item.TaskDueDate = moment(item.DueDate).format("MM-DD-YYYY");
@@ -680,15 +705,15 @@ function EditInstitution({ item, SelectD, Calls, usedFor }: any) {
       item["SiteIcon"] =
         item.siteType == "Master Tasks"
           ? GetIconImageUrl(
-              item.siteType,
-              "https://hhhhteams.sharepoint.com/sites/HHHH/SP/",
-              undefined
-            )
+            item.siteType,
+            "https://hhhhteams.sharepoint.com/sites/HHHH/SP/",
+            undefined
+          )
           : GetIconImageUrl(
-              item.siteType,
-              "https://hhhhteams.sharepoint.com/sites/HHHH/SP/",
-              undefined
-            );
+            item.siteType,
+            "https://hhhhteams.sharepoint.com/sites/HHHH/SP/",
+            undefined
+          );
       if (item.Synonyms != undefined && item.Synonyms.length > 0) {
         item.Synonyms = JSON.parse(item.Synonyms);
       }
@@ -743,6 +768,26 @@ function EditInstitution({ item, SelectD, Calls, usedFor }: any) {
   //     }
   // });
   // }
+  const onRenderCustomHeaderQuestion = () => {
+    return (
+      <div className="subheading siteColor">Add Question</div>
+    );
+  };
+  const onRenderCustomHeaderHelp = () => {
+    return (
+      <div className="subheading siteColor">Add Help</div>
+    );
+  };
+  const onRenderHeaderQuestionEdit = () => {
+    return (
+      <div className="subheading siteColor">Edit Question</div>
+    );
+  };
+  const onRenderHeaderHelpEdit = () => {
+    return (
+      <div className="subheading siteColor">Edit Help</div>
+    );
+  };
 
   var ListId: any = "";
   var CurrentSiteUrl: any = "";
@@ -757,12 +802,12 @@ function EditInstitution({ item, SelectD, Calls, usedFor }: any) {
   const TaskItemRank: any = [];
   const site: any = [];
   const siteDetail: any = [];
-  
+
   const GetSmartmetadata = async () => {
     let smartmetaDetails = [];
     subCategories = [];
-        var TaskTypes: any = []
-        var Task: any = []
+    var TaskTypes: any = []
+    var Task: any = []
     smartmetaDetails = await web.lists
       //.getById('ec34b38f-0669-480a-910c-f84e92e58adf')
       .getById(RequireData.SmartMetadataListID)
@@ -796,48 +841,48 @@ function EditInstitution({ item, SelectD, Calls, usedFor }: any) {
         }
       });
     }
-     TaskTypes = getSmartMetadataItemsByTaxType(smartmetaDetails, 'Categories');
+    TaskTypes = getSmartMetadataItemsByTaxType(smartmetaDetails, 'Categories');
     let instantCat: any = [];
-        TaskTypes?.map((cat: any) => {
-            cat.ActiveTile = false;
-            getChilds(cat, TaskTypes);
-            if (cat?.ParentID !== undefined && cat?.ParentID === 0 && cat?.Title !== 'Phone') {
-                Task.push(cat);
-            }
-            if (cat?.Title == 'Phone' || cat?.Title == 'Email Notification' || cat?.Title == 'Immediate' || cat?.Title == 'Approval') {
-                instantCat.push(cat)
-            }
-            if (cat?.Parent?.Id !== undefined && cat?.Parent?.Id !== 0 && cat?.IsVisible) {
-                subCategories.push(cat);
-            }
-        })
-        setInstantCategories(instantCat)
-        let uniqueArray: any = [];
-        AutoCompleteItemsArray.map((currentObject: any) => {
-            if (!uniqueArray.find((obj: any) => obj.Id === currentObject.Id)) {
-                uniqueArray.push(currentObject)
-            }
-        })
-        AutoCompleteItemsArray = uniqueArray;
-        Task?.map((taskItem: any) => {
-            subCategories?.map((item: any) => {
-                if (taskItem?.Id === item?.Parent?.Id) {
-                    try {
-                        item.ActiveTile = false;
-                        item.SubTaskActTile = item?.Title?.replace(/\s/g, "");
-                    } catch (error) {
-                        console.log(error);
-                    }
-                }
-            })
-        })
+    TaskTypes?.map((cat: any) => {
+      cat.ActiveTile = false;
+      getChilds(cat, TaskTypes);
+      if (cat?.ParentID !== undefined && cat?.ParentID === 0 && cat?.Title !== 'Phone') {
+        Task.push(cat);
+      }
+      if (cat?.Title == 'Phone' || cat?.Title == 'Email Notification' || cat?.Title == 'Immediate' || cat?.Title == 'Approval') {
+        instantCat.push(cat)
+      }
+      if (cat?.Parent?.Id !== undefined && cat?.Parent?.Id !== 0 && cat?.IsVisible) {
+        subCategories.push(cat);
+      }
+    })
+    setInstantCategories(instantCat)
+    let uniqueArray: any = [];
+    AutoCompleteItemsArray.map((currentObject: any) => {
+      if (!uniqueArray.find((obj: any) => obj.Id === currentObject.Id)) {
+        uniqueArray.push(currentObject)
+      }
+    })
+    AutoCompleteItemsArray = uniqueArray;
+    Task?.map((taskItem: any) => {
+      subCategories?.map((item: any) => {
+        if (taskItem?.Id === item?.Parent?.Id) {
+          try {
+            item.ActiveTile = false;
+            item.SubTaskActTile = item?.Title?.replace(/\s/g, "");
+          } catch (error) {
+            console.log(error);
+          }
+        }
+      })
+    })
 
-       
+
     setsiteDetails(siteDetail);
     getMasterTaskListTasks();
   };
- 
- 
+
+
   React.useEffect(() => {
     GetTaskUsers();
     getAllSitesData();
@@ -925,78 +970,77 @@ function EditInstitution({ item, SelectD, Calls, usedFor }: any) {
 
     console.log(componentDetails);
   };
-  function EditComponentCallback(res:any) {
-    if(res ==="Close"){
+  function EditComponentCallback(res: any) {
+    if (res === "Close") {
       Calls(res);
-    }else{
+    } else {
 
-    
-    const date = moment(res?.Created);
-    const formattedDate = date.format('DD-MM-YYYY');
-    const datedue = moment(res?.DueDate);
-    const formattedDateDue = datedue.format('DD-MM-YYYY');
-    if (TaskAssignedTo!= undefined && TaskAssignedTo?.length > 0) {
-      $.map(TaskAssignedTo, (Assig: any) => {
-        if (Assig.Id != undefined) {
-          $.map(AllUsers, (users: any) => {
-            if (
-              Assig.Id != undefined &&
-              users.AssingedToUser != undefined &&
-              Assig.Id == users.AssingedToUser.Id
-            ) {
-              users.ItemCover = users.Item_x0020_Cover;
-              res?.TeamLeaderUser?.push(users);
-            }
-          });
-        }
-      });
+
+      const date = moment(res?.Created);
+      const formattedDate = date.format('DD-MM-YYYY');
+      const datedue = moment(res?.DueDate);
+      const formattedDateDue = datedue.format('DD-MM-YYYY');
+      if (TaskAssignedTo != undefined && TaskAssignedTo?.length > 0) {
+        $.map(TaskAssignedTo, (Assig: any) => {
+          if (Assig.Id != undefined) {
+            $.map(AllUsers, (users: any) => {
+              if (
+                Assig.Id != undefined &&
+                users.AssingedToUser != undefined &&
+                Assig.Id == users.AssingedToUser.Id
+              ) {
+                users.ItemCover = users.Item_x0020_Cover;
+                res?.TeamLeaderUser?.push(users);
+              }
+            });
+          }
+        });
+      }
+
+      if (TaskTeamMembers != undefined && TaskTeamMembers.length > 0) {
+        $.map(TaskTeamMembers, (Assig: any) => {
+          if (Assig.Id != undefined) {
+            $.map(AllUsers, (users: any) => {
+              if (
+                Assig.Id != undefined &&
+                users.AssingedToUser != undefined &&
+                Assig.Id == users.AssingedToUser.Id
+              ) {
+                users.ItemCover = users.Item_x0020_Cover;
+                res?.TeamLeaderUser?.push(users);
+              }
+            });
+          }
+        });
+      }
+      // ClientCategory
+      if (res?.ClientCategory != undefined && res?.ClientCategory?.results?.length > 0) {
+        const clientarray = res?.ClientCategory?.results?.filter((item: any) => item.Title != undefined)
+        res.ClientCategory = clientarray;
+      }
+      res.DisplayCreateDate = formattedDate;
+
+      if (formattedDateDue === "Invalid date") {
+        res.DisplayDueDate = "";
+      } else {
+        res.DisplayDueDate = formattedDateDue;
+      }
+      res.TaskID = item.TaskID;
+      res.SiteIconTitle = item.SiteIconTitle;
+      res.Item_x0020_Type = item.Item_x0020_Type;
+      res.isRestructureActive = item.isRestructureActive;
+      res.ItemRank = item.ItemRank;
+      res.PercentComplete = item.PercentComplete;
+      res.PortfolioType = item.PortfolioType;
+      res.SiteIcon = undefined;
+      res.siteUrl = RequireData?.siteUrl;
+      Calls(res);
     }
-   
-    if (TaskTeamMembers != undefined && TaskTeamMembers.length > 0) {
-      $.map(TaskTeamMembers, (Assig: any) => {
-        if (Assig.Id != undefined) {
-          $.map(AllUsers, (users: any) => {
-            if (
-              Assig.Id != undefined &&
-              users.AssingedToUser != undefined &&
-              Assig.Id == users.AssingedToUser.Id
-            ) {
-              users.ItemCover = users.Item_x0020_Cover;
-              res?.TeamLeaderUser?.push(users);
-            }
-          });
-        }
-      });
-    }
-// ClientCategory
-if(res?.ClientCategory != undefined && res?.ClientCategory?.results?.length >0 ){
- const clientarray= res?.ClientCategory?.results?.filter((item:any)=> item.Title != undefined)
-  res.ClientCategory =clientarray;
-}
-    res.DisplayCreateDate = formattedDate;
-    
-    if(formattedDateDue === "Invalid date"){
-      res.DisplayDueDate = "";
-    }else{
-      res.DisplayDueDate = formattedDateDue;
-    }
-    res.TaskID = item.TaskID;
-    res.SiteIconTitle = item.SiteIconTitle;
-    res.Item_x0020_Type = item.Item_x0020_Type;
-    res.isRestructureActive = item.isRestructureActive;
-    res.ItemRank = item.ItemRank;
-    res.PercentComplete = item.PercentComplete;
-    res.PortfolioType = item.PortfolioType;
-    res.SiteIcon = undefined;
-    res.siteUrl = RequireData?.siteUrl;
-    res.data=res;
-    Calls(res.data, "UpdatedData");
   }
-  }
 
 
 
-  
+
 
 
   let mentionUsers: any = [];
@@ -1241,10 +1285,10 @@ if(res?.ClientCategory != undefined && res?.ClientCategory?.results?.length >0 )
       } else item["Synonyms"] = [];
       flag
         ? item["Synonyms"].push({
-            status: true,
-            Title: item.SynonymsTitle,
-            Id: ""
-          })
+          status: true,
+          Title: item.SynonymsTitle,
+          Id: ""
+        })
         : null;
       item.SynonymsTitle = "";
     }
@@ -1266,7 +1310,7 @@ if(res?.ClientCategory != undefined && res?.ClientCategory?.results?.length >0 )
     var item: any = {};
     var smartComponentsIds: any[] = [];
     var RelevantPortfolioIds = "";
-    let PortfolioIds:any[]=[];
+    let PortfolioIds: any[] = [];
     let TotalCompositionsValue: any = 0;
     var Items = EditData;
     if (SiteTaggingData?.length > 0) {
@@ -1347,18 +1391,22 @@ if(res?.ClientCategory != undefined && res?.ClientCategory?.results?.length >0 )
 
       if (TaskTeamMembers != undefined && TaskTeamMembers?.length > 0) {
         TaskTeamMembers?.map((taskInfo) => {
-            TeamMemberIds.push(taskInfo.Id);
+          TeamMemberIds.push(taskInfo.Id);
         })
-    }else{
-      TeamMemberIds=[];
-    }
-    if (TaskAssignedTo != undefined && TaskAssignedTo?.length > 0) {
-      TaskAssignedTo?.map((taskInfo) => {
+      } else if (TaskTeamMembers.length === 0 && TeamMemberIds.length > 0) {
+        TeamMemberIds;
+      } else {
+        TeamMemberIds = [];
+      }
+      if (TaskAssignedTo != undefined && TaskAssignedTo?.length > 0) {
+        TaskAssignedTo?.map((taskInfo) => {
           AssignedToIds.push(taskInfo.Id);
-      })
-  }else{
-    AssignedToIds=[];
-  }
+        })
+      } else if (TaskAssignedTo?.length === 0 && AssignedToIds?.length > 0) {
+        AssignedToIds;
+      } else {
+        AssignedToIds = [];
+      }
 
 
       // if (isDropItemRes == true) {
@@ -1468,7 +1516,7 @@ if(res?.ClientCategory != undefined && res?.ClientCategory?.results?.length >0 )
           // ClientCategoryId: { "results": RelevantPortfolioIds },
           ServicePortfolioId:
             RelevantPortfolioIds != "" ? RelevantPortfolioIds : null,
-          PortfoliosId:{results:(PortfolioIds?.length != 0 ? PortfolioIds : [])},
+          PortfoliosId: { results: (PortfolioIds?.length != 0 ? PortfolioIds : []) },
           Synonyms: JSON.stringify(Items["Synonyms"]),
           Package: Items.Package,
           AdminStatus: Items.AdminStatus,
@@ -1497,7 +1545,7 @@ if(res?.ClientCategory != undefined && res?.ClientCategory?.results?.length >0 )
           },
           TechnicalExplanations:
             PostTechnicalExplanations != undefined &&
-            PostTechnicalExplanations != ""
+              PostTechnicalExplanations != ""
               ? PostTechnicalExplanations
               : EditData?.TechnicalExplanations,
           Deliverables:
@@ -1506,7 +1554,7 @@ if(res?.ClientCategory != undefined && res?.ClientCategory?.results?.length >0 )
               : EditData?.Deliverables,
           Short_x0020_Description_x0020_On:
             PostShort_x0020_Description_x0020_On != undefined &&
-            PostShort_x0020_Description_x0020_On != ""
+              PostShort_x0020_Description_x0020_On != ""
               ? PostShort_x0020_Description_x0020_On
               : EditData?.Short_x0020_Description_x0020_On,
           Body:
@@ -1538,6 +1586,56 @@ if(res?.ClientCategory != undefined && res?.ClientCategory?.results?.length >0 )
         });
     }
   };
+  const AddQuestionFunc = async () => {
+    try {
+      let componentId = CompoenetItem[0].Id;
+      const newItem = {
+        ItemType: "Question",
+        Title: `${CompoenetItem[0].Title} - ${question}`,
+        ComponentsId: { "results": [componentId] },
+        Permission: choice,
+        Body: PostQuestionDescription || (EditData?.PostQuestionDescription || ""),
+      };
+      await web.lists.getById(RequireData.SmartHelptListID).items.add(newItem);
+
+      // Update the state with the newly added item
+      setSmartHelpDetails([...SmartHelpDetails, newItem]);
+      setIsOpenPopup(false);
+      let smartHelpDetails = await web.lists.getById(RequireData.SmartHelptListID).items.select("Title, Id, Body, Permission, ItemType, Components/Id, Components/Title").expand("Components").getAll();
+      setSmartHelpDetails(smartHelpDetails)
+      setQuestion("")
+      setChoice("");
+      PostQuestionDescription = "";
+
+    } catch (error) {
+      console.log(error);
+    }
+  }
+
+  const AddHelpFunc = async () => {
+    try {
+      let componentId = CompoenetItem[0].Id;
+      const newItem = {
+        ItemType: "Help",
+        Title: `${CompoenetItem[0].Title} - ${help}`,
+        ComponentsId: { "results": [componentId] },
+        Permission: choice,
+        Body: PostQuestionDescription || (EditData?.PostQuestionDescription || ""),
+      };
+      await web.lists.getById(RequireData.SmartHelptListID).items.add(newItem);
+
+      // Update the state with the newly added item
+      setSmartHelpDetails([...SmartHelpDetails, newItem]);
+      setOpenPopup(false);
+      let smartHelpDetails = await web.lists.getById(RequireData.SmartHelptListID).items.select("Title, Id, Body, Permission, ItemType, Components/Id, Components/Title").expand("Components").getAll();
+      setSmartHelpDetails(smartHelpDetails)
+      setHelp("")
+      setChoice("");
+      PostQuestionDescription = "";
+    } catch (error) {
+      console.log(error);
+    }
+  }
   const EditComponentPicker = (item: any) => {
     setIsComponentPicker(true);
 
@@ -1578,6 +1676,24 @@ if(res?.ClientCategory != undefined && res?.ClientCategory?.results?.length >0 )
       let message: any = Editorvalue;
       EditData.TechnicalExplanations = message;
       PostTechnicalExplanations = EditData?.TechnicalExplanations;
+      console.log("Editor Data call back ====", Editorvalue);
+    },
+    []
+  );
+  const HelpInformationHtmlEditorCallBack = React.useCallback(
+    (Editorvalue: any) => {
+      let message: any = Editorvalue;
+      EditData.Help_x0020_Information = message;
+      PostHelp_x0020_Information = EditData?.Help_x0020_Information;
+      console.log("Editor Data call back ====", Editorvalue);
+    },
+    []
+  );
+  const QuestionDescriptionEditorCallBack = React.useCallback(
+    (Editorvalue: any) => {
+      let message: any = Editorvalue;
+      EditData.QuestionDescription = message;
+      PostQuestionDescription = EditData?.QuestionDescription;
       console.log("Editor Data call back ====", Editorvalue);
     },
     []
@@ -1689,80 +1805,60 @@ if(res?.ClientCategory != undefined && res?.ClientCategory?.results?.length >0 )
               </li>
               {(EditData?.Item_x0020_Type == "SubComponent" ||
                 EditData?.Item_x0020_Type == "Feature") && (
-                <>
-                  {" "}
-                  <li>
-                    {/* if="Task.Portfolio_x0020_Type=='Component'  (Task.Item_x0020_Type=='Component Category')" */}
-                    {EditData?.Parent != undefined &&
-                      ParentData != undefined &&
-                      ParentData.length != 0 && (
+                  <>
+                    {" "}
+                    <li>
+                      {/* if="Task.Portfolio_x0020_Type=='Component'  (Task.Item_x0020_Type=='Component Category')" */}
+                      {EditData?.Parent != undefined &&
+                        ParentData != undefined &&
+                        ParentData.length != 0 && (
+                          <a
+                            target="_blank"
+                            data-interception="off"
+                            href={`${RequireData.siteUrl}/SitePages/Portfolio-Profile.aspx?taskId=${ParentData[0].Parent.Id}`}
+                          >
+                            {ParentData[0].Parent.Title}
+                          </a>
+                        )}
+                    </li>
+                    <li>
+                      {/* if="Task.Portfolio_x0020_Type=='Component'  (Task.Item_x0020_Type=='Component Category')" */}
+                      {EditData?.Parent != undefined && (
                         <a
                           target="_blank"
                           data-interception="off"
-                          href={`${RequireData.siteUrl}/SitePages/Portfolio-Profile.aspx?taskId=${ParentData[0].Parent.Id}`}
+                          href={`${RequireData.siteUrl}/SitePages/Portfolio-Profile.aspx?taskId=${EditData?.Parent.Id}`}
                         >
-                          {ParentData[0].Parent.Title}
+                          {EditData?.Parent.Title}
                         </a>
                       )}
-                  </li>
-                  <li>
-                    {/* if="Task.Portfolio_x0020_Type=='Component'  (Task.Item_x0020_Type=='Component Category')" */}
-                    {EditData?.Parent != undefined && (
-                      <a
-                        target="_blank"
-                        data-interception="off"
-                        href={`${RequireData.siteUrl}/SitePages/Portfolio-Profile.aspx?taskId=${EditData?.Parent.Id}`}
-                      >
-                        {EditData?.Parent.Title}
-                      </a>
-                    )}
-                  </li>
-                </>
-              )}
+                    </li>
+                  </>
+                )}
 
               <li>
                 {EditData?.Item_x0020_Type == "Feature" && (
                   <a>
                     <>
-                      <img
-                        style={{ width: "20px", marginRight: "2px" }}
-                        src={
-                          EditData?.Portfolio_x0020_Type == "Service"
-                            ? "https://hhhhteams.sharepoint.com/sites/HHHH/SiteCollectionImages/ICONS/Service_Icons/feature_icon.png"
-                            : "https://hhhhteams.sharepoint.com/sites/HHHH/SiteCollectionImages/ICONS/Shareweb/feature_icon.png"
-                        }
-                      />
-                      {EditData?.Title}
+                      <span className="Dyicons mt--3">F</span>
+
+                      <span className="ms-1">{EditData?.Title}</span>
                     </>
                   </a>
                 )}
                 {EditData?.Item_x0020_Type == "SubComponent" && (
                   <a>
                     <>
-                      <img
-                        style={{ width: "20px", marginRight: "2px" }}
-                        src={
-                          EditData?.Portfolio_x0020_Type == "Service"
-                            ? "https://hhhhteams.sharepoint.com/sites/HHHH/SiteCollectionImages/ICONS/Service_Icons/SubComponent_icon.png"
-                            : "https://hhhhteams.sharepoint.com/sites/HHHH/SP/SiteCollectionImages/ICONS/Shareweb/SubComponent_icon.png"
-                        }
-                      />
-                      {EditData?.Title}
+                      <span className="Dyicons mt--3">S</span>
+                      <span className="ms-1">{EditData?.Title}</span>
                     </>
                   </a>
                 )}
                 {EditData?.Item_x0020_Type == "Component" && (
                   <a>
                     <>
-                      <img
-                        style={{ width: "20px", marginRight: "2px" }}
-                        src={
-                          EditData?.Portfolio_x0020_Type == "Service"
-                            ? "https://hhhhteams.sharepoint.com/sites/HHHH/SiteCollectionImages/ICONS/Service_Icons/component_icon.png"
-                            : "https://hhhhteams.sharepoint.com/sites/HHHH/SP/SiteCollectionImages/ICONS/Shareweb/component_icon.png"
-                        }
-                      />
-                      {EditData?.Title}
+                      <span className="Dyicons mt--3">C</span>
+                      <span className="ms-1">{EditData?.Title}</span>
                     </>
                   </a>
                 )}
@@ -1793,17 +1889,16 @@ if(res?.ClientCategory != undefined && res?.ClientCategory?.results?.length >0 )
         .then((i: any) => {
           console.log(i);
           setComponent((EditData) => [...EditData]);
-         
+
           setModalIsOpenToFalse();
-            var ItmesDelete: any = {
-              data: {
-                Id: item.Id,
-                siteName: item.siteType,
-                ItmesDelete: true
-              }
+          var ItmesDelete: any = {
+            data: {
+              Id: item.Id,
+              ItmesDelete: true
             }
-            Calls(ItmesDelete);
-        
+          }
+          Calls(ItmesDelete);
+
           item.showProgressBar();
         });
     }
@@ -1884,18 +1979,18 @@ if(res?.ClientCategory != undefined && res?.ClientCategory?.results?.length >0 )
       .top(4999)
       .expand("Author,Editor")
       .get();
-     CategoryAllData = MetaData?.filter((item:any)=> item?.TaxType === "Categories")
-     let MyCategoriesd:any = [];
-     if(CategoryAllData?.length>0 && categoryitem?.length>0){
-      CategoryAllData.map((item:any)=>{
-        categoryitem.map((items:any)=>{
-          if(item.Title===items){
-           MyCategoriesd.push(item) ;
+    CategoryAllData = MetaData?.filter((item: any) => item?.TaxType === "Categories")
+    let MyCategoriesd: any = [];
+    if (CategoryAllData?.length > 0 && categoryitem?.length > 0) {
+      CategoryAllData.map((item: any) => {
+        categoryitem.map((items: any) => {
+          if (item.Title === items) {
+            MyCategoriesd.push(item);
           }
         })
       })
-     }
-     setCategoriesData(MyCategoriesd);
+    }
+    setCategoriesData(MyCategoriesd);
     siteConfig = getSmartMetadataItemsByTaxType(MetaData, "Sites");
     siteConfig?.map((site: any) => {
       if (
@@ -2282,7 +2377,7 @@ if(res?.ClientCategory != undefined && res?.ClientCategory?.results?.length >0 )
 
     return previous;
   },
-  []);
+    []);
   const setSelectedCategoryData = (selectCategoryData: any, usedFor: any) => {
     setCategorySearchKey("");
 
@@ -2366,8 +2461,8 @@ if(res?.ClientCategory != undefined && res?.ClientCategory?.results?.length >0 )
       setApprovalStatus(false);
     }
   };
-   
-// For first time 
+
+  // For first time 
 
 
   const selectedCategoryTrue = (type: any) => {
@@ -2387,7 +2482,7 @@ if(res?.ClientCategory != undefined && res?.ClientCategory?.results?.length >0 )
       setApprovalStatus(true);
     }
   };
-  
+
 
   const imageTabCallBack = React.useCallback((data: any) => {
     setEditData(data);
@@ -2396,51 +2491,51 @@ if(res?.ClientCategory != undefined && res?.ClientCategory?.results?.length >0 )
     // setEditdocumentsData(data);
   }, []);
 
-  React.useEffect(()=>{
+  React.useEffect(() => {
     const categoryd = item?.Categories?.split(';')
-    categoryd?.map((item:any)=>{
+    categoryd?.map((item: any) => {
       selectedCategoryTrue(item);
     })
-    
-  },[])
+
+  }, [])
 
 
 
   // const selectSubTaskCategory = (title: any, Id: any, item: any) => {
   //   setCategoriesData((prevCategoriesData) => {
   //     let itemIndex = -1;
-  
+
   //     for (let i = 0; i < prevCategoriesData.length; i++) {
   //       if (prevCategoriesData[i].Id === Id) {
   //         itemIndex = i;
   //         break;
   //       }
   //     }
-  
+
   //     const updatedCategoriesData = [...prevCategoriesData];
-  
+
   //     if (itemIndex !== -1) {
   //       updatedCategoriesData[itemIndex].ActiveTile = !updatedCategoriesData[itemIndex].ActiveTile;
   //     } else {
   //       item.ActiveTile = true;
   //       updatedCategoriesData.push(item);
   //     }
-  
+
   //     return updatedCategoriesData;
   //   });
   // };
-  
-  const toggleCategorySelection = function (item:any) {
+
+  const toggleCategorySelection = function (item: any) {
     setCategoriesData(function (prevCategoriesData) {
       var itemIndex = -1;
-  
+
       for (var i = 0; i < prevCategoriesData.length; i++) {
         if (prevCategoriesData[i].Id === item.Id) {
           itemIndex = i;
           break;
         }
       }
-  
+
       if (itemIndex !== -1) {
         // Category is already selected, so remove it.
         var updatedCategoriesData = prevCategoriesData.slice(); // Create a shallow copy.
@@ -2452,16 +2547,100 @@ if(res?.ClientCategory != undefined && res?.ClientCategory?.results?.length >0 )
       }
     });
   };
-  
-    return (
+
+  const choiceHandler = (event: any) => {
+    setChoice(event.target.value)
+  }
+
+  const editQuestionHandler = (ques: any) => {
+    setEditPopup(true)
+    setDataUpdate(ques)
+    ID = ques.Id
+  }
+
+  const editHelpHandler = (help: any) => {
+    setEditHelpPopup(true)
+    setHelpDataUpdate(help)
+    ID = help.Id
+  }
+
+  const updateDetails = async () => {
+    try {
+      await web.lists.getById(RequireData.SmartHelptListID).items.getById(ID).update({
+        Title: question ? question : dataUpdate?.Title,
+        Permission: choice ? choice : dataUpdate?.choice,
+        Body: PostQuestionDescription ? PostQuestionDescription || (EditData?.PostQuestionDescription || "") : dataUpdate?.Body,
+      }).then(async (i: any) => {
+        console.log(i);
+
+        // Fetch the updated data and set it to SmartHelpDetails
+        const updatedSmartHelpDetails = await web.lists.getById(RequireData.SmartHelptListID).items.select("Title, Id, Body, Permission, ItemType, Components/Id, Components/Title").expand("Components").getAll();
+        setSmartHelpDetails(updatedSmartHelpDetails);
+        setQuestion("");
+        setChoice("");
+        PostQuestionDescription = "";
+        setEditPopup(false);
+      });
+    } catch (error) {
+      console.log(error);
+    }
+  }
+
+
+  const updateHelpDetails = async () => {
+    try {
+      await web.lists.getById(RequireData.SmartHelptListID).items.getById(ID).update({
+        Title: help ? help : helpDataUpdate?.Title,
+        Permission: choice ? choice : helpDataUpdate?.choice,
+        Body: PostQuestionDescription ? PostQuestionDescription || (EditData?.PostQuestionDescription || "") : helpDataUpdate?.Body,
+      }).then(async (i: any) => {
+        console.log(i);
+
+        // Fetch the updated data and set it to SmartHelpDetails
+        const updatedSmartHelpDetails = await web.lists.getById(RequireData.SmartHelptListID).items.select("Title, Id, Body, Permission, ItemType, Components/Id, Components/Title").expand("Components").getAll();
+        setSmartHelpDetails(updatedSmartHelpDetails);
+        setHelp("");
+        setChoice("");
+        PostQuestionDescription = "";
+        setEditHelpPopup(false);
+      })
+    }
+    catch (error) {
+      console.log(error)
+    }
+  }
+
+  // Function to delete Question and Help from Help tab section
+  const deleteHandler = async (item_Id: any) => {
+    await web.lists.getById(RequireData.SmartHelptListID).items.getById(item_Id).delete()
+      .then((i: any) => {
+        console.log(i);
+        SmartHelpDetails.map((catId: any, index: any) => {
+          if (item_Id == catId.Id) {
+            SmartHelpDetails.splice(index, 1);
+          }
+        })
+      })
+    setSmartHelpDetails((SmartHelpDetails: any) => [...SmartHelpDetails]);
+  }
+
+
+  React.useEffect(() => {
+    setTimeout(() => {
+      const panelMain: any = document.querySelector('.ms-Panel-main');
+      if (panelMain && PortfolioTypeColor) {
+        panelMain.style.setProperty('--SiteBlue', PortfolioTypeColor); // Set the desired color value here
+      }
+    }, 2000)
+  }, [IsComponentPicker, imagetab, IsComponent, IsService, isOpenPopup, editPopup]);
+  return (
     <>
       {console.log("All Done")}
       <Panel
-        className={`${
-          EditData?.Portfolio_x0020_Type == "Service"
-            ? " serviepannelgreena"
-            : ""
-        }`}
+        className={`${EditData?.Portfolio_x0020_Type == "Service"
+          ? " serviepannelgreena"
+          : ""
+          }`}
         headerText={`${EditData?.Portfolio_x0020_Type}-Portfolio > ${EditData?.Title}`}
         isOpen={modalIsOpen}
         onDismiss={setModalIsOpenToFalse}
@@ -2471,7 +2650,7 @@ if(res?.ClientCategory != undefined && res?.ClientCategory?.results?.length >0 )
       >
         {EditData != undefined && EditData?.Title != undefined && (
           <div id="EditGrueneContactSearch">
-            <div className="modal-body">
+            <div className="modal-body mb-5">
               <ul
                 className="nav nav-tabs fixed-Header"
                 id="myTab"
@@ -2547,8 +2726,7 @@ if(res?.ClientCategory != undefined && res?.ClientCategory?.results?.length >0 )
                   className={
                     usedFor != "Task-Popup"
                       ? "tab-pane show active"
-                      : "tab-pane"
-                  }
+                      : "tab-pane"}
                   id="home"
                   role="tabpanel"
                   aria-labelledby="home-tab"
@@ -2557,7 +2735,7 @@ if(res?.ClientCategory != undefined && res?.ClientCategory?.results?.length >0 )
                     <div className="col-sm-6 ">
                       <div className="col-12">
                         <div className="input-group">
-                          <label className="form-label  full-width">
+                          <label className="form-label full-width">
                             Title
                           </label>
                           <input
@@ -2607,7 +2785,7 @@ if(res?.ClientCategory != undefined && res?.ClientCategory?.results?.length >0 )
                             </select>
                           </div>
                         </div>
-                        <div className="col-4 ps-0  mt-2">
+                        <div className="col-4 mt-2">
                           <div className="input-group">
                             <label className="form-label full-width">
                               Deliverable-Synonyms
@@ -2627,7 +2805,7 @@ if(res?.ClientCategory != undefined && res?.ClientCategory?.results?.length >0 )
                             />
                           </div>
                         </div>
-                        <div className="col-4 ps-0 pe-0 mt-2 ">
+                        <div className="col-4 pe-0 mt-2 ">
                           {EditData?.Portfolio_x0020_Type == "Service" && (
                             <div className="input-group">
                               <label className="form-label full-width">
@@ -2635,12 +2813,12 @@ if(res?.ClientCategory != undefined && res?.ClientCategory?.results?.length >0 )
                               </label>
                               <input type="text" className="form-control" />
                               <span className="input-group-text">
-                                <span  onClick={(e) =>
-                                    EditComponent(EditData, "Component")
-                                  } className="svg__iconbox svg__icon--editBox">
+                                <span onClick={(e) =>
+                                  EditComponent(EditData, "Component")
+                                } className="svg__iconbox svg__icon--editBox">
 
-                                  </span>
-                          
+                                </span>
+
                               </span>
                             </div>
                           )}
@@ -2651,11 +2829,11 @@ if(res?.ClientCategory != undefined && res?.ClientCategory?.results?.length >0 )
                               </label>
                               <input type="text" className="form-control" />
                               <span className="input-group-text">
-                                <span  onClick={(e) =>
-                                    EditComponent(EditData, "Service")
-                                  } className="svg__iconbox svg__icon--editBox">
-                                    
-                                  </span>
+                                <span onClick={(e) =>
+                                  EditComponent(EditData, "Service")
+                                } className="svg__iconbox svg__icon--editBox">
+
+                                </span>
                               </span>
                             </div>
                           )}
@@ -2666,24 +2844,20 @@ if(res?.ClientCategory != undefined && res?.ClientCategory?.results?.length >0 )
                                   {linkedComponentData?.map((com: any) => {
                                     return (
                                       <>
-                                        <div className="block d-flex justify-content-between mb-1">
-                                          <a
-                                            className="hreflink service ps-2"
+                                        <div className="block alignCenter">
+                                          <a className="hreflink service wid90"
                                             target="_blank"
                                             data-interception="off"
                                             href={`${RequireData.siteUrl}/SitePages/Portfolio-Profile.aspx?taskId=${com.ID}`}
                                           >
                                             {com.Title}
                                           </a>
-                                          <a className="text-end">
-                                            {" "}
-                                            <span
-                                              className="bg-light svg__icon--cross svg__iconbox"
-                                              onClick={() =>
-                                                setLinkedComponentData([])
-                                              }
-                                            ></span>
-                                          </a>
+                                          <span
+                                            className="bg-light ml-auto svg__icon--cross svg__iconbox"
+                                            onClick={() =>
+                                              setLinkedComponentData([])
+                                            }
+                                          ></span>
                                         </div>
                                       </>
                                     );
@@ -2697,7 +2871,7 @@ if(res?.ClientCategory != undefined && res?.ClientCategory?.results?.length >0 )
                             </div>
                           )}
                           {EditData?.Portfolio_x0020_Type == "Service" && (
-                            <div className="col-sm-12  inner-tabb">
+                            <div className="col-sm-12 inner-tabb">
                               {linkedComponentData?.length > 0 ? (
                                 <div>
                                   {linkedComponentData?.map((com: any) => {
@@ -2714,7 +2888,7 @@ if(res?.ClientCategory != undefined && res?.ClientCategory?.results?.length >0 )
                                           </a>
                                           <a className="text-end">
                                             <span
-                                              className="bg-light svg__icon--cross svg__iconbox"
+                                              className="bg-light svg__iconbox svg__icon--cross"
                                               onClick={() =>
                                                 setLinkedComponentData([])
                                               }
@@ -2733,7 +2907,7 @@ if(res?.ClientCategory != undefined && res?.ClientCategory?.results?.length >0 )
                             </div>
                           )}
 
-                          <div className="col-sm-12  inner-tabb">
+                          <div className="col-sm-12 inner-tabb">
                             <div>
                               {/* {(EditData != undefined && EditData?.smartComponent != undefined)?
                                                                 <>
@@ -2778,35 +2952,32 @@ if(res?.ClientCategory != undefined && res?.ClientCategory?.results?.length >0 )
                                                     } */}
                               {smartComponentData
                                 ? smartComponentData?.map((com: any) => {
-                                    return (
-                                      <>
-                                        <div className="">
-                                          <div
-                                            className="d-flex Component-container-edit-task block "
-                                            style={{ width: "81%" }}
+                                  return (
+                                    <>
+                                      <div className="">
+                                        <div
+                                          className="block alignCenter Component-container-edit-task"
+                                          style={{ width: "81%" }}
+                                        >
+                                          <a style={{ color: "#fff !important" }} className="wid90"
+                                            target="_blank"
+                                            href={`${RequireData.siteUrl}/SitePages/Portfolio-Profile.aspx?taskId=${com.ID}`}
                                           >
-                                            <a
-                                              style={{
-                                                color: "#fff !important"
-                                              }}
-                                              target="_blank"
-                                              href={`${RequireData.siteUrl}/SitePages/Portfolio-Profile.aspx?taskId=${com.ID}`}
-                                            >
-                                              {com.Title}
-                                            </a>
-                                            <a>
-                                              <span
-                                                className="bg-light svg__icon--cross svg__iconbox"
-                                                onClick={() =>
-                                                  setSmartComponentData([])
-                                                }
-                                              ></span>
-                                            </a>
-                                          </div>
+                                            {com.Title}
+                                          </a>
+                                          <a>
+                                            <span
+                                              className="bg-light ml-auto hreflink svg__iconbox svg__icon--cross"
+                                              onClick={() =>
+                                                setSmartComponentData([])
+                                              }
+                                            ></span>
+                                          </a>
                                         </div>
-                                      </>
-                                    );
-                                  })
+                                      </div>
+                                    </>
+                                  );
+                                })
                                 : null}
                             </div>
                           </div>
@@ -2815,7 +2986,7 @@ if(res?.ClientCategory != undefined && res?.ClientCategory?.results?.length >0 )
                       <div className="mx-0 row mt-2">
                         <div className="col-sm-4 ps-0 ">
                           <div className="input-group">
-                            <label className="form-label  full-width">
+                            <label className="form-label full-width">
                               Start Date
                             </label>
                             <input
@@ -2846,8 +3017,8 @@ if(res?.ClientCategory != undefined && res?.ClientCategory?.results?.length >0 )
                               defaultValue={
                                 EditData?.DueDate
                                   ? moment(EditData?.DueDate).format(
-                                      "YYYY-MM-DD"
-                                    )
+                                    "YYYY-MM-DD"
+                                  )
                                   : ""
                               }
                               onChange={(e) =>
@@ -2872,8 +3043,8 @@ if(res?.ClientCategory != undefined && res?.ClientCategory?.results?.length >0 )
                               defaultValue={
                                 EditData?.CompletedDate
                                   ? moment(EditData?.CompletedDate).format(
-                                      "YYYY-MM-DD"
-                                    )
+                                    "YYYY-MM-DD"
+                                  )
                                   : ""
                               }
                               onChange={(e) =>
@@ -2905,7 +3076,8 @@ if(res?.ClientCategory != undefined && res?.ClientCategory?.results?.length >0 )
                               onClick={(e) => createSynonyms(EditData)}
                             >
                               {" "}
-                              <img src="https://www.shareweb.ch/site/Joint/SiteCollectionImages/ICONS/24/save.png"></img>
+                              {/* <img src="https://www.shareweb.ch/site/Joint/SiteCollectionImages/ICONS/24/save.png"></img> */}
+                              <span className="svg__iconbox hreflink svg__icon--Save dark"></span>
                             </span>
                           </div>
                           <div className="">
@@ -2914,14 +3086,11 @@ if(res?.ClientCategory != undefined && res?.ClientCategory?.results?.length >0 )
                               map(EditData["Synonyms"], (obj, index) => {
                                 return (
                                   <>
-                                    <div className="block ">
-                                      {obj.Title}
-                                      <a
-                                        className="input-group-text"
-                                        onClick={(e) => deleteItem(EditData)}
-                                      >
-                                        <img src="/_layouts/images/delete.gif"></img>
-                                      </a>
+                                    <div className="alignCenter block">
+                                      <span className="wid90">{obj.Title}</span>
+                                      <span onClick={(e) => deleteItem(EditData)} className="bg-light ml-auto svg__iconbox svg__icon--cross"></span>
+                                      {/* <img onClick={(e) => deleteItem(EditData)} src="/_layouts/images/delete.gif"></img> */}
+
                                     </div>
                                   </>
                                 );
@@ -3251,93 +3420,93 @@ if(res?.ClientCategory != undefined && res?.ClientCategory?.results?.length >0 )
                         </div>
                       </div>
                       <div className="row mt-2">
-                                <div className="col-sm-12">
-                                    <div className="col-sm-12 padding-0 input-group">
-                                        <label className="full_width">Categories</label>
+                        <div className="col-sm-12">
+                          <div className="col-sm-12 padding-0 input-group">
+                            <label className="full_width">Categories</label>
 
-                                        <input
-                                            type="text"
-                                            className="ui-autocomplete-input form-control"
-                                            id="txtCategories"
-                                            value={categorySearchKey}
-                                            onChange={(e) => autoSuggestionsForCategory(e)}
-                                        />
-                                        <span className="input-group-text">
-                                            <a className="hreflink" title="Edit Categories">
+                            <input
+                              type="text"
+                              className="ui-autocomplete-input form-control"
+                              id="txtCategories"
+                              value={categorySearchKey}
+                              onChange={(e) => autoSuggestionsForCategory(e)}
+                            />
+                            <span className="input-group-text">
+                              {/* <a className="hreflink" title="Edit Categories">
                                                 <img
                                                     src="https://hhhhteams.sharepoint.com/sites/HHHH/SP/_layouts/15/images/EMMCopyTerm.png"
                                                     onClick={() => EditComponentPicker(item)}
                                                 />
-                                            </a>
-                                        </span>
+                                            </a> */}
+                              <span title="Edit Categories" onClick={() => EditComponentPicker(item)} className="svg__iconbox svg__icon--editBox"></span>
+                            </span>
 
-                                    </div>
-                                    {
-                                        instantCategories?.map((item: any, index: any) => {
-                                          const isChecked = CategoriesData?.some((selectedCat: any) => selectedCat?.Id === item?.Id);
+                          </div>
+                          {
+                            instantCategories?.map((item: any, index: any) => {
+                              const isChecked = CategoriesData?.some((selectedCat: any) => selectedCat?.Id === item?.Id);
 
-                                          return (
-                                            <div key={index} className="form-check">
-                                              <input
-                                                className="form-check-input rounded-0"
-                                                type="checkbox"
-                                                checked={isChecked}
-                                                onChange={() => toggleCategorySelection(item)}
-                                              />
-                                              <label>{item?.Title}</label>
-                                            </div>
-                                          );
-                                        })
-                                      }
-
-                                    {SearchedCategoryData?.length > 0 ? (
-                                        <div className="SmartTableOnTaskPopup">
-                                            <ul className="list-group">
-                                                {SearchedCategoryData.map((item: any) => {
-                                                    return (
-                                                        <li
-                                                            className="hreflink list-group-item rounded-0 list-group-item-action"
-                                                            key={item.id}
-                                                            onClick={() =>
-                                                                setSelectedCategoryData([item], "For-Auto-Search")
-                                                            }
-                                                        >
-                                                            <a>{item.Newlabel}</a>
-                                                        </li>
-                                                    );
-                                                })}
-                                            </ul>
-                                        </div>
-                                    ) : null}
+                              return (
+                                <div key={index} className="form-check">
+                                  <input
+                                    className="form-check-input rounded-0"
+                                    type="checkbox"
+                                    checked={isChecked}
+                                    onChange={() => toggleCategorySelection(item)}
+                                  />
+                                  <label>{item?.Title}</label>
                                 </div>
-                                {CategoriesData != undefined ? (
-                                    <div>
-                                        {CategoriesData?.map((type: any, index: number) => {
-                                            return (
-                                                <>
-                                                    {!instantCategories?.some((selectedCat: any) => selectedCat?.Title == type?.Title) && (
-                                                        <div className="block d-flex full-width justify-content-between mb-1 p-2">
-                                                            <a
-                                                                style={{ color: "#fff !important" }}
-                                                                target="_blank"
-                                                                data-interception="off"
-                                                                href={`${SelectD.siteUrl}/SitePages/Portfolio-Profile.aspx?${item?.Id}`}
-                                                            >
-                                                                {type.Title}
-                                                            </a>
-                                                            <span
-                                                                className="bg-light svg__iconbox svg__icon--cross"
-                                                                onClick={() => deleteCategories(type?.Id)}
-                                                            ></span>
-                                                            {/* <img src="https://hhhhteams.sharepoint.com/sites/HHHH/SP/_layouts/images/delete.gif" onClick={() => deleteCategories(type?.Id)} className="p-1" /> */}
-                                                        </div>
-                                                    )}
-                                                </>
-                                            );
-                                        })}
+                              );
+                            })
+                          }
+
+                          {SearchedCategoryData?.length > 0 ? (
+                            <div className="SmartTableOnTaskPopup">
+                              <ul className="list-group">
+                                {SearchedCategoryData.map((item: any) => {
+                                  return (
+                                    <li
+                                      className="hreflink list-group-item rounded-0 list-group-item-action"
+                                      key={item.id}
+                                      onClick={() =>
+                                        setSelectedCategoryData([item], "For-Auto-Search")
+                                      }
+                                    >
+                                      <a>{item.Newlabel}</a>
+                                    </li>
+                                  );
+                                })}
+                              </ul>
+                            </div>
+                          ) : null}
+                        </div>
+                        {CategoriesData != undefined ? (
+                          <div>
+                            {CategoriesData?.map((type: any, index: number) => {
+                              return (
+                                <>
+                                  {!instantCategories?.some((selectedCat: any) => selectedCat?.Title == type?.Title) && (
+                                    <div className="block alignCenter">
+                                      <a style={{ color: "#fff !important" }}
+                                        target="_blank" className="wid90"
+                                        data-interception="off"
+                                        href={`${SelectD.siteUrl}/SitePages/Portfolio-Profile.aspx?${item?.Id}`}
+                                      >
+                                        {type.Title}
+                                      </a>
+                                      <span
+                                        className="bg-light ml-auto hreflink svg__iconbox svg__icon--cross"
+                                        onClick={() => deleteCategories(type?.Id)}
+                                      ></span>
+                                      {/* <img src="https://hhhhteams.sharepoint.com/sites/HHHH/SP/_layouts/images/delete.gif" onClick={() => deleteCategories(type?.Id)} className="p-1" /> */}
                                     </div>
-                                ) : null}
-                                {/* <div className="col-sm-12">
+                                  )}
+                                </>
+                              );
+                            })}
+                          </div>
+                        ) : null}
+                        {/* <div className="col-sm-12">
                                     <div className="col-sm-12 padding-0 input-group">
                                         <label className="full_width">Client Category</label>
                                         <input
@@ -3358,8 +3527,8 @@ if(res?.ClientCategory != undefined && res?.ClientCategory?.results?.length >0 )
 
                                 </div> */}
 
-                            </div>
-                           
+                      </div>
+
                     </div>
                     <div className="col-sm-4  ">
                       <CommentCard
@@ -3426,7 +3595,26 @@ if(res?.ClientCategory != undefined && res?.ClientCategory?.results?.length >0 )
                       <div className="row">
                         <section className="accordionbox mt-2">
                           <div className="accordion p-0  overflow-hidden">
-                            <div className="card shadow-none mb-2">
+                            <details>
+                              <summary className="alignCenter">
+                                <label className="toggler full_width">
+                                  <div className="pull-left">Admin Notes</div>
+                                </label>
+                              </summary>
+                              <div className="border border-top-0 p-2">
+                                <div className="accordion-body py-2 px-2"
+                                  id="testDiv1">
+                                  <textarea
+                                    className="full_width"
+                                    defaultValue={EditData?.AdminNotes}
+                                    onChange={(e) =>
+                                      (EditData.AdminNotes = e.target.value)
+                                    }
+                                  ></textarea>
+                                </div>
+                              </div>
+                            </details>
+                            {/* <div className="card shadow-none mb-2">
                               <div
                                 className="accordion-item border-0"
                                 id="t_draggable1"
@@ -3474,8 +3662,42 @@ if(res?.ClientCategory != undefined && res?.ClientCategory?.results?.length >0 )
                                   )}
                                 </div>
                               </div>
-                            </div>
-                            <div className="card shadow-none  mb-2">
+                            </div> */}
+                            <details>
+                              <summary className="alignCenter">
+                                <label className="toggler full_width">
+                                  <div className="pull-left">Description</div>
+                                </label>
+                              </summary>
+                              <div className="border border-top-0 p-2">
+
+                                <div
+                                  id="testDiv1">
+                                  <span className="form-check pull-right">
+                                    <input className="form-check-input rounded-0"
+                                      type="checkbox"
+                                      defaultChecked={
+                                        EditData?.descriptionVerified ===
+                                        true
+                                      }
+                                    ></input>
+                                    <span>Verified</span>
+                                  </span>
+                                  <HtmlEditorCard
+                                    editorValue={
+                                      EditData?.Body != undefined
+                                        ? EditData?.Body
+                                        : ""
+                                    }
+                                    HtmlEditorStateChange={
+                                      HtmlEditorCallBack
+                                    }
+                                  ></HtmlEditorCard>
+                                </div>
+
+                              </div>
+                            </details>
+                            {/* <div className="card shadow-none  mb-2">
                               <div
                                 className="accordion-item border-0"
                                 id="t_draggable1"
@@ -3518,7 +3740,6 @@ if(res?.ClientCategory != undefined && res?.ClientCategory?.results?.length >0 )
                                         ></input>
                                         <span className="ps-1">Verified</span>
                                       </span>
-                                      {/* <HtmlEditorCard editorValue={this.state.editorValue} HtmlEditorStateChange={this.HtmlEditorStateChange}></HtmlEditorCard> */}
                                       <HtmlEditorCard
                                         editorValue={
                                           EditData?.Body != undefined
@@ -3533,8 +3754,44 @@ if(res?.ClientCategory != undefined && res?.ClientCategory?.results?.length >0 )
                                   )}
                                 </div>
                               </div>
-                            </div>
-                            <div className="card shadow-none  mb-2">
+                            </div> */}
+                            <details>
+                              <summary className="alignCenter">
+                                <label className="toggler full_width">
+                                  <div className="pull-left">Short Description</div>
+                                </label>
+                              </summary>
+                              <div className="border border-top-0 p-2">
+
+                                <div id="testDiv1"
+                                >
+                                  <span className="form-check pull-right">
+                                    <input
+                                      type="checkbox" className="form-check-input rounded-0"
+                                      defaultChecked={
+                                        EditData?.ShortDescriptionVerified ===
+                                        true
+                                      }
+                                    ></input>
+                                    <span>Verified</span>
+                                  </span>
+
+                                  <HtmlEditorCard
+                                    editorValue={
+                                      EditData?.Short_x0020_Description_x0020_On !=
+                                        undefined
+                                        ? EditData?.Short_x0020_Description_x0020_On
+                                        : ""
+                                    }
+                                    HtmlEditorStateChange={
+                                      SortHtmlEditorCallBack
+                                    }
+                                  ></HtmlEditorCard>
+                                </div>
+
+                              </div>
+                            </details>
+                            {/* <div className="card shadow-none  mb-2">
                               <div
                                 className="accordion-item border-0"
                                 id="t_draggable1"
@@ -3581,7 +3838,7 @@ if(res?.ClientCategory != undefined && res?.ClientCategory?.results?.length >0 )
                                       <HtmlEditorCard
                                         editorValue={
                                           EditData?.Short_x0020_Description_x0020_On !=
-                                          undefined
+                                            undefined
                                             ? EditData?.Short_x0020_Description_x0020_On
                                             : ""
                                         }
@@ -3593,9 +3850,45 @@ if(res?.ClientCategory != undefined && res?.ClientCategory?.results?.length >0 )
                                   )}
                                 </div>
                               </div>
-                            </div>
+                            </div> */}
+                            <details>
+                              <summary className="alignCenter">
+                                <label className="toggler full_width">
+                                  <div className="pull-left">Background</div>
+                                </label>
+                              </summary>
+                              <div className="border border-top-0 p-2">
 
-                            <div className="card shadow-none  mb-2">
+                                <div
+                                  className="accordion-body py-2 px-2"
+                                  id="testDiv1"
+                                >
+                                  <span className="form-check pull-right">
+                                    <input className="form-check-input rounded-0"
+                                      type="checkbox"
+                                      defaultChecked={
+                                        EditData?.BackgroundVerified ===
+                                        true
+                                      }
+                                      onChange={(e) =>
+                                      (EditData.BackgroundVerified =
+                                        e.target.value)
+                                      }
+                                    ></input>
+                                    <span>Verified</span>
+                                  </span>
+                                  <textarea
+                                    className="full_width"
+                                    defaultValue={EditData?.Background}
+                                    onChange={(e) =>
+                                      (EditData.Background = e.target.value)
+                                    }
+                                  ></textarea>
+                                </div>
+
+                              </div></details>
+
+                            {/* <div className="card shadow-none  mb-2">
                               <div
                                 className="accordion-item border-0"
                                 id="t_draggable1"
@@ -3637,8 +3930,8 @@ if(res?.ClientCategory != undefined && res?.ClientCategory?.results?.length >0 )
                                             true
                                           }
                                           onChange={(e) =>
-                                            (EditData.BackgroundVerified =
-                                              e.target.value)
+                                          (EditData.BackgroundVerified =
+                                            e.target.value)
                                           }
                                         ></input>
                                         <span className="ps-1">Verified</span>
@@ -3654,9 +3947,44 @@ if(res?.ClientCategory != undefined && res?.ClientCategory?.results?.length >0 )
                                   )}
                                 </div>
                               </div>
-                            </div>
+                            </div> */}
+                            <details>
+                              <summary className="alignCenter">
+                                <label className="toggler full_width">
+                                  <div className="pull-left">Idea</div>
+                                </label>
+                              </summary>
+                              <div className="border border-top-0 p-2">
+                                {EditData?.shows && (
+                                  <div
+                                    className="accordion-body py-2 px-2"
+                                    id="testDiv1"
+                                  >
+                                    <span className="form-check pull-right">
+                                      <input
+                                        type="checkbox"
+                                        defaultChecked={
+                                          EditData?.IdeaVerified === true
+                                        }
+                                        onChange={(e) =>
+                                        (EditData.BackgroundVerified =
+                                          e.target.value)
+                                        }
+                                      ></input>
+                                      <span>Verified</span>
+                                    </span>
+                                    <textarea
+                                      className="full_width"
+                                      defaultValue={EditData?.Idea}
+                                      onChange={(e) =>
+                                        (EditData.Idea = e.target.value)
+                                      }
+                                    ></textarea>
+                                  </div>
+                                )}
+                              </div></details>
 
-                            <div className="card shadow-none mb-2">
+                            {/* <div className="card shadow-none mb-2">
                               <div
                                 className="accordion-item border-0"
                                 id="t_draggable1"
@@ -3697,8 +4025,8 @@ if(res?.ClientCategory != undefined && res?.ClientCategory?.results?.length >0 )
                                             EditData?.IdeaVerified === true
                                           }
                                           onChange={(e) =>
-                                            (EditData.BackgroundVerified =
-                                              e.target.value)
+                                          (EditData.BackgroundVerified =
+                                            e.target.value)
                                           }
                                         ></input>
                                         <span className="ps-1">Verified</span>
@@ -3714,13 +4042,47 @@ if(res?.ClientCategory != undefined && res?.ClientCategory?.results?.length >0 )
                                   )}
                                 </div>
                               </div>
-                            </div>
+                            </div> */}
+                            <details>
+                              <summary className="alignCenter">
+                                <label className="toggler full_width">
+                                  <div className="pull-left">Value Added</div>
+                                </label>
+                              </summary>
+                              <div className="border border-top-0 p-2">
 
-                            <div className="card shadow-none mb-2">
-                              <div
-                                className="accordion-item border-0"
-                                id="t_draggable1"
-                              >
+                                <div
+                                  className="accordion-body py-2 px-2"
+                                  id="testDiv1"
+                                >
+                                  <span className="form-check pull-right">
+                                    <input
+                                      type="checkbox" className="form-check-input rounded-0"
+                                      defaultChecked={
+                                        EditData?.ValueAddedVerified ===
+                                        true
+                                      }
+                                      onChange={(e) =>
+                                      (EditData.ValueAddedVerified =
+                                        e.target.value)
+                                      }
+                                    ></input>
+                                    <span>Verified</span>
+                                  </span>
+                                  <textarea
+                                    className="full_width"
+                                    defaultValue={EditData?.ValueAdded}
+                                    onChange={(e) =>
+                                      (EditData.ValueAdded = e.target.value)
+                                    }
+                                  ></textarea>
+                                </div>
+
+                              </div>
+                            </details>
+                            {/* <div className="card shadow-none mb-2">
+                              <div className="accordion-item border-0"
+                                id="t_draggable1">
                                 <div
                                   className="card-header p-0 border-bottom-0 "
                                   onClick={() =>
@@ -3758,8 +4120,8 @@ if(res?.ClientCategory != undefined && res?.ClientCategory?.results?.length >0 )
                                             true
                                           }
                                           onChange={(e) =>
-                                            (EditData.ValueAddedVerified =
-                                              e.target.value)
+                                          (EditData.ValueAddedVerified =
+                                            e.target.value)
                                           }
                                         ></input>
                                         <span className="ps-1">Verified</span>
@@ -3775,9 +4137,43 @@ if(res?.ClientCategory != undefined && res?.ClientCategory?.results?.length >0 )
                                   )}
                                 </div>
                               </div>
-                            </div>
+                            </div> */}
+                            <details>
+                              <summary className="alignCenter">
+                                <label className="toggler full_width">
+                                  <div className="pull-left">Deliverables</div>
+                                </label>
+                              </summary>
+                              <div className="border border-top-0 p-2">
 
-                            <div className="card shadow-none mb-2">
+                                <div
+                                  className="accordion-body py-2 px-2"
+                                  id="testDiv1"
+                                >
+                                  <span className="form-check pull-right">
+                                    <input
+                                      type="checkbox" className="form-check-input rounded-0"
+                                      defaultChecked={
+                                        EditData?.DeliverablesVerified ===
+                                        true
+                                      }
+                                    ></input>
+                                    <span>Verified</span>
+                                  </span>
+                                  <HtmlEditorCard
+                                    editorValue={
+                                      EditData?.Deliverables != undefined
+                                        ? EditData?.Deliverables
+                                        : ""
+                                    }
+                                    HtmlEditorStateChange={
+                                      DeliverablesHtmlEditorCallBack
+                                    }
+                                  ></HtmlEditorCard>
+                                </div>
+
+                              </div></details>
+                            {/* <div className="card shadow-none mb-2">
                               <div
                                 className="accordion-item border-0"
                                 id="t_draggable1"
@@ -3835,7 +4231,7 @@ if(res?.ClientCategory != undefined && res?.ClientCategory?.results?.length >0 )
                                   )}
                                 </div>
                               </div>
-                            </div>
+                            </div> */}
                           </div>
                         </section>
                       </div>
@@ -3873,15 +4269,42 @@ if(res?.ClientCategory != undefined && res?.ClientCategory?.results?.length >0 )
                   role="tabpanel"
                   aria-labelledby="profile-tab"
                 >
-                  <div className="col  p-2">
-                    <section className="accordionbox">
+                  <div className="col p-2">
+                    <details>
+                      <summary className="alignCenter">
+                        <label className="toggler full_width">
+                          <div className="pull-left">Technical Concept</div>
+                        </label>
+                      </summary>
+                      <div className="border border-top-0 p-2">
+                        {CollapseExpend && (
+                          <div>
+                            <span className="form-check pull-right">
+                              <input
+                                type="checkbox" className="form-check-input rounded-0"
+                                defaultValue={
+                                  EditData?.TechnicalExplanationsVerified
+                                }
+                              />
+                              <span>Verified</span>
+                            </span>
+
+                            <HtmlEditorCard
+                              editorValue={
+                                EditData?.TechnicalExplanations != undefined
+                                  ? EditData?.TechnicalExplanations
+                                  : ""
+                              }
+                              HtmlEditorStateChange={
+                                TechnicalExplanationsHtmlEditorCallBack
+                              }
+                            ></HtmlEditorCard>
+                          </div>
+                        )}
+                      </div></details>
+                    {/* <section className="accordionbox">
                       <div className="accordion p-0  overflow-hidden">
-                        <div className="card shadow-none  mb-2">
-                          {/* <a className="btn btn-secondary p-0" title="Tap to expand the childs" onClick={() => (setCollapseExpend(CollapseExpend => !CollapseExpend))} >
-
-                                                        <span className="sign">{CollapseExpend ? <IoMdArrowDropdown /> : <IoMdArrowDropright />}</span>  Technical Concept
-
-                                                    </a> */}
+                        <div className="card shadow-none mb-2">
                           <div
                             className="card-header p-0 border-bottom-0 "
                             onClick={() =>
@@ -3934,7 +4357,263 @@ if(res?.ClientCategory != undefined && res?.ClientCategory?.results?.length >0 )
                           )}
                         </div>
                       </div>
+                    </section> */}
+                  </div>
+                </div>
+                <div
+                  className="tab-pane"
+                  id="help"
+                  role="tabpanel"
+                  aria-labelledby="help-tab"
+                >
+                  <div className="col  p-2">
+                    <section className="accordionbox">
+                      <div className="accordion p-0  overflow-hidden">
+                        <div className="card shadow-none  mb-2">
+                          {/* <a className="btn btn-secondary p-0" title="Tap to expand the childs" onClick={() => (setCollapseExpend(CollapseExpend => !CollapseExpend))} >
+
+                                                  <span className="sign">{CollapseExpend ? <IoMdArrowDropdown /> : <IoMdArrowDropright />}</span>  Technical Concept
+
+                                              </a> */}
+                          <div
+                            className="card-header p-0 border-bottom-0 "
+                            onClick={() =>
+                              setCollapseExpend(
+                                (CollapseExpend) => !CollapseExpend
+                              )
+                            }
+                          >
+                            <button
+                              className="accordion-button btn btn-link text-decoration-none d-block w-100 py-2 px-1 border-0 text-start rounded-0 shadow-none"
+                              data-bs-toggle="collapse"
+                            >
+                              <span className="sign">
+                                {CollapseExpend ? (
+                                  <SlArrowDown />
+                                ) : (
+                                  <SlArrowRight />
+                                )}
+                              </span>
+                              <span className="fw-medium font-sans-serif text-900">
+                                {" "}
+                                Help Information
+                              </span>
+                            </button>
+                          </div>
+
+                          {CollapseExpend && (
+                            <div>
+                              <span className="form-check text-end">
+                                <input
+                                  type="checkbox"
+                                  defaultChecked={
+                                    EditData?.HelpInformationVerified ===
+                                    true
+                                  }
+                                  onChange={(e) =>
+                                  (EditData.HelpInformationVerified =
+                                    e.target.value)
+                                  }
+                                ></input>
+                                <span>Verified</span>
+                              </span>
+                              <HtmlEditorCard
+                                editorValue={
+                                  EditData?.Help_x0020_Information != undefined
+                                    ? EditData?.Help_x0020_Information
+                                    : ""
+                                }
+                                HtmlEditorStateChange={
+                                  HelpInformationHtmlEditorCallBack
+                                }
+                              ></HtmlEditorCard>
+                            </div>
+                          )}
+                        </div>
+                      </div>
                     </section>
+                    <div className="">
+                      <div className="col-md-12">
+                        <div className="col-sm-12 mb-3 mt-10 pad0">
+                          <h5 className=""> Questions Description </h5><a className="pull-right" onClick={() => setIsOpenPopup(true)}>Add Questions</a>
+                          {/* {SmartHelpDetails?.filter((elem) => CompoenetItem[0]?.Id === elem.Components[0]?.Id).map((filteredItem) => (
+                      filteredItem.ItemType === "Question" &&
+                      <div className="block" key={filteredItem.Id}>
+                        {filteredItem.Title}
+                        <button onClick={() => editQuestionHandler(filteredItem)}>Edit</button>
+                        <button onClick={() => deleteQuestionHandler(filteredItem.Id)}>Delete</button>
+                      </div>
+                    ))} */}
+
+                          {SmartHelpDetails?.filter((elem: any) => elem?.ComponentsId != undefined).map((item: any) => (
+                            CompoenetItem[0]?.Id === item.ComponentsId?.results[0] ? (
+                              item.ItemType === "Question" && (
+                                <div key={item.Id}>
+                                  <details open>
+                                    <summary>
+                                      <label className="toggler full_width alignCenter">
+                                        <a className="pull-left">
+                                          {item.Title}
+                                        </a>
+                                        {/* <button onClick={() => editQuestionHandler(item)}>Edit</button>
+                            <button onClick={() => deleteHandler(item.Id)}>Delete</button> */}
+                                        <div className="ml-auto alignCenter">
+                                          <span className="svg__iconbox svg__icon--edit hreflink" onClick={() => editQuestionHandler(item)}>Edit</span>
+                                          <span className="svg__iconbox svg__icon--cross hreflink" onClick={() => deleteHandler(item.Id)}>Delete</span>
+                                        </div>
+
+                                      </label>
+                                    </summary>
+                                    <div className="border border-top-0 p-2">{item.Body?.replace(/<[^>]*>/g, '')}</div>
+                                  </details>
+
+                                </div>
+                              )
+                            ) : null
+                          ))}
+
+                          {SmartHelpDetails?.filter((elem: any) => elem.ComponentsId === undefined).map((filteredItem: any) => (
+                            filteredItem?.Components != undefined && CompoenetItem[0]?.Id === filteredItem?.Components[0]?.Id ? (
+                              filteredItem.ItemType === "Question" && (
+                                <div key={filteredItem.Id}>
+                                  <details open>
+                                    <summary>
+                                      <label className="toggler full_width alignCenter">
+                                        <a className="pull-left">
+                                          {filteredItem.Title}
+                                        </a>
+                                        {/* <button onClick={() => editQuestionHandler(item)}>Edit</button>
+                            <button onClick={() => deleteHandler(item.Id)}>Delete</button> */}
+                                        <div className="ml-auto alignCenter">
+                                          <span className="svg__iconbox svg__icon--edit hreflink" onClick={() => editQuestionHandler(filteredItem)}>Edit</span>
+                                          <span className="svg__iconbox svg__icon--cross hreflink" onClick={() => deleteHandler(filteredItem.Id)}>Delete</span>
+                                        </div>
+
+                                      </label>
+                                    </summary>
+                                    <div className="border border-top-0 p-2">{filteredItem.Body?.replace(/<[^>]*>/g, '')}</div>
+                                  </details>
+
+                                </div>
+                              )
+                            ) : null
+                          ))}
+
+
+                          {/* {SmartHelpDetails.filter((elem) => CompoenetItem[0].Id === elem.Components[0]?.Id).every((elem) => elem.ItemType !== "Question") && (
+                      <div>No Help Description available</div>
+                    )} */}
+                          {SmartHelpDetails.filter((elem: any) => elem.Components && elem.Components[0] && CompoenetItem[0]?.Id === elem.Components[0]?.Id)
+                            .every((elem: any) => elem.ItemType !== "Question")
+                            ? <div>No Help Description available</div>
+                            : null}
+                        </div>
+                        <div>
+
+                        </div>
+
+                      </div>
+                      <div>
+
+                        <div>
+                          <h5 className=""> Help Description </h5> <a className="pull-right" onClick={() => setOpenPopup(true)}>Add Help</a>
+                          {/* {SmartHelpDetails.filter((elem) => CompoenetItem[0].Id === elem.Components[0]?.Id).map((filteredItem) => (
+                      filteredItem.ItemType === "Help" &&
+                      <div className="block" key={filteredItem.Id}>
+                        {filteredItem.Title}
+                        <button onClick={() => editHelpHandler(filteredItem)}>Edit</button>
+                        <button onClick={() => deleteHelpHandler(filteredItem.Id)}>Delete</button>
+                      </div>
+                    ))} */}
+
+                          {SmartHelpDetails?.filter((elem: any) => elem?.ComponentsId != undefined).map((item: any) => (
+                            CompoenetItem[0]?.Id === item.ComponentsId?.results[0] ? (
+                              item.ItemType === "Help" && (
+                                <div key={item.Id}>
+                                  <details open>
+                                    <summary>
+                                      <label className="toggler full_width alignCenter">
+                                        <a className="pull-left">
+                                          {item.Title}
+                                        </a>
+                                        {/* <button onClick={() => editQuestionHandler(item)}>Edit</button>
+                            <button onClick={() => deleteHandler(item.Id)}>Delete</button> */}
+                                        <div className="ml-auto alignCenter">
+                                          <span className="svg__iconbox svg__icon--edit hreflink" onClick={() => editHelpHandler(item)}>Edit</span>
+                                          <span className="svg__iconbox svg__icon--cross hreflink" onClick={() => deleteHandler(item.Id)}>Delete</span>
+                                        </div>
+
+                                      </label>
+                                    </summary>
+                                    <div className="border border-top-0 p-2">{item.Body?.replace(/<[^>]*>/g, '')}</div>
+                                  </details>
+                                </div>
+                              )
+                            ) : null
+                          ))}
+                          {/* 
+                    {SmartHelpDetails?.filter((elem: any) => elem?.ComponentsId != undefined).map((item: any) => (
+                      CompoenetItem[0]?.Id === item.ComponentsId?.results[0] ? (
+                        item.ItemType === "Help" && (
+                          <div className="block" key={item.Id}>
+                            {item.Title}
+                            <button onClick={() => editHelpHandler(item)}>Edit</button>
+                            <button onClick={() => deleteHandler(item.Id)}>Delete</button>
+                          </div>
+                        )
+                      ) : null
+                    ))} */}
+
+                          {SmartHelpDetails?.filter((elem: any) => elem?.ComponentsId === undefined).map((filteredItem: any) => (
+                            filteredItem?.Components != undefined && CompoenetItem[0]?.Id === filteredItem?.Components[0]?.Id ? (
+                              filteredItem.ItemType === "Help" && (
+                                <div key={filteredItem.Id}>
+                                  <details open>
+                                    <summary>
+                                      <label className="toggler full_width alignCenter">
+                                        <a className="pull-left">
+                                          {filteredItem.Title}
+                                        </a>
+                                        {/* <button onClick={() => editQuestionHandler(item)}>Edit</button>
+                            <button onClick={() => deleteHandler(item.Id)}>Delete</button> */}
+                                        <div className="ml-auto alignCenter">
+                                          <span className="svg__iconbox svg__icon--edit hreflink" onClick={() => editHelpHandler(filteredItem)}>Edit</span>
+                                          <span className="svg__iconbox svg__icon--cross hreflink" onClick={() => deleteHandler(filteredItem.Id)}>Delete</span>
+                                        </div>
+
+                                      </label>
+                                    </summary>
+                                    <div className="border border-top-0 p-2">{filteredItem.Body?.replace(/<[^>]*>/g, '')}</div>
+                                  </details>
+                                </div>
+                              )
+                            ) : null
+                          ))}
+
+                          {/* {SmartHelpDetails?.filter((elem: any) => elem?.ComponentsId === undefined).map((filteredItem: any) => (
+                      filteredItem?.Components != undefined && CompoenetItem[0]?.Id === filteredItem?.Components[0]?.Id ? (
+                        filteredItem.ItemType === "Help" && (
+                          <div className="block" key={filteredItem.Id}>
+                            {filteredItem.Title}
+                            <button onClick={() => editHelpHandler(filteredItem)}>Edit</button>
+                            <button onClick={() => deleteHandler(filteredItem.Id)}>Delete</button>
+                          </div>
+                        )
+                      ) : null
+                    ))} */}
+                          {/* {SmartHelpDetails.filter((elem) => CompoenetItem[0].Id === elem.Components[0]?.Id).every((elem) => elem.ItemType !== "Help") && (
+                      <div>No Help Description available</div>
+                    )} */}
+                          {SmartHelpDetails && CompoenetItem[0] ? (
+                            SmartHelpDetails.filter((elem: any) => elem.Components && elem.Components[0] && CompoenetItem[0]?.Id === elem.Components[0]?.Id)
+                              .every((elem: any) => elem.ItemType !== "Help")
+                              ? <div>No Help Description available</div>
+                              : null
+                          ) : null}
+                        </div>
+
+                      </div>
+                    </div>
                   </div>
                 </div>
                 <div
@@ -3958,15 +4637,9 @@ if(res?.ClientCategory != undefined && res?.ClientCategory?.results?.length >0 )
               </div>
             </div>
             <footer
-              className="bg-f4"
-              style={{
-                position: "absolute",
-                width: "100%",
-                bottom: "0px",
-                background: "#FAFAFA"
-              }}
-            >
-              <div className="align-items-center d-flex justify-content-between me-5 py-2">
+              className="bg-f4 fixed-bottom"
+              style={{ position: "absolute" }}>
+              <div className="align-items-center d-flex justify-content-between px-4 py-2">
                 <div>
                   <div className="text-left">
                     Created{" "}
@@ -3984,7 +4657,7 @@ if(res?.ClientCategory != undefined && res?.ClientCategory?.results?.length >0 )
                   <div className="text-left">
                     Last modified{" "}
                     <span>
-                    {EditData.Modified ? moment(EditData.Modified).format("DD/MM/YYYY") : ''}
+                      {EditData.Modified ? moment(EditData.Modified).format("DD/MM/YYYY") : ''}
                     </span>{" "}
                     by{" "}
                     <span className="panel-title">
@@ -4025,28 +4698,31 @@ if(res?.ClientCategory != undefined && res?.ClientCategory?.results?.length >0 )
                   </div>
                 </div>
                 <div>
-                  <div>
+                  <div className="footer-right">
                     <span>
-                      <a
+                      <a className="me-1"
                         target="_blank"
                         href={`${RequireData.siteUrl}/SitePages/Portfolio-Profile.aspx?taskId=${EditData?.Id}`}
                       >
-                        <img src="https://hhhhteams.sharepoint.com/sites/HHHH/_layouts/15/images/ichtm.gif?rev=23" />{" "}
+                        {/* <img src="https://hhhhteams.sharepoint.com/sites/HHHH/_layouts/15/images/ichtm.gif?rev=23" />{" "} */}
                         Go To Profile Page
                       </a>
                       ||
-                      <img
+                      {/* <img
                         className="mail-width mx-2"
                         src="https://hhhhteams.sharepoint.com/sites/HHHH/SP/SiteCollectionImages/ICONS/32/icon_maill.png"
-                      />
-                      <a
-                        href={`mailto:?subject=${"Test"}&body=${
-                          EditData?.ComponentLink
-                        }`}
+                      /> */}
+                      <span className="hreflink mx-1 siteColor f-mailicons">
+                        <span title="Edit Task" className="alignIcon svg__iconbox svg__icon--mail"></span>
+                      </span>
+                      <a className="me-1"
+                        href={`mailto:?subject=${"Test"}&body=${EditData?.ComponentLink
+                          }`}
                       >
                         {" "}
-                        Share This Task ||
+                        Share This Task
                       </a>
+                      ||
                     </span>
 
                     <a
@@ -4091,22 +4767,22 @@ if(res?.ClientCategory != undefined && res?.ClientCategory?.results?.length >0 )
               ></ComponentPortPolioPopup>
             )} */}
             {IsComponent ? (
-                <ServiceComponentPortfolioPopup
-                            props={SharewebComponent}
-                            Dynamic={RequireData}
-                            ComponentType={"Component"}
-                            Call={Call}
-                            selectionType={"Single"}
-                        />
+              <ServiceComponentPortfolioPopup
+                props={SharewebComponent}
+                Dynamic={RequireData}
+                ComponentType={"Component"}
+                Call={Call}
+                selectionType={"Single"}
+              />
             ) : null}
             {IsService ? (
               <ServiceComponentPortfolioPopup
-                            props={SharewebComponent}
-                            Dynamic={RequireData}
-                            Call={Call}
-                            ComponentType={"Component"}
-                            selectionType={"Multi"}
-                        />
+                props={SharewebComponent}
+                Dynamic={RequireData}
+                Call={Call}
+                ComponentType={"Component"}
+                selectionType={"Multi"}
+              />
             ) : null}
             {IsComponentPicker && (
               <Picker
@@ -4119,6 +4795,190 @@ if(res?.ClientCategory != undefined && res?.ClientCategory?.results?.length >0 )
             )}
           </div>
         )}
+      </Panel>
+      <Panel onRenderHeader={onRenderCustomHeaderQuestion}
+        isOpen={isOpenPopup}
+        isBlocking={!isOpenPopup}
+        onDismiss={() => setIsOpenPopup(false)}
+        closeButtonAriaLabel="Close"
+        type={PanelType.large}
+      >
+        <div className="modal-body clearfix">
+          <div className="input-group mb-2">
+            <label className="form-label full-width">Title</label>
+            <input type="text" className="form-control" onChange={(e) => { setQuestion(e.target.value) }}></input>
+          </div>
+          <div className="input-group mb-2">
+            <label className="full-width form-label">Permission</label>
+
+            <label className="SpfxCheckRadio">
+              <input type="radio" id="public" value="Public" className="radio" checked={choice === 'Public'} onChange={choiceHandler} /> Public
+            </label>
+
+
+            <label className="SpfxCheckRadio">
+              <input type="radio" id="memberarea" value="Memberarea" className="radio" checked={choice === 'Memberarea'} onChange={choiceHandler} />
+              Memberarea</label>
+
+
+            <label className="SpfxCheckRadio">
+              <input type="radio" id="eda Only" value="EDA Only" className="radio" checked={choice === 'EDA Only'} onChange={choiceHandler} /> EDA Only</label>
+
+
+            <label className="SpfxCheckRadio">
+              <input type="radio" id="team" value="Team" className="radio" checked={choice === 'Team'} onChange={choiceHandler} /> Team</label>
+
+
+            <label className="SpfxCheckRadio">
+              <input type="radio" id="admin" className="radio" value="Admin" checked={choice === 'Admin'} onChange={choiceHandler} /> Admin</label>
+          </div>
+          <div className="mb-2">
+            <label className="form-label">Description</label>
+            <div>
+              <HtmlEditorCard editorValue={
+                EditData.QuestionDescription != undefined
+                  ? EditData.QuestionDescription
+                  : ""
+              }
+                HtmlEditorStateChange={
+                  QuestionDescriptionEditorCallBack
+                }
+              ></HtmlEditorCard>
+            </div>
+          </div>
+        </div>
+        <footer className="modal-body pull-right">
+          <button className='btn btn-primary' onClick={() => AddQuestionFunc()}>Save</button>
+          <button className='btn btn-default mx-1' onClick={() => setIsOpenPopup(false)}>Cancel</button>
+        </footer>
+      </Panel>
+
+      <Panel
+        isOpen={editPopup}
+        isBlocking={!editPopup}
+        onDismiss={() => setEditPopup(false)}
+        closeButtonAriaLabel="Close"
+        onRenderHeader={onRenderHeaderQuestionEdit}
+        type={PanelType.large}
+      >
+        <div className="modal-body clearfix">
+          <div className="input-group mb-2">
+            <label className="form-label full-width">Title</label>
+            <input type="text" defaultValue={dataUpdate?.Title} onChange={(e) => { setQuestion(e.target.value) }}></input>
+          </div>
+
+          <div className="input-group mb-2">
+            <label className="full-width form-label">Permission</label>
+
+            <label className="SpfxCheckRadio">
+              <input type="radio" id="public" value="Public" className="radio" checked={choice === 'Public'} onChange={choiceHandler} /> Public
+            </label>
+
+
+            <label className="SpfxCheckRadio">
+              <input type="radio" id="memberarea" value="Memberarea" className="radio" checked={choice === 'Memberarea'} onChange={choiceHandler} />
+              Memberarea</label>
+
+
+            <label className="SpfxCheckRadio">
+              <input type="radio" id="eda Only" value="EDA Only" className="radio" checked={choice === 'EDA Only'} onChange={choiceHandler} /> EDA Only</label>
+
+
+            <label className="SpfxCheckRadio">
+              <input type="radio" id="team" value="Team" className="radio" checked={choice === 'Team'} onChange={choiceHandler} /> Team</label>
+
+
+            <label className="SpfxCheckRadio">
+              <input type="radio" id="admin" className="radio" value="Admin" checked={choice === 'Admin'} onChange={choiceHandler} /> Admin</label>
+          </div>
+          <div className="mb-2">
+            <label className="form-label">Description</label>
+            <div>
+              <HtmlEditorCard editorValue={
+                EditData.QuestionDescription != undefined
+                  ? EditData.QuestionDescription
+                  : dataUpdate?.Body
+              }
+                HtmlEditorStateChange={
+                  QuestionDescriptionEditorCallBack
+                }
+              ></HtmlEditorCard>
+            </div>
+          </div>
+        </div>
+        <footer className="modal-body pull-right">
+          <DefaultButton className='btn btn-primary' onClick={() => updateDetails()}>Save</DefaultButton>
+          <DefaultButton className='btn btn-default mx-1' onClick={() => setEditPopup(false)}>Cancel</DefaultButton>
+        </footer>
+      </Panel>
+      <Panel
+        isOpen={openPopup}
+        isBlocking={!openPopup}
+        onDismiss={() => setOpenPopup(false)}
+        closeButtonAriaLabel="Close"
+        onRenderHeader={onRenderCustomHeaderHelp}
+        type={PanelType.large}
+      >
+        <div className="modal-body clearfix">
+          <div className="input-group mb-2">
+            <label className="form-label full-width">Title</label>
+            <input type="text" onChange={(e) => { setHelp(e.target.value) }}></input>
+          </div>
+
+          <div className="mb-2">
+            <label className="form-label">Description</label>
+            <div>
+              <HtmlEditorCard
+                editorValue={
+                  EditData?.TechnicalExplanations != undefined
+                    ? EditData?.TechnicalExplanations
+                    : ""
+                }
+                HtmlEditorStateChange={
+                  QuestionDescriptionEditorCallBack
+                }
+              ></HtmlEditorCard>
+            </div>
+          </div>
+        </div>
+        <footer className="modal-body pull-right">
+          <DefaultButton className='btn btn-primary' onClick={() => AddHelpFunc()}>Save</DefaultButton>
+          <DefaultButton className='btn btn-default mx-1' onClick={() => setOpenPopup(false)}>Cancel</DefaultButton>
+        </footer>
+      </Panel>
+      <Panel
+        isOpen={editHelpPopup}
+        isBlocking={!editHelpPopup}
+        onDismiss={() => setEditHelpPopup(false)}
+        closeButtonAriaLabel="Close"
+        onRenderHeader={onRenderHeaderHelpEdit}
+        headerText="Edit Help"
+        type={PanelType.large}
+      >
+        <div className="modal-body clearfix">
+          <div className="input-group mb-2">
+            <label className="form-label full-width">Title</label>
+            <input type="text" defaultValue={helpDataUpdate?.Title} onChange={(e) => { setHelp(e.target.value) }}></input>
+          </div>
+          <div className="mb-2">
+            <label className="form-label">Description</label>
+            <div>
+              <HtmlEditorCard editorValue={
+                EditData.QuestionDescription != undefined
+                  ? EditData.QuestionDescription
+                  : helpDataUpdate?.Body
+              }
+                HtmlEditorStateChange={
+                  QuestionDescriptionEditorCallBack
+                }
+              ></HtmlEditorCard>
+            </div>
+          </div>
+        </div>
+        <footer className="modal-body pull-right">
+          <DefaultButton className='btn btn-primary' onClick={() => updateHelpDetails()}>Save</DefaultButton>
+          <DefaultButton className='btn btn-default mx-1' onClick={() => setEditHelpPopup(false)}>Cancel</DefaultButton>
+        </footer>
       </Panel>
     </>
   );

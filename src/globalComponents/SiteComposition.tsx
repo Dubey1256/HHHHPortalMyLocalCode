@@ -57,8 +57,24 @@ export default function Sitecomposition(datas: any) {
     if (datas?.isDirectPopup == true) {
       setIsDirectPopup(true)
       setEditSiteCompositionStatus(true)
+      setTimeout(() => {
+        const panelMain: any = document.querySelector('.ms-Panel-main');
+        if (panelMain && datas?.props?.PortfolioType?.Color) {
+          $('.ms-Panel-main').css('--SiteBlue', datas?.props?.PortfolioType?.Color); // Set the desired color value here
+        }
+      }, 2000)
     }
   }, [datas?.isDirectPopup])
+  React.useEffect(() => {
+    if (datas?.props?.PortfolioType?.Color) {
+      setTimeout(() => {
+        const panelMain: any = document.querySelector('.ms-Panel-main');
+        if (panelMain && datas?.props?.PortfolioType?.Color) {
+          $('.ms-Panel-main').css('--SiteBlue', datas?.props?.PortfolioType?.Color);// Set the desired color value here
+        }
+      }, 2000)
+    }
+  }, [EditSiteCompositionStatus])
   const GetSmartMetaData = async (ClientCategory: any, ClientTime: any) => {
     const array2: any[] = [];
     let ClientTime2: any[] = [];
