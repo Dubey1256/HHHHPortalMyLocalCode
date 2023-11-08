@@ -11,10 +11,10 @@ const ShowClintCatogory = (Item: any) => {
 
 
     const getParentTitles = (parentId: number | null | undefined, titles: string[] = []) => {
-        const matchingParent = AllClintCatogry.find((elem: any) => elem.Id === parentId);
+        const matchingParent = AllClintCatogry?.find((elem: any) => elem.Id === parentId);
         if (matchingParent) {
           titles.unshift(matchingParent.Title);
-          if (matchingParent.Parent != null) {
+          if (matchingParent?.Parent != null) {
             getParentTitles(matchingParent.Parent.Id, titles);
           }
         }
@@ -25,7 +25,7 @@ const ShowClintCatogory = (Item: any) => {
     const ShowCatogroy = () => {
         if (AllClintCatogry !== undefined) {
           data?.ClientCategory?.map((dataCat: any) => {
-            const matchingItem = AllClintCatogry.find((elem: any) => elem.Id === dataCat.Id);
+            const matchingItem = AllClintCatogry?.find((elem: any) => elem.Id === dataCat.Id);
             if (matchingItem) {
               const titles: string[] = [];
               if (matchingItem.Parent == null) {
@@ -61,7 +61,7 @@ const ShowClintCatogory = (Item: any) => {
                 return (
                   <span key={index}>
                     {" "}
-                    {index <= 3 ? <span title={elem?.Titles.join(' > ')} className="ClientCategory-Usericon" style={{ backgroundColor: elem?.Color_x0020_Tag  }}>
+                    {index <= 3 ? <span title={elem?.Titles?.join(' > ')} className="ClientCategory-Usericon" style={{ backgroundColor: elem?.Color_x0020_Tag  }}>
                               {elem?.Title?.slice(0, 2).toUpperCase()}
                           </span> : ''}
                   </span>
@@ -73,7 +73,7 @@ const ShowClintCatogory = (Item: any) => {
                 return (
                   <span key={index}>
                     {" "}
-                    {index <= 2 ? <span title={elem?.Titles.join(' > ')} className="ClientCategory-Usericon" style={{ backgroundColor: elem?.Color_x0020_Tag  }}>
+                    {index <= 2 ? <span title={elem?.Titles?.join(' > ')} className="ClientCategory-Usericon" style={{ backgroundColor: elem?.Color_x0020_Tag  }}>
                               {elem?.Title?.slice(0, 2).toUpperCase()}
                           </span> : ''}
                   </span>
