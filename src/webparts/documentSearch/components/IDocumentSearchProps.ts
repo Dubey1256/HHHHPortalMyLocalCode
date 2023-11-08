@@ -4,8 +4,8 @@ export interface IDocumentSearchProps {
   environmentMessage: string;
   hasTeamsContext: boolean;
   userDisplayName: string;
-  DocumentListId:string;
+  DocumentListID:string;
   context:any;
-  TaskUserListId:string;
-  MasterTaskListId:string
+  TaskUserListID:string;
+  MasterTaskListID:string
 }
