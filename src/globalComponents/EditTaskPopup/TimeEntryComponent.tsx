@@ -176,7 +176,7 @@ function TimeEntryPopup(item: any) {
       var inputDate = new Date(change);
       setMyDatee(inputDate);
 
-      if (Type == "EditTime") {
+      if (Type == "EditTime" || Type == "CopyTime") {
         changeEdited = Moment(editeddata).add(1, "days").format();
         var editaskk = Moment(changeEdited).format("ddd, DD MMM yyyy");
         var inputDate = new Date(editaskk);
@@ -191,7 +191,7 @@ function TimeEntryPopup(item: any) {
       var inputDate = new Date(change);
       setMyDatee(inputDate);
 
-      if (Type == "EditTime") {
+      if (Type == "EditTime" || Type == "CopyTime") {
         changeEdited = Moment(editeddata).add(1, "months").format();
         var editaskk = Moment(changeEdited).format("ddd, DD MMM yyyy");
         //setediteddata(editaskk)
@@ -208,7 +208,7 @@ function TimeEntryPopup(item: any) {
       setMyDatee(inputDate);
       // setMyDatee(change)
 
-      if (Type == "EditTime") {
+      if (Type == "EditTime" || Type == "CopyTime") {
         changeEdited = Moment(editeddata).add(1, "years").format();
         var editaskk = Moment(changeEdited).format("ddd, DD MMM yyyy");
         // setediteddata(editaskk)
@@ -232,7 +232,7 @@ function TimeEntryPopup(item: any) {
       var inputDate = new Date(change);
       setMyDatee(inputDate);
 
-      if (Type == "EditTime") {
+      if (Type == "EditTime" || Type == "CopyTime") {
         changeEdited = Moment(editeddata).add(-1, "days").format();
         var editaskk = Moment(changeEdited).format("ddd, DD MMM yyyy");
         var inputDate = new Date(editaskk);
@@ -246,7 +246,7 @@ function TimeEntryPopup(item: any) {
       var inputDate = new Date(change);
       setMyDatee(inputDate);
 
-      if (Type == "EditTime") {
+      if (Type == "EditTime" || Type == "CopyTime") {
         changeEdited = Moment(editeddata).add(-1, "months").format();
         var editaskk = Moment(changeEdited).format("ddd, DD MMM yyyy");
         var inputDate = new Date(editaskk);
@@ -260,7 +260,7 @@ function TimeEntryPopup(item: any) {
       var inputDate = new Date(change);
       setMyDatee(inputDate);
 
-      if (Type == "EditTime") {
+      if (Type == "EditTime" || Type == "CopyTime") {
         changeEdited = Moment(editeddata).add(-1, "years").format();
         var editaskk = Moment(changeEdited).format("ddd, DD MMM yyyy");
         var inputDate = new Date(editaskk);
@@ -268,11 +268,8 @@ function TimeEntryPopup(item: any) {
       }
     }
   };
-  var newTime: any = "";
-  const changeTimesEdit = (val: any, time: any, type: any) => {
-
-  };
-
+ 
+ 
 
   const changeTimes = (val: any, time: any, type: any) => {
     if (type == 'AddTime' || type == 'AddTimeCat') {
@@ -305,7 +302,7 @@ function TimeEntryPopup(item: any) {
         setTimeInMinutes(changeTime);
       }
     }
-    if (type === "EditTime" || type === "CopyTime" && val === "15") {
+    if ((type == "EditTime" || type == "CopyTime") && val == "15") {
       if (TimeInMinutes != undefined) {
         time.TaskTimeInMin = Number(time.TaskTimeInMin);
         if (changeTime == 0) {
@@ -335,7 +332,7 @@ function TimeEntryPopup(item: any) {
         setTimeInMinutes(changeTime);
       }
     }
-    if (type === "EditTime" || type === "CopyTime" && val === "60") {
+    if ((type == "EditTime" || type == "CopyTime") && val == "60") {
       changeTime = Number(changeTime);
       if (TimeInMinutes != undefined) {
         time.TaskTimeInMin = Number(time.TaskTimeInMin);
@@ -2143,7 +2140,7 @@ function TimeEntryPopup(item: any) {
       <>
         <div
           className="subheading">
-          {PopupType}
+          {PopupType} - {item?.props?.Title}
         </div>
         <Tooltip ComponentId="1753" />
       </>
