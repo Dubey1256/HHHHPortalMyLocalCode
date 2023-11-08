@@ -1883,7 +1883,7 @@ const TeamSmartFilter = (item: any) => {
                                         {action === "click" && visible && (
                                             <div ref={setTooltipRef} {...getTooltipProps({ className: "tooltip-container m-0" })}>
                                                 <button className="toolTipCross" onClick={handleCloseClick}><div className="popHoverCross">×</div></button>
-
+     
                                                 <div className='row'>
                                                     {filterGroupsData != null && filterGroupsData.length > 0 &&
                                                         filterGroupsData?.map((MainGroup: any, index: any) => {
@@ -2472,7 +2472,7 @@ const TeamSmartFilter = (item: any) => {
                 </section> : ''}
 
                 {collapseAll == false ? <section className="smartFilterSection p-0 mb-1">
-                    <div className="px-2">
+                    <div>
                         <div className="togglebox">
                             <label className="toggler full_width active">
                                 <span className="full-width" style={{ color: `${portfolioColor}` }} onClick={() => showSmartFilter("isDateExpendShow")}>
