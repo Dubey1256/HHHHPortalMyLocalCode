@@ -86,7 +86,7 @@ const loadleave = async () =>  {
       .sendEmail({
         Body: BindHtmlBody(),
         Subject: "HHHH - Team Attendance "+formattedDate+" "+Allteamoforganization +" available - "+Object?.keys(nameidTotals)?.length+" on leave" ,
-        To: ["abhishek.tiwari@hochhuth-consulting.de","prashant.kumar@hochhuth-consulting.de","ranu.trivedi@hochhuth-consulting.de","jyoti.prasad@hochhuth-consulting.de"],
+        To: ["abhishek.tiwari@hochhuth-consulting.de"],
         // ,"prashant.kumar@hochhuth-consulting.de","ranu.trivedi@hochhuth-consulting.de","jyoti.prasad@hochhuth-consulting.de"
         AdditionalHeaders: {
           "content-type": "text/html",
@@ -137,21 +137,51 @@ const loadleave = async () =>  {
 
 // For Calculate all the day of leave
 
-const calculateTotalDays = (matchedData:any) => {
+// const calculateTotalDays = (matchedData:any) => {
+//   return matchedData.reduce((total:any, item:any) => {
+//     const EndDate:any = new Date(item.EndDate);
+//     const EventDate:any = new Date(item.EventDate);
+//     const time_difference_ms = EndDate - EventDate;
+//     const totalDays = Math.ceil(time_difference_ms / (1000 * 60 * 60 * 24));
+
+//     // Consider the special case where the difference is less than or equal to 9 hours as one day.
+//     if (time_difference_ms <= 9 * 60 * 60 * 1000) {
+//       return total + 1;
+//     }
+
+//     return total + totalDays;
+//   }, 0);
+// };
+
+const calculateTotalWorkingDays = (matchedData:any) => {
   return matchedData.reduce((total:any, item:any) => {
     const EndDate:any = new Date(item.EndDate);
     const EventDate:any = new Date(item.EventDate);
+    
     const time_difference_ms = EndDate - EventDate;
     const totalDays = Math.ceil(time_difference_ms / (1000 * 60 * 60 * 24));
 
-    // Consider the special case where the difference is less than or equal to 9 hours as one day.
     if (time_difference_ms <= 9 * 60 * 60 * 1000) {
-      return total + 1;
+      return total + 1; // Consider difference less than or equal to 9 hours as one day
     }
 
-    return total + totalDays;
+    let workingDays = 0;
+
+    while (EventDate < EndDate) {
+      const dayOfWeek = EventDate.getDay();
+      if (dayOfWeek !== 0 && dayOfWeek !== 6) { // Exclude Sunday (0) and Saturday (6)
+        workingDays++;
+      }
+      EventDate.setDate(EventDate.getDate() + 1); // Move to the next day
+    }
+
+    // Adjust total days by subtracting weekends within the period
+    const totalDaysExcludingWeekends = totalDays - 2 * Math.floor(totalDays / 7); // Subtract two days for each full weekend
+
+    return total + Math.max(totalDaysExcludingWeekends, workingDays);
   }, 0);
 };
+
 
 
 React.useEffect(() => {
@@ -167,7 +197,7 @@ React.useEffect(() => {
 
     if (matchedData.length !== 0) {
       
-      const totalDays = calculateTotalDays(matchedData);
+      const totalDays = calculateTotalWorkingDays(matchedData);
       nameidData[username.NameId] = {
         NameId: username.NameId,
         TotalLeaved: totalDays,
