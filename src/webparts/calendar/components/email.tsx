@@ -221,7 +221,7 @@ const data = props.data;
   const qaleavetotal =  AllTaskuser.filter((qaleave:any)=>(qaleave?.UserGroupId===11));
   const designttotal =  AllTaskuser.filter((designt:any)=>(designt?.UserGroupId===10));
    
-  Allteamoforganization = juniortotal.length+smalleadtotal.length+seniodevtotal.length + qaleavetotal.length+designttotal.length;
+  Allteamoforganization = juniortotal.length+smalleadtotal.length+seniodevtotal.length + qaleavetotal.length+designttotal.length+2;
 
 
 
@@ -262,6 +262,7 @@ const data = props.data;
       <th style={{border: "1px solid #dddddd", textAlign: "center"}}>Junior Developer Team</th>
       <th style={{border: "1px solid #dddddd", textAlign: "center"}}>Design Team</th>
       <th style={{border: "1px solid #dddddd", textAlign: "center"}}>QA Team</th>
+      <th style={{border: "1px solid #dddddd", textAlign: "center"}}>HR</th>
     </tr>
   </thead>
   <tbody>
@@ -272,6 +273,7 @@ const data = props.data;
       <td style={{border: "1px solid #dddddd", textAlign: "center"}}>{Juniordevavailabel}</td>
       <td style={{border: "1px solid #dddddd", textAlign: "center"}}>{designteamavailabel}</td>
       <td style={{border: "1px solid #dddddd", textAlign: "center"}}>{qateamavailabel}</td>
+      <td style={{border: "1px solid #dddddd", textAlign: "center"}}>{1}</td>
     </tr>
   </tbody>
 </table>
