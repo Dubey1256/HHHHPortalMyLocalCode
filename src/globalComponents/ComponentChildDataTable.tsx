@@ -19,10 +19,7 @@ import InfoIconsToolTip from "../globalComponents/InfoIconsToolTip/InfoIconsTool
 
 var filt: any = "";
 var ContextValueGlobal: any = {};
-let AllSiteTasksDataGlobal: any = [];
-let isUpdatedGlobal: any = "";
-let componentDataGlobal: any = [];
-let childRefdataGlobal: any;
+
 let timeSheetConfigGlobal: any = {}
 let portfolioColorGlobal: any = "";
 let ProjectDataGlobal: any = [];
@@ -36,6 +33,12 @@ let UpdatedCCCount: any = 0;
 let tempSiteAndCategoryData: any = [];
 let AllsiteClientCategories: any = [];
 let lastUpdatedAllSites: any = [];
+let allMasterTaskGlobalArray: any = [];
+let allSiteGlobalArray: any = [];
+let AllSiteTasksDataGlobal: any = [];
+let isUpdatedGlobal: any = "";
+let componentDataGlobal: any = [];
+let childRefdataGlobal: any;
 
 function ComponentChildDataTable(SelectedProp: any) {
   const usedFor = SelectedProp.usedFor;
@@ -59,7 +62,14 @@ function ComponentChildDataTable(SelectedProp: any) {
   // }
   ContextValueGlobal = SelectedProp?.NextProp;
 
-  const refreshData = () => setData(() => renderDataGlobal);
+  const refreshData = () => {
+    AllsiteClientCategories = []
+    componentDataGlobal = [];
+    lastUpdatedAllSites = []
+    allMasterTaskGlobalArray = []
+    allSiteGlobalArray = []
+    // setData([])
+  };
   const [loaded, setLoaded] = React.useState(false);
   const [siteConfig, setSiteConfig] = React.useState([]);
   const [data, setData] = React.useState([]);
@@ -521,58 +531,7 @@ function ComponentChildDataTable(SelectedProp: any) {
       }
     }
   };
-  const timeEntryIndex: any = {};
-  const smartTimeTotal = async () => {
-    countGlobal++;
-    let AllTimeEntries = [];
-    if (timeSheetConfigGlobal?.Id !== undefined) {
-      AllTimeEntries = await globalCommon.loadAllTimeEntry(timeSheetConfigGlobal);
-    }
-    AllTimeEntries?.forEach((entry: any) => {
-      siteConfig.forEach((site) => {
-        const taskTitle = `Task${site.Title}`;
-        const key = taskTitle + entry[taskTitle]?.Id
-        if (entry.hasOwnProperty(taskTitle) && entry.AdditionalTimeEntry !== null && entry.AdditionalTimeEntry !== undefined) {
-          if (entry[taskTitle].Id === 168) {
-            console.log(entry[taskTitle].Id);
 
-          }
-          const additionalTimeEntry = JSON.parse(entry.AdditionalTimeEntry);
-          let totalTaskTime = additionalTimeEntry?.reduce((total: any, time: any) => total + parseFloat(time.TaskTime), 0);
-
-          if (timeEntryIndex.hasOwnProperty(key)) {
-            timeEntryIndex[key].TotalTaskTime += totalTaskTime
-          } else {
-            timeEntryIndex[`${taskTitle}${entry[taskTitle]?.Id}`] = {
-              ...entry[taskTitle],
-              TotalTaskTime: totalTaskTime,
-              siteType: site.Title,
-            };
-          }
-        }
-      });
-    });
-    AllSiteTasksDataGlobal?.map((task: any) => {
-      task.TotalTaskTime = 0;
-      const key = `Task${task?.siteType + task.Id}`;
-      if (timeEntryIndex.hasOwnProperty(key) && timeEntryIndex[key]?.Id === task.Id && timeEntryIndex[key]?.siteType === task.siteType) {
-        task.TotalTaskTime = timeEntryIndex[key]?.TotalTaskTime;
-      }
-    })
-    if (timeEntryIndex) {
-      const dataString = JSON.stringify(timeEntryIndex);
-      localStorage.setItem('timeEntryIndex', dataString);
-    }
-    console.log("timeEntryIndex", timeEntryIndex)
-    if (AllSiteTasksDataGlobal?.length > 0) {
-      setData([]);
-      portfolioTypeData.forEach((port, index) => {
-        componentGrouping(port?.Id, index);
-        countsrunGlobal++;
-      });
-    }
-    return AllSiteTasksDataGlobal;
-  };
 
   const GetComponents = async () => {
     if (portfolioTypeData.length > 0) {
@@ -775,9 +734,12 @@ function ComponentChildDataTable(SelectedProp: any) {
         result.ClientCategorySearch = "";
       }
     });
-    setAllMasterTasks(componentDetails);
-    AllComponetsData = componentDetails;
-    ComponetsData["allComponets"] = componentDetails;
+    let finalDataComponent = componentDetails.filter((val: any, id: any, array: any) => {
+      return array.indexOf(val) == id;
+    })
+    setAllMasterTasks(finalDataComponent);
+    AllComponetsData = finalDataComponent;
+    ComponetsData["allComponets"] = finalDataComponent;
     // AllSiteTasksDataGlobal?.length > 0 &&
     if (AllSiteTasksDataGlobal?.length > 0 && AllComponetsData?.length > 0) {
       //   if (usedFor == "Site-Compositions" && copyDtaArrayGlobal?.length > 0) {
@@ -789,6 +751,9 @@ function ComponentChildDataTable(SelectedProp: any) {
         componentGrouping(port?.Id, index);
         countsrunGlobal++;
       });
+      // let portfoliodata =  portfolioTypeData.filter((port)=>port.Title === SelectedProp?.props?.Item_x0020_Type)
+      // componentGrouping(portfoliodata[0]?.Id, portfoliodata[0]?.Id);
+      // countsrunGlobal++;
       //   }
 
     }
@@ -857,7 +822,7 @@ function ComponentChildDataTable(SelectedProp: any) {
     );
     countAllComposubDataGlobal = countAllComposubDataGlobal.concat(subComFeat);
     subComFeat?.map((masterTask: any) => {
-      masterTask.subRows = [];
+      masterTask.subRowsData = [];
       taskTypeData?.map((levelType: any) => {
         if (levelType.Level === 1) componentActivity(levelType, masterTask);
       });
@@ -866,9 +831,9 @@ function ComponentChildDataTable(SelectedProp: any) {
         (elem: any) => elem?.Parent?.Id === masterTask?.Id
       );
       countAllComposubDataGlobal = countAllComposubDataGlobal.concat(allFeattData);
-      masterTask.subRows = masterTask?.subRows?.concat(allFeattData);
+      masterTask.subRowsData = masterTask?.subRowsData?.concat(allFeattData);
       allFeattData?.forEach((subFeat: any) => {
-        subFeat.subRows = [];
+        subFeat.subRowsData = [];
         taskTypeData?.map((levelType: any) => {
           if (levelType.Level === 1) componentActivity(levelType, subFeat);
         });
@@ -880,30 +845,30 @@ function ComponentChildDataTable(SelectedProp: any) {
     componentDataGlobal = componentDataGlobal?.concat(FinalComponent);
     DynamicSort(componentDataGlobal, "PortfolioLevel", "");
     componentDataGlobal.forEach((element: any) => {
-      if (element?.subRows?.length > 0) {
-        let level = element?.subRows?.filter(
+      if (element?.subRowsData?.length > 0) {
+        let level = element?.subRowsData?.filter(
           (obj: any) =>
             obj.Item_x0020_Type != undefined && obj.Item_x0020_Type != "Task"
         );
-        let leveltask = element?.subRows?.filter(
+        let leveltask = element?.subRowsData?.filter(
           (obj: any) => obj.Item_x0020_Type === "Task"
         );
         DynamicSort(level, "Item_x0020_Type", "asc");
-        element.subRows = [];
-        element.subRows = level.concat(leveltask);
+        element.subRowsData = [];
+        element.subRowsData = level.concat(leveltask);
       }
-      if (element?.subRows != undefined) {
-        element?.subRows?.forEach((obj: any) => {
-          let level1 = obj?.subRows?.filter(
+      if (element?.subRowsData != undefined) {
+        element?.subRowsData?.forEach((obj: any) => {
+          let level1 = obj?.subRowsData?.filter(
             (obj: any) =>
               obj.Item_x0020_Type != undefined && obj.Item_x0020_Type != "Task"
           );
-          let leveltask1 = obj?.subRows?.filter(
+          let leveltask1 = obj?.subRowsData?.filter(
             (obj: any) => obj.Item_x0020_Type === "Task"
           );
           DynamicSort(level1, "Item_x0020_Type", "asc");
-          obj.subRows = [];
-          obj.subRows = level1?.concat(leveltask1);
+          obj.subRowsData = [];
+          obj.subRowsData = level1?.concat(leveltask1);
         });
       }
     });
@@ -915,7 +880,7 @@ function ComponentChildDataTable(SelectedProp: any) {
       );
       countAllTasksDataGlobal = countAllTasksDataGlobal.concat(Actatcomponent);
       Actatcomponent?.map((masterTask1: any) => {
-        masterTask1.subRows = [];
+        masterTask1.subRowsData = [];
         taskTypeData?.map((levelType: any) => {
           if (levelType.Level === 1) componentWsT(levelType, masterTask1);
         });
@@ -924,7 +889,7 @@ function ComponentChildDataTable(SelectedProp: any) {
       var temp: any = {};
       temp.Title = "Others";
       temp.TaskID = "";
-      temp.subRows = [];
+      temp.subRowsData = [];
       temp.PercentComplete = "";
       temp.ItemRank = "";
       temp.DueDate = null;
@@ -939,7 +904,7 @@ function ComponentChildDataTable(SelectedProp: any) {
       temp.ProjectTitle = "";
       temp.Status = "";
       temp.Author = "";
-      temp.subRows = AllSiteTasksDataGlobal?.filter(
+      temp.subRowsData = AllSiteTasksDataGlobal?.filter(
         (elem1: any) =>
           elem1?.TaskType?.Id != undefined &&
           elem1?.TaskType?.Level != 1 &&
@@ -948,12 +913,12 @@ function ComponentChildDataTable(SelectedProp: any) {
             elem1?.ParentTask?.TaskID === null) &&
           elem1?.Portfolio?.Id === SelectedProp?.props?.Id
       );
-      countAllTasksDataGlobal = countAllTasksDataGlobal.concat(temp.subRows);
-      temp.subRows.forEach((task: any) => {
+      countAllTasksDataGlobal = countAllTasksDataGlobal.concat(temp.subRowsData);
+      temp.subRowsData.forEach((task: any) => {
         if (task.TaskID === undefined || task.TaskID === "")
           task.TaskID = "T" + task.Id;
       });
-      if (temp?.subRows?.length > 0) {
+      if (temp?.subRowsData?.length > 0) {
         componentDataGlobal.push(temp);
       }
     }
@@ -999,9 +964,12 @@ function ComponentChildDataTable(SelectedProp: any) {
       //   }
       // }
     })
-    setData(componentDataGlobal);
-    findAllClientCategories(componentDataGlobal);
-    console.log(countAllTasksDataGlobal);
+    // setData(componentDataGlobal);
+    let AllFlitteredData: any = componentDataGlobal.filter((val: any, id: any, array: any) => {
+      return array.indexOf(val) == id;
+    })
+    findAllClientCategories(AllFlitteredData);
+    console.log(AllFlitteredData);
     GroupByClientCategoryData();
     // console.log("Finter Site and Client Category Data ======", tempSiteAndCategoryData);
     // console.log("Finter Site and Client Category Data  AllsiteClientCategoriesAllsiteClientCategoriesAllsiteClientCategories======", AllsiteClientCategories);
@@ -1013,24 +981,34 @@ function ComponentChildDataTable(SelectedProp: any) {
 
   const findAllClientCategories = (AllData: any) => {
     AllData.forEach((AllDataItem: any) => {
+      if (AllDataItem.Item_x0020_Type == "SubComponent" || AllDataItem.Item_x0020_Type == "Feature" || AllDataItem.Item_x0020_Type == "Component") {
+
+        allMasterTaskGlobalArray.push(AllDataItem)
+      }
       if (AllDataItem.TaskType?.Title == "Task" || AllDataItem.TaskType?.Title == "Activities" || AllDataItem.TaskType?.Title == "Workstream") {
         if (AllDataItem?.ClientCategory?.length > 0) {
           AllDataItem?.ClientCategory?.map((CCItem: any) => {
             AllsiteClientCategories.push(CCItem);
           })
+          allSiteGlobalArray.push(AllDataItem);
         }
       }
-      if (AllDataItem.subRows?.length > 0) {
-        AllDataItem.subRows?.map((ChildArray: any) => {
+      if (AllDataItem.subRowsData?.length > 0) {
+        AllDataItem.subRowsData?.map((ChildArray: any) => {
+          if (ChildArray.Item_x0020_Type == "SubComponent" || ChildArray.Item_x0020_Type == "Feature" || ChildArray.Item_x0020_Type == "Component") {
+            allMasterTaskGlobalArray.push(ChildArray)
+          }
+
           if (ChildArray.TaskType?.Title == "Task" || ChildArray.TaskType?.Title == "Activities" || ChildArray.TaskType?.Title == "Workstream") {
             if (ChildArray?.ClientCategory?.length > 0) {
               ChildArray?.ClientCategory?.map((CCItem: any) => {
                 AllsiteClientCategories.push(CCItem);
               })
             }
+            allSiteGlobalArray.push(ChildArray);
           }
         })
-        findAllClientCategories(AllDataItem.subRows);
+        findAllClientCategories(AllDataItem.subRowsData);
       }
     });
   }
@@ -1090,8 +1068,14 @@ function ComponentChildDataTable(SelectedProp: any) {
         CCItemData.ClientCategories = finalData;
       }
     })
-
+    let AllFinalData: any = allMasterTaskGlobalArray.concat(allSiteGlobalArray);
+    let AllFaltViewData = AllFinalData?.filter((val: any, id: any, array: any) => {
+      return array.indexOf(val) == id;
+    })
+    setData(AllFaltViewData);
+    // refreshData();
     console.log("Final Summerize All CC After All validations Final Data ====", AllSitesData);
+    console.log("Final Flat view data  ====", AllFaltViewData);
   }
 
   const selectedParentClientCategory = (SelectedCCIndex: any, SiteName: any) => {
@@ -1110,6 +1094,7 @@ function ComponentChildDataTable(SelectedProp: any) {
     })
     setAllSitesData([...tempArray]);
     lastUpdatedAllSites = tempArray;
+
   }
 
 
@@ -1139,17 +1124,17 @@ function ComponentChildDataTable(SelectedProp: any) {
     );
     countAllTasksDataGlobal = countAllTasksDataGlobal.concat(findws);
     findws?.forEach((act: any) => {
-      act.subRows = [];
+      act.subRowsData = [];
       let allTasksData = AllSiteTasksDataGlobal.filter(
         (elem1: any) =>
           elem1?.ParentTask?.Id === act?.Id && elem1?.siteType === act?.siteType
       );
       if (allTasksData.length > 0) {
-        act.subRows = act?.subRows?.concat(allTasksData);
+        act.subRowsData = act?.subRowsData?.concat(allTasksData);
         countAllTasksDataGlobal = countAllTasksDataGlobal.concat(allTasksData);
       }
     });
-    items.subRows = items?.subRows?.concat(findws);
+    items.subRowsData = items?.subRowsData?.concat(findws);
   };
 
 
@@ -1168,31 +1153,31 @@ function ComponentChildDataTable(SelectedProp: any) {
     countAllTasksDataGlobal = countAllTasksDataGlobal.concat(findActivity);
 
     findActivity?.forEach((act: any) => {
-      act.subRows = [];
+      act.subRowsData = [];
       let worstreamAndTask = AllSiteTasksDataGlobal?.filter(
         (taskData: any) =>
           taskData?.ParentTask?.Id === act?.Id &&
           taskData?.siteType === act?.siteType
       );
       if (worstreamAndTask.length > 0) {
-        act.subRows = act?.subRows?.concat(worstreamAndTask);
+        act.subRowsData = act?.subRowsData?.concat(worstreamAndTask);
         countAllTasksDataGlobal = countAllTasksDataGlobal.concat(worstreamAndTask);
       }
       worstreamAndTask?.forEach((wrkst: any) => {
-        wrkst.subRows = wrkst.subRows === undefined ? [] : wrkst.subRows;
+        wrkst.subRowsData = wrkst.subRowsData === undefined ? [] : wrkst.subRowsData;
         let allTasksData = AllSiteTasksDataGlobal?.filter(
           (elem: any) =>
             elem?.ParentTask?.Id === wrkst?.Id &&
             elem?.siteType === wrkst?.siteType
         );
         if (allTasksData.length > 0) {
-          wrkst.subRows = wrkst?.subRows?.concat(allTasksData);
+          wrkst.subRowsData = wrkst?.subRowsData?.concat(allTasksData);
           countAllTasksDataGlobal = countAllTasksDataGlobal.concat(allTasksData);
         }
       });
     });
-    items.subRows = items?.subRows?.concat(findActivity);
-    items.subRows = items?.subRows?.concat(findTasks);
+    items.subRowsData = items?.subRowsData?.concat(findActivity);
+    items.subRowsData = items?.subRowsData?.concat(findTasks);
   };
 
   const countTaskAWTLevel = (countTaskAWTLevel: any) => {
@@ -1450,10 +1435,10 @@ function ComponentChildDataTable(SelectedProp: any) {
             ) : (
               ""
             )}
-            {row?.original?.subRows?.length > 0 ? (
+            {row?.original?.subRowsData?.length > 0 ? (
               <span className="ms-1">
-                {row?.original?.subRows?.length
-                  ? "(" + row?.original?.subRows?.length + ")"
+                {row?.original?.subRowsData?.length
+                  ? "(" + row?.original?.subRowsData?.length + ")"
                   : ""}
               </span>
             ) : (
@@ -1661,13 +1646,7 @@ function ComponentChildDataTable(SelectedProp: any) {
     setCheckedList1(array);
   }, []);
 
-  const callBackData1 = React.useCallback((getData: any, topCompoIcon: any) => {
-    setData((getData) => [...getData]);
-    setTopCompoIcon(topCompoIcon);
-    renderDataGlobal = [];
-    renderDataGlobal = renderDataGlobal.concat(getData);
-    refreshData();
-  }, []);
+
 
   //  Function to call the child component's function
   const callChildFunction = (items: any) => {
@@ -1675,13 +1654,11 @@ function ComponentChildDataTable(SelectedProp: any) {
       childRef.current.callChildFunction(items);
     }
   };
-
-  const trueTopIcon = (items: any) => {
-    if (childRef.current) {
-      childRef.current.trueTopIcon(items);
-    }
-  };
   let IndexCounting: any = 0;
+
+  // let FinalGroupData:any = data?.filter((val: any, id: any, array: any) => {
+  //   return array.indexOf(val) == id;
+  // })
   //-------------------------------------------------- restructuring function end---------------------------------------------------------------
   //-------------------------------------------------------------End---------------------------------------------------------------------------------
   return (
@@ -1731,7 +1708,6 @@ function ComponentChildDataTable(SelectedProp: any) {
                 </table>
               </div>
               <div className="col-sm-12 p-0 smart">
-              
                 <div className="">
                   <div className="wrapper">
                     <Loader
@@ -1757,7 +1733,6 @@ function ComponentChildDataTable(SelectedProp: any) {
                     />
                     <GlobalCommanTable
                       expendedTrue={true}
-                      smartTimeTotalFunction={smartTimeTotal} SmartTimeIconShow={true}
                       ref={childRef}
                       AddStructureFeature={
                         SelectedProp?.props?.Item_x0020_Type
@@ -1769,7 +1744,6 @@ function ComponentChildDataTable(SelectedProp: any) {
                       callChildFunction={callChildFunction}
                       AllListId={ContextValueGlobal}
                       columns={columns}
-                      restructureCallBack={callBackData1}
                       data={data}
                       multiSelect={usedFor == "Site-Compositions" ? true : false}
                       callBackData={callBackData}
@@ -1791,6 +1765,7 @@ function ComponentChildDataTable(SelectedProp: any) {
           </div>
         </section>
       </div>
+      {console.log("html rendering count ====")}
     </section>
   );
 }
