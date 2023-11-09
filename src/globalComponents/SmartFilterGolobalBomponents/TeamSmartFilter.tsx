@@ -1987,11 +1987,18 @@ const TeamSmartFilter = (item: any) => {
             })
     }
     const handleOpenSamePage = (items: any, filterSmaePage: any) => {
-        if (items.Id && !filterSmaePage) {
-            const newURL = `?SmartfavoriteId=${items?.Id}&smartfavorite=${items?.Title}`;
-            const concatenatedURL = "https://hhhhteams.sharepoint.com/sites/HHHH/SP/_layouts/15/workbench.aspx" + newURL;
-            window.open(concatenatedURL, '_blank');
-        } else {
+        // if (items.Id && !filterSmaePage) {
+        //     const newURL = `?SmartfavoriteId=${items?.Id}&smartfavorite=${items?.Title}`;
+        //     const concatenatedURL = "https://hhhhteams.sharepoint.com/sites/HHHH/SP/_layouts/15/workbench.aspx" + newURL;
+        //     window.open(concatenatedURL, '_blank');
+        // }
+        //  else {
+        //     item?.setLoaded(false);
+        //     setFlatView(true);
+        //     setUpdatedSmartFilter(true);
+        //     loadAdminConfigurationsId(items?.Id);
+        // }
+        if (items.Id && filterSmaePage) {
             item?.setLoaded(false);
             setFlatView(true);
             setUpdatedSmartFilter(true);
@@ -2692,7 +2699,7 @@ const TeamSmartFilter = (item: any) => {
                             return (<>
                                 <div className='bg-ee my-1 p-1 w-100'>
                                     <span className='d-flex'>
-                                        <a className='hreflink' onClick={() => handleOpenSamePage(item1, "filterSmaePage")}>{item1.Title}</a><span className='d-flex'><a href='#' onClick={() => handleOpenSamePage(item1, "")}><span className="svg__iconbox svg__icon--openWeb"></span></a><span onClick={() => handleUpdateFaborites(item1)} className="svg__iconbox svg__icon--edit"></span> <span onClick={() => deleteTask(item1)} className="svg__icon--trash  svg__iconbox"></span></span>
+                                        <a className='hreflink' onClick={() => handleOpenSamePage(item1, "filterSmaePage")}>{item1.Title}</a><span className='d-flex'><a className="hreflink" data-interception="off" target="_blank" style={{ color: `${portfolioColor}` }} href={ContextValue.siteUrl + "/SitePages/Team-Portfolio.aspx" + (item.IsUpdated ? `?PortfolioType=${item.IsUpdated}` : '') + `?SmartfavoriteId=${item1.Id}&smartfavorite=${item1?.Title}`}><span className="svg__iconbox svg__icon--openWeb"></span></a><span onClick={() => handleUpdateFaborites(item1)} className="svg__iconbox svg__icon--edit"></span> <span onClick={() => deleteTask(item1)} className="svg__icon--trash  svg__iconbox"></span></span>
                                     </span>
                                 </div>
                             </>)
@@ -2714,7 +2721,7 @@ const TeamSmartFilter = (item: any) => {
                                 <div className='bg-ee my-1 p-1 w-100'>
                                     <div>
                                         <span className='d-flex'>
-                                            <a className='hreflink' onClick={() => handleOpenSamePage(item2, "filterSmaePage")}>{item2.Title}</a><span className='d-flex'><a href='#' onClick={() => handleOpenSamePage(item2, "")}><span className="svg__iconbox svg__icon--openWeb"> </span></a><span onClick={() => handleUpdateFaborites(item2)} className="svg__iconbox svg__icon--edit"></span> <span onClick={() => deleteTask(item2)} className="svg__icon--trash  svg__iconbox"></span></span>
+                                            <a className='hreflink' onClick={() => handleOpenSamePage(item2, "filterSmaePage")}>{item2.Title}</a><span className='d-flex'><a className="hreflink" data-interception="off" target="_blank" style={{ color: `${portfolioColor}` }} href={ContextValue.siteUrl + "/SitePages/Team-Portfolio.aspx" + (item.IsUpdated ? `?PortfolioType=${item.IsUpdated}` : '') + `?SmartfavoriteId=${item2.Id}&smartfavorite=${item2?.Title}`}><span className="svg__iconbox svg__icon--openWeb"> </span></a><span onClick={() => handleUpdateFaborites(item2)} className="svg__iconbox svg__icon--edit"></span> <span onClick={() => deleteTask(item2)} className="svg__icon--trash  svg__iconbox"></span></span>
                                         </span>
                                     </div>
                                 </div>
