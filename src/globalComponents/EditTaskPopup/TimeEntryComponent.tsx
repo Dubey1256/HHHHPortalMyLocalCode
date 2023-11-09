@@ -302,7 +302,7 @@ function TimeEntryPopup(item: any) {
         setTimeInMinutes(changeTime);
       }
     }
-    if (type === "EditTime" || type === "CopyTime" && val === "15") {
+    if ((type == "EditTime" || type == "CopyTime") && val == "15") {
       if (TimeInMinutes != undefined) {
         time.TaskTimeInMin = Number(time.TaskTimeInMin);
         if (changeTime == 0) {
@@ -332,7 +332,7 @@ function TimeEntryPopup(item: any) {
         setTimeInMinutes(changeTime);
       }
     }
-    if (type === "EditTime" || type === "CopyTime" && val === "60") {
+    if ((type == "EditTime" || type == "CopyTime") && val == "60") {
       changeTime = Number(changeTime);
       if (TimeInMinutes != undefined) {
         time.TaskTimeInMin = Number(time.TaskTimeInMin);
