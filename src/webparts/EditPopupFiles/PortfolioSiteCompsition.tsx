@@ -1257,9 +1257,14 @@ const SiteCompositionComponent = (Props: any) => {
             }
         }
 
+
+
         TempClientCategoryIds = TempArray.filter((val: any, id: any, array: any) => {
             return array.indexOf(val) == id;
         })
+        if (siteType == "Shareweb") {
+            ClientCategoryIds = TempClientCategoryIds;
+        }
 
         let MakeUpdateJSONDataObject: any;
         if (TaskType == "MasterTask") {
@@ -1873,6 +1878,7 @@ const SiteCompositionComponent = (Props: any) => {
                             <div className="">{isPortfolioComposition == true || ProportionalStatus == false ? `${TotalPercent} %` : "100%"}</div>
                         </div>
                         <button className="btn ms-1 btn-primary px-4" onClick={UpdateSiteTaggingAndClientCategory}>Save</button>
+                        <button className="btn btn-default ms-1 px-3" onClick={() => Props.closePopupCallBack("Close")}>Cancel</button>
                     </div>
                 </footer>
             </div>
