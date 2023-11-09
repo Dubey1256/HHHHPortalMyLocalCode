@@ -87,7 +87,7 @@ const ShowClintCatogory = (Item: any) => {
                         {FilterData?.ClientCategory?.slice(2).map((rcData: any, i: any) => {
                           return (
                             <span key={i} className="team_Members_Item" style={{ padding: "2px" }}>
-                              <span title={rcData?.Titles.join(' > ')} className="ClientCategory-Usericon" style={{ backgroundColor: rcData?.Color_x0020_Tag }}>
+                              <span title={rcData?.Titles?.join(' > ')} className="ClientCategory-Usericon" style={{ backgroundColor: rcData?.Color_x0020_Tag }}>
                                 {rcData?.Title?.slice(0, 2).toUpperCase()}
                               </span>
                               <div className="mx-2">{rcData?.Title}</div>
