@@ -136,7 +136,7 @@ export default class CategoriesWeeklyMultipleReport extends React.Component<ICat
         hasCheckbox: false,
         hasCustomExpanded: true,
         hasExpanded: true,
-        size: 55,
+        size: 25,
         id: 'Id',
       },
       {
@@ -144,7 +144,7 @@ export default class CategoriesWeeklyMultipleReport extends React.Component<ICat
         placeholder: "User Name",
         header: "",
         resetColumnFilters: false,
-        size: 190,
+        size: 85,
         id: "getUserName",
       },
       {
@@ -184,7 +184,7 @@ export default class CategoriesWeeklyMultipleReport extends React.Component<ICat
         placeholder: "Time",
         header: "",
         resetColumnFilters: false,
-        size: 91,
+        size: 45,
         id: "TotalValue",
       },
       {
@@ -234,7 +234,7 @@ export default class CategoriesWeeklyMultipleReport extends React.Component<ICat
         placeholder: "Smart Hours",
         header: "",
         resetColumnFilters: false,
-        size: 91,
+        size: 45,
         id: "TotalSmartTime",
       },
       {
@@ -256,7 +256,7 @@ export default class CategoriesWeeklyMultipleReport extends React.Component<ICat
         placeholder: "Smart Hours (Roundup)",
         header: "",
         resetColumnFilters: false,
-        size: 91,
+        size: 45,
         id: "SmartHoursTime",
       },
       {
@@ -264,7 +264,7 @@ export default class CategoriesWeeklyMultipleReport extends React.Component<ICat
         placeholder: "Adjusted Hours ",
         header: "",
         resetColumnFilters: false,
-        size: 91,
+        size: 45,
         id: "AdjustedTime",
       },
       {
@@ -295,7 +295,7 @@ export default class CategoriesWeeklyMultipleReport extends React.Component<ICat
         placeholder: "Adjusted Hours (Roundup)",
         header: "",
         resetColumnFilters: false,
-        size: 91,
+        size: 45,
         id: "Rountfiguretime",
       },
 
@@ -3516,7 +3516,7 @@ export default class CategoriesWeeklyMultipleReport extends React.Component<ICat
           <div className="report-taskuser ps-0 pe-1" id="TimeSheet-Section">
             <details className='pt-1 m-0 allfilter' open>
               <summary>
-                <a className="fw-semibold hreflink mr-5 pe-2 pull-left">All filters :<span className='text-dark'>Task User :</span><span>
+                <a className="fw-semibold hreflink mr-5 pe-2 pull-left">All filters :<span className='fw-normal me-1'>Task User :</span><span className='fw-normal me-1'>
                   {this.state.SelectGroupName}
                 </span> </a>
                 {this.state.ImageSelectedUsers.length <= 3 ? (
@@ -3532,8 +3532,6 @@ export default class CategoriesWeeklyMultipleReport extends React.Component<ICat
                   this.state.ImageSelectedUsers.length > 3 && <span>({this.state.ImageSelectedUsers.length})</span>)
 
                 }
-
-
               </summary>
               <div className="subfilters BdrBoxBlue mb-3">
                 <div className="taskTeamBox mt-10">
@@ -3546,9 +3544,9 @@ export default class CategoriesWeeklyMultipleReport extends React.Component<ICat
                           <label className='ms-1 f-14'>Select All </label>
                         </span>
                       </div>
-                      <hr></hr>
+               
                     </summary>
-                    <div className="BdrBoxBlue ps-30 mb-3">
+                    <div className="BdrBoxBlue ps-20 mb-3 ms-2" style={{borderTop: "1.5px solid",  borderColor: "var(--SiteBlue)" }}>
                       <div className="taskTeamBox mt-10">
                         {this.state.taskUsers != null && this.state.taskUsers.length > 0 && this.state.taskUsers.map((user: any, i: number) => {
                           return <div className="top-assign">
@@ -3586,10 +3584,10 @@ export default class CategoriesWeeklyMultipleReport extends React.Component<ICat
                   <details className='p-0 m-0' open>
                     <summary>
                       <a>Date</a>
-                      <hr></hr>
+                  
                     </summary>
 
-                    <div className="BdrBoxBlue ps-30 mb-3">
+                    <div className="BdrBoxBlue ps-20 mb-3 ms-2" style={{borderTop: "1.5px solid",  borderColor: "var(--SiteBlue)" }}>
                       <div className="taskTeamBox mt-10">
                         <div className="Weekly-TimeReportDays">
                           <span className='SpfxCheckRadio'>
@@ -3650,7 +3648,7 @@ export default class CategoriesWeeklyMultipleReport extends React.Component<ICat
                           </span>
                         </div>
                         <div className='row mt-2'>
-                          <div className='col-2 ps-0'>
+                          <div className='col-2 ps-2'>
                             <div className='input-group'>
                               <label className="full_width form-label">Start Date</label>
                               <DatePicker selected={this.state.startdate} dateFormat="dd/MM/yyyy" onChange={(date) => this.setStartDate(date)} className="form-control" />
@@ -3701,9 +3699,9 @@ export default class CategoriesWeeklyMultipleReport extends React.Component<ICat
                           }
                         </span>
                       </label>
-                      <hr className='m-0'></hr>
+                     
                     </summary>
-                    <div className=" BdrBoxBlue ps-30 mb-3">
+                    <div className=" BdrBoxBlue ps-20 mb-3 ms-2" style={{borderTop: "1.5px solid", borderColor: "var(--SiteBlue)" }}>
                       <div className="taskTeamBox mt-10">
                         {this?.state?.loaded ? <PageLoader /> : ''}
                         {/* <Loader loaded={this.state.loaded} lines={13} length={20} width={10} radius={30} corners={1} rotate={0} direction={1} color={portfolioColor ? portfolioColor : "#000066"}
@@ -3747,15 +3745,14 @@ export default class CategoriesWeeklyMultipleReport extends React.Component<ICat
               </div>
             </details>
           </div>
-
-
-
-
         </div>
-
-
-        <div id="showSearchBox" className="col-sm-12 p-0 mb-10">
+<div className='container-fluid p-0'>
+<div className='TableSection'>
+        <div id="showSearchBox" className="container p-0">
           <div className='Alltable'>
+          <div className='col-sm-12 p-0 smart'>
+             <div className='wrapper'>
+            
             {this.state.AllTimeEntry == undefined && this.state.AllTimeEntry.length == 0 &&
               <div id="contact" className="col-sm-12 p-0">
                 <div className="current_commnet">No entries available</div>
@@ -3763,17 +3760,17 @@ export default class CategoriesWeeklyMultipleReport extends React.Component<ICat
             }
 
             {this.state.AllTimeEntry != undefined && this.state.AllTimeEntry.length > 0 &&
-
               <div id="contact" className="col-sm-12 p-0">
                 <div className='table-responsive fortablee'>
                   <GlobalCommanTable catogryDataLength={this?.state?.AllTimeEntryItem?.length} columns={this?.columns} expendedTrue={true} data={this.state.AllTimeEntry} showHeader={true} showCatIcon={true} exportToExcelCategoryReport={this.exportToExcel} OpenAdjustedTimePopupCategory={this.OpenAdjustedTimePopup} callBackData={this?.callBackData} showDateTime={this.state.showDateTime} fixedWidth={true} /> </div>
               </div>
             }
-
+              </div>
+            </div>
           </div>
         </div>
-
-
+        </div>
+        </div>
         <Panel
           onRenderHeader={this.onRenderCustomHeaderMain}
           type={PanelType.custom}
