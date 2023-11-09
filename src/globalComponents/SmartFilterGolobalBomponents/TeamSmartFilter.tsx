@@ -236,7 +236,9 @@ const TeamSmartFilter = (item: any) => {
                 if (smart.Configurations !== undefined) {
                     configurationData = JSON.parse(smart.Configurations);
                     configurationData.map((elem) => {
-                        elem.Id = smart.Id
+                        elem.Id = smart.Id;
+                        elem.startDate = new Date(elem.startDate);
+                        elem.endDate = new Date(elem.endDate);
                     })
                 }
             });
@@ -1975,6 +1977,8 @@ const TeamSmartFilter = (item: any) => {
                             }
                             if (config.CurrentUserID !== undefined && config.CurrentUserID === item?.ContextValue?.Context?.pageContext?.legacyPageContext?.userId && config.isShowEveryone === false) {
                                 config.Id = smart.Id;
+                                config.startDate = new Date(config.startDate);
+                                config.endDate = new Date(config.endDate);
                                 copyCreateMeSmartFavorites.push(config);
                             }
                         })
@@ -2760,6 +2764,30 @@ const TeamSmartFilter = (item: any) => {
                 : null
             }
             <>{PreSetPanelIsOpen && <PreSetDatePikerPannel isOpen={PreSetPanelIsOpen} PreSetPikerCallBack={PreSetPikerCallBack} portfolioColor={portfolioColor} />}</>
+            {/* {selectedFilterPanelIsOpen && <TeamSmartFavorites allFilterClintCatogryData={allFilterClintCatogryData} filterGroupsData={filterGroupsData} allStites={allStites} isOpen={selectedFilterPanelIsOpen} halfCheckBoxIcons={halfCheckBoxIcons} checkBoxIcon={checkBoxIcon} checkIcons={checkIcons} onCheck={onCheck} expanded={expanded} handleSelectAll={handleSelectAll} setExpanded={setExpanded} selectedFilterCallBack={selectedFilterCallBack} portfolioColor={portfolioColor}
+                handleSelectAllChangeTeamSection={handleSelectAllChangeTeamSection}
+                setIsCreatedBy={setIsCreatedBy}
+                setIsModifiedby={setIsModifiedby}
+                setIsAssignedto={setIsAssignedto}
+                setIsTeamLead={setIsTeamLead}
+                setIsTeamMember={setIsTeamMember}
+                setIsTodaysTask={setIsTodaysTask}
+                isSelectAll={isSelectAll}
+                isCreatedBy={isCreatedBy}
+                isModifiedby={isModifiedby}
+                isAssignedto={isAssignedto}
+                isTeamLead={isTeamLead}
+                isTeamMember={isTeamMember}
+                isTodaysTask={isTodaysTask}
+                TaskUsersData={TaskUsersData}
+                isCreatedDateSelected={isCreatedDateSelected}
+                isModifiedDateSelected={isModifiedDateSelected}
+                isDueDateSelected={isDueDateSelected}
+                setIsCreatedDateSelected={setIsCreatedDateSelected}
+                setIsModifiedDateSelected={setIsModifiedDateSelected}
+                setIsDueDateSelected={setIsDueDateSelected}
+            />} */}
+
             {selectedFilterPanelIsOpen && <TeamSmartFavoritesCopy isOpen={selectedFilterPanelIsOpen} selectedFilterCallBack={selectedFilterCallBack}
                 portfolioColor={portfolioColor}
                 filterGroupsData={filterGroupsData}
@@ -2795,4 +2823,3 @@ const TeamSmartFilter = (item: any) => {
     )
 }
 export default TeamSmartFilter;
-

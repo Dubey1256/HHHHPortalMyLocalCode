@@ -1187,7 +1187,7 @@ function CreateTaskComponent(props: any) {
         if (item?.IsSendAttentionEmail != undefined) {
             TeamMessagearray.push(item.IsSendAttentionEmail);
         }
-        if (loggedInUser?.IsApprovalMail?.toLowerCase() == 'approve all but selected items' && !IsapprovalTask) {
+        if (loggedInUser?.IsApprovalMail?.toLowerCase() == 'approve all but selected items'||loggedInUser?.IsApprovalMail?.toLowerCase() == 'approve selected' && !IsapprovalTask) {
             try {
                 let selectedApprovalCat = JSON.parse(loggedInUser?.CategoriesItemsJson)
                 IsapprovalTask = selectedApprovalCat?.some((selectiveApproval: any) => selectiveApproval?.Title == title)
@@ -1202,6 +1202,21 @@ function CreateTaskComponent(props: any) {
                 console.log(error, "Can't Parse Selected Approval Categories")
             }
         }
+        // if (loggedInUser?.IsApprovalMail?.toLowerCase() == 'approve selected' && !IsapprovalTask) {
+        //     try {
+        //         let selectedApprovalCat = JSON.parse(loggedInUser?.CategoriesItemsJson)
+        //         IsapprovalTask = selectedApprovalCat?.some((selectiveApproval: any) => selectiveApproval?.Title == title)
+        //         if (IsapprovalTask == true) {
+        //             subCategories?.map((item: any) => {
+        //                 if (item?.Title == "Approval" && !item.ActiveTile) {
+        //                     selectSubTaskCategory(item?.Title, item?.Id, item)
+        //                 }
+        //             })
+        //         }
+        //     } catch (error: any) {
+        //         console.log(error, "Can't Parse Selected Approval Categories")
+        //     }
+        // }
 
         let activeCategoryArray = activeCategory;
         let TaskCategories: any[] = taskCat;
@@ -1212,7 +1227,7 @@ function CreateTaskComponent(props: any) {
                 item.ActiveTile = !item.ActiveTile;
                 activeCategoryArray = activeCategoryArray.filter((category: any) => category !== title);
                 TaskCategories = TaskCategories.filter((category: any) => category !== Id);
-                if (loggedInUser?.IsApprovalMail?.toLowerCase() == 'approve all but selected items' && IsapprovalTask) {
+                if (loggedInUser?.IsApprovalMail?.toLowerCase() == 'approve all but selected items'||loggedInUser?.IsApprovalMail?.toLowerCase() == 'approve selected' && IsapprovalTask) {
                     try {
                         let selectedApprovalCat = JSON.parse(loggedInUser?.CategoriesItemsJson)
                         IsapprovalTask = !selectedApprovalCat?.some((selectiveApproval: any) => selectiveApproval?.Title == title)
