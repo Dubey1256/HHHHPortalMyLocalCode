@@ -1113,7 +1113,7 @@ export const Modified = (props: any) => {
       <span>Last Modified</span></h2>
       <div className="d-flex float-end">
         <div className="me-1" >
-        <input className="form-check-input me-1"
+        <input className="form-check-input me-2"
             type="checkbox"
             checked={componentChecked}
             onChange={componentCheckboxChange}

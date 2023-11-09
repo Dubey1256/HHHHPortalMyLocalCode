@@ -3516,11 +3516,7 @@ export default class CategoriesWeeklyMultipleReport extends React.Component<ICat
           <div className="report-taskuser ps-0 pe-1" id="TimeSheet-Section">
             <details className='pt-1 m-0 allfilter' open>
               <summary>
-<<<<<<< HEAD
                 <a className="fw-semibold hreflink mr-5 pe-2 pull-left">All filters :<span className='fw-normal me-1'>Task User :</span><span className='fw-normal me-1'>
-=======
-                <a className="fw-semibold hreflink mr-5 pe-2 pull-left">All filters :<span className='text-dark'>Task User :</span><span>
->>>>>>> cb3fe939ba112d3abc52ccf0476954b63fbf9201
                   {this.state.SelectGroupName}
                 </span> </a>
                 {this.state.ImageSelectedUsers.length <= 3 ? (
@@ -3749,10 +3745,6 @@ export default class CategoriesWeeklyMultipleReport extends React.Component<ICat
               </div>
             </details>
           </div>
-
-
-
-
         </div>
 <div className='container-fluid p-0'>
 <div className='TableSection'>
