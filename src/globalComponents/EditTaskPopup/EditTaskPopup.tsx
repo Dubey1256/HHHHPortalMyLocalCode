@@ -48,7 +48,7 @@ import { CurrentUser } from "sp-pnp-js/lib/sharepoint/siteusers";
 
 
 
-let PortfolioItemColor:any='';
+let PortfolioItemColor: any = '';
 var AllMetaData: any = []
 var taskUsers: any = []
 var AllTaskUser: any = []
@@ -196,6 +196,7 @@ const EditTaskPopup = (Items: any) => {
     const [IsTaskCompleted, setIsTaskCompleted] = useState(false);
     const [SendCategoryName, setSendCategoryName] = useState('');
     const [OpenEODReportPopup, setOpenEODReportPopup] = useState(false);
+    const [CurrentImageIndex, setCurrentImageIndex] = useState("");
     let [StatusOptions, setStatusOptions] = useState([
         { value: 0, status: "0% Not Started", taskStatusComment: "Not Started" },
         { value: 1, status: "1% For Approval", taskStatusComment: "For Approval" },
@@ -284,13 +285,13 @@ const EditTaskPopup = (Items: any) => {
     useEffect(() => {
         setTimeout(() => {
             const panelMain: any = document.querySelector('.ms-Panel-main');
-            if (panelMain && PortfolioItemColor!='') {
+            if (panelMain && PortfolioItemColor != '') {
                 $('.ms-Panel-main').css('--SiteBlue', PortfolioItemColor); // Set the desired color value here
             }
         }, 1000)
     }, [IsComponentPicker, openLinkedPortfolioPopup, openTeamPortfolioPopup, ImageComparePopup, modalIsOpen, TimeSheetPopup,
         ApproverPopupStatus, ProjectManagementPopup, replaceImagePopup, CopyAndMoveTaskPopup, AddImageDescriptions, ImageCustomizePopup, SmartMedaDataUsedPanel?.length]);
- 
+
     const SmartMetaDataListInformations = async () => {
         let AllSmartDataListData: any = [];
 
@@ -1769,16 +1770,16 @@ const EditTaskPopup = (Items: any) => {
                                             FeedBackCount++;
                                         }
                                     }
-                                    PortfolioItemColor= PortfolioItem?.Color;
-                                    let targetDiv :any = document?.querySelector('.ms-Panel-main');
-                                    setTimeout(()=>{
-                                        if (targetDiv ) {
+                                    PortfolioItemColor = PortfolioItem?.Color;
+                                    let targetDiv: any = document?.querySelector('.ms-Panel-main');
+                                    setTimeout(() => {
+                                        if (targetDiv) {
                                             // Change the --SiteBlue variable for elements under the targetDiv
                                             $('.ms-Panel-main').css('--SiteBlue', PortfolioItem?.Color);
                                         }
-                                    },1000)
+                                    }, 1000)
                                 }
-                               
+
                             })
                         }
                     })
@@ -3251,6 +3252,7 @@ const EditTaskPopup = (Items: any) => {
         UpdateTaskInfoFunction("Image-Tab");
         setImageCustomizePopup(true);
         setModalIsOpen(false);
+        setCurrentImageIndex(currentImagIndex);
     }
     const ImageCustomizeFunctionClosePopup = () => {
         setImageCustomizePopup(false);
@@ -6113,7 +6115,7 @@ const EditTaskPopup = (Items: any) => {
                                         <div className="carousel-inner">
                                             {TaskImages?.map((imgData: any, index: any) => {
                                                 return (
-                                                    <div className={index == 0 ? "carousel-item active" : "carousel-item"}>
+                                                    <div className={index == CurrentImageIndex ? "carousel-item active" : "carousel-item"}>
                                                         <img src={imgData.ImageUrl} className="d-block w-100" alt="..." />
                                                         <div className="card-footer alignCenter justify-content-between pt-0 pb-1 px-2">
                                                             <div className="alignCenter">
