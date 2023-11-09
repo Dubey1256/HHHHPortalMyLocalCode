@@ -123,8 +123,74 @@ export default class UserTimeEntry extends React.Component<IUserTimeEntryProps, 
     this.SelectedPortfolioItem = this.SelectedPortfolioItem.bind(this);
     this.EditDataTimeEntryData = this.EditDataTimeEntryData.bind(this);
     this.TimeEntryCallBack = this.TimeEntryCallBack.bind(this);
+    // this.handleKeyDown = this.handleKeyDown.bind(this);
     this.GetResult();
   }
+  // componentDidMount() {
+  //   window.addEventListener('keydown', this.handleKeyDown);
+  // }
+
+  // componentWillUnmount() {
+  //   window.removeEventListener('keydown', this.handleKeyDown);
+  // }
+  // handleKeyDown(event: any) {
+  //   const selectedDate: any = this.state.startdate;
+  //   let newDate = selectedDate;
+
+  //   switch (event.key) {
+  //     case 'ArrowLeft':
+  //       newDate.setDate(selectedDate.getDate() - 1);
+  //       break;
+  //     case 'ArrowRight':
+  //       newDate.setDate(selectedDate.getDate() + 1);
+  //       break;
+  //     case 'ArrowUp':
+  //       newDate.setDate(selectedDate.getDate() - 7);
+  //       break;
+  //     case 'ArrowDown':
+  //       newDate.setDate(selectedDate.getDate() + 7);
+  //       break;
+  //     case 'PageUp':
+  //       newDate.setMonth(selectedDate.getMonth() + 1);
+  //       break;
+  //     case 'PageDown':
+  //       newDate.setMonth(selectedDate.getMonth() - 1);
+  //       break;
+  //     case 'Home':
+  //       let startdt = new Date();
+  //       let diff: number;
+  //       diff = startdt.getDate() - startdt.getDay() + (startdt.getDay() === 0 ? -6 : 1);
+  //       startdt = new Date(startdt.setDate(diff));
+  //       newDate = startdt;
+  //       break;
+  //     case 'End':
+  //       let enddt = new Date();
+  //       let lastday: number;
+  //       lastday = enddt.getDate() - (enddt.getDay() - 1) + 6;
+  //       enddt = new Date(enddt.setDate(lastday));
+  //       newDate = enddt;
+  //       break;
+  //     case '/':
+  //       const PickerPopup: any = document.getElementsByClassName('react-datepicker__tab-loop');
+  //       for (let i = 0; i < PickerPopup.length; i++) {
+  //         PickerPopup[i].style.display = 'block';
+  //       }
+  //       break;
+  //     case 'Enter':
+  //       const elements: any = document.getElementsByClassName('react-datepicker__tab-loop');
+  //       for (let i = 0; i < elements.length; i++) {
+  //         elements[i].style.display = 'none';
+  //       }
+  //       break;
+  //     default:
+  //       return;
+  //   }
+  //   this.setState({
+  //     startdate: newDate
+  //   });
+
+  // }
+
   private BackupAllTimeEntry: any = [];
   private AllTimeEntry: any = [];
   private TotalTimeEntry: any;
@@ -2402,10 +2468,10 @@ export default class UserTimeEntry extends React.Component<IUserTimeEntryProps, 
                   </span>
                   <summary className='hyperlink'>
                     Team members
-                  
+                    <hr></hr>
                   </summary>
-                  <div className='mx-2' style={{ display: "block", borderTop: "1.5px solid", borderColor: "var(--SiteBlue)" }}>
-                    <div className="taskTeamBox ps-20 ">
+                  <div style={{ display: "block" }}>
+                    <div className="taskTeamBox ps-30 ">
                       {this.state.taskUsers != null && this.state.taskUsers.length > 0 && this.state.taskUsers.map((users: any, i: number) => {
                         return users?.childs?.length > 0 && <div className="top-assign">
                           <div className="team ">
@@ -2442,9 +2508,9 @@ export default class UserTimeEntry extends React.Component<IUserTimeEntryProps, 
                 <details className='m-0' open>
                   <summary className='hyperlink'>
                     Date
-                
+                    <hr></hr>
                   </summary>
-                  <col className="ps-20 mx-2" style={{ borderTop: "1.5px solid", borderColor: "var(--SiteBlue)" }}>
+                  <Row className="ps-30">
                     <div>
                       <div className="col TimeReportDays">
                         <span className='SpfxCheckRadio'>
@@ -2498,8 +2564,8 @@ export default class UserTimeEntry extends React.Component<IUserTimeEntryProps, 
                         </span>
                       </div>
                     </div>
-                  </col>
-                  <col className='ps-30 mt-2'>
+                  </Row>
+                  <Row className='ps-30 mt-2'>
                     <div className="col-2">
                       <div className='input-group'>
                         <label className='full-width'>Start Date</label>
@@ -2527,14 +2593,14 @@ export default class UserTimeEntry extends React.Component<IUserTimeEntryProps, 
                         <label><input type="checkbox" checked={this.state?.IsCheckedService} className="form-check-input ml-12" onClick={(e) => this.SelectedPortfolioItem(e, 'Service')} /> Service</label>
                       </div>
                     </div>
-                  </col>
+                  </Row>
                 </details>
                 <div id="showFilterBox" className="col mb-2 p-0 ">
                   <div className="togglebox">
                     <details open>
                       <summary className='hyperlink'>
                         SmartSearch – Filters
-                     
+                        <hr></hr>
                         <span>
                           {this.state.checkedAll && this.state.filterItems != null && this.state.filterItems.length > 0 &&
                             this.state.filterItems.map((obj: any) => {
@@ -2565,7 +2631,7 @@ export default class UserTimeEntry extends React.Component<IUserTimeEntryProps, 
                           }
                         </span>
                       </summary>
-                      <div className="togglecontent mx-2 ps-20" style={{ display: "block",  borderTop: "1.5px solid", borderColor: "var(--SiteBlue)" }}>
+                      <div className="togglecontent" style={{ display: "block", paddingLeft: "24px" }}>
                         <div className="smartSearch-Filter-Section">
                           <table width="100%" className="indicator_search">
                             <Loader loaded={this.state.loaded} lines={13} length={20} width={10} radius={30} corners={1} rotate={0} direction={1} color={portfolioColor ? portfolioColor : "#000066"}

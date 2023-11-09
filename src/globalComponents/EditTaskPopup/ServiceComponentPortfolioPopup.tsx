@@ -237,7 +237,7 @@ const ServiceComponentPortfolioPopup = ({ props, Dynamic, Call, ComponentType, s
                 accessorFn: (row) => row?.ClientCategory?.map((elem: any) => elem.Title)?.join("-"),
                 cell: ({ row }) => (
                     <>
-                        <ShowClintCatogory clintData={row?.original} AllMetadata={AllMetadataItems} />
+                        <ShowClintCatogory clintData={row?.original} AllMetadata={AllMetadata} />
                     </>
                 ),
                 id: 'ClientCategory',
