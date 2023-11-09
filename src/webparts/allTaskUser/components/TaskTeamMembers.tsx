@@ -1157,7 +1157,8 @@ export default class TaskTeamMembers extends Component<ITeamMembersProps, ITeamM
         const elemEditTaskBasicInfo: JSX.Element = (<div className="ms-SPLegacyFabricBlock">
             <div className="ms-Grid p-0">
                 <div className="ms-Grid-row Task-User-Management mb-2">
-                    <div className="ms-Grid-col ms-sm3 ms-md3 ms-lg3">
+                {/* Title */}
+                    <div className="ms-Grid-col ms-sm2 ms-md2 ms-lg2">
                         <TextField
                             label="Title"
                             value={this.state.taskItem.userTitle}
@@ -1166,7 +1167,8 @@ export default class TaskTeamMembers extends Component<ITeamMembersProps, ITeamM
                        
                         />
                     </div>
-                    <div className="ms-Grid-col ms-sm3 ms-md3 ms-lg3">
+                    {/* Suffix */}
+                    <div className="ms-Grid-col ms-sm1 ms-md1 ms-lg1">
                         <TextField
                             label="Suffix"
                             value={this.state.taskItem.userSuffix}
@@ -1174,7 +1176,9 @@ export default class TaskTeamMembers extends Component<ITeamMembersProps, ITeamM
                             onChange={this.onUserSuffixChange}
                         />
                     </div>
-                    <div className="ms-Grid-col ms-sm3 ms-md3 ms-lg3">
+                    <div className="ms-Grid-col ms-sm2 ms-md2 ms-lg2">{elemUser}</div>
+                    {/* Group */}
+                    <div className="ms-Grid-col ms-sm2 ms-md2 ms-lg2">
                         <label className="ms-Label root-321 pb-2 pt-1 text-dark">Group</label>
                         <select onChange={(event) => this.onGroupChange(event)} value={this.state.taskItem.groupId} className="fieldGroup-311 ms-sm12 ms-md12 ms-lg12">
                             {this.state.teamGroups.map((item: any) => (
@@ -1184,7 +1188,8 @@ export default class TaskTeamMembers extends Component<ITeamMembersProps, ITeamM
                             ))}
                         </select>
                     </div>
-                    <div className="ms-Grid-col ms-sm3 ms-md3 ms-lg3">
+                    {/* Sort Order */}
+                    <div className="ms-Grid-col ms-sm1 ms-md1 ms-lg1">
                         <TextField
                             label="Sort Order"
                             value={this.state.taskItem.sortOrder}
@@ -1192,10 +1197,9 @@ export default class TaskTeamMembers extends Component<ITeamMembersProps, ITeamM
                             onChange={this.onSortOrderChange}
                         />
                     </div>
-                </div>
-                <div className="ms-Grid-row Task-User-Management mb-2">
-                    <div className="ms-Grid-col ms-sm4 ms-md4 ms-lg4">{elemUser}</div>
-                    <div className="ms-Grid-col ms-sm4 ms-md4 ms-lg4">
+                        
+                    {/* Manage Categories */}
+                    <div className="ms-Grid-col ms-sm2 ms-md2 ms-lg2">
                         <label className="ms-Label root-321 pb-2 pt-1 text-dark">Manage Categories</label>
                         <select onChange={(event) => this.onManageTimeCategory(event)} value={this.state.taskItem.timeCategory} className="fieldGroup-311 ms-sm12 ms-md12 ms-lg12">
                             {this.state.timesheetCategories.map((item: any) => (
@@ -1205,11 +1209,13 @@ export default class TaskTeamMembers extends Component<ITeamMembersProps, ITeamM
                             ))}
                         </select>
                     </div>
-                    <div className="ms-Grid-col ms-sm4 ms-md4 ms-lg4">{elemApprover}</div>
+                    {/* Approver */}
+                    <div className="ms-Grid-col ms-sm2 ms-md2 ms-lg2">{elemApprover}</div>
                 </div>
+             
                
                 <div className="ms-Grid-row Task-User-Management SpfxCheckRadio mb-2">
-                    <div className="ms-Grid-col ms-sm4 ms-md4 ms-lg3">
+                    <div className="ms-Grid-col ms-sm2 ms-md2 ms-lg2">
                         <ChoiceGroup  className="SpfxCheckRadio"
                             label="Approval Type"
                             options={appTypeOptions}
@@ -1219,7 +1225,7 @@ export default class TaskTeamMembers extends Component<ITeamMembersProps, ITeamM
                             
                         />
                     </div>
-                    <div className="ms-Grid-col ms-sm4 ms-md4 ms-lg3">
+                    <div className="ms-Grid-col ms-sm1 ms-md1 ms-lg1">
                         <ChoiceGroup className="SpfxCheckRadio"
                             label="Company"
                             options={compOptions}
@@ -1229,7 +1235,8 @@ export default class TaskTeamMembers extends Component<ITeamMembersProps, ITeamM
                            
                         />
                     </div>
-                    <div className="ms-Grid-col ms-sm4 ms-md4 ms-lg3">
+                    {/* <div className="ms-Grid-col ms-sm2 ms-md2 ms-lg2"></div> */}
+                    <div className="ms-Grid-col ms-sm6 ms-md6 ms-lg2">
                         <Label>Roles</Label>
                         <Checkbox  className="SpfxCheckRadio"
                             label="Component Teams"
@@ -1247,7 +1254,7 @@ export default class TaskTeamMembers extends Component<ITeamMembersProps, ITeamM
                            
                         />
                     </div>
-                    <div className="ms-Grid-col ms-sm4 ms-md4 ms-lg3 mt-4">
+                    <div className="ms-Grid-col ms-sm1 ms-md1 ms-lg1 mt-4">
               
                         <Checkbox   className="SpfxCheckRadio"
                             label="Active User"

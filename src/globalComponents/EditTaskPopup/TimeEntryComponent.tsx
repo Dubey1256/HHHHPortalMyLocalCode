@@ -487,7 +487,7 @@ function TimeEntryPopup(item: any) {
     setTimeInHours(0);
     setNewData(undefined);
     setTimeInMinutes(0);
-    setediteddata({});
+    setediteddata(undefined);
     setCount(1);
     change = Moment().format();
     setMyDatee(new Date());
@@ -1698,14 +1698,8 @@ function TimeEntryPopup(item: any) {
               TimeInHours != undefined && TimeInHours != 0
                 ? TimeInHours
                 : child.TaskTime;
-            update["TaskTimeInMin"] =
-              TimeInMinutes != undefined && TimeInMinutes != 0
-                ? TimeInMinutes
-                : child.TaskTimeInMin;
-            update["TaskDate"] =
-              Dateee != "Invalid date"
-                ? Dateee
-                : Moment(DateFormate).format("DD/MM/YYYY");
+            update["TaskTimeInMin"] = TimeInMinutes != undefined && TimeInMinutes != 0 ? TimeInMinutes : child.TaskTimeInMin;
+            update["TaskDate"] = Moment(myDatee).format("DD/MM/YYYY");
             update["Description"] =
               postData != undefined &&
                 postData.Description != undefined &&
@@ -2600,7 +2594,7 @@ function TimeEntryPopup(item: any) {
                         <div className="d-flex w-100 mb-1">
                           <button className="btnCol btn-primary" onClick={() => changeDateDec("month", PopupType)}><MdKeyboardDoubleArrowLeft></MdKeyboardDoubleArrowLeft></button> <button className="btnCol btn-primary mx-1" onClick={() => changeDateDec("Date", PopupType)}><MdKeyboardArrowLeft></MdKeyboardArrowLeft></button><DatePicker
                             className="form-control"
-                            selected={myDatee != undefined ? myDatee : editeddata}
+                            selected={(PopupType=='EditTime') ? editeddata != undefined ? editeddata : myDatee: myDatee }
                             onChange={handleDatedue}
                             dateFormat="EEE, dd MMM yyyy"
                           /> <button onClick={() => changeDate("Date", PopupType)} className="btnCol btn-primary mx-1" ><MdKeyboardArrowRight></MdKeyboardArrowRight></button> <button className="btnCol btn-primary" onClick={() => changeDate("month", PopupType)}><MdKeyboardDoubleArrowRight></MdKeyboardDoubleArrowRight></button></div>
