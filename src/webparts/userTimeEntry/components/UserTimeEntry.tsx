@@ -123,8 +123,74 @@ export default class UserTimeEntry extends React.Component<IUserTimeEntryProps, 
     this.SelectedPortfolioItem = this.SelectedPortfolioItem.bind(this);
     this.EditDataTimeEntryData = this.EditDataTimeEntryData.bind(this);
     this.TimeEntryCallBack = this.TimeEntryCallBack.bind(this);
+    // this.handleKeyDown = this.handleKeyDown.bind(this);
     this.GetResult();
   }
+  // componentDidMount() {
+  //   window.addEventListener('keydown', this.handleKeyDown);
+  // }
+
+  // componentWillUnmount() {
+  //   window.removeEventListener('keydown', this.handleKeyDown);
+  // }
+  // handleKeyDown(event: any) {
+  //   const selectedDate: any = this.state.startdate;
+  //   let newDate = selectedDate;
+
+  //   switch (event.key) {
+  //     case 'ArrowLeft':
+  //       newDate.setDate(selectedDate.getDate() - 1);
+  //       break;
+  //     case 'ArrowRight':
+  //       newDate.setDate(selectedDate.getDate() + 1);
+  //       break;
+  //     case 'ArrowUp':
+  //       newDate.setDate(selectedDate.getDate() - 7);
+  //       break;
+  //     case 'ArrowDown':
+  //       newDate.setDate(selectedDate.getDate() + 7);
+  //       break;
+  //     case 'PageUp':
+  //       newDate.setMonth(selectedDate.getMonth() + 1);
+  //       break;
+  //     case 'PageDown':
+  //       newDate.setMonth(selectedDate.getMonth() - 1);
+  //       break;
+  //     case 'Home':
+  //       let startdt = new Date();
+  //       let diff: number;
+  //       diff = startdt.getDate() - startdt.getDay() + (startdt.getDay() === 0 ? -6 : 1);
+  //       startdt = new Date(startdt.setDate(diff));
+  //       newDate = startdt;
+  //       break;
+  //     case 'End':
+  //       let enddt = new Date();
+  //       let lastday: number;
+  //       lastday = enddt.getDate() - (enddt.getDay() - 1) + 6;
+  //       enddt = new Date(enddt.setDate(lastday));
+  //       newDate = enddt;
+  //       break;
+  //     case '/':
+  //       const PickerPopup: any = document.getElementsByClassName('react-datepicker__tab-loop');
+  //       for (let i = 0; i < PickerPopup.length; i++) {
+  //         PickerPopup[i].style.display = 'block';
+  //       }
+  //       break;
+  //     case 'Enter':
+  //       const elements: any = document.getElementsByClassName('react-datepicker__tab-loop');
+  //       for (let i = 0; i < elements.length; i++) {
+  //         elements[i].style.display = 'none';
+  //       }
+  //       break;
+  //     default:
+  //       return;
+  //   }
+  //   this.setState({
+  //     startdate: newDate
+  //   });
+
+  // }
+
   private BackupAllTimeEntry: any = [];
   private AllTimeEntry: any = [];
   private TotalTimeEntry: any;

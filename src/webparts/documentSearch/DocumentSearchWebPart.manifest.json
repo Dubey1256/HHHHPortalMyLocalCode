@@ -3,10 +3,8 @@
   "id": "3abb9f7b-9679-4f8d-8b04-3ac425e9400b",
   "alias": "DocumentSearchWebPart",
   "componentType": "WebPart",
-
   "version": "*",
   "manifestVersion": 2,
-
   "requiresCustomScript": false,
   "supportedHosts": ["SharePointWebPart", "TeamsPersonalApp", "TeamsTab", "SharePointFullPage"],
   "supportsThemeVariants": true,
