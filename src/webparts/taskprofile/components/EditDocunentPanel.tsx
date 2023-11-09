@@ -35,6 +35,12 @@ const EditDocumentpanel=(props:any)=>{
           props.editData. docTitle= props?.editData.Title.split(props?.editData.File_x0020_Type)[0]
         }
         setEditdocumentsData(props?.editData); 
+        setTimeout(() => {
+          const panelMain: any = document.querySelector('.ms-Panel-main');
+          if (panelMain && props?.ColorCode) {
+            $('.ms-Panel-main').css('--SiteBlue', props?.ColorCode); // Set the desired color value here
+          }
+        }, 1000)
          }
              
     }, [])

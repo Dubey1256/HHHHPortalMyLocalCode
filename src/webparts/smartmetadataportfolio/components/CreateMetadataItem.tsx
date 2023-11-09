@@ -1,9 +1,9 @@
-import { Panel, PrimaryButton } from 'office-ui-fabric-react';
+import { Panel, PrimaryButton, PanelType } from 'office-ui-fabric-react';
 import * as React from 'react';
 import { useState } from 'react';
 import { Web } from 'sp-pnp-js';
 import SmartMetadataEditPopup from './SmartMetadataEditPopup';
-
+import Tooltip from '../../../globalComponents/Tooltip';
 export default function CreateMetadataItem(props: any) {
     let SelectedItem: any = props.SelectedItem;
     let Taxtype: any = props.TabSelected
@@ -172,135 +172,137 @@ export default function CreateMetadataItem(props: any) {
     const closeCreateSmartMetadataPopup = () => {
         setIsCreatePopupOpen(false);
     }
+    const onRenderDeleteSmartMetadata = () => {
+        return (
+            <>
+                <div className='subheading siteColor'>
+                    Create SmartMetadata
+                </div>
+                <Tooltip ComponentId={'1630'} />
+            </>
+        );
+    };
     return (
         <>
             <div>
-                <button type="button" title="Add" onClick={OpenCreateSmartMetadataPopup} className="btnCol btn btn-primary">+ Add</button>
+                <button type="button" title="Add" onClick={OpenCreateSmartMetadataPopup} className="btnCol btn btn-primary">Add +</button>
             </div>
             {
                 IsCreatePopupOpen === true ? <section>
-                    <Panel headerText="Create SmartMetaData" isOpen={IsCreatePopupOpen} onDismiss={closeCreateSmartMetadataPopup} isBlocking={false} closeButtonAriaLabel="Close">
+                    <Panel type={PanelType.custom} onRenderHeader={onRenderDeleteSmartMetadata} customWidth="500px" isOpen={IsCreatePopupOpen} onDismiss={closeCreateSmartMetadataPopup} isBlocking={false} closeButtonAriaLabel="Close">
                         {props.ParentItem.Id == undefined && (
-                            <div className="col-sm-12 padL-0">
-                                <div className="row">
-                                    <div className="row">
-                                        <label className="full_width">Title</label>
-                                        <input className="form-control full_width" type="text" value={smartMetaDataTitle} onChange={(e) => setSmartMetaDataTitle(e.target.value)} placeholder="Enter Component Title..." required />
-                                        <span className="searchclear" style={{ top: '47px' }} onClick={clearControl}>
-                                            X
+                            <div className="modal-body">
+                                <div className="col-sm-12 padL-0">
+                                    <div className="input-group my-2">
+                                        <label className="full_width form-label">Title</label>
+                                        <input className="form-control w-100" type="text" value={smartMetaDataTitle} onChange={(e) => setSmartMetaDataTitle(e.target.value)} placeholder="Enter Component Title..." required />
+                                        <span className="searchclear" style={{ top: '17px', right: '10px' }} onClick={clearControl}>
+                                            x
                                         </span>
                                     </div>
-                                    <div className="col-sm-1"></div>
-                                </div>
-                                {showDes && (
-                                    <div className="row">
-                                        <label className="full_width">Description</label>
-                                        <div className="row">
-                                            <textarea
-                                                value={smartDescription}
-                                                onChange={(e) => setSmartDescription(e.target.value)}
-                                            ></textarea>
+                                    {showDes && (
+                                        <div className="d-flex mb-3">
+                                            <div className="input-group">
+                                                <label className="full_width form-label">Description</label>
+                                                <textarea className='w-100'
+                                                    value={smartDescription}
+                                                    onChange={(e) => setSmartDescription(e.target.value)}
+                                                ></textarea>
+                                            </div>
+                                            <div className='mt-4'>
+                                                <a style={{ cursor: 'pointer' }} title="Delete" data-toggle="modal" onClick={removeFeedbackColumn}>
+                                                    {/* <img className="" src="/_layouts/images/delete.gif" alt="Delete" /> */}
+                                                    <span className='svg__iconbox svg__icon--trash dark hreflink'></span>
+                                                </a>
+                                            </div>
                                         </div>
-                                        <div className="row">
-                                            <a style={{ cursor: 'pointer' }} title="Delete" data-toggle="modal" onClick={removeFeedbackColumn}>
-                                                <img className="" src="/_layouts/images/delete.gif" alt="Delete" />
-                                            </a>
-                                        </div>
-                                        <div className="clearfix"></div>
-                                    </div>
-                                )}
-                            </div>)}
+                                    )}
+                                </div></div>)}
                         {props.ParentItem.Id !== undefined && (
                             <div className="modal-body">
-                                <div className="col-sm-12 tab-content bdrbox">
-                                    <div className="row">
-                                        {childItemTitle.map((item: { Title: string | number | readonly string[]; Child: any[]; Id: any; }, index: React.Key) => (
-                                            <div className="row" key={index}>
-                                                <label className="row">Title</label>
-                                                <div className="row">
-                                                    <input
-                                                        className="form-control full_width mb-10"
-                                                        type="text"
-                                                        value={item.Title}
-                                                        onChange={(e) => handleTitleChange(index, e.target.value)}
-                                                        placeholder="Enter Child Item Title"
-                                                        required
-                                                    />
-                                                    <div className="row">
-                                                        {isOwner && childItemTitle.length > 1 && index !== 0 && (
-                                                            <a
-                                                                style={{ cursor: 'pointer' }}
-                                                                title="Delete"
-                                                                data-toggle="modal"
-                                                                onClick={() => removeFeedbackColumnn(childItemTitle, index, '')}
-                                                            >
-                                                                <img className="" src="/_layouts/images/delete.gif" alt="Delete" />
-                                                            </a>
-                                                        )}
-                                                    </div>
-                                                    <div className="clearfix"></div>
-                                                </div>
-                                                <div className="row">
-                                                    <div className="row" key={index}>
-                                                        {item.Child.map((items: { Description: string | number | readonly string[]; }, childIndex: React.Key) => (
-                                                            <div className="row" key={childIndex}>
-                                                                <label className="row" style={{ paddingRight: '1px', paddingLeft: '26px' }}>
-                                                                    Description
-                                                                </label>
-                                                                <div className="row">
-                                                                    <textarea
-                                                                        rows={4}
-                                                                        value={items.Description}
-                                                                        onChange={(e) => handleDescriptionChange(index, childIndex, e.target.value)}
-                                                                    ></textarea>
-                                                                </div>
-                                                                <div className="row">
-                                                                    {isOwner && (
-                                                                        <a
-                                                                            style={{ cursor: 'pointer' }}
-                                                                            title="Delete"
-                                                                            data-toggle="modal"
-                                                                            onClick={() => removeFeedbackColumnn(childItemTitle, item.Id, 'Description')}
-                                                                        >
-                                                                            <img className="" src="/_layouts/images/delete.gif" alt="Delete" />
-                                                                        </a>
-                                                                    )}
-                                                                </div>
-                                                                <div className="clearfix"></div>
-                                                            </div>
-                                                        ))}
-                                                    </div>
-                                                </div>
+                                <div className="col-sm-12">
+                                    {childItemTitle.map((item: { Title: string | number | readonly string[]; Child: any[]; Id: any; }, index: React.Key) => (
+                                        <div key={index}>
+                                            <div className='input-group my-2'>
+                                                <label className="form-label full-width">Title</label>
+                                                <input className="form-control w-100"
+                                                    type="text"
+                                                    value={item.Title}
+                                                    onChange={(e) => handleTitleChange(index, e.target.value)}
+                                                    placeholder="Enter Child Item Title"
+                                                    required
+                                                />
+                                                {isOwner && childItemTitle.length > 1 && index !== 0 && (
+                                                    <a className='countSec'
+                                                        style={{ cursor: 'pointer' }}
+                                                        title="Delete"
+                                                        data-toggle="modal"
+                                                        onClick={() => removeFeedbackColumnn(childItemTitle, index, '')}
+                                                    >
+                                                        {/* <img className="" src="/_layouts/images/delete.gif" alt="Delete" /> */}
+                                                        <span className='svg__iconbox svg__icon--cross dark hreflink'></span>
+                                                    </a>
+                                                )}
                                             </div>
-                                        ))}
-                                        <div className="clearfix"></div>
-                                    </div>
+                                            <div key={index}>
+                                                {item.Child.map((items: { Description: string | number | readonly string[]; }, childIndex: React.Key) => (
+                                                    <div className="d-flex mb-3" key={childIndex}>
+                                                        <div className="input-group">
+                                                            <label className="full_width form-label">
+                                                                Description
+                                                            </label>
+                                                            <textarea className='w-100'
+                                                                rows={4}
+                                                                value={items.Description}
+                                                                onChange={(e) => handleDescriptionChange(index, childIndex, e.target.value)}
+                                                            ></textarea>
+                                                        </div>
+                                                        <div className='mt-4'>
+                                                            {isOwner && (
+                                                                <a title="Delete"
+                                                                    data-toggle="modal"
+                                                                    onClick={() => removeFeedbackColumnn(childItemTitle, item.Id, 'Description')}
+                                                                >
+                                                                    {/* <img className="" src="/_layouts/images/delete.gif" alt="Delete" /> */}
+                                                                    <span className='svg__iconbox svg__icon--trash dark hreflink'></span>
+                                                                </a>
+                                                            )}
+                                                        </div>
+                                                    </div>
+                                                ))}
+                                            </div>
+                                        </div>
+                                    ))}
+                                    <div className="clearfix"></div>
                                 </div>
                             </div>)}
-                        {props.ParentItem.Id == undefined && (
-                            <div>
-                                <PrimaryButton onClick={() => AddSmartMetadataItem('createAndOpenPopup')} text="Create & Open Popup" />
-                                <PrimaryButton onClick={() => AddSmartMetadataItem('CreatePopup')} text="Create" />
-                            </div>
-                        )}
-                        {props.ParentItem.Id != undefined && (
-                            <div>
-                                <a className="hreflink pull-left" onClick={addNewTextField}>
-                                    <img className="icon-sites-img" src="/_layouts/images/delete.gif" alt="Add New" />
-                                    + Add more child items
-                                </a>
-                                {childItemTitle.length > 0 && (
-                                    <>
-                                        {childItemTitle.length == 1 && (<PrimaryButton onClick={() => createChildItems('CreatePopup')} disabled={childItemTitle[0].Title === ''}>
-                                            Create & Open Popup
-                                        </PrimaryButton>
-                                        )}
-                                        <PrimaryButton onClick={() => createChildItems('Create')} disabled={childItemTitle[0].Title === ''}>
-                                            Create
-                                        </PrimaryButton>
-                                    </>
-                                )}
-                            </div>)}
+                        <footer className='pull-right'>
+                            {props.ParentItem.Id == undefined && (
+                                <div>
+                                    <button onClick={() => AddSmartMetadataItem('createAndOpenPopup')} className='btnCol btn btn-primary mx-1'>Create & Open Popup</button>
+                                    <button onClick={() => AddSmartMetadataItem('CreatePopup')} className='btnCol btn btn-primary'>Create</button>
+                                </div>
+                            )}
+                            {props.ParentItem.Id != undefined && (
+                                <div>
+                                    <a className="hreflink pull-left" onClick={addNewTextField}>
+                                        {/* <img className="icon-sites-img" src="/_layouts/images/delete.gif" alt="Add New" /> */}
+                                        + Add more child items
+                                    </a>
+                                    {childItemTitle.length > 0 && (
+                                        <>
+                                            {childItemTitle.length == 1 && (
+                                                <button onClick={() => createChildItems('CreatePopup')} className='btn btn-primary mx-1' disabled={childItemTitle[0].Title === ''}>
+                                                    Create & Open Popup
+                                                </button>
+                                            )}
+                                            <button onClick={() => createChildItems('Create')} className='btn btn-primary' disabled={childItemTitle[0].Title === ''}>
+                                                Create
+                                            </button>
+                                        </>
+                                    )}
+                                </div>)}
+                        </footer>
                     </Panel>
                 </section> : ''
             }

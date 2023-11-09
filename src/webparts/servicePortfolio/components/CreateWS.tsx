@@ -26,7 +26,7 @@ const itemRanks: any = [
     { rankTitle: '(1) Archive', rank: 1 },
     { rankTitle: '(0) No Show', rank: 0 }
 ]
-let AllTaskUsers:any=[];
+let AllTaskUsers: any = [];
 let loggedInUser: any = {};
 let IsapprovalTask = false
 const CreateWS = (props: any) => {
@@ -44,7 +44,7 @@ const CreateWS = (props: any) => {
     const [inputFields, setInputFields]: any = React.useState([{
         Title: '',
         ItemRank: '',
-        Priority: '',
+        Priority: '4',
         DueDate: '',
         Description: [],
         AssignedTo: props?.selectedItem?.AssignedTo?.length > 0 ? props?.selectedItem?.AssignedTo : [],
@@ -57,7 +57,7 @@ const CreateWS = (props: any) => {
         setInputFields([...inputFields, {
             Title: '',
             ItemRank: '',
-            Priority: '',
+            Priority: '4',
             DueDate: '',
             Description: [],
             AssignedTo: props?.selectedItem?.AssignedTo?.length > 0 ? props?.selectedItem?.AssignedTo : [],
@@ -82,7 +82,7 @@ const CreateWS = (props: any) => {
     //---- close popup end -------
     React.useEffect(() => {
         AllListId = props?.AllListId;
-  
+
         if (props?.selectedItem?.ClientCategory?.length > 0) {
             if (ClientCategoriesData?.length == 0) {
                 setClientCategoriesData(props?.selectedItem?.ClientCategory)
@@ -90,36 +90,48 @@ const CreateWS = (props: any) => {
         }
         setSelectedItem(props?.selectedItem)
         GetParentHierarchy(props?.selectedItem)
-
-//***************** Load All task Users***************** */
- const getTaskUsers = async () => {
-    if (AllListId?.TaskUsertListID != undefined) {
-        let web = new Web(AllListId?.siteUrl);
-        let taskUser = [];
-        taskUser = await web.lists
-            .getById(AllListId?.TaskUsertListID)
-            .items
-            .select("Id,UserGroupId,Suffix,Title,IsTaskNotifications,IsApprovalMail,CategoriesItemsJson,technicalGroup,Email,SortOrder,Role,Company,ParentID1,Status,Item_x0020_Cover,AssingedToUserId,isDeleted,AssingedToUser/Title,AssingedToUser/Id,AssingedToUser/EMail,UserGroup/Id,ItemType,Approver/Id,Approver/Title,Approver/Name")
-            .top(5000)
-            .expand("AssingedToUser,Approver, UserGroup")
-            .get();
-        try {
-            taskUser?.map((user: any) => {
-                if (props?.context?.pageContext?.legacyPageContext?.userId == user?.AssingedToUser?.Id) {
-                    loggedInUser = user;
+      
+        if(props?.selectedItem?.PortfolioType?.Color!=undefined){
+            setTimeout(()=>{
+                let targetDiv :any = document?.querySelector('.ms-Panel-main');
+                if (targetDiv ) {
+                    // Change the --SiteBlue variable for elements under the targetDiv
+                    targetDiv?.style?.setProperty('--SiteBlue', props?.selectedItem?.PortfolioType?.Color); // Change the color to your desired value
                 }
-            })
-        } catch (error) {
-            console.log(error)
+            },1000)
         }
+       
+        //***************** Load All task Users***************** */
+        const getTaskUsers = async () => {
+            if (AllListId?.TaskUsertListID != undefined) {
+                let web = new Web(AllListId?.siteUrl);
+                let taskUser = [];
+                taskUser = await web.lists
+                    .getById(AllListId?.TaskUsertListID)
+                    .items
+                    .select("Id,UserGroupId,Suffix,Title,IsTaskNotifications,IsApprovalMail,CategoriesItemsJson,technicalGroup,Email,SortOrder,Role,Company,ParentID1,Status,Item_x0020_Cover,AssingedToUserId,isDeleted,AssingedToUser/Title,AssingedToUser/Id,AssingedToUser/EMail,UserGroup/Id,ItemType,Approver/Id,Approver/Title,Approver/Name")
+                    .top(5000)
+                    .expand("AssingedToUser,Approver, UserGroup")
+                    .get();
+                try {
+                    taskUser?.map((user: any) => {
+                        if (props?.context?.pageContext?.legacyPageContext?.userId == user?.AssingedToUser?.Id) {
+                            loggedInUser = user;
+                        }
+                    })
+                    if (loggedInUser?.IsApprovalMail?.toLowerCase() == 'approve all') {
+                        IsapprovalTask = true
+                    }
+                } catch (error) {
+                    console.log(error)
+                }
 
-        AllTaskUsers = taskUser;
-     }
-  }
-  if (loggedInUser?.IsApprovalMail?.toLowerCase() == 'approve all') {
-    IsapprovalTask = true
-}
-    // console.log("all task user =====", taskUser)
+                AllTaskUsers = taskUser;
+            }
+        }
+        getTaskUsers()
+       
+        // console.log("all task user =====", taskUser)
     }, [])
 
 
@@ -166,14 +178,14 @@ const CreateWS = (props: any) => {
     //-------- header section of popup
     const onRenderCustomHeaderMain = () => {
         return (
-            <div className={props?.props?.PortFolioType?.Id == 2 ? "d-flex full-width pb-1 serviepannelgreena" : "d-flex full-width pb-1"} >
-                <div style={{ marginRight: "auto", fontSize: "20px", fontWeight: "600", marginLeft: '20px' }}>
-                    <h2 className='heading'>
+          <>
+                <div className='subheading'>
+                   
                         {`Create Item`}
-                    </h2>
+                   
                 </div>
                 <Tooltip ComponentId='1710' />
-            </div>
+                </>
         );
     };
 
@@ -321,13 +333,13 @@ const CreateWS = (props: any) => {
         const user = AllTaskUsers.filter((user: any) => user?.AssingedToUser?.Id == Id);
         let Image: any;
         if (user[0]?.Item_x0020_Cover != undefined) {
-          Image = user[0].Item_x0020_Cover.Url;
+            Image = user[0].Item_x0020_Cover.Url;
         } else {
-          Image =
-            "https://hhhhteams.sharepoint.com/sites/HHHH/PublishingImages/Portraits/icon_user.jpg";
+            Image =
+                "https://hhhhteams.sharepoint.com/sites/HHHH/PublishingImages/Portraits/icon_user.jpg";
         }
         return user ? Image : null;
-      };
+    };
 
 
     // -------------Save  and CREATE WORKSTREAM AND TASK  -----------
@@ -398,29 +410,29 @@ const CreateWS = (props: any) => {
             let Categories: any = '';
             selectedItem?.TaskCategories?.map((cat: any) => {
                 CategoryID.push(cat?.Id)
-                
+
             })
-            if(IsapprovalTask){
+            if (IsapprovalTask) {
                 CategoryID.push(277)
             }
             let clientTime: any;
             if (selectedItem?.ClientTime != undefined) {
                 if (typeof selectedItem?.ClientTime == "object") {
-                    selectedItem?.ClientTime?.map((sitecomp:any)=>{
-                        if(sitecomp.Title!=undefined && sitecomp.Title!=""&& sitecomp.SiteName==undefined){
-                            sitecomp.SiteName=sitecomp.Title
+                    selectedItem?.ClientTime?.map((sitecomp: any) => {
+                        if (sitecomp.Title != undefined && sitecomp.Title != "" && sitecomp.SiteName == undefined) {
+                            sitecomp.SiteName = sitecomp.Title
                         }
                     })
                     clientTime = JSON.stringify(selectedItem?.ClientTime);
                 } else {
-                    var sitetag=JSON.parse(selectedItem?.ClientTime)
-                                sitetag?.map((sitecomp:any)=>{
-                                    if(sitecomp.Title!=undefined && sitecomp.Title!=""&& sitecomp.SiteName==undefined){
-                                        sitecomp.SiteName=sitecomp.Title
-                                    }
-                                   
-                                }) 
-                                
+                    var sitetag = JSON.parse(selectedItem?.ClientTime)
+                    sitetag?.map((sitecomp: any) => {
+                        if (sitecomp.Title != undefined && sitecomp.Title != "" && sitecomp.SiteName == undefined) {
+                            sitecomp.SiteName = sitecomp.Title
+                        }
+
+                    })
+
 
                     clientTime = JSON.stringify(sitetag)
                 }
@@ -486,12 +498,12 @@ const CreateWS = (props: any) => {
                                     ? JSON.stringify([FeedBackItem])
                                     : null,
                             Item_x0020_Type: 'Task',
-                            descriptionsSearch:"",
+                            descriptionsSearch: "",
                             Author: {
                                 Id: props?.context?.pageContext?.legacyPageContext?.userId,
-                                autherImage:  findUserByName(props?.context?.pageContext?.legacyPageContext?.userId)
+                                autherImage: findUserByName(props?.context?.pageContext?.legacyPageContext?.userId)
                             },
-                            ParentTask:selectedItem,
+                            ParentTask: selectedItem,
                             TaskType: {
                                 Title: selectedTaskType == 2 ? 'Task' : 'Workstream',
                                 Id: selectedTaskType
@@ -500,11 +512,11 @@ const CreateWS = (props: any) => {
                     }
                     if (item?.FeedBack != undefined) {
                         let DiscriptionSearchData: any = '';
-                        let feedbackdata: any =JSON.parse(item?.FeedBack);
-                        DiscriptionSearchData =globalCommon.descriptionSearchData(feedbackdata)
+                        let feedbackdata: any = JSON.parse(item?.FeedBack);
+                        DiscriptionSearchData = globalCommon.descriptionSearchData(feedbackdata)
                         item.descriptionsSearch = DiscriptionSearchData
                     }
-    
+
                     item.TaskID = globalCommon.GetTaskId(item);
                     if (item.DisplayDueDate == "Invalid date" || "") {
                         item.DisplayDueDate = item.DisplayDueDate.replaceAll(
@@ -514,7 +526,7 @@ const CreateWS = (props: any) => {
                     }
 
                     if (IsapprovalTask) {
-                       
+
                         await globalCommon?.sendImmediateEmailNotifications(item?.Id, selectedItem?.siteUrl, selectedItem.listId, item, undefined, 'ApprovalMail', AllTaskUsers, props?.context).then((response: any) => {
                             console.log(response);
                         });

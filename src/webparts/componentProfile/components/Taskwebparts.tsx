@@ -432,15 +432,7 @@ function PortfolioTable(SelectedProp: any) {
                   
                   if (result?.FeedBack != undefined) {
                     let feedbackdata = JSON.parse(result?.FeedBack)
-                    feedbackdata[0]?.FeedBackDescriptions?.map(
-                      (child: any) =>{
-                       let  copyTitle=child?.Title?.replace( /(<([^>]+)>)/gi,"")?.replace(/\n/g, "");
-                         if(copyTitle!=undefined && copyTitle!=null&& copyTitle!=""){
-                          result.descriptionsSearch = copyTitle;
-                         }
-                       
-                      }
-                      )
+                    result.descriptionsSearch = globalCommon.descriptionSearchData(result);
                   }
                  
                   if (result?.Comments != null) {
@@ -607,196 +599,16 @@ function PortfolioTable(SelectedProp: any) {
   };
 
   const GetComponents = async () => {
-    if (portfolioTypeData.length > 0) {
-      portfolioTypeData?.map((elem: any) => {
-        if (isUpdated === "") {
-          filt = "";
-        } else if (
-          isUpdated === elem.Title ||
-          isUpdated?.toLowerCase() === elem?.Title?.toLowerCase()
-        ) {
-          filt =
-            "(Item_x0020_Type eq 'SubComponent' and Item_x0020_Type eq 'Feature' )";
-        }
-      });
+    let componentDetails: any = [];
+    let results = await globalCommon.GetServiceAndComponentAllData(SelectedProp?.NextProp)
+    if (results?.AllData?.length > 0) {
+        componentDetails = results?.AllData;
+        ProjectData=results?.ProjectData;
     }
-    let web = new Web(ContextValue.siteUrl);
-    let componentDetails = [];
-    componentDetails = await web.lists
-      .getById(ContextValue.MasterTaskListID)
-      .items.select(
-        "ID",
-        "Id",
-        "Title",
-        "PortfolioLevel",
-        "PortfolioStructureID",
-        "Comments",
-        "ItemRank",
-        "Portfolio_x0020_Type",
-        "Parent/Id",
-        "Parent/Title",
-        "DueDate",
-        "Created",
-        "Body",
-        "Sitestagging",
-        "Item_x0020_Type",
-        "Categories",
-        "Short_x0020_Description_x0020_On",
-        "PriorityRank",
-        "Priority",
-        "AssignedTo/Title",
-        "TeamMembers/Id",
-        "TeamMembers/Title",
-        "ClientCategory/Id",
-        "ClientCategory/Title",
-        "PercentComplete",
-        "ResponsibleTeam/Id",
-        "Author/Id",
-        "Author/Title",
-        "Sitestagging",
-        "ResponsibleTeam/Title",
-        "PortfolioType/Id",
-        "PortfolioType/Color",
-        "PortfolioType/IdRange",
-        "PortfolioType/Title",
-        "AssignedTo/Id"
-      )
-      .expand(
-        "Parent",
-        "PortfolioType",
-        "AssignedTo",
-        "Author",
-        "ClientCategory",
-        "TeamMembers",
-        "ResponsibleTeam"
-      )
-      .top(4999)
-      .get();
-
-    console.log(componentDetails);
-    ProjectData = componentDetails.filter(
-      (projectItem: any) => projectItem.Item_x0020_Type === "Project"
-    );
-    componentDetails.forEach((result: any) => {
-      result["siteType"] = "Master Tasks";
-      result.AllTeamName = "";
-      result.portfolioItemsSearch = result.Item_x0020_Type;
-      result.descriptionsSearch = "";
-      result.commentsSearch = "";
-      result.TeamLeaderUser = [];
-      result.TaskTypeValue = '';
-      if (result.Item_x0020_Type === "Component") {
-        result.boldRow = "boldClable";
-        result.lableColor = "f-bg";
-      }
-      if (result.Item_x0020_Type === "SubComponent") {
-        result.lableColor = "a-bg";
-      }
-      if (result.Item_x0020_Type === "Feature") {
-        result.lableColor = "w-bg";
-      }
-      if (result?.Item_x0020_Type != undefined) {
-        result.SiteIconTitle = result?.Item_x0020_Type?.charAt(0);
-      }
-      result["TaskID"] = result?.PortfolioStructureID;
-
-      result.DueDate = Moment(result.DueDate).format("DD/MM/YYYY");
-      result.DisplayDueDate = Moment(result.DueDate).format("DD/MM/YYYY");
-      if (result.DisplayDueDate == "Invalid date" || "") {
-        result.DisplayDueDate = result.DisplayDueDate.replaceAll(
-          "Invalid date",
-          ""
-        );
-      }
-      if (result.DisplayCreateDate == "Invalid date" || "") {
-        result.DisplayCreateDate = result.DisplayCreateDate.replaceAll(
-          "Invalid date",
-          ""
-        );
-      }
-      result.DisplayCreateDate = Moment(result.Created).format("DD/MM/YYYY");
-
-      result.PercentComplete = (result.PercentComplete * 100).toFixed(0);
-      if (result?.Deliverables != undefined || result.Short_x0020_Description_x0020_On != undefined || result.TechnicalExplanations != undefined || result.Body != undefined || result.AdminNotes != undefined || result.ValueAdded != undefined
-        || result.Idea != undefined || result.Background != undefined) {
-        result.descriptionsSearch = `${removeHtmlAndNewline(result.Deliverables)} ${removeHtmlAndNewline(result.Short_x0020_Description_x0020_On)} ${removeHtmlAndNewline(result.TechnicalExplanations)} ${removeHtmlAndNewline(result.Body)} ${removeHtmlAndNewline(result.AdminNotes)} ${removeHtmlAndNewline(result.ValueAdded)} ${removeHtmlAndNewline(result.Idea)} ${removeHtmlAndNewline(result.Background)}`;
-    }
-      if (result?.Comments != null) {
-        result.commentsSearch = result?.Comments.replace(
-          /(<([^>]+)>)/gi,
-          ""
-        ).replace(/\n/g, "");
-      }
-
-      result.Id = result.Id != undefined ? result.Id : result.ID;
-      if (result.AssignedTo != undefined && result.AssignedTo.length > 0) {
-        map(result.AssignedTo, (Assig: any) => {
-          if (Assig.Id != undefined) {
-            map(AllUsers, (users: any) => {
-              if (
-                Assig.Id != undefined &&
-                users.AssingedToUser != undefined &&
-                Assig.Id == users.AssingedToUser.Id
-              ) {
-                users.ItemCover = users.Item_x0020_Cover;
-                result.TeamLeaderUser.push(users);
-                result.AllTeamName += users.Title + ";";
-              }
-            });
-          }
-        });
-      }
-      if (
-        result.ResponsibleTeam != undefined &&
-        result.ResponsibleTeam.length > 0
-      ) {
-        map(result.ResponsibleTeam, (Assig: any) => {
-          if (Assig.Id != undefined) {
-            map(AllUsers, (users: any) => {
-              if (
-                Assig.Id != undefined &&
-                users.AssingedToUser != undefined &&
-                Assig.Id == users.AssingedToUser.Id
-              ) {
-                users.ItemCover = users.Item_x0020_Cover;
-                result.TeamLeaderUser.push(users);
-                result.AllTeamName += users.Title + ";";
-              }
-            });
-          }
-        });
-      }
-      if (result.TeamMembers != undefined && result.TeamMembers.length > 0) {
-        map(result.TeamMembers, (Assig: any) => {
-          if (Assig.Id != undefined) {
-            map(AllUsers, (users: any) => {
-              if (
-                Assig.Id != undefined &&
-                users.AssingedToUser != undefined &&
-                Assig.Id == users.AssingedToUser.Id
-              ) {
-                users.ItemCover = users.Item_x0020_Cover;
-                result.TeamLeaderUser.push(users);
-                result.AllTeamName += users.Title + ";";
-              }
-            });
-          }
-        });
-      }
-
-      if (result?.ClientCategory?.length > 0) {
-        result.ClientCategorySearch = result?.ClientCategory?.map(
-          (elem: any) => elem.Title
-        ).join(" ");
-      } else {
-        result.ClientCategorySearch = "";
-      }
-    });
     flatviewmastertask = JSON.parse(JSON.stringify(componentDetails));
     setAllMasterTasks(componentDetails);
     AllComponetsData = componentDetails;
     ComponetsData["allComponets"] = componentDetails;
-    // AllSiteTasksData?.length > 0 &&
     if (AllSiteTasksData?.length > 0 && AllComponetsData?.length > 0) {
       portfolioTypeData.forEach((port, index) => {
         componentGrouping(port?.Id, index);
@@ -806,6 +618,7 @@ function PortfolioTable(SelectedProp: any) {
     if (portfolioTypeData?.length === countsrun) {
       executeOnce();
     }
+    // AllSiteTasksData?.length > 0 &&
   };
 
 
@@ -1540,7 +1353,7 @@ const switchGroupbyData = () => {
           }
         },
         header: "",
-        size: 145
+        size: 134
       },
       {
         accessorKey: "descriptionsSearch",
@@ -1880,186 +1693,144 @@ const switchGroupbyData = () => {
   /// END ////
 
   //----------------------------Code By Santosh---------------------------------------------------------------------------
-  const Call = (res: any) => {
-    if (res?.data?.ItmesDelete == true) {
-      copyDtaArray?.map((ele: any, index: any) => {
-        if (ele.subRows != undefined && ele.subRows?.length > 0) {
-          ele.subRows?.map((sub: any, subindex: any) => {
-            if (sub.Id == res.data.Id) {
-              copyDtaArray[index].subRows.splice(subindex, 1);
-            }
-          })
+  
+
+  function deletedDataFromPortfolios(dataArray: any, idToDelete: any, siteName: any) {
+    let updatedArray = [];
+    let itemDeleted = false;
+    for (let item of dataArray) {
+        if (item.Id === idToDelete && item.siteType === siteName) {
+            itemDeleted = true;
+            continue;
         }
-        if (ele.Id == res.data.Id) {
-          copyDtaArray.splice(index, 1);
+        let newItem = { ...item };
+        if (newItem.subRows && newItem.subRows.length > 0) {
+            newItem.subRows = deletedDataFromPortfolios(newItem.subRows, idToDelete, siteName);
         }
-      })
-      renderData = [];
-      renderData = renderData.concat(copyDtaArray);
-      refreshData();
+        updatedArray.push(newItem);
+        if (itemDeleted) {
+            return updatedArray;
+        }
     }
-    if (res == "Close") {
-      setIsTask(false);
-      setIsOpenActivity(false);
-      setIsOpenWorkstream(false);
-      setActivityPopup(false);
-      setIsComponent(false);
+    return updatedArray;
+}
+
+const addedCreatedDataFromAWT = (arr: any, dataToPush: any) => {
+  if(dataToPush?.PortfolioId === SelectedProp.props.Id && dataToPush?.ParentTask?.Id === undefined){
+    arr.push(dataToPush)
+    return true;
+  }else if(dataToPush?.PortfolioId === SelectedProp?.props?.Id && dataToPush?.TaskTypeId ==2 && dataToPush?.ParentTaskId === null){
+    const checkother = arr.filter((item: any) => item.Title === "Others");
+    if (checkother?.length === 0) {
+      let temp: any = {};
+      temp.Title = "Others";
+      temp.TaskID = "";
+      temp.subRows = [];
+      temp.PercentComplete = "";
+      temp.ItemRank = "";
+      temp.DueDate = null;
+      temp.Project = "";
+      temp.ClientCategorySearch = "";
+      temp.Created = null;
+      temp.DisplayCreateDate = null;
+      temp.DisplayDueDate = null;
+      temp.AllTeamName = "";
+      temp.DueDate = "";
+      temp.portfolioItemsSearch = "";
+      temp.descriptionsSearch = "";
+      temp.ProjectTitle = "";
+      temp.Status = "";
+      temp.Author = "";
+      temp?.subRows?.push(dataToPush);
+      copyDtaArray = copyDtaArray.concat(temp)
+      return true;
+    } else {
+      checkother[0]?.subRows?.push(dataToPush)
+      return true;
     }
-    else if(res?.Id != undefined && res?.siteCompositionData != undefined){
-      copyDtaArray.forEach((val:any, index:any) => {
-        if (res?.Id === val?.Id && val?.Item_x0020_Type === res?.Item_x0020_Type) {
-          const newVal = { ...res };
-          copyDtaArray[index] = newVal;
-        } else if (val?.subRows) {
-          val.subRows.forEach((ele:any, subIndex:any) => {
-            if (res?.Id === ele?.Id && ele?.Item_x0020_Type === res?.Item_x0020_Type) {
-              const newVal = { ...res };
-              copyDtaArray[index].subRows[subIndex] = newVal;
-            } else if (ele?.subRows) {
-              ele.subRows.forEach((elev:any, subSubIndex:any) => {
-                if (res?.Id === elev?.Id && elev?.Item_x0020_Type === res?.Item_x0020_Type) {
-                  const newVal = { ...res };
-                  copyDtaArray[index].subRows[subIndex].subRows[subSubIndex] = newVal;
-                }
-              });
-            }
-          });
+  }
+  for (let val of arr) {
+      if (dataToPush?.PortfolioId === val.Id && dataToPush?.ParentTask?.Id === undefined) {
+          val.subRows = val.subRows || [];
+          val?.subRows?.push(dataToPush);
+          return true;
+      } else if (dataToPush?.ParentTask?.Id === val.Id && dataToPush?.siteType === val?.siteType) {
+          val.subRows = val.subRows || [];
+          val?.subRows?.push(dataToPush);
+          return true;
+      } else if (val?.subRows) {
+          if (addedCreatedDataFromAWT(val.subRows, dataToPush)) {
+              return true;
+          }
+      }
+  }
+  return false;
+};
+const updatedDataDataFromPortfolios = (copyDtaArray: any, dataToUpdate: any) => {
+  for (let i = 0; i < copyDtaArray.length; i++) {
+      if ((dataToUpdate?.Portfolio?.Id === copyDtaArray[i]?.Portfolio?.Id && dataToUpdate?.Id === copyDtaArray[i]?.Id && copyDtaArray[i]?.siteType === dataToUpdate?.siteType) || (dataToUpdate?.Id === copyDtaArray[i]?.Id && copyDtaArray[i]?.siteType === dataToUpdate?.siteType)) {
+          copyDtaArray[i] = { ...copyDtaArray[i], ...dataToUpdate };
+          return true;
+      } else if (copyDtaArray[i].subRows) {
+          if (updatedDataDataFromPortfolios(copyDtaArray[i].subRows, dataToUpdate)) {
+              return true;
+          }
+      }
+  }
+  return false;
+};
+  const Call = (res: any, UpdatedData: any) => {
+    if (res === "Close") {
+        setIsComponent(false);
+        setIsTask(false);
+        setIsOpenActivity(false)
+        setIsOpenWorkstream(false)
+        setActivityPopup(false)
+    } else if (res?.data && res?.data?.ItmesDelete != true && !UpdatedData) {
+        childRef?.current?.setRowSelection({});
+        setIsComponent(false);
+        setIsTask(false);
+        setIsOpenActivity(false)
+        setIsOpenWorkstream(false)
+        setActivityPopup(false)
+        if (addedCreatedDataFromAWT(copyDtaArray, res.data)) {
+            renderData = [];
+            renderData = renderData.concat(copyDtaArray)
+            refreshData();
         }
-      });
-      
-      renderData = [];
-      renderData = renderData.concat(copyDtaArray);
-      refreshData();
-   
-    } 
-    else {
-      childRef?.current?.setRowSelection({});
-      setIsComponent(false);
-      setIsTask(false);
-      setIsOpenActivity(false);
-      setIsOpenWorkstream(false);
-      setActivityPopup(false);
-      if (res?.data?.PortfolioId != null && res?.data?.PortfolioId === SelectedProp?.props?.Id &&res?.data?.TaskTypeId === 2 && res?.data?.ParentTaskId===null ) {
-        const checkother = copyDtaArray.filter((item: any) => item.Title === "Others");
-        if (checkother?.length === 0) {
-          let temp: any = {};
-          temp.Title = "Others";
-          temp.TaskID = "";
-          temp.subRows = [];
-          temp.PercentComplete = "";
-          temp.ItemRank = "";
-          temp.DueDate = null;
-          temp.Project = "";
-          temp.ClientCategorySearch = "";
-          temp.Created = null;
-          temp.DisplayCreateDate = null;
-          temp.DisplayDueDate = null;
-          temp.AllTeamName = "";
-          temp.DueDate = "";
-          temp.portfolioItemsSearch = "";
-          temp.descriptionsSearch = "";
-          temp.ProjectTitle = "";
-          temp.Status = "";
-          temp.Author = "";
-          temp?.subRows?.push(res.data);
-          copyDtaArray = copyDtaArray.concat(temp)
+    } else if (res?.data?.ItmesDelete === true && res?.data?.Id && (res?.data?.siteName || res?.data?.siteType) && !UpdatedData) {
+        setIsComponent(false);
+        setIsTask(false);
+        setIsOpenActivity(false)
+        setIsOpenWorkstream(false)
+        setActivityPopup(false)
+        if (res?.data?.siteName) {
+            copyDtaArray = deletedDataFromPortfolios(copyDtaArray, res.data.Id, res.data.siteName);
         } else {
-          checkother[0]?.subRows?.push(res.data)
+            copyDtaArray = deletedDataFromPortfolios(copyDtaArray, res.data.Id, res.data.siteType);
         }
-      }
-      if (res?.data?.PortfolioId === SelectedProp?.props?.Id || res?.data?.TaskTypeId != null) {
-        if(copyDtaArray?.length === 0){
-          copyDtaArray.push(res.data);
-        }else{
-          copyDtaArray.forEach((val: any) => {
-            if (res?.data?.ParentTask?.Id === val?.Id || res?.data?.ParentTaskId === val?.Id) {
-              val.subRows = val.subRows ?? [];
-              val.subRows.push(res.data);
-            }
-  
-            if (val?.subRows) {
-              val?.subRows?.forEach((ele: any) => {
-                if (res?.data?.ParentTask?.Id === ele?.Id || res?.data?.ParentTaskId === ele?.Id) {
-                  ele.subRows = ele.subRows ?? [];
-                  ele?.subRows?.push(res.data);
-                }
-                if (ele?.subRows) {
-                  ele?.subRows?.forEach((elev: any) => {
-                    if (res?.data?.ParentTask?.Id === elev?.Id || res?.data?.ParentTaskId === elev?.Id) {
-                      elev.subRows = elev.subRows ?? [];
-                      elev?.subRows?.push(res.data);
-                    }
-                  });
-                }
-  
-              });
-            }
-          });
-       
+        renderData = [];
+        renderData = renderData.concat(copyDtaArray)
+        refreshData();
+    } else if (res?.data?.ItmesDelete != true && res?.data?.Id && res?.data?.siteType && UpdatedData) {
+        setIsComponent(false);
+        setIsTask(false);
+        setIsOpenActivity(false)
+        setIsOpenWorkstream(false)
+        setActivityPopup(false)
+        const updated = updatedDataDataFromPortfolios(copyDtaArray, res?.data);
+        if (updated) {
+            renderData = [];
+            renderData = renderData.concat(copyDtaArray)
+            refreshData();
+        } else {
+            console.log("Data with the specified PortfolioId was not found.");
         }
-      }
 
-      copyDtaArray?.forEach((val: any) => {
-
-        if (res?.data?.PortfolioId == val.Id) {
-          val.subRows = val.subRows === undefined ? [] : val.subRows;
-
-          val.subRows.push(res.data);
-        } else if (val?.subRows != undefined && val?.subRows.length > 0) {
-          val.subRows?.forEach((ele: any) => {
-            if (res?.data?.PortfolioId == ele?.Id) {
-              ele.subRows = ele.subRows === undefined ? [] : ele.subRows;
-              ele.subRows.push(res.data);
-            } else {
-              ele.subRows?.forEach((elev: any) => {
-                if (res?.data?.PortfolioId == elev.Id) {
-                  elev.subRows = elev.subRows === undefined ? [] : elev.subRows;
-                  elev.subRows.push(res.data);
-                } else {
-                  elev.subRows?.forEach((child: any) => {
-                    if (res?.data?.PortfolioId == child?.Id) {
-                      child.subRows =
-                        child.subRows === undefined ? [] : child.subRows;
-
-                      child.subRows.push(res.data);
-                    } else {
-                      {
-                        child.subRows?.forEach((Sub: any) => {
-                          if (res?.data?.PortfolioId == Sub.Id) {
-                            Sub.subRows =
-                              Sub.subRows === undefined ? [] : Sub.subRows;
-
-                            Sub.subRows.push(res.data);
-                          }else{
-                            Sub?.subRows?.forEach((nextsub:any)=>{
-                              if (res?.data?.PortfolioId == nextsub.Id) {
-                                nextsub.subRows =
-                                nextsub.subRows === undefined ? [] : nextsub.subRows;
-    
-                                nextsub.subRows.push(res.data);
-                              }
-                            })
-                            
-                          }
-                        });
-                      }
-                    }
-                  });
-                }
-              });
-            }
-          });
-        }
-      });
-
-
-      // For the resolve the 
-
-      renderData = [];
-      renderData = renderData.concat(copyDtaArray);
-      refreshData();
     }
-  };
+   
+}
+
   // new change////
   const CreateActivityPopup = (type: any) => {
     if (checkedList?.TaskType === undefined) {
@@ -2091,10 +1862,28 @@ const switchGroupbyData = () => {
     ) {
       checkedList.NoteCall = type;
       setActivityPopup(true);
+      if (SelectedProp?.props?.PortfolioType?.Color != undefined) {
+        setTimeout(() => {
+          let targetDiv: any = document?.querySelector('.ms-Panel-main');
+          if (targetDiv) {
+            // Change the --SiteBlue variable for elements under the targetDiv
+            targetDiv?.style?.setProperty('--SiteBlue', SelectedProp?.props?.PortfolioType?.Color); // Change the color to your desired value
+          }
+        }, 1000)
+      }
     }
     if (checkedList?.TaskTypeId === 3 || checkedList?.TaskType?.Id === 3) {
       checkedList.NoteCall = "Task";
       setIsOpenActivity(true);
+      if (SelectedProp?.props?.PortfolioType?.Color != undefined) {
+        setTimeout(() => {
+          let targetDiv: any = document?.querySelector('.ms-Panel-main');
+          if (targetDiv) {
+            // Change the --SiteBlue variable for elements under the targetDiv
+            targetDiv?.style?.setProperty('--SiteBlue', SelectedProp?.props?.PortfolioType?.Color); // Change the color to your desired value
+          }
+        }, 1000)
+      }
     }
     if (checkedList?.TaskType?.Id == 1 || checkedList?.TaskTypeId == 1) {
       checkedList.NoteCall = "Workstream";
@@ -2258,7 +2047,7 @@ const switchGroupbyData = () => {
                         AddStructureFeature={
                           SelectedProp?.props?.Item_x0020_Type
                         }
-                        clickFlatView={clickFlatView} switchFlatViewData={switchFlatViewData} flatView={true} switchGroupbyData={switchGroupbyData}  updatedSmartFilterFlatView={false}
+                        clickFlatView={clickFlatView} switchFlatViewData={switchFlatViewData} flatView={true} switchGroupbyData={switchGroupbyData} updatedSmartFilterFlatView={false}
                         setLoaded={setLoaded}
                         queryItems={SelectedProp?.props}
                         PortfolioFeature={SelectedProp?.props?.Item_x0020_Type}
@@ -2319,13 +2108,7 @@ const switchGroupbyData = () => {
       >
         <div className="modal-body bg-f5f5 clearfix">
           <div
-            className={
-              IsUpdated == "Events Portfolio"
-                ? "app component clearfix eventpannelorange"
-                : IsUpdated == "Service Portfolio"
-                  ? "app component clearfix serviepannelgreena"
-                  : "app component clearfix"
-            }
+            className= "app component clearfix"
           >
             <div id="portfolio" className="section-event pt-0">
               {checkedList != undefined &&

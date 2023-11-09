@@ -6,9 +6,10 @@ import EditDocument from './EditDocunentPanel'
 import { useState, useEffect, forwardRef, useImperativeHandle, createContext } from 'react';
 // import { MyContext } from './Taskprofile'
 import { myContextValue } from "../../../globalComponents/globalCommon";
+
 let mastertaskdetails: any = [];
 const RelevantEmail = (props: any, ref: any) => {
-
+  const myContextData2: any = React.useContext<any>(myContextValue)
   const [documentData, setDocumentData] = useState([]);
 
   // const [FileName, setFileName] = useState(props?.folderName);
@@ -189,7 +190,7 @@ const RelevantEmail = (props: any, ref: any) => {
       </div>
       } */}
 
-      {editdocpanel && <EditDocument editData={EditdocData} AllListId={props.AllListId} Context={props.Context} editdocpanel={editdocpanel} callbackeditpopup={callbackeditpopup} />}
+      {editdocpanel && <EditDocument editData={EditdocData} ColorCode={myContextData2?.ColorCode} AllListId={props.AllListId} Context={props.Context} editdocpanel={editdocpanel} callbackeditpopup={callbackeditpopup} />}
 
     </>
 

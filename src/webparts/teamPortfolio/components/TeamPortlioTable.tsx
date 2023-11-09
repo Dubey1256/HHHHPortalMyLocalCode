@@ -81,6 +81,8 @@ function TeamPortlioTable(SelectedProp: any) {
     const [AllMetadata, setMetadata] = React.useState([])
     const [AllClientCategory, setAllClientCategory] = React.useState([])
     const [IsUpdated, setIsUpdated] = React.useState("");
+    const [IsSmartfavoriteId, setIsSmartfavoriteId] = React.useState("");
+    const [IsSmartfavorite, setIsSmartfavorite] = React.useState("");
     const [checkedList, setCheckedList] = React.useState<any>({});
     const [AllSiteTasksData, setAllSiteTasksData] = React.useState([]);
     const [AllMasterTasksData, setAllMasterTasks] = React.useState([]);
@@ -273,8 +275,6 @@ function TeamPortlioTable(SelectedProp: any) {
         } else { Image = "https://hhhhteams.sharepoint.com/sites/HHHH/PublishingImages/Portraits/icon_user.jpg"; }
         return user ? Image : null;
     };
-
-
 
     const LoadAllSiteTasks = function () {
         let AllTasksData: any = [];
@@ -512,6 +512,7 @@ function TeamPortlioTable(SelectedProp: any) {
         console.log(componentDetails);
         ProjectData = componentDetails.filter((projectItem: any) => projectItem.Item_x0020_Type === "Project")
         componentDetails.forEach((result: any) => {
+            result.siteUrl = ContextValue?.siteUrl;
             result["siteType"] = "Master Tasks";
             result.AllTeamName = "";
             result.descriptionsSearch = '';
@@ -641,6 +642,14 @@ function TeamPortlioTable(SelectedProp: any) {
             setIsUpdated(query);
             isUpdated = query;
         }
+        let smartFavoriteIdParam = params.get("SmartfavoriteId");
+        if (smartFavoriteIdParam) {
+            setIsSmartfavoriteId(smartFavoriteIdParam);
+        }
+        let smartFavoriteParam = params.get("smartfavorite");
+        if (smartFavoriteParam) {
+            setIsSmartfavorite(smartFavoriteParam);
+        }
     }, [])
 
     React.useEffect(() => {
@@ -674,7 +683,6 @@ function TeamPortlioTable(SelectedProp: any) {
 
     React.useEffect(() => {
         if (AllMetadata.length > 0 && portfolioTypeData.length > 0) {
-            // GetComponents();
             LoadAllSiteTasks()
         }
     }, [AllMetadata.length > 0 && portfolioTypeData.length > 0])
@@ -696,7 +704,6 @@ function TeamPortlioTable(SelectedProp: any) {
                     }
                 })
             }
-            // if (count === portfolioTypeData?.length) {
             countAllTasksData = countAllTasksData?.filter((ele: any, ind: any, arr: any) => {
                 const isDuplicate = arr.findIndex((elem: any) => {
                     return (elem.ID === ele.ID || elem.Id === ele.Id) && elem.siteType === ele.siteType;
@@ -705,7 +712,6 @@ function TeamPortlioTable(SelectedProp: any) {
             })
             countTaskAWTLevel(countAllTasksData, '');
             setFilterCounters(true);
-            // }
         }
     }, [AllSiteTasksData.length > 0 && AllMasterTasksData.length > 0 && allLoadeDataMasterTaskAndTask?.length > 0])
 
@@ -1443,7 +1449,7 @@ function TeamPortlioTable(SelectedProp: any) {
                     <div className="alignCenter">
                         {row?.original?.Created == null ? ("") : (
                             <>
-                                <HighlightableCell value={row?.original?.DisplayCreateDate} searchTerm={column.getFilterValue() != undefined ? column.getFilterValue() : childRef?.current?.globalFilter} />
+                                <div style={{ width: "75px" }} className="me-1"><HighlightableCell value={row?.original?.DisplayCreateDate} searchTerm={column.getFilterValue() != undefined ? column.getFilterValue() : childRef?.current?.globalFilter} /></div>
                                 {/* <div className='ms-1'>{row?.original?.DisplayCreateDate} </div> */}
                                 {row?.original?.Author != undefined &&
                                     <>
@@ -1837,53 +1843,6 @@ function TeamPortlioTable(SelectedProp: any) {
             setIsOpenActivity(false)
             setIsOpenWorkstream(false)
             setActivityPopup(false)
-            // copyDtaArray?.forEach((val: any) => {
-            //     if (res?.data?.PortfolioId === val.Id) {
-            //         val.subRows = val.subRows === undefined ? [] : val.subRows;
-            //         val.subRows.push(res.data)
-            //     }
-            //     else if (val?.subRows != undefined && val?.subRows.length > 0) {
-            //         val.subRows?.forEach((ele: any) => {
-            //             if (res?.data?.PortfolioId == ele?.Id) {
-            //                 ele.subRows = ele.subRows === undefined ? [] : ele.subRows;
-            //                 ele.subRows.push(res.data)
-
-            //             }
-            //             else {
-            //                 ele.subRows?.forEach((elev: any) => {
-            //                     if (res?.data?.PortfolioId == elev.Id) {
-            //                         elev.subRows = elev.subRows === undefined ? [] : elev.subRows;
-            //                         elev.subRows.push(res.data)
-
-            //                     }
-            //                     else {
-            //                         elev.subRows?.forEach((child: any) => {
-            //                             if (res?.data?.PortfolioId == child?.Id) {
-            //                                 child.subRows = child.subRows === undefined ? [] : child.subRows;
-
-            //                                 child.subRows.push(res.data)
-
-            //                             }
-            //                             else {
-            //                                 {
-            //                                     child.subRows?.forEach((Sub: any) => {
-            //                                         if (res?.data?.PortfolioId == Sub.Id) {
-            //                                             Sub.subRows = Sub.subRows === undefined ? [] : Sub.subRows;
-
-            //                                             Sub.subRows.push(res.data)
-
-            //                                         }
-            //                                     })
-            //                                 }
-            //                             }
-            //                         })
-            //                     }
-            //                 })
-            //             }
-            //         })
-            //     }
-
-            // })
             if (addedCreatedDataFromAWT(copyDtaArray, res.data)) {
                 renderData = [];
                 renderData = renderData.concat(copyDtaArray)
@@ -2033,7 +1992,7 @@ function TeamPortlioTable(SelectedProp: any) {
                     </h2>
                 </div>
                 <div className="togglecontent mt-1">
-                    {filterCounters == true ? <TeamSmartFilter ProjectData={ProjectData} portfolioTypeData={portfolioTypeData} setLoaded={setLoaded} AllSiteTasksData={AllSiteTasksData} AllMasterTasksData={AllMasterTasksData} SelectedProp={SelectedProp.SelectedProp} ContextValue={ContextValue} smartFiltercallBackData={smartFiltercallBackData} portfolioColor={portfolioColor} /> : ''}
+                    {filterCounters == true ? <TeamSmartFilter IsUpdated={IsUpdated} IsSmartfavorite={IsSmartfavorite} IsSmartfavoriteId={IsSmartfavoriteId} ProjectData={ProjectData} portfolioTypeData={portfolioTypeData} setLoaded={setLoaded} AllSiteTasksData={AllSiteTasksData} AllMasterTasksData={AllMasterTasksData} SelectedProp={SelectedProp.SelectedProp} ContextValue={ContextValue} smartFiltercallBackData={smartFiltercallBackData} portfolioColor={portfolioColor} /> : ''}
                 </div>
             </section>
 

@@ -26,20 +26,13 @@ import {
   Toggle
 } from "office-ui-fabric-react";
 
-//import $ from "jquery";
-// import { RichText } from 'office-ui-fabric-react';
-// import { TextEditor } from '@microsoft/monaco-editor-react';
-// import 'froala-editor/css/froala_editor.pkgd.min.css';
-// import 'froala-editor/css/froala_style.min.css';
-// import FroalaEditorComponent from 'react-froala-wysiwyg';
 import * as ReactQuill from "react-quill";
 import "react-quill/dist/quill.snow.css";
 import { EventRecurrenceInfo } from "./EventRecurrenceControls/EventRecurrenceInfo/EventRecurrenceInfo";
 import parseRecurrentEvent from "./EventRecurrenceControls/service/parseRecurrentEvent";
 import Tooltip from "../../../globalComponents/Tooltip";
 import VersionHistoryPopup from "../../../globalComponents/VersionHistroy/VersionHistory";
-//import Modal from "react-bootstrap/Modal";
-//import MoreSlot from "./Slots";
+
 
 import {
   PeoplePicker,
@@ -93,9 +86,6 @@ interface IEventData {
   created?: string;
   modify?: string;
 }
-//import TimePicker from 'react-time-picker';
-//import { format } from "date-fns";
-//import { TimePicker } from "@fluentui/react";
 
 const localizer = momentLocalizer(moment);
 let createdBY: any,
@@ -111,10 +101,9 @@ let startTime: any,
   eventPass: any = {},
   endTime: any,
   allDay: any = false,
+  HalfDaye:any=false,
   title_people: any,
   title_Id: any;
-// endDateTime: any;
-//let dateTime:any,startDate:any,startTime:any,endtDate:any,endTime:any;
 let maxD = new Date(8640000000000000);
 
 const App = (props: any) => {
@@ -156,6 +145,7 @@ const App = (props: any) => {
   // Change here array
   const [peopleName, setPeopleName]: any = React.useState();
   const [isChecked, setIsChecked] = React.useState(false);
+  const [isHalfDChecked, setIsHalfDChecked] = React.useState(false);
   const [disableTime, setDisableTime] = React.useState(false);
   //const [maxD, setMaxD] = React.useState(new Date(8640000000000000));
   const [selectedPeople, setSelectedPeople] = React.useState([]);
@@ -230,19 +220,12 @@ const App = (props: any) => {
 
     try {
       const web = new Web(props.props.siteUrl);
-      /*const results = await web.lists.getById(props.props.SmalsusLeaveCalendar).renderListDataAsStream(
-        {
-          DatesInUtc: true,
-          ViewXml: `<View><ViewFields><FieldRef Name='RecurrenceData'/><FieldRef Name='Duration'/><FieldRef Name='Author'/><FieldRef Name='Editor'/><FieldRef Name='Category'/><FieldRef Name='Description'/><FieldRef Name='ParticipantsPicker'/><FieldRef Name='Geolocation'/><FieldRef Name='ID'/><FieldRef Name='EndDate'/><FieldRef Name='EventDate'/><FieldRef Name='ID'/><FieldRef Name='Location'/><FieldRef Name='Title'/><FieldRef Name='fAllDayEvent'/><FieldRef Name='EventType'/><FieldRef Name='UID' /><FieldRef Name='fRecurrence' /><FieldRef Name='Event_x002d_Type' /></ViewFields>          
-          <RowLimit Paged=\"FALSE\">2000</RowLimit>
-          </View>`
-        }
-      );*/
+   
 
       const results = await web.lists
         .getById(props.props.SmalsusLeaveCalendar)
         .items.select(
-          "RecurrenceData,Duration,Author/Title,Editor/Title,NameId,Employee/Id,Employee/Title,Category,Description,ID,EndDate,EventDate,Location,Title,fAllDayEvent,EventType,UID,fRecurrence,Event_x002d_Type"
+          "RecurrenceData,Duration,Author/Title,Editor/Title,NameId,Employee/Id,Employee/Title,Category,Description,ID,EndDate,EventDate,Location,Title,fAllDayEvent,EventType,UID,fRecurrence,Event_x002d_Type,HalfDay,Color"
         )
         .expand("Author,Editor,Employee")
         .top(500)
@@ -283,7 +266,9 @@ const App = (props: any) => {
               MasterSeriesItemID: event.MasterSeriesItemID,
               UID: event.UID ? event.UID.replace("{", "").replace("}", "") : "",
               Author: event.Author,
-              Editor: event.Editor
+              Editor: event.Editor,
+              HalfDay:event.HalfDay,
+              Color:event.Color
             });
           }
 
@@ -369,7 +354,9 @@ const App = (props: any) => {
         "RecurrenceData",
         "Duration",
         "Category",
-        "UID"
+        "UID",
+        "HalfDay",
+        "Color"
       )
       .expand("Author")
       .get();
@@ -439,6 +426,7 @@ const App = (props: any) => {
     sedType("");
     setInputValueReason("");
     allDay = "false";
+    HalfDaye = "false";
   };
 
   const handleInputChangeName = (
@@ -500,7 +488,9 @@ const App = (props: any) => {
       RecurrenceData: event.RecurrenceData,
       RecurrenceID: event.RecurrenceID,
       UID: event.UID,
-      fRecurrence: event.fRecurrence
+      fRecurrence: event.fRecurrence,
+      HalfDay:event.HalfDay,
+      Color:event.Color
     }));
    
     console.log(eventsFormatted, "dadd");
@@ -516,7 +506,9 @@ const App = (props: any) => {
         "Author/Title",
         "Editor/Title",
         "Employee/Id",
-        "Employee/Title"
+        "Employee/Title",
+        "HalfDay",
+        "Color"
       )
       .top(4999)
       .orderBy("Created", false)
@@ -590,7 +582,10 @@ const App = (props: any) => {
             cTime: createdAt,
             mTime: modifyAt,
             Name: item.Employee?.Title,
-            Designation: item.Designation
+            Designation: item.Designation,
+            HalfDay:item.HalfDay,
+            Color:item.Color
+            
           };
           // const create ={
           //   id:item.Id,
@@ -644,6 +639,7 @@ const App = (props: any) => {
             void getData();
              closem(undefined);
             setIsChecked(false);
+            setIsHalfDChecked(false)
             setSelectedTime(selectedTime);
             setSelectedTimeEnd(selectedTimeEnd);
             return;
@@ -702,8 +698,9 @@ const App = (props: any) => {
               (selectedTime + "" + ":00"),
 
             fAllDayEvent: allDay,
-
-            Designation: newEvent.Designation
+            HalfDay:HalfDaye,
+            Designation: newEvent.Designation,
+            Color:HalfDaye?"#6d36c5":""
           };
 
           let web = new Web(props.props.siteUrl);
@@ -716,9 +713,11 @@ const App = (props: any) => {
               void getData();
                closem(undefined);
               setIsChecked(false);
+              setIsHalfDChecked(false)
               setSelectedTime(selectedTime);
               setSelectedTimeEnd(selectedTimeEnd);
               allDay = "false";
+              HalfDaye="false";
             });
         }
       }
@@ -756,6 +755,8 @@ const App = (props: any) => {
         EventDate: new Date(start),
         EndDate: new Date(end),
         fAllDayEvent: allDay,
+        HalfDay:HalfDaye,
+        Color:HalfDaye?"#6d36c5":"",
         fRecurrence: true,
         RecurrenceData: returnedRecurrenceInfo.recurrenceData,
         UID: uuidv4()
@@ -771,6 +772,8 @@ const App = (props: any) => {
         EventDate: new Date(start),
         EndDate: new Date(end),
         fAllDayEvent: allDay,
+        HalfDay:HalfDaye,
+        Color:HalfDaye?"#6d36c5":"",
         fRecurrence: true,
         RecurrenceData: returnedRecurrenceInfo.recurrenceData,
         UID: uuidv4()
@@ -1099,9 +1102,11 @@ const App = (props: any) => {
         EndDate: await getUtcTime(newEvent.EndDate),
         Location: newEvent.Location,
         fAllDayEvent: newEvent.fAllDayEvent,
+        Color:HalfDaye?"#6d36c5":"",
         fRecurrence: newEvent.fRecurrence,
         EventType: newEvent.EventType,
         UID: newEvent.UID,
+        HalfDay:HalfDaye,
         RecurrenceData: newEvent.RecurrenceData
           ? await deCodeHtmlEntities(newEvent.RecurrenceData)
           : "",
@@ -1133,6 +1138,8 @@ const App = (props: any) => {
         fRecurrence: editEvent.fRecurrence,
         EventType: editEvent.EventType,
         UID: editEvent.UID,
+        HalfDay:editEvent.HalfDay,
+        Color:HalfDaye?"#6d36c5":"",
         RecurrenceData: editEvent.RecurrenceData
           ? await deCodeHtmlEntities(editEvent.RecurrenceData)
           : "",
@@ -1157,6 +1164,7 @@ const App = (props: any) => {
       void getData();
       closem(undefined);
       setIsChecked(false);
+      setIsHalfDChecked(false)
       setSelectedTime(selectedTime);
       setSelectedTimeEnd(selectedTimeEnd);
       return;
@@ -1171,7 +1179,8 @@ const App = (props: any) => {
       reason: inputValueReason,
       type: type,
       Designation: dType,
-      loc: location
+      loc: location,
+      
     };
     if (
       selectedTime == undefined ||
@@ -1210,7 +1219,8 @@ const App = (props: any) => {
 
         Description: newEvent.reason,
         Designation: newEvent.Designation,
-
+        HalfDay:HalfDaye,
+        Color:HalfDaye?"#6d36c5":"",
         EndDate:
           ConvertLocalTOServerDateToSave(newEvent.end, selectedTimeEnd) +
           " " +
@@ -1220,7 +1230,7 @@ const App = (props: any) => {
           ConvertLocalTOServerDateToSave(startDate, selectedTime) +
           " " +
           (selectedTime + "" + ":00"),
-
+        // Color:newEvent.HalfDay?"#f66499":"",
         fAllDayEvent: allDay
       })
       .then((i: any) => {
@@ -1230,6 +1240,7 @@ const App = (props: any) => {
         setSelectedTime(startTime);
         setSelectedTimeEnd(endTime);
         allDay = "false";
+        HalfDaye="false";
       });
   };
 
@@ -1251,7 +1262,11 @@ const App = (props: any) => {
       //setEndDate(event.end);
       setdisabl(false);
       setIsChecked(event.alldayevent);
+      setIsHalfDChecked(event.HalfDay)
       if (event.alldayevent == true) {
+        setDisableTime(true);
+      }
+      if (event.HalfDay == true) {
         setDisableTime(true);
       }
       setLocation(event.location);
@@ -1290,7 +1305,11 @@ const App = (props: any) => {
         setEndDate(item.end);
         setdisabl(false);
         setIsChecked(item.alldayevent);
+        setIsHalfDChecked(item.HalfDay)
         if (item.alldayevent == true) {
+          setDisableTime(true);
+        }
+        if (item.HalfDay == true) {
           setDisableTime(true);
         }
         setLocation(item.location);
@@ -1344,6 +1363,7 @@ const App = (props: any) => {
     setSelectedTimeEnd("19:00");
     setSelectedTime("10:00");
     setIsChecked(false);
+    setIsHalfDChecked(false)
     setDisableTime(false);
     maxD = new Date(8640000000000000);
   };
@@ -1378,6 +1398,28 @@ const App = (props: any) => {
       setDisableTime(false);
       allDay = false;
       console.log("allDay", allDay);
+    }
+  };
+  const handleHalfDayCheckboxChange = (event: React.ChangeEvent<HTMLInputElement>) => {
+    setIsHalfDChecked(event.target.checked);
+    // console.log("check", isChecked);
+    if (isHalfDChecked == false) {
+      startTime = "10:00";
+      endTime = "19:00";
+      setSelectedTimeEnd("19:00");
+      setSelectedTime("10:00");
+      setEndDate(startDate);
+      maxD = startDate;
+      //console.log(maxD);
+      setDisableTime(true);
+      // allDay = true;
+      HalfDaye=true;
+      //console.log("allDay", allDay);
+    } else {
+      maxD = new Date(8640000000000000);
+      setDisableTime(false);
+      HalfDaye = false;
+      console.log("HalfDay", HalfDaye);
     }
   };
    const setStartDatefunction = (date: any) => {
@@ -1501,6 +1543,23 @@ const App = (props: any) => {
     void getData();
   }, [m]);
 
+// for the new color for the new 
+
+const eventStyleGetter = (event:any, start:any, end:any, isSelecte:any) => {
+  const style = {
+    backgroundColor:event.Color, // Set the background color based on the color property in the event data
+    borderRadius: "0px",
+    opacity: 0.8,
+    color: "rgb(50, 49, 48)",
+    border: "0px",
+    display: "block",
+  };
+  return {
+    style,
+  };
+};
+
+
   return (
     <div>
       <div className="w-100 text-end">
@@ -1542,6 +1601,7 @@ const App = (props: any) => {
           onShowMore={handleShowMore}
           views={{ month: true, week: true, day: true, agenda: true }}
           localizer={localizer}
+          eventPropGetter={eventStyleGetter}
           onSelectEvent={handleDateClick}
         />
       </div>
@@ -1695,6 +1755,17 @@ const App = (props: any) => {
                 onChange={handleCheckboxChange}
               />
               All Day Event
+            </label>
+          </div>
+          <div>
+            <label>
+              <input
+                type="checkbox"
+                className="me-1"
+                checked={isHalfDChecked}
+                onChange={handleHalfDayCheckboxChange}
+              />
+              Half Day Event
             </label>
           </div>
           {

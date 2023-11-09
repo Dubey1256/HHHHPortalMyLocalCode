@@ -15,7 +15,7 @@ import "froala-editor/js/froala_editor.pkgd.min.js";
 import "froala-editor/css/froala_style.min.css";
 import "froala-editor/css/froala_editor.pkgd.min.css";
 import * as globalCommon from "../../../globalComponents/globalCommon";
-import FlorarImageUploadComponent from "../../../globalComponents/FlorarComponents/FlorarImageUploadComponent";
+import FlorarImageUploadComponent from "../../EditPopupFiles/FlorarImagetabportfolio";
 let SitesTypes: any = [];
 let AllListId: any = {};
 let IsapprovalTask = false
@@ -24,8 +24,11 @@ let AllMetadata: any = [];
 let AllTaskUsers: any = [];
 let siteConfig: any = [];
 let loggedInUser: any = {};
+let ClientCategoriesData: any = [];
 let AutoCompleteItemsArray: any = [];
 let FeedBackItem: any = {};
+let uploadedImage:any;
+let imgdefaultContent=""
 const CreateActivity = (props: any) => {
     const [isActive, setIsActive] = React.useState({
         siteType: false,
@@ -51,9 +54,9 @@ const CreateActivity = (props: any) => {
     const [TaskTeamMembers, setTaskTeamMembers] = React.useState([]);
     const [selectPriority, setselectPriority] = React.useState("");
     const [SearchedCategoryData, setSearchedCategoryData] = React.useState([]);
-    const [ClientCategoriesData, setClientCategoriesData] = React.useState<any>(
-        []
-    );
+    // const [ClientCategoriesData, setClientCategoriesData] = React.useState<any>(
+    //     []
+    // );
     const [TaskResponsibleTeam, setTaskResponsibleTeam] = React.useState([]);
     const [editTaskPopupData, setEditTaskPopupData] = React.useState({
         isOpenEditPopup: false,
@@ -81,13 +84,29 @@ const CreateActivity = (props: any) => {
             setTaskTeamMembers(props?.selectedItem?.TeamMember)
         }
         if (props?.selectedItem?.ClientCategory?.length > 0) {
-            setClientCategoriesData(props?.selectedItem?.ClientCategory)
+            ClientCategoriesData = props?.selectedItem?.ClientCategory
         } else if (props?.selectedItem?.ClientCategory?.results?.length > 0) {
-            setClientCategoriesData(props?.selectedItem?.ClientCategory?.results)
+            ClientCategoriesData = props?.selectedItem?.ClientCategory?.results
         }
         setSelectedItem(props?.selectedItem)
-
+        let targetDiv :any = document?.querySelector('.ms-Panel-main');
+        if(props?.selectedItem?.PortfolioType?.Color!=undefined){
+            setTimeout(()=>{
+                if (targetDiv ) {
+                    // Change the --SiteBlue variable for elements under the targetDiv
+                    $('.ms-Panel-main').css('--SiteBlue', props?.selectedItem?.PortfolioType?.Color);
+                }
+            },1000)
+        }
     }, [])
+    React.useEffect(() => {
+        setTimeout(()=>{
+         const panelMain: any = document.querySelector('.ms-Panel-main');
+         if (panelMain && props?.selectedItem?.PortfolioType?.Color) {
+             $('.ms-Panel-main').css('--SiteBlue', props?.selectedItem?.PortfolioType?.Color);; // Set the desired color value here
+         }
+        },2000)
+     }, [IsComponentPicker]);
     //***************** Load All task Users***************** */
     const getTaskUsers = async () => {
         if (AllListId?.TaskUsertListID != undefined) {
@@ -207,6 +226,19 @@ const CreateActivity = (props: any) => {
                 }
             })
         }
+
+        if (AllMetadata?.length > 0 && ClientCategoriesData?.length > 0) {
+            let a: any = [];
+            ClientCategoriesData?.map((cat: any) => {
+                let searchedCat = AllMetadata?.find((item: any) => item.Id == cat?.Id)
+                if (searchedCat) {
+                    a?.push(searchedCat)
+                } else {
+                    a?.push(cat)
+                }
+            })
+            ClientCategoriesData = a;
+        }
     }
     // **************  Get smartmetadata function End ************************* 
     const changeTitle = (e: any) => {
@@ -272,8 +304,11 @@ const CreateActivity = (props: any) => {
     const onRenderCustomHeaderMain = () => {
         return (
             <>
-                <div className="subheading sitecolor">
-                    {`Create Quick Option - ${selectedItem?.NoteCall}`}
+                <div className="subheading"
+                >
+                    <h2 className="siteColor">
+                        {`Create Quick Option - ${selectedItem?.NoteCall}`}
+                    </h2>
                 </div>
                 <Tooltip ComponentId={1746} />
             </>
@@ -356,19 +391,129 @@ const CreateActivity = (props: any) => {
     //------------Image upload function start--------------
 
 
-    const FlorarImageUploadComponentCallBack = (dt: any) => {
-        console.log(dt)
-        // setUploadBtnStatus(false);
-        // let DataObject: any = {
-        //     data_url: dt,
-        //     file: "Image/jpg"
-        // }
-        // let arrayIndex: any = TaskImages?.length
-        // TaskImages.push(DataObject)
-        // if (dt.length > 0) {
-        //     onUploadImageFunction(TaskImages, [arrayIndex]);
-        // }
+    const FlorarImageUploadComponentCallBack = (item: any, FileName: any) => {
+        imgdefaultContent=item;
+        console.log(item)
+        let DataObject: any = {
+            fileURL: item,
+            file: "Image/jpg",
+            fileName: FileName
+        }
+        uploadedImage=DataObject;
     }
+    const onUploadImageFunction = async (
+        postData:any) => {
+      
+        let fileName: any = '';
+        let tempArray: any = [];
+        let SiteUrl = AllListId?.siteUrl;
+         let date = new Date()
+                let timeStamp = date.getTime();
+                let imageIndex = 0
+                fileName = "T" + postData.Id + '-Image' + imageIndex + "-" + postData.Title?.replace(/["/':?]/g, '')?.slice(0, 40) + " " + timeStamp + ".jpg";
+           
+              
+                let ImgArray = {
+                    ImageName: fileName,
+                    UploadeDate: Moment(new Date()).format("DD/MM/YYYY"),
+                    ImageUrl: SiteUrl + '/Lists/' + postData.siteType + '/Attachments/' + postData?.Id + '/' + fileName,
+
+                    UserImage: loggedInUser != undefined && loggedInUser.Item_x0020_Cover?.Url?.length > 0 ? loggedInUser.Item_x0020_Cover?.Url : "https://hhhhteams.sharepoint.com/sites/HHHH/SiteCollectionImages/ICONS/32/icon_user.jpg",
+                    UserName: loggedInUser != undefined && loggedInUser.Title?.length > 0 ? loggedInUser.Title : props.context.pageContext._user.displayName,
+                    Description: ''
+                };
+                tempArray.push(ImgArray);
+       
+    
+        tempArray?.map((tempItem: any) => {
+            tempItem.Checked = false
+        })
+        // setTaskImages(tempArray);
+        // UploadImageFunction(lastindexArray, fileName);
+      
+                UploadImageFunction(postData,fileName, tempArray);
+
+            
+           
+        }
+  
+    const UploadImageFunction = (postData: any, imageName: any, DataJson: any) => {
+        let listId = postData.listId;
+       
+        let Id = postData.Id
+        var src = uploadedImage?.fileURL?.split(",")[1];
+        var byteArray = new Uint8Array(atob(src)?.split("")?.map(function (c) {
+            return c.charCodeAt(0);
+        }));
+        const data: any = byteArray
+        var fileData = '';
+        for (var i = 0; i < byteArray.byteLength; i++) {
+            fileData += String.fromCharCode(byteArray[i]);
+        }
+        setTimeout(() => {
+            if (postData.listId != undefined) {
+                (async () => {
+                    let web = new Web(AllListId?.siteUrl);
+                    let item = web.lists.getById(listId).items.getById(Id);
+                    item.attachmentFiles.add(imageName, data).then(() => {
+                        console.log("Attachment added");
+                        UpdateBasicImageInfoJSON(DataJson, "Upload", 0,postData);
+                        postData.UploadedImage = DataJson;
+                    });
+                   
+                })().catch(console.log)
+            } 
+        }, 2500);
+    }
+
+
+    const UpdateBasicImageInfoJSON = async (JsonData: any, usedFor: any, ImageIndex: any,postData:any) => {
+        var UploadImageArray: any = []
+        if (JsonData != undefined && JsonData.length > 0) {
+            JsonData?.map((imgItem: any, Index: any) => {
+                if (imgItem.ImageName != undefined && imgItem.ImageName != null) {
+                    if (imgItem.imageDataUrl != undefined && imgItem.imageDataUrl != null) {
+                        let TimeStamp: any = Moment(new Date().toLocaleString())
+                        let ImageUpdatedURL: any;
+                        if (usedFor == "Update" && Index == ImageIndex) {
+                            ImageUpdatedURL = imgItem.imageDataUrl + "?Updated=" + TimeStamp;
+                        } else {
+                            ImageUpdatedURL = imgItem.imageDataUrl
+                        }
+                        let tempObject: any = {
+                            ImageName: imgItem.ImageName,
+                            ImageUrl: ImageUpdatedURL,
+                            UploadeDate: imgItem.UploadeDate,
+                            UserName: imgItem.UserName,
+                            UserImage: imgItem.UserImage,
+                            Description: imgItem.Description != undefined ? imgItem.Description : ''
+                        }
+                        UploadImageArray.push(tempObject)
+                    } else {
+                        let TimeStamp: any = Moment(new Date().toLocaleString())
+                        let ImageUpdatedURL: any;
+                        if (usedFor == "Update" && Index == ImageIndex) {
+                            ImageUpdatedURL = imgItem.ImageUrl + "?Updated=" + TimeStamp;
+                        } else {
+                            ImageUpdatedURL = imgItem.ImageUrl;
+                        }
+                        imgItem.Description = imgItem.Description != undefined ? imgItem.Description : '';
+                        imgItem.ImageUrl = ImageUpdatedURL;
+                        UploadImageArray.push(imgItem);
+                    }
+                }
+            })
+        }
+        if (UploadImageArray != undefined && UploadImageArray.length > 0) {
+            try {
+                let web = new Web(AllListId?.siteUrl);
+                await web.lists.getById(postData.listId).items.getById(postData.Id).update({ BasicImageInfo: JSON.stringify(UploadImageArray) }).then((res: any) => { console.log("Image JSON Updated !!"); })
+            } catch (error) {
+                console.log("Error Message :", error);
+            }
+        }
+    }
+
 
     //------------ Image Upload Function end -------------
 
@@ -408,6 +553,7 @@ const CreateActivity = (props: any) => {
         else {
             let priorityRank = 4;
             let priority = '';
+            let postedCC: any = []
             if (selectPriority === '' || parseInt(selectPriority) <= 0) {
                 priority = '(2) Normal';
             }
@@ -476,31 +622,32 @@ const CreateActivity = (props: any) => {
                         ClientCategoriesData != undefined &&
                         ClientCategoriesData?.length > 0
                     ) {
+
                         ClientCategoriesData.map((val: any) => {
                             if (site?.Title?.toLowerCase() == "shareweb") {
                                 ClientCategory.push(val?.Id);
+                                postedCC.push(val)
                             }
-                            else if (val?.Id != undefined && val?.siteName == site?.Title) {
+                            else if (site.Title?.toLowerCase() == val?.siteName?.toLowerCase()) {
                                 ClientCategory.push(val?.Id);
-                            }
-                            else if (val?.Id != undefined && val?.Titles != undefined && val?.Titles.length > 0 && val?.Titles[0] == site?.Title) {
-                                ClientCategory.push(val?.Id);
+                                postedCC.push(val)
                             }
                             else if (selectedItem?.TaskType?.Title == "Workstream") {
                                 ClientCategory.push(val?.Id);
+                                postedCC.push(val)
                             }
-                            
+
                         });
                     }
-                   
+
 
                     if (selectedItem?.Sitestagging != undefined) {
                         if (typeof selectedItem?.Sitestagging == "object") {
                             if (site?.Title?.toLowerCase() == "shareweb") {
-                                selectedItem?. Sitestagging((sitecomp:any)=>{
-                                    if(sitecomp.Title!=undefined && sitecomp.Title!=""&& sitecomp.SiteName==undefined){
-                                        sitecomp.SiteName=sitecomp.Title
-                                    }   
+                                selectedItem?.Sitestagging((sitecomp: any) => {
+                                    if (sitecomp.Title != undefined && sitecomp.Title != "" && sitecomp.SiteName == undefined) {
+                                        sitecomp.SiteName = sitecomp.Title
+                                    }
                                 })
                                 Sitestagging = JSON.stringify(selectedItem?.Sitestagging);
                             } else {
@@ -515,14 +662,14 @@ const CreateActivity = (props: any) => {
                             // clientTime = JSON.stringify(selectedItem?.ClientTime);
                         } else {
                             if (site?.Title?.toLowerCase() == "shareweb") {
-                                var sitetag=JSON.parse(selectedItem?.Sitestagging)
-                                sitetag?.map((sitecomp:any)=>{
-                                    if(sitecomp.Title!=undefined && sitecomp.Title!=""&& sitecomp.SiteName==undefined){
-                                        sitecomp.SiteName=sitecomp.Title
+                                var sitetag = JSON.parse(selectedItem?.Sitestagging)
+                                sitetag?.map((sitecomp: any) => {
+                                    if (sitecomp.Title != undefined && sitecomp.Title != "" && sitecomp.SiteName == undefined) {
+                                        sitecomp.SiteName = sitecomp.Title
                                     }
-                                   
-                                }) 
-                                 Sitestagging = JSON.stringify(sitetag)
+
+                                })
+                                Sitestagging = JSON.stringify(sitetag)
                             } else {
                                 var siteComp: any = {};
                                 siteComp.SiteName = site?.Title,
@@ -612,7 +759,7 @@ const CreateActivity = (props: any) => {
                                 item = res?.data;
                                 item = {
                                     ...item, ...{
-                                        ClientCategory: ClientCategoriesData,
+                                        ClientCategory: postedCC,
                                         AssignedTo: TaskAssignedTo,
                                         DisplayCreateDate: moment(item.Created).format("DD/MM/YYYY"),
                                         DisplayDueDate: moment(item.DueDate).format("DD/MM/YYYY"),
@@ -622,9 +769,9 @@ const CreateActivity = (props: any) => {
                                         siteType: site?.Title,
                                         listId: site?.listId,
                                         FeedBack:
-                                        FeedbackPost?.length > 0
-                                            ? JSON.stringify(FeedbackPost)
-                                            : null,
+                                            FeedbackPost?.length > 0
+                                                ? JSON.stringify(FeedbackPost)
+                                                : null,
                                         SiteIcon: site?.Item_x005F_x0020_Cover?.Url,
                                         ResponsibleTeam: TaskResponsibleTeam,
                                         TeamMembers: TaskTeamMembers,
@@ -637,7 +784,7 @@ const CreateActivity = (props: any) => {
                                 }
                                 if (item?.FeedBack != undefined) {
                                     let DiscriptionSearchData: any = '';
-                                    let feedbackdata: any =JSON.parse(item?.FeedBack);
+                                    let feedbackdata: any = JSON.parse(item?.FeedBack);
                                     DiscriptionSearchData = feedbackdata[0]?.FeedBackDescriptions?.map((child: any) => {
                                         const childText = child?.Title?.replace(/(<([^>]+)>)/gi, '')?.replace(/\n/g, '');
                                         const subtextText = (child?.Subtext || [])?.map((elem: any) =>
@@ -647,6 +794,7 @@ const CreateActivity = (props: any) => {
                                     }).join('');
                                     item.descriptionsSearch = DiscriptionSearchData
                                 }
+                                onUploadImageFunction(item)
                                 if (categoriesItem?.indexOf('Immediate') > -1 || categoriesItem?.indexOf("Email Notification") > -1) {
                                     let listID = '3BBA0B9A-4A9F-4CE0-BC15-61F4F550D556'
                                     var postData = {
@@ -683,7 +831,7 @@ const CreateActivity = (props: any) => {
                             if (selectedItem.PageType == "ProjectManagement") {
                                 props.Call();
                                 let url = `${AllListId.siteUrl}/SitePages/Task-Profile.aspx?taskId=${res.data.Id}&Site=${res.data.siteType}`;
-                                window.location.href = url;
+                                window.open(url, "_blank")
                             } else {
                                 console.log(res);
                                 closeTaskStatusUpdatePoup(res);
@@ -726,9 +874,9 @@ const CreateActivity = (props: any) => {
                     if (selectedItem?.ClientTime != undefined) {
                         if (typeof selectedItem?.ClientTime == "object") {
                             if (site?.Title?.toLowerCase() == "shareweb") {
-                                selectedItem?.ClientTime?.map((sitecomp:any)=>{
-                                    if(sitecomp.Title!=undefined && sitecomp.Title!=""&& sitecomp.SiteName==undefined){
-                                        sitecomp.SiteName=sitecomp.Title
+                                selectedItem?.ClientTime?.map((sitecomp: any) => {
+                                    if (sitecomp.Title != undefined && sitecomp.Title != "" && sitecomp.SiteName == undefined) {
+                                        sitecomp.SiteName = sitecomp.Title
                                     }
                                 })
                                 clientTime = JSON.stringify(selectedItem?.ClientTime);
@@ -742,17 +890,17 @@ const CreateActivity = (props: any) => {
                                 clientTime = JSON?.stringify([siteComp]);
                             }
                             // clientTime = JSON.stringify(selectedItem?.ClientTime);
-                        } 
-                          else {
-                           if (site?.Title?.toLowerCase() == "shareweb") {
-                            var sitetag=JSON.parse(selectedItem?.ClientTime)
-                            sitetag?.map((sitecomp:any)=>{
-                                if(sitecomp.Title!=undefined && sitecomp.Title!=""&& sitecomp.SiteName==undefined){
-                                    sitecomp.SiteName=sitecomp.Title
-                                }
-                            
-                            }) 
-                             clientTime = JSON.stringify(sitetag)
+                        }
+                        else {
+                            if (site?.Title?.toLowerCase() == "shareweb") {
+                                var sitetag = JSON.parse(selectedItem?.ClientTime)
+                                sitetag?.map((sitecomp: any) => {
+                                    if (sitecomp.Title != undefined && sitecomp.Title != "" && sitecomp.SiteName == undefined) {
+                                        sitecomp.SiteName = sitecomp.Title
+                                    }
+
+                                })
+                                clientTime = JSON.stringify(sitetag)
                             } else {
                                 var siteComp: any = {};
                                 siteComp.SiteName = site?.Title,
@@ -823,7 +971,7 @@ const CreateActivity = (props: any) => {
                                 item = res?.data;
                                 item = {
                                     ...item,
-                                    ClientCategory: ClientCategoriesData,
+                                    ClientCategory: postedCC,
                                     AssignedTo: TaskAssignedTo,
                                     DisplayCreateDate: moment(item.Created).format("DD/MM/YYYY"),
                                     DisplayDueDate: moment(item.DueDate).format("DD/MM/YYYY"),
@@ -834,15 +982,15 @@ const CreateActivity = (props: any) => {
                                     SiteIcon: site?.Item_x005F_x0020_Cover?.Url,
                                     ResponsibleTeam: TaskResponsibleTeam,
                                     FeedBack:
-                                    FeedbackPost?.length > 0
-                                        ? JSON.stringify(FeedbackPost)
-                                        : null,
+                                        FeedbackPost?.length > 0
+                                            ? JSON.stringify(FeedbackPost)
+                                            : null,
                                     TeamMembers: TaskTeamMembers,
                                     TeamLeader: TaskResponsibleTeam,
                                     Author: {
                                         Id: props?.context?.pageContext?.legacyPageContext?.userId
                                     },
-                                     Item_x0020_Type: 'Task',
+                                    Item_x0020_Type: 'Task',
                                     ParentTask: selectedItem,
                                     TaskType: {
                                         Title: 'Task',
@@ -850,13 +998,14 @@ const CreateActivity = (props: any) => {
                                     }
 
                                 }
-                             
-                                        if (item?.FeedBack != undefined) {
+
+                                if (item?.FeedBack != undefined) {
                                     let DiscriptionSearchData: any = '';
-                                    let feedbackdata: any =JSON.parse(item?.FeedBack);
+                                    let feedbackdata: any = JSON.parse(item?.FeedBack);
                                     DiscriptionSearchData = globalCommon.descriptionSearchData(feedbackdata)
                                 }
                                 item.TaskID = globalCommon?.GetTaskId(item);
+                                onUploadImageFunction(item)
                                 if (categoriesItem?.indexOf('Immediate') > -1 || categoriesItem?.indexOf("Email Notification") > -1) {
                                     let listID = '3BBA0B9A-4A9F-4CE0-BC15-61F4F550D556'
                                     var postData = {
@@ -910,6 +1059,7 @@ const CreateActivity = (props: any) => {
         }
     };
     const closeTaskStatusUpdatePoup = (res: any) => {
+    
         if (res === "item") {
             //   setTaskStatuspopup(false);
             props.Call("Close");
@@ -917,6 +1067,7 @@ const CreateActivity = (props: any) => {
             //   setTaskStatuspopup(false);
             props.Call(res);
         }
+        imgdefaultContent=""
     };
     //----------- save function end --------------
 
@@ -1054,7 +1205,7 @@ const CreateActivity = (props: any) => {
             }
             return selectCAT; // Return the original value if no change is needed
         }));
-      
+
         setCategoriesData(TaskCategories)
 
     }
@@ -1143,16 +1294,16 @@ const CreateActivity = (props: any) => {
                                 <div className="col-sm-2 mb-10 padL-0 mt-3">
                                     <div className="input-group">
                                         <label className='full-width'>Due Date</label>
-                                               <DatePicker
-                                                selected={save?.DueDate}
-                                                onChange={(date) => handleDatedue(date)}
-                                                dateFormat="dd/MM/yyyy"
-                                                minDate={new Date()}
-                                                customInput={<ExampleCustomInput />}
-                                                isClearable
-                                                showYearDropdown
-                                                scrollableYearDropdown
-                                            />
+                                        <DatePicker
+                                            selected={save?.DueDate}
+                                            onChange={(date) => handleDatedue(date)}
+                                            dateFormat="dd/MM/yyyy"
+                                            minDate={new Date()}
+                                            customInput={<ExampleCustomInput />}
+                                            isClearable
+                                            showYearDropdown
+                                            scrollableYearDropdown
+                                        />
                                         {/* <DatePicker selected={save?.DueDate} onChange={(date) => handleDatedue(date)} /> */}
                                         {/* <input
                                             type="date"
@@ -1162,7 +1313,7 @@ const CreateActivity = (props: any) => {
                                             onChange={handleDatedue}
                                         /> */}
                                     </div>
-                                    
+
                                 </div>
                             </div>
                             <div className="row mt-3">
@@ -1180,8 +1331,10 @@ const CreateActivity = (props: any) => {
                                         className="Florar-Editor-Image-Upload-Container"
                                         id="uploadImageFroalaEditor"
                                     >
-                                        <div>
-                                            <FlorarImageUploadComponent callBack={FlorarImageUploadComponentCallBack} />
+                                       <div>
+                                        <FlorarImageUploadComponent callBack={FlorarImageUploadComponentCallBack} 
+                                        defaultContent={imgdefaultContent}
+                                         />
                                         </div>
                                     </div>
                                 </div>
@@ -1202,9 +1355,14 @@ const CreateActivity = (props: any) => {
                                         <label className="full-width">
                                             Priority
                                             <span>
-                                                <div className="popover__wrapper ms-1"
-                                                    data-bs-toggle="tooltip" data-bs-placement="auto" >
-                                                    <span title="Edit" className="alignIcon svg__icon--info svg__iconbox"></span>
+                                                <div
+                                                    className="popover__wrapper ms-1"
+                                                    data-bs-toggle="tooltip"
+                                                    data-bs-placement="auto"
+                                                >
+                                                    <span title="Edit" className="alignIcon svg__icon--info svg__iconbox"
+                                                    ></span>
+
                                                     <div className="popover__content">
                                                         <span>
                                                             8-10 = High Priority,
@@ -1220,7 +1378,7 @@ const CreateActivity = (props: any) => {
 
                                         <div className="input-group">
                                             <input
-                                                type="text" 
+                                                type="text"
                                                 className="form-control"
                                                 placeholder="Enter Priority"
                                                 value={selectPriority ? selectPriority : ""}
@@ -1228,36 +1386,45 @@ const CreateActivity = (props: any) => {
                                             />
                                         </div>
 
-                                        <ul className="p-0 mt-1">
-                                            <li className="form-check ps-0">
-                                                <label className="SpfxCheckRadio">
-                                                    <input className="radio" name="radioPriority" type="radio"
-                                                        checked={
-                                                            Number(selectPriority) <= 10 &&
-                                                            Number(selectPriority) >= 8
-                                                        }
-                                                        onChange={() => setselectPriority("8")} />
-                                                    High</label>
+                                        <ul className="p-0 mt-1 list-none">
+                                            <li className="SpfxCheckRadio">
+                                                <input
+                                                    className="radio"
+                                                    name="radioPriority"
+                                                    type="radio"
+                                                    checked={
+                                                        Number(selectPriority) <= 10 &&
+                                                        Number(selectPriority) >= 8
+                                                    }
+                                                    onChange={() => setselectPriority("8")}
+                                                />
+                                                <label className="form-check-label">High</label>
                                             </li>
-                                            <li className="form-check ps-0">
-                                                <label className="SpfxCheckRadio">
-                                                    <input className="radio" name="radioPriority" type="radio"
-                                                        checked={
-                                                            Number(selectPriority) <= 7 &&
-                                                            Number(selectPriority) >= 4
-                                                        }
-                                                        onChange={() => setselectPriority("4")} /> Normal</label>
+                                            <li className="SpfxCheckRadio">
+                                                <input
+                                                    className="radio"
+                                                    name="radioPriority"
+                                                    type="radio"
+                                                    checked={
+                                                        Number(selectPriority) <= 7 &&
+                                                        Number(selectPriority) >= 4
+                                                    }
+                                                    onChange={() => setselectPriority("4")}
+                                                />
+                                                <label className="form-check-label">Normal</label>
                                             </li>
-                                            <li className="form-check ps-0">
-                                                <label className="SpfxCheckRadio">
-                                                    <input className="radio" name="radioPriority" type="radio"
-                                                        checked={
-                                                            Number(selectPriority) <= 3 &&
-                                                            Number(selectPriority) > 0
-                                                        }
-                                                        onChange={() => setselectPriority("1")}
-                                                    />
-                                                    Low</label>
+                                            <li className="SpfxCheckRadio">
+                                                <input
+                                                    className="radio"
+                                                    name="radioPriority"
+                                                    type="radio"
+                                                    checked={
+                                                        Number(selectPriority) <= 3 &&
+                                                        Number(selectPriority) > 0
+                                                    }
+                                                    onChange={() => setselectPriority("1")}
+                                                />
+                                                <label className="form-check-label">Low</label>
                                             </li>
                                         </ul>
                                     </fieldset>
@@ -1329,7 +1496,7 @@ const CreateActivity = (props: any) => {
                                                             </a>
                                                             <span
                                                                 className="bg-light svg__iconbox svg__icon--cross"
-                                                                onClick={() =>  selectSubTaskCategory(type?.Title, type?.Id, type)}
+                                                                onClick={() => selectSubTaskCategory(type?.Title, type?.Id, type)}
                                                             ></span>
                                                             {/* <img src="https://hhhhteams.sharepoint.com/sites/HHHH/SP/_layouts/images/delete.gif" onClick={() => deleteCategories(type?.Id)} className="p-1" /> */}
                                                         </div>
@@ -1401,32 +1568,32 @@ const CreateActivity = (props: any) => {
                     </div>
                 </div>
                 <footer className={refreshData ? 'col text-end mt-3 lkjhgfds' : 'col text-end mt-3 kkkkk'}>
-                        {
-                            selectedSites?.map((site: any) => {
-                                return (
-                                    <span className='ms-2'>
-                                        {(site.Item_x005F_x0020_Cover !== undefined && site.Item_x005F_x0020_Cover?.Url !== undefined) &&
-                                            <img className={refreshData ? "createTask-SiteIcon me-1 rdfgererg" : "createTask-SiteIcon me-1 erfrerg"} style={{ width: '31.5px' }} title={site?.Title} src={site.Item_x005F_x0020_Cover.Url} />
-                                        }
-                                    </span>
-                                )
-                            })
-                        }
-                        <button
-                            type="button"
-                            className="btn btn-primary mx-2"
-                            onClick={() => saveNoteCall()}
-                        >
-                            Submit
-                        </button>
-                        <button
-                            type="button"
-                            className="btn btn-default"
-                            onClick={() => closeTaskStatusUpdatePoup("item")}
-                        >
-                            Cancel
-                        </button>
-                    </footer>
+                    {
+                        selectedSites?.map((site: any) => {
+                            return (
+                                <span className='ms-2'>
+                                    {(site.Item_x005F_x0020_Cover !== undefined && site.Item_x005F_x0020_Cover?.Url !== undefined) &&
+                                        <img className={refreshData ? "createTask-SiteIcon me-1 rdfgererg" : "createTask-SiteIcon me-1 erfrerg"} style={{ width: '31.5px' }} title={site?.Title} src={site.Item_x005F_x0020_Cover.Url} />
+                                    }
+                                </span>
+                            )
+                        })
+                    }
+                    <button
+                        type="button"
+                        className="btn btn-primary mx-2"
+                        onClick={() => saveNoteCall()}
+                    >
+                        Submit
+                    </button>
+                    <button
+                        type="button"
+                        className="btn btn-default"
+                        onClick={() => closeTaskStatusUpdatePoup("item")}
+                    >
+                        Cancel
+                    </button>
+                </footer>
             </Panel>
 
 
