@@ -2868,14 +2868,14 @@ function TimeEntryPopup(item: any) {
                     </> : ''}
                   {PopupTypeCat == true ?
                     <button
-                      disabled={PopupType == 'Addtime' && TimeInMinutes <= 0 ? true : false}
+                      disabled={(PopupType == 'AddTime' ||PopupType == 'AddTimeCat') && TimeInMinutes <= 0 ? true : false}
                       type="button"
                       className="btn btn-primary ms-2"
                       onClick={() => saveTimeSpent()}
                     >
                       Save
                     </button> : <button
-                      disabled={PopupType == 'Addtime' && TimeInMinutes <= 0 ? true : false}
+                      disabled={(PopupType == 'AddTime' ||PopupType == 'AddTimeCat') && TimeInMinutes <= 0 ? true : false}
                       type="button"
                       className="btn btn-primary ms-2"
                       onClick={() => AddTaskTime(saveEditTaskTimeChild, PopupType)}
