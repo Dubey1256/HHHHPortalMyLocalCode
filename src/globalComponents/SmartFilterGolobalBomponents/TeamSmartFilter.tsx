@@ -249,7 +249,7 @@ const TeamSmartFilter = (item: any) => {
     }
 
     React.useEffect(() => {
-        if (item?.IsSmartfavoriteId != "") {
+        if (item?.IsSmartfavoriteId != "" && item?.IsSmartfavoriteId != undefined && item?.IsSmartfavoriteId != null) {
             setFlatView(true);
             setUpdatedSmartFilter(true);
             loadAdminConfigurationsId(item?.IsSmartfavoriteId);
