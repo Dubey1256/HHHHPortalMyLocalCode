@@ -1885,9 +1885,7 @@ function TimeEntryPopup(item: any) {
       }
     }
 
-    if (CurrentUserData?.length == countss && isTrueTime == false) {
-      saveJsonDataAnotherCat(CurrentUser, ParentId);
-    }
+   
   };
   const saveJsonDataAnotherCat = async (CurrentUser: any, items: any) => {
     var update: any = {};
