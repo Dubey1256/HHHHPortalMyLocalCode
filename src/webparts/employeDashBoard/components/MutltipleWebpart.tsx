@@ -9,7 +9,13 @@ import { SPFI, spfi, SPFx as spSPFx } from "@pnp/sp";
 import 'bootstrap/dist/css/bootstrap.min.css';
 import GlobalCommanTable from "../../../globalComponents/GroupByReactTableComponents/GlobalCommanTable";
 import ReactPopperTooltipSingleLevel from "../../../globalComponents/Hierarchy-Popper-tooltipSilgleLevel/Hierarchy-Popper-tooltipSingleLevel";
+import EmailComponenet from "../../taskprofile/components/emailComponent";
 // import GlobalCommanTable from '../../../globalComponents/GlobalCommanTable';
+let data: any
+let sendMail: boolean
+let approveItem: any;
+let currentUser: any;
+let emailStatus: any = ""
 
 const MultipleWebpart = (Tile: any) => {
   const ContextData: any = React.useContext(myContextValue);
@@ -18,9 +24,10 @@ const MultipleWebpart = (Tile: any) => {
   const bottleneckTask: any = ContextData?.AlltaskData.BottleneckTask;
   const immediateTask: any = ContextData?.AlltaskData.ImmediateTask;
   const thisWeekTask: any = ContextData?.AlltaskData.ThisWeekTask;
-  const approvalTask: any = ContextData?.AlltaskData.ApprovalTask;
+  let approvalTask: any = ContextData?.AlltaskData.ApprovalTask;
   const AllMasterTasks: any = ContextData?.AllMasterTasks;
   const [editPopup, setEditPopup]: any = React.useState(false);
+  const [sendMail, setsendMail]: any = React.useState(false);
   const [result, setResult]: any = React.useState(false);
 
   let AllListId: any = {
@@ -32,6 +39,17 @@ const MultipleWebpart = (Tile: any) => {
     isShowTimeEntry: true,
     isShowSiteCompostion: true
   };
+  const sendEmail = () => {
+    approveItem.PercentComplete = 3
+    setsendMail(true)
+    emailStatus = "Approved"
+  }
+  const approvalcallback = () => {
+    setsendMail(false)
+    emailStatus = ""
+    const data:any = ContextData?.AlltaskData.ApprovalTask.filter((i:any)=>{return i.Id!=approveItem.Id})
+    approvalTask = data;
+  }
   const sendAllWorkingTodayTasks = async (sharingTasks: any) => {
     let to: any = [ContextData.approverEmail];
     let body: any = '';
@@ -208,7 +226,13 @@ const MultipleWebpart = (Tile: any) => {
   }
 
 
-  const callBackData = React.useCallback((elem: any, ShowingData: any) => { },
+  const callBackData = React.useCallback((elem: any, ShowingData: any) => {
+    if (elem != undefined)
+      approveItem = elem;
+    else{
+      approveItem = undefined
+    }
+  },
     []);
   const SendEmailFinal = async (to: any, subject: any, body: any) => {
     let sp = spfi().using(spSPFx(ContextData?.propsValue?.Context));
@@ -237,16 +261,16 @@ const MultipleWebpart = (Tile: any) => {
   }
 
   return (
-    <div>    
+    <div>
       <div className="row m-0 mb-3 empMainSec">
-      <div className="col-7 p-0">
+        <div className="col-7 p-0">
           <div className="empAllSec approvalSec clearfix">
             <div className="d-flex mb-2 justify-content-between">
               <span className="fw-bold">
                 Waiting for Approval {`(${approvalTask.length})`}
               </span>
               <span className="alignCenter">
-                <span className="empCol me-3 hreflink">Approve</span>
+                <span className="empCol me-3 hreflink" onClick={sendEmail}>Approve</span>
                 <span title="Share Approver Task" onClick={() => sendAllWorkingTodayTasks(approvalTask)} className="svg__iconbox svg__icon--share empBg"></span>
               </span>
             </div>
@@ -259,6 +283,7 @@ const MultipleWebpart = (Tile: any) => {
                   callBackData={callBackData}
                 />
               )}
+              {sendMail && emailStatus != "" && approveItem && <EmailComponenet approvalcallback={() => { approvalcallback() }} Context={ContextData.Context} emailStatus={"Approved"} items={approveItem} />}
             </div>
           </div>
         </div>
@@ -293,7 +318,7 @@ const MultipleWebpart = (Tile: any) => {
         </div>
       </div>
       <div className="row m-0 mb-3 empMainSec">
-      <div className="col-7 p-0">
+        <div className="col-7 p-0">
           <div className="empAllSec notesSec clearfix">
             <MyNotes />
           </div>
@@ -303,7 +328,7 @@ const MultipleWebpart = (Tile: any) => {
             <ComingBirthday />
           </div>
         </div>
-      </div>  
+      </div>
       <span>
         {editPopup && <EditTaskPopup Items={result} context={ContextData?.propsValue?.Context} AllListId={AllListId} Call={() => { CallBack() }} />}
       </span>
