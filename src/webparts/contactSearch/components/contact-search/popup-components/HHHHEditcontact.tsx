@@ -99,11 +99,11 @@ const HHHHEditComponent = (props: any) => {
                         }
                     }
                     if (SitesTagged.search("HR") >= 0 && myContextData2.loggedInUserName == data.Email) {
-                        HrTagInformation(props.props);
+                        HrTagInformation(Id);
                         setSiteTaggedHR(true);
                     }
                     if (SitesTagged.search("SMALSUS") >= 0 && myContextData2.loggedInUserName == data.Email) {
-                        HrTagInformation(props.props);
+                        HrTagInformation(Id);
                         setSiteTaggedSMALSUS(true);
                     }
                     data.Item_x002d_Image = data?.Item_x0020_Cover;
@@ -390,20 +390,23 @@ const HHHHEditComponent = (props: any) => {
     const deleteUserDtl = async () => {
         try {
             if (confirm("Are you sure, you want to delete this?")) {
-       
-                let web = new Web(myContextData2?.allListId?.jointSiteUrl);
-                await web.lists.getById(myContextData2?.allListId?.HHHHContactListId).items.getById(myContextData2?.allSite?.GMBHSite||myContextData2?.allSite?.HrSite?JointData?.Id:updateData?.Id).recycle().then(async(data:any)=>{
-                    if(props?.allSite?.GMBHSite||props?.allSite?.HrSite){
-                        let web = new Web(props?.allListId?.siteUrl);
-                        await web.lists.getById(props?.allSite?.GMBHSite ? props?.allListId?.GMBH_CONTACT_SEARCH_LISTID : props?.allListId?.HR_EMPLOYEE_DETAILS_LIST_ID).items.getById(updateData.Id).recycle(); 
-                     }
-                }).catch(async(error:any)=>{
-                    console.log(error)
-                    if(myContextData2?.allSite?.GMBHSite||myContextData2?.allSite?.HrSite){
-                        let web = new Web(myContextData2?.allListId?.siteUrl);
-                        await web.lists.getById(myContextData2?.allSite?.GMBHSite ? myContextData2?.allListId?.GMBH_CONTACT_SEARCH_LISTID : myContextData2?.allListId?.HR_EMPLOYEE_DETAILS_LIST_ID).items.getById(updateData.Id).recycle(); 
-                     }
-                });
+                 if(myContextData2?.allSite?.MainSite){
+                    let web = new Web(myContextData2?.allListId?.jointSiteUrl);
+                    await web.lists.getById(myContextData2?.allListId?.HHHHContactListId).items.getById(myContextData2?.allSite?.GMBHSite||myContextData2?.allSite?.HrSite?JointData?.Id:updateData?.Id).recycle().then(async(data:any)=>{
+                        if(props?.allSite?.GMBHSite||props?.allSite?.HrSite){
+                            let web = new Web(props?.allListId?.siteUrl);
+                            await web.lists.getById(props?.allSite?.GMBHSite ? props?.allListId?.GMBH_CONTACT_SEARCH_LISTID : props?.allListId?.HR_EMPLOYEE_DETAILS_LIST_ID).items.getById(updateData.Id).recycle(); 
+                         }
+                    }).catch(async(error:any)=>{
+                        console.log(error)
+                       
+                    });
+                 }
+                
+                if(myContextData2?.allSite?.GMBHSite||myContextData2?.allSite?.HrSite){
+                    let web = new Web(myContextData2?.allListId?.siteUrl);
+                    await web.lists.getById(myContextData2?.allSite?.GMBHSite ? myContextData2?.allListId?.GMBH_CONTACT_SEARCH_LISTID : myContextData2?.allListId?.HR_EMPLOYEE_DETAILS_LIST_ID).items.getById(updateData.Id).recycle(); 
+                 }
              
             
             //  props.userUpdateFunction();
@@ -576,7 +579,8 @@ const HHHHEditComponent = (props: any) => {
                                     imageta()
                                   }}
                                 aria-selected="true">IMAGE INFORMATION</button>
-                            {siteTaggedHR &&<button className="nav-link" id="HR-TAB"
+                            {siteTaggedHR &&
+                            <button className="nav-link" id="HR"
                                 data-bs-toggle="tab"
                                 data-bs-target="#HR"
                                 type="button"

@@ -1449,7 +1449,7 @@ function TeamPortlioTable(SelectedProp: any) {
                     <div className="alignCenter">
                         {row?.original?.Created == null ? ("") : (
                             <>
-                                <HighlightableCell value={row?.original?.DisplayCreateDate} searchTerm={column.getFilterValue() != undefined ? column.getFilterValue() : childRef?.current?.globalFilter} />
+                                <div style={{ width: "75px" }} className="me-1"><HighlightableCell value={row?.original?.DisplayCreateDate} searchTerm={column.getFilterValue() != undefined ? column.getFilterValue() : childRef?.current?.globalFilter} /></div>
                                 {/* <div className='ms-1'>{row?.original?.DisplayCreateDate} </div> */}
                                 {row?.original?.Author != undefined &&
                                     <>
@@ -2222,3 +2222,4 @@ function TeamPortlioTable(SelectedProp: any) {
     );
 }
 export default TeamPortlioTable;
+

@@ -351,6 +351,7 @@ function ComponentChildDataTable(SelectedProp: any) {
                 $.each(AllTasksMatches, function (index: any, item: any) {
                   item.isDrafted = false;
                   item.flag = true;
+                  
                   item.TitleNew = item.Title;
                   item.siteType = config.Title;
                   item.childs = [];
@@ -409,6 +410,7 @@ function ComponentChildDataTable(SelectedProp: any) {
                   result.chekbox = false;
                   result.descriptionsSearch = "";
                   result.commentsSearch = "";
+                  result.portfolioItemsSearch = '';
 
                   result.DueDate = Moment(result.DueDate).format("DD/MM/YYYY");
                   result.DisplayDueDate = Moment(result.DueDate).format("DD/MM/YYYY");
@@ -519,6 +521,9 @@ function ComponentChildDataTable(SelectedProp: any) {
 
                   }
                   result["Item_x0020_Type"] = "Task";
+                  if (result?.TaskType) {
+                    result.portfolioItemsSearch = result.siteType;
+                  } 
                   TasksItem.push(result);
                   AllTasksData.push(result);
                 });
@@ -1271,6 +1276,7 @@ function ComponentChildDataTable(SelectedProp: any) {
         id: "Id"
       },
       {
+        accessorFn: (row) => row?.portfolioItemsSearch,
         cell: ({ row, getValue }) => (
           <div className="alignCenter">
             {row?.original?.SiteIcon != undefined ? (
@@ -1279,17 +1285,17 @@ function ComponentChildDataTable(SelectedProp: any) {
                   title={row?.original?.TaskType?.Title}
                   className={
                     row?.original?.Item_x0020_Type == "SubComponent"
-                      ? "ml-12 workmember ml20 me-1"
+                      ? "workmember ml20 me-1"
                       : row?.original?.Item_x0020_Type == "Feature"
-                        ? "ml-24 workmember ml20 me-1"
+                        ? "ml-12 workmember ml20 me-1"
                         : row?.original?.TaskType?.Title == "Activities"
-                          ? "ml-36 workmember ml20 me-1"
+                          ? "ml-24 workmember ml20 me-1"
                           : row?.original?.TaskType?.Title == "Workstream"
-                            ? "ml-48 workmember ml20 me-1"
+                            ? "ml-36 workmember ml20 me-1"
                             : row?.original?.TaskType?.Title == "Task" ||
                               (row?.original?.Item_x0020_Type === "Task" &&
                                 row?.original?.TaskType == undefined)
-                              ? "ml-60 workmember ml20 me-1"
+                              ? "ml-48 workmember ml20 me-1"
                               : "workmember ml20 me-1"
                   }
                   src={row?.original?.SiteIcon}
@@ -1305,15 +1311,15 @@ function ComponentChildDataTable(SelectedProp: any) {
                     }}
                     className={
                       row?.original?.Item_x0020_Type == "SubComponent"
-                        ? "ml-12 Dyicons"
+                        ? "Dyicons"
                         : row?.original?.Item_x0020_Type == "Feature"
-                          ? "ml-24 Dyicons"
+                          ? "ml-12 Dyicons"
                           : row?.original?.TaskType?.Title == "Activities"
-                            ? "ml-36 Dyicons"
+                            ? "ml-24 Dyicons"
                             : row?.original?.TaskType?.Title == "Workstream"
-                              ? "ml-48 Dyicons"
+                              ? "ml-36 Dyicons"
                               : row?.original?.TaskType?.Title == "Task"
-                                ? "ml-60 Dyicons"
+                                ? "ml-48 Dyicons"
                                 : "Dyicons"
                     }
                   >
@@ -1324,14 +1330,23 @@ function ComponentChildDataTable(SelectedProp: any) {
                 )}
               </>
             )}
-            {getValue()}
+
           </div>
         ),
-        accessorKey: "",
-        id: "row?.original.Id",
-        canSort: false,
-        placeholder: "",
-        size: 95
+        id: "portfolioItemsSearch",
+        placeholder: "Type",
+        filterFn: (row: any, columnId: any, filterValue: any) => {
+          if(row?.original?.Item_x0020_Type?.toLowerCase()?.includes(filterValue?.toLowerCase())){
+            return true
+          } else if(row?.original?.siteType?.toLowerCase()?.includes(filterValue?.toLowerCase())){
+            return true
+          }else{
+            return false
+          }
+      },
+        header: "",
+        resetColumnFilters: false,
+        size: 95,
       },
       {
         accessorFn: (row) => row?.TaskID,
@@ -1650,12 +1665,7 @@ function ComponentChildDataTable(SelectedProp: any) {
 
 
 
-  //  Function to call the child component's function
-  const callChildFunction = (items: any) => {
-    if (childRef.current) {
-      childRef.current.callChildFunction(items);
-    }
-  };
+
   let IndexCounting: any = 0;
 
   // let FinalGroupData:any = data?.filter((val: any, id: any, array: any) => {
@@ -1743,7 +1753,7 @@ function ComponentChildDataTable(SelectedProp: any) {
                       queryItems={SelectedProp?.props}
                       PortfolioFeature={SelectedProp?.props?.Item_x0020_Type}
                       AllMasterTasksData={AllMasterTasksData}
-                      callChildFunction={callChildFunction}
+              
                       AllListId={ContextValueGlobal}
                       columns={columns}
                       data={data}

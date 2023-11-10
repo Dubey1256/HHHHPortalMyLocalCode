@@ -412,8 +412,11 @@ const ContactMainPage = (props: any) => {
         <myContextValue.Provider value={{ ...myContextValue, allSite:allSite,allListId:allListId ,loggedInUserName:props.props?.userDisplayName,InstitutionAllData:institutionData}}>
         <div className='contact-section'>
             <div className='contact-container'>
+
                 <div className='alignCenter'>
-                    <h2 className='heading'>Joint Contact Database</h2>
+                {allSite?.GMBHSite &&<h2 className='heading'> Contact Database -Gmbh</h2>}
+                    {allSite?.MainSite &&<h2 className='heading'>Joint Contact Database</h2>}
+                    {allSite?.HrSite &&<h2 className='heading'>Joint Contact Database-HR</h2>}
                     {/* <button className='btn btn-light btn-sm mx-1'><img src='https://hhhhteams.sharepoint.com/_layouts/images/edititem.gif' /></button> */}
                     <a className="hreflink" title="Edit"><svg xmlns="http://www.w3.org/2000/svg" width="30" height="25" viewBox="0 0 48 48" fill="none"><path fill-rule="evenodd" clip-rule="evenodd" d="M7 21.9323V35.8647H13.3613H19.7226V34.7589V33.6532H14.3458H8.96915L9.0264 25.0837L9.08387 16.5142H24H38.9161L38.983 17.5647L39.0499 18.6151H40.025H41V13.3076V8H24H7V21.9323ZM38.9789 12.2586L39.0418 14.4164L24.0627 14.3596L9.08387 14.3027L9.0196 12.4415C8.98428 11.4178 9.006 10.4468 9.06808 10.2838C9.1613 10.0392 11.7819 9.99719 24.0485 10.0441L38.9161 10.1009L38.9789 12.2586ZM36.5162 21.1565C35.8618 21.3916 34.1728 22.9571 29.569 27.5964L23.4863 33.7259L22.7413 36.8408C22.3316 38.554 22.0056 39.9751 22.017 39.9988C22.0287 40.0225 23.4172 39.6938 25.1029 39.2686L28.1677 38.4952L34.1678 32.4806C41.2825 25.3484 41.5773 24.8948 40.5639 22.6435C40.2384 21.9204 39.9151 21.5944 39.1978 21.2662C38.0876 20.7583 37.6719 20.7414 36.5162 21.1565ZM38.5261 23.3145C39.2381 24.2422 39.2362 24.2447 32.9848 30.562C27.3783 36.2276 26.8521 36.6999 25.9031 36.9189C25.3394 37.0489 24.8467 37.1239 24.8085 37.0852C24.7702 37.0467 24.8511 36.5821 24.9884 36.0529C25.2067 35.2105 25.9797 34.3405 31.1979 29.0644C35.9869 24.2225 37.2718 23.0381 37.7362 23.0381C38.0541 23.0381 38.4094 23.1626 38.5261 23.3145Z" fill="#333333"></path></svg>
                     </a>
@@ -455,9 +458,9 @@ const ContactMainPage = (props: any) => {
                         <div className="tab-pane show active" id="Contacts" role="tabpanel" aria-labelledby="Contacts">
                             <div>
                                 <div className="alignCenter" >
-                                    <div className='ml-auto '>
-                                        <button className={isDisabled ? 'btnCol btn btn-primary' : "function-btns"} onClick={sendEmail} disabled={isDisabled}>Bulk Email</button>
-                                      {allSite?.MainSite&&<button className={isDisabled ? 'btnCol btn btn-primary mx-1' : "function-btns"} onClick={() => setAddToLocalDBStatus(true)} disabled={isDisabled}>Add Contact To The Loacl Database</button>}
+                                    <div className='ml-auto mb-1 '>
+                                        <button className={isDisabled ? 'btnCol btn btn-primary' : "btnCol btn btn-primary"} onClick={sendEmail} disabled={isDisabled}>Bulk Email</button>
+                                      {allSite?.MainSite&&<button className={isDisabled ? 'btnCol btn btn-primary mx-1' : "btnCol btn btn-primary mx-1"} onClick={() => setAddToLocalDBStatus(true)} disabled={isDisabled}>Add Contact To The Loacl Database</button>}
                                         <button className='btnCol btn btn-primary' onClick={() => setCreateContactStatus(true)}>Create Contact</button>
 
                                     </div>
@@ -487,48 +490,12 @@ const ContactMainPage = (props: any) => {
                         </div>
                     </div>
                 </div>
-                {/* <div className='component-section my-2'>
-                    {tableStatus ? <div>
-                        <div className="card-header d-flex justify-content-between" >
-                            <div className='table-buttons'>
-                                <button className={isDisabled ? 'function-btns opacity-50' : "function-btns"} onClick={sendEmail} disabled={isDisabled}>Bulk Email</button>
-                                <button className={isDisabled ? 'function-btns opacity-50' : "function-btns"} onClick={() => setAddToLocalDBStatus(true)} disabled={isDisabled}>Add Contact To The Loacl Database</button>
-                                <button className='function-btns' onClick={() => setCreateContactStatus(true)}>Create Contact</button>
-
-                            </div>
-                        </div>
-                        <div className='section-event'>
-                            <div className='table-container'>
-                                <GlobalCommanTable columns={columns} data={searchedData} showHeader={true}
-                                    callBackData={callBackData}
-                                />
-
-                            </div>
-                        </div>
-                    </div> :
-                        <div className='table-buttons'>
-                            <div className="card-header d-flex justify-content-between">
-
-                                <div>
-                                    {isDisabled ? null : <button className='function-btns' onClick={() => setAddToLocalDBStatus(true)}>Tag Institution</button>}
-                                    <button className='function-btns' onClick={() => setCreateInstituteStatus(true)}>Create Institution</button>
-
-                                </div>
-                            </div>
-                            <div>
-                                <GlobalCommanTable columns={Inscolumns} data={searchedInstituteData} showHeader={true}
-                                    callBackData={callBackData}
-                                />
-
-                            </div>
-                        </div>
-                    }
-                </div> */}
+             
             </div>
             {EditContactStatus ? <HHHHEditComponent props={EditContactData}  callBack={ClosePopup}  /> : null}
-            {AddToLocalDBStatus ? <AddToLocalDBComponent callBack={addToLocalDBClosePopup} data={userEmails} /> : null}
+            {/* {AddToLocalDBStatus ? <AddToLocalDBComponent callBack={addToLocalDBClosePopup} data={userEmails} /> : null}
             {CreateContactStatus ? <CreateContactComponent callBack={ClosePopup}data={EmployeeData} userUpdateFunction={updateUserDtlFunction}/> : null}
-            {CreateInstituteStatus ? <CreateContactComponent callBack={ClosePopup} data={institutionData} userUpdateFunction={updateUserDtlFunction} /> : null}
+            {CreateInstituteStatus ? <CreateContactComponent callBack={ClosePopup} data={institutionData} userUpdateFunction={updateUserDtlFunction} /> : null} */}
         </div>
         </myContextValue.Provider>
     )
