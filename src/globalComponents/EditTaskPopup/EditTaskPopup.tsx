@@ -1424,6 +1424,23 @@ const EditTaskPopup = (Items: any) => {
                     setOnlyCompletedStatus(false);
                 }
             }
+            currentUserData?.map((CUData: any) => {
+                if (CUData?.CategoriesItemsJson?.length > 5) {
+                    let PrevDefinedCategories: any = JSON.parse(CUData.CategoriesItemsJson);
+                    PrevDefinedCategories?.map((CUCategories: any) => {
+                        if (CUCategories.Title == existingData.Title) {
+                            setApprovalStatus(true);
+                            setApproverData(TaskApproverBackupArray);
+                            AutoCompleteItemsArray?.map((itemData: any) => {
+                                if (itemData.Title == "Approval") {
+                                    CategoryChangeUpdateFunction(false, itemData.Title, itemData.Id)
+                                }
+                            })
+                        }
+                    })
+                }
+
+            })
         })
 
         let uniqueIds: any = {};
@@ -2081,18 +2098,29 @@ const EditTaskPopup = (Items: any) => {
         filterArray.map((TeamItems: any) => {
             taskUsers?.map((TaskUserData: any) => {
                 if (TeamItems.Id == TaskUserData.AssingedToUserId) {
-                    if (TaskUserData.TimeCategory == filterType) {
-                        tempArray.push(TaskUserData)
-                        EditData.TaskAssignedUsers = tempArray;
-                        let updateUserArray1: any = [];
-                        updateUserArray1.push(tempArray[0].AssingedToUser)
-                        setTaskAssignedTo(updateUserArray1);
-                    }
-                    else {
-                        if (tempArray?.length == 0) {
-                            setWorkingMember(143);
+                    if (filterType == "Development") {
+                        if (TaskUserData.TimeCategory == "Development" || TaskUserData.TimeCategory == "Design") {
+                            tempArray.push(TaskUserData)
+                            EditData.TaskAssignedUsers = tempArray;
+                            let updateUserArray1: any = [];
+                            updateUserArray1.push(tempArray[0].AssingedToUser)
+                            setTaskAssignedTo(updateUserArray1);
+                        }
+                    } else {
+                        if (TaskUserData.TimeCategory == filterType) {
+                            tempArray.push(TaskUserData)
+                            EditData.TaskAssignedUsers = tempArray;
+                            let updateUserArray1: any = [];
+                            updateUserArray1.push(tempArray[0].AssingedToUser)
+                            setTaskAssignedTo(updateUserArray1);
+                        }
+                        else {
+                            if (tempArray?.length == 0) {
+                                setWorkingMember(143);
+                            }
                         }
                     }
+
                 }
             })
         })
