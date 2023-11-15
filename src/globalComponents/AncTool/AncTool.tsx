@@ -87,13 +87,13 @@ const AncTool = (props: any) => {
         rootSiteName = props.Context.pageContext.site.absoluteUrl.split(props.Context.pageContext.site.serverRelativeUrl)[0];
     }, [])
     React.useEffect(() => {
-        setTimeout(() => {
-            const panelMain: any = document.querySelector('.ms-Panel-main');
-            if (panelMain && props?.selectedItem?.PortfolioType?.Color) {
-                $('.ms-Panel-main').css('--SiteBlue', props?.selectedItem?.PortfolioType?.Color); // Set the desired color value here
-            }
-        }, 2000)
-    }, [CreateFolderLocation, modalIsOpen]);
+        setTimeout(()=>{
+         const panelMain: any = document.querySelector('.ms-Panel-main');
+         if (panelMain && props?.selectedItem?.PortfolioType?.Color) {
+             $('.ms-Panel-main').css('--SiteBlue', props?.selectedItem?.PortfolioType?.Color); // Set the desired color value here
+         }
+        },2000)
+     }, [CreateFolderLocation,modalIsOpen]);
     // Generate Path And Basic Calls
     const pathGenerator = async () => {
         const params = new URLSearchParams(window.location.search);
@@ -324,7 +324,7 @@ const AncTool = (props: any) => {
                         {`Add & Connect Tool - ${Item.TaskId != undefined || Item.TaskId != null ? Item.TaskId : ""} ${Item.Title != undefined || Item.Title != null ? Item.Title : ""}`}
                     </span>
                 </div>
-                <Tooltip ComponentId="7640" />
+                <Tooltip ComponentId="528" />
             </div>
         );
     };
@@ -337,7 +337,7 @@ const AncTool = (props: any) => {
                         Select Upload Folder
                     </span>
                 </div>
-                <Tooltip ComponentId="7643" />
+                {/* <Tooltip ComponentId="528" /> */}
             </div>
         );
     };
@@ -351,7 +351,6 @@ const AncTool = (props: any) => {
                         Upload Email
                     </span>
                 </div>
-                <Tooltip ComponentId="7641" />
                 {/* <Tooltip ComponentId="528" /> */}
             </div>
         );
@@ -362,9 +361,9 @@ const AncTool = (props: any) => {
         const file = event.dataTransfer.files[0];
         console.log('Dropped file:', file); // Log the dropped file for debugging
         setSelectedFile(file);
-        setTimeout(() => {
+        setTimeout(()=>{
             handleUpload(file);
-        }, 2000)
+        },2000)
     };
     const handleFileInputChange = (event: any) => {
         const file = event.target.files[0];
@@ -394,7 +393,7 @@ const AncTool = (props: any) => {
         }
     }
 
-    const handleUpload = async (uploadselectedFile: any) => {
+    const handleUpload = async (uploadselectedFile:any) => {
         let emailDoc: any = [];
         let attachmentFile = false;
         let uploadedAttachmentFile: any = []
@@ -413,7 +412,7 @@ const AncTool = (props: any) => {
         if (renamedFileName?.length > 0) {
             fileName = renamedFileName;
         } else {
-            fileName = selectedFile != undefined ? selectedFile.name : uploadselectedFile.name;
+            fileName = selectedFile!=undefined?selectedFile.name:uploadselectedFile.name;
         }
         if (isFolderAvailable == false) {
             try {
@@ -433,8 +432,8 @@ const AncTool = (props: any) => {
                 let msgfile: any = {};
                 reader.onloadend = async () => {
                     const fileContent = reader.result as ArrayBuffer;
-                    setCreateNewDocType(getFileType(selectedFile != undefined ? selectedFile.name : uploadselectedFile.name));
-                    if (getFileType(selectedFile != undefined ? selectedFile.name : uploadselectedFile.name) == 'msg') {
+                    setCreateNewDocType(getFileType(selectedFile!=undefined?selectedFile.name:uploadselectedFile.name));
+                    if (getFileType(selectedFile!=undefined?selectedFile.name:uploadselectedFile.name) == 'msg') {
 
                         const reader = new FileReader();
                         attachmentFile = true;
@@ -442,8 +441,8 @@ const AncTool = (props: any) => {
                         const testMsgInfo = testMsg.getFileData()
                         console.log(testMsgInfo);
                         msgfile = testMsgInfo
-                        reader.readAsArrayBuffer(selectedFile != undefined ? selectedFile : uploadselectedFile);
-                        emailDoc = emailDoc.concat(selectedFile != undefined ? selectedFile : uploadselectedFile);
+                        reader.readAsArrayBuffer(selectedFile!=undefined?selectedFile:uploadselectedFile);
+                        emailDoc = emailDoc.concat(selectedFile!=undefined?selectedFile:uploadselectedFile);
                         emailDoc = emailDoc.concat(msgfile.attachments);
                         emailDoc?.map((AttachFile: any, index: any) => {
                             attachmentFileIndex = index
@@ -454,16 +453,16 @@ const AncTool = (props: any) => {
                         // };
 
                     } else {
-
+                       
                         uploadFile(fileContent)
                     }
 
 
                 };
-
-                reader.readAsArrayBuffer(selectedFile != undefined ? selectedFile : uploadselectedFile);
-
-
+              
+                reader.readAsArrayBuffer(selectedFile!=undefined?selectedFile:uploadselectedFile);
+                
+              
                 const uploadFile = async (fileToUpload: any) => {
                     return new Promise<void>(function (myResolve, myReject) {
                         let fileItems: any;
@@ -526,7 +525,7 @@ const AncTool = (props: any) => {
                                         })
                                     }
                                     )
-                                } else {
+                                }else{
                                     setTimeout(async () => {
                                         if (attachmentFile == false) {
                                             fileItems = await getExistingUploadedDocuments()
@@ -539,7 +538,7 @@ const AncTool = (props: any) => {
                                                     taggedDocument = {
                                                         ...taggedDocument,
                                                         fileName: fileName,
-                                                        docType: getFileType(selectedFile != undefined ? selectedFile.name : uploadselectedFile.name),
+                                                        docType: getFileType(selectedFile!=undefined?selectedFile.name:uploadselectedFile.name),
                                                         uploaded: true,
                                                         link: `${rootSiteName}${selectedPath.displayPath}/${fileName}?web=1`,
                                                         size: fileSize
@@ -564,14 +563,14 @@ const AncTool = (props: any) => {
                                                             setRenamedFileName('')
                                                             return file;
                                                         })
-
+    
                                                     console.log("File uploaded successfully.", file);
                                                 }
                                             })
                                         }
                                     }, 2000);
                                 }
-
+                              
 
                             });
                         setUploadedDocDetails(taggedDocument);
@@ -580,7 +579,7 @@ const AncTool = (props: any) => {
                 }
 
             } catch (error) {
-                console.log("File upload failed:", error);
+              console.log("File upload failed:", error);
             }
         }
         setSelectedFile(null);
@@ -1054,7 +1053,7 @@ const AncTool = (props: any) => {
                             <a className='siteColor' onClick={() => { setUploadEmailModal(true) }}> Upload Email</a>
                         </div>
                         <div className="comment-box hreflink mb-2 col-sm-12">
-                            <a className='siteColor' onClick={() => { setFileNamePopup(true) }}> Create New Online File</a>
+                            <a className='siteColor' onClick={() => { setFileNamePopup(true) }}> Create New Item</a>
                         </div>
                         <div className="comment-box hreflink mb-2 col-sm-12">
                             <a className='siteColor' onClick={() => { setRemark(true) }}> Add SmartNote</a>
@@ -1375,8 +1374,8 @@ const AncTool = (props: any) => {
 
                 <Col>
                     <div className="panel">
-                        <Col>
-
+                      <Col>
+                         
                             <div className='dragDropbox my-3' onDragOver={(event) => event.preventDefault()} onDrop={handleFileDrop}>
                                 {selectedFile ? <p>Selected file: {selectedFile.name}</p> : <p>Drag and drop file here </p>}
                             </div>
@@ -1389,17 +1388,17 @@ const AncTool = (props: any) => {
                                 <input type="text" onChange={(e) => { setRenamedFileName(e.target.value) }} value={renamedFileName} placeholder='Rename your document' className='full-width' />
                             </Row>
                             <div className='text-end'>
-                                <button onClick={handleUpload} disabled={selectedFile?.name?.length > 0 ? false : true} className="btnCol btn btn-primary">Upload</button>
-                                <Button className='btn btn-default mx-1' onClick={() => setUploadEmailModal(false)}>
-                                    Cancel
-                                </Button>
-
+                            <button onClick={handleUpload} disabled={selectedFile?.name?.length > 0 ? false : true} className="btnCol btn btn-primary">Upload</button>
+                            <Button className='btn btn-default mx-1' onClick={() =>setUploadEmailModal(false)}>
+                            Cancel
+                           </Button>
+                      
                             </div>
-
+                          
                         </Col>
 
                     </div>
-
+                   
                 </Col>
 
 
@@ -1407,46 +1406,36 @@ const AncTool = (props: any) => {
             </Panel>
 
 
-            {FileNamePopup ?
-                <div className="modal Anc-Confirmation-modal" >
-                    <div className="modal-dialog modal-mg rounded-0 " style={{ maxWidth: "400px" }}>
-                        <div className="modal-content rounded-0">
-                            <div className="modal-header">
-                                <div className='subheading'>
-                                    {/* <img className="imgWid29 pe-1 mb-1 " src={Item?.SiteIcon} /> */}
-                                    <span className="siteColor">
-                                        Create New Online File {createNewDocType?.length > 0 ? ` - ${createNewDocType}` : ''}
-                                    </span>
-                                </div>
-                                <Tooltip ComponentId="7642" />
-                                <span onClick={() => cancelNewCreateFile()}><i className="svg__iconbox svg__icon--cross crossBtn me-1"></i></span>
+            <Modal show={FileNamePopup} isOpen={FileNamePopup} size='mg' isBlocking={FileNamePopup} backdrop={true} >
+                <div className="modal-content rounded-0">
+                    <div className="modal-header">
+                        <h5 className="modal-title">Create New File {createNewDocType?.length > 0 ? ` - ${createNewDocType}` : ''}</h5>
+                        <span onClick={() => cancelNewCreateFile()}><i className="svg__iconbox svg__icon--cross crossBtn"></i></span>
+                    </div>
+                    <div className="modal-body p-2 row">
+                        <div className="AnC-CreateDoc-Icon">
+                            <div className={createNewDocType == 'docx' ? 'selected' : ''}>
+                                <span onClick={() => createBlankWordDocx()} className='svg__iconbox svg__icon--docx hreflink' title='Word'></span>
                             </div>
-                            <div className="modal-body p-2 row">
-                                <div className="AnC-CreateDoc-Icon">
-                                    <div className={createNewDocType == 'docx' ? 'selected' : ''}>
-                                        <span onClick={() => createBlankWordDocx()} className='svg__iconbox svg__icon--docx hreflink' title='Word'></span>
-                                    </div>
-                                    <div className={createNewDocType == 'xlsx' ? 'selected' : ''}>
-                                        <span onClick={() => createBlankExcelXlsx()} className='svg__iconbox svg__icon--xlsx hreflink' title='Excel'></span>
-                                    </div>
-                                    <div className={createNewDocType == 'pptx' ? 'selected' : ''}>
-                                        <span onClick={() => createBlankPowerPointPptx()} className='svg__iconbox svg__icon--ppt hreflink' title='Presentation'></span>
-                                    </div>
-                                </div>
-                                <div className="col-sm-12 mt-2">
-                                    <input type="text" onChange={(e) => { setRenamedFileName(e.target.value) }} value={renamedFileName} placeholder='Enter File Name' className='full-width' />
-                                </div>
+                            <div className={createNewDocType == 'xlsx' ? 'selected' : ''}>
+                                <span onClick={() => createBlankExcelXlsx()} className='svg__iconbox svg__icon--xlsx hreflink' title='Excel'></span>
                             </div>
-                            <footer className='text-end p-2'>
-
-
-                                <button className="btn btnPrimary" disabled={renamedFileName?.length > 0 ? false : true} onClick={() => { CreateNewAndTag() }}>Create</button>
-                                <button className='btn btn-default ms-1' onClick={() => cancelNewCreateFile()}>Cancel</button>
-                            </footer>
+                            <div className={createNewDocType == 'pptx' ? 'selected' : ''}>
+                                <span onClick={() => createBlankPowerPointPptx()} className='svg__iconbox svg__icon--ppt hreflink' title='Presentation'></span>
+                            </div>
+                        </div>
+                        <div className="col-sm-12 mt-2">
+                            <input type="text" onChange={(e) => { setRenamedFileName(e.target.value) }} value={renamedFileName} placeholder='Enter File Name' className='full-width' />
                         </div>
                     </div>
-                </div> : ''
-            }
+                    <footer className='text-end p-2'>
+
+
+                        <button className="btn btnPrimary" disabled={renamedFileName?.length > 0 ? false : true} onClick={() => { CreateNewAndTag() }}>Create</button>
+                        <button className='btn btn-default ms-1' onClick={() => cancelNewCreateFile()}>Cancel</button>
+                    </footer>
+                </div>
+            </Modal>
             {ShowConfirmation ?
                 <div className="modal Anc-Confirmation-modal" >
                     <div className="modal-dialog modal-mg rounded-0 " style={{ maxWidth: "700px" }}>
