@@ -2220,15 +2220,16 @@ const EditTaskPopup = (Items: any) => {
                 await web.lists.getById(Items.Items.listId).items.getById(Items.Items.Id).update(DataJSONUpdate)
                     .then(async (res: any) => {
                         // Added by PB************************
-                        if (Items?.SDCAuthor != undefined && Items?.SDCAuthor != '' && EditData != undefined && EditData != '') {
+                        if (Items?.SDCTaskDetails != undefined && Items?.SDCTaskDetails?.SDCCreatedBy != undefined && Items?.SDCTaskDetails?.SDCCreatedBy != '' && EditData != undefined && EditData != '') {
                             let SDCRecipientMail: any[] = [];
-                            EditData.SDCAuthor = Items?.SDCAuthor;
+                            EditData.ClientTask = Items?.SDCTaskDetails;
                             taskUsers?.map((User: any) => {
                                 if (User?.Title?.toLowerCase() == 'robert ungethuem' || User?.Title?.toLowerCase() == 'stefan hochhuth') {
+                                    // if (User?.Title?.toLowerCase() == 'abhishek tiwari') {
                                     SDCRecipientMail.push(User);
                                 }
                             });
-                            globalCommon.sendImmediateEmailNotifications(EditData.Id, siteUrls, Items.Items.listId, EditData, SDCRecipientMail, 'Client Task', taskUsers, Context).then((response: any) => {
+                            await globalCommon.sendImmediateEmailNotifications(EditData.Id, siteUrls, Items.Items.listId, EditData, SDCRecipientMail, 'Client Task', taskUsers, Context).then((response: any) => {
                                 console.log(response);
                             });
                         }
