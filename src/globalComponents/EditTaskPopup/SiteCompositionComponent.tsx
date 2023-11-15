@@ -1542,9 +1542,14 @@ const SiteCompositionComponent = (Props: any) => {
                         <div className="bg-body col-sm-2 mx-1 p-1 alignCenter">
                             <div className="">{TaskTotalTime ? TaskTotalTime.toFixed(2) : 0}</div>
                         </div>
-                        <div className="me-1">
+                        <div className="">
                             <button className="btn btn-primary px-4 " onClick={UpdateSiteTaggingAndClientCategory} style={usedFor == 'Task-Profile' ? { display: 'block' } : { display: 'none' }}>
                                 Save
+                            </button>
+                        </div>
+                        <div className="me-1">
+                            <button className="btn btn-default ms-1 px-3" onClick={() => closePopupCallBack("Close")} style={usedFor == 'Task-Profile' ? { display: 'block' } : { display: 'none' }}>
+                                Cancel
                             </button>
                         </div>
                     </div>

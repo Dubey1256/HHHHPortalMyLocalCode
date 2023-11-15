@@ -29,7 +29,7 @@ const RelevantDocuments = (props: any, ref: any) => {
     if (props.siteName == "Offshore Tasks") {
       props.siteName = "OffShoreTask"
     } else if (props.siteName == "Master Tasks") {
-      props.siteName = 'SharewebTask';
+      props.siteName = 'TeamPortfolio';
       query ="Id,Title,PriorityRank,Year,Body,Item_x0020_Cover,File_x0020_Type,FileLeafRef,FileDirRef,ItemRank,ItemType,Url,Created,Modified,Author/Id,Author/Title,Editor/Id,Editor/Title,EncodedAbsUrl&$expand=Author,Editor"
       
     }

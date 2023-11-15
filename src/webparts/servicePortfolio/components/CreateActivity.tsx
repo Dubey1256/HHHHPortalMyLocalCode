@@ -1115,7 +1115,7 @@ const CreateActivity = (props: any) => {
         setCategorySearchKey("");
         setIsComponentPicker(false);
         setSearchedCategoryData([]);
-        if (loggedInUser?.IsApprovalMail?.toLowerCase() == 'approve all but selected items' && !IsapprovalTask) {
+        if (loggedInUser?.IsApprovalMail?.toLowerCase() == 'approve all but selected items'||loggedInUser?.IsApprovalMail?.toLowerCase() == 'approve selected'  && !IsapprovalTask) {
             try {
                 let selectedApprovalCat = JSON.parse(loggedInUser?.CategoriesItemsJson)
                 IsapprovalTask = selectedApprovalCat?.some((selectiveApproval: any) => selectiveApproval?.Title == title)
@@ -1138,7 +1138,7 @@ const CreateActivity = (props: any) => {
             } else {
                 item.ActiveTile = !item.ActiveTile;
                 TaskCategories = TaskCategories.filter((category: any) => category?.Id !== Id);
-                if (loggedInUser?.IsApprovalMail?.toLowerCase() == 'approve all but selected items' && IsapprovalTask) {
+                if (loggedInUser?.IsApprovalMail?.toLowerCase() == 'approve all but selected items'||loggedInUser?.IsApprovalMail?.toLowerCase() == 'approve selected'  && IsapprovalTask) {
                     try {
                         let selectedApprovalCat = JSON.parse(loggedInUser?.CategoriesItemsJson)
                         IsapprovalTask = !selectedApprovalCat?.some((selectiveApproval: any) => selectiveApproval?.Title == title)
