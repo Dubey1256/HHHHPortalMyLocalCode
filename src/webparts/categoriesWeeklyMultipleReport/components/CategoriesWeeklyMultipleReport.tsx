@@ -668,7 +668,8 @@ export default class CategoriesWeeklyMultipleReport extends React.Component<ICat
       else
         sitesResult.push(obj)
     });
-
+   
+    this.checkBoxColor(undefined)
     this.setState({
       AllMetadata: results,
       SitesConfig: sitesResult
@@ -1070,6 +1071,59 @@ export default class CategoriesWeeklyMultipleReport extends React.Component<ICat
   //     } while (items.hasNext);
   //     console.log("PnP Paged All Items: ", finalItems);
   // };
+
+  private checkBoxColor = (className: any) => {
+    try {
+      setTimeout(() => {
+        const inputElementSubchild = document.getElementsByClassName('rct-node rct-node-parent rct-node-collapsed');
+        if (inputElementSubchild) {
+          for (let j = 0; j < inputElementSubchild.length; j++) {
+            const checkboxContainer = inputElementSubchild[j]
+            const childElements = checkboxContainer.getElementsByTagName('input');
+            const childElements2 = checkboxContainer.getElementsByClassName('rct-title');
+            for (let i = 0; i < childElements.length; i++) {
+              const checkbox = childElements[i];
+              const lable: any = childElements2[i];
+              if (lable?.style) {
+                lable.style.color = portfolioColor;
+              }
+              checkbox.classList.add('form-check-input', 'cursor-pointer');
+            }
+          }
+        }
+ 
+        const inputElementleaf = document.getElementsByClassName('rct-node rct-node-leaf');
+        if (inputElementleaf) {
+          for (let j = 0; j < inputElementleaf.length; j++) {
+            const checkboxContainer = inputElementleaf[j]
+            const childElements = checkboxContainer.getElementsByTagName('input');
+            const childElements2 = checkboxContainer.getElementsByClassName('rct-title');
+            for (let i = 0; i < childElements.length; i++) {
+              const checkbox = childElements[i];
+              const lable: any = childElements2[i];
+              if (lable?.style) {
+                lable.style.color = portfolioColor;
+              }
+              checkbox.classList.add('form-check-input', 'cursor-pointer');
+            }
+          }
+        }
+        const BtnElement = document.getElementsByClassName("rct-collapse rct-collapse-btn");
+        if (BtnElement) {
+          for (let j = 0; j < BtnElement.length; j++) {
+            BtnElement[j].classList.add('mt--5', 'me-0');
+          }
+        }
+      }, 40);
+ 
+    } catch (e: any) {
+      console.log(e)
+    }
+  }
+  private ExpandClientCategory = (expanded: any) => {
+    this.checkBoxColor(undefined)
+    this.setState({ expanded })
+  }
   private async generateTimeEntry() {
 
     //Create filter Creteria based on Dates and Selected users
@@ -3711,14 +3765,15 @@ export default class CategoriesWeeklyMultipleReport extends React.Component<ICat
                             <input defaultChecked={this.state.checkedAll} onClick={(e) => this.SelectAllCategories(e)} id='chkAllCategory' type="checkbox" className="form-check-input me-1 mt-1" />
                             Client Category
 
-
+                           
                           </label>
+                          <div className='custom-checkbox-tree mt-2'>
                           <CheckboxTree
                             nodes={this.state.filterItems}
                             checked={this.state.checked}
                             expanded={this.state.expanded}
                             onCheck={(e, checked) => this.onCheck(e, checked)}
-                            onExpand={expanded => this.setState({ expanded })}
+                            onExpand={expanded => this.ExpandClientCategory(expanded)}
                             nativeCheckboxes={true}
                             showNodeIcon={false}
                             checkModel={'all'}
@@ -3730,6 +3785,7 @@ export default class CategoriesWeeklyMultipleReport extends React.Component<ICat
                               leaf: null,
                             }}
                           />
+                          </div>
                         </div>
 
                         <div className="col-sm-12 mt-10 pe-1 text-end">
