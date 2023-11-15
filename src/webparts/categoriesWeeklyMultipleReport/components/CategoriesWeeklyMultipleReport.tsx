@@ -3765,8 +3765,9 @@ export default class CategoriesWeeklyMultipleReport extends React.Component<ICat
                             <input defaultChecked={this.state.checkedAll} onClick={(e) => this.SelectAllCategories(e)} id='chkAllCategory' type="checkbox" className="form-check-input me-1 mt-1" />
                             Client Category
 
-
+                           
                           </label>
+                          <div className='custom-checkbox-tree mt-2'>
                           <CheckboxTree
                             nodes={this.state.filterItems}
                             checked={this.state.checked}
@@ -3784,6 +3785,7 @@ export default class CategoriesWeeklyMultipleReport extends React.Component<ICat
                               leaf: null,
                             }}
                           />
+                          </div>
                         </div>
 
                         <div className="col-sm-12 mt-10 pe-1 text-end">

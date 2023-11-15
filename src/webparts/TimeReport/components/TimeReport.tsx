@@ -1301,7 +1301,7 @@ QATime = 0.00;
         + '<tr>'
         + '<td style="border: 1px solid #aeabab;padding: 5px;width: 50%;" bgcolor="#f5f5f5">' + '<strong>' + 'Total' + '</strong>' + '</td>'        
         + '<td style="border: 1px solid #aeabab;padding: 4px">' + '<strong>' + TotalMembers.toFixed(2) + '</strong>' + '</td>'
-        + '<td style="border: 1px solid #aeabab;padding: 4px">' + '<strong>' + TotalleaveMembers.toFixed(2) * 8 + '</strong>' + '</td>'
+        + '<td style="border: 1px solid #aeabab;padding: 4px">' + '<strong>' + TotalleaveMembers.toFixed(2)  + '</strong>' + '</td>'
         + '<td style="border: 1px solid #aeabab;padding: 4px">' + '<strong>' + TotlaTime.toFixed(2) + '</strong>' + '</td>'
         + '<td style="border: 1px solid #aeabab;padding: 4px">' + '<strong>' + TotalleaveHours + '</strong>' + '</td>'
         + '</tr>';
