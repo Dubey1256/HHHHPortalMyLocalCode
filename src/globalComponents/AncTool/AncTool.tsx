@@ -86,6 +86,14 @@ const AncTool = (props: any) => {
         pathGenerator();
         rootSiteName = props.Context.pageContext.site.absoluteUrl.split(props.Context.pageContext.site.serverRelativeUrl)[0];
     }, [])
+    React.useEffect(() => {
+        setTimeout(()=>{
+         const panelMain: any = document.querySelector('.ms-Panel-main');
+         if (panelMain && props?.selectedItem?.PortfolioType?.Color) {
+             $('.ms-Panel-main').css('--SiteBlue', props?.selectedItem?.PortfolioType?.Color); // Set the desired color value here
+         }
+        },2000)
+     }, [CreateFolderLocation,modalIsOpen]);
     // Generate Path And Basic Calls
     const pathGenerator = async () => {
         const params = new URLSearchParams(window.location.search);
@@ -98,7 +106,7 @@ const AncTool = (props: any) => {
         Href = Href.split('#')[0];
         siteName = params.get("Site");
         if ((siteName == undefined || siteName == '' || siteName?.length == 0) && props?.listName == "Master Tasks") {
-            siteName = 'SharewebTask'
+            siteName = 'TeamPortfolio'
         }
         if (siteName?.length > 0) {
             if (siteName === "Offshore Tasks") {
@@ -1058,7 +1066,7 @@ const AncTool = (props: any) => {
                 isOpen={modalIsOpen}
                 onDismiss={setModalIsOpenToFalse}
                 onRenderHeader={onRenderCustomHeaderMain}
-                isBlocking={false}>
+                isBlocking={modalIsOpen}>
                 <div className={ServicesTaskCheck ? "serviepannelgreena" : ""} >
 
                     <ModalBody>
