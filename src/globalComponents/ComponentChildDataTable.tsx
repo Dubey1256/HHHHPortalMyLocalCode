@@ -1569,7 +1569,7 @@ function ComponentChildDataTable(SelectedProp: any) {
             <div className="Alltable mt-2">
               <div className="p-2">
                 <div className="full-width alignCenter justify-content-between">
-                  <div className="pb-2 siteColor">Summerize Client Categories</div>
+                  <div className="pb-2 siteColor">Summarize Client Categories</div>
                   <div className="alignCenter pb-2">
                     <span className='me-1 siteColor'>Flat View</span>
                     <label className="switch me-2 siteColor" htmlFor="checkbox">
