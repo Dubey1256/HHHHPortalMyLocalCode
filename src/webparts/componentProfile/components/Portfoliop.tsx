@@ -1467,10 +1467,10 @@ const inlineCallBack = React.useCallback((item: any) => {
 
                       {/* Question description */}
                       {AllQuestion?.length != 0 && (
-                        <details open>
+                        <details>
                           <summary className="alignCenter">
                             <label className="toggler full_width">
-                          Question Description
+                            Question Description <span>({AllQuestion?.length})</span>
                             </label>
                           </summary>
                           <div className="border border-top-0 p-2">
