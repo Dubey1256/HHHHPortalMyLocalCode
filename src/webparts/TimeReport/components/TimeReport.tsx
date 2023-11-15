@@ -424,7 +424,7 @@ QATime = 0.00;
         myData = await web.lists
             .getById(props?.ContextData?.LeaveCalenderListID)
             .items
-            .select("RecurrenceData,Duration,Author/Title,Editor/Title,Category,Description,ID,EndDate,EventDate,Location,Title,fAllDayEvent,EventType,UID,fRecurrence,Event_x002d_Type,Employee/Id")
+            .select("RecurrenceData,Duration,Author/Title,Editor/Title,Category,HalfDay,Description,ID,EndDate,EventDate,Location,Title,fAllDayEvent,EventType,UID,fRecurrence,Event_x002d_Type,Employee/Id")
             .top(499)
             .expand("Author,Editor,Employee")
             .getAll()
@@ -458,6 +458,9 @@ QATime = 0.00;
                         }
                         else{
                             val.totaltime = Math.abs(parseInt(endtime[0]) - parseInt(stattime[0]));
+                        }
+                        if(val?.HalfDay == true) {
+                            val.totaltime = 4
                         }
                                     
                         console.log(val)
