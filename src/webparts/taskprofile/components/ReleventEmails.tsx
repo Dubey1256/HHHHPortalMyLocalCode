@@ -26,12 +26,12 @@ const RelevantEmail = (props: any, ref: any) => {
     loadAllSitesDocuments
   }))
   const loadAllSitesDocuments = async () => {
-    let query ="Id,Title,PriorityRank,Year,Body,Item_x0020_Cover,SharewebTask/Id,SharewebTask/Title,SharewebTask/ItemType,Portfolios/Id,Portfolios/Title,File_x0020_Type,FileLeafRef,FileDirRef,ItemRank,ItemType,Url,Created,Modified,Author/Id,Author/Title,Editor/Id,Editor/Title,EncodedAbsUrl&$expand=Author,Editor,SharewebTask,Portfolios"
+    let query ="Id,Title,PriorityRank,Year,Body,Item_x0020_Cover,Portfolios/Id,Portfolios/Title,File_x0020_Type,FileLeafRef,FileDirRef,ItemRank,ItemType,Url,Created,Modified,Author/Id,Author/Title,Editor/Id,Editor/Title,EncodedAbsUrl&$expand=Author,Editor,Portfolios"
     if (props.siteName == "Offshore Tasks") {
       props.siteName = "OffShoreTask"
     } else if (props.siteName == "Master Tasks") {
-      props.siteName = 'SharewebTask';
-      query ="Id,Title,PriorityRank,Year,Body,Item_x0020_Cover,SharewebTask/Id,SharewebTask/Title,SharewebTask/ItemType,File_x0020_Type,FileLeafRef,FileDirRef,ItemRank,ItemType,Url,Created,Modified,Author/Id,Author/Title,Editor/Id,Editor/Title,EncodedAbsUrl&$expand=Author,Editor,SharewebTask"
+      props.siteName = 'TeamPortfolio';
+      query ="Id,Title,PriorityRank,Year,Body,Item_x0020_Cover,File_x0020_Type,FileLeafRef,FileDirRef,ItemRank,ItemType,Url,Created,Modified,Author/Id,Author/Title,Editor/Id,Editor/Title,EncodedAbsUrl&$expand=Author,Editor"
       
     }
     const web = new Web(props.siteUrl);
