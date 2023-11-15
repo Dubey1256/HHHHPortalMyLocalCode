@@ -486,7 +486,7 @@ function ShowTeamMembers(item: any) {
                                         }
                                           onDragOver={(e) => e.preventDefault()}
 
-                                          key={index} draggable title={childItem?.Title} className="workmember activeimgbg-fxdark border bg-e9 p-1 ">{childItem?.Suffix}</span>
+                                          key={index} draggable title={childItem?.Title} className="workmember activeimgbg-fxdark border bg-e9">{childItem?.Suffix}</span>
                                     }
 
                                   </span>
