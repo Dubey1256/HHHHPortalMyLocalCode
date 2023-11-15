@@ -1367,7 +1367,27 @@ export const sendImmediateEmailNotifications = async (itemId: any, siteUrl: any,
 
                         }
                         if (isLoadNotification == 'Client Task') {
-                            Subject = "[ SDC Client Task - " + siteType + " - " + item?.SDCAuthor + " ] " + UpdateItem?.Title + "";
+                            let SDCDetails = item?.ClientTask
+                            let extraBody = ''
+                            Subject = "[ SDC Client Task - " + siteType + " - " + SDCDetails?.SDCCreatedBy + " ] " + UpdateItem?.Title + "";
+                            if (UpdateItem?.PercentComplete < 90) {
+                                extraBody = `<div>
+                                <h2>Email Subject : Your Task has been seen - [${UpdateItem?.SDCTaskId} ${UpdateItem?.Title}]</h2>
+                                <p>Message:</p>
+                                <p>Dear ${SDCDetails?.SDCCreatedBy},</p>
+                                <p>Thank you for your Feedback!</p>
+                                <p>Your Task - [${UpdateItem?.Title}] has been seen by our Team and we are now working on it.</p>
+                                <p>You can track your Task Status here: <a href="${SDCDetails?.SDCTaskUrl}">${SDCDetails?.SDCTaskUrl}</a></p>
+                                <p>If you want to see all your Tasks or all Sharweb Tasks click here: <a href="${SDCDetails?.SDCTaskDashboard}">Team Dashboard - Task View</a></p>
+                                <p>Best regards,<br />Your HHHH Support Team</p>
+                                <br>
+                                <h4>Client Email : - ${SDCDetails?.SDCEmail}
+                            </div><br><br>`
+
+                            }
+                        
+
+                            body = extraBody + body
                         }
                         var from = '',
                             to = ToEmails,

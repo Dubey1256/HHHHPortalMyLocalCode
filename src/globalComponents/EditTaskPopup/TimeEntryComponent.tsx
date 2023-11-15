@@ -268,8 +268,8 @@ function TimeEntryPopup(item: any) {
       }
     }
   };
- 
- 
+
+
 
   const changeTimes = (val: any, time: any, type: any) => {
     if (type == 'AddTime' || type == 'AddTimeCat') {
@@ -497,10 +497,10 @@ function TimeEntryPopup(item: any) {
   //   setTaskStatuspopup(false);
   // };
   const changeTimesDec = (items: any, time: any, type: any) => {
-    if(type == 'CopyTime'){
+    if (type == 'CopyTime') {
       type = 'EditTime'
     }
-    if(type == 'AddTimeCat'){
+    if (type == 'AddTimeCat') {
       type = 'AddTime'
     }
     if (type == 'AddTime') {
@@ -1699,7 +1699,9 @@ function TimeEntryPopup(item: any) {
                 ? TimeInHours
                 : child.TaskTime;
             update["TaskTimeInMin"] = TimeInMinutes != undefined && TimeInMinutes != 0 ? TimeInMinutes : child.TaskTimeInMin;
-            update["TaskDate"] = Moment(myDatee).format("DD/MM/YYYY");
+            update["TaskDate"] = Dateee != "Invalid date"
+              ? Dateee
+              : Moment(DateFormate).format("DD/MM/YYYY");
             update["Description"] =
               postData != undefined &&
                 postData.Description != undefined &&
@@ -1883,9 +1885,7 @@ function TimeEntryPopup(item: any) {
       }
     }
 
-    if (CurrentUserData?.length == countss && isTrueTime == false) {
-      saveJsonDataAnotherCat(CurrentUser, ParentId);
-    }
+   
   };
   const saveJsonDataAnotherCat = async (CurrentUser: any, items: any) => {
     var update: any = {};
@@ -2181,103 +2181,105 @@ function TimeEntryPopup(item: any) {
     }
   };
 
-  // const changeDatetodayQuickly = (date: any, type: any, Popup: any) => {
-  //   if (Popup == "Edit") {
-  //     if (type == "firstdate") {
-  //       var a1 = date.split("/");
-  //       a1[0] = "01";
-  //       a1 = a1[2] + a1[1] + a1[0];
-  //       var finalDate = Moment(a1).format("ddd, DD MMM yyyy");
-  //       change = new window.Date(finalDate);
-  //       //setMyDatee(finalDate)
-  //       setediteddata(change);
-  //     }
-  //     if (type == "15thdate") {
-  //       var a1 = date.split("/");
-  //       a1[0] = "15";
-  //       a1 = a1[2] + a1[1] + a1[0];
-  //       var finalDate = Moment(a1).format("ddd, DD MMM yyyy");
-  //       change = new window.Date(finalDate);
-  //       // setMyDatee(finalDate)
-  //       setediteddata(change);
-  //     }
-  //     if (type == "1Jandate") {
-  //       var a1 = date.split("/");
-  //       a1[1] = "01";
-  //       a1[0] = "01";
-  //       a1 = a1[2] + a1[1] + a1[0];
-  //       var finalDate = Moment(a1).format("ddd, DD MMM yyyy");
-  //       change = new window.Date(finalDate);
-  //       //setMyDatee(finalDate)
-  //       setediteddata(change);
-  //     }
-  //     if (type == "Today") {
-  //       var newStartDate: any = Moment().format("DD/MM/YYYY");
-  //       var a1 = newStartDate.split("/");
-  //       a1 = a1[2] + a1[1] + a1[0];
-  //       var finalDate = Moment(a1).format("ddd, DD MMM yyyy");
-  //       change = new window.Date(finalDate);
-  //       //setMyDatee(finalDate)
-  //       setediteddata(change);
-  //     }
-  //   }
-  //   if (Popup == "Add") {
-  //     if (type == "firstdate") {
-  //       var newStartDate: any = Moment(date).format("DD/MM/YYYY");
-  //       var a1 = newStartDate.split("/");
-  //       a1[0] = "01";
-  //       a1 = a1[2] + a1[1] + a1[0];
-  //       var finalDate = Moment(a1).format("ddd, DD MMM yyyy");
-  //       change = new window.Date(finalDate);
-  //       // setMyDatee(finalDate)
-  //       //setediteddata(finalDate)
-  //       // var inputDate = new Date(a1)
-  //       setMyDatee(change);
-  //     }
-  //     if (type == "15thdate") {
-  //       var newStartDate: any = Moment(date).format("DD/MM/YYYY");
-  //       var a1 = newStartDate.split("/");
-  //       a1[0] = "15";
-  //       a1 = a1[2] + a1[1] + a1[0];
-  //       let finalDate: any = Moment(a1).format("ddd, DD MMM yyyy");
-  //       change = new window.Date(finalDate);
-  //       // setMyDatee(finalDate)
-  //       // setediteddata(finalDate)
-  //       // var inputDate = new Date(a1)
-  //       setMyDatee(change);
-  //     }
-  //     if (type == "1Jandate") {
-  //       var newStartDate: any = Moment(date).format("DD/MM/YYYY");
-  //       var a1 = newStartDate.split("/");
-  //       a1[1] = "01";
-  //       a1[0] = "01";
-  //       a1 = a1[2] + a1[1] + a1[0];
-  //       var finalDate = Moment(a1).format("ddd, DD MMM yyyy");
-  //       change = new window.Date(finalDate);
-  //       //setMyDatee(finalDate)
-  //       //setediteddata(finalDate)
-  //       // var inputDate = new Date(a1)
-  //       setMyDatee(change);
-  //     }
-  //     if (type == "Today") {
-  //       var newStartDate: any = Moment().format("DD/MM/YYYY");
-  //       var a1 = newStartDate.split("/");
-  //       a1 = a1[2] + a1[1] + a1[0];
-  //       var finalDate = Moment(a1).format("ddd, DD MMM yyyy");
-  //       change = new window.Date(finalDate);
-  //       //setMyDatee(finalDate)
-  //       //setediteddata(finalDate)
-  //       //var inputDate = new Date(a1)
-  //       setMyDatee(change);
-  //     }
-  //   }
-  // };
-  // function convert(str: any) {
-  //   var date = new Date(str),
-  //     mnth = ("0" + (date.getMonth() + 1)).slice(-2),
-  //     day = ("0" + date.getDate()).slice(-2);
-  //   return [date.getFullYear(), mnth, day].join("-");
-  // }
+  const changeDatetodayQuickly = (date: any, type: any, Popup: any) => {
+    if (Popup == "EditTime" || Popup == "CopyTime") {
+      var newDate:any = Moment(date).format("DD/MM/YYYY");
+      if (type == "firstdate") {
+        var a1 = newDate.split("/");
+        a1[0] = "01";
+        a1 = a1[2] + a1[1] + a1[0];
+        var finalDate = Moment(a1).format("ddd, DD MMM yyyy");
+        change = new window.Date(finalDate);
+        //setMyDatee(finalDate)
+        setediteddata(change);
+      }
+      if (type == "15thdate") {
+        var a1 = newDate.split("/");
+        a1[0] = "15";
+        a1 = a1[2] + a1[1] + a1[0];
+        var finalDate = Moment(a1).format("ddd, DD MMM yyyy");
+        change = new window.Date(finalDate);
+        // setMyDatee(finalDate)
+        setediteddata(change);
+      }
+      if (type == "1Jandate") {
+        var a1 = newDate.split("/");
+        a1[1] = "01";
+        a1[0] = "01";
+        a1 = a1[2] + a1[1] + a1[0];
+        var finalDate = Moment(a1).format("ddd, DD MMM yyyy");
+        change = new window.Date(finalDate);
+        //setMyDatee(finalDate)
+        setediteddata(change);
+      }
+      if (type == "Today") {
+        var newStartDate: any = Moment().format("DD/MM/YYYY");
+        var a1 = newStartDate.split("/");
+        a1 = a1[2] + a1[1] + a1[0];
+        var finalDate = Moment(a1).format("ddd, DD MMM yyyy");
+        change = new window.Date(finalDate);
+        //setMyDatee(finalDate)
+        setediteddata(change);
+      }
+    }
+    if (Popup == "AddTime" || Popup == "AddTimeCat") {
+
+      if (type == "firstdate") {
+        var newStartDate: any = Moment(date).format("DD/MM/YYYY");
+        var a1 = newStartDate.split("/");
+        a1[0] = "01";
+        a1 = a1[2] + a1[1] + a1[0];
+        var finalDate = Moment(a1).format("ddd, DD MMM yyyy");
+        change = new window.Date(finalDate);
+        // setMyDatee(finalDate)
+        //setediteddata(finalDate)
+        // var inputDate = new Date(a1)
+        setMyDatee(change);
+      }
+      if (type == "15thdate") {
+        var newStartDate: any = Moment(date).format("DD/MM/YYYY");
+        var a1 = newStartDate.split("/");
+        a1[0] = "15";
+        a1 = a1[2] + a1[1] + a1[0];
+        let finalDate: any = Moment(a1).format("ddd, DD MMM yyyy");
+        change = new window.Date(finalDate);
+        // setMyDatee(finalDate)
+        // setediteddata(finalDate)
+        // var inputDate = new Date(a1)
+        setMyDatee(change);
+      }
+      if (type == "1Jandate") {
+        var newStartDate: any = Moment(date).format("DD/MM/YYYY");
+        var a1 = newStartDate.split("/");
+        a1[1] = "01";
+        a1[0] = "01";
+        a1 = a1[2] + a1[1] + a1[0];
+        var finalDate = Moment(a1).format("ddd, DD MMM yyyy");
+        change = new window.Date(finalDate);
+        //setMyDatee(finalDate)
+        //setediteddata(finalDate)
+        // var inputDate = new Date(a1)
+        setMyDatee(change);
+      }
+      if (type == "Today") {
+        var newStartDate: any = Moment().format("DD/MM/YYYY");
+        var a1 = newStartDate.split("/");
+        a1 = a1[2] + a1[1] + a1[0];
+        var finalDate = Moment(a1).format("ddd, DD MMM yyyy");
+        change = new window.Date(finalDate);
+        //setMyDatee(finalDate)
+        //setediteddata(finalDate)
+        //var inputDate = new Date(a1)
+        setMyDatee(change);
+      }
+    }
+  };
+  function convert(str: any) {
+    var date = new Date(str),
+      mnth = ("0" + (date.getMonth() + 1)).slice(-2),
+      day = ("0" + date.getDate()).slice(-2);
+    return [date.getFullYear(), mnth, day].join("-");
+  }
   const handleDatedue = (date: any) => {
     change = new window.Date(date);
     var NewDate: any = new window.Date(date);
@@ -2588,13 +2590,124 @@ function TimeEntryPopup(item: any) {
 
                   <div className="col-sm-12">
                     <div className="date-div">
+                      <div className="row">
+                        <div className="col-sm-12">
+                          <div className="date-div">
+                          <label className="form-label full-width mb-2">Select date</label>
+                            <div className="Date-Div-BAR d-flex mb-2">
+                              <span
+                                className="href"
+                                id="selectedYear"
+                                onClick={() =>
+                                  changeDatetodayQuickly(
+                                    myDatee,
+                                    "firstdate",
+                                    PopupType
+                                  )
+                                }
+                              >
+                                1st
+                              </span>
+                              |{" "}
+                              <span
+                                className="href"
+                                id="selectedYear"
+                                onClick={() =>
+                                  changeDatetodayQuickly(myDatee, "15thdate", PopupType)
+                                }
+                              >
+                                15th
+                              </span>
+                              |{" "}
+                              <span
+                                className="href"
+                                id="selectedYear"
+                                onClick={() =>
+                                  changeDatetodayQuickly(myDatee, "1Jandate", PopupType)
+                                }
+                              >
+                                1 Jan
+                              </span>
+                              |
+                              <span
+                                className="href"
+                                id="selectedToday"
+                                onClick={() =>
+                                  changeDatetodayQuickly(myDatee, "Today", PopupType)
+                                }
+                              >
+                                Today
+                              </span>
+                            </div>
+                          </div>
+                        </div>
 
+                        {/* <div className="col-sm-6  session-control-buttons">
+                          <div className="row">
+                            <div className="col-sm-4 ">
+                              <button
+                                id="DayPlus"
+                                className="top-container plus-button plus-minus"
+                                onClick={() => changeDate("Date", PopupType)}
+                              >
+                                <i className="fa fa-plus" aria-hidden="true"></i>
+                              </button>
+                              <span className="min-input">Day</span>
+                              <button
+                                id="DayMinus"
+                                className="top-container minus-button plus-minus"
+                                onClick={() => changeDateDec("Date", PopupType)}
+                              >
+                                <i className="fa fa-minus" aria-hidden="true"></i>
+                              </button>
+                            </div>
+
+                            <div className="col-sm-4 ">
+                              <button
+                                id="MonthPlus"
+                                className="top-container plus-button plus-minus"
+                                onClick={() => changeDate("month", PopupType)}
+                              >
+                                <i className="fa fa-plus" aria-hidden="true"></i>
+                              </button>
+                              <span className="min-input">Month</span>
+                              <button
+                                id="MonthMinus"
+                                className="top-container minus-button plus-minus"
+                                onClick={() =>
+                                  changeDateDec("month", PopupType)
+                                }
+                              >
+                                <i className="fa fa-minus" aria-hidden="true"></i>
+                              </button>
+                            </div>
+
+                            <div className="col-sm-4 ">
+                              <button
+                                id="YearPlus"
+                                className="top-container plus-button plus-minus"
+                                onClick={() => changeDate("Year", PopupType)}
+                              >
+                                <i className="fa fa-plus" aria-hidden="true"></i>
+                              </button>
+                              <span className="min-input">Year</span>
+                              <button
+                                id="YearMinus"
+                                className="top-container minus-button plus-minus"
+                                onClick={() => changeDateDec("year", PopupType)}
+                              >
+                                <i className="fa fa-minus" aria-hidden="true"></i>
+                              </button>
+                            </div>
+                          </div>
+                        </div> */}
+                      </div>
                       <div className="input-group">
-                        <label className="form-label full-width mb-2">Select date</label>
+                      
                         <div className="d-flex w-100 mb-1">
                           <button className="btnCol btn-primary" onClick={() => changeDateDec("month", PopupType)}><MdKeyboardDoubleArrowLeft></MdKeyboardDoubleArrowLeft></button> <button className="btnCol btn-primary mx-1" onClick={() => changeDateDec("Date", PopupType)}><MdKeyboardArrowLeft></MdKeyboardArrowLeft></button><DatePicker
                             className="form-control"
-                            selected={(PopupType=='EditTime') ? editeddata != undefined ? editeddata : myDatee: myDatee }
+                            selected={(PopupType == 'EditTime' || PopupType == 'CopyTime') ? editeddata != undefined ? editeddata : myDatee : myDatee}
                             onChange={handleDatedue}
                             dateFormat="EEE, dd MMM yyyy"
                           /> <button onClick={() => changeDate("Date", PopupType)} className="btnCol btn-primary mx-1" ><MdKeyboardArrowRight></MdKeyboardArrowRight></button> <button className="btnCol btn-primary" onClick={() => changeDate("month", PopupType)}><MdKeyboardDoubleArrowRight></MdKeyboardDoubleArrowRight></button></div>
@@ -2722,47 +2835,47 @@ function TimeEntryPopup(item: any) {
               <div className="row">
 
                 <div className="col-sm-6">
-                   {PopupType=='EditTime' || PopupType=='CopyTime' ?
-                   <>
-                   
-                  <div className="text-left">
-                    Created
-                    <span>{saveEditTaskTimeChild?.TaskTimeCreatedDate}</span>
-                    by{" "}
-                    <span className="siteColor">
-                      {saveEditTaskTimeChild?.EditorTitle}
-                    </span>
-                  </div>
-                  <div className="text-left">
-                    Last modified
-                    <span>{saveEditTaskTimeChild?.TaskTimeModifiedDate}</span>
-                    by{" "}
-                    <span className="siteColor">
-                      {saveEditTaskTimeChild?.EditorTitle}
-                    </span>
-                  </div>
-                  </>:'' }
+                  {PopupType == 'EditTime' || PopupType == 'CopyTime' ?
+                    <>
+
+                      <div className="text-left">
+                        Created
+                        <span>{saveEditTaskTimeChild?.TaskTimeCreatedDate}</span>
+                        by{" "}
+                        <span className="siteColor">
+                          {saveEditTaskTimeChild?.EditorTitle}
+                        </span>
+                      </div>
+                      <div className="text-left">
+                        Last modified
+                        <span>{saveEditTaskTimeChild?.TaskTimeModifiedDate}</span>
+                        by{" "}
+                        <span className="siteColor">
+                          {saveEditTaskTimeChild?.EditorTitle}
+                        </span>
+                      </div>
+                    </> : ''}
                 </div>
                 <div className="col-sm-6 text-end">
-                {PopupType=='EditTime' || PopupType=='CopyTime' ?
-                   <>
-                  <a
-                    target="_blank"
-                    href={`https://hhhhteams.sharepoint.com/sites/HHHH/SP/Lists/TaskTimeSheetListNew/EditForm.aspx?ID=${saveEditTaskTimeChild?.ParentID}`}
-                  >
-                    Open out-of-the-box form
-                  </a>
-                  </>:'' }
+                  {PopupType == 'EditTime' || PopupType == 'CopyTime' ?
+                    <>
+                      <a
+                        target="_blank"
+                        href={`https://hhhhteams.sharepoint.com/sites/HHHH/SP/Lists/TaskTimeSheetListNew/EditForm.aspx?ID=${saveEditTaskTimeChild?.ParentID}`}
+                      >
+                        Open out-of-the-box form
+                      </a>
+                    </> : ''}
                   {PopupTypeCat == true ?
                     <button
-                      disabled={PopupType == 'Addtime' && TimeInMinutes <= 0 ? true : false}
+                      disabled={(PopupType == 'AddTime' ||PopupType == 'AddTimeCat') && TimeInMinutes <= 0 ? true : false}
                       type="button"
                       className="btn btn-primary ms-2"
                       onClick={() => saveTimeSpent()}
                     >
                       Save
                     </button> : <button
-                      disabled={PopupType == 'Addtime' && TimeInMinutes <= 0 ? true : false}
+                      disabled={(PopupType == 'AddTime' ||PopupType == 'AddTimeCat') && TimeInMinutes <= 0 ? true : false}
                       type="button"
                       className="btn btn-primary ms-2"
                       onClick={() => AddTaskTime(saveEditTaskTimeChild, PopupType)}

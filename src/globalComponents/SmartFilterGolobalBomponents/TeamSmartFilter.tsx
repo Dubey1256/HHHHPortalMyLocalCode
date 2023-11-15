@@ -141,11 +141,6 @@ const TeamSmartFilter = (item: any) => {
     }, [])
     ///// Year Range Using Piker end////////
 
-
-    let finalArrayData: any = [];
-    let SetAllData: any = [];
-    let filt: any = "";
-
     const getTaskUsers = async () => {
         let web = new Web(ContextValue?.siteUrl);
         let taskUsers = [];
@@ -237,8 +232,12 @@ const TeamSmartFilter = (item: any) => {
                     configurationData = JSON.parse(smart.Configurations);
                     configurationData.map((elem) => {
                         elem.Id = smart.Id;
-                        elem.startDate = new Date(elem.startDate);
-                        elem.endDate = new Date(elem.endDate);
+                        if (elem.startDate != null && elem.startDate != undefined && elem.startDate != "") {
+                            elem.startDate = new Date(elem.startDate);
+                        }
+                        if (elem.endDate != null && elem.endDate != undefined && elem.endDate != "") {
+                            elem.endDate = new Date(elem.endDate);
+                        }
                     })
                 }
             });
@@ -251,7 +250,7 @@ const TeamSmartFilter = (item: any) => {
     }
 
     React.useEffect(() => {
-        if (item?.IsSmartfavoriteId != "") {
+        if (item?.IsSmartfavoriteId != "" && item?.IsSmartfavoriteId != undefined && item?.IsSmartfavoriteId != null) {
             setFlatView(true);
             setUpdatedSmartFilter(true);
             loadAdminConfigurationsId(item?.IsSmartfavoriteId);
@@ -961,6 +960,7 @@ const TeamSmartFilter = (item: any) => {
         let allFinalResult = filteredMasterTaskData.concat(filteredTaskData);
         setFinalArray(allFinalResult);
         setFirstTimecallFilterGroup(false);
+        setItemsQueryBasedCall(false);
         console.log(filteredMasterTaskData);
         console.log(filteredTaskData);
     };
@@ -1258,7 +1258,7 @@ const TeamSmartFilter = (item: any) => {
             setIsTeamMembersExpendShow(false);
             setIsDateExpendShow(false);
             setIsSmartfilter(false);
-            setItemsQueryBasedCall(false);
+            // setItemsQueryBasedCall(false);
             loadAdminConfigurationsId(item?.IsSmartfavoriteId);
             rerender();
         }
@@ -1977,8 +1977,12 @@ const TeamSmartFilter = (item: any) => {
                             }
                             if (config.CurrentUserID !== undefined && config.CurrentUserID === item?.ContextValue?.Context?.pageContext?.legacyPageContext?.userId && config.isShowEveryone === false) {
                                 config.Id = smart.Id;
-                                config.startDate = new Date(config.startDate);
-                                config.endDate = new Date(config.endDate);
+                                if (config.startDate != null && config.startDate != undefined && config.startDate != "") {
+                                    config.startDate = new Date(config.startDate);
+                                }
+                                if (config.endDate != null && config.endDate != undefined && config.endDate != "") {
+                                    config.endDate = new Date(config.endDate);
+                                }
                                 copyCreateMeSmartFavorites.push(config);
                             }
                         })
@@ -2703,7 +2707,7 @@ const TeamSmartFilter = (item: any) => {
                             return (<>
                                 <div className='bg-ee my-1 p-1 w-100'>
                                     <span className='d-flex'>
-                                        <a className='hreflink' onClick={() => handleOpenSamePage(item1, "filterSmaePage")}>{item1.Title}</a><span className='d-flex'><a className="hreflink" data-interception="off" target="_blank" style={{ color: `${portfolioColor}` }} href={ContextValue.siteUrl + "/SitePages/Team-Portfolio.aspx" + (item.IsUpdated ? `?PortfolioType=${item.IsUpdated}` : '') + `?SmartfavoriteId=${item1.Id}&smartfavorite=${item1?.Title}`}><span className="svg__iconbox svg__icon--openWeb"></span></a><span onClick={() => handleUpdateFaborites(item1)} className="svg__iconbox svg__icon--edit"></span> <span onClick={() => deleteTask(item1)} className="svg__icon--trash  svg__iconbox"></span></span>
+                                        <a className='hreflink' onClick={() => handleOpenSamePage(item1, "filterSmaePage")}>{item1.Title}</a><span className='d-flex'><a className="hreflink" data-interception="off" target="_blank" style={{ color: `${portfolioColor}` }} href={`${ContextValue.siteUrl}/SitePages/Team-Portfolio.aspx${item.IsUpdated ? `?PortfolioType=${encodeURIComponent(item.IsUpdated)}` : ''}${item.IsUpdated ? '&' : '?'}SmartfavoriteId=${encodeURIComponent(item1.Id)}&smartfavorite=${encodeURIComponent(item1?.Title)}`}><span className="svg__iconbox svg__icon--openWeb"></span></a><span onClick={() => handleUpdateFaborites(item1)} className="svg__iconbox svg__icon--edit"></span> <span onClick={() => deleteTask(item1)} className="svg__icon--trash  svg__iconbox"></span></span>
                                     </span>
                                 </div>
                             </>)
@@ -2725,7 +2729,7 @@ const TeamSmartFilter = (item: any) => {
                                 <div className='bg-ee my-1 p-1 w-100'>
                                     <div>
                                         <span className='d-flex'>
-                                            <a className='hreflink' onClick={() => handleOpenSamePage(item2, "filterSmaePage")}>{item2.Title}</a><span className='d-flex'><a className="hreflink" data-interception="off" target="_blank" style={{ color: `${portfolioColor}` }} href={ContextValue.siteUrl + "/SitePages/Team-Portfolio.aspx" + (item.IsUpdated ? `?PortfolioType=${item.IsUpdated}` : '') + `?SmartfavoriteId=${item2.Id}&smartfavorite=${item2?.Title}`}><span className="svg__iconbox svg__icon--openWeb"> </span></a><span onClick={() => handleUpdateFaborites(item2)} className="svg__iconbox svg__icon--edit"></span> <span onClick={() => deleteTask(item2)} className="svg__icon--trash  svg__iconbox"></span></span>
+                                            <a className='hreflink' onClick={() => handleOpenSamePage(item2, "filterSmaePage")}>{item2.Title}</a><span className='d-flex'><a className="hreflink" data-interception="off" target="_blank" style={{ color: `${portfolioColor}` }} href={`${ContextValue.siteUrl}/SitePages/Team-Portfolio.aspx${item.IsUpdated ? `?PortfolioType=${encodeURIComponent(item.IsUpdated)}` : ''}${item.IsUpdated ? '&' : '?'}SmartfavoriteId=${encodeURIComponent(item2.Id)}&smartfavorite=${encodeURIComponent(item2?.Title)}`}><span className="svg__iconbox svg__icon--openWeb"> </span></a><span onClick={() => handleUpdateFaborites(item2)} className="svg__iconbox svg__icon--edit"></span> <span onClick={() => deleteTask(item2)} className="svg__icon--trash  svg__iconbox"></span></span>
                                         </span>
                                     </div>
                                 </div>
