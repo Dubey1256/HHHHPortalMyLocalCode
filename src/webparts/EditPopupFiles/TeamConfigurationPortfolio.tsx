@@ -487,7 +487,7 @@ export class TeamConfigurationCard extends React.Component<ITeamConfigurationPro
                                                                 src={image.userImage != null ? image.userImage : image.Item_x0020_Cover.Url}
                                                                 // style={{ backgroundImage: "url('" + (image.userImage != null ? image.userImage : image.Item_x0020_Cover.Url) + "')", backgroundSize: "24px 24px" }}
                                                                 title={image.Title} draggable
-                                                                onDragStart={(e) => this.dragStart(e, index, image, 'AssignedToUsers')}
+                                                                onDragStart={(e) => this.dragStart(e, index, image, 'Assigned User')}
                                                                 onDragOver={(e) => e.preventDefault()}
                                                             />
                                                         })

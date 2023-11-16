@@ -86,7 +86,7 @@ const loadleave = async () =>  {
       .sendEmail({
         Body: BindHtmlBody(),
         Subject: "HHHH - Team Attendance "+formattedDate+" "+Allteamoforganization +" available - "+Object?.keys(nameidTotals)?.length+" on leave" ,
-        To: ["abhishek.tiwari@hochhuth-consulting.de",,"prashant.kumar@hochhuth-consulting.de","ranu.trivedi@hochhuth-consulting.de","jyoti.prasad@hochhuth-consulting.de"],
+        To: ["abhishek.tiwari@hochhuth-consulting.de","prashant.kumar@hochhuth-consulting.de","ranu.trivedi@hochhuth-consulting.de","jyoti.prasad@hochhuth-consulting.de"],
         // ,"prashant.kumar@hochhuth-consulting.de","ranu.trivedi@hochhuth-consulting.de","jyoti.prasad@hochhuth-consulting.de"
         AdditionalHeaders: {
           "content-type": "text/html",
@@ -219,6 +219,7 @@ const loadleave = async () =>  {
   
     return (startDay === 0 || startDay === 6) && (endDay === 0 || endDay === 6);
   };
+  
 
 // const calculateTotalWorkingDays = (matchedData:any) => {
 //   return matchedData.reduce((total:any, item:any) => {
