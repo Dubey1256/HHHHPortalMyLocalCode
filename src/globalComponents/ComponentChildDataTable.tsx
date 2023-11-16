@@ -1061,7 +1061,7 @@ function ComponentChildDataTable(SelectedProp: any) {
           })
         })
       }
-      // Mereging the prev selected CC from Parent into the Summerize CC Array
+      // Mereging the prev selected CC from Parent into the summarize CC Array
       if (prevSelectedCC?.length > 0) {
         UpdatedCCCount++;
         prevSelectedCC?.map((SelectedCCItem: any) => {
