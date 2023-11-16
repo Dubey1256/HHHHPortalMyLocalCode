@@ -17,6 +17,7 @@ import GlobalCommanTable, {
 } from "../globalComponents/GroupByReactTableComponents/GlobalCommanTable";
 import InfoIconsToolTip from "../globalComponents/InfoIconsToolTip/InfoIconsToolTip";
 
+
 var filt: any = "";
 var ContextValueGlobal: any = {};
 
@@ -101,6 +102,7 @@ function ComponentChildDataTable(SelectedProp: any) {
     ]);
 
   const [flatView, setFlatView] = React.useState(true);
+  const [IsMakeSCProtected, setIsMakeSCProtected] = React.useState(false);
   let ComponetsData: any = {};
   let Response: any = [];
   let props = undefined;
@@ -231,6 +233,16 @@ function ComponentChildDataTable(SelectedProp: any) {
 
   const handleSwitchToggle = () => {
     setFlatView(!flatView);
+  };
+  const handleSwitchToggleForProtected = () => {
+    if (IsMakeSCProtected) {
+      setIsMakeSCProtected(false);
+      SelectedProp?.isProtected(false)
+    } else {
+      setIsMakeSCProtected(true);
+      SelectedProp?.isProtected(true)
+    }
+
   };
 
   const findPortFolioIconsAndPortfolio = async () => {
@@ -1072,21 +1084,29 @@ function ComponentChildDataTable(SelectedProp: any) {
       }
       removeDuplicateClientCategories();
       lastUpdatedAllSites = [...AllSitesData];
+      console.log(" vfs fb gsdf bdfd df bdf bdf bvs sf ds v ===============", lastUpdatedAllSites)
     }
   }
 
 
   const removeDuplicateClientCategories = () => {
-    let finalData: any
     AllSitesData?.map((CCItemData: any) => {
       if (CCItemData.ClientCategories?.length > 0) {
-        finalData = CCItemData.ClientCategories?.filter((val: any, id: any, array: any) => {
-          return array.indexOf(val) == id;
-        })
-        finalData[0].checked = true;
-        CCItemData.ClientCategories = finalData;
+        let uniqueIds: any = {};
+        // Filter the array to remove duplicates based on Id
+        let result: any = CCItemData.ClientCategories?.filter((obj: any) => {
+          if (!uniqueIds[obj.Id]) {
+            uniqueIds[obj.Id] = true;
+            return true;
+          }
+          return false;
+        });
+        result[0].checked = true;
+        CCItemData.ClientCategories = result;
       }
     })
+
+    console.log("All Cliebnt nsdv sdvd sv dfbsf", AllSitesData)
 
     let AllFinalData: any = allMasterTaskGlobalArray.concat(allSiteGlobalArray);
     let AllFaltViewData: any = AllFinalData?.filter((val: any, id: any, array: any) => {
@@ -1553,6 +1573,8 @@ function ComponentChildDataTable(SelectedProp: any) {
 
 
 
+ 
+
 
   let IndexCounting: any = 0;
 
@@ -1570,13 +1592,23 @@ function ComponentChildDataTable(SelectedProp: any) {
               <div className="p-2">
                 <div className="full-width alignCenter justify-content-between">
                   <div className="pb-2 siteColor">Summarize Client Categories</div>
-                  <div className="alignCenter pb-2">
-                    <span className='me-1 siteColor'>Flat View</span>
-                    <label className="switch me-2 siteColor" htmlFor="checkbox">
-                      <input checked={flatView} onChange={handleSwitchToggle} type="checkbox" id="checkbox" />
-                      {flatView === true ? <div style={{ backgroundColor: '#000066' }} className="slider round" title='Switch to Groupby View'></div> : <div title='Switch to Flat-View' className="slider round"></div>}
-                    </label>
+                  <div className="alignCenter">
+                    <div className="alignCenter pb-2">
+                      <span className='me-1 siteColor'>Protected</span>
+                      <label className="switch me-2 siteColor" htmlFor="checkbox">
+                        <input checked={IsMakeSCProtected} onChange={handleSwitchToggleForProtected} type="checkbox" id="checkbox" />
+                        {IsMakeSCProtected === true ? <div style={{ backgroundColor: '#000066' }} className="slider round" title='Switch to Groupby View'></div> : <div title='Switch to Flat-View' className="slider round"></div>}
+                      </label>
+                    </div>
+                    <div className="alignCenter pb-2">
+                      <span className='me-1 siteColor'>Flat View</span>
+                      <label className="switch me-2 siteColor" htmlFor="checkbox">
+                        <input checked={flatView} onChange={handleSwitchToggle} type="checkbox" id="checkbox" />
+                        {flatView === true ? <div style={{ backgroundColor: '#000066' }} className="slider round" title='Switch to Groupby View'></div> : <div title='Switch to Flat-View' className="slider round"></div>}
+                      </label>
+                    </div>
                   </div>
+
                 </div>
                 <table className="table siteColor">
                   <tbody>
@@ -1668,6 +1700,7 @@ function ComponentChildDataTable(SelectedProp: any) {
           </div>
         </section>
       </div>
+     
       {console.log("html rendering count ====")}
     </section>
   );
