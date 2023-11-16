@@ -1598,7 +1598,7 @@ const inlineEditingcolumns = (props: any) => {
           :
           <TeamConfigurationCards
           ItemInfo={props?.item}
-          Sitel={props?.AllListId}
+          AllListId={props?.AllListId}
           parentCallback={DDComponentCallBack}
             ></TeamConfigurationCards>
           }
