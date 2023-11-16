@@ -912,13 +912,12 @@ const SiteCompositionComponent = (Props: any) => {
     // ************************ this is for the auto Suggestion fuction for all Client Category ******************
     const closeComponentChildrenPopup = (FnType: any) => {
         setComponentChildrenPopupStatus(false);
-        setIsChildUpdated(true);
-        
-        // setTimeout(() => {
-        //     // Props.closePopupCallBack(FnType);
-        //     // callBack(SiteCompositionObject, "dataExits");
-        //     makeAllGlobalVariableAsDefault();
-        // }, 1500);
+        // setIsChildUpdated(true);
+        setTimeout(() => {
+            Props.closePopupCallBack(FnType);
+            // callBack(SiteCompositionObject, "dataExits");
+            makeAllGlobalVariableAsDefault();
+        }, 1000);
         // makeAllGlobalVariableAsDefault();
     }
 
@@ -1064,13 +1063,13 @@ const SiteCompositionComponent = (Props: any) => {
             }
         }
         if (TaskShouldBeUpdate) {
-            if (!IsChildUpdated) {
+            // if (!IsChildUpdated) {
                 setComponentChildrenPopupStatus(true);
-            } else {
-                closeComponentChildrenPopup("Save");
-                Props.closePopupCallBack("Save");
-                // callBack(SiteCompositionObject, "dataExits");
-            }
+            // } else {
+            //     closeComponentChildrenPopup("Save");
+            //     Props.closePopupCallBack("Save");
+            //     // callBack(SiteCompositionObject, "dataExits");
+            // }
         }
     }
 
