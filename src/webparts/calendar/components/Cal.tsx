@@ -677,6 +677,8 @@ const App = (props: any) => {
           setDetails(newEvent);
           let mytitle =
             newEvent.name + "-" + newEvent.type + "-" + newEvent.title;
+    let mycolors = HalfDaye===true?"#6d36c5":newEvent.type === "Work From Home"?"#e0a209":"";
+
           let eventData = {
             Title: mytitle,
 
@@ -703,7 +705,7 @@ const App = (props: any) => {
 
             HalfDay:HalfDaye,
             Designation: newEvent.Designation,
-            Color:HalfDaye?"#6d36c5":""
+            Color:mycolors
           };
 
           let web = new Web(props.props.siteUrl);
@@ -751,6 +753,7 @@ const App = (props: any) => {
     if (!editRecurrenceEvent) {
       let mytitle =
       peopleName + "-" + type + "-" + inputValueName;
+      let mycolors = HalfDaye===true?"#6d36c5":type === "Work From Home"?"#e0a209":"";
       const newEventData: IEventData = {
         
         EventType: "1",
@@ -761,7 +764,7 @@ const App = (props: any) => {
         Designation: dType,
         Description: '',
         HalfDay:HalfDaye,
-        Color:HalfDaye?"#6d36c5":"",
+        Color:mycolors,
         EventDate: new Date(start),
         EndDate: new Date(end),
         fAllDayEvent: allDay,
@@ -774,6 +777,7 @@ const App = (props: any) => {
     } else if (editRecurrenceEvent) {
       let mytitle =
       peopleName + "-" + type + "-" + inputValueName;
+      let mycolors = HalfDaye===true?"#6d36c5":type === "Work From Home"?"#e0a209":"";
       const editEventData: IEventData = {
         EventType: "1",
         EmployeeId: title_Id,
@@ -783,7 +787,7 @@ const App = (props: any) => {
         Designation: dType,
         Description: '',
         HalfDay:HalfDaye,
-        Color:HalfDaye?"#6d36c5":"",
+        Color:mycolors,
         EventDate: new Date(start),
         reason: inputValueReason,
         EndDate: new Date(end),
@@ -1109,6 +1113,8 @@ const App = (props: any) => {
     let results = null;
     try {
       const web = new Web(props.props.siteUrl);
+      
+      let mycolors = HalfDaye===true?"#6d36c5":newEvent.Event_x002d_Type === "Work From Home"?"#e0a209":"";
       const addEventItem = {
          Title: newEvent.Title,
         Description: newEvent.Description,
@@ -1120,7 +1126,7 @@ const App = (props: any) => {
         fAllDayEvent: newEvent.fAllDayEvent,
         fRecurrence: newEvent.fRecurrence,
         EventType: newEvent.EventType,
-        Color:HalfDaye?"#6d36c5":"",
+        Color:mycolors,
         UID: newEvent.UID,
         HalfDay:HalfDaye,
         RecurrenceData: newEvent.RecurrenceData
@@ -1143,6 +1149,8 @@ const App = (props: any) => {
       const web = new Web(props.props.siteUrl);
       let mytitle =
         editEvent.name + "-" + editEvent.type + "-" + editEvent.title;
+      let mycolors = HalfDaye===true?"#6d36c5":editEvent.Event_x002d_Type === "Work From Home"?"#e0a209":"";
+
       const editEventItem = {
         Title: mytitle,
         Description: editEvent.Description,
@@ -1156,7 +1164,7 @@ const App = (props: any) => {
         EventType: editEvent.EventType,
         UID: editEvent.UID,
         HalfDay:editEvent.HalfDay,
-        Color:HalfDaye?"#6d36c5":"",
+        Color:mycolors,
         RecurrenceData: editEvent.RecurrenceData
           ? await deCodeHtmlEntities(editEvent.RecurrenceData)
           : "",
@@ -1196,7 +1204,9 @@ const App = (props: any) => {
       reason: inputValueReason,
       type: type,
       Designation: dType,
-      loc: location
+      loc: location,
+      halfdayevent:isHalfDChecked,
+      fulldayevent:isChecked
     };
     if (
       selectedTime == undefined ||
@@ -1227,6 +1237,9 @@ const App = (props: any) => {
     );
    
     newEvent.title = newEvent.title.replace("LWP", newEvent.type);
+
+    let mycolors = newEvent.halfdayevent===true?"#6d36c5":newEvent.type === "Work From Home"?"#e0a209":"";
+
     await web.lists
       .getById(props.props.SmalsusLeaveCalendar)
       .items.getById(eventPass.iD)
@@ -1250,9 +1263,9 @@ const App = (props: any) => {
           ConvertLocalTOServerDateToSave(startDate, selectedTime) +
           " " +
           (selectedTime + "" + ":00"),
-          HalfDay:HalfDaye,
-          Color:HalfDaye?"#6d36c5":"",
-        fAllDayEvent: allDay
+          HalfDay:newEvent.halfdayevent,
+          Color:mycolors,
+        fAllDayEvent: newEvent.fulldayevent
       })
       .then((i: any) => {
         //console.log(i);
@@ -1730,7 +1743,7 @@ const eventStyleGetter = (event:any, start:any, end:any, isSelecte:any) => {
               />
             </div>
           )}
-          {!disableTime ? (
+          {/* {!disableTime ? (
             <div className="col-md-6  mt-4">
               <label htmlFor="1" className="w-100">
                 Start Time:
@@ -1745,7 +1758,7 @@ const eventStyleGetter = (event:any, start:any, end:any, isSelecte:any) => {
             </div>
           ) : (
             ""
-          )}
+          )} */}
           {showRecurrenceSeriesInfo != true && (
             <div className="col-md-6">
               <DatePicker
@@ -1757,7 +1770,7 @@ const eventStyleGetter = (event:any, start:any, end:any, isSelecte:any) => {
               />
             </div>
           )}
-          {!disableTime ? (
+          {/* {!disableTime ? (
             <div className="col-md-6  mt-4">
               <label htmlFor="2" className="w-100">
                 End Time:
@@ -1772,7 +1785,7 @@ const eventStyleGetter = (event:any, start:any, end:any, isSelecte:any) => {
             </div>
           ) : (
             ""
-          )}
+          )} */}
           <div>
             <label>
               <input
