@@ -78,6 +78,7 @@ const SiteCompositionComponent = (Props: any) => {
     const calloutProps = { gapSpace: 0 };
     const [isPortfolioComposition, setIsPortfolioComposition] = useState(false);
     const [checkBoxStatus, setCheckBoxStatus] = useState(false);
+    const [MakeScProtected, setMakeScProtected] = useState(false);
     const StandardComposition =
         [
             {
@@ -912,13 +913,12 @@ const SiteCompositionComponent = (Props: any) => {
     // ************************ this is for the auto Suggestion fuction for all Client Category ******************
     const closeComponentChildrenPopup = (FnType: any) => {
         setComponentChildrenPopupStatus(false);
-        setIsChildUpdated(true);
-        
-        // setTimeout(() => {
-        //     // Props.closePopupCallBack(FnType);
-        //     // callBack(SiteCompositionObject, "dataExits");
-        //     makeAllGlobalVariableAsDefault();
-        // }, 1500);
+        // setIsChildUpdated(true);
+        setTimeout(() => {
+            Props.closePopupCallBack(FnType);
+            // callBack(SiteCompositionObject, "dataExits");
+            makeAllGlobalVariableAsDefault();
+        }, 500);
         // makeAllGlobalVariableAsDefault();
     }
 
@@ -948,12 +948,6 @@ const SiteCompositionComponent = (Props: any) => {
             setSearchedKeyForMigration(SearchedKey);
         }
     }
-
-   
-
-   
-
-
 
     //    ************* this is Custom Header For Client Category Popup *****************
     const onRenderCustomClientCategoryHeader = () => {
@@ -1064,13 +1058,13 @@ const SiteCompositionComponent = (Props: any) => {
             }
         }
         if (TaskShouldBeUpdate) {
-            if (!IsChildUpdated) {
-                setComponentChildrenPopupStatus(true);
-            } else {
-                closeComponentChildrenPopup("Save");
-                Props.closePopupCallBack("Save");
-                // callBack(SiteCompositionObject, "dataExits");
-            }
+            // if (!IsChildUpdated) {
+            setComponentChildrenPopupStatus(true);
+            // } else {
+            //     closeComponentChildrenPopup("Save");
+            //     Props.closePopupCallBack("Save");
+            //     // callBack(SiteCompositionObject, "dataExits");
+            // }
         }
     }
 
@@ -1122,6 +1116,11 @@ const SiteCompositionComponent = (Props: any) => {
                 }
             })
         }
+
+        if (MakeScProtected) {
+            SiteCompositionSettingData[0].Protected = true;
+        }
+
         try {
             let web = new Web(AllListIdData.siteUrl);
             await web.lists.getById(AllListIdData.MasterTaskListID).items.getById(ItemId).update({
@@ -1172,6 +1171,10 @@ const SiteCompositionComponent = (Props: any) => {
             closeComponentChildrenPopup("Save");
         }
     }
+
+    const MakeSCProtectedFunction = React.useCallback((Status: any) => {
+        setMakeScProtected(Status);
+    }, [])
 
     const CommonFunctionForUpdateCC = (AllTaskListData: any, SiteTaskListData: any) => {
         let web = AllListIdData.siteUrl;
@@ -1285,6 +1288,10 @@ const SiteCompositionComponent = (Props: any) => {
         // if (siteType == "Shareweb") {
         //     ClientCategoryIds = TempClientCategoryIds;
         // }
+
+        if (MakeScProtected) {
+            finalSiteCompositionSettingData[0].Protected = true;
+        }
 
         let MakeUpdateJSONDataObject: any;
         if (TaskType == "MasterTask") {
@@ -2092,6 +2099,7 @@ const SiteCompositionComponent = (Props: any) => {
                                     props={selectedComponent}
                                     NextProp={AllListIdData}
                                     callback={callBackData}
+                                    isProtected={MakeSCProtectedFunction}
                                     usedFor={"Site-Compositions"}
                                     prevSelectedCC={SiteClientCatgeoryFinalData?.length > 0 ? SiteClientCatgeoryFinalData : SelectedClientCategoryFromProps}
                                 />
