@@ -580,6 +580,7 @@ const AncTool = (props: any) => {
                             });
                         setUploadedDocDetails(taggedDocument);
                         setShowConfirmation(true)
+                        setModalIsOpenToFalse()
                     })
                 }
 
@@ -738,6 +739,7 @@ const AncTool = (props: any) => {
                     });
                 setUploadedDocDetails(taggedDocument);
                 setShowConfirmation(true)
+                setModalIsOpenToFalse()
             } catch (error) {
                 console.log("File upload failed:", error);
             }
@@ -1042,6 +1044,7 @@ const AncTool = (props: any) => {
                     });
                 setUploadedDocDetails(taggedDocument);
                 setShowConfirmation(true)
+                setModalIsOpenToFalse()
             } catch (error) {
                 console.log("File upload failed:", error);
             }
