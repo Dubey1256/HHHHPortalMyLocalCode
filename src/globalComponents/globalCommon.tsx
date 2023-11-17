@@ -1628,7 +1628,7 @@ export const GetServiceAndComponentAllData = async (Props: any) => {
                 result.descriptionsSearch = portfolioSearchData(result)
                 result.commentsSearch = result?.Comments != null && result?.Comments != undefined ? result.Comments.replace(/(<([^>]+)>)/gi, "").replace(/\n/g, '') : '';
             }catch(error){
-                
+             
             }
             result.Id = result.Id != undefined ? result.Id : result.ID;
             result["TaskID"] = result?.PortfolioStructureID;
