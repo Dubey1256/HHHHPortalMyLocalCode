@@ -668,7 +668,6 @@ export default class CategoriesWeeklyMultipleReport extends React.Component<ICat
       else
         sitesResult.push(obj)
     });
-   
     this.checkBoxColor(undefined)
     this.setState({
       AllMetadata: results,
@@ -3765,9 +3764,9 @@ export default class CategoriesWeeklyMultipleReport extends React.Component<ICat
                             <input defaultChecked={this.state.checkedAll} onClick={(e) => this.SelectAllCategories(e)} id='chkAllCategory' type="checkbox" className="form-check-input me-1 mt-1" />
                             Client Category
 
-                           
+
                           </label>
-                          <div className='custom-checkbox-tree mt-2'>
+                          <div className='custom-checkbox-tree weeklyReport'>
                           <CheckboxTree
                             nodes={this.state.filterItems}
                             checked={this.state.checked}
@@ -3802,8 +3801,8 @@ export default class CategoriesWeeklyMultipleReport extends React.Component<ICat
             </details>
           </div>
         </div>
-<div className='container-fluid p-0'>
-<div className='TableSection'>
+       <div className='container-fluid p-0'>
+       <div className='TableSection'>
         <div id="showSearchBox" className="container p-0">
           <div className='Alltable'>
           <div className='col-sm-12 p-0 smart'>
