@@ -3614,16 +3614,15 @@ function EditInstitution({ item, SelectD, Calls, usedFor }: any) {
                       ></TeamConfigurationCard>
                     </div>
                     <div className="row">
-                      <section className="accordionbox mt-2">
-                        <div className="accordion p-0  overflow-hidden">
-                          <details>
-                            <summary className="alignCenter">
-                              <label className="toggler full_width">
-                                <a className="pull-left">Admin Notes</a>
-                              </label>
-                            </summary>
-                            <div className="border border-top-0 p-2">
-                              {EditData?.showsAdmin && (
+                        <section className="accordionbox mt-2">
+                          <div className="accordion p-0  overflow-hidden">
+                            <details>
+                              <summary className="alignCenter">
+                                <label className="toggler full_width">
+                                  <div className="pull-left">Admin Notes</div>
+                                </label>
+                              </summary>
+                              <div className="border border-top-0 p-2">
                                 <div className="accordion-body py-2 px-2"
                                   id="testDiv1">
                                   <textarea
@@ -3634,77 +3633,76 @@ function EditInstitution({ item, SelectD, Calls, usedFor }: any) {
                                     }
                                   ></textarea>
                                 </div>
-                              )}
-                            </div>
-                          </details>
-                          {/* <div className="card shadow-none mb-2">
-                            <div
-                              className="accordion-item border-0"
-                              id="t_draggable1"
-                            >
+                              </div>
+                            </details>
+                            {/* <div className="card shadow-none mb-2">
                               <div
-                                className="card-header p-0 border-bottom-0 "
-                                onClick={() =>
-                                  expendcollapsAccordion(
-                                    EditData,
-                                    "showsAdmin"
-                                  )
-                                }
+                                className="accordion-item border-0"
+                                id="t_draggable1"
                               >
-                                <button
-                                  className="accordion-button btn btn-link text-decoration-none d-block w-100 py-2 px-1 border-0 text-start rounded-0 shadow-none"
-                                  data-bs-toggle="collapse"
+                                <div
+                                  className="card-header p-0 border-bottom-0 "
+                                  onClick={() =>
+                                    expendcollapsAccordion(
+                                      EditData,
+                                      "showsAdmin"
+                                    )
+                                  }
                                 >
-                                  <span className="sign">
-                                    {EditData?.showsAdmin ? (
-                                      <SlArrowDown />
-                                    ) : (
-                                      <SlArrowRight />
-                                    )}
-                                  </span>
-                                  <span className="fw-medium font-sans-serif text-900">
-                                    {" "}
-                                    Admin Notes
-                                  </span>
-                                </button>
-                              </div>
-                              <div className="accordion-collapse collapse show">
-                                {EditData?.showsAdmin && (
-                                  <div
-                                    className="accordion-body py-2 px-2"
-                                    id="testDiv1"
+                                  <button
+                                    className="accordion-button btn btn-link text-decoration-none d-block w-100 py-2 px-1 border-0 text-start rounded-0 shadow-none"
+                                    data-bs-toggle="collapse"
                                   >
-                                    <textarea
-                                      className="full_width"
-                                      defaultValue={EditData?.AdminNotes}
-                                      onChange={(e) =>
-                                        (EditData.AdminNotes = e.target.value)
-                                      }
-                                    ></textarea>
-                                  </div>
-                                )}
+                                    <span className="sign">
+                                      {EditData?.showsAdmin ? (
+                                        <SlArrowDown />
+                                      ) : (
+                                        <SlArrowRight />
+                                      )}
+                                    </span>
+                                    <span className="fw-medium font-sans-serif text-900">
+                                      {" "}
+                                      Admin Notes
+                                    </span>
+                                  </button>
+                                </div>
+                                <div className="accordion-collapse collapse show">
+                                  {EditData?.showsAdmin && (
+                                    <div
+                                      className="accordion-body py-2 px-2"
+                                      id="testDiv1"
+                                    >
+                                      <textarea
+                                        className="full_width"
+                                        defaultValue={EditData?.AdminNotes}
+                                        onChange={(e) =>
+                                          (EditData.AdminNotes = e.target.value)
+                                        }
+                                      ></textarea>
+                                    </div>
+                                  )}
+                                </div>
                               </div>
-                            </div>
-                          </div> */}
-                          <details>
-                            <summary className="alignCenter">
-                              <label className="toggler full_width">
-                                <a className="pull-left">Description</a>
-                              </label>
-                            </summary>
-                            <div className="border border-top-0 p-2">
-                              {EditData?.showdes && (
+                            </div> */}
+                            <details>
+                              <summary className="alignCenter">
+                                <label className="toggler full_width">
+                                  <div className="pull-left">Description</div>
+                                </label>
+                              </summary>
+                              <div className="border border-top-0 p-2">
+
                                 <div
                                   id="testDiv1">
-                                  <span className="form-check text-end">
-                                    <input
+                                  <span className="form-check pull-right">
+                                    <input className="form-check-input rounded-0"
                                       type="checkbox"
                                       defaultChecked={
                                         EditData?.descriptionVerified ===
                                         true
                                       }
                                     ></input>
-                                    <span className="ps-1">Verified</span>
+                                    <span>Verified</span>
                                   </span>
                                   <HtmlEditorCard
                                     editorValue={
@@ -3717,86 +3715,86 @@ function EditInstitution({ item, SelectD, Calls, usedFor }: any) {
                                     }
                                   ></HtmlEditorCard>
                                 </div>
-                              )}
-                            </div>
-                          </details>
-                          {/* <div className="card shadow-none  mb-2">
-                            <div
-                              className="accordion-item border-0"
-                              id="t_draggable1"
-                            >
+
+                              </div>
+                            </details>
+                            {/* <div className="card shadow-none  mb-2">
                               <div
-                                className="card-header p-0 border-bottom-0 "
-                                onClick={() =>
-                                  expendcollapsAccordion(EditData, "showdes")
-                                }
+                                className="accordion-item border-0"
+                                id="t_draggable1"
                               >
-                                <button
-                                  className="accordion-button btn btn-link text-decoration-none d-block w-100 py-2 px-1 border-0 text-start rounded-0 shadow-none"
-                                  data-bs-toggle="collapse"
+                                <div
+                                  className="card-header p-0 border-bottom-0 "
+                                  onClick={() =>
+                                    expendcollapsAccordion(EditData, "showdes")
+                                  }
                                 >
-                                  <span className="fw-medium font-sans-serif text-900">
-                                    <span className="sign">
-                                      {EditData?.showdes ? (
-                                        <SlArrowDown />
-                                      ) : (
-                                        <SlArrowRight />
-                                      )}
-                                    </span>{" "}
-                                    Description
-                                  </span>
-                                </button>
-                              </div>
-                              <div className="accordion-collapse collapse show">
-                                {EditData?.showdes && (
-                                  <div
-                                    className="accordion-body py-2 px-2"
-                                    id="testDiv1"
+                                  <button
+                                    className="accordion-button btn btn-link text-decoration-none d-block w-100 py-2 px-1 border-0 text-start rounded-0 shadow-none"
+                                    data-bs-toggle="collapse"
                                   >
-                                    <span className="form-check text-end">
-                                      <input
-                                        type="checkbox"
-                                        defaultChecked={
-                                          EditData?.descriptionVerified ===
-                                          true
-                                        }
-                                      ></input>
-                                      <span className="ps-1">Verified</span>
+                                    <span className="fw-medium font-sans-serif text-900">
+                                      <span className="sign">
+                                        {EditData?.showdes ? (
+                                          <SlArrowDown />
+                                        ) : (
+                                          <SlArrowRight />
+                                        )}
+                                      </span>{" "}
+                                      Description
                                     </span>
-                                    <HtmlEditorCard
-                                      editorValue={
-                                        EditData?.Body != undefined
-                                          ? EditData?.Body
-                                          : ""
-                                      }
-                                      HtmlEditorStateChange={
-                                        HtmlEditorCallBack
-                                      }
-                                    ></HtmlEditorCard>
-                                  </div>
-                                )}
+                                  </button>
+                                </div>
+                                <div className="accordion-collapse collapse show">
+                                  {EditData?.showdes && (
+                                    <div
+                                      className="accordion-body py-2 px-2"
+                                      id="testDiv1"
+                                    >
+                                      <span className="form-check text-end">
+                                        <input
+                                          type="checkbox"
+                                          defaultChecked={
+                                            EditData?.descriptionVerified ===
+                                            true
+                                          }
+                                        ></input>
+                                        <span className="ps-1">Verified</span>
+                                      </span>
+                                      <HtmlEditorCard
+                                        editorValue={
+                                          EditData?.Body != undefined
+                                            ? EditData?.Body
+                                            : ""
+                                        }
+                                        HtmlEditorStateChange={
+                                          HtmlEditorCallBack
+                                        }
+                                      ></HtmlEditorCard>
+                                    </div>
+                                  )}
+                                </div>
                               </div>
-                            </div>
-                          </div> */}
-                          <details>
-                            <summary className="alignCenter">
-                              <label className="toggler full_width">
-                                <a className="pull-left">Short Description</a>
-                              </label>
-                            </summary>
-                            <div className="border border-top-0 p-2">
-                              {EditData?.show && (
+                            </div> */}
+                            <details>
+                              <summary className="alignCenter">
+                                <label className="toggler full_width">
+                                  <div className="pull-left">Short Description</div>
+                                </label>
+                              </summary>
+                              <div className="border border-top-0 p-2">
+
                                 <div id="testDiv1"
                                 >
-                                  <span className="form-check text-end">
+                                  <span className="form-check pull-right">
                                     <input
-                                      type="checkbox"
+                                      type="checkbox" className="form-check-input rounded-0"
                                       defaultChecked={
                                         EditData?.ShortDescriptionVerified ===
                                         true
                                       }
                                     ></input>
-                                    <span className="ps-1">Verified</span>
+                                    <span>Verified</span>
                                   </span>
 
                                   <HtmlEditorCard
@@ -3811,83 +3809,83 @@ function EditInstitution({ item, SelectD, Calls, usedFor }: any) {
                                     }
                                   ></HtmlEditorCard>
                                 </div>
-                              )}
-                            </div>
-                          </details>
-                          {/* <div className="card shadow-none  mb-2">
-                            <div
-                              className="accordion-item border-0"
-                              id="t_draggable1"
-                            >
-                              <div
-                                className="card-header p-0 border-bottom-0 "
-                                onClick={() =>
-                                  expendcollapsAccordion(EditData, "show")
-                                }
-                              >
-                                <button
-                                  className="accordion-button btn btn-link text-decoration-none d-block w-100 py-2 px-1 border-0 text-start rounded-0 shadow-none"
-                                  data-bs-toggle="collapse"
-                                >
-                                  <span className="fw-medium font-sans-serif text-900">
-                                    <span className="sign">
-                                      {EditData?.show ? (
-                                        <SlArrowDown />
-                                      ) : (
-                                        <SlArrowRight />
-                                      )}
-                                    </span>{" "}
-                                    Short Description
-                                  </span>
-                                </button>
-                              </div>
-                              <div className="accordion-collapse collapse show">
-                                {EditData?.show && (
-                                  <div
-                                    className="accordion-body py-2 px-2"
-                                    id="testDiv1"
-                                  >
-                                    <span className="form-check text-end">
-                                      <input
-                                        type="checkbox"
-                                        defaultChecked={
-                                          EditData?.ShortDescriptionVerified ===
-                                          true
-                                        }
-                                      ></input>
-                                      <span className="ps-1">Verified</span>
-                                    </span>
 
-                                    <HtmlEditorCard
-                                      editorValue={
-                                        EditData?.Short_x0020_Description_x0020_On !=
-                                          undefined
-                                          ? EditData?.Short_x0020_Description_x0020_On
-                                          : ""
-                                      }
-                                      HtmlEditorStateChange={
-                                        SortHtmlEditorCallBack
-                                      }
-                                    ></HtmlEditorCard>
-                                  </div>
-                                )}
                               </div>
-                            </div>
-                          </div> */}
-                          <details>
-                            <summary className="alignCenter">
-                              <label className="toggler full_width">
-                                <a className="pull-left">Background</a>
-                              </label>
-                            </summary>
-                            <div className="border border-top-0 p-2">
-                              {EditData?.showl && (
+                            </details>
+                            {/* <div className="card shadow-none  mb-2">
+                              <div
+                                className="accordion-item border-0"
+                                id="t_draggable1"
+                              >
+                                <div
+                                  className="card-header p-0 border-bottom-0 "
+                                  onClick={() =>
+                                    expendcollapsAccordion(EditData, "show")
+                                  }
+                                >
+                                  <button
+                                    className="accordion-button btn btn-link text-decoration-none d-block w-100 py-2 px-1 border-0 text-start rounded-0 shadow-none"
+                                    data-bs-toggle="collapse"
+                                  >
+                                    <span className="fw-medium font-sans-serif text-900">
+                                      <span className="sign">
+                                        {EditData?.show ? (
+                                          <SlArrowDown />
+                                        ) : (
+                                          <SlArrowRight />
+                                        )}
+                                      </span>{" "}
+                                      Short Description
+                                    </span>
+                                  </button>
+                                </div>
+                                <div className="accordion-collapse collapse show">
+                                  {EditData?.show && (
+                                    <div
+                                      className="accordion-body py-2 px-2"
+                                      id="testDiv1"
+                                    >
+                                      <span className="form-check text-end">
+                                        <input
+                                          type="checkbox"
+                                          defaultChecked={
+                                            EditData?.ShortDescriptionVerified ===
+                                            true
+                                          }
+                                        ></input>
+                                        <span className="ps-1">Verified</span>
+                                      </span>
+
+                                      <HtmlEditorCard
+                                        editorValue={
+                                          EditData?.Short_x0020_Description_x0020_On !=
+                                            undefined
+                                            ? EditData?.Short_x0020_Description_x0020_On
+                                            : ""
+                                        }
+                                        HtmlEditorStateChange={
+                                          SortHtmlEditorCallBack
+                                        }
+                                      ></HtmlEditorCard>
+                                    </div>
+                                  )}
+                                </div>
+                              </div>
+                            </div> */}
+                            <details>
+                              <summary className="alignCenter">
+                                <label className="toggler full_width">
+                                  <div className="pull-left">Background</div>
+                                </label>
+                              </summary>
+                              <div className="border border-top-0 p-2">
+
                                 <div
                                   className="accordion-body py-2 px-2"
                                   id="testDiv1"
                                 >
-                                  <span className="form-check text-end">
-                                    <input
+                                  <span className="form-check pull-right">
+                                    <input className="form-check-input rounded-0"
                                       type="checkbox"
                                       defaultChecked={
                                         EditData?.BackgroundVerified ===
@@ -3898,7 +3896,7 @@ function EditInstitution({ item, SelectD, Calls, usedFor }: any) {
                                         e.target.value)
                                       }
                                     ></input>
-                                    <span className="ps-1">Verified</span>
+                                    <span>Verified</span>
                                   </span>
                                   <textarea
                                     className="full_width"
@@ -3908,140 +3906,82 @@ function EditInstitution({ item, SelectD, Calls, usedFor }: any) {
                                     }
                                   ></textarea>
                                 </div>
-                              )}
-                            </div></details>
 
-                          {/* <div className="card shadow-none  mb-2">
-                            <div
-                              className="accordion-item border-0"
-                              id="t_draggable1"
-                            >
+                              </div></details>
+
+                            {/* <div className="card shadow-none  mb-2">
                               <div
-                                className="card-header p-0 border-bottom-0 "
-                                onClick={() =>
-                                  expendcollapsAccordion(EditData, "showl")
-                                }
+                                className="accordion-item border-0"
+                                id="t_draggable1"
                               >
-                                <button
-                                  className="accordion-button btn btn-link text-decoration-none d-block w-100 py-2 px-1 border-0 text-start rounded-0 shadow-none"
-                                  data-bs-toggle="collapse"
-                                >
-                                  <span className="sign">
-                                    {EditData?.showl ? (
-                                      <SlArrowDown />
-                                    ) : (
-                                      <SlArrowRight />
-                                    )}
-                                  </span>
-                                  <span className="fw-medium font-sans-serif text-900">
-                                    {" "}
-                                    Background
-                                  </span>
-                                </button>
-                              </div>
-                              <div className="accordion-collapse collapse show">
-                                {EditData?.showl && (
-                                  <div
-                                    className="accordion-body py-2 px-2"
-                                    id="testDiv1"
-                                  >
-                                    <span className="form-check text-end">
-                                      <input
-                                        type="checkbox"
-                                        defaultChecked={
-                                          EditData?.BackgroundVerified ===
-                                          true
-                                        }
-                                        onChange={(e) =>
-                                        (EditData.BackgroundVerified =
-                                          e.target.value)
-                                        }
-                                      ></input>
-                                      <span className="ps-1">Verified</span>
-                                    </span>
-                                    <textarea
-                                      className="full_width"
-                                      defaultValue={EditData?.Background}
-                                      onChange={(e) =>
-                                        (EditData.Background = e.target.value)
-                                      }
-                                    ></textarea>
-                                  </div>
-                                )}
-                              </div>
-                            </div>
-                          </div> */}
-                          <details>
-                            <summary className="alignCenter">
-                              <label className="toggler full_width">
-                                <a className="pull-left">Idea</a>
-                              </label>
-                            </summary>
-                            <div className="border border-top-0 p-2">
-                              {EditData?.shows && (
                                 <div
-                                  className="accordion-body py-2 px-2"
-                                  id="testDiv1"
+                                  className="card-header p-0 border-bottom-0 "
+                                  onClick={() =>
+                                    expendcollapsAccordion(EditData, "showl")
+                                  }
                                 >
-                                  <span className="form-check text-end">
-                                    <input
-                                      type="checkbox"
-                                      defaultChecked={
-                                        EditData?.IdeaVerified === true
-                                      }
-                                      onChange={(e) =>
-                                      (EditData.BackgroundVerified =
-                                        e.target.value)
-                                      }
-                                    ></input>
-                                    <span className="ps-1">Verified</span>
-                                  </span>
-                                  <textarea
-                                    className="full_width"
-                                    defaultValue={EditData?.Idea}
-                                    onChange={(e) =>
-                                      (EditData.Idea = e.target.value)
-                                    }
-                                  ></textarea>
+                                  <button
+                                    className="accordion-button btn btn-link text-decoration-none d-block w-100 py-2 px-1 border-0 text-start rounded-0 shadow-none"
+                                    data-bs-toggle="collapse"
+                                  >
+                                    <span className="sign">
+                                      {EditData?.showl ? (
+                                        <SlArrowDown />
+                                      ) : (
+                                        <SlArrowRight />
+                                      )}
+                                    </span>
+                                    <span className="fw-medium font-sans-serif text-900">
+                                      {" "}
+                                      Background
+                                    </span>
+                                  </button>
                                 </div>
-                              )}
-                            </div></details>
-
-                          {/* <div className="card shadow-none mb-2">
-                            <div
-                              className="accordion-item border-0"
-                              id="t_draggable1"
-                            >
-                              <div
-                                className="card-header p-0 border-bottom-0 "
-                                onClick={() =>
-                                  expendcollapsAccordion(EditData, "shows")
-                                }
-                              >
-                                <button
-                                  className="accordion-button btn btn-link text-decoration-none d-block w-100 py-2 px-1 border-0 text-start rounded-0 shadow-none"
-                                  data-bs-toggle="collapse"
-                                >
-                                  <span className="sign">
-                                    {EditData?.shows ? (
-                                      <SlArrowDown />
-                                    ) : (
-                                      <SlArrowRight />
-                                    )}
-                                  </span>
-                                  <span className="fw-medium font-sans-serif text-900">
-                                    {" "}
-                                    Idea
-                                  </span>
-                                </button>
+                                <div className="accordion-collapse collapse show">
+                                  {EditData?.showl && (
+                                    <div
+                                      className="accordion-body py-2 px-2"
+                                      id="testDiv1"
+                                    >
+                                      <span className="form-check text-end">
+                                        <input
+                                          type="checkbox"
+                                          defaultChecked={
+                                            EditData?.BackgroundVerified ===
+                                            true
+                                          }
+                                          onChange={(e) =>
+                                          (EditData.BackgroundVerified =
+                                            e.target.value)
+                                          }
+                                        ></input>
+                                        <span className="ps-1">Verified</span>
+                                      </span>
+                                      <textarea
+                                        className="full_width"
+                                        defaultValue={EditData?.Background}
+                                        onChange={(e) =>
+                                          (EditData.Background = e.target.value)
+                                        }
+                                      ></textarea>
+                                    </div>
+                                  )}
+                                </div>
                               </div>
-                              <div className="accordion-collapse collapse show">
-                                {EditData?.shows && (
+                            </div> */}
+                            <details>
+                              <summary className="alignCenter">
+                                <label className="toggler full_width">
+                                  <div className="pull-left">Idea</div>
+                                </label>
+                              </summary>
+                              <div className="border border-top-0 p-2">
+                                
                                   <div
                                     className="accordion-body py-2 px-2"
                                     id="testDiv1"
                                   >
-                                    <span className="form-check text-end">
+                                    <span className="form-check pull-right">
                                       <input
                                         type="checkbox"
                                         defaultChecked={
@@ -4052,7 +3992,7 @@ function EditInstitution({ item, SelectD, Calls, usedFor }: any) {
                                           e.target.value)
                                         }
                                       ></input>
-                                      <span className="ps-1">Verified</span>
+                                      <span>Verified</span>
                                     </span>
                                     <textarea
                                       className="full_width"
@@ -4062,25 +4002,83 @@ function EditInstitution({ item, SelectD, Calls, usedFor }: any) {
                                       }
                                     ></textarea>
                                   </div>
-                                )}
+                                
+                              </div></details>
+
+                            {/* <div className="card shadow-none mb-2">
+                              <div
+                                className="accordion-item border-0"
+                                id="t_draggable1"
+                              >
+                                <div
+                                  className="card-header p-0 border-bottom-0 "
+                                  onClick={() =>
+                                    expendcollapsAccordion(EditData, "shows")
+                                  }
+                                >
+                                  <button
+                                    className="accordion-button btn btn-link text-decoration-none d-block w-100 py-2 px-1 border-0 text-start rounded-0 shadow-none"
+                                    data-bs-toggle="collapse"
+                                  >
+                                    <span className="sign">
+                                      {EditData?.shows ? (
+                                        <SlArrowDown />
+                                      ) : (
+                                        <SlArrowRight />
+                                      )}
+                                    </span>
+                                    <span className="fw-medium font-sans-serif text-900">
+                                      {" "}
+                                      Idea
+                                    </span>
+                                  </button>
+                                </div>
+                                <div className="accordion-collapse collapse show">
+                                  {EditData?.shows && (
+                                    <div
+                                      className="accordion-body py-2 px-2"
+                                      id="testDiv1"
+                                    >
+                                      <span className="form-check text-end">
+                                        <input
+                                          type="checkbox"
+                                          defaultChecked={
+                                            EditData?.IdeaVerified === true
+                                          }
+                                          onChange={(e) =>
+                                          (EditData.BackgroundVerified =
+                                            e.target.value)
+                                          }
+                                        ></input>
+                                        <span className="ps-1">Verified</span>
+                                      </span>
+                                      <textarea
+                                        className="full_width"
+                                        defaultValue={EditData?.Idea}
+                                        onChange={(e) =>
+                                          (EditData.Idea = e.target.value)
+                                        }
+                                      ></textarea>
+                                    </div>
+                                  )}
+                                </div>
                               </div>
-                            </div>
-                          </div> */}
-                          <details>
-                            <summary className="alignCenter">
-                              <label className="toggler full_width">
-                                <a className="pull-left">Value Added</a>
-                              </label>
-                            </summary>
-                            <div className="border border-top-0 p-2">
-                              {EditData?.showj && (
+                            </div> */}
+                            <details>
+                              <summary className="alignCenter">
+                                <label className="toggler full_width">
+                                  <div className="pull-left">Value Added</div>
+                                </label>
+                              </summary>
+                              <div className="border border-top-0 p-2">
+
                                 <div
                                   className="accordion-body py-2 px-2"
                                   id="testDiv1"
                                 >
-                                  <span className="form-check text-end">
+                                  <span className="form-check pull-right">
                                     <input
-                                      type="checkbox"
+                                      type="checkbox" className="form-check-input rounded-0"
                                       defaultChecked={
                                         EditData?.ValueAddedVerified ===
                                         true
@@ -4090,7 +4088,7 @@ function EditInstitution({ item, SelectD, Calls, usedFor }: any) {
                                         e.target.value)
                                       }
                                     ></input>
-                                    <span className="ps-1">Verified</span>
+                                    <span>Verified</span>
                                   </span>
                                   <textarea
                                     className="full_width"
@@ -4100,88 +4098,88 @@ function EditInstitution({ item, SelectD, Calls, usedFor }: any) {
                                     }
                                   ></textarea>
                                 </div>
-                              )}
-                            </div>
-                          </details>
-                          {/* <div className="card shadow-none mb-2">
-                            <div className="accordion-item border-0"
-                              id="t_draggable1">
-                              <div
-                                className="card-header p-0 border-bottom-0 "
-                                onClick={() =>
-                                  expendcollapsAccordion(EditData, "showj")
-                                }
-                              >
-                                <button
-                                  className="accordion-button btn btn-link text-decoration-none d-block w-100 py-2 px-1 border-0 text-start rounded-0 shadow-none"
-                                  data-bs-toggle="collapse"
+
+                              </div>
+                            </details>
+                            {/* <div className="card shadow-none mb-2">
+                              <div className="accordion-item border-0"
+                                id="t_draggable1">
+                                <div
+                                  className="card-header p-0 border-bottom-0 "
+                                  onClick={() =>
+                                    expendcollapsAccordion(EditData, "showj")
+                                  }
                                 >
-                                  <span className="sign">
-                                    {EditData?.showj ? (
-                                      <SlArrowDown />
-                                    ) : (
-                                      <SlArrowRight />
-                                    )}
-                                  </span>
-                                  <span className="fw-medium font-sans-serif text-900">
-                                    {" "}
-                                    Value Added
-                                  </span>
-                                </button>
-                              </div>
-                              <div className="accordion-collapse collapse show">
-                                {EditData?.showj && (
-                                  <div
-                                    className="accordion-body py-2 px-2"
-                                    id="testDiv1"
+                                  <button
+                                    className="accordion-button btn btn-link text-decoration-none d-block w-100 py-2 px-1 border-0 text-start rounded-0 shadow-none"
+                                    data-bs-toggle="collapse"
                                   >
-                                    <span className="form-check text-end">
-                                      <input
-                                        type="checkbox"
-                                        defaultChecked={
-                                          EditData?.ValueAddedVerified ===
-                                          true
-                                        }
-                                        onChange={(e) =>
-                                        (EditData.ValueAddedVerified =
-                                          e.target.value)
-                                        }
-                                      ></input>
-                                      <span className="ps-1">Verified</span>
+                                    <span className="sign">
+                                      {EditData?.showj ? (
+                                        <SlArrowDown />
+                                      ) : (
+                                        <SlArrowRight />
+                                      )}
                                     </span>
-                                    <textarea
-                                      className="full_width"
-                                      defaultValue={EditData?.ValueAdded}
-                                      onChange={(e) =>
-                                        (EditData.ValueAdded = e.target.value)
-                                      }
-                                    ></textarea>
-                                  </div>
-                                )}
+                                    <span className="fw-medium font-sans-serif text-900">
+                                      {" "}
+                                      Value Added
+                                    </span>
+                                  </button>
+                                </div>
+                                <div className="accordion-collapse collapse show">
+                                  {EditData?.showj && (
+                                    <div
+                                      className="accordion-body py-2 px-2"
+                                      id="testDiv1"
+                                    >
+                                      <span className="form-check text-end">
+                                        <input
+                                          type="checkbox"
+                                          defaultChecked={
+                                            EditData?.ValueAddedVerified ===
+                                            true
+                                          }
+                                          onChange={(e) =>
+                                          (EditData.ValueAddedVerified =
+                                            e.target.value)
+                                          }
+                                        ></input>
+                                        <span className="ps-1">Verified</span>
+                                      </span>
+                                      <textarea
+                                        className="full_width"
+                                        defaultValue={EditData?.ValueAdded}
+                                        onChange={(e) =>
+                                          (EditData.ValueAdded = e.target.value)
+                                        }
+                                      ></textarea>
+                                    </div>
+                                  )}
+                                </div>
                               </div>
-                            </div>
-                          </div> */}
-                          <details>
-                            <summary className="alignCenter">
-                              <label className="toggler full_width">
-                                <a className="pull-left">Deliverables</a>
-                              </label>
-                            </summary>
-                            <div className="border border-top-0 p-2">
-                              {EditData?.showm && (
+                            </div> */}
+                            <details>
+                              <summary className="alignCenter">
+                                <label className="toggler full_width">
+                                  <div className="pull-left">Deliverables</div>
+                                </label>
+                              </summary>
+                              <div className="border border-top-0 p-2">
+
                                 <div
                                   className="accordion-body py-2 px-2"
                                   id="testDiv1"
                                 >
-                                  <span className="form-check text-end">
+                                  <span className="form-check pull-right">
                                     <input
-                                      type="checkbox"
+                                      type="checkbox" className="form-check-input rounded-0"
                                       defaultChecked={
                                         EditData?.DeliverablesVerified ===
                                         true
                                       }
                                     ></input>
-                                    <span className="ps-1">Verified</span>
+                                    <span>Verified</span>
                                   </span>
                                   <HtmlEditorCard
                                     editorValue={
@@ -4194,70 +4192,70 @@ function EditInstitution({ item, SelectD, Calls, usedFor }: any) {
                                     }
                                   ></HtmlEditorCard>
                                 </div>
-                              )}
-                            </div></details>
-                          {/* <div className="card shadow-none mb-2">
-                            <div
-                              className="accordion-item border-0"
-                              id="t_draggable1"
-                            >
+
+                              </div></details>
+                            {/* <div className="card shadow-none mb-2">
                               <div
-                                className="card-header p-0 border-bottom-0 "
-                                onClick={() =>
-                                  expendcollapsAccordion(EditData, "showm")
-                                }
+                                className="accordion-item border-0"
+                                id="t_draggable1"
                               >
-                                <button
-                                  className="accordion-button btn btn-link text-decoration-none d-block w-100 py-2 px-1 border-0 text-start rounded-0 shadow-none"
-                                  data-bs-toggle="collapse"
+                                <div
+                                  className="card-header p-0 border-bottom-0 "
+                                  onClick={() =>
+                                    expendcollapsAccordion(EditData, "showm")
+                                  }
                                 >
-                                  <span className="sign">
-                                    {EditData?.showm ? (
-                                      <SlArrowDown />
-                                    ) : (
-                                      <SlArrowRight />
-                                    )}
-                                  </span>
-                                  <span className="fw-medium font-sans-serif text-900">
-                                    {" "}
-                                    Deliverables
-                                  </span>
-                                </button>
-                              </div>
-                              <div className="accordion-collapse collapse show">
-                                {EditData?.showm && (
-                                  <div
-                                    className="accordion-body py-2 px-2"
-                                    id="testDiv1"
+                                  <button
+                                    className="accordion-button btn btn-link text-decoration-none d-block w-100 py-2 px-1 border-0 text-start rounded-0 shadow-none"
+                                    data-bs-toggle="collapse"
                                   >
-                                    <span className="form-check text-end">
-                                      <input
-                                        type="checkbox"
-                                        defaultChecked={
-                                          EditData?.DeliverablesVerified ===
-                                          true
-                                        }
-                                      ></input>
-                                      <span className="ps-1">Verified</span>
+                                    <span className="sign">
+                                      {EditData?.showm ? (
+                                        <SlArrowDown />
+                                      ) : (
+                                        <SlArrowRight />
+                                      )}
                                     </span>
-                                    <HtmlEditorCard
-                                      editorValue={
-                                        EditData?.Deliverables != undefined
-                                          ? EditData?.Deliverables
-                                          : ""
-                                      }
-                                      HtmlEditorStateChange={
-                                        DeliverablesHtmlEditorCallBack
-                                      }
-                                    ></HtmlEditorCard>
-                                  </div>
-                                )}
+                                    <span className="fw-medium font-sans-serif text-900">
+                                      {" "}
+                                      Deliverables
+                                    </span>
+                                  </button>
+                                </div>
+                                <div className="accordion-collapse collapse show">
+                                  {EditData?.showm && (
+                                    <div
+                                      className="accordion-body py-2 px-2"
+                                      id="testDiv1"
+                                    >
+                                      <span className="form-check text-end">
+                                        <input
+                                          type="checkbox"
+                                          defaultChecked={
+                                            EditData?.DeliverablesVerified ===
+                                            true
+                                          }
+                                        ></input>
+                                        <span className="ps-1">Verified</span>
+                                      </span>
+                                      <HtmlEditorCard
+                                        editorValue={
+                                          EditData?.Deliverables != undefined
+                                            ? EditData?.Deliverables
+                                            : ""
+                                        }
+                                        HtmlEditorStateChange={
+                                          DeliverablesHtmlEditorCallBack
+                                        }
+                                      ></HtmlEditorCard>
+                                    </div>
+                                  )}
+                                </div>
                               </div>
-                            </div>
-                          </div> */}
-                        </div>
-                      </section>
-                    </div>
+                            </div> */}
+                          </div>
+                        </section>
+                      </div>
                   </div>
                   {/* <div className="col-sm-5 ps-0">
                     {EditData.Id != null ?
