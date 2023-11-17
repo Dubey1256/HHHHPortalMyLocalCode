@@ -5054,7 +5054,7 @@ const EditTaskPopup = (Items: any) => {
                                     </div>
                                     <div className="col-md-4">
                                         <div className="full_width ">
-                                            <CommentCard siteUrl={siteUrls} itemID={Items.Items.Id} AllListId={AllListIdData} Context={Context} />
+                                            <CommentCard siteUrl={siteUrls} listName={Items?.Items?.siteType} itemID={Items.Items.Id} AllListId={AllListIdData} Context={Context} />
                                         </div>
                                         <div className="pull-right">
                                             <span className="">
@@ -6110,7 +6110,7 @@ const EditTaskPopup = (Items: any) => {
                                                 </div>
                                                 <div className="col-md-4">
                                                     <div className="full_width ">
-                                                        <CommentCard siteUrl={siteUrls} itemID={Items.Items.Id} AllListId={AllListIdData} Context={Context} />
+                                                        <CommentCard siteUrl={siteUrls} listName={Items?.Items?.siteType} itemID={Items.Items.Id} AllListId={AllListIdData} Context={Context} />
                                                     </div>
                                                     <div className="pull-right">
                                                         <span className="">
