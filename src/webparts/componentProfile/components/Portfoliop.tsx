@@ -923,6 +923,24 @@ const inlineCallBack = React.useCallback((item: any) => {
                           </a>
                         )}
                       </li>
+                       {/* Changes done by Robin Start*/}
+                       <li>
+                          {/* if="Task.PortfolioType=='Component'  (Task.Item_x0020_Type=='Component Category')" */}
+                          {item?.PortfolioType?.Title != undefined && (
+                            <a
+                              target="_blank"
+                              data-interception="off"
+                              href={
+                                SelectedProp.siteUrl +
+                                "/SitePages/Team-Portfolio.aspx?PortfolioType=" +
+                                item?.PortfolioType?.Title
+                              }
+                            >
+                              {item?.PortfolioType?.Title} - Portfolio
+                            </a>
+                          )}
+                        </li>
+                          {/* Changes done by Robin End*/}
                       {(item?.Item_x0020_Type == "SubComponent" ||
                         item?.Item_x0020_Type == "Feature") && (
                           <>
