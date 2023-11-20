@@ -148,7 +148,6 @@ const RestructuringCom = (props: any, ref: any) => {
   const setPortfolioTypeCheck=(arr:any, portfolioTypeCheck:any)=> {
     arr?.forEach((obj:any) => {
       obj.PortfolioTypeCheck = '';
-  
       const matchingTask = props?.AllMasterTasksData?.find((task:any) => obj?.Portfolio?.Id === task?.Id);
       if (matchingTask && portfolioTypeCheck !== '') {
         obj.PortfolioTypeCheck = matchingTask?.PortfolioType?.Title;
@@ -247,7 +246,6 @@ const RestructuringCom = (props: any, ref: any) => {
                 itemTypes = "SAME_TYPE"
               } else {
                 itemTypes = "DIFFRENT_TYPE"
-                alert("You are not allowed to Restructure items with different site type");
                 alertNotify = false;
               }
             } else {
@@ -266,6 +264,9 @@ const RestructuringCom = (props: any, ref: any) => {
         })
         if (itemTypes == "SAME_TYPE") {
           buttonRestructureSameType();
+        }
+        if (itemTypes == "DIFFRENT_TYPE") {
+          buttonRestructureDifferentType();
         }
       }
     }
@@ -757,6 +758,124 @@ const RestructuringCom = (props: any, ref: any) => {
       restructureCallBack(array, topCompo);
     }
   }
+
+
+
+const buttonRestructureDifferentType=()=>{
+  let topCompo: any = false;
+  let array = allData;
+  if (allData?.length > 0 && allData != undefined && restructureItem?.length > 0 && restructureItem != undefined) {
+    let ArrayTest: any = [];
+
+
+     if (restructureItem?.[0].Item_x0020_Type === "Task" && restructureItem?.[0].TaskType?.Id === 2) {
+
+      if (array != undefined && array?.length > 0) {
+        let newChildarray: any = [];
+        let newarrays: any = [];
+        array?.map((obj: any) => {
+          let actionsPerformed = false;
+          restructureItem?.map((items: any) => {
+            let newObj: any;
+            if (items?.PortfolioTypeCheck === obj.PortfolioTypeCheck && !actionsPerformed) {
+              if (!actionsPerformed) {
+                if (items?.Id !== obj.Id && obj?.TaskType?.Id != 2) {
+                  obj.isRestructureActive = true;
+                  obj.Restructuring = obj?.PortfolioTypeCheck == "Component" ? "https://hhhhteams.sharepoint.com/sites/HHHH/SP/SiteCollectionImages/ICONS/Shareweb/Restructuring_Tool.png" : "https://hhhhteams.sharepoint.com/sites/HHHH/SP/SiteCollectionImages/ICONS/Service_Icons/Restructuring_Tool.png";
+                 
+                  if (obj?.Item_x0020_Type == 'Task') {
+                    obj.isRestructureActive = false;
+                  }
+                } else {
+                  if (items?.Id === obj.Id && items?.Item_x0020_Type == obj.Item_x0020_Type && items?.siteType == obj.siteType) {
+                    newObj = { Title: obj?.Title, TaskType: { Id: obj.TaskType?.Id == undefined ? '' : obj.TaskType?.Id }, Id: obj.Id, Item_x0020_Type: obj.Item_x0020_Type, siteIcon: obj.SiteIconTitle === undefined ? obj.SiteIcon : obj.SiteIconTitle };
+                    newChildarray?.push(newObj);
+                    newarrays?.push(obj);
+                    setRestructuredItemarray(newarrays);
+                    setCheckSubChilds(obj);
+                    setRestructureChecked(newChildarray);
+                    ArrayTest?.push(newObj);
+                    actionsPerformed = true;
+                    obj.isRestructureActive = false;
+                  }
+                }
+              }
+
+              if (obj?.subRows != undefined && obj?.subRows?.length > 0 && !actionsPerformed) {
+                obj?.subRows?.map((sub: any) => {
+                  if (items?.Id !== sub.Id && sub?.TaskType?.Id != 2) {
+                    sub.isRestructureActive = true;
+                    sub.Restructuring = sub?.PortfolioTypeCheck == "Component" ? "https://hhhhteams.sharepoint.com/sites/HHHH/SP/SiteCollectionImages/ICONS/Shareweb/Restructuring_Tool.png" : "https://hhhhteams.sharepoint.com/sites/HHHH/SP/SiteCollectionImages/ICONS/Service_Icons/Restructuring_Tool.png";
+                    if (sub?.Item_x0020_Type == 'Task') {
+                      sub.isRestructureActive = false;
+                    }
+                  } else {
+                    if (items?.Id === sub.Id && items?.Item_x0020_Type == sub.Item_x0020_Type && items?.siteType == sub.siteType) {
+                      newObj = {
+                        Title: obj?.Title, TaskType: { Id: obj.TaskType?.Id == undefined ? '' : obj.TaskType?.Id }, Item_x0020_Type: obj.Item_x0020_Type, Id: obj.Id, siteIcon: obj.SiteIconTitle === undefined ? obj.SiteIcon : obj.SiteIconTitle,
+                        newSubChild: { Title: sub?.Title, TaskType: { Id: sub.TaskType?.Id == undefined ? '' : sub.TaskType?.Id }, Item_x0020_Type: sub.Item_x0020_Type, Id: sub.Id, siteIcon: sub.SiteIconTitle === undefined ? sub.SiteIcon : sub.SiteIconTitle, }
+                      };
+                      newarrays?.push(obj);
+                      setRestructuredItemarray(newarrays);
+                      setCheckSubChilds(sub);
+                      newChildarray?.push(newObj.newSubChild)
+                      setRestructureChecked(newChildarray);
+                      ArrayTest?.push(newObj);
+                      actionsPerformed = true;
+                      sub.isRestructureActive = false;
+                    }
+
+                  }
+
+                  if (sub?.subRows != undefined && sub?.subRows?.length > 0 && !actionsPerformed) {
+                    sub?.subRows?.map((feature: any) => {
+                      if (items?.Id !== feature.Id && feature?.TaskType?.Id != 2) {
+                        feature.isRestructureActive = true;
+                        feature.Restructuring = feature?.PortfolioTypeCheck == "Component" ? "https://hhhhteams.sharepoint.com/sites/HHHH/SP/SiteCollectionImages/ICONS/Shareweb/Restructuring_Tool.png" : "https://hhhhteams.sharepoint.com/sites/HHHH/SP/SiteCollectionImages/ICONS/Service_Icons/Restructuring_Tool.png";
+                        if (feature?.Item_x0020_Type == 'Task') {
+                          feature.isRestructureActive = false;
+                        }
+                      } else {
+                        if (items?.Id === feature.Id && items?.Item_x0020_Type == feature.Item_x0020_Type && items?.siteType == feature.siteType) {
+                          newObj = {
+                            Title: obj?.Title, TaskType: { Id: obj.TaskType?.Id == undefined ? '' : obj.TaskType?.Id }, Item_x0020_Type: obj.Item_x0020_Type, Id: obj.Id, siteIcon: obj.SiteIconTitle === undefined ? obj.SiteIcon : obj.SiteIconTitle,
+                            newSubChild: {
+                              Title: sub?.Title, TaskType: { Id: sub.TaskType?.Id == undefined ? '' : sub.TaskType?.Id }, Item_x0020_Type: sub.Item_x0020_Type, Id: sub.Id, siteIcon: sub.SiteIconTitle === undefined ? sub.SiteIcon : sub.SiteIconTitle,
+                              newFeatChild: { Title: feature?.Title, TaskType: { Id: feature.TaskType?.Id == undefined ? '' : feature.TaskType?.Id }, Item_x0020_Type: feature.Item_x0020_Type, Id: feature.Id, siteIcon: feature.SiteIconTitle === undefined ? feature.SiteIcon : feature.SiteIconTitle, }
+                            }
+                          };
+                          newarrays?.push(obj);
+                          setRestructuredItemarray(newarrays);
+                          setCheckSubChilds(feature);
+                          newChildarray?.push(newObj.newSubChild.newFeatChild)
+                          setRestructureChecked(newChildarray);
+                          ArrayTest?.push(newObj);
+                          actionsPerformed = true;
+                          feature.isRestructureActive = false;
+                        }
+                      }
+
+                    })
+                  }
+
+                })
+              }
+            }
+
+          })
+        })
+      }
+      setCheckItemLength(true);
+      setOldArrayBackup(ArrayTest);
+      restructureCallBack(array, topCompo);
+    }
+    else{
+      alert('You are not allowed to restructure different site Activities and Workstream');
+    }
+    
+  }
+}
+
 
 
 
@@ -1529,7 +1648,6 @@ const RestructuringCom = (props: any, ref: any) => {
                   if(obj.Title == "Others"){
                     obj.isRestructureActive = false;
                   }
-                
                 }
 
               }
@@ -1985,12 +2103,14 @@ const RestructuringCom = (props: any, ref: any) => {
       let ParentTask_ID: any = newItemBackUp?.Item_x0020_Type == 'Task' ? newItemBackUp?.Id : null ;
       let TaskId = newItemBackUp?.TaskID == undefined ? null : newItemBackUp?.TaskID
       let TaskLevel: number = 0;
+      let Level: number = 0;
       // let ActivityLevel: number = 0;
       if (newItemBackUp?.subRows != undefined && newItemBackUp?.subRows?.length > 0 && restructureItem[0]?.TaskType?.Id == 3) {
         newItemBackUp?.subRows?.map((sub: any) => {
           if (restructureItem[0]?.TaskType?.Id === sub?.TaskType?.Id) {
             if (TaskLevel <= sub.TaskLevel) {
               TaskLevel = sub.TaskLevel;
+            Level = sub.TaskLevel;
             }
           } 
 
@@ -1998,16 +2118,64 @@ const RestructuringCom = (props: any, ref: any) => {
       } 
       let array: any = [...allData];
       let count: number = 0;
+
+
+
+   
       
+     
     
       restructureItem?.map(async (items: any, index: any) => {
+         TaskLevel = TaskLevel+1;
+
+         if(RestructureChecked[0]?.TaskType?.Id === 1){
+          // ParentTask_Id = null;
+          let web = new Web(items?.siteUrl);
+          await web.lists
+             .getById(items?.listId)
+             .items
+             .select("Id,Title,TaskType/Id,TaskType/Title,TaskLevel")
+             .expand('TaskType')
+             .orderBy("TaskLevel", false)
+             .filter("TaskType/Title eq 'Activities'")
+             .top(1)
+             .get().then((componentDetails:any)=>{
+               if(componentDetails?.length == 0){
+                 var LatestId:any =  1;
+                 TaskLevel = LatestId
+                 TaskId =  'A' + LatestId
+               }
+               else{
+                 var LatestId = componentDetails[0].TaskLevel + 1;
+                 TaskLevel = LatestId
+                 TaskId =  'A' + LatestId
+               }
+               items.TaskID = TaskId;
+             }).catch((err:any)=>{
+                    console.log(err);
+             })
+      }
+  
         
-        let level: number = TaskLevel + index+1;
-        let web = new Web(items.siteUrl);
-       
+      let web = new Web(items.siteUrl);
+        TaskId = RestructureChecked[0]?.TaskType?.Id == 2 ? 'T' + items?.Id : (RestructureChecked[0]?.TaskType?.Id == 1 ? items?.TaskID : TaskId + '-' + 'W' + TaskLevel)    
+      
+
+        if(newItemBackUp?.Item_x0020_Type != 'Task'){
+          ParentTask_ID = null;
+          ParentTask_Portfolio = { Id: newItemBackUp?.Id, ItemType:newItemBackUp?.Item_x0020_Type, PortfolioStructureID:newItemBackUp?.PortfolioStructureID, Title:newItemBackUp?.Title}
+        }else{
+          ParentTask_Portfolio = { Id: newItemBackUp?.Portfolio?.Id, ItemType:newItemBackUp?.Portfolio?.ItemType, PortfolioStructureID:newItemBackUp?.Portfolio?.PortfolioStructureID, Title:newItemBackUp?.Portfolio?.Title},
+          ParentTask_ID = {Id:newItemBackUp?.Id, Title : newItemBackUp?.Title, TaskID : newItemBackUp?.TaskID};
+        }
+      
+      
         var postData: any = {
-          ParentTaskId:  ParentTask_ID,
-          PortfolioId: ParentTask_Portfolio,
+          ParentTaskId: ParentTask_ID == null ? null : ParentTask_ID.Id,
+          PortfolioId: ParentTask_Portfolio.Id,
+          TaskLevel: TaskLevel,
+          TaskTypeId: RestructureChecked[0]?.TaskType.Id,
+          TaskID: TaskId
        };
 
         await web.lists
@@ -2027,9 +2195,13 @@ const RestructuringCom = (props: any, ref: any) => {
 
 
             latestCheckedList?.map((itemss: any) => {
+                Level = Level+1;
                 itemss.ParentTask = { Id: ParentTask_ID },
-                itemss.Portfolio = { Id: ParentTask_Portfolio, ItemType: RestructureChecked[0]?.TaskType?.Title == undefined ? RestructureChecked[0]?.Item_x0020_Type : RestructureChecked[0]?.TaskType?.Title, Title: restructureItem[0]?.Title }
-           })
+                itemss.TaskLevel= Level,
+                itemss.TaskTypeId= RestructureChecked[0]?.TaskType.Id,
+                itemss.TaskID = RestructureChecked[0]?.TaskType?.Id == 2 ? 'T' + itemss?.Id : (RestructureChecked[0]?.TaskType?.Id == 1 ? itemss?.TaskID : TaskId + '-' + 'W' + Level)    
+                itemss.Portfolio = ParentTask_Portfolio
+               })
 
             
             function processArray(arr : any, pushData : any, spliceData : any) {
@@ -3211,7 +3383,7 @@ if(restructureItem != undefined && restructureItem != undefined && restructureIt
       }
     })
     array?.push(...data);
-    setRestructureChecked(array)
+    setRestructureChecked(array);
   };
 
 
@@ -3602,6 +3774,50 @@ if(restructureItem != undefined && restructureItem != undefined && restructureIt
                   <span>{NewArrayBackup[0]?.Title} </span>
                 </a></span>
             </div>
+            {restructureItem != undefined &&
+                restructureItem?.length > 1 &&
+                restructureItem[0]?.Item_x0020_Type == "Task" && restructureItem[0]?.TaskType?.Id == 2 ? (
+                  <div className='mt-2'>
+                  <span>
+
+                    {"Select Component Type :"}
+                    <label className='SpfxCheckRadio ms-2'>
+                    <input
+                      type="radio" className='radio'
+                      name="fav_language"
+                      value="Activity"
+                      checked={
+                        RestructureChecked[0]?.TaskType?.Id == 3
+                          ? true
+                          : (RestructureChecked[0]?.TaskType?.Id == 1 ? true : false)
+                      }
+                      onChange={(e) =>
+                        setRestructure(RestructureChecked, 1)
+                      }
+                    /></label>
+                    <label className="ms-1"> {"Activity"} </label>
+                  </span>
+                  <span>
+                  <label className='SpfxCheckRadio ms-2'>
+                    <input
+                      type="radio" className='radio'
+                      name="fav_language"
+                      value="Task"
+                      checked={
+                        RestructureChecked[0]?.TaskType?.Id === 2
+                          ? true
+                          : false
+                      }
+                      onChange={(e) =>
+                        setRestructure(RestructureChecked, 2)
+                      }
+                    /></label>
+                    <label className="ms-1"> {"Task"} </label>
+                  </span>
+                </div>
+              ) : (
+                ""
+              )}
             <footer className="mt-2 text-end">
               
               <button className="me-2 btn btn-primary" onClick={makeMultiSameTask} >Save</button>
