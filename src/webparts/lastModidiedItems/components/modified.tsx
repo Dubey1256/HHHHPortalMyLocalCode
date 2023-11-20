@@ -98,7 +98,7 @@ export const Modified = (props: any) => {
       sites.AllTask = false;
       sites.editFunction = false;
       sites.allEditFunction = false;
-    })
+    }) 
     setSites(ActualSites)
     getCurrentData(ActualSites[0]);
     getMasterTaskList();
@@ -1030,7 +1030,7 @@ export const Modified = (props: any) => {
           accessorKey: 'PriorityRank', placeholder: 'PriorityRank', header: '' 
         },
         {
-          accessorKey: "teamUserName", placeholder: "Team Member", header: "", size: 125,
+          accessorKey: "teamUserName", placeholder: "Team Member", header: "", size: 100,
           cell: ({ row }) =>
             <>
               <ShowTaskTeamMembers props={row.original} TaskUsers={allUsers} />
@@ -1110,7 +1110,7 @@ export const Modified = (props: any) => {
     <>
     <div className="p-0  d-flex justify-content-between align-items-center " style={{ verticalAlign: "top" }}>
       <h2 className="heading ">
-      <span>Last Modified</span></h2>
+      <span>Last Modified Views</span></h2>
       <div className="d-flex float-end">
         <div className="me-1" >
         <input className="form-check-input me-2"
@@ -1143,7 +1143,7 @@ export const Modified = (props: any) => {
           {
             sites && sites.map((siteValue: any) =>
               <>
-                <button disabled={!isButtonDisabled} onClick={() => { getCurrentData(siteValue); }} className={`nav-link ${siteValue.TabName == sites[0].TabName ? 'active' : ''}`} id={`nav-${siteValue.TabName}-tab`} data-bs-toggle="tab" data-bs-target={`#nav-${siteValue.TabName}`} type="button" role="tab" aria-controls="nav-home" aria-selected="true">{siteValue.TabName.toUpperCase()}</button>
+                <button disabled={!isButtonDisabled} onClick={() => { getCurrentData(siteValue); }} className={`nav-link ${siteValue.TabName == sites[0].TabName ? 'active' : ''}`} id={`nav-${siteValue.TabName}-tab`} data-bs-toggle="tab" data-bs-target={`#nav-${siteValue.TabName}`} type="button" role="tab" aria-controls="nav-home" aria-selected="true">{siteValue.DisplaySiteName}</button>
               </>
             )
           }
