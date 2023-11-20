@@ -1680,6 +1680,11 @@ if(folora=="folora"&&index==0){
                       }
                       {this.state.breadCrumData?.map((breadcrumbitem: any, index: any) => {
                         return <>
+                         {/* Changes done by Robin Start*/}
+                         {breadcrumbitem?.ItemType !== undefined && breadcrumbitem?.ItemType == "Component" && <li>
+                            <a target="_blank" data-interception="off" href={`${this.state.Result["siteUrl"]}/SitePages/Portfolio-Profile.aspx?taskId=${breadcrumbitem?.Id}`}>{breadcrumbitem?.PortfolioType?.Title} - Portfolio</a>
+                          </li>}
+                          {/* Changes done by Robin End*/}
                           {breadcrumbitem?.siteType == undefined && <li>
 
                             <a target="_blank" data-interception="off" href={`${this.state.Result["siteUrl"]}/SitePages/Portfolio-Profile.aspx?taskId=${breadcrumbitem?.Id}`}>{breadcrumbitem?.Title}</a>
