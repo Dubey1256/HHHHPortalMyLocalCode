@@ -123,73 +123,83 @@ export default class UserTimeEntry extends React.Component<IUserTimeEntryProps, 
     this.SelectedPortfolioItem = this.SelectedPortfolioItem.bind(this);
     this.EditDataTimeEntryData = this.EditDataTimeEntryData.bind(this);
     this.TimeEntryCallBack = this.TimeEntryCallBack.bind(this);
-    // this.handleKeyDown = this.handleKeyDown.bind(this);
+    this.handleKeyDown = this.handleKeyDown.bind(this);
     this.GetResult();
   }
-  // componentDidMount() {
-  //   window.addEventListener('keydown', this.handleKeyDown);
-  // }
+  componentDidMount() {
+    window.addEventListener('keydown', this.handleKeyDown);
+  }
 
-  // componentWillUnmount() {
-  //   window.removeEventListener('keydown', this.handleKeyDown);
-  // }
-  // handleKeyDown(event: any) {
-  //   const selectedDate: any = this.state.startdate;
-  //   let newDate = selectedDate;
+  componentWillUnmount() {
+    window.removeEventListener('keydown', this.handleKeyDown);
+  }
+  handleKeyDown(event: any) {
+    let selectedDate: any = undefined
+    if (event.target.dataset.inputType == 'StartDate')
+      selectedDate = this.state.startdate;
+    else if (event.target.dataset.inputType == 'EndDate')
+      selectedDate = this.state.enddate;
+    let newDate = selectedDate;
+    switch (event.key) {
+      case 'ArrowLeft':
+        newDate.setDate(selectedDate.getDate() - 1);
+        break;
+      case 'ArrowRight':
+        newDate.setDate(selectedDate.getDate() + 1);
+        break;
+      case 'ArrowUp':
+        newDate.setDate(selectedDate.getDate() - 7);
+        break;
+      case 'ArrowDown':
+        newDate.setDate(selectedDate.getDate() + 7);
+        break;
+      case 'PageUp':
+        newDate.setMonth(selectedDate.getMonth() + 1);
+        break;
+      case 'PageDown':
+        newDate.setMonth(selectedDate.getMonth() - 1);
+        break;
+      case 'Home':
+        let startdt = new Date();
+        let diff: number;
+        diff = startdt.getDate() - startdt.getDay() + (startdt.getDay() === 0 ? -6 : 1);
+        startdt = new Date(startdt.setDate(diff));
+        newDate = startdt;
+        break;
+      case 'End':
+        let enddt = new Date();
+        let lastday: number;
+        lastday = enddt.getDate() - (enddt.getDay() - 1) + 6;
+        enddt = new Date(enddt.setDate(lastday));
+        newDate = enddt;
+        break;
+      case '/':
+        const PickerPopup: any = document.getElementsByClassName('react-datepicker__tab-loop');
+        for (let i = 0; i < PickerPopup.length; i++) {
+          PickerPopup[i].style.display = 'block';
+        }
+        break;
+      case 'Enter':
+        const elements: any = document.getElementsByClassName('react-datepicker__tab-loop');
+        for (let i = 0; i < elements.length; i++) {
+          elements[i].style.display = 'none';
+        }
+        break;
+      default:
+        return;
+    }
+    if (event.target.dataset.inputType == 'StartDate') {
+      this.setState({
+        startdate: newDate
+      });
+    }
+    else if (event.target.dataset.inputType == 'EndDate') {
+      this.setState({
+        enddate: newDate
+      });
+    }
 
-  //   switch (event.key) {
-  //     case 'ArrowLeft':
-  //       newDate.setDate(selectedDate.getDate() - 1);
-  //       break;
-  //     case 'ArrowRight':
-  //       newDate.setDate(selectedDate.getDate() + 1);
-  //       break;
-  //     case 'ArrowUp':
-  //       newDate.setDate(selectedDate.getDate() - 7);
-  //       break;
-  //     case 'ArrowDown':
-  //       newDate.setDate(selectedDate.getDate() + 7);
-  //       break;
-  //     case 'PageUp':
-  //       newDate.setMonth(selectedDate.getMonth() + 1);
-  //       break;
-  //     case 'PageDown':
-  //       newDate.setMonth(selectedDate.getMonth() - 1);
-  //       break;
-  //     case 'Home':
-  //       let startdt = new Date();
-  //       let diff: number;
-  //       diff = startdt.getDate() - startdt.getDay() + (startdt.getDay() === 0 ? -6 : 1);
-  //       startdt = new Date(startdt.setDate(diff));
-  //       newDate = startdt;
-  //       break;
-  //     case 'End':
-  //       let enddt = new Date();
-  //       let lastday: number;
-  //       lastday = enddt.getDate() - (enddt.getDay() - 1) + 6;
-  //       enddt = new Date(enddt.setDate(lastday));
-  //       newDate = enddt;
-  //       break;
-  //     case '/':
-  //       const PickerPopup: any = document.getElementsByClassName('react-datepicker__tab-loop');
-  //       for (let i = 0; i < PickerPopup.length; i++) {
-  //         PickerPopup[i].style.display = 'block';
-  //       }
-  //       break;
-  //     case 'Enter':
-  //       const elements: any = document.getElementsByClassName('react-datepicker__tab-loop');
-  //       for (let i = 0; i < elements.length; i++) {
-  //         elements[i].style.display = 'none';
-  //       }
-  //       break;
-  //     default:
-  //       return;
-  //   }
-  //   this.setState({
-  //     startdate: newDate
-  //   });
-
-  // }
+  }
 
   private BackupAllTimeEntry: any = [];
   private AllTimeEntry: any = [];
@@ -2262,9 +2272,17 @@ export default class UserTimeEntry extends React.Component<IUserTimeEntryProps, 
       columns: dt
     })
   }
-  private ExampleCustomInput = React.forwardRef(({ value, onClick }: any, ref: any) => (
+  private ExampleCustomInputStrat = React.forwardRef(({ value, onClick }: any, ref: any) => (
     <div style={{ position: "relative" }} onClick={onClick} ref={ref}>
-      <input type="text" id="datepicker" className="form-control date-picker" placeholder="DD/MM/YYYY" value={value} />
+      <input type="text" id="datepicker" data-input-type="StartDate" className="form-control date-picker" placeholder="DD/MM/YYYY" value={value} />
+      <span style={{ position: "absolute", top: "50%", right: "5px", transform: "translateY(-50%)", cursor: "pointer" }}>
+        <span className="svg__iconbox svg__icon--calendar"></span>
+      </span>
+    </div>
+  ));
+  private ExampleCustomInputEnd = React.forwardRef(({ value, onClick }: any, ref: any) => (
+    <div style={{ position: "relative" }} onClick={onClick} ref={ref}>
+      <input type="text" id="datepicker" data-input-type="EndDate" className="form-control date-picker" placeholder="DD/MM/YYYY" value={value} />
       <span style={{ position: "absolute", top: "50%", right: "5px", transform: "translateY(-50%)", cursor: "pointer" }}>
         <span className="svg__iconbox svg__icon--calendar"></span>
       </span>
@@ -2570,8 +2588,8 @@ export default class UserTimeEntry extends React.Component<IUserTimeEntryProps, 
                       <div className='input-group'>
                         <label className='full-width'>Start Date</label>
                         <span>
-                          <DatePicker selected={this.state.startdate} onChange={(date: any) => this.setStartDate(date)} dateFormat="dd/MM/yyyy" // Format as DD/MM/YYYY
-                            className="form-control date-picker" popperPlacement="bottom-start" customInput={<this.ExampleCustomInput />}
+                          <DatePicker selected={this.state.startdate} data-input-type="First" onChange={(date: any) => this.setStartDate(date)} dateFormat="dd/MM/yyyy" // Format as DD/MM/YYYY
+                            className="form-control date-picker" popperPlacement="bottom-start" customInput={<this.ExampleCustomInputStrat />}
                           />
                         </span>
                       </div>
@@ -2581,7 +2599,7 @@ export default class UserTimeEntry extends React.Component<IUserTimeEntryProps, 
                         <label className='full-width'>End Date</label>
                         <span>
                           <DatePicker selected={this.state.enddate} onChange={(date: any) => this.setEndDate(date)} dateFormat="dd/MM/yyyy" // Format as DD/MM/YYYY
-                            className="form-control date-picker" popperPlacement="bottom-start" customInput={<this.ExampleCustomInput />}
+                            className="form-control date-picker" popperPlacement="bottom-start" customInput={<this.ExampleCustomInputEnd />}
                           />
                         </span>
                       </div>
