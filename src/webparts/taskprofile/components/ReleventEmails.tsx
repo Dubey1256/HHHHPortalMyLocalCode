@@ -30,8 +30,8 @@ const RelevantEmail = (props: any, ref: any) => {
     if (props.siteName == "Offshore Tasks") {
       props.siteName = "OffShoreTask"
     } else if (props.siteName == "Master Tasks") {
-      props.siteName = 'TeamPortfolio';
-      query ="Id,Title,PriorityRank,Year,Body,Item_x0020_Cover,File_x0020_Type,FileLeafRef,FileDirRef,ItemRank,ItemType,Url,Created,Modified,Author/Id,Author/Title,Editor/Id,Editor/Title,EncodedAbsUrl&$expand=Author,Editor"
+      props.siteName = 'Portfolios';
+      query ="Id,Title,PriorityRank,Year,Body,Item_x0020_Cover,Portfolios/Id,Portfolios/Title,File_x0020_Type,FileLeafRef,FileDirRef,ItemRank,ItemType,Url,Created,Modified,Author/Id,Author/Title,Editor/Id,Editor/Title,EncodedAbsUrl&$expand=Author,Editor,Portfolios"
       
     }
     const web = new Web(props.siteUrl);

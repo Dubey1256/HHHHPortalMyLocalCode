@@ -808,7 +808,7 @@ const GlobalCommanTable = (items: any, ref: any) => {
                             </>}
 
                     </div> :
-                        <span style={{ color: "#333333" }} className='Header-Showing-Items'>{`Showing ${table?.getFilteredRowModel()?.rows?.length} of ${items?.catogryDataLength ? items?.catogryDataLength : data?.length}`}</span>}
+                        <span style={{ color: "#333333", flex:"none" }} className='Header-Showing-Items'>{`Showing ${table?.getFilteredRowModel()?.rows?.length} of ${items?.catogryDataLength ? items?.catogryDataLength : data?.length}`}</span>}
                     <span className="mx-1">{items?.showDateTime}</span>
                     <DebouncedInput
                         value={globalFilter ?? ""}

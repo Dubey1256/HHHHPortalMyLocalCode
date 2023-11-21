@@ -668,7 +668,6 @@ export default class CategoriesWeeklyMultipleReport extends React.Component<ICat
       else
         sitesResult.push(obj)
     });
-   
     this.checkBoxColor(undefined)
     this.setState({
       AllMetadata: results,
@@ -1091,7 +1090,7 @@ export default class CategoriesWeeklyMultipleReport extends React.Component<ICat
             }
           }
         }
- 
+
         const inputElementleaf = document.getElementsByClassName('rct-node rct-node-leaf');
         if (inputElementleaf) {
           for (let j = 0; j < inputElementleaf.length; j++) {
@@ -1115,7 +1114,7 @@ export default class CategoriesWeeklyMultipleReport extends React.Component<ICat
           }
         }
       }, 40);
- 
+
     } catch (e: any) {
       console.log(e)
     }
@@ -1310,6 +1309,12 @@ export default class CategoriesWeeklyMultipleReport extends React.Component<ICat
     console.log(AllTimeSpentDetails);
 
     let getAllTimeEntry = [];
+    try {
+      this.state.startdate.setHours(0, 0, 0, 0);
+      this.state.enddate.setHours(0, 0, 0, 0)
+    } catch (e) {
+
+    }
     for (let i = 0; i < AllTimeSpentDetails.length; i++) {
       let time = AllTimeSpentDetails[i];
       time.MileageJson = 0;
@@ -1536,6 +1541,14 @@ export default class CategoriesWeeklyMultipleReport extends React.Component<ICat
                               filterItem.clientCategory += client.Title + ';';
                               filterItem.clientCategoryIds += client.Id + ';';
                             }
+                            if (subchild.children != undefined && subchild.children.length > 0) {
+                              subchild.children.forEach(function (Newsubchild: any) {
+                                if (Newsubchild.Id != undefined && client.Id != undefined && Newsubchild.checked == true && Newsubchild.Id === client.Id) {
+                                  filterItem.clientCategory += client.Title + ';';
+                                  filterItem.clientCategoryIds += client.Id + ';';
+                                }
+                              })
+                            }
                           })
                         }
                       })
@@ -1620,6 +1633,12 @@ export default class CategoriesWeeklyMultipleReport extends React.Component<ICat
               child.children.forEach(function (subchild: any) {
                 if (subchild.value == id)
                   selectedFilters.push(subchild);
+                  if (subchild.children != undefined && subchild.children.length > 0) {
+                    subchild.children.forEach(function (newsubchild: any) {
+                      if (newsubchild.value == id)
+                        selectedFilters.push(newsubchild);
+                    });
+                  }
               });
             }
           });
@@ -2437,11 +2456,17 @@ export default class CategoriesWeeklyMultipleReport extends React.Component<ICat
       if (NewItem?.value === item?.value) {
         filterGroups[item.index].checked = item.checked;
         filterGroups[item.index].checkedObj = this.GetCheckedObject(filterGroups[item.index]?.children, checked, item.checked)
-        // //// demo////
         if (filterGroups[item.index]?.children?.length > 0) {
           const childrenLength = filterGroups[item.index]?.children?.reduce((total: any, obj: any) => total + (obj?.children?.length || 0), 0) + (filterGroups[item.index]?.children?.length ? filterGroups[item.index]?.children?.length : 0);
           filterGroups[item.index].selectAllChecked = childrenLength === checked?.length;
         }
+        NewItem?.children?.forEach((ObjItem: any, newIndex: any) => {
+          ObjItem.checked = item.checked;
+          ObjItem?.children?.forEach((newObjItem: any, new1Index: any) => {
+            newObjItem.checked = item.checked;
+          })
+
+        })
       }
       NewItem?.children?.forEach((ObjItem: any, newIndex: any) => {
         if (ObjItem?.value === item?.value) {
@@ -2461,6 +2486,7 @@ export default class CategoriesWeeklyMultipleReport extends React.Component<ICat
               ObjItem.children[lastindex].selectAllChecked = childrenLength === checked?.length;
             }
           }
+
         })
       })
     })
@@ -2750,15 +2776,16 @@ export default class CategoriesWeeklyMultipleReport extends React.Component<ICat
           } else {
             contentItem['First Level'] = '';
           }
+          contentItem['Hours'] = '';
+          if (childItem.AdjustedTime != undefined) {
+            contentItem['Hours'] = parseFloat(childItem.Rountfiguretime);
+          }
           if (childItem.TotalSmartTime != undefined) {
             contentItem['Days'] = childItem.SmartHoursTime / 8;
           } else {
             contentItem['Days'] = '';
           }
-          contentItem['Hours'] = '';
-          if (childItem.AdjustedTime != undefined) {
-            contentItem['Hours'] = parseFloat(childItem.Rountfiguretime);
-          }
+
 
           contentItem['Client Category'] = childItem.clientCategory != undefined ? childItem.clientCategory : '';
           if (childItem.TotalSmartTime != undefined) {
@@ -2767,7 +2794,8 @@ export default class CategoriesWeeklyMultipleReport extends React.Component<ICat
             contentItem['Smart Hours'] = '';
           }
           if (childItem.TotalValue != undefined) {
-            contentItem['Smart Days'] = parseFloat(childItem.TotalValue);
+            contentItem['Smart Days'] = childItem.TotalValue / 8;
+            contentItem['Smart Days'] = parseFloat(contentItem['Smart Days']);
           } else {
             contentItem['Smart Days'] = 0;
           }
@@ -2942,8 +2970,9 @@ export default class CategoriesWeeklyMultipleReport extends React.Component<ICat
     contentItemNew['User Name'] = 'Total ' + firstTitle + ' to ' + lastTitle;
     contentItemNew['Site'] = this.state.ImageSelectedUsers.length == 1 ? this.state.ImageSelectedUsers[0].Title : '';
     contentItemNew['First Level'] = '';
-    contentItemNew['Days'] = (this.RoundAdjustedTimeTimeEntry / 8);
     contentItemNew['Hours'] = parseFloat(this.RoundAdjustedTimeTimeEntry);
+    contentItemNew['Days'] = (this.RoundAdjustedTimeTimeEntry / 8);
+
     contentItemNew['Client Category'] = ''
     contentItemNew['Smart Hours'] = parseFloat(TotalValueAll || 0);;
     contentItemNew['Smart Days'] = (TotalValueAll / 8);
@@ -2967,8 +2996,9 @@ export default class CategoriesWeeklyMultipleReport extends React.Component<ICat
     contentItemNew['User Name'] = '';
     contentItemNew['Site'] = '';
     contentItemNew['First Level'] = '';
-    contentItemNew['Days'] = '';
     contentItemNew['Hours'] = '';
+    contentItemNew['Days'] = '';
+
     contentItemNew['Client Category'] = '';
     contentItemNew['Smart Hours'] = '';
     contentItemNew['Smart Days'] = '';
@@ -3004,16 +3034,16 @@ export default class CategoriesWeeklyMultipleReport extends React.Component<ICat
       if (item.Secondlevel != undefined) {
         contentItem['First Level'] = item.Secondlevel;
       }
-
+      contentItem['Hours'] = '';
+      if (item.AdjustedTime != undefined) {
+        contentItem['Hours'] = parseFloat(item.SmartHoursTotal);;
+      }
       contentItem['Days'] = '';
       if (item.SmartHoursTotal != undefined && item.SmartHoursTotal != undefined) {
         contentItem['Days'] = item.TotalValueHours / 8;
       }
 
-      contentItem['Hours'] = '';
-      if (item.AdjustedTime != undefined) {
-        contentItem['Hours'] = parseFloat(item.SmartHoursTotal);;
-      }
+
       if (item.Categories != undefined) {
         contentItem['Client Category'] = ''
         item.clientCategory.split(';').forEach((clientCategory: any) => {
@@ -3182,8 +3212,9 @@ export default class CategoriesWeeklyMultipleReport extends React.Component<ICat
     contentItemNew['User Name'] = '';
     contentItemNew['Site'] = '';
     contentItemNew['First Level'] = '';
-    contentItemNew['Days'] = '';
     contentItemNew['Hours'] = '';
+    contentItemNew['Days'] = '';
+
     contentItemNew['Client Category'] = '';
     contentItemNew['Smart Hours'] = '';
     contentItemNew['Smart Days'] = '';
@@ -3217,15 +3248,16 @@ export default class CategoriesWeeklyMultipleReport extends React.Component<ICat
       } else {
         contentItem['First Level'] = '';
       }
+
+      contentItem['Hours'] = '';
+      if (item.AdjustedTime != undefined) {
+        contentItem['Hours'] = parseFloat(item.RoundAdjustedTime != undefined ? item.RoundAdjustedTime : item.SmartHoursTotal);;
+      }
       contentItem['Days'] = '';
       if (item.SmartHoursTotal != undefined && item.SmartHoursTotal != undefined) {
 
         contentItem['Days'] = item.SmartHoursTotal / 8;
 
-      }
-      contentItem['Hours'] = '';
-      if (item.AdjustedTime != undefined) {
-        contentItem['Hours'] = parseFloat(item.RoundAdjustedTime != undefined ? item.RoundAdjustedTime : item.SmartHoursTotal);;
       }
       if (item.Categories != undefined) {
         contentItem['Client Category'] = ''
@@ -3275,7 +3307,7 @@ export default class CategoriesWeeklyMultipleReport extends React.Component<ICat
 
       if (item.TotalValue != undefined) {
         let days: any = item.TimeInExcel / 8;
-        contentItem['Smart Days'] = (contentItem[days]);
+        contentItem['Smart Days'] = (days);
       }
       else {
         contentItem['Smart Days'] = 0;
@@ -3598,9 +3630,9 @@ export default class CategoriesWeeklyMultipleReport extends React.Component<ICat
                           <label className='ms-1 f-14'>Select All </label>
                         </span>
                       </div>
-               
+
                     </summary>
-                    <div className="BdrBoxBlue ps-20 mb-3 ms-2" style={{borderTop: "1.5px solid",  borderColor: "var(--SiteBlue)" }}>
+                    <div className="BdrBoxBlue ps-20 mb-3 ms-2" style={{ borderTop: "1.5px solid", borderColor: "var(--SiteBlue)" }}>
                       <div className="taskTeamBox mt-10">
                         {this.state.taskUsers != null && this.state.taskUsers.length > 0 && this.state.taskUsers.map((user: any, i: number) => {
                           return <div className="top-assign">
@@ -3638,10 +3670,10 @@ export default class CategoriesWeeklyMultipleReport extends React.Component<ICat
                   <details className='p-0 m-0' open>
                     <summary>
                       <a>Date</a>
-                  
+
                     </summary>
 
-                    <div className="BdrBoxBlue ps-20 mb-3 ms-2" style={{borderTop: "1.5px solid",  borderColor: "var(--SiteBlue)" }}>
+                    <div className="BdrBoxBlue ps-20 mb-3 ms-2" style={{ borderTop: "1.5px solid", borderColor: "var(--SiteBlue)" }}>
                       <div className="taskTeamBox mt-10">
                         <div className="Weekly-TimeReportDays">
                           <span className='SpfxCheckRadio'>
@@ -3753,9 +3785,9 @@ export default class CategoriesWeeklyMultipleReport extends React.Component<ICat
                           }
                         </span>
                       </label>
-                     
+
                     </summary>
-                    <div className=" BdrBoxBlue ps-20 mb-3 ms-2" style={{borderTop: "1.5px solid", borderColor: "var(--SiteBlue)" }}>
+                    <div className=" BdrBoxBlue ps-20 mb-3 ms-2" style={{ borderTop: "1.5px solid", borderColor: "var(--SiteBlue)" }}>
                       <div className="taskTeamBox mt-10">
                         {this?.state?.loaded ? <PageLoader /> : ''}
                         {/* <Loader loaded={this.state.loaded} lines={13} length={20} width={10} radius={30} corners={1} rotate={0} direction={1} color={portfolioColor ? portfolioColor : "#000066"}
@@ -3765,26 +3797,26 @@ export default class CategoriesWeeklyMultipleReport extends React.Component<ICat
                             <input defaultChecked={this.state.checkedAll} onClick={(e) => this.SelectAllCategories(e)} id='chkAllCategory' type="checkbox" className="form-check-input me-1 mt-1" />
                             Client Category
 
-                           
+
                           </label>
-                          <div className='custom-checkbox-tree mt-2'>
-                          <CheckboxTree
-                            nodes={this.state.filterItems}
-                            checked={this.state.checked}
-                            expanded={this.state.expanded}
-                            onCheck={(e, checked) => this.onCheck(e, checked)}
-                            onExpand={expanded => this.ExpandClientCategory(expanded)}
-                            nativeCheckboxes={true}
-                            showNodeIcon={false}
-                            checkModel={'all'}
-                            icons={{
-                              expandOpen: <SlArrowDown />,
-                              expandClose: <SlArrowRight />,
-                              parentClose: null,
-                              parentOpen: null,
-                              leaf: null,
-                            }}
-                          />
+                          <div className='custom-checkbox-tree weeklyReport'>
+                            <CheckboxTree
+                              nodes={this.state.filterItems}
+                              checked={this.state.checked}
+                              expanded={this.state.expanded}
+                              onCheck={(e, checked) => this.onCheck(e, checked)}
+                              onExpand={expanded => this.ExpandClientCategory(expanded)}
+                              nativeCheckboxes={true}
+                              showNodeIcon={false}
+                              checkModel={'all'}
+                              icons={{
+                                expandOpen: <SlArrowDown />,
+                                expandClose: <SlArrowRight />,
+                                parentClose: null,
+                                parentOpen: null,
+                                leaf: null,
+                              }}
+                            />
                           </div>
                         </div>
 
@@ -3802,30 +3834,30 @@ export default class CategoriesWeeklyMultipleReport extends React.Component<ICat
             </details>
           </div>
         </div>
-<div className='container-fluid p-0'>
-<div className='TableSection'>
-        <div id="showSearchBox" className="container p-0">
-          <div className='Alltable'>
-          <div className='col-sm-12 p-0 smart'>
-             <div className='wrapper'>
-            
-            {this.state.AllTimeEntry == undefined && this.state.AllTimeEntry.length == 0 &&
-              <div id="contact" className="col-sm-12 p-0">
-                <div className="current_commnet">No entries available</div>
-              </div>
-            }
+        <div className='container-fluid p-0'>
+          <div className='TableSection'>
+            <div id="showSearchBox" className="container p-0">
+              <div className='Alltable'>
+                <div className='col-sm-12 p-0 smart'>
+                  <div className='wrapper'>
 
-            {this.state.AllTimeEntry != undefined && this.state.AllTimeEntry.length > 0 &&
-              <div id="contact" className="col-sm-12 p-0">
-                <div className='table-responsive fortablee'>
-                  <GlobalCommanTable catogryDataLength={this?.state?.AllTimeEntryItem?.length} columns={this?.columns} expendedTrue={true} data={this.state.AllTimeEntry} showHeader={true} showCatIcon={true} exportToExcelCategoryReport={this.exportToExcel} OpenAdjustedTimePopupCategory={this.OpenAdjustedTimePopup} callBackData={this?.callBackData} showDateTime={this.state.showDateTime} fixedWidth={true} /> </div>
-              </div>
-            }
+                    {this.state.AllTimeEntry == undefined && this.state.AllTimeEntry.length == 0 &&
+                      <div id="contact" className="col-sm-12 p-0">
+                        <div className="current_commnet">No entries available</div>
+                      </div>
+                    }
+
+                    {this.state.AllTimeEntry != undefined && this.state.AllTimeEntry.length > 0 &&
+                      <div id="contact" className="col-sm-12 p-0">
+                        <div className='table-responsive fortablee'>
+                          <GlobalCommanTable catogryDataLength={this?.state?.AllTimeEntryItem?.length} columns={this?.columns} expendedTrue={true} data={this.state.AllTimeEntry} showHeader={true} showCatIcon={true} exportToExcelCategoryReport={this.exportToExcel} OpenAdjustedTimePopupCategory={this.OpenAdjustedTimePopup} callBackData={this?.callBackData} showDateTime={this.state.showDateTime} fixedWidth={true} /> </div>
+                      </div>
+                    }
+                  </div>
+                </div>
               </div>
             </div>
           </div>
-        </div>
-        </div>
         </div>
         <Panel
           onRenderHeader={this.onRenderCustomHeaderMain}

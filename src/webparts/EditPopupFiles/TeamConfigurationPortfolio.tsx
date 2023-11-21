@@ -476,47 +476,57 @@ export class TeamConfigurationCard extends React.Component<ITeamConfigurationPro
                                     <h6 className='mb-1'>Team Members</h6>
                                     <div className="d-flex p-1  UserTimeTabGray">
                                         <div className="col-sm-5 border-end p-0" >
-                                            <div className="col"
-                                                onDrop={(e) => this.onDropTeam(e, this.state.AssignedToUsers, 'Team Leaders', this.state.taskUsers, 'AssignedToUsers')}
-                                                onDragOver={(e) => e.preventDefault()}>
-                                                <div className="p-1">
-                                                    <div data-placeholder="Team Leader" className='d-flex flex-wrap selectmember'>
-                                                        {this.state.AssignedToUsers != null && this.state.AssignedToUsers.length > 0 && this.state.AssignedToUsers.map((image: any, index: number) => {
-                                                            return <img
+                                        <div className="col"
+                                            onDrop={(e) => this.onDropTeam(e, this.state.AssignedToUsers, 'Team Leaders', this.state.taskUsers, 'AssignedToUsers')}
+                                            onDragOver={(e) => e.preventDefault()}>
+                                            <div className="p-1">
+                                                <div data-placeholder="Team Leader" className='d-flex flex-wrap selectmember'>
+                                                    {this.state.AssignedToUsers && this.state.AssignedToUsers.length > 0 ? (
+                                                        this.state.AssignedToUsers.map((image: any, index: number) => (
+                                                            <img
+                                                                key={index} // Remember to add a unique key for each item in the list
                                                                 className="ProirityAssignedUserPhoto"
                                                                 src={image.userImage != null ? image.userImage : image.Item_x0020_Cover.Url}
-                                                                // style={{ backgroundImage: "url('" + (image.userImage != null ? image.userImage : image.Item_x0020_Cover.Url) + "')", backgroundSize: "24px 24px" }}
-                                                                title={image.Title} draggable
+                                                                title={image.Title}
+                                                                draggable
                                                                 onDragStart={(e) => this.dragStart(e, index, image, 'Assigned User')}
                                                                 onDragOver={(e) => e.preventDefault()}
                                                             />
-                                                        })
-                                                        }
-                                                    </div>
+                                                        ))
+                                                    ) : (
+                                                        <div >Team Leader</div>
+                                                    )}
                                                 </div>
                                             </div>
                                         </div>
-                                        <div className="col-sm-7 ">
-                                            <div className="col-sm-12"
-                                                onDrop={(e) => this.onDropTeam(e, this.state.TeamMemberUsers, 'Team Members', this.state.taskUsers, 'TeamMemberUsers')}
-                                                onDragOver={(e) => e.preventDefault()}>
-                                                <div className="p-1">
-                                                    <div data-placeholder="Responsible Team" className='d-flex flex-wrap selectmember'>
-                                                        {this.state.TeamMemberUsers != null && this.state.TeamMemberUsers.length > 0 && this.state.TeamMemberUsers.map((image: any, index: number) => {
-                                                            return <img
-                                                                className="ProirityAssignedUserPhoto me-1"
-                                                                // style={{ backgroundImage: "url('" + (image.userImage != null ? image.userImage : image.Item_x0020_Cover.Url) + "')", backgroundSize: "24px 24px" }}
-                                                                title={image.Title}
-                                                                src={image.userImage != null ? image.userImage : image.Item_x0020_Cover.Url}
-                                                                draggable
-                                                                onDragStart={(e) => this.dragStart(e, index, image, 'TeamMemberUsers')}
-                                                                onDragOver={(e) => e.preventDefault()} />
-                                                        })
-                                                        }
+
+                                        </div>
+                                        <div className="col-sm-7">
+                                                <div className="col-sm-12"
+                                                    onDrop={(e) => this.onDropTeam(e, this.state.TeamMemberUsers, 'Team Members', this.state.taskUsers, 'TeamMemberUsers')}
+                                                    onDragOver={(e) => e.preventDefault()}>
+                                                    <div className="p-1">
+                                                        <div data-placeholder="Responsible Team" className='d-flex flex-wrap selectmember'>
+                                                            {this.state.TeamMemberUsers && this.state.TeamMemberUsers.length > 0 ? (
+                                                                this.state.TeamMemberUsers.map((image: any, index: number) => (
+                                                                    <img
+                                                                        key={index} // Remember to add a unique key for each item in the list
+                                                                        className="ProirityAssignedUserPhoto me-1"
+                                                                        title={image.Title}
+                                                                        src={image.userImage != null ? image.userImage : image.Item_x0020_Cover.Url}
+                                                                        draggable
+                                                                        onDragStart={(e) => this.dragStart(e, index, image, 'TeamMemberUsers')}
+                                                                        onDragOver={(e) => e.preventDefault()}
+                                                                    />
+                                                                ))
+                                                            ) : (
+                                                                <div >Responsible Team</div>
+                                                            )}
+                                                        </div>
                                                     </div>
                                                 </div>
                                             </div>
-                                        </div>
+
                                     </div>
                                 </div>
 
