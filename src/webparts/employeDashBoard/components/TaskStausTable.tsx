@@ -15,6 +15,7 @@ import GlobalCommanTable from "../../../globalComponents/GroupByReactTableCompon
 import ReactPopperTooltipSingleLevel from "../../../globalComponents/Hierarchy-Popper-tooltipSilgleLevel/Hierarchy-Popper-tooltipSingleLevel";
 // import GlobalCommanTable from '../../../globalComponents/GlobalCommanTable';
 const TaskStatusTbl = (Tile: any) => {
+  var portfolioColor: any = '#000066';
   const ContextData: any = React.useContext(myContextValue);
   const draftCatogary: any = ContextData?.AlltaskData.DraftCatogary;
   const todaysTask: any = ContextData?.AlltaskData.TodaysTask;
@@ -23,6 +24,7 @@ const TaskStatusTbl = (Tile: any) => {
   const thisWeekTask: any = ContextData?.AlltaskData.ThisWeekTask;
   const approvalTask: any = ContextData?.AlltaskData.ApprovalTask;
   const AllMasterTasks: any = ContextData?.AllMasterTasks;
+  const TaskUsers: any = ContextData?.taskUsers
   // const [draftCatogary, setDraftCatogary] = useState(ContextData?.AlltaskData.DraftCatogary);
   // const [todaysTask, setTodaysTask] = useState(ContextData?.AlltaskData.TodaysTask);
   // const [bottleneckTask, setbottleneckTask] = useState(ContextData?.AlltaskData.BottleneckTask);
@@ -83,6 +85,13 @@ const TaskStatusTbl = (Tile: any) => {
             >
               {row?.original?.Title}
             </a>
+            {row?.original?.descriptionsSearch != null &&
+              row?.original?.descriptionsSearch != "" && (
+                <InfoIconsToolTip
+                  Discription={row?.original?.descriptionsSearch}
+                  row={row?.original}
+                />
+              )}
           </div>
         ),
         id: "Title",
@@ -192,6 +201,13 @@ const TaskStatusTbl = (Tile: any) => {
             >
               {row?.original?.Title}
             </a>
+            {row?.original?.descriptionsSearch != null &&
+              row?.original?.descriptionsSearch != "" && (
+                <InfoIconsToolTip
+                  Discription={row?.original?.descriptionsSearch}
+                  row={row?.original}
+                />
+              )}
           </div>
         ),
         id: "Title",
@@ -582,7 +598,7 @@ const TaskStatusTbl = (Tile: any) => {
         placeholder: "",
         size: 95
       },
-       {
+      {
         accessorKey: "TaskID",
         placeholder: "ID",
         id: 'TaskID',
@@ -803,8 +819,8 @@ const TaskStatusTbl = (Tile: any) => {
                   <GlobalCommanTable
                     showHeader={true}
                     columns={columnss}
-                    data={todaysTask}
-                    callBackData={callBackData} />
+                    data={todaysTask} TaskUsers={TaskUsers}
+                    callBackData={callBackData} portfolioColor={portfolioColor} />
                 )}
               </div>
             </div>
@@ -839,8 +855,8 @@ const TaskStatusTbl = (Tile: any) => {
                   <GlobalCommanTable
                     showHeader={true}
                     columns={ThisWeekcolumn}
-                    data={thisWeekTask}
-                    callBackData={callBackData} />
+                    data={thisWeekTask} TaskUsers={TaskUsers}
+                    callBackData={callBackData} portfolioColor={portfolioColor} />
                 )}
               </div>
             </div>
@@ -877,8 +893,8 @@ const TaskStatusTbl = (Tile: any) => {
                   <GlobalCommanTable
                     showHeader={true}
                     columns={Bottlecolumn}
-                    data={bottleneckTask}
-                    callBackData={callBackData} />
+                    data={bottleneckTask} TaskUsers={TaskUsers}
+                    callBackData={callBackData} portfolioColor={portfolioColor} />
                 )}
               </div>
             </div>
@@ -913,8 +929,8 @@ const TaskStatusTbl = (Tile: any) => {
                   <GlobalCommanTable
                     showHeader={true}
                     columns={Immcolumn}
-                    data={immediateTask}
-                    callBackData={callBackData} />
+                    data={immediateTask} TaskUsers={TaskUsers}
+                    callBackData={callBackData} portfolioColor={portfolioColor} />
                 )}
               </div>
             </div>
@@ -941,8 +957,8 @@ const TaskStatusTbl = (Tile: any) => {
                   <GlobalCommanTable
                     showHeader={true}
                     columns={draftColumns}
-                    data={draftCatogary}
-                    callBackData={callBackData} />
+                    data={draftCatogary} TaskUsers={TaskUsers}
+                    callBackData={callBackData} portfolioColor={portfolioColor} />
                 )}
               </div>
             </div>
