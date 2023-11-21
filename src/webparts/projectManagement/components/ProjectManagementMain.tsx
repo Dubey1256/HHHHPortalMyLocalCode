@@ -206,7 +206,7 @@ const ProjectManagementMain = (props: any) => {
         let web = new Web(props?.siteUrl);
         await web.lists
           .getById(AllListId?.MasterTaskListID)
-          .items.select("ComponentCategory/Id", "ComponentCategory/Title", "DueDate", "SiteCompositionSettings", "PortfolioStructureID", "PortfoliosId", "Portfolios/Id", "Portfolios/Title", "ItemRank", "ShortDescriptionVerified", "Portfolio_x0020_Type", "BackgroundVerified", "descriptionVerified", "Synonyms", "BasicImageInfo", "DeliverableSynonyms", "OffshoreComments", "OffshoreImageUrl", "HelpInformationVerified", "IdeaVerified", "TechnicalExplanationsVerified", "Deliverables", "DeliverablesVerified", "ValueAddedVerified", "CompletedDate", "Idea", "ValueAdded", "TechnicalExplanations", "Item_x0020_Type", "Sitestagging", "Package", "Parent/Id", "Parent/Title", "Short_x0020_Description_x0020_On", "Short_x0020_Description_x0020__x", "Short_x0020_description_x0020__x0", "AdminNotes", "AdminStatus", "Background", "Help_x0020_Information", "TaskCategories/Id", "TaskCategories/Title", "PriorityRank", "Reference_x0020_Item_x0020_Json", "TeamMembers/Title", "TeamMembers/Name", "TeamMembers/Id", "Item_x002d_Image", "ComponentLink", "IsTodaysTask", "AssignedTo/Title", "AssignedTo/Name", "AssignedTo/Id", "AttachmentFiles/FileName", "FileLeafRef", "FeedBack", "Title", "Id", "PercentComplete", "Company", "StartDate", "DueDate", "Comments", "Categories", "Status", "WebpartId", "Body", "Mileage", "PercentComplete", "Attachments", "Priority", "Created", "Modified", "Author/Id", "Author/Title", "Editor/Id", "Editor/Title", "ClientCategory/Id", "ClientCategory/Title")
+          .items.select("ComponentCategory/Id", "ComponentLink", "ComponentCategory/Title", "DueDate", "SiteCompositionSettings", "PortfolioStructureID", "PortfoliosId", "Portfolios/Id", "Portfolios/Title", "ItemRank", "ShortDescriptionVerified", "Portfolio_x0020_Type", "BackgroundVerified", "descriptionVerified", "Synonyms", "BasicImageInfo", "DeliverableSynonyms", "OffshoreComments", "OffshoreImageUrl", "HelpInformationVerified", "IdeaVerified", "TechnicalExplanationsVerified", "Deliverables", "DeliverablesVerified", "ValueAddedVerified", "CompletedDate", "Idea", "ValueAdded", "TechnicalExplanations", "Item_x0020_Type", "Sitestagging", "Package", "Parent/Id", "Parent/Title", "Short_x0020_Description_x0020_On", "Short_x0020_Description_x0020__x", "Short_x0020_description_x0020__x0", "AdminNotes", "AdminStatus", "Background", "Help_x0020_Information", "TaskCategories/Id", "TaskCategories/Title", "PriorityRank", "Reference_x0020_Item_x0020_Json", "TeamMembers/Title", "TeamMembers/Name", "TeamMembers/Id", "Item_x002d_Image", "ComponentLink", "IsTodaysTask", "AssignedTo/Title", "AssignedTo/Name", "AssignedTo/Id", "AttachmentFiles/FileName", "FileLeafRef", "FeedBack", "Title", "Id", "PercentComplete", "Company", "StartDate", "DueDate", "Comments", "Categories", "Status", "WebpartId", "Body", "Mileage", "PercentComplete", "Attachments", "Priority", "Created", "Modified", "Author/Id", "Author/Title", "Editor/Id", "Editor/Title", "ClientCategory/Id", "ClientCategory/Title")
           .expand("ClientCategory", "ComponentCategory", "AssignedTo", "AttachmentFiles", "Author", "Editor", "TeamMembers", "Portfolios", "TaskCategories", "Parent")
           .getById(QueryId)
           .get().then((fetchedProject: any) => {
@@ -729,6 +729,20 @@ const ProjectManagementMain = (props: any) => {
         id: 'Id',
       },
       {
+        accessorFn: (row) => row?.Site,
+        cell: ({ row }) => (
+          <span>
+            <img className='circularImage rounded-circle' src={row?.original?.SiteIcon} />
+          </span>
+        ),
+        id: "Site",
+        placeholder: "Site",
+        header: "",
+        resetSorting: false,
+        resetColumnFilters: false,
+        size: 50
+      },
+      {
         accessorKey: "TaskID",
         placeholder: "Task Id",
         header: "",
@@ -775,6 +789,27 @@ const ProjectManagementMain = (props: any) => {
         resetSorting: false,
         header: "",
       },
+
+      {
+        accessorFn: (row) => row?.Portfolio,
+        cell: ({ row }) => (
+          <a
+            className="hreflink"
+            data-interception="off"
+            target="blank"
+            href={`${props?.siteUrl}/SitePages/Portfolio-Profile.aspx?taskId=${row?.original?.portfolio?.Id}`}
+          >
+            <span className="d-flex">
+              <ReactPopperTooltipSingleLevel ShareWebId={row?.original?.portfolio?.Title} row={row?.original?.Portfolio} singleLevel={true} masterTaskData={MasterListData} AllSitesTaskData={AllSitesAllTasks} />
+            </span>
+          </a>
+        ),
+        id: "Portfolio",
+        placeholder: "Portfolio",
+        resetColumnFilters: false,
+        resetSorting: false,
+        header: ""
+      },
       {
         accessorFn: (row) => row?.TaskTypeValue,
         cell: ({ row }) => (
@@ -797,40 +832,7 @@ const ProjectManagementMain = (props: any) => {
         size: 120,
         id: "TaskTypeValue",
       },
-      {
-        accessorFn: (row) => row?.Site,
-        cell: ({ row }) => (
-          <span>
-            <img className='circularImage rounded-circle' src={row?.original?.SiteIcon} />
-          </span>
-        ),
-        id: "Site",
-        placeholder: "Site",
-        header: "",
-        resetSorting: false,
-        resetColumnFilters: false,
-        size: 50
-      },
-      {
-        accessorFn: (row) => row?.Portfolio,
-        cell: ({ row }) => (
-          <a
-            className="hreflink"
-            data-interception="off"
-            target="blank"
-            href={`${props?.siteUrl}/SitePages/Portfolio-Profile.aspx?taskId=${row?.original?.portfolio?.Id}`}
-          >
-            <span className="d-flex">
-              <ReactPopperTooltipSingleLevel ShareWebId={row?.original?.portfolio?.Title} row={row?.original?.Portfolio} singleLevel={true} masterTaskData={MasterListData} AllSitesTaskData={AllSitesAllTasks} />
-            </span>
-          </a>
-        ),
-        id: "Portfolio",
-        placeholder: "Portfolio",
-        resetColumnFilters: false,
-        resetSorting: false,
-        header: ""
-      },
+
       {
         accessorFn: (row) => row?.PriorityRank,
         cell: ({ row }) => (
@@ -1185,20 +1187,18 @@ const ProjectManagementMain = (props: any) => {
                                       <dt className="bg-fxdark">Due Date</dt>
                                       <dd className="bg-light">
                                         <span>
-                                          <a>
-                                            {Masterdata?.DisplayDueDate}
-                                          </a>
+                                          <InlineEditingcolumns
+                                            AllListId={AllListId}
+                                            callBack={inlineCallBack}
+                                            columnName='DueDate'
+                                            item={Masterdata}
+                                            TaskUsers={AllUser}
+                                            pageName={'ProjectManagment'}
+                                          />
                                         </span>
-                                        <span
-                                          className="pull-right"
-                                          title="Edit Inline"
-                                          ng-click="EditContents(Task,'editableDueDate')"
-                                        >
-                                          <i
-                                            className="fa fa-pencil siteColor"
-                                            aria-hidden="true"
-                                          ></i>
-                                        </span>
+                                        {/* <span className="" >
+                                          <span title="Edit Due Date" className="svg__iconbox svg__icon--editBox pull-right"></span>
+                                        </span> */}
                                       </dd>
                                     </dl>
                                     <dl>
@@ -1223,7 +1223,7 @@ const ProjectManagementMain = (props: any) => {
                                   </div>
                                   <div className="col-md-6 p-0">
                                     <dl>
-                                      <dt className="bg-fxdark">Assigned To</dt>
+                                      <dt className="bg-fxdark">Project Team</dt>
                                       <dd className="bg-light">
                                         {Masterdata?.AssignedTo?.length > 0 || Masterdata?.TeamMembers?.length > 0 || Masterdata?.ResponsibleTeam?.length > 0 ? <ShowTaskTeamMembers props={Masterdata} TaskUsers={AllTaskUsers} /> : ''}
                                       </dd>
@@ -1253,9 +1253,8 @@ const ProjectManagementMain = (props: any) => {
                                       </dd>
                                     </dl>
                                   </div>
-
-
-
+                                  {/* <div className="col-md-12 url"><div className="d-flex p-0"><div className="bg-fxdark p-2"><label>Url</label></div><div className="bg-light p-2 text-break full-width"><a target="_blank" data-interception="off" href={Masterdata?.ComponentLink?.Url != undefined ? Masterdata?.ComponentLink?.Url : ''}>  {Masterdata?.ComponentLink?.Url != undefined ? Masterdata?.ComponentLink?.Url : ''}</a></div></div></div> */}
+                                  <div className="col-md-12 pe-0"><dl><dt className="bg-fxdark UrlLabel">Url</dt><dd className="bg-light UrlField"><a target="_blank" data-interception="off" href={Masterdata?.ComponentLink?.Url != undefined ? Masterdata?.ComponentLink?.Url : ''}>  {Masterdata?.ComponentLink?.Url != undefined ? Masterdata?.ComponentLink?.Url : ''}</a></dd></dl></div>
                                   {
                                     Masterdata?.Body != undefined ? <div className="mt-2 row pe-0 detailsbox">
                                       <details className="pe-0" open>
