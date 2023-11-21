@@ -46,6 +46,24 @@ export default function FroalaCommnetBoxes(textItems: any) {
                     }
                     item.taskIndex = index;
                     testItems.push(item);
+
+                    testItems?.forEach((ele:any)=>{
+                        if(ele.ApproverData != undefined && ele.ApproverData.length > 0){
+                       ele.ApproverData?.forEach((ba:any)=>{
+                           if(ba.isShowLight == 'Reject'){
+                            ba.Status = 'Rejected by'
+                           }
+                           if(ba.isShowLight == 'Approve'){
+                               ba.Status = 'Approved by '
+                           }
+                           if(ba.isShowLight == 'Maybe'){
+                               ba.Status = 'For discussion with'
+                           }
+                           
+               
+                       })
+                     }
+                       })
                     setTexts(!Texts);
                     IndexCount = IndexCount + 1;
                     UpdatedFeedBackParentArray.push(item);
@@ -241,6 +259,24 @@ export default function FroalaCommnetBoxes(textItems: any) {
         UpdatedFeedBackParentArray[index].isShowLight = value;
         UpdatedFeedBackParentArray[index].ApproverData.push(temObject);
         let tempApproverData: any = UpdatedFeedBackParentArray[index].ApproverData
+
+        UpdatedFeedBackParentArray?.forEach((ele: any) => {
+            if (ele.ApproverData != undefined && ele.ApproverData.length > 0) {
+                ele.ApproverData?.forEach((ba: any) => {
+                    if (ba.isShowLight == 'Reject') {
+                        ba.Status = 'Rejected by'
+                    }
+                    if (ba.isShowLight == 'Approve') {
+                        ba.Status = 'Approved by '
+                    }
+                    if (ba.isShowLight == 'Maybe') {
+                        ba.Status = 'For discussion with'
+                    }
+
+
+                })
+            }
+        })
         callBack(UpdatedFeedBackParentArray);
         const copy = [...State];
         const obj = { ...State[index], isShowLight: value, ApproverData: tempApproverData };
@@ -403,13 +439,14 @@ export default function FroalaCommnetBoxes(textItems: any) {
                                                 </div>
                                                 : null
                                             }
-                                            {obj.ApproverData != undefined && obj.ApproverData.length > 0 ?
-                                                <span className="siteColor ms-2 hreflink" title="Approval-History Popup" onClick={() => ApprovalPopupOpenHandle(i + 1, obj)}>
-                                                    Pre-approved by - <span className="ms-1"><a title={obj.ApproverData[obj.ApproverData.length - 1]?.Title}>
-                                                        <img className='imgAuthor' src={obj.ApproverData[obj.ApproverData.length - 1]?.ImageUrl} />
-                                                    </a>
-                                                    </span>
-                                                </span> : null
+                                             {obj.ApproverData != undefined && obj.ApproverData.length > 0 ?
+                                                <>
+                                                   
+                                                            <span className="siteColor ms-2 hreflink" title="Approval-History Popup" onClick={() => ApprovalPopupOpenHandle(i, obj)}>
+                                                            {obj.ApproverData[obj.ApproverData?.length - 1]?.Status} </span> <span className="ms-1"><a title={obj.ApproverData[obj.ApproverData?.length - 1]?.Title}><span><a href={`${Context.pageContext.web.absoluteUrl}/SitePages/TaskDashboard.aspx?UserId=${obj.ApproverData[obj.ApproverData?.length - 1]?.Id}&Name=${obj.ApproverData[obj.ApproverData?.length - 1]?.Title}`} target="_blank" data-interception="off" title={obj.ApproverData[obj.ApproverData?.length - 1]?.Title}> <img className='imgAuthor' src={obj.ApproverData[obj.ApproverData?.length - 1]?.ImageUrl} /></a></span></a></span>
+                                                      
+                                                </> :
+                                                null
                                             }
                                         </div>
                                         <div>

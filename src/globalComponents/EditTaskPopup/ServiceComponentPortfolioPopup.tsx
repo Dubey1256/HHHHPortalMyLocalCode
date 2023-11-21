@@ -34,8 +34,9 @@ const ServiceComponentPortfolioPopup = ({ props, Dynamic, Call, ComponentType, s
     function Example(callBack: any, type: any, functionType: any) {
         Call(callBack, type, functionType);
     }
-    const setModalIsOpenToFalse = () => {
-        Example([], ComponentType, "Close");
+    const closePanel = (e: any) => {
+        if (e != undefined && e?.type != 'mousedown')
+            Example([], ComponentType, "Close");
     }
     const setModalIsOpenToOK = () => {
         if (props.linkedComponent != undefined && props?.linkedComponent.length == 0)
@@ -155,7 +156,7 @@ const ServiceComponentPortfolioPopup = ({ props, Dynamic, Call, ComponentType, s
                         {`Select Portfolio`}
                     </span>
                 </div>
-                
+
                 <Tooltip ComponentId="1667" />
                 {/* <span onClick={() => setModalIsOpenToFalse()}><i className="svg__iconbox svg__icon--cross crossBtn me-1"></i></span> */}
             </div>
@@ -167,7 +168,7 @@ const ServiceComponentPortfolioPopup = ({ props, Dynamic, Call, ComponentType, s
             <footer className={ComponentType == "Service" ? "me-3 p-2 serviepannelgreena text-end" : "me-3 p-2 text-end"}>
 
                 <button type="button" className="btn btn-primary me-1" onClick={setModalIsOpenToOK}>OK</button>
-                <button type="button" className="btn btn-default" onClick={setModalIsOpenToFalse}>Cancel</button>
+                <button type="button" className="btn btn-default" onClick={(e: any) => closePanel(e)}>Cancel</button>
             </footer>
         )
     }
@@ -332,7 +333,7 @@ const ServiceComponentPortfolioPopup = ({ props, Dynamic, Call, ComponentType, s
             type={PanelType.custom}
             customWidth="1100px"
             isOpen={modalIsOpen}
-            onDismiss={setModalIsOpenToFalse}
+            onDismiss={(e: any) => closePanel(e)}
             onRenderHeader={onRenderCustomHeader}
             isBlocking={modalIsOpen}
             onRenderFooter={CustomFooter}
