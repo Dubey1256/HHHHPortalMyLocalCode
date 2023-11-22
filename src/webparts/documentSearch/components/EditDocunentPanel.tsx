@@ -59,7 +59,7 @@ const EditDocumentpanel = (props: any) => {
     // await web.lists.getByTitle("SmartInformation")
     var text: any = "Are you sure want to Delete ?";
     if (confirm(text) == true) {
-      await web.lists.getById(props?.AllListId?.DocumentsListID)
+      await web.lists.getById(props?.AllListId?.DocumentListID)
         .items.getById(DeletItemId).recycle()
         .then((res: any) => {
           console.log(res);
@@ -95,7 +95,7 @@ const EditDocumentpanel = (props: any) => {
     }
 
     const web = new Web(props?.AllListId?.siteUrl);
-    await web.lists.getById(props?.AllListId?.DocumentsListID)
+    await web.lists.getById(props?.AllListId?.DocumentListID)
       .items.getById(EditdocumentsData.Id).update({
         Title: EditdocumentsData.docTitle,
         ItemRank: EditdocumentsData.ItemRank,
