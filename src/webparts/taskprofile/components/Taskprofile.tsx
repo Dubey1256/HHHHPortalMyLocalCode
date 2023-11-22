@@ -1244,6 +1244,24 @@ class Taskprofile extends React.Component<ITaskprofileProps, ITaskprofileState> 
         tempData.ApproverData = [];
         tempData.ApproverData.push(approvalDataHistory)
       }
+
+      tempData?.forEach((ele: any) => {
+        if (ele.ApproverData != undefined && ele.ApproverData.length > 0) {
+            ele.ApproverData?.forEach((ba: any) => {
+                if (ba.isShowLight == 'Reject') {
+                    ba.Status = 'Rejected by'
+                }
+                if (ba.isShowLight == 'Approve') {
+                    ba.Status = 'Approved by '
+                }
+                if (ba.isShowLight == 'Maybe') {
+                    ba.Status = 'For discussion with'
+                }
+
+
+            })
+        }
+    })
       console.log(tempData);
       console.log(this.state.Result["FeedBack"][0]?.FeedBackDescriptions);
       await this.onPost();
@@ -1274,6 +1292,23 @@ class Taskprofile extends React.Component<ITaskprofileProps, ITaskprofileState> 
         tempData.Subtext[subchileindex].ApproverData = [];
         tempData.Subtext[subchileindex].ApproverData.push(approvalDataHistory)
       }
+      tempData?.Subtext?.forEach((ele: any) => {
+        if (ele.ApproverData != undefined && ele.ApproverData.length > 0) {
+            ele.ApproverData?.forEach((ba: any) => {
+                if (ba.isShowLight == 'Reject') {
+                    ba.Status = 'Rejected by'
+                }
+                if (ba.isShowLight == 'Approve') {
+                    ba.Status = 'Approved by '
+                }
+                if (ba.isShowLight == 'Maybe') {
+                    ba.Status = 'For discussion with'
+                }
+
+
+            })
+        }
+    })
 
       console.log(tempData);
 
@@ -1680,6 +1715,11 @@ if(folora=="folora"&&index==0){
                       }
                       {this.state.breadCrumData?.map((breadcrumbitem: any, index: any) => {
                         return <>
+                         {/* Changes done by Robin Start*/}
+                         {breadcrumbitem?.ItemType !== undefined && breadcrumbitem?.ItemType == "Component" && <li>
+                            <a target="_blank" data-interception="off" href={`${this.state.Result["siteUrl"]}/SitePages/Portfolio-Profile.aspx?taskId=${breadcrumbitem?.Id}`}>{breadcrumbitem?.PortfolioType?.Title} - Portfolio</a>
+                          </li>}
+                          {/* Changes done by Robin End*/}
                           {breadcrumbitem?.siteType == undefined && <li>
 
                             <a target="_blank" data-interception="off" href={`${this.state.Result["siteUrl"]}/SitePages/Portfolio-Profile.aspx?taskId=${breadcrumbitem?.Id}`}>{breadcrumbitem?.Title}</a>
@@ -2094,13 +2134,18 @@ if(folora=="folora"&&index==0){
                                                     className={fbData['isShowLight'] == "Approve" ? "circlelight br_green pull-left green" : "circlelight br_green pull-left"}>
 
                                                   </span>
-                                                  {fbData['ApproverData'] != undefined && fbData?.ApproverData.length > 0 &&
-                                                    <>
-                                                      <a className='hreflink mt--2 mx-2'
-                                                        onClick={() => this.ShowApprovalHistory(fbData, i, null)}
-                                                      >Approved by -</a>
-                                                      <img className="workmember" src={fbData?.ApproverData[fbData?.ApproverData?.length - 1]?.ImageUrl}></img>
-                                                    </>}
+                                                  {fbData["ApproverData"] != undefined && fbData.ApproverData.length > 0 &&
+                                                  <>
+                                                    {fbData?.ApproverData.map((ele: any) => {
+                                                      return (
+                                                        <>
+                                                        <span className="siteColor ms-2 hreflink" title="Approval-History Popup" onClick={() => this.ShowApprovalHistory(fbData, i, null)}>
+                                                        {fbData?.ApproverData[fbData?.ApproverData?.length - 1]?.Status} </span> <span className="ms-1"><a title={fbData.ApproverData[fbData.ApproverData.length - 1]?.Title}><span><a href={`${this.props?.siteUrl}/SitePages/TaskDashboard.aspx?UserId=${fbData?.ApproverData[ele?.ApproverData?.length - 1]?.Id}&Name=${fbData?.ApproverData[fbData?.ApproverData?.length - 1]?.Title}`} target="_blank" data-interception="off" title={fbData?.ApproverData[fbData?.ApproverData?.length - 1]?.Title}> <img className='imgAuthor' src={fbData?.ApproverData[fbData?.ApproverData?.length - 1]?.ImageUrl} /></a></span></a></span>
+                                                       </>
+                                                      )
+
+                                                    })}
+                                                  </>}
                                                 </span>
 
                                                 : null
@@ -2243,7 +2288,7 @@ if(folora=="folora"&&index==0){
                                           return <div className="col-sm-12 p-0 mb-2" style={{ width: '100%' }}>
                                             <div className='justify-content-between d-flex'>
                                               <div className='alignCenter m-0'>
-                                                {this.state.ApprovalStatus ?
+                                                {this.state.ApprovalStatus &&
                                                   <span className="alignCenter">
                                                     <span title="Rejected"
                                                       onClick={() => this.changeTrafficLigthsubtext(i, j, "Reject")}
@@ -2259,14 +2304,22 @@ if(folora=="folora"&&index==0){
                                                       className={fbSubData?.isShowLight == "Approve" ? "circlelight br_green pull-left green" : "circlelight br_green pull-left"}>
 
                                                     </span>
-                                                    {fbSubData.ApproverData != undefined && fbSubData.ApproverData.length > 0 && <>
-                                                      <a className='hreflink mt--2 mx-2'
-                                                        onClick={() => this.ShowApprovalHistory(fbSubData, i, j)}
-                                                      >Approved by -</a>
-                                                      <img className="workmember" src={fbSubData?.ApproverData[fbSubData?.ApproverData?.length - 1]?.ImageUrl}></img>
-                                                    </>}
+                                                    {fbData["Subtext"] != undefined && fbData.Subtext.length > 0 &&
+                                                      <>
+                                                        {fbData?.Subtext.map((b: any) => {
+                                                          return(
+                                                         <>
+                                                              <span className="siteColor ms-2 hreflink" title="Approval-History Popup" onClick={() => this.ShowApprovalHistory(fbSubData, i, j)}>
+                                                              {b?.ApproverData[b?.ApproverData?.length - 1]?.Status} </span> <span className="ms-1"><a title={b?.ApproverData[b?.ApproverData.length - 1]?.Title}><span><a href={`${this.props?.siteUrl}/SitePages/TaskDashboard.aspx?UserId=${b?.ApproverData[b?.ApproverData?.length - 1]?.Id}&Name=${b?.ApproverData[b?.ApproverData?.length - 1]?.Title}`} target="_blank" data-interception="off" title={b?.ApproverData[b?.ApproverData.length - 1]?.Title}> <img className='imgAuthor' src={b?.ApproverData[b?.ApproverData?.length - 1]?.ImageUrl} /></a></span></a></span>
+                                                              
+                                                       </> )
+                                                         
+
+                                                        })}
+                                                      </>
+                                                     }
                                                   </span>
-                                                  : null
+                                                  
                                                 }
                                               </div>
                                               <div className='m-0'>

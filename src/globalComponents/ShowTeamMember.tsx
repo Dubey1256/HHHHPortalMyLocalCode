@@ -486,7 +486,7 @@ function ShowTeamMembers(item: any) {
                                         }
                                           onDragOver={(e) => e.preventDefault()}
 
-                                          key={index} draggable title={childItem?.Title} className="workmember activeimgbg-fxdark border bg-e9 p-1 ">{childItem?.Suffix}</span>
+                                          key={index} draggable title={childItem?.Title} className="workmember activeimgbg-fxdark border bg-e9">{childItem?.Suffix}</span>
                                     }
 
                                   </span>
@@ -530,7 +530,7 @@ function ShowTeamMembers(item: any) {
                                         }
                                           onDragOver={(e) => e.preventDefault()}
 
-                                          key={index} draggable title={childItem?.Title} className="workmember activeimgbg-fxdark border bg-e9 p-1 ">{childItem?.Suffix}</span>
+                                          key={index} draggable title={childItem?.Title} className="workmember activeimgbg-fxdark border bg-e9">{childItem?.Suffix}</span>
                                     }
                                   </span>
                                 ) : (
@@ -558,7 +558,7 @@ function ShowTeamMembers(item: any) {
                                         }
                                           onDragOver={(e) => e.preventDefault()}
 
-                                          key={index} draggable title={childItem?.Title} className="workmember activeimgbg-fxdark border bg-e9 p-1 ">{childItem?.Suffix}</span>
+                                          key={index} draggable title={childItem?.Title} className="workmember activeimgbg-fxdark border bg-e9">{childItem?.Suffix}</span>
                                     }
                                   </span>
                                 ) : (
@@ -586,7 +586,7 @@ function ShowTeamMembers(item: any) {
                                         }
                                           onDragOver={(e) => e.preventDefault()}
 
-                                          key={index} draggable title={childItem?.Title} className="workmember activeimgbg-fxdark border bg-e9 p-1 ">{childItem?.Suffix}</span>
+                                          key={index} draggable title={childItem?.Title} className="workmember activeimgbg-fxdark border bg-e9">{childItem?.Suffix}</span>
                                     }
                                   </span>
                                 ) : (
@@ -614,7 +614,7 @@ function ShowTeamMembers(item: any) {
                                         }
                                           onDragOver={(e) => e.preventDefault()}
 
-                                          key={index} draggable title={childItem?.Title} className="workmember activeimgbg-fxdark border bg-e9 p-1 ">{childItem?.Suffix}</span>
+                                          key={index} draggable title={childItem?.Title} className="workmember activeimgbg-fxdark border bg-e9">{childItem?.Suffix}</span>
                                     }
                                   </span>
                                 ) : (
@@ -642,7 +642,7 @@ function ShowTeamMembers(item: any) {
                                         }
                                           onDragOver={(e) => e.preventDefault()}
 
-                                          key={index} draggable title={childItem?.Title} className="workmember activeimgbg-fxdark border bg-e9 p-1 ">{childItem?.Suffix}</span>
+                                          key={index} draggable title={childItem?.Title} className="workmember activeimgbg-fxdark border bg-e9">{childItem?.Suffix}</span>
                                     }
                                   </span>
                                 ) : (
@@ -670,7 +670,7 @@ function ShowTeamMembers(item: any) {
                                         }
                                           onDragOver={(e) => e.preventDefault()}
 
-                                          key={index} draggable title={childItem?.Title} className="workmember activeimgbg-fxdark border bg-e9 p-1 ">{childItem?.Suffix}</span>
+                                          key={index} draggable title={childItem?.Title} className="workmember activeimgbg-fxdark border bg-e9">{childItem?.Suffix}</span>
                                     }
                                   </span>
                                 ) : (
@@ -707,7 +707,7 @@ function ShowTeamMembers(item: any) {
                                 height={"35px"}
                                 width={"35px"}
                                 src={items?.Item_x0020_Cover?.Url}
-                              /> : <span title={items?.Title} className="workmember activeimgbg-fxdark border bg-e9 p-1 ">{items?.Suffix}</span>
+                              /> : <span title={items?.Title} className="workmember activeimgbg-fxdark border bg-e9">{items?.Suffix}</span>
                             }
 
                           </span>
@@ -724,7 +724,7 @@ function ShowTeamMembers(item: any) {
                     return (
                       <> {item.messageType == 'message' && item?.body?.content != undefined && item?.body?.content != '' ?
                         <p>{item?.UserImage != undefined && item?.UserImage != '' ? <img className="me-1" title={item?.from?.user?.displayName} style={{ borderRadius: "20px" }} height={"35px"} width={"35px"} src={item?.UserImage}
-                        /> : <span className="workmember activeimgbg-fxdark border bg-e9 p-1 ">{item?.Suffix}</span>} - {item?.body?.content.replace(/<\/?[^>]+(>|$)/g, '')}</p> : ''}
+                        /> : <span className="workmember activeimgbg-fxdark border bg-e9">{item?.Suffix}</span>} - {item?.body?.content.replace(/<\/?[^>]+(>|$)/g, '')}</p> : ''}
                       </>
                     )
                   })}
