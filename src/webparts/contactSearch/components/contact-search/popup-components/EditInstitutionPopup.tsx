@@ -29,7 +29,7 @@ const HrGmbhInstitutionDeatails=async(Id:any)=>{
         let web = new Web(myContextData2?.allListId?.siteUrl);
         await web.lists.getById(myContextData2?.allSite?.GMBHSite?myContextData2?.allListId?.GMBH_CONTACT_SEARCH_LISTID:myContextData2?.allListId?.HR_EMPLOYEE_DETAILS_LIST_ID)
             .items.getById(Id)
-            .select("Id", "Title", "FirstName", "FullName","About","InstitutionType","SocialMediaUrls", "DOJ","DOE","Company","SmartCountriesId","SmartContactId","SmartInstitutionId", "WorkCity", "Suffix", "WorkPhone", "HomePhone", "Comments", "WorkAddress", "WorkFax", "WorkZip",  "ItemType", "JobTitle", "Item_x0020_Cover", "WebPage",  "CellPhone", "Email", "LinkedIn", "Created", "SocialMediaUrls","Author/Title", "Modified", "Editor/Title", "Division/Title", "Division/Id", "EmployeeID/Title", "StaffID", "EmployeeID/Id", "Institution/Id", "Institution/FullName", "IM")
+            .select("Id", "Title", "FirstName", "FullName","About","InstitutionType","SocialMediaUrls", "DOJ","DOE","Company","SmartCountriesId","SmartContactId","SmartInstitutionId", "WorkCity", "Suffix", "WorkPhone", "HomePhone", "Comments", "WorkAddress", "WorkFax", "WorkZip",  "ItemType", "JobTitle", "Item_x0020_Cover", "WebPage",  "CellPhone", "Email", "Created", "SocialMediaUrls","Author/Title", "Modified", "Editor/Title", "Division/Title", "Division/Id", "EmployeeID/Title", "StaffID", "EmployeeID/Id", "Institution/Id", "Institution/FullName", "IM")
             .expand("EmployeeID", "Division", "Author", "Editor",  "Institution")
             .get().then((data:any)=>{
                
@@ -61,13 +61,17 @@ const HrGmbhInstitutionDeatails=async(Id:any)=>{
             let web = new Web(myContextData2?.allListId?.jointSiteUrl);
             await web.lists.getById(myContextData2?.allListId?.HHHHInstitutionListId)
                 .items
-                .select("Id,Title,FirstName,FullName,Company,JobTitle,About,InstitutionType,SocialMediaUrls,ItemType,WorkCity,ItemImage,WorkCountry,WorkAddress,Twitter,Instagram,Facebook,LinkedIn,WebPage,CellPhone,HomePhone,Email,SharewebSites,Created,Author/Id,Author/Title,Modified,Editor/Id,Editor/Title")
+                .select("Id,Title,FirstName,FullName,Company,JobTitle,About,InstitutionType,SocialMediaUrls,ItemType,WorkCity,ItemImage,WorkCountry,WorkAddress,WebPage,CellPhone,HomePhone,Email,SharewebSites,Created,Author/Id,Author/Title,Modified,Editor/Id,Editor/Title")
                 .expand("Author", "Editor",)
                 .getById(id)
                 .get().then((data: any) => {
                 let URL: any[] = JSON.parse(data.SocialMediaUrls != null ? data.SocialMediaUrls : ["{}"]);
                 setURLs(URL);
                 data.Item_x002d_Image = data?.ItemImage;
+                delete data.LinkedIn;
+                delete data.Facebook;
+                delete data.Twitter;
+                delete data.Instagram;
                    setUpdateData(data);
                    JointData=data;
                 }).catch((error: any) => {
@@ -377,7 +381,7 @@ return(
                                             <div className="col" >
                                                     <div className='input-group'>
                                                         <label className="full-width label-form">Facebook</label>
-                                                        <input type="text" className="form-control" defaultValue={URLs.length ? URLs[0].Facebook : ""} onChange={(e) => setUpdateData({ ...updateData, Facebook: e.target.value })} aria-label="LinkedIn" />
+                                                        <input type="text" className="form-control" defaultValue={URLs.length ? URLs[0].Facebook : ""} onChange={(e) => setUpdateData({ ...updateData, Facebook: e.target.value })} aria-label="Facebook" />
                                                     </div></div>
                                               </div>
                                             <div className="user-form-5 mt-2">
