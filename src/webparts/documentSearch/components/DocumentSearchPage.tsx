@@ -1,10 +1,7 @@
 import React, { useEffect, useState } from 'react'
 import { Web } from 'sp-pnp-js';
-//import styles from './DocumentSearch.module.scss';
-// import GlobalCommanTable from '../../../GlobalCommon/GlobalCommanTable';
-import GlobalCommanTable from "../../../globalComponents/GlobalCommanTable";
+import GlobalCommanTable from "../../../globalComponents/GroupByReactTableComponents/GlobalCommanTable";
 import { ColumnDef } from '@tanstack/react-table';
-//import DocumentPopup from "./DocumentPopup";
 import EditDocument from './EditDocunentPanel'
 import moment from 'moment';
 var TaskUser: any = []
