@@ -11,6 +11,7 @@ import GlobalCommanTable, { IndeterminateCheckbox } from "../GroupByReactTableCo
 import HighlightableCell from "../GroupByReactTableComponents/highlight";
 import ShowTaskTeamMembers from "../ShowTaskTeamMembers";
 import { Web } from "sp-pnp-js";
+import InfoIconsToolTip from "../InfoIconsToolTip/InfoIconsToolTip";
 var LinkedServicesBackupArray: any = [];
 var MultiSelectedData: any = [];
 let AllMetadata: any = [];
@@ -26,15 +27,16 @@ const ServiceComponentPortfolioPopup = ({ props, Dynamic, Call, ComponentType, s
     let GlobalArray: any = [];
     React.useEffect(() => {
         GetMetaData();
-       
+
 
     },
         []);
     function Example(callBack: any, type: any, functionType: any) {
         Call(callBack, type, functionType);
     }
-    const setModalIsOpenToFalse = () => {
-        Example([], ComponentType, "Close");
+    const closePanel = (e: any) => {
+        if (e != undefined && e?.type != 'mousedown')
+            Example([], ComponentType, "Close");
     }
     const setModalIsOpenToOK = () => {
         if (props.linkedComponent != undefined && props?.linkedComponent.length == 0)
@@ -79,7 +81,7 @@ const ServiceComponentPortfolioPopup = ({ props, Dynamic, Call, ComponentType, s
         }
     };
     const loadTaskUsers = async () => {
-        let taskUser:any=[];
+        let taskUser: any = [];
         if (Dynamic?.TaskUsertListID != undefined) {
             try {
                 let web = new Web(Dynamic?.siteUrl);
@@ -95,7 +97,7 @@ const ServiceComponentPortfolioPopup = ({ props, Dynamic, Call, ComponentType, s
                 return Promise.reject(error);
             }
             GetComponents();
-            setTaskUser(taskUser) ;
+            setTaskUser(taskUser);
         } else {
             alert('Task User List Id not Available')
         }
@@ -149,12 +151,14 @@ const ServiceComponentPortfolioPopup = ({ props, Dynamic, Call, ComponentType, s
     ) => {
         return (
             <div className="d-flex full-width pb-1" >
-                <div style={{ marginRight: "auto", fontSize: "20px", fontWeight: "600", marginLeft: '20px' }}>
+                <div className='subheading'>
                     <span className="siteColor">
                         {`Select Portfolio`}
                     </span>
                 </div>
+
                 <Tooltip ComponentId="1667" />
+                {/* <span onClick={() => setModalIsOpenToFalse()}><i className="svg__iconbox svg__icon--cross crossBtn me-1"></i></span> */}
             </div>
         );
     };
@@ -164,7 +168,7 @@ const ServiceComponentPortfolioPopup = ({ props, Dynamic, Call, ComponentType, s
             <footer className={ComponentType == "Service" ? "me-3 p-2 serviepannelgreena text-end" : "me-3 p-2 text-end"}>
 
                 <button type="button" className="btn btn-primary me-1" onClick={setModalIsOpenToOK}>OK</button>
-                <button type="button" className="btn btn-default" onClick={setModalIsOpenToFalse}>Cancel</button>
+                <button type="button" className="btn btn-default" onClick={(e: any) => closePanel(e)}>Cancel</button>
             </footer>
         )
     }
@@ -220,13 +224,7 @@ const ServiceComponentPortfolioPopup = ({ props, Dynamic, Call, ComponentType, s
                             <HighlightableCell value={getValue()} searchTerm={column.getFilterValue()} />
                         </a>
 
-                        {row?.original?.Short_x0020_Description_x0020_On != null &&
-                            <span className='popover__wrapper ms-1' data-bs-toggle="tooltip" data-bs-placement="auto">
-                                <span title="Edit" className="svg__iconbox svg__icon--info"></span>
-                                <span className="popover__content">
-                                    {row?.original?.Short_x0020_Description_x0020_On}
-                                </span>
-                            </span>}
+                        {row?.original?.descriptionsSearch?.length > 0 && <span className='alignIcon  mt--5 '><InfoIconsToolTip Discription={row?.original?.Body} row={row?.original} /></span>}
                     </>
                 ),
                 id: "Title",
@@ -237,7 +235,7 @@ const ServiceComponentPortfolioPopup = ({ props, Dynamic, Call, ComponentType, s
                 accessorFn: (row) => row?.ClientCategory?.map((elem: any) => elem.Title)?.join("-"),
                 cell: ({ row }) => (
                     <>
-                        <ShowClintCatogory clintData={row?.original} AllMetadata={AllMetadataItems} />
+                        <ShowClintCatogory clintData={row?.original} AllMetadata={AllMetadata} />
                     </>
                 ),
                 id: 'ClientCategory',
@@ -262,6 +260,22 @@ const ServiceComponentPortfolioPopup = ({ props, Dynamic, Call, ComponentType, s
                 placeholder: "Status",
                 header: "",
                 size: 42,
+            },
+            {
+                accessorKey: "descriptionsSearch",
+                placeholder: "descriptionsSearch",
+                header: "",
+                resetColumnFilters: false,
+                size: 100,
+                id: "descriptionsSearch",
+            },
+            {
+                accessorKey: "commentsSearch",
+                placeholder: "commentsSearch",
+                header: "",
+                resetColumnFilters: false,
+                size: 100,
+                id: "commentsSearch",
             },
             {
                 accessorKey: "ItemRank",
@@ -319,7 +333,7 @@ const ServiceComponentPortfolioPopup = ({ props, Dynamic, Call, ComponentType, s
             type={PanelType.custom}
             customWidth="1100px"
             isOpen={modalIsOpen}
-            onDismiss={setModalIsOpenToFalse}
+            onDismiss={(e: any) => closePanel(e)}
             onRenderHeader={onRenderCustomHeader}
             isBlocking={modalIsOpen}
             onRenderFooter={CustomFooter}

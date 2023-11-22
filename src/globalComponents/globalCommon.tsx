@@ -1367,7 +1367,27 @@ export const sendImmediateEmailNotifications = async (itemId: any, siteUrl: any,
 
                         }
                         if (isLoadNotification == 'Client Task') {
-                            Subject = "[ SDC Client Task - " + siteType + " - " + item?.SDCAuthor + " ] " + UpdateItem?.Title + "";
+                            let SDCDetails = item?.ClientTask
+                            let extraBody = ''
+                            Subject = "[ SDC Client Task - " + siteType + " - " + SDCDetails?.SDCCreatedBy + " ] " + UpdateItem?.Title + "";
+                            if (UpdateItem?.PercentComplete < 90) {
+                                extraBody = `<div>
+                                <h2>Email Subject : Your Task has been seen - [${SDCDetails?.SDCTaskId} ${UpdateItem?.Title}]</h2>
+                                <p>Message:</p>
+                                <p>Dear ${SDCDetails?.SDCCreatedBy},</p>
+                                <p>Thank you for your Feedback!</p>
+                                <p>Your Task - [${UpdateItem?.Title}] has been seen by our Team and we are now working on it.</p>
+                                <p>You can track your Task Status here: <a href="${SDCDetails?.SDCTaskUrl}">${SDCDetails?.SDCTaskUrl}</a></p>
+                                <p>If you want to see all your Tasks or all Sharweb Tasks click here: <a href="${SDCDetails?.SDCTaskDashboard}">Team Dashboard - Task View</a></p>
+                                <p>Best regards,<br />Your HHHH Support Team</p>
+                                <br>
+                                <h4>Client Email : - ${SDCDetails?.SDCEmail}
+                            </div><br><br>`
+
+                            }
+                        
+
+                            body = extraBody + body
                         }
                         var from = '',
                             to = ToEmails,
@@ -1550,8 +1570,8 @@ export const GetServiceAndComponentAllData = async (Props: any) => {
         AllMasterTaskData = await web.lists
             .getById(Props.MasterTaskListID)
             .items
-            .select("ID","Id","Title","PortfolioLevel","PortfolioStructureID","Comments","ItemRank","Portfolio_x0020_Type","Parent/Id","Parent/Title","DueDate","Created","Body","Sitestagging","Item_x0020_Type","Categories","Short_x0020_Description_x0020_On","PriorityRank","Priority","AssignedTo/Title","TeamMembers/Id","TeamMembers/Title","ClientCategory/Id","ClientCategory/Title","PercentComplete","ResponsibleTeam/Id","Author/Id","Author/Title","Sitestagging","ResponsibleTeam/Title","PortfolioType/Id","PortfolioType/Color","PortfolioType/IdRange","PortfolioType/Title","AssignedTo/Id")
-            .expand("Parent","PortfolioType","AssignedTo","Author","ClientCategory","TeamMembers","ResponsibleTeam")
+            .select("ID", "Id", "Title", "PortfolioLevel", "PortfolioStructureID", "Comments", "ItemRank", "Portfolio_x0020_Type", "Parent/Id", "Parent/Title", "DueDate", "Created", "Body", "Sitestagging", "Item_x0020_Type", "Categories", "Short_x0020_Description_x0020_On", "PriorityRank", "Priority", "AssignedTo/Title", "TeamMembers/Id", "TeamMembers/Title", "ClientCategory/Id", "ClientCategory/Title", "PercentComplete", "ResponsibleTeam/Id", "Author/Id", "Author/Title", "Sitestagging", "ResponsibleTeam/Title", "PortfolioType/Id", "PortfolioType/Color", "PortfolioType/IdRange", "PortfolioType/Title", "AssignedTo/Id")
+            .expand("Parent", "PortfolioType", "AssignedTo", "Author", "ClientCategory", "TeamMembers", "ResponsibleTeam")
             .getAll();
         ProjectData = AllMasterTaskData?.filter(
             (projectItem: any) => projectItem.Item_x0020_Type === "Project"
@@ -1603,17 +1623,13 @@ export const GetServiceAndComponentAllData = async (Props: any) => {
                 result.SiteIconTitle = result?.Item_x0020_Type?.charAt(0);
             }
             result.PercentComplete = (result.PercentComplete * 100).toFixed(0);
-            if (result?.Deliverables != undefined || result.Short_x0020_Description_x0020_On != undefined || result.TechnicalExplanations != undefined || result.Body != undefined || result.AdminNotes != undefined || result.ValueAdded != undefined
-                || result.Idea != undefined || result.Background != undefined) {
-                result.descriptionsSearch = `${removeHtmlAndNewline(result.Deliverables)} ${removeHtmlAndNewline(result.Short_x0020_Description_x0020_On)} ${removeHtmlAndNewline(result.TechnicalExplanations)} ${removeHtmlAndNewline(result.Body)} ${removeHtmlAndNewline(result.AdminNotes)} ${removeHtmlAndNewline(result.ValueAdded)} ${removeHtmlAndNewline(result.Idea)} ${removeHtmlAndNewline(result.Background)}`;
+            result.descriptionsSearch = '';
+            try{
+                result.descriptionsSearch = portfolioSearchData(result)
+                result.commentsSearch = result?.Comments != null && result?.Comments != undefined ? result.Comments.replace(/(<([^>]+)>)/gi, "").replace(/\n/g, '') : '';
+            }catch(error){
+             
             }
-            if (result?.Comments != null) {
-                result.commentsSearch = result?.Comments.replace(
-                    /(<([^>]+)>)/gi,
-                    ""
-                ).replace(/\n/g, "");
-            }
-
             result.Id = result.Id != undefined ? result.Id : result.ID;
             result["TaskID"] = result?.PortfolioStructureID;
             if (result.AssignedTo != undefined && result.AssignedTo.length > 0) {
@@ -1700,6 +1716,7 @@ export const GetServiceAndComponentAllData = async (Props: any) => {
     }
     console.log("all Service and Coponent data in global common =======", AllMasterTaskData)
 }
+
 
 const componentGrouping = (Portfolio: any, AllProtFolioData: any, path: string = "") => {
     let pathArray: any = [];

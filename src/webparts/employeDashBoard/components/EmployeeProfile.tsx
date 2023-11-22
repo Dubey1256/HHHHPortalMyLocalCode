@@ -11,8 +11,9 @@ var taskUsers: any
 var dataLength: any = [];
 var count: number = 0;
 var AllData: any = [];
-let AllMasterTasks:any[]=[]
+let AllMasterTasks: any[] = []
 var currentUserData: any
+let currentUserId: any
 const EmployeProfile = (props: any) => {
   let allData: any = [];
   const [AllSite, setAllSite] = useState([]);
@@ -27,14 +28,14 @@ const EmployeProfile = (props: any) => {
     annouceMent();
   }, []);
 
-  const loadMasterTask = ()=>{
+  const loadMasterTask = () => {
     let web = new Web("https://hhhhteams.sharepoint.com/sites/HHHH/SP/");
     web.lists
       .getById("ec34b38f-0669-480a-910c-f84e92e58adf")
       .items
       .select('ComponentCategory/Id', 'PortfolioStructureID', 'Item_x0020_Type', 'PortfolioType/Id', 'PortfolioType/Color', 'PortfolioType/Title', 'Id', 'ValueAdded', 'Idea', 'Sitestagging', 'TechnicalExplanations', 'Short_x0020_Description_x0020_On', 'Short_x0020_Description_x0020__x', 'Short_x0020_description_x0020__x0', 'AdminNotes', 'Background', 'Help_x0020_Information', 'ItemType', 'Title', 'Parent/Id', 'Parent/Title')
       .expand('Parent', 'ComponentCategory', "PortfolioType")
-  
+
       .orderBy('Modified', false)
       .getAll(4000).then((data: any) => {
         AllMasterTasks = data;
@@ -102,7 +103,7 @@ const EmployeProfile = (props: any) => {
         .get();
       let mailApprover: any;
       taskUsers?.map((item: any) => {
-        let currentUserId: any = props?.props?.Context?.pageContext?.legacyPageContext?.userId
+        currentUserId = props?.props?.Context?.pageContext?.legacyPageContext?.userId
         if (currentUserId == item?.AssingedToUser?.Id && currentUserId != undefined) {
           currentUserData = item;
           //  setCurrentUserData(item);
@@ -130,13 +131,23 @@ const EmployeProfile = (props: any) => {
     }
     return taskUser;
   }
-
+  const isTaskItemExists = (array: any, items: any) => {
+    let isExists = false;
+    for (let index = 0; index < array.length; index++) {
+      let item = array[index];
+      if (item.Id == items.Id && item?.siteType.toLowerCase() == items?.siteType.toLowerCase()) {
+        isExists = true;
+        break;
+      }
+    }
+    return isExists;
+  }
   const getAllData = async (ConfigItem: any) => {
     const web = new Web(ConfigItem.siteUrl);
     await web.lists
       .getById(ConfigItem.listId)
-      .items.select("Title", "PercentComplete", "Categories", "Portfolio/Id", "Portfolio/ItemType", "Body", "Portfolio/PortfolioStructureID", "Portfolio/Title", "TaskType/Id", "TaskType/Title", "TaskType/Level", "workingThisWeek", 'TaskID', "IsTodaysTask", "Priority", "PriorityRank", "DueDate", "Created", "Modified", "Team_x0020_Members/Id", "Team_x0020_Members/Title", "ID", "Responsible_x0020_Team/Id", "Responsible_x0020_Team/Title", "Editor/Title", "Editor/Id", "Author/Title", "Author/Id", "AssignedTo/Id", "AssignedTo/Title")
-      .expand("Team_x0020_Members", "Portfolio", "TaskType", "Author", "Editor", "Responsible_x0020_Team", "AssignedTo")
+      .items.select("Title", "PercentComplete", "FeedBack", "Categories", "Approver/Id", "Approver/Title", "Portfolio/Id", "Portfolio/ItemType", "Body", "Portfolio/PortfolioStructureID", "Portfolio/Title", "TaskType/Id", "TaskType/Title", "TaskType/Level", "workingThisWeek", 'TaskID', "IsTodaysTask", "Priority", "PriorityRank", "DueDate", "Created", "Modified", "Team_x0020_Members/Id", "Team_x0020_Members/Title", "ID", "Responsible_x0020_Team/Id", "Responsible_x0020_Team/Title", "Editor/Title", "Editor/Id", "Author/Title", "Author/Id", "AssignedTo/Id", "AssignedTo/Title")
+      .expand("Team_x0020_Members", "Portfolio", "Approver", "TaskType", "Author", "Editor", "Responsible_x0020_Team", "AssignedTo")
       .top(5000)
       .getAll()
       .then((data: any) => {
@@ -148,8 +159,20 @@ const EmployeProfile = (props: any) => {
               ""
             ).replace(/\n/g, "");
           }
+          items.descriptionsSearch = '';
+          if (items?.FeedBack != undefined) {
+            let DiscriptionSearchData: any = '';
+            let feedbackdata: any = JSON.parse(items?.FeedBack)
+            DiscriptionSearchData = feedbackdata[0]?.FeedBackDescriptions?.map((child: any) => {
+              const childText = child?.Title?.replace(/(<([^>]+)>)/gi, '')?.replace(/\n/g, '');
+              const subtextText = (child?.Subtext || [])?.map((elem: any) => elem.Title?.replace(/(<([^>]+)>)/gi, '')?.replace(/\n/g, '')).join('');
+              return childText + subtextText;
+            }).join('');
+            items.descriptionsSearch = DiscriptionSearchData
+          }
           items.listId = ConfigItem.listId;
           items.site = ConfigItem.Title;
+          items.listName = ConfigItem.Title;
           items.siteType = ConfigItem.Title;
           items.siteUrl = ConfigItem.siteUrl;
           items.percentage = items.PercentComplete * 100 + "%";
@@ -189,6 +212,27 @@ const EmployeProfile = (props: any) => {
               allData.push(items);
             }
           });
+          if (items?.Categories != undefined && items?.Categories?.toLowerCase().indexOf('draft') > -1) {
+            if (!isTaskItemExists(allData, items)) {
+              allData.push(items);
+            }
+          }
+          let senderObject = taskUsers?.filter(function (user: any, i: any) {
+            if (user?.AssingedToUser != undefined) {
+              return user?.AssingedToUser["Id"] == items.Author.Id
+            }
+          });
+
+          let userDeatails: any = []
+          if (senderObject.length > 0) {
+            userDeatails.push({
+              'Id': senderObject[0]?.AssingedToUser.Id,
+              'Name': senderObject[0]?.Email,
+              'Suffix': senderObject[0]?.Suffix,
+              'Title': senderObject[0]?.Title,
+            })
+          }
+          items.Author = userDeatails;
         })
         if (count == dataLength.length) {
           var today = new Date();
@@ -215,7 +259,8 @@ const EmployeProfile = (props: any) => {
               if (assign && assign.Id === currentUserData.AssingedToUser.Id) {
                 if (items.Categories?.indexOf('Draft') > -1) {
                   DraftArray.push(items);
-                } else if (items.IsTodaysTask === true) {
+                }
+                else if (items.IsTodaysTask === true) {
                   TodaysTask.push(items);
                 } else if (items.Categories?.indexOf('Bottleneck') > -1) {
                   BottleneckTask.push(items);
@@ -228,7 +273,15 @@ const EmployeProfile = (props: any) => {
                 }
               }
             });
-          });          
+            items.Author?.forEach((author: any) => {
+              if (author && author.Id === currentUserData.AssingedToUser.Id) {
+                if (items.Categories?.indexOf('Draft') > -1) {
+                  if (!isTaskItemExists(DraftArray, items))
+                    DraftArray.push(items);
+                }
+              }
+            })
+          });
           // setCurrentTaskUser(currentUserData);
           setData({ DraftCatogary: DraftArray, TodaysTask: TodaysTask, BottleneckTask: BottleneckTask, ApprovalTask: ApprovalTask, ImmediateTask: ImmediateTask, ThisWeekTask: ThisWeekTask });
         }
@@ -238,10 +291,10 @@ const EmployeProfile = (props: any) => {
       });
   };
   return (
-    <myContextValue.Provider value={{ ...myContextValue, approverEmail: approverEmail, propsValue: props.props, currentTime:currentTime, annouceMents: annouceMents, siteUrl: props?.props?.siteUrl, AllSite: AllSite, currentUserData: currentUserData, AlltaskData: data, timesheetListConfig: timesheetListConfig, AllMasterTasks : AllMasterTasks }}>
+    <myContextValue.Provider value={{ ...myContextValue, taskUsers: taskUsers, approverEmail: approverEmail, Context: props.props.Context, propsValue: props.props, currentTime: currentTime, annouceMents: annouceMents, siteUrl: props?.props?.siteUrl, AllSite: AllSite, currentUserData: currentUserData, AlltaskData: data, currentUserId: currentUserId, timesheetListConfig: timesheetListConfig, AllMasterTasks: AllMasterTasks }}>
       <div> <Header /></div>
       <TaskStatusTbl />
-      <MultipleWebpart/>
+      <MultipleWebpart />
     </myContextValue.Provider>
   );
 };

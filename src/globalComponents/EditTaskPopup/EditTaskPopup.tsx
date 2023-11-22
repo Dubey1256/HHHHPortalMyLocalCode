@@ -48,7 +48,7 @@ import { CurrentUser } from "sp-pnp-js/lib/sharepoint/siteusers";
 
 
 
-let PortfolioItemColor:any='';
+let PortfolioItemColor: any = '';
 var AllMetaData: any = []
 var taskUsers: any = []
 var AllTaskUser: any = []
@@ -196,6 +196,7 @@ const EditTaskPopup = (Items: any) => {
     const [IsTaskCompleted, setIsTaskCompleted] = useState(false);
     const [SendCategoryName, setSendCategoryName] = useState('');
     const [OpenEODReportPopup, setOpenEODReportPopup] = useState(false);
+    const [CurrentImageIndex, setCurrentImageIndex] = useState("");
     let [StatusOptions, setStatusOptions] = useState([
         { value: 0, status: "0% Not Started", taskStatusComment: "Not Started" },
         { value: 1, status: "1% For Approval", taskStatusComment: "For Approval" },
@@ -284,13 +285,13 @@ const EditTaskPopup = (Items: any) => {
     useEffect(() => {
         setTimeout(() => {
             const panelMain: any = document.querySelector('.ms-Panel-main');
-            if (panelMain && PortfolioItemColor!='') {
+            if (panelMain && PortfolioItemColor != '') {
                 $('.ms-Panel-main').css('--SiteBlue', PortfolioItemColor); // Set the desired color value here
             }
         }, 1000)
     }, [IsComponentPicker, openLinkedPortfolioPopup, openTeamPortfolioPopup, ImageComparePopup, modalIsOpen, TimeSheetPopup,
         ApproverPopupStatus, ProjectManagementPopup, replaceImagePopup, CopyAndMoveTaskPopup, AddImageDescriptions, ImageCustomizePopup, SmartMedaDataUsedPanel?.length]);
- 
+
     const SmartMetaDataListInformations = async () => {
         let AllSmartDataListData: any = [];
 
@@ -1423,6 +1424,23 @@ const EditTaskPopup = (Items: any) => {
                     setOnlyCompletedStatus(false);
                 }
             }
+            currentUserData?.map((CUData: any) => {
+                if (CUData?.CategoriesItemsJson?.length > 5) {
+                    let PrevDefinedCategories: any = JSON.parse(CUData.CategoriesItemsJson);
+                    PrevDefinedCategories?.map((CUCategories: any) => {
+                        if (CUCategories.Title == existingData.Title) {
+                            setApprovalStatus(true);
+                            setApproverData(TaskApproverBackupArray);
+                            AutoCompleteItemsArray?.map((itemData: any) => {
+                                if (itemData.Title == "Approval") {
+                                    CategoryChangeUpdateFunction(false, itemData.Title, itemData.Id)
+                                }
+                            })
+                        }
+                    })
+                }
+
+            })
         })
 
         let uniqueIds: any = {};
@@ -1624,7 +1642,7 @@ const EditTaskPopup = (Items: any) => {
         taskUsers = await web.lists
             .getById(AllListIdData?.TaskUsertListID)
             .items
-            .select("Id,UserGroupId,TimeCategory,IsActive,Suffix,Title,Email,SortOrder,Role,IsShowTeamLeader,Company,ParentID1,Status,Item_x0020_Cover,AssingedToUserId,isDeleted,AssingedToUser/Title,AssingedToUser/Id,AssingedToUser/EMail,ItemType,Approver/Id,Approver/Title,Approver/Name")
+            .select("Id,UserGroupId,TimeCategory,CategoriesItemsJson,IsActive,Suffix,Title,Email,SortOrder,Role,IsShowTeamLeader,Company,ParentID1,Status,Item_x0020_Cover,AssingedToUserId,isDeleted,AssingedToUser/Title,AssingedToUser/Id,AssingedToUser/EMail,ItemType,Approver/Id,Approver/Title,Approver/Name")
             .filter('IsActive eq 1')
             .expand('AssingedToUser,Approver')
             .orderBy('SortOrder', true)
@@ -1769,16 +1787,16 @@ const EditTaskPopup = (Items: any) => {
                                             FeedBackCount++;
                                         }
                                     }
-                                    PortfolioItemColor= PortfolioItem?.Color;
-                                    let targetDiv :any = document?.querySelector('.ms-Panel-main');
-                                    setTimeout(()=>{
-                                        if (targetDiv ) {
+                                    PortfolioItemColor = PortfolioItem?.Color;
+                                    let targetDiv: any = document?.querySelector('.ms-Panel-main');
+                                    setTimeout(() => {
+                                        if (targetDiv) {
                                             // Change the --SiteBlue variable for elements under the targetDiv
                                             $('.ms-Panel-main').css('--SiteBlue', PortfolioItem?.Color);
                                         }
-                                    },1000)
+                                    }, 1000)
                                 }
-                               
+
                             })
                         }
                     })
@@ -2080,18 +2098,29 @@ const EditTaskPopup = (Items: any) => {
         filterArray.map((TeamItems: any) => {
             taskUsers?.map((TaskUserData: any) => {
                 if (TeamItems.Id == TaskUserData.AssingedToUserId) {
-                    if (TaskUserData.TimeCategory == filterType) {
-                        tempArray.push(TaskUserData)
-                        EditData.TaskAssignedUsers = tempArray;
-                        let updateUserArray1: any = [];
-                        updateUserArray1.push(tempArray[0].AssingedToUser)
-                        setTaskAssignedTo(updateUserArray1);
-                    }
-                    else {
-                        if (tempArray?.length == 0) {
-                            setWorkingMember(143);
+                    if (filterType == "Development") {
+                        if (TaskUserData.TimeCategory == "Development" || TaskUserData.TimeCategory == "Design") {
+                            tempArray.push(TaskUserData)
+                            EditData.TaskAssignedUsers = tempArray;
+                            let updateUserArray1: any = [];
+                            updateUserArray1.push(tempArray[0].AssingedToUser)
+                            setTaskAssignedTo(updateUserArray1);
+                        }
+                    } else {
+                        if (TaskUserData.TimeCategory == filterType) {
+                            tempArray.push(TaskUserData)
+                            EditData.TaskAssignedUsers = tempArray;
+                            let updateUserArray1: any = [];
+                            updateUserArray1.push(tempArray[0].AssingedToUser)
+                            setTaskAssignedTo(updateUserArray1);
+                        }
+                        else {
+                            if (tempArray?.length == 0) {
+                                setWorkingMember(143);
+                            }
                         }
                     }
+
                 }
             })
         })
@@ -2219,15 +2248,16 @@ const EditTaskPopup = (Items: any) => {
                 await web.lists.getById(Items.Items.listId).items.getById(Items.Items.Id).update(DataJSONUpdate)
                     .then(async (res: any) => {
                         // Added by PB************************
-                        if (Items?.SDCAuthor != undefined && Items?.SDCAuthor != '' && EditData != undefined && EditData != '') {
+                        if (Items?.SDCTaskDetails != undefined && Items?.SDCTaskDetails?.SDCCreatedBy != undefined && Items?.SDCTaskDetails?.SDCCreatedBy != '' && EditData != undefined && EditData != '') {
                             let SDCRecipientMail: any[] = [];
-                            EditData.SDCAuthor = Items?.SDCAuthor;
+                            EditData.ClientTask = Items?.SDCTaskDetails;
                             taskUsers?.map((User: any) => {
                                 if (User?.Title?.toLowerCase() == 'robert ungethuem' || User?.Title?.toLowerCase() == 'stefan hochhuth') {
+                                    // if (User?.Title?.toLowerCase() == 'abhishek tiwari') {
                                     SDCRecipientMail.push(User);
                                 }
                             });
-                            globalCommon.sendImmediateEmailNotifications(EditData.Id, siteUrls, Items.Items.listId, EditData, SDCRecipientMail, 'Client Task', taskUsers, Context).then((response: any) => {
+                            await globalCommon.sendImmediateEmailNotifications(EditData.Id, siteUrls, Items.Items.listId, EditData, SDCRecipientMail, 'Client Task', taskUsers, Context).then((response: any) => {
                                 console.log(response);
                             });
                         }
@@ -3251,6 +3281,7 @@ const EditTaskPopup = (Items: any) => {
         UpdateTaskInfoFunction("Image-Tab");
         setImageCustomizePopup(true);
         setModalIsOpen(false);
+        setCurrentImageIndex(currentImagIndex);
     }
     const ImageCustomizeFunctionClosePopup = () => {
         setImageCustomizePopup(false);
@@ -5023,7 +5054,7 @@ const EditTaskPopup = (Items: any) => {
                                     </div>
                                     <div className="col-md-4">
                                         <div className="full_width ">
-                                            <CommentCard siteUrl={siteUrls} itemID={Items.Items.Id} AllListId={AllListIdData} Context={Context} />
+                                            <CommentCard siteUrl={siteUrls} listName={Items?.Items?.siteType} itemID={Items.Items.Id} AllListId={AllListIdData} Context={Context} />
                                         </div>
                                         <div className="pull-right">
                                             <span className="">
@@ -6079,7 +6110,7 @@ const EditTaskPopup = (Items: any) => {
                                                 </div>
                                                 <div className="col-md-4">
                                                     <div className="full_width ">
-                                                        <CommentCard siteUrl={siteUrls} itemID={Items.Items.Id} AllListId={AllListIdData} Context={Context} />
+                                                        <CommentCard siteUrl={siteUrls} listName={Items?.Items?.siteType} itemID={Items.Items.Id} AllListId={AllListIdData} Context={Context} />
                                                     </div>
                                                     <div className="pull-right">
                                                         <span className="">
@@ -6113,7 +6144,7 @@ const EditTaskPopup = (Items: any) => {
                                         <div className="carousel-inner">
                                             {TaskImages?.map((imgData: any, index: any) => {
                                                 return (
-                                                    <div className={index == 0 ? "carousel-item active" : "carousel-item"}>
+                                                    <div className={index == CurrentImageIndex ? "carousel-item active" : "carousel-item"}>
                                                         <img src={imgData.ImageUrl} className="d-block w-100" alt="..." />
                                                         <div className="card-footer alignCenter justify-content-between pt-0 pb-1 px-2">
                                                             <div className="alignCenter">

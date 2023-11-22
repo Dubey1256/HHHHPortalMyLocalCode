@@ -1,4 +1,5 @@
 import * as React from 'react';
+import styles from './TestWebPart.module.scss';
 import { ITestWebPartProps } from './ITestWebPartProps';
 import { escape } from '@microsoft/sp-lodash-subset';
 import HalfClientCategory from './HalfClientCategory';
@@ -18,10 +19,11 @@ export default class TestWebPart extends React.Component<ITestWebPartProps, {}> 
       SmartMetadataListID,
       SmartInformationListID,
       DocumentsListID,
+      Context,
       TaskTimeSheetListID,
-      TimeEntry,
       TaskTypeID,
       PortFolioTypeID,
+      TimeEntry,
       SiteCompostion
     } = this.props;
 

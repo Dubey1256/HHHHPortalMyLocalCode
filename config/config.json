@@ -50,6 +50,14 @@
         }
       ]
     },
+    "contact-search-web-part": {
+      "components": [
+        {
+          "entrypoint": "./lib/webparts/contactSearch/ContactSearchWebPart.js",
+          "manifest": "./src/webparts/contactSearch/ContactSearchWebPart.manifest.json"
+        }
+      ]
+    },
     "component-edit-popup-web-part": {
       "components": [
         {
@@ -436,6 +444,7 @@
     "DocumentSearchWebPartStrings": "lib/webparts/documentSearch/loc/{locale}.js",
     "UserTimeEntryWebPartStrings": "lib/webparts/userTimeEntry/loc/{locale}.js",
     "TeamPortfolioWebPartStrings": "lib/webparts/teamPortfolio/loc/{locale}.js",
-    "MeetingOverviewWebPartStrings": "lib/webparts/meetingOverview/loc/{locale}.js"
+    "MeetingOverviewWebPartStrings": "lib/webparts/meetingOverview/loc/{locale}.js",
+    "ContactSearchWebPartStrings": "lib/webparts/contactSearch/loc/{locale}.js"
   }
 }

@@ -136,7 +136,7 @@ export default class CategoriesWeeklyMultipleReport extends React.Component<ICat
         hasCheckbox: false,
         hasCustomExpanded: true,
         hasExpanded: true,
-        size: 55,
+        size: 25,
         id: 'Id',
       },
       {
@@ -144,7 +144,7 @@ export default class CategoriesWeeklyMultipleReport extends React.Component<ICat
         placeholder: "User Name",
         header: "",
         resetColumnFilters: false,
-        size: 190,
+        size: 85,
         id: "getUserName",
       },
       {
@@ -184,7 +184,7 @@ export default class CategoriesWeeklyMultipleReport extends React.Component<ICat
         placeholder: "Time",
         header: "",
         resetColumnFilters: false,
-        size: 91,
+        size: 45,
         id: "TotalValue",
       },
       {
@@ -234,7 +234,7 @@ export default class CategoriesWeeklyMultipleReport extends React.Component<ICat
         placeholder: "Smart Hours",
         header: "",
         resetColumnFilters: false,
-        size: 91,
+        size: 45,
         id: "TotalSmartTime",
       },
       {
@@ -256,7 +256,7 @@ export default class CategoriesWeeklyMultipleReport extends React.Component<ICat
         placeholder: "Smart Hours (Roundup)",
         header: "",
         resetColumnFilters: false,
-        size: 91,
+        size: 45,
         id: "SmartHoursTime",
       },
       {
@@ -264,7 +264,7 @@ export default class CategoriesWeeklyMultipleReport extends React.Component<ICat
         placeholder: "Adjusted Hours ",
         header: "",
         resetColumnFilters: false,
-        size: 91,
+        size: 45,
         id: "AdjustedTime",
       },
       {
@@ -295,7 +295,7 @@ export default class CategoriesWeeklyMultipleReport extends React.Component<ICat
         placeholder: "Adjusted Hours (Roundup)",
         header: "",
         resetColumnFilters: false,
-        size: 91,
+        size: 45,
         id: "Rountfiguretime",
       },
 
@@ -668,7 +668,7 @@ export default class CategoriesWeeklyMultipleReport extends React.Component<ICat
       else
         sitesResult.push(obj)
     });
-
+    this.checkBoxColor(undefined)
     this.setState({
       AllMetadata: results,
       SitesConfig: sitesResult
@@ -1070,6 +1070,59 @@ export default class CategoriesWeeklyMultipleReport extends React.Component<ICat
   //     } while (items.hasNext);
   //     console.log("PnP Paged All Items: ", finalItems);
   // };
+
+  private checkBoxColor = (className: any) => {
+    try {
+      setTimeout(() => {
+        const inputElementSubchild = document.getElementsByClassName('rct-node rct-node-parent rct-node-collapsed');
+        if (inputElementSubchild) {
+          for (let j = 0; j < inputElementSubchild.length; j++) {
+            const checkboxContainer = inputElementSubchild[j]
+            const childElements = checkboxContainer.getElementsByTagName('input');
+            const childElements2 = checkboxContainer.getElementsByClassName('rct-title');
+            for (let i = 0; i < childElements.length; i++) {
+              const checkbox = childElements[i];
+              const lable: any = childElements2[i];
+              if (lable?.style) {
+                lable.style.color = portfolioColor;
+              }
+              checkbox.classList.add('form-check-input', 'cursor-pointer');
+            }
+          }
+        }
+
+        const inputElementleaf = document.getElementsByClassName('rct-node rct-node-leaf');
+        if (inputElementleaf) {
+          for (let j = 0; j < inputElementleaf.length; j++) {
+            const checkboxContainer = inputElementleaf[j]
+            const childElements = checkboxContainer.getElementsByTagName('input');
+            const childElements2 = checkboxContainer.getElementsByClassName('rct-title');
+            for (let i = 0; i < childElements.length; i++) {
+              const checkbox = childElements[i];
+              const lable: any = childElements2[i];
+              if (lable?.style) {
+                lable.style.color = portfolioColor;
+              }
+              checkbox.classList.add('form-check-input', 'cursor-pointer');
+            }
+          }
+        }
+        const BtnElement = document.getElementsByClassName("rct-collapse rct-collapse-btn");
+        if (BtnElement) {
+          for (let j = 0; j < BtnElement.length; j++) {
+            BtnElement[j].classList.add('mt--5', 'me-0');
+          }
+        }
+      }, 40);
+
+    } catch (e: any) {
+      console.log(e)
+    }
+  }
+  private ExpandClientCategory = (expanded: any) => {
+    this.checkBoxColor(undefined)
+    this.setState({ expanded })
+  }
   private async generateTimeEntry() {
 
     //Create filter Creteria based on Dates and Selected users
@@ -1256,6 +1309,12 @@ export default class CategoriesWeeklyMultipleReport extends React.Component<ICat
     console.log(AllTimeSpentDetails);
 
     let getAllTimeEntry = [];
+    try {
+      this.state.startdate.setHours(0, 0, 0, 0);
+      this.state.enddate.setHours(0, 0, 0, 0)
+    } catch (e) {
+
+    }
     for (let i = 0; i < AllTimeSpentDetails.length; i++) {
       let time = AllTimeSpentDetails[i];
       time.MileageJson = 0;
@@ -1482,6 +1541,14 @@ export default class CategoriesWeeklyMultipleReport extends React.Component<ICat
                               filterItem.clientCategory += client.Title + ';';
                               filterItem.clientCategoryIds += client.Id + ';';
                             }
+                            if (subchild.children != undefined && subchild.children.length > 0) {
+                              subchild.children.forEach(function (Newsubchild: any) {
+                                if (Newsubchild.Id != undefined && client.Id != undefined && Newsubchild.checked == true && Newsubchild.Id === client.Id) {
+                                  filterItem.clientCategory += client.Title + ';';
+                                  filterItem.clientCategoryIds += client.Id + ';';
+                                }
+                              })
+                            }
                           })
                         }
                       })
@@ -1566,6 +1633,12 @@ export default class CategoriesWeeklyMultipleReport extends React.Component<ICat
               child.children.forEach(function (subchild: any) {
                 if (subchild.value == id)
                   selectedFilters.push(subchild);
+                  if (subchild.children != undefined && subchild.children.length > 0) {
+                    subchild.children.forEach(function (newsubchild: any) {
+                      if (newsubchild.value == id)
+                        selectedFilters.push(newsubchild);
+                    });
+                  }
               });
             }
           });
@@ -2383,11 +2456,17 @@ export default class CategoriesWeeklyMultipleReport extends React.Component<ICat
       if (NewItem?.value === item?.value) {
         filterGroups[item.index].checked = item.checked;
         filterGroups[item.index].checkedObj = this.GetCheckedObject(filterGroups[item.index]?.children, checked, item.checked)
-        // //// demo////
         if (filterGroups[item.index]?.children?.length > 0) {
           const childrenLength = filterGroups[item.index]?.children?.reduce((total: any, obj: any) => total + (obj?.children?.length || 0), 0) + (filterGroups[item.index]?.children?.length ? filterGroups[item.index]?.children?.length : 0);
           filterGroups[item.index].selectAllChecked = childrenLength === checked?.length;
         }
+        NewItem?.children?.forEach((ObjItem: any, newIndex: any) => {
+          ObjItem.checked = item.checked;
+          ObjItem?.children?.forEach((newObjItem: any, new1Index: any) => {
+            newObjItem.checked = item.checked;
+          })
+
+        })
       }
       NewItem?.children?.forEach((ObjItem: any, newIndex: any) => {
         if (ObjItem?.value === item?.value) {
@@ -2407,6 +2486,7 @@ export default class CategoriesWeeklyMultipleReport extends React.Component<ICat
               ObjItem.children[lastindex].selectAllChecked = childrenLength === checked?.length;
             }
           }
+
         })
       })
     })
@@ -2696,15 +2776,16 @@ export default class CategoriesWeeklyMultipleReport extends React.Component<ICat
           } else {
             contentItem['First Level'] = '';
           }
+          contentItem['Hours'] = '';
+          if (childItem.AdjustedTime != undefined) {
+            contentItem['Hours'] = parseFloat(childItem.Rountfiguretime);
+          }
           if (childItem.TotalSmartTime != undefined) {
             contentItem['Days'] = childItem.SmartHoursTime / 8;
           } else {
             contentItem['Days'] = '';
           }
-          contentItem['Hours'] = '';
-          if (childItem.AdjustedTime != undefined) {
-            contentItem['Hours'] = parseFloat(childItem.Rountfiguretime);
-          }
+
 
           contentItem['Client Category'] = childItem.clientCategory != undefined ? childItem.clientCategory : '';
           if (childItem.TotalSmartTime != undefined) {
@@ -2713,7 +2794,8 @@ export default class CategoriesWeeklyMultipleReport extends React.Component<ICat
             contentItem['Smart Hours'] = '';
           }
           if (childItem.TotalValue != undefined) {
-            contentItem['Smart Days'] = parseFloat(childItem.TotalValue);
+            contentItem['Smart Days'] = childItem.TotalValue / 8;
+            contentItem['Smart Days'] = parseFloat(contentItem['Smart Days']);
           } else {
             contentItem['Smart Days'] = 0;
           }
@@ -2888,8 +2970,9 @@ export default class CategoriesWeeklyMultipleReport extends React.Component<ICat
     contentItemNew['User Name'] = 'Total ' + firstTitle + ' to ' + lastTitle;
     contentItemNew['Site'] = this.state.ImageSelectedUsers.length == 1 ? this.state.ImageSelectedUsers[0].Title : '';
     contentItemNew['First Level'] = '';
-    contentItemNew['Days'] = (this.RoundAdjustedTimeTimeEntry / 8);
     contentItemNew['Hours'] = parseFloat(this.RoundAdjustedTimeTimeEntry);
+    contentItemNew['Days'] = (this.RoundAdjustedTimeTimeEntry / 8);
+
     contentItemNew['Client Category'] = ''
     contentItemNew['Smart Hours'] = parseFloat(TotalValueAll || 0);;
     contentItemNew['Smart Days'] = (TotalValueAll / 8);
@@ -2913,8 +2996,9 @@ export default class CategoriesWeeklyMultipleReport extends React.Component<ICat
     contentItemNew['User Name'] = '';
     contentItemNew['Site'] = '';
     contentItemNew['First Level'] = '';
-    contentItemNew['Days'] = '';
     contentItemNew['Hours'] = '';
+    contentItemNew['Days'] = '';
+
     contentItemNew['Client Category'] = '';
     contentItemNew['Smart Hours'] = '';
     contentItemNew['Smart Days'] = '';
@@ -2950,16 +3034,16 @@ export default class CategoriesWeeklyMultipleReport extends React.Component<ICat
       if (item.Secondlevel != undefined) {
         contentItem['First Level'] = item.Secondlevel;
       }
-
+      contentItem['Hours'] = '';
+      if (item.AdjustedTime != undefined) {
+        contentItem['Hours'] = parseFloat(item.SmartHoursTotal);;
+      }
       contentItem['Days'] = '';
       if (item.SmartHoursTotal != undefined && item.SmartHoursTotal != undefined) {
         contentItem['Days'] = item.TotalValueHours / 8;
       }
 
-      contentItem['Hours'] = '';
-      if (item.AdjustedTime != undefined) {
-        contentItem['Hours'] = parseFloat(item.SmartHoursTotal);;
-      }
+
       if (item.Categories != undefined) {
         contentItem['Client Category'] = ''
         item.clientCategory.split(';').forEach((clientCategory: any) => {
@@ -3128,8 +3212,9 @@ export default class CategoriesWeeklyMultipleReport extends React.Component<ICat
     contentItemNew['User Name'] = '';
     contentItemNew['Site'] = '';
     contentItemNew['First Level'] = '';
-    contentItemNew['Days'] = '';
     contentItemNew['Hours'] = '';
+    contentItemNew['Days'] = '';
+
     contentItemNew['Client Category'] = '';
     contentItemNew['Smart Hours'] = '';
     contentItemNew['Smart Days'] = '';
@@ -3163,15 +3248,16 @@ export default class CategoriesWeeklyMultipleReport extends React.Component<ICat
       } else {
         contentItem['First Level'] = '';
       }
+
+      contentItem['Hours'] = '';
+      if (item.AdjustedTime != undefined) {
+        contentItem['Hours'] = parseFloat(item.RoundAdjustedTime != undefined ? item.RoundAdjustedTime : item.SmartHoursTotal);;
+      }
       contentItem['Days'] = '';
       if (item.SmartHoursTotal != undefined && item.SmartHoursTotal != undefined) {
 
         contentItem['Days'] = item.SmartHoursTotal / 8;
 
-      }
-      contentItem['Hours'] = '';
-      if (item.AdjustedTime != undefined) {
-        contentItem['Hours'] = parseFloat(item.RoundAdjustedTime != undefined ? item.RoundAdjustedTime : item.SmartHoursTotal);;
       }
       if (item.Categories != undefined) {
         contentItem['Client Category'] = ''
@@ -3221,7 +3307,7 @@ export default class CategoriesWeeklyMultipleReport extends React.Component<ICat
 
       if (item.TotalValue != undefined) {
         let days: any = item.TimeInExcel / 8;
-        contentItem['Smart Days'] = (contentItem[days]);
+        contentItem['Smart Days'] = (days);
       }
       else {
         contentItem['Smart Days'] = 0;
@@ -3509,14 +3595,14 @@ export default class CategoriesWeeklyMultipleReport extends React.Component<ICat
     return (
       <div>
         <div className="col-sm-12 padL-0">
-          <h2 className="heading">Timesheet</h2>
+          <h2 className="heading">Timesheet <a className="f-13 pull-right" data-interception="off" target="_blank" href='https://hhhhteams.sharepoint.com/sites/HHHH/SP/SitePages/CategoriesWeeklyMultipleReportDetails-Old.aspx'>Old Categories Weekly Multiple Report Details</a></h2>
         </div>
 
         <div className="smartFilter bg-light border mb-3 col row">
           <div className="report-taskuser ps-0 pe-1" id="TimeSheet-Section">
             <details className='pt-1 m-0 allfilter' open>
               <summary>
-                <a className="fw-semibold hreflink mr-5 pe-2 pull-left">All filters :<span className='text-dark'>Task User :</span><span>
+                <a className="fw-semibold hreflink mr-5 pe-2 pull-left">All filters :<span className='fw-normal me-1'>Task User :</span><span className='fw-normal me-1'>
                   {this.state.SelectGroupName}
                 </span> </a>
                 {this.state.ImageSelectedUsers.length <= 3 ? (
@@ -3532,8 +3618,6 @@ export default class CategoriesWeeklyMultipleReport extends React.Component<ICat
                   this.state.ImageSelectedUsers.length > 3 && <span>({this.state.ImageSelectedUsers.length})</span>)
 
                 }
-
-
               </summary>
               <div className="subfilters BdrBoxBlue mb-3">
                 <div className="taskTeamBox mt-10">
@@ -3546,9 +3630,9 @@ export default class CategoriesWeeklyMultipleReport extends React.Component<ICat
                           <label className='ms-1 f-14'>Select All </label>
                         </span>
                       </div>
-                      <hr></hr>
+
                     </summary>
-                    <div className="BdrBoxBlue ps-30 mb-3">
+                    <div className="BdrBoxBlue ps-20 mb-3 ms-2" style={{ borderTop: "1.5px solid", borderColor: "var(--SiteBlue)" }}>
                       <div className="taskTeamBox mt-10">
                         {this.state.taskUsers != null && this.state.taskUsers.length > 0 && this.state.taskUsers.map((user: any, i: number) => {
                           return <div className="top-assign">
@@ -3586,10 +3670,10 @@ export default class CategoriesWeeklyMultipleReport extends React.Component<ICat
                   <details className='p-0 m-0' open>
                     <summary>
                       <a>Date</a>
-                      <hr></hr>
+
                     </summary>
 
-                    <div className="BdrBoxBlue ps-30 mb-3">
+                    <div className="BdrBoxBlue ps-20 mb-3 ms-2" style={{ borderTop: "1.5px solid", borderColor: "var(--SiteBlue)" }}>
                       <div className="taskTeamBox mt-10">
                         <div className="Weekly-TimeReportDays">
                           <span className='SpfxCheckRadio'>
@@ -3650,7 +3734,7 @@ export default class CategoriesWeeklyMultipleReport extends React.Component<ICat
                           </span>
                         </div>
                         <div className='row mt-2'>
-                          <div className='col-2 ps-0'>
+                          <div className='col-2 ps-2'>
                             <div className='input-group'>
                               <label className="full_width form-label">Start Date</label>
                               <DatePicker selected={this.state.startdate} dateFormat="dd/MM/yyyy" onChange={(date) => this.setStartDate(date)} className="form-control" />
@@ -3701,9 +3785,9 @@ export default class CategoriesWeeklyMultipleReport extends React.Component<ICat
                           }
                         </span>
                       </label>
-                      <hr className='m-0'></hr>
+
                     </summary>
-                    <div className=" BdrBoxBlue ps-30 mb-3">
+                    <div className=" BdrBoxBlue ps-20 mb-3 ms-2" style={{ borderTop: "1.5px solid", borderColor: "var(--SiteBlue)" }}>
                       <div className="taskTeamBox mt-10">
                         {this?.state?.loaded ? <PageLoader /> : ''}
                         {/* <Loader loaded={this.state.loaded} lines={13} length={20} width={10} radius={30} corners={1} rotate={0} direction={1} color={portfolioColor ? portfolioColor : "#000066"}
@@ -3715,23 +3799,25 @@ export default class CategoriesWeeklyMultipleReport extends React.Component<ICat
 
 
                           </label>
-                          <CheckboxTree
-                            nodes={this.state.filterItems}
-                            checked={this.state.checked}
-                            expanded={this.state.expanded}
-                            onCheck={(e, checked) => this.onCheck(e, checked)}
-                            onExpand={expanded => this.setState({ expanded })}
-                            nativeCheckboxes={true}
-                            showNodeIcon={false}
-                            checkModel={'all'}
-                            icons={{
-                              expandOpen: <SlArrowDown />,
-                              expandClose: <SlArrowRight />,
-                              parentClose: null,
-                              parentOpen: null,
-                              leaf: null,
-                            }}
-                          />
+                          <div className='custom-checkbox-tree weeklyReport'>
+                            <CheckboxTree
+                              nodes={this.state.filterItems}
+                              checked={this.state.checked}
+                              expanded={this.state.expanded}
+                              onCheck={(e, checked) => this.onCheck(e, checked)}
+                              onExpand={expanded => this.ExpandClientCategory(expanded)}
+                              nativeCheckboxes={true}
+                              showNodeIcon={false}
+                              checkModel={'all'}
+                              icons={{
+                                expandOpen: <SlArrowDown />,
+                                expandClose: <SlArrowRight />,
+                                parentClose: null,
+                                parentOpen: null,
+                                leaf: null,
+                              }}
+                            />
+                          </div>
                         </div>
 
                         <div className="col-sm-12 mt-10 pe-1 text-end">
@@ -3747,33 +3833,32 @@ export default class CategoriesWeeklyMultipleReport extends React.Component<ICat
               </div>
             </details>
           </div>
-
-
-
-
         </div>
+        <div className='container-fluid p-0'>
+          <div className='TableSection'>
+            <div id="showSearchBox" className="container p-0">
+              <div className='Alltable'>
+                <div className='col-sm-12 p-0 smart'>
+                  <div className='wrapper'>
 
+                    {this.state.AllTimeEntry == undefined && this.state.AllTimeEntry.length == 0 &&
+                      <div id="contact" className="col-sm-12 p-0">
+                        <div className="current_commnet">No entries available</div>
+                      </div>
+                    }
 
-        <div id="showSearchBox" className="col-sm-12 p-0 mb-10">
-          <div className='Alltable'>
-            {this.state.AllTimeEntry == undefined && this.state.AllTimeEntry.length == 0 &&
-              <div id="contact" className="col-sm-12 p-0">
-                <div className="current_commnet">No entries available</div>
+                    {this.state.AllTimeEntry != undefined && this.state.AllTimeEntry.length > 0 &&
+                      <div id="contact" className="col-sm-12 p-0">
+                        <div className='table-responsive fortablee'>
+                          <GlobalCommanTable catogryDataLength={this?.state?.AllTimeEntryItem?.length} columns={this?.columns} expendedTrue={true} data={this.state.AllTimeEntry} showHeader={true} showCatIcon={true} exportToExcelCategoryReport={this.exportToExcel} OpenAdjustedTimePopupCategory={this.OpenAdjustedTimePopup} callBackData={this?.callBackData} showDateTime={this.state.showDateTime} fixedWidth={true} /> </div>
+                      </div>
+                    }
+                  </div>
+                </div>
               </div>
-            }
-
-            {this.state.AllTimeEntry != undefined && this.state.AllTimeEntry.length > 0 &&
-
-              <div id="contact" className="col-sm-12 p-0">
-                <div className='table-responsive fortablee'>
-                  <GlobalCommanTable catogryDataLength={this?.state?.AllTimeEntryItem?.length} columns={this?.columns} expendedTrue={true} data={this.state.AllTimeEntry} showHeader={true} showCatIcon={true} exportToExcelCategoryReport={this.exportToExcel} OpenAdjustedTimePopupCategory={this.OpenAdjustedTimePopup} callBackData={this?.callBackData} showDateTime={this.state.showDateTime} fixedWidth={true} /> </div>
-              </div>
-            }
-
+            </div>
           </div>
         </div>
-
-
         <Panel
           onRenderHeader={this.onRenderCustomHeaderMain}
           type={PanelType.custom}

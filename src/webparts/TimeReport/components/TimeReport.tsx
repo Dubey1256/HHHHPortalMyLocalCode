@@ -424,7 +424,7 @@ QATime = 0.00;
         myData = await web.lists
             .getById(props?.ContextData?.LeaveCalenderListID)
             .items
-            .select("RecurrenceData,Duration,Author/Title,Editor/Title,Category,Description,ID,EndDate,EventDate,Location,Title,fAllDayEvent,EventType,UID,fRecurrence,Event_x002d_Type,Employee/Id")
+            .select("RecurrenceData,Duration,Author/Title,Editor/Title,Category,HalfDay,Description,ID,EndDate,EventDate,Location,Title,fAllDayEvent,EventType,UID,fRecurrence,Event_x002d_Type,Employee/Id")
             .top(499)
             .expand("Author,Editor,Employee")
             .getAll()
@@ -458,6 +458,9 @@ QATime = 0.00;
                         }
                         else{
                             val.totaltime = Math.abs(parseInt(endtime[0]) - parseInt(stattime[0]));
+                        }
+                        if(val?.HalfDay == true) {
+                            val.totaltime = 4
                         }
                                     
                         console.log(val)
@@ -749,6 +752,7 @@ QATime = 0.00;
                         item.siteUrl = task.siteUrl
                         item.NewTaskId = task.TaskId
                         item.siteType = item.siteType
+                        item.TaskID = task.TaskId
                         item.SiteIcon = task?.SiteIcon
                         item.SiteIconTitle = item?.siteType;
                         item.PercentComplete = task.PercentComplete
@@ -768,6 +772,7 @@ QATime = 0.00;
                         item.PercentComplete = task.PercentComplete
                         item.TaskType = task.TaskType
                         item.NewTaskId = task.TaskId
+                        item.TaskID = task.TaskId
                         item.Status = task.Status
                         item.SiteIcon = task?.SiteIcon
                         item.SiteIconTitle = item?.siteType;
@@ -783,6 +788,7 @@ QATime = 0.00;
                         item.siteUrl = task.siteUrl
                         item.siteType = item.siteType
                         item.TaskType = task.TaskType
+                        item.TaskID = task.TaskId
                         item.NewTaskId = task.TaskId
                         item.PercentComplete = task.PercentComplete
                         item.Status = task.Status
@@ -799,6 +805,7 @@ QATime = 0.00;
                         item.Features = task.Portfolio.Title
                         item.siteUrl = task.siteUrl
                         item.siteType = item.siteType
+                        item.TaskID = task.TaskId
                         item.PercentComplete = task.PercentComplete
                         item.NewTaskId = task.TaskId
                         item.TaskType = task.TaskType
@@ -1294,7 +1301,7 @@ QATime = 0.00;
         + '<tr>'
         + '<td style="border: 1px solid #aeabab;padding: 5px;width: 50%;" bgcolor="#f5f5f5">' + '<strong>' + 'Total' + '</strong>' + '</td>'        
         + '<td style="border: 1px solid #aeabab;padding: 4px">' + '<strong>' + TotalMembers.toFixed(2) + '</strong>' + '</td>'
-        + '<td style="border: 1px solid #aeabab;padding: 4px">' + '<strong>' + TotalleaveMembers.toFixed(2) * 8 + '</strong>' + '</td>'
+        + '<td style="border: 1px solid #aeabab;padding: 4px">' + '<strong>' + TotalleaveMembers.toFixed(2)  + '</strong>' + '</td>'
         + '<td style="border: 1px solid #aeabab;padding: 4px">' + '<strong>' + TotlaTime.toFixed(2) + '</strong>' + '</td>'
         + '<td style="border: 1px solid #aeabab;padding: 4px">' + '<strong>' + TotalleaveHours + '</strong>' + '</td>'
         + '</tr>';

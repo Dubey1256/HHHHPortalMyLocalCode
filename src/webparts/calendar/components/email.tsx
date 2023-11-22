@@ -86,7 +86,7 @@ const loadleave = async () =>  {
       .sendEmail({
         Body: BindHtmlBody(),
         Subject: "HHHH - Team Attendance "+formattedDate+" "+Allteamoforganization +" available - "+Object?.keys(nameidTotals)?.length+" on leave" ,
-        To: ["abhishek.tiwari@hochhuth-consulting.de"],
+        To: ["abhishek.tiwari@hochhuth-consulting.de","prashant.kumar@hochhuth-consulting.de","ranu.trivedi@hochhuth-consulting.de","jyoti.prasad@hochhuth-consulting.de"],
         // ,"prashant.kumar@hochhuth-consulting.de","ranu.trivedi@hochhuth-consulting.de","jyoti.prasad@hochhuth-consulting.de"
         AdditionalHeaders: {
           "content-type": "text/html",
@@ -134,53 +134,121 @@ const loadleave = async () =>  {
 
 
 
+  // const calculateTotalWorkingDays = (matchedData: any) => {
+  //   const currentYear = new Date().getFullYear();
+  
+  //   return matchedData.reduce((total: any, item: any) => {
+  //     const endDate: any = new Date(item.EndDate);
+  //     const eventDate: any = new Date(item.EventDate);
+  
+  //     // Filter data based on the event date being in the current year
+  //     if (eventDate.getFullYear() === currentYear) {
+  //       // Adjust the end date to the last day of the current year
+  //       const endOfYearDate = new Date(currentYear, 11, 31);
+  
+  //       const adjustedEndDate = endDate < endOfYearDate ? endDate : endOfYearDate;
+  
+  //       const timeDifferenceMs = adjustedEndDate - eventDate;
+  //       const totalDays = Math.ceil(timeDifferenceMs / (1000 * 60 * 60 * 24));
+  
+  //       if (timeDifferenceMs <= 9 * 60 * 60 * 1000) {
+  //         return total + 1; // Consider difference less than or equal to 9 hours as one day
+  //       }
+  
+  //       let workingDays = 0;
+  
+  //       while (eventDate < adjustedEndDate) {
+  //         const dayOfWeek = eventDate.getDay();
+  //         if (dayOfWeek !== 0 && dayOfWeek !== 6) {
+  //           // Exclude Sunday (0) and Saturday (6)
+  //           workingDays++;
+  //         }
+  //         eventDate.setDate(eventDate.getDate() + 1); // Move to the next day
+  //       }
+  
+  //       // Adjust total days by subtracting weekends within the period
+  //       const totalDaysExcludingWeekends = totalDays - 2 * Math.floor(totalDays / 7);
+  //       // Subtract two days for each full weekend
+  //       return total + Math.max(totalDaysExcludingWeekends, workingDays);
+  //     }
+  
+  //     return total;
+  //   }, 0);
+  // };
+  
+  const calculateTotalWorkingDays = (matchedData:any) => {
+    const currentYear = new Date().getFullYear();
+  
+    return matchedData.reduce((total:any, item:any) => {
+      const endDate = new Date(item.EndDate);
+      const eventDate:any = new Date(item.EventDate);
+  
+      // Filter data based on the event date being in the current year
+      if (eventDate.getFullYear() === currentYear) {
+        // Adjust the end date to the last day of the current year
+        const endOfYearDate = new Date(currentYear, 11, 31);
+        const adjustedEndDate = endDate < endOfYearDate ? endDate : endOfYearDate;
+  
+        const oneDay = 24 * 60 * 60 * 1000; // Number of milliseconds in a day
+  
+        let workingDays = 0;
+        let currentDate = new Date(eventDate);
+  
+        while (currentDate <= adjustedEndDate) {
+          const dayOfWeek = currentDate.getDay();
+  
+          if (dayOfWeek !== 0 && dayOfWeek !== 6 && !isWeekend(eventDate, adjustedEndDate)) {
+            // Exclude Sunday (0) and Saturday (6), and the event date and end date if they're both on a weekend
+            workingDays++;
+          }
+  
+          currentDate.setTime(currentDate.getTime() + oneDay); // Move to the next day
+        }
+  
+        return total + workingDays;
+      }
+  
+      return total;
+    }, 0);
+  };
+  
+  // Function to check if both the event date and end date fall on a weekend
+  const isWeekend = (startDate:any, endDate:any) => {
+    const startDay = startDate.getDay();
+    const endDay = endDate.getDay();
+  
+    return (startDay === 0 || startDay === 6) && (endDay === 0 || endDay === 6);
+  };
+  
 
-// For Calculate all the day of leave
-
-// const calculateTotalDays = (matchedData:any) => {
+// const calculateTotalWorkingDays = (matchedData:any) => {
 //   return matchedData.reduce((total:any, item:any) => {
 //     const EndDate:any = new Date(item.EndDate);
 //     const EventDate:any = new Date(item.EventDate);
+    
 //     const time_difference_ms = EndDate - EventDate;
 //     const totalDays = Math.ceil(time_difference_ms / (1000 * 60 * 60 * 24));
 
-//     // Consider the special case where the difference is less than or equal to 9 hours as one day.
 //     if (time_difference_ms <= 9 * 60 * 60 * 1000) {
-//       return total + 1;
+//       return total + 1; // Consider difference less than or equal to 9 hours as one day
 //     }
 
-//     return total + totalDays;
+//     let workingDays = 0;
+
+//     while (EventDate < EndDate) {
+//       const dayOfWeek = EventDate.getDay();
+//       if (dayOfWeek !== 0 && dayOfWeek !== 6) { // Exclude Sunday (0) and Saturday (6)
+//         workingDays++;
+//       }
+//       EventDate.setDate(EventDate.getDate() + 1); // Move to the next day
+//     }
+
+//     // Adjust total days by subtracting weekends within the period
+//     const totalDaysExcludingWeekends = totalDays - 2 * Math.floor(totalDays / 7); // Subtract two days for each full weekend
+
+//     return total + Math.max(totalDaysExcludingWeekends, workingDays);
 //   }, 0);
 // };
-
-const calculateTotalWorkingDays = (matchedData:any) => {
-  return matchedData.reduce((total:any, item:any) => {
-    const EndDate:any = new Date(item.EndDate);
-    const EventDate:any = new Date(item.EventDate);
-    
-    const time_difference_ms = EndDate - EventDate;
-    const totalDays = Math.ceil(time_difference_ms / (1000 * 60 * 60 * 24));
-
-    if (time_difference_ms <= 9 * 60 * 60 * 1000) {
-      return total + 1; // Consider difference less than or equal to 9 hours as one day
-    }
-
-    let workingDays = 0;
-
-    while (EventDate < EndDate) {
-      const dayOfWeek = EventDate.getDay();
-      if (dayOfWeek !== 0 && dayOfWeek !== 6) { // Exclude Sunday (0) and Saturday (6)
-        workingDays++;
-      }
-      EventDate.setDate(EventDate.getDate() + 1); // Move to the next day
-    }
-
-    // Adjust total days by subtracting weekends within the period
-    const totalDaysExcludingWeekends = totalDays - 2 * Math.floor(totalDays / 7); // Subtract two days for each full weekend
-
-    return total + Math.max(totalDaysExcludingWeekends, workingDays);
-  }, 0);
-};
 
 
 

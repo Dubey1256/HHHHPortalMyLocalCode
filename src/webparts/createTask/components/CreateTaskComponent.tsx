@@ -269,7 +269,9 @@ function CreateTaskComponent(props: any) {
             let SDCCreatedDate = BurgerMenuData.SDCCreatedDate = params.get('CreatedDate');
             let SDCDescription = BurgerMenuData.SDCDescription = params.get('Description');
             let SDCPageUrl = BurgerMenuData.SDCTaskUrl = params.get('TaskUrl');
+            let SDCEmail = BurgerMenuData.SDCEmail = params.get('Email');
             let SDCTaskUrl = '';
+            let SDCTaskDashboard = '';
             if (SDCDescription == 'null') {
                 SDCDescription = null
             }
@@ -306,11 +308,15 @@ function CreateTaskComponent(props: any) {
 
                     let saveValue = save;
                     if (SDCSiteType?.toLowerCase() == 'alakdigital') {
+
                         SDCTaskUrl = `https://www.shareweb.ch/site/EI/DigitalAdministration/Team/Pages/Manage/TaskProfile.aspx?TaskId=${SDCTaskId}`
+                        SDCTaskDashboard = `https://www.shareweb.ch/EI/DigitalAdministration/team/Pages/TeamDashboard.aspx`
                     } else {
                         SDCTaskUrl = `https://www.shareweb.ch/site/${SDCSiteType}/Team/Pages/Manage/TaskProfile.aspx?TaskId=${SDCTaskId}`
+                        SDCTaskDashboard = `https://www.shareweb.ch/site/${SDCSiteType}/team/Pages/TeamDashboard.aspx`
                     }
-
+                    BurgerMenuData.SDCTaskUrl = SDCTaskUrl;
+                    BurgerMenuData.SDCTaskDashboard = SDCTaskDashboard;
                     let isTaskFound = false;
                     const creatSDCTas = () => {
                         let e = {
@@ -1187,7 +1193,7 @@ function CreateTaskComponent(props: any) {
         if (item?.IsSendAttentionEmail != undefined) {
             TeamMessagearray.push(item.IsSendAttentionEmail);
         }
-        if (loggedInUser?.IsApprovalMail?.toLowerCase() == 'approve all but selected items' && !IsapprovalTask) {
+        if (loggedInUser?.IsApprovalMail?.toLowerCase() == 'approve all but selected items' || loggedInUser?.IsApprovalMail?.toLowerCase() == 'approve selected' && !IsapprovalTask) {
             try {
                 let selectedApprovalCat = JSON.parse(loggedInUser?.CategoriesItemsJson)
                 IsapprovalTask = selectedApprovalCat?.some((selectiveApproval: any) => selectiveApproval?.Title == title)
@@ -1202,6 +1208,21 @@ function CreateTaskComponent(props: any) {
                 console.log(error, "Can't Parse Selected Approval Categories")
             }
         }
+        // if (loggedInUser?.IsApprovalMail?.toLowerCase() == 'approve selected' && !IsapprovalTask) {
+        //     try {
+        //         let selectedApprovalCat = JSON.parse(loggedInUser?.CategoriesItemsJson)
+        //         IsapprovalTask = selectedApprovalCat?.some((selectiveApproval: any) => selectiveApproval?.Title == title)
+        //         if (IsapprovalTask == true) {
+        //             subCategories?.map((item: any) => {
+        //                 if (item?.Title == "Approval" && !item.ActiveTile) {
+        //                     selectSubTaskCategory(item?.Title, item?.Id, item)
+        //                 }
+        //             })
+        //         }
+        //     } catch (error: any) {
+        //         console.log(error, "Can't Parse Selected Approval Categories")
+        //     }
+        // }
 
         let activeCategoryArray = activeCategory;
         let TaskCategories: any[] = taskCat;
@@ -1212,7 +1233,7 @@ function CreateTaskComponent(props: any) {
                 item.ActiveTile = !item.ActiveTile;
                 activeCategoryArray = activeCategoryArray.filter((category: any) => category !== title);
                 TaskCategories = TaskCategories.filter((category: any) => category !== Id);
-                if (loggedInUser?.IsApprovalMail?.toLowerCase() == 'approve all but selected items' && IsapprovalTask) {
+                if (loggedInUser?.IsApprovalMail?.toLowerCase() == 'approve all but selected items' || loggedInUser?.IsApprovalMail?.toLowerCase() == 'approve selected' && IsapprovalTask) {
                     try {
                         let selectedApprovalCat = JSON.parse(loggedInUser?.CategoriesItemsJson)
                         IsapprovalTask = !selectedApprovalCat?.some((selectiveApproval: any) => selectiveApproval?.Title == title)
@@ -1517,11 +1538,14 @@ function CreateTaskComponent(props: any) {
             isOpenEditPopup: false,
             passdata: null
         })
-        if (items) {
-            window.open(base_Url + "/SitePages/Task-Profile.aspx?taskId=" + createdTask?.Id + "&Site=" + createdTask?.siteType, "_self")
-            createdTask = {};
-        } else {
+        if (items == 'Delete' || items == undefined) {
             location.reload();
+        } else {
+            setTimeout(() => {
+                window.open(base_Url + "/SitePages/Task-Profile.aspx?taskId=" + createdTask?.Id + "&Site=" + createdTask?.siteType, "_self")
+                createdTask = {};
+            }, 1200)
+
         }
 
     }, [])
@@ -1826,7 +1850,7 @@ function CreateTaskComponent(props: any) {
                         groupedData={groupedComponentData}
                     />
                 }
-                {editTaskPopupData.isOpenEditPopup ? <EditTaskPopup context={props?.SelectedProp.Context} SDCAuthor={burgerMenuTaskDetails?.SDCCreatedBy}
+                {editTaskPopupData.isOpenEditPopup ? <EditTaskPopup context={props?.SelectedProp.Context} SDCTaskDetails={burgerMenuTaskDetails}
                     sendApproverMail={sendApproverMail} AllListId={AllListId} Items={editTaskPopupData.passdata} Call={CallBack} /> : ''}
             </div>
         </div>

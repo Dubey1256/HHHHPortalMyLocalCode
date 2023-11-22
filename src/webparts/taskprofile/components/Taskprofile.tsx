@@ -36,6 +36,7 @@ import { Modal, Panel, PanelType } from 'office-ui-fabric-react';
 import { ImReply } from 'react-icons/im';
 import KeyDocuments from './KeyDocument';
 import EODReportComponent from '../../../globalComponents/EOD Report Component/EODReportComponent';
+import ReactPopperTooltipSingleLevel from '../../../globalComponents/Hierarchy-Popper-tooltipSilgleLevel/Hierarchy-Popper-tooltipSingleLevel';
 
 
 // import {MyContext} from './myContext'
@@ -554,9 +555,9 @@ class Taskprofile extends React.Component<ITaskprofileProps, ITaskprofileState> 
       // .getByTitle("Task Users")
       .getById(this.props.TaskUsertListID)
       .items
-      .select('Id', 'Email', 'Suffix', 'Title', 'Item_x0020_Cover', 'Company', 'AssingedToUser/Title', 'AssingedToUser/Id',)
+      .select('Id', 'Email', 'Suffix', 'UserGroup/Id','UserGroup/Title','Team','Title', 'Item_x0020_Cover', 'Company', 'AssingedToUser/Title', 'AssingedToUser/Id',)
       .filter("ItemType eq 'User'")
-      .expand('AssingedToUser')
+      .expand('AssingedToUser,UserGroup')
       .get();
     taskUsers?.map((item: any, index: any) => {
       if (this.props?.Context?.pageContext?._legacyPageContext?.userId === (item?.AssingedToUser?.Id) && item?.Company == "Smalsus") {
@@ -1244,6 +1245,24 @@ class Taskprofile extends React.Component<ITaskprofileProps, ITaskprofileState> 
         tempData.ApproverData = [];
         tempData.ApproverData.push(approvalDataHistory)
       }
+
+      tempData?.forEach((ele: any) => {
+        if (ele.ApproverData != undefined && ele.ApproverData.length > 0) {
+            ele.ApproverData?.forEach((ba: any) => {
+                if (ba.isShowLight == 'Reject') {
+                    ba.Status = 'Rejected by'
+                }
+                if (ba.isShowLight == 'Approve') {
+                    ba.Status = 'Approved by '
+                }
+                if (ba.isShowLight == 'Maybe') {
+                    ba.Status = 'For discussion with'
+                }
+
+
+            })
+        }
+    })
       console.log(tempData);
       console.log(this.state.Result["FeedBack"][0]?.FeedBackDescriptions);
       await this.onPost();
@@ -1274,6 +1293,23 @@ class Taskprofile extends React.Component<ITaskprofileProps, ITaskprofileState> 
         tempData.Subtext[subchileindex].ApproverData = [];
         tempData.Subtext[subchileindex].ApproverData.push(approvalDataHistory)
       }
+      tempData?.Subtext?.forEach((ele: any) => {
+        if (ele.ApproverData != undefined && ele.ApproverData.length > 0) {
+            ele.ApproverData?.forEach((ba: any) => {
+                if (ba.isShowLight == 'Reject') {
+                    ba.Status = 'Rejected by'
+                }
+                if (ba.isShowLight == 'Approve') {
+                    ba.Status = 'Approved by '
+                }
+                if (ba.isShowLight == 'Maybe') {
+                    ba.Status = 'For discussion with'
+                }
+
+
+            })
+        }
+    })
 
       console.log(tempData);
 
@@ -1680,6 +1716,11 @@ if(folora=="folora"&&index==0){
                       }
                       {this.state.breadCrumData?.map((breadcrumbitem: any, index: any) => {
                         return <>
+                         {/* Changes done by Robin Start*/}
+                         {breadcrumbitem?.ItemType !== undefined && breadcrumbitem?.ItemType == "Component" && <li>
+                            <a target="_blank" data-interception="off" href={`${this.state.Result["siteUrl"]}/SitePages/Portfolio-Profile.aspx?taskId=${breadcrumbitem?.Id}`}>{breadcrumbitem?.PortfolioType?.Title} - Portfolio</a>
+                          </li>}
+                          {/* Changes done by Robin End*/}
                           {breadcrumbitem?.siteType == undefined && <li>
 
                             <a target="_blank" data-interception="off" href={`${this.state.Result["siteUrl"]}/SitePages/Portfolio-Profile.aspx?taskId=${breadcrumbitem?.Id}`}>{breadcrumbitem?.Title}</a>
@@ -1739,9 +1780,10 @@ if(folora=="folora"&&index==0){
                     <div className='col-md-4 p-0'>
                       <dl>
                         <dt className='bg-Fa'>Task Id</dt>
-                        <dd className='bg-Ff position-relative' ><span className='tooltipbox'>{this.state.Result["TaskId"]} </span>
-                          {TaskIdCSF != "" && <span className="idhide bg-fxdark siteColor">{TaskIdCSF?.replace("-", ">")}{TaskIdAW == "" && this.state.Result["TaskId"] != undefined && <span className='text-body'>{">" + this.state.Result["TaskId"]}</span>} {TaskIdAW != "" && <span className='text-body'>{">" + TaskIdAW?.replace("-", ">")}</span>}</span>}
-                        </dd>
+                        <dd className='bg-Ff position-relative'>
+                           <ReactPopperTooltipSingleLevel ShareWebId={this.state.Result['TaskId']} row={this.state.Result} singleLevel={true} masterTaskData={this.masterTaskData} AllSitesTaskData={this.allDataOfTask} AllListId={AllListId} />
+                          {/* {TaskIdCSF != "" && <span  className="idhide bg-fxdark siteColor">{TaskIdCSF?.replace("-", ">")}{TaskIdAW == "" && this.state.Result["TaskId"] != undefined && <span className='text-body'>{">" + this.state.Result["TaskId"]}</span>} {TaskIdAW != "" && <span className='text-body'>{">" + TaskIdAW?.replace("-", ">")}</span>}</span>} */}
+                          </dd>
                       </dl>
                       <dl>
                         <dt className='bg-Fa'>Due Date</dt>
@@ -1774,7 +1816,7 @@ if(folora=="folora"&&index==0){
                       {isShowTimeEntry && <dl>
                         <dt className='bg-Fa'>SmartTime Total</dt>
                         <dd className='bg-Ff'>
-                          <span className="me-1 alignCenter  pull-left"> {this.state.smarttimefunction ? <SmartTimeTotal AllListId={AllListId}callbackTotalTime={(data:any)=>this.callbackTotalTime(data)} props={this.state.Result} Context={this.props.Context} /> : null}</span>
+                          <span className="me-1 alignCenter  pull-left"> {this.state.smarttimefunction ? <SmartTimeTotal AllListId={AllListId}callbackTotalTime={(data:any)=>this.callbackTotalTime(data)} props={this.state.Result} Context={this.props.Context}allTaskUsers={this?.taskUsers} /> : null}</span>
                         </dd>
 
                       </dl>}
@@ -2094,13 +2136,18 @@ if(folora=="folora"&&index==0){
                                                     className={fbData['isShowLight'] == "Approve" ? "circlelight br_green pull-left green" : "circlelight br_green pull-left"}>
 
                                                   </span>
-                                                  {fbData['ApproverData'] != undefined && fbData?.ApproverData.length > 0 &&
-                                                    <>
-                                                      <a className='hreflink mt--2 mx-2'
-                                                        onClick={() => this.ShowApprovalHistory(fbData, i, null)}
-                                                      >Approved by -</a>
-                                                      <img className="workmember" src={fbData?.ApproverData[fbData?.ApproverData?.length - 1]?.ImageUrl}></img>
-                                                    </>}
+                                                  {fbData["ApproverData"] != undefined && fbData.ApproverData.length > 0 &&
+                                                  <>
+                                                    {fbData?.ApproverData.map((ele: any) => {
+                                                      return (
+                                                        <>
+                                                        <span className="siteColor ms-2 hreflink" title="Approval-History Popup" onClick={() => this.ShowApprovalHistory(fbData, i, null)}>
+                                                        {fbData?.ApproverData[fbData?.ApproverData?.length - 1]?.Status} </span> <span className="ms-1"><a title={fbData.ApproverData[fbData.ApproverData.length - 1]?.Title}><span><a href={`${this.props?.siteUrl}/SitePages/TaskDashboard.aspx?UserId=${fbData?.ApproverData[ele?.ApproverData?.length - 1]?.Id}&Name=${fbData?.ApproverData[fbData?.ApproverData?.length - 1]?.Title}`} target="_blank" data-interception="off" title={fbData?.ApproverData[fbData?.ApproverData?.length - 1]?.Title}> <img className='imgAuthor' src={fbData?.ApproverData[fbData?.ApproverData?.length - 1]?.ImageUrl} /></a></span></a></span>
+                                                       </>
+                                                      )
+
+                                                    })}
+                                                  </>}
                                                 </span>
 
                                                 : null
@@ -2243,7 +2290,7 @@ if(folora=="folora"&&index==0){
                                           return <div className="col-sm-12 p-0 mb-2" style={{ width: '100%' }}>
                                             <div className='justify-content-between d-flex'>
                                               <div className='alignCenter m-0'>
-                                                {this.state.ApprovalStatus ?
+                                                {this.state.ApprovalStatus &&
                                                   <span className="alignCenter">
                                                     <span title="Rejected"
                                                       onClick={() => this.changeTrafficLigthsubtext(i, j, "Reject")}
@@ -2259,14 +2306,25 @@ if(folora=="folora"&&index==0){
                                                       className={fbSubData?.isShowLight == "Approve" ? "circlelight br_green pull-left green" : "circlelight br_green pull-left"}>
 
                                                     </span>
-                                                    {fbSubData.ApproverData != undefined && fbSubData.ApproverData.length > 0 && <>
-                                                      <a className='hreflink mt--2 mx-2'
-                                                        onClick={() => this.ShowApprovalHistory(fbSubData, i, j)}
-                                                      >Approved by -</a>
-                                                      <img className="workmember" src={fbSubData?.ApproverData[fbSubData?.ApproverData?.length - 1]?.ImageUrl}></img>
-                                                    </>}
+                                                    {fbData["Subtext"] != undefined && fbData.Subtext.length > 0 &&
+                                                      <>
+                                                        {fbData?.Subtext.map((b: any) => {
+                                                          return(
+                                                         <>
+                                                         {(b.ApproverData != undefined && b.ApproverData != !Number)  &&
+                                                         <span> 
+                                                              <span className="siteColor ms-2 hreflink" title="Approval-History Popup" onClick={() => this.ShowApprovalHistory(fbSubData, i, j)}>
+                                                              {b?.ApproverData[b?.ApproverData?.length - 1]?.Status} </span> <span className="ms-1"><a title={b?.ApproverData[b?.ApproverData.length - 1]?.Title}><span><a href={`${this.props?.siteUrl}/SitePages/TaskDashboard.aspx?UserId=${b?.ApproverData[b?.ApproverData?.length - 1]?.Id}&Name=${b?.ApproverData[b?.ApproverData?.length - 1]?.Title}`} target="_blank" data-interception="off" title={b?.ApproverData[b?.ApproverData.length - 1]?.Title}> <img className='imgAuthor' src={b?.ApproverData[b?.ApproverData.length - 1]?.ImageUrl} /></a></span></a></span>
+                                                              </span>}
+                                                              
+                                                       </> )
+                                                         
+
+                                                        })}
+                                                      </>
+                                                     }
                                                   </span>
-                                                  : null
+                                                  
                                                 }
                                               </div>
                                               <div className='m-0'>

@@ -758,14 +758,14 @@ const GlobalCommanTable = (items: any, ref: any) => {
                 <span className='leftsec'>
                 {showingAllPortFolioCount === true ? <div className='alignCenter mt--2'>
                         <label>
-                            <label style={{ color: `${portfolioColor}` }}>
+                            <label style={{ color: "#333333" }}>
                                 Showing
                             </label>
                             {portfolioTypeData?.map((type: any, index: any) => {
                                 return (
                                     <>
-                                        {isShowingDataAll === true ? <><label className='ms-1' style={{ color: `${portfolioColor}` }}>{` ${type[type.Title + 'numberCopy']} `} of {" "} </label> <label style={{ color: `${portfolioColor}` }} className='ms-0'>{` ${type[type.Title + 'number']} `}</label><label style={{ color: `${portfolioColor}` }} className='ms-1'>{" "} {type.Title}</label>{index < type.length - 1 && <label style={{ color: `${portfolioColor}` }} className="ms-1"> | </label>}</> :
-                                            <><label className='ms-1' style={{ color: `${portfolioColor}` }}>{` ${type[type.Title + 'filterNumber']} `} of {" "} </label> <label style={{ color: `${portfolioColor}` }} className='ms-0'>{` ${type[type.Title + 'number']} `}</label><label style={{ color: `${portfolioColor}` }} className='ms-1'>{" "} {type.Title}</label>{index < type.length - 1 && <label style={{ color: `${portfolioColor}` }} className="ms-1"> | </label>}</>}
+                                        {isShowingDataAll === true ? <><label className='ms-1' style={{ color: "#333333" }}>{` ${type[type.Title + 'numberCopy']} `} of {" "} </label> <label style={{ color: "#333333" }} className='ms-0'>{` ${type[type.Title + 'number']} `}</label><label style={{ color: "#333333" }} className='ms-1'>{" "} {type.Title}</label>{index < type.length - 1 && <label style={{ color: "#333333" }} className="ms-1"> | </label>}</> :
+                                            <><label className='ms-1' style={{ color: "#333333" }}>{` ${type[type.Title + 'filterNumber']} `} of {" "} </label> <label style={{ color: "#333333" }} className='ms-0'>{` ${type[type.Title + 'number']} `}</label><label style={{ color: "#333333" }} className='ms-1'>{" "} {type.Title}</label>{index < type.length - 1 && <label style={{ color: "#333333" }} className="ms-1"> | </label>}</>}
                                     </>
                                 )
                             })}
@@ -808,7 +808,7 @@ const GlobalCommanTable = (items: any, ref: any) => {
                             </>}
 
                     </div> :
-                        <span style={{ color: "#333333" }} className='Header-Showing-Items'>{`Showing ${table?.getFilteredRowModel()?.rows?.length} of ${items?.catogryDataLength ? items?.catogryDataLength : data?.length}`}</span>}
+                        <span style={{ color: "#333333", flex:"none" }} className='Header-Showing-Items'>{`Showing ${table?.getFilteredRowModel()?.rows?.length} of ${items?.catogryDataLength ? items?.catogryDataLength : data?.length}`}</span>}
                     <span className="mx-1">{items?.showDateTime}</span>
                     <DebouncedInput
                         value={globalFilter ?? ""}
@@ -817,8 +817,8 @@ const GlobalCommanTable = (items: any, ref: any) => {
                         portfolioColor={portfolioColor}
                     />
                     <span className="svg__iconbox svg__icon--setting" style={{ backgroundColor: `${portfolioColor}` }} onClick={() => setSelectedFilterPanelIsOpen(true)}></span>
-                    <span className='ms-1'>
-                        <select style={{ height: "30px", color: `${portfolioColor}` }}
+                    <span className='mx-1'>
+                        <select style={{ height: "30px", paddingTop:"3px" , color: `${portfolioColor}` }}
                             className="w-100"
                             aria-label="Default select example"
                             value={globalSearchType}
@@ -876,15 +876,15 @@ const GlobalCommanTable = (items: any, ref: any) => {
                     {table?.getSelectedRowModel()?.flatRows?.length > 0 ? <a className="teamIcon" onClick={() => ShowTeamFunc()}><span title="Create Teams Group" style={{ color: `${portfolioColor}`, backgroundColor: `${portfolioColor}` }} className="svg__iconbox svg__icon--team"></span></a>
                         : <a className="teamIcon"><span title="Create Teams Group" style={{ backgroundColor: "gray" }} className="svg__iconbox svg__icon--team"></span></a>}
                     {table?.getSelectedRowModel()?.flatRows?.length > 0 ?
-                        <a onClick={() => openTaskAndPortfolioMulti()} title='Open in new tab' className="openWebIcon p-0"><span style={{ color: `${portfolioColor}`, backgroundColor: `${portfolioColor}` }} className="svg__iconbox svg__icon--openWeb"></span></a>
-                        : <a className="openWebIcon p-0" title='Open in new tab'><span className="svg__iconbox svg__icon--openWeb" style={{ backgroundColor: "gray" }}></span></a>}
+                        <a onClick={() => openTaskAndPortfolioMulti()} title='Open in New Tab' className="openWebIcon p-0"><span style={{ color: `${portfolioColor}`, backgroundColor: `${portfolioColor}` }} className="svg__iconbox svg__icon--openWeb"></span></a>
+                        : <a className="openWebIcon p-0" title='Open in New Tab'><span className="svg__iconbox svg__icon--openWeb" style={{ backgroundColor: "gray" }}></span></a>}
 
                     {items?.OpenAdjustedTimePopupCategory && items?.showCatIcon === true && <a onClick={items.OpenAdjustedTimePopupCategory} title="Open Adjusted Time Popup">
                         <i className="fa fa-cog brush" aria-hidden="true"></i>
                     </a>}
 
-                    {items?.showCatIcon != true ? <a className='excal' title='Export to excal' onClick={() => exportToExcel()}><RiFileExcel2Fill style={{ color: `${portfolioColor}` }} /></a> :
-                        <a className='excal' title='Export to excal' onClick={items?.exportToExcelCategoryReport}><RiFileExcel2Fill style={{ color: `${portfolioColor}` }} /></a>}
+                    {items?.showCatIcon != true ? <a className='excal' title='Export to Excel' onClick={() => exportToExcel()}><RiFileExcel2Fill style={{ color: `${portfolioColor}` }} /></a> :
+                        <a className='excal' title='Export to Excel' onClick={items?.exportToExcelCategoryReport}><RiFileExcel2Fill style={{ color: `${portfolioColor}` }} /></a>}
 
                     {/* <a className='excal' title='Export To Excel' onClick={() => exportToExcel()}><RiFileExcel2Fill style={{ color: `${portfolioColor}` }} /></a> */}
 
