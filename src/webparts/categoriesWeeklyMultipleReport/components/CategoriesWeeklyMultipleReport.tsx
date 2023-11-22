@@ -1469,37 +1469,40 @@ export default class CategoriesWeeklyMultipleReport extends React.Component<ICat
             if (Item.ID == 4090)
               console.log(Item)
             Item.siteName = itemtype.ListName;
+            Item.listId = itemtype.listId
+            Item.IsCheckedComponent = false;
+            Item.IsCheckedService = false;
             if (Item?.Portfolio?.Title !== undefined) {
               Item.ComponentTitle = Item?.Portfolio?.Title;
-              Item.listId = itemtype.listId
               Item.ComponentIDs = Item?.Portfolio?.Id;
               let ProtFolioData = AllMasterTasks?.filter((comp: any) => comp?.Id === Item?.Portfolio?.Id);
               Item.Portfoliotype = ProtFolioData[0]?.PortfolioType?.Title;;
               if (Item?.Portfoliotype === 'Component')
                 Item.IsCheckedComponent = true;
               else if (Item?.Portfoliotype === 'Service') Item.IsCheckedService = true
-              if (Item.IsCheckedComponent === isCheckedComponent || Item.IsCheckedService === IsCheckedService) {
-
-                if (Item?.ClientCategory?.length > 0) {
-                  Item.ClientCategorySearch = Item?.ClientCategory?.map((elem: any) => elem.Title).join(" ")
-                } else {
-                  Item.ClientCategorySearch = ''
-                }
-                Item.siteImage = itemtype.siteImage;
-                Item.TaskID = globalCommon.GetTaskId(Item);
-                Item.PercentComplete = Item.PercentComplete <= 1 ? Item.PercentComplete * 100 : Item.PercentComplete;
-                if (Item.PercentComplete != undefined) {
-                  Item.PercentComplete = parseInt((Item.PercentComplete).toFixed(0));
-                }
-                Item.NewCompletedDate = Item.CompletedDate;
-                Item.NewCreated = Item.Created;
-                if (Item.Created != undefined)
-                  Item.FiltercreatedDate = ''//SharewebCommonFactoryService.ConvertLocalTOServerDate(Item.Created, "DD/MM/YYYY");
-                if (Item.CompletedDate != undefined)
-                  Item.FilterCompletedDate = ''//SharewebCommonFactoryService.ConvertLocalTOServerDate(Item.CompletedDate, "DD/MM/YYYY");
-                AllSharewebSiteTasks.push(Item);
-              }
             }
+            if (Item.IsCheckedComponent === isCheckedComponent || Item.IsCheckedService === IsCheckedService) {
+
+              if (Item?.ClientCategory?.length > 0) {
+                Item.ClientCategorySearch = Item?.ClientCategory?.map((elem: any) => elem.Title).join(" ")
+              } else {
+                Item.ClientCategorySearch = ''
+              }
+              Item.siteImage = itemtype.siteImage;
+              Item.TaskID = globalCommon.GetTaskId(Item);
+              Item.PercentComplete = Item.PercentComplete <= 1 ? Item.PercentComplete * 100 : Item.PercentComplete;
+              if (Item.PercentComplete != undefined) {
+                Item.PercentComplete = parseInt((Item.PercentComplete).toFixed(0));
+              }
+              Item.NewCompletedDate = Item.CompletedDate;
+              Item.NewCreated = Item.Created;
+              if (Item.Created != undefined)
+                Item.FiltercreatedDate = ''//SharewebCommonFactoryService.ConvertLocalTOServerDate(Item.Created, "DD/MM/YYYY");
+              if (Item.CompletedDate != undefined)
+                Item.FilterCompletedDate = ''//SharewebCommonFactoryService.ConvertLocalTOServerDate(Item.CompletedDate, "DD/MM/YYYY");
+              AllSharewebSiteTasks.push(Item);
+            }
+
 
           })
         }
@@ -1633,12 +1636,12 @@ export default class CategoriesWeeklyMultipleReport extends React.Component<ICat
               child.children.forEach(function (subchild: any) {
                 if (subchild.value == id)
                   selectedFilters.push(subchild);
-                  if (subchild.children != undefined && subchild.children.length > 0) {
-                    subchild.children.forEach(function (newsubchild: any) {
-                      if (newsubchild.value == id)
-                        selectedFilters.push(newsubchild);
-                    });
-                  }
+                if (subchild.children != undefined && subchild.children.length > 0) {
+                  subchild.children.forEach(function (newsubchild: any) {
+                    if (newsubchild.value == id)
+                      selectedFilters.push(newsubchild);
+                  });
+                }
               });
             }
           });
@@ -3420,9 +3423,10 @@ export default class CategoriesWeeklyMultipleReport extends React.Component<ICat
       //   // contentItem['Hours'] = '';
       //   contentItem['Smart Days (Roundup)'] = ''; contentItem['Adjusted Hours Roundup (In days)'] = '';
       // }
+      this.sheetsItems.push(contentItem);
       this.getexportChilds(item.childs);
 
-      this.sheetsItems.push(contentItem);
+
 
 
     });
