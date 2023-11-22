@@ -281,7 +281,7 @@ const HHHHEditComponent = (props: any) => {
                 IM: (updateData?.Skype ),
                 SocialMediaUrls: JSON.stringify(UrlData),
                 SmartCountriesId: {
-                    results:updateData?.SmartCountries.length>0!=undefined?[updateData?.SmartCountries?.Id ]: []
+                    results:updateData?.SmartCountries?.length>0?[updateData?.SmartCountries?.Id ]: []
                 }
             }
             if (updateData?.Id != undefined) {
@@ -580,14 +580,14 @@ const HHHHEditComponent = (props: any) => {
                                   }}
                                 aria-selected="true">IMAGE INFORMATION</button>
                             {siteTaggedHR &&
-                            <button className="nav-link" id="HR"
+                            <button className="nav-link" id="HR-Tab"
                                 data-bs-toggle="tab"
                                 data-bs-target="#HR"
                                 type="button"
                                 role="tab"
                                 aria-controls="HR"
                                 aria-selected="true">HR</button>}
-                            {siteTaggedSMALSUS&&<button className="nav-link" id="SMALSUS"
+                            {siteTaggedSMALSUS&&<button className="nav-link" id="SMALSUS-Tab"
                                 data-bs-toggle="tab"
                                 data-bs-target="#SMALSUS"
                                 type="button"
