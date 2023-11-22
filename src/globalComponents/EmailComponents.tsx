@@ -14,6 +14,17 @@ const EmailComponent = (props: any) => {
 
   const sendEmail = async (send: any) => {
     let mention_To: any = [];
+
+    props?.items.TaskApprovers.map((ApproverData: any) => {
+      props?.AllTaskUser.forEach((val: any) => {
+        if (ApproverData.Id == val?.AssingedToUserId) {
+          let tempEmail = val?.Approver[0].Name;
+          mention_To.push(tempEmail?.substring(18, tempEmail.length))
+        }
+      
+      })
+  
+  })
     const sendMailToTaskCreatore = () => {
       if(props?.items.Approvee != undefined){
         props?.AllTaskUser.filter((ele:any)=>{

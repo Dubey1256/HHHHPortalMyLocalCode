@@ -737,6 +737,7 @@ const EditTaskPopup = (Items: any) => {
     // #################### this is used for getting All Information for selected task from Backend ##############################
 
     const GetSelectedTaskDetails = async () => {
+        var ApprovarDataId = ''
         try {
             let web = new Web(siteUrls);
             let smartMeta: any;
@@ -1054,16 +1055,27 @@ const EditTaskPopup = (Items: any) => {
                 if (TaskApproverBackupArray != undefined && TaskApproverBackupArray.length > 0) {
                     TaskApproverBackupArray.map((itemData: any) => {
                         currentUserBackupArray?.map((currentUser: any) => {
-                            if (itemData.Id == currentUser.AssingedToUserId) {
+                            taskUsers?.map((userData: any) => {
+                                if(userData?.AssingedToUserId == itemData.Id){
+                                     ApprovarDataId = userData?.Approver[0].Id
+                                }
+                            })
+                            if (itemData.Id == currentUser.AssingedToUserId || itemData.Id == ApprovarDataId) {
                                 setSmartLightStatus(true);
                             }
+                        
                         })
                     })
                 } else {
                     if (TaskCreatorApproverBackupArray?.length > 0) {
                         TaskCreatorApproverBackupArray?.map((Approver: any) => {
                             currentUserBackupArray?.map((current: any) => {
-                                if (Approver.Id == current.AssingedToUserId) {
+                                taskUsers?.map((userData: any) => {
+                                    if(userData?.AssingedToUserId == Approver?.Id){
+                                         ApprovarDataId = userData?.Approver[0].Id
+                                    }
+                                })
+                                if (Approver.Id == current.AssingedToUserId || Approver.Id == ApprovarDataId) {
                                     setSmartLightStatus(true);
                                 }
                             })
