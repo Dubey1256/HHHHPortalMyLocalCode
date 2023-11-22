@@ -217,7 +217,7 @@ let allTaskUsers:any;
                                                     <img className='workmember '  src={items?.AuthorImage != undefined && items?.AuthorImage !="" ? items?.AuthorImage:"https://hhhhteams.sharepoint.com/sites/HHHH/SiteCollectionImages/ICONS/32/icon_user.jpg"}></img>
                                                 </td>
                                                 <td >
-                                                <SmartTooltipComponent items={items}allTaskUsers={allTaskUsers} />
+                                                <SmartTooltipComponent items={items}allTaskUsers={allTaskUsers}siteUrl={item?.AllListId?.siteUrl}/>
                                                
                                               
                                                 </td>
