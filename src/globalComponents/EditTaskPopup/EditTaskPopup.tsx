@@ -3064,6 +3064,14 @@ const EditTaskPopup = (Items: any) => {
                 tempArray.push(ImgArray);
             } else {
                 imgItem.Description = imgItem.Description != undefined ? imgItem.Description : '';
+                let checkImageURL: any = imgItem.ImageUrl?.includes("https://www.hochhuth-consulting.de/sp");
+                let checkUserImage: any = imgItem.UserImage?.includes("https://www.hochhuth-consulting.de/sp");
+                if (checkImageURL) {
+                    imgItem.ImageUrl = imgItem?.ImageUrl.replace("https://www.hochhuth-consulting.de/sp", "https://hhhhteams.sharepoint.com/sites/HHHH/SP");
+                }
+                if (checkUserImage) {
+                    imgItem.UserImage = imgItem?.UserImage.replace("https://www.hochhuth-consulting.de/sp", "https://hhhhteams.sharepoint.com/sites/HHHH/SP");
+                }
                 tempArray.push(imgItem);
             }
         })
