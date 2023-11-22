@@ -5,6 +5,7 @@ import { Web } from 'sp-pnp-js';
 import { Panel, PanelType } from 'office-ui-fabric-react';
 import Tooltip from "../../../../../globalComponents/Tooltip";
 import { myContextValue } from '../../../../../globalComponents/globalCommon'
+import { error } from "jquery";
 const CreateContactComponent = (props: any) => {
     const myContextData2: any = React.useContext<any>(myContextValue)
     const listData = props.data;
@@ -46,24 +47,77 @@ const CreateContactComponent = (props: any) => {
         }
     }
     const saveDataFunction = async () => {
-        try {
-            let web = new Web('https://hhhhteams.sharepoint.com/sites/HHHH');
-            await web.lists.getById('edc879b9-50d2-4144-8950-5110cacc267a').items.add({
+        if(props?.CreateInstituteStatus){
+            CreateInstitution() ;
+        }else{
+            try {
+           
+                let web = new Web(myContextData2?.allListId?.jointSiteUrl);
+                await web.lists.getById(myContextData2?.allListId?.HHHHContactListId).items.add({
+                    Title: (searchKey.FirstName[1] ? searchKey.FirstName[1] : " "),
+                    FirstName: searchKey.FirstName[0],
+                    FullName: searchKey.FirstName[0] + " " + (searchKey.FirstName[1] ? searchKey.FirstName[1] : " ")
+                }).then(async(data) => {
+                    if(myContextData2?.GMBHSite|| myContextData2?.HrSite){
+                        let web = new Web(myContextData2?.allListId?.siteUrl);
+                        await web.lists.getById(myContextData2?.allSite?.GMBHSite ? myContextData2?.allListId?.GMBH_CONTACT_SEARCH_LISTID : myContextData2?.allListId?.HR_EMPLOYEE_DETAILS_LIST_ID).items.add({
+                            Title: (searchKey.FirstName[1] ? searchKey.FirstName[1] : " "),
+                            FirstName: searchKey.FirstName[0],
+                            FullName: searchKey.FirstName[0] + " " + (searchKey.FirstName[1] ? searchKey.FirstName[1] : " ")
+                        }).then((LocalData) => {
+                            setContactdata(LocalData?.data)
+                        }).catch((error:any)=>{
+    
+                        })
+                    }else{
+                        setContactdata(data?.data)
+                        console.log("request success");
+                    }
+                   
+                })
+            } catch (error) {
+                console.log("Error:", error.message);
+            }
+            //    props.callBack();
+            props.userUpdateFunction();
+            setTimeout(() => {
+                setNewContact(true)
+            }, 1000)
+        }
+        
+    }
+    const CreateInstitution=async()=>{
+        try{
+
+            let web = new Web(myContextData2?.allListId?.jointSiteUrl);
+             await web.lists.getById(myContextData2?.allListId?.HHHHInstitutionListId).items.add({
                 Title: (searchKey.FirstName[1] ? searchKey.FirstName[1] : " "),
                 FirstName: searchKey.FirstName[0],
-                FullName: searchKey.FirstName[0] + " " + (searchKey.FirstName[1] ? searchKey.FirstName[1] : " ")
-            }).then((data) => {
-                setContactdata(data?.data)
-                console.log("request success");
+                FullName: searchKey.FirstName[0] + " " + (searchKey.FirstName[1] ? searchKey.FirstName[1] : " "),
+                ItemType: "Institution"
+            }).then(async(data) => {
+                console.log( "joint institution post sucessfully",data)
+                if(myContextData2?.GMBHSite|| myContextData2?.HrSite){
+                    let web = new Web(myContextData2?.allListId?.siteUrl);
+                    await web.lists.getById(myContextData2?.allSite?.GMBHSite ? myContextData2?.allListId?.GMBH_CONTACT_SEARCH_LISTID : myContextData2?.allListId?.HR_EMPLOYEE_DETAILS_LIST_ID).items.add({
+                        Title: (searchKey.FirstName[1] ? searchKey.FirstName[1] : " "),
+                        FirstName: searchKey.FirstName[0],
+                        FullName: searchKey.FirstName[0] + " " + (searchKey.FirstName[1] ? searchKey.FirstName[1] : " "),
+                        ItemType: "Institution"
+                    }).then((LocalData) => {
+                       console.log("local institution also done")
+                    }).catch((error:any)=>{
+
+                    })
+                }else{
+                    setNewContact(true)
+                    console.log("request success");
+                }
+               
             })
-        } catch (error) {
-            console.log("Error:", error.message);
+        }catch(error){
+            console.log("eeeorCreate Institution",error.message)
         }
-        //    props.callBack();
-        props.userUpdateFunction();
-        setTimeout(() => {
-            setNewContact(true)
-        }, 1000)
     }
     const editProfile = (item: any) => {
         setProfileStatus(true);
