@@ -431,23 +431,24 @@ QATime = 0.00;
             console.log(myData);
            
             myData?.forEach((val:any)=>{
-              
+                val.EndDate = new Date(val?.EndDate);
+                val?.EndDate.setHours(val?.EndDate.getHours() - 9);
                     // var TodayDate:any = new Date()
                     // TodayDate =  Moment(TodayDate).format("DD/MM/YYYY")
                    //var TodayDate =  selectDate.split("/")  
-                   var itemDate = Moment(val.EventDate)
-                              
-                    var a = val.EndDate?.substring(0, 10);                                    
+                   var itemDate = Moment(val.EventDate)                                    
                     var TodayDate =  selectDate[2] + selectDate[1] + selectDate[0]
-                    var endDate = Moment(a).format("DD/MM/YYYY")
+                    var endDate = Moment(val?.EndDate).format("DD/MM/YYYY")
                     var eventDate = Moment(val.EventDate).format("DD/MM/YYYY")
- 
+                    const date = val.EndDate
                     var NewEndDate = endDate.split("/")
                     var NewEventDate = eventDate.split("/")
- 
+
+                    
+
                     var End = NewEndDate[2] + NewEndDate[1] + NewEndDate[0]
                     var start = NewEventDate[2] + NewEventDate[1] + NewEventDate[0]
-                    // if(start === End)
+                    // if(start === End)ss
                     //  totaltime = stattime - endtime;
  
                     if (TodayDate >= start && TodayDate <= End){
@@ -457,11 +458,12 @@ QATime = 0.00;
                             val.totaltime = 8
                         }
                         else{
-                            val.totaltime = Math.abs(parseInt(endtime[0]) - parseInt(stattime[0]));
+                            val.totaltime = 8
                         }
                         if(val?.HalfDay == true) {
                             val.totaltime = 4
                         }
+                       
                                     
                         console.log(val)
                         leaveData.push(val)                       
