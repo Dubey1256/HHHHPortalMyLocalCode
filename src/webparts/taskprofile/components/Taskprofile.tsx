@@ -36,6 +36,7 @@ import { Modal, Panel, PanelType } from 'office-ui-fabric-react';
 import { ImReply } from 'react-icons/im';
 import KeyDocuments from './KeyDocument';
 import EODReportComponent from '../../../globalComponents/EOD Report Component/EODReportComponent';
+import ReactPopperTooltipSingleLevel from '../../../globalComponents/Hierarchy-Popper-tooltipSilgleLevel/Hierarchy-Popper-tooltipSingleLevel';
 
 
 // import {MyContext} from './myContext'
@@ -554,9 +555,9 @@ class Taskprofile extends React.Component<ITaskprofileProps, ITaskprofileState> 
       // .getByTitle("Task Users")
       .getById(this.props.TaskUsertListID)
       .items
-      .select('Id', 'Email', 'Suffix', 'Title', 'Item_x0020_Cover', 'Company', 'AssingedToUser/Title', 'AssingedToUser/Id',)
+      .select('Id', 'Email', 'Suffix', 'UserGroup/Id','UserGroup/Title','Team','Title', 'Item_x0020_Cover', 'Company', 'AssingedToUser/Title', 'AssingedToUser/Id',)
       .filter("ItemType eq 'User'")
-      .expand('AssingedToUser')
+      .expand('AssingedToUser,UserGroup')
       .get();
     taskUsers?.map((item: any, index: any) => {
       if (this.props?.Context?.pageContext?._legacyPageContext?.userId === (item?.AssingedToUser?.Id) && item?.Company == "Smalsus") {
@@ -1779,9 +1780,10 @@ if(folora=="folora"&&index==0){
                     <div className='col-md-4 p-0'>
                       <dl>
                         <dt className='bg-Fa'>Task Id</dt>
-                        <dd className='bg-Ff position-relative' ><span className='tooltipbox'>{this.state.Result["TaskId"]} </span>
-                          {TaskIdCSF != "" && <span className="idhide bg-fxdark siteColor">{TaskIdCSF?.replace("-", ">")}{TaskIdAW == "" && this.state.Result["TaskId"] != undefined && <span className='text-body'>{">" + this.state.Result["TaskId"]}</span>} {TaskIdAW != "" && <span className='text-body'>{">" + TaskIdAW?.replace("-", ">")}</span>}</span>}
-                        </dd>
+                        <dd className='bg-Ff position-relative'>
+                           <ReactPopperTooltipSingleLevel ShareWebId={this.state.Result['TaskId']} row={this.state.Result} singleLevel={true} masterTaskData={this.masterTaskData} AllSitesTaskData={this.allDataOfTask} AllListId={AllListId} />
+                          {/* {TaskIdCSF != "" && <span  className="idhide bg-fxdark siteColor">{TaskIdCSF?.replace("-", ">")}{TaskIdAW == "" && this.state.Result["TaskId"] != undefined && <span className='text-body'>{">" + this.state.Result["TaskId"]}</span>} {TaskIdAW != "" && <span className='text-body'>{">" + TaskIdAW?.replace("-", ">")}</span>}</span>} */}
+                          </dd>
                       </dl>
                       <dl>
                         <dt className='bg-Fa'>Due Date</dt>
@@ -1814,7 +1816,7 @@ if(folora=="folora"&&index==0){
                       {isShowTimeEntry && <dl>
                         <dt className='bg-Fa'>SmartTime Total</dt>
                         <dd className='bg-Ff'>
-                          <span className="me-1 alignCenter  pull-left"> {this.state.smarttimefunction ? <SmartTimeTotal AllListId={AllListId}callbackTotalTime={(data:any)=>this.callbackTotalTime(data)} props={this.state.Result} Context={this.props.Context} /> : null}</span>
+                          <span className="me-1 alignCenter  pull-left"> {this.state.smarttimefunction ? <SmartTimeTotal AllListId={AllListId}callbackTotalTime={(data:any)=>this.callbackTotalTime(data)} props={this.state.Result} Context={this.props.Context}allTaskUsers={this?.taskUsers} /> : null}</span>
                         </dd>
 
                       </dl>}
@@ -2309,8 +2311,11 @@ if(folora=="folora"&&index==0){
                                                         {fbData?.Subtext.map((b: any) => {
                                                           return(
                                                          <>
+                                                         {(b.ApproverData != undefined && b.ApproverData != !Number)  &&
+                                                         <span> 
                                                               <span className="siteColor ms-2 hreflink" title="Approval-History Popup" onClick={() => this.ShowApprovalHistory(fbSubData, i, j)}>
-                                                              {b?.ApproverData[b?.ApproverData?.length - 1]?.Status} </span> <span className="ms-1"><a title={b?.ApproverData[b?.ApproverData.length - 1]?.Title}><span><a href={`${this.props?.siteUrl}/SitePages/TaskDashboard.aspx?UserId=${b?.ApproverData[b?.ApproverData?.length - 1]?.Id}&Name=${b?.ApproverData[b?.ApproverData?.length - 1]?.Title}`} target="_blank" data-interception="off" title={b?.ApproverData[b?.ApproverData.length - 1]?.Title}> <img className='imgAuthor' src={b?.ApproverData[b?.ApproverData?.length - 1]?.ImageUrl} /></a></span></a></span>
+                                                              {b?.ApproverData[b?.ApproverData?.length - 1]?.Status} </span> <span className="ms-1"><a title={b?.ApproverData[b?.ApproverData.length - 1]?.Title}><span><a href={`${this.props?.siteUrl}/SitePages/TaskDashboard.aspx?UserId=${b?.ApproverData[b?.ApproverData?.length - 1]?.Id}&Name=${b?.ApproverData[b?.ApproverData?.length - 1]?.Title}`} target="_blank" data-interception="off" title={b?.ApproverData[b?.ApproverData.length - 1]?.Title}> <img className='imgAuthor' src={b?.ApproverData[b?.ApproverData.length - 1]?.ImageUrl} /></a></span></a></span>
+                                                              </span>}
                                                               
                                                        </> )
                                                          
