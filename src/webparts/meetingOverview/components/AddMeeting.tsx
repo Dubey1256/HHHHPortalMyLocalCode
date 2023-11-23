@@ -107,6 +107,7 @@ const AddProject = (props: any) => {
                         <span >
                             <div>
                                 <span>
+                                    <label htmlFor=""> Meeting Title</label>
                                     <input type='text' className='form-control' placeholder='Meeting Title' value={title} onChange={(e) => { settitle(e.target.value) }} />
                                 </span>
                             </div>

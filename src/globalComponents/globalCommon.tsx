@@ -1007,10 +1007,11 @@ export const sendImmediateEmailNotifications = async (itemId: any, siteUrl: any,
 
             if (ToEmails?.length > 0 || RecipientMail?.length > 0) {
                 var query = '';
-                query += "AssignedTo/Title,AssignedTo/Name,AssignedTo/Id,AttachmentFiles/FileName,Component/Id,Component/Title,Component/ItemType,ComponentLink,Categories,FeedBack,ComponentLink,FileLeafRef,Title,Id,Comments,StartDate,DueDate,Status,Body,Company,Mileage,PercentComplete,FeedBack,Attachments,Priority,Created,Modified,Author/Id,Author/Title,Editor/Id,Editor/Title,TaskCategories/Id,TaskCategories/Title,Services/Id,Services/Title,Events/Id,Events/Title,TaskType/Id,TaskType/Title,TaskID,CompletedDate,TaskLevel,TaskLevel&$expand=AssignedTo,Component,AttachmentFiles,Author,Editor,TaskCategories,TaskType,Services,Events&$filter=Id eq " + itemId;
+                query += "AssignedTo/Title,AssignedTo/Name,AssignedTo/Id,ClientActivityJson,AttachmentFiles/FileName,Component/Id,Component/Title,Component/ItemType,ComponentLink,Categories,FeedBack,ComponentLink,FileLeafRef,Title,Id,Comments,StartDate,DueDate,Status,Body,Company,Mileage,PercentComplete,FeedBack,Attachments,Priority,Created,Modified,Author/Id,Author/Title,Editor/Id,Editor/Title,TaskCategories/Id,TaskCategories/Title,Services/Id,Services/Title,Events/Id,Events/Title,TaskType/Id,TaskType/Title,TaskID,CompletedDate,TaskLevel,TaskLevel&$expand=AssignedTo,Component,AttachmentFiles,Author,Editor,TaskCategories,TaskType,Services,Events&$filter=Id eq " + itemId;
                 await getData(siteUrl, listId, query)
                     .then(async (data: any) => {
                         data?.map((task: any) => {
+                            
                             task.PercentageCompleted = task?.PercentComplete < 1 ? task?.PercentComplete * 100 : task?.PercentComplete;
                             task.PercentComplete = task?.PercentComplete < 1 ? task?.PercentComplete * 100 : task?.PercentComplete;
                             if (task.PercentageCompleted != undefined) {
@@ -1035,6 +1036,16 @@ export const sendImmediateEmailNotifications = async (itemId: any, siteUrl: any,
                         })
 
                         var UpdateItem = data[0];
+                        if(UpdateItem?.ClientActivityJson!=undefined){
+                            try{
+                                UpdateItem.ClientActivityJson =JSON.parse(UpdateItem?.ClientActivityJson)
+                                if(UpdateItem.ClientActivityJson?.length>0){
+                                    UpdateItem.ClientActivityJson=UpdateItem.ClientActivityJson[0]
+                                }
+                            }catch(e){
+
+                            }
+                        }
                         var siteType = item?.siteType;
                         UpdateItem.siteType = '';
                         if (UpdateItem.siteType == '') {
@@ -1367,27 +1378,43 @@ export const sendImmediateEmailNotifications = async (itemId: any, siteUrl: any,
 
                         }
                         if (isLoadNotification == 'Client Task') {
-                            let SDCDetails = item?.ClientTask
+                            let SDCDetails :any= {};
                             let extraBody = ''
-                            Subject = "[ SDC Client Task - " + siteType + " - " + SDCDetails?.SDCCreatedBy + " ] " + UpdateItem?.Title + "";
-                            if (UpdateItem?.PercentComplete < 90) {
-                                extraBody = `<div>
-                                <h2>Email Subject : Your Task has been seen - [${SDCDetails?.SDCTaskId} ${UpdateItem?.Title}]</h2>
-                                <p>Message:</p>
-                                <p>Dear ${SDCDetails?.SDCCreatedBy},</p>
-                                <p>Thank you for your Feedback!</p>
-                                <p>Your Task - [${UpdateItem?.Title}] has been seen by our Team and we are now working on it.</p>
-                                <p>You can track your Task Status here: <a href="${SDCDetails?.SDCTaskUrl}">${SDCDetails?.SDCTaskUrl}</a></p>
-                                <p>If you want to see all your Tasks or all Sharweb Tasks click here: <a href="${SDCDetails?.SDCTaskDashboard}">Team Dashboard - Task View</a></p>
-                                <p>Best regards,<br />Your HHHH Support Team</p>
-                                <br>
-                                <h4>Client Email : - ${SDCDetails?.SDCEmail}
-                            </div><br><br>`
-
+                            if(UpdateItem?.ClientActivityJson?.SDCCreatedBy?.length>0){
+                                SDCDetails=UpdateItem?.ClientActivityJson;
+                                Subject = "[ SDC Client Task - " + siteType + " - " + SDCDetails?.SDCCreatedBy + " ] " + UpdateItem?.Title + "";
+                                if (UpdateItem?.PercentComplete < 90) {
+                                    extraBody = `<div>
+                                    <h2>Email Subject : Your Task has been seen - [${SDCDetails?.SDCTaskId} ${UpdateItem?.Title}]</h2>
+                                    <p>Message:</p>
+                                    <p>Dear ${SDCDetails?.SDCCreatedBy},</p>
+                                    <p>Thank you for your Feedback!</p>
+                                    <p>Your Task - [${UpdateItem?.Title}] has been seen by our Team and we are now working on it.</p>
+                                    <p>You can track your Task Status here: <a href="${SDCDetails?.SDCTaskUrl}">${SDCDetails?.SDCTaskUrl}</a></p>
+                                    <p>If you want to see all your Tasks or all Sharweb Tasks click here: <a href="${SDCDetails?.SDCTaskDashboard}">Team Dashboard - Task View</a></p>
+                                    <p>Best regards,<br />Your HHHH Support Team</p>
+                                    <br>
+                                    <h4>Client Email : - ${SDCDetails?.SDCEmail}
+                                </div><br><br>`
+                                }else  if (UpdateItem?.PercentComplete == 90) {
+                                    extraBody = `<div>
+                                    <h2>Email Subject : Your Task has been completed - [${SDCDetails?.SDCTaskId} ${UpdateItem?.Title}]</h2>
+                                    <p>Message:</p>
+                                    <p>Dear ${SDCDetails?.SDCCreatedBy},</p>
+                                    <p>Thank you for your Feedback!</p>
+                                    <p>Your Task - [${UpdateItem?.Title}] has been completed.</p>
+                                    <p>You can review your Task here:: <a href="${SDCDetails?.SDCTaskUrl}">${SDCDetails?.SDCTaskUrl}</a></p>
+                                    <p>If you want to see all your Tasks or all Shareweb Tasks click here: <a href="${SDCDetails?.SDCTaskDashboard}">Team Dashboard - Task View</a></p>
+                                    <p>Best regards,<br />Your HHHH Support Team</p>
+                                    <br>
+                                    <h4>Client Email : - ${SDCDetails?.SDCEmail}
+                                </div><br><br>`
+                                }
+                            
+    
+                                body = extraBody + body
                             }
-                        
-
-                            body = extraBody + body
+                           
                         }
                         var from = '',
                             to = ToEmails,
