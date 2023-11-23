@@ -6,15 +6,19 @@ import ImagesC from '../../../../EditPopupFiles/ImageInformation';
 import { myContextValue } from '../../../../../globalComponents/globalCommon'
 import HtmlEditorCard from '../../../../../globalComponents/HtmlEditor/HtmlEditor';
 import moment from 'moment';
+import CountryContactEditPopup from './CountryContactEditPopup';
 let JointData:any=[];
 const EditInstitutionPopup=(props:any)=>{
     const myContextData2: any = React.useContext<any>(myContextValue)
     const [imagetab, setImagetab] = React.useState(false);
     const [URLs, setURLs] = React.useState([]);
+    const [countryData, setCountryData] = React.useState([]);
     const [status, setStatus] = React.useState({countryPopup: false });
+    const [currentCountry, setCurrentCountry] :any= React.useState([])
     const [updateData, setUpdateData]:any = React.useState({});
     let callBack=props?.callBack;
 React.useEffect(()=>{
+    getSmartMetaData();
     if(myContextData2.allSite?.MainSite){
     jointInstitutionDetails(props.props.Id);
     }else{
@@ -36,6 +40,9 @@ const HrGmbhInstitutionDeatails=async(Id:any)=>{
               
                 let URL: any[] = JSON.parse(data.SocialMediaUrls != null ? data.SocialMediaUrls : ["{}"]);
                 setURLs(URL);
+                if (data?.SmartCountries?.length > 0) {
+                    setCurrentCountry(data.SmartCountries);
+                }
                 // if (data?.Institution != null && data?.Institution!=undefined) {
                 //    setCurrentInstitute(data?.Institution);
                 // }
@@ -60,18 +67,20 @@ const HrGmbhInstitutionDeatails=async(Id:any)=>{
         try {
             let web = new Web(myContextData2?.allListId?.jointSiteUrl);
             await web.lists.getById(myContextData2?.allListId?.HHHHInstitutionListId)
-                .items
-                .select("Id,Title,FirstName,FullName,Company,JobTitle,About,InstitutionType,SocialMediaUrls,ItemType,WorkCity,ItemImage,WorkCountry,WorkAddress,WebPage,CellPhone,HomePhone,Email,SharewebSites,Created,Author/Id,Author/Title,Modified,Editor/Id,Editor/Title")
+                .items .getById(id)
+                .select("Id","Title","FirstName","FullName","Company","JobTitle","About","InstitutionType","SocialMediaUrls","ItemType","WorkCity","ItemImage","WorkCountry","WorkAddress","WebPage","CellPhone","HomePhone","Email","SharewebSites","Created","Author/Id","Author/Title","Modified","Editor/Id","Editor/Title")
                 .expand("Author", "Editor",)
-                .getById(id)
-                .get().then((data: any) => {
+              .get().then((data: any) => {
                 let URL: any[] = JSON.parse(data.SocialMediaUrls != null ? data.SocialMediaUrls : ["{}"]);
                 setURLs(URL);
                 data.Item_x002d_Image = data?.ItemImage;
-                delete data.LinkedIn;
-                delete data.Facebook;
-                delete data.Twitter;
-                delete data.Instagram;
+                if (data?.SmartCountries?.length > 0) {
+                    setCurrentCountry(data.SmartCountries);
+                }
+                // delete data?.LinkedIn;
+                // delete data?.Facebook;
+                // delete data?.Twitter;
+                // delete data?.Instagram;
                    setUpdateData(data);
                    JointData=data;
                 }).catch((error: any) => {
@@ -175,7 +184,7 @@ const HrGmbhInstitutionDeatails=async(Id:any)=>{
 
 
 
- //*****************Save for Joint,GMBH,HR Data Update***************************************** */
+ //*****************Save for Joint,GMBH Data Update***************************************** */
  const UpdateDetails = async () => {
     let urlData: any;
     if(updateData?.WebPage!=undefined){
@@ -246,8 +255,41 @@ const HrGmbhInstitutionDeatails=async(Id:any)=>{
    
 
 }
+//*****************save function End *************** */
 
-   
+//***********samrt Meta data call function To get The country data ********************* */
+const getSmartMetaData = async () => {
+    try {
+        let web = new Web(myContextData2?.allListId?.jointSiteUrl);
+        let data = await web.lists.getById(myContextData2?.allListId?.MAIN_SMARTMETADATA_LISTID)
+            .items.top(4999).get()
+        data.map((item: any, index: any) => {
+            // let countryData:any=[];
+            // let stateData:any=[];
+            if (item.TaxType == "Countries") {
+                countryData.push(item)
+               
+            }
+            // else if (item.TaxType == "State") {
+            //     stateData.push(item)
+            // }
+
+        })
+        setCountryData(countryData);
+        // setStateData(stateData);
+    } catch (error) {
+        console.log("Error:", error.message);
+    }
+
+}
+//************samrt Meta  End function ************* */
+const CloseCountryPopup = React.useCallback((data:any) => {
+    setStatus({ ...status, countryPopup: false })
+    // setCountryPopup(false);
+    if(data!=undefined){
+        setUpdateData(data);
+    }
+}, []);
 return(
     <>
       <Panel onRenderHeader={onRenderCustomHeadersmartinfo}
@@ -438,7 +480,7 @@ return(
                     <div className='align-items-center d-flex justify-content-between me-3 px-4 py-2'>
                         <div>
                             {console.log("footerdiv")}
-                            <div><span className='pe-2'>Created</span><span className='pe-2'> {updateData?.Created ? moment(updateData?.Created).format("DD/MM/YYYY") : ''}&nbsp;By</span><span><a>{updateData?.FullName ? updateData?.FullName : ''}</a></span></div>
+                            <div><span className='pe-2'>Created</span><span className='pe-2'> {updateData?.Created ? moment(updateData?.Created).format("DD/MM/YYYY") : ''}&nbsp;By</span><span><a>{updateData?.Author ? updateData?.Author?.Title : ''}</a></span></div>
                             <div><span className='pe-2'>Last modified</span><span className='pe-2'> {updateData?.Modified ? moment(updateData?.Modified).format("DD/MM/YYYY") : ''}&nbsp;By</span><span><a>{updateData?.Editor ? updateData?.Editor.Title : ''}</a></span></div>
                             <div className='alignCenter'><span 
                             onClick={deleteUserDtl}
@@ -456,7 +498,7 @@ return(
                             </span>}
                         
                             {myContextData2.allSite?.MainSite && <span>|</span>}
-                          <a href={`${myContextData2.allSite?.MainSite?myContextData2?.allListId?.jointSiteUrl:myContextData2?.allListId?.siteUrl}/Lists/institution/EditForm.aspx?ID=${updateData?.Id}`}  data-interception="off"
+                          <a href={`${myContextData2.allSite?.MainSite?myContextData2?.allListId?.jointSiteUrl:myContextData2?.allListId?.siteUrl}/Lists/Institutions/EditForm.aspx?ID=${updateData?.Id}`}  data-interception="off"
                             target="_blank">Open out-of-the-box form</a> 
 
                             <button className='btn btn-primary ms-1  mx-2'
@@ -473,7 +515,9 @@ return(
                     </div>  
                     </div>
 
-
+                    {status.countryPopup ? <CountryContactEditPopup popupName="Country" 
+                    selectedCountry={currentCountry} 
+                    callBack={CloseCountryPopup} data={countryData} updateData={updateData} /> : null}
             </Panel>
     </>
 )
