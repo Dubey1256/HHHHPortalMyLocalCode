@@ -24,7 +24,7 @@ React.useEffect(()=>{
       {hoverDetails?.UserGroup?.Title}
       </div>
       <div className='col-sm-4'>
-      (${hoverDetails?.Team})
+      ({hoverDetails?.Team})
       </div>
       </div>
     )
