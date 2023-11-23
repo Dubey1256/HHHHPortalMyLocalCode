@@ -33,7 +33,7 @@ React.useEffect(()=>{
     <>
          {console.log(hoverDetails)}
         <Tooltip title={TootltipDetails()} arrow>
-         <span>{props?.items?.AuthorName}</span>
+        <a href={`${props["siteUrl"]}/SitePages/TaskDashboard.aspx?UserId=${props?.items?.AuthorId}&Name=${props?.items?.AuthorName}`} target="_blank" data-interception="off" title={props?.items?.AuthorName}>{props?.items?.AuthorName}</a>
          </Tooltip>
     
     </>
