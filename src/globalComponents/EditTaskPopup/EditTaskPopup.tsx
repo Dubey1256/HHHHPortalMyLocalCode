@@ -2275,8 +2275,8 @@ const EditTaskPopup = (Items: any) => {
                             let SDCRecipientMail: any[] = [];
                             EditData.ClientTask = Items?.SDCTaskDetails;
                             taskUsers?.map((User: any) => {
-                                //  if (User?.Title?.toLowerCase() == 'robert ungethuem' || User?.Title?.toLowerCase() == 'stefan hochhuth') {
-                                if (User?.Title?.toLowerCase() == 'abhishek tiwari') {
+                                  if (User?.Title?.toLowerCase() == 'robert ungethuem' || User?.Title?.toLowerCase() == 'stefan hochhuth') {
+                              //  if (User?.Title?.toLowerCase() == 'abhishek tiwari') {
                                     SDCRecipientMail.push(User);
                                 }
                             });
