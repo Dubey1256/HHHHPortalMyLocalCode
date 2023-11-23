@@ -3134,7 +3134,7 @@ export default class CategoriesWeeklyMultipleReport extends React.Component<ICat
         contentItem['Client Category'] = '';
       }
       if (item.SmartHoursTotal != undefined && item.SmartHoursTotal != undefined) {
-        contentItem['Smart Hours'] = parseFloat(item.AdjustedTime);
+        contentItem['Smart Hours'] = parseFloat(item.TotalValue);
       } else {
         contentItem['Smart Hours'] = '';
       }
