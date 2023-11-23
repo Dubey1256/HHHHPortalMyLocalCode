@@ -92,19 +92,7 @@ const EmailComponenet = (props: any) => {
     console.log(props);
 
     let mention_To: any = [];
- 
-    if(props?.items.Approvee != undefined){
-      props?.taskUser.filter((ele:any)=>{
-        if(ele.AssingedToUser?.Id == props?.items.Approvee?.Id){
-          mention_To.push(ele?.Email);
-        }
-      })
-     
-    }
-    else{
-      mention_To.push(props?.items?.Author[0]?.Name?.replace('{', '').replace('}', '').trim());
-    }
-   
+    mention_To.push(props?.items?.Author[0]?.Name?.replace('{', '').replace('}', '').trim());
     console.log(mention_To);
     if (mention_To.length > 0) {
       let emailprops = {
@@ -157,8 +145,8 @@ const EmailComponenet = (props: any) => {
       {props.items != null && props?.items?.Approver != undefined &&
         <div id='htmlMailBodyemail' style={{ display: 'none' }}>
           <div style={{ marginTop: "2pt" }}>Hi,</div>
-          {taskpermission != null && taskpermission == "Approve" && <div style={{ marginTop: "2pt" }}>Your task has been Approved by {props.items?.Approver?.Title},team will process it further.Please refer to the Approved Comments.</div>}
-          {taskpermission != null && taskpermission == "Reject" && <div style={{ marginTop: "2pt" }}>Your task has been Rejected by {props?.items?.Approver?.Title},team will process it further. Please refer to the  Rejected Comments.</div>}
+          {taskpermission != null && taskpermission == "Approve" && <div style={{ marginTop: "2pt" }}>Your task has been Approved by {props?.currentUser[0]?.Title},team will process it further.Please refer to the Approved Comments.</div>}
+          {taskpermission != null && taskpermission == "Reject" && <div style={{ marginTop: "2pt" }}>Your task has been Rejected by {props?.currentUser[0]?.Title},team will process it further. Please refer to the  Rejected Comments.</div>}
 
           <div style={{ marginTop: "11.25pt" }}>
             <a href={`${props.items["siteUrl"]}/SitePages/Task-Profile.aspx?taskId=${props?.items?.Id}&Site=${props?.items?.siteType}`} target="_blank" data-interception="off">{props?.items["Title"]}</a><u></u><u></u></div>
