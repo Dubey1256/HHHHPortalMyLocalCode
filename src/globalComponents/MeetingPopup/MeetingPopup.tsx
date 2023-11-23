@@ -784,6 +784,8 @@ const MeetingPopupComponent = (Props: any) => {
                                 <div className="col-10 ps-0 pe-0 pt-4">
                                                 <div className="time-status mt--2">
                                                     <div className="input-group">
+                                                        <label className="form-label full-width">Priority
+                                                        </label>
                                                         <input type="text" className="form-control"
                                                             placeholder="Enter Priority"
                                                             value={MeetingData.PriorityRank ? MeetingData.PriorityRank : ''}
