@@ -3160,7 +3160,7 @@ export default class CategoriesWeeklyMultipleReport extends React.Component<ICat
         contentItem['Adjusted Hours Roundup (In days)'] = '';
       }
       this.sheetsItems.push(contentItem);
-      this.getexportChilds(item.childs);
+      this.getexportChilds(item.subRows);
 
 
 
