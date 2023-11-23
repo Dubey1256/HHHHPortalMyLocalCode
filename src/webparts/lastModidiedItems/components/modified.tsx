@@ -33,6 +33,7 @@ export const Modified = (props: any) => {
   const [serviceChecked, setServiceChecked] = useState<any>(false);
   const [isButtonDisabled, setIsButtonDisabled] = useState(true);
   const childRef = React.useRef<any>();
+  let masterTaskData:any;
   let context = props?.props?.context
   let allDataFinal: any = [];
   let allSitesDummy: any = [];
@@ -106,7 +107,7 @@ export const Modified = (props: any) => {
   const getMasterTaskList = async () => {
     var web = new Web(baseUrl);
     try {
-      var masterTaskData = await web.lists.getById(props?.props?.MasterTaskListID).items.select("Id,Title,PortfolioStructureID,ComponentCategory/Id,ComponentCategory/Title,PortfolioType/Id,PortfolioType/Title").expand('PortfolioType,ComponentCategory').getAll();
+       masterTaskData = await web.lists.getById(props?.props?.MasterTaskListID).items.select("Id,Title,PortfolioStructureID,ComponentCategory/Id,ComponentCategory/Title,PortfolioType/Id,PortfolioType/Title").expand('PortfolioType,ComponentCategory').getAll();
     } catch (error) {
       console.error(error)
     }
@@ -224,6 +225,10 @@ export const Modified = (props: any) => {
                 item.authorDateSearch = item.Created + item.authorName;
               }
             })
+            if( item?.authorImage==undefined){
+              item.authorName=item.Author.Title;
+              item.authorImage="https://hhhhteams.sharepoint.com/sites/HHHH/SiteCollectionImages/ICONS/32/icon_user.jpg";    
+            }
           }
           if (item.Editor != undefined) {
             allUsers.map((Users: any) => {
@@ -238,9 +243,16 @@ export const Modified = (props: any) => {
       }
       else {
         data?.map((item: any) => {
+          item.fontColorTask ='#000066';
+          (masterTaskData!=undefined?masterTaskData:storeMasterData).map((masterTaskValue: any) => {
+            if (item?.Portfolio?.Id == masterTaskValue?.Id) {
+              if (masterTaskValue?.PortfolioType?.Title == 'Service') {
+                item.fontColorTask = '#228b22'
+              }
+            }      
+          })
           item.siteType = allSite?.TabName
           item.listId = allSite.ListId;
-          item.fontColorTask ='#000066'
           item.siteUrl = baseUrl;
           item.siteUrlOld = item.siteUrl.replace('/SP', '')
           item.siteImage = allSite?.SiteIcon;
@@ -269,6 +281,10 @@ export const Modified = (props: any) => {
 
               }
             })
+            if( item?.authorImage==undefined){
+              item.authorName=item.Author.Title;
+              item.authorImage="https://hhhhteams.sharepoint.com/sites/HHHH/SiteCollectionImages/ICONS/32/icon_user.jpg";    
+            }
           }
           if (item.Editor != undefined) {
             (Users != undefined ? Users : allUsers).map((Users: any) => {
@@ -383,7 +399,6 @@ export const Modified = (props: any) => {
         duplicate.map((dupData: any) => {
           dupData.map((items: any) => {
             if (items.siteType != 'DOCUMENTS' && items.siteType != 'FOLDERS' && items.siteType != 'COMPONENTS' && items.siteType != 'SERVICES') {
-              items.fontColorTask = '#000066'
               duplicateValue.push(items)
             }
           })
@@ -406,7 +421,6 @@ export const Modified = (props: any) => {
         duplicate.map((dupData: any) => {
           dupData.map((items: any) => {
             if (items.siteType == allSite.TabName) {
-              items.fontColorTask = '#000066'
               duplicateValue.push(items)
               currentvalue.push(items)
             }
@@ -432,8 +446,7 @@ export const Modified = (props: any) => {
           if (type=='ALL'&& item.siteType!='DOCUMENTS' && item.siteType != 'FOLDERS' && item.siteType != 'COMPONENTS' && item.siteType != 'SERVICES') {
             storeMasterData.map((masterTaskValue: any) => {
               if (item?.Portfolio?.Id == masterTaskValue?.Id) {
-                if (masterTaskValue?.PortfolioType?.Title == 'Component') {
-                  item.fontColorTask = '#000066'
+                if (masterTaskValue?.PortfolioType?.Title == 'Component') {               
                   storeComponent.push(item)
                 }
                 if (masterTaskValue?.PortfolioType?.Title == 'Service') {
@@ -448,7 +461,6 @@ export const Modified = (props: any) => {
             storeMasterData.map((masterTaskValue: any) => {
               if (item?.Portfolio?.Id == masterTaskValue?.Id) {
                 if (masterTaskValue?.PortfolioType?.Title == 'Component') {
-                  item.fontColorTask = '#000066'
                   storeComponent.push(item)
                 }
                 if (masterTaskValue?.PortfolioType?.Title == 'Service') {
@@ -505,11 +517,9 @@ export const Modified = (props: any) => {
       duplicate.map((dupdata: any) => {
         dupdata.map((data: any) => {
           if(type=='ALL'&& data.siteType!='DOCUMENTS' && data.siteType != 'FOLDERS' && data.siteType != 'COMPONENTS' && data.siteType != 'SERVICES'){
-            data.fontColorTask = '#000066'
             storeComponent.push(data)
           }
           else if (data.siteType == type) {
-            data.fontColorTask = '#000066'
             storeComponent.push(data)
           }
         })
@@ -529,7 +539,6 @@ export const Modified = (props: any) => {
             storeMasterData.map((masterTaskValue: any) => {
               if (item?.Portfolio?.Id == masterTaskValue?.Id) {
                 if (masterTaskValue?.PortfolioType?.Title == 'Component') {
-                  item.fontColorTask = '#000066'
                   storeServices.push(item)
                 }
                 if (masterTaskValue?.PortfolioType?.Title == 'Service') {
@@ -544,7 +553,6 @@ export const Modified = (props: any) => {
             storeMasterData.map((masterTaskValue: any) => {
               if (item?.Portfolio?.Id == masterTaskValue.Id) {
                 if (masterTaskValue.PortfolioType?.Title == 'Component') {
-                  item.fontColorTask = '#000066'
                   storeServices.push(item)
                 }
                 if (masterTaskValue.PortfolioType?.Title == 'Service') {
@@ -579,7 +587,6 @@ export const Modified = (props: any) => {
             storeMasterData.map((masterTaskValue: any) => {
               if (item?.Portfolio?.Id == masterTaskValue.Id) {
                 if (masterTaskValue?.PortfolioType?.Title == 'Component') {
-                  item.fontColorTask = '#000066'
                   storeServices.push(item)
                 }             
               }
@@ -589,7 +596,6 @@ export const Modified = (props: any) => {
             storeMasterData.map((masterTaskValue: any) => {
               if (item?.Portfolio?.Id == masterTaskValue.Id) {
                 if (masterTaskValue?.PortfolioType?.Title == 'Component') {
-                  item.fontColorTask = '#000066'
                   storeServices.push(item)
                 }             
               }
@@ -603,11 +609,9 @@ export const Modified = (props: any) => {
       duplicate.map((dupdata: any) => {
         dupdata.map((data: any) => {
           if(type=='ALL'&& data.siteType!='DOCUMENTS' && data.siteType != 'FOLDERS' && data.siteType != 'COMPONENTS' && data.siteType != 'SERVICES'){
-            data.fontColorTask = '#000066'
             storeServices.push(data)
           }
           if (data.siteType == type) {
-            data.fontColorTask = '#000066'
             storeServices.push(data)
           }
         })
@@ -896,7 +900,7 @@ export const Modified = (props: any) => {
 
         },
         {
-          accessorKey: 'PriorityRank', placeholder: 'PriorityRank', header: ''
+          accessorKey: 'PriorityRank', placeholder: 'Priority', header: ''
         },
         {
           accessorKey: 'Modified'
@@ -1027,7 +1031,7 @@ export const Modified = (props: any) => {
 
         },
         {
-          accessorKey: 'PriorityRank', placeholder: 'PriorityRank', header: '' 
+          accessorKey: 'PriorityRank', placeholder: 'Priority', header: '' 
         },
         {
           accessorKey: "teamUserName", placeholder: "Team Member", header: "", size: 100,
