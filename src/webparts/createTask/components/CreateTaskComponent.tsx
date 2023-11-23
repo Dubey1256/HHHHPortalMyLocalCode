@@ -333,7 +333,10 @@ function CreateTaskComponent(props: any) {
                         setSave(saveValue);
 
                         feedback = [{ "Title": "FeedBackPicture16019", "FeedBackDescriptions": [{ "Title": SDCDescription?.length > 0 && SDCDescription != null ? SDCDescription : SDCTitle, "Completed": false, "isShowComment": true, "Comments": [{ "Title": `Created ${SDCCreatedDate}  By ${SDCCreatedBy}   TaskUrl-${SDCPageUrl}`, "Created": moment(new Date()).tz("Europe/Berlin").format('DD MMM YYYY HH:mm'), "editableItem": false, "AuthorName": loggedInUser?.Title, "AuthorImage": loggedInUser?.Item_x0020_Cover?.Url }], "Id": "11185" }], "ImageDate": "16019" }]
-                        ClientActivityJson = [{ "ClientActivityId": SDCTaskId, "ClientSite": SDCSiteType }]
+                        let ccAct={...BurgerMenuData,
+                            "ClientActivityId": SDCTaskId, "ClientSite": SDCSiteType 
+                        }
+                        ClientActivityJson = [ccAct];
                         if (SDCPriority != undefined && SDCPriority != '' && SDCPriority != null) {
                             setActiveTile("rank", "rank", SDCPriority)
                         }
