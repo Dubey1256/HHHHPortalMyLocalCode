@@ -98,7 +98,7 @@ const HrGmbhInstitutionDeatails=async(Id:any)=>{
                     <img className='workmember' 
                     src={updateData?.ItemImage != undefined ? updateData?.ItemImage.Url : "https://hhhhteams.sharepoint.com/sites/HHHH/SiteCollectionImages/ICONS/32/InstitutionPicture.jpg"}
                      />Edit Institution- 
-                      {/* {updateData?.FullName} */}
+                      {updateData?.Title}
                 </div>
                 <Tooltip ComponentId='3299' />
             </>
