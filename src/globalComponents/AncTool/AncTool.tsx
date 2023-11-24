@@ -1079,7 +1079,7 @@ const AncTool = (props: any) => {
                 isOpen={modalIsOpen}
                 onDismiss={setModalIsOpenToFalse}
                 onRenderHeader={onRenderCustomHeaderMain}
-                isBlocking={modalIsOpen}>
+                isBlocking={false}>
                 <div className={ServicesTaskCheck ? "serviepannelgreena" : ""} >
 
                     <ModalBody>
@@ -1366,7 +1366,7 @@ const AncTool = (props: any) => {
                 onDismiss={cancelPathFolder}
                 onRenderHeader={ChoosePathCustomHeader}
                 onRenderFooter={onRenderCustomFooterMain}
-                isBlocking={choosePathPopup}>
+                isBlocking={false}>
                 <div id="folderHierarchy">
                     <ul id="groupedFolders" className='p-0'>
                         {AllFoldersGrouped.map((folder: any) => (
@@ -1383,7 +1383,7 @@ const AncTool = (props: any) => {
                 isOpen={uploadEmailModal}
                 onDismiss={cancelPathFolder}
                 onRenderHeader={ChoosePathCustomHeaderEmail}
-                isBlocking={choosePathPopup}>
+                isBlocking={false}>
 
                 <Col>
                     <div className="panel">
