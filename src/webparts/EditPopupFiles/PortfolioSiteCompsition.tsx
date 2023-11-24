@@ -1119,6 +1119,8 @@ const SiteCompositionComponent = (Props: any) => {
 
         if (MakeScProtected) {
             SiteCompositionSettingData[0].Protected = true;
+        }else{
+            SiteCompositionSettingData[0].Protected = false;
         }
 
         try {
@@ -1291,6 +1293,8 @@ const SiteCompositionComponent = (Props: any) => {
 
         if (MakeScProtected) {
             finalSiteCompositionSettingData[0].Protected = true;
+        }else{
+            finalSiteCompositionSettingData[0].Protected = false;
         }
 
         let MakeUpdateJSONDataObject: any;
