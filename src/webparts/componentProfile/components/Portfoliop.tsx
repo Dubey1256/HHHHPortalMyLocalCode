@@ -915,8 +915,7 @@ const inlineCallBack = React.useCallback((item: any) => {
                             data-interception="off"
                             href={
                               SelectedProp.siteUrl +
-                              "/SitePages/Team-Portfolio.aspx?PortfolioType=" +
-                              item?.PortfolioType?.Title
+                              "/SitePages/Team-Portfolio.aspx"
                             }
                           >
                             Team-Portfolio
