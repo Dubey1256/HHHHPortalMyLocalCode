@@ -8,6 +8,7 @@ import CreateContactComponent from './popup-components/CreateContact';
 import { ColumnDef } from '@tanstack/react-table';
 import GlobalCommanTable from '../../../../globalComponents/GroupByReactTableComponents/GlobalCommanTable';
 import { myContextValue } from '../../../../globalComponents/globalCommon'
+import EditInstitutionPopup from './popup-components/EditInstitutionPopup';
 let allListId: any = {};
 let allSite: any = {
     GMBHSite: false,
@@ -19,9 +20,9 @@ const ContactMainPage = (props: any) => {
     const [EmployeeData, setEmployeeData] = useState([]);
     const [institutionData, setInstitutionsData] = useState([]);
     const [EditContactStatus, setEditContactStatus] = useState(false);
-
+    const [EditInstitutionStatus, setEditInstitutionStatus] = useState(false);
     const [EditContactData, setEditContactData] = useState([]);
-
+    const [editInstitutionData, setEditInstitutionData] = useState([]);
     const [userEmails, setUserEmails] = useState([]);
     const [tableStatus, setTableStatus] = useState(true);
     const [searchedData, setSearchedData] = useState([]);
@@ -185,14 +186,7 @@ const ContactMainPage = (props: any) => {
             console.log("Error:", error.message);
         }
     }
-    const contactNavButtonFunction = () => {
-        setTableStatus(true);
-        setBtnVisibility(true);
-    }
-    const instituteNavButtonFunction = () => {
-        setTableStatus(false);
-        setBtnVisibility(false);
-    }
+ 
     //***********************************Bulk Email function  */
     const sendEmail = () => {
         let emails = '';
@@ -224,6 +218,7 @@ const ContactMainPage = (props: any) => {
         setAddToLocalDBStatus(false);
         setCreateContactStatus(false);
         setCreateInstituteStatus(false);
+        setEditInstitutionStatus(false);
     }, []);
 
     const addToLocalDBClosePopup = () => {
@@ -235,6 +230,10 @@ const ContactMainPage = (props: any) => {
         EmployeeDetails();
         InstitutionDetails();
     }, [])
+    const openInstitutionPopup=(editItems:any)=>{
+        setEditInstitutionStatus(true);
+        setEditInstitutionData(editItems);
+    }
     //**************************End All popup function and popup callback function****************************************** */
 
 
@@ -378,10 +377,12 @@ const ContactMainPage = (props: any) => {
         { accessorKey: "WorkCity", placeholder: "City", header: "", size: 80, },
         { accessorKey: "SmartCountriesIns", placeholder: "Country", header: "", size: 80, },
         { accessorKey: "SitesTagged", placeholder: "Site", header: "", size: 80, },
+       
         {
             cell: ({ row }) => (
                 <>
-                    {/* <a onClick={() => EditInstitutionPopup(row.original)} title="Edit"><svg xmlns="http://www.w3.org/2000/svg" width="30" height="25" viewBox="0 0 48 48" fill="none"><path fill-rule="evenodd" clip-rule="evenodd" d="M7 21.9323V35.8647H13.3613H19.7226V34.7589V33.6532H14.3458H8.96915L9.0264 25.0837L9.08387 16.5142H24H38.9161L38.983 17.5647L39.0499 18.6151H40.025H41V13.3076V8H24H7V21.9323ZM38.9789 12.2586L39.0418 14.4164L24.0627 14.3596L9.08387 14.3027L9.0196 12.4415C8.98428 11.4178 9.006 10.4468 9.06808 10.2838C9.1613 10.0392 11.7819 9.99719 24.0485 10.0441L38.9161 10.1009L38.9789 12.2586ZM36.5162 21.1565C35.8618 21.3916 34.1728 22.9571 29.569 27.5964L23.4863 33.7259L22.7413 36.8408C22.3316 38.554 22.0056 39.9751 22.017 39.9988C22.0287 40.0225 23.4172 39.6938 25.1029 39.2686L28.1677 38.4952L34.1678 32.4806C41.2825 25.3484 41.5773 24.8948 40.5639 22.6435C40.2384 21.9204 39.9151 21.5944 39.1978 21.2662C38.0876 20.7583 37.6719 20.7414 36.5162 21.1565ZM38.5261 23.3145C39.2381 24.2422 39.2362 24.2447 32.9848 30.562C27.3783 36.2276 26.8521 36.6999 25.9031 36.9189C25.3394 37.0489 24.8467 37.1239 24.8085 37.0852C24.7702 37.0467 24.8511 36.5821 24.9884 36.0529C25.2067 35.2105 25.9797 34.3405 31.1979 29.0644C35.9869 24.2225 37.2718 23.0381 37.7362 23.0381C38.0541 23.0381 38.4094 23.1626 38.5261 23.3145Z" fill="#333333"></path></svg></a> */}
+                    {/* <a onClick={() => EditContactPopup(row.original)} title="Edit"><svg xmlns="http://www.w3.org/2000/svg" width="30" height="25" viewBox="0 0 48 48" fill="none"><path fill-rule="evenodd" clip-rule="evenodd" d="M7 21.9323V35.8647H13.3613H19.7226V34.7589V33.6532H14.3458H8.96915L9.0264 25.0837L9.08387 16.5142H24H38.9161L38.983 17.5647L39.0499 18.6151H40.025H41V13.3076V8H24H7V21.9323ZM38.9789 12.2586L39.0418 14.4164L24.0627 14.3596L9.08387 14.3027L9.0196 12.4415C8.98428 11.4178 9.006 10.4468 9.06808 10.2838C9.1613 10.0392 11.7819 9.99719 24.0485 10.0441L38.9161 10.1009L38.9789 12.2586ZM36.5162 21.1565C35.8618 21.3916 34.1728 22.9571 29.569 27.5964L23.4863 33.7259L22.7413 36.8408C22.3316 38.554 22.0056 39.9751 22.017 39.9988C22.0287 40.0225 23.4172 39.6938 25.1029 39.2686L28.1677 38.4952L34.1678 32.4806C41.2825 25.3484 41.5773 24.8948 40.5639 22.6435C40.2384 21.9204 39.9151 21.5944 39.1978 21.2662C38.0876 20.7583 37.6719 20.7414 36.5162 21.1565ZM38.5261 23.3145C39.2381 24.2422 39.2362 24.2447 32.9848 30.562C27.3783 36.2276 26.8521 36.6999 25.9031 36.9189C25.3394 37.0489 24.8467 37.1239 24.8085 37.0852C24.7702 37.0467 24.8511 36.5821 24.9884 36.0529C25.2067 35.2105 25.9797 34.3405 31.1979 29.0644C35.9869 24.2225 37.2718 23.0381 37.7362 23.0381C38.0541 23.0381 38.4094 23.1626 38.5261 23.3145Z" fill="#333333"></path></svg></a> */}
+                    <span onClick={() => openInstitutionPopup(row?.original)} title="Edit" className='svg__iconbox svg__icon--edit hreflink'></span>
                 </>
             ),
             accessorKey: '',
@@ -390,7 +391,7 @@ const ContactMainPage = (props: any) => {
             header: '',
             id: 'row.original',
             size: 10,
-        }
+        },
         ],
         [searchedInstituteData]);
 
@@ -493,9 +494,10 @@ const ContactMainPage = (props: any) => {
              
             </div>
             {EditContactStatus ? <HHHHEditComponent props={EditContactData}  callBack={ClosePopup}  /> : null}
-            {/* {AddToLocalDBStatus ? <AddToLocalDBComponent callBack={addToLocalDBClosePopup} data={userEmails} /> : null}
+            {AddToLocalDBStatus ? <AddToLocalDBComponent callBack={addToLocalDBClosePopup} data={userEmails} /> : null}
             {CreateContactStatus ? <CreateContactComponent callBack={ClosePopup}data={EmployeeData} userUpdateFunction={updateUserDtlFunction}/> : null}
-            {CreateInstituteStatus ? <CreateContactComponent callBack={ClosePopup} data={institutionData} userUpdateFunction={updateUserDtlFunction} /> : null} */}
+            {CreateInstituteStatus ? <CreateContactComponent callBack={ClosePopup}CreateInstituteStatus={CreateInstituteStatus} data={institutionData} userUpdateFunction={updateUserDtlFunction} /> : null}
+           {EditInstitutionStatus?<EditInstitutionPopup props={editInstitutionData} callBack={ClosePopup}/>:null}
         </div>
         </myContextValue.Provider>
     )

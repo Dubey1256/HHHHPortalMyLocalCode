@@ -278,7 +278,13 @@ const TaskDashboard = (props: any) => {
     const checkTimeEntrySite = (timeEntry: any) => {
         let result = ''
         result = AllTasks?.filter((task: any) => {
-            if (timeEntry[`Task${task?.siteType}`]!=undefined && task?.Id == timeEntry[`Task${task?.siteType}`]?.Id) {
+            let site='';
+            if(task?.siteType=='Offshore Tasks'){
+                site='OffshoreTasks'
+            }else{
+                site=task?.siteType;
+            }
+            if (timeEntry[`Task${site}`]!=undefined && task?.Id == timeEntry[`Task${site}`]?.Id) { 
                 return task;
             }
         });    

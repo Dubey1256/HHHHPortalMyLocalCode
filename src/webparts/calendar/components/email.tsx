@@ -17,6 +17,7 @@ interface NameIdData {
   };
 }
 
+
 let count:any=1;
 let counts = 0;
 let Juniordevavailabel=0;
@@ -52,7 +53,7 @@ const loadleave = async () =>  {
   const results =  await web.lists
           .getById(props.Listdata.SmalsusLeaveCalendar)
           .items.select(
-            "RecurrenceData,Duration,Author/Title,Editor/Title,NameId,Employee/Id,Employee/Title,Category,Description,ID,EndDate,EventDate,Location,Title,fAllDayEvent,EventType,UID,fRecurrence,Event_x002d_Type"
+            "RecurrenceData,Duration,Author/Title,Editor/Title,NameId,Employee/Id,Employee/Title,Category,Description,ID,EndDate,EventDate,Location,Title,fAllDayEvent,EventType,UID,fRecurrence,HalfDay,Event_x002d_Type"
           )
           .expand("Author,Editor,Employee")
           .top(500)
@@ -199,7 +200,11 @@ const loadleave = async () =>  {
   
           if (dayOfWeek !== 0 && dayOfWeek !== 6 && !isWeekend(eventDate, adjustedEndDate)) {
             // Exclude Sunday (0) and Saturday (6), and the event date and end date if they're both on a weekend
-            workingDays++;
+            if (item.HalfDay) {
+              workingDays += 0.5; // Consider half-day
+            } else {
+              workingDays++;
+            }
           }
   
           currentDate.setTime(currentDate.getTime() + oneDay); // Move to the next day
@@ -263,8 +268,7 @@ React.useEffect(() => {
   userId.forEach((username:any) => {
     const matchedData:any = yeardata.filter((member) => member.Employee?.Id === username.NameId);
 
-    if (matchedData.length !== 0) {
-      
+    if (matchedData.length !== 0) { 
       const totalDays = calculateTotalWorkingDays(matchedData);
       nameidData[username.NameId] = {
         NameId: username.NameId,

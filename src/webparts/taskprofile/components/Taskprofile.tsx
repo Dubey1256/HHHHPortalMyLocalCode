@@ -36,6 +36,7 @@ import { Modal, Panel, PanelType } from 'office-ui-fabric-react';
 import { ImReply } from 'react-icons/im';
 import KeyDocuments from './KeyDocument';
 import EODReportComponent from '../../../globalComponents/EOD Report Component/EODReportComponent';
+import ShowTaskTeamMembers from '../../../globalComponents/ShowTaskTeamMembers';
 
 
 // import {MyContext} from './myContext'
@@ -334,7 +335,7 @@ class Taskprofile extends React.Component<ITaskprofileProps, ITaskprofileState> 
 
     taskDetails["Categories"] = category;
     this.taskResult = taskDetails;
-    await this.GetTaskUsers();
+    await this.GetTaskUsers(taskDetails);
     await this.GetSmartMetaData(taskDetails?.ClientCategory, taskDetails?.ClientTime);
 
     this.currentUser = this.GetUserObject(this.props?.userDisplayName);
@@ -404,6 +405,7 @@ class Taskprofile extends React.Component<ITaskprofileProps, ITaskprofileState> 
       StartDate: taskDetails["StartDate"] != null ? moment(taskDetails["StartDate"]).format("DD/MM/YYYY") : "",
       CompletedDate: taskDetails["CompletedDate"] != null ? moment(taskDetails["CompletedDate"])?.format("DD/MM/YYYY") : "",
       TeamLeader: taskDetails["ResponsibleTeam"] != null ? this.GetUserObjectFromCollection(taskDetails["ResponsibleTeam"]) : null,
+      ResponsibleTeam:taskDetails["ResponsibleTeam"] != null ? this.GetUserObjectFromCollection(taskDetails["ResponsibleTeam"]) : null,
       TeamMembers: taskDetails.array != null ? this.GetUserObjectFromCollection(taskDetails.array) : null,
       ItemRank: taskDetails["ItemRank"],
       PercentComplete: (taskDetails["PercentComplete"] * 100),
@@ -429,7 +431,7 @@ class Taskprofile extends React.Component<ITaskprofileProps, ITaskprofileState> 
       Attachments: taskDetails["Attachments"],
       AttachmentFiles: taskDetails["AttachmentFiles"],
       SmartInformationId: taskDetails["SmartInformation"],
-      Approver: taskDetails.Approver != undefined ? taskDetails.Approver[0] : "",
+      Approver: taskDetails.Approver != undefined ?  this.taskUsers.find((userData:any)=>userData?.AssingedToUser?.Id==taskDetails.Approver[0].Id): "",
       ParentTask: taskDetails?.ParentTask,
     };
     if(tempTask?.ClientTime==false){
@@ -547,22 +549,29 @@ class Taskprofile extends React.Component<ITaskprofileProps, ITaskprofileState> 
     return ImagesInfo;
   }
 
-  private async GetTaskUsers() {
+  private async GetTaskUsers(taskDetails:any) {
     let web = new Web(this.props?.siteUrl);
-    let taskUsers = [];
+    let taskUsers:any = [];
+    var taskDeatails=this.state.Result;
     taskUsers = await web.lists
       // .getByTitle("Task Users")
       .getById(this.props.TaskUsertListID)
       .items
-      .select('Id', 'Email', 'Suffix', 'Title', 'Item_x0020_Cover', 'Company', 'AssingedToUser/Title', 'AssingedToUser/Id',)
+      .select('Id', 'Email','Approver/Id','Approver/Title','Approver/Name', 'Suffix', 'UserGroup/Id','UserGroup/Title','Team','Title', 'Item_x0020_Cover', 'Company', 'AssingedToUser/Title', 'AssingedToUser/Id',)
       .filter("ItemType eq 'User'")
-      .expand('AssingedToUser')
+      .expand('AssingedToUser,UserGroup,Approver')
       .get();
+      
     taskUsers?.map((item: any, index: any) => {
       if (this.props?.Context?.pageContext?._legacyPageContext?.userId === (item?.AssingedToUser?.Id) && item?.Company == "Smalsus") {
         this.backGroundComment = true;
       }
+    
+     
     })
+    this.setState({
+      Result: taskDeatails,
+      })
     this.taskUsers = taskUsers;
 
 
@@ -1224,10 +1233,10 @@ class Taskprofile extends React.Component<ITaskprofileProps, ITaskprofileState> 
   }
 
   //===============traffic light function==================
-  private async changeTrafficLigth(index: any, item: any) {
+ private async changeTrafficLigth(index: any, item: any) {
     console.log(index);
     console.log(item);
-    if (this.state.Result["Approver"]?.Id == this?.currentUser[0]?.Id) {
+    if ((this.state.Result["Approver"]?.AssingedToUser?.Id == this?.currentUser[0]?.Id)||(this.state.Result["Approver"]?.Approver[0]?.Id==this?.currentUser[0]?.Id)) {
       let tempData: any = this.state.Result["FeedBack"][0]?.FeedBackDescriptions[index];
       var approvalDataHistory = {
         ApprovalDate: moment(new Date()).tz("Europe/Berlin").format('DD MMM YYYY HH:mm'),
@@ -1245,9 +1254,9 @@ class Taskprofile extends React.Component<ITaskprofileProps, ITaskprofileState> 
         tempData.ApproverData.push(approvalDataHistory)
       }
 
-      tempData?.forEach((ele: any) => {
-        if (ele.ApproverData != undefined && ele.ApproverData.length > 0) {
-            ele.ApproverData?.forEach((ba: any) => {
+     
+        if (tempData?.ApproverData != undefined && tempData?.ApproverData?.length > 0) {
+          tempData?.ApproverData?.forEach((ba: any) => {
                 if (ba.isShowLight == 'Reject') {
                     ba.Status = 'Rejected by'
                 }
@@ -1261,7 +1270,7 @@ class Taskprofile extends React.Component<ITaskprofileProps, ITaskprofileState> 
 
             })
         }
-    })
+  
       console.log(tempData);
       console.log(this.state.Result["FeedBack"][0]?.FeedBackDescriptions);
       await this.onPost();
@@ -1271,11 +1280,13 @@ class Taskprofile extends React.Component<ITaskprofileProps, ITaskprofileState> 
       }
     }
   }
+
+
   private async changeTrafficLigthsubtext(parentindex: any, subchileindex: any, status: any) {
     console.log(parentindex);
     console.log(subchileindex);
     console.log(status);
-    if (this.state.Result["Approver"]?.Id == this.currentUser[0]?.Id) {
+    if ((this.state.Result["Approver"]?.AssingedToUser?.Id == this?.currentUser[0]?.Id)||(this.state.Result["Approver"]?.Approver[0]?.Id==this?.currentUser[0]?.Id)) {
       let tempData: any = this.state.Result["FeedBack"][0]?.FeedBackDescriptions[parentindex];
       var approvalDataHistory = {
         ApprovalDate: moment(new Date()).tz("Europe/Berlin").format('DD MMM YYYY HH:mm'),
@@ -1285,16 +1296,16 @@ class Taskprofile extends React.Component<ITaskprofileProps, ITaskprofileState> 
         isShowLight: status
       }
       tempData.Subtext[subchileindex].isShowLight = status;
-      if (tempData.Subtext[subchileindex].ApproverData != undefined && tempData.Subtext[subchileindex].ApproverData.length > 0) {
+      if (tempData?.Subtext[subchileindex]?.ApproverData != undefined && tempData?.Subtext[subchileindex]?.ApproverData?.length > 0) {
 
         tempData.Subtext[subchileindex].ApproverData.push(approvalDataHistory);
       } else {
         tempData.Subtext[subchileindex].ApproverData = [];
         tempData.Subtext[subchileindex].ApproverData.push(approvalDataHistory)
       }
-      tempData?.Subtext?.forEach((ele: any) => {
-        if (ele.ApproverData != undefined && ele.ApproverData.length > 0) {
-            ele.ApproverData?.forEach((ba: any) => {
+
+        if ( tempData?.Subtext[subchileindex]!=undefined &&tempData?.Subtext[subchileindex]?.ApproverData != undefined) {
+          tempData?.Subtext[subchileindex]?.ApproverData?.forEach((ba: any) => {
                 if (ba.isShowLight == 'Reject') {
                     ba.Status = 'Rejected by'
                 }
@@ -1308,11 +1319,9 @@ class Taskprofile extends React.Component<ITaskprofileProps, ITaskprofileState> 
 
             })
         }
-    })
-
-      console.log(tempData);
-
-      console.log(this.state.emailcomponentopen)
+       console.log(tempData);
+       console.log(this.state.Result["FeedBack"][0]?.FeedBackDescriptions);
+      console.log(this.state?.emailcomponentopen)
       await this.onPost();
 
       if (this.state.Result["FeedBack"] != undefined) {
@@ -1715,11 +1724,6 @@ if(folora=="folora"&&index==0){
                       }
                       {this.state.breadCrumData?.map((breadcrumbitem: any, index: any) => {
                         return <>
-                         {/* Changes done by Robin Start*/}
-                         {breadcrumbitem?.ItemType !== undefined && breadcrumbitem?.ItemType == "Component" && <li>
-                            <a target="_blank" data-interception="off" href={`${this.state.Result["siteUrl"]}/SitePages/Portfolio-Profile.aspx?taskId=${breadcrumbitem?.Id}`}>{breadcrumbitem?.PortfolioType?.Title} - Portfolio</a>
-                          </li>}
-                          {/* Changes done by Robin End*/}
                           {breadcrumbitem?.siteType == undefined && <li>
 
                             <a target="_blank" data-interception="off" href={`${this.state.Result["siteUrl"]}/SitePages/Portfolio-Profile.aspx?taskId=${breadcrumbitem?.Id}`}>{breadcrumbitem?.Title}</a>
@@ -1763,8 +1767,8 @@ if(folora=="folora"&&index==0){
                     <svg xmlns="http://www.w3.org/2000/svg" width="30" height="25" viewBox="0 0 48 48" fill="none"><path fill-rule="evenodd" clip-rule="evenodd" d="M7 21.9323V35.8647H13.3613H19.7226V34.7589V33.6532H14.3458H8.96915L9.0264 25.0837L9.08387 16.5142H24H38.9161L38.983 17.5647L39.0499 18.6151H40.025H41V13.3076V8H24H7V21.9323ZM38.9789 12.2586L39.0418 14.4164L24.0627 14.3596L9.08387 14.3027L9.0196 12.4415C8.98428 11.4178 9.006 10.4468 9.06808 10.2838C9.1613 10.0392 11.7819 9.99719 24.0485 10.0441L38.9161 10.1009L38.9789 12.2586ZM36.5162 21.1565C35.8618 21.3916 34.1728 22.9571 29.569 27.5964L23.4863 33.7259L22.7413 36.8408C22.3316 38.554 22.0056 39.9751 22.017 39.9988C22.0287 40.0225 23.4172 39.6938 25.1029 39.2686L28.1677 38.4952L34.1678 32.4806C41.2825 25.3484 41.5773 24.8948 40.5639 22.6435C40.2384 21.9204 39.9151 21.5944 39.1978 21.2662C38.0876 20.7583 37.6719 20.7414 36.5162 21.1565ZM38.5261 23.3145C39.2381 24.2422 39.2362 24.2447 32.9848 30.562C27.3783 36.2276 26.8521 36.6999 25.9031 36.9189C25.3394 37.0489 24.8467 37.1239 24.8085 37.0852C24.7702 37.0467 24.8511 36.5821 24.9884 36.0529C25.2067 35.2105 25.9797 34.3405 31.1979 29.0644C35.9869 24.2225 37.2718 23.0381 37.7362 23.0381C38.0541 23.0381 38.4094 23.1626 38.5261 23.3145Z" fill="#333333" /></svg>
                     {/* <img style={{ width: '16px', height: '16px', borderRadius: '0' }} src="https://hhhhteams.sharepoint.com/sites/HHHH/SiteCollectionImages/ICONS/32/edititem.gif" /> */}
                   </a>
-                  {this.state.Result["Approver"] != undefined && this.state.Result["Categories"].includes("Approval") && this.currentUser != undefined && this.currentUser.length > 0 && this.state.Result.Approver.Id == this.currentUser[0].Id && this.state.Result["Status"] == "For Approval" &&
-                    this.state.Result["PercentComplete"] == 1 && <span><button onClick={() => this.sendEmail("Approved")} className="btn btn-success ms-3 mx-2">Approve</button><span><button className="btn btn-danger" onClick={() => this.sendEmail("Rejected")}>Reject</button></span></span>
+                  {this.state.Result["Approver"] != undefined  && this.state.Result["Categories"]?.includes("Approval")  && ( (this.currentUser != undefined &&this?.currentUser?.length>0 && this.state.Result?.Approver?.AssingedToUser?.Id == this.currentUser[0]?.Id )||( this.currentUser != undefined &&this?.currentUser?.length>0 && this.state.Result["Approver"]?.Approver[0]?.Id==this?.currentUser[0]?.Id)) && this.state.Result["Status"] == "For Approval" &&
+                    this.state.Result["PercentComplete"] == 1 ? <span><button onClick={() => this.sendEmail("Approved")} className="btn btn-success ms-3 mx-2">Approve</button><span><button className="btn btn-danger" onClick={() => this.sendEmail("Rejected")}>Reject</button></span></span>:null
                   }
                   {this.currentUser != undefined && this.state.sendMail && this.state.emailStatus != "" && <EmailComponenet approvalcallback={() => { this.approvalcallback() }} Context={this.props.Context} emailStatus={this.state.emailStatus} currentUser={this.currentUser} items={this.state.Result} />}
                 </span>
@@ -1814,7 +1818,7 @@ if(folora=="folora"&&index==0){
                       {isShowTimeEntry && <dl>
                         <dt className='bg-Fa'>SmartTime Total</dt>
                         <dd className='bg-Ff'>
-                          <span className="me-1 alignCenter  pull-left"> {this.state.smarttimefunction ? <SmartTimeTotal AllListId={AllListId}callbackTotalTime={(data:any)=>this.callbackTotalTime(data)} props={this.state.Result} Context={this.props.Context} /> : null}</span>
+                          <span className="me-1 alignCenter  pull-left"> {this.state.smarttimefunction ? <SmartTimeTotal AllListId={AllListId}callbackTotalTime={(data:any)=>this.callbackTotalTime(data)} props={this.state.Result} Context={this.props.Context}allTaskUsers={this?.taskUsers} /> : null}</span>
                         </dd>
 
                       </dl>}
@@ -1823,8 +1827,13 @@ if(folora=="folora"&&index==0){
                     <div className='col-md-4 p-0'>
                       <dl>
                         <dt className='bg-Fa'>Team Members</dt>
+                       
                         <dd className='bg-Ff'>
-                          <div className="d-flex align-items-center">
+                        <ShowTaskTeamMembers
+                          props={this.state.Result}
+                          TaskUsers={this?.taskUsers}
+                        />
+                          {/* <div className="d-flex align-items-center">
                             {this.state.Result["TeamLeader"] != null && this.state.Result["TeamLeader"].length > 0 && this.state.Result["TeamLeader"]?.map((rcData: any, i: any) => {
                               return <div className="user_Member_img"><a href={`${this.state.Result["siteUrl"]}/SitePages/TaskDashboard.aspx?UserId=${rcData?.Id}&Name=${rcData?.Title}`} target="_blank" data-interception="off" title={rcData?.Title}>
                                 {rcData.userImage != null && <img className="workmember" src={rcData?.userImage}></img>}
@@ -1874,7 +1883,7 @@ if(folora=="folora"&&index==0){
                               </div>
                             }
 
-                          </div>
+                          </div> */}
 
                         </dd>
                       </dl>
@@ -2134,20 +2143,14 @@ if(folora=="folora"&&index==0){
                                                     className={fbData['isShowLight'] == "Approve" ? "circlelight br_green pull-left green" : "circlelight br_green pull-left"}>
 
                                                   </span>
-                                                  {fbData["ApproverData"] != undefined && fbData.ApproverData.length > 0 &&
+                                                  {fbData["ApproverData"] != undefined && fbData.ApproverData?.length > 0 &&
                                                   <>
-                                                    {fbData?.ApproverData.map((ele: any) => {
-                                                      return (
-                                                        <>
-                                                        <span className="siteColor ms-2 hreflink" title="Approval-History Popup" onClick={() => this.ShowApprovalHistory(fbData, i, null)}>
-                                                        {fbData?.ApproverData[fbData?.ApproverData?.length - 1]?.Status} </span> <span className="ms-1"><a title={fbData.ApproverData[fbData.ApproverData.length - 1]?.Title}><span><a href={`${this.props?.siteUrl}/SitePages/TaskDashboard.aspx?UserId=${fbData?.ApproverData[ele?.ApproverData?.length - 1]?.Id}&Name=${fbData?.ApproverData[fbData?.ApproverData?.length - 1]?.Title}`} target="_blank" data-interception="off" title={fbData?.ApproverData[fbData?.ApproverData?.length - 1]?.Title}> <img className='imgAuthor' src={fbData?.ApproverData[fbData?.ApproverData?.length - 1]?.ImageUrl} /></a></span></a></span>
+                                                    <span className="siteColor ms-2 hreflink" title="Approval-History Popup" onClick={() => this.ShowApprovalHistory(fbData, i, null)}>
+                                                        {fbData?.ApproverData[fbData?.ApproverData?.length - 1]?.Status} </span> <span className="ms-1"><a title={fbData.ApproverData[fbData.ApproverData.length - 1]?.Title}><span><a href={`${this.props?.siteUrl}/SitePages/TaskDashboard.aspx?UserId=${fbData?.ApproverData[fbData?.ApproverData?.length - 1]?.Id}&Name=${fbData?.ApproverData[fbData?.ApproverData?.length - 1]?.Title}`} target="_blank" data-interception="off" title={fbData?.ApproverData[fbData?.ApproverData?.length - 1]?.Title}> <img className='imgAuthor' src={fbData?.ApproverData[fbData?.ApproverData?.length - 1]?.ImageUrl} /></a></span></a></span>
                                                        </>
-                                                      )
-
-                                                    })}
-                                                  </>}
-                                                </span>
-
+                                                    
+                                                }
+                                                  </span>
                                                 : null
                                               }
                                             </div>
@@ -2272,13 +2275,13 @@ if(folora=="folora"&&index==0){
                                           </div>
                                           {this.state.showhideCommentBoxIndex == i && <div className='SpfxCheckRadio'>
                                             <div className="col-sm-12 mt-2 p-0" style={{ display: this.state.showcomment }} >
-                                              {this.state.Result["Approver"]?.Id == this?.currentUser[0]?.Id && <label className='label--checkbox'><input type='checkbox' className='checkbox' name='approval' checked={this.state.ApprovalCommentcheckbox} onChange={(e) => this.setState({ ApprovalCommentcheckbox: e.target.checked })} />
+                                              {(this.state.Result["Approver"]?.AssingedToUser?.Id == this?.currentUser[0]?.Id||(this.state.Result["Approver"]?.Approver[0]?.Id==this?.currentUser[0]?.Id)) && <label className='label--checkbox'><input type='checkbox' className='checkbox' name='approval' checked={this.state.ApprovalCommentcheckbox} onChange={(e) => this.setState({ ApprovalCommentcheckbox: e.target.checked })} />
                                                 Mark as Approval Comment</label>}
                                             </div>
                                             <div className="align-items-center d-flex"
                                               style={{ display: this.state.showcomment }}
                                             >  <textarea id="txtComment" onChange={(e) => this.handleInputChange(e)} className="form-control full-width"></textarea>
-                                              <button type="button" className={this.state.Result["Approver"]?.Id == this.currentUser[0]?.Id ? "btn-primary btn ms-2" : "btn-primary btn ms-2"} onClick={() => this.PostButtonClick(fbData, i)}>Post</button>
+                                              <button type="button" className={(this.state.Result["Approver"]?.AssingedToUser?.Id  == this.currentUser[0]?.Id ||(this.state.Result["Approver"]?.Approver[0]?.Id==this?.currentUser[0]?.Id))? "btn-primary btn ms-2" : "btn-primary btn ms-2"} onClick={() => this.PostButtonClick(fbData, i)}>Post</button>
                                             </div>
                                           </div>}
 
@@ -2288,7 +2291,7 @@ if(folora=="folora"&&index==0){
                                           return <div className="col-sm-12 p-0 mb-2" style={{ width: '100%' }}>
                                             <div className='justify-content-between d-flex'>
                                               <div className='alignCenter m-0'>
-                                                {this.state.ApprovalStatus &&
+                                                {this.state.ApprovalStatus ?
                                                   <span className="alignCenter">
                                                     <span title="Rejected"
                                                       onClick={() => this.changeTrafficLigthsubtext(i, j, "Reject")}
@@ -2304,22 +2307,15 @@ if(folora=="folora"&&index==0){
                                                       className={fbSubData?.isShowLight == "Approve" ? "circlelight br_green pull-left green" : "circlelight br_green pull-left"}>
 
                                                     </span>
-                                                    {fbData["Subtext"] != undefined && fbData.Subtext.length > 0 &&
-                                                      <>
-                                                        {fbData?.Subtext.map((b: any) => {
-                                                          return(
-                                                         <>
-                                                              <span className="siteColor ms-2 hreflink" title="Approval-History Popup" onClick={() => this.ShowApprovalHistory(fbSubData, i, j)}>
-                                                              {b?.ApproverData[b?.ApproverData?.length - 1]?.Status} </span> <span className="ms-1"><a title={b?.ApproverData[b?.ApproverData.length - 1]?.Title}><span><a href={`${this.props?.siteUrl}/SitePages/TaskDashboard.aspx?UserId=${b?.ApproverData[b?.ApproverData?.length - 1]?.Id}&Name=${b?.ApproverData[b?.ApproverData?.length - 1]?.Title}`} target="_blank" data-interception="off" title={b?.ApproverData[b?.ApproverData.length - 1]?.Title}> <img className='imgAuthor' src={b?.ApproverData[b?.ApproverData?.length - 1]?.ImageUrl} /></a></span></a></span>
+                                                    { fbSubData?.ApproverData?.length > 0 &&
+                                                         <> 
+                                                         <span className="siteColor ms-2 hreflink" title="Approval-History Popup" onClick={() => this.ShowApprovalHistory(fbSubData, i, j)}>
+                                                          {fbSubData?.ApproverData[fbSubData?.ApproverData?.length - 1]?.Status} </span> <span className="ms-1"><a title={fbSubData?.ApproverData[fbSubData?.ApproverData.length - 1]?.Title}><span><a href={`${this.props?.siteUrl}/SitePages/TaskDashboard.aspx?UserId=${fbSubData?.ApproverData[fbSubData?.ApproverData?.length - 1]?.Id}&Name=${fbSubData?.ApproverData[fbSubData?.ApproverData?.length - 1]?.Title}`} target="_blank" data-interception="off" title={fbSubData?.ApproverData[fbSubData?.ApproverData.length - 1]?.Title}> <img className='imgAuthor' src={fbSubData?.ApproverData[fbSubData?.ApproverData.length - 1]?.ImageUrl} /></a></span></a></span>
+                                                         </>}
                                                               
-                                                       </> )
-                                                         
-
-                                                        })}
-                                                      </>
-                                                     }
+                                                     
                                                   </span>
-                                                  
+                                                  : null
                                                 }
                                               </div>
                                               <div className='m-0'>
@@ -2440,14 +2436,14 @@ if(folora=="folora"&&index==0){
                                               <div className="col-sm-12 mt-2 p-0  "
                                               //  style={{ display: this.state.showcomment_subtext }}
                                               >
-                                                {this.state.Result["Approver"]?.Id == this.currentUser[0]?.Id && <label className='label--checkbox'><input type='checkbox' className='checkbox' checked={this.state?.ApprovalCommentcheckbox} onChange={(e) => this.setState({ ApprovalCommentcheckbox: e.target?.checked })} />Mark as Approval Comment</label>}
+                                                {(this.state.Result["Approver"]?.AssingedToUser?.Id  == this.currentUser[0]?.Id||(this.state.Result["Approver"]?.Approver[0]?.Id==this?.currentUser[0]?.Id)) && <label className='label--checkbox'><input type='checkbox' className='checkbox' checked={this.state?.ApprovalCommentcheckbox} onChange={(e) => this.setState({ ApprovalCommentcheckbox: e.target?.checked })} />Mark as Approval Comment</label>}
 
                                               </div>
 
                                               <div className="align-items-center d-flex"
                                               //  style={{ display: this.state.showcomment_subtext }}
                                               >  <textarea id="txtCommentSubtext" onChange={(e) => this.handleInputChange(e)} className="form-control full-width" ></textarea>
-                                                <button type="button" className={this.state.Result["Approver"]?.Id == this.currentUser[0]?.Id ? "btn-primary btn ms-2" : "btn-primary btn ms-2"} onClick={() => this.SubtextPostButtonClick(j, i)}>Post</button>
+                                                <button type="button" className={(this.state.Result["Approver"]?.AssingedToUser?.Id  == this.currentUser[0]?.Id ||(this.state.Result["Approver"]?.Approver[0]?.Id==this?.currentUser[0]?.Id))? "btn-primary btn ms-2" : "btn-primary btn ms-2"} onClick={() => this.SubtextPostButtonClick(j, i)}>Post</button>
                                               </div>
                                             </div> : null}
 
