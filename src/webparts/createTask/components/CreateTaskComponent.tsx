@@ -333,8 +333,9 @@ function CreateTaskComponent(props: any) {
                         setSave(saveValue);
 
                         feedback = [{ "Title": "FeedBackPicture16019", "FeedBackDescriptions": [{ "Title": SDCDescription?.length > 0 && SDCDescription != null ? SDCDescription : SDCTitle, "Completed": false, "isShowComment": true, "Comments": [{ "Title": `Created ${SDCCreatedDate}  By ${SDCCreatedBy}   TaskUrl-${SDCPageUrl}`, "Created": moment(new Date()).tz("Europe/Berlin").format('DD MMM YYYY HH:mm'), "editableItem": false, "AuthorName": loggedInUser?.Title, "AuthorImage": loggedInUser?.Item_x0020_Cover?.Url }], "Id": "11185" }], "ImageDate": "16019" }]
-                        let ccAct={...BurgerMenuData,
-                            "ClientActivityId": SDCTaskId, "ClientSite": SDCSiteType 
+                        let ccAct = {
+                            ...BurgerMenuData,
+                            "ClientActivityId": SDCTaskId, "ClientSite": SDCSiteType
                         }
                         ClientActivityJson = [ccAct];
                         if (SDCPriority != undefined && SDCPriority != '' && SDCPriority != null) {
@@ -1411,6 +1412,9 @@ function CreateTaskComponent(props: any) {
                     </span>
                 ),
                 placeholder: "Priority",
+                filterFn: (row: any, columnId: any, filterValue: any) => {
+                    return row?.original?.PriorityRank == filterValue
+                },
                 id: 'Priority',
                 header: "",
                 resetColumnFilters: false,
@@ -1433,6 +1437,13 @@ function CreateTaskComponent(props: any) {
                 resetColumnFilters: false,
                 resetSorting: false,
                 placeholder: "Due Date",
+                filterFn: (row: any, columnId: any, filterValue: any) => {
+                    if (row?.original?.DisplayDueDate?.includes(filterValue)) {
+                        return true
+                    } else {
+                        return false
+                    }
+                },
                 header: "",
                 size: 100
             },
@@ -1452,13 +1463,16 @@ function CreateTaskComponent(props: any) {
                 ),
                 id: 'PercentComplete',
                 placeholder: "% Complete",
+                filterFn: (row: any, columnId: any, filterValue: any) => {
+                    return row?.original?.PercentComplete == filterValue
+                },
                 resetColumnFilters: false,
                 resetSorting: false,
                 header: "",
                 size: 42
             },
             {
-                accessorFn: (row) => row?.CreatedSearch,
+                accessorFn: (row) => row?.Created,
                 cell: ({ row }) => (
                     <span className='alignCenter'>
                         <span className='ms-1'>{row?.original?.CreateDate} </span>
@@ -1479,6 +1493,14 @@ function CreateTaskComponent(props: any) {
                 ),
                 id: 'Created',
                 canSort: false,
+                filterFn: (row: any, columnId: any, filterValue: any) => {
+                    if (row?.original?.Author?.Title?.toLowerCase()?.includes(filterValue?.toLowerCase()) || row?.original?.CreateDate?.includes(filterValue)) {
+                        return true
+                    } else {
+                        return false
+                    }
+                },
+                isColumnDefultSortingDesc: true,
                 resetColumnFilters: false,
                 resetSorting: false,
                 placeholder: "Created",
@@ -1486,7 +1508,7 @@ function CreateTaskComponent(props: any) {
                 size: 120
             },
             {
-                accessorFn: (row) => row?.ModifiedSearch,
+                accessorFn: (row) => row?.Modified,
                 cell: ({ row }) => (
                     <span className='alignCenter'>
                         <span className='ms-1'>{row?.original?.ModifiedDate} </span>
@@ -1508,6 +1530,13 @@ function CreateTaskComponent(props: any) {
                 ),
                 id: 'Modified',
                 canSort: false,
+                filterFn: (row: any, columnId: any, filterValue: any) => {
+                    if (row?.original?.Editor?.Title?.toLowerCase()?.includes(filterValue?.toLowerCase()) || row?.original?.ModifiedDate?.includes(filterValue)) {
+                        return true
+                    } else {
+                        return false
+                    }
+                },
                 resetColumnFilters: false,
                 resetSorting: false,
                 placeholder: "Modified",

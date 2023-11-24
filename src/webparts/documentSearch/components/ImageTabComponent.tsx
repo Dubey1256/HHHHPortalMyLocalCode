@@ -231,7 +231,17 @@ const ImagetabFunction = (props: any) => {
                                         id="noanim-tab-example"
                                         className=""
                                     >
-                                        <Tab eventKey="copy & paste" title="copy & paste" className='p-0'>
+                                        <Tab className='p-0' eventKey="Choose from existing (0)" title={`CHOOSE FROM EXISTING (${chooseExistingFile?.ChooseExistinglogo.length})`}>
+                                            <div className='border border-top-0 ImageSec p-2'>
+                                                {chooseExistingFile?.ChooseExistinglogo != undefined && chooseExistingFile.ChooseExistinglogo.length > 0 && chooseExistingFile?.ChooseExistinglogo?.map((imagesData: any) => {
+                                                    return (
+                                                        <>
+                                                            <img src={`${imagesData?.ServerRelativeUrl}`}></img></>
+                                                    )
+                                                })}
+                                            </div>
+                                        </Tab>
+                                        <Tab eventKey="copy & paste" title="COPY & PASTE" className='p-0'>
                                             <div className='border border-top-0  p-2'>
                                                 <div className="input-group "><label className=" full-width ">Image Name</label>
                                                     <input type="text" className="form-control" value={props?.EditdocumentsData?.Title} placeholder='image Name' />
@@ -242,7 +252,7 @@ const ImagetabFunction = (props: any) => {
                                                 </div>
                                             </div>
                                         </Tab>
-                                        <Tab eventKey="Upload" title="Upload" className='p-0'>
+                                        <Tab eventKey="Upload" title="UPLOAD" className='p-0'>
                                             <div className='border border-top-0  p-2'>
                                                 <div className='mt-3 ' style={{ height: "500px" }}>
                                                     <input type="file" accept="image/*" className='full-width' onChange={(e) => UploadImageValue(e, "upload")} />
@@ -251,16 +261,7 @@ const ImagetabFunction = (props: any) => {
 
                                             </div>
                                         </Tab>
-                                        <Tab className='p-0' eventKey="Choose from existing (0)" title={`Choose from existing (${chooseExistingFile?.ChooseExistinglogo.length})`}>
-                                            <div className='border border-top-0 ImageSec p-2'>
-                                                {chooseExistingFile?.ChooseExistinglogo != undefined && chooseExistingFile.ChooseExistinglogo.length > 0 && chooseExistingFile?.ChooseExistinglogo?.map((imagesData: any) => {
-                                                    return (
-                                                        <>
-                                                            <img src={`${imagesData?.ServerRelativeUrl}`}></img></>
-                                                    )
-                                                })}
-                                            </div>
-                                        </Tab>
+
                                     </Tabs>
                                 </Tab.Pane>
                                 <Tab.Pane eventKey="Covers">
@@ -270,7 +271,17 @@ const ImagetabFunction = (props: any) => {
                                         id="noanim-tab-example"
                                         className=""
                                     >
-                                        <Tab eventKey="copy & paste" title="copy & paste" className='p-0'>
+                                        <Tab className='p-0' eventKey="Choose from existing (0)" title={`CHOOSE FROM EXISTING (${chooseExistingFile?.ChooseExistingCover.length})`}>
+                                            <div className='border border-top-0 ImageSec p-2'>
+                                                {chooseExistingFile?.ChooseExistingCover != undefined && chooseExistingFile?.ChooseExistingCover?.length > 0 && chooseExistingFile?.ChooseExistingCover?.map((imagesData: any) => {
+                                                    return (
+                                                        <>
+                                                            <img src={`${imagesData?.ServerRelativeUrl}`}></img></>
+                                                    )
+                                                })}
+                                            </div>
+                                        </Tab>
+                                        <Tab eventKey="copy & paste" title="COPY & PASTE" className='p-0'>
                                             <div className='border border-top-0  p-2'>
                                                 <div className="input-group "><label className=" full-width ">Image Name</label>
                                                     <input type="text" className="form-control" value={props?.EditdocumentsData?.Title} placeholder='image Name' />
@@ -281,22 +292,12 @@ const ImagetabFunction = (props: any) => {
                                                 </div>
                                             </div>
                                         </Tab>
-                                        <Tab eventKey="Upload" title="Upload" className='p-0'>
+                                        <Tab eventKey="Upload" title="UPLOAD" className='p-0'>
                                             <div className='border border-top-0  p-2'>
                                                 <div className='mt-3' style={{ height: "500px" }}>
                                                     <input type="file" multiple accept='image/*' className='full-width' onChange={(e) => UploadImageValue(e, "upload")} />
                                                     <div className='text-lg-end mt-2'><Button className='btn btn-primary ms-1  mx-2 btn btn-primary' onClick={() => uploadImage()}>Upload</Button></div>
                                                 </div>
-                                            </div>
-                                        </Tab>
-                                        <Tab className='p-0' eventKey="Choose from existing (0)" title={`Choose from existing (${chooseExistingFile?.ChooseExistingCover.length})`}>
-                                            <div className='border border-top-0 ImageSec p-2'>
-                                                {chooseExistingFile?.ChooseExistingCover != undefined && chooseExistingFile?.ChooseExistingCover?.length > 0 && chooseExistingFile?.ChooseExistingCover?.map((imagesData: any) => {
-                                                    return (
-                                                        <>
-                                                            <img src={`${imagesData?.ServerRelativeUrl}`}></img></>
-                                                    )
-                                                })}
                                             </div>
                                         </Tab>
                                     </Tabs>
@@ -309,7 +310,17 @@ const ImagetabFunction = (props: any) => {
                                         id="noanim-tab-example"
                                         className=""
                                     >
-                                        <Tab eventKey="copy & paste" title="copy & paste" className='p-0'>
+                                            <Tab className='p-0' eventKey="Choose from existing (0)" title={`CHOOSE FROM EXISTING (${chooseExistingFile?.ChooseExistingImages1?.length})`} >
+                                            <div className='border border-top-0 ImageSec p-2'>
+                                                {chooseExistingFile?.ChooseExistingImages1 != undefined && chooseExistingFile?.ChooseExistingImages1?.length > 0 && chooseExistingFile?.ChooseExistingImages1?.map((imagesData: any) => {
+                                                    return (
+                                                        <>
+                                                            <img src={`${imagesData?.ServerRelativeUrl}`}></img></>
+                                                    )
+                                                })}
+                                            </div>
+                                        </Tab>
+                                        <Tab eventKey="copy & paste" title="COPY & PASTE" className='p-0'>
                                             <div className='border border-top-0  p-2'>
                                                 <div className="input-group "><label className=" full-width ">Image Name</label>
                                                     <input type="text" className="form-control" value={props?.EditdocumentsData?.Title} placeholder='image Name' />
@@ -320,7 +331,7 @@ const ImagetabFunction = (props: any) => {
                                                 </div>
                                             </div>
                                         </Tab>
-                                        <Tab eventKey="Upload" title="Upload" className='p-0'>
+                                        <Tab eventKey="Upload" title="UPLOAD" className='p-0'>
                                             <div className='border border-top-0 p-2'>
                                                 <div className='mt-3' style={{ height: "500px" }}>
                                                     <input type="file" multiple accept='image/*' className='full-width' onChange={(e) => UploadImageValue(e, "upload")} />
@@ -328,16 +339,7 @@ const ImagetabFunction = (props: any) => {
                                                 </div>
                                             </div>
                                         </Tab>
-                                        <Tab className='p-0' eventKey="Choose from existing (0)" title={`Choose from existing (${chooseExistingFile?.ChooseExistingImages1?.length})`} >
-                                            <div className='border border-top-0 ImageSec p-2'>
-                                                {chooseExistingFile?.ChooseExistingImages1 != undefined && chooseExistingFile?.ChooseExistingImages1?.length > 0 && chooseExistingFile?.ChooseExistingImages1?.map((imagesData: any) => {
-                                                    return (
-                                                        <>
-                                                            <img src={`${imagesData?.ServerRelativeUrl}`}></img></>
-                                                    )
-                                                })}
-                                            </div>
-                                        </Tab>
+                                   
                                     </Tabs>
 
                                 </Tab.Pane>
