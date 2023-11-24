@@ -1060,7 +1060,7 @@ const EditTaskPopup = (Items: any) => {
                                     ApprovarDataId = userData?.Approver[0].Id
                                 }
                             })
-                            if (itemData.Id == currentUser.AssingedToUserId || itemData.Id == ApprovarDataId) {
+                            if (itemData.Id == currentUser.AssingedToUserId || currentUser.AssingedToUserId == ApprovarDataId) {
                                 setSmartLightStatus(true);
                             }
 
@@ -1075,7 +1075,7 @@ const EditTaskPopup = (Items: any) => {
                                         ApprovarDataId = userData?.Approver[0].Id
                                     }
                                 })
-                                if (Approver.Id == current.AssingedToUserId || Approver.Id == ApprovarDataId) {
+                                if (Approver.Id == current.AssingedToUserId ||  current.AssingedToUserId == ApprovarDataId) {
                                     setSmartLightStatus(true);
                                 }
                             })
