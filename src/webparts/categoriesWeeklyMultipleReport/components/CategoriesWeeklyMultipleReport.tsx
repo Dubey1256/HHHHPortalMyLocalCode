@@ -2797,8 +2797,8 @@ export default class CategoriesWeeklyMultipleReport extends React.Component<ICat
             contentItem['Smart Hours'] = '';
           }
           if (childItem.TotalValue != undefined) {
-            contentItem['Smart Days'] = childItem.TotalValue / 8;
-            contentItem['Smart Days'] = parseFloat(contentItem['Smart Days']);
+            contentItem['Smart Days'] =contentItem['Days']; 
+           // contentItem['Smart Days'] = parseFloat(contentItem['Smart Days']);
           } else {
             contentItem['Smart Days'] = 0;
           }
@@ -3140,8 +3140,9 @@ export default class CategoriesWeeklyMultipleReport extends React.Component<ICat
       }
 
       if (item.TotalValue != undefined) {
-        let days: any = item.TimeInExcel / 8;
-        contentItem['Smart Days'] = (days);
+        // let days: any = item.TimeInExcel / 8;
+        // contentItem['Smart Days'] = (days);
+        contentItem['Smart Days']= contentItem['Days'] ;
       }
       else {
         contentItem['Smart Days'] = 0;
