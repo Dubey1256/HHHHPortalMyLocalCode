@@ -2260,12 +2260,23 @@ const EditTaskPopup = (Items: any) => {
                 await web.lists.getById(Items.Items.listId).items.getById(Items.Items.Id).update(DataJSONUpdate)
                     .then(async (res: any) => {
                         // Added by PB************************
-                        if (Items?.SDCTaskDetails != undefined && Items?.SDCTaskDetails?.SDCCreatedBy != undefined && Items?.SDCTaskDetails?.SDCCreatedBy != '' && EditData != undefined && EditData != '') {
+                        let ClientActivityJsonMail :any=null
+                        if(EditData?.ClientActivityJson!=undefined){
+                            try{
+                                ClientActivityJsonMail =JSON.parse(EditData?.ClientActivityJson)
+                                if(ClientActivityJsonMail?.length>0){
+                                    ClientActivityJsonMail=ClientActivityJsonMail[0]
+                                }
+                            }catch(e){
+
+                            }
+                        }
+                        if ((Items?.SDCTaskDetails != undefined && Items?.SDCTaskDetails?.SDCCreatedBy != undefined && Items?.SDCTaskDetails?.SDCCreatedBy != '' )&& EditData != undefined && EditData != '' ||(ClientActivityJsonMail!=null&&ClientActivityJsonMail?.SDCCreatedBy!=undefined && Number(UpdateTaskInfo?.PercentCompleteStatus)==90)) {
                             let SDCRecipientMail: any[] = [];
                             EditData.ClientTask = Items?.SDCTaskDetails;
                             taskUsers?.map((User: any) => {
-                                if (User?.Title?.toLowerCase() == 'robert ungethuem' || User?.Title?.toLowerCase() == 'stefan hochhuth') {
-                                    // if (User?.Title?.toLowerCase() == 'abhishek tiwari') {
+                                  if (User?.Title?.toLowerCase() == 'robert ungethuem' || User?.Title?.toLowerCase() == 'stefan hochhuth') {
+                              //  if (User?.Title?.toLowerCase() == 'abhishek tiwari') {
                                     SDCRecipientMail.push(User);
                                 }
                             });
@@ -3076,6 +3087,14 @@ const EditTaskPopup = (Items: any) => {
                 tempArray.push(ImgArray);
             } else {
                 imgItem.Description = imgItem.Description != undefined ? imgItem.Description : '';
+                let checkImageURL: any = imgItem.ImageUrl?.includes("https://www.hochhuth-consulting.de/sp");
+                let checkUserImage: any = imgItem.UserImage?.includes("https://www.hochhuth-consulting.de/sp");
+                if (checkImageURL) {
+                    imgItem.ImageUrl = imgItem?.ImageUrl.replace("https://www.hochhuth-consulting.de/sp", "https://hhhhteams.sharepoint.com/sites/HHHH/SP");
+                }
+                if (checkUserImage) {
+                    imgItem.UserImage = imgItem?.UserImage.replace("https://www.hochhuth-consulting.de/sp", "https://hhhhteams.sharepoint.com/sites/HHHH/SP");
+                }
                 tempArray.push(imgItem);
             }
         })
