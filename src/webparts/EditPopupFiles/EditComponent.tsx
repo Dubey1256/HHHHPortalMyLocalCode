@@ -4326,7 +4326,7 @@ function EditInstitution({ item, SelectD, Calls, usedFor }: any) {
                                             <div className="border border-top-0 p-2">
                                                 {CollapseExpend && (
                                                     <div>
-                                                        <span className="form-check text-end">
+                                                        <span className="form-check pull-right">
                                                             <input
                                                                 type="checkbox" className="form-check-input rounded-0"
                                                                 defaultValue={
