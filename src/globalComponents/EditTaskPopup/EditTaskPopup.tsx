@@ -1058,14 +1058,14 @@ const EditTaskPopup = (Items: any) => {
                     TaskApproverBackupArray.map((itemData: any) => {
                         currentUserBackupArray?.map((currentUser: any) => {
                             taskUsers?.map((userData: any) => {
-                                if(userData?.AssingedToUserId == itemData.Id){
-                                     ApprovarDataId = userData?.Approver[0].Id
+                                if (userData?.AssingedToUserId == itemData.Id) {
+                                    ApprovarDataId = userData?.Approver[0].Id
                                 }
                             })
                             if (itemData.Id == currentUser.AssingedToUserId || currentUser.AssingedToUserId == ApprovarDataId) {
                                 setSmartLightStatus(true);
                             }
-                        
+
                         })
                     })
                 } else {
@@ -1073,8 +1073,8 @@ const EditTaskPopup = (Items: any) => {
                         TaskCreatorApproverBackupArray?.map((Approver: any) => {
                             currentUserBackupArray?.map((current: any) => {
                                 taskUsers?.map((userData: any) => {
-                                    if(userData?.AssingedToUserId == Approver?.Id){
-                                         ApprovarDataId = userData?.Approver[0].Id
+                                    if (userData?.AssingedToUserId == Approver?.Id) {
+                                        ApprovarDataId = userData?.Approver[0].Id
                                     }
                                 })
                                 if (Approver.Id == current.AssingedToUserId || current.AssingedToUserId == ApprovarDataId) {
@@ -2263,12 +2263,23 @@ const EditTaskPopup = (Items: any) => {
                 await web.lists.getById(Items.Items.listId).items.getById(Items.Items.Id).update(DataJSONUpdate)
                     .then(async (res: any) => {
                         // Added by PB************************
-                        if (Items?.SDCTaskDetails != undefined && Items?.SDCTaskDetails?.SDCCreatedBy != undefined && Items?.SDCTaskDetails?.SDCCreatedBy != '' && EditData != undefined && EditData != '') {
+                        let ClientActivityJsonMail: any = null
+                        if (EditData?.ClientActivityJson != undefined) {
+                            try {
+                                ClientActivityJsonMail = JSON.parse(EditData?.ClientActivityJson)
+                                if (ClientActivityJsonMail?.length > 0) {
+                                    ClientActivityJsonMail = ClientActivityJsonMail[0]
+                                }
+                            } catch (e) {
+
+                            }
+                        }
+                        if ((Items?.SDCTaskDetails != undefined && Items?.SDCTaskDetails?.SDCCreatedBy != undefined && Items?.SDCTaskDetails?.SDCCreatedBy != '') && EditData != undefined && EditData != '' || (ClientActivityJsonMail != null && ClientActivityJsonMail?.SDCCreatedBy != undefined && Number(UpdateTaskInfo?.PercentCompleteStatus) == 90)) {
                             let SDCRecipientMail: any[] = [];
                             EditData.ClientTask = Items?.SDCTaskDetails;
                             taskUsers?.map((User: any) => {
                                 if (User?.Title?.toLowerCase() == 'robert ungethuem' || User?.Title?.toLowerCase() == 'stefan hochhuth') {
-                                    // if (User?.Title?.toLowerCase() == 'abhishek tiwari') {
+                                    //  if (User?.Title?.toLowerCase() == 'abhishek tiwari') {
                                     SDCRecipientMail.push(User);
                                 }
                             });
@@ -3208,21 +3219,21 @@ const EditTaskPopup = (Items: any) => {
             (async () => {
                 let web = new Web(siteUrls);
                 let item = web.lists.getById(Items.Items.listId).items.getById(Items.Items.Id);
-                item.attachmentFiles.getByName(imageName).recycle();
-                UpdateBasicImageInfoJSON(tempArray, "Upload", 0);
-                EditData.UploadedImage = tempArray;
-                console.log("Attachment deleted");
-
+                item.attachmentFiles.getByName(imageName).recycle().then(() => {
+                    UpdateBasicImageInfoJSON(tempArray, "Upload", 0);
+                    EditData.UploadedImage = tempArray;
+                    console.log("Attachment deleted");
+                });
             })().catch(console.log)
         } else {
             (async () => {
                 let web = new Web(siteUrls);
                 let item = web.lists.getByTitle(Items.Items.listName).items.getById(Items.Items.Id);
-                item.attachmentFiles.getByName(imageName).recycle();
-                UpdateBasicImageInfoJSON(tempArray, "Upload", 0);
-                EditData.UploadedImage = tempArray;
-                console.log("Attachment deleted");
-
+                item.attachmentFiles.getByName(imageName).recycle().then(() => {
+                    UpdateBasicImageInfoJSON(tempArray, "Upload", 0);
+                    EditData.UploadedImage = tempArray;
+                    console.log("Attachment deleted");
+                });
             })().catch(console.log)
         }
     }

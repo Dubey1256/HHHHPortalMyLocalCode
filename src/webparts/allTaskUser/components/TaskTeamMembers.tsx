@@ -7,7 +7,7 @@ import { FilePicker, IFilePickerResult } from '@pnp/spfx-controls-react/lib/File
 import { ITeamMembersProps } from "./ITeamMembersProps";
 import { ITeamMembersState } from "./ITeamMembersState";
 import * as pnp from 'sp-pnp-js';
-import {Web, sp } from 'sp-pnp-js';
+import { Web, sp } from 'sp-pnp-js';
 import { List, Item } from '@pnp/sp/presets/all';
 import { SPHttpClient } from '@microsoft/sp-http';
 import { getSP } from "../../../spservices/pnpjsConfig"
@@ -134,6 +134,9 @@ export default class TaskTeamMembers extends Component<ITeamMembersProps, ITeamM
         this.deleteTask = this.deleteTask.bind(this);
         this.uploadImage = this.uploadImage.bind(this);
         this.updateGallery = this.updateGallery.bind(this);
+        this.getUserInfo = this.getUserInfo.bind(this);
+
+
 
         this.onUserTitleChange = this.onUserTitleChange.bind(this);
         this.onUserSuffixChange = this.onUserSuffixChange.bind(this);
@@ -233,7 +236,7 @@ export default class TaskTeamMembers extends Component<ITeamMembersProps, ITeamM
             smartMetadataItems.push(smartMetadataItem);
         });
 
-        const listTasks: any[] = [..._tasks].map(({ Title, Group, Category, Role,Team, SortOrder, Suffix, Item_x0020_Cover, Company, Approver, TaskId }) => ({ Title, Group, Category, Role, SortOrder,Team, Suffix, Item_x0020_Cover, Company, Approver, TaskId }));
+        const listTasks: any[] = [..._tasks].map(({ Title, Group, Category, Role, Team, SortOrder, Suffix, Item_x0020_Cover, Company, Approver, TaskId }) => ({ Title, Group, Category, Role, SortOrder, Team, Suffix, Item_x0020_Cover, Company, Approver, TaskId }));
         let filteredImages: any = []
         let _filteredImages: any = []
         //let filteredImages = await this.props.spService.getImages(this.props.imagesLibraryId, this.state.selImageFolder);
@@ -283,7 +286,7 @@ export default class TaskTeamMembers extends Component<ITeamMembersProps, ITeamM
             Approver: taskItem.Approver ? taskItem.Approver.map((i: { Title: any; }) => i.Title).join(", ") : "",
             TaskId: taskItem.Id,
             Suffix: taskItem.Suffix,
-            Team:taskItem.Team,
+            Team: taskItem.Team,
             SortOrder: taskItem.SortOrder,
             GroupId: taskItem.UserGroup ? taskItem.UserGroup.Id.toString() : "",
             AssignedToUserMail: taskItem.AssingedToUser ? [taskItem.AssingedToUser.Name.split("|")[2]] : [],
@@ -460,15 +463,17 @@ export default class TaskTeamMembers extends Component<ITeamMembersProps, ITeamM
     }
 
     private async getApproverDetails(approvers: any[]) {
-        let approverId: number = undefined;
+        let approverId: any = [];
         if (approvers.length > 0) {
-            let approverMail = approvers[0].id.split("|")[2];
-            let userInfo = await this.getUserInfo(approverMail);
-            approverId = userInfo.Id;
+            approvers.forEach(async (obj: any, index: any) => {
+                let approverMail = obj.id.split("|")[2];
+                let userInfo = await this.getUserInfo(approverMail);
+                approverId.push(userInfo.Id);
+            });
         }
         let taskItem = { ...this.state.taskItem };
         if (approverId != undefined) {
-            taskItem.approverId = [approverId];
+            taskItem.approverId = approverId;
         } else {
             taskItem.approverId = []
         }
@@ -503,7 +508,7 @@ export default class TaskTeamMembers extends Component<ITeamMembersProps, ITeamM
         this.setState({
             taskItem: CreatetaskItem,
             showCreatePanel: true,
-            selTaskId:undefined,
+            selTaskId: undefined,
             enableUser: true,
             enableSave: false
         });
@@ -586,6 +591,9 @@ export default class TaskTeamMembers extends Component<ITeamMembersProps, ITeamM
             });
     };
     private async createTask() {
+        this.setState({
+            showCreatePanel: false,
+        });
         let SiteUrl = ''
         let taskItem = this.state.taskItem;
         let newTaskItem = {
@@ -605,6 +613,7 @@ export default class TaskTeamMembers extends Component<ITeamMembersProps, ITeamM
                     this.createNewFolder(taskItem.userTitle, taskItem, SiteUrl, 'TasksTimesheet2')
             })
             .catch((error) => {
+                this.onCancelTask();
                 console.error('An error occurred:', error);
             });
         if (newTask) {
@@ -626,6 +635,7 @@ export default class TaskTeamMembers extends Component<ITeamMembersProps, ITeamM
                 taskItem: _taskItem
             });
         }
+        this.onCancelTask();
     }
 
     private async updateTask() {
@@ -717,8 +727,8 @@ export default class TaskTeamMembers extends Component<ITeamMembersProps, ITeamM
         const allTasks = await this.props.spService.getTasks(this.props.taskUsersListId);
 
         const teamMembersTasks = allTasks.filter((taskItem: { ItemType: string; }) => taskItem.ItemType == "User").map((taskItem: {
-            Team: any; Title: any; UserGroup: { Title: any; Id: { toString: () => any; }; }; TimeCategory: any; Role: string[]; Company: any; Approver: any[]; Id: any; Suffix: any; AssingedToUser: { Name: string; }; IsApprovalMail: any; CategoriesItemsJson: string; SortOrder: null; IsActive: any; IsTaskNotifications: any; Item_x0020_Cover: any; Created: string; Author: { Title: any; }; Modified: string; Editor: { Title: any; }; 
-}) => ({
+            Team: any; Title: any; UserGroup: { Title: any; Id: { toString: () => any; }; }; TimeCategory: any; Role: string[]; Company: any; Approver: any[]; Id: any; Suffix: any; AssingedToUser: { Name: string; }; IsApprovalMail: any; CategoriesItemsJson: string; SortOrder: null; IsActive: any; IsTaskNotifications: any; Item_x0020_Cover: any; Created: string; Author: { Title: any; }; Modified: string; Editor: { Title: any; };
+        }) => ({
             Title: taskItem.Title,
             Group: taskItem.UserGroup ? taskItem.UserGroup.Title : "",
             Category: taskItem.TimeCategory,
@@ -730,7 +740,7 @@ export default class TaskTeamMembers extends Component<ITeamMembersProps, ITeamM
             Approver: taskItem.Approver ? taskItem.Approver.map((i: { Title: any; }) => i.Title).join(", ") : "",
             TaskId: taskItem.Id,
             Suffix: taskItem.Suffix,
-            Team: taskItem.Team!=undefined?taskItem.Team:'',
+            Team: taskItem.Team != undefined ? taskItem.Team : '',
             GroupId: taskItem.UserGroup ? taskItem.UserGroup.Id.toString() : "",
             AssignedToUserMail: taskItem.AssingedToUser ? [taskItem.AssingedToUser.Name.split("|")[2]] : [],
             ApproverMail: taskItem.Approver ? taskItem.Approver.map((i: { Name: string; }) => i.Name.split("|")[2]) : [],
@@ -1068,13 +1078,13 @@ export default class TaskTeamMembers extends Component<ITeamMembersProps, ITeamM
         const elemTaskMetadata = (this.state.showEditPanel ? <div>
             <p className="mb-0">Created {this.state.taskItem.createdOn} by {this.state.taskItem.createdBy}</p>
             <p className="mb-0">Last modified {this.state.taskItem.modifiedOn} by {this.state.taskItem.modifiedBy}</p>
-            <Link style={{marginLeft:"-5px"}} href="#" onClick={this.onDeleteTask}><span title="Delete" className="alignIcon  svg__icon--trash hreflink  svg__iconbox"></span><Text>Delete this user</Text></Link>
+            <Link style={{ marginLeft: "-5px" }} href="#" onClick={this.onDeleteTask}><span title="Delete" className="alignIcon  svg__icon--trash hreflink  svg__iconbox"></span><Text>Delete this user</Text></Link>
 
 
         </div> : <div></div>);
 
-        const elemSaveButton = (<button className="btn btn-primary me-2 btnCol"  onClick={this.onSaveTask} disabled={!this.state.enableSave}>Save</button>);
-        const elemCancelButton = (<button className="btn btn-default me-3"   onClick={this.onCancelTask}>Cancel</button>);
+        const elemSaveButton = (<button className="btn btn-primary me-2 btnCol" onClick={this.onSaveTask} disabled={!this.state.enableSave}>Save</button>);
+        const elemCancelButton = (<button className="btn btn-default me-3" onClick={this.onCancelTask}>Cancel</button>);
         const elemOOTBFormLink = (
             <a
                 className="pe-2"
@@ -1118,13 +1128,12 @@ export default class TaskTeamMembers extends Component<ITeamMembersProps, ITeamM
             resolveDelay={1000}
             onChange={this.getUserDetails}
             defaultSelectedUsers={this.state.taskItem.userMail}
-            disabled={!this.state.enableUser}
         ></PeoplePicker>);
-
+        // disabled={!this.state.enableUser}
         const elemApprover = (<PeoplePicker
             context={this.props.context as any}
             principalTypes={[PrincipalType.User]}
-            personSelectionLimit={1}
+            personSelectionLimit={7}
             titleText="Approver"
             resolveDelay={1000}
             onChange={this.getApproverDetails}
@@ -1157,14 +1166,14 @@ export default class TaskTeamMembers extends Component<ITeamMembersProps, ITeamM
         const elemEditTaskBasicInfo: JSX.Element = (<div className="ms-SPLegacyFabricBlock">
             <div className="ms-Grid p-0">
                 <div className="ms-Grid-row Task-User-Management mb-2">
-                {/* Title */}
+                    {/* Title */}
                     <div className="ms-Grid-col ms-sm2 ms-md2 ms-lg2">
                         <TextField
                             label="Title"
                             value={this.state.taskItem.userTitle}
                             defaultValue={this.state.taskItem.userTitle}
                             onChange={this.onUserTitleChange}
-                       
+
                         />
                     </div>
                     {/* Suffix */}
@@ -1197,7 +1206,7 @@ export default class TaskTeamMembers extends Component<ITeamMembersProps, ITeamM
                             onChange={this.onSortOrderChange}
                         />
                     </div>
-                        
+
                     {/* Manage Categories */}
                     <div className="ms-Grid-col ms-sm2 ms-md2 ms-lg2">
                         <label className="ms-Label root-321 pb-2 pt-1 text-dark">Manage Categories</label>
@@ -1212,17 +1221,17 @@ export default class TaskTeamMembers extends Component<ITeamMembersProps, ITeamM
                     {/* Approver */}
                     <div className="ms-Grid-col ms-sm2 ms-md2 ms-lg2">{elemApprover}</div>
                 </div>
-             
-               
+
+
                 <div className="ms-Grid-row Task-User-Management SpfxCheckRadio mb-2">
                     <div className="ms-Grid-col ms-sm2 ms-md2 ms-lg2">
-                        <ChoiceGroup  className="SpfxCheckRadio"
+                        <ChoiceGroup className="SpfxCheckRadio"
                             label="Approval Type"
                             options={appTypeOptions}
                             value={this.state.taskItem.approvalType}
                             defaultSelectedKey={this.state.taskItem.approvalType}
                             onChange={this.onApprovalTypeChange}
-                            
+
                         />
                     </div>
                     <div className="ms-Grid-col ms-sm1 ms-md1 ms-lg1">
@@ -1232,44 +1241,44 @@ export default class TaskTeamMembers extends Component<ITeamMembersProps, ITeamM
                             value={this.state.taskItem.company}
                             defaultSelectedKey={this.state.taskItem.company}
                             onChange={this.onCompanyChange}
-                           
+
                         />
                     </div>
                     {/* <div className="ms-Grid-col ms-sm2 ms-md2 ms-lg2"></div> */}
                     <div className="ms-Grid-col ms-sm6 ms-md6 ms-lg2">
                         <Label>Roles</Label>
-                        <Checkbox  className="SpfxCheckRadio"
+                        <Checkbox className="SpfxCheckRadio"
                             label="Component Teams"
                             checked={this.state.taskItem.roles.indexOf("Component Teams") > -1}
                             defaultChecked={this.state.taskItem.roles.indexOf("Component Teams") > -1}
                             onChange={this.onComponentTeamsChecked}
-                          
+
                         />
-              
+
                         <Checkbox className="SpfxCheckRadio"
                             label="Service Teams"
                             checked={this.state.taskItem.roles.indexOf("Service Teams") > -1}
                             defaultChecked={this.state.taskItem.roles.indexOf("Service Teams") > -1}
                             onChange={this.onServiceTeamsChecked}
-                           
+
                         />
                     </div>
                     <div className="ms-Grid-col ms-sm1 ms-md1 ms-lg1 mt-4">
-              
-                        <Checkbox   className="SpfxCheckRadio"
+
+                        <Checkbox className="SpfxCheckRadio"
                             label="Active User"
                             checked={this.state.taskItem.isActive}
                             defaultChecked={this.state.taskItem.isActive}
                             onChange={this.onActiveUserChecked}
-                         
+
                         />
-                  
-                        <Checkbox   className="SpfxCheckRadio"
+
+                        <Checkbox className="SpfxCheckRadio"
                             label="Task Notifications"
                             checked={this.state.taskItem.isTaskNotifications}
                             defaultChecked={this.state.taskItem.isTaskNotifications}
                             onChange={this.onTaskNotificationsChecked}
-                         
+
                         />
                     </div>
                 </div>

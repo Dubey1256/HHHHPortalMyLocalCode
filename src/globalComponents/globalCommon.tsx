@@ -1856,10 +1856,7 @@ export const findTaskHierarchy = (
             // if (Object?.Item_x0020_Type?.toLowerCase() != 'task') {
             //     Object.SiteIconTitle = Object?.Item_x0020_Type?.charAt(0);
             // }
-            if (
-                Object.Id === row?.ParentTask?.Id &&
-                row?.siteType === Object?.siteType
-            ) {
+            if (Object.Id === row?.ParentTask?.Id && row?.siteType === Object?.siteType && row?.TaskType?.Title!="Activities") {
                 Object.subRows = [];
                 Object.subRows.push(row);
                 return createGrouping(Object);
@@ -1868,25 +1865,9 @@ export const findTaskHierarchy = (
                 Object.subRows.push(row);
                 return createGrouping(Object);
             } else if (
-                row?.Component != undefined &&
-                row?.Component?.length > 0 &&
-                Object.Id === row?.Component[0]?.Id
-            ) {
-                Object.subRows = [];
-                Object.subRows.push(row);
-                return createGrouping(Object);
-            } else if (
-                row?.Services != undefined &&
-                row?.Services?.length > 0 &&
-                Object.Id === row?.Services[0]?.Id
-            ) {
-                Object.subRows = [];
-                Object.subRows.push(row);
-                return createGrouping(Object);
-            } else if (
                 row?.Portfolio != undefined &&
                 Object.Id === row?.Portfolio?.Id &&
-                row?.ParentTask?.Id == undefined
+                (row?.ParentTask?.Id == undefined ||row?.TaskType?.Title=="Activities")
             ) {
                 Object.subRows = [];
                 Object.subRows.push(row);
@@ -1897,6 +1878,7 @@ export const findTaskHierarchy = (
     };
     return createGrouping(row);
 };
+
 
 export const loadAllTimeEntry = async (timesheetListConfig: any) => {
     var AllTimeEntry: any = []

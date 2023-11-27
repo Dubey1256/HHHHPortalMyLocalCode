@@ -211,9 +211,9 @@ const SiteCompositionComponent = (Props: any) => {
                     setProportionalStatus(false);
                 }
             }
-            // if (SiteCompositionSettings[0].Protected) {
-            //     setIsSCProtected(true);
-            // }
+            if (SiteCompositionSettings[0].Protected) {
+                setMakeScProtected(true);
+            }
         }
     }, [Props.SelectedClientCategory])
 
@@ -471,17 +471,18 @@ const SiteCompositionComponent = (Props: any) => {
 
         if (Type == "Protected") {
             if (SiteCompositionSettings[0]?.Protected == true) {
-                if (SiteCompositionSettings[0].Deluxe == true || SiteCompositionSettings[0].Standard == true) {
-                    // setIsSCProtected(true);
-                } else {
-                    SiteCompositionSettings[0].Protected = false;
-                    // setIsSCProtected(false);
-                }
-
+                // if (SiteCompositionSettings[0].Deluxe == true || SiteCompositionSettings[0].Standard == true) {
+                //     // setIsSCProtected(true);
+                // } else {
+                SiteCompositionSettings[0].Protected = false;
+                // setIsSCProtected(false);
+                // }/
+                setMakeScProtected(false);
             } else {
                 SiteCompositionSettings[0].Protected = true;
                 // SiteTaggingFinalData = ClientTimeData;
-                setIsSCProtected(true);
+                setMakeScProtected(true);
+                // setIsSCProtected(true);
             }
         }
         if (Type == "Deluxe") {
@@ -1119,6 +1120,8 @@ const SiteCompositionComponent = (Props: any) => {
 
         if (MakeScProtected) {
             SiteCompositionSettingData[0].Protected = true;
+        } else {
+            SiteCompositionSettingData[0].Protected = false;
         }
 
         try {
@@ -1291,6 +1294,8 @@ const SiteCompositionComponent = (Props: any) => {
 
         if (MakeScProtected) {
             finalSiteCompositionSettingData[0].Protected = true;
+        } else {
+            finalSiteCompositionSettingData[0].Protected = false;
         }
 
         let MakeUpdateJSONDataObject: any;
@@ -2100,6 +2105,7 @@ const SiteCompositionComponent = (Props: any) => {
                                     NextProp={AllListIdData}
                                     callback={callBackData}
                                     isProtected={MakeSCProtectedFunction}
+                                    IsSCProtected={MakeScProtected}
                                     usedFor={"Site-Compositions"}
                                     prevSelectedCC={SiteClientCatgeoryFinalData?.length > 0 ? SiteClientCatgeoryFinalData : SelectedClientCategoryFromProps}
                                 />

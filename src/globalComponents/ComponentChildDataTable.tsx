@@ -16,6 +16,7 @@ import GlobalCommanTable, {
   IndeterminateCheckbox
 } from "../globalComponents/GroupByReactTableComponents/GlobalCommanTable";
 import InfoIconsToolTip from "../globalComponents/InfoIconsToolTip/InfoIconsToolTip";
+import ClientCategoryPopup from "./SiteCompositionComponents/ClientCategoryPopup";
 
 
 var filt: any = "";
@@ -39,7 +40,6 @@ let childRefdataGlobal: any;
 
 function ComponentChildDataTable(SelectedProp: any) {
   let AllsiteClientCategories: any = [];
-
   let allMasterTaskGlobalArray: any = [];
   let allSiteGlobalArray: any = [];
   let AllSiteTasksDataGlobal: any = [];
@@ -55,7 +55,6 @@ function ComponentChildDataTable(SelectedProp: any) {
   //     SelectedProp.NextProp.isShowTimeEntry = JSON.parse(
   //       SelectedProp?.NextProp?.TimeEntry
   //     );
-
   //     SelectedProp.NextProp.isShowSiteCompostion = JSON.parse(
   //       SelectedProp?.NextProp?.SiteCompostion
   //     );
@@ -64,7 +63,6 @@ function ComponentChildDataTable(SelectedProp: any) {
   //   console.log(e);
   // }
   ContextValueGlobal = SelectedProp?.NextProp;
-
   const refreshData = () => {
     AllsiteClientCategories = []
     componentDataGlobal = [];
@@ -102,7 +100,10 @@ function ComponentChildDataTable(SelectedProp: any) {
     ]);
 
   const [flatView, setFlatView] = React.useState(true);
-  const [IsMakeSCProtected, setIsMakeSCProtected] = React.useState(false);
+  const [IsMakeSCProtected, setIsMakeSCProtected] = React.useState(SelectedProp?.IsSCProtected ? SelectedProp.IsSCProtected : false);
+  const [IsClientCategoryPopupOpen, setIsClientCategoryPopupOpen] = React.useState(false);
+  const [SelectedClientCategory, setSelectedClientCategory] = React.useState([]);
+  const [CurrentSiteName, setCurrentSiteName] = React.useState('');
   let ComponetsData: any = {};
   let Response: any = [];
   let props = undefined;
@@ -234,7 +235,7 @@ function ComponentChildDataTable(SelectedProp: any) {
   const handleSwitchToggle = () => {
     setFlatView(!flatView);
   };
-  const handleSwitchToggleForProtected = () => {
+  const ToggleForProtected = () => {
     if (IsMakeSCProtected) {
       setIsMakeSCProtected(false);
       SelectedProp?.isProtected(false)
@@ -1001,8 +1002,7 @@ function ComponentChildDataTable(SelectedProp: any) {
     console.log(AllFlitteredData);
     GroupByClientCategoryData();
     // console.log("Filter Site and Client Category Data ======", tempSiteAndCategoryData);
-    // console.log("Filter Site and Client Category Data  AllSiteClientCategories AllSiteClientCategories AllSiteClientCategories======", AllSiteClientCategories);
-
+    // console.log("Filter Site and Client Category Data AllSiteClientCategories======", AllSiteClientCategories);
   };
 
 
@@ -1011,7 +1011,6 @@ function ComponentChildDataTable(SelectedProp: any) {
   const findAllClientCategories = (AllData: any) => {
     AllData.forEach((AllDataItem: any) => {
       if (AllDataItem.Item_x0020_Type == "SubComponent" || AllDataItem.Item_x0020_Type == "Feature" || AllDataItem.Item_x0020_Type == "Component") {
-
         allMasterTaskGlobalArray.push(AllDataItem)
       }
       if (AllDataItem.TaskType?.Title == "Task" || AllDataItem.TaskType?.Title == "Activities" || AllDataItem.TaskType?.Title == "Workstream") {
@@ -1019,8 +1018,8 @@ function ComponentChildDataTable(SelectedProp: any) {
           AllDataItem?.ClientCategory?.map((CCItem: any) => {
             AllsiteClientCategories.push(CCItem);
           })
-          allSiteGlobalArray.push(AllDataItem);
         }
+        allSiteGlobalArray.push(AllDataItem);
       }
       if (AllDataItem.subRows?.length > 0) {
         AllDataItem.subRows?.map((ChildArray: any) => {
@@ -1061,7 +1060,7 @@ function ComponentChildDataTable(SelectedProp: any) {
           })
         })
       }
-      // Mereging the prev selected CC from Parent into the summarize CC Array
+      // Mereging the prev selected CC from Parent into the Summerize CC Array
       if (prevSelectedCC?.length > 0) {
         UpdatedCCCount++;
         prevSelectedCC?.map((SelectedCCItem: any) => {
@@ -1572,8 +1571,29 @@ function ComponentChildDataTable(SelectedProp: any) {
   }, []);
 
 
+  // thses are used for Client Category Popup Related Functionality 
 
- 
+  const OpenClientCategoryPopup = (siteName: string, SelectedCC: any) => {
+    setIsClientCategoryPopupOpen(true);
+    setSelectedClientCategory(SelectedCC)
+    setCurrentSiteName(siteName)
+  }
+
+  const ClosePopupCallback = React.useCallback((UsedFor: string) => {
+    setIsClientCategoryPopupOpen(false);
+  }, [])
+  const saveClientCategory = React.useCallback((ClientCategories: any, siteName: string) => {
+    let TempArray: any = [];
+    lastUpdatedAllSites?.map((AllCCItem: any) => {
+      if (AllCCItem.Title == siteName) {
+        AllCCItem.ClientCategories = ClientCategories;
+      }
+      TempArray.push(AllCCItem);
+    })
+    setAllSitesData([...TempArray]);
+  }, [])
+
+
 
 
   let IndexCounting: any = 0;
@@ -1595,15 +1615,15 @@ function ComponentChildDataTable(SelectedProp: any) {
                   <div className="alignCenter">
                     <div className="alignCenter pb-2">
                       <span className='me-1 siteColor'>Protected</span>
-                      <label className="switch me-2 siteColor" htmlFor="checkbox">
-                        <input checked={IsMakeSCProtected} onChange={handleSwitchToggleForProtected} type="checkbox" id="checkbox" />
-                        {IsMakeSCProtected === true ? <div style={{ backgroundColor: '#000066' }} className="slider round" title='Switch to Groupby View'></div> : <div title='Switch to Flat-View' className="slider round"></div>}
+                      <label className="switch me-2 siteColor" htmlFor="checkbox-Protected">
+                        <input checked={IsMakeSCProtected} onChange={ToggleForProtected} type="checkbox" id="checkbox-Protected" name="Protected-view" />
+                        {IsMakeSCProtected === true ? <div style={{ backgroundColor: '#000066' }} className="slider round" title='Switch to Un-Protected View'></div> : <div title='Switch to Protected-View' className="slider round"></div>}
                       </label>
                     </div>
                     <div className="alignCenter pb-2">
                       <span className='me-1 siteColor'>Flat View</span>
-                      <label className="switch me-2 siteColor" htmlFor="checkbox">
-                        <input checked={flatView} onChange={handleSwitchToggle} type="checkbox" id="checkbox" />
+                      <label className="switch me-2 siteColor" htmlFor="checkbox-Flat">
+                        <input checked={flatView} onChange={handleSwitchToggle} type="checkbox" id="checkbox-Flat" name="Flat-view" />
                         {flatView === true ? <div style={{ backgroundColor: '#000066' }} className="slider round" title='Switch to Groupby View'></div> : <div title='Switch to Flat-View' className="slider round"></div>}
                       </label>
                     </div>
@@ -1637,6 +1657,9 @@ function ComponentChildDataTable(SelectedProp: any) {
                                   )
                                 })}
                               </div>
+                            </td>
+                            <td>
+                              <span onClick={() => OpenClientCategoryPopup(CCDetails.Title, CCDetails.ClientCategories)} className="svg__iconbox svg__icon--editBox"></span>
                             </td>
                           </tr>
                         )
@@ -1674,7 +1697,6 @@ function ComponentChildDataTable(SelectedProp: any) {
                     SelectedProp?.props?.Item_x0020_Type
                   }
                   setLoaded={setLoaded}
-
                   queryItems={SelectedProp?.props}
                   PortfolioFeature={SelectedProp?.props?.Item_x0020_Type}
                   AllMasterTasksData={AllMasterTasksData}
@@ -1695,13 +1717,19 @@ function ComponentChildDataTable(SelectedProp: any) {
                   showCreationAllButton={true}
                 />
               </div>
-
             </div>
           </div>
         </section>
       </div>
-     
-      {console.log("html rendering count ====")}
+
+      {IsClientCategoryPopupOpen ?
+        <ClientCategoryPopup
+          ContextValue={ContextValueGlobal}
+          SelectedCC={SelectedClientCategory}
+          CurrentSiteName={CurrentSiteName}
+          ClosePopupCallback={ClosePopupCallback}
+          saveClientCategory={saveClientCategory}
+        /> : null}
     </section>
   );
 }
