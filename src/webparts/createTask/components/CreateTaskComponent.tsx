@@ -1553,7 +1553,7 @@ function CreateTaskComponent(props: any) {
         })
         if (items == 'Delete' || items == undefined) {
             location.reload();
-        } else if (items?.Id) {
+        } else if (items=="Save") {
             setTimeout(() => {
                 window.open(base_Url + "/SitePages/Task-Profile.aspx?taskId=" + createdTask?.Id + "&Site=" + createdTask?.siteType, "_self")
                 createdTask = {};

@@ -468,7 +468,7 @@ function TeamPortlioTable(SelectedProp: any) {
                                 // if (title) result.joinedData.push(`Title: ${title}`);
                                 // if (dueDate) result.joinedData.push(`Due Date: ${dueDate}`);
                             }
-                            result["Item_x0020_Type"] = "Task";
+                            result["Item_x0020_Type"] = "Task"; 
                             TasksItem.push(result);
                             AllTasksData.push(result)
                         });
@@ -1211,32 +1211,44 @@ function TeamPortlioTable(SelectedProp: any) {
         setclickFlatView(false);
         setData(groupByButtonClickData);
     }
-    const setTableHeight = () => {
-        const table = document.getElementById('runtimeTable');
-        const screenHeight = window.innerHeight;
-        const tableHeight = screenHeight * 0.8 - 5;
-        table.style.maxHeight = `${tableHeight}px`;
-    };
-    React.useEffect(() => {
-        setTableHeight();
-        window.addEventListener('resize', setTableHeight);
-        return () => {
-            window.removeEventListener('resize', setTableHeight);
-        };
-    }, []);
-
-
-    // const sortFn = (row: any, rowb: any) => {
-    //     let datePartsA = row?.DueDate?.split('/');
-    //     let datePartsB = rowb?.DueDate?.split('/');
-    //     let newDateA:any = new Date(datePartsA[2], datePartsA[1] - 1, datePartsA[0]);
-    //     let newDateB:any = new Date(datePartsB[2], datePartsB[1] - 1, datePartsB[0]);
-    //     return new Date(newDateB).getTime() - new Date(newDateA).getTime();
+    // const setTableHeight = () => {
+    //     const table = document.getElementById('runtimeTable');
+    //     const screenHeight = window.innerHeight;
+    //     const tableHeight = screenHeight * 0.8 - 5;
+    //     table.style.maxHeight = `${tableHeight}px`;
     // };
-    // const sortCreatedFn = (row: any, rowb: any) => {
-    //     return new Date(rowb.Created).getTime() - new Date(row.Created).getTime();
+    // React.useEffect(() => {
+    //     setTableHeight();
+    //     window.addEventListener('resize', setTableHeight);
+    //     return () => {
+    //         window.removeEventListener('resize', setTableHeight);
+    //     };
+    // }, []);
+
+   
+
+    // const setTableDimensions = () => {
+    //     const table = document.getElementById('runtimeTable');
+    //     const screenHeight = window.innerHeight;
+    //     const screenWidth = window.innerWidth;
+
+    //     // Set table height
+    //     const tableHeight = screenHeight * 0.8 - 5;
+    //     table.style.maxHeight = `${tableHeight}px`;
+
+    //     // Set table width (example: 80% of screen width)
+    //     const tableWidth = screenWidth * 0.8;
+    //     table.style.maxWidth = `${tableWidth}px`;
     // };
 
+    // React.useEffect(() => {
+    //     setTableDimensions();
+    //     window.addEventListener('resize', setTableDimensions);
+
+    //     return () => {
+    //         window.removeEventListener('resize', setTableDimensions);
+    //     };
+    // }, []);
 
     const columns: any = React.useMemo<ColumnDef<any, unknown>[]>(
         () => [
@@ -1997,14 +2009,14 @@ function TeamPortlioTable(SelectedProp: any) {
             </section>
 
 
-            <section className="TableContentSection row taskprofilepagegreen">
+            <section className="Tabl1eContentSection row taskprofilepagegreen">
                 <div className="container-fluid p-0">
                     <section className="TableSection">
                         <div className="container p-0">
                             <div className="Alltable mt-2 ">
                                 <div className="col-sm-12 p-0 smart">
                                     <div className="">
-                                        <div className="wrapper" id="runtimeTable">
+                                        <div>
                                             <Loader loaded={loaded} lines={13} length={20} width={10} radius={30} corners={1} rotate={0} direction={1}
                                                 color={portfolioColor ? portfolioColor : "#000069"}
                                                 speed={2}
