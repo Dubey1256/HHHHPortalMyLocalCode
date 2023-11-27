@@ -12,8 +12,10 @@ import {
     getSortedRowModel,
     SortingState,
     FilterFn,
-    getPaginationRowModel
+    getPaginationRowModel,
+    Row
 } from "@tanstack/react-table";
+import { useVirtualizer, notUndefined } from "@tanstack/react-virtual";
 import { RankingInfo, rankItem, compareItems } from "@tanstack/match-sorter-utils";
 import { FaSort, FaSortDown, FaSortUp, FaChevronRight, FaChevronLeft, FaAngleDoubleRight, FaAngleDoubleLeft, FaInfoCircle, FaPlus, FaMinus, FaListAlt } from 'react-icons/fa';
 import { HTMLProps } from 'react';
@@ -369,6 +371,19 @@ const GlobalCommanTable = (items: any, ref: any) => {
             }
         }
     }, [columns])
+
+    /****************** defult Expend Other Section  part *******************/
+    React.useEffect(() => {
+        if (table?.getRowModel()?.rows.length > 0) {
+            table?.getRowModel()?.rows.map((elem: any) => {
+                if (elem?.original?.Title === "Others") {
+                    const newExpandedState = { [elem.id]: true };
+                    setExpanded(newExpandedState);
+                }
+            })
+        }
+    }, [data])
+    /****************** defult Expend Other Section end *******************/
     /****************** defult sorting  part end *******************/
 
     const table: any = useReactTable({
@@ -403,19 +418,6 @@ const GlobalCommanTable = (items: any, ref: any) => {
         enableSubRowSelection: false,
         // filterFns: undefined
     });
-    /****************** defult Expend Other Section  part *******************/
-    React.useEffect(() => {
-        if (table?.getRowModel()?.rows.length > 0) {
-            table?.getRowModel()?.rows.map((elem: any) => {
-                if (elem?.original?.Title === "Others") {
-                    const newExpandedState = { [elem.id]: true };
-                    setExpanded(newExpandedState);
-                }
-            })
-        }
-    }, [data])
-    /****************** defult Expend Other Section end *******************/
-
     React.useEffect(() => {
         CheckDataPrepre()
     }, [table?.getSelectedRowModel()?.flatRows])
@@ -752,11 +754,47 @@ const GlobalCommanTable = (items: any, ref: any) => {
 
     ////////////////  end /////////////////
 
+    //Virual rows
+    const parentRef = React.useRef<HTMLDivElement>(null);
+    const { rows } = table.getRowModel();
+    const virtualizer = useVirtualizer({
+        count: rows.length,
+        getScrollElement: () => parentRef.current,
+        estimateSize: () => 24,
+        overscan: 15,
+    });
+
+    const itemsVirtualizer: any = virtualizer.getVirtualItems();
+    const [before, after] =
+        itemsVirtualizer.length > 0
+            ? [
+                notUndefined(itemsVirtualizer[0]).start - virtualizer.options.scrollMargin,
+                virtualizer.getTotalSize() -
+                notUndefined(itemsVirtualizer[itemsVirtualizer.length - 1]).end,
+            ]
+            : [0, 0];
+
+    const setTableHeight = () => {
+        const table = document.getElementById('table-container');
+        const screenHeight = window.innerHeight;
+        const tableHeight = screenHeight * 0.8 - 5;
+        table.style.height = `${tableHeight}px`;
+    };
+    React.useEffect(() => {
+        setTableHeight();
+        window.addEventListener('resize', setTableHeight);
+        return () => {
+            window.removeEventListener('resize', setTableHeight);
+        };
+    }, []);
+    //Virtual rows
+
+
     return (
         <>
             {showHeader === true && <div className='tbl-headings justify-content-between fixed-Header top-0' style={{ background: '#e9e9e9' }}>
                 <span className='leftsec'>
-                {showingAllPortFolioCount === true ? <div className='alignCenter mt--2'>
+                    {showingAllPortFolioCount === true ? <div className='alignCenter mt--2'>
                         <label>
                             <label style={{ color: "#333333" }}>
                                 Showing
@@ -808,7 +846,7 @@ const GlobalCommanTable = (items: any, ref: any) => {
                             </>}
 
                     </div> :
-                        <span style={{ color: "#333333" }} className='Header-Showing-Items'>{`Showing ${table?.getFilteredRowModel()?.rows?.length} of ${items?.catogryDataLength ? items?.catogryDataLength : data?.length}`}</span>}
+                        <span style={{ color: "#333333", flex: "none" }} className='Header-Showing-Items'>{`Showing ${table?.getFilteredRowModel()?.rows?.length} of ${items?.catogryDataLength ? items?.catogryDataLength : data?.length}`}</span>}
                     <span className="mx-1">{items?.showDateTime}</span>
                     <DebouncedInput
                         value={globalFilter ?? ""}
@@ -818,7 +856,7 @@ const GlobalCommanTable = (items: any, ref: any) => {
                     />
                     <span className="svg__iconbox svg__icon--setting" style={{ backgroundColor: `${portfolioColor}` }} onClick={() => setSelectedFilterPanelIsOpen(true)}></span>
                     <span className='mx-1'>
-                        <select style={{ height: "30px", paddingTop:"3px" , color: `${portfolioColor}` }}
+                        <select style={{ height: "30px", paddingTop: "3px", color: `${portfolioColor}` }}
                             className="w-100"
                             aria-label="Default select example"
                             value={globalSearchType}
@@ -908,71 +946,83 @@ const GlobalCommanTable = (items: any, ref: any) => {
                     <Tooltip ComponentId={5756} />
                 </span>
             </div>}
-
-            <table className="SortingTable table table-hover mb-0" id='my-table' style={{ width: "100%" }}>
-                <thead className={showHeader === true ? 'fixedSmart-Header top-0' : 'fixed-Header top-0'}>
-                    {table.getHeaderGroups().map((headerGroup: any) => (
-                        <tr key={headerGroup.id} >
-                            {headerGroup.headers.map((header: any) => {
-                                return (
-                                    <th key={header.id} colSpan={header.colSpan} style={header.column.columnDef.size != undefined && header.column.columnDef.size != 150 ? { width: header.column.columnDef.size + "px" } : {}}>
-                                        {header.isPlaceholder ? null : (
-                                            <div className='position-relative' style={{ display: "flex" }}>
-                                                {flexRender(
-                                                    header.column.columnDef.header,
-                                                    header.getContext()
+            <div ref={parentRef} id="table-container" style={{ overflow: "auto" }}>
+                <div style={{ height: `${virtualizer.getTotalSize()}px` }}>
+                    <table className="SortingTable table table-hover mb-0" id='my-table' style={{ width: "100%" }}>
+                        <thead className={showHeader === true ? 'fixedSmart-Header top-0' : 'fixed-Header top-0'}>
+                            {table.getHeaderGroups().map((headerGroup: any) => (
+                                <tr key={headerGroup.id} >
+                                    {headerGroup.headers.map((header: any) => {
+                                        return (
+                                            <th key={header.id} colSpan={header.colSpan} style={header.column.columnDef.size != undefined && header.column.columnDef.size != 150 ? { width: header.column.columnDef.size + "px" } : {}}>
+                                                {header.isPlaceholder ? null : (
+                                                    <div className='position-relative' style={{ display: "flex" }}>
+                                                        {flexRender(
+                                                            header.column.columnDef.header,
+                                                            header.getContext()
+                                                        )}
+                                                        {header.column.getCanFilter() ? (
+                                                            // <span>
+                                                            <Filter column={header.column} table={table} placeholder={header.column.columnDef} />
+                                                            // </span>
+                                                        ) : null}
+                                                        {header.column.getCanSort() ? <div
+                                                            {...{
+                                                                className: header.column.getCanSort()
+                                                                    ? "cursor-pointer select-none shorticon"
+                                                                    : "",
+                                                                onClick: header.column.getToggleSortingHandler(),
+                                                            }}
+                                                        >
+                                                            {header.column.getIsSorted()
+                                                                ? { asc: <FaSortDown style={{ color: `${portfolioColor}` }} />, desc: <FaSortUp style={{ color: `${portfolioColor}` }} /> }[
+                                                                header.column.getIsSorted() as string
+                                                                ] ?? null
+                                                                : <FaSort style={{ color: "gray" }} />}
+                                                        </div> : ""}
+                                                    </div>
                                                 )}
-                                                {header.column.getCanFilter() ? (
-                                                    // <span>
-                                                    <Filter column={header.column} table={table} placeholder={header.column.columnDef} />
-                                                    // </span>
-                                                ) : null}
-                                                {header.column.getCanSort() ? <div
-                                                    {...{
-                                                        className: header.column.getCanSort()
-                                                            ? "cursor-pointer select-none shorticon"
-                                                            : "",
-                                                        onClick: header.column.getToggleSortingHandler(),
-                                                    }}
-                                                >
-                                                    {header.column.getIsSorted()
-                                                        ? { asc: <FaSortDown style={{ color: `${portfolioColor}` }} />, desc: <FaSortUp style={{ color: `${portfolioColor}` }} /> }[
-                                                        header.column.getIsSorted() as string
-                                                        ] ?? null
-                                                        : <FaSort style={{ color: "gray" }} />}
-                                                </div> : ""}
-                                            </div>
-                                        )}
-                                    </th>
+                                            </th>
+                                        );
+                                    })}
+                                </tr>
+                            ))}
+                        </thead>
+                        <tbody>
+                            {before > 0 && (
+                                <tr>
+                                    <td className="col-span-full" style={{ height: before }}></td>
+                                </tr>
+                            )}
+                            {virtualizer.getVirtualItems().map((virtualRow: any, index: any) => {
+                                const row = rows[virtualRow.index] as Row<any>;
+                                return (
+                                    <tr
+                                        // className={row?.original?.lableColor}
+                                        className={row?.original?.IsSCProtected != undefined && row?.original?.IsSCProtected == true ? `Disabled-Link opacity-75 ${row?.original?.lableColor}` : `${row?.original?.lableColor}`}
+                                        key={row.id}>
+                                        {row.getVisibleCells().map((cell: any) => {
+                                            return (
+                                                <td className={row?.original?.boldRow} key={cell.id} style={row?.original?.fontColorTask != undefined ? { color: `${row?.original?.fontColorTask}` } : { color: `${row?.original?.PortfolioType?.Color}` }}>
+                                                    {flexRender(
+                                                        cell.column.columnDef.cell,
+                                                        cell.getContext()
+                                                    )}
+                                                </td>
+                                            );
+                                        })}
+                                    </tr>
                                 );
                             })}
-                        </tr>
-                    ))}
-                </thead>
-                <tbody>
-                    {table?.getRowModel()?.rows?.map((row: any) => {
-                        return (
-                            <tr
-                                // className={row?.original?.lableColor}
-                                className={row?.original?.IsSCProtected != undefined && row?.original?.IsSCProtected == true ? `Disabled-Link opacity-75 ${row?.original?.lableColor}` : `${row?.original?.lableColor}`}
-                                key={row.id}
-                            >
-                                {row.getVisibleCells().map((cell: any) => {
-                                    return (
-                                        <td className={row?.original?.boldRow} key={cell.id} style={row?.original?.fontColorTask != undefined ? { color: `${row?.original?.fontColorTask}` } : { color: `${row?.original?.PortfolioType?.Color}` }}>
-                                            {flexRender(
-                                                cell.column.columnDef.cell,
-                                                cell.getContext()
-                                            )}
-                                        </td>
-                                    );
-                                })}
-                            </tr>
-                        );
-                    })}
-
-                </tbody>
-            </table>
+                            {after > 0 && (
+                                <tr>
+                                    <td className="col-span-full" style={{ height: after }}></td>
+                                </tr>
+                            )}
+                        </tbody>
+                    </table>
+                </div>
+            </div>
             {data?.length === 0 && <div className='mt-2'>
                 <div className='d-flex justify-content-center' style={{ height: "30px", color: portfolioColor ? `${portfolioColor}` : "#000069" }}>No data available</div>
             </div>}
