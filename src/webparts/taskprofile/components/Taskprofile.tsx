@@ -2284,7 +2284,7 @@ if(folora=="folora"&&index==0){
                                             <div className="align-items-center d-flex"
                                               style={{ display: this.state.showcomment }}
                                             >  <textarea id="txtComment" onChange={(e) => this.handleInputChange(e)} className="form-control full-width"></textarea>
-                                              <button type="button" className={(this.state.Result["Approver"]?.AssingedToUser?.Id  == this.currentUser[0]?.Id ||(this.state.Result["Approver"]?.Approver[0]?.Id==this?.currentUser[0]?.Id))? "btn-primary btn ms-2" : "btn-primary btn ms-2"} onClick={() => this.PostButtonClick(fbData, i)}>Post</button>
+                                              <button type="button" className={this.state.Result["Approver"]!=undefined&& this.state.Result["Approver"]!=""&&(this.state.Result["Approver"]?.AssingedToUser?.Id  == this.currentUser[0]?.Id ||(this.state.Result["Approver"]?.Approver[0]?.Id==this?.currentUser[0]?.Id))? "btn-primary btn ms-2" : "btn-primary btn ms-2"} onClick={() => this.PostButtonClick(fbData, i)}>Post</button>
                                             </div>
                                           </div>}
 
