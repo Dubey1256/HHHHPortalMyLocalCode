@@ -12,6 +12,8 @@ import * as Moment from "moment";
 import { data } from 'jquery';
  var ParentData:any = []
  var childData:any =[]
+ var newData:any=''
+var MydataSorted:any=''
 const TopNavigation = (dynamicData: any) => {
     var ListId = dynamicData.dynamicData.TopNavigationListID
     const [root, setRoot] = React.useState([])
@@ -26,6 +28,7 @@ const TopNavigation = (dynamicData: any) => {
     // var [ParentData, setParentData] = React.useState<any>([]);
     //var [childData, setchildData] = React.useState<any>([]);
     const [sortOrder, setSortOrder] = React.useState<any>()
+    const [search, setSearch]: [string, (search: string) => void] = React.useState("");
     const [sortId,setSortId] = React.useState()
     const [value, setValue] = React.useState("")
     const [child, setChild] = React.useState("")
@@ -38,6 +41,13 @@ const TopNavigation = (dynamicData: any) => {
     React.useEffect(() => {
         loadTopNavigation();
     }, [])
+    let SearchedData = (e: { target: { value: string; }; }) => {
+        setSearch(e.target.value.toLowerCase());
+    };
+    const clearSearch = () => {
+        setSearch('')
+
+    }
     const handleChange = (type: any, event: any) => {
         if (type == 'Parent') {
             ParentData=[]
@@ -81,6 +91,12 @@ const TopNavigation = (dynamicData: any) => {
             .get()
         console.log(TaskTypeItems)
         TaskTypeItems?.forEach((item: any) => {
+            if(item.ownersonly == true){
+                item.image= 'https://hhhhteams.sharepoint.com/sites/HHHH/SP/SiteCollectionImages/ICONS/24/Facilitators-do-not-disturb.png'
+            }
+            if(item.IsVisible == false){
+                item.image= 'https://hhhhteams.sharepoint.com/sites/HHHH/SP/SitecollectionImages/ICONS/24/do-not-disturb-rounded.png'
+            }
             if (item.ParentID == 0) {
                 item.Id = item.ID;
                 getChilds(item, TaskTypeItems);
@@ -94,6 +110,12 @@ const TopNavigation = (dynamicData: any) => {
         item.childs = [];
         items?.forEach((childItem: any) => {
             if (childItem.ParentID != undefined && parseInt(childItem.ParentID) == item.ID) {
+                if(childItem.ownersonly == true){
+                    childItem.image= 'https://hhhhteams.sharepoint.com/sites/HHHH/SP/SiteCollectionImages/ICONS/24/Facilitators-do-not-disturb.png'
+                }
+                if(childItem.IsVisible == false){
+                    childItem.image= 'https://hhhhteams.sharepoint.com/sites/HHHH/SP/SitecollectionImages/ICONS/24/do-not-disturb-rounded.png'
+                }
                 item.childs.push(childItem);
                 getChilds(childItem, items);
             }
@@ -250,7 +272,7 @@ const TopNavigation = (dynamicData: any) => {
     }
     const sortItem = (item:any) => {
         var neeArray:any=[]
-        item?.forEach((val:any)=>{
+        item?.map((val:any)=>{
             val.SortOrder = val?.SortOrder?.toString()
         })
         neeArray =  item.sort(customSort);
@@ -274,28 +296,40 @@ const TopNavigation = (dynamicData: any) => {
     }
     const sortBy = (type:any) => {
 
-        const copy = root
+        const copy = data
         if(type == 'Title'){
-            copy.sort((a:any, b:any) => (a.Title > b.Title) ? 1 : -1);
+            copy.sort((a:any, b:any) => (a.Title > b?.Title) ? 1 : -1);
         }
         if(type == 'SortOrder'){
-            copy.sort((a:any, b:any) => (a.SortOrder > b.SortOrder) ? 1 : -1);
+            copy?.forEach((val:any)=>{
+                if(val.SortOrder != undefined){
+                    val.SortOrder = parseInt(val?.SortOrder)
+                }
+                
+            })
+            copy.sort((a:any, b:any) => (a?.SortOrder > b?.SortOrder) ? 1 : -1);
         }
-        setRoot(copy)
-        setRoot((copy)=>[...copy])
+        setData(copy)
+        setData((copy)=>[...copy])
 
     }
     const sortByDng = (type:any) => {
 
-        const copy = root
+        const copy = data
         if(type == 'Title'){
-            copy.sort((a:any, b:any) => (a.Title > b.Title) ? -1 : 1);
+            copy.sort((a:any, b:any) => (a?.Title > b?.Title) ? -1 : 1);
         }
         if(type == 'SortOrder'){
-            copy.sort((a:any, b:any) => (a.SortOrder > b.SortOrder) ? -1 : 1);
+            copy?.forEach((val:any)=>{
+
+                  if(val.SortOrder != undefined){
+                    val.SortOrder = parseInt(val?.SortOrder)
+                }
+            })
+            copy.sort((a:any, b:any) => (a?.SortOrder > b?.SortOrder) ? -1 : 1);
         }
-        setRoot(copy)
-        setRoot((copy)=>[...copy])
+        setData(copy)
+        setData((copy)=>[...copy])
 
     }
 const updateSortOrder=async ()=>{
@@ -355,16 +389,40 @@ const callBackData = React.useCallback((elem: any, ShowingData: any) => {
 
 
 }, []);
+
+  const SortedData=(newDatas:any,items:any)=>{
+     newData = newDatas
+     MydataSorted = items
+  }
+const inputSortOrder=async ()=>{
+    let web = new Web(dynamicData.dynamicData.siteUrl);
+
+    await web.lists.getById(ListId).items.getById(MydataSorted.Id).update({
+
+
+        SortOrder:parseInt(newData),
+
+    }).then((res: any) => {
+
+        console.log(res);
+        ClosesortItem();
+         newData = ''
+        MydataSorted = ''
+        loadTopNavigation();
+
+
+    })
+}
     return (
         <>
-             <div className='row'>
+              <div className='row'>
                 <div className='col-sm-3 text-primary'>
                     <h3 className="heading">Update TopNavigation
                     </h3>
                 </div>
                 <div className='col-sm-9 text-primary'>
                     <h6 className='pull-right'><b><a  data-interception="off"
-                    target="_blank" href="https://hhhhteams.sharepoint.com/sites/HHHH/SP/SitePages/UpdateTopNavigation.aspx">Old Update TopNavigation</a></b>
+                    target="_blank" href="https://hhhhteams.sharepoint.com/sites/HHHH/SP/SitePages/UpdateTopNavigation-old.aspx">Old Update TopNavigation</a></b>
                     </h6>
                 </div>
             </div>
@@ -374,7 +432,9 @@ const callBackData = React.useCallback((elem: any, ShowingData: any) => {
                     {root.map((item) => {
                         return (
                             <>
-                                <li className='parent '>
+                                <li className='parent'>
+                                    {item.image != undefined ? <span><img src={item?.image} className='workmember'/></span>: <span><img src={item?.image} /></span>}
+                               
                                     <span> <a href={item.href?.Url}>{item.Title}</a></span>
                                     <span className='float-end'>
                                         <span className='svg__iconbox svg__icon--editBox' onClick={() => editPopup(item)}></span>
@@ -387,6 +447,7 @@ const callBackData = React.useCallback((elem: any, ShowingData: any) => {
                                             return (
                                                 <>
                                                     <li className="pre">
+                                                    {child.image != undefined ? <span><img src={child?.image} className='workmember'/></span>: <span><img src={child?.image} /></span>}
                                                         <span><a href={child.href?.Url}>{child.Title}</a></span>
                                                         <span className='float-end'>
                                                             <span className='svg__iconbox svg__icon--editBox' onClick={() => editPopup(child)}></span>
@@ -399,6 +460,8 @@ const callBackData = React.useCallback((elem: any, ShowingData: any) => {
                                                                 return (
                                                                     <>
                                                                         <li className="pre">
+                                                                        {subchild.image != undefined ? <span><img src={subchild?.image} className='workmember'/></span>: <span><img src={subchild?.image} /></span>}
+                                                                        <span><img src={subchild?.image} className='workmember'/></span>
                                                                             <span><a href={subchild.href?.Url}>{subchild.Title}</a></span>
                                                                             <span className='float-end'>
                                                                                 <span className='svg__iconbox svg__icon--editBox' onClick={() => editPopup(subchild)}></span>
@@ -769,7 +832,71 @@ const callBackData = React.useCallback((elem: any, ShowingData: any) => {
             >
                 
                     <div className='Alltable'>
-                        <GlobalCommanTable columns={column} data={data} callBackData={callBackData} showHeader={false} expandIcon={false}/> 
+
+                        <table className="table table-hover" id="EmpTable" style={{ width: "100%" }}>
+                                                <thead>
+                                                    <tr>
+                                                        <th style={{ width: "80%" }}>
+                                                        <div style={{ width: "100%" }} className="position-relative smart-relative">
+                                                                <input id="searchClientCategory" type="search" placeholder="Title"
+                                                                    title="Client Category" className="full_width searchbox_height"
+                                                                    onChange={SearchedData} autoComplete='off'/>
+                                                                <span className="sorticon" style={{top:"1px"}}>
+                                                                    <span className="up" onClick={()=>sortBy('Title')}>< FaAngleUp /></span>
+                                                                    <span className="down" onClick={()=>sortByDng('Title')}>< FaAngleDown /></span>
+                                                                </span>
+
+                                                            </div>
+                                                        </th>
+
+                                                        <th style={{ width: "20%" }}>
+                                                        <div style={{ width: "100%" }} className="position-relative smart-relative">
+                                                                <input id="searchClientCategory" type="search" placeholder="SortOrder"
+                                                                    title="Client Category" className="full_width searchbox_height"
+                                                                    onChange={SearchedData} autoComplete='off'/>
+                                                                <span className="sorticon" style={{top:"1px"}}>
+                                                                    <span className="up" onClick={()=>sortBy('SortOrder')}>< FaAngleUp /></span>
+                                                                    <span className="down" onClick={()=>sortByDng('SortOrder')}>< FaAngleDown /></span>
+                                                                </span>
+
+                                                            </div>
+                                                        </th>
+                                                    </tr>
+                                                </thead>
+                                                <tbody>
+                                                    {data && data.map(function (item, index) {
+                                                        if ((search == "" || item?.Title?.toLowerCase().includes(search.toLowerCase())) || (search == "" || item?.SortOrder?.toLowerCase().includes(search.toLowerCase()))) {
+                                                            return (
+                                                                <>
+                                                                    <tr className="bold for-c0l">
+                                                                        <td className="p-0">
+                                                                               {item?.Title}
+                                                                          
+                                                                        </td>
+                                                                        <td className="p-0">
+                                                                        <input id="searchClientCategory" 
+                                                                    title="Client Category" className="full_width searchbox_height" defaultValue={item?.SortOrder}
+                                                                    onChange={(e)=>SortedData(e.target.value,item)} />
+                                                                          
+                                                                        </td>
+
+
+                                                                    </tr>
+                                                                   
+                                                                </>
+
+
+                                                            )
+                                                        }
+                                                    })}
+
+
+
+                                                </tbody>
+
+
+
+                                            </table>
                     </div>
 
                 
@@ -784,7 +911,7 @@ const callBackData = React.useCallback((elem: any, ShowingData: any) => {
                          </div>
                          <div className='mt-2'>
                             <button type="button" className="btn btn-primary ms-2"
-                                onClick={() =>ClosesortItem()}>
+                                onClick={() =>inputSortOrder()}>
                                 Save
                             </button>
                             <button type="button" className="btn btn-default ms-2" 

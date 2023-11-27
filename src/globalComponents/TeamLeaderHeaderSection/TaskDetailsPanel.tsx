@@ -69,7 +69,7 @@ const TaskDetailsPanel = (props: any) => {
         cell: ({ row, column, getValue }) => (
           <>
             <span >
-              {row.original.Services.length >= 1 ? (
+              {row.original?.Services?.length >= 1 ? (
                 <a
                   className="hreflink text-success"
                   href={`${props?.siteUrl}/SitePages/Task-Profile.aspx?taskId=${row?.original?.Id}&Site=${row?.original?.siteType}`}
@@ -116,7 +116,7 @@ const TaskDetailsPanel = (props: any) => {
         accessorFn: (row) => row?.Portfolio,
         cell: ({ row }) => (
           <span>
-            {row.original.Services.length >= 1 ? (
+            {row.original?.Services?.length >= 1 ? (
               <a
                 className="hreflink text-success"
                 data-interception="off"
@@ -257,7 +257,7 @@ const TaskDetailsPanel = (props: any) => {
         accessorFn: (row) => row?.Created,
         cell: ({ row }) => (
           <span>
-            {row.original.Services.length >= 1 ? (
+            {row.original.Services?.length >= 1 ? (
               <span className='ms-1 text-success'>{row?.original?.DisplayCreateDate} </span>
             ) : (
               <span className='ms-1'>{row?.original?.DisplayCreateDate} </span>

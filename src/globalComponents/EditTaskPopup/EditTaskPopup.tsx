@@ -737,6 +737,7 @@ const EditTaskPopup = (Items: any) => {
     // #################### this is used for getting All Information for selected task from Backend ##############################
 
     const GetSelectedTaskDetails = async () => {
+        var ApprovarDataId = ''
         try {
             let web = new Web(siteUrls);
             let smartMeta: any;
@@ -1054,16 +1055,27 @@ const EditTaskPopup = (Items: any) => {
                 if (TaskApproverBackupArray != undefined && TaskApproverBackupArray.length > 0) {
                     TaskApproverBackupArray.map((itemData: any) => {
                         currentUserBackupArray?.map((currentUser: any) => {
-                            if (itemData.Id == currentUser.AssingedToUserId) {
+                            taskUsers?.map((userData: any) => {
+                                if (userData?.AssingedToUserId == itemData.Id) {
+                                    ApprovarDataId = userData?.Approver[0].Id
+                                }
+                            })
+                            if (itemData.Id == currentUser.AssingedToUserId || currentUser.AssingedToUserId == ApprovarDataId) {
                                 setSmartLightStatus(true);
                             }
+
                         })
                     })
                 } else {
                     if (TaskCreatorApproverBackupArray?.length > 0) {
                         TaskCreatorApproverBackupArray?.map((Approver: any) => {
                             currentUserBackupArray?.map((current: any) => {
-                                if (Approver.Id == current.AssingedToUserId) {
+                                taskUsers?.map((userData: any) => {
+                                    if (userData?.AssingedToUserId == Approver?.Id) {
+                                        ApprovarDataId = userData?.Approver[0].Id
+                                    }
+                                })
+                                if (Approver.Id == current.AssingedToUserId ||  current.AssingedToUserId == ApprovarDataId) {
                                     setSmartLightStatus(true);
                                 }
                             })
@@ -1424,6 +1436,23 @@ const EditTaskPopup = (Items: any) => {
                     setOnlyCompletedStatus(false);
                 }
             }
+            currentUserData?.map((CUData: any) => {
+                if (CUData?.CategoriesItemsJson?.length > 5) {
+                    let PrevDefinedCategories: any = JSON.parse(CUData.CategoriesItemsJson);
+                    PrevDefinedCategories?.map((CUCategories: any) => {
+                        if (CUCategories.Title == existingData.Title) {
+                            setApprovalStatus(true);
+                            setApproverData(TaskApproverBackupArray);
+                            AutoCompleteItemsArray?.map((itemData: any) => {
+                                if (itemData.Title == "Approval") {
+                                    CategoryChangeUpdateFunction(false, itemData.Title, itemData.Id)
+                                }
+                            })
+                        }
+                    })
+                }
+
+            })
         })
 
         let uniqueIds: any = {};
@@ -1625,7 +1654,7 @@ const EditTaskPopup = (Items: any) => {
         taskUsers = await web.lists
             .getById(AllListIdData?.TaskUsertListID)
             .items
-            .select("Id,UserGroupId,TimeCategory,IsActive,Suffix,Title,Email,SortOrder,Role,IsShowTeamLeader,Company,ParentID1,Status,Item_x0020_Cover,AssingedToUserId,isDeleted,AssingedToUser/Title,AssingedToUser/Id,AssingedToUser/EMail,ItemType,Approver/Id,Approver/Title,Approver/Name")
+            .select("Id,UserGroupId,TimeCategory,CategoriesItemsJson,IsActive,Suffix,Title,Email,SortOrder,Role,IsShowTeamLeader,Company,ParentID1,Status,Item_x0020_Cover,AssingedToUserId,isDeleted,AssingedToUser/Title,AssingedToUser/Id,AssingedToUser/EMail,ItemType,Approver/Id,Approver/Title,Approver/Name")
             .filter('IsActive eq 1')
             .expand('AssingedToUser,Approver')
             .orderBy('SortOrder', true)
@@ -2081,18 +2110,29 @@ const EditTaskPopup = (Items: any) => {
         filterArray.map((TeamItems: any) => {
             taskUsers?.map((TaskUserData: any) => {
                 if (TeamItems.Id == TaskUserData.AssingedToUserId) {
-                    if (TaskUserData.TimeCategory == filterType) {
-                        tempArray.push(TaskUserData)
-                        EditData.TaskAssignedUsers = tempArray;
-                        let updateUserArray1: any = [];
-                        updateUserArray1.push(tempArray[0].AssingedToUser)
-                        setTaskAssignedTo(updateUserArray1);
-                    }
-                    else {
-                        if (tempArray?.length == 0) {
-                            setWorkingMember(143);
+                    if (filterType == "Development") {
+                        if (TaskUserData.TimeCategory == "Development" || TaskUserData.TimeCategory == "Design") {
+                            tempArray.push(TaskUserData)
+                            EditData.TaskAssignedUsers = tempArray;
+                            let updateUserArray1: any = [];
+                            updateUserArray1.push(tempArray[0].AssingedToUser)
+                            setTaskAssignedTo(updateUserArray1);
+                        }
+                    } else {
+                        if (TaskUserData.TimeCategory == filterType) {
+                            tempArray.push(TaskUserData)
+                            EditData.TaskAssignedUsers = tempArray;
+                            let updateUserArray1: any = [];
+                            updateUserArray1.push(tempArray[0].AssingedToUser)
+                            setTaskAssignedTo(updateUserArray1);
+                        }
+                        else {
+                            if (tempArray?.length == 0) {
+                                setWorkingMember(143);
+                            }
                         }
                     }
+
                 }
             })
         })
@@ -2220,15 +2260,27 @@ const EditTaskPopup = (Items: any) => {
                 await web.lists.getById(Items.Items.listId).items.getById(Items.Items.Id).update(DataJSONUpdate)
                     .then(async (res: any) => {
                         // Added by PB************************
-                        if (Items?.SDCAuthor != undefined && Items?.SDCAuthor != '' && EditData != undefined && EditData != '') {
+                        let ClientActivityJsonMail: any = null
+                        if (EditData?.ClientActivityJson != undefined) {
+                            try {
+                                ClientActivityJsonMail = JSON.parse(EditData?.ClientActivityJson)
+                                if (ClientActivityJsonMail?.length > 0) {
+                                    ClientActivityJsonMail = ClientActivityJsonMail[0]
+                                }
+                            } catch (e) {
+
+                            }
+                        }
+                        if ((Items?.SDCTaskDetails != undefined && Items?.SDCTaskDetails?.SDCCreatedBy != undefined && Items?.SDCTaskDetails?.SDCCreatedBy != '') && EditData != undefined && EditData != '' || (ClientActivityJsonMail != null && ClientActivityJsonMail?.SDCCreatedBy != undefined && Number(UpdateTaskInfo?.PercentCompleteStatus) == 90)) {
                             let SDCRecipientMail: any[] = [];
-                            EditData.SDCAuthor = Items?.SDCAuthor;
+                            EditData.ClientTask = Items?.SDCTaskDetails;
                             taskUsers?.map((User: any) => {
                                 if (User?.Title?.toLowerCase() == 'robert ungethuem' || User?.Title?.toLowerCase() == 'stefan hochhuth') {
+                                    //  if (User?.Title?.toLowerCase() == 'abhishek tiwari') {
                                     SDCRecipientMail.push(User);
                                 }
                             });
-                            globalCommon.sendImmediateEmailNotifications(EditData.Id, siteUrls, Items.Items.listId, EditData, SDCRecipientMail, 'Client Task', taskUsers, Context).then((response: any) => {
+                            await globalCommon.sendImmediateEmailNotifications(EditData.Id, siteUrls, Items.Items.listId, EditData, SDCRecipientMail, 'Client Task', taskUsers, Context).then((response: any) => {
                                 console.log(response);
                             });
                         }
@@ -3035,6 +3087,14 @@ const EditTaskPopup = (Items: any) => {
                 tempArray.push(ImgArray);
             } else {
                 imgItem.Description = imgItem.Description != undefined ? imgItem.Description : '';
+                let checkImageURL: any = imgItem.ImageUrl?.includes("https://www.hochhuth-consulting.de/sp");
+                let checkUserImage: any = imgItem.UserImage?.includes("https://www.hochhuth-consulting.de/sp");
+                if (checkImageURL) {
+                    imgItem.ImageUrl = imgItem?.ImageUrl.replace("https://www.hochhuth-consulting.de/sp", "https://hhhhteams.sharepoint.com/sites/HHHH/SP");
+                }
+                if (checkUserImage) {
+                    imgItem.UserImage = imgItem?.UserImage.replace("https://www.hochhuth-consulting.de/sp", "https://hhhhteams.sharepoint.com/sites/HHHH/SP");
+                }
                 tempArray.push(imgItem);
             }
         })
@@ -3158,21 +3218,21 @@ const EditTaskPopup = (Items: any) => {
             (async () => {
                 let web = new Web(siteUrls);
                 let item = web.lists.getById(Items.Items.listId).items.getById(Items.Items.Id);
-                item.attachmentFiles.getByName(imageName).recycle();
-                UpdateBasicImageInfoJSON(tempArray, "Upload", 0);
-                EditData.UploadedImage = tempArray;
-                console.log("Attachment deleted");
-
+                item.attachmentFiles.getByName(imageName).recycle().then(() => {
+                    UpdateBasicImageInfoJSON(tempArray, "Upload", 0);
+                    EditData.UploadedImage = tempArray;
+                    console.log("Attachment deleted");
+                });
             })().catch(console.log)
         } else {
             (async () => {
                 let web = new Web(siteUrls);
                 let item = web.lists.getByTitle(Items.Items.listName).items.getById(Items.Items.Id);
-                item.attachmentFiles.getByName(imageName).recycle();
-                UpdateBasicImageInfoJSON(tempArray, "Upload", 0);
-                EditData.UploadedImage = tempArray;
-                console.log("Attachment deleted");
-
+                item.attachmentFiles.getByName(imageName).recycle().then(() => {
+                    UpdateBasicImageInfoJSON(tempArray, "Upload", 0);
+                    EditData.UploadedImage = tempArray;
+                    console.log("Attachment deleted");
+                });
             })().catch(console.log)
         }
     }
@@ -5025,7 +5085,7 @@ const EditTaskPopup = (Items: any) => {
                                     </div>
                                     <div className="col-md-4">
                                         <div className="full_width ">
-                                            <CommentCard siteUrl={siteUrls} itemID={Items.Items.Id} AllListId={AllListIdData} Context={Context} />
+                                            <CommentCard siteUrl={siteUrls} listName={Items?.Items?.siteType} itemID={Items.Items.Id} AllListId={AllListIdData} Context={Context} />
                                         </div>
                                         <div className="pull-right">
                                             <span className="">
@@ -6081,7 +6141,7 @@ const EditTaskPopup = (Items: any) => {
                                                 </div>
                                                 <div className="col-md-4">
                                                     <div className="full_width ">
-                                                        <CommentCard siteUrl={siteUrls} itemID={Items.Items.Id} AllListId={AllListIdData} Context={Context} />
+                                                        <CommentCard siteUrl={siteUrls} listName={Items?.Items?.siteType} itemID={Items.Items.Id} AllListId={AllListIdData} Context={Context} />
                                                     </div>
                                                     <div className="pull-right">
                                                         <span className="">

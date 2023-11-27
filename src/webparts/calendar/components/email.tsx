@@ -17,6 +17,7 @@ interface NameIdData {
   };
 }
 
+
 let count:any=1;
 let counts = 0;
 let Juniordevavailabel=0;
@@ -52,7 +53,7 @@ const loadleave = async () =>  {
   const results =  await web.lists
           .getById(props.Listdata.SmalsusLeaveCalendar)
           .items.select(
-            "RecurrenceData,Duration,Author/Title,Editor/Title,NameId,Employee/Id,Employee/Title,Category,Description,ID,EndDate,EventDate,Location,Title,fAllDayEvent,EventType,UID,fRecurrence,Event_x002d_Type"
+            "RecurrenceData,Duration,Author/Title,Editor/Title,NameId,Employee/Id,Employee/Title,Category,Description,ID,EndDate,EventDate,Location,Title,fAllDayEvent,EventType,UID,fRecurrence,HalfDay,Event_x002d_Type"
           )
           .expand("Author,Editor,Employee")
           .top(500)
@@ -86,7 +87,7 @@ const loadleave = async () =>  {
       .sendEmail({
         Body: BindHtmlBody(),
         Subject: "HHHH - Team Attendance "+formattedDate+" "+Allteamoforganization +" available - "+Object?.keys(nameidTotals)?.length+" on leave" ,
-        To: ["abhishek.tiwari@hochhuth-consulting.de"],
+        To: ["abhishek.tiwari@hochhuth-consulting.de","prashant.kumar@hochhuth-consulting.de","ranu.trivedi@hochhuth-consulting.de","jyoti.prasad@hochhuth-consulting.de"],
         // ,"prashant.kumar@hochhuth-consulting.de","ranu.trivedi@hochhuth-consulting.de","jyoti.prasad@hochhuth-consulting.de"
         AdditionalHeaders: {
           "content-type": "text/html",
@@ -134,48 +135,95 @@ const loadleave = async () =>  {
 
 
 
-  const calculateTotalWorkingDays = (matchedData: any) => {
+  // const calculateTotalWorkingDays = (matchedData: any) => {
+  //   const currentYear = new Date().getFullYear();
+  
+  //   return matchedData.reduce((total: any, item: any) => {
+  //     const endDate: any = new Date(item.EndDate);
+  //     const eventDate: any = new Date(item.EventDate);
+  
+  //     // Filter data based on the event date being in the current year
+  //     if (eventDate.getFullYear() === currentYear) {
+  //       // Adjust the end date to the last day of the current year
+  //       const endOfYearDate = new Date(currentYear, 11, 31);
+  
+  //       const adjustedEndDate = endDate < endOfYearDate ? endDate : endOfYearDate;
+  
+  //       const timeDifferenceMs = adjustedEndDate - eventDate;
+  //       const totalDays = Math.ceil(timeDifferenceMs / (1000 * 60 * 60 * 24));
+  
+  //       if (timeDifferenceMs <= 9 * 60 * 60 * 1000) {
+  //         return total + 1; // Consider difference less than or equal to 9 hours as one day
+  //       }
+  
+  //       let workingDays = 0;
+  
+  //       while (eventDate < adjustedEndDate) {
+  //         const dayOfWeek = eventDate.getDay();
+  //         if (dayOfWeek !== 0 && dayOfWeek !== 6) {
+  //           // Exclude Sunday (0) and Saturday (6)
+  //           workingDays++;
+  //         }
+  //         eventDate.setDate(eventDate.getDate() + 1); // Move to the next day
+  //       }
+  
+  //       // Adjust total days by subtracting weekends within the period
+  //       const totalDaysExcludingWeekends = totalDays - 2 * Math.floor(totalDays / 7);
+  //       // Subtract two days for each full weekend
+  //       return total + Math.max(totalDaysExcludingWeekends, workingDays);
+  //     }
+  
+  //     return total;
+  //   }, 0);
+  // };
+  
+  const calculateTotalWorkingDays = (matchedData:any) => {
     const currentYear = new Date().getFullYear();
   
-    return matchedData.reduce((total: any, item: any) => {
-      const endDate: any = new Date(item.EndDate);
-      const eventDate: any = new Date(item.EventDate);
+    return matchedData.reduce((total:any, item:any) => {
+      const endDate = new Date(item.EndDate);
+      const eventDate:any = new Date(item.EventDate);
   
       // Filter data based on the event date being in the current year
       if (eventDate.getFullYear() === currentYear) {
         // Adjust the end date to the last day of the current year
         const endOfYearDate = new Date(currentYear, 11, 31);
-  
         const adjustedEndDate = endDate < endOfYearDate ? endDate : endOfYearDate;
   
-        const timeDifferenceMs = adjustedEndDate - eventDate;
-        const totalDays = Math.ceil(timeDifferenceMs / (1000 * 60 * 60 * 24));
-  
-        if (timeDifferenceMs <= 9 * 60 * 60 * 1000) {
-          return total + 1; // Consider difference less than or equal to 9 hours as one day
-        }
+        const oneDay = 24 * 60 * 60 * 1000; // Number of milliseconds in a day
   
         let workingDays = 0;
+        let currentDate = new Date(eventDate);
   
-        while (eventDate < adjustedEndDate) {
-          const dayOfWeek = eventDate.getDay();
-          if (dayOfWeek !== 0 && dayOfWeek !== 6) {
-            // Exclude Sunday (0) and Saturday (6)
-            workingDays++;
+        while (currentDate <= adjustedEndDate) {
+          const dayOfWeek = currentDate.getDay();
+  
+          if (dayOfWeek !== 0 && dayOfWeek !== 6 && !isWeekend(eventDate, adjustedEndDate)) {
+            // Exclude Sunday (0) and Saturday (6), and the event date and end date if they're both on a weekend
+            if (item.HalfDay) {
+              workingDays += 0.5; // Consider half-day
+            } else {
+              workingDays++;
+            }
           }
-          eventDate.setDate(eventDate.getDate() + 1); // Move to the next day
+  
+          currentDate.setTime(currentDate.getTime() + oneDay); // Move to the next day
         }
   
-        // Adjust total days by subtracting weekends within the period
-        const totalDaysExcludingWeekends = totalDays - 2 * Math.floor(totalDays / 7);
-        // Subtract two days for each full weekend
-        return total + Math.max(totalDaysExcludingWeekends, workingDays);
+        return total + workingDays;
       }
   
       return total;
     }, 0);
   };
   
+  // Function to check if both the event date and end date fall on a weekend
+  const isWeekend = (startDate:any, endDate:any) => {
+    const startDay = startDate.getDay();
+    const endDay = endDate.getDay();
+  
+    return (startDay === 0 || startDay === 6) && (endDay === 0 || endDay === 6);
+  };
   
 
 // const calculateTotalWorkingDays = (matchedData:any) => {
@@ -220,8 +268,7 @@ React.useEffect(() => {
   userId.forEach((username:any) => {
     const matchedData:any = yeardata.filter((member) => member.Employee?.Id === username.NameId);
 
-    if (matchedData.length !== 0) {
-      
+    if (matchedData.length !== 0) { 
       const totalDays = calculateTotalWorkingDays(matchedData);
       nameidData[username.NameId] = {
         NameId: username.NameId,

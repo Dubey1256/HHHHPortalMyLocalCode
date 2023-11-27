@@ -1,149 +1,206 @@
 import * as React from "react";
-
-// import teamsImg from '../Assets/ICON/Teams-Logo.png'; 
-var siteUrl = ''
-
+var siteUrl = '';
 function ShowTaskTeamMembers(item: any) {
-
-  siteUrl =
- item.props?.siteUrl != undefined
-? item?.props?.siteUrl
- : item?.Context?.siteurl;
+  siteUrl = item.props?.siteUrl != undefined ? item?.props?.siteUrl : item?.Context?.siteurl;
   const [Display, setDisplay] = React.useState("none");
   const [taskData, settaskData] = React.useState<any>();
-  const [key, setKey] = React.useState(0); // Add a key state
-
+  const [key, setKey] = React.useState(0);
+  const [LeadCount, setLeadCount] = React.useState(0);
   let TaskUsers: any = [];
-//  let  taskDetails = item?.props;
   TaskUsers = item?.TaskUsers;
-
+  let CompleteTeamMembers: any = [];
   React.useEffect(() => {
-    if(item?.props!=undefined){
-      let  taskDetails = item?.props;
-      if (taskDetails["AssignedTo"] != undefined) {
-        taskDetails["AssignedTo"]?.map((item: any, index: any) => {
-          if (taskDetails?.TeamMembers != undefined) {
-            for (let i = 0; i < taskDetails?.TeamMembers?.length; i++) {
-              if (item.Id == taskDetails?.TeamMembers[i]?.Id) {
-                taskDetails?.TeamMembers?.splice(i, true);
+    if (item?.props != undefined) {
+      let taskDetails = item?.props;
+      const LeadCount = taskDetails["ResponsibleTeam"] != undefined && taskDetails["ResponsibleTeam"].length > 0 ? taskDetails["ResponsibleTeam"].length : 0;
+      setLeadCount(LeadCount);
+      if (taskDetails["ResponsibleTeam"] != undefined) {
+        taskDetails["ResponsibleTeam"]?.map((item: any, index: any) => {
+          if (taskDetails?.AssignedTo != undefined) {
+            for (let i = 0; i < taskDetails?.AssignedTo?.length; i++) {
+              if (item.Id == taskDetails?.AssignedTo[i]?.Id) {
+                item.workingMember = true;
+                taskDetails?.AssignedTo?.splice(i, true);
                 i--;
               }
             }
           }
-  
-          item.workingMember = "activeimg";
-  
+          CompleteTeamMembers.push(item);
         });
       }
-      var array2: any = taskDetails["AssignedTo"] != undefined ? taskDetails["AssignedTo"] : [];
       if (taskDetails["TeamMembers"] != undefined) {
-        taskDetails.array = array2.concat(taskDetails["TeamMembers"]?.filter((item: any) => array2?.Id != item?.Id))
-      } else {
-        taskDetails.array = array2;
+        taskDetails["TeamMembers"]?.map((item: any, index: any) => {
+          if (taskDetails?.AssignedTo != undefined) {
+            for (let i = 0; i < taskDetails?.AssignedTo?.length; i++) {
+              if (item.Id == taskDetails?.AssignedTo[i]?.Id) {
+                item.workingMember = true;
+                taskDetails?.AssignedTo?.splice(i, true);
+                i--;
+              }
+            }
+          }
+
+          CompleteTeamMembers.push(item);
+        });
       }
-  
-      taskDetails.TeamLeader = taskDetails["ResponsibleTeam"] != null ? GetUserObjectFromCollection(taskDetails["ResponsibleTeam"]) : null;
-  
-      taskDetails.TeamMembers = taskDetails?.array != null ? GetUserObjectFromCollection(taskDetails.array) : null;
-      settaskData(taskDetails)
-    }
-    setKey((prevKey) => prevKey + 1);
-  }, [item])
-  const GetUserObjectFromCollection = (UsersValues: any) => {
-    let userDeatails = [];
-    for (let index = 0; index < UsersValues?.length; index++) {
-      let senderObject:any = TaskUsers?.filter(function (user: any, i: any) {
-        if (user?.AssingedToUser != undefined) {
-          return user?.AssingedToUser["Id"] == UsersValues[index]?.Id
-        }
+      if (taskDetails?.AssignedTo != undefined) {
+        taskDetails["AssignedTo"]?.map((item: any, index: any) => {
+          item.workingMember = true;
+          CompleteTeamMembers.push(item);
+        });
+      }
+      // Remove duplicate items
+      CompleteTeamMembers = CompleteTeamMembers.filter((item: any, index: any) => {
+        return CompleteTeamMembers.indexOf(item) === index;
       });
-      if (senderObject.length > 0) {
-        userDeatails.push({
-          'Id': senderObject[0]?.AssingedToUser.Id,
-          'Name': senderObject[0]?.Email,
-          'Suffix': senderObject[0]?.Suffix,
-          'Title': senderObject[0]?.Title,
-          'userImage': senderObject[0]?.Item_x0020_Cover?.Url,
-          'activeimg2': UsersValues[index]?.workingMember ? UsersValues[index]?.workingMember : "",
-        })
+
+      // Check if there are more than 3 members
+      if (CompleteTeamMembers.length > 3) {
+        // If there is no lead, show the first 2 members and the rest in a tooltip
+        // if (LeadCount === 0) {
+        //   taskDetails.TeamMembersFlat = GetUserObjectFromCollection(CompleteTeamMembers.toSpliced(1));
+        //   taskDetails.TeamMembersTip = GetUserObjectFromCollection(CompleteTeamMembers.slice(1));
+        // } else if (LeadCount === 1) {
+        //   // If there is a lead, show the lead and the first member and the rest in a tooltip
+        taskDetails.TeamMembersFlat = GetUserObjectFromCollection(CompleteTeamMembers.toSpliced(2));
+        taskDetails.TeamMembersTip = GetUserObjectFromCollection(CompleteTeamMembers.slice(2));
+        // }
+      } else {
+        // If there are less than or equal to 3 members, show all of them
+        taskDetails.TeamMembersFlat = GetUserObjectFromCollection(CompleteTeamMembers);
+        taskDetails.TeamMembersTip = [];
       }
 
+      settaskData(taskDetails);
     }
+    setKey((prevKey) => prevKey + 1);
+  }, [item]);
+
+  const GetUserObjectFromCollection = (UsersValues: any) => {
+    let userDeatails: any = [];
+    UsersValues?.map((item: any) => {
+      let workingToday=item?.workingMember!=undefined?item?.workingMember:false;
+      item = TaskUsers?.find((User: any) => User?.AssingedToUser?.Id == item?.Id)
+      userDeatails.push({
+        'Id': item?.AssingedToUser.Id,
+        'Name': item?.Email,
+        'Suffix': item?.Suffix,
+        'Title': item?.Title,
+        'userImage': item?.Item_x0020_Cover?.Url,
+        "workingMember": workingToday
+      });
+    })
+
     setKey((prevKey) => prevKey + 1);
     return userDeatails;
-  }
+  };
+
   const handleSuffixHover = () => {
     //e.preventDefault();
-    setDisplay("block")
+    setDisplay("block");
+  };
 
-  }
-  const handleuffixLeave = () => {
-    setDisplay("none")
-  }
-
-
+  const handleSuffixLeave = () => {
+    setDisplay("none");
+  };
 
   return (
     <>
-      <div key={key} className='full-width'>
-
-        <div className="d-flex align-items-center">
-          {taskData?.TeamLeader != null && taskData?.TeamLeader?.length > 0 && taskData?.TeamLeader?.map((rcData: any, i: any) => {
-            return <div key={key} className="user_Member_img"><a href={`${siteUrl}/SitePages/TaskDashboard.aspx?UserId=${rcData?.Id}&Name=${rcData?.Title}`} target="_blank" data-interception="off" title={rcData?.Title}>
-              {rcData.userImage != null && <img className="workmember" src={rcData?.userImage}></img>}
-              {rcData.userImage == null && <span className="workmember bg-fxdark" >{rcData?.Suffix}</span>}
-            </a>
-            </div>
-          })}
-        {(taskData?.TeamLeader==null && taskData?.TeamLeader==undefined)&&(taskData?.TeamMembers != null && taskData?.TeamMembers?.length > 0) && <div className="user_Member_img">
-                <span className="workmember d-flex clearfix" ></span>
-                <span className="workmember bg-fxdark" ></span>
-        
-         </div>}
-
-          {taskData?.TeamMembers != null && taskData?.TeamMembers?.length > 0 &&
-            <div key={key} className="img  "><a href={`${siteUrl}/SitePages/TaskDashboard.aspx?UserId=${taskData?.TeamMembers[0]?.Id}&Name=${taskData?.TeamMembers[0]?.Title}`} target="_blank" data-interception="off" title={taskData?.TeamMembers[0]?.Title}>
-              {taskData?.TeamMembers[0].userImage != null && <img className={`workmember ${taskData?.TeamMembers[0].activeimg2}`} src={taskData?.TeamMembers[0]?.userImage}></img>}
-              {taskData?.TeamMembers[0].userImage == null && <span className={`workmember ${taskData?.TeamMembers[0].activeimg2}bg-fxdark border bg-e9 p-1 `} >{taskData?.TeamMembers[0]?.Suffix}</span>}
-            </a>
-            </div>
-          }
-
-          {taskData?.TeamMembers != null && taskData?.TeamMembers?.length == 2 && <div className="img mx-2"><a href={`${siteUrl}/SitePages/TaskDashboard.aspx?UserId=${taskData?.TeamMembers[1]?.Id}&Name=${taskData?.TeamMembers[1]?.Title}`} target="_blank" data-interception="off" title={taskData?.TeamMembers[1]?.Title}>
-            {taskData?.TeamMembers[1]?.userImage != null && <img className={`workmember ${taskData?.TeamMembers[1]?.activeimg2}`} src={taskData?.TeamMembers[1]?.userImage}></img>}
-            {taskData?.TeamMembers[1]?.userImage == null && <span className={`workmember ${taskData?.TeamMembers[1]?.activeimg2}bg-fxdark border bg-e9 p-1`} >{taskData?.TeamMembers[1]?.Suffix}</span>}
-          </a>
-          </div>
-          }
-          {taskData?.TeamMembers != null && taskData?.TeamMembers?.length > 2 &&
-            <div className="position-relative user_Member_img_suffix2 ms-1 alignCenter" onMouseOver={(e) => handleSuffixHover()} onMouseLeave={(e) => handleuffixLeave()}>+{taskData?.TeamMembers?.length - 1}
-              <span className="tooltiptext" style={{ display: Display, padding: '10px' }}>
+      <div className="d-flex align-items-center full-width">
+        {/* {LeadCount === 0 ?
+          <div className="user_Member_img">
+            <span className="workmember d-flex clearfix"></span>
+            <span className="workmember bg-fxdark"></span>
+          </div> :
+         
+        } */}
+        <div key={key} className="">
+          {taskData?.TeamMembersFlat != null &&
+            taskData?.TeamMembersFlat?.length > 0 &&
+            taskData?.TeamMembersFlat?.map((rcData: any, i: any) => {
+              return (
+                <a
+                  style={{ marginRight: "4px" }}
+                  href={`${siteUrl}/SitePages/TaskDashboard.aspx?UserId=${rcData?.Id}&Name=${rcData?.Title}`}
+                  target="_blank"
+                  className={i == (LeadCount - 1) && i != 3 ? "teamLeader-IconEnd" : ''}
+                  data-interception="off"
+                  title={rcData?.Title}
+                >
+                  {rcData.userImage != null && (
+                    <img
+                      className={rcData?.workingMember ? "workmember activeimg" : "workmember"}
+                      src={rcData?.userImage}
+                    />
+                  )}
+                  {rcData.userImage == null && (
+                    <span
+                      className={
+                        rcData?.workingMember
+                          ? "workmember activeimg bg-fxdark"
+                          : "workmember bg-fxdark"
+                      }
+                    >
+                      {rcData?.Suffix}
+                    </span>
+                  )}
+                </a>
+              );
+            })}
+        </div>
+        {taskData?.TeamMembersTip != null &&
+          taskData?.TeamMembersTip?.length > 0 && (
+            <div
+              className="position-relative user_Member_img_suffix2 ms-1 alignCenter"
+              onMouseOver={(e) => handleSuffixHover()}
+              onMouseLeave={(e) => handleSuffixLeave()}
+            >
+              +{taskData?.TeamMembersTip?.length}
+              <span className="tooltiptext" style={{ display: Display, padding: "10px" }}>
                 <div key={key}>
-                  {taskData?.TeamMembers?.slice(1)?.map((rcData: any, i: any) => {
-
-                    return <div key={key} className=" mb-1 team_Members_Item" style={{ padding: '2px' }}>
-                      <a href={`${siteUrl}/SitePages/TaskDashboard.aspx?UserId=${rcData?.Id}&Name=${rcData?.Title}`} target="_blank" data-interception="off">
-
-                        {rcData?.userImage != null && <img className={`workmember ${rcData?.activeimg2}`} src={rcData?.userImage}></img>}
-                        {rcData?.userImage == null && <span className={`workmember ${rcData?.activeimg2}bg-fxdark border bg-e9 p-1`}>{rcData?.Suffix}</span>}
-
-                        <span className='mx-2'>{rcData?.Title}</span>
-                      </a>
-                    </div>
-
-                  })
-                  }
-
+                  {taskData?.TeamMembersTip?.map((rcData: any, i: any) => {
+                    return (
+                      <div
+                        key={key}
+                        className="mb-1 team_Members_Item"
+                        style={{ padding: "2px" }}
+                      >
+                        <a
+                          href={`${siteUrl}/SitePages/TaskDashboard.aspx?UserId=${rcData?.Id}&Name=${rcData?.Title}`}
+                          target="_blank"
+                          data-interception="off"
+                        >
+                          {rcData.userImage != null && (
+                            <img
+                              className={
+                                rcData?.workingMember ? "workmember activeimg" : "workmember"
+                              }
+                              src={rcData?.userImage}
+                            />
+                          )}
+                          {rcData.userImage == null && (
+                            <span
+                              className={
+                                rcData?.workingMember
+                                  ? "workmember activeimg bg-fxdark border bg-e9"
+                                  : "workmember bg-fxdark border bg-e9"
+                              }
+                            >
+                              {rcData?.Suffix}
+                            </span>
+                          )}
+                          <span className="mx-2">{rcData?.Title}</span>
+                        </a>
+                      </div>
+                    );
+                  })}
                 </div>
               </span>
             </div>
-          }
-
-        </div>
-
-
+          )}
       </div>
     </>
   );
 }
+
 export default ShowTaskTeamMembers;

@@ -22,6 +22,7 @@ import SmartInformation from "../../taskprofile/components/SmartInformation";
 import InfoIconsToolTip from "../../../globalComponents/InfoIconsToolTip/InfoIconsToolTip";
 import { BiCommentDetail } from "react-icons/bi";
 import { BsTag, BsTagFill } from "react-icons/bs";
+import PageLoader from "../../../globalComponents/pageLoader";
 //import { BsXCircleFill, BsCheckCircleFill } from "react-icons/bs";
 var QueryId: any = "";
 let smartPortfoliosData: any = [];
@@ -32,6 +33,7 @@ let headerOptions: any = {
   openTab: true,
   teamsIcon: true
 }
+let timeSheetConfig: any = {}
 var allSmartInfo: any = [];
 var AllSitesAllTasks: any = [];
 var AllListId: any = {};
@@ -47,6 +49,7 @@ const ProjectManagementMain = (props: any) => {
   const [AllTaskUsers, setAllTaskUsers] = React.useState([]);
   const [IsPortfolio, setIsPortfolio] = React.useState(false);
   const [IsComponent, setIsComponent] = React.useState(false);
+  const [pageLoaderActive, setPageLoader] = React.useState(false)
   const [SharewebComponent, setSharewebComponent] = React.useState("");
   const [AllTasks, setAllTasks] = React.useState([]);
   const [data, setData] = React.useState([]);
@@ -206,7 +209,7 @@ const ProjectManagementMain = (props: any) => {
         let web = new Web(props?.siteUrl);
         await web.lists
           .getById(AllListId?.MasterTaskListID)
-          .items.select("ComponentCategory/Id", "ComponentCategory/Title", "DueDate", "SiteCompositionSettings", "PortfolioStructureID", "PortfoliosId", "Portfolios/Id", "Portfolios/Title", "ItemRank", "ShortDescriptionVerified", "Portfolio_x0020_Type", "BackgroundVerified", "descriptionVerified", "Synonyms", "BasicImageInfo", "DeliverableSynonyms", "OffshoreComments", "OffshoreImageUrl", "HelpInformationVerified", "IdeaVerified", "TechnicalExplanationsVerified", "Deliverables", "DeliverablesVerified", "ValueAddedVerified", "CompletedDate", "Idea", "ValueAdded", "TechnicalExplanations", "Item_x0020_Type", "Sitestagging", "Package", "Parent/Id", "Parent/Title", "Short_x0020_Description_x0020_On", "Short_x0020_Description_x0020__x", "Short_x0020_description_x0020__x0", "AdminNotes", "AdminStatus", "Background", "Help_x0020_Information", "TaskCategories/Id", "TaskCategories/Title", "PriorityRank", "Reference_x0020_Item_x0020_Json", "TeamMembers/Title", "TeamMembers/Name", "TeamMembers/Id", "Item_x002d_Image", "ComponentLink", "IsTodaysTask", "AssignedTo/Title", "AssignedTo/Name", "AssignedTo/Id", "AttachmentFiles/FileName", "FileLeafRef", "FeedBack", "Title", "Id", "PercentComplete", "Company", "StartDate", "DueDate", "Comments", "Categories", "Status", "WebpartId", "Body", "Mileage", "PercentComplete", "Attachments", "Priority", "Created", "Modified", "Author/Id", "Author/Title", "Editor/Id", "Editor/Title", "ClientCategory/Id", "ClientCategory/Title")
+          .items.select("ComponentCategory/Id", "ComponentLink", "ComponentCategory/Title", "DueDate", "SiteCompositionSettings", "PortfolioStructureID", "PortfoliosId", "Portfolios/Id", "Portfolios/Title", "ItemRank", "ShortDescriptionVerified", "Portfolio_x0020_Type", "BackgroundVerified", "descriptionVerified", "Synonyms", "BasicImageInfo", "DeliverableSynonyms", "OffshoreComments", "OffshoreImageUrl", "HelpInformationVerified", "IdeaVerified", "TechnicalExplanationsVerified", "Deliverables", "DeliverablesVerified", "ValueAddedVerified", "CompletedDate", "Idea", "ValueAdded", "TechnicalExplanations", "Item_x0020_Type", "Sitestagging", "Package", "Parent/Id", "Parent/Title", "Short_x0020_Description_x0020_On", "Short_x0020_Description_x0020__x", "Short_x0020_description_x0020__x0", "AdminNotes", "AdminStatus", "Background", "Help_x0020_Information", "TaskCategories/Id", "TaskCategories/Title", "PriorityRank", "Reference_x0020_Item_x0020_Json", "TeamMembers/Title", "TeamMembers/Name", "TeamMembers/Id", "Item_x002d_Image", "ComponentLink", "IsTodaysTask", "AssignedTo/Title", "AssignedTo/Name", "AssignedTo/Id", "AttachmentFiles/FileName", "FileLeafRef", "FeedBack", "Title", "Id", "PercentComplete", "Company", "StartDate", "DueDate", "Comments", "Categories", "Status", "WebpartId", "Body", "Mileage", "PercentComplete", "Attachments", "Priority", "Created", "Modified", "Author/Id", "Author/Title", "Editor/Id", "Editor/Title", "ClientCategory/Id", "ClientCategory/Title")
           .expand("ClientCategory", "ComponentCategory", "AssignedTo", "AttachmentFiles", "Author", "Editor", "TeamMembers", "Portfolios", "TaskCategories", "Parent")
           .getById(QueryId)
           .get().then((fetchedProject: any) => {
@@ -285,7 +288,52 @@ const ProjectManagementMain = (props: any) => {
       alert('Master Task List Id not present')
     }
   };
+  const timeEntryIndex: any = {};
+  const smartTimeTotal = async () => {
+    setPageLoader(true);
+    try {
+      let AllTimeEntries = [];
+      if (timeSheetConfig?.Id !== undefined) {
+          AllTimeEntries = await globalCommon.loadAllTimeEntry(timeSheetConfig);
+      }
+   
+      AllTimeEntries?.forEach((entry: any) => {
+        siteConfig.forEach((site:any) => {
+              const taskTitle = `Task${site.Title}`;
+              const key = taskTitle + entry[taskTitle]?.Id
+              if (entry.hasOwnProperty(taskTitle) && entry.AdditionalTimeEntry !== null && entry.AdditionalTimeEntry !== undefined) {
+                  const additionalTimeEntry = JSON.parse(entry.AdditionalTimeEntry);
+                  let totalTaskTime = additionalTimeEntry?.reduce((total: any, time: any) => total + parseFloat(time.TaskTime), 0);
 
+                  if (timeEntryIndex.hasOwnProperty(key)) {
+                      timeEntryIndex[key].TotalTaskTime += totalTaskTime
+                  } else {
+                      timeEntryIndex[`${taskTitle}${entry[taskTitle]?.Id}`] = {
+                          ...entry[taskTitle],
+                          TotalTaskTime: totalTaskTime,
+                          siteType: site.Title,
+                      };
+                  }
+              }
+          });
+      });
+      backupAllTasks?.map((task: any) => {
+          task.TotalTaskTime = 0;
+          const key = `Task${task?.siteType + task.Id}`;
+          if (timeEntryIndex.hasOwnProperty(key) && timeEntryIndex[key]?.Id === task.Id && timeEntryIndex[key]?.siteType === task.siteType) {
+              task.TotalTaskTime = timeEntryIndex[key]?.TotalTaskTime;
+          }
+      })
+      setData(backupAllTasks);
+      setPageLoader(false)
+      if (timeEntryIndex) {
+        const dataString = JSON.stringify(timeEntryIndex);
+        localStorage.setItem('timeEntryIndex', dataString);
+      }
+    } catch (error) {
+      setPageLoader(false)
+    }
+  };
   const callBackData = React.useCallback((elem: any, ShowingData: any) => {
 
 
@@ -306,15 +354,17 @@ const ProjectManagementMain = (props: any) => {
         let TaxonomyItems = [];
         smartmeta = await web.lists
           .getById(AllListId?.SmartMetadataListID)
-          .items.select("Id", "IsVisible", "ParentID", "Title", "SmartSuggestions", "TaxType", "Description1", "Item_x005F_x0020_Cover", "listId", "siteName", "siteUrl", "SortOrder", "SmartFilters", "Selectable", "Parent/Id", "Parent/Title")
+          .items.select("Id", "IsVisible", "ParentID", "Title", "SmartSuggestions","Configurations", "TaxType", "Description1", "Item_x005F_x0020_Cover", "listId", "siteName", "siteUrl", "SortOrder", "SmartFilters", "Selectable", "Parent/Id", "Parent/Title")
           .top(5000)
-          .filter("TaxType eq 'Sites'")
           .expand("Parent")
           .get();
         if (smartmeta.length > 0) {
           smartmeta?.map((site: any) => {
-            if (site?.Title != "Master Tasks" && site?.Title != "SDC Sites" && site?.IsVisible == true) {
+            if (site?.TaxType == 'Sites' && site?.Title != "Master Tasks" && site?.Title != "SDC Sites" && site?.IsVisible == true && site?.listId != undefined && site?.listId?.length >= 32) {
               siteConfig.push(site)
+            }
+            if (site?.TaxType == 'timesheetListConfigrations') {
+              timeSheetConfig = site;
             }
           })
           GetMasterData(true);
@@ -390,7 +440,13 @@ const ProjectManagementMain = (props: any) => {
 
   const LoadAllSiteTasks = async function () {
     let taskComponent: any = TaggedPortfoliosToProject;
-
+    let localtimeEntryIndex:any;
+    try {
+    localtimeEntryIndex= localStorage.getItem('timeEntryIndex')
+    localtimeEntryIndex=JSON?.parse(localtimeEntryIndex);
+     } catch (error) {
+      
+     }
     if (siteConfig?.length > 0) {
       try {
         var AllTask: any = [];
@@ -423,6 +479,19 @@ const ProjectManagementMain = (props: any) => {
 
               })
             }
+            items.siteType = config.Title;
+            items.listId = config.listId;
+                      items.siteUrl = config.siteUrl.Url;
+            items.TotalTaskTime = 0;
+            const key = `Task${items?.siteType + items.Id}`;
+           try {
+            if (localtimeEntryIndex?.hasOwnProperty(key) && localtimeEntryIndex[key]?.Id === items.Id && localtimeEntryIndex[key]?.siteType === items.siteType) {
+              items.TotalTaskTime = localtimeEntryIndex[key]?.TotalTaskTime;
+            }
+           } catch (error) {
+            
+           }
+           
             if (items?.TaskCategories?.length > 0) {
               items.TaskTypeValue = items?.TaskCategories?.map((val: any) => val.Title).join(",")
             }
@@ -432,15 +501,12 @@ const ProjectManagementMain = (props: any) => {
             items.AllTeamMember = [];
             items.HierarchyData = [];
             items.descriptionsSearch = '';
-            items.siteType = config.Title;
             if (items?.FeedBack != undefined) {
               items.descriptionsSearch = globalCommon.descriptionSearchData(items)
             } else {
               items.descriptionsSearch = '';
             }
             items.commentsSearch = items?.Comments != null && items?.Comments != undefined ? items.Comments.replace(/(<([^>]+)>)/gi, "").replace(/\n/g, '') : '';
-            items.listId = config.listId;
-            items.siteUrl = config.siteUrl.Url;
             items.PercentComplete = (items.PercentComplete * 100).toFixed(0);
             items.DisplayDueDate =
               items.DueDate != null
@@ -729,6 +795,20 @@ const ProjectManagementMain = (props: any) => {
         id: 'Id',
       },
       {
+        accessorFn: (row) => row?.Site,
+        cell: ({ row }) => (
+          <span>
+            <img className='circularImage rounded-circle' src={row?.original?.SiteIcon} />
+          </span>
+        ),
+        id: "Site",
+        placeholder: "Site",
+        header: "",
+        resetSorting: false,
+        resetColumnFilters: false,
+        size: 50
+      },
+      {
         accessorKey: "TaskID",
         placeholder: "Task Id",
         header: "",
@@ -775,6 +855,27 @@ const ProjectManagementMain = (props: any) => {
         resetSorting: false,
         header: "",
       },
+
+      {
+        accessorFn: (row) => row?.Portfolio,
+        cell: ({ row }) => (
+          <a
+            className="hreflink"
+            data-interception="off"
+            target="blank"
+            href={`${props?.siteUrl}/SitePages/Portfolio-Profile.aspx?taskId=${row?.original?.portfolio?.Id}`}
+          >
+            <span className="d-flex">
+              <ReactPopperTooltipSingleLevel ShareWebId={row?.original?.portfolio?.Title} row={row?.original?.Portfolio} singleLevel={true} masterTaskData={MasterListData} AllSitesTaskData={AllSitesAllTasks} />
+            </span>
+          </a>
+        ),
+        id: "Portfolio",
+        placeholder: "Portfolio",
+        resetColumnFilters: false,
+        resetSorting: false,
+        header: ""
+      },
       {
         accessorFn: (row) => row?.TaskTypeValue,
         cell: ({ row }) => (
@@ -797,40 +898,7 @@ const ProjectManagementMain = (props: any) => {
         size: 120,
         id: "TaskTypeValue",
       },
-      {
-        accessorFn: (row) => row?.Site,
-        cell: ({ row }) => (
-          <span>
-            <img className='circularImage rounded-circle' src={row?.original?.SiteIcon} />
-          </span>
-        ),
-        id: "Site",
-        placeholder: "Site",
-        header: "",
-        resetSorting: false,
-        resetColumnFilters: false,
-        size: 50
-      },
-      {
-        accessorFn: (row) => row?.Portfolio,
-        cell: ({ row }) => (
-          <a
-            className="hreflink"
-            data-interception="off"
-            target="blank"
-            href={`${props?.siteUrl}/SitePages/Portfolio-Profile.aspx?taskId=${row?.original?.portfolio?.Id}`}
-          >
-            <span className="d-flex">
-              <ReactPopperTooltipSingleLevel ShareWebId={row?.original?.portfolio?.Title} row={row?.original?.Portfolio} singleLevel={true} masterTaskData={MasterListData} AllSitesTaskData={AllSitesAllTasks} />
-            </span>
-          </a>
-        ),
-        id: "Portfolio",
-        placeholder: "Portfolio",
-        resetColumnFilters: false,
-        resetSorting: false,
-        header: ""
-      },
+
       {
         accessorFn: (row) => row?.PriorityRank,
         cell: ({ row }) => (
@@ -990,6 +1058,17 @@ const ProjectManagementMain = (props: any) => {
         },
         header: "",
         size: 105
+      },
+      {
+        accessorFn: (row) => row?.TotalTaskTime,
+        cell: ({ row }) => (
+          <span> {row?.original?.TotalTaskTime}</span>
+        ),
+        id: "TotalTaskTime",
+        placeholder: "Smart Time",
+        header: "",
+        resetColumnFilters: false,
+        size: 49,
       },
       {
         cell: ({ row }) => (
@@ -1185,20 +1264,18 @@ const ProjectManagementMain = (props: any) => {
                                       <dt className="bg-fxdark">Due Date</dt>
                                       <dd className="bg-light">
                                         <span>
-                                          <a>
-                                            {Masterdata?.DisplayDueDate}
-                                          </a>
+                                          <InlineEditingcolumns
+                                            AllListId={AllListId}
+                                            callBack={inlineCallBack}
+                                            columnName='DueDate'
+                                            item={Masterdata}
+                                            TaskUsers={AllUser}
+                                            pageName={'ProjectManagment'}
+                                          />
                                         </span>
-                                        <span
-                                          className="pull-right"
-                                          title="Edit Inline"
-                                          ng-click="EditContents(Task,'editableDueDate')"
-                                        >
-                                          <i
-                                            className="fa fa-pencil siteColor"
-                                            aria-hidden="true"
-                                          ></i>
-                                        </span>
+                                        {/* <span className="" >
+                                          <span title="Edit Due Date" className="svg__iconbox svg__icon--editBox pull-right"></span>
+                                        </span> */}
                                       </dd>
                                     </dl>
                                     <dl>
@@ -1223,7 +1300,7 @@ const ProjectManagementMain = (props: any) => {
                                   </div>
                                   <div className="col-md-6 p-0">
                                     <dl>
-                                      <dt className="bg-fxdark">Assigned To</dt>
+                                      <dt className="bg-fxdark">Project Team</dt>
                                       <dd className="bg-light">
                                         {Masterdata?.AssignedTo?.length > 0 || Masterdata?.TeamMembers?.length > 0 || Masterdata?.ResponsibleTeam?.length > 0 ? <ShowTaskTeamMembers props={Masterdata} TaskUsers={AllTaskUsers} /> : ''}
                                       </dd>
@@ -1253,9 +1330,8 @@ const ProjectManagementMain = (props: any) => {
                                       </dd>
                                     </dl>
                                   </div>
-
-
-
+                                  {/* <div className="col-md-12 url"><div className="d-flex p-0"><div className="bg-fxdark p-2"><label>Url</label></div><div className="bg-light p-2 text-break full-width"><a target="_blank" data-interception="off" href={Masterdata?.ComponentLink?.Url != undefined ? Masterdata?.ComponentLink?.Url : ''}>  {Masterdata?.ComponentLink?.Url != undefined ? Masterdata?.ComponentLink?.Url : ''}</a></div></div></div> */}
+                                  <div className="col-md-12 pe-0"><dl><dt className="bg-fxdark UrlLabel">Url</dt><dd className="bg-light UrlField"><a target="_blank" data-interception="off" href={Masterdata?.ComponentLink?.Url != undefined ? Masterdata?.ComponentLink?.Url : ''}>  {Masterdata?.ComponentLink?.Url != undefined ? Masterdata?.ComponentLink?.Url : ''}</a></dd></dl></div>
                                   {
                                     Masterdata?.Body != undefined ? <div className="mt-2 row pe-0 detailsbox">
                                       <details className="pe-0" open>
@@ -1326,7 +1402,10 @@ const ProjectManagementMain = (props: any) => {
                           <div className="section-event ps-0">
                             <div className="wrapper project-management-Table">
 
-                              <GlobalCommanTable AllListId={AllListId} headerOptions={headerOptions} columns={column2} data={data} callBackData={callBackData} TaskUsers={AllUser} showHeader={true} expendedTrue={false} />
+                              <GlobalCommanTable AllListId={AllListId} headerOptions={headerOptions}
+                                columns={column2} data={data} callBackData={callBackData}
+                                smartTimeTotalFunction={smartTimeTotal} SmartTimeIconShow={true}
+                                TaskUsers={AllUser} showHeader={true} expendedTrue={false} />
                             </div>
 
                           </div>
@@ -1370,8 +1449,9 @@ const ProjectManagementMain = (props: any) => {
             <TaggedComponentTask projectItem={Masterdata} SelectedItem={SelectedItem} createComponent={createTaskId} SelectedProp={props?.props} AllSitesTaskData={AllSitesAllTasks} context={props?.props?.Context} MasterListData={MasterListData} AllListId={AllListId} AllUser={AllUser} callBack={tagAndCreateCallBack}
             />
           )}
-
+          {   pageLoaderActive ? <PageLoader /> : ''}
         </>) : (<div>Project not found</div>)}
+
     </div>
   );
 };

@@ -131,12 +131,22 @@ const EmployeProfile = (props: any) => {
     }
     return taskUser;
   }
-
+  const isTaskItemExists = (array: any, items: any) => {
+    let isExists = false;
+    for (let index = 0; index < array.length; index++) {
+      let item = array[index];
+      if (item.Id == items.Id && item?.siteType.toLowerCase() == items?.siteType.toLowerCase()) {
+        isExists = true;
+        break;
+      }
+    }
+    return isExists;
+  }
   const getAllData = async (ConfigItem: any) => {
     const web = new Web(ConfigItem.siteUrl);
     await web.lists
       .getById(ConfigItem.listId)
-      .items.select("Title", "PercentComplete", "Categories", "Approver/Id", "Approver/Title", "Portfolio/Id", "Portfolio/ItemType", "Body", "Portfolio/PortfolioStructureID", "Portfolio/Title", "TaskType/Id", "TaskType/Title", "TaskType/Level", "workingThisWeek", 'TaskID', "IsTodaysTask", "Priority", "PriorityRank", "DueDate", "Created", "Modified", "Team_x0020_Members/Id", "Team_x0020_Members/Title", "ID", "Responsible_x0020_Team/Id", "Responsible_x0020_Team/Title", "Editor/Title", "Editor/Id", "Author/Title", "Author/Id", "AssignedTo/Id", "AssignedTo/Title")
+      .items.select("Title", "PercentComplete", "FeedBack", "Categories", "Approver/Id", "Approver/Title", "Portfolio/Id", "Portfolio/ItemType", "Body", "Portfolio/PortfolioStructureID", "Portfolio/Title", "TaskType/Id", "TaskType/Title", "TaskType/Level", "workingThisWeek", 'TaskID', "IsTodaysTask", "Priority", "PriorityRank", "DueDate", "Created", "Modified", "Team_x0020_Members/Id", "Team_x0020_Members/Title", "ID", "Responsible_x0020_Team/Id", "Responsible_x0020_Team/Title", "Editor/Title", "Editor/Id", "Author/Title", "Author/Id", "AssignedTo/Id", "AssignedTo/Title")
       .expand("Team_x0020_Members", "Portfolio", "Approver", "TaskType", "Author", "Editor", "Responsible_x0020_Team", "AssignedTo")
       .top(5000)
       .getAll()
@@ -148,6 +158,17 @@ const EmployeProfile = (props: any) => {
               /(<([^>]+)>)/gi,
               ""
             ).replace(/\n/g, "");
+          }
+          items.descriptionsSearch = '';
+          if (items?.FeedBack != undefined) {
+            let DiscriptionSearchData: any = '';
+            let feedbackdata: any = JSON.parse(items?.FeedBack)
+            DiscriptionSearchData = feedbackdata[0]?.FeedBackDescriptions?.map((child: any) => {
+              const childText = child?.Title?.replace(/(<([^>]+)>)/gi, '')?.replace(/\n/g, '');
+              const subtextText = (child?.Subtext || [])?.map((elem: any) => elem.Title?.replace(/(<([^>]+)>)/gi, '')?.replace(/\n/g, '')).join('');
+              return childText + subtextText;
+            }).join('');
+            items.descriptionsSearch = DiscriptionSearchData
           }
           items.listId = ConfigItem.listId;
           items.site = ConfigItem.Title;
@@ -191,6 +212,11 @@ const EmployeProfile = (props: any) => {
               allData.push(items);
             }
           });
+          if (items?.Categories != undefined && items?.Categories?.toLowerCase().indexOf('draft') > -1) {
+            if (!isTaskItemExists(allData, items)) {
+              allData.push(items);
+            }
+          }
           let senderObject = taskUsers?.filter(function (user: any, i: any) {
             if (user?.AssingedToUser != undefined) {
               return user?.AssingedToUser["Id"] == items.Author.Id
@@ -233,7 +259,8 @@ const EmployeProfile = (props: any) => {
               if (assign && assign.Id === currentUserData.AssingedToUser.Id) {
                 if (items.Categories?.indexOf('Draft') > -1) {
                   DraftArray.push(items);
-                } else if (items.IsTodaysTask === true) {
+                }
+                else if (items.IsTodaysTask === true) {
                   TodaysTask.push(items);
                 } else if (items.Categories?.indexOf('Bottleneck') > -1) {
                   BottleneckTask.push(items);
@@ -246,6 +273,14 @@ const EmployeProfile = (props: any) => {
                 }
               }
             });
+            items.Author?.forEach((author: any) => {
+              if (author && author.Id === currentUserData.AssingedToUser.Id) {
+                if (items.Categories?.indexOf('Draft') > -1) {
+                  if (!isTaskItemExists(DraftArray, items))
+                    DraftArray.push(items);
+                }
+              }
+            })
           });
           // setCurrentTaskUser(currentUserData);
           setData({ DraftCatogary: DraftArray, TodaysTask: TodaysTask, BottleneckTask: BottleneckTask, ApprovalTask: ApprovalTask, ImmediateTask: ImmediateTask, ThisWeekTask: ThisWeekTask });

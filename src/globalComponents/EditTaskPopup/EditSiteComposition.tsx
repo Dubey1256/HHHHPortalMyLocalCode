@@ -19,7 +19,7 @@ const EditSiteComposition = (Props: any) => {
         getAllSitesData();
         if (EditData.ClientCategory?.length > 0) {
             EditData.ClientCategory?.map((itemData: any) => {
-                if (itemData.siteName?.length > 2) {
+                if (itemData.siteName?.length > 1) {
                 } else {
                     itemData.siteName = itemData.SiteName;
                 }

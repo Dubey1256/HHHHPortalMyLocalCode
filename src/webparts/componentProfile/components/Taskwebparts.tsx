@@ -1068,13 +1068,13 @@ const switchGroupbyData = () => {
         accessorFn: (row) => row?.TaskTypeValue,
         cell: ({ row, column, getValue }) => (
             <>
-                <span className="columnFixedTaskCate"><span title={row?.original?.TaskTypeValue} className="text-content"><HighlightableCell value={getValue()} searchTerm={column.getFilterValue() != undefined ? column.getFilterValue() : childRef?.current?.globalFilter} /></span></span>
+                <span className="columnportfoliotaskCate"><span title={row?.original?.TaskTypeValue} className="text-content"><HighlightableCell value={getValue()} searchTerm={column.getFilterValue() != undefined ? column.getFilterValue() : childRef?.current?.globalFilter} /></span></span>
             </>
         ),
         placeholder: "Task Type",
         header: "",
         resetColumnFilters: false,
-        size: 130,
+        size: 90,
         id: "TaskTypeValue",
     },
   
@@ -1260,7 +1260,7 @@ const switchGroupbyData = () => {
         placeholder: "Team",
         resetColumnFilters: false,
         header: "",
-        size: 131
+        size: 100
       },
       {
         accessorKey: "PriorityRank",
@@ -1353,7 +1353,7 @@ const switchGroupbyData = () => {
           }
         },
         header: "",
-        size: 134
+        size: 130
       },
       {
         accessorKey: "descriptionsSearch",
