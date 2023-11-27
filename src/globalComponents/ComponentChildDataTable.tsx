@@ -100,7 +100,7 @@ function ComponentChildDataTable(SelectedProp: any) {
     ]);
 
   const [flatView, setFlatView] = React.useState(true);
-  const [IsMakeSCProtected, setIsMakeSCProtected] = React.useState(false);
+  const [IsMakeSCProtected, setIsMakeSCProtected] = React.useState(SelectedProp?.IsSCProtected ? SelectedProp.IsSCProtected : false);
   const [IsClientCategoryPopupOpen, setIsClientCategoryPopupOpen] = React.useState(false);
   const [SelectedClientCategory, setSelectedClientCategory] = React.useState([]);
   const [CurrentSiteName, setCurrentSiteName] = React.useState('');
@@ -1002,8 +1002,7 @@ function ComponentChildDataTable(SelectedProp: any) {
     console.log(AllFlitteredData);
     GroupByClientCategoryData();
     // console.log("Filter Site and Client Category Data ======", tempSiteAndCategoryData);
-    // console.log("Filter Site and Client Category Data  AllSiteClientCategories AllSiteClientCategories AllSiteClientCategories======", AllSiteClientCategories);
-
+    // console.log("Filter Site and Client Category Data AllSiteClientCategories======", AllSiteClientCategories);
   };
 
 
@@ -1012,7 +1011,6 @@ function ComponentChildDataTable(SelectedProp: any) {
   const findAllClientCategories = (AllData: any) => {
     AllData.forEach((AllDataItem: any) => {
       if (AllDataItem.Item_x0020_Type == "SubComponent" || AllDataItem.Item_x0020_Type == "Feature" || AllDataItem.Item_x0020_Type == "Component") {
-
         allMasterTaskGlobalArray.push(AllDataItem)
       }
       if (AllDataItem.TaskType?.Title == "Task" || AllDataItem.TaskType?.Title == "Activities" || AllDataItem.TaskType?.Title == "Workstream") {
@@ -1020,8 +1018,8 @@ function ComponentChildDataTable(SelectedProp: any) {
           AllDataItem?.ClientCategory?.map((CCItem: any) => {
             AllsiteClientCategories.push(CCItem);
           })
-          allSiteGlobalArray.push(AllDataItem);
         }
+        allSiteGlobalArray.push(AllDataItem);
       }
       if (AllDataItem.subRows?.length > 0) {
         AllDataItem.subRows?.map((ChildArray: any) => {

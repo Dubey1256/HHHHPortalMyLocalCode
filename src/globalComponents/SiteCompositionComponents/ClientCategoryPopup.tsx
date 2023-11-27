@@ -161,7 +161,7 @@ const ClientCategoryPopup = (Props: any) => {
     const AutoSuggestionForClientCategory = (e: any) => {
         const searchedKey: string = e.target.value;
         const tempArray: any = [];
-
+        setSearchedKey(searchedKey);
         if (searchedKey.length > 0) {
             if (SearchWithDescriptionStatus) {
                 if (AllClientCategoriesForAutoSuggestion?.length > 0) {
