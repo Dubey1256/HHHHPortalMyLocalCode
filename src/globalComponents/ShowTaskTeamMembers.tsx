@@ -12,7 +12,13 @@ function ShowTaskTeamMembers(item: any) {
   React.useEffect(() => {
     if (item?.props != undefined) {
       let taskDetails = item?.props;
-      const LeadCount = taskDetails["ResponsibleTeam"] != undefined && taskDetails["ResponsibleTeam"].length > 0 ? taskDetails["ResponsibleTeam"].length : 0;
+      let LeadCount =0;
+      if(taskDetails["ResponsibleTeam"] != undefined&&taskDetails["ResponsibleTeam"].length > 0){
+        taskDetails["ResponsibleTeam"]=GetUserObjectFromCollection(taskDetails["ResponsibleTeam"]);
+        LeadCount=taskDetails["ResponsibleTeam"].length;
+      }
+      // GetUserObjectFromCollection
+      // const LeadCount = taskDetails["ResponsibleTeam"] != undefined && taskDetails["ResponsibleTeam"].length > 0 ? taskDetails["ResponsibleTeam"].length : 0;
       setLeadCount(LeadCount);
       if (taskDetails["ResponsibleTeam"] != undefined) {
         taskDetails["ResponsibleTeam"]?.map((item: any, index: any) => {
