@@ -591,6 +591,9 @@ export default class TaskTeamMembers extends Component<ITeamMembersProps, ITeamM
             });
     };
     private async createTask() {
+        this.setState({
+            showCreatePanel: false,
+        });
         let SiteUrl = ''
         let taskItem = this.state.taskItem;
         let newTaskItem = {
@@ -610,6 +613,7 @@ export default class TaskTeamMembers extends Component<ITeamMembersProps, ITeamM
                     this.createNewFolder(taskItem.userTitle, taskItem, SiteUrl, 'TasksTimesheet2')
             })
             .catch((error) => {
+                this.onCancelTask();
                 console.error('An error occurred:', error);
             });
         if (newTask) {
@@ -631,6 +635,7 @@ export default class TaskTeamMembers extends Component<ITeamMembersProps, ITeamM
                 taskItem: _taskItem
             });
         }
+        this.onCancelTask();
     }
 
     private async updateTask() {
