@@ -498,7 +498,7 @@ QATime = 0.00;
           var De=[]
           var QAteam=[]
           AllUsers?.forEach((item:any)=>{
-            if((item?.TimeCategory == 'Development' && item?.Company == 'Smalsus') || item?.UserGroup?.Title == 'Senior Developer Team' || item?.UserGroup?.Title == 'Smalsus Lead Team' || item?.UserGroup?.Title == 'External Staff' || item?.UserGroup?.Title == 'Junior Developer Team'){
+            if((item?.TimeCategory == 'Development' && item?.Company == 'Smalsus') && (item?.UserGroup?.Title == 'Senior Developer Team' || item?.UserGroup?.Title == 'Mobile Team' || item?.UserGroup?.Title == 'Smalsus Lead Team' ||  item?.UserGroup?.Title == 'Junior Developer Team')){
                 D.push(item)
             }
             if((item?.TimeCategory == 'Design'  && item.Company == 'Smalsus') ||  item?.UserGroup?.Title == 'Design Team'){
