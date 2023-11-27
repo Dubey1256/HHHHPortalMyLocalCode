@@ -893,8 +893,8 @@ export class CommentCard extends React.Component<ICommentCardProps, ICommentCard
                           </div>
 
                           <div className="media-text">
-                            {/* {cmtData.Header != '' && <h6 className="userid m-0"><a className="align-top">{cmtData?.Header}</a></h6>}
-                            <p className='m-0'><span dangerouslySetInnerHTML={{ __html: this.detectAndRenderLinks(cmtData?.Description) }}>
+                            {cmtData.Header != '' && <h6 className="userid m-0"><a className="align-top">{cmtData?.Header}</a></h6>}
+                            {/* <p className='m-0'><span dangerouslySetInnerHTML={{ __html: this.detectAndRenderLinks(cmtData?.Description) }}>
 
                             </span></p> */}
 
