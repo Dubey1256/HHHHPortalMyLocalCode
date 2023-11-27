@@ -3580,7 +3580,7 @@ export default class CategoriesWeeklyMultipleReport extends React.Component<ICat
             <div id="showSearchBox" className="container p-0">
               <div className='Alltable'>
                 <div className='col-sm-12 p-0 smart'>
-                  <div className='wrapper'>
+                  <div className=''>
 
                     {this.state.AllTimeEntry == undefined && this.state.AllTimeEntry.length == 0 &&
                       <div id="contact" className="col-sm-12 p-0">
