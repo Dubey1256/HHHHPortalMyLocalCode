@@ -298,6 +298,7 @@ const SmartInformation = (props: any, ref: any) => {
                   task?.SmartInformation?.map((tagtask: any) => {
                     if (tagtask?.Id == items?.Id) {
                       var tagtaskarray: any = [];
+                      
                       tagtaskarray.push(task)
                       items.TagTask = tagtaskarray
 
@@ -582,7 +583,10 @@ const SmartInformation = (props: any, ref: any) => {
       }
     }
     else {
+    
       alert("Please fill the Title")
+      setsmartDocumentpostData
+    
       // setallSetValue({...allValue,AstricMesaage:true})
       setaddSmartInfoPopupAddlinkDoc(false)
       addSmartInfoPopupAddlinkDoc2 = false;
@@ -823,7 +827,7 @@ const SmartInformation = (props: any, ref: any) => {
       await web.lists.getByTitle(props?.listName).items.add(
         {
           Title: allValue?.taskTitle,
-          SmartInformationId: { "results": [(smartDocumentpostData?.Id)] }
+          SmartInformationId: { "results": [(smartDocumentpostData!=undefined && smartDocumentpostData!=null?smartDocumentpostData?.Id:PostSmartInfo?.data?.Id)] }
 
         }
       )
@@ -894,6 +898,7 @@ const SmartInformation = (props: any, ref: any) => {
     console.log(editTaskData);
     editTaskData.siteUrl = props?.AllListId?.siteUrl;
     editTaskData.listName = props?.listName;
+    editTaskData.siteType=props?.listName
     setEditTaskdata(editTaskData);
     setallSetValue({ ...allValue, EditTaskpopupstatus: true })
   }

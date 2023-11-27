@@ -359,7 +359,7 @@ class Taskprofile extends React.Component<ITaskprofileProps, ITaskprofileState> 
     } else {
       tempEstimatedArrayData = [];
     }
-    const maxTitleLength: number = 65;
+    const maxTitleLength: number = 75;
 
 
     if (taskDetails["Title"].length > maxTitleLength) {
