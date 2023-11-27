@@ -17,7 +17,7 @@ let currentUserId: any
 const EmployeProfile = (props: any) => {
   let allData: any = [];
   const [AllSite, setAllSite] = useState([]);
-  const [data, setData] = React.useState({ DraftCatogary: [], TodaysTask: [], BottleneckTask: [], ThisWeekTask: [], ImmediateTask: [], ApprovalTask: [] });
+  const [data, setData]: any = React.useState({ DraftCatogary: [], TodaysTask: [], BottleneckTask: [], AssignedTask: [], ThisWeekTask: [], ImmediateTask: [], ApprovalTask: [] });
   const [currentTime, setCurrentTime]: any = useState([]);
   const [annouceMents, setAnnouceMents]: any = useState([]);
   const [approverEmail, setApproverEmail]: any = useState([]);
@@ -56,7 +56,6 @@ const EmployeProfile = (props: any) => {
   }
 
   const smartMetaData = async () => {
-    let sites = [];
 
     const web = new Web(props.props?.siteUrl);
     await web.lists
@@ -103,7 +102,7 @@ const EmployeProfile = (props: any) => {
         .get();
       let mailApprover: any;
       taskUsers?.map((item: any) => {
-        currentUserId = props?.props?.Context?.pageContext?.legacyPageContext?.userId
+        let currentUserId: any = props?.props?.Context?.pageContext?.legacyPageContext?.userId
         if (currentUserId == item?.AssingedToUser?.Id && currentUserId != undefined) {
           currentUserData = item;
           //  setCurrentUserData(item);
@@ -131,23 +130,13 @@ const EmployeProfile = (props: any) => {
     }
     return taskUser;
   }
-  const isTaskItemExists = (array: any, items: any) => {
-    let isExists = false;
-    for (let index = 0; index < array.length; index++) {
-      let item = array[index];
-      if (item.Id == items.Id && item?.siteType.toLowerCase() == items?.siteType.toLowerCase()) {
-        isExists = true;
-        break;
-      }
-    }
-    return isExists;
-  }
+
   const getAllData = async (ConfigItem: any) => {
     const web = new Web(ConfigItem.siteUrl);
     await web.lists
       .getById(ConfigItem.listId)
-      .items.select("Title", "PercentComplete", "FeedBack", "Categories", "Approver/Id", "Approver/Title", "Portfolio/Id", "Portfolio/ItemType", "Body", "Portfolio/PortfolioStructureID", "Portfolio/Title", "TaskType/Id", "TaskType/Title", "TaskType/Level", "workingThisWeek", 'TaskID', "IsTodaysTask", "Priority", "PriorityRank", "DueDate", "Created", "Modified", "Team_x0020_Members/Id", "Team_x0020_Members/Title", "ID", "Responsible_x0020_Team/Id", "Responsible_x0020_Team/Title", "Editor/Title", "Editor/Id", "Author/Title", "Author/Id", "AssignedTo/Id", "AssignedTo/Title")
-      .expand("Team_x0020_Members", "Portfolio", "Approver", "TaskType", "Author", "Editor", "Responsible_x0020_Team", "AssignedTo")
+      .items.select("Title", "PercentComplete", "Categories", "Portfolio/Id", "Portfolio/ItemType", "Body", "Portfolio/PortfolioStructureID", "Portfolio/Title", "TaskType/Id", "TaskType/Title", "TaskType/Level", "workingThisWeek", 'TaskID', "IsTodaysTask", "Priority", "PriorityRank", "DueDate", "Created", "Modified", "Team_x0020_Members/Id", "Team_x0020_Members/Title", "ID", "Responsible_x0020_Team/Id", "Responsible_x0020_Team/Title", "Editor/Title", "Editor/Id", "Author/Title", "Author/Id", "AssignedTo/Id", "AssignedTo/Title")
+      .expand("Team_x0020_Members", "Portfolio", "TaskType", "Author", "Editor", "Responsible_x0020_Team", "AssignedTo")
       .top(5000)
       .getAll()
       .then((data: any) => {
@@ -159,20 +148,8 @@ const EmployeProfile = (props: any) => {
               ""
             ).replace(/\n/g, "");
           }
-          items.descriptionsSearch = '';
-          if (items?.FeedBack != undefined) {
-            let DiscriptionSearchData: any = '';
-            let feedbackdata: any = JSON.parse(items?.FeedBack)
-            DiscriptionSearchData = feedbackdata[0]?.FeedBackDescriptions?.map((child: any) => {
-              const childText = child?.Title?.replace(/(<([^>]+)>)/gi, '')?.replace(/\n/g, '');
-              const subtextText = (child?.Subtext || [])?.map((elem: any) => elem.Title?.replace(/(<([^>]+)>)/gi, '')?.replace(/\n/g, '')).join('');
-              return childText + subtextText;
-            }).join('');
-            items.descriptionsSearch = DiscriptionSearchData
-          }
           items.listId = ConfigItem.listId;
           items.site = ConfigItem.Title;
-          items.listName = ConfigItem.Title;
           items.siteType = ConfigItem.Title;
           items.siteUrl = ConfigItem.siteUrl;
           items.percentage = items.PercentComplete * 100 + "%";
@@ -212,27 +189,6 @@ const EmployeProfile = (props: any) => {
               allData.push(items);
             }
           });
-          if (items?.Categories != undefined && items?.Categories?.toLowerCase().indexOf('draft') > -1) {
-            if (!isTaskItemExists(allData, items)) {
-              allData.push(items);
-            }
-          }
-          let senderObject = taskUsers?.filter(function (user: any, i: any) {
-            if (user?.AssingedToUser != undefined) {
-              return user?.AssingedToUser["Id"] == items.Author.Id
-            }
-          });
-
-          let userDeatails: any = []
-          if (senderObject.length > 0) {
-            userDeatails.push({
-              'Id': senderObject[0]?.AssingedToUser.Id,
-              'Name': senderObject[0]?.Email,
-              'Suffix': senderObject[0]?.Suffix,
-              'Title': senderObject[0]?.Title,
-            })
-          }
-          items.Author = userDeatails;
         })
         if (count == dataLength.length) {
           var today = new Date();
@@ -254,13 +210,13 @@ const EmployeProfile = (props: any) => {
           let ApprovalTask: any = [];
           let ImmediateTask: any = [];
           let ThisWeekTask: any = [];
+          let AssignedTask: any = [];
           array?.map((items: any) => {
             items.AssignedTo?.forEach((assign: any) => {
               if (assign && assign.Id === currentUserData.AssingedToUser.Id) {
                 if (items.Categories?.indexOf('Draft') > -1) {
                   DraftArray.push(items);
-                }
-                else if (items.IsTodaysTask === true) {
+                } else if (items.IsTodaysTask === true) {
                   TodaysTask.push(items);
                 } else if (items.Categories?.indexOf('Bottleneck') > -1) {
                   BottleneckTask.push(items);
@@ -271,19 +227,12 @@ const EmployeProfile = (props: any) => {
                 } else if (items.percentage == "1%") {
                   ApprovalTask.push(items);
                 }
+                AssignedTask.push(items);
               }
             });
-            items.Author?.forEach((author: any) => {
-              if (author && author.Id === currentUserData.AssingedToUser.Id) {
-                if (items.Categories?.indexOf('Draft') > -1) {
-                  if (!isTaskItemExists(DraftArray, items))
-                    DraftArray.push(items);
-                }
-              }
-            })
           });
           // setCurrentTaskUser(currentUserData);
-          setData({ DraftCatogary: DraftArray, TodaysTask: TodaysTask, BottleneckTask: BottleneckTask, ApprovalTask: ApprovalTask, ImmediateTask: ImmediateTask, ThisWeekTask: ThisWeekTask });
+          setData({ DraftCatogary: DraftArray, AssignedTask: AssignedTask, TodaysTask: TodaysTask, BottleneckTask: BottleneckTask, ApprovalTask: ApprovalTask, ImmediateTask: ImmediateTask, ThisWeekTask: ThisWeekTask });
         }
       })
       .catch((err: any) => {
@@ -291,7 +240,7 @@ const EmployeProfile = (props: any) => {
       });
   };
   return (
-    <myContextValue.Provider value={{ ...myContextValue, taskUsers: taskUsers, approverEmail: approverEmail, Context: props.props.Context, propsValue: props.props, currentTime: currentTime, annouceMents: annouceMents, siteUrl: props?.props?.siteUrl, AllSite: AllSite, currentUserData: currentUserData, AlltaskData: data, currentUserId: currentUserId, timesheetListConfig: timesheetListConfig, AllMasterTasks: AllMasterTasks }}>
+    <myContextValue.Provider value={{ ...myContextValue, approverEmail: approverEmail, propsValue: props.props, currentTime: currentTime, annouceMents: annouceMents, siteUrl: props?.props?.siteUrl, AllSite: AllSite, currentUserData: currentUserData, AlltaskData: data, timesheetListConfig: timesheetListConfig, AllMasterTasks: AllMasterTasks }}>
       <div> <Header /></div>
       <TaskStatusTbl />
       <MultipleWebpart />

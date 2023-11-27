@@ -21,7 +21,7 @@ const TaskStatusTbl = (Tile: any) => {
   const bottleneckTask: any = ContextData?.AlltaskData.BottleneckTask;
   const immediateTask: any = ContextData?.AlltaskData.ImmediateTask;
   const thisWeekTask: any = ContextData?.AlltaskData.ThisWeekTask;
-  const allAssignedTask: any = ContextData?.AlltaskData.AssignedTask;
+  const allAssignedTask: any = ContextData?.AlltaskData?.AssignedTask;
   //const approvalTask: any = ContextData?.AlltaskData.ApprovalTask;
   const AllMasterTasks: any = ContextData?.AllMasterTasks;
   // const [draftCatogary, setDraftCatogary] = useState(ContextData?.AlltaskData.DraftCatogary);
@@ -956,13 +956,13 @@ const TaskStatusTbl = (Tile: any) => {
                 </span>
               </div>
               <div className="Alltable maXh-300 scrollbar">
-                { //allAssignedTask?.length > 0 && (
+                { allAssignedTask?.length > 0 && (
                   <GlobalCommanTable
                     showHeader={true}
                     columns={AssignedTask}
                     data={allAssignedTask}
                     callBackData={callBackData} />
-                  // )
+                   )
                 }
               </div>
             </div>

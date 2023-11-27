@@ -6,7 +6,7 @@ import { Panel, PanelType } from "office-ui-fabric-react";
 import { useEffect, useState } from 'react';
 import { Web } from "sp-pnp-js";
 import EditTaskPopup from '../../../globalComponents/EditTaskPopup/EditTaskPopup';
-import CreateTaskComponent from '../../createTask/components/CreateTaskComponent';
+// import CreateTaskComponent from '../../createTask/components/CreateTaskComponent';
 
 var siteConfig: any = []
 const CreateTaskFromProject = (props: any) => {
@@ -43,7 +43,7 @@ const CreateTaskFromProject = (props: any) => {
                 isOpen={lgShow}
                 onDismiss={() => callBack()}
                 isBlocking={false}>
-                <CreateTaskComponent SelectedProp={props?.SelectedProp} callBack={callBack} projectItem={props?.projectItem} pageContext={props?.pageContext} projectId={props?.projectId} createComponent={props?.createComponent} />
+                {/* <CreateTaskComponent SelectedProp={props?.SelectedProp} callBack={callBack} projectItem={props?.projectItem} pageContext={props?.pageContext} projectId={props?.projectId} createComponent={props?.createComponent} /> */}
             </Panel>
 
         </>
