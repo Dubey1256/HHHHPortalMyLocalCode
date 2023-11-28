@@ -1132,7 +1132,8 @@ const inlineEditingcolumns = (props: any) => {
             onClick={() => setTaskPriorityPopup(true)}
           >
             &nbsp;
-            {props?.item?.PriorityRank}
+            {props?.mypriority === true ? `(${props?.item?.PriorityRank}) ${props?.item?.Priority?.slice(3)}`:props?.item?.PriorityRank}
+         
             {props?.item?.TaskCategories?.map((category: any) => {
               if (category?.Title == "Immediate") {
                 return (
@@ -1524,7 +1525,7 @@ const inlineEditingcolumns = (props: any) => {
                           onClick={() => setTaskPriority(item.Title)}
                         />
                         <label className="form-check-label mx-2">
-                          {item.Title}
+                          {item?.Title}
                         </label>
                       </div>
                     </li>
@@ -1533,6 +1534,8 @@ const inlineEditingcolumns = (props: any) => {
               </ul>
             </div>
           </div>
+          {props?.mypriority != true && 
+          <>
           {impTaskCategoryType?.map((option) => (
             <div
               className={
@@ -1570,6 +1573,8 @@ const inlineEditingcolumns = (props: any) => {
               </label>
             </div>
           ))}
+          </>
+        }
           <footer className="float-end">
             <button
               type="button"

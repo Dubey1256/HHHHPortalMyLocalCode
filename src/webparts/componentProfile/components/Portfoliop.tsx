@@ -1688,8 +1688,8 @@ const inlineCallBack = React.useCallback((item: any) => {
           )}
 
           {showOverlay && currentImage && (currentImage === item?.Item_x002d_Image?.Url) && (
-            <div className="imghover " style={{left:'300px !important'}}>
-              <div className="popup">
+            <div className="imghover " >
+              <div className="popup" style={{left: "400px",top: "118px"}}>
                 <div className="parentDiv">
                   <span style={{ color: 'white' }}>
                     {currentImage}
