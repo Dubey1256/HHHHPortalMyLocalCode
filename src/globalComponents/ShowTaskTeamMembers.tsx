@@ -139,7 +139,7 @@ function ShowTaskTeamMembers(item: any) {
                 >
                   {rcData.userImage != null && (
                     <img
-                      className={rcData?.workingMember ? "workmember activeimg" : "workmember"}
+                      className={rcData?.workingMember ? "suffix_Usericon activeimg" : "suffix_Usericon"}
                       src={rcData?.userImage}
                     />
                   )}
@@ -183,7 +183,7 @@ function ShowTaskTeamMembers(item: any) {
                           {rcData.userImage != null && (
                             <img
                               className={
-                                rcData?.workingMember ? "workmember activeimg" : "workmember"
+                                rcData?.workingMember ? "suffix_Usericon activeimg" : "suffix_Usericon"
                               }
                               src={rcData?.userImage}
                             />

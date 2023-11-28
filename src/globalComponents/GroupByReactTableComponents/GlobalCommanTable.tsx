@@ -760,8 +760,10 @@ const GlobalCommanTable = (items: any, ref: any) => {
     const virtualizer = useVirtualizer({
         count: rows.length,
         getScrollElement: () => parentRef.current,
-        estimateSize: () => 24,
-        overscan: 15,
+        // estimateSize: () => 24,
+        // overscan: 15,
+        estimateSize: () => 200,
+        overscan: 50,
     });
 
     const itemsVirtualizer: any = virtualizer.getVirtualItems();
@@ -1000,7 +1002,10 @@ const GlobalCommanTable = (items: any, ref: any) => {
                                     <tr
                                         // className={row?.original?.lableColor}
                                         className={row?.original?.IsSCProtected != undefined && row?.original?.IsSCProtected == true ? `Disabled-Link opacity-75 ${row?.original?.lableColor}` : `${row?.original?.lableColor}`}
-                                        key={row.id}>
+                                        key={row.id}
+                                        data-index={virtualRow.index}
+                                        ref={virtualizer.measureElement}
+                                    >
                                         {row.getVisibleCells().map((cell: any) => {
                                             return (
                                                 <td className={row?.original?.boldRow} key={cell.id} style={row?.original?.fontColorTask != undefined ? { color: `${row?.original?.fontColorTask}` } : { color: `${row?.original?.PortfolioType?.Color}` }}>
