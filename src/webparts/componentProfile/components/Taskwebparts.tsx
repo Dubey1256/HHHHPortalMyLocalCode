@@ -2019,7 +2019,7 @@ const updatedDataDataFromPortfolios = (copyDtaArray: any, dataToUpdate: any) => 
               <div className="Alltable mt-2 ">
                 <div className="col-sm-12 p-0 smart">
                   <div className="">
-                    <div className="wrapper">
+                    <div className="">
                       <Loader
                         loaded={loaded}
                         lines={13}
