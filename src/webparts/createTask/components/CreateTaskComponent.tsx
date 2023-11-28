@@ -1671,7 +1671,7 @@ function CreateTaskComponent(props: any) {
                                 {TaskUrlRelevantTask?.length > 0 ?
                                     <>
                                         <div className={TaskUrlRelevantTask?.length > 0 ? 'fxhg' : ''}>
-                                            <GlobalCommanTable columns={column2} data={TaskUrlRelevantTask} callBackData={callBackData} />
+                                            <GlobalCommanTable wrapperHeight="100%" columns={column2} data={TaskUrlRelevantTask} callBackData={callBackData} />
                                         </div>
                                     </> : <div className='text-center full-width'>
                                         <span>No Tasks Available</span>
@@ -1682,7 +1682,7 @@ function CreateTaskComponent(props: any) {
                                 {PageRelevantTask?.length > 0 ?
                                     <>
                                         <div className={PageRelevantTask?.length > 0 ? 'fxhg' : ''}>
-                                            <GlobalCommanTable columns={column2} data={PageRelevantTask} callBackData={callBackData} />
+                                            <GlobalCommanTable wrapperHeight="100%" columns={column2} data={PageRelevantTask} callBackData={callBackData} />
                                         </div>
                                     </> : <div className='text-center full-width'>
                                         <span>No Tasks Available</span>
@@ -1694,7 +1694,7 @@ function CreateTaskComponent(props: any) {
                                 {ComponentRelevantTask?.length > 0 ?
                                     <>
                                         <div className={ComponentRelevantTask?.length > 0 ? 'fxhg' : ''}>
-                                            <GlobalCommanTable columns={column2} data={ComponentRelevantTask} callBackData={callBackData} />
+                                            <GlobalCommanTable wrapperHeight="100%" columns={column2} data={ComponentRelevantTask} callBackData={callBackData} />
                                         </div>
                                     </> : <div className='text-center full-width'>
                                         <span>No Tasks Available</span>
