@@ -126,16 +126,14 @@ function ShowTaskTeamMembers(item: any) {
           </div> :
          
         } */}
-        <div key={key} className="">
+        <div key={key} className="alignCenter">
           {taskData?.TeamMembersFlat != null &&
             taskData?.TeamMembersFlat?.length > 0 &&
             taskData?.TeamMembersFlat?.map((rcData: any, i: any) => {
               return (
-                <a
-                  style={{ marginRight: "4px" }}
-                  href={`${siteUrl}/SitePages/TaskDashboard.aspx?UserId=${rcData?.Id}&Name=${rcData?.Title}`}
+                <a style={{marginRight:"4px"}} href={`${siteUrl}/SitePages/TaskDashboard.aspx?UserId=${rcData?.Id}&Name=${rcData?.Title}`}
                   target="_blank"
-                  className={i == (LeadCount - 1) && i != 3 ? "teamLeader-IconEnd" : ''}
+                  className={i == (LeadCount - 1) && i != 3 ? "teamLeader-IconEnd alignCenter" : 'alignCenter'}
                   data-interception="off"
                   title={rcData?.Title}
                 >
@@ -149,8 +147,8 @@ function ShowTaskTeamMembers(item: any) {
                     <span
                       className={
                         rcData?.workingMember
-                          ? "workmember activeimg bg-fxdark"
-                          : "workmember bg-fxdark"
+                          ? "suffix_Usericon activeimg"
+                          : "suffix_Usericon "
                       }
                     >
                       {rcData?.Suffix}
@@ -163,12 +161,12 @@ function ShowTaskTeamMembers(item: any) {
         {taskData?.TeamMembersTip != null &&
           taskData?.TeamMembersTip?.length > 0 && (
             <div
-              className="position-relative user_Member_img_suffix2 ms-1 alignCenter"
+              className="hover-text user_Member_img_suffix2 alignCenter"
               onMouseOver={(e) => handleSuffixHover()}
               onMouseLeave={(e) => handleSuffixLeave()}
             >
               +{taskData?.TeamMembersTip?.length}
-              <span className="tooltiptext" style={{ display: Display, padding: "10px" }}>
+              <span className="tooltip-text pop-right" style={{ display: Display, padding: "10px" }}>
                 <div key={key}>
                   {taskData?.TeamMembersTip?.map((rcData: any, i: any) => {
                     return (
@@ -194,8 +192,8 @@ function ShowTaskTeamMembers(item: any) {
                             <span
                               className={
                                 rcData?.workingMember
-                                  ? "workmember activeimg bg-fxdark border bg-e9"
-                                  : "workmember bg-fxdark border bg-e9"
+                                  ? "suffix_Usericon activeimg "
+                                  : "suffix_Usericon "
                               }
                             >
                               {rcData?.Suffix}
