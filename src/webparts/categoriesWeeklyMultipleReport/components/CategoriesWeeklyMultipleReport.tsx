@@ -110,7 +110,7 @@ export default class CategoriesWeeklyMultipleReport extends React.Component<ICat
       AdjustedTimeType: 'Divide',
       filledeDays: '',
       AdjustedTimeCalcuValue: 1,
-      AllTimeEntryBackup: [],
+      AllTimeEntryBackup: {},
       QuickEditItem: {},
       defaultValuequick: 0,
       IsCheckedComponent: true,
@@ -484,6 +484,7 @@ export default class CategoriesWeeklyMultipleReport extends React.Component<ICat
     AllListId = this.props;
     AllListId.isShowTimeEntry = this.props.TimeEntry;
     AllListId.isShowSiteCompostion = this.props.SiteCompostion
+    $("#spPageCanvasContent").addClass("sixtyHundred");
     this.GetComponents();
     this.GetTaskUsers();
     this.LoadAllMetaDataFilter();
@@ -2082,7 +2083,8 @@ export default class CategoriesWeeklyMultipleReport extends React.Component<ICat
       })
       this.setState({
         AllTimeEntry: this.AllTimeEntry,
-        AllTimeEntryBackup: JSON.parse(JSON.stringify(this.AllTimeEntry))
+        AllTimeEntryBackup: JSON.stringify(this.AllTimeEntry)
+
       });
 
       // this.AllTimeEntryBackup = JSON.parse(JSON.stringify(this.AllTimeEntry));
@@ -2581,7 +2583,7 @@ export default class CategoriesWeeklyMultipleReport extends React.Component<ICat
 
   private SaveAdjustedTime = () => {
     this.AdjustedimeEntry = 0;
-   // this.AllTimeEntry = this.state.AllTimeEntryBackup;
+    this.AllTimeEntry = JSON.parse(this.state.AllTimeEntryBackup);
     this.AllTimeEntry.forEach((value: any) => {
       if (value.TotalValue != undefined && value.TotalValue != '') {
         if (this.state.AdjustedTimeType == 'Divide' && this.state.AdjustedTimeCalcuValue != 0) {
@@ -2670,7 +2672,7 @@ export default class CategoriesWeeklyMultipleReport extends React.Component<ICat
     }
     this.setState({ AllTimeEntry: this.AllTimeEntry });
     this.setState({ AdjustedTimePopup: false });
-    this.rerenderEntire(this.state.AllTimeEntry);
+    this.rerenderEntire(this.AllTimeEntry);
   }
 
   private AdjustedimeEntrytotal = 0;
@@ -2696,20 +2698,21 @@ export default class CategoriesWeeklyMultipleReport extends React.Component<ICat
     this.renderData = [];
     this.renderData = this.renderData.concat(array)
     this.refreshData();
+    // this.rerenderEntire(array);
     // this.rerender();
-    // this.rerenderEntire(this.AllTimeEntry);
+     
   }
 
   private ApplyCalculatedDays = () => {
     this.AdjustedimeEntrytotal = this.SmartTotalTimeEntry;
     this.AdjustedimeEntry = 0;
     this.RoundAdjustedTimeTimeEntry = 0;
-   // this.AllTimeEntry = this.state.AllTimeEntryBackup;
+    this.AllTimeEntry = JSON.parse(this.state.AllTimeEntryBackup);
     this.AllTimeEntry.forEach((value: any) => {
       value.AdjustedTime = 0;
       if (value.TotalValue != undefined && value.TotalValue != '') {
         if (this.state.filledeDays != 0) {
-          value.AdjustedTime = (this.state.filledeDays / (this.AdjustedimeEntrytotal / 8)) * value.AdjustedTime;
+          value.AdjustedTime = (this.state.filledeDays / (this.AdjustedimeEntrytotal / 8)) * value.TotalValue;
           value.AdjustedTime = value.AdjustedTime.toFixed(2)
           if (value.AdjustedTime != undefined && value.AdjustedTime != '') {
             value.AdjustedTime = parseFloat(value.AdjustedTime).toFixed(2);
