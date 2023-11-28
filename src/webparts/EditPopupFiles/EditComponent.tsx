@@ -2676,7 +2676,7 @@ function EditInstitution({ item, SelectD, Calls, usedFor }: any) {
             >
                 {EditData != undefined && EditData?.Title != undefined && (
                     <div id="EditGrueneContactSearch">
-                        <div className="modal-body">
+                        <div className="modal-body mb-5">
                             <ul
                                 className="nav nav-tabs fixed-Header"
                                 id="myTab"
@@ -3645,7 +3645,7 @@ function EditInstitution({ item, SelectD, Calls, usedFor }: any) {
                             <details>
                               <summary className="alignCenter">
                                 <label className="toggler full_width">
-                                  <div className="pull-left">Admin Notes</div>
+                                  <div className="pull-left">Admin Notes{`(${EditData?.AdminNotes?.length != undefined ?EditData?.AdminNotes?.length:0 })`}</div>
                                 </label>
                               </summary>
                               <div className="border border-top-0 p-2">
@@ -3713,7 +3713,7 @@ function EditInstitution({ item, SelectD, Calls, usedFor }: any) {
                             <details>
                               <summary className="alignCenter">
                                 <label className="toggler full_width">
-                                  <div className="pull-left">Description</div>
+                                  <div className="pull-left">Description{`(${EditData?.Body?.length != undefined ?EditData?.Body?.length:0 })`}</div>
                                 </label>
                               </summary>
                               <div className="border border-top-0 p-2">
@@ -3805,7 +3805,7 @@ function EditInstitution({ item, SelectD, Calls, usedFor }: any) {
                             <details>
                               <summary className="alignCenter">
                                 <label className="toggler full_width">
-                                  <div className="pull-left">Short Description</div>
+                                  <div className="pull-left">Short Description{`(${EditData?.Short_x0020_Description_x0020_On?.length != undefined ?EditData?.Short_x0020_Description_x0020_On?.length:0 })`}</div>
                                 </label>
                               </summary>
                               <div className="border border-top-0 p-2">
@@ -3901,7 +3901,7 @@ function EditInstitution({ item, SelectD, Calls, usedFor }: any) {
                             <details>
                               <summary className="alignCenter">
                                 <label className="toggler full_width">
-                                  <div className="pull-left">Background</div>
+                                  <div className="pull-left">Background{`(${EditData?.Background?.length != undefined ?EditData?.Background?.length:0 })`}</div>
                                 </label>
                               </summary>
                               <div className="border border-top-0 p-2">
@@ -3998,7 +3998,7 @@ function EditInstitution({ item, SelectD, Calls, usedFor }: any) {
                             <details>
                               <summary className="alignCenter">
                                 <label className="toggler full_width">
-                                  <div className="pull-left">Idea</div>
+                                  <div className="pull-left">Idea{`(${EditData?.Idea?.length != undefined ?EditData?.Idea?.length:0 })`}</div>
                                 </label>
                               </summary>
                               <div className="border border-top-0 p-2">
@@ -4093,7 +4093,7 @@ function EditInstitution({ item, SelectD, Calls, usedFor }: any) {
                             <details>
                               <summary className="alignCenter">
                                 <label className="toggler full_width">
-                                  <div className="pull-left">Value Added</div>
+                                  <div className="pull-left">Value Added{`(${EditData?.ValueAdded?.length != undefined ?EditData?.ValueAdded?.length:0 })`}</div>
                                 </label>
                               </summary>
                               <div className="border border-top-0 p-2">
@@ -4188,7 +4188,7 @@ function EditInstitution({ item, SelectD, Calls, usedFor }: any) {
                             <details>
                               <summary className="alignCenter">
                                 <label className="toggler full_width">
-                                  <div className="pull-left">Deliverables</div>
+                                  <div className="pull-left">Deliverables{`(${EditData?.Deliverables?.length != undefined ?EditData?.Deliverables?.length:0 })`}</div>
                                 </label>
                               </summary>
                               <div className="border border-top-0 p-2">
@@ -4320,7 +4320,7 @@ function EditInstitution({ item, SelectD, Calls, usedFor }: any) {
                                         <details>
                                             <summary className="alignCenter">
                                                 <label className="toggler full_width">
-                                                    <a className="pull-left">Technical Concept</a>
+                                                    <a className="pull-left">Technical Concept{`(${EditData?.TechnicalExplanations?.length != undefined ?EditData?.TechnicalExplanations?.length:0 })`}</a>
                                                 </label>
                                             </summary>
                                             <div className="border border-top-0 p-2">
@@ -4938,7 +4938,7 @@ function EditInstitution({ item, SelectD, Calls, usedFor }: any) {
                             <input type="radio" id="admin" className="radio" value="Admin" checked={choice === 'Admin'} onChange={choiceHandler} /> Admin</label>
                     </div>
                     <div className="mb-2">
-                        <label className="form-label">Description</label>
+                        <label className="form-label">Description{`(${EditData?.QuestionDescription?.length})`}</label>
                         <div>
                             <HtmlEditorCard editorValue={
                                 EditData.QuestionDescription != undefined
