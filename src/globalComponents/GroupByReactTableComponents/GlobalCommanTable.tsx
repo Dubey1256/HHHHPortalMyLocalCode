@@ -777,17 +777,21 @@ const GlobalCommanTable = (items: any, ref: any) => {
             : [0, 0];
 
     const setTableHeight = () => {
-        const table = document.getElementById('table-container');
+        const table = document.getElementById('global-table-container');
         const screenHeight = window.innerHeight;
         const tableHeight = screenHeight * 0.8 - 5;
         table.style.height = `${tableHeight}px`;
     };
     React.useEffect(() => {
-        setTableHeight();
-        window.addEventListener('resize', setTableHeight);
-        return () => {
-            window.removeEventListener('resize', setTableHeight);
-        };
+        if (items.wrapperHeight) {
+            document.getElementById('global-table-container').style.height = items.wrapperHeight;
+        } else {
+            setTableHeight();
+            window.addEventListener('resize', setTableHeight);
+            return () => {
+                window.removeEventListener('resize', setTableHeight);
+            };
+        }
     }, []);
     //Virtual rows
 
@@ -948,7 +952,7 @@ const GlobalCommanTable = (items: any, ref: any) => {
                     <Tooltip ComponentId={5756} />
                 </span>
             </div>}
-            <div ref={parentRef} id="table-container" style={{ overflow: "auto" }}>
+            <div ref={parentRef} id="global-table-container" style={{ overflow: "auto" }}>
                 <div style={{ height: `${virtualizer.getTotalSize()}px` }}>
                     <table className="SortingTable table table-hover mb-0" id='my-table' style={{ width: "100%" }}>
                         <thead className={showHeader === true ? 'fixedSmart-Header top-0' : 'fixed-Header top-0'}>
