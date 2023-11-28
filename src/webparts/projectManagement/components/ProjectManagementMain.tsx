@@ -1325,7 +1325,7 @@ const ProjectManagementMain = (props: any) => {
                                           TaskUsers={AllUser}
                                           pageName={'ProjectManagment'}
                                         />
-                                        {Masterdata?.AssignedTo?.length > 0 || Masterdata?.TeamMembers?.length > 0 || Masterdata?.ResponsibleTeam?.length > 0 ? <ShowTaskTeamMembers props={Masterdata} TaskUsers={AllTaskUsers} /> : ''}
+                                        {/* {Masterdata?.AssignedTo?.length > 0 || Masterdata?.TeamMembers?.length > 0 || Masterdata?.ResponsibleTeam?.length > 0 ? <ShowTaskTeamMembers props={Masterdata} TaskUsers={AllTaskUsers} /> : ''} */}
                                       </dd>
                                     </dl>
                                     <dl>
