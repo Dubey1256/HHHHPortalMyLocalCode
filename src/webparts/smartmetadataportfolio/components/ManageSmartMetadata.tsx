@@ -5,10 +5,10 @@ import GlobalCommanTable from './GlobalCommanTableSmartmetadata';
 import { Panel, PanelType } from 'office-ui-fabric-react';
 import SmartMetadataEditPopup from "./SmartMetadataEditPopup";
 import DeleteSmartMetadata from "./DeleteSmartMetadata";
-import BraedCrum from './BreadCrumb';
 let SmartmetadataItems: any = [];
 let TabSelected: string;
 let compareSeletected: any = [];
+let ParentMetaDataItems: any = [];
 export default function ManageSmartMetadata(selectedProps: any) {
     const [setName]: any = useState('');
     const [AllCombinedJSON, setAllCombinedJSON] = useState(JSON);
@@ -100,10 +100,11 @@ export default function ManageSmartMetadata(selectedProps: any) {
     }
     const ShowingTabsData = async (Tab: any) => {
         TabsFilter = [];
-        var ParentMetaDataItems: any = [];
         TabSelected = Tab;
+        if (ParentMetaDataItems.length > 0)
+            ParentMetaDataItems = [];
         SmartmetadataItems?.filter((comp: any) => {
-            if (comp?.TaxType === Tab && comp?.ParentId === null) {
+            if (comp?.TaxType === Tab && comp?.ParentID === 0) {
                 comp['flag'] = true;
                 ParentMetaDataItems.push(comp)
             }
@@ -117,9 +118,21 @@ export default function ManageSmartMetadata(selectedProps: any) {
                 getFilterMetadataItems(TabsFilter);
             }
         });
-        setSmartmetadata(TabsFilter);
-
+        if (TabSelected === 'Categories') {
+            ShowingCategoriesTabsData(TabsFilter[0]?.Title)
+        } else
+            setSmartmetadata(TabsFilter);
     };
+    const ShowingCategoriesTabsData = (tabData: any) => {
+        TabsFilter = [];
+        ParentMetaDataItems.filter((item: any) => {
+            if (item.TaxType && item.Title === tabData) {
+                TabsFilter.push(item);
+                getFilterMetadataItems(TabsFilter);
+            }
+        });
+        setSmartmetadata(TabsFilter);
+    }
     const EditSmartMetadataPopup = (item: any) => {
         setSelectedSmartMetadataItem(item);
         setSmartMetadataEditPopupOpen(true);
@@ -166,7 +179,7 @@ export default function ManageSmartMetadata(selectedProps: any) {
             placeholder: 'SmartFilters',
             id: 'SmartFilters',
             header: '',
-            size: 350,
+            size: 400,
             cell: ({ row }) => (
                 <>
                     <div className='alignCenter'>
@@ -202,7 +215,7 @@ export default function ManageSmartMetadata(selectedProps: any) {
             placeholder: 'SortOrder',
             id: 'SortOrder',
             header: '',
-            size: 42,
+            size: 55,
             cell: ({ row }) => (
                 <>
                     <div className='alignCenter'>
@@ -251,7 +264,7 @@ export default function ManageSmartMetadata(selectedProps: any) {
                     {
                         RestructureIcon ?
                             <span style={{ backgroundColor: `${'portfolioColor'}` }} title="Restructure" className="Dyicons mb-1 mx-1 p-1" onClick={() => trueTopIcon(true)}>
-                                <span className="alignIcon svg__iconbox svg__icon--re-structure"></span>
+                                <span className="svg__iconbox svg__icon--re-structure"></span>
                             </span>
                             : ''
                     }
@@ -368,7 +381,7 @@ export default function ManageSmartMetadata(selectedProps: any) {
     //-------------------------------------------------- GENERATE JSON FUNCTION end---------------------------------------------------------------
     return (
         <>
-            {<BraedCrum AllList={selectedProps.AllList} />}
+            {/* {<BraedCrum AllList={selectedProps.AllList} />} */}
             <section className='ContentSection'>
                 <div className='row'>
                     <div className='col-sm-3 text-primary'>
@@ -393,12 +406,25 @@ export default function ManageSmartMetadata(selectedProps: any) {
                         {item.Title}
                     </button>
                 ))}
-                <span className='pull-right ml-auto mt-2'>
-                <a className='text-end hreflink' onClick={() => generateJSONOfTaskLists()}>Generate JSON </a>
-            </span>
+                <span className='ml-auto'>
+                    <a className='text-end hyperlink ' onClick={() => generateJSONOfTaskLists()}>Generate JSON </a>
+                </span>
             </ul>
             <div className="border border-top-0 clearfix p-2 tab-content " id="myTabContent">
-                <div className="tab-pane Alltable mx-height show active p-0" id="URLTasks" role="tabpanel" aria-labelledby="URLTasks">
+                {TabSelected === 'Categories' &&
+                    <ul className="nav nav-tabs" role="tablist">
+                        {ParentMetaDataItems.map((Parent: any, index: any) => (
+                            <button className={
+                                index === 0
+                                    ? "nav-link active"
+                                    : "nav-link"
+                            } onClick={() => ShowingCategoriesTabsData(Parent.Title)} key={index} data-bs-toggle="tab" data-bs-target="#URLTasks" type="button" role="tab" aria-controls="URLTasks" aria-selected="true">
+                                {Parent.Title}
+                            </button>
+                        ))}
+                    </ul>
+                }
+                <div className="tab-pane Alltable mx-height show active" id="URLTasks" role="tabpanel" aria-labelledby="URLTasks">
                     {
                         Smartmetadata &&
                         <GlobalCommanTable smartMetadataCount={smartMetadataCount} Tabs={Tabs} compareSeletected={compareSeletected} CloseEditSmartMetaPopup={CloseEditSmartMetaPopup} SelectedItem={SelectedItem} setName={setName} ParentItem={Smartmetadata} AllList={selectedProps.AllList} data={Smartmetadata} TabSelected={TabSelected} ref={childRef} callChildFunction={callChildFunction} callBackSmartMetaData={callBackSmartMetaData} columns={columns} showHeader={true} expandIcon={true} showPagination={true} callBackData={callBackData} />
@@ -432,8 +458,10 @@ export default function ManageSmartMetadata(selectedProps: any) {
                     </div>
                 </Panel>
             </div>)}
-            {SmartMetadataEditPopupOpen ? <SmartMetadataEditPopup AllList={selectedProps.AllList} CloseEditSmartMetaPopup={CloseEditSmartMetaPopup} EditItemCallBack={callBackSmartMetaData} AllMetadata={Smartmetadata} modalInstance={SelectedSmartMetadataItem} /> : ''}
+            {SmartMetadataEditPopupOpen ? <SmartMetadataEditPopup AllList={selectedProps.AllList} CloseEditSmartMetaPopup={CloseEditSmartMetaPopup} EditItemCallBack={callBackSmartMetaData} AllMetadata={Smartmetadata} MetadataItems={SmartmetadataItems} modalInstance={SelectedSmartMetadataItem} /> : ''}
             {SmartMetadataDeletePopupOpen ? <DeleteSmartMetadata AllList={selectedProps.AllList} CloseDeleteSmartMetaPopup={CloseDeleteSmartMetaPopup} DeleteItemCallBack={callBackSmartMetaData} AllMetadata={Smartmetadata} modalInstance={SelectedSmartMetadataItem} /> : ''}
         </>
     );
 }
+
+

@@ -168,11 +168,11 @@ function TasksTable(props: any) {
     });
 
     // var filter: any = '';
-    if (props.props.TaskType != undefined && props.props.TaskType != undefined && props.props.TaskType === 'Activities') {
+    if ( props?.props?.TaskType != undefined && props?.props?.TaskType?.Title === 'Activities') {
       filter += '(ParentTask/Id eq ' + props.props.Id + ' ) or '
       loadWSTasks(props.props);
     }
-    else if (props.props.TaskType != undefined && props.props.TaskType != undefined && props.props.TaskType === 'Workstream') {
+    else if ( props?.props?.TaskType != undefined && props?.props?.TaskType?.Title === 'Workstream') {
       filter += '(ParentTask/Id eq ' + props.props.Id + ' )'
       loadActivityTasks(props.props);
 
@@ -398,8 +398,8 @@ function TasksTable(props: any) {
                   result["Item_x0020_Type"] = "Task";
                 })
                 let allParentTasks = $.grep(AllTasks, function (type: any) { return (type.ParentTask != undefined && type.ParentTask.Id === props.props.Id && type?.siteType==props?.props?.siteType ) && (type.TaskType != undefined && type.TaskType.Title != 'Workstream') });
-                if (props.props.TaskType != undefined && props.props.TaskType != undefined && props.props.TaskType === 'Activities')
-                  allworkstreamTasks = $.grep(AllTasks, function (task: any) { return (task.TaskType != undefined && task.TaskType.Title === 'Workstream' && task?.siteType==props?.props?.siteType) });
+                if (props?.props?.TaskType != undefined && props.props.TaskType != undefined && props.props.TaskType?.Title === 'Activities')
+                  allworkstreamTasks = $.grep(AllTasks, function (task: any) { return (task.TaskType != undefined && task?.TaskType?.Title === 'Workstream' && task?.siteType==props?.props?.siteType) });
 
                 if (allworkstreamTasks != undefined && allworkstreamTasks?.length > 0) {
                   allworkstreamTasks.forEach((obj: any) => {
@@ -965,12 +965,12 @@ function TasksTable(props: any) {
       }
     }
     else {
-      if (props.props.TaskType == 'Workstream') {
+      if (props?.props?.TaskType?.Title == 'Workstream') {
         props.props['NoteCall'] = 'Task'
         MeetingItems.push(props.props)
         setMeetingPopup(true)
       }
-      if (props.props.TaskType == 'Activities') {
+      if (props?.props?.TaskType?.Title == 'Activities') {
         let parentcat: any = [];
 
         if (data2?.ClientTime != null && data2?.ClientTime != undefined) {
@@ -1054,14 +1054,14 @@ function TasksTable(props: any) {
 
       }
       if (checkData.TaskType != undefined) {
-        if (checkData.TaskType.Title == 'Activities' || checkData.TaskType.Title == "Workstream") {
+        if (checkData.TaskType?.Title == 'Activities' || checkData.TaskType?.Title == "Workstream") {
           setActivityDisable(false)
           // Arrays.push(itrm)
           checkData['PortfolioId'] = props?.Id;
           MeetingItems.push(checkData)
           setCount(count + 2)
         }
-        if (checkData.TaskType.Title == 'Task') {
+        if (checkData.TaskType?.Title == 'Task') {
           setActivityDisable(true)
           MeetingItems.push(checkData)
 
