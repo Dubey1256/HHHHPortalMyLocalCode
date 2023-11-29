@@ -250,8 +250,8 @@ const Tabless = (props: any) => {
     const web = new Web(items.siteUrl);
     await web.lists
       .getById(items.listId)
-      .items.select("Title", "PercentComplete",'EstimatedTimeDescription',"EstimatedTime" ,"SharewebTaskType/Title", "TaskType/Id", "TaskType/Title", "Portfolio/Id", "Portfolio/ItemType", "Portfolio/Title", "PortfolioType/Id", "PortfolioType/Color", "PortfolioType/IdRange", "PortfolioType/Title", "Categories", "Priority_x0020_Rank", "DueDate", "Created", "Modified", "Team_x0020_Members/Id", "Team_x0020_Members/Title", "ID", "Responsible_x0020_Team/Id", "Responsible_x0020_Team/Title", "Editor/Title", "Editor/Id", "Author/Title", "Author/Id", "AssignedTo/Id", "AssignedTo/Title")
-      .expand("Team_x0020_Members", "Author", "PortfolioType", "Portfolio", "TaskType", "SharewebTaskType", "Editor", "Responsible_x0020_Team", "AssignedTo")
+      .items.select("Title", "PercentComplete","TeamMembers/Id","TeamMembers/Title","ResponsibleTeam/Id","ResponsibleTeam/Title",'EstimatedTimeDescription',"EstimatedTime" ,"SharewebTaskType/Title", "TaskType/Id", "TaskType/Title", "Portfolio/Id", "Portfolio/ItemType", "Portfolio/Title", "PortfolioType/Id", "PortfolioType/Color", "PortfolioType/IdRange", "PortfolioType/Title", "Categories", "Priority_x0020_Rank", "DueDate", "Created", "Modified", "Team_x0020_Members/Id", "Team_x0020_Members/Title", "ID", "Responsible_x0020_Team/Id", "Responsible_x0020_Team/Title", "Editor/Title", "Editor/Id", "Author/Title", "Author/Id", "AssignedTo/Id", "AssignedTo/Title")
+      .expand("Team_x0020_Members", "ResponsibleTeam" , "TeamMembers" , "Author", "PortfolioType", "Portfolio", "TaskType", "SharewebTaskType", "Editor", "Responsible_x0020_Team", "AssignedTo")
       .filter(`${filter}`).top(5000)
       .getAll()
       .then((data: any) => {
@@ -320,15 +320,17 @@ const Tabless = (props: any) => {
             Editorss: dataItem.Editor.Title,
             Team_x0020_Members: dataItem.Team_x0020_Members,
             Responsible_x0020_Team: dataItem.Responsible_x0020_Team,
+            ResponsibleTeam: dataItem.ResponsibleTeam,
+            TeamMembers: dataItem.TeamMembers,
             AssignedTo: dataItem.AssignedTo,
             created: dataItem.Created,
             modified: dataItem.Modified,
             dueDate: dataItem.DueDate,
             PortfolioType: dataItem.PortfolioType,
             listId: items.listId,
-            site: items.siteName,
-            siteType: items.siteName,
-            Urlss: `${items.siteUrl}/SitePages/Task-Profile.aspx?taskId=${dataItem.Id}&Site=${items.siteName}`
+            site: items.Title,
+            siteType: items.Title,
+            Urlss: `${items.siteUrl}/SitePages/Task-Profile.aspx?taskId=${dataItem.Id}&Site=${items.Title}`
           });
 
         });
@@ -548,7 +550,7 @@ const Tabless = (props: any) => {
         accessorFn: (row: any) => row?.TeamMembersSearch,
         cell: ({ row, getValue }: any) => (
           <span>
-            <ShowTaskTeamMembers props={row?.original} TaskUsers={taskUser} />
+            <ShowTaskTeamMembers key={row?.original?.Id} props={row?.original} TaskUsers={taskUser} />
           </span>
         ),
         id: "TeamMembersSearch",

@@ -367,7 +367,7 @@ const ServiceComponentPortfolioPopup = ({ props, Dynamic, Call, ComponentType, s
                             </span>
                         </div>
                         <div className="col-sm-12 p-0 smart">
-                            <div className="wrapper">
+                            <div className="">
                                 <GlobalCommanTable columns={columns} showHeader={true} data={data} selectedData={selectedDataArray} callBackData={callBackData} multiSelect={selectionType == 'Multi' ? true : false} />
                             </div>
                         </div>

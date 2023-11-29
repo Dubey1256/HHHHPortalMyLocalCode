@@ -760,8 +760,10 @@ const GlobalCommanTable = (items: any, ref: any) => {
     const virtualizer = useVirtualizer({
         count: rows.length,
         getScrollElement: () => parentRef.current,
-        estimateSize: () => 24,
-        overscan: 15,
+        // estimateSize: () => 24,
+        // overscan: 15,
+        estimateSize: () => 200,
+        overscan: 50,
     });
 
     const itemsVirtualizer: any = virtualizer.getVirtualItems();
@@ -775,17 +777,20 @@ const GlobalCommanTable = (items: any, ref: any) => {
             : [0, 0];
 
     const setTableHeight = () => {
-        const table = document.getElementById('table-container');
         const screenHeight = window.innerHeight;
         const tableHeight = screenHeight * 0.8 - 5;
-        table.style.height = `${tableHeight}px`;
+        parentRef.current.style.height = `${tableHeight}px`;
     };
     React.useEffect(() => {
-        setTableHeight();
-        window.addEventListener('resize', setTableHeight);
-        return () => {
-            window.removeEventListener('resize', setTableHeight);
-        };
+        if (items.wrapperHeight) {
+            parentRef.current.style.height = items.wrapperHeight;
+        } else {
+            setTableHeight();
+            window.addEventListener('resize', setTableHeight);
+            return () => {
+                window.removeEventListener('resize', setTableHeight);
+            };
+        }
     }, []);
     //Virtual rows
 
@@ -946,7 +951,7 @@ const GlobalCommanTable = (items: any, ref: any) => {
                     <Tooltip ComponentId={5756} />
                 </span>
             </div>}
-            <div ref={parentRef} id="table-container" style={{ overflow: "auto" }}>
+            <div ref={parentRef} style={{ overflow: "auto" }}>
                 <div style={{ height: `${virtualizer.getTotalSize()}px` }}>
                     <table className="SortingTable table table-hover mb-0" id='my-table' style={{ width: "100%" }}>
                         <thead className={showHeader === true ? 'fixedSmart-Header top-0' : 'fixed-Header top-0'}>
@@ -1000,7 +1005,10 @@ const GlobalCommanTable = (items: any, ref: any) => {
                                     <tr
                                         // className={row?.original?.lableColor}
                                         className={row?.original?.IsSCProtected != undefined && row?.original?.IsSCProtected == true ? `Disabled-Link opacity-75 ${row?.original?.lableColor}` : `${row?.original?.lableColor}`}
-                                        key={row.id}>
+                                        key={row.id}
+                                        data-index={virtualRow.index}
+                                        ref={virtualizer.measureElement}
+                                    >
                                         {row.getVisibleCells().map((cell: any) => {
                                             return (
                                                 <td className={row?.original?.boldRow} key={cell.id} style={row?.original?.fontColorTask != undefined ? { color: `${row?.original?.fontColorTask}` } : { color: `${row?.original?.PortfolioType?.Color}` }}>

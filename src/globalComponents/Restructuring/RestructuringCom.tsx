@@ -2570,7 +2570,7 @@ const buttonRestructureDifferentType=()=>{
 
      if (newItemBackUp?.subRows != undefined && newItemBackUp?.subRows?.length > 0) {
         newItemBackUp?.subRows?.map((sub: any) => {
-          if (RestructureChecked[0]?.TaskType?.Id === sub?.TaskType?.Id) {
+          if (TaskTypeId === sub?.TaskType?.Id) {
             if (TaskLevel <= sub.TaskLevel) {
               TaskLevel = sub.TaskLevel;
             }
