@@ -69,7 +69,7 @@ const TopNavigation = (dynamicData: any) => {
                 })
                
             })
-        }
+        }2
         if (type == 'subchild') {
             setSubChild(event.target.value);
            
@@ -214,8 +214,8 @@ const TopNavigation = (dynamicData: any) => {
             ParentID: postData?.ParentId != undefined && postData?.ParentId != '' ? postData?.ParentId : item?.ParentID,
             href: {
                 "__metadata": { type: "SP.FieldUrlValue" },
-                Description: postData != undefined && postData?.Url != '' ? postData?.Url : item?.href.Url,
-                Url: postData != undefined && postData.Url != '' ? postData?.Url : item?.href.Url,
+                Description: postData != undefined && postData?.Url != '' ? postData?.Url : item?.href != null ? item?.href.Url : '',
+                Url: postData != undefined && postData.Url != '' ? postData?.Url : item?.href != null ? item?.href.Url : '' ,
             },
             IsVisible: isVisible,
             ownersonly: owner
@@ -330,7 +330,7 @@ const TopNavigation = (dynamicData: any) => {
         }
         setData(copy)
         setData((copy)=>[...copy])
-
+        
     }
 const updateSortOrder=async ()=>{
     console.log(sortId)
@@ -357,7 +357,7 @@ if(childData != undefined && childData.length > 0){
 }
 else {
    if (ParentData != undefined && ParentData.length > 0){
-    setPostData({ ...postData, ParentId: childData[0]?.Id })} 
+    setPostData({ ...postData, ParentId: ParentData[0]?.Id })} 
        
     }
  
@@ -738,6 +738,7 @@ const inputSortOrder=async ()=>{
                         </div>
                         <div className='col-sm-10'>
                             <select className='full-width' value={value == ''?'Select Item':value} onChange={(e) => handleChange('Parent', e)}>
+                            <option value={""}>Root</option>
                                 {
                                     root?.map((item: any) => {
                                         return (
@@ -759,7 +760,8 @@ const inputSortOrder=async ()=>{
                             <label><b>Second Level</b></label>
                         </div>
                         <div className='col-sm-10'>
-                            <select className='full-width' value={child == ''?'Select Item':child} onChange={(e) => handleChange('child', e)}>
+                            <select className='full-width' value={child ==  ''?'Select Item':child} onChange={(e) => handleChange('child', e)}>
+                           <option value={""}>Select</option>
                                 {
                                     ParentData?.map((item: any) => {
                                         return (
@@ -785,7 +787,7 @@ const inputSortOrder=async ()=>{
                         </div>
                         <div className='col-sm-10'>
                             <select className='full-width' value={subchild} onChange={(e) => handleChange('subchild', e)}>
-                                
+                            <option value={""}>Select</option>
                                    
                                                 {childData?.map((child: any) => {
                                                     return (
@@ -793,7 +795,7 @@ const inputSortOrder=async ()=>{
                                                             {child.childs?.map((subchild: any) => {
                                                                 return (
                                                                     <>
-                                                                        <option value={child.Title}>{child.Title}</option>
+                                                                        <option value={subchild.Title}>{subchild.Title}</option>
                                                                     </>
                                                                 )
                                                             })}
