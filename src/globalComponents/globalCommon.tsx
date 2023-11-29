@@ -1649,7 +1649,6 @@ export const GetServiceAndComponentAllData = async (Props: any) => {
             if (result?.Item_x0020_Type != undefined) {
                 result.SiteIconTitle = result?.Item_x0020_Type?.charAt(0);
             }
-            result.PercentComplete = (result.PercentComplete * 100).toFixed(0);
             result.descriptionsSearch = '';
             try{
                 result.descriptionsSearch = portfolioSearchData(result)
