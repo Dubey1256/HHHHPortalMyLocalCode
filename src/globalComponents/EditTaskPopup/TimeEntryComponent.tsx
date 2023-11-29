@@ -2221,12 +2221,35 @@ function TimeEntryPopup(item: any) {
         //setMyDatee(finalDate)
         setediteddata(change);
       }
+      if (type == "1Jul") {
+        var a1 = newDate.split("/");
+        a1[1] = "07";
+        a1[0] = "01";
+        a1 = a1[2] + a1[1] + a1[0];
+        var finalDate = Moment(a1).format("ddd, DD MMM yyyy");
+        change = new window.Date(finalDate);
+        //setMyDatee(finalDate)
+        setediteddata(change);
+      }
     }
     if (Popup == "AddTime" || Popup == "AddTimeCat") {
 
       if (type == "firstdate") {
         var newStartDate: any = Moment(date).format("DD/MM/YYYY");
         var a1 = newStartDate.split("/");
+        a1[0] = "01";
+        a1 = a1[2] + a1[1] + a1[0];
+        var finalDate = Moment(a1).format("ddd, DD MMM yyyy");
+        change = new window.Date(finalDate);
+        // setMyDatee(finalDate)
+        //setediteddata(finalDate)
+        // var inputDate = new Date(a1)
+        setMyDatee(change);
+      }
+      if (type == "1Jul") {
+        var newStartDate: any = Moment(date).format("DD/MM/YYYY");
+        var a1 = newStartDate.split("/");
+        a1[1] = "07";
         a1[0] = "01";
         a1 = a1[2] + a1[1] + a1[0];
         var finalDate = Moment(a1).format("ddd, DD MMM yyyy");
@@ -2504,7 +2527,7 @@ function TimeEntryPopup(item: any) {
             <div className="Alltable">
               <div className="col-sm-12 p-0 smart">
                 <div>
-                  <div className="wrapper AllTime">
+                  <div className="AllTime">
                     {data && (
                       <GlobalCommanTable
                         columns={column}
@@ -2595,6 +2618,16 @@ function TimeEntryPopup(item: any) {
                           <div className="date-div">
                           <label className="form-label full-width mb-2">Select date</label>
                             <div className="Date-Div-BAR d-flex mb-2">
+                            <span
+                                className="href"
+                                id="selectedToday"
+                                onClick={() =>
+                                  changeDatetodayQuickly((PopupType == 'EditTime' || PopupType == 'CopyTime') ? editeddata != undefined ? editeddata : myDatee : myDatee, "1Jul", PopupType)
+                                }
+                              >
+                                1 Jul
+                              </span>
+                              |
                               <span
                                 className="href"
                                 id="selectedYear"
