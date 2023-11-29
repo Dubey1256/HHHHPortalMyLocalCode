@@ -1,38 +1,56 @@
-shareweb-breadcrumb-item .Breadcrumb {
-    display: none;
+
+/******** Version History Table CSS **********/
+
+
+$border-color: #eeeeee;
+
+.VersionHistoryTable {
+  border: 1px solid $border-color;
+  margin-top: 16px;
 }
-   
-div#workbenchPageContent {
-    max-width: none; 
+.Info-VH-Col {
+  > ul {
+    li {
+      list-style-type: none;
+      margin-bottom: 4px;
+      padding: 0;
+      display: flex;
+      column-gap: 12px;
+
+      > span.vh-textLabel {
+        width: 170px;
+        background: #fafafa;
+        height: 28px;
+        padding: 0 5px;
+        line-height: 28px;
+        font-size: 13px;
+      }
+
+      > span.vh-textData {
+        padding: 0 5px;
+        line-height: 28px;
+        font-size: 13px;
+        min-height: 28px;
+      }
+    }
+
+    margin: 0;
+    padding: 0;
+  }
 }
 
-.ms-spimn-img{
-    vertical-align: middle;
-    display: none;
+table.VersionHistoryTable thead > tr > th {
+  height: 48px;
+  vertical-align: middle;
+  color: var(--SiteBlue);
 }
+table.VersionHistoryTable, table.VersionHistoryTable th, table.VersionHistoryTable td {
+  border: 1px solid #eee !important;
+  border-collapse: collapse;
+  clear: both;
+  padding: 0.5rem 16px;
 
-.modal-title{
-    font-size: 18px;
-    line-height: 24px;
-    width: 100%;
-    color: #000066;
-}
-
-.abbr[data-original-title], abbr[title] {
-    cursor: help;
-    border-bottom: 1px dotted #777;
-}
-
-.ms-vb2 {
-    padding: 4px 8px 4px 4px;
-}
-
-.table_scroll {
-    height: 450px;
-    overflow: auto;
-}
-
-a:visited, body a {
-    color: #000066;
-    text-decoration: none;
+  &:not(:last-child) > :last-child > * {
+    border-bottom-color: #eeeeee !important;
+  }
 }
