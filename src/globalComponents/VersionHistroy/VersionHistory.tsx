@@ -3,6 +3,7 @@ import './VersionHistory.scss';
 import { Panel, PanelType } from 'office-ui-fabric-react';
 import { sp } from 'sp-pnp-js';
 import "bootstrap/dist/css/bootstrap.min.css";  
+import Tooltip from '../Tooltip';
 import * as moment from 'moment';
 
 var keys: any = []
@@ -146,13 +147,14 @@ export default function VersionHistoryPopup(props: any) {
     }, [show]);
 
     const onRenderCustomHeader = () => {
-        return (
-            <>
-                <div style={{ marginRight: "auto", fontSize: "20px", fontWeight: "600", marginLeft: '15px' }}>
-                    Version History
-                </div>
-            </>
-        );
+      return (
+        <>
+          <div style={{ marginRight: "auto", fontSize: "20px", fontWeight: "600", marginLeft: '15px' }}>
+            Version History
+          </div>
+          <Tooltip />
+        </>
+      );
     };
     const renderArray = (arr: any[]) => {
         return arr.map((item, index) => (
