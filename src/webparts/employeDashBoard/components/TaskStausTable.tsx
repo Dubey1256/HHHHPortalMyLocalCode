@@ -883,9 +883,10 @@ const TaskStatusTbl = (Tile: any) => {
                   <span title="Share Ongoing Task" onClick={() => sendAllWorkingTodayTasks(todaysTask)} className="hreflink svg__iconbox svg__icon--share empBg"></span>
                 </span>
               </div>
-              <div className="Alltable maXh-300 scrollbar">
+              <div className="Alltable maXh-300 border-bottom-0" style={{ height: '300px' }}>
                 {todaysTask && (
                   <GlobalCommanTable
+                    wrapperHeight="100%"
                     showHeader={true}
                     columns={columnss}
                     data={todaysTask}
@@ -919,9 +920,10 @@ const TaskStatusTbl = (Tile: any) => {
                   <span title="Share Ongoing Task" onClick={() => sendAllWorkingTodayTasks(thisWeekTask)} className="hreflink svg__iconbox svg__icon--share empBg"></span>
                 </span>
               </div>
-              <div className="Alltable maXh-300 scrollbar">
+              <div className="Alltable maXh-300 border-bottom-0" style={{ height: '300px' }}>
                 {thisWeekTask && (
                   <GlobalCommanTable
+                    wrapperHeight="100%"
                     showHeader={true}
                     columns={ThisWeekcolumn}
                     data={thisWeekTask}
@@ -955,14 +957,15 @@ const TaskStatusTbl = (Tile: any) => {
                   <span title="Share Ongoing Task" onClick={() => sendAllWorkingTodayTasks(allAssignedTask)} className="hreflink svg__iconbox svg__icon--share empBg"></span>
                 </span>
               </div>
-              <div className="Alltable maXh-300 scrollbar">
-                { allAssignedTask?.length > 0 && (
+              <div className="Alltable maXh-300 border-bottom-0" style={{ height: '300px' }}>
+                {allAssignedTask?.length > 0 && (
                   <GlobalCommanTable
+                    wrapperHeight="100%"
                     showHeader={true}
                     columns={AssignedTask}
                     data={allAssignedTask}
                     callBackData={callBackData} />
-                   )
+                )
                 }
               </div>
             </div>
@@ -994,9 +997,10 @@ const TaskStatusTbl = (Tile: any) => {
                   <span title="Share Ongoing Task" onClick={() => sendAllWorkingTodayTasks(bottleneckTask)} className="hreflink svg__iconbox svg__icon--share empBg"></span>
                 </span>
               </div>
-              <div className="Alltable maXh-300 scrollbar">
+              <div className="Alltable maXh-300 border-bottom-0" style={{ height: '300px' }}>
                 {bottleneckTask && (
                   <GlobalCommanTable
+                    wrapperHeight="100%"
                     showHeader={true}
                     columns={Bottlecolumn}
                     data={bottleneckTask}
@@ -1030,9 +1034,10 @@ const TaskStatusTbl = (Tile: any) => {
                   <span title="Share Ongoing Task" onClick={() => sendAllWorkingTodayTasks(immediateTask)} className="hreflink svg__iconbox svg__icon--share empBg"></span>
                 </span>
               </div>
-              <div className="Alltable maXh-300 scrollbar">
+              <div className="Alltable maXh-300 border-bottom-0" style={{ height: '300px' }}>
                 {immediateTask && (
                   <GlobalCommanTable
+                    wrapperHeight="100%"
                     showHeader={true}
                     columns={Immcolumn}
                     data={immediateTask}
@@ -1058,9 +1063,10 @@ const TaskStatusTbl = (Tile: any) => {
                   <span title="Share Draft Task" onClick={() => sendAllWorkingTodayTasks(draftCatogary)} className="svg__iconbox svg__icon--share empBg"></span>
                 </span>
               </div>
-              <div className="Alltable maXh-300 scrollbar">
+              <div className="Alltable maXh-300 border-bottom-0" style={{ height: '300px' }}>
                 {draftCatogary && (
                   <GlobalCommanTable
+                    wrapperHeight="100%"
                     showHeader={true}
                     columns={draftColumns}
                     data={draftCatogary}

@@ -213,30 +213,46 @@ export const Modified = (props: any) => {
           if (item.Created != undefined) {
             item.createdNew = moment(item?.Created).format('DD/MM/YYYY')
           }
+          if(item.File_x0020_Type!=undefined){
+            if(item.File_x0020_Type=="doc"){
+              item.File_x0020_Type='docx'
+            }
+            if(item.File_x0020_Type=='jfif'){
+              item.File_x0020_Type='jpg'
+            }
+          }
+
           if (allSite.TabName == 'FOLDERS') {
             item.File_x0020_Type = 'folder';
           }
           if (item.Author != undefined) {
-            allUsers.map((Users: any) => {
+            (Users != undefined ? Users : allUsers).map((Users: any) => {
               if (item.Author.Id == Users?.AssingedToUser?.Id) {
-                item.authorImage = Users.Item_x0020_Cover?.Url;
+                  item.authorImage=Users.Item_x0020_Cover?.Url;
+                  item.authorSuffix = Users.Suffix; 
                 item.authorName = Users?.AssingedToUser?.Title;
-                item.authorId = Users?.AssingedToUser?.Id
-                item.authorDateSearch = item.Created + item.authorName;
+                item.authorId = Users?.AssingedToUser?.Id;
+
               }
             })
-            if( item?.authorImage==undefined){
-              item.authorName=item.Author.Title;
-              item.authorImage="https://hhhhteams.sharepoint.com/sites/HHHH/SiteCollectionImages/ICONS/32/icon_user.jpg";    
+            if( item?.authorImage==undefined && item.authorSuffix==undefined){
+              item.authorDefaultName=item.Author?.Title;
+              item.authorDefaultImage="https://hhhhteams.sharepoint.com/sites/HHHH/SiteCollectionImages/ICONS/32/icon_user.jpg";    
             }
           }
           if (item.Editor != undefined) {
-            allUsers.map((Users: any) => {
-              if (item.Editor.Id == Users?.AssingedToUser?.Id) {
-                item.editorImage = Users.Item_x0020_Cover?.Url;
+            (Users != undefined ? Users : allUsers).map((Users: any) => {
+              if (item.Editor.Id == Users?.AssingedToUser?.Id) { 
+                  item.editorImage=Users.Item_x0020_Cover?.Url;
+                  item.editorSuffix = Users.Suffix;               
                 item.editorName = Users?.AssingedToUser?.Title;
                 item.editorId = Users?.AssingedToUser?.Id;
               }
+              if( item?.editorImage==undefined && item.editorSuffix==undefined){
+                item.editorDefaultName=item.Editor.Title;
+                item.editorDefaultImage="https://hhhhteams.sharepoint.com/sites/HHHH/SiteCollectionImages/ICONS/32/icon_user.jpg";    
+              }
+
             })
           }
         })
@@ -275,25 +291,31 @@ export const Modified = (props: any) => {
           if (item.Author != undefined) {
             (Users != undefined ? Users : allUsers).map((Users: any) => {
               if (item.Author.Id == Users?.AssingedToUser?.Id) {
-                item.authorImage = Users.Item_x0020_Cover?.Url;
+                  item.authorImage=Users.Item_x0020_Cover?.Url;
+                  item.authorSuffix = Users.Suffix; 
                 item.authorName = Users?.AssingedToUser?.Title;
                 item.authorId = Users?.AssingedToUser?.Id;
 
               }
             })
-            if( item?.authorImage==undefined){
-              item.authorName=item.Author.Title;
-              item.authorImage="https://hhhhteams.sharepoint.com/sites/HHHH/SiteCollectionImages/ICONS/32/icon_user.jpg";    
+            if( item?.authorImage==undefined && item.authorSuffix==undefined){
+              item.authorDefaultName=item.Author?.Title;
+              item.authorDefaultImage="https://hhhhteams.sharepoint.com/sites/HHHH/SiteCollectionImages/ICONS/32/icon_user.jpg";    
             }
           }
           if (item.Editor != undefined) {
             (Users != undefined ? Users : allUsers).map((Users: any) => {
-              if (item.Editor.Id == Users?.AssingedToUser?.Id) {
-                item.editorImage = Users.Item_x0020_Cover?.Url;
+              if (item.Editor.Id == Users?.AssingedToUser?.Id) { 
+                  item.editorImage=Users.Item_x0020_Cover?.Url;
+                  item.editorSuffix = Users.Suffix;               
                 item.editorName = Users?.AssingedToUser?.Title;
                 item.editorId = Users?.AssingedToUser?.Id;
-
               }
+              if( item?.editorImage==undefined && item.editorSuffix==undefined){
+                item.editorDefaultName=item.Editor.Title;
+                item.editorDefaultImage="https://hhhhteams.sharepoint.com/sites/HHHH/SiteCollectionImages/ICONS/32/icon_user.jpg";    
+              }
+
             })
           }
           if (item.Portfolio != undefined) {
@@ -314,6 +336,15 @@ export const Modified = (props: any) => {
             item.ResponsibleTeam?.map((teamLeader: any) => {
               (Users != undefined ? Users : allUsers).map((users: any) => {
                 if (teamLeader?.Id == users.AssingedToUserId) {
+                  item.AllusersName.push(users)
+                }
+              })
+            })
+          }
+          if(item.AssignedTo?.length>0){
+            item.AssignedTo?.map((workingMember: any) => {
+              (Users != undefined ? Users : allUsers).map((users: any) => {
+                if (workingMember?.Id == users.AssingedToUserId) {
                   item.AllusersName.push(users)
                 }
               })
@@ -780,7 +811,9 @@ export const Modified = (props: any) => {
               {row.original.modifiedNew}
               <a target='_blank' href={`${baseUrl}/SitePages/TaskDashboard.aspx?UserId=${row.original.editorId}&Name=${row.original.editorName}`}>
                 {row.original.editorImage != undefined ?
-                  <img title={row.original.editorName} className='workmember ms-1' src={`${row.original.editorImage}`} alt="" /> : undefined}
+                  <img title={row.original.editorName} className='workmember ms-1' src={`${row.original.editorImage}`} alt="" /> 
+                  : row.original.editorSuffix!=undefined?<span title={row.original.editorName} className="workmember ms-1 bg-fxdark" >{row.original.editorSuffix}</span>
+                  : <img title={row.original.editorDefaultName} className='workmember ms-1' src={`${row.original.editorDefaultImage}`} alt="" />}
               </a>
             </>,
           filterFn: (row: any, columnName: any, filterValue: any) => {
@@ -804,7 +837,9 @@ export const Modified = (props: any) => {
               {row.original.createdNew}
               <a data-interception="off" target='_blank' href={`${baseUrl}/SitePages/TaskDashboard.aspx?UserId=${row.original.authorId}&Name=${row.original.authorName}`}>
                 {row.original.authorImage != undefined ?
-                  <img title={row.original.authorName} className='workmember ms-1' src={`${row.original.authorImage}`} alt="" /> : undefined}
+                   <img title={row.original.authorName} className='workmember ms-1' src={`${row.original.authorImage}`} alt="" /> 
+                   : row.original.authorSuffix!=undefined?<span title={row.original.authorName} className="workmember ms-1 bg-fxdark" >{row.original.authorSuffix}</span>
+                   :<img title={row.original.authorDefaultName} className='workmember ms-1' src={`${row.original.authorDefaultImage}`} alt="" />}
               </a>
             </>,
           filterFn: (row: any, columnName: any, filterValue: any) => {
@@ -911,7 +946,9 @@ export const Modified = (props: any) => {
               </span>
               <a data-interception="off" target='_blank' href={`${baseUrl}/SitePages/TaskDashboard.aspx?UserId=${row.original.editorId}&Name=${row.original.editorName}`}>
                 {row.original.editorImage != undefined ?
-                  <img title={row.original.editorName} className='workmember ms-1' src={`${row.original.editorImage}`} alt="" /> : undefined}
+                 <img title={row.original.editorName} className='workmember ms-1' src={`${row.original.editorImage}`} alt="" /> 
+                 : row.original.editorSuffix!=undefined?<span title={row.original.editorName} className="workmember ms-1 bg-fxdark" >{row.original.editorSuffix}</span>
+                 : <img title={row.original.editorDefaultName} className='workmember ms-1' src={`${row.original.editorDefaultImage}`} alt="" />}
               </a>
             </>
           , filterFn: (row: any, columnName: any, filterValue: any) => {
@@ -938,7 +975,9 @@ export const Modified = (props: any) => {
               </span>
               <a data-interception="off" target='_blank' href={`${baseUrl}/SitePages/TaskDashboard.aspx?UserId=${row.original.authorId}&Name=${row.original.authorName}`}>
                 {row.original.authorImage != undefined ?
-                  <img title={row.original.authorName} className='workmember ms-1' src={`${row.original.authorImage}`} alt="" /> : undefined}
+                   <img title={row.original.authorName} className='workmember ms-1' src={`${row.original.authorImage}`} alt="" /> 
+                   : row.original.authorSuffix!=undefined?<span title={row.original.authorName} className="workmember ms-1 bg-fxdark" >{row.original.authorSuffix}</span>
+                   :<img title={row.original.authorDefaultName} className='workmember ms-1' src={`${row.original.authorDefaultImage}`} alt="" />}
               </a>
             </>
           , filterFn: (row: any, columnName: any, filterValue: any) => {
@@ -1048,7 +1087,9 @@ export const Modified = (props: any) => {
               {row.original.modifiedNew}
               <a data-interception="off" target='_blank' href={`${baseUrl}/SitePages/TaskDashboard.aspx?UserId=${row.original.editorId}&Name=${row.original.editorName}`}>
                 {row.original.editorImage != undefined ?
-                  <img title={row.original.editorName} className='workmember ms-1' src={`${row.original.editorImage}`} alt="" /> : undefined}
+                 <img title={row.original.editorName} className='workmember ms-1' src={`${row.original.editorImage}`} alt="" /> 
+                 : row.original.editorSuffix!=undefined?<span title={row.original.editorName} className="workmember ms-1 bg-fxdark" >{row.original.editorSuffix}</span>
+                 : <img title={row.original.editorDefaultName} className='workmember ms-1' src={`${row.original.editorDefaultImage}`} alt="" />}
               </a>
             </>,
           filterFn: (row: any, columnName: any, filterValue: any) => {
@@ -1073,7 +1114,9 @@ export const Modified = (props: any) => {
               {row.original.createdNew}
               <a data-interception="off" target='_blank' href={`${baseUrl}/SitePages/TaskDashboard.aspx?UserId=${row.original.authorId}&Name=${row.original.authorName}`}>
                 {row.original.authorImage != undefined ?
-                  <img title={row.original.authorName} className='workmember ms-1' src={`${row.original.authorImage}`} alt="" /> : undefined}
+                   <img title={row.original.authorName} className='workmember ms-1' src={`${row.original.authorImage}`} alt="" /> 
+                   : row.original.authorSuffix!=undefined?<span title={row.original.authorName} className="workmember ms-1 bg-fxdark" >{row.original.authorSuffix}</span>
+                   :<img title={row.original.authorDefaultName} className='workmember ms-1' src={`${row.original.authorDefaultImage}`} alt="" />}
               </a>
             </>,
           filterFn: (row: any, columnName: any, filterValue: any) => {

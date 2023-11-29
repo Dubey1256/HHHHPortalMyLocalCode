@@ -2600,7 +2600,7 @@ function TimeEntryPopup(item: any) {
                                 id="selectedYear"
                                 onClick={() =>
                                   changeDatetodayQuickly(
-                                    myDatee,
+                                    (PopupType == 'EditTime' || PopupType == 'CopyTime') ? editeddata != undefined ? editeddata : myDatee : myDatee,
                                     "firstdate",
                                     PopupType
                                   )
@@ -2613,7 +2613,7 @@ function TimeEntryPopup(item: any) {
                                 className="href"
                                 id="selectedYear"
                                 onClick={() =>
-                                  changeDatetodayQuickly(myDatee, "15thdate", PopupType)
+                                  changeDatetodayQuickly((PopupType == 'EditTime' || PopupType == 'CopyTime') ? editeddata != undefined ? editeddata : myDatee : myDatee, "15thdate", PopupType)
                                 }
                               >
                                 15th
@@ -2623,7 +2623,7 @@ function TimeEntryPopup(item: any) {
                                 className="href"
                                 id="selectedYear"
                                 onClick={() =>
-                                  changeDatetodayQuickly(myDatee, "1Jandate", PopupType)
+                                  changeDatetodayQuickly((PopupType == 'EditTime' || PopupType == 'CopyTime') ? editeddata != undefined ? editeddata : myDatee : myDatee, "1Jandate", PopupType)
                                 }
                               >
                                 1 Jan
@@ -2633,7 +2633,7 @@ function TimeEntryPopup(item: any) {
                                 className="href"
                                 id="selectedToday"
                                 onClick={() =>
-                                  changeDatetodayQuickly(myDatee, "Today", PopupType)
+                                  changeDatetodayQuickly((PopupType == 'EditTime' || PopupType == 'CopyTime') ? editeddata != undefined ? editeddata : myDatee : myDatee, "Today", PopupType)
                                 }
                               >
                                 Today
