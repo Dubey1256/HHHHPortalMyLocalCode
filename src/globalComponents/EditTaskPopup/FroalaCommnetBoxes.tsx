@@ -7,7 +7,6 @@ import pnp from 'sp-pnp-js';
 import * as Moment from 'moment';
 import { Panel, PanelType } from 'office-ui-fabric-react';
 import { Web } from "sp-pnp-js";
-// import { TiMessage } from 'react-icons/ti'
 import ApprovalHistoryPopup from "./ApprovalHistoryPopup";
 import EditTaskPopup from "./EditTaskPopup";
 let globalCount = 0;
@@ -47,23 +46,23 @@ export default function FroalaCommnetBoxes(textItems: any) {
                     item.taskIndex = index;
                     testItems.push(item);
 
-                    testItems?.forEach((ele:any)=>{
-                        if(ele.ApproverData != undefined && ele.ApproverData.length > 0){
-                       ele.ApproverData?.forEach((ba:any)=>{
-                           if(ba.isShowLight == 'Reject'){
-                            ba.Status = 'Rejected by'
-                           }
-                           if(ba.isShowLight == 'Approve'){
-                               ba.Status = 'Approved by '
-                           }
-                           if(ba.isShowLight == 'Maybe'){
-                               ba.Status = 'For discussion with'
-                           }
-                           
-               
-                       })
-                     }
-                       })
+                    testItems?.forEach((ele: any) => {
+                        if (ele.ApproverData != undefined && ele.ApproverData.length > 0) {
+                            ele.ApproverData?.forEach((ba: any) => {
+                                if (ba.isShowLight == 'Reject') {
+                                    ba.Status = 'Rejected by'
+                                }
+                                if (ba.isShowLight == 'Approve') {
+                                    ba.Status = 'Approved by '
+                                }
+                                if (ba.isShowLight == 'Maybe') {
+                                    ba.Status = 'For discussion with'
+                                }
+
+
+                            })
+                        }
+                    })
                     setTexts(!Texts);
                     IndexCount = IndexCount + 1;
                     UpdatedFeedBackParentArray.push(item);
@@ -101,9 +100,7 @@ export default function FroalaCommnetBoxes(textItems: any) {
         }
     }
     const addMainRow = () => {
-        // let testTaskIndex = State?.length + 1
         let testTaskIndex = UpdatedFeedBackParentArray?.length + 1
-        // setIndexCount(IndexCount + 1);
         IndexCount = IndexCount + 1;
         const object = {
             Completed: "",
@@ -122,9 +119,7 @@ export default function FroalaCommnetBoxes(textItems: any) {
         setBtnStatus(true);
     }
     const addMainRowInDiv = () => {
-        // let testTaskIndex = State?.length + 1
         let testTaskIndex = UpdatedFeedBackParentArray?.length + 1
-        // setIndexCount(IndexCount + 1);
         IndexCount = IndexCount + 1;
         const object = {
             Completed: "",
@@ -142,10 +137,10 @@ export default function FroalaCommnetBoxes(textItems: any) {
         setBtnStatus(true);
     }
 
-    const RemoveItem = (dltItem: any, Index:any) => {
+    const RemoveItem = (dltItem: any, Index: any) => {
         let tempArray: any = []
         IndexCount--;
-        State.map((array: any, ItemIndex:any) => {
+        State.map((array: any, ItemIndex: any) => {
             if (dltItem.Title != array.Title || ItemIndex != Index) {
                 tempArray.push(array);
             }
@@ -160,76 +155,43 @@ export default function FroalaCommnetBoxes(textItems: any) {
     }
 
     function handleChange(e: any) {
-        if (e.target.matches("textarea")) {
-            const { id } = e.currentTarget.dataset;
-            const { name, value } = e.target;
-            UpdatedFeedBackParentArray[id].Title = value;
-            const copy = [...State];
-            const obj = { ...State[id], [name]: value };
-            copy[id] = obj;
-            setState(copy);
-        }
-        if (e.target.matches("input")) {
-            const { id } = e.currentTarget.dataset;
-            const { name, value } = e.target;
-            if (name == "SeeAbove") {
-                if (value == 'false') {
-                    const { id } = e.currentTarget.dataset;
-                    let Index = Number(id) + 1;
-                    let NewTitle: any = "";
-                    if (UpdatedFeedBackParentArray[id].Title != undefined && UpdatedFeedBackParentArray[id].Title.length > 0) {
-                        NewTitle = UpdatedFeedBackParentArray[id].Title + " (See " + Index + ")";
-                    } else {
-                        NewTitle = "See " + Index
-                    }
-                    UpdatedFeedBackParentArray[id].Title = NewTitle;
-                    const copy = [...State];
-                    const obj = { ...State[id], Title: NewTitle, SeeAbove: true };
-                    copy[id] = obj;
-                    setState(copy);
-                } else {
-                    const { id } = e.currentTarget.dataset;
-                    let Index = Number(id) + 1;
-                    let NewTitle: any = "";
-                    if (UpdatedFeedBackParentArray[id].Title != undefined && UpdatedFeedBackParentArray[id].Title.length > 0) {
-                        NewTitle = UpdatedFeedBackParentArray[id].Title.replace(`(See ${Index})`, "");
-                    } else {
-                        NewTitle = "";
-                    }
-                    UpdatedFeedBackParentArray[id].Title = NewTitle;
-                    const copy = [...State];
-                    const obj = { ...State[id], Title: NewTitle, SeeAbove: false };
-                    copy[id] = obj;
-                    setState(copy);
+        const id = parseInt(e.currentTarget.dataset.id, 10);
+        const { name, type, checked, value } = e.target;
+        let updatedValue = type === "checkbox" ? checked : value;
+        if (name === "SeeAbove") {
+            let newTitle = UpdatedFeedBackParentArray[id].Title;
+            const seeText = ` (See ${id + 1})`;
+            if (updatedValue) {
+                if (!newTitle.includes(seeText)) {
+                    newTitle += seeText;
                 }
-                UpdatedFeedBackParentArray[id].SeeAbove = (value == "true" ? false : true)
+            } else {
+                newTitle = newTitle.replace(seeText, "").trim();
             }
-            if (name == "Phone") {
-                UpdatedFeedBackParentArray[id].Phone = (value == "true" ? false : true)
-            }
-            if (name == "LowImportance") {
-                UpdatedFeedBackParentArray[id].LowImportance = (value == "true" ? false : true)
-            }
-            if (name == "HighImportance") {
-                UpdatedFeedBackParentArray[id].HighImportance = (value == "true" ? false : true)
-            }
-            if (name == "Completed") {
-                UpdatedFeedBackParentArray[id].Completed = (value == "true" ? false : true)
-            }
-            const copy = [...State];
-            const obj = { ...State[id], [name]: value == "true" ? false : true };
-            copy[id] = obj;
-            setState(copy);
-
+            UpdatedFeedBackParentArray[id].Title = newTitle;
+            UpdatedFeedBackParentArray[id].SeeAbove = updatedValue;
+        } else if (type === "textarea") {
+            UpdatedFeedBackParentArray[id].Title = updatedValue;
+        } else if (type === "checkbox") {
+            UpdatedFeedBackParentArray[id][name] = updatedValue;
         }
+        const updatedState = State.map((item, idx) => {
+            if (idx === id) {
+                return {
+                    ...item,
+                    Title: UpdatedFeedBackParentArray[id].Title,
+                    [name]: updatedValue
+                };
+            }
+            return item;
+        });
+        setState(updatedState);
         callBack(UpdatedFeedBackParentArray);
     }
-
     const subTextCallBack = useCallback((subTextData: any, subTextIndex: any) => {
         UpdatedFeedBackParentArray[subTextIndex].Subtext = subTextData
         callBack(UpdatedFeedBackParentArray);
     }, [])
-
     const postBtnHandle = (index: any) => {
         setCurrentIndex(index)
         if (postBtnStatus) {
@@ -272,8 +234,6 @@ export default function FroalaCommnetBoxes(textItems: any) {
                     if (ba.isShowLight == 'Maybe') {
                         ba.Status = 'For discussion with'
                     }
-
-
                 })
             }
         })
@@ -439,46 +399,73 @@ export default function FroalaCommnetBoxes(textItems: any) {
                                                 </div>
                                                 : null
                                             }
-                                             {obj.ApproverData != undefined && obj.ApproverData.length > 0 ?
+                                            {obj.ApproverData != undefined && obj.ApproverData.length > 0 ?
                                                 <>
-                                                   
-                                                            <span className="siteColor ms-2 hreflink" title="Approval-History Popup" onClick={() => ApprovalPopupOpenHandle(i, obj)}>
-                                                            {obj.ApproverData[obj.ApproverData?.length - 1]?.Status} </span> <span className="ms-1"><a title={obj.ApproverData[obj.ApproverData?.length - 1]?.Title}><span><a href={`${Context.pageContext.web.absoluteUrl}/SitePages/TaskDashboard.aspx?UserId=${obj.ApproverData[obj.ApproverData?.length - 1]?.Id}&Name=${obj.ApproverData[obj.ApproverData?.length - 1]?.Title}`} target="_blank" data-interception="off" title={obj.ApproverData[obj.ApproverData?.length - 1]?.Title}> <img className='imgAuthor' src={obj.ApproverData[obj.ApproverData?.length - 1]?.ImageUrl} /></a></span></a></span>
-                                                      
+
+                                                    <span className="siteColor ms-2 hreflink" title="Approval-History Popup" onClick={() => ApprovalPopupOpenHandle(i, obj)}>
+                                                        {obj.ApproverData[obj.ApproverData?.length - 1]?.Status} </span> <span className="ms-1"><a title={obj.ApproverData[obj.ApproverData?.length - 1]?.Title}><span><a href={`${Context.pageContext.web.absoluteUrl}/SitePages/TaskDashboard.aspx?UserId=${obj.ApproverData[obj.ApproverData?.length - 1]?.Id}&Name=${obj.ApproverData[obj.ApproverData?.length - 1]?.Title}`} target="_blank" data-interception="off" title={obj.ApproverData[obj.ApproverData?.length - 1]?.Title}> <img className='imgAuthor' src={obj.ApproverData[obj.ApproverData?.length - 1]?.ImageUrl} /></a></span></a></span>
+
                                                 </> :
                                                 null
                                             }
                                         </div>
                                         <div>
                                             <span className="mx-1">
-                                                <input className="form-check-input mt--3"
+                                                {/* <input className="form-check-input mt--3"
                                                     type="checkbox"
                                                     checked={obj.SeeAbove != undefined && obj.SeeAbove == true ? true : false}
                                                     value={obj.SeeAbove != undefined && obj.SeeAbove == true ? "true" : "false"}
                                                     name='SeeAbove'
+                                                /> */}
+                                                <input className="form-check-input mt--3"
+                                                    type="checkbox"
+                                                    data-id={i}
+                                                    name="SeeAbove"
+                                                    checked={obj.SeeAbove}
                                                 />
+
+                                                {/* Similar setup for other checkboxes like Phone, LowImportance, etc. */}
+
                                                 <label className="commentSectionLabel ms-1">See Above</label>
                                             </span>
                                             <span> | </span>
                                             <span className="mx-1">
-                                                <input className="form-check-input mt--3" type="checkbox"
+                                                {/* <input className="form-check-input mt--3" type="checkbox"
                                                     checked={obj.Phone}
                                                     value={obj.Phone}
                                                     name='Phone'
+                                                /> */}
+                                                <input className="form-check-input mt--3"
+                                                    type="checkbox"
+                                                    data-id={i}
+                                                    name="Phone"
+                                                    checked={obj.Phone}
                                                 />
                                                 <label className="commentSectionLabel ms-1">Phone</label>
                                             </span>
                                             <span> | </span>
                                             <span className="mx-1">
-                                                <input type="checkbox" name='LowImportance' checked={obj.LowImportance} value={obj.LowImportance} className="form-check-input mt--3" />
+                                                {/* <input type="checkbox" name='LowImportance' checked={obj.LowImportance} value={obj.LowImportance} className="form-check-input mt--3" /> */}
+                                                <input className="form-check-input mt--3"
+                                                    type="checkbox"
+                                                    data-id={i}
+                                                    name="LowImportance"
+                                                    checked={obj.LowImportance}
+                                                />
                                                 <label className="commentSectionLabel ms-1">
                                                     Low Importance
                                                 </label>
                                             </span>
                                             <span> | </span>
                                             <span className="mx-1">
-                                                <input type="checkbox" name='HighImportance' checked={obj.HighImportance}
+                                                {/* <input type="checkbox" name='HighImportance' checked={obj.HighImportance}
                                                     value={obj.HighImportance} className="form-check-input mt--3"
+                                                /> */}
+                                                <input className="form-check-input mt--3"
+                                                    type="checkbox"
+                                                    data-id={i}
+                                                    name="HighImportance"
+                                                    checked={obj.HighImportance}
                                                 />
                                                 <label className="commentSectionLabel ms-1">
                                                     High Importance
@@ -486,8 +473,14 @@ export default function FroalaCommnetBoxes(textItems: any) {
                                             </span>
                                             <span> | </span>
                                             <span className="mx-1">
-                                                <input type="checkbox" id="" className="form-check-input mt--3"
-                                                    name='Completed' checked={obj.Completed} value={obj.Completed} />
+                                                {/* <input type="checkbox" id="" className="form-check-input mt--3"
+                                                    name='Completed' checked={obj.Completed} value={obj.Completed} /> */}
+                                                <input className="form-check-input mt--3"
+                                                    type="checkbox"
+                                                    data-id={i}
+                                                    name="Completed"
+                                                    checked={obj.Completed}
+                                                />
                                                 <label className="commentSectionLabel ms-1">
                                                     Mark As Completed
                                                 </label>
