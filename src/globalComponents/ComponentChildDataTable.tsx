@@ -391,8 +391,12 @@ function ComponentChildDataTable(SelectedProp: any) {
                   }
                   if (checkIsSCProctected) {
                     item.IsSCProtected = true;
+                    item.IsSCProtectedStatus = "Protected";
+                    
                   } else {
                     item.IsSCProtected = false;
+                    item.IsSCProtectedStatus = "";
+
                   }
                   let tempArray: any = [];
                   if (item.ClientCategory?.length > 0) {
@@ -679,8 +683,12 @@ function ComponentChildDataTable(SelectedProp: any) {
       }
       if (checkIsSCProctected) {
         result.IsSCProtected = true;
+        result.IsSCProtectedStatus = "Protected";
+
       } else {
         result.IsSCProtected = false;
+        result.IsSCProtectedStatus = "";
+
       }
 
       result.DisplayCreateDate = Moment(result.Created).format("DD/MM/YYYY");
@@ -963,8 +971,10 @@ function ComponentChildDataTable(SelectedProp: any) {
       }
       if (checkIsSCProctected) {
         ItemDataCheckSC.IsSCProtected = true;
+        ItemDataCheckSC.IsSCProtectedStatus = "Protected";
       } else {
         ItemDataCheckSC.IsSCProtected = false;
+        ItemDataCheckSC.IsSCProtectedStatus = "";
       }
       if (ItemDataCheckSC?.SiteCompositionSettings != undefined) {
         ItemDataCheckSC.compositionType = siteCompositionType(ItemDataCheckSC?.SiteCompositionSettings);
@@ -1359,7 +1369,7 @@ function ComponentChildDataTable(SelectedProp: any) {
         header: "",
         resetColumnFilters: false,
         // isColumnDefultSortingAsc:true,
-        size: 190
+        size: 100
       },
       {
         accessorFn: (row) => row?.Title,
@@ -1400,28 +1410,21 @@ function ComponentChildDataTable(SelectedProp: any) {
         size: 500,
       },
       {
-        accessorFn: (row) => row?.IsSCProtected,
-        cell: ({ row }) => (
-          <span>{row?.original?.IsSCProtected == true ? "Protected" : ""}</span>
-        ),
-        id: 'Type',
+        accessorKey: "IsSCProtectedStatus",
         placeholder: "Protected",
         header: "",
         resetColumnFilters: false,
-        resetSorting: false,
         size: 80,
+        id: "IsSCProtectedStatus"
       },
+     
       {
-        accessorFn: (row) => row?.compositionType,
-        cell: ({ row }) => (
-          <span>{row?.original?.compositionType}</span>
-        ),
-        id: 'Type',
+        accessorKey: "compositionType",
         placeholder: "Composition Type",
         header: "",
         resetColumnFilters: false,
-        resetSorting: false,
         size: 80,
+        id: "compositionType"
       },
       {
         accessorFn: (row) => row?.ClientCategorySearch,
@@ -1604,8 +1607,8 @@ function ComponentChildDataTable(SelectedProp: any) {
   //-------------------------------------------------- restructuring function end---------------------------------------------------------------
   //-------------------------------------------------------------End---------------------------------------------------------------------------------
   return (
-    <section className="TableContentSection taskprofilepagegreen">
-      <div className="container-fluid">
+    <section className="">
+      <div className="">
         <section className="TableSection">
           <div className="container p-0">
             <div className="Alltable mt-2">
@@ -1668,7 +1671,7 @@ function ComponentChildDataTable(SelectedProp: any) {
                   </tbody>
                 </table>
               </div>
-              <div className="wrapper">
+              <div className="">
                 <Loader
                   loaded={loaded}
                   lines={13}
