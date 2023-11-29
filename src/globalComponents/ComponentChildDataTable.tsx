@@ -392,7 +392,7 @@ function ComponentChildDataTable(SelectedProp: any) {
                   if (checkIsSCProctected) {
                     item.IsSCProtected = true;
                     item.IsSCProtectedStatus = "Protected";
-                    
+
                   } else {
                     item.IsSCProtected = false;
                     item.IsSCProtectedStatus = "";
@@ -1091,10 +1091,11 @@ function ComponentChildDataTable(SelectedProp: any) {
         })
 
       }
-      removeDuplicateClientCategories();
+
       lastUpdatedAllSites = [...AllSitesData];
-      console.log(" vfs fb gsdf bdfd df bdf bdf bvs sf ds v ===============", lastUpdatedAllSites)
+
     }
+    removeDuplicateClientCategories();
   }
 
 
@@ -1417,7 +1418,7 @@ function ComponentChildDataTable(SelectedProp: any) {
         size: 80,
         id: "IsSCProtectedStatus"
       },
-     
+
       {
         accessorKey: "compositionType",
         placeholder: "Composition Type",
