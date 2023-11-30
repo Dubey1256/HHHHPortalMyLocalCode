@@ -1,14 +1,14 @@
 import * as React from 'react'
-import './VersionHistory.scss';
 import { Panel, PanelType } from 'office-ui-fabric-react';
 import { sp } from 'sp-pnp-js';
 import "bootstrap/dist/css/bootstrap.min.css";  
 import Tooltip from '../Tooltip';
 import * as moment from 'moment';
 
+
 var keys: any = []
 
-export default function VersionHistoryPopup(props: any) {
+export default function VersionHistory(props: any) {
     const [propdata, setpropData] = React.useState(props);
     const [show, setShow] = React.useState(false);
     const [data, setData]: any = React.useState([])
@@ -209,9 +209,9 @@ export default function VersionHistoryPopup(props: any) {
                         <thead>
                             <tr>
                                 <th style={{width:"80px"}} scope="col">No</th>
-                                <th style={{width:"180px"}} scope="col">Modified</th>
-                                <th style={{width:"500px"}} scope="col">Info</th>
-                                <th style={{width:"156px"}} scope="col">Modified by</th>
+                                <th style={{width:"170px"}} scope="col">Modified</th>
+                                <th  scope="col">Info</th>
+                                <th style={{width:"256px"}} scope="col">Modified by</th>
                             </tr>
                         </thead>
                         <tbody>
