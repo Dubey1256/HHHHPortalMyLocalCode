@@ -95,10 +95,11 @@ export default function ProjectOverview(props: any) {
             SmalsusLeaveCalendar: props?.props?.SmalsusLeaveCalendar,
             TaskTypeID: props?.props?.TaskTypeID
         }
+        TaskUser()
         loadTodaysLeave();
         setPageLoader(true);
         LoadAllSiteAllTasks()
-        TaskUser()
+
         GetMetaData()
 
     }, [])
@@ -298,7 +299,10 @@ export default function ProjectOverview(props: any) {
                             <span>
                                 {row?.original?.SiteIcon != undefined ?
                                     <img title={row?.original?.siteType} className="workmember" src={row?.original?.SiteIcon} /> : ''}
-                            </span> : ''
+                            </span> : row?.original?.Item_x0020_Type == "Sprint"  ?
+                            <div title={row?.original?.Item_x0020_Type}  style={{ backgroundColor: '#000066' }} className={"Dyicons me-1"}>
+                            X
+                          </div>:''
                     }</>
                 ),
                 id: "siteType",
@@ -380,7 +384,7 @@ export default function ProjectOverview(props: any) {
                 accessorFn: (row) => row?.TeamMembersSearch,
                 cell: ({ row }) => (
                     <div >
-                        <InlineEditingcolumns AllListId={AllListId} callBack={CallBack} columnName='Team' item={row?.original} TaskUsers={AllTaskUser} pageName={'ProjectOverView'} />
+                        <InlineEditingcolumns AllListId={AllListId} callBack={CallBack} columnName='Team' item={row?.original} TaskUsers={AllTaskUsers} pageName={'ProjectOverView'} />
                     </div>
 
 
@@ -423,7 +427,7 @@ export default function ProjectOverview(props: any) {
                                 callBack={CallBack}
                                 columnName="EstimatedTime"
                                 item={row?.original}
-                                TaskUsers={AllTaskUser} /> : ''
+                                TaskUsers={AllTaskUsers} /> : ''
                     }</>
                 ),
                 id: "EstimatedTime",
@@ -639,7 +643,7 @@ export default function ProjectOverview(props: any) {
                 accessorFn: (row) => row?.TeamMembersSearch,
                 cell: ({ row }) => (
                     <span>
-                        <InlineEditingcolumns AllListId={AllListId} callBack={CallBack} columnName='Team' item={row?.original} TaskUsers={AllTaskUser} pageName={'ProjectOverView'} />
+                        <InlineEditingcolumns AllListId={AllListId} callBack={CallBack} columnName='Team' item={row?.original} TaskUsers={AllTaskUsers} pageName={'ProjectOverView'} />
                         {/* <ShowTaskTeamMembers  props={row?.original} TaskUsers={AllTaskUser}></ShowTaskTeamMembers> */}
                     </span>
                 ),
@@ -743,6 +747,8 @@ export default function ProjectOverview(props: any) {
                 accessorKey: "",
                 placeholder: "",
                 hasCheckbox: true,
+                hasCustomExpanded: true,
+                hasExpanded: true,
                 size: 20,
                 id: 'Id',
             },
@@ -752,7 +758,7 @@ export default function ProjectOverview(props: any) {
                 id: 'TaskID',
                 resetColumnFilters: false,
                 resetSorting: false,
-                size: 60,
+                size: 80,
                 cell: ({ row }) => (
                     <>
                         <span className='ms-1'>{row?.original?.TaskID}</span>
@@ -821,7 +827,7 @@ export default function ProjectOverview(props: any) {
                             callBack={CallBack}
                             columnName='Team'
                             item={row?.original}
-                            TaskUsers={AllTaskUser}
+                            TaskUsers={AllTaskUsers}
                             pageName={'ProjectManagment'}
                         />
                     </span>
@@ -1052,7 +1058,7 @@ export default function ProjectOverview(props: any) {
                 accessorFn: (row) => row?.TeamMembersSearch,
                 cell: ({ row }) => (
                     <span>
-                        <InlineEditingcolumns AllListId={AllListId} callBack={CallBack} columnName='Team' item={row?.original} TaskUsers={AllTaskUser} pageName={'ProjectOverView'} />
+                        <InlineEditingcolumns AllListId={AllListId} callBack={CallBack} columnName='Team' item={row?.original} TaskUsers={AllTaskUsers} pageName={'ProjectOverView'} />
                         {/* <ShowTaskTeamMembers  props={row?.original} TaskUsers={AllTaskUser}></ShowTaskTeamMembers> */}
                     </span>
                 ),
@@ -1370,7 +1376,7 @@ export default function ProjectOverview(props: any) {
             Alltask = await web.lists.getById(AllListId?.MasterTaskListID).items
                 .select("Deliverables,TechnicalExplanations,ResponsibleTeam/Id,ResponsibleTeam/Title,PortfolioLevel,PortfolioStructureID,ValueAdded,Categories,Idea,Short_x0020_Description_x0020_On,Background,Help_x0020_Information,Short_x0020_Description_x0020__x,ComponentCategory/Id,ComponentCategory/Title,Comments,HelpDescription,FeedBack,Body,SiteCompositionSettings,ShortDescriptionVerified,Portfolio_x0020_Type,BackgroundVerified,descriptionVerified,Synonyms,BasicImageInfo,OffshoreComments,OffshoreImageUrl,HelpInformationVerified,IdeaVerified,TechnicalExplanationsVerified,Deliverables,DeliverablesVerified,ValueAddedVerified,CompletedDate,Idea,ValueAdded,TechnicalExplanations,Item_x0020_Type,Sitestagging,Package,Parent/Id,Parent/Title,Short_x0020_Description_x0020_On,Short_x0020_Description_x0020__x,Short_x0020_description_x0020__x0,AdminNotes,AdminStatus,Background,Help_x0020_Information,TaskCategories/Id,TaskCategories/Title,PriorityRank,Reference_x0020_Item_x0020_Json,TeamMembers/Title,TeamMembers/Name,TeamMembers/Id,Item_x002d_Image,ComponentLink,IsTodaysTask,AssignedTo/Title,AssignedTo/Name,AssignedTo/Id,AttachmentFiles/FileName,FileLeafRef,FeedBack,Title,Id,PercentComplete,Company,StartDate,DueDate,Comments,Categories,Status,WebpartId,Body,Mileage,PercentComplete,Attachments,Priority,Created,Modified,Author/Id,Author/Title,Editor/Id,Editor/Title")
                 .expand("ComponentCategory,AssignedTo,AttachmentFiles,ResponsibleTeam,Author,Editor,TeamMembers,TaskCategories,Parent")
-                .top(4999).filter("Item_x0020_Type eq 'Project'")
+                .top(4999).filter("(Item_x0020_Type eq 'Project') or (Item_x0020_Type eq 'Sprint')")
                 .getAll();
 
             // if(taskUsers.ItemType=="Project"){
@@ -1399,16 +1405,24 @@ export default function ProjectOverview(props: any) {
                         })
                     })
                 }
+                items.subRows = Alltask?.filter((child: any) => child?.Item_x0020_Type == "Sprint" && child?.Parent?.Id == items?.Id)
+                // items?.subRows?.map((sprint: any) => {
+                //     sprint.subRows = allSitesTasks?.filter((child: any) => child?.Project?.Id == sprint?.Id && child?.IsTodaysTask == true)
+                // })
                 items.descriptionsSearch = globalCommon.portfolioSearchData(items)
                 items.commentsSearch = items?.Comments != null && items?.Comments != undefined ? items.Comments.replace(/(<([^>]+)>)/gi, "").replace(/\n/g, '') : '';
                 items['TaskID'] = items?.PortfolioStructureID
                 items.DisplayDueDate = items.DueDate != null ? Moment(items.DueDate).format('DD/MM/YYYY') : ""
             })
-            Alltask = sortOnPriority(Alltask)
-            let flatDataProjects = JSON.parse(JSON.stringify(Alltask))
+            let AllProject = Alltask?.filter((item: any) => item?.Item_x0020_Type == "Project")
+
+            AllProject = sortOnPriority(AllProject)
+            let flatDataProjects = JSON.parse(JSON.stringify(AllProject))
             setFlatData(flatDataProjects);
-            Alltask.map((items: any) => {
-                items['subRows'] = [];
+            AllProject.map((items: any) => {
+                items?.subRows?.map((sprint: any) => {
+                    sprint.subRows = allSitesTasks?.filter((child: any) => child?.Project?.Id == sprint?.Id && child?.IsTodaysTask == true)
+                })
                 allSitesTasks?.map((task: any) => {
                     if (task?.IsTodaysTask == true && task?.Project?.Id == items?.Id) {
                         items['subRows'].push(task);
@@ -1416,9 +1430,9 @@ export default function ProjectOverview(props: any) {
                 })
             })
             // })
-            setAllTasks(Alltask);
+            setAllTasks(AllProject);
             setPageLoader(false);
-            setData(Alltask);
+            setData(AllProject);
         } else {
             alert('Master Task List Id Not Available')
         }
@@ -1439,7 +1453,12 @@ export default function ProjectOverview(props: any) {
 
     const callBackData = React.useCallback((elem: any, getSelectedRowModel: any, ShowingData: any) => {
         if (elem != undefined) {
-            setCheckBoxData([elem])
+            let selectedItem:any=[]
+            elem?.map((Project:any)=>{
+                selectedItem?.push(Project?.original)
+              //  Project = Project?.original
+            })
+            setCheckBoxData(selectedItem)
             setTableProperty(getSelectedRowModel?.getSelectedRowModel()?.flatRows)
         } else {
             setCheckBoxData([])
@@ -1511,16 +1530,8 @@ export default function ProjectOverview(props: any) {
                             })
                         }
                         if (items?.FeedBack != undefined) {
-                            let DiscriptionSearchData: any = '';
-                            let feedbackdata: any = JSON.parse(items?.FeedBack)
-                            DiscriptionSearchData = feedbackdata[0]?.FeedBackDescriptions?.map((child: any) => {
-                                const childText = child?.Title?.replace(/(<([^>]+)>)/gi, '')?.replace(/\n/g, '');
-                                const subtextText = (child?.Subtext || [])?.map((elem: any) =>
-                                    elem.Title?.replace(/(<([^>]+)>)/gi, '')?.replace(/\n/g, '')
-                                ).join('');
-                                return childText + subtextText;
-                            }).join('');
-                            items.descriptionsSearch = DiscriptionSearchData
+
+                            items.descriptionsSearch = globalCommon?.descriptionSearchData(items)
                         }
                         items.commentsSearch = items?.Comments != null && items?.Comments != undefined ? items.Comments.replace(/(<([^>]+)>)/gi, "").replace(/\n/g, '') : '';
                         items.listId = config.listId;
@@ -1704,7 +1715,7 @@ export default function ProjectOverview(props: any) {
 
                                     </dl>
                                     <div className="m-0 text-end">
-                                        <AddProject CallBack={CallBack} AllListId={AllListId} />
+                                        <AddProject CallBack={CallBack} items={CheckBoxData} AllListId={AllListId} />
                                         {currentUserData?.Title == "Deepak Trivedi" || currentUserData?.Title == "Ranu Trivedi" || currentUserData?.Title == "Abhishek Tiwari" || currentUserData?.Title == "Prashant Kumar" ?
                                             <>
                                                 <a className="hreflink  ms-1" onClick={() => { sendAllWorkingTodayTasks() }}>Share Working Todays's Task</a></>
@@ -1713,10 +1724,10 @@ export default function ProjectOverview(props: any) {
                                 </div>
                                 <div className="TableSection"><div className="Alltable">
                                     <div className='wrapper'>
-                                        {selectedView == 'grouped' ? <GlobalCommanTable expandIcon={true} headerOptions={headerOptions} AllListId={AllListId} columns={columns} data={data} paginatedTable={false} callBackData={callBackData} pageName={"ProjectOverviewGrouped"} TaskUsers={AllTaskUser} showHeader={true} /> : ''}
+                                        {selectedView == 'grouped' ? <GlobalCommanTable expandIcon={true} headerOptions={headerOptions} AllListId={AllListId} columns={columns} multiSelect={true} data={data} paginatedTable={false} callBackData={callBackData} pageName={"ProjectOverviewGrouped"} TaskUsers={AllTaskUser} showHeader={true} /> : ''}
                                         {selectedView == 'flat' ? <GlobalCommanTable expandIcon={true} headerOptions={headerOptions} AllListId={AllListId} columns={flatView} paginatedTable={true} data={AllSiteTasks} callBackData={callBackData} pageName={"ProjectOverview"} TaskUsers={AllTaskUser} showHeader={true} /> : ''}
                                         {selectedView == 'teamWise' ? <GlobalCommanTable expandIcon={true} headerOptions={headerOptions} AllListId={AllListId} columns={groupedUsers} paginatedTable={true} data={categoryGroup} callBackData={callBackData} pageName={"ProjectOverviewGrouped"} TaskUsers={AllTaskUser} showHeader={true} /> : ''}
-                                        {selectedView == 'Projects' ? <GlobalCommanTable expandIcon={true} AllListId={AllListId} headerOptions={headerOptions} paginatedTable={false} columns={column2} data={flatData} callBackData={callBackData} pageName={"ProjectOverview"} TaskUsers={AllTaskUser} showHeader={true} /> : ''}
+                                        {selectedView == 'Projects' ? <GlobalCommanTable expandIcon={true} AllListId={AllListId} headerOptions={headerOptions} paginatedTable={false} multiSelect={true} columns={column2} data={flatData} callBackData={callBackData} pageName={"ProjectOverview"} TaskUsers={AllTaskUser} showHeader={true} /> : ''}
                                     </div>
                                 </div>
                                 </div>
