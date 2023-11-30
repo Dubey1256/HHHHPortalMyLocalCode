@@ -6,15 +6,19 @@ import { Panel, PanelType } from 'office-ui-fabric-react';
 import Tooltip from "../../../../../globalComponents/Tooltip";
 import { myContextValue } from '../../../../../globalComponents/globalCommon'
 import { error } from "jquery";
+import EditInstitutionPopup from "./EditInstitutionPopup";
 const CreateContactComponent = (props: any) => {
     const myContextData2: any = React.useContext<any>(myContextValue)
     const listData = props.data;
     const [listIsVisible, setListIsVisible] = useState(false);
     const [profileStatus, setProfileStatus] = useState(false);
     const [contactdata, setContactdata]:any = useState();
+    const [institutionData, setInstitutionData]:any = useState();
     const [searchedNameData, setSearchedDataName] = useState(props?.data)
     const [isUserExist, setUserExits] = useState(true);
     const [newContact, setNewContact] = useState(false);
+    const [newInstitution, setNewInstitution] = useState(false);
+   
     const [searchKey, setSearchKey] = useState({
         Title: '',
         FirstName: '',
@@ -104,13 +108,15 @@ const CreateContactComponent = (props: any) => {
                         FirstName: searchKey.FirstName[0],
                         FullName: searchKey.FirstName[0] + " " + (searchKey.FirstName[1] ? searchKey.FirstName[1] : " "),
                         ItemType: "Institution"
-                    }).then((LocalData) => {
+                    }).then((newData) => {
                        console.log("local institution also done")
+                       setInstitutionData(newData?.data)
                     }).catch((error:any)=>{
 
                     })
                 }else{
-                    setNewContact(true)
+                    setInstitutionData(data?.data)
+                 
                     console.log("request success");
                 }
                
@@ -118,6 +124,9 @@ const CreateContactComponent = (props: any) => {
         }catch(error){
             console.log("eeeorCreate Institution",error.message)
         }
+        setTimeout(() => {
+            setNewInstitution(true)
+        }, 1000)
     }
     const editProfile = (item: any) => {
         setProfileStatus(true);
@@ -173,7 +182,7 @@ const CreateContactComponent = (props: any) => {
           
             {profileStatus ? <HHHHEditComponent  props={contactdata} callBack={ClosePopup} /> : null}
             {newContact ? <HHHHEditComponent props={contactdata} userUpdateFunction={updateCallBack} callBack={ClosePopup} /> : null}
-       
+           {newInstitution?<EditInstitutionPopup props={institutionData} callBack={ClosePopup}/>:null}
         </Panel>
     )
 }

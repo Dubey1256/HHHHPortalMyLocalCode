@@ -2053,15 +2053,16 @@ private async updateProjectComponentServices(dataUpdate:any) {
                             )
                           })} */}
                           {this.state?.Result["Portfolio"] != null &&
-                           <div>
+                         
                             <a className="hreflink" target="_blank" data-interception="off" href={`${this.state.Result["siteUrl"]}/SitePages/Portfolio-Profile.aspx?taskId=${this.state?.Result["Portfolio"].Id}`}>
                               
                               {this.state?.Result["Portfolio"]?.Title}
                               
                               </a>
-                              <span className="pull-right svg__icon--editBox svg__iconbox" onClick={()=>this?.openPortfolioPopupFunction("Portfolio")}></span>
-                              </div>
-                          }
+                             
+                              
+                              
+                          } <span className="pull-right svg__icon--editBox svg__iconbox" onClick={()=>this?.openPortfolioPopupFunction("Portfolio")}></span>
 
                         </dd>
                       </dl>
