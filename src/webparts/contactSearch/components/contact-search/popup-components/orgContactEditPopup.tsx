@@ -16,7 +16,7 @@ const orgContactEditPopup = (props: any) => {
 
    
     useEffect(() => {
-        if(props?.data!=undefined){
+        if(props?.updateData!=undefined){
             setUpdateData(props?.updateData) 
         }
         if(myContextData2?.allSite?.MainSite){
@@ -127,6 +127,7 @@ const orgContactEditPopup = (props: any) => {
 
                 <div>
                     <div className="panel-body">
+
                         <table className="table table-hover">
                             <thead>
                                 <tr>
