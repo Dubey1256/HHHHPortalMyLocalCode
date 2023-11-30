@@ -86,7 +86,15 @@ const CreateActivity = (props: any) => {
             setClientCategoriesData(props?.selectedItem?.ClientCategory?.results)
         }
         setSelectedItem(props?.selectedItem)
-
+        let targetDiv :any = document?.querySelector('.ms-Panel-main');
+        if(props?.selectedItem?.PortfolioType?.Color!=undefined){
+            setTimeout(()=>{
+                if (targetDiv ) {
+                    // Change the --SiteBlue variable for elements under the targetDiv
+                    targetDiv?.style?.setProperty('--SiteBlue', props?.selectedItem?.PortfolioType?.Color); // Change the color to your desired value
+                }
+            },1000)
+        }
     }, [])
     //***************** Load All task Users***************** */
     const getTaskUsers = async () => {
@@ -272,8 +280,11 @@ const CreateActivity = (props: any) => {
     const onRenderCustomHeaderMain = () => {
         return (
             <>
-                <div className="subheading sitecolor">
-                    {`Create Quick Option - ${selectedItem?.NoteCall}`}
+                <div className="subheading"
+                >
+                    <h2 className="siteColor">
+                        {`Create Quick Option - ${selectedItem?.NoteCall}`}
+                    </h2>
                 </div>
                 <Tooltip ComponentId={1746} />
             </>
@@ -854,7 +865,14 @@ const CreateActivity = (props: any) => {
                                         if (item?.FeedBack != undefined) {
                                     let DiscriptionSearchData: any = '';
                                     let feedbackdata: any =JSON.parse(item?.FeedBack);
-                                    DiscriptionSearchData = globalCommon.descriptionSearchData(feedbackdata)
+                                    DiscriptionSearchData = feedbackdata[0]?.FeedBackDescriptions?.map((child: any) => {
+                                        const childText = child?.Title?.replace(/(<([^>]+)>)/gi, '')?.replace(/\n/g, '');
+                                        const subtextText = (child?.Subtext || [])?.map((elem: any) =>
+                                            elem.Title?.replace(/(<([^>]+)>)/gi, '')?.replace(/\n/g, '')
+                                        ).join('');
+                                        return childText + subtextText;
+                                    }).join('');
+                                    item.descriptionsSearch = DiscriptionSearchData
                                 }
                                 item.TaskID = globalCommon?.GetTaskId(item);
                                 if (categoriesItem?.indexOf('Immediate') > -1 || categoriesItem?.indexOf("Email Notification") > -1) {
@@ -1202,9 +1220,14 @@ const CreateActivity = (props: any) => {
                                         <label className="full-width">
                                             Priority
                                             <span>
-                                                <div className="popover__wrapper ms-1"
-                                                    data-bs-toggle="tooltip" data-bs-placement="auto" >
-                                                    <span title="Edit" className="alignIcon svg__icon--info svg__iconbox"></span>
+                                                <div
+                                                    className="popover__wrapper ms-1"
+                                                    data-bs-toggle="tooltip"
+                                                    data-bs-placement="auto"
+                                                >
+                                                    <span title="Edit" className="alignIcon svg__icon--info svg__iconbox"
+                                                    ></span>
+
                                                     <div className="popover__content">
                                                         <span>
                                                             8-10 = High Priority,
@@ -1228,36 +1251,45 @@ const CreateActivity = (props: any) => {
                                             />
                                         </div>
 
-                                        <ul className="p-0 mt-1">
-                                            <li className="form-check ps-0">
-                                                <label className="SpfxCheckRadio">
-                                                    <input className="radio" name="radioPriority" type="radio"
-                                                        checked={
-                                                            Number(selectPriority) <= 10 &&
-                                                            Number(selectPriority) >= 8
-                                                        }
-                                                        onChange={() => setselectPriority("8")} />
-                                                    High</label>
+                                        <ul className="p-0 mt-1 list-none">
+                                            <li className="SpfxCheckRadio">
+                                                <input
+                                                    className="radio"
+                                                    name="radioPriority"
+                                                    type="radio"
+                                                    checked={
+                                                        Number(selectPriority) <= 10 &&
+                                                        Number(selectPriority) >= 8
+                                                    }
+                                                    onChange={() => setselectPriority("8")}
+                                                />
+                                                <label className="form-check-label">High</label>
                                             </li>
-                                            <li className="form-check ps-0">
-                                                <label className="SpfxCheckRadio">
-                                                    <input className="radio" name="radioPriority" type="radio"
-                                                        checked={
-                                                            Number(selectPriority) <= 7 &&
-                                                            Number(selectPriority) >= 4
-                                                        }
-                                                        onChange={() => setselectPriority("4")} /> Normal</label>
+                                            <li className="SpfxCheckRadio">
+                                                <input
+                                                    className="radio"
+                                                    name="radioPriority"
+                                                    type="radio"
+                                                    checked={
+                                                        Number(selectPriority) <= 7 &&
+                                                        Number(selectPriority) >= 4
+                                                    }
+                                                    onChange={() => setselectPriority("4")}
+                                                />
+                                                <label className="form-check-label">Normal</label>
                                             </li>
-                                            <li className="form-check ps-0">
-                                                <label className="SpfxCheckRadio">
-                                                    <input className="radio" name="radioPriority" type="radio"
-                                                        checked={
-                                                            Number(selectPriority) <= 3 &&
-                                                            Number(selectPriority) > 0
-                                                        }
-                                                        onChange={() => setselectPriority("1")}
-                                                    />
-                                                    Low</label>
+                                            <li className="SpfxCheckRadio">
+                                                <input
+                                                    className="radio"
+                                                    name="radioPriority"
+                                                    type="radio"
+                                                    checked={
+                                                        Number(selectPriority) <= 3 &&
+                                                        Number(selectPriority) > 0
+                                                    }
+                                                    onChange={() => setselectPriority("1")}
+                                                />
+                                                <label className="form-check-label">Low</label>
                                             </li>
                                         </ul>
                                     </fieldset>
@@ -1399,8 +1431,7 @@ const CreateActivity = (props: any) => {
 
 
                     </div>
-                </div>
-                <footer className={refreshData ? 'col text-end mt-3 lkjhgfds' : 'col text-end mt-3 kkkkk'}>
+                    <footer className={refreshData ? 'col text-end mt-3 ' : 'col text-end mt-3 '}>
                         {
                             selectedSites?.map((site: any) => {
                                 return (
@@ -1427,6 +1458,7 @@ const CreateActivity = (props: any) => {
                             Cancel
                         </button>
                     </footer>
+                    </div>
             </Panel>
 
 

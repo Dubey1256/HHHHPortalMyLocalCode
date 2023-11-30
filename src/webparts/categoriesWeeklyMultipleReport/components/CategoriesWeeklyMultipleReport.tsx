@@ -540,7 +540,7 @@ export default class CategoriesWeeklyMultipleReport extends React.Component<ICat
     this.setState({
       showDateTime: (
         <span className='alignCenter'>
-          <label className='ms-1'> | Time: {this?.TotalTimeEntry} | hours ({this?.TotalTimeEntry / 8} days)</label>
+          <label className='ms-1'> items | Time: {this?.TotalTimeEntry} | hours ({this?.TotalTimeEntry / 8} days)</label>
           <label className="mx-1">|</label>
           <label>
             <div className="">Smart Hours: {this?.SmartTotalTimeEntry} ({this?.SmartTotalTimeEntry / 8} days)</div>
@@ -668,7 +668,7 @@ export default class CategoriesWeeklyMultipleReport extends React.Component<ICat
       else
         sitesResult.push(obj)
     });
-
+    this.checkBoxColor(undefined)
     this.setState({
       AllMetadata: results,
       SitesConfig: sitesResult
@@ -1982,7 +1982,7 @@ export default class CategoriesWeeklyMultipleReport extends React.Component<ICat
       this.setState({
         showDateTime: (
           <span className='alignCenter'>
-            <label className='ms-1'> | Time: {this?.TotalTimeEntry} | hours ({this?.TotalTimeEntry / 8} days)</label>
+            <label className='ms-1'> items | Time: {this?.TotalTimeEntry} | hours ({this?.TotalTimeEntry / 8} days)</label>
             <label className="mx-1">|</label>
             <label>
               <div className="">Smart Hours: {this?.SmartTotalTimeEntry} ({this?.SmartTotalTimeEntry / 8} days)</div>
@@ -2550,7 +2550,7 @@ export default class CategoriesWeeklyMultipleReport extends React.Component<ICat
     this.setState({
       showDateTime: (
         <span className='alignCenter'>
-          <label className='ms-1'> | Time: {this?.TotalTimeEntry} | hours ({this?.TotalTimeEntry / 8} days)</label>
+          <label className='ms-1'> items | Time: {this?.TotalTimeEntry} | hours ({this?.TotalTimeEntry / 8} days)</label>
           <label className="mx-1">|</label>
           <label>
             <div className="">Smart Hours: {this?.SmartTotalTimeEntry} ({this?.SmartTotalTimeEntry / 8} days)</div>
@@ -3461,6 +3461,58 @@ export default class CategoriesWeeklyMultipleReport extends React.Component<ICat
       checkedItems: checkedItems,
     });
   }
+  private checkBoxColor = (className: any) => {
+    try {
+      setTimeout(() => {
+        const inputElementSubchild = document.getElementsByClassName('rct-node rct-node-parent rct-node-collapsed');
+        if (inputElementSubchild) {
+          for (let j = 0; j < inputElementSubchild.length; j++) {
+            const checkboxContainer = inputElementSubchild[j]
+            const childElements = checkboxContainer.getElementsByTagName('input');
+            const childElements2 = checkboxContainer.getElementsByClassName('rct-title');
+            for (let i = 0; i < childElements.length; i++) {
+              const checkbox = childElements[i];
+              const lable: any = childElements2[i];
+              if (lable?.style) {
+                lable.style.color = portfolioColor;
+              }
+              checkbox.classList.add('form-check-input', 'cursor-pointer');
+            }
+          }
+        }
+
+        const inputElementleaf = document.getElementsByClassName('rct-node rct-node-leaf');
+        if (inputElementleaf) {
+          for (let j = 0; j < inputElementleaf.length; j++) {
+            const checkboxContainer = inputElementleaf[j]
+            const childElements = checkboxContainer.getElementsByTagName('input');
+            const childElements2 = checkboxContainer.getElementsByClassName('rct-title');
+            for (let i = 0; i < childElements.length; i++) {
+              const checkbox = childElements[i];
+              const lable: any = childElements2[i];
+              if (lable?.style) {
+                lable.style.color = portfolioColor;
+              }
+              checkbox.classList.add('form-check-input', 'cursor-pointer');
+            }
+          }
+        }
+        const BtnElement = document.getElementsByClassName("rct-collapse rct-collapse-btn");
+        if (BtnElement) {
+          for (let j = 0; j < BtnElement.length; j++) {
+            BtnElement[j].classList.add('mt--5', 'me-0');
+          }
+        }
+      }, 40);
+
+    } catch (e: any) {
+      console.log(e)
+    }
+  }
+  private ExpandClientCategory = (expanded: any) => {
+    this.checkBoxColor(undefined)
+    this.setState({ expanded })
+  }
   private getAllSubChildenCount(item: any) {
     let count = 1;
     if (item.children != undefined && item.children.length > 0) {
@@ -3516,7 +3568,7 @@ export default class CategoriesWeeklyMultipleReport extends React.Component<ICat
           <div className="report-taskuser ps-0 pe-1" id="TimeSheet-Section">
             <details className='pt-1 m-0 allfilter' open>
               <summary>
-                <a className="fw-semibold hreflink mr-5 pe-2 pull-left">All filters :<span className='text-dark'>Task User :</span><span>
+                <a className="fw-semibold hreflink mr-5 pe-2 pull-left">All filters :<span className='fw-normal me-1'>Task User :</span><span>
                   {this.state.SelectGroupName}
                 </span> </a>
                 {this.state.ImageSelectedUsers.length <= 3 ? (
@@ -3701,29 +3753,31 @@ export default class CategoriesWeeklyMultipleReport extends React.Component<ICat
                         {/* <Loader loaded={this.state.loaded} lines={13} length={20} width={10} radius={30} corners={1} rotate={0} direction={1} color={portfolioColor ? portfolioColor : "#000066"}
                           speed={2} trail={60} shadow={false} hwaccel={false} className="spinner" zIndex={2e9} top="28%" left="50%" scale={1.0} loadedClassName="loadedContent" /> */}
                         <div className="p-0 mt-10 smartSearch-Filter-Section">
-                          <label className='border-bottom full-width alignCenter pb-1'>
+                          <label className='border-bottom full-width alignCenter pb-1  mb-1'>
                             <input defaultChecked={this.state.checkedAll} onClick={(e) => this.SelectAllCategories(e)} id='chkAllCategory' type="checkbox" className="form-check-input me-1 mt-1" />
                             Client Category
 
 
                           </label>
-                          <CheckboxTree
-                            nodes={this.state.filterItems}
-                            checked={this.state.checked}
-                            expanded={this.state.expanded}
-                            onCheck={(e, checked) => this.onCheck(e, checked)}
-                            onExpand={expanded => this.setState({ expanded })}
-                            nativeCheckboxes={true}
-                            showNodeIcon={false}
-                            checkModel={'all'}
-                            icons={{
-                              expandOpen: <SlArrowDown />,
-                              expandClose: <SlArrowRight />,
-                              parentClose: null,
-                              parentOpen: null,
-                              leaf: null,
-                            }}
-                          />
+                          <div className='custom-checkbox-tree'>
+                            <CheckboxTree
+                              nodes={this.state.filterItems}
+                              checked={this.state.checked}
+                              expanded={this.state.expanded}
+                              onCheck={(e, checked) => this.onCheck(e, checked)}
+                              onExpand={expanded => this.ExpandClientCategory(expanded)}
+                              nativeCheckboxes={true}
+                              showNodeIcon={false}
+                              checkModel={'all'}
+                              icons={{
+                                expandOpen: <SlArrowDown />,
+                                expandClose: <SlArrowRight />,
+                                parentClose: null,
+                                parentOpen: null,
+                                leaf: null,
+                              }}
+                            />
+                          </div>
                         </div>
 
                         <div className="col-sm-12 mt-10 pe-1 text-end">
