@@ -2777,7 +2777,7 @@ private async updateProjectComponentServices(dataUpdate:any) {
           {(this.state?.isopencomonentservicepopup ||this.state?.isopenProjectpopup) &&
         <ServiceComponentPortfolioPopup
 
-          props={this?.state?.Result?.Portfolio}
+          props={this?.state?.Result}
           Dynamic={AllListId}
           ComponentType={"Component"}
           Call={ (DataItem: any, Type: any, functionType: any)=>{this.ComponentServicePopupCallBack(DataItem,Type,functionType)}}
