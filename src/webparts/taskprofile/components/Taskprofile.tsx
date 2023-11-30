@@ -2773,23 +2773,23 @@ private async updateProjectComponentServices(dataUpdate:any) {
           {this.state.EditSiteCompositionStatus ? <EditSiteComposition EditData={this.state.Result} SmartTotalTimeData={this.state.TotalTimeEntry} context={this.props.Context} AllListId={AllListId} Call={(Type: any) => { this.CallBack(Type) }} /> : ''}
           {this.state?.emailcomponentopen && countemailbutton == 0 && <EmailComponenet approvalcallback={() => { this.approvalcallback() }} Context={this.props?.Context} emailStatus={this.state?.emailComponentstatus} currentUser={this?.currentUser} items={this.state?.Result} />}
           {this.state?.OpenEODReportPopup ? <EODReportComponent TaskDetails={this.state.Result} siteUrl={this.props?.siteUrl} Callback={() => { this.EODReportComponentCallback() }} /> : null}
-          {this.state?.isopencomonentservicepopup &&
+          {(this.state?.isopencomonentservicepopup ||this.state?.isopenProjectpopup) &&
         <ServiceComponentPortfolioPopup
 
           props={this?.state?.Result?.Portfolio}
           Dynamic={AllListId}
           ComponentType={"Component"}
           Call={ (DataItem: any, Type: any, functionType: any)=>{this.ComponentServicePopupCallBack(DataItem,Type,functionType)}}
-          showProject
+          showProject={this.state?.isopenProjectpopup}
         />
       }
-      {this.state?.isopenProjectpopup &&<ServiceComponentPortfolioPopup
+      {/* {this.state?.isopenProjectpopup &&<ServiceComponentPortfolioPopup
         props={this?.state?.Result?.Portfolio}
       Dynamic={AllListId}
       ComponentType={"Component"}
       Call={ (DataItem: any, Type: any, functionType: any)=>{this.ComponentServicePopupCallBack(DataItem,Type,functionType)}}
       showProject={this.state?.isopenProjectpopup}
-            />}
+            />} */}
         </div>
       </myContextValue.Provider>
     );
