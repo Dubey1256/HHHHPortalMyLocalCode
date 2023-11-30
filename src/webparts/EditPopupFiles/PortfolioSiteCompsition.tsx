@@ -2094,12 +2094,12 @@ const SiteCompositionComponent = (Props: any) => {
                     onDismiss={closeComponentChildrenPopup}
                     isBlocking={false}
                     type={PanelType.custom}
-                    customWidth="1600px"
+                    customWidth="1400px"
                     onRenderFooter={onRenderFooterComponentChildren}
                 >
-                    <div className={ServicesTaskCheck ? "serviepannelgreena SelectProjectTable " : 'SelectProjectTable '}>
-                        <div className="modal-body wrapper p-0 mt-2">
-                            <div className="wrapper">
+                    <div>
+                        <div className="modal-body p-0 mt-2">
+                            <div className="">
                                 <ComponentChildDataTable
                                     props={selectedComponent}
                                     NextProp={AllListIdData}

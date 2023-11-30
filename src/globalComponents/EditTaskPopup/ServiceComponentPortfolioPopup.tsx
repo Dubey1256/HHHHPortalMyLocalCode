@@ -15,7 +15,7 @@ import InfoIconsToolTip from "../InfoIconsToolTip/InfoIconsToolTip";
 var LinkedServicesBackupArray: any = [];
 var MultiSelectedData: any = [];
 let AllMetadata: any = [];
-const ServiceComponentPortfolioPopup = ({ props, Dynamic, Call, ComponentType, selectionType, groupedData }: any) => {
+const ServiceComponentPortfolioPopup = ({ props, Dynamic, Call, ComponentType, selectionType, groupedData ,showProject}: any) => {
     const [modalIsOpen, setModalIsOpen] = React.useState(false);
     const [data, setData] = React.useState([]);
     const [CheckBoxData, setCheckBoxData] = React.useState([]);
@@ -117,14 +117,19 @@ const ServiceComponentPortfolioPopup = ({ props, Dynamic, Call, ComponentType, s
                 TaskUserListId: Dynamic.TaskUsertListID,
                 selectedItems: selectedDataArray
             }
+            if (showProject == true) {
+                PropsObject.projectSelection = true
+            }
             GlobalArray = await globalCommon.GetServiceAndComponentAllData(PropsObject);
-            if (GlobalArray?.GroupByData != undefined && GlobalArray?.GroupByData?.length > 0) {
+            if (GlobalArray?.GroupByData != undefined && GlobalArray?.GroupByData?.length > 0 && showProject != true) {
                 setData(GlobalArray.GroupByData);
                 LinkedServicesBackupArray = GlobalArray.GroupByData;
+            } else if (GlobalArray?.ProjectData != undefined && GlobalArray?.ProjectData?.length > 0 && showProject == true) {
+                setData(GlobalArray.ProjectData);
+                LinkedServicesBackupArray = GlobalArray.ProjectData;
             }
+            setModalIsOpen(true);
         }
-
-        setModalIsOpen(true);
     }
 
 
@@ -153,10 +158,9 @@ const ServiceComponentPortfolioPopup = ({ props, Dynamic, Call, ComponentType, s
             <div className="d-flex full-width pb-1" >
                 <div className='subheading'>
                     <span className="siteColor">
-                        {`Select Portfolio`}
+                        {showProject==true?`Select Project`:`Select Portfolio`}
                     </span>
                 </div>
-
                 <Tooltip ComponentId="1667" />
                 {/* <span onClick={() => setModalIsOpenToFalse()}><i className="svg__iconbox svg__icon--cross crossBtn me-1"></i></span> */}
             </div>

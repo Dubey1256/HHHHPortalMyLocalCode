@@ -1631,6 +1631,7 @@ export const getPortfolio = async (type: any) => {
 export const GetServiceAndComponentAllData = async (Props: any) => {
     var ComponentsData: any = [];
     var AllPathGeneratedData: any = [];
+    let AllPathGeneratedProjectdata:any=[];
     // let TaskUsers: any = [];
     let AllMasterTaskData: any = [];
     try {
@@ -1642,9 +1643,7 @@ export const GetServiceAndComponentAllData = async (Props: any) => {
             .select("ID", "Id", "Title", "PortfolioLevel", "PortfolioStructureID", "Comments", "ItemRank", "Portfolio_x0020_Type", "Parent/Id", "Parent/Title", "DueDate", "Created", "Body", "Sitestagging", "Item_x0020_Type", "Categories", "Short_x0020_Description_x0020_On", "PriorityRank", "Priority", "AssignedTo/Title", "TeamMembers/Id", "TeamMembers/Title", "ClientCategory/Id", "ClientCategory/Title", "PercentComplete", "ResponsibleTeam/Id", "Author/Id", "Author/Title", "Sitestagging", "ResponsibleTeam/Title", "PortfolioType/Id", "PortfolioType/Color", "PortfolioType/IdRange", "PortfolioType/Title", "AssignedTo/Id")
             .expand("Parent", "PortfolioType", "AssignedTo", "Author", "ClientCategory", "TeamMembers", "ResponsibleTeam")
             .getAll();
-        ProjectData = AllMasterTaskData?.filter(
-            (projectItem: any) => projectItem.Item_x0020_Type === "Project"
-        );
+     
         // console.log("all Service and Coponent data form global Call=======", AllMasterTaskData);
         // TaskUsers = await AllTaskUsers(Props.siteUrl, Props.TaskUserListId);
         $.each(AllMasterTaskData, function (index: any, result: any) {
@@ -1691,6 +1690,7 @@ export const GetServiceAndComponentAllData = async (Props: any) => {
             if (result?.Item_x0020_Type != undefined) {
                 result.SiteIconTitle = result?.Item_x0020_Type?.charAt(0);
             }
+           
             result.descriptionsSearch = '';
             try {
                 result.descriptionsSearch = portfolioSearchData(result)
@@ -1764,18 +1764,31 @@ export const GetServiceAndComponentAllData = async (Props: any) => {
                 result.SiteIconTitle = result?.Item_x0020_Type?.charAt(0);
             }
 
-            if (result.Item_x0020_Type == 'Component') {
+            if (result.Item_x0020_Type == 'Component' && Props?.projectSelection!=true) {
                 const groupedResult = componentGrouping(result, AllMasterTaskData)
                 AllPathGeneratedData = [...AllPathGeneratedData, ...groupedResult?.PathArray];
                 ComponentsData.push(groupedResult?.comp);
             }
+            if (result.Item_x0020_Type == 'Project' && Props?.projectSelection!=true) {
+                const groupedResult = componentGrouping(result, AllMasterTaskData)
+                AllPathGeneratedData = [...AllPathGeneratedData, ...groupedResult?.PathArray];
+                ComponentsData.push(groupedResult?.comp);
+            }
+            if (result.Item_x0020_Type == 'Project') {
+                const groupedResult = componentGrouping(result, AllMasterTaskData)
+                AllPathGeneratedProjectdata = [...AllPathGeneratedProjectdata, ...groupedResult?.PathArray];
+            }
 
         });
+        ProjectData = AllMasterTaskData?.filter(
+            (projectItem: any) => projectItem.Item_x0020_Type === "Project"
+        );
 
         let dataObject = {
             GroupByData: ComponentsData,
             AllData: AllPathGeneratedData,
-            ProjectData: ProjectData
+            ProjectData: ProjectData,
+            FlatProjectData:AllPathGeneratedProjectdata
         }
         return dataObject;
 

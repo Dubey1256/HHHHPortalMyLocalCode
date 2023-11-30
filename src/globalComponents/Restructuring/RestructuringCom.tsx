@@ -3779,9 +3779,13 @@ if(restructureItem != undefined && restructureItem != undefined && restructureIt
                 restructureItem[0]?.Item_x0020_Type == "Task" && restructureItem[0]?.TaskType?.Id == 2 ? (
                   <div className='mt-2'>
                   <span>
+                    
 
                     {"Select Component Type :"}
-                    <label className='SpfxCheckRadio ms-2'>
+                    {
+                      newItemBackUp?.Item_x0020_Type != 'Task' ?
+                     <>
+                      <label className='SpfxCheckRadio ms-2'>
                     <input
                       type="radio" className='radio'
                       name="fav_language"
@@ -3796,6 +3800,25 @@ if(restructureItem != undefined && restructureItem != undefined && restructureIt
                       }
                     /></label>
                     <label className="ms-1"> {"Activity"} </label>
+                     </> :
+                     <>
+                      <label className='SpfxCheckRadio ms-2'>
+                    <input
+                      type="radio" className='radio'
+                      name="fav_language"
+                      value="Workstream"
+                      checked={
+                        RestructureChecked[0]?.TaskType?.Id == 3
+                          ? true
+                          : (RestructureChecked[0]?.TaskType?.Id == 1 ? true : false)
+                      }
+                      onChange={(e) =>
+                        setRestructure(RestructureChecked, 3)
+                      }
+                    /></label>
+                    <label className="ms-1"> {"Workstream"} </label></>
+                    }
+                   
                   </span>
                   <span>
                   <label className='SpfxCheckRadio ms-2'>
