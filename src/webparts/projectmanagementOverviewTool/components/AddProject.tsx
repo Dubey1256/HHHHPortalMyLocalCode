@@ -15,12 +15,18 @@ const AddProject = (props: any) => {
     const [IsComponent, setIsComponent] = React.useState(false);
     const [ShareWebComponent, setShareWebComponent] = React.useState('');
     const [linkedComponentData, setLinkedComponentData] = React.useState([]);
+    const [selectedItem, setSetSelectedItem]: any = React.useState(undefined);
     const [IsPortfolio, setIsPortfolio] = React.useState(false);
     const [save, setSave] = React.useState({ siteType: '', linkedServices: [], recentClick: undefined, Mileage: '', DueDate: undefined, dueDate: '', taskCategory: '', taskCategoryParent: '', rank: undefined, Time: '', taskName: '', taskUrl: undefined, portfolioType: 'Component', Component: [] })
     const [smartComponentData, setSmartComponentData] = React.useState([]);
     const OpenCreateTaskPopup = () => {
         setLgShow(true)
     }
+    React.useEffect(() => {
+        if (props?.items?.length == 1 && props?.items[0]?.Item_x0020_Type == "Project") {
+            setSetSelectedItem(props?.items[0])
+        }
+    }, [props?.items?.length])
     const addFunction = async () => {
         if (title?.length > 0) {
             let selectedComponent: any[] = [];
@@ -29,34 +35,85 @@ const AddProject = (props: any) => {
                     selectedComponent.push(smart?.Id);
                 })
             }
-          
+            let portfolioLevel = 1;
             let web = new Web(props?.AllListId?.siteUrl);
-            await web.lists.getById(props?.AllListId?.MasterTaskListID).items
-                .select("Id,Title,PortfolioLevel,PortfolioStructureID").filter("Item_x0020_Type eq 'Project'")
-                .top(1).orderBy('PortfolioLevel', false)
-                .get().then(async (res: any) => {
-                    let portfolioLevel = 1;
-                    if (res?.length > 0) {
-                        portfolioLevel = res[0].PortfolioLevel + 1
-                    }
-                    await web.lists.getById(props?.AllListId?.MasterTaskListID).items.add({
-                        Title: `${title}`,
-                        Item_x0020_Type: "Project",
-                        PortfolioLevel: portfolioLevel,
-                        PortfoliosId: { "results": (selectedComponent !== undefined && selectedComponent?.length > 0) ? selectedComponent : [] },
-                        PortfolioStructureID: `P${portfolioLevel}`,
-                    }).then((res: any) => {
-                        closePopup()
-                        props?.CallBack()
+            if (props?.items?.length == 1 && selectedItem?.Id != undefined) {
+                await web.lists.getById(props?.AllListId?.MasterTaskListID).items
+                    .select("Id,Title,PortfolioLevel,PortfolioStructureID")
+                    .filter(("Item_x0020_Type eq 'Sprint'") && ("Parent/Id eq '" + selectedItem?.Id + "'"))
+                    .orderBy('PortfolioLevel', false)
+                    .get().then(async (res: any) => {
 
+                        if (res?.length > 0) {
+                            portfolioLevel = res?.length + 1
+                        }
+                        let portfolioStructureId = ''
+                        if (portfolioLevel >= 1) {
+                            portfolioStructureId = `${selectedItem?.PortfolioStructureID}-X${portfolioLevel}`
+                        }
+                        await web.lists.getById(props?.AllListId?.MasterTaskListID).items.add({
+                            Title: `${title}`,
+                            Item_x0020_Type: "Sprint",
+                            PortfolioLevel: portfolioLevel,
+                            ParentId: selectedItem?.Id,
+                            PortfoliosId: { "results": (selectedComponent !== undefined && selectedComponent?.length > 0) ? selectedComponent : [] },
+                            PortfolioStructureID: portfolioStructureId,
+                        }).then((res: any) => {
+                            closePopup()
+                            props?.CallBack()
+
+                        })
                     })
+            } else {
+                await web.lists.getById(props?.AllListId?.MasterTaskListID).items
+                    .select("Id,Title,PortfolioLevel,PortfolioStructureID").filter("Item_x0020_Type eq 'Project'")
+                    .top(1).orderBy('PortfolioLevel', false)
+                    .get().then(async (res: any) => {
 
-                })
+                        if (res?.length > 0) {
+                            portfolioLevel = res[0].PortfolioLevel + 1
+                        }
+                        let portfolioStructureId = ''
+                        if (portfolioLevel >= 1 && portfolioLevel < 10) {
+                            portfolioStructureId = `P00${portfolioLevel}`
+                        } else if (portfolioLevel >= 10 && portfolioLevel < 100) {
+                            portfolioStructureId = `P0${portfolioLevel}`
+                        } else if (portfolioLevel >= 100) {
+                            portfolioStructureId = `P${portfolioLevel}`
+                        }
+
+                        await web.lists.getById(props?.AllListId?.MasterTaskListID).items.add({
+                            Title: `${title}`,
+                            Item_x0020_Type: "Project",
+                            PortfolioLevel: portfolioLevel,
+                            PortfoliosId: { "results": (selectedComponent !== undefined && selectedComponent?.length > 0) ? selectedComponent : [] },
+                            PortfolioStructureID: portfolioStructureId,
+                        }).then((res: any) => {
+                            closePopup()
+                            props?.CallBack()
+
+                        })
+                    })
+            }
 
         } else {
             alert("Please Enter Project Title")
         }
 
+    }
+    const createItem = async (portfolioStructureId: any, selectedComponent: any, ItemType: any, portfolioLevel: any) => {
+        let web = new Web(props?.AllListId?.siteUrl);
+        await web.lists.getById(props?.AllListId?.MasterTaskListID).items.add({
+            Title: `${title}`,
+            Item_x0020_Type: ItemType,
+            PortfolioLevel: portfolioLevel,
+            PortfoliosId: { "results": (selectedComponent !== undefined && selectedComponent?.length > 0) ? selectedComponent : [] },
+            PortfolioStructureID: portfolioStructureId,
+        }).then((res: any) => {
+            closePopup()
+            props?.CallBack()
+
+        })
     }
     const closePopup = () => {
         settitle('')
@@ -100,10 +157,21 @@ const AddProject = (props: any) => {
     const onRenderCustomHeader = (
     ) => {
         return (
-            <div className="d-flex full-width pb-1" >
+            <div className=" full-width pb-1" >
+                {props?.items != undefined && props?.items?.length == 1 && 
+                    <div>
+                        <ul className="spfxbreadcrumb mb-2 ms-2 p-0">
+                            <li><a>Project Management</a></li>
+                            <li>
+                                {" "}
+                                <a target='_blank' data-interception="off" href={`${props?.AllListId?.siteUrl}/SitePages/Project-Management.aspx?ProjectId=${props?.items[0]?.Id}`}>{props?.items[0]?.Title}</a>{" "}
+                            </li>
+                        </ul>
+                    </div>
+               }
                 <div className="subheading">
                     <span className="siteColor">
-                        {`Create Project`}
+                        {props?.items?.length == 1 ? 'Create Sprint' : 'Create Project'}
                     </span>
                 </div>
             </div>
@@ -112,7 +180,7 @@ const AddProject = (props: any) => {
 
     return (
         <>
-            <button type="button" className='btn btn-primary btnCol' onClick={() => OpenCreateTaskPopup()}>Create Project</button>
+            <button type="button" disabled={props?.items?.length > 1 || (props?.items?.length > 0 && props?.items[0]?.Item_x0020_Type != "Project")} className='btn btn-primary btnCol' onClick={() => OpenCreateTaskPopup()}>Add Structure</button>
 
             <Panel
                 onRenderHeader={onRenderCustomHeader}
@@ -125,7 +193,7 @@ const AddProject = (props: any) => {
                     <span >
                         <div>
                             <span>
-                                <input type='text' className='form-control' placeholder='Enter Project Name' value={title} onChange={(e) => { settitle(e.target.value) }} />
+                                <input type='text' className='form-control' placeholder='Enter Title' value={title} onChange={(e) => { settitle(e.target.value) }} />
                             </span>
                         </div>
                     </span>
