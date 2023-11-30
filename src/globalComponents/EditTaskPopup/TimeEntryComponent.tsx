@@ -303,7 +303,7 @@ function TimeEntryPopup(item: any) {
       }
     }
     if ((type == "EditTime" || type == "CopyTime") && val == "15") {
-      if (TimeInMinutes != undefined) {
+      if (time.TaskTimeInMin != undefined) {
         time.TaskTimeInMin = Number(time.TaskTimeInMin);
         if (changeTime == 0) {
           changeTime = time.TaskTimeInMin + 15;
@@ -311,13 +311,13 @@ function TimeEntryPopup(item: any) {
           changeTime = changeTime + 15;
         }
 
-        if (changeTime != undefined) {
+        if (changeTime != undefined  && TimeInMinutes == 0) {
           var TimeInHour: any = changeTime / 60;
           setTimeInHours(TimeInHour.toFixed(2));
         }
         setTimeInMinutes(changeTime);
       }
-      if (TimeInMinutes == undefined) {
+      if (time.TaskTimeInMin == undefined) {
         changeTime = 0;
         if (changeTime == 0) {
           changeTime = changeTime + 15;
@@ -758,6 +758,9 @@ function TimeEntryPopup(item: any) {
             var NewDate = new Date(dp);
             val.sortTaskDate = NewDate;
             val.TaskDates = Moment(NewDate).format("ddd, DD/MM/YYYY");
+            if((val.TaskTimeInMin == 0 || val?.TaskTimeInMin == undefined)  && val?.TaskTime != undefined){
+              val.TaskTimeInMin = val?.TaskTime * 60 
+            }
             try {
               getDateForTimeEntry(NewDate, val);
             } catch (e) { }
