@@ -312,24 +312,23 @@ const data = props.data;
   const designteamleave = data.filter((item:any)=> item.designteam.length != 0);
   designteamavailabel = designttotal.length - designteamleave.length;
 
-const returnEmailHtml=():any=>{
-  let structure=`
-  
-  <div style="background-color:#FAFAFA;">
-      <div id="htmlMailBodyemail" style=" width:900px;margin:0 auto; padding:0px 32px;background-color:#ffff;">
-      <div style="display: flex;align-items: center;margin: 56px 0px;">
-      <img src="https://hhhhteams.sharepoint.com/sites/HHHH/SiteCollectionImages/ICONS/Foundation/icon_hhhh.png" style="width: 48px;height: 48px;border-radius: 50%;" alt="Site Icon">
-      <div style="color: var(--black, #333);text-align: center;font-family: Segoe UI;font-size: 14px;font-style: normal; font-weight: 600;margin-left: 4px;">Attendance Report</div>
-      
-        
-  </div>
-  <div style="margin-bottom: 40px;font-size: 32px;font-weight: 600;line-height: 40px;color: #2F5596;font-family: Segoe UI;">
-             ${Object?.keys(nameidTotals)?.length === 0 ? `The ${formattedDate} is a great Day! All ${Allteamoforganization} are in Office today!`  : `${formattedDate}: ${Object?.keys(nameidTotals)?.length} are on leave, ${Allteamoforganization-Object?.keys(nameidTotals)?.length} are working`}
-        </div>
-        `
+  const returnEmailHtml = (): any => {
+    let structure = `
+    <div id="htmlMailBodyemail" style=" display:none;">
+    <div style="background-color:#FAFAFA;margin:-18px -10px;">
+        <div style="width:900px;margin:0 auto; padding:0px 32px;background-color:#ffff;">
+            <div style="display: flex;align-items: center;padding: 56px 0px;">
+                <img src="https://hhhhteams.sharepoint.com/sites/HHHH/SiteCollectionImages/ICONS/Foundation/icon_hhhh.png" style="width: 48px;height: 48px;border-radius: 50%;" alt="Site Icon">
+                <div style="color: var(--black, #333);text-align: center;font-family: Segoe UI;font-size: 14px;font-style: normal; font-weight: 600;margin-left: 4px;">Attendance Report</div>
+            </div>
+            <div style="margin-bottom: 40px;font-size: 32px;font-weight: 600;line-height: 40px;color: #2F5596;font-family: Segoe UI;">
+                ${Object?.keys(nameidTotals)?.length === 0 ? `The ${formattedDate} is a great Day! All ${Allteamoforganization} are in Office today!` : `${formattedDate}: ${Object?.keys(nameidTotals)?.length} are on leave, ${Allteamoforganization - Object?.keys(nameidTotals)?.length} are working`}
+            </div>
+        `;
+
         let tableBody = `
         <div style="margin-bottom: 32px;">
-        <table style="width: 836px;height: 88px;border-collapse: collapse;">
+        <table style="height: 88px;border-collapse: collapse;">
             <tr>
                 <td style="color: #333;width:158px;height:48px;font-family: Segoe UI;font-size: 14px;font-style: normal;font-weight: 600;padding: 0px 8px;border: 1px solid #EEE;background: #FAFAFA;">Smalsus Lead Team</td>
                 <td style="color: #333;width:190px;height:48px;font-family: Segoe UI;font-size: 14px;font-style: normal;font-weight: 600;padding: 0px 8px;border-top: 1px solid #EEE; border-right: 1px solid #EEE;border-bottom: 1px solid #EEE;background: #FAFAFA;">Senoir Developer Team</td>
@@ -349,15 +348,15 @@ const returnEmailHtml=():any=>{
         </table>
     </div>
     <div style="margin-bottom: 48px;">
-    <table style="width: 836px;border-collapse: collapse;">
+    <table style="border-collapse: collapse;">
         <tr>
             <td style="color: #333;height:48px;width:40px;font-family: Segoe UI;font-size: 14px;font-style: normal;font-weight: 600;padding: 0px 8px;border: 1px solid #EEE; background: #FAFAFA;">No.</td>
             <td style="color: #333;height:48px;width:136px;font-family: Segoe UI;font-size: 14px;font-style: normal;font-weight: 600;padding: 0px 8px;border-top: 1px solid #EEE; border-right: 1px solid #EEE;border-bottom: 1px solid #EEE;background: #FAFAFA;">Name</td>
-            <td style="color: #333;height:48px;width:105px;font-family: Segoe UI;font-size: 14px;font-style: normal;font-weight: 600;padding: 0px 8px;border-top: 1px solid #EEE; border-right: 1px solid #EEE;border-bottom: 1px solid #EEE;background: #FAFAFA;">Attendance</td>
-            <td style="color: #333;height:48px;width:100px;font-family: Segoe UI;font-size: 14px;font-style: normal;font-weight: 600;padding: 0px 8px;border-top: 1px solid #EEE; border-right: 1px solid #EEE;border-bottom: 1px solid #EEE;background: #FAFAFA;">Reason</td>
-            <td style="color: #333;height:48px;width:160px;font-family: Segoe UI;font-size: 14px;font-style: normal;font-weight: 600;padding: 0px 8px;border-top: 1px solid #EEE; border-right: 1px solid #EEE;border-bottom: 1px solid #EEE;background: #FAFAFA;">Expected leave end</td>
-            <td style="color: #333;height:48px;width:155px;font-family: Segoe UI;font-size: 14px;font-style: normal;font-weight: 600;padding: 0px 8px;border-top: 1px solid #EEE; border-right: 1px solid #EEE;border-bottom: 1px solid #EEE;background: #FAFAFA;">Team</td>
-            <td style="color: #333;height:48px;width:180px;font-family: Segoe UI;font-size: 14px;font-style: normal;font-weight: 600;padding: 0px 8px;border-top: 1px solid #EEE; border-right: 1px solid #EEE;border-bottom: 1px solid #EEE;background: #FAFAFA;">Total leave this year</td>
+            <td style="color: #333;height:48px;width:112px;font-family: Segoe UI;font-size: 14px;font-style: normal;font-weight: 600;padding: 0px 8px;border-top: 1px solid #EEE; border-right: 1px solid #EEE;border-bottom: 1px solid #EEE;background: #FAFAFA;">Attendance</td>
+            <td style="color: #333;height:48px;width:104px;font-family: Segoe UI;font-size: 14px;font-style: normal;font-weight: 600;padding: 0px 8px;border-top: 1px solid #EEE; border-right: 1px solid #EEE;border-bottom: 1px solid #EEE;background: #FAFAFA;">Reason</td>
+            <td style="color: #333;height:48px;width:144px;font-family: Segoe UI;font-size: 14px;font-style: normal;font-weight: 600;padding: 0px 8px;border-top: 1px solid #EEE; border-right: 1px solid #EEE;border-bottom: 1px solid #EEE;background: #FAFAFA;">Expected leave end</td>
+            <td style="color: #333;height:48px;width:156px;font-family: Segoe UI;font-size: 14px;font-style: normal;font-weight: 600;padding: 0px 8px;border-top: 1px solid #EEE; border-right: 1px solid #EEE;border-bottom: 1px solid #EEE;background: #FAFAFA;">Team</td>
+            <td style="color: #333;height:48px;width:144px;font-family: Segoe UI;font-size: 14px;font-style: normal;font-weight: 600;padding: 0px 8px;border-top: 1px solid #EEE; border-right: 1px solid #EEE;border-bottom: 1px solid #EEE;background: #FAFAFA;">Total leave this year</td>
         </tr>
        `
       let innerTableRow:any='';
@@ -366,46 +365,147 @@ const returnEmailHtml=():any=>{
          `<tr>
              <td style="color: #333;height:40px;width:40px;font-family: Segoe UI;font-size: 14px;font-style: normal;font-weight: 400;border-right: 1px solid #EEE;border-bottom: 1px solid #EEE;border-left: 1px solid #EEE;padding: 8px;">${index+1}</td>
              <td style="color: #333;height:40px;width:136px;font-family: Segoe UI;font-size: 14px;font-style: normal;font-weight: 400;border-right: 1px solid #EEE;border-bottom: 1px solid #EEE;padding: 8px;text-decoration-line: underline;color: #2F5596;"><a href='${props.Listdata.siteUrl}/SitePages/TaskDashboard.aspx?UserId=${item?.NameId}&Name=${item?.Name}'> ${item?.Name}</a></td>
-             <td style="color: #333;height:40px;width:105px;font-family: Segoe UI;font-size: 14px;font-style: normal;font-weight: 400;border-right: 1px solid #EEE;border-bottom: 1px solid #EEE;padding: 8px;${item.eventType === "Un-Planned"?"background: #FFEAEA;color: #A10101;" :"background: #DCECDE;color: #008314;"}"> ${item.eventType}</td>
-             <td style="color: #333;height:40px;width:100px;font-family: Segoe UI;font-size: 14px;font-style: normal;font-weight: 400;border-right: 1px solid #EEE;border-bottom: 1px solid #EEE;padding: 8px;">${item?.shortD}</td>
-             <td style="color: #333;height:40px;width:160px;font-family: Segoe UI;font-size: 14px;font-style: normal;font-weight: 400;border-right: 1px solid #EEE;border-bottom: 1px solid #EEE;padding: 8px;text-decoration-line: underline;color: #2F5596;"><a href="https://hhhhteams.sharepoint.com/sites/HHHH/SP/SitePages/SmalsusLeaveCalendar.aspx">
+             <td style="color: #333;height:40px;width:112px;font-family: Segoe UI;font-size: 14px;font-style: normal;font-weight: 400;border-right: 1px solid #EEE;border-bottom: 1px solid #EEE;padding: 8px;${item.eventType === "Un-Planned"?"background: #FFEAEA;color: #A10101;" :"background: #DCECDE;color: #008314;"}"> ${item.eventType}</td>
+             <td style="color: #333;height:40px;width:104px;font-family: Segoe UI;font-size: 14px;font-style: normal;font-weight: 400;border-right: 1px solid #EEE;border-bottom: 1px solid #EEE;padding: 8px;">${item?.shortD}</td>
+             <td style="color: #333;height:40px;width:144px;font-family: Segoe UI;font-size: 14px;font-style: normal;font-weight: 400;border-right: 1px solid #EEE;border-bottom: 1px solid #EEE;padding: 8px;text-decoration-line: underline;color: #2F5596;"><a href="https://hhhhteams.sharepoint.com/sites/HHHH/SP/SitePages/SmalsusLeaveCalendar.aspx">
                  <span>${item?.enddate}</span></td>
-             <td style="color: #333;height:40px;width:155px;font-family: Segoe UI;font-size: 14px;font-style: normal;font-weight: 400;border-right: 1px solid #EEE;border-bottom: 1px solid #EEE;padding: 8px;" >${item.Designation}</td>
-             <td style="color: #333;height:40px;width:180px;font-family: Segoe UI;font-size: 14px;font-style: normal;font-weight: 400;border-right: 1px solid #EEE;border-bottom: 1px solid #EEE;padding: 8px;">${item?.TotalLeave}</td>
+             <td style="color: #333;height:40px;width:156px;font-family: Segoe UI;font-size: 14px;font-style: normal;font-weight: 400;border-right: 1px solid #EEE;border-bottom: 1px solid #EEE;padding: 8px;" >${item.Designation}</td>
+             <td style="color: #333;height:40px;width:144px;font-family: Segoe UI;font-size: 14px;font-style: normal;font-weight: 400;border-right: 1px solid #EEE;border-bottom: 1px solid #EEE;padding: 8px;">${item?.TotalLeave}</td>
          </tr>`
         
      })
 
      tableBody+= innerTableRow + ` </table></div>`
-     let CompleteEmployeeBody = ` <div style="width: 264px;height: 264px;flex-shrink: 0;border-radius: 264px;background: #EEF4FF;margin-bottom: 40px;padding: 32px;display: flex; align-items: center;justify-content: space-around; margin: 0 auto;">
-     <div style="width: 200px;height: 200px;flex-shrink: 0;background: url(<path-to-image>), lightgray 50% / cover no-repeat;"></div>
- </div>
- <div style="margin-bottom: 88px;">
-     <div style="display: flex;padding: 8px;justify-content: center;align-items: center;gap: 8px;flex-shrink: 0;color: #FFF;border-radius: 4px;
-     background: #2F5596;width: 260px;height:40px;font-family: Segoe UI;font-size: 14px;font-style: normal;font-weight: 600;line-height: normal;">See Full Leave Report Online</div>
- </div>
- <div style="display: flex;align-items: center;margin-bottom: 88px;">
-     <img src="" style="height: 48px;" alt="Site Icon">
-     <div style="color: var(--black, #333);text-align: center;font-family: Segoe UI;font-size: 14px;font-style: normal; font-weight: 600;margin-left: 4px;">Hochhuth Consulting GmbH</div>
- </div>`
-let allEmpPresent=false;
-        Object?.keys(nameidTotals)?.length != 0 ? allEmpPresent=false:allEmpPresent=true;
 
-    if(allEmpPresent){
-     return structure+=CompleteEmployeeBody+`</div></div>`
-    }else {
-      return structure+=tableBody+`<div style="margin-bottom: 88px;">
-      <div style="display: flex;padding: 8px;justify-content: center;align-items: center;gap: 8px;flex-shrink: 0;color: #FFF;border-radius: 4px;
-      background: #2F5596;width: 260px;height:40px;font-family: Segoe UI;font-size: 14px;font-style: normal;font-weight: 600;line-height: normal;"><a  style="text-decoration: none;color: white;" href="https://hhhhteams.sharepoint.com/sites/HHHH/SP/SitePages/SmalsusLeaveCalendar.aspx">See Full Leave Report Online</a></div>
-  </div>
-  <div style="display: flex;align-items: center;margin-bottom: 88px;">
-      <img src="https://www.hochhuth-consulting.de/images/logo.png" style="wheight: 48px;" alt="Site Icon">
-      <div style="color: var(--black, #333);text-align: center;font-family: Segoe UI;font-size: 14px;font-style: normal; font-weight: 600;margin-left: 4px;">Hochhuth Consulting GmbH</div>
-  </div></div></div>`
+     let CompleteEmployeeBody = ` <div style="width: 264px;height: 264px;flex-shrink: 0;border-radius: 264px;background: #EEF4FF;margin-bottom: 40px;padding: 32px;display: flex; align-items: center;justify-content: space-around; margin: 0 auto;">
+    <div style="width: 200px;height: 200px;flex-shrink: 0;background: url(<path-to-image>), lightgray 50% / cover no-repeat;"></div>
+</div>
+<div style="margin-bottom: 88px;">
+    <div style="display: flex;justify-content: center;align-items: center;gap: 8px;flex-shrink: 0;color: #FFF;border-radius: 4px;
+    background: #2F5596;width: 260px;height:40px;font-family: Segoe UI;font-size: 14px;font-style: normal;font-weight: 600;line-height: normal;">See Full Leave Report Online</div>
+</div>
+<div style="display: flex;align-items: center;padding-bottom: 88px;">
+    <img src="" style="height: 48px;" alt="Site Icon">
+    <div style="color: var(--black, #333);text-align: center;font-family: Segoe UI;font-size: 14px;font-style: normal; font-weight: 600;margin-left: 4px;">Hochhuth Consulting GmbH</div>
+</div>`
+
+    let allEmpPresent = false;
+    Object?.keys(nameidTotals)?.length != 0 ? (allEmpPresent = false) : (allEmpPresent = true);
+
+    if (allEmpPresent) {
+        structure += CompleteEmployeeBody + `</div></div></div></div></div>`;
+    } else {
+        structure += tableBody + `
+            <div style="margin-bottom: 88px;">
+                <div style="display: flex;justify-content: center;align-items: center;flex-shrink: 0;color: #FFF;border-radius: 4px;
+                background: #2F5596;width: 260px;height:40px;font-family: Segoe UI;font-size: 14px;font-style: normal;font-weight: 600;line-height: normal;">
+                    <a style="text-decoration: none;color: white;" href="https://hhhhteams.sharepoint.com/sites/HHHH/SP/SitePages/SmalsusLeaveCalendar.aspx">See Full Leave Report Online</a>
+                </div>
+            </div>
+            <div style="display: flex;align-items: center;padding-bottom: 88px;">
+                <img src="https://www.hochhuth-consulting.de/images/logo.png" style="height: 48px;" alt="Site Icon">
+                <div style="color: var(--black, #333);text-align: center;font-family: Segoe UI;font-size: 14px;font-style: normal; font-weight: 600;margin-left: 4px;">Hochhuth Consulting GmbH</div>
+            </div>
+        </div></div></div></div></div></div>`;
     }
+
+    return structure;
+};
+
+
+
+// const returnEmailHtml=():any=>{
+//   let structure=`
+  
+//   <div style="background-color:#FAFAFA;">
+//       <div id="htmlMailBodyemail" style="width:900px;margin:0 auto; padding:0px 32px;background-color:#ffff; display:none;">
+//       <div style="display: flex;align-items: center;margin: 56px 0px;">
+//       <img src="https://hhhhteams.sharepoint.com/sites/HHHH/SiteCollectionImages/ICONS/Foundation/icon_hhhh.png" style="width: 48px;height: 48px;border-radius: 50%;" alt="Site Icon">
+//       <div style="color: var(--black, #333);text-align: center;font-family: Segoe UI;font-size: 14px;font-style: normal; font-weight: 600;margin-left: 4px;">Attendance Report</div>
+//   </div>
+//   <div style="margin-bottom: 40px;font-size: 32px;font-weight: 600;line-height: 40px;color: #2F5596;font-family: Segoe UI;">
+//              ${Object?.keys(nameidTotals)?.length === 0 ? `The ${formattedDate} is a great Day! All ${Allteamoforganization} are in Office today!`  : `${formattedDate}: ${Object?.keys(nameidTotals)?.length} are on leave, ${Allteamoforganization-Object?.keys(nameidTotals)?.length} are working`}
+//         </div>
+//         `
+//         let tableBody = `
+//         <div style="margin-bottom: 32px;">
+//         <table style="width: 836px;height: 88px;border-collapse: collapse;">
+//             <tr>
+//                 <td style="color: #333;width:158px;height:48px;font-family: Segoe UI;font-size: 14px;font-style: normal;font-weight: 600;padding: 0px 8px;border: 1px solid #EEE;background: #FAFAFA;">Smalsus Lead Team</td>
+//                 <td style="color: #333;width:190px;height:48px;font-family: Segoe UI;font-size: 14px;font-style: normal;font-weight: 600;padding: 0px 8px;border-top: 1px solid #EEE; border-right: 1px solid #EEE;border-bottom: 1px solid #EEE;background: #FAFAFA;">Senoir Developer Team</td>
+//                 <td style="color: #333;width:185px;height:48px;font-family: Segoe UI;font-size: 14px;font-style: normal;font-weight: 600;padding: 0px 8px;border-top: 1px solid #EEE; border-right: 1px solid #EEE;border-bottom: 1px solid #EEE;background: #FAFAFA;">Junior Developer Team</td>
+//                 <td style="color: #333;width:103px;height:48px;font-family: Segoe UI;font-size: 14px;font-style: normal;font-weight: 600;padding: 0px 8px;border-top: 1px solid #EEE; border-right: 1px solid #EEE;border-bottom: 1px solid #EEE;background: #FAFAFA;">Design Team</td>
+//                 <td style="color: #333;width:104px;height:48px;font-family: Segoe UI;font-size: 14px;font-style: normal;font-weight: 600;padding: 0px 8px;border-top: 1px solid #EEE; border-right: 1px solid #EEE;border-bottom: 1px solid #EEE;background: #FAFAFA;">QA Team</td>
+//                 <td style="color: #333;width:96px;height:48px;font-family: Segoe UI;font-size: 14px;font-style: normal;font-weight: 600;padding: 0px 8px;border: 1px solid #EEE; background: #FAFAFA;">HR</td>
+//             </tr>
+//             <tr>
+//                 <td style="color: #333;width:158px;height:40px;font-family: Segoe UI;font-size: 14px;font-style: normal;font-weight: 400;border-right: 1px solid #EEE;border-bottom: 1px solid #EEE;border-left: 1px solid #EEE;padding: 0px 8px;">${smalsusleadavailabel}</td>
+//                 <td style="color: #333;width:190px;height:40px;font-family: Segoe UI;font-size: 14px;font-style: normal;font-weight: 400;border-right: 1px solid #EEE;border-bottom: 1px solid #EEE;padding: 0px 8px;">${seniordevavailabel}</td>
+//                 <td style="color: #333;width:185px;height:40px;font-family: Segoe UI;font-size: 14px;font-style: normal;font-weight: 400;border-right: 1px solid #EEE;border-bottom: 1px solid #EEE;padding: 0px 8px;">${Juniordevavailabel}</td>
+//                 <td style="color: #333;width:103px;height:40px;font-family: Segoe UI;font-size: 14px;font-style: normal;font-weight: 400;border-right: 1px solid #EEE;border-bottom: 1px solid #EEE;padding: 0px 8px;">${designteamavailabel}</td>
+//                 <td style="color: #333;width:104px;height:40px;font-family: Segoe UI;font-size: 14px;font-style: normal;font-weight: 400;border-right: 1px solid #EEE;border-bottom: 1px solid #EEE;padding: 0px 8px;">${qateamavailabel}</td>
+//                 <td style="color: #333;width:96px;height:40px;font-family: Segoe UI;font-size: 14px;font-style: normal;font-weight: 400;border-right: 1px solid #EEE;border-bottom: 1px solid #EEE;padding: 0px 8px;">${1}</td>
+//             </tr>
+//         </table>
+//     </div>
+//     <div style="margin-bottom: 48px;">
+//     <table style="width: 836px;border-collapse: collapse;">
+//         <tr>
+//             <td style="color: #333;height:48px;width:40px;font-family: Segoe UI;font-size: 14px;font-style: normal;font-weight: 600;padding: 0px 8px;border: 1px solid #EEE; background: #FAFAFA;">No.</td>
+//             <td style="color: #333;height:48px;width:136px;font-family: Segoe UI;font-size: 14px;font-style: normal;font-weight: 600;padding: 0px 8px;border-top: 1px solid #EEE; border-right: 1px solid #EEE;border-bottom: 1px solid #EEE;background: #FAFAFA;">Name</td>
+//             <td style="color: #333;height:48px;width:105px;font-family: Segoe UI;font-size: 14px;font-style: normal;font-weight: 600;padding: 0px 8px;border-top: 1px solid #EEE; border-right: 1px solid #EEE;border-bottom: 1px solid #EEE;background: #FAFAFA;">Attendance</td>
+//             <td style="color: #333;height:48px;width:100px;font-family: Segoe UI;font-size: 14px;font-style: normal;font-weight: 600;padding: 0px 8px;border-top: 1px solid #EEE; border-right: 1px solid #EEE;border-bottom: 1px solid #EEE;background: #FAFAFA;">Reason</td>
+//             <td style="color: #333;height:48px;width:160px;font-family: Segoe UI;font-size: 14px;font-style: normal;font-weight: 600;padding: 0px 8px;border-top: 1px solid #EEE; border-right: 1px solid #EEE;border-bottom: 1px solid #EEE;background: #FAFAFA;">Expected leave end</td>
+//             <td style="color: #333;height:48px;width:155px;font-family: Segoe UI;font-size: 14px;font-style: normal;font-weight: 600;padding: 0px 8px;border-top: 1px solid #EEE; border-right: 1px solid #EEE;border-bottom: 1px solid #EEE;background: #FAFAFA;">Team</td>
+//             <td style="color: #333;height:48px;width:180px;font-family: Segoe UI;font-size: 14px;font-style: normal;font-weight: 600;padding: 0px 8px;border-top: 1px solid #EEE; border-right: 1px solid #EEE;border-bottom: 1px solid #EEE;background: #FAFAFA;">Total leave this year</td>
+//         </tr>
+//        `
+//       let innerTableRow:any='';
+//       data?.map((item:any,index:any)=>{
+//         innerTableRow+=    
+//          `<tr>
+//              <td style="color: #333;height:40px;width:40px;font-family: Segoe UI;font-size: 14px;font-style: normal;font-weight: 400;border-right: 1px solid #EEE;border-bottom: 1px solid #EEE;border-left: 1px solid #EEE;padding: 8px;">${index+1}</td>
+//              <td style="color: #333;height:40px;width:136px;font-family: Segoe UI;font-size: 14px;font-style: normal;font-weight: 400;border-right: 1px solid #EEE;border-bottom: 1px solid #EEE;padding: 8px;text-decoration-line: underline;color: #2F5596;"><a href='${props.Listdata.siteUrl}/SitePages/TaskDashboard.aspx?UserId=${item?.NameId}&Name=${item?.Name}'> ${item?.Name}</a></td>
+//              <td style="color: #333;height:40px;width:105px;font-family: Segoe UI;font-size: 14px;font-style: normal;font-weight: 400;border-right: 1px solid #EEE;border-bottom: 1px solid #EEE;padding: 8px;${item.eventType === "Un-Planned"?"background: #FFEAEA;color: #A10101;" :"background: #DCECDE;color: #008314;"}"> ${item.eventType}</td>
+//              <td style="color: #333;height:40px;width:100px;font-family: Segoe UI;font-size: 14px;font-style: normal;font-weight: 400;border-right: 1px solid #EEE;border-bottom: 1px solid #EEE;padding: 8px;">${item?.shortD}</td>
+//              <td style="color: #333;height:40px;width:160px;font-family: Segoe UI;font-size: 14px;font-style: normal;font-weight: 400;border-right: 1px solid #EEE;border-bottom: 1px solid #EEE;padding: 8px;text-decoration-line: underline;color: #2F5596;"><a href="https://hhhhteams.sharepoint.com/sites/HHHH/SP/SitePages/SmalsusLeaveCalendar.aspx">
+//                  <span>${item?.enddate}</span></td>
+//              <td style="color: #333;height:40px;width:155px;font-family: Segoe UI;font-size: 14px;font-style: normal;font-weight: 400;border-right: 1px solid #EEE;border-bottom: 1px solid #EEE;padding: 8px;" >${item.Designation}</td>
+//              <td style="color: #333;height:40px;width:180px;font-family: Segoe UI;font-size: 14px;font-style: normal;font-weight: 400;border-right: 1px solid #EEE;border-bottom: 1px solid #EEE;padding: 8px;">${item?.TotalLeave}</td>
+//          </tr>`
+        
+//      })
+
+//      tableBody+= innerTableRow + ` </table></div>`
+//      let CompleteEmployeeBody = ` <div style="width: 264px;height: 264px;flex-shrink: 0;border-radius: 264px;background: #EEF4FF;margin-bottom: 40px;padding: 32px;display: flex; align-items: center;justify-content: space-around; margin: 0 auto;">
+//      <div style="width: 200px;height: 200px;flex-shrink: 0;background: url(<path-to-image>), lightgray 50% / cover no-repeat;"></div>
+//  </div>
+//  <div style="margin-bottom: 88px;">
+//      <div style="display: flex;padding: 8px;justify-content: center;align-items: center;gap: 8px;flex-shrink: 0;color: #FFF;border-radius: 4px;
+//      background: #2F5596;width: 260px;height:40px;font-family: Segoe UI;font-size: 14px;font-style: normal;font-weight: 600;line-height: normal;">See Full Leave Report Online</div>
+//  </div>
+//  <div style="display: flex;align-items: center;margin-bottom: 88px;">
+//      <img src="" style="height: 48px;" alt="Site Icon">
+//      <div style="color: var(--black, #333);text-align: center;font-family: Segoe UI;font-size: 14px;font-style: normal; font-weight: 600;margin-left: 4px;">Hochhuth Consulting GmbH</div>
+//  </div>`
+// let allEmpPresent=false;
+//         Object?.keys(nameidTotals)?.length != 0 ? allEmpPresent=false:allEmpPresent=true;
+
+//     if(allEmpPresent){
+//      return structure+=CompleteEmployeeBody+`</div></div></div></div>`
+//     }else {
+//       return structure+=tableBody+`<div style="margin-bottom: 88px;">
+//       <div style="display: flex;padding: 8px;justify-content: center;align-items: center;gap: 8px;flex-shrink: 0;color: #FFF;border-radius: 4px;
+//       background: #2F5596;width: 260px;height:40px;font-family: Segoe UI;font-size: 14px;font-style: normal;font-weight: 600;line-height: normal;"><a  style="text-decoration: none;color: white;" href="https://hhhhteams.sharepoint.com/sites/HHHH/SP/SitePages/SmalsusLeaveCalendar.aspx">See Full Leave Report Online</a></div>
+//   </div>
+//   <div style="display: flex;align-items: center;margin-bottom: 88px;">
+//       <img src="https://www.hochhuth-consulting.de/images/logo.png" style="height: 48px;" alt="Site Icon">
+//       <div style="color: var(--black, #333);text-align: center;font-family: Segoe UI;font-size: 14px;font-style: normal; font-weight: 600;margin-left: 4px;">Hochhuth Consulting GmbH</div>
+//   </div></div></div></div></div>`
+//     }
       
   
-}
+// }
 
   return (
     
