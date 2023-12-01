@@ -165,26 +165,62 @@ const addToLocalDBComponent = (props: any) => {
                                     if (taggedSite == 'GMBH' ) {
                                         let addData:any
                                         if(Item?.ItemType!="Institution"){
-                                            addData= {
-                                                Title: (Item.Title ? Item.Title : ''),
-                                                FirstName: (Item.FirstName ? Item.FirstName : ''),
-                                                FullName: (Item.FullName ? Item.FullName : ''),
-                                                Suffix: (Item.Suffix ? Item.Suffix : ''),
-                                                JobTitle: (Item.JobTitle ? Item.JobTitle : ''),
-                                                Email: (Item.Email ? Item.Email : ''),
-                                                WorkPhone: (Item.WorkPhone ? Item.WorkPhone : ''),
-                                                CellPhone: (Item.CellPhone ? Item.CellPhone : ''),
-                                                HomePhone: (Item.HomePhone ? Item.HomePhone : ''),
-                                                WorkCity: (Item.WorkCity ? Item.WorkCity : ''),
-                                                WorkAddress: (Item.WorkAddress ? Item.WorkAddress : ''),
-                                                WorkZip: (Item.WorkZip ? Item.WorkZip : ''),
-                                                IM: (Item.IM ? Item.IM : ''),
-                                                SmartContactId:Item.Id
+                                        //     addData= {
+                                        //         Title: (Item.Title ? Item.Title : ''),
+                                        //         FirstName: (Item.FirstName ? Item.FirstName : ''),
+                                        //         FullName: (Item.FullName ? Item.FullName : ''),
+                                        //         Suffix: (Item.Suffix ? Item.Suffix : ''),
+                                        //         JobTitle: (Item.JobTitle ? Item.JobTitle : ''),
+                                        //         Email: (Item.Email ? Item.Email : ''),
+                                        //         WorkPhone: (Item.WorkPhone ? Item.WorkPhone : ''),
+                                        //         CellPhone: (Item.CellPhone ? Item.CellPhone : ''),
+                                        //         HomePhone: (Item.HomePhone ? Item.HomePhone : ''),
+                                        //         WorkCity: (Item.WorkCity ? Item.WorkCity : ''),
+                                        //         WorkAddress: (Item.WorkAddress ? Item.WorkAddress : ''),
+                                        //         WorkZip: (Item.WorkZip ? Item.WorkZip : ''),
+                                        //         IM: (Item.IM ? Item.IM : ''),
+                                        //         SmartContactId:Item.Id
                                             
+                                        // }
+
+                                        addData= {
+                                            Title: (Item?.Title ),
+                                            FirstName: (Item?.FirstName ),
+                                            Suffix: (Item?.Suffix ),
+                                            JobTitle: (Item?.JobTitle ),
+                                            FullName: (Item?.FirstName ) + " " + (Item?.Title ),
+                                            InstitutionId: (Item?.Institution!=undefined? Item?.Institution?.Id :null),
+                                            Email: (Item?.Email ),
+                                            
+                                            WorkPhone: (Item?.WorkPhone ),
+                                            CellPhone: (Item?.CellPhone ),
+                                            HomePhone: (Item?.HomePhone ),
+                                            WorkCity: (Item?.WorkCity),
+                                            WorkAddress: (Item?.WorkAddress),
+                                            DOJ:Item?.DOJ!=undefined?new Date(Item?.DOJ).toISOString():null,
+                                            DOE:Item?.DOE!=undefined?new Date(Item?.DOE).toISOString():null,
+                                            WebPage: {
+                                                "__metadata": { type: "SP.FieldUrlValue" },
+                                                Description: (Item?.WebPage ? Item?.WebPage?.Url :null) ,
+                                                Url: (Item?.WebPage ? Item?.WebPage?.Url :null)
+                                            },
+                                           
+                                            Item_x0020_Cover:{
+                                                "__metadata": { type: "SP.FieldUrlValue" },
+                                                Description: Item?.Item_x002d_Image!=undefined ? Item?.Item_x002d_Image?.Url : (Item?.Item_x0020_Cover!=undefined?Item?.Item_x0020_Cover?.Url:""),
+                                                Url: Item?.Item_x002d_Image!=undefined ? Item?.Item_x002d_Image?.Url : (Item?.Item_x0020_Cover!=undefined?Item?.Item_x0020_Cover?.Url:"")
+                                            },
+                                            WorkZip: (Item?.WorkZip ),
+                                            IM: (Item?.Skype ),
+                                            SocialMediaUrls:item?.UrlData!=undefined&&item?.UrlData!=null? JSON.stringify( item?.UrlData):null,
+                                            SmartCountriesId: {
+                                                results:Item?.SmartCountries?.length>0?[Item?.SmartCountries?.Id ]: []
+                                            },
+                                            SmartContactId:Item.Id
                                         }
                                         
                                         }else{
-                                            let addData:any= {
+                                            addData = {
                                                 Title: (Item?.Title ),
                                               Categories:Item?.Categories,
                                                 Email: (Item?.Email ),
@@ -212,6 +248,9 @@ const addToLocalDBComponent = (props: any) => {
                                                     results:Item?.SmartCountries?.length>0?[Item?.SmartCountries?.Id ]: []
                                                 }
                                             }
+
+
+                                            
 
                                         //     addData= {
                                         //         Title: (Item.Title ? Item.Title : " "),
