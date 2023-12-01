@@ -1677,7 +1677,8 @@ if(folora=="folora"&&index==0){
 })
   //********** */ Inline editing start************
   private handleFieldChange = (fieldName: any) => (e: any) => {
-    
+    let Priority:any;
+   
     this.setState((prevState) => ({
       Result: {
         ...prevState.Result,
@@ -2013,8 +2014,8 @@ private async updateProjectComponentServices(dataUpdate:any) {
                               itemId={this.state.Result?.Id}
                               fieldName="Priority"
                               value={
-                                this.state.Result?.Priority != undefined
-                                  ? this.state.Result?.Priority
+                                this.state.Result?.PriorityRank != undefined
+                                  ? this.state.Result?.PriorityRank
                                   : ""
                               }
                               onChange={this.handleFieldChange("Priority")}
