@@ -8,6 +8,7 @@ import TeamConfigurationCard from "../../../globalComponents/TeamConfiguration/T
 import TeamConfigurationCards from "../../EditPopupFiles/TeamConfigurationPortfolio";
 import { OverlayTrigger, Popover } from "react-bootstrap";
 import Picker from "../../../globalComponents/EditTaskPopup/SmartMetaDataPicker";
+
 var ChangeTaskUserStatus: any = true;
 let ApprovalStatusGlobal: any = false;
 let taskUsers: any = [];
@@ -539,44 +540,49 @@ const inlineEditingcolumns = (props: any) => {
         newDueDate = "";
       }
     }
+    let postData :any= {};
+
+    switch (props?.columnName) {
+      case 'TaskCategories':
+        postData.Categories = CategoryTitle;
+        postData.TaskCategoriesId = { results: selectedCategoriesId };
+        break;
+    
+      case 'Team':
+        postData.AssignedToId = { results: AssignedToIds ?? [] };
+        postData.ResponsibleTeamId = { results: ResponsibleTeamIds ?? [] };
+        postData.TeamMembersId = { results: TeamMemberIds ?? [] };
+        break;
+    
+      case 'Priority':
+        postData.Priority = priority;
+        postData.PriorityRank = priorityRank;
+        break;
+    
+      case 'Remark':
+        postData.Remark = feedback;
+        break;
+    
+      case 'EstimatedTime':
+        postData.EstimatedTime = TimeInHours;
+        break;
+    
+      case 'PercentComplete':
+        postData.PercentComplete = taskStatusInNumber / 100;
+        break;
+    
+      case 'DueDate':
+        postData.DueDate = newDueDate;
+        break;
+    
+      default:
+        break;
+    }
     let web = new Web(props?.item?.siteUrl);
     await web.lists
       .getById(props?.item?.listId)
       .items.getById(props?.item?.Id)
-      .update({
-        PercentComplete: taskStatusInNumber / 100,
-        AssignedToId: {
-          results:
-            AssignedToIds != undefined && AssignedToIds.length > 0
-              ? AssignedToIds
-              : []
-        },
-        ResponsibleTeamId: {
-          results:
-            ResponsibleTeamIds != undefined && ResponsibleTeamIds.length > 0
-              ? ResponsibleTeamIds
-              : []
-        },
-        TeamMembersId: {
-          results:
-            TeamMemberIds != undefined && TeamMemberIds.length > 0
-              ? TeamMemberIds
-              : []
-        },
-        ApproverId: {
-          results:
-            ApproverIds != undefined && ApproverIds.length > 0
-              ? ApproverIds
-              : []
-        },
-        Priority: priority,
-        Categories: CategoryTitle,
-        PriorityRank: priorityRank,
-        TaskCategoriesId: { results: selectedCategoriesId },
-        DueDate: newDueDate,
-        Remark: feedback,
-        EstimatedTime: TimeInHours
-      })
+      .update(postData)
       .then((res: any) => {
         web.lists
           .getById(props?.item?.listId)
@@ -597,7 +603,7 @@ const inlineEditingcolumns = (props: any) => {
             task.DisplayDueDate =
               task.DueDate != null
                 ? Moment(task.DueDate).format("DD/MM/YYYY")
-                : "";
+                : null;
             task.TeamMembersSearch = "";
             task.ApproverIds = [];
             task.Categories = CategoryTitle;
@@ -1094,7 +1100,7 @@ const inlineEditingcolumns = (props: any) => {
       {props?.columnName == "Team" ? (
         <>
           <span
-            style={{ display: "flex", width: "100%", height: "100%" }}
+            style={{ display: "flex", width: "90%", height: "100%" }}
             onClick={() => setTeamMembersPopup(true)}
             className="hreflink"
           >
