@@ -1680,12 +1680,22 @@ export const GetServiceAndComponentAllData = async (Props: any) => {
             if (result.Item_x0020_Type === "Component") {
                 result.boldRow = "boldClable";
                 result.lableColor = "f-bg";
+                result.ItemCat= "Portfolio"
             }
             if (result.Item_x0020_Type === "SubComponent") {
                 result.lableColor = "a-bg";
+                result.ItemCat= "Portfolio"
             }
             if (result.Item_x0020_Type === "Feature") {
                 result.lableColor = "w-bg";
+                result.ItemCat= "Portfolio"
+            }
+            if (result.Item_x0020_Type === "Project") {
+                result.lableColor = "w-bg";
+                result.ItemCat= "Project"
+            }
+            if (result.Item_x0020_Type === "Sprint") {
+                result.ItemCat= "Project"
             }
             if (result?.Item_x0020_Type != undefined) {
                 result.SiteIconTitle = result?.Item_x0020_Type?.charAt(0);
