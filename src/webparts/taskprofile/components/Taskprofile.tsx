@@ -2009,7 +2009,7 @@ private async updateProjectComponentServices(dataUpdate:any) {
                         <dd className='bg-Ff'>
                         <EditableField
                               // key={index}
-                              listName="Master Tasks"
+                              listName={this?.state?.Result?.listName}
                               itemId={this.state.Result?.Id}
                               fieldName="Priority"
                               value={
