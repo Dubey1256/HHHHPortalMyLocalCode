@@ -1769,7 +1769,7 @@ export const GetServiceAndComponentAllData = async (Props: any) => {
                 AllPathGeneratedData = [...AllPathGeneratedData, ...groupedResult?.PathArray];
                 ComponentsData.push(groupedResult?.comp);
             }
-            if (result.Item_x0020_Type == 'Project' && Props?.projectSelection!=true) {
+            if (result.Item_x0020_Type == 'Project' && Props?.projectSelection==true) {
                 const groupedResult = componentGrouping(result, AllMasterTaskData)
                 AllPathGeneratedData = [...AllPathGeneratedData, ...groupedResult?.PathArray];
                 ComponentsData.push(groupedResult?.comp);

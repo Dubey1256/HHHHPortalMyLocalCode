@@ -3,6 +3,7 @@ import { Web } from "sp-pnp-js";
 import "bootstrap/dist/css/bootstrap.min.css";
 import { arraysEqual, Modal, Panel, PanelType } from 'office-ui-fabric-react';
 import { FaAngleDown, FaAngleUp } from 'react-icons/fa';
+import { DragDropContext, Droppable, Draggable } from 'react-beautiful-dnd';
 import Tooltip from '../../../globalComponents/Tooltip'
 import GlobalCommanTable from '../../../globalComponents/GroupByReactTableComponents/GlobalCommanTable';
 import {
@@ -403,6 +404,7 @@ const inputSortOrder=async ()=>{
      const uniqueArray = MydataSorted.filter(
         (item:any, index:any, self:any) => index === self.findIndex((i:any) => i.Id === item.Id)
       );
+    //   console.log(uniqueArray);
     if(uniqueArray?.length > 0 && uniqueArray != undefined){
      uniqueArray?.map(async (items:any)=>{
         let web = new Web(dynamicData.dynamicData.siteUrl);
@@ -426,6 +428,50 @@ const inputSortOrder=async ()=>{
     }
    
 }
+
+// const handleDragEnd = (result:any) => {
+//     if (!result.destination) {
+//       return;
+//     }
+
+//     const items : any = Array.from(data);
+//     const [reorderedItem]:any = items.splice(result.source.index, 1);
+//     items.splice(result.destination.index, 0, reorderedItem);
+
+//     // Update IDs based on the new order
+//     const updatedItems : any = items.map((item:any, index:any) => ({
+//       ...item,
+//       id: index + 1,
+//     }));
+
+//     setData(updatedItems);
+//   };
+
+
+const handleDragEnd = (result:any) => {
+    if (!result.destination) {
+      return;
+    }
+  
+    // Use the spread operator to create a shallow copy of the array
+    const items = [...data];
+  
+    const [reorderedItem] = items.splice(result.source.index, 1);
+    items.splice(result.destination.index, 0, reorderedItem);
+  
+    // Update IDs based on the new order
+    const updatedItems = items.map((item, index) => ({
+      ...item,
+      newSortOrder: index + 1,
+      SortOrder: index + 1,
+    }));
+  
+    MydataSorted = updatedItems;
+    setData(updatedItems);
+
+  };
+
+
     return (
         <>
               <div className='row'>
@@ -872,8 +918,11 @@ const inputSortOrder=async ()=>{
             >
                 
                     <div className='Alltable'>
-
-                        <table className="table table-hover" id="EmpTable" style={{ width: "100%" }}>
+                    <DragDropContext onDragEnd={handleDragEnd}>
+      <Droppable droppableId="sortableTable">
+      {(provided) => (
+                        <table  {...provided.droppableProps}
+                        ref={provided.innerRef} className="table table-hover" id="EmpTable" style={{ width: "100%" }}>
                                                 <thead>
                                                     <tr>
                                                         <th style={{ width: "80%" }}>
@@ -905,10 +954,14 @@ const inputSortOrder=async ()=>{
                                                 </thead>
                                                 <tbody>
                                                     {data && data.map(function (item, index) {
+
                                                         if ((search == "" || item?.Title?.toLowerCase().includes(search.toLowerCase())) || (search == "" || item?.SortOrder?.toLowerCase().includes(search.toLowerCase()))) {
                                                             return (
-                                                                <>
-                                                                    <tr className="bold for-c0l">
+                                                                <> <Draggable key={item.Id} draggableId={item.Id.toString()} index={index}>
+                                                             {(provided) => (
+                                                                    <tr  ref={provided.innerRef}
+                                                                    {...provided.draggableProps}
+                                                                    {...provided.dragHandleProps} className="bold for-c0l">
                                                                         <td className="p-0">
                                                                                {item?.Title}
                                                                           
@@ -922,12 +975,14 @@ const inputSortOrder=async ()=>{
 
 
                                                                     </tr>
-                                                                   
+                                                                    )}
+                                                                    </Draggable>
                                                                 </>
 
 
                                                             )
                                                         }
+                                                      
                                                     })}
 
 
@@ -937,6 +992,9 @@ const inputSortOrder=async ()=>{
 
 
                                             </table>
+                                             )}
+                                            </Droppable>
+                                 </DragDropContext>
                     </div>
 
                 
