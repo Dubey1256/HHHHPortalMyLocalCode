@@ -42,7 +42,7 @@ const Header = () => {
               </svg>
             </span>
             <WorldClock />
-            <img className="rounded-circle" title='{userName}' width={"30px"} height={"30px"} src={userName?.Item_x0020_Cover?.Url} />
+            <img className="rounded-circle" title={userName?.Title} width={"30px"} height={"30px"} src={userName?.Item_x0020_Cover?.Url} />
           </div>
         </div>
       </section>
