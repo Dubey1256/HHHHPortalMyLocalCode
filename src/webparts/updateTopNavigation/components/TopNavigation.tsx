@@ -920,7 +920,7 @@ const handleDragEnd = (result:any) => {
                     <div className='Alltable'>
                     <DragDropContext onDragEnd={handleDragEnd}>
       <Droppable droppableId="sortableTable">
-      {(provided) => (
+      {(provided: { droppableProps: JSX.IntrinsicAttributes & React.ClassAttributes<HTMLTableElement> & React.TableHTMLAttributes<HTMLTableElement>; innerRef: React.LegacyRef<HTMLTableElement>; }) => (
                         <table  {...provided.droppableProps}
                         ref={provided.innerRef} className="table table-hover" id="EmpTable" style={{ width: "100%" }}>
                                                 <thead>
@@ -958,7 +958,7 @@ const handleDragEnd = (result:any) => {
                                                         if ((search == "" || item?.Title?.toLowerCase().includes(search.toLowerCase())) || (search == "" || item?.SortOrder?.toLowerCase().includes(search.toLowerCase()))) {
                                                             return (
                                                                 <> <Draggable key={item.Id} draggableId={item.Id.toString()} index={index}>
-                                                             {(provided) => (
+                                                             {(provided: { innerRef: React.LegacyRef<HTMLTableRowElement>; draggableProps: JSX.IntrinsicAttributes & React.ClassAttributes<HTMLTableRowElement> & React.HTMLAttributes<HTMLTableRowElement>; dragHandleProps: JSX.IntrinsicAttributes & React.ClassAttributes<HTMLTableRowElement> & React.HTMLAttributes<HTMLTableRowElement>; }) => (
                                                                     <tr  ref={provided.innerRef}
                                                                     {...provided.draggableProps}
                                                                     {...provided.dragHandleProps} className="bold for-c0l">
