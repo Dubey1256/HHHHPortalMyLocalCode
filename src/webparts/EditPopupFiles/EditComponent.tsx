@@ -18,7 +18,7 @@ import { EditorState } from "draft-js";
 import HtmlEditorCard from "../../globalComponents/HtmlEditor/HtmlEditor";
 import TeamConfigurationCard from "./TeamConfigurationPortfolio";
 import Tooltip from "../../globalComponents/Tooltip";
-import VersionHistoryPopup from "../../globalComponents/VersionHistroy/VersionHistory";
+import VersionHistory from "../../globalComponents/VersionHistroy/VersionHistory";
 import Sitecomposition from "../../globalComponents/SiteComposition";
 
 import ImagesC from "./ImageInformation";
@@ -4274,7 +4274,7 @@ function EditInstitution({ item, SelectD, Calls, usedFor , portfolioTypeData}: a
                                         <span>
                                             {" "}
                                             {EditData?.ID ? (
-                                                <VersionHistoryPopup
+                                                <VersionHistory
                                                     taskId={EditData?.ID}
                                                     listId={RequireData.MasterTaskListID}
                                                     siteUrls={RequireData?.siteUrl}
