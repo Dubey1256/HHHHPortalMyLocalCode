@@ -843,7 +843,28 @@ const ProjectManagementMain = (props: any) => {
         accessorFn: (row) => row?.Title,
         cell: ({ row, column, getValue }) => (
           <>
-            <span>
+            {row?.original?.Item_x0020_Type == "Sprint" ?
+             <span>
+             <a
+               className="hreflink"
+               href={`${props?.siteUrl}/SitePages/Project-Management.aspx?ProjectId=${row?.original?.Id}`}
+               data-interception="off"
+               target="_blank"
+             >
+               {row?.original?.Title}
+             </a>
+             {row?.original?.descriptionsSearch?.length > 0 ? (
+               <span className="alignIcon">
+                 <InfoIconsToolTip
+                   Discription={row?.original?.bodys}
+                   row={row?.original}
+                 />
+               </span>
+             ) : (
+               ""
+             )}
+           </span>
+              : <span>
               <a
                 className="hreflink"
                 href={`${props?.siteUrl}/SitePages/Task-Profile.aspx?taskId=${row?.original?.Id}&Site=${row?.original?.siteType}`}
@@ -862,7 +883,8 @@ const ProjectManagementMain = (props: any) => {
               ) : (
                 ""
               )}
-            </span>
+            </span>}
+            
           </>
         ),
         id: "Title",
