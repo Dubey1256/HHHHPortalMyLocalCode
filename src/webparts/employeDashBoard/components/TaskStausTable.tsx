@@ -1275,7 +1275,8 @@ const TaskStatusTbl = (Tile: any) => {
             </div>  </>
         )}
         {Tile.activeTile == 'draft' && (
-          <><div className="col-7 p-0">
+          <>
+          <div className="col-7 p-0">
             <div className="chartSec empAllSec clearfix">
               <div className="alignCenter mb-2 justify-content-between">
                 <span className="fw-bold">
