@@ -17,7 +17,7 @@ let sendMail: boolean
 let approveItem: any;
 let currentUser: any;
 let emailStatus: any = ""
-let portfolioColor: any = '#000066';
+
 const MultipleWebpart = (Tile: any) => {
   const ContextData: any = React.useContext(myContextValue);
   const draftCatogary: any = ContextData?.AlltaskData.DraftCatogary;
@@ -27,7 +27,6 @@ const MultipleWebpart = (Tile: any) => {
   const thisWeekTask: any = ContextData?.AlltaskData.ThisWeekTask;
   let approvalTask: any = ContextData?.AlltaskData.ApprovalTask;
   const AllMasterTasks: any = ContextData?.AllMasterTasks;
-  const AllTaskUser: any = ContextData?.AlltaskData?.AllTaskUser;
   const [editPopup, setEditPopup]: any = React.useState(false);
   const [sendMail, setsendMail]: any = React.useState(false);
   const [result, setResult]: any = React.useState(false);
@@ -307,8 +306,8 @@ const MultipleWebpart = (Tile: any) => {
     <div>
       <div className="row m-0 mb-3 empMainSec">
         <div className="col-7 p-0">
-          <div className="empAllSec approvalSec clearfix">
-            <div className="d-flex mb-2 justify-content-between">
+          <div className="chartSec empAllSec clearfix">
+            <div className="alignCenter mb-2 justify-content-between">
               <span className="fw-bold">
                 Waiting for Approval {`(${approvalTask.length})`}
               </span>
@@ -322,8 +321,6 @@ const MultipleWebpart = (Tile: any) => {
                 <GlobalCommanTable
                   showHeader={true}
                   columns={aprovlColumn}
-                  TaskUsers={AllTaskUser}
-                  portfolioColor={portfolioColor}
                   data={approvalTask}
                   callBackData={callBackData}
                 />
