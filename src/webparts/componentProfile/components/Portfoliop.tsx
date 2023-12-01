@@ -130,6 +130,28 @@ export const EditableField: React.FC<EditableFieldProps> = ({
   
       );
     }
+
+
+    let rank = parseInt(fieldValue);
+    let Priority = "";
+    if (rank <= 10 && rank >= 8) {
+      Priority = "(1) High"
+  }
+  if (rank <= 7 && rank >= 4) {
+      Priority = "(2) Normal"
+  }
+
+  if (rank <= 3 && rank >= 0) {
+      Priority = "(3) Low"
+  }
+    return (
+      <div>
+        <span title={Priority}>{Priority}</span>
+        <a className="pancil-icons" onClick={handleEdit}>
+          <span className="svg__iconbox svg__icon--editBox"></span>
+        </a>
+      </div>
+    );
   }
   if (fieldName == "ItemRank") {
     const [selectedRank, setSelectedRank] = React.useState(value);

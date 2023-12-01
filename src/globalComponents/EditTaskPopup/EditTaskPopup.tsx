@@ -5289,7 +5289,7 @@ const EditTaskPopup = (Items: any) => {
                                     <div className={IsShowFullViewImage != true ? 'col-sm-9 toggle-task' : 'col-sm-6 editsectionscroll toggle-task'}>
                                         {EditData.Id != null ? <>
                                             <CommentBoxComponent
-                                                data={EditData.FeedBackBackup[0]?.FeedBackDescriptions}
+                                                data={EditData?.FeedBackBackup?.length>0?EditData?.FeedBackBackup[0]?.FeedBackDescriptions:[]}
                                                 callBack={CommentSectionCallBack}
                                                 allUsers={taskUsers}
                                                 ApprovalStatus={ApprovalStatus}
@@ -5299,7 +5299,7 @@ const EditTaskPopup = (Items: any) => {
                                                 FeedbackCount={FeedBackCount}
                                             />
                                             <Example
-                                                textItems={EditData.FeedBackBackup[0]?.FeedBackDescriptions}
+                                                textItems={EditData?.FeedBackBackup?.length>0?EditData?.FeedBackBackup[0]?.FeedBackDescriptions:[]}
                                                 callBack={SubCommentSectionCallBack}
                                                 allUsers={taskUsers}
                                                 ItemId={EditData.Id}
@@ -6327,7 +6327,7 @@ const EditTaskPopup = (Items: any) => {
                                     <div>
                                         {EditData.Id != null ? <>
                                             <CommentBoxComponent
-                                                data={EditData.FeedBackBackup[0]?.FeedBackDescriptions}
+                                                data={EditData?.FeedBackBackup?.length>0?EditData?.FeedBackBackup[0]?.FeedBackDescriptions:[]}
                                                 callBack={CommentSectionCallBack}
                                                 allUsers={taskUsers}
                                                 ApprovalStatus={ApprovalStatus}
@@ -6336,7 +6336,7 @@ const EditTaskPopup = (Items: any) => {
                                                 Context={Context}
                                             />
                                             <Example
-                                                textItems={EditData.FeedBackBackup[0]?.FeedBackDescriptions}
+                                                textItems={EditData?.FeedBackBackup?.length>0?EditData?.FeedBackBackup[0]?.FeedBackDescriptions:[]}
                                                 callBack={SubCommentSectionCallBack}
                                                 allUsers={taskUsers}
                                                 ItemId={EditData.Id}
