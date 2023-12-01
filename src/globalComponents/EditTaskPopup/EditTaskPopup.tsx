@@ -71,6 +71,7 @@ var TimeSheetlistId = ''
 let siteConfig: any = [];
 let siteConfigs: any = [];
 var TimeSheets: any = []
+let tempArrayJsonData: any = []
 var MigrationListId = ''
 var newGeneratedId: any = ''
 var siteUrl = ''
@@ -3569,8 +3570,9 @@ const EditTaskPopup = (Items: any) => {
 
                     //       console.log(MyImage)
                     //   }
-                     CopydocumentData(SelectedSite,res.data)
                     await CopyImageData(SelectedSite,res.data)
+                     CopydocumentData(SelectedSite,res.data)
+                    
                     if (FunctionsType == "Copy-Task") {
                         newGeneratedId = res.data.Id;
                         console.log(`Task Copied Successfully on ${SelectedSite} !!!!!`);
@@ -3619,75 +3621,88 @@ const EditTaskPopup = (Items: any) => {
             });
            
     }
-        const CopyImageData = async (NewList:any,NewItem:any) => {
-            var attachmentFileName:any=''
-            let tempArray:any=[]
-            let currentUserDataObject: any;
-                 if (currentUserBackupArray != null && currentUserBackupArray.length > 0) {
-                        currentUserDataObject = currentUserBackupArray[0];
-                   }
-            let web = new Web(siteUrls);
-            await web.lists
-                .getById(`${Items?.Items?.listId}`) 
-                .items.getById(Items?.Items?.Id)
-                .select("Id,Title,Attachments,AttachmentFiles")
-                .expand("AttachmentFiles").get()
-                .then((res: any) => {
-                    console.log(res);
-                    res.AttachmentFiles?.forEach(async (value:any,index:any)=>{
-                        const sourceEndpoint = `${siteUrls}/_api/web/lists/getbytitle('${Items?.Items?.siteType}')/items(${Items?.Items?.Id})/AttachmentFiles/getByFileName('${value.FileName}')/$value`;
-                         const response = await fetch(sourceEndpoint, {
-                           method: 'GET',
-                           headers: {
-                             'Accept': 'application/json;odata=nometadata',
-                           },
-                         });
-                   
-                         if (response.ok) {
-                           const binaryData = await response.arrayBuffer();
-                           console.log('Binary Data:', binaryData);
-                           var uint8Array = new Uint8Array(binaryData);
-                           console.log(uint8Array)
-                   
-                           // Use the binary data as needed
-                         } else {
-                           console.error('Error:', response.statusText);
-                         }
-                         let fileName: any = '';
-                         let date = new Date()
-                         let timeStamp = date.getTime();
-                         let imageIndex = index + 1
-                         var file = "T" + NewItem.Id + '-Image' + imageIndex + "-" + NewItem.Title?.replace(/["/':?]/g, '')?.slice(0, 40) + " " + timeStamp + ".jpg";
+    const CopyImageData = async (NewList: any, NewItem: any) => {
+        var attachmentFileName: any = ''
+        let web = new Web(siteUrls);
+        const response = await web.lists
+            .getById(`${Items?.Items?.listId}`)
+            .items.getById(Items?.Items?.Id)
+            .select("Id,Title,Attachments,AttachmentFiles")
+            .expand("AttachmentFiles").get()
+        await SaveImageDataOnLoop(response, NewList, NewItem)
 
-                         let ImgArray = {
-                            ImageName: file,
-                            UploadeDate: Moment(new Date()).format("DD/MM/YYYY"),
-                            ImageUrl:  siteUrls + '/Lists/' + NewList + '/Attachments/' + NewItem?.Id + '/' + file,
-                            UserImage: currentUserDataObject != undefined && currentUserDataObject.Item_x0020_Cover?.Url?.length > 0 ? currentUserDataObject.Item_x0020_Cover?.Url : "https://hhhhteams.sharepoint.com/sites/HHHH/SiteCollectionImages/ICONS/32/icon_user.jpg",
-                            UserName: currentUserDataObject != undefined && currentUserDataObject.Title?.length > 0 ? currentUserDataObject.Title : Items.context.pageContext._user.displayName,
-                            Description: ''
-                        };
-                          tempArray.push(ImgArray);
-                         const result = await sp.web.lists.getByTitle(NewList).items.getById(NewItem.Id).attachmentFiles.add(file, uint8Array);
-                         console.log(result)
-                         if(tempArray != undefined && tempArray.length > 0){
-                            var Data = await web.lists.getByTitle(NewList).items.getById(NewItem.Id).update({
-                                BasicImageInfo: tempArray != undefined && tempArray.length > 0 ? JSON.stringify(tempArray) : JSON.stringify(tempArray),
-                            }).then((res) => {
-                               console.log(res)
-                            })
-                        }
+    }
+    const SaveImageDataOnLoop = async (response: any, NewList: any, NewItem: any) => {
+        var count = 0;
+        let currentUserDataObject: any;
+        if (currentUserBackupArray != null && currentUserBackupArray.length > 0) {
+            currentUserDataObject = currentUserBackupArray[0];
+        }
+        var fetchPromises = response?.AttachmentFiles?.map(async (value: any, index: any) => {
+            const sourceEndpoint = `${siteUrls}/_api/web/lists/getbytitle('${Items?.Items?.siteType}')/items(${Items?.Items?.Id})/AttachmentFiles/getByFileName('${value.FileName}')/$value`;
 
-                           })
+            try {
+                const response = await fetch(sourceEndpoint, {
+                    method: 'GET',
+                    headers: {
+                        'Accept': 'application/json;odata=nometadata',
+                    },
                 });
 
-               
-                
-    
+                if (response.ok) {
+                    count++;
+                    const binaryData = await response.arrayBuffer();
+                    console.log('Binary Data:', binaryData);
+                    var uint8Array = new Uint8Array(binaryData);
+                    console.log(uint8Array);
 
-               
-              
-     }
+                    console.log(uint8Array)
+                    let fileName: any = '';
+                    let date = new Date()
+                    let timeStamp = date.getTime();
+                    let imageIndex = index + 1
+                    var file = "T" + NewItem.Id + '-Image' + imageIndex + "-" + NewItem.Title?.replace(/["/':?]/g, '')?.slice(0, 40) + " " + timeStamp + ".jpg";
+
+                    // Your existing code for creating ImgArray
+                    let ImgArray = {
+                        ImageName: file,
+                        UploadeDate: Moment(new Date()).format("DD/MM/YYYY"),
+                        ImageUrl: siteUrls + '/Lists/' + NewList + '/Attachments/' + NewItem?.Id + '/' + file,
+                        UserImage: currentUserDataObject != undefined && currentUserDataObject.Item_x0020_Cover?.Url?.length > 0 ? currentUserDataObject.Item_x0020_Cover?.Url : "https://hhhhteams.sharepoint.com/sites/HHHH/SiteCollectionImages/ICONS/32/icon_user.jpg",
+                        UserName: currentUserDataObject != undefined && currentUserDataObject.Title?.length > 0 ? currentUserDataObject.Title : Items.context.pageContext._user.displayName,
+                        Description: ''
+                    };
+                    tempArrayJsonData.push(ImgArray);
+
+                    await sp.web.lists.getByTitle(NewList).items.getById(NewItem.Id).attachmentFiles.add(file, uint8Array);
+
+                } else {
+                    console.error('Error:', response.statusText);
+                }
+            } catch (error) {
+                console.log(error, 'HHHH Time');
+            }
+        });
+
+        // Wait for all promises to resolve
+        try {
+            await Promise.all(fetchPromises);
+
+            // Call another function after all promises are resolved
+            await SaveJSONData(NewList, NewItem);
+        } catch (error) {
+            console.error("Error updating client category:", error);
+        }
+
+    }
+    const SaveJSONData = async (NewList: any, NewItem: any) => {
+        let web = new Web(siteUrls);
+        var Data = await web.lists.getByTitle(NewList).items.getById(NewItem.Id).update({
+            BasicImageInfo: tempArrayJsonData != undefined && tempArrayJsonData.length > 0 ? JSON.stringify(tempArrayJsonData) : JSON.stringify(tempArrayJsonData),
+        })
+        console.log(Data)
+        
+    }
           
     
     const moveTimeSheet = async (SelectedSite: any, newItem: any) => {
@@ -5289,7 +5304,7 @@ const EditTaskPopup = (Items: any) => {
                                     <div className={IsShowFullViewImage != true ? 'col-sm-9 toggle-task' : 'col-sm-6 editsectionscroll toggle-task'}>
                                         {EditData.Id != null ? <>
                                             <CommentBoxComponent
-                                                data={EditData.FeedBackBackup[0]?.FeedBackDescriptions}
+                                                data={EditData?.FeedBackBackup?.length>0?EditData?.FeedBackBackup[0]?.FeedBackDescriptions:[]}
                                                 callBack={CommentSectionCallBack}
                                                 allUsers={taskUsers}
                                                 ApprovalStatus={ApprovalStatus}
@@ -5299,7 +5314,7 @@ const EditTaskPopup = (Items: any) => {
                                                 FeedbackCount={FeedBackCount}
                                             />
                                             <Example
-                                                textItems={EditData.FeedBackBackup[0]?.FeedBackDescriptions}
+                                                textItems={EditData?.FeedBackBackup?.length>0?EditData?.FeedBackBackup[0]?.FeedBackDescriptions:[]}
                                                 callBack={SubCommentSectionCallBack}
                                                 allUsers={taskUsers}
                                                 ItemId={EditData.Id}
@@ -6327,7 +6342,7 @@ const EditTaskPopup = (Items: any) => {
                                     <div>
                                         {EditData.Id != null ? <>
                                             <CommentBoxComponent
-                                                data={EditData.FeedBackBackup[0]?.FeedBackDescriptions}
+                                                data={EditData?.FeedBackBackup?.length>0?EditData?.FeedBackBackup[0]?.FeedBackDescriptions:[]}
                                                 callBack={CommentSectionCallBack}
                                                 allUsers={taskUsers}
                                                 ApprovalStatus={ApprovalStatus}
@@ -6336,7 +6351,7 @@ const EditTaskPopup = (Items: any) => {
                                                 Context={Context}
                                             />
                                             <Example
-                                                textItems={EditData.FeedBackBackup[0]?.FeedBackDescriptions}
+                                                textItems={EditData?.FeedBackBackup?.length>0?EditData?.FeedBackBackup[0]?.FeedBackDescriptions:[]}
                                                 callBack={SubCommentSectionCallBack}
                                                 allUsers={taskUsers}
                                                 ItemId={EditData.Id}
