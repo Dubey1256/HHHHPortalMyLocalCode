@@ -484,7 +484,7 @@ export default class CategoriesWeeklyMultipleReport extends React.Component<ICat
     AllListId = this.props;
     AllListId.isShowTimeEntry = this.props.TimeEntry;
     AllListId.isShowSiteCompostion = this.props.SiteCompostion
-    $("#spPageCanvasContent").addClass("sixtyHundred");
+
     this.GetComponents();
     this.GetTaskUsers();
     this.LoadAllMetaDataFilter();
@@ -535,7 +535,7 @@ export default class CategoriesWeeklyMultipleReport extends React.Component<ICat
         item.getParentRows()[0].original.RoundAdjustedTime = ((parseFloat(item?.getParentRows()[0]?.original?.RoundAdjustedTime || 0) - parseFloat(QuickEditItem?.Rountfiguretime || 0)))// + (parseFloat(item?.RoundAdjustedTime) + parseFloat(obj.Rountfiguretime)))
         this.RoundAdjustedTimeTimeEntry = (parseFloat(this.RoundAdjustedTimeTimeEntry || 0) - parseFloat(QuickEditItem?.Rountfiguretime || 0))
         this.RoundAdjustedTimeTimeEntry = (parseFloat(this.RoundAdjustedTimeTimeEntry || 0) + parseFloat(obj.Rountfiguretime || 0))
-        this.RoundAdjustedTimeTimeEntry =this.RoundAdjustedTimeTimeEntry.toFixed(2);
+        this.RoundAdjustedTimeTimeEntry = this.RoundAdjustedTimeTimeEntry.toFixed(2);
         obj.QuickEditItem = false;
         obj.IsColor = true;
 
@@ -608,6 +608,7 @@ export default class CategoriesWeeklyMultipleReport extends React.Component<ICat
 
     for (let index = 0; index < results.length; index++) {
       let element = results[index];
+      element.AssingedToUserTitle = element?.AssingedToUser?.Title + ' ' + element?.UserGroup?.Title;
       if (element.UserGroupId == undefined) {
         this.getChilds(element, results);
         if (element?.childs?.length > 0)
@@ -739,6 +740,7 @@ export default class CategoriesWeeklyMultipleReport extends React.Component<ICat
     this.setState({
       filterItems: updatedItems
     })
+    $("#spPageCanvasContent").addClass("sixtyHundred");
   }
 
   private IsExistsData(array: any, Id: any) {
@@ -1048,7 +1050,7 @@ export default class CategoriesWeeklyMultipleReport extends React.Component<ICat
   }
 
   private updatefilter() {
-    if (this.state.IsUpdatedbutton ===false) {
+    if (this.state.IsUpdatedbutton === false) {
       alert('Select Client Category first');
       return false;
     }
@@ -2594,7 +2596,7 @@ export default class CategoriesWeeklyMultipleReport extends React.Component<ICat
           }
         }
         if (this.state.AdjustedTimeType == 'Percentage' && this.state.AdjustedTimeCalcuValue != 0) {
-          value.AdjustedTime = (value.AdjustedTime *  this.state.AdjustedTimeCalcuValue) / 100;
+          value.AdjustedTime = (value.AdjustedTime * this.state.AdjustedTimeCalcuValue) / 100;
           value.AdjustedTime = value.AdjustedTime.toFixed(2)
           if (value.AdjustedTime != undefined && value.AdjustedTime != '') {
             value.AdjustedTime = parseFloat(value.AdjustedTime);
@@ -2614,7 +2616,7 @@ export default class CategoriesWeeklyMultipleReport extends React.Component<ICat
               }
             }
             if (this.state.AdjustedTimeType == 'Percentage' && this.state.AdjustedTimeCalcuValue != 0) {
-              val.AdjustedTime = ( val.AdjustedTime *  this.state.AdjustedTimeCalcuValue) /100;
+              val.AdjustedTime = (val.AdjustedTime * this.state.AdjustedTimeCalcuValue) / 100;
               val.AdjustedTime = val.AdjustedTime.toFixed(2)
               if (val.AdjustedTime != undefined && val.AdjustedTime != '') {
                 val.AdjustedTime = parseFloat(val.AdjustedTime).toFixed(2);
@@ -2700,7 +2702,7 @@ export default class CategoriesWeeklyMultipleReport extends React.Component<ICat
     this.refreshData();
     // this.rerenderEntire(array);
     // this.rerender();
-     
+
   }
 
   private ApplyCalculatedDays = () => {
@@ -2830,7 +2832,7 @@ export default class CategoriesWeeklyMultipleReport extends React.Component<ICat
           }
           contentItem['Adjusted Hours (Roundup)'] = '';
           if (childItem.TotalValue != undefined) {
-            contentItem['Adjusted Hours (Roundup)'] =parseFloat(childItem.Rountfiguretime); //parseFloat(childItem.SmartHoursTime);
+            contentItem['Adjusted Hours (Roundup)'] = parseFloat(childItem.Rountfiguretime); //parseFloat(childItem.SmartHoursTime);
           }
           if (childItem.TotalSmartTime != undefined) {
             contentItem['Adjusted Hours Roundup (In days)'] = (contentItem['Adjusted Hours (Roundup)'] / 8); //childItem.SmartHoursTime / 8;
@@ -2878,7 +2880,7 @@ export default class CategoriesWeeklyMultipleReport extends React.Component<ICat
           //   contentItem['Adjusted Days'] = ''
           // }
           if (childItem.AdjustedTime != undefined) {
-            contentItem['Hours'] =parseFloat(childItem.AdjustedTime);// parseFloat(childItem.Rountfiguretime);
+            contentItem['Hours'] = parseFloat(childItem.AdjustedTime);// parseFloat(childItem.Rountfiguretime);
           }
           else {
             contentItem['Hours'] = '';
@@ -2943,7 +2945,7 @@ export default class CategoriesWeeklyMultipleReport extends React.Component<ICat
       var Firstlevel = '';
       var dayroundeup: any = 0;
       var TotalValue = 0;
-      var AllAdjustedTime =0;
+      var AllAdjustedTime = 0;
       AllExporttoExcelData.push(yearttile)
       if (yearttile.getMonthYearDate != undefined) {
         var AllItems = $.grep(AllExporttoExcelDataNew, function (obj: any) { return yearttile.getMonthYearDate == obj.getMonthYearDate });
@@ -3020,7 +3022,7 @@ export default class CategoriesWeeklyMultipleReport extends React.Component<ICat
     contentItemNew['First Level'] = '';
     contentItemNew['Adjusted Hours (Roundup)'] = '';
     contentItemNew['Adjusted Hours Roundup (In days)'] = '';
-   
+
     contentItemNew['Client Category'] = '';
     contentItemNew['Smart Hours'] = '';
     contentItemNew['Smart Days'] = '';
@@ -3047,13 +3049,13 @@ export default class CategoriesWeeklyMultipleReport extends React.Component<ICat
       }
       contentItem['Adjusted Hours (Roundup)'] = '';
       if (item.AdjustedTime != undefined) {
-        item.TotalValue =item.TotalValue.toFixed(2);
+        item.TotalValue = item.TotalValue.toFixed(2);
         contentItem['Adjusted Hours (Roundup)'] = parseFloat(item.TotalValue);
       }
       contentItem['Adjusted Hours Roundup (In days)'] = '';
       if (item.SmartHoursTotal != undefined && item.SmartHoursTotal != undefined) {
         contentItem['Adjusted Hours Roundup (In days)'] = item.TotalValueHours / 8;
-        contentItem['Adjusted Hours Roundup (In days)'] =contentItem['Adjusted Hours Roundup (In days)'].toFixed(2);
+        contentItem['Adjusted Hours Roundup (In days)'] = contentItem['Adjusted Hours Roundup (In days)'].toFixed(2);
         contentItem['Adjusted Hours Roundup (In days)'] = parseFloat(contentItem['Adjusted Hours Roundup (In days)']);
       }
 
@@ -3105,7 +3107,7 @@ export default class CategoriesWeeklyMultipleReport extends React.Component<ICat
       contentItem['Smart Days'] = '';
       if (item.TotalValue != undefined) {
         let days: any = item.TotalValueHours / 8;
-        days =days.toFixed(2);
+        days = days.toFixed(2);
         contentItem['Smart Days'] = parseFloat(days);
 
       }
@@ -3119,7 +3121,7 @@ export default class CategoriesWeeklyMultipleReport extends React.Component<ICat
 
       if (item.SmartHoursTotal != undefined && item.SmartHoursTotal != undefined) {
         let daysround: any = (item.TotalValueHours / 8);
-        daysround =daysround.toFixed(2);
+        daysround = daysround.toFixed(2);
         contentItem['Days'] = (parseFloat(daysround));
       } else {
         contentItem['Days'] = '';
@@ -3132,7 +3134,7 @@ export default class CategoriesWeeklyMultipleReport extends React.Component<ICat
     contentItemNew['User Name'] = '';
     contentItemNew['Site'] = '';
     contentItemNew['First Level'] = '';
-   
+
     contentItemNew['Adjusted Hours (Roundup)'] = '';
     contentItemNew['Adjusted Hours Roundup (In days)'] = '';
 
@@ -3143,7 +3145,7 @@ export default class CategoriesWeeklyMultipleReport extends React.Component<ICat
     // contentItemNew['Smart Days (Roundup)'] = '';
     // contentItemNew['Adjusted Hours'] = '';
     // contentItemNew['Adjusted Days'] = '';
-   
+
     // contentItemNew['Hours Actual'] = '';
     // contentItemNew['Days Actual'] = '';
     contentItemNew['Hours'] = '';
@@ -3375,6 +3377,7 @@ export default class CategoriesWeeklyMultipleReport extends React.Component<ICat
       checked,
       checkedAll: select,
       checkedItems: checkedItems,
+      IsUpdatedbutton: select,
     });
   }
   private getAllSubChildenCount(item: any) {
@@ -3438,7 +3441,7 @@ export default class CategoriesWeeklyMultipleReport extends React.Component<ICat
                 {this.state.ImageSelectedUsers.length <= 3 ? (
                   this.state.ImageSelectedUsers.map(function (obj: any) {
                     return (<span className="marginR41">
-                      <img onClick={(e) => this.SelectUserImage(e, obj)}   title={obj?.AssingedToUser?.Title}
+                      <img onClick={(e) => this.SelectUserImage(e, obj)} title={obj?.AssingedToUserTitle}
                         className="AssignUserPhoto"
                         src={obj.Item_x0020_Cover.Url}
                       ></img>
@@ -3585,7 +3588,7 @@ export default class CategoriesWeeklyMultipleReport extends React.Component<ICat
                               </div>
                             </div>
                           </div>
-                         
+
                         </div>
                       </div>
                     </div>
@@ -3644,7 +3647,7 @@ export default class CategoriesWeeklyMultipleReport extends React.Component<ICat
                         </div>
 
                         <div className="col-sm-12 mt-10 pe-1 text-end">
-                        {/* <div className='col'>
+                          {/* <div className='col'>
                             <label className='full_width'></label>
                             <div className=''>
                               <button type="button" disabled={this.state?.IsUpdatedbutton === false} className="btnCol btn btn-primary pull-right" onClick={() => this.updatefilter()}>

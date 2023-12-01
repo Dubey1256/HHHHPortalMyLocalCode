@@ -15,6 +15,7 @@ import GlobalCommanTable from "../../../globalComponents/GroupByReactTableCompon
 import ReactPopperTooltipSingleLevel from "../../../globalComponents/Hierarchy-Popper-tooltipSilgleLevel/Hierarchy-Popper-tooltipSingleLevel";
 // import GlobalCommanTable from '../../../globalComponents/GlobalCommanTable';
 const TaskStatusTbl = (Tile: any) => {
+  let portfolioColor: any = '#000066';
   const ContextData: any = React.useContext(myContextValue);
   const draftCatogary: any = ContextData?.AlltaskData.DraftCatogary;
   const todaysTask: any = ContextData?.AlltaskData.TodaysTask;
@@ -22,6 +23,7 @@ const TaskStatusTbl = (Tile: any) => {
   const immediateTask: any = ContextData?.AlltaskData.ImmediateTask;
   const thisWeekTask: any = ContextData?.AlltaskData.ThisWeekTask;
   const allAssignedTask: any = ContextData?.AlltaskData?.AssignedTask;
+  const AllTaskUser: any = ContextData?.AlltaskData?.AllTaskUser;
   //const approvalTask: any = ContextData?.AlltaskData.ApprovalTask;
   const AllMasterTasks: any = ContextData?.AllMasterTasks;
   // const [draftCatogary, setDraftCatogary] = useState(ContextData?.AlltaskData.DraftCatogary);
@@ -84,6 +86,13 @@ const TaskStatusTbl = (Tile: any) => {
             >
               {row?.original?.Title}
             </a>
+            {row?.original?.descriptionsSearch != null &&
+              row?.original?.descriptionsSearch != "" && (
+                <InfoIconsToolTip
+                  Discription={row?.original?.descriptionsSearch}
+                  row={row?.original}
+                />
+              )}
           </div>
         ),
         id: "Title",
@@ -108,6 +117,40 @@ const TaskStatusTbl = (Tile: any) => {
         resetColumnFilters: false,
         size: 42,
         id: "percentage"
+      },
+      {
+        accessorFn: (row) => row?.Created,
+        cell: ({ row, column }) => (
+          <div className="alignCenter">
+            {row?.original?.Created == null ? ("") : (
+              <>
+                <div className='ms-1'>{row?.original?.DisplayCreateDate} </div>
+                {row?.original?.Author != undefined &&
+                  <>
+                    <a href={`${ContextData?.siteUrl}/SitePages/TaskDashboard.aspx?UserId=${row?.original?.Author?.Id}&Name=${row?.original?.Author?.Title}`}
+                      target="_blank" data-interception="off">
+                      <img title={row?.original?.Author?.Title} className="workmember ms-1" src={row?.original?.Author?.autherImage} />
+                    </a>
+                  </>
+                }
+              </>
+            )}
+          </div>
+        ),
+        id: 'Created',
+        isColumnDefultSortingDesc: true,
+        resetColumnFilters: false,
+        resetSorting: false,
+        placeholder: "Created",
+        filterFn: (row: any, columnName: any, filterValue: any) => {
+          if (row?.original?.Author?.Title?.toLowerCase()?.includes(filterValue?.toLowerCase()) || row?.original?.DisplayCreateDate?.includes(filterValue)) {
+            return true
+          } else {
+            return false
+          }
+        },
+        header: "",
+        size: 125
       },
       {
         cell: ({ row, getValue }: any) => (
@@ -334,6 +377,40 @@ const TaskStatusTbl = (Tile: any) => {
         id: "percentage"
       },
       {
+        accessorFn: (row) => row?.Created,
+        cell: ({ row, column }) => (
+          <div className="alignCenter">
+            {row?.original?.Created == null ? ("") : (
+              <>
+                <div className='ms-1'>{row?.original?.DisplayCreateDate} </div>
+                {row?.original?.Author != undefined &&
+                  <>
+                    <a href={`${ContextData?.siteUrl}/SitePages/TaskDashboard.aspx?UserId=${row?.original?.Author?.Id}&Name=${row?.original?.Author?.Title}`}
+                      target="_blank" data-interception="off">
+                      <img title={row?.original?.Author?.Title} className="workmember ms-1" src={row?.original?.Author?.autherImage} />
+                    </a>
+                  </>
+                }
+              </>
+            )}
+          </div>
+        ),
+        id: 'Created',
+        resetColumnFilters: false,
+        isColumnDefultSortingDesc: true,
+        resetSorting: false,
+        placeholder: "Created",
+        filterFn: (row: any, columnName: any, filterValue: any) => {
+          if (row?.original?.Author?.Title?.toLowerCase()?.includes(filterValue?.toLowerCase()) || row?.original?.DisplayCreateDate?.includes(filterValue)) {
+            return true
+          } else {
+            return false
+          }
+        },
+        header: "",
+        size: 125
+      },
+      {
         cell: ({ row, getValue }: any) => (
           <span>
             <span title="Edit Task" className="svg__iconbox svg__icon--edit hreflink ms-1" onClick={() => editPopFunc(row.original)} ></span>
@@ -434,6 +511,40 @@ const TaskStatusTbl = (Tile: any) => {
         resetColumnFilters: false,
         size: 42,
         id: "percentage"
+      },
+      {
+        accessorFn: (row) => row?.Created,
+        cell: ({ row, column }) => (
+          <div className="alignCenter">
+            {row?.original?.Created == null ? ("") : (
+              <>
+                <div className='ms-1'>{row?.original?.DisplayCreateDate} </div>
+                {row?.original?.Author != undefined &&
+                  <>
+                    <a href={`${ContextData?.siteUrl}/SitePages/TaskDashboard.aspx?UserId=${row?.original?.Author?.Id}&Name=${row?.original?.Author?.Title}`}
+                      target="_blank" data-interception="off">
+                      <img title={row?.original?.Author?.Title} className="workmember ms-1" src={row?.original?.Author?.autherImage} />
+                    </a>
+                  </>
+                }
+              </>
+            )}
+          </div>
+        ),
+        id: 'Created',
+        isColumnDefultSortingDesc: true,
+        resetColumnFilters: false,
+        resetSorting: false,
+        placeholder: "Created",
+        filterFn: (row: any, columnName: any, filterValue: any) => {
+          if (row?.original?.Author?.Title?.toLowerCase()?.includes(filterValue?.toLowerCase()) || row?.original?.DisplayCreateDate?.includes(filterValue)) {
+            return true
+          } else {
+            return false
+          }
+        },
+        header: "",
+        size: 125
       },
       {
         cell: ({ row, getValue }: any) => (
@@ -538,6 +649,40 @@ const TaskStatusTbl = (Tile: any) => {
         id: "percentage"
       },
       {
+        accessorFn: (row) => row?.Created,
+        cell: ({ row, column }) => (
+          <div className="alignCenter">
+            {row?.original?.Created == null ? ("") : (
+              <>
+                <div className='ms-1'>{row?.original?.DisplayCreateDate} </div>
+                {row?.original?.Author != undefined &&
+                  <>
+                    <a href={`${ContextData?.siteUrl}/SitePages/TaskDashboard.aspx?UserId=${row?.original?.Author?.Id}&Name=${row?.original?.Author?.Title}`}
+                      target="_blank" data-interception="off">
+                      <img title={row?.original?.Author?.Title} className="workmember ms-1" src={row?.original?.Author?.autherImage} />
+                    </a>
+                  </>
+                }
+              </>
+            )}
+          </div>
+        ),
+        id: 'Created',
+        isColumnDefultSortingDesc: true,
+        resetColumnFilters: false,
+        resetSorting: false,
+        placeholder: "Created",
+        filterFn: (row: any, columnName: any, filterValue: any) => {
+          if (row?.original?.Author?.Title?.toLowerCase()?.includes(filterValue?.toLowerCase()) || row?.original?.DisplayCreateDate?.includes(filterValue)) {
+            return true
+          } else {
+            return false
+          }
+        },
+        header: "",
+        size: 125
+      },
+      {
         cell: ({ row, getValue }: any) => (
           <span>
             <span title="Edit Task" className="svg__iconbox svg__icon--edit hreflink ms-1" onClick={() => editPopFunc(row.original)} ></span>
@@ -640,6 +785,40 @@ const TaskStatusTbl = (Tile: any) => {
         id: "percentage"
       },
       {
+        accessorFn: (row) => row?.Created,
+        cell: ({ row, column }) => (
+          <div className="alignCenter">
+            {row?.original?.Created == null ? ("") : (
+              <>
+                <div className='ms-1'>{row?.original?.DisplayCreateDate} </div>
+                {row?.original?.Author != undefined &&
+                  <>
+                    <a href={`${ContextData?.siteUrl}/SitePages/TaskDashboard.aspx?UserId=${row?.original?.Author?.Id}&Name=${row?.original?.Author?.Title}`}
+                      target="_blank" data-interception="off">
+                      <img title={row?.original?.Author?.Title} className="workmember ms-1" src={row?.original?.Author?.autherImage} />
+                    </a>
+                  </>
+                }
+              </>
+            )}
+          </div>
+        ),
+        id: 'Created',
+        isColumnDefultSortingDesc: true,
+        resetColumnFilters: false,
+        resetSorting: false,
+        placeholder: "Created",
+        filterFn: (row: any, columnName: any, filterValue: any) => {
+          if (row?.original?.Author?.Title?.toLowerCase()?.includes(filterValue?.toLowerCase()) || row?.original?.DisplayCreateDate?.includes(filterValue)) {
+            return true
+          } else {
+            return false
+          }
+        },
+        header: "",
+        size: 125
+      },
+      {
         cell: ({ row, getValue }: any) => (
           <span>
             <span title="Edit Task" className="svg__iconbox svg__icon--edit hreflink ms-1" onClick={() => editPopFunc(row.original)} ></span>
@@ -740,6 +919,40 @@ const TaskStatusTbl = (Tile: any) => {
         resetColumnFilters: false,
         size: 42,
         id: "percentage"
+      },
+      {
+        accessorFn: (row) => row?.Created,
+        cell: ({ row, column }) => (
+          <div className="alignCenter">
+            {row?.original?.Created == null ? ("") : (
+              <>
+                <div className='ms-1'>{row?.original?.DisplayCreateDate} </div>
+                {row?.original?.Author != undefined &&
+                  <>
+                    <a href={`${ContextData?.siteUrl}/SitePages/TaskDashboard.aspx?UserId=${row?.original?.Author?.Id}&Name=${row?.original?.Author?.Title}`}
+                      target="_blank" data-interception="off">
+                      <img title={row?.original?.Author?.Title} className="workmember ms-1" src={row?.original?.Author?.autherImage} />
+                    </a>
+                  </>
+                }
+              </>
+            )}
+          </div>
+        ),
+        id: 'Created',
+        isColumnDefultSortingDesc: true,
+        resetColumnFilters: false,
+        resetSorting: false,
+        placeholder: "Created",
+        filterFn: (row: any, columnName: any, filterValue: any) => {
+          if (row?.original?.Author?.Title?.toLowerCase()?.includes(filterValue?.toLowerCase()) || row?.original?.DisplayCreateDate?.includes(filterValue)) {
+            return true
+          } else {
+            return false
+          }
+        },
+        header: "",
+        size: 125
       },
       {
         cell: ({ row, getValue }: any) => (
@@ -883,11 +1096,13 @@ const TaskStatusTbl = (Tile: any) => {
                   <span title="Share Ongoing Task" onClick={() => sendAllWorkingTodayTasks(todaysTask)} className="hreflink svg__iconbox svg__icon--share empBg"></span>
                 </span>
               </div>
-              <div className="Alltable maXh-300 border-bottom-0" style={{ height: '300px' }}>
+              <div className="Alltable maXh-300">
                 {todaysTask && (
                   <GlobalCommanTable
                     wrapperHeight="100%"
                     showHeader={true}
+                    TaskUsers={AllTaskUser}
+                    portfolioColor={portfolioColor}
                     columns={columnss}
                     data={todaysTask}
                     callBackData={callBackData} />
@@ -920,11 +1135,13 @@ const TaskStatusTbl = (Tile: any) => {
                   <span title="Share Ongoing Task" onClick={() => sendAllWorkingTodayTasks(thisWeekTask)} className="hreflink svg__iconbox svg__icon--share empBg"></span>
                 </span>
               </div>
-              <div className="Alltable maXh-300 border-bottom-0" style={{ height: '300px' }}>
+              <div className="Alltable maXh-300">
                 {thisWeekTask && (
                   <GlobalCommanTable
                     wrapperHeight="100%"
                     showHeader={true}
+                    TaskUsers={AllTaskUser}
+                    portfolioColor={portfolioColor}
                     columns={ThisWeekcolumn}
                     data={thisWeekTask}
                     callBackData={callBackData} />
@@ -957,11 +1174,13 @@ const TaskStatusTbl = (Tile: any) => {
                   <span title="Share Ongoing Task" onClick={() => sendAllWorkingTodayTasks(allAssignedTask)} className="hreflink svg__iconbox svg__icon--share empBg"></span>
                 </span>
               </div>
-              <div className="Alltable maXh-300 border-bottom-0" style={{ height: '300px' }}>
+              <div className="Alltable maXh-300">
                 {allAssignedTask?.length > 0 && (
                   <GlobalCommanTable
                     wrapperHeight="100%"
                     showHeader={true}
+                    TaskUsers={AllTaskUser}
+                    portfolioColor={portfolioColor}
                     columns={AssignedTask}
                     data={allAssignedTask}
                     callBackData={callBackData} />
@@ -997,11 +1216,13 @@ const TaskStatusTbl = (Tile: any) => {
                   <span title="Share Ongoing Task" onClick={() => sendAllWorkingTodayTasks(bottleneckTask)} className="hreflink svg__iconbox svg__icon--share empBg"></span>
                 </span>
               </div>
-              <div className="Alltable maXh-300 border-bottom-0" style={{ height: '300px' }}>
+              <div className="Alltable maXh-300">
                 {bottleneckTask && (
                   <GlobalCommanTable
                     wrapperHeight="100%"
                     showHeader={true}
+                    TaskUsers={AllTaskUser}
+                    portfolioColor={portfolioColor}
                     columns={Bottlecolumn}
                     data={bottleneckTask}
                     callBackData={callBackData} />
@@ -1034,11 +1255,13 @@ const TaskStatusTbl = (Tile: any) => {
                   <span title="Share Ongoing Task" onClick={() => sendAllWorkingTodayTasks(immediateTask)} className="hreflink svg__iconbox svg__icon--share empBg"></span>
                 </span>
               </div>
-              <div className="Alltable maXh-300 border-bottom-0" style={{ height: '300px' }}>
+              <div className="Alltable maXh-300">
                 {immediateTask && (
                   <GlobalCommanTable
                     wrapperHeight="100%"
                     showHeader={true}
+                    TaskUsers={AllTaskUser}
+                    portfolioColor={portfolioColor}
                     columns={Immcolumn}
                     data={immediateTask}
                     callBackData={callBackData} />
@@ -1063,10 +1286,12 @@ const TaskStatusTbl = (Tile: any) => {
                   <span title="Share Draft Task" onClick={() => sendAllWorkingTodayTasks(draftCatogary)} className="svg__iconbox svg__icon--share empBg"></span>
                 </span>
               </div>
-              <div className="Alltable maXh-300 border-bottom-0" style={{ height: '300px' }}>
+              <div className="Alltable maXh-300">
                 {draftCatogary && (
                   <GlobalCommanTable
                     wrapperHeight="100%"
+                    TaskUsers={AllTaskUser}
+                    portfolioColor={portfolioColor}
                     showHeader={true}
                     columns={draftColumns}
                     data={draftCatogary}

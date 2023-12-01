@@ -1319,7 +1319,7 @@ const HHHHEditComponent = (props: any) => {
 
                         <div>
                             {console.log("footerdiv")}
-                            <div><span className='pe-2'>Created</span><span className='pe-2'> {updateData?.Created ? Moment(updateData?.Created).format("DD/MM/YYYY") : ''}&nbsp;By</span><span><a>{updateData?.FullName ? updateData?.FullName : ''}</a></span></div>
+                            <div><span className='pe-2'>Created</span><span className='pe-2'> {updateData?.Created ? Moment(updateData?.Created).format("DD/MM/YYYY") : ''}&nbsp;By</span><span><a>{updateData?.Author ? updateData?.Author?.Title : ''}</a></span></div>
                             <div><span className='pe-2'>Last modified</span><span className='pe-2'> {updateData?.Modified ? Moment(updateData?.Modified).format("DD/MM/YYYY") : ''}&nbsp;By</span><span><a>{updateData?.Editor ? updateData?.Editor.Title : ''}</a></span></div>
                             <div className='alignCenter'><span onClick={deleteUserDtl} className="svg__iconbox svg__icon--trash hreflink"></span>Delete this item</div>
                         </div>

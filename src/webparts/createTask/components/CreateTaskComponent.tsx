@@ -427,9 +427,11 @@ function CreateTaskComponent(props: any) {
                     }
                     UrlPasteTitle(e);
                 }
-                await loadRelevantTask(paramComponentId, paramSiteUrl, PageName).then((response: any) => {
-                    setRefreshPage(!refreshPage);
-                })
+                if(paramTaskType != 'Bug' && paramTaskType != 'Design'){
+                    await loadRelevantTask(paramComponentId, paramSiteUrl, PageName).then((response: any) => {
+                        setRefreshPage(!refreshPage);
+                    })
+                }
             }
         } else if (props?.projectId != undefined && props?.projectItem != undefined) {
             AllComponents?.map((item: any) => {

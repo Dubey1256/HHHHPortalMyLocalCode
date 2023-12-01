@@ -7,6 +7,7 @@ import WorldClock from './worldclock2';
 import Header from './HeaderSection';
 import TaskStatusTbl from './TaskStausTable';
 import MultipleWebpart from './MutltipleWebpart';
+import * as Moment from "moment";
 var taskUsers: any
 var dataLength: any = [];
 var count: number = 0;
@@ -17,7 +18,7 @@ let currentUserId: any
 const EmployeProfile = (props: any) => {
   let allData: any = [];
   const [AllSite, setAllSite] = useState([]);
-  const [data, setData]: any = React.useState({ DraftCatogary: [], TodaysTask: [], BottleneckTask: [], AssignedTask: [], ThisWeekTask: [], ImmediateTask: [], ApprovalTask: [] });
+  const [data, setData]: any = React.useState({ DraftCatogary: [], TodaysTask: [], BottleneckTask: [], AssignedTask: [], ThisWeekTask: [], ImmediateTask: [], ApprovalTask: [], AllTaskUser: [] });
   const [currentTime, setCurrentTime]: any = useState([]);
   const [annouceMents, setAnnouceMents]: any = useState([]);
   const [approverEmail, setApproverEmail]: any = useState([]);
@@ -130,23 +131,47 @@ const EmployeProfile = (props: any) => {
     }
     return taskUser;
   }
-
+  const findUserByName = (name: any) => {
+    const user = taskUsers.filter(
+      (user: any) => user?.AssingedToUser?.Id === name
+    );
+    let Image: any;
+    if (user[0]?.Item_x0020_Cover != undefined) {
+      Image = user[0].Item_x0020_Cover.Url;
+    } else { Image = "https://hhhhteams.sharepoint.com/sites/HHHH/PublishingImages/Portraits/icon_user.jpg"; }
+    return user ? Image : null;
+  };
   const getAllData = async (ConfigItem: any) => {
     const web = new Web(ConfigItem.siteUrl);
     await web.lists
       .getById(ConfigItem.listId)
-      .items.select("Title", "PercentComplete", "Categories", "Portfolio/Id", "Portfolio/ItemType", "Body", "Portfolio/PortfolioStructureID", "Portfolio/Title", "TaskType/Id", "TaskType/Title", "TaskType/Level", "workingThisWeek", 'TaskID', "IsTodaysTask", "Priority", "PriorityRank", "DueDate", "Created", "Modified", "Team_x0020_Members/Id", "Team_x0020_Members/Title", "ID", "Responsible_x0020_Team/Id", "Responsible_x0020_Team/Title", "Editor/Title", "Editor/Id", "Author/Title", "Author/Id", "AssignedTo/Id", "AssignedTo/Title")
+      .items.select("Title", "PercentComplete", "Categories", "FeedBack", "Portfolio/Id", "Portfolio/ItemType", "Body", "Portfolio/PortfolioStructureID", "Portfolio/Title", "TaskType/Id", "TaskType/Title", "TaskType/Level", "workingThisWeek", 'TaskID', "IsTodaysTask", "Priority", "PriorityRank", "DueDate", "Created", "Modified", "Team_x0020_Members/Id", "Team_x0020_Members/Title", "ID", "Responsible_x0020_Team/Id", "Responsible_x0020_Team/Title", "Editor/Title", "Editor/Id", "Author/Title", "Author/Id", "AssignedTo/Id", "AssignedTo/Title")
       .expand("Team_x0020_Members", "Portfolio", "TaskType", "Author", "Editor", "Responsible_x0020_Team", "AssignedTo")
       .top(5000)
       .getAll()
       .then((data: any) => {
         count++;
         data?.map((items: any) => {
-          if (items?.Body != undefined) {
-            items.descriptionsSearch = items?.Body.replace(
-              /(<([^>]+)>)/gi,
-              ""
-            ).replace(/\n/g, "");
+          items.descriptionsSearch = '';
+          if (items?.FeedBack != undefined) {
+            let DiscriptionSearchData: any = '';
+            let feedbackdata: any = JSON.parse(items?.FeedBack)
+            DiscriptionSearchData = feedbackdata[0]?.FeedBackDescriptions?.map((child: any) => {
+              const childText = child?.Title?.replace(/(<([^>]+)>)/gi, '')?.replace(/\n/g, '');
+              const subtextText = (child?.Subtext || [])?.map((elem: any) => elem.Title?.replace(/(<([^>]+)>)/gi, '')?.replace(/\n/g, '')).join('');
+              return childText + subtextText;
+            }).join('');
+            items.descriptionsSearch = DiscriptionSearchData
+          }
+          if (items?.Created != null && items?.Created != undefined) {
+            items.serverCreatedDate = new Date(items?.Created).setHours(0, 0, 0, 0)
+          }
+          items.DisplayCreateDate = Moment(items.Created).format("DD/MM/YYYY");
+          if (items.DisplayCreateDate == "Invalid date" || "") {
+            items.DisplayCreateDate = items.DisplayCreateDate.replaceAll("Invalid date", "");
+          }
+          if (items.Author) {
+            items.Author.autherImage = findUserByName(items.Author?.Id)
           }
           items.listId = ConfigItem.listId;
           items.site = ConfigItem.Title;
@@ -232,7 +257,7 @@ const EmployeProfile = (props: any) => {
             });
           });
           // setCurrentTaskUser(currentUserData);
-          setData({ DraftCatogary: DraftArray, AssignedTask: AssignedTask, TodaysTask: TodaysTask, BottleneckTask: BottleneckTask, ApprovalTask: ApprovalTask, ImmediateTask: ImmediateTask, ThisWeekTask: ThisWeekTask });
+          setData({ DraftCatogary: DraftArray, AssignedTask: AssignedTask, TodaysTask: TodaysTask, BottleneckTask: BottleneckTask, ApprovalTask: ApprovalTask, ImmediateTask: ImmediateTask, ThisWeekTask: ThisWeekTask, AllTaskUser: taskUsers });
         }
       })
       .catch((err: any) => {
