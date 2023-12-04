@@ -15,7 +15,7 @@ import InfoIconsToolTip from "../InfoIconsToolTip/InfoIconsToolTip";
 var LinkedServicesBackupArray: any = [];
 var MultiSelectedData: any = [];
 let AllMetadata: any = [];
-const ServiceComponentPortfolioPopup = ({ props, Dynamic, Call, ComponentType, selectionType, groupedData }: any) => {
+const ServiceComponentPortfolioPopup = ({ props, Dynamic, Call, ComponentType, selectionType, groupedData, showProject }: any) => {
     const [modalIsOpen, setModalIsOpen] = React.useState(false);
     const [data, setData] = React.useState([]);
     const [CheckBoxData, setCheckBoxData] = React.useState([]);
@@ -117,14 +117,19 @@ const ServiceComponentPortfolioPopup = ({ props, Dynamic, Call, ComponentType, s
                 TaskUserListId: Dynamic.TaskUsertListID,
                 selectedItems: selectedDataArray
             }
+            if (showProject == true) {
+                PropsObject.projectSelection = true
+            }
             GlobalArray = await globalCommon.GetServiceAndComponentAllData(PropsObject);
-            if (GlobalArray?.GroupByData != undefined && GlobalArray?.GroupByData?.length > 0) {
+            if (GlobalArray?.GroupByData != undefined && GlobalArray?.GroupByData?.length > 0 && showProject != true) {
                 setData(GlobalArray.GroupByData);
                 LinkedServicesBackupArray = GlobalArray.GroupByData;
+            } else if (GlobalArray?.ProjectData != undefined && GlobalArray?.ProjectData?.length > 0 && showProject == true) {
+                setData(GlobalArray.ProjectData);
+                LinkedServicesBackupArray = GlobalArray.ProjectData;
             }
+            setModalIsOpen(true);
         }
-
-        setModalIsOpen(true);
     }
 
 
@@ -153,10 +158,9 @@ const ServiceComponentPortfolioPopup = ({ props, Dynamic, Call, ComponentType, s
             <div className="d-flex full-width pb-1" >
                 <div className='subheading'>
                     <span className="siteColor">
-                        {`Select Portfolio`}
+                        {showProject == true ? `Select Project` : `Select Portfolio`}
                     </span>
                 </div>
-
                 <Tooltip ComponentId="1667" />
                 {/* <span onClick={() => setModalIsOpenToFalse()}><i className="svg__iconbox svg__icon--cross crossBtn me-1"></i></span> */}
             </div>
@@ -218,11 +222,16 @@ const ServiceComponentPortfolioPopup = ({ props, Dynamic, Call, ComponentType, s
                 accessorFn: (row) => row?.Title,
                 cell: ({ row, column, getValue }) => (
                     <>
-                        <a className="hreflink serviceColor_Active" target="_blank" style={row?.original?.fontColorTask != undefined ? { color: `${row?.original?.fontColorTask}` } : { color: `${row?.original?.PortfolioType?.Color}` }}
+                        {row?.original?.ItemCat == "Portfolio" ? <a className="hreflink serviceColor_Active" target="_blank" style={row?.original?.fontColorTask != undefined ? { color: `${row?.original?.fontColorTask}` } : { color: `${row?.original?.PortfolioType?.Color}` }}
                             href={Dynamic.siteUrl + "/SitePages/Portfolio-Profile.aspx?taskId=" + row?.original?.Id}
                         >
                             <HighlightableCell value={getValue()} searchTerm={column.getFilterValue()} />
                         </a>
+                            : row?.original?.ItemCat == "Project" ? <a className="hreflink serviceColor_Active" target="_blank" style={row?.original?.fontColorTask != undefined ? { color: `${row?.original?.fontColorTask}` } : { color: `${row?.original?.PortfolioType?.Color}` }}
+                                href={Dynamic.siteUrl + "/SitePages/Project-Management.aspx?ProjectId=" + row?.original?.Id}
+                            >
+                                <HighlightableCell value={getValue()} searchTerm={column.getFilterValue()} />
+                            </a> : ''}
 
                         {row?.original?.descriptionsSearch?.length > 0 && <span className='alignIcon  mt--5 '><InfoIconsToolTip Discription={row?.original?.Body} row={row?.original} /></span>}
                     </>

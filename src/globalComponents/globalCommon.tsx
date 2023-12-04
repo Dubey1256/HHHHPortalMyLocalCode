@@ -738,6 +738,48 @@ export const loadTaskUsers = async () => {
     }
     return taskUser;
 }
+export const loadAllTaskUsers = async (AllListId: any) => {
+
+    let taskUser;
+    try {
+        let web = new Web(AllListId?.siteUrl);
+        taskUser = await web.lists
+            .getById(AllListId?.TaskUsertListID)
+            .items
+            .select("Id,UserGroupId,Suffix,Title,Email,SortOrder,Role,Company,ParentID1,Status,Item_x0020_Cover,AssingedToUserId,isDeleted,AssingedToUser/Title,AssingedToUser/Id,AssingedToUser/EMail,ItemType,Approver/Id,Approver/Title,Approver/Name&$expand=AssingedToUser,Approver")
+            .get();
+    }
+    catch (error) {
+        return Promise.reject(error);
+    }
+    return taskUser;
+}
+export const loadSmartMetadata = async (AllListId: any, TaxType: any) => {
+
+    let metadata;
+    try {
+        let web = new Web(AllListId?.siteUrl);
+        metadata = await web.lists
+            .getById(AllListId?.SmartMetadataListID)
+            .items
+            .select("Id,IsVisible,ParentID,Title,SmartSuggestions,Configurations,TaxType,Item_x005F_x0020_Cover,Color_x0020_Tag,listId,siteName,siteUrl,SortOrder,SmartFilters,Selectable,Parent/Id,Parent/Title")
+            .expand('Parent')
+            .get();
+    }
+    catch (error) {
+        return Promise.reject(error);
+    }
+    if (TaxType != undefined) {
+        if (TaxType == "Sites") {
+            return metadata?.filter((metadataItem: any) => metadataItem?.TaxType == TaxType && metadataItem?.listId != undefined)
+        } else {
+            return metadata?.filter((metadataItem: any) => metadataItem?.TaxType == TaxType)
+        }
+    } else {
+        return metadata;
+    }
+
+}
 export const parseJSON = (jsonItem: any) => {
     var json = [];
     try {
@@ -1011,7 +1053,7 @@ export const sendImmediateEmailNotifications = async (itemId: any, siteUrl: any,
                 await getData(siteUrl, listId, query)
                     .then(async (data: any) => {
                         data?.map((task: any) => {
-                            
+
                             task.PercentageCompleted = task?.PercentComplete < 1 ? task?.PercentComplete * 100 : task?.PercentComplete;
                             task.PercentComplete = task?.PercentComplete < 1 ? task?.PercentComplete * 100 : task?.PercentComplete;
                             if (task.PercentageCompleted != undefined) {
@@ -1036,13 +1078,13 @@ export const sendImmediateEmailNotifications = async (itemId: any, siteUrl: any,
                         })
 
                         var UpdateItem = data[0];
-                        if(UpdateItem?.ClientActivityJson!=undefined){
-                            try{
-                                UpdateItem.ClientActivityJson =JSON.parse(UpdateItem?.ClientActivityJson)
-                                if(UpdateItem.ClientActivityJson?.length>0){
-                                    UpdateItem.ClientActivityJson=UpdateItem.ClientActivityJson[0]
+                        if (UpdateItem?.ClientActivityJson != undefined) {
+                            try {
+                                UpdateItem.ClientActivityJson = JSON.parse(UpdateItem?.ClientActivityJson)
+                                if (UpdateItem.ClientActivityJson?.length > 0) {
+                                    UpdateItem.ClientActivityJson = UpdateItem.ClientActivityJson[0]
                                 }
-                            }catch(e){
+                            } catch (e) {
 
                             }
                         }
@@ -1378,10 +1420,10 @@ export const sendImmediateEmailNotifications = async (itemId: any, siteUrl: any,
 
                         }
                         if (isLoadNotification == 'Client Task') {
-                            let SDCDetails :any= {};
+                            let SDCDetails: any = {};
                             let extraBody = ''
-                            if(UpdateItem?.ClientActivityJson?.SDCCreatedBy?.length>0){
-                                SDCDetails=UpdateItem?.ClientActivityJson;
+                            if (UpdateItem?.ClientActivityJson?.SDCCreatedBy?.length > 0) {
+                                SDCDetails = UpdateItem?.ClientActivityJson;
                                 Subject = "[ SDC Client Task - " + siteType + " - " + SDCDetails?.SDCCreatedBy + " ] " + UpdateItem?.Title + "";
                                 if (UpdateItem?.PercentComplete < 90) {
                                     extraBody = `<div>
@@ -1396,7 +1438,7 @@ export const sendImmediateEmailNotifications = async (itemId: any, siteUrl: any,
                                     <br>
                                     <h4>Client Email : - ${SDCDetails?.SDCEmail}
                                 </div><br><br>`
-                                }else  if (UpdateItem?.PercentComplete == 90) {
+                                } else if (UpdateItem?.PercentComplete == 90) {
                                     extraBody = `<div>
                                     <h2>Email Subject : Your Task has been completed - [${SDCDetails?.SDCTaskId} ${UpdateItem?.Title}]</h2>
                                     <p>Message:</p>
@@ -1410,11 +1452,11 @@ export const sendImmediateEmailNotifications = async (itemId: any, siteUrl: any,
                                     <h4>Client Email : - ${SDCDetails?.SDCEmail}
                                 </div><br><br>`
                                 }
-                            
-    
+
+
                                 body = extraBody + body
                             }
-                           
+
                         }
                         var from = '',
                             to = ToEmails,
@@ -1526,11 +1568,11 @@ export const getPortfolio = async (type: any) => {
                     })
                 }
 
-                if (result.ClientCategory != undefined && result.ClientCategory.length > 0) {
-                    $.each(result.TeamMembers, function (index: any, catego: any) {
-                        result.ClientCategory.push(catego);
-                    })
-                }
+                // if (result.ClientCategory != undefined && result.ClientCategory.length > 0) {
+                //     $.each(result.TeamMembers, function (index: any, catego: any) {
+                //         result.ClientCategory.push(catego);
+                //     })
+                // }
                 if (result.Item_x0020_Type == 'Root Component') {
                     result['Child'] = [];
                     RootComponentsData.push(result);
@@ -1589,6 +1631,7 @@ export const getPortfolio = async (type: any) => {
 export const GetServiceAndComponentAllData = async (Props: any) => {
     var ComponentsData: any = [];
     var AllPathGeneratedData: any = [];
+    let AllPathGeneratedProjectdata:any=[];
     // let TaskUsers: any = [];
     let AllMasterTaskData: any = [];
     try {
@@ -1600,9 +1643,7 @@ export const GetServiceAndComponentAllData = async (Props: any) => {
             .select("ID", "Id", "Title", "PortfolioLevel", "PortfolioStructureID", "Comments", "ItemRank", "Portfolio_x0020_Type", "Parent/Id", "Parent/Title", "DueDate", "Created", "Body", "Sitestagging", "Item_x0020_Type", "Categories", "Short_x0020_Description_x0020_On", "PriorityRank", "Priority", "AssignedTo/Title", "TeamMembers/Id", "TeamMembers/Title", "ClientCategory/Id", "ClientCategory/Title", "PercentComplete", "ResponsibleTeam/Id", "Author/Id", "Author/Title", "Sitestagging", "ResponsibleTeam/Title", "PortfolioType/Id", "PortfolioType/Color", "PortfolioType/IdRange", "PortfolioType/Title", "AssignedTo/Id")
             .expand("Parent", "PortfolioType", "AssignedTo", "Author", "ClientCategory", "TeamMembers", "ResponsibleTeam")
             .getAll();
-        ProjectData = AllMasterTaskData?.filter(
-            (projectItem: any) => projectItem.Item_x0020_Type === "Project"
-        );
+     
         // console.log("all Service and Coponent data form global Call=======", AllMasterTaskData);
         // TaskUsers = await AllTaskUsers(Props.siteUrl, Props.TaskUserListId);
         $.each(AllMasterTaskData, function (index: any, result: any) {
@@ -1639,23 +1680,33 @@ export const GetServiceAndComponentAllData = async (Props: any) => {
             if (result.Item_x0020_Type === "Component") {
                 result.boldRow = "boldClable";
                 result.lableColor = "f-bg";
+                result.ItemCat= "Portfolio"
             }
             if (result.Item_x0020_Type === "SubComponent") {
                 result.lableColor = "a-bg";
+                result.ItemCat= "Portfolio"
             }
             if (result.Item_x0020_Type === "Feature") {
                 result.lableColor = "w-bg";
+                result.ItemCat= "Portfolio"
+            }
+            if (result.Item_x0020_Type === "Project") {
+                result.lableColor = "w-bg";
+                result.ItemCat= "Project"
+            }
+            if (result.Item_x0020_Type === "Sprint") {
+                result.ItemCat= "Project"
             }
             if (result?.Item_x0020_Type != undefined) {
                 result.SiteIconTitle = result?.Item_x0020_Type?.charAt(0);
             }
-            result.PercentComplete = (result.PercentComplete * 100).toFixed(0);
+           
             result.descriptionsSearch = '';
-            try{
+            try {
                 result.descriptionsSearch = portfolioSearchData(result)
                 result.commentsSearch = result?.Comments != null && result?.Comments != undefined ? result.Comments.replace(/(<([^>]+)>)/gi, "").replace(/\n/g, '') : '';
-            }catch(error){
-             
+            } catch (error) {
+
             }
             result.Id = result.Id != undefined ? result.Id : result.ID;
             result["TaskID"] = result?.PortfolioStructureID;
@@ -1723,18 +1774,31 @@ export const GetServiceAndComponentAllData = async (Props: any) => {
                 result.SiteIconTitle = result?.Item_x0020_Type?.charAt(0);
             }
 
-            if (result.Item_x0020_Type == 'Component') {
+            if (result.Item_x0020_Type == 'Component' && Props?.projectSelection!=true) {
                 const groupedResult = componentGrouping(result, AllMasterTaskData)
                 AllPathGeneratedData = [...AllPathGeneratedData, ...groupedResult?.PathArray];
                 ComponentsData.push(groupedResult?.comp);
             }
+            if (result.Item_x0020_Type == 'Project' && Props?.projectSelection!=true) {
+                const groupedResult = componentGrouping(result, AllMasterTaskData)
+                AllPathGeneratedData = [...AllPathGeneratedData, ...groupedResult?.PathArray];
+                ComponentsData.push(groupedResult?.comp);
+            }
+            if (result.Item_x0020_Type == 'Project') {
+                const groupedResult = componentGrouping(result, AllMasterTaskData)
+                AllPathGeneratedProjectdata = [...AllPathGeneratedProjectdata, ...groupedResult?.PathArray];
+            }
 
         });
+        ProjectData = AllMasterTaskData?.filter(
+            (projectItem: any) => projectItem.Item_x0020_Type === "Project"
+        );
 
         let dataObject = {
             GroupByData: ComponentsData,
             AllData: AllPathGeneratedData,
-            ProjectData: ProjectData
+            ProjectData: ProjectData,
+            FlatProjectData:AllPathGeneratedProjectdata
         }
         return dataObject;
 
@@ -1856,7 +1920,7 @@ export const findTaskHierarchy = (
             // if (Object?.Item_x0020_Type?.toLowerCase() != 'task') {
             //     Object.SiteIconTitle = Object?.Item_x0020_Type?.charAt(0);
             // }
-            if (Object.Id === row?.ParentTask?.Id && row?.siteType === Object?.siteType && row?.TaskType?.Title!="Activities") {
+            if (Object.Id === row?.ParentTask?.Id && row?.siteType === Object?.siteType && row?.TaskType?.Title != "Activities") {
                 Object.subRows = [];
                 Object.subRows.push(row);
                 return createGrouping(Object);
@@ -1867,7 +1931,7 @@ export const findTaskHierarchy = (
             } else if (
                 row?.Portfolio != undefined &&
                 Object.Id === row?.Portfolio?.Id &&
-                (row?.ParentTask?.Id == undefined ||row?.TaskType?.Title=="Activities")
+                (row?.ParentTask?.Id == undefined || row?.TaskType?.Title == "Activities")
             ) {
                 Object.subRows = [];
                 Object.subRows.push(row);
@@ -1878,7 +1942,6 @@ export const findTaskHierarchy = (
     };
     return createGrouping(row);
 };
-
 
 export const loadAllTimeEntry = async (timesheetListConfig: any) => {
     var AllTimeEntry: any = []
@@ -1899,6 +1962,40 @@ export const loadAllTimeEntry = async (timesheetListConfig: any) => {
             return AllTimeEntry
         }
 
+    }
+}
+export const loadAllSiteTasks = async (allListId: any, filter: any) => {
+    let query = "Id,Title,FeedBack,PriorityRank,Remark,Project/PriorityRank,ParentTask/Id,ParentTask/Title,ParentTask/TaskID,TaskID,SmartInformation/Id,SmartInformation/Title,Project/Id,Project/Title,workingThisWeek,EstimatedTime,TaskLevel,TaskLevel,OffshoreImageUrl,OffshoreComments,ClientTime,Priority,Status,ItemRank,IsTodaysTask,Body,Portfolio/Id,Portfolio/Title,Portfolio/PortfolioStructureID,PercentComplete,Categories,StartDate,PriorityRank,DueDate,TaskType/Id,TaskType/Title,Created,Modified,Author/Id,Author/Title,TaskCategories/Id,TaskCategories/Title,AssignedTo/Id,AssignedTo/Title,TeamMembers/Id,TeamMembers/Title,ResponsibleTeam/Id,ResponsibleTeam/Title,ClientCategory/Id,ClientCategory/Title&$expand=AssignedTo,Project,ParentTask,SmartInformation,Author,Portfolio,TaskType,TeamMembers,ResponsibleTeam,TaskCategories,ClientCategory"
+    if (filter != undefined) {
+        query += `&$filter=${filter}`
+    }
+    let siteConfig: any = await loadSmartMetadata(allListId, "Sites")
+    let filteredSiteConfig = siteConfig.filter((site: any) => site?.Title != "Master Tasks" && site?.Title != "SDC Sites")
+    let AllSiteTasks: any = []
+    if (filteredSiteConfig?.length > 0) {
+        const fetchPromises = filteredSiteConfig.map(async (site: any) => {
+            let web = new Web(allListId?.siteUrl);
+            try {
+                const data = await web.lists.getById(site?.listId).items.select(query).getAll();
+                data?.map((task: any) => {
+                    task.siteType = site.Title;
+                    task.listId = site.listId;
+                    task.siteUrl = site.siteUrl.Url;
+                    if (task?.Portfolio?.Id != undefined) {
+                        task.portfolio = task?.Portfolio;
+                        task.PortfolioTitle = task?.Portfolio?.Title;
+                        // task["Portfoliotype"] = "Component";
+                    }
+                    task["SiteIcon"] = site?.Item_x005F_x0020_Cover?.Url;
+                    task.TaskID =GetTaskId(task);
+                })
+                AllSiteTasks = [...AllSiteTasks, ...data];
+            } catch (error) {
+                console.log(error, 'HHHH Time');
+            }
+        });
+        await Promise.all(fetchPromises)
+        return AllSiteTasks
     }
 }
 

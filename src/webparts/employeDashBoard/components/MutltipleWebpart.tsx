@@ -10,6 +10,7 @@ import 'bootstrap/dist/css/bootstrap.min.css';
 import GlobalCommanTable from "../../../globalComponents/GroupByReactTableComponents/GlobalCommanTable";
 import ReactPopperTooltipSingleLevel from "../../../globalComponents/Hierarchy-Popper-tooltipSilgleLevel/Hierarchy-Popper-tooltipSingleLevel";
 import EmailComponenet from "../../taskprofile/components/emailComponent";
+import InfoIconsToolTip from "../../../globalComponents/InfoIconsToolTip/InfoIconsToolTip";
 // import GlobalCommanTable from '../../../globalComponents/GlobalCommanTable';
 let data: any
 let sendMail: boolean
@@ -47,7 +48,7 @@ const MultipleWebpart = (Tile: any) => {
   const approvalcallback = () => {
     setsendMail(false)
     emailStatus = ""
-    const data:any = ContextData?.AlltaskData.ApprovalTask.filter((i:any)=>{return i.Id!=approveItem.Id})
+    const data: any = ContextData?.AlltaskData.ApprovalTask.filter((i: any) => { return i.Id != approveItem.Id })
     approvalTask = data;
   }
   const sendAllWorkingTodayTasks = async (sharingTasks: any) => {
@@ -175,6 +176,13 @@ const MultipleWebpart = (Tile: any) => {
             >
               {row?.original?.Title}
             </a>
+            {row?.original?.descriptionsSearch != null &&
+              row?.original?.descriptionsSearch != "" && (
+                <InfoIconsToolTip
+                  Discription={row?.original?.descriptionsSearch}
+                  row={row?.original}
+                />
+              )}
           </div>
         ),
         id: "Title",
@@ -199,6 +207,40 @@ const MultipleWebpart = (Tile: any) => {
         resetColumnFilters: false,
         size: 42,
         id: "percentage"
+      },
+      {
+        accessorFn: (row) => row?.Created,
+        cell: ({ row, column }) => (
+          <div className="alignCenter">
+            {row?.original?.Created == null ? ("") : (
+              <>
+                <div className='ms-1'>{row?.original?.DisplayCreateDate} </div>
+                {row?.original?.Author != undefined &&
+                  <>
+                    <a href={`${ContextData?.siteUrl}/SitePages/TaskDashboard.aspx?UserId=${row?.original?.Author?.Id}&Name=${row?.original?.Author?.Title}`}
+                      target="_blank" data-interception="off">
+                      <img title={row?.original?.Author?.Title} className="workmember ms-1" src={row?.original?.Author?.autherImage} />
+                    </a>
+                  </>
+                }
+              </>
+            )}
+          </div>
+        ),
+        id: 'Created',
+        isColumnDefultSortingDesc: true,
+        resetColumnFilters: false,
+        resetSorting: false,
+        placeholder: "Created",
+        filterFn: (row: any, columnName: any, filterValue: any) => {
+          if (row?.original?.Author?.Title?.toLowerCase()?.includes(filterValue?.toLowerCase()) || row?.original?.DisplayCreateDate?.includes(filterValue)) {
+            return true
+          } else {
+            return false
+          }
+        },
+        header: "",
+        size: 125
       },
       {
         cell: ({ row, getValue }: any) => (
@@ -229,7 +271,7 @@ const MultipleWebpart = (Tile: any) => {
   const callBackData = React.useCallback((elem: any, ShowingData: any) => {
     if (elem != undefined)
       approveItem = elem;
-    else{
+    else {
       approveItem = undefined
     }
   },
@@ -264,8 +306,8 @@ const MultipleWebpart = (Tile: any) => {
     <div>
       <div className="row m-0 mb-3 empMainSec">
         <div className="col-7 p-0">
-          <div className="empAllSec approvalSec clearfix">
-            <div className="d-flex mb-2 justify-content-between">
+          <div className="chartSec empAllSec clearfix">
+            <div className="alignCenter mb-2 justify-content-between">
               <span className="fw-bold">
                 Waiting for Approval {`(${approvalTask.length})`}
               </span>

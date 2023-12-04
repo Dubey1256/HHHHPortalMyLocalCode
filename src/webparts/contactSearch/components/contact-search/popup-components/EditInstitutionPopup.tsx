@@ -33,7 +33,7 @@ const HrGmbhInstitutionDeatails=async(Id:any)=>{
         let web = new Web(myContextData2?.allListId?.siteUrl);
         await web.lists.getById(myContextData2?.allSite?.GMBHSite?myContextData2?.allListId?.GMBH_CONTACT_SEARCH_LISTID:myContextData2?.allListId?.HR_EMPLOYEE_DETAILS_LIST_ID)
             .items.getById(Id)
-            .select("Id", "Title", "FirstName", "FullName","About","InstitutionType","SocialMediaUrls", "DOJ","DOE","Company","SmartCountriesId","SmartContactId","SmartInstitutionId", "WorkCity", "Suffix", "WorkPhone", "HomePhone", "Comments", "WorkAddress", "WorkFax", "WorkZip",  "ItemType", "JobTitle", "Item_x0020_Cover", "WebPage",  "CellPhone", "Email", "Created", "SocialMediaUrls","Author/Title", "Modified", "Editor/Title", "Division/Title", "Division/Id", "EmployeeID/Title", "StaffID", "EmployeeID/Id", "Institution/Id", "Institution/FullName", "IM")
+            .select("Id", "Title", "FirstName", "FullName","About","Description","InstitutionType","SocialMediaUrls", "DOJ","DOE","Company","SmartCountriesId","SmartContactId","SmartInstitutionId", "WorkCity", "Suffix", "WorkPhone", "HomePhone", "Comments", "WorkAddress", "WorkFax", "WorkZip",  "ItemType", "JobTitle", "Item_x0020_Cover", "WebPage",  "CellPhone", "Email", "Created", "SocialMediaUrls","Author/Title", "Modified", "Editor/Title", "Division/Title", "Division/Id", "EmployeeID/Title", "StaffID", "EmployeeID/Id", "Institution/Id", "Institution/FullName", "IM")
             .expand("EmployeeID", "Division", "Author", "Editor",  "Institution")
             .get().then((data:any)=>{
                
@@ -68,7 +68,7 @@ const HrGmbhInstitutionDeatails=async(Id:any)=>{
             let web = new Web(myContextData2?.allListId?.jointSiteUrl);
             await web.lists.getById(myContextData2?.allListId?.HHHHInstitutionListId)
                 .items .getById(id)
-                .select("Id","Title","FirstName","FullName","Company","JobTitle","About","InstitutionType","SocialMediaUrls","ItemType","WorkCity","ItemImage","WorkCountry","WorkAddress","WebPage","CellPhone","HomePhone","Email","SharewebSites","Created","Author/Id","Author/Title","Modified","Editor/Id","Editor/Title")
+                .select("Id","Title","FirstName","Description","FullName","Company","JobTitle","About","InstitutionType","SocialMediaUrls","ItemType","WorkCity","ItemImage","WorkCountry","WorkAddress","WebPage","CellPhone","HomePhone","Email","SharewebSites","Created","Author/Id","Author/Title","Modified","Editor/Id","Editor/Title")
                 .expand("Author", "Editor",)
               .get().then((data: any) => {
                 let URL: any[] = JSON.parse(data.SocialMediaUrls != null ? data.SocialMediaUrls : ["{}"]);
@@ -213,7 +213,8 @@ const HrGmbhInstitutionDeatails=async(Id:any)=>{
            InstitutionType:updateData?.InstitutionType,
             WorkCity: (updateData?.WorkCity),
             WorkAddress: (updateData?.WorkAddress),
-          
+            Description:updateData?.Description,
+            About:updateData?.About,
             WebPage: {
                 "__metadata": { type: "SP.FieldUrlValue" },
                 Description: updateData?.WebPage ? urlData : (updateData?.WebPage ? updateData?.WebPage?.Url :null),
@@ -235,7 +236,7 @@ const HrGmbhInstitutionDeatails=async(Id:any)=>{
             let web = new Web(myContextData2?.allListId?.jointSiteUrl);
             await web.lists.getById(myContextData2?.allListId?.HHHHInstitutionListId).items.getById(myContextData2?.allSite?.GMBHSite||myContextData2?.allSite?.HrSite?JointData?.Id:updateData?.Id).update(postData).then((e) => {
                 console.log("Your information has been updated successfully");
-           if(props?.allSite?.GMBHSite){
+           if(myContextData2.allSite?.GMBHSite){
             // UpdateGmbhDetails();
            
            }else{

@@ -651,7 +651,7 @@ export class CommentCard extends React.Component<ICommentCardProps, ICommentCard
           if (this.state?.ChildLevel == true) {
             if (this.state?.ReplyParent?.MsTeamCreated == undefined)
               this.state.ReplyParent.MsTeamCreated = ''
-            TeamMsg = `<blockquote>${this.state?.ReplyParent?.AuthorName} ${this.state?.ReplyParent?.MsTeamCreated} </br> ${this.state?.ReplyParent?.Description.replace(/<\/?[^>]+(>|$)/g, '')} </br> ${this.state?.Result?.TaskId}-${this.state?.Result?.Title}</blockquote>${txtComment}`;
+            TeamMsg = `<blockquote>${this.state?.ReplyParent?.AuthorName} ${this.state?.ReplyParent?.MsTeamCreated} </br> ${this.state?.ReplyParent?.Description.replace(/<\/?[^>]+(>|$)/g, '')} </br> <a href=${window.location.href}>${this.state?.Result?.TaskId}-${this.state?.Result?.Title}</a></blockquote>${txtComment}`;
 
           }
           else {
@@ -1037,7 +1037,7 @@ export class CommentCard extends React.Component<ICommentCardProps, ICommentCard
                       <textarea id="txtCommentModal" onChange={(e) => this.handleInputChange(e)} className="form-control ng-pristine ng-untouched ng-empty ng-invalid ng-invalid-required ui-autocomplete-input" rows={2} ng-required="true" placeholder="Enter your comments here" ng-model="Feedback.comment"></textarea>
                       <span role="status" aria-live="polite" className="ui-helper-hidden-accessible"></span>
                     </div>
-                    <div className='text-end mt-1'> <a className=' btn btn-primary ' onClick={() => this.PostComment('txtCommentModal')} >Post</a></div>
+                    <div className='text-end mt-1'> <span className='btn btn-primary hreflink' onClick={() => this.PostComment('txtCommentModal')} >Post</span></div>
 
                   </div>
                   {this.state.Result["Comments"] != null && this.state.Result["Comments"]?.length > 0 && this.state.Result["Comments"]?.map((cmtData: any, i: any) => {

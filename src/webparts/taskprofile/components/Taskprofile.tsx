@@ -38,7 +38,10 @@ import KeyDocuments from './KeyDocument';
 import EODReportComponent from '../../../globalComponents/EOD Report Component/EODReportComponent';
 import ShowTaskTeamMembers from '../../../globalComponents/ShowTaskTeamMembers';
 import ReactPopperTooltipSingleLevel from '../../../globalComponents/Hierarchy-Popper-tooltipSilgleLevel/Hierarchy-Popper-tooltipSingleLevel';
-
+// import InlineEditingcolumns from '../../projectmanagementOverviewTool/components/inlineEditingcolumns';
+import { EditableField } from "../../componentProfile/components/Portfoliop";
+import InlineEditingcolumns from '../../projectmanagementOverviewTool/components/inlineEditingcolumns';
+import ServiceComponentPortfolioPopup from '../../../globalComponents/EditTaskPopup/ServiceComponentPortfolioPopup';
 
 // import {MyContext} from './myContext'
 // const MyContext: any = React.createContext<any>({})
@@ -100,7 +103,9 @@ export interface ITaskprofileState {
   ApprovalPointUserData: any;
   ApprovalPointCurrentParentIndex: number;
   currentArraySubTextIndex: number;
-  isCalloutVisible: boolean
+  isCalloutVisible: boolean;
+  isopencomonentservicepopup:boolean;
+  isopenProjectpopup:boolean;
   currentDataIndex: any
   buttonIdCounter: number
   replyTextComment: any;
@@ -140,6 +145,8 @@ class Taskprofile extends React.Component<ITaskprofileProps, ITaskprofileState> 
       currentDataIndex: 0,
       buttonIdCounter: null,
       isCalloutVisible: false,
+      isopencomonentservicepopup:false,
+      isopenProjectpopup:false,
       currentArraySubTextIndex: null,
       ApprovalPointUserData: null,
       ApprovalPointCurrentParentIndex: null,
@@ -254,7 +261,7 @@ class Taskprofile extends React.Component<ITaskprofileProps, ITaskprofileState> 
       .getByTitle(this.state?.listName)
       .items
       .getById(this.state?.itemID)
-      .select("ID", "Title", "Comments", "ApproverHistory", "EstimatedTime", "SiteCompositionSettings","TaskID", "Portfolio/Id", "Portfolio/Title", "Portfolio/PortfolioStructureID", "DueDate", "IsTodaysTask", 'EstimatedTimeDescription', "Approver/Id", "Approver/Title", "ParentTask/Id", "ParentTask/TaskID", "Project/Id", "Project/Title", "ParentTask/Title", "SmartInformation/Id", "AssignedTo/Id", "TaskLevel", "TaskLevel", "OffshoreComments", "AssignedTo/Title", "OffshoreImageUrl", "TaskCategories/Id", "TaskCategories/Title", "ClientCategory/Id", "ClientCategory/Title", "Status", "StartDate", "CompletedDate", "TeamMembers/Title", "TeamMembers/Id", "ItemRank", "PercentComplete", "Priority", "Created", "Author/Title", "Author/EMail", "BasicImageInfo", "ComponentLink", "FeedBack", "ResponsibleTeam/Title", "ResponsibleTeam/Id", "TaskType/Title", "ClientTime", "Editor/Title", "Modified", "Attachments", "AttachmentFiles")
+      .select("ID", "Title", "Comments", "ApproverHistory", "EstimatedTime", "SiteCompositionSettings","TaskID", "Portfolio/Id", "Portfolio/Title", "Portfolio/PortfolioStructureID", "DueDate", "IsTodaysTask", 'EstimatedTimeDescription', "Approver/Id", "PriorityRank","Approver/Title", "ParentTask/Id", "ParentTask/TaskID", "Project/Id", "Project/Title","Project/PortfolioStructureID", "ParentTask/Title", "SmartInformation/Id", "AssignedTo/Id", "TaskLevel", "TaskLevel", "OffshoreComments", "AssignedTo/Title", "OffshoreImageUrl", "TaskCategories/Id", "TaskCategories/Title", "ClientCategory/Id", "ClientCategory/Title", "Status", "StartDate", "CompletedDate", "TeamMembers/Title", "TeamMembers/Id", "ItemRank", "PercentComplete", "Priority", "Created", "Author/Title", "Author/EMail", "BasicImageInfo", "ComponentLink", "FeedBack", "ResponsibleTeam/Title", "ResponsibleTeam/Id", "TaskType/Title", "ClientTime", "Editor/Title", "Modified", "Attachments", "AttachmentFiles")
       .expand("TeamMembers", "Project", "Approver", "ParentTask", "Portfolio", "SmartInformation", "AssignedTo", "TaskCategories", "Author", "ClientCategory", "ResponsibleTeam", "TaskType", "Editor", "AttachmentFiles")
       .get()
     AllListId = {
@@ -383,9 +390,10 @@ class Taskprofile extends React.Component<ITaskprofileProps, ITaskprofileState> 
       Comments: comment != null && comment != undefined ? comment : "",
       Id: taskDetails["ID"],
       ID: taskDetails["ID"],
-
+      TaskCategories:taskDetails["TaskCategories"],
       Project: taskDetails["Project"],
       IsTodaysTask: taskDetails["IsTodaysTask"],
+      PriorityRank:taskDetails["PriorityRank"],
       EstimatedTime: taskDetails["EstimatedTime"],
       ClientTime: taskDetails["ClientTime"] != null && JSON.parse(taskDetails["ClientTime"]),
       ApproverHistory: taskDetails["ApproverHistory"] != null ? JSON.parse(taskDetails["ApproverHistory"]) : "",
@@ -400,7 +408,7 @@ class Taskprofile extends React.Component<ITaskprofileProps, ITaskprofileState> 
       TaskID: taskDetails["TaskID"],
       Title: taskDetails["Title"],
       Item_x0020_Type: 'Task',
-      DueDate: taskDetails["DueDate"],
+      DueDate:  taskDetails["DueDate"] != null? moment(taskDetails["DueDate"]).format("DD/MM/YYYY") : null ,
       Categories: taskDetails["Categories"],
       Status: taskDetails["Status"],
       StartDate: taskDetails["StartDate"] != null ? moment(taskDetails["StartDate"]).format("DD/MM/YYYY") : "",
@@ -1660,13 +1668,107 @@ if(folora=="folora"&&index==0){
 
 
 
- //******* End */
+ //******* End ****************************/
   private callbackTotalTime=((Time:any)=>{
     this.setState(({
       TotalTimeEntry:Time
     }))
   
 })
+  //********** */ Inline editing start************
+  private handleFieldChange = (fieldName: any) => (e: any) => {
+    let Priority:any;
+   
+    this.setState((prevState) => ({
+      Result: {
+        ...prevState.Result,
+        [fieldName]:fieldName=="ItemRank"?e:e.target.value,
+          
+      }
+    }));
+  };
+
+ private inlineCallBack = (item:any) => {
+ 
+  this.setState((prevState) => ({
+    Result: {
+      ...prevState.Result,
+      Categories:item?.Categories,
+        
+    }
+  }));
+ console.log(item)
+}
+
+private openPortfolioPopupFunction=(change:any)=>{
+  if(change=="Portfolio"){
+    this.setState({
+      isopencomonentservicepopup:true
+    })
+  }else{
+    this.setState({
+      isopenProjectpopup:true
+    })
+  }
+  
+}
+private ComponentServicePopupCallBack = (DataItem: any, Type: any, functionType: any) => {
+  console.log(DataItem)
+  console.log(Type)
+  console.log(functionType)
+  let dataUpdate:any;
+  if (functionType == "Save") {
+   if(this?.state?.isopencomonentservicepopup){
+    this.setState((prevState) => ({
+      Result: {
+        ...prevState.Result,
+        Portfolio:DataItem[0],
+      }}))
+      dataUpdate={
+        PortfolioId:DataItem[0]?.Id
+      }
+    this?.updateProjectComponentServices(dataUpdate) 
+   }else{
+    this.setState((prevState) => ({
+      Result: {
+        ...prevState.Result,
+        Project:DataItem[0],
+          
+      }
+    }));
+    if(DataItem[0]?.Item_x0020_Type=="Project"){
+      dataUpdate={
+        ProjectId:DataItem[0]?.Id
+      }
+      this?.updateProjectComponentServices(dataUpdate)
+    }
+  }
+     
+  }
+  this.setState({
+    isopencomonentservicepopup:false,
+    isopenProjectpopup:false
+  })
+}
+private async updateProjectComponentServices(dataUpdate:any) {
+
+
+  let web = new Web(this.props.siteUrl);
+   await web.lists
+    .getByTitle(this.state?.listName)
+    // .getById(this.props.SiteTaskListID)
+    .items
+    .getById(this.state?.itemID)
+    .update(dataUpdate).then((data:any)=>{
+      console.log(data)
+    }).catch((error:any)=>{
+      console.log(error)
+    });
+
+
+}
+
+//********** */ Inline editing End************
   public render(): React.ReactElement<ITaskprofileProps> {
     buttonId = this.generateButtonId();
     const {
@@ -1792,7 +1894,22 @@ if(folora=="folora"&&index==0){
                       </dl>
                       <dl>
                         <dt className='bg-Fa'>Due Date</dt>
-                        <dd className='bg-Ff'>{this.state.Result["DueDate"] != null && this.state.Result["DueDate"] != undefined ? moment(this.state.Result["DueDate"]).format("DD/MM/YYYY") : ''}</dd>
+                        <dd className='bg-Ff'>
+                          <EditableField
+                      listName={this?.state?.Result?.listName}
+                    itemId={this?.state?.Result?.Id}
+                    fieldName="DueDate"
+                    value={
+                      this?.state?.Result?.DueDate != undefined
+                        ? this?.state?.Result?.DueDate 
+                        : ""
+                    }
+                    onChange={this.handleFieldChange("DueDate")}
+                    type="Date"
+                    web={AllListId?.siteUrl}
+                  />
+                          {/* {this.state.Result["DueDate"] != null && this.state.Result["DueDate"] != undefined ? moment(this.state.Result["DueDate"]).format("DD/MM/YYYY") : ''} */}
+                          </dd>
                       </dl>
                       <dl>
                         <dt className='bg-Fa'>Start Date</dt>
@@ -1805,19 +1922,42 @@ if(folora=="folora"&&index==0){
                       <dl>
                         <dt className='bg-Fa' title="Task Id">Categories</dt>
 
-                        <dd className='bg-Ff text-break'>{this.state.Result["Categories"]}</dd>
+                        <dd className='bg-Ff text-break'>
+                             <div className='alignCenter'>
+                              <InlineEditingcolumns
+                      AllListId={AllListId}
+                      callBack={this?.inlineCallBack}
+                      columnName='TaskCategories'
+                    item={this?.state?.Result}
+                    TaskUsers={this?.taskUsers}
+                    pageName={'portfolioprofile'}
+                  />
+                
+                  </div>
+                        
+                   {/* {this.state.Result["Categories"]} */}
+                          </dd>
                       </dl>
                       <dl>
                         <dt className='bg-Fa'>Item Rank</dt>
-                        <dd className='bg-Ff'>{this.state.Result["ItemRank"]}</dd>
+                        <dd className='bg-Ff'>
+                        <EditableField
+                      listName={this?.state?.Result?.listName}
+                    itemId={this?.state?.Result?.Id}
+                    fieldName="ItemRank"
+                    value={
+                      this?.state?.Result?.ItemRank != undefined
+                        ? this?.state?.Result?.ItemRank 
+                        : ""
+                    }
+                    onChange={this.handleFieldChange("ItemRank")}
+                    type=""
+                    web={AllListId?.siteUrl}
+                  />
+                          {/* {this.state.Result["ItemRank"]} */}
+                          </dd>
                       </dl>
-                      {/* <dl>
-                        <dt className='bg-Fa'>Estimated Time</dt>
-                        <dd className='bg-Ff position-relative' >
-                          <span className='tooltipbox' title="hours">{this.state.Result["EstimatedTime"] != undefined ? (this.state.Result["EstimatedTime"].toFixed(1) > 1 ? this.state.Result["EstimatedTime"].toFixed(1) + " hours" : this.state.Result["EstimatedTime"].toFixed(1) + " hour") : "0.0 hour"} </span>
-                        
-                        </dd>
-                      </dl> */}
+                    
                       {isShowTimeEntry && <dl>
                         <dt className='bg-Fa'>SmartTime Total</dt>
                         <dd className='bg-Ff'>
@@ -1836,57 +1976,7 @@ if(folora=="folora"&&index==0){
                           props={this.state.Result}
                           TaskUsers={this?.taskUsers}
                         />
-                          {/* <div className="d-flex align-items-center">
-                            {this.state.Result["TeamLeader"] != null && this.state.Result["TeamLeader"].length > 0 && this.state.Result["TeamLeader"]?.map((rcData: any, i: any) => {
-                              return <div className="user_Member_img"><a href={`${this.state.Result["siteUrl"]}/SitePages/TaskDashboard.aspx?UserId=${rcData?.Id}&Name=${rcData?.Title}`} target="_blank" data-interception="off" title={rcData?.Title}>
-                                {rcData.userImage != null && <img className="workmember" src={rcData?.userImage}></img>}
-                                {rcData.userImage == null && <span className="workmember bg-fxdark" >{rcData?.Suffix}</span>}
-                              </a>
-                              </div>
-                            })}
-                            {this.state.Result["TeamLeader"] != null && this.state.Result["TeamLeader"].length > 0 &&
-                              <div></div>
-                            }
-
-                            {this.state.Result["TeamMembers"] != null && this.state.Result["TeamMembers"].length > 0 &&
-                              <div className="img  "><a href={`${this.state.Result["siteUrl"]}/SitePages/TaskDashboard.aspx?UserId=${this.state.Result["TeamMembers"][0]?.Id}&Name=${this.state.Result["TeamMembers"][0]?.Title}`} target="_blank" data-interception="off" title={this.state.Result["TeamMembers"][0]?.Title}>
-                                {this.state.Result["TeamMembers"][0].userImage != null && <img className={`workmember ${this.state.Result["TeamMembers"][0].activeimg2}`} src={this.state.Result["TeamMembers"][0]?.userImage}></img>}
-                                {this.state.Result["TeamMembers"][0].userImage == null && <span className={`workmember ${this.state.Result["TeamMembers"][0].activeimg2}  suffix_Usericon bg-e9 p-1 `} >{this.state.Result["TeamMembers"][0]?.Suffix}</span>}
-                              </a>
-                              </div>
-                            }
-
-                            {this.state.Result["TeamMembers"] != null && this.state.Result["TeamMembers"].length == 2 && <div className="img mx-2"><a href={`${this.state.Result["siteUrl"]}/SitePages/TaskDashboard.aspx?UserId=${this.state.Result["TeamMembers"][1]?.Id}&Name=${this.state.Result["TeamMembers"][1]?.Title}`} target="_blank" data-interception="off" title={this.state.Result["TeamMembers"][1]?.Title}>
-                              {this.state.Result["TeamMembers"][1]?.userImage != null && <img className={`workmember ${this.state.Result["TeamMembers"][1]?.activeimg2}`} src={this.state.Result["TeamMembers"][1]?.userImage}></img>}
-                              {this.state.Result["TeamMembers"][1]?.userImage == null && <span className={`workmember ${this.state.Result["TeamMembers"][1]?.activeimg2} suffix_Usericon bg-e9 p-1`} >{this.state.Result["TeamMembers"][1]?.Suffix}</span>}
-                            </a>
-                            </div>
-                            }
-                            {this.state.Result["TeamMembers"] != null && this.state.Result["TeamMembers"].length > 2 &&
-                              <div className="position-relative user_Member_img_suffix2 ms-1 alignCenter" onMouseOver={(e) => this.handleSuffixHover()} onMouseLeave={(e) => this.handleuffixLeave()}>+{this.state.Result["TeamMembers"].length - 1}
-                                <span className="tooltiptext" style={{ display: this.state.Display, padding: '10px' }}>
-                                  <div>
-                                    {this.state.Result["TeamMembers"].slice(1)?.map((rcData: any, i: any) => {
-
-                                      return <div className=" mb-1 team_Members_Item" style={{ padding: '2px' }}>
-                                        <a href={`${this.state.Result["siteUrl"]}/SitePages/TaskDashboard.aspx?UserId=${rcData?.Id}&Name=${rcData?.Title}`} target="_blank" data-interception="off">
-
-                                          {rcData?.userImage != null && <img className={`workmember ${rcData?.activeimg2}`} src={rcData?.userImage}></img>}
-                                          {rcData?.userImage == null && <span className={`workmember ${rcData?.activeimg2} suffix_Usericon bg-e9 p-1`}>{rcData?.Suffix}</span>}
-
-                                          <span className='mx-2'>{rcData?.Title}</span>
-                                        </a>
-                                      </div>
-
-                                    })
-                                    }
-
-                                  </div>
-                                </span>
-                              </div>
-                            }
-
-                          </div> */}
+                          
 
                         </dd>
                       </dl>
@@ -1910,11 +2000,30 @@ if(folora=="folora"&&index==0){
 
                       <dl>
                         <dt className='bg-Fa'>% Complete</dt>
-                        <dd className='bg-Ff'>{this.state.Result["PercentComplete"] != undefined ? this.state.Result["PercentComplete"].toFixed(0) : 0}</dd>
+                        <dd className='bg-Ff'>
+                        <dd className='bg-Ff'>{this.state.Result["PercentComplete"] != undefined ? this.state.Result["PercentComplete"]?.toFixed(0) : 0}</dd>
+                         
+                          </dd>
                       </dl>
                       <dl>
                         <dt className='bg-Fa'>Priority</dt>
-                        <dd className='bg-Ff'>{this.state.Result["Priority"]}</dd>
+                        <dd className='bg-Ff'>
+                        <EditableField
+                              // key={index}
+                              listName={this?.state?.Result?.listName}
+                              itemId={this.state.Result?.Id}
+                              fieldName="Priority"
+                              value={
+                                this.state.Result?.PriorityRank != undefined
+                                  ? this.state.Result?.PriorityRank
+                                  : ""
+                              }
+                              onChange={this.handleFieldChange("Priority")}
+                              type=""
+                              web={AllListId?.siteUrl}
+                            />
+                          {/* {this.state.Result["Priority"]} */}
+                          </dd>
                       </dl>
 
                       <dl>
@@ -1945,16 +2054,26 @@ if(folora=="folora"&&index==0){
                             )
                           })} */}
                           {this.state?.Result["Portfolio"] != null &&
-
-                            <a className="hreflink" target="_blank" data-interception="off" href={`${this.state.Result["siteUrl"]}/SitePages/Portfolio-Profile.aspx?taskId=${this.state?.Result["Portfolio"].Id}`}>{this.state?.Result["Portfolio"]?.Title}</a>
-                          }
+                         
+                            <a className="hreflink" target="_blank" data-interception="off" href={`${this.state.Result["siteUrl"]}/SitePages/Portfolio-Profile.aspx?taskId=${this.state?.Result["Portfolio"].Id}`}>
+                              
+                              {this.state?.Result["Portfolio"]?.Title}
+                              
+                              </a>
+                             
+                              
+                              
+                          } <span className="pull-right svg__icon--editBox svg__iconbox" onClick={()=>this?.openPortfolioPopupFunction("Portfolio")}></span>
 
                         </dd>
                       </dl>
                       <dl>
                         <dt className='bg-Fa'>Project</dt>
                         <dd className='bg-Ff full-width'>
-                          <a className="hreflink" target="_blank" data-interception="off" href={`${this.state.Result["siteUrl"]}/SitePages/Project-Management.aspx?ProjectId=${this.state.Result["Project"]?.Id}`}>{this.state.Result["Project"]?.Title}</a>
+                          <div>
+                    {this.state.Result["Project"]!=undefined?<a className="hreflink" target="_blank" data-interception="off" href={`${this.state.Result["siteUrl"]}/SitePages/Project-Management.aspx?ProjectId=${this.state.Result["Project"]?.Id}`}>{`${this.state.Result["Project"]?.PortfolioStructureID}-${this.state.Result["Project"]?.Title}`}</a>:null}
+                    <span className="pull-right svg__icon--editBox svg__iconbox" onClick={()=>this?.openPortfolioPopupFunction("Project")}></span> 
+                          </div>
                         </dd>
                       </dl>
                       {isShowSiteCompostion && <dl className="Sitecomposition">
@@ -2656,6 +2775,23 @@ if(folora=="folora"&&index==0){
           {this.state.EditSiteCompositionStatus ? <EditSiteComposition EditData={this.state.Result} SmartTotalTimeData={this.state.TotalTimeEntry} context={this.props.Context} AllListId={AllListId} Call={(Type: any) => { this.CallBack(Type) }} /> : ''}
           {this.state?.emailcomponentopen && countemailbutton == 0 && <EmailComponenet approvalcallback={() => { this.approvalcallback() }} Context={this.props?.Context} emailStatus={this.state?.emailComponentstatus} currentUser={this?.currentUser} items={this.state?.Result} />}
           {this.state?.OpenEODReportPopup ? <EODReportComponent TaskDetails={this.state.Result} siteUrl={this.props?.siteUrl} Callback={() => { this.EODReportComponentCallback() }} /> : null}
+          {(this.state?.isopencomonentservicepopup ||this.state?.isopenProjectpopup) &&
+        <ServiceComponentPortfolioPopup
+
+          props={this?.state?.Result}
+          Dynamic={AllListId}
+          ComponentType={"Component"}
+          Call={ (DataItem: any, Type: any, functionType: any)=>{this.ComponentServicePopupCallBack(DataItem,Type,functionType)}}
+          showProject={this.state?.isopenProjectpopup}
+        />
+      }
+      {/* {this.state?.isopenProjectpopup &&<ServiceComponentPortfolioPopup
+        props={this?.state?.Result?.Portfolio}
+      Dynamic={AllListId}
+      ComponentType={"Component"}
+      Call={ (DataItem: any, Type: any, functionType: any)=>{this.ComponentServicePopupCallBack(DataItem,Type,functionType)}}
+      showProject={this.state?.isopenProjectpopup}
+            />} */}
         </div>
       </myContextValue.Provider>
     );

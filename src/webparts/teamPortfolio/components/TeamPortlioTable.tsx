@@ -2223,13 +2223,13 @@ function TeamPortlioTable(SelectedProp: any) {
                     pageName={"TaskFooterTable"}
                 ></EditTaskPopup>
             )}
-            {IsComponent && (
+           {IsComponent && (
                 <EditInstituton
                     item={SharewebComponent}
                     Calls={Call}
                     SelectD={SelectedProp}
+                    portfolioTypeData={portfolioTypeData}
                 >
-                    {" "}
                 </EditInstituton>
             )}
             {IsTimeEntry && (

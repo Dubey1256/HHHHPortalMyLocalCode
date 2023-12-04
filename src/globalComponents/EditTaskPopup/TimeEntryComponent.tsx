@@ -303,7 +303,7 @@ function TimeEntryPopup(item: any) {
       }
     }
     if ((type == "EditTime" || type == "CopyTime") && val == "15") {
-      if (TimeInMinutes != undefined) {
+      if (time.TaskTimeInMin != undefined) {
         time.TaskTimeInMin = Number(time.TaskTimeInMin);
         if (changeTime == 0) {
           changeTime = time.TaskTimeInMin + 15;
@@ -311,13 +311,13 @@ function TimeEntryPopup(item: any) {
           changeTime = changeTime + 15;
         }
 
-        if (changeTime != undefined) {
+        if (changeTime != undefined  && TimeInMinutes == 0) {
           var TimeInHour: any = changeTime / 60;
           setTimeInHours(TimeInHour.toFixed(2));
         }
         setTimeInMinutes(changeTime);
       }
-      if (TimeInMinutes == undefined) {
+      if (time.TaskTimeInMin == undefined) {
         changeTime = 0;
         if (changeTime == 0) {
           changeTime = changeTime + 15;
@@ -758,6 +758,9 @@ function TimeEntryPopup(item: any) {
             var NewDate = new Date(dp);
             val.sortTaskDate = NewDate;
             val.TaskDates = Moment(NewDate).format("ddd, DD/MM/YYYY");
+            if((val.TaskTimeInMin == 0 || val?.TaskTimeInMin == undefined)  && val?.TaskTime != undefined){
+              val.TaskTimeInMin = val?.TaskTime * 60 
+            }
             try {
               getDateForTimeEntry(NewDate, val);
             } catch (e) { }
@@ -2221,12 +2224,35 @@ function TimeEntryPopup(item: any) {
         //setMyDatee(finalDate)
         setediteddata(change);
       }
+      if (type == "1Jul") {
+        var a1 = newDate.split("/");
+        a1[1] = "07";
+        a1[0] = "01";
+        a1 = a1[2] + a1[1] + a1[0];
+        var finalDate = Moment(a1).format("ddd, DD MMM yyyy");
+        change = new window.Date(finalDate);
+        //setMyDatee(finalDate)
+        setediteddata(change);
+      }
     }
     if (Popup == "AddTime" || Popup == "AddTimeCat") {
 
       if (type == "firstdate") {
         var newStartDate: any = Moment(date).format("DD/MM/YYYY");
         var a1 = newStartDate.split("/");
+        a1[0] = "01";
+        a1 = a1[2] + a1[1] + a1[0];
+        var finalDate = Moment(a1).format("ddd, DD MMM yyyy");
+        change = new window.Date(finalDate);
+        // setMyDatee(finalDate)
+        //setediteddata(finalDate)
+        // var inputDate = new Date(a1)
+        setMyDatee(change);
+      }
+      if (type == "1Jul") {
+        var newStartDate: any = Moment(date).format("DD/MM/YYYY");
+        var a1 = newStartDate.split("/");
+        a1[1] = "07";
         a1[0] = "01";
         a1 = a1[2] + a1[1] + a1[0];
         var finalDate = Moment(a1).format("ddd, DD MMM yyyy");
@@ -2504,7 +2530,7 @@ function TimeEntryPopup(item: any) {
             <div className="Alltable">
               <div className="col-sm-12 p-0 smart">
                 <div>
-                  <div className="wrapper AllTime">
+                  <div className="AllTime">
                     {data && (
                       <GlobalCommanTable
                         columns={column}
@@ -2595,6 +2621,16 @@ function TimeEntryPopup(item: any) {
                           <div className="date-div">
                           <label className="form-label full-width mb-2">Select date</label>
                             <div className="Date-Div-BAR d-flex mb-2">
+                            <span
+                                className="href"
+                                id="selectedToday"
+                                onClick={() =>
+                                  changeDatetodayQuickly((PopupType == 'EditTime' || PopupType == 'CopyTime') ? editeddata != undefined ? editeddata : myDatee : myDatee, "1Jul", PopupType)
+                                }
+                              >
+                                1 Jul
+                              </span>
+                              |
                               <span
                                 className="href"
                                 id="selectedYear"
