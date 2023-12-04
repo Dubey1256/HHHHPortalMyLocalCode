@@ -68,6 +68,9 @@ const TeamSmartFilter = (item: any) => {
     const [iscategoriesAndStatusExpendShow, setIscategoriesAndStatusExpendShow] = React.useState(false);
     const [isTeamMembersExpendShow, setIsTeamMembersExpendShow] = React.useState(false);
     const [isDateExpendShow, setIsDateExpendShow] = React.useState(false);
+    const [isEveryOneShow, setIsEveryOneShow] = React.useState(false);
+    const [isOnlyMeShow, setIsOnlyMeShow] = React.useState(false);
+
     const [collapseAll, setcollapseAll] = React.useState(true);
     const [iconIndex, setIconIndex] = React.useState(0);
 
@@ -1339,12 +1342,23 @@ const TeamSmartFilter = (item: any) => {
         if (value == "isDateExpendShow") {
             if (isDateExpendShow == true) {
                 setIsDateExpendShow(false)
-
             } else {
                 setIsDateExpendShow(true)
-
             }
-
+        }
+        if (value == "isEveryOneShow") {
+            if (isEveryOneShow == true) {
+                setIsEveryOneShow(false)
+            } else {
+                setIsEveryOneShow(true)
+            }
+        }
+        if (value == "isOnlyMeShow") {
+            if (isOnlyMeShow == true) {
+                setIsOnlyMeShow(false)
+            } else {
+                setIsOnlyMeShow(true)
+            }
         }
     }
     const toggleAllExpendCloseUpDown = (iconIndex: any) => {
@@ -1418,18 +1432,19 @@ const TeamSmartFilter = (item: any) => {
                 if (entry.hasOwnProperty(taskTitle) && entry.AdditionalTimeEntry !== null && entry.AdditionalTimeEntry !== undefined) {
                     if (entry[taskTitle].Id === 168) {
                         console.log(entry[taskTitle].Id);
-
                     }
                     const additionalTimeEntry = JSON.parse(entry.AdditionalTimeEntry);
                     let totalTaskTime = additionalTimeEntry?.reduce((total: any, time: any) => total + parseFloat(time.TaskTime), 0);
-
+                    let timeSheetsDescriptionSearch = additionalTimeEntry?.reduce((accumulator: any, entry: any) => `${accumulator} ${entry?.Description?.replace(/(<([^>]+)>|\n)/gi, "").trim()}`, "").trim();
                     if (timeEntryIndex.hasOwnProperty(key)) {
-                        timeEntryIndex[key].TotalTaskTime += totalTaskTime
+                        timeEntryIndex[key].TotalTaskTime += totalTaskTime;
+                        timeEntryIndex[key].timeSheetsDescriptionSearch = (timeEntryIndex[key]?.timeSheetsDescriptionSearch || '') + ' ' + timeSheetsDescriptionSearch;
                     } else {
                         timeEntryIndex[`${taskTitle}${entry[taskTitle]?.Id}`] = {
                             ...entry[taskTitle],
                             TotalTaskTime: totalTaskTime,
                             siteType: site.Title,
+                            timeSheetsDescriptionSearch: timeSheetsDescriptionSearch
                         };
                     }
                 }
@@ -1437,9 +1452,11 @@ const TeamSmartFilter = (item: any) => {
         });
         allTastsData?.map((task: any) => {
             task.TotalTaskTime = 0;
+            task.timeSheetsDescriptionSearch = "";
             const key = `Task${task?.siteType + task.Id}`;
             if (timeEntryIndex.hasOwnProperty(key) && timeEntryIndex[key]?.Id === task.Id && timeEntryIndex[key]?.siteType === task.siteType) {
                 task.TotalTaskTime = timeEntryIndex[key]?.TotalTaskTime;
+                task.timeSheetsDescriptionSearch = timeEntryIndex[key]?.timeSheetsDescriptionSearch;
             }
         })
         if (timeEntryIndex) {
@@ -1456,9 +1473,11 @@ const TeamSmartFilter = (item: any) => {
             const timeEntryIndexLocalStorage = JSON.parse(timeEntryDataLocalStorage)
             allTastsData?.map((task: any) => {
                 task.TotalTaskTime = 0;
+                task.timeSheetsDescriptionSearch = "";
                 const key = `Task${task?.siteType + task.Id}`;
                 if (timeEntryIndexLocalStorage.hasOwnProperty(key) && timeEntryIndexLocalStorage[key]?.Id === task.Id && timeEntryIndexLocalStorage[key]?.siteType === task.siteType) {
                     task.TotalTaskTime = timeEntryIndexLocalStorage[key]?.TotalTaskTime;
+                    task.timeSheetsDescriptionSearch = timeEntryIndex[key]?.timeSheetsDescriptionSearch;
                 }
             })
             console.log("timeEntryIndexLocalStorage", timeEntryIndexLocalStorage)
@@ -2033,14 +2052,18 @@ const TeamSmartFilter = (item: any) => {
     };
     return (
         <>
-            {isSmartFevShowHide === true && <div className='row text-end' >
-                <a onClick={() => OpenSmartfavorites('goToSmartFilter')}>Go to Smart Filter</a>
-            </div>}
-            {isSmartFevShowHide === false && <div className='row text-end' >
-                <a onClick={() => OpenSmartfavorites('goToSmartFavorites')}>Go to Smart Favorites</a>
-            </div>}
-            <section className='smartFilter bg-light border mb-2 col'>
+            <div className='justify-content-end d-flex'>
+                <a className="mx-3" onClick={() => setSelectedFilterPanelIsOpen(true)}>Add Smart Favorite</a>
+                {isSmartFevShowHide === true && <div>
+                    <a className='hreflink' onClick={() => OpenSmartfavorites('goToSmartFilter')}>Go to Smart Filter</a>
+                </div>}
+                {isSmartFevShowHide === false && <div>
+                    <a className='hreflink' onClick={() => OpenSmartfavorites('goToSmartFavorites')}>Go to Smart Favorites</a>
+                </div>}
+            </div>
 
+
+            <section className='smartFilter bg-light border mb-2 col'>
                 {isSmartFevShowHide === false && <>
                     <section className="p-0 smartFilterSection">
                         <div className="px-2 py-1">
@@ -2156,7 +2179,6 @@ const TeamSmartFilter = (item: any) => {
                                         <input className='form-check-input me-1' type='checkbox' id='Component' value='Component' checked={isPortfolioItems} onChange={() => setIsPortfolioItems(!isPortfolioItems)} />Portfolio Items
                                         <span className='mx-2'>|</span>
                                         <input className='form-check-input me-1' type='checkbox' id='Task' value='Task' checked={isTaskItems} onChange={() => setIsTaskItems(!isTaskItems)} />Task Items
-                                        <div className="ml-auto" ><a className="hreflink" onClick={() => setSelectedFilterPanelIsOpen(true)}>Add Smart Favorite</a></div>
                                     </div>
                                 </div> : ''}
                             </div>
@@ -2585,8 +2607,6 @@ const TeamSmartFilter = (item: any) => {
                                                 <SlArrowDown style={{ color: "#555555", width: '12px' }} /> : <SlArrowRight style={{ color: "#555555", width: '12px' }} />}
                                             <span className='ms-2 f-16'>Date</span><div className="ms-2 f-14" style={{ color: "#333333" }}>{dateCountInfo ? '- ' + dateCountInfo : ''}</div>
                                         </div>
-
-
                                     </span>
                                 </label>
                                 {isDateExpendShow === true ? <div className="togglecontent mb-3 ps-3 pt-1 mt-1" style={{ display: "block", borderTop: "1.5px solid" + portfolioColor }}>
@@ -2698,7 +2718,83 @@ const TeamSmartFilter = (item: any) => {
                     </section> : ''}
                 </>}
 
-                {isSmartFevShowHide === true && <div className='row'>
+                {isSmartFevShowHide === true && <>
+                    <section className="smartFilterSection p-0 mb-1">
+                        <div className="px-2">
+                            <div className="togglebox">
+                                <label className="toggler full_width active">
+                                    <span className="full-width" style={{ color: `${portfolioColor}` }} onClick={() => showSmartFilter("isEveryOneShow")}>
+                                        <div className='alignCenter'>
+                                            {isEveryOneShow === true ?
+                                                <SlArrowDown style={{ color: "#555555", width: '12px' }} /> : <SlArrowRight style={{ color: "#555555", width: '12px' }} />}
+                                            <span className='ms-2 f-16'>EveryOne</span><div className="ms-2 f-14" style={{ color: "#333333" }}>{dateCountInfo ? '- ' + dateCountInfo : ''}</div>
+                                        </div>
+                                    </span>
+                                </label>
+                                {isEveryOneShow === true ? <div className="togglecontent mb-3 ps-3 pt-1 mt-1" style={{ display: "block", borderTop: "1.5px solid" + portfolioColor }}>
+                                    <div className="col-sm-12">
+                                        <div>{EveryoneSmartFavorites?.length > 0 && EveryoneSmartFavorites.map((item1: any) => {
+                                            return (<>
+                                                <div className='bg-ee my-1 p-1 w-100'>
+                                                    <span className='d-flex'>
+                                                        <a className='hreflink' onClick={() => handleOpenSamePage(item1, "filterSmaePage")}>{item1.Title}</a><span className='d-flex'><a className="hreflink" data-interception="off" target="_blank" style={{ color: `${portfolioColor}` }} href={`${ContextValue.siteUrl}/SitePages/Team-Portfolio.aspx${item.IsUpdated ? `?PortfolioType=${encodeURIComponent(item.IsUpdated)}` : ''}${item.IsUpdated ? '&' : '?'}SmartfavoriteId=${encodeURIComponent(item1.Id)}&smartfavorite=${encodeURIComponent(item1?.Title)}`}><span className="svg__iconbox svg__icon--openWeb"></span></a><span onClick={() => handleUpdateFaborites(item1)} className="svg__iconbox svg__icon--edit"></span> <span onClick={() => deleteTask(item1)} className="svg__icon--trash  svg__iconbox"></span></span>
+                                                    </span>
+                                                </div>
+                                            </>)
+                                        })}</div>
+                                        <div>{EveryoneSmartFavorites?.length == 0 &&
+                                            <div className='bg-ee my-1 p-1 w-100'>
+                                                <span className='d-flex'>
+                                                    No Items Available
+                                                </span>
+                                            </div>
+                                        }</div>
+                                    </div>
+                                </div> : ''}
+                            </div>
+                        </div >
+                    </section>
+                    <section className="smartFilterSection p-0 mb-1">
+                        <div className="px-2">
+                            <div className="togglebox">
+                                <label className="toggler full_width active">
+                                    <span className="full-width" style={{ color: `${portfolioColor}` }} onClick={() => showSmartFilter("isOnlyMeShow")}>
+                                        <div className='alignCenter'>
+                                            {isOnlyMeShow === true ?
+                                                <SlArrowDown style={{ color: "#555555", width: '12px' }} /> : <SlArrowRight style={{ color: "#555555", width: '12px' }} />}
+                                            <span className='ms-2 f-16'>Only Me</span><div className="ms-2 f-14" style={{ color: "#333333" }}>{dateCountInfo ? '- ' + dateCountInfo : ''}</div>
+                                        </div>
+                                    </span>
+                                </label>
+                                {isOnlyMeShow === true ? <div className="togglecontent mb-3 ps-3 pt-1 mt-1" style={{ display: "block", borderTop: "1.5px solid" + portfolioColor }}>
+                                    <div className="col-sm-12">
+                                        <div>{CreateMeSmartFavorites?.length > 0 && CreateMeSmartFavorites.map((item2: any) => {
+                                            return (<>
+                                                <div className='bg-ee my-1 p-1 w-100'>
+                                                    <div>
+                                                        <span className='d-flex'>
+                                                            <a className='hreflink' onClick={() => handleOpenSamePage(item2, "filterSmaePage")}>{item2.Title}</a><span className='d-flex'><a className="hreflink" data-interception="off" target="_blank" style={{ color: `${portfolioColor}` }} href={`${ContextValue.siteUrl}/SitePages/Team-Portfolio.aspx${item.IsUpdated ? `?PortfolioType=${encodeURIComponent(item.IsUpdated)}` : ''}${item.IsUpdated ? '&' : '?'}SmartfavoriteId=${encodeURIComponent(item2.Id)}&smartfavorite=${encodeURIComponent(item2?.Title)}`}><span className="svg__iconbox svg__icon--openWeb"> </span></a><span onClick={() => handleUpdateFaborites(item2)} className="svg__iconbox svg__icon--edit"></span> <span onClick={() => deleteTask(item2)} className="svg__icon--trash  svg__iconbox"></span></span>
+                                                        </span>
+                                                    </div>
+                                                </div>
+                                            </>)
+                                        })}
+                                        </div>
+                                        <div>{CreateMeSmartFavorites?.length == 0 &&
+                                            <div className='bg-ee my-1 p-1 w-100'>
+                                                <span className='d-flex'>
+                                                    No Items Available
+                                                </span>
+                                            </div>
+                                        }</div>
+                                    </div>
+                                </div> : ''}
+                            </div>
+                        </div >
+                    </section>
+                </>}
+
+                {/* {isSmartFevShowHide === true && <div className='row'>
                     <Col>
                         <div className='bg-69 p-1 text-center'>
                             <h6>EveryOne</h6>
@@ -2744,7 +2840,7 @@ const TeamSmartFilter = (item: any) => {
                             </div>
                         }</div>
                     </Col>
-                </div>}
+                </div>} */}
 
             </section>
             {/* ********************* this is Project Management panel ****************** */}
@@ -2768,30 +2864,6 @@ const TeamSmartFilter = (item: any) => {
                 : null
             }
             <>{PreSetPanelIsOpen && <PreSetDatePikerPannel isOpen={PreSetPanelIsOpen} PreSetPikerCallBack={PreSetPikerCallBack} portfolioColor={portfolioColor} />}</>
-            {/* {selectedFilterPanelIsOpen && <TeamSmartFavorites allFilterClintCatogryData={allFilterClintCatogryData} filterGroupsData={filterGroupsData} allStites={allStites} isOpen={selectedFilterPanelIsOpen} halfCheckBoxIcons={halfCheckBoxIcons} checkBoxIcon={checkBoxIcon} checkIcons={checkIcons} onCheck={onCheck} expanded={expanded} handleSelectAll={handleSelectAll} setExpanded={setExpanded} selectedFilterCallBack={selectedFilterCallBack} portfolioColor={portfolioColor}
-                handleSelectAllChangeTeamSection={handleSelectAllChangeTeamSection}
-                setIsCreatedBy={setIsCreatedBy}
-                setIsModifiedby={setIsModifiedby}
-                setIsAssignedto={setIsAssignedto}
-                setIsTeamLead={setIsTeamLead}
-                setIsTeamMember={setIsTeamMember}
-                setIsTodaysTask={setIsTodaysTask}
-                isSelectAll={isSelectAll}
-                isCreatedBy={isCreatedBy}
-                isModifiedby={isModifiedby}
-                isAssignedto={isAssignedto}
-                isTeamLead={isTeamLead}
-                isTeamMember={isTeamMember}
-                isTodaysTask={isTodaysTask}
-                TaskUsersData={TaskUsersData}
-                isCreatedDateSelected={isCreatedDateSelected}
-                isModifiedDateSelected={isModifiedDateSelected}
-                isDueDateSelected={isDueDateSelected}
-                setIsCreatedDateSelected={setIsCreatedDateSelected}
-                setIsModifiedDateSelected={setIsModifiedDateSelected}
-                setIsDueDateSelected={setIsDueDateSelected}
-            />} */}
-
             {selectedFilterPanelIsOpen && <TeamSmartFavoritesCopy isOpen={selectedFilterPanelIsOpen} selectedFilterCallBack={selectedFilterCallBack}
                 portfolioColor={portfolioColor}
                 filterGroupsData={filterGroupsData}
@@ -2827,3 +2899,4 @@ const TeamSmartFilter = (item: any) => {
     )
 }
 export default TeamSmartFilter;
+

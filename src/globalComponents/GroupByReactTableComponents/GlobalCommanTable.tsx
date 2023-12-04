@@ -148,13 +148,13 @@ const getFirstColHeader = ({ hasCheckbox, hasExpanded, isHeaderNotAvlable, portf
     return ({ table }: any) => (
         <>
             {hasExpanded && isHeaderNotAvlable != true && (<>
-                <span className="border-0 bg-Ff ms-1" {...{ onClick: table.getToggleAllRowsExpandedHandler(), }}>
+                <span className="border-0 bg-Ff ms-1 mb-1" {...{ onClick: table.getToggleAllRowsExpandedHandler(), }}>
                     {table.getIsAllRowsExpanded() ? (
                         <SlArrowDown style={{ color: portfolioColor, width: '12px' }} title='Tap to collapse the childs' />) : (<SlArrowRight style={{ color: portfolioColor, width: '12px' }} title='Tap to expand the childs' />)}
                 </span>{" "}
             </>)}
             {hasCheckbox && (
-                <span style={hasExpanded ? { marginLeft: '7px', marginBottom: '5px' } : {}} ><IndeterminateCheckbox className="mx-1 " {...{ checked: table.getIsAllRowsSelected(), indeterminate: table.getIsSomeRowsSelected(), onChange: table.getToggleAllRowsSelectedHandler(), }} />{" "}</span>
+                <span style={hasExpanded ? { marginLeft: '7px', marginBottom: '0px' } : {}} ><IndeterminateCheckbox className="mx-1 " style={{ marginTop: "5px" }} {...{ checked: table.getIsAllRowsSelected(), indeterminate: table.getIsSomeRowsSelected(), onChange: table.getToggleAllRowsSelectedHandler(), }} />{" "}</span>
             )}
         </>
     );
@@ -269,11 +269,12 @@ const GlobalCommanTable = (items: any, ref: any) => {
     const [tablecontiner, settablecontiner]: any = React.useState("hundred");
     const [trueRestructuring, setTrueRestructuring] = React.useState(false);
     // const [clickFlatView, setclickFlatView] = React.useState(false);
-    const [columnVisibility, setColumnVisibility] = React.useState({ descriptionsSearch: false, commentsSearch: false });
+    const [columnVisibility, setColumnVisibility] = React.useState({ descriptionsSearch: false, commentsSearch: false, timeSheetsDescriptionSearch: false });
     const [selectedFilterPannelData, setSelectedFilterPannelData] = React.useState({
         Title: { Title: 'Title', Selected: true },
         commentsSearch: { commentsSearch: 'commentsSearch', Selected: true },
         descriptionsSearch: { descriptionsSearch: 'descriptionsSearch', Selected: true },
+        timeSheetsDescriptionSearch: { timeSheetsDescriptionSearch: 'timeSheetsDescriptionSearch', Selected: true }
     });
 
     React.useEffect(() => {
@@ -294,7 +295,7 @@ const GlobalCommanTable = (items: any, ref: any) => {
         if (String(query).trim() === "") return true;
 
         if ((selectedFilterPannelData?.Title?.Title === id && selectedFilterPannelData?.Title?.Selected === true) || (selectedFilterPannelData?.commentsSearch?.commentsSearch === id && selectedFilterPannelData?.commentsSearch?.Selected === true) ||
-            (selectedFilterPannelData?.descriptionsSearch?.descriptionsSearch === id && selectedFilterPannelData?.descriptionsSearch?.Selected === true)) {
+            (selectedFilterPannelData?.descriptionsSearch?.descriptionsSearch === id && selectedFilterPannelData?.descriptionsSearch?.Selected === true) || (selectedFilterPannelData?.timeSheetsDescriptionSearch?.timeSheetsDescriptionSearch === id && selectedFilterPannelData?.timeSheetsDescriptionSearch?.Selected === true)) {
 
             const cellValue: any = String(row.getValue(id)).toLowerCase();
 
