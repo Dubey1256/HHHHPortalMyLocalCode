@@ -55,12 +55,12 @@ const HHHHEditComponent = (props: any) => {
         qualificationInfo: false,
         socialSecurityInfo: false
     })
-    let callBack = props.callBack;
+    let callBack = props?.callBack;
   
     useEffect(() => {
         getSmartMetaData();
         if(myContextData2.allSite?.MainSite){
-            getUserData(props.props.Id);
+            getUserData(props?.props?.Id);
          
         }else{
            
@@ -125,8 +125,8 @@ const HHHHEditComponent = (props: any) => {
             let web = new Web(myContextData2?.allListId?.siteUrl);
             await web.lists.getById(myContextData2?.allSite?.GMBHSite?myContextData2?.allListId?.GMBH_CONTACT_SEARCH_LISTID:myContextData2?.allListId?.HR_EMPLOYEE_DETAILS_LIST_ID)
                 .items.getById(Id)
-                .select("Id", "Title", "FirstName", "FullName", "DOJ","DOE","Company","SmartCountriesId","SmartContactId","SmartInstitutionId", "WorkCity", "Suffix", "WorkPhone", "HomePhone", "Comments", "WorkAddress", "WorkFax", "WorkZip",  "ItemType", "JobTitle", "Item_x0020_Cover", "WebPage",  "CellPhone", "Email", "LinkedIn", "Created", "SocialMediaUrls","Author/Title", "Modified", "Editor/Title", "Division/Title", "Division/Id", "EmployeeID/Title", "StaffID", "EmployeeID/Id", "Institution/Id", "Institution/FullName", "IM")
-                .expand("EmployeeID", "Division", "Author", "Editor",  "Institution")
+                .select("Id", "Title", "FirstName", "FullName", "DOJ","DOE","SmartContact/Id","Company","SmartCountries/Id","SmartCountries/Title","SmartContactId","SmartInstitutionId", "WorkCity", "Suffix", "WorkPhone", "HomePhone", "Comments", "WorkAddress", "WorkFax", "WorkZip",  "ItemType", "JobTitle", "Item_x0020_Cover", "WebPage",  "CellPhone", "Email", "LinkedIn", "Created", "SocialMediaUrls","Author/Title", "Modified", "Editor/Title", "Division/Title", "Division/Id", "EmployeeID/Title", "StaffID", "EmployeeID/Id", "Institution/Id", "Institution/FullName", "IM")
+                .expand("EmployeeID", "Division", "Author", "Editor",  "Institution","SmartCountries","SmartContact")
                 .get().then((data:any)=>{
                     
                     HrGmbhEmployeData=data;
@@ -281,15 +281,15 @@ const HHHHEditComponent = (props: any) => {
                 IM: (updateData?.Skype ),
                 SocialMediaUrls: JSON.stringify(UrlData),
                 SmartCountriesId: {
-                    results:updateData?.SmartCountries?.length>0?[updateData?.SmartCountries?.Id ]: []
+                    results:updateData?.SmartCountries?.length>0?[updateData?.SmartCountries[0]?.Id ]: []
                 }
             }
             if (updateData?.Id != undefined) {
                 let web = new Web(myContextData2?.allListId?.jointSiteUrl);
                 await web.lists.getById(myContextData2?.allListId?.HHHHContactListId).items.getById(myContextData2?.allSite?.GMBHSite||myContextData2?.allSite?.HrSite?JointData?.Id:updateData?.Id).update(postData).then((e) => {
                     console.log("Your information has been updated successfully");
-               if(props?.allSite?.GMBHSite){
-                UpdateGmbhDetails();
+               if(myContextData2?.allSite?.GMBHSite){
+                UpdateGmbhDetails(postData);
                
                }else{
                 callBack();
@@ -315,27 +315,27 @@ const HHHHEditComponent = (props: any) => {
 
     // ************************Update GMBH fUNCTION ***********************
 
-   const UpdateGmbhDetails= async()=>{
+   const UpdateGmbhDetails= async(postData:any)=>{
 
-
-        let updateGmbhData:any={
-            Title: (updateData.Title ),
-            FirstName: (updateData.FirstName),
-            FullName: (updateData.FullName ),
-            Suffix: (updateData.Suffix ),
-            JobTitle: (updateData.JobTitle ),
-            Email: (updateData.Email ),
-            WorkPhone: (updateData.WorkPhone ),
-            CellPhone: (updateData.CellPhone ),
-            HomePhone: (updateData.HomePhone ),
-            WorkCity: (updateData.WorkCity ),
-            WorkAddress: (updateData.WorkAddress ),
-            WorkZip: (updateData.WorkZip ),
-            IM: (updateData.IM ),
+         delete(postData?.Department)
+        // let updateGmbhData:any={
+        //     Title: (updateData.Title ),
+        //     FirstName: (updateData.FirstName),
+        //     FullName: (updateData.FullName ),
+        //     Suffix: (updateData.Suffix ),
+        //     JobTitle: (updateData.JobTitle ),
+        //     Email: (updateData.Email ),
+        //     WorkPhone: (updateData.WorkPhone ),
+        //     CellPhone: (updateData.CellPhone ),
+        //     HomePhone: (updateData.HomePhone ),
+        //     WorkCity: (updateData.WorkCity ),
+        //     WorkAddress: (updateData.WorkAddress ),
+        //     WorkZip: (updateData.WorkZip ),
+        //     IM: (updateData.IM ),
            
-        }
+        // }
         let web = new Web('https://hhhhteams.sharepoint.com/sites/HHHH/GmBH');
-      await web.lists.getById('6CE99A82-F577-4467-9CDA-613FADA2296F').items.getById(updateData.Id).update(updateGmbhData).then((e:any) => {
+      await web.lists.getById('6CE99A82-F577-4467-9CDA-613FADA2296F').items.getById(updateData.Id).update(postData).then((e:any) => {
        console.log("request success", e);
        callBack();
        }).catch((error:any)=>{
@@ -393,9 +393,9 @@ const HHHHEditComponent = (props: any) => {
                  if(myContextData2?.allSite?.MainSite){
                     let web = new Web(myContextData2?.allListId?.jointSiteUrl);
                     await web.lists.getById(myContextData2?.allListId?.HHHHContactListId).items.getById(myContextData2?.allSite?.GMBHSite||myContextData2?.allSite?.HrSite?JointData?.Id:updateData?.Id).recycle().then(async(data:any)=>{
-                        if(props?.allSite?.GMBHSite||props?.allSite?.HrSite){
-                            let web = new Web(props?.allListId?.siteUrl);
-                            await web.lists.getById(props?.allSite?.GMBHSite ? props?.allListId?.GMBH_CONTACT_SEARCH_LISTID : props?.allListId?.HR_EMPLOYEE_DETAILS_LIST_ID).items.getById(updateData.Id).recycle(); 
+                        if(myContextData2?.allSite?.GMBHSite||myContextData2?.allSite?.HrSite){
+                            let web = new Web(myContextData2?.allListId?.siteUrl);
+                            await web.lists.getById(myContextData2?.allSite?.GMBHSite ? myContextData2?.allListId?.GMBH_CONTACT_SEARCH_LISTID : myContextData2?.allListId?.HR_EMPLOYEE_DETAILS_LIST_ID).items.getById(updateData.Id).recycle(); 
                          }
                     }).catch(async(error:any)=>{
                         console.log(error)
@@ -527,7 +527,7 @@ const HHHHEditComponent = (props: any) => {
                 <div className='subheading alignCenter'>
                     <img className='workmember' src={updateData?.Item_x0020_Cover != undefined ? updateData?.Item_x0020_Cover.Url : "NA"} />Edit Contact - {updateData?.FullName}
                 </div>
-                <Tooltip ComponentId='3299' />
+                <Tooltip ComponentId='3433' />
             </>
         );
     };
@@ -656,7 +656,7 @@ const HHHHEditComponent = (props: any) => {
                                                         {updateData?.Institution?.FullName ?
                                                             <div className="block wid90 alignCenter">
                                                                 <a className="hreflink" target="_blank"> {updateData?.Institution?.FullName}</a>
-                                                                <span className="bg-light svg__icon--cross svg__iconbox hreflink ml-auto"></span>
+                                                                <span className="bg-light svg__icon--cross svg__iconbox hreflink ml-auto" onClick={()=>setUpdateData({ ...updateData, Institution:{} })}></span>
                                                             </div> :<input type='text'/>
                                                           
                                                         }
@@ -790,7 +790,7 @@ const HHHHEditComponent = (props: any) => {
                                                            {updateData?.SmartCountries?.length>0?<div className="block wid90 alignCenter">
                                                                 <a className="hreflink" target="_blank">{updateData?.SmartCountries?.[0]?.Title}</a>
                                                                 <span
-                                                                //  onClick={() => removeSmartCountry(item.Id)}
+                                                                 onClick={() =>setUpdateData({...updateData,SmartCountries:[]})}
                                                                     className="bg-light ml-auto svg__icon--cross svg__iconbox"></span>
                                                             </div>:<input type='text'></input>} 
                                                             
