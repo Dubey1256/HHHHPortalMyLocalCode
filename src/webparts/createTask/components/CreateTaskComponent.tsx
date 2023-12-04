@@ -255,8 +255,8 @@ function CreateTaskComponent(props: any) {
             siteUrlData = siteUrlData?.split('&OR')[0]
             siteUrlData = siteUrlData?.slice(1, siteUrlData?.length)
             let paramSiteUrl = siteUrlData;
-            //  let paramComponentId = params.get('ComponentID');
-            let paramComponentId = params.get('Component');
+              let paramComponentId = params.get('ComponentID');
+        //    let paramComponentId = params.get('Component');
             let paramType = params.get('Type');
             let paramTaskType = params.get('TaskType');
             let paramServiceId = params.get('ServiceID');

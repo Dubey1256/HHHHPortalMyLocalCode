@@ -8,7 +8,6 @@ import TeamConfigurationCard from "../../../globalComponents/TeamConfiguration/T
 import TeamConfigurationCards from "../../EditPopupFiles/TeamConfigurationPortfolio";
 import { OverlayTrigger, Popover } from "react-bootstrap";
 import Picker from "../../../globalComponents/EditTaskPopup/SmartMetaDataPicker";
-
 var ChangeTaskUserStatus: any = true;
 let ApprovalStatusGlobal: any = false;
 let taskUsers: any = [];
@@ -16,6 +15,7 @@ var AssignedToIds: any = [];
 var ResponsibleTeamIds: any = [];
 var TeamMemberIds: any = [];
 var ApproverIds: any = [];
+let selectedCatTitleVal :any=[]
 let AutoCompleteItemsArray: any = [];
 var changeTime: any = 0;
 let siteUrl: any = "";
@@ -122,6 +122,10 @@ const inlineEditingcolumns = (props: any) => {
         });
       }
       setCategoriesData(props?.item?.TaskCategories?.results);
+    }else if((props?.item?.TaskCategories?.length==0||props?.item?.TaskCategories?.results?.length==0)&& props?.item?.Categories?.length>0  ){
+      selectedCatTitleVal=[];
+      selectedCatTitleVal = props?.item?.Categories?.split(";")
+
     }
     loadTaskUsers();
     if (props?.item?.DueDate != undefined) {
@@ -182,12 +186,12 @@ const inlineEditingcolumns = (props: any) => {
     let SharewebtaskCategories: any = [];
     let instantCat: any = [];
     var Priority: any = [];
-
+    let cateFromTitle: any[]=[];
     try {
       impSharewebCategories = JSON.parse(
         localStorage.getItem("impTaskCategoryType")
       );
-      instantCat = JSON.parse(localStorage.getItem("instantCategories"));
+      // instantCat = JSON.parse(localStorage.getItem("instantCategories"));
       SharewebtaskCategories = JSON.parse(
         localStorage.getItem("taskCategoryType")
       );
@@ -206,7 +210,7 @@ const inlineEditingcolumns = (props: any) => {
         impSharewebCategories = [];
         SharewebtaskCategories = [];
         Priority = [];
-        instantCat = [];
+        
         var TaskTypes: any = [];
         var Timing: any = [];
         var Task: any = [];
@@ -238,7 +242,13 @@ const inlineEditingcolumns = (props: any) => {
           .expand("Parent")
           .get();
         AllMetadata = MetaData;
+
+        instantCat = [];
+      
         AllMetadata?.map((metadata: any) => {
+          if(selectedCatTitleVal?.some((catTitle:any)=>{catTitle==metadata?.Title&& metadata.TaxType == "Categories"})){
+            cateFromTitle.push(metadata)
+          }
           if (
             metadata.Title == "Immediate" ||
             metadata.Title == "Bottleneck" ||
@@ -250,17 +260,10 @@ const inlineEditingcolumns = (props: any) => {
           if (metadata.TaxType == "Categories") {
             SharewebtaskCategories.push(metadata);
           }
-        });
+        })
+       
         SharewebtaskCategories?.map((cat: any) => {
           getChilds(cat, TaskTypes);
-          if (
-            cat?.Title == "Phone" ||
-            cat?.Title == "Email Notification" ||
-            cat?.Title == "Immediate" ||
-            cat?.Title == "Approval"
-          ) {
-            instantCat.push(cat);
-          }
         });
         let uniqueArray: any = [];
         AutoCompleteItemsArray.map((currentObject: any) => {
@@ -289,12 +292,24 @@ const inlineEditingcolumns = (props: any) => {
         setImpTaskCategoryType(impSharewebCategories);
         setpriorityRank(Priority);
         setInstantCategories(instantCat);
+        if(cateFromTitle?.length>0){
+          setCategoriesData(cateFromTitle);
+        }
       }
       if (instantCat == null) {
         instantCat = [];
       }
+      if(selectedCatTitleVal?.length==0){
+        cateFromTitle = CategoriesData;
+      }
+    
       SharewebtaskCategories?.map((cat: any) => {
-        if(CategoriesData?.some(
+        selectedCatTitleVal?.map((catTitle:any)=>{
+          if(catTitle==cat?.Title ){
+            cateFromTitle.push(cat)
+          }
+        })
+        if(cateFromTitle?.some(
           (selectedCat: any) => selectedCat?.Id == cat?.Id
         )){
           cat.ActiveTile = true;
@@ -322,6 +337,9 @@ const inlineEditingcolumns = (props: any) => {
       setImpTaskCategoryType(impSharewebCategories);
       setpriorityRank(Priority);
       setInstantCategories(instantCat);
+      if(cateFromTitle?.length>0){
+        setCategoriesData(cateFromTitle);
+      }
     } catch (e) {
       console.log(e);
     }
@@ -603,7 +621,7 @@ const inlineEditingcolumns = (props: any) => {
             task.DisplayDueDate =
               task.DueDate != null
                 ? Moment(task.DueDate).format("DD/MM/YYYY")
-                : null;
+                : "";
             task.TeamMembersSearch = "";
             task.ApproverIds = [];
             task.Categories = CategoryTitle;
@@ -1100,7 +1118,7 @@ const inlineEditingcolumns = (props: any) => {
       {props?.columnName == "Team" ? (
         <>
           <span
-            style={{ display: "flex", width: "90%", height: "100%" }}
+            style={{ display: "flex", width: "100%", height: "100%" }}
             onClick={() => setTeamMembersPopup(true)}
             className="hreflink"
           >
