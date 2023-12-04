@@ -8,6 +8,7 @@ import TeamConfigurationCard from "../../../globalComponents/TeamConfiguration/T
 import TeamConfigurationCards from "../../EditPopupFiles/TeamConfigurationPortfolio";
 import { OverlayTrigger, Popover } from "react-bootstrap";
 import Picker from "../../../globalComponents/EditTaskPopup/SmartMetaDataPicker";
+import Tooltip from "../../../globalComponents/Tooltip";
 var ChangeTaskUserStatus: any = true;
 let ApprovalStatusGlobal: any = false;
 let taskUsers: any = [];
@@ -1109,7 +1110,9 @@ const inlineEditingcolumns = (props: any) => {
             {`Update ${columnName} - ${props?.item?.TaskID} ${props?.item?.Title}`}
           </span>
         </div>
+        <Tooltip ComponentId={7801}/>
       </div>
+      
     );
   };
 
