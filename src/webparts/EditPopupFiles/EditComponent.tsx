@@ -4276,7 +4276,7 @@ function EditInstitution({ item, SelectD, Calls, usedFor , portfolioTypeData}: a
                                             {EditData?.ID ? (
                                                 <VersionHistory
                                                     taskId={EditData?.ID}
-                                                    listId={RequireData.MasterTaskListID}
+                                                    listId={RequireData?.MasterTaskListID}
                                                     siteUrls={RequireData?.siteUrl}
                                                 />
                                             ) : (

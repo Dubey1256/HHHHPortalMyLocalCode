@@ -1364,8 +1364,9 @@ async function updateMultiLookupField(itemIds: number[], lookupIds: number[],All
                         data-interception="off"
                         target="_blank"
                     >
-                        {item?.PortfolioStructureID}{", "}
+                        {item?.PortfolioStructureID}{" "}
                     </a>{" "}
+                    {Index !== filterdata.length - 1 ? ", " : ""}
                 </span>
             ))}
             <a className="pancil-icons" onClick={() => openPortfolioPopupFunction("Project")}>
