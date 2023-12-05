@@ -8,6 +8,8 @@ import TeamConfigurationCard from "../../../globalComponents/TeamConfiguration/T
 import TeamConfigurationCards from "../../EditPopupFiles/TeamConfigurationPortfolio";
 import { OverlayTrigger, Popover } from "react-bootstrap";
 import Picker from "../../../globalComponents/EditTaskPopup/SmartMetaDataPicker";
+import Tooltip from "../../../globalComponents/Tooltip";
+import { IoHandRightOutline } from "react-icons/io5";
 
 var ChangeTaskUserStatus: any = true;
 let ApprovalStatusGlobal: any = false;
@@ -16,6 +18,7 @@ var AssignedToIds: any = [];
 var ResponsibleTeamIds: any = [];
 var TeamMemberIds: any = [];
 var ApproverIds: any = [];
+let selectedCatTitleVal: any = []
 let AutoCompleteItemsArray: any = [];
 var changeTime: any = 0;
 let siteUrl: any = "";
@@ -23,6 +26,7 @@ let smartMetadataListId: any = "";
 let AllMetadata: any = [];
 let TaskCreatorApproverBackupArray: any = [];
 let TaskApproverBackupArray: any = [];
+let comments: any = []
 const inlineEditingcolumns = (props: any) => {
   const [TimeInHours, setTimeInHours] = React.useState(0);
   const [taskStatusInNumber, setTaskStatusInNumber] = React.useState(0);
@@ -31,6 +35,7 @@ const inlineEditingcolumns = (props: any) => {
   const [CategoriesData, setCategoriesData] = React.useState<any>([]);
   const [SearchedCategoryData, setSearchedCategoryData] = React.useState([]);
   const [TeamConfig, setTeamConfig] = React.useState();
+  const [onHoldComment ,setOnHoldComment]:any=React.useState(false)
   const [teamMembersPopup, setTeamMembersPopup] = React.useState(false);
   const [TaskStatusPopup, setTaskStatusPopup] = React.useState(false);
   const [taskCategoriesPopup, setTaskCategoriesPopup] = React.useState(false);
@@ -122,6 +127,10 @@ const inlineEditingcolumns = (props: any) => {
         });
       }
       setCategoriesData(props?.item?.TaskCategories?.results);
+    } else if ((props?.item?.TaskCategories?.length == 0 || props?.item?.TaskCategories?.results?.length == 0) && props?.item?.Categories?.length > 0) {
+      selectedCatTitleVal = [];
+      selectedCatTitleVal = props?.item?.Categories?.split(";")
+
     }
     loadTaskUsers();
     if (props?.item?.DueDate != undefined) {
@@ -150,7 +159,8 @@ const inlineEditingcolumns = (props: any) => {
       setTaskStatusInNumber(props.item.PercentComplete);
     }
     GetSmartMetadata();
-  }, [props,props?.item?.TaskCategories?.results]);
+
+  }, [props, props?.item?.TaskCategories?.results]);
   const getPercentCompleteTitle = (percent: any) => {
     let result = "";
     StatusArray?.map((status: any) => {
@@ -182,12 +192,12 @@ const inlineEditingcolumns = (props: any) => {
     let SharewebtaskCategories: any = [];
     let instantCat: any = [];
     var Priority: any = [];
-
+    let cateFromTitle: any[] = [];
     try {
       impSharewebCategories = JSON.parse(
         localStorage.getItem("impTaskCategoryType")
       );
-      instantCat = JSON.parse(localStorage.getItem("instantCategories"));
+      // instantCat = JSON.parse(localStorage.getItem("instantCategories"));
       SharewebtaskCategories = JSON.parse(
         localStorage.getItem("taskCategoryType")
       );
@@ -206,7 +216,7 @@ const inlineEditingcolumns = (props: any) => {
         impSharewebCategories = [];
         SharewebtaskCategories = [];
         Priority = [];
-        instantCat = [];
+
         var TaskTypes: any = [];
         var Timing: any = [];
         var Task: any = [];
@@ -238,7 +248,13 @@ const inlineEditingcolumns = (props: any) => {
           .expand("Parent")
           .get();
         AllMetadata = MetaData;
+
+        instantCat = [];
+
         AllMetadata?.map((metadata: any) => {
+          if (selectedCatTitleVal?.some((catTitle: any) => { catTitle == metadata?.Title && metadata.TaxType == "Categories" })) {
+            cateFromTitle.push(metadata)
+          }
           if (
             metadata.Title == "Immediate" ||
             metadata.Title == "Bottleneck" ||
@@ -250,17 +266,10 @@ const inlineEditingcolumns = (props: any) => {
           if (metadata.TaxType == "Categories") {
             SharewebtaskCategories.push(metadata);
           }
-        });
+        })
+
         SharewebtaskCategories?.map((cat: any) => {
           getChilds(cat, TaskTypes);
-          if (
-            cat?.Title == "Phone" ||
-            cat?.Title == "Email Notification" ||
-            cat?.Title == "Immediate" ||
-            cat?.Title == "Approval"
-          ) {
-            instantCat.push(cat);
-          }
         });
         let uniqueArray: any = [];
         AutoCompleteItemsArray.map((currentObject: any) => {
@@ -289,16 +298,28 @@ const inlineEditingcolumns = (props: any) => {
         setImpTaskCategoryType(impSharewebCategories);
         setpriorityRank(Priority);
         setInstantCategories(instantCat);
+        if (cateFromTitle?.length > 0) {
+          setCategoriesData(cateFromTitle);
+        }
       }
       if (instantCat == null) {
         instantCat = [];
       }
+      if (selectedCatTitleVal?.length == 0) {
+        cateFromTitle = CategoriesData;
+      }
+
       SharewebtaskCategories?.map((cat: any) => {
-        if(CategoriesData?.some(
+        selectedCatTitleVal?.map((catTitle: any) => {
+          if (catTitle == cat?.Title) {
+            cateFromTitle.push(cat)
+          }
+        })
+        if (cateFromTitle?.some(
           (selectedCat: any) => selectedCat?.Id == cat?.Id
-        )){
+        )) {
           cat.ActiveTile = true;
-        }else{
+        } else {
           cat.ActiveTile = false;
         }
         getChilds(cat, TaskTypes);
@@ -322,6 +343,9 @@ const inlineEditingcolumns = (props: any) => {
       setImpTaskCategoryType(impSharewebCategories);
       setpriorityRank(Priority);
       setInstantCategories(instantCat);
+      if (cateFromTitle?.length > 0) {
+        setCategoriesData(cateFromTitle);
+      }
     } catch (e) {
       console.log(e);
     }
@@ -540,41 +564,41 @@ const inlineEditingcolumns = (props: any) => {
         newDueDate = "";
       }
     }
-    let postData :any= {};
+    let postData: any = {};
 
     switch (props?.columnName) {
       case 'TaskCategories':
         postData.Categories = CategoryTitle;
         postData.TaskCategoriesId = { results: selectedCategoriesId };
         break;
-    
+
       case 'Team':
         postData.AssignedToId = { results: AssignedToIds ?? [] };
         postData.ResponsibleTeamId = { results: ResponsibleTeamIds ?? [] };
         postData.TeamMembersId = { results: TeamMemberIds ?? [] };
         break;
-    
+
       case 'Priority':
         postData.Priority = priority;
         postData.PriorityRank = priorityRank;
         break;
-    
+
       case 'Remark':
         postData.Remark = feedback;
         break;
-    
+
       case 'EstimatedTime':
         postData.EstimatedTime = TimeInHours;
         break;
-    
+
       case 'PercentComplete':
         postData.PercentComplete = taskStatusInNumber / 100;
         break;
-    
+
       case 'DueDate':
         postData.DueDate = newDueDate;
         break;
-    
+
       default:
         break;
     }
@@ -587,7 +611,7 @@ const inlineEditingcolumns = (props: any) => {
         web.lists
           .getById(props?.item?.listId)
           .items.select(
-            "Id,Title,FeedBack,PriorityRank,Remark,Project/PriorityRank,ParentTask/Id,ParentTask/Title,ParentTask/TaskID,TaskID,SmartInformation/Id,SmartInformation/Title,Project/Id,Project/Title,workingThisWeek,EstimatedTime,TaskLevel,TaskLevel,OffshoreImageUrl,OffshoreComments,ClientTime,Priority,Status,ItemRank,IsTodaysTask,Body,PercentComplete,Categories,StartDate,PriorityRank,DueDate,TaskType/Id,TaskType/Title,Created,Modified,Author/Id,Author/Title,TaskCategories/Id,TaskCategories/Title,AssignedTo/Id,AssignedTo/Title,TeamMembers/Id,TeamMembers/Title,ResponsibleTeam/Id,ResponsibleTeam/Title,ClientCategory/Id,ClientCategory/Title"
+            "Id,Title,FeedBack,PriorityRank,Remark,Project/PriorityRank,ParentTask/Id,ParentTask/Title,ParentTask/TaskID,TaskID,SmartInformation/Id,SmartInformation/Title,Project/Id,Project/Title,workingThisWeek,EstimatedTime,TaskLevel,TaskLevel,OffshoreImageUrl,OffshoreComments,Comments,ClientTime,Priority,Status,ItemRank,IsTodaysTask,Body,PercentComplete,Categories,StartDate,PriorityRank,DueDate,TaskType/Id,TaskType/Title,Created,Modified,Author/Id,Author/Title,TaskCategories/Id,TaskCategories/Title,AssignedTo/Id,AssignedTo/Title,TeamMembers/Id,TeamMembers/Title,ResponsibleTeam/Id,ResponsibleTeam/Title,ClientCategory/Id,ClientCategory/Title"
           )
           .expand(
             "AssignedTo,Project,ParentTask,SmartInformation,Author,TaskType,TeamMembers,ResponsibleTeam,TaskCategories,ClientCategory"
@@ -603,7 +627,7 @@ const inlineEditingcolumns = (props: any) => {
             task.DisplayDueDate =
               task.DueDate != null
                 ? Moment(task.DueDate).format("DD/MM/YYYY")
-                : null;
+                : "";
             task.TeamMembersSearch = "";
             task.ApproverIds = [];
             task.Categories = CategoryTitle;
@@ -1086,21 +1110,35 @@ const inlineEditingcolumns = (props: any) => {
         }
       >
         <div className="subheading ">
-          <img className="imgWid29 pe-1 mb-1 " src={props?.item?.SiteIcon} />
+          {props?.item?.SiteIcon != null && <img className="imgWid29 pe-1 mb-1 " src={props?.item?.SiteIcon} />}
           <span className="siteColor">
             {`Update ${columnName} - ${props?.item?.TaskID} ${props?.item?.Title}`}
           </span>
         </div>
+        <Tooltip ComponentId={7801} />
       </div>
+
     );
   };
 
+  const showOnHoldComment = () => {
+    setOnHoldComment(true);
+  };
+
+  const hideOnHoldComment = () => {
+    setOnHoldComment(false);
+  };
+  
+  if (props?.columnName == 'Priority'){
+    comments = JSON.parse(props?.item?.Comments)
+  }
+  
   return (
     <>
       {props?.columnName == "Team" ? (
         <>
           <span
-            style={{ display: "flex", width: "90%", height: "100%" }}
+            style={{ display: "flex", width: "100%", height: "100%" }}
             onClick={() => setTeamMembersPopup(true)}
             className="hreflink"
           >
@@ -1139,7 +1177,35 @@ const inlineEditingcolumns = (props: any) => {
           >
             &nbsp;
             {props?.mypriority === true ? `(${props?.item?.PriorityRank}) ${props?.item?.Priority?.slice(3)}`:props?.item?.PriorityRank}
-         
+            {props?.item.TaskCategories.map((items: any) =>
+              items.Title === "On-Hold" ? (
+                <div className="hover-text">
+                  <IoHandRightOutline
+                    onMouseEnter={showOnHoldComment}
+                    onMouseLeave={hideOnHoldComment}
+                  />
+                  <span className="tooltip-text pop-right">
+                    {onHoldComment &&
+                      comments.map((commentItem: any, index: any) => 
+                        commentItem.CommentFor !== undefined &&
+                        commentItem.CommentFor === "On-Hold" ? (
+                          <div key={index}>
+                            <span className="siteColor p-1 border-bottom">
+                              Task On-Hold by{" "}
+                              <span>{commentItem.AuthorName}</span>{" "}
+                              <span>{Moment(commentItem.Created).format('DD/MM/YY')}</span>
+                            </span>
+                            {commentItem.CommentFor !== undefined &&
+                            commentItem.CommentFor === "On-Hold" ? (
+                              <div key={index}>{commentItem.Description}</div>
+                            ) : null}
+                          </div>
+                        ) : null
+                        )}
+                  </span>
+                </div>
+              ) : null
+            )}
             {props?.item?.TaskCategories?.map((category: any) => {
               if (category?.Title == "Immediate") {
                 return (
@@ -1540,47 +1606,47 @@ const inlineEditingcolumns = (props: any) => {
               </ul>
             </div>
           </div>
-          {props?.mypriority != true && 
-          <>
-          {impTaskCategoryType?.map((option) => (
-            <div
-              className={
-                ServicesTaskCheck ? "serviepannelgreena d-flex" : "d-flex"
-              }
-              key={option.Id}
-            >
-              <input
-                type="checkbox"
-                className="form-check-input"
-                id={option.Id}
-                value={option.Id}
-                checked={selectedCatId?.includes(option.Id)}
-                onChange={(event) => handleCategoryChange(event, option.Id)}
-              />
-              <a title={option.Title}>
-                {option.Title == "Immediate" ? (
-                  <span className="workmember svg__iconbox svg__icon--alert "></span>
-                ) : (
-                  ""
-                )}
-                {option.Title == "Bottleneck" ? (
-                  <span className="workmember svg__iconbox svg__icon--bottleneck "></span>
-                ) : (
-                  ""
-                )}
-                {option.Title == "Favorite" ? (
-                  <span className="workmember svg__iconbox svg__icon--Star "></span>
-                ) : (
-                  ""
-                )}
-              </a>
-              <label htmlFor={option.Id} className="ms-2">
-                {option.Title}
-              </label>
-            </div>
-          ))}
-          </>
-        }
+          {props?.mypriority != true &&
+            <>
+              {impTaskCategoryType?.map((option) => (
+                <div
+                  className={
+                    ServicesTaskCheck ? "serviepannelgreena d-flex" : "d-flex"
+                  }
+                  key={option.Id}
+                >
+                  <input
+                    type="checkbox"
+                    className="form-check-input"
+                    id={option.Id}
+                    value={option.Id}
+                    checked={selectedCatId?.includes(option.Id)}
+                    onChange={(event) => handleCategoryChange(event, option.Id)}
+                  />
+                  <a title={option.Title}>
+                    {option.Title == "Immediate" ? (
+                      <span className="workmember svg__iconbox svg__icon--alert "></span>
+                    ) : (
+                      ""
+                    )}
+                    {option.Title == "Bottleneck" ? (
+                      <span className="workmember svg__iconbox svg__icon--bottleneck "></span>
+                    ) : (
+                      ""
+                    )}
+                    {option.Title == "Favorite" ? (
+                      <span className="workmember svg__iconbox svg__icon--Star "></span>
+                    ) : (
+                      ""
+                    )}
+                  </a>
+                  <label htmlFor={option.Id} className="ms-2">
+                    {option.Title}
+                  </label>
+                </div>
+              ))}
+            </>
+          }
           <footer className="float-end">
             <button
               type="button"
@@ -1600,17 +1666,17 @@ const inlineEditingcolumns = (props: any) => {
         type={PanelType.medium}
       >
         <div>
-          {props.pageName !== "portfolioprofile" ? 
-          <TeamConfigurationCard
-            AllListId={props?.AllListId}
-            ItemInfo={props?.item}
-            parentCallback={DDComponentCallBack}
-          ></TeamConfigurationCard>
-          :
-          <TeamConfigurationCards
-          ItemInfo={props?.item}
-          AllListId={props?.AllListId}
-          parentCallback={DDComponentCallBack}
+          {props.pageName !== "portfolioprofile" ?
+            <TeamConfigurationCard
+              AllListId={props?.AllListId}
+              ItemInfo={props?.item}
+              parentCallback={DDComponentCallBack}
+            ></TeamConfigurationCard>
+            :
+            <TeamConfigurationCards
+              ItemInfo={props?.item}
+              AllListId={props?.AllListId}
+              parentCallback={DDComponentCallBack}
             ></TeamConfigurationCards>
           }
           <footer className="float-end">
@@ -1742,24 +1808,24 @@ const inlineEditingcolumns = (props: any) => {
                     {!instantCategories?.some(
                       (selectedCat: any) => selectedCat?.Title == type?.Title
                     ) && (
-                      <div className="block d-flex full-width justify-content-between mb-1 p-2">
-                        <a
-                          className="wid90"
-                          style={{ color: "#fff !important" }}
-                          target="_blank"
-                          data-interception="off"
-                        >
-                          {type.Title}
-                        </a>
-                        <span
-                          className="bg-light svg__iconbox svg__icon--cross"
-                          onClick={() =>
-                            selectSubTaskCategory(type?.Title, type?.Id, type)
-                          }
-                        ></span>
-                        {/* <img src="https://hhhhteams.sharepoint.com/sites/HHHH/SP/_layouts/images/delete.gif" onClick={() => deleteCategories(type?.Id)} className="p-1" /> */}
-                      </div>
-                    )}
+                        <div className="block alignCenter">
+                          <a
+                            className="wid90"
+                            style={{ color: "#fff !important" }}
+                            target="_blank"
+                            data-interception="off"
+                          >
+                            {type.Title}
+                          </a>
+                          <span
+                            className="bg-light ml-auto svg__iconbox svg__icon--cross"
+                            onClick={() =>
+                              selectSubTaskCategory(type?.Title, type?.Id, type)
+                            }
+                          ></span>
+                          {/* <img src="https://hhhhteams.sharepoint.com/sites/HHHH/SP/_layouts/images/delete.gif" onClick={() => deleteCategories(type?.Id)} className="p-1" /> */}
+                        </div>
+                      )}
                   </>
                 );
               })}

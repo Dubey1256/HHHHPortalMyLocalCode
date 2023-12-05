@@ -25,8 +25,8 @@ import GlobalCommanTable, {
 } from "../../../globalComponents/GroupByReactTableComponents/GlobalCommanTable";
 import InfoIconsToolTip from "../../../globalComponents/InfoIconsToolTip/InfoIconsToolTip";
 import PageLoader from "../../../globalComponents/pageLoader";
-import CreateActivity from "../../servicePortfolio/components/CreateActivity";
-import CreateWS from '../../servicePortfolio/components/CreateWS';
+import CreateActivity from "../../../globalComponents/CreateActivity";
+import CreateWS from '../../../globalComponents/CreateWS';
 import ReactPopperTooltipSingleLevel from "../../../globalComponents/Hierarchy-Popper-tooltipSilgleLevel/Hierarchy-Popper-tooltipSingleLevel";
 //import RestructuringCom from "../../../globalComponents/Restructuring/RestructuringCom";
 
