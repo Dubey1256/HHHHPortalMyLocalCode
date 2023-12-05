@@ -1677,7 +1677,8 @@ if(folora=="folora"&&index==0){
 })
   //********** */ Inline editing start************
   private handleFieldChange = (fieldName: any) => (e: any) => {
-    
+    let Priority:any;
+   
     this.setState((prevState) => ({
       Result: {
         ...prevState.Result,
@@ -2009,12 +2010,12 @@ private async updateProjectComponentServices(dataUpdate:any) {
                         <dd className='bg-Ff'>
                         <EditableField
                               // key={index}
-                              listName="Master Tasks"
+                              listName={this?.state?.Result?.listName}
                               itemId={this.state.Result?.Id}
                               fieldName="Priority"
                               value={
-                                this.state.Result?.Priority != undefined
-                                  ? this.state.Result?.Priority
+                                this.state.Result?.PriorityRank != undefined
+                                  ? this.state.Result?.PriorityRank
                                   : ""
                               }
                               onChange={this.handleFieldChange("Priority")}
@@ -2053,15 +2054,16 @@ private async updateProjectComponentServices(dataUpdate:any) {
                             )
                           })} */}
                           {this.state?.Result["Portfolio"] != null &&
-                           <div>
+                         
                             <a className="hreflink" target="_blank" data-interception="off" href={`${this.state.Result["siteUrl"]}/SitePages/Portfolio-Profile.aspx?taskId=${this.state?.Result["Portfolio"].Id}`}>
                               
                               {this.state?.Result["Portfolio"]?.Title}
                               
                               </a>
-                              <span className="pull-right svg__icon--editBox svg__iconbox" onClick={()=>this?.openPortfolioPopupFunction("Portfolio")}></span>
-                              </div>
-                          }
+                             
+                              
+                              
+                          } <span className="pull-right svg__icon--editBox svg__iconbox" onClick={()=>this?.openPortfolioPopupFunction("Portfolio")}></span>
 
                         </dd>
                       </dl>
@@ -2776,7 +2778,7 @@ private async updateProjectComponentServices(dataUpdate:any) {
           {(this.state?.isopencomonentservicepopup ||this.state?.isopenProjectpopup) &&
         <ServiceComponentPortfolioPopup
 
-          props={this?.state?.Result?.Portfolio}
+          props={this?.state?.Result}
           Dynamic={AllListId}
           ComponentType={"Component"}
           Call={ (DataItem: any, Type: any, functionType: any)=>{this.ComponentServicePopupCallBack(DataItem,Type,functionType)}}

@@ -1568,11 +1568,11 @@ export const getPortfolio = async (type: any) => {
                     })
                 }
 
-                if (result.ClientCategory != undefined && result.ClientCategory.length > 0) {
-                    $.each(result.TeamMembers, function (index: any, catego: any) {
-                        result.ClientCategory.push(catego);
-                    })
-                }
+                // if (result.ClientCategory != undefined && result.ClientCategory.length > 0) {
+                //     $.each(result.TeamMembers, function (index: any, catego: any) {
+                //         result.ClientCategory.push(catego);
+                //     })
+                // }
                 if (result.Item_x0020_Type == 'Root Component') {
                     result['Child'] = [];
                     RootComponentsData.push(result);
@@ -1680,12 +1680,22 @@ export const GetServiceAndComponentAllData = async (Props: any) => {
             if (result.Item_x0020_Type === "Component") {
                 result.boldRow = "boldClable";
                 result.lableColor = "f-bg";
+                result.ItemCat= "Portfolio"
             }
             if (result.Item_x0020_Type === "SubComponent") {
                 result.lableColor = "a-bg";
+                result.ItemCat= "Portfolio"
             }
             if (result.Item_x0020_Type === "Feature") {
                 result.lableColor = "w-bg";
+                result.ItemCat= "Portfolio"
+            }
+            if (result.Item_x0020_Type === "Project") {
+                result.lableColor = "w-bg";
+                result.ItemCat= "Project"
+            }
+            if (result.Item_x0020_Type === "Sprint") {
+                result.ItemCat= "Project"
             }
             if (result?.Item_x0020_Type != undefined) {
                 result.SiteIconTitle = result?.Item_x0020_Type?.charAt(0);
