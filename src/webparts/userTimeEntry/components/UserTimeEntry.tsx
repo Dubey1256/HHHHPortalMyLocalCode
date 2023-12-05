@@ -1205,6 +1205,10 @@ export default class UserTimeEntry extends React.Component<IUserTimeEntryProps, 
                   addtime.NewTimeEntryDate = TaskDate;
                   let datesplite = addtime.TaskDate.split("/");
                   addtime.TimeEntrykDateNew = new Date(parseInt(datesplite[2], 10), parseInt(datesplite[1], 10) - 1, parseInt(datesplite[0], 10));
+                  const maxTitleLength: number = 40;
+                  if (addtime["Description"] != undefined && addtime["Description"].length > maxTitleLength) {
+                    addtime.truncatedTitle = addtime["Description"].substring(0, maxTitleLength - 3) + "...";
+                  }
                   //addtime.TimeEntrykDateNewback = datesplite[1] + '/' + datesplite[0] + '/' + datesplite[2];
                   addtime.TaskTitle = time.TaskTitle;
                   addtime.ID = time.ID;
@@ -1222,24 +1226,24 @@ export default class UserTimeEntry extends React.Component<IUserTimeEntryProps, 
                   addtime.Author.Id = addtime.AuthorId
                   addtime.Author.autherImage = addtime.autherImage
                   addtime.Author.Title = addtime.AuthorName
-                  if (!this.isTaskItemExists(getAllTimeEntry, addtime)) {
-                    getAllTimeEntry.push(addtime);
-                  }
-                  else {
-                    try {
-                      getAllTimeEntry?.forEach(function (item: any) {
-                        if (item.TaskItemID == addtime.TaskItemID && item?.siteType.toLowerCase() == addtime?.siteType.toLowerCase()) {
-                          item.TaskTime = parseFloat(item.TaskTime)
-                          item.TaskTime += parseFloat(addtime?.TaskTime)
-                          item.Effort += addtime?.Effort
-                          item.DispEffort = item?.Effort
-                          item.DispEffort = item.DispEffort.toFixed(2);
-                        }
-                      })
-                    } catch (e) {
-                      console.log(e)
-                    }
-                  }
+                  // if (!this.isTaskItemExists(getAllTimeEntry, addtime)) {
+                  getAllTimeEntry.push(addtime);
+                  // }
+                  // else {
+                  //   try {
+                  //     getAllTimeEntry?.forEach(function (item: any) {
+                  //       if (item.TaskItemID == addtime.TaskItemID && item?.siteType.toLowerCase() == addtime?.siteType.toLowerCase()) {
+                  //         item.TaskTime = parseFloat(item.TaskTime)
+                  //         item.TaskTime += parseFloat(addtime?.TaskTime)
+                  //         item.Effort += addtime?.Effort
+                  //         item.DispEffort = item?.Effort
+                  //         item.DispEffort = item.DispEffort.toFixed(2);
+                  //       }
+                  //     })
+                  //   } catch (e) {
+                  //     console.log(e)
+                  //   }
+                  // }
                 }
               }
             }
@@ -2181,13 +2185,19 @@ export default class UserTimeEntry extends React.Component<IUserTimeEntryProps, 
         size: 275,
       },
 
-      // {
-      //   accessorKey: "Description",
-      //   id: "Description",
-      //   placeholder: "Time Description",
-      //   header: "",
-      //   // size: 175,
-      // },
+      {
+        accessorKey: "Description",
+        cell: (info: any) => <><span className='popover__wrapper ms-1' data-bs-toggle="tooltip" data-bs-placement="auto">
+          <span title={info?.row?.original?.Description}>{info?.row?.original.truncatedTitle?.length > 0 ? info?.row?.original?.truncatedTitle : info?.row?.original?.Description}</span>
+          {info?.row?.original.truncatedTitle?.length > 0 && <span className="f-13 popover__content" >
+            {info?.row?.original?.Description}
+          </span>}
+        </span></>,
+        id: "Description",
+        placeholder: "Time Description",
+        header: "",
+        // size: 175,
+      },
       // {
       //   accessorKey: "TimeEntryDate",
       //   id: "TimeEntryDate",
@@ -2195,40 +2205,40 @@ export default class UserTimeEntry extends React.Component<IUserTimeEntryProps, 
       //   header: "",
       //   size: 91,
       // },
-      // {
-      //   accessorFn: (info: any) => info?.NewTimeEntryDate,
-      //   cell: (info: any) => (
-      //     <div className="alignCenter">
-      //       {info?.row?.original?.NewTimeEntryDate == null ? ("") : (
-      //         <>
-      //           {/* <HighlightableCell value={info?.row?.original?.TimeEntryDate} searchTerm={column.getFilterValue()} /> */}
-      //           <span>{info?.row?.original?.TimeEntryDate}</span>
-      //           {info?.row?.original?.Author != undefined &&
-      //             <>
-      //               <a href={`${this.props.Context.pageContext.web.absoluteUrl}/SitePages/TaskDashboard.aspx?UserId=${info?.row?.original?.Author?.Id}&Name=${info?.row?.original?.Author?.Title}`}
-      //                 target="_blank" data-interception="off">
-      //                 <img title={info?.row?.original?.Author?.Title} className="workmember ms-1" src={info?.row?.original?.Author?.autherImage} />
-      //               </a>
-      //             </>
-      //           }
-      //         </>
-      //       )}
-      //     </div>
-      //   ),
-      //   filterFn: (info: any, columnName: any, filterValue: any) => {
-      //     if (info?.original?.Author?.Title?.toLowerCase()?.includes(filterValue?.toLowerCase()) || info?.original?.TimeEntryDate?.includes(filterValue)) {
-      //       return true
-      //     } else {
-      //       return false
-      //     }
-      //   },
-      //   id: 'NewTimeEntryDate',
-      //   resetColumnFilters: false,
-      //   resetSorting: false,
-      //   placeholder: "Time Entry",
-      //   header: "",
-      //   size: 91
-      // },
+      {
+        accessorFn: (info: any) => info?.NewTimeEntryDate,
+        cell: (info: any) => (
+          <div className="alignCenter">
+            {info?.row?.original?.NewTimeEntryDate == null ? ("") : (
+              <>
+                {/* <HighlightableCell value={info?.row?.original?.TimeEntryDate} searchTerm={column.getFilterValue()} /> */}
+                <span>{info?.row?.original?.TimeEntryDate}</span>
+                {info?.row?.original?.Author != undefined &&
+                  <>
+                    <a href={`${this.props.Context.pageContext.web.absoluteUrl}/SitePages/TaskDashboard.aspx?UserId=${info?.row?.original?.Author?.Id}&Name=${info?.row?.original?.Author?.Title}`}
+                      target="_blank" data-interception="off">
+                      <img title={info?.row?.original?.Author?.Title} className="workmember ms-1" src={info?.row?.original?.Author?.autherImage} />
+                    </a>
+                  </>
+                }
+              </>
+            )}
+          </div>
+        ),
+        filterFn: (info: any, columnName: any, filterValue: any) => {
+          if (info?.original?.Author?.Title?.toLowerCase()?.includes(filterValue?.toLowerCase()) || info?.original?.TimeEntryDate?.includes(filterValue)) {
+            return true
+          } else {
+            return false
+          }
+        },
+        id: 'NewTimeEntryDate',
+        resetColumnFilters: false,
+        resetSorting: false,
+        placeholder: "Time Entry",
+        header: "",
+        size: 91
+      },
       {
         accessorKey: "DispEffort",
         id: "DispEffort",

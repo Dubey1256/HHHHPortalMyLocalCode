@@ -4,9 +4,9 @@ import "react-popper-tooltip/dist/styles.css";
 import { ColumnDef, } from "@tanstack/react-table";
 import { FaChevronDown, FaChevronRight, FaPlus } from "react-icons/fa";
 import GlobalCommanTable from "../GroupByReactTableComponents/GlobalCommanTable";
-import CreateActivity from "../../webparts/servicePortfolio/components/CreateActivity";
+import CreateActivity from "../CreateActivity";
 import * as globalCommon from "../globalCommon"
-import CreateWS from '../../webparts/servicePortfolio/components/CreateWS'
+import CreateWS from '../CreateWS'
 let AllMatsterAndTaskData: any = [];
 let counterAllTaskCount: any = 0;
 let checkedData = ''
@@ -243,7 +243,7 @@ export default function ReactPopperTooltipSingleLevel({ ShareWebId, row, masterT
                     </div>
 
                     <div className={scrollToolitem === true ? "tool-Wrapper toolWrapper-Th scroll-toolitem" : "tool-Wrapper toolWrapper-Th"}  >
-                        <GlobalCommanTable columns={columns} data={tooltiphierarchy} callBackDataToolTip={callBackDataToolTip} callBackData={callBackData} pageName={pageName} expendedTrue={true} />
+                        <GlobalCommanTable wrapperHeight="auto" columns={columns} data={tooltiphierarchy} callBackDataToolTip={callBackDataToolTip} callBackData={callBackData} pageName={pageName} expendedTrue={true} />
                     </div>
                     <div {...getArrowProps({ className: "tooltip-arrow" })} />
                 </div>

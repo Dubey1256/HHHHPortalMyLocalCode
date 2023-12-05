@@ -4,8 +4,8 @@ import "react-popper-tooltip/dist/styles.css";
 import { ColumnDef, } from "@tanstack/react-table";
 import { FaChevronDown, FaChevronRight, FaPlus } from "react-icons/fa";
 import GlobalCommanTable from "./GroupByReactTableComponents/GlobalCommanTable";
-import CreateActivity from "../webparts/servicePortfolio/components/CreateActivity";
-import CreateWS from "../webparts/servicePortfolio/components/CreateWS";
+import CreateActivity from "./CreateActivity";
+import CreateWS from "./CreateWS";
 
 let checkedData = ''
 export const getTooltiphierarchy = (row: any) => {
@@ -14,7 +14,7 @@ export const getTooltiphierarchy = (row: any) => {
     while (true) {
         // if (row?.parentRow) {
         if (row?.getParentRow()) {
-            // const temp = { ...row.parentRow.original };
+        // const temp = { ...row.parentRow.original };
             const temp = { ...row.getParentRow().original };
             temp.subRows = [rowOrg];
             rowOrg = temp;

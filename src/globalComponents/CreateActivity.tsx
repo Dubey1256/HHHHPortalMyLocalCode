@@ -1,21 +1,21 @@
 import * as React from "react";
 import { Panel, PanelType } from "office-ui-fabric-react";
 import { Web } from "sp-pnp-js";
-import TeamConfigurationCard from "../../../globalComponents/TeamConfiguration/TeamConfiguration";
-import HtmlEditorCard from "../../../globalComponents/HtmlEditor/HtmlEditor";
+import TeamConfigurationCard from "./TeamConfiguration/TeamConfiguration";
+import HtmlEditorCard from "./HtmlEditor/HtmlEditor";
 import moment, * as Moment from "moment";
 import DatePicker from "react-datepicker";
-import Picker from "../../../globalComponents/EditTaskPopup/SmartMetaDataPicker";
+import Picker from "./EditTaskPopup/SmartMetaDataPicker";
 import "react-datepicker/dist/react-datepicker.css";
 import "react-datepicker/dist/react-datepicker-cssmodules.css";
-import Tooltip from "../../../globalComponents/Tooltip";
+import Tooltip from "./Tooltip";
 import "react-datepicker/dist/react-datepicker.css";
 import "froala-editor/js/plugins.pkgd.min.js";
 import "froala-editor/js/froala_editor.pkgd.min.js";
 import "froala-editor/css/froala_style.min.css";
 import "froala-editor/css/froala_editor.pkgd.min.css";
-import * as globalCommon from "../../../globalComponents/globalCommon";
-import FlorarImageUploadComponent from "../../EditPopupFiles/FlorarImagetabportfolio";
+import * as globalCommon from "./globalCommon";
+import FlorarImageUploadComponent from "../webparts/EditPopupFiles/FlorarImagetabportfolio";
 let SitesTypes: any = [];
 let AllListId: any = {};
 let IsapprovalTask = false
