@@ -127,15 +127,23 @@ const onRenderCustomCalculateSC = () => {
                               Item Rank
                         </label>
                         <select className='form-control' value={data?.ItemRank != undefined && data?.ItemRank != null ? data?.ItemRank : ''} onChange={(e:any)=>onChangeInput("ItemRank" , e.target.value)}>
-                            <option value="0"></option>
-                            <option value="0">(8) Top Highlights</option>
-                            <option value="0">(7) Featured Item</option>
-                            <option value="0">(6) Key Item</option>
-                            <option value="0">(5) Relevant Item</option>
-                            <option value="0">(4) Unsure</option>
-                            <option value="0">(2) to be verified</option>
-                            <option value="0">(1) Archive</option>
-                            <option value="0">(0) No Show</option>
+                        <option value=""></option>
+
+<option value="(8) Top Highlights">(8) Top Highlights</option>
+
+<option value="(7) Featured Item">(7) Featured Item</option>
+
+<option value="(6) Key Item">(6) Key Item</option>
+
+<option value="(5) Relevant Item">(5) Relevant Item</option>
+
+<option value="(4) Unsure">(4) Unsure</option>
+
+<option value="(2) to be verified">(2) to be verified</option>
+
+<option value="(1) Archive">(1) Archive</option>
+
+<option value="(0) No Show">(0) No Show</option>
                         </select>
                    </div>
                 </div>

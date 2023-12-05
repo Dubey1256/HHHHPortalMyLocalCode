@@ -16,7 +16,7 @@ var AssignedToIds: any = [];
 var ResponsibleTeamIds: any = [];
 var TeamMemberIds: any = [];
 var ApproverIds: any = [];
-let selectedCatTitleVal :any=[]
+let selectedCatTitleVal: any = []
 let AutoCompleteItemsArray: any = [];
 var changeTime: any = 0;
 let siteUrl: any = "";
@@ -98,6 +98,25 @@ const inlineEditingcolumns = (props: any) => {
     { value: 99, status: "99% Completed", taskStatusComment: "Completed" },
     { value: 100, status: "100% Closed", taskStatusComment: "Closed" }
   ];
+
+  React.useEffect(() => {
+    
+    
+    setTimeout(() => {
+      let targetDiv: any = document?.querySelector('.ms-Panel-main');
+    let PortfolioTypeColor:any;
+    if(props?.item?.PortfolioType?.Color){
+      PortfolioTypeColor = props?.item?.PortfolioType?.Color;
+    }else if(props?.item?.Portfolio?.PortfolioType?.Color){
+      PortfolioTypeColor =props?.item?.Portfolio?.PortfolioType?.Color; 
+    }
+      if (targetDiv && PortfolioTypeColor) {
+        // Change the --SiteBlue variable for elements under the targetDiv
+        targetDiv?.style?.setProperty('--SiteBlue', PortfolioTypeColor); // Change the color to your desired value
+      }
+    }, 1000)
+  }, [dueDate,TaskPriorityPopup,UpdateEstimatedTime,taskCategoriesPopup,TaskStatusPopup,remark,teamMembersPopup])
+
   React.useEffect(() => {
     if (props?.item?.metaDataListId != undefined) {
       smartMetadataListId = props?.item?.metaDataListId;
@@ -123,8 +142,8 @@ const inlineEditingcolumns = (props: any) => {
         });
       }
       setCategoriesData(props?.item?.TaskCategories?.results);
-    }else if((props?.item?.TaskCategories?.length==0||props?.item?.TaskCategories?.results?.length==0)&& props?.item?.Categories?.length>0  ){
-      selectedCatTitleVal=[];
+    } else if ((props?.item?.TaskCategories?.length == 0 || props?.item?.TaskCategories?.results?.length == 0) && props?.item?.Categories?.length > 0) {
+      selectedCatTitleVal = [];
       selectedCatTitleVal = props?.item?.Categories?.split(";")
 
     }
@@ -155,7 +174,8 @@ const inlineEditingcolumns = (props: any) => {
       setTaskStatusInNumber(props.item.PercentComplete);
     }
     GetSmartMetadata();
-  }, [props,props?.item?.TaskCategories?.results]);
+
+  }, [props, props?.item?.TaskCategories?.results]);
   const getPercentCompleteTitle = (percent: any) => {
     let result = "";
     StatusArray?.map((status: any) => {
@@ -187,7 +207,7 @@ const inlineEditingcolumns = (props: any) => {
     let SharewebtaskCategories: any = [];
     let instantCat: any = [];
     var Priority: any = [];
-    let cateFromTitle: any[]=[];
+    let cateFromTitle: any[] = [];
     try {
       impSharewebCategories = JSON.parse(
         localStorage.getItem("impTaskCategoryType")
@@ -211,7 +231,7 @@ const inlineEditingcolumns = (props: any) => {
         impSharewebCategories = [];
         SharewebtaskCategories = [];
         Priority = [];
-        
+
         var TaskTypes: any = [];
         var Timing: any = [];
         var Task: any = [];
@@ -245,9 +265,9 @@ const inlineEditingcolumns = (props: any) => {
         AllMetadata = MetaData;
 
         instantCat = [];
-      
+
         AllMetadata?.map((metadata: any) => {
-          if(selectedCatTitleVal?.some((catTitle:any)=>{catTitle==metadata?.Title&& metadata.TaxType == "Categories"})){
+          if (selectedCatTitleVal?.some((catTitle: any) => { catTitle == metadata?.Title && metadata.TaxType == "Categories" })) {
             cateFromTitle.push(metadata)
           }
           if (
@@ -262,7 +282,7 @@ const inlineEditingcolumns = (props: any) => {
             SharewebtaskCategories.push(metadata);
           }
         })
-       
+
         SharewebtaskCategories?.map((cat: any) => {
           getChilds(cat, TaskTypes);
         });
@@ -293,28 +313,28 @@ const inlineEditingcolumns = (props: any) => {
         setImpTaskCategoryType(impSharewebCategories);
         setpriorityRank(Priority);
         setInstantCategories(instantCat);
-        if(cateFromTitle?.length>0){
+        if (cateFromTitle?.length > 0) {
           setCategoriesData(cateFromTitle);
         }
       }
       if (instantCat == null) {
         instantCat = [];
       }
-      if(selectedCatTitleVal?.length==0){
+      if (selectedCatTitleVal?.length == 0) {
         cateFromTitle = CategoriesData;
       }
-    
+
       SharewebtaskCategories?.map((cat: any) => {
-        selectedCatTitleVal?.map((catTitle:any)=>{
-          if(catTitle==cat?.Title ){
+        selectedCatTitleVal?.map((catTitle: any) => {
+          if (catTitle == cat?.Title) {
             cateFromTitle.push(cat)
           }
         })
-        if(cateFromTitle?.some(
+        if (cateFromTitle?.some(
           (selectedCat: any) => selectedCat?.Id == cat?.Id
-        )){
+        )) {
           cat.ActiveTile = true;
-        }else{
+        } else {
           cat.ActiveTile = false;
         }
         getChilds(cat, TaskTypes);
@@ -338,7 +358,7 @@ const inlineEditingcolumns = (props: any) => {
       setImpTaskCategoryType(impSharewebCategories);
       setpriorityRank(Priority);
       setInstantCategories(instantCat);
-      if(cateFromTitle?.length>0){
+      if (cateFromTitle?.length > 0) {
         setCategoriesData(cateFromTitle);
       }
     } catch (e) {
@@ -559,41 +579,41 @@ const inlineEditingcolumns = (props: any) => {
         newDueDate = "";
       }
     }
-    let postData :any= {};
+    let postData: any = {};
 
     switch (props?.columnName) {
       case 'TaskCategories':
         postData.Categories = CategoryTitle;
         postData.TaskCategoriesId = { results: selectedCategoriesId };
         break;
-    
+
       case 'Team':
         postData.AssignedToId = { results: AssignedToIds ?? [] };
         postData.ResponsibleTeamId = { results: ResponsibleTeamIds ?? [] };
         postData.TeamMembersId = { results: TeamMemberIds ?? [] };
         break;
-    
+
       case 'Priority':
         postData.Priority = priority;
         postData.PriorityRank = priorityRank;
         break;
-    
+
       case 'Remark':
         postData.Remark = feedback;
         break;
-    
+
       case 'EstimatedTime':
         postData.EstimatedTime = TimeInHours;
         break;
-    
+
       case 'PercentComplete':
         postData.PercentComplete = taskStatusInNumber / 100;
         break;
-    
+
       case 'DueDate':
         postData.DueDate = newDueDate;
         break;
-    
+
       default:
         break;
     }
@@ -1105,16 +1125,17 @@ const inlineEditingcolumns = (props: any) => {
         }
       >
         <div className="subheading ">
-        {props?.item?.SiteIcon != null && <img className="imgWid29 pe-1 mb-1 " src={props?.item?.SiteIcon} />}
+          {props?.item?.SiteIcon != null && <img className="imgWid29 pe-1 mb-1 " src={props?.item?.SiteIcon} />}
           <span className="siteColor">
             {`Update ${columnName} - ${props?.item?.TaskID} ${props?.item?.Title}`}
           </span>
         </div>
-        <Tooltip ComponentId={7801}/>
+        <Tooltip ComponentId={7801} />
       </div>
-      
+
     );
   };
+
 
   return (
     <>
@@ -1159,8 +1180,8 @@ const inlineEditingcolumns = (props: any) => {
             onClick={() => setTaskPriorityPopup(true)}
           >
             &nbsp;
-            {props?.mypriority === true ? `(${props?.item?.PriorityRank}) ${props?.item?.Priority?.slice(3)}`:props?.item?.PriorityRank}
-         
+            {props?.mypriority === true ? `(${props?.item?.PriorityRank}) ${props?.item?.Priority?.slice(3)}` : props?.item?.PriorityRank}
+
             {props?.item?.TaskCategories?.map((category: any) => {
               if (category?.Title == "Immediate") {
                 return (
@@ -1561,47 +1582,47 @@ const inlineEditingcolumns = (props: any) => {
               </ul>
             </div>
           </div>
-          {props?.mypriority != true && 
-          <>
-          {impTaskCategoryType?.map((option) => (
-            <div
-              className={
-                ServicesTaskCheck ? "serviepannelgreena d-flex" : "d-flex"
-              }
-              key={option.Id}
-            >
-              <input
-                type="checkbox"
-                className="form-check-input"
-                id={option.Id}
-                value={option.Id}
-                checked={selectedCatId?.includes(option.Id)}
-                onChange={(event) => handleCategoryChange(event, option.Id)}
-              />
-              <a title={option.Title}>
-                {option.Title == "Immediate" ? (
-                  <span className="workmember svg__iconbox svg__icon--alert "></span>
-                ) : (
-                  ""
-                )}
-                {option.Title == "Bottleneck" ? (
-                  <span className="workmember svg__iconbox svg__icon--bottleneck "></span>
-                ) : (
-                  ""
-                )}
-                {option.Title == "Favorite" ? (
-                  <span className="workmember svg__iconbox svg__icon--Star "></span>
-                ) : (
-                  ""
-                )}
-              </a>
-              <label htmlFor={option.Id} className="ms-2">
-                {option.Title}
-              </label>
-            </div>
-          ))}
-          </>
-        }
+          {props?.mypriority != true &&
+            <>
+              {impTaskCategoryType?.map((option) => (
+                <div
+                  className={
+                    ServicesTaskCheck ? "serviepannelgreena d-flex" : "d-flex"
+                  }
+                  key={option.Id}
+                >
+                  <input
+                    type="checkbox"
+                    className="form-check-input"
+                    id={option.Id}
+                    value={option.Id}
+                    checked={selectedCatId?.includes(option.Id)}
+                    onChange={(event) => handleCategoryChange(event, option.Id)}
+                  />
+                  <a title={option.Title}>
+                    {option.Title == "Immediate" ? (
+                      <span className="workmember svg__iconbox svg__icon--alert "></span>
+                    ) : (
+                      ""
+                    )}
+                    {option.Title == "Bottleneck" ? (
+                      <span className="workmember svg__iconbox svg__icon--bottleneck "></span>
+                    ) : (
+                      ""
+                    )}
+                    {option.Title == "Favorite" ? (
+                      <span className="workmember svg__iconbox svg__icon--Star "></span>
+                    ) : (
+                      ""
+                    )}
+                  </a>
+                  <label htmlFor={option.Id} className="ms-2">
+                    {option.Title}
+                  </label>
+                </div>
+              ))}
+            </>
+          }
           <footer className="float-end">
             <button
               type="button"
@@ -1621,17 +1642,17 @@ const inlineEditingcolumns = (props: any) => {
         type={PanelType.medium}
       >
         <div>
-          {props.pageName !== "portfolioprofile" ? 
-          <TeamConfigurationCard
-            AllListId={props?.AllListId}
-            ItemInfo={props?.item}
-            parentCallback={DDComponentCallBack}
-          ></TeamConfigurationCard>
-          :
-          <TeamConfigurationCards
-          ItemInfo={props?.item}
-          AllListId={props?.AllListId}
-          parentCallback={DDComponentCallBack}
+          {props.pageName !== "portfolioprofile" ?
+            <TeamConfigurationCard
+              AllListId={props?.AllListId}
+              ItemInfo={props?.item}
+              parentCallback={DDComponentCallBack}
+            ></TeamConfigurationCard>
+            :
+            <TeamConfigurationCards
+              ItemInfo={props?.item}
+              AllListId={props?.AllListId}
+              parentCallback={DDComponentCallBack}
             ></TeamConfigurationCards>
           }
           <footer className="float-end">
@@ -1763,24 +1784,24 @@ const inlineEditingcolumns = (props: any) => {
                     {!instantCategories?.some(
                       (selectedCat: any) => selectedCat?.Title == type?.Title
                     ) && (
-                      <div className="block alignCenter">
-                        <a
-                          className="wid90"
-                          style={{ color: "#fff !important" }}
-                          target="_blank"
-                          data-interception="off"
-                        >
-                          {type.Title}
-                        </a>
-                        <span
-                          className="bg-light ml-auto svg__iconbox svg__icon--cross"
-                          onClick={() =>
-                            selectSubTaskCategory(type?.Title, type?.Id, type)
-                          }
-                        ></span>
-                        {/* <img src="https://hhhhteams.sharepoint.com/sites/HHHH/SP/_layouts/images/delete.gif" onClick={() => deleteCategories(type?.Id)} className="p-1" /> */}
-                      </div>
-                    )}
+                        <div className="block alignCenter">
+                          <a
+                            className="wid90"
+                            style={{ color: "#fff !important" }}
+                            target="_blank"
+                            data-interception="off"
+                          >
+                            {type.Title}
+                          </a>
+                          <span
+                            className="bg-light ml-auto svg__iconbox svg__icon--cross"
+                            onClick={() =>
+                              selectSubTaskCategory(type?.Title, type?.Id, type)
+                            }
+                          ></span>
+                          {/* <img src="https://hhhhteams.sharepoint.com/sites/HHHH/SP/_layouts/images/delete.gif" onClick={() => deleteCategories(type?.Id)} className="p-1" /> */}
+                        </div>
+                      )}
                   </>
                 );
               })}
