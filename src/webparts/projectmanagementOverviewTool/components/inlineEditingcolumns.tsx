@@ -8,6 +8,7 @@ import TeamConfigurationCard from "../../../globalComponents/TeamConfiguration/T
 import TeamConfigurationCards from "../../EditPopupFiles/TeamConfigurationPortfolio";
 import { OverlayTrigger, Popover } from "react-bootstrap";
 import Picker from "../../../globalComponents/EditTaskPopup/SmartMetaDataPicker";
+import { IoHandRightOutline } from "react-icons/io5";
 
 var ChangeTaskUserStatus: any = true;
 let ApprovalStatusGlobal: any = false;
@@ -23,6 +24,7 @@ let smartMetadataListId: any = "";
 let AllMetadata: any = [];
 let TaskCreatorApproverBackupArray: any = [];
 let TaskApproverBackupArray: any = [];
+let comments: any = []
 const inlineEditingcolumns = (props: any) => {
   const [TimeInHours, setTimeInHours] = React.useState(0);
   const [taskStatusInNumber, setTaskStatusInNumber] = React.useState(0);
@@ -97,6 +99,7 @@ const inlineEditingcolumns = (props: any) => {
     { value: 99, status: "99% Completed", taskStatusComment: "Completed" },
     { value: 100, status: "100% Closed", taskStatusComment: "Closed" }
   ];
+  const [onHoldComment, setOnHoldComment] = React.useState(false);
   React.useEffect(() => {
     if (props?.item?.metaDataListId != undefined) {
       smartMetadataListId = props?.item?.metaDataListId;
@@ -587,7 +590,7 @@ const inlineEditingcolumns = (props: any) => {
         web.lists
           .getById(props?.item?.listId)
           .items.select(
-            "Id,Title,FeedBack,PriorityRank,Remark,Project/PriorityRank,ParentTask/Id,ParentTask/Title,ParentTask/TaskID,TaskID,SmartInformation/Id,SmartInformation/Title,Project/Id,Project/Title,workingThisWeek,EstimatedTime,TaskLevel,TaskLevel,OffshoreImageUrl,OffshoreComments,ClientTime,Priority,Status,ItemRank,IsTodaysTask,Body,PercentComplete,Categories,StartDate,PriorityRank,DueDate,TaskType/Id,TaskType/Title,Created,Modified,Author/Id,Author/Title,TaskCategories/Id,TaskCategories/Title,AssignedTo/Id,AssignedTo/Title,TeamMembers/Id,TeamMembers/Title,ResponsibleTeam/Id,ResponsibleTeam/Title,ClientCategory/Id,ClientCategory/Title"
+            "Id,Title,FeedBack,PriorityRank,Remark,Project/PriorityRank,ParentTask/Id,ParentTask/Title,ParentTask/TaskID,TaskID,SmartInformation/Id,SmartInformation/Title,Project/Id,Project/Title,workingThisWeek,EstimatedTime,TaskLevel,TaskLevel,OffshoreImageUrl,OffshoreComments,Comments,ClientTime,Priority,Status,ItemRank,IsTodaysTask,Body,PercentComplete,Categories,StartDate,PriorityRank,DueDate,TaskType/Id,TaskType/Title,Created,Modified,Author/Id,Author/Title,TaskCategories/Id,TaskCategories/Title,AssignedTo/Id,AssignedTo/Title,TeamMembers/Id,TeamMembers/Title,ResponsibleTeam/Id,ResponsibleTeam/Title,ClientCategory/Id,ClientCategory/Title"
           )
           .expand(
             "AssignedTo,Project,ParentTask,SmartInformation,Author,TaskType,TeamMembers,ResponsibleTeam,TaskCategories,ClientCategory"
@@ -1095,6 +1098,18 @@ const inlineEditingcolumns = (props: any) => {
     );
   };
 
+  const showOnHoldComment = () => {
+    setOnHoldComment(true);
+  };
+
+  const hideOnHoldComment = () => {
+    setOnHoldComment(false);
+  };
+  
+  if (props?.columnName == 'Priority'){
+    comments = JSON.parse(props?.item?.Comments)
+  }
+  
   return (
     <>
       {props?.columnName == "Team" ? (
@@ -1139,7 +1154,35 @@ const inlineEditingcolumns = (props: any) => {
           >
             &nbsp;
             {props?.mypriority === true ? `(${props?.item?.PriorityRank}) ${props?.item?.Priority?.slice(3)}`:props?.item?.PriorityRank}
-         
+            {props?.item.TaskCategories.map((items: any) =>
+              items.Title === "On-Hold" ? (
+                <div className="hover-text">
+                  <IoHandRightOutline
+                    onMouseEnter={showOnHoldComment}
+                    onMouseLeave={hideOnHoldComment}
+                  />
+                  <span className="tooltip-text pop-right">
+                    {onHoldComment &&
+                      comments.map((commentItem: any, index: any) => 
+                        commentItem.CommentFor !== undefined &&
+                        commentItem.CommentFor === "On-Hold" ? (
+                          <div key={index}>
+                            <span className="siteColor p-1 border-bottom">
+                              Task On-Hold by{" "}
+                              <span>{commentItem.AuthorName}</span>{" "}
+                              <span>{Moment(commentItem.Created).format('DD/MM/YY')}</span>
+                            </span>
+                            {commentItem.CommentFor !== undefined &&
+                            commentItem.CommentFor === "On-Hold" ? (
+                              <div key={index}>{commentItem.Description}</div>
+                            ) : null}
+                          </div>
+                        ) : null
+                        )}
+                  </span>
+                </div>
+              ) : null
+            )}
             {props?.item?.TaskCategories?.map((category: any) => {
               if (category?.Title == "Immediate") {
                 return (
