@@ -60,7 +60,8 @@ const CreateContactComponent = (props: any) => {
                 await web.lists.getById(myContextData2?.allListId?.HHHHContactListId).items.add({
                     Title: (searchKey.FirstName[1] ? searchKey.FirstName[1] : " "),
                     FirstName: searchKey.FirstName[0],
-                    FullName: searchKey.FirstName[0] + " " + (searchKey.FirstName[1] ? searchKey.FirstName[1] : " ")
+                    FullName: searchKey.FirstName[0] + " " + (searchKey.FirstName[1] ? searchKey.FirstName[1] : " "),
+                    ItemType:"Contact"
                 }).then(async(data) => {
                     if(myContextData2?.GMBHSite|| myContextData2?.HrSite){
                         let web = new Web(myContextData2?.allListId?.siteUrl);

@@ -20,6 +20,7 @@ const SelectFilterPanel = (props: any) => {
             Title: { Title: 'Title', Selected: checked },
             commentsSearch: { commentsSearch: 'commentsSearch', Selected: checked },
             descriptionsSearch: { descriptionsSearch: 'descriptionsSearch', Selected: checked },
+            timeSheetsDescriptionSearch: { timeSheetsDescriptionSearch: 'timeSheetsDescriptionSearch', Selected: checked },
         });
     };
 
@@ -50,7 +51,7 @@ const SelectFilterPanel = (props: any) => {
                 <div className="alignCenter subheading">
                     <span style={{ color: `${props?.portfolioColor}` }} className="siteColor">Settings Advanced Search</span>
                 </div>
-                <Tooltip ComponentId={839} />
+                <Tooltip ComponentId={839}/>
             </>
         );
     };
@@ -62,7 +63,7 @@ const SelectFilterPanel = (props: any) => {
             isOpen={props?.isOpen}
             onDismiss={setModalIsOpenToFalse}
             onRenderHeader={onRenderCustomHeader}
-            isBlocking={props?.isOpen}
+            isBlocking={false}
         // onRenderFooter={CustomFooter}
         >
             <div className="modal-body p-0 mt-2 mb-3">
@@ -100,13 +101,23 @@ const SelectFilterPanel = (props: any) => {
                             </label>
                             <br />
                             <label>
-                                <input style={props?.selectedFilterPannelData.Title.Selected && props?.selectedFilterPannelData.commentsSearch.Selected && props?.selectedFilterPannelData.descriptionsSearch.Selected && props?.portfolioColor ? { marginRight: '6px', marginBottom: '6px', backgroundColor: `${props?.portfolioColor}`, borderColor: `${props?.portfolioColor}` } : { marginRight: '6px', marginBottom: '6px', backgroundColor: "", borderColor: "" }} className="cursor-pointer form-check-input rounded-0"
+                                <input className="cursor-pointer form-check-input rounded-0" style={props?.selectedFilterPannelData.timeSheetsDescriptionSearch.Selected && props?.portfolioColor ? { marginRight: '6px', marginBottom: '6px', backgroundColor: `${props?.portfolioColor}`, borderColor: `${props?.portfolioColor}` } : { marginRight: '6px', marginBottom: '6px', backgroundColor: "", borderColor: "" }}
+                                    type="checkbox"
+                                    name="timeSheetsDescriptionSearch"
+                                    checked={props?.selectedFilterPannelData.timeSheetsDescriptionSearch.Selected}
+                                    onChange={handleCheckboxChange}
+                                />
+                                Timesheet Data
+                            </label>
+                            <br/>
+                            <label>
+                                <input style={props?.selectedFilterPannelData.Title.Selected && props?.selectedFilterPannelData.commentsSearch.Selected && props?.selectedFilterPannelData.descriptionsSearch.Selected && props?.selectedFilterPannelData.timeSheetsDescriptionSearch.Selected && props?.portfolioColor ? { marginRight: '6px', marginBottom: '6px', backgroundColor: `${props?.portfolioColor}`, borderColor: `${props?.portfolioColor}` } : { marginRight: '6px', marginBottom: '6px', backgroundColor: "", borderColor: "" }} className="cursor-pointer form-check-input rounded-0"
                                     type="checkbox"
                                     name="selectAll"
-                                    checked={props?.selectedFilterPannelData.Title.Selected && props?.selectedFilterPannelData.commentsSearch.Selected && props?.selectedFilterPannelData.descriptionsSearch.Selected}
+                                    checked={props?.selectedFilterPannelData.Title.Selected && props?.selectedFilterPannelData.commentsSearch.Selected && props?.selectedFilterPannelData.descriptionsSearch.Selected && props?.selectedFilterPannelData.timeSheetsDescriptionSearch.Selected}
                                     onChange={handleSelectAllChange}
                                 />
-                                Select All
+                                All content
                             </label>
                         </div>
                     </div>
