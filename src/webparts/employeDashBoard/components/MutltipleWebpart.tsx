@@ -306,8 +306,8 @@ const MultipleWebpart = (Tile: any) => {
     <div>
       <div className="row m-0 mb-3 empMainSec">
         <div className="col-7 p-0">
-          <div className="empAllSec approvalSec clearfix">
-            <div className="d-flex mb-2 justify-content-between">
+          <div className="chartSec empAllSec clearfix">
+            <div className="alignCenter mb-2 justify-content-between">
               <span className="fw-bold">
                 Waiting for Approval {`(${approvalTask.length})`}
               </span>
