@@ -4,9 +4,9 @@ import "react-popper-tooltip/dist/styles.css";
 import { ColumnDef, } from "@tanstack/react-table";
 import { FaChevronDown, FaChevronRight, FaPlus } from "react-icons/fa";
 import GlobalCommanTable from "../GroupByReactTableComponents/GlobalCommanTable";
-import CreateActivity from "../../webparts/servicePortfolio/components/CreateActivity";
+import CreateActivity from "../CreateActivity";
 import * as globalCommon from "../globalCommon"
-import CreateWS from '../../webparts/servicePortfolio/components/CreateWS'
+import CreateWS from '../CreateWS'
 let AllMatsterAndTaskData: any = [];
 let counterAllTaskCount: any = 0;
 let checkedData = ''
