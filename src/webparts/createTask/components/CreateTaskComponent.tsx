@@ -1105,8 +1105,16 @@ function CreateTaskComponent(props: any) {
                     TestUrl = TestUrl.split('.com')[1];
                 else if (TestUrl.toLowerCase().indexOf('.ch') > -1)
                     TestUrl = TestUrl.split('.ch')[1];
-                else if (TestUrl.toLowerCase().indexOf('.de') > -1)
-                    TestUrl = TestUrl.split('.de')[1];
+                else if (TestUrl.toLowerCase().indexOf('.de') > -1) {
+                    TestUrl = TestUrl.split('.de');
+                    try {
+                        if (TestUrl[0]?.toLowerCase()?.indexOf('gruene-washington') > -1) {
+                            TestUrl = TestUrl[0];
+                        } else {
+                            TestUrl = TestUrl[1];
+                        }
+                    } catch (e) { }
+                }
                 let URLDataArr: any = TestUrl.split('/');
                 for (let index = 0; index < SitesTypes?.length; index++) {
                     let site = SitesTypes[index];
@@ -1674,34 +1682,34 @@ function CreateTaskComponent(props: any) {
 
                         </ul>
                         <div className="border border-top-0 clearfix p-2 tab-content " id="myTabContent">
-                            <div className="tab-pane Alltable mx-height p-0 show active" id="URLTasks" role="tabpanel" aria-labelledby="URLTasks">
+                            <div className="tab-pane Alltable  p-0 show active" id="URLTasks" role="tabpanel" style={{height:'500px'}} aria-labelledby="URLTasks">
                                 {TaskUrlRelevantTask?.length > 0 ?
                                     <>
                                         <div className={TaskUrlRelevantTask?.length > 0 ? 'fxhg' : ''}>
-                                            <GlobalCommanTable columns={column2} data={TaskUrlRelevantTask} callBackData={callBackData} />
+                                            <GlobalCommanTable columns={column2} wrapperHeight="100%"  data={TaskUrlRelevantTask} callBackData={callBackData} />
                                         </div>
                                     </> : <div className='text-center full-width'>
                                         <span>No Tasks Available</span>
                                     </div>
                                 }
                             </div>
-                            <div className="tab-pane Alltable p-0 mx-height" id="PageTasks" role="tabpanel" aria-labelledby="PageTasks">
+                            <div className="tab-pane Alltable p-0 " id="PageTasks" role="tabpanel"  style={{height:'500px'}} aria-labelledby="PageTasks">
                                 {PageRelevantTask?.length > 0 ?
                                     <>
                                         <div className={PageRelevantTask?.length > 0 ? 'fxhg' : ''}>
-                                            <GlobalCommanTable columns={column2} data={PageRelevantTask} callBackData={callBackData} />
+                                            <GlobalCommanTable columns={column2} wrapperHeight="100%" data={PageRelevantTask} callBackData={callBackData} />
                                         </div>
                                     </> : <div className='text-center full-width'>
                                         <span>No Tasks Available</span>
                                     </div>
                                 }
                             </div>
-                            <div className="tab-pane Alltable mx-height p-0" id="ComponentTasks" role="tabpanel" aria-labelledby="ComponentTasks">
+                            <div className="tab-pane Alltable  p-0" id="ComponentTasks" role="tabpanel" style={{height:'500px'}} aria-labelledby="ComponentTasks">
 
                                 {ComponentRelevantTask?.length > 0 ?
                                     <>
                                         <div className={ComponentRelevantTask?.length > 0 ? 'fxhg' : ''}>
-                                            <GlobalCommanTable columns={column2} data={ComponentRelevantTask} callBackData={callBackData} />
+                                            <GlobalCommanTable columns={column2} wrapperHeight="100%" data={ComponentRelevantTask} callBackData={callBackData} />
                                         </div>
                                     </> : <div className='text-center full-width'>
                                         <span>No Tasks Available</span>

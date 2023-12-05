@@ -19,6 +19,8 @@ const AddProject = (props: any) => {
     const [IsPortfolio, setIsPortfolio] = React.useState(false);
     const [save, setSave] = React.useState({ siteType: '', linkedServices: [], recentClick: undefined, Mileage: '', DueDate: undefined, dueDate: '', taskCategory: '', taskCategoryParent: '', rank: undefined, Time: '', taskName: '', taskUrl: undefined, portfolioType: 'Component', Component: [] })
     const [smartComponentData, setSmartComponentData] = React.useState([]);
+    const [projectData, setProjectData] = React.useState([]);
+    const [searchedProjectKey, setSearchedProjectKey] = React.useState("");
     const OpenCreateTaskPopup = () => {
         setLgShow(true)
     }
@@ -59,9 +61,10 @@ const AddProject = (props: any) => {
                             PortfoliosId: { "results": (selectedComponent !== undefined && selectedComponent?.length > 0) ? selectedComponent : [] },
                             PortfolioStructureID: portfolioStructureId,
                         }).then((res: any) => {
+                            const newProjectId = res.data.Id;
                             closePopup()
                             props?.CallBack()
-
+                            window.open(`${props?.AllListId?.siteUrl}/SitePages/Project-Management.aspx?ProjectId=${newProjectId}`, "_blank");
                         })
                     })
             } else {
@@ -89,9 +92,10 @@ const AddProject = (props: any) => {
                             PortfoliosId: { "results": (selectedComponent !== undefined && selectedComponent?.length > 0) ? selectedComponent : [] },
                             PortfolioStructureID: portfolioStructureId,
                         }).then((res: any) => {
+                            const newProjectId = res.data.Id;
                             closePopup()
                             props?.CallBack()
-
+                            window.open(`${props?.AllListId?.siteUrl}/SitePages/Project-Management.aspx?ProjectId=${newProjectId}`, "_blank");
                         })
                     })
             }
@@ -115,6 +119,36 @@ const AddProject = (props: any) => {
 
         })
     }
+
+    const autoSuggestionsForProject = (e: any) => {
+        let SearchedKeyWord: any = e.target.value;
+        let TempArray: any = [];
+        if (SearchedKeyWord.length > 0) {
+            if (props?.data != undefined && props?.data?.length > 0) {
+                props?.data.map((AllDataItem: any) => {
+                    if (
+                        AllDataItem?.Title?.toLowerCase()?.includes(
+                            SearchedKeyWord.toLowerCase()
+                        )
+                    ) {
+                        TempArray.push(AllDataItem);
+                    }
+                });
+            }
+            if (TempArray != undefined && TempArray.length > 0) {
+                setProjectData(TempArray);
+                setSearchedProjectKey(SearchedKeyWord);
+            }
+        } else {
+            setProjectData([]);
+            // setSearchedServiceCompnentKey("");
+        }
+        // let updatedInputData: any = [...backupInputData];
+        // updatedInputData[index].SearchedComps = [...TempArray];
+        // updatedInputData[index].searchText = SearchedKeyWord;
+        // setInputData(updatedInputData);
+    };
+
     const closePopup = () => {
         settitle('')
         setLinkedComponentData([])
@@ -133,7 +167,6 @@ const AddProject = (props: any) => {
             setIsPortfolio(false);
         }
     }, [])
-
 
     const unTagComponent = (array: any, index: any) => {
         array.splice(index, 1);
@@ -158,7 +191,7 @@ const AddProject = (props: any) => {
     ) => {
         return (
             <div className=" full-width pb-1" >
-                {props?.items != undefined && props?.items?.length == 1 && 
+                {props?.items != undefined && props?.items?.length == 1 &&
                     <div>
                         <ul className="spfxbreadcrumb mb-2 ms-2 p-0">
                             <li><a>Project Management</a></li>
@@ -168,7 +201,7 @@ const AddProject = (props: any) => {
                             </li>
                         </ul>
                     </div>
-               }
+                }
                 <div className="subheading">
                     <span className="siteColor">
                         {props?.items?.length == 1 ? 'Create Sprint' : 'Create Project'}
@@ -193,7 +226,24 @@ const AddProject = (props: any) => {
                     <span >
                         <div>
                             <span>
-                                <input type='text' className='form-control' placeholder='Enter Title' value={title} onChange={(e) => { settitle(e.target.value) }} />
+                                <input type='text' className='form-control' placeholder='Enter Title' value={title} onChange={(e) => { settitle(e.target.value); autoSuggestionsForProject(e) }} />
+                                {projectData?.length > 0 ? (
+                                    <div>
+                                        <ul className="list-group">
+                                            {projectData?.map((Item: any) => {
+                                                return (
+                                                    <li
+                                                        className="hreflink list-group-item rounded-0 list-group-item-action"
+                                                        key={Item.id}
+                                                        onClick={() => window.open(`${Item?.siteUrl}/SitePages/Project-Management.aspx?ProjectId=${Item?.Id}`, '_blank')}
+                                                    >
+                                                        <a>{Item.Title}</a>
+                                                    </li>
+                                                );
+                                            })}
+                                        </ul>
+                                    </div>
+                                ) : null}
                             </span>
                         </div>
                     </span>
