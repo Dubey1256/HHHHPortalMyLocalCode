@@ -25,8 +25,8 @@ import * as globalCommon from '../../../globalComponents/globalCommon';
 import { typography } from '@mui/system';
 import ShowTaskTeamMembers from '../../../globalComponents/ShowTaskTeamMembers';
 import { PortfolioStructureCreationCard } from '../../../globalComponents/tableControls/PortfolioStructureCreation';
-import CreateActivity from '../../servicePortfolio/components/CreateActivity';
-import CreateWS from '../../servicePortfolio/components/CreateWS';
+import CreateActivity from '../../../globalComponents/CreateActivity';
+import CreateWS from '../../../globalComponents/CreateWS';
 import 'bootstrap/dist/css/bootstrap.min.css';
 import Tooltip from '../../../globalComponents/Tooltip';
 import {

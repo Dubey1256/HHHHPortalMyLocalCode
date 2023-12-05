@@ -1,11 +1,7 @@
 import React, { useEffect, useState } from 'react'
 import { Web } from 'sp-pnp-js';
-//import styles from './DocumentSearch.module.scss';
-// import GlobalCommanTable from '../../../GlobalCommon/GlobalCommanTable';
-// import GlobalCommanTable from "../../../globalComponents/GlobalCommanTable";
 import GlobalCommanTable from '../../../globalComponents/GroupByReactTableComponents/GlobalCommanTable';
 import { ColumnDef } from '@tanstack/react-table';
-//import DocumentPopup from "./DocumentPopup";
 import EditDocument from './EditDocunentPanel'
 import moment from 'moment';
 var TaskUser: any = []
@@ -22,7 +18,7 @@ export default function DocumentSearchPage(Props: any) {
     //#region code to load All Documents By PB
     const LoadDocs = () => {
         let web = new Web(PageContext.context._pageContext._web.absoluteUrl + '/')
-        web.lists.getById(PageContext.DocumentListID).items.select("Id,Title,PriorityRank,Year,Body,Item_x0020_Cover,SharewebTask/Id,SharewebTask/Title,SharewebTask/ItemType,Portfolios/Id,Portfolios/Title,File_x0020_Type,FileLeafRef,FileDirRef,ItemRank,ItemType,Url,Created,Modified,Author/Id,Author/Title,Editor/Id,Editor/Title,EncodedAbsUrl").filter('FSObjType eq 0').expand("Author,Editor,SharewebTask,Portfolios").getAll()
+        web.lists.getById(PageContext.DocumentListID).items.select("Id,Title,PriorityRank,Year,Body,Item_x0020_Cover,SharewebTask/Id,SharewebTask/Title,SharewebTask/ItemType,Portfolios/Id,Portfolios/Title,File_x0020_Type,FileLeafRef,FileDirRef,ItemRank,ItemType,Url,Created,Modified,Author/Id,Author/Title,Editor/Id,Editor/Title,EncodedAbsUrl").filter('FSObjType eq 0').expand("Author,Editor,SharewebTask,Portfolios").orderBy("Created", false).getAll()
             .then((response: any) => {
                 try {
                     response.forEach((Doc: any) => {
@@ -63,7 +59,7 @@ export default function DocumentSearchPage(Props: any) {
                         });
                         Doc.AllCreatedImages.push(CreatedUserObj);
                         Doc.AllModifiedImages.push(ModifiedUserObj)
-                    });
+                    });                  
                 } catch (e) {
                     console.log(e)
                 }
@@ -100,7 +96,7 @@ export default function DocumentSearchPage(Props: any) {
         var flag: any = confirm('Do you want to delete this item')
         if (flag) {
             let web = new Web(PageContext.context._pageContext._web.absoluteUrl + '/')
-            web.lists.getById(PageContext.DocumentListId).items.getById(dlData.Id).recycle().then(() => {
+            web.lists.getById(PageContext.DocumentListID).items.getById(dlData.Id).recycle().then(() => {
                 alert("delete successfully")
                 LoadDocs();
             }).catch((error: any) => {
@@ -110,41 +106,54 @@ export default function DocumentSearchPage(Props: any) {
     }
     //#endregion 
     //#region code to apply react/10stack global table BY PB
-    const columns = React.useMemo<ColumnDef<any, unknown>[]>(() =>
-        [{
+    const columns = React.useMemo<ColumnDef<any, unknown>[]>(() => [
+        {
+            accessorKey: "",
+            placeholder: "",
+            hasCheckbox: false,
+            hasCustomExpanded: false,
+            hasExpanded: false,
+            size: 10,
+            id: 'Id',
+        },
+        {
             accessorKey: "Title", placeholder: "Title", header: "", id: "Title",
             cell: ({ row }) => (
-                <>
+                <div className='alignCenter columnFixedTitle'>
                     <a target="_blank" href={row?.original?.FileDirRef}>
                         <span className="alignIcon svg__iconbox svg__icon--folder"></span>
+                        {row?.original?.Title ? <a className='ms-1 text-content' title={row?.original?.Title} target="_blank" href={row?.original?.FileDirRef}> {row?.original?.Title} </a> : <a className='ms-1 text-content' title={row?.original?.FileDirRef} target="_blank" href={row?.original?.FileDirRef}> {row?.original?.FileLeafRef} </a>}
                     </a>
-                    {row?.original?.Title ? <a target="_blank" href={row?.original?.FileDirRef}> {row?.original?.Title} </a> : <a target="_blank" href={row?.original?.FileDirRef}> {row?.original?.FileLeafRef} </a>}
-                </>
+                </div>
             ),
+
         },
         {
             accessorKey: "FileLeafRef", placeholder: "Document Url", header: "", id: "FileLeafRef",
             cell: ({ row }) => (
-                <div className='alignCenter'>
-                    {row?.original?.File_x0020_Type != 'msg' && row?.original?.File_x0020_Type != 'docx' && row?.original?.File_x0020_Type != 'doc' && row?.original?.File_x0020_Type != 'rar' && row?.original?.File_x0020_Type != 'jpeg' && row?.original?.File_x0020_Type != 'jpg' && row?.original?.File_x0020_Type != 'aspx' && <span className={`wid30 svg__iconbox svg__icon--${row?.original?.File_x0020_Type}`}></span>}
-                    {row?.original?.File_x0020_Type == 'rar' && <span className="wid30 svg__iconbox svg__icon--zip "></span>}
-                    {row?.original?.File_x0020_Type == 'aspx' || row?.original?.File_x0020_Type == 'msg' || row?.original?.File_x0020_Type == 'apk' ? <span className="wid30 svg__iconbox svg__icon--unknownFile "></span> : ''}
-                    {row?.original?.File_x0020_Type == 'jpeg' || row?.original?.File_x0020_Type == 'jpg' ? <span className="wid30 svg__iconbox svg__icon--jpeg "></span> : ''}
-                    {row?.original?.File_x0020_Type == 'doc' || row?.original?.File_x0020_Type == 'docx' ? <span className="wid30 svg__iconbox svg__icon--docx "></span> : ''}
-                    {row?.original?.File_x0020_Type == 'jfif' ? <span className="wid30 svg__iconbox svg__icon--jpeg "></span> : ''}
+                <div className='alignCenter columnFixedTitle'>
+                    {row?.original?.File_x0020_Type != 'msg' && row?.original?.File_x0020_Type != 'docx' && row?.original?.File_x0020_Type != 'doc' && row?.original?.File_x0020_Type != 'rar' && row?.original?.File_x0020_Type != 'jpeg' && row?.original?.File_x0020_Type != 'jpg' && row?.original?.File_x0020_Type != 'aspx'&&row?.original?.File_x0020_Type != 'jfif' && <span className={` svg__iconbox svg__icon--${row?.original?.File_x0020_Type}`}></span>}
+                    {row?.original?.File_x0020_Type == 'rar' && <span className="svg__iconbox svg__icon--zip "></span>}
+                    {row?.original?.File_x0020_Type == 'aspx' || row?.original?.File_x0020_Type == 'msg' || row?.original?.File_x0020_Type == 'apk' ? <span className=" svg__iconbox svg__icon--unknownFile "></span> : ''}
+                    {row?.original?.File_x0020_Type == 'jpeg' || row?.original?.File_x0020_Type == 'jpg' ? <span className=" svg__iconbox svg__icon--jpeg "></span> : ''}
+                    {row?.original?.File_x0020_Type == 'doc' || row?.original?.File_x0020_Type == 'docx' ? <span className=" svg__iconbox svg__icon--docx "></span> : ''}
+                    {row?.original?.File_x0020_Type == 'jfif' ? <span className=" svg__iconbox svg__icon--jpeg "></span> : ''}
                     <a className='ms-1 wid90' target="_blank" href={`${row?.original?.EncodedAbsUrl}?web=1`}> {row?.original?.FileLeafRef} </a>
                 </div>
             ),
         },
         {
-            accessorKey: "Created", placeholder: "Created Date", header: "", size: 120, id: "Created",
+            accessorKey: "Created", placeholder: "Created Date", header: "", size: 120, id: "Created", isColumnDefultSortingDesc: true,
             cell: ({ row }) => (
                 <>
+                    {row?.original?.CreatedDate}
                     {row?.original?.AllCreatedImages.map((item: any) => (
                         <a target="_blank" href={`${PageContext.context._pageContext._web.serverRelativeUrl}/SitePages/TaskDashboard.aspx?UserId=${item.UserId}&Name=${item.Title}`}>
-                            {row?.original?.CreatedDate} {item?.UserImage != undefined && item?.UserImage != '' ? <img title={item?.Title} className="workmember" src={item?.UserImage}></img> : <img title={item?.Title} className="workmember" src={`${PageContext.context._pageContext._web.serverRelativeUrl}/SiteCollectionImages/ICONS/32/icon_user.jpg`}></img>}
+                            {item?.UserImage != undefined && item?.UserImage != '' ? <img title={item?.Title} className="workmember" src={item?.UserImage}></img> : <img title={item?.Title} className="workmember" src={`${PageContext.context._pageContext._web.serverRelativeUrl}/SiteCollectionImages/ICONS/32/icon_user.jpg`}></img>}
                         </a>
                     ))}
+
+
                 </>
             ),
         },
@@ -152,11 +161,14 @@ export default function DocumentSearchPage(Props: any) {
             accessorKey: "Modified", placeholder: "Modified Date", header: "", size: 172, id: "Modified",
             cell: ({ row }) => (
                 <>
+                    {row?.original?.ModifiedDate}
                     {row?.original?.AllModifiedImages.map((item: any) => (
                         <a target="_blank" href={`${PageContext.context._pageContext._web.serverRelativeUrl}/SitePages/TaskDashboard.aspx?UserId=${item.UserId}&Name=${item.Title}`}>
-                            {row?.original?.ModifiedDate} {item?.UserImage != undefined && item?.UserImage != '' ? <img title={item?.Title} className="workmember" src={item?.UserImage}></img> : <img title={item?.Title} className="workmember" src={`${PageContext.context._pageContext._web.serverRelativeUrl}/SiteCollectionImages/ICONS/32/icon_user.jpg`}></img>}
+                            {item?.UserImage != undefined && item?.UserImage != '' ? <img title={item?.Title} className="workmember" src={item?.UserImage}></img> : <img title={item?.Title} className="workmember" src={`${PageContext.context._pageContext._web.serverRelativeUrl}/SiteCollectionImages/ICONS/32/icon_user.jpg`}></img>}
                         </a>
                     ))}
+
+
                 </>
             ),
         },
@@ -175,27 +187,39 @@ export default function DocumentSearchPage(Props: any) {
             id: 'row.original',
             size: 50,
         },
-        ],
+    ],
         [AllDocs]);
     const callBackData = React.useCallback((elem: any, getSelectedRowModel: any, ShowingData: any) => { }, []);
     //#endregion
     return (
-
-        //#Jsx Part By PB
-        <> {AllDocs && <div>
-            <div><h2 className='mt-2 heading'>Document Search</h2></div>
-            <div className='Alltable'>
-                <div className='wrapper'>
-                    <GlobalCommanTable columns={columns} data={AllDocs} showHeader={true} callBackData={callBackData} />
+        <>
+            <section className='ContentSection'>
+                <div className='row'>
+                    <div className='col-sm-3 text-primary'>
+                        <h3 className="heading">Document Serach
+                        </h3>
+                    </div>
+                    <div className='col-sm-9 text-primary'>
+                        <h6 className='pull-right'><b><a data-interception="off"
+                            target="_blank" href="https://hhhhteams.sharepoint.com/sites/HHHH/SP/SitePages/document-search-old.aspx">Old Document Serach</a></b>
+                        </h6>
+                    </div>
+                </div>
+            </section>
+            {AllDocs && <div>
+                <div className="TableSection">
+                <div className='Alltable mt-2'>
+                    <div className='col-md-12 p-0 smart'>
+                        <GlobalCommanTable columns={columns} data={AllDocs} showHeader={true} callBackData={callBackData} />
+                    </div>
                 </div>
             </div>
-        </div>}
+            </div>}
             {isEditModalOpen ?
                 <EditDocument closeEditPopup={closeEditPopup} editData={selectedItemId} AllListId={PageContext} Context={PageContext?.context} editdocpanel={isEditModalOpen} />
                 :
                 null
             }    </>
-        //#endregion
     )
 }
 

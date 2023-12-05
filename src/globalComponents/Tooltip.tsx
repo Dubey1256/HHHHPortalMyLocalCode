@@ -247,7 +247,7 @@ function Tooltip(props: any) {
       <>
         <Popup
           trigger={
-            <button type='button' className='burgerMenu'><span className="svg__iconbox svg__icon--burgerMenu"></span></button>
+            <button type='button' className='burgerMenu d-flex ml-12'><span className="svg__iconbox svg__icon--burgerMenu"></span></button>
           }
           position="left top"
           on="hover"
