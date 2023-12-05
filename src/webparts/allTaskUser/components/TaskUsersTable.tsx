@@ -19,7 +19,7 @@ interface ITaskUser {
   Company: string;
   Approver: string;
   TaskId: number;
-  Team:string;
+  technicalGroup:string;
 }
 
 interface ITableTaskUsersProps {
@@ -97,9 +97,9 @@ function TableTaskUsers(props: ITableTaskUsersProps) {
       placeholder: "Approver"
     },
     {
-      accessorKey: "Team",
+      accessorKey: "technicalGroup",
       header: "",
-      id: 'Team',
+      id: 'technicalGroup',
       placeholder: "Team",
       size: 75,
     },
