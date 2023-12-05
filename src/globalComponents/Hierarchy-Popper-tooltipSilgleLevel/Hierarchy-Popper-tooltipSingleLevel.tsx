@@ -243,7 +243,7 @@ export default function ReactPopperTooltipSingleLevel({ ShareWebId, row, masterT
                     </div>
 
                     <div className={scrollToolitem === true ? "tool-Wrapper toolWrapper-Th scroll-toolitem" : "tool-Wrapper toolWrapper-Th"}  >
-                        <GlobalCommanTable columns={columns} data={tooltiphierarchy} callBackDataToolTip={callBackDataToolTip} callBackData={callBackData} pageName={pageName} expendedTrue={true} />
+                        <GlobalCommanTable wrapperHeight="auto" columns={columns} data={tooltiphierarchy} callBackDataToolTip={callBackDataToolTip} callBackData={callBackData} pageName={pageName} expendedTrue={true} />
                     </div>
                     <div {...getArrowProps({ className: "tooltip-arrow" })} />
                 </div>

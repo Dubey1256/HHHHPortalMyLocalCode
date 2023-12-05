@@ -1105,7 +1105,7 @@ const inlineEditingcolumns = (props: any) => {
         }
       >
         <div className="subheading ">
-          <img className="imgWid29 pe-1 mb-1 " src={props?.item?.SiteIcon} />
+        {props?.item?.SiteIcon != null && <img className="imgWid29 pe-1 mb-1 " src={props?.item?.SiteIcon} />}
           <span className="siteColor">
             {`Update ${columnName} - ${props?.item?.TaskID} ${props?.item?.Title}`}
           </span>
@@ -1763,7 +1763,7 @@ const inlineEditingcolumns = (props: any) => {
                     {!instantCategories?.some(
                       (selectedCat: any) => selectedCat?.Title == type?.Title
                     ) && (
-                      <div className="block d-flex full-width justify-content-between mb-1 p-2">
+                      <div className="block alignCenter">
                         <a
                           className="wid90"
                           style={{ color: "#fff !important" }}
@@ -1773,7 +1773,7 @@ const inlineEditingcolumns = (props: any) => {
                           {type.Title}
                         </a>
                         <span
-                          className="bg-light svg__iconbox svg__icon--cross"
+                          className="bg-light ml-auto svg__iconbox svg__icon--cross"
                           onClick={() =>
                             selectSubTaskCategory(type?.Title, type?.Id, type)
                           }
