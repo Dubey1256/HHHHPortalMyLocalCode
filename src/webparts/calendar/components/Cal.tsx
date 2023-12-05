@@ -104,6 +104,7 @@ let createdBY: any,
   CDate: any,
   MTime: any,
   MDate: any,
+  HalfDaye:any=false,
   localArr: any = [],
   vHistory: any = [];
 let startTime: any,
@@ -139,6 +140,7 @@ const App = (props: any) => {
   const [chkName, setChkName]: any = React.useState("");
   const [type, setType]: any = React.useState("");
   const [dType, sedType]: any = React.useState("");
+  const [isHalfDChecked, setIsHalfDChecked] = React.useState(false);
   const [inputValueName, setInputValueName] = React.useState("");
   const [inputValueReason, setInputValueReason] = React.useState("");
   // const myButton = document.getElementById("myButton");
@@ -242,7 +244,7 @@ const App = (props: any) => {
       const results = await web.lists
         .getById(props.props.SmalsusLeaveCalendar)
         .items.select(
-          "RecurrenceData,Duration,Author/Title,Editor/Title,NameId,Employee/Id,Employee/Title,Category,Description,ID,EndDate,EventDate,Location,Title,fAllDayEvent,EventType,UID,fRecurrence,Event_x002d_Type"
+          "RecurrenceData,Duration,Author/Title,Editor/Title,NameId,Employee/Id,Employee/Title,Category,Description,ID,EndDate,EventDate,Location,Title,fAllDayEvent,EventType,UID,fRecurrence,Event_x002d_Type,HalfDay,Color"
         )
         .expand("Author,Editor,Employee")
         .top(500)
@@ -286,7 +288,9 @@ const App = (props: any) => {
               MasterSeriesItemID: event.MasterSeriesItemID,
               UID: event.UID ? event.UID.replace("{", "").replace("}", "") : "",
               Author: event.Author,
-              Editor: event.Editor
+              Editor: event.Editor,
+              HalfDay:event.HalfDay,
+              Color:event.Color
             });
           }
 
@@ -372,7 +376,9 @@ const App = (props: any) => {
         "RecurrenceData",
         "Duration",
         "Category",
-        "UID"
+        "UID",
+        "HalfDay",
+        "Color"
       )
       .expand("Author")
       .get();
@@ -409,7 +415,9 @@ const App = (props: any) => {
     { key: "Planned Leave", text: "Planned" },
     { key: "Un-Planned", text: "Un-Planned" },
     { key: "Restricted Holiday", text: "Restricted Holiday" },
-    { key: "LWP", text: "LWP" }
+    { key: "LWP", text: "LWP" },
+    { key: "Work From Home", text: "Work From Home" }
+    
   ];
   const Designation = [
     { key: "SPFx", text: "SPFx" },
@@ -436,6 +444,7 @@ const App = (props: any) => {
     sedType("");
     setInputValueReason("");
     allDay = "false";
+    HalfDaye = "false";
   };
   const handleInputChangeName = (
     event: React.ChangeEvent<HTMLInputElement>
@@ -490,7 +499,9 @@ const App = (props: any) => {
       RecurrenceData: event.RecurrenceData,
       RecurrenceID: event.RecurrenceID,
       UID: event.UID,
-      fRecurrence: event.fRecurrence
+      fRecurrence: event.fRecurrence,
+      HalfDay:event.HalfDay,
+      Color:event.Color
     }));
     console.log(eventsFormatted, "dadd");
     let localcomp = [];
@@ -504,7 +515,9 @@ const App = (props: any) => {
         "Author/Title",
         "Editor/Title",
         "Employee/Id",
-        "Employee/Title"
+        "Employee/Title",
+        "HalfDay",
+        "Color"
       )
       .top(4999)
       .orderBy("Created", false)
@@ -574,7 +587,9 @@ const App = (props: any) => {
             cTime: createdAt,
             mTime: modifyAt,
             Name: item.Employee?.Title,
-            Designation: item.Designation
+            Designation: item.Designation,
+            HalfDay:item.HalfDay,
+            Color:item.Color
           };
           // const create ={
           //   id:item.Id,
@@ -627,6 +642,7 @@ const App = (props: any) => {
             void getData();
             closem(undefined);
             setIsChecked(false);
+            setIsHalfDChecked(false);
             setSelectedTime(selectedTime);
             setSelectedTimeEnd(selectedTimeEnd);
             return;
@@ -661,6 +677,8 @@ const App = (props: any) => {
           setDetails(newEvent);
           let mytitle =
             newEvent.name + "-" + newEvent.type + "-" + newEvent.title;
+    let mycolors = HalfDaye===true?"#6d36c5":newEvent.type === "Work From Home"?"#e0a209":"";
+
           let eventData = {
             Title: mytitle,
 
@@ -685,7 +703,9 @@ const App = (props: any) => {
 
             fAllDayEvent: allDay,
 
-            Designation: newEvent.Designation
+            HalfDay:HalfDaye,
+            Designation: newEvent.Designation,
+            Color:mycolors
           };
 
           let web = new Web(props.props.siteUrl);
@@ -698,9 +718,11 @@ const App = (props: any) => {
               void getData();
               closem(undefined);
               setIsChecked(false);
+              setIsHalfDChecked(false);
               setSelectedTime(selectedTime);
               setSelectedTimeEnd(selectedTimeEnd);
               allDay = "false";
+              HalfDaye="false";
             });
         }
       }
@@ -731,6 +753,7 @@ const App = (props: any) => {
     if (!editRecurrenceEvent) {
       let mytitle =
       peopleName + "-" + type + "-" + inputValueName;
+      let mycolors = HalfDaye===true?"#6d36c5":type === "Work From Home"?"#e0a209":"";
       const newEventData: IEventData = {
         
         EventType: "1",
@@ -739,7 +762,9 @@ const App = (props: any) => {
         Location: location,
         Event_x002d_Type: type,
         Designation: dType,
-        Description: inputValueName,
+        Description: '',
+        HalfDay:HalfDaye,
+        Color:mycolors,
         EventDate: new Date(start),
         EndDate: new Date(end),
         fAllDayEvent: allDay,
@@ -752,6 +777,7 @@ const App = (props: any) => {
     } else if (editRecurrenceEvent) {
       let mytitle =
       peopleName + "-" + type + "-" + inputValueName;
+      let mycolors = HalfDaye===true?"#6d36c5":type === "Work From Home"?"#e0a209":"";
       const editEventData: IEventData = {
         EventType: "1",
         EmployeeId: title_Id,
@@ -759,7 +785,9 @@ const App = (props: any) => {
         Location: location,
         Event_x002d_Type: type,
         Designation: dType,
-        Description: inputValueName,
+        Description: '',
+        HalfDay:HalfDaye,
+        Color:mycolors,
         EventDate: new Date(start),
         reason: inputValueReason,
         EndDate: new Date(end),
@@ -1085,6 +1113,8 @@ const App = (props: any) => {
     let results = null;
     try {
       const web = new Web(props.props.siteUrl);
+      
+      let mycolors = HalfDaye===true?"#6d36c5":newEvent.Event_x002d_Type === "Work From Home"?"#e0a209":"";
       const addEventItem = {
          Title: newEvent.Title,
         Description: newEvent.Description,
@@ -1096,7 +1126,9 @@ const App = (props: any) => {
         fAllDayEvent: newEvent.fAllDayEvent,
         fRecurrence: newEvent.fRecurrence,
         EventType: newEvent.EventType,
+        Color:mycolors,
         UID: newEvent.UID,
+        HalfDay:HalfDaye,
         RecurrenceData: newEvent.RecurrenceData
           ? await deCodeHtmlEntities(newEvent.RecurrenceData)
           : "",
@@ -1117,6 +1149,8 @@ const App = (props: any) => {
       const web = new Web(props.props.siteUrl);
       let mytitle =
         editEvent.name + "-" + editEvent.type + "-" + editEvent.title;
+      let mycolors = HalfDaye===true?"#6d36c5":editEvent.Event_x002d_Type === "Work From Home"?"#e0a209":"";
+
       const editEventItem = {
         Title: mytitle,
         Description: editEvent.Description,
@@ -1129,6 +1163,8 @@ const App = (props: any) => {
         fRecurrence: editEvent.fRecurrence,
         EventType: editEvent.EventType,
         UID: editEvent.UID,
+        HalfDay:editEvent.HalfDay,
+        Color:mycolors,
         RecurrenceData: editEvent.RecurrenceData
           ? await deCodeHtmlEntities(editEvent.RecurrenceData)
           : "",
@@ -1152,6 +1188,7 @@ const App = (props: any) => {
       await saveRecurrenceEvent();
       void getData();
       closem(undefined);
+      setIsHalfDChecked(false)
       setIsChecked(false);
       setSelectedTime(selectedTime);
       setSelectedTimeEnd(selectedTimeEnd);
@@ -1167,7 +1204,9 @@ const App = (props: any) => {
       reason: inputValueReason,
       type: type,
       Designation: dType,
-      loc: location
+      loc: location,
+      halfdayevent:isHalfDChecked,
+      fulldayevent:isChecked
     };
     if (
       selectedTime == undefined ||
@@ -1183,7 +1222,7 @@ const App = (props: any) => {
       const timeend = date.format();
       setSelectedTime(time);
       setSelectedTimeEnd(timeend);
-      newEvent.loc = " ";
+      newEvent.loc = "";
     }
     newEvent.title = newEvent.title.replace("Un-Planned", newEvent.type);
     newEvent.title = newEvent.title.replace("Sick", newEvent.type);
@@ -1192,7 +1231,15 @@ const App = (props: any) => {
       "Restricted Holiday",
       newEvent.type
     );
+    newEvent.title = newEvent.title.replace(
+      "Work From Home",
+      newEvent.type
+    );
+   
     newEvent.title = newEvent.title.replace("LWP", newEvent.type);
+
+    let mycolors = newEvent.halfdayevent===true?"#6d36c5":newEvent.type === "Work From Home"?"#e0a209":"";
+
     await web.lists
       .getById(props.props.SmalsusLeaveCalendar)
       .items.getById(eventPass.iD)
@@ -1216,8 +1263,9 @@ const App = (props: any) => {
           ConvertLocalTOServerDateToSave(startDate, selectedTime) +
           " " +
           (selectedTime + "" + ":00"),
-
-        fAllDayEvent: allDay
+          HalfDay:newEvent.halfdayevent,
+          Color:mycolors,
+        fAllDayEvent: newEvent.fulldayevent
       })
       .then((i: any) => {
         //console.log(i);
@@ -1226,6 +1274,7 @@ const App = (props: any) => {
         setSelectedTime(startTime);
         setSelectedTimeEnd(endTime);
         allDay = "false";
+        HalfDaye="false";
       });
   };
 
@@ -1247,7 +1296,11 @@ const App = (props: any) => {
       //setEndDate(event.end);
       setdisabl(false);
       setIsChecked(event.alldayevent);
+      setIsHalfDChecked(event.HalfDay)
       if (event.alldayevent == true) {
+        setDisableTime(true);
+      }
+      if (event.HalfDay == true) {
         setDisableTime(true);
       }
       setLocation(event.location);
@@ -1286,7 +1339,11 @@ const App = (props: any) => {
         setEndDate(item.end);
         setdisabl(false);
         setIsChecked(item.alldayevent);
+        setIsHalfDChecked(item.HalfDay)
         if (item.alldayevent == true) {
+          setDisableTime(true);
+        }
+        if (item.HalfDay == true) {
           setDisableTime(true);
         }
         setLocation(item.location);
@@ -1340,6 +1397,7 @@ const App = (props: any) => {
     setSelectedTimeEnd("19:00");
     setSelectedTime("10:00");
     setIsChecked(false);
+    setIsHalfDChecked(false);
     setDisableTime(false);
     maxD = new Date(8640000000000000);
   };
@@ -1368,12 +1426,37 @@ const App = (props: any) => {
       //console.log(maxD);
       setDisableTime(true);
       allDay = true;
+      HalfDaye=false;
+      setIsHalfDChecked(HalfDaye)
       //console.log("allDay", allDay);
     } else {
       maxD = new Date(8640000000000000);
       setDisableTime(false);
       allDay = false;
       console.log("allDay", allDay);
+    }
+  };
+  const handleHalfDayCheckboxChange = (event: React.ChangeEvent<HTMLInputElement>) => {
+    setIsHalfDChecked(event.target.checked);
+    // console.log("check", isChecked);
+    if (isHalfDChecked == false) {
+      startTime = "10:00";
+      endTime = "19:00";
+      setSelectedTimeEnd("19:00");
+      setSelectedTime("10:00");
+      setEndDate(startDate);
+      maxD = startDate;
+      //console.log(maxD);
+      setDisableTime(true);
+      allDay = false;
+      HalfDaye=true;
+      setIsChecked(allDay);
+      //console.log("allDay", allDay);
+    } else {
+      maxD = new Date(8640000000000000);
+      setDisableTime(false);
+      HalfDaye = false;
+      console.log("HalfDay", HalfDaye);
     }
   };
   const setStartDatefunction = (date: any) => {
@@ -1497,6 +1580,26 @@ const App = (props: any) => {
     void getData();
   }, [m]);
 
+  // for the new color for the new 
+
+const eventStyleGetter = (event:any, start:any, end:any, isSelecte:any) => {
+  const style = {
+    backgroundColor:event.Color, // Set the background color based on the color property in the event data
+    borderRadius: "0px",
+    opacity: 0.8,
+    color: "white",
+    border: "0px",
+    display: "block",
+  };
+  return {
+    style,
+  };
+};
+
+
+//  If type === work from home 
+
+
   return (
     <div>
       <div className="w-100 text-end">
@@ -1539,6 +1642,7 @@ const App = (props: any) => {
           views={{ month: true, week: true, day: true, agenda: true }}
           localizer={localizer}
           onSelectEvent={handleDateClick}
+          eventPropGetter={eventStyleGetter}
         />
       </div>
 
@@ -1639,7 +1743,7 @@ const App = (props: any) => {
               />
             </div>
           )}
-          {!disableTime ? (
+          {/* {!disableTime ? (
             <div className="col-md-6  mt-4">
               <label htmlFor="1" className="w-100">
                 Start Time:
@@ -1654,7 +1758,7 @@ const App = (props: any) => {
             </div>
           ) : (
             ""
-          )}
+          )} */}
           {showRecurrenceSeriesInfo != true && (
             <div className="col-md-6">
               <DatePicker
@@ -1666,7 +1770,7 @@ const App = (props: any) => {
               />
             </div>
           )}
-          {!disableTime ? (
+          {/* {!disableTime ? (
             <div className="col-md-6  mt-4">
               <label htmlFor="2" className="w-100">
                 End Time:
@@ -1681,7 +1785,7 @@ const App = (props: any) => {
             </div>
           ) : (
             ""
-          )}
+          )} */}
           <div>
             <label>
               <input
@@ -1691,6 +1795,17 @@ const App = (props: any) => {
                 onChange={handleCheckboxChange}
               />
               All Day Event
+            </label>
+          </div>
+          <div>
+            <label>
+              <input
+                type="checkbox"
+                className="me-1"
+                checked={isHalfDChecked}
+                onChange={handleHalfDayCheckboxChange}
+              />
+              Half Day Event
             </label>
           </div>
           {

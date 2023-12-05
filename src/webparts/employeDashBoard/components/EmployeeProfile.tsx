@@ -11,12 +11,13 @@ var taskUsers: any
 var dataLength: any = [];
 var count: number = 0;
 var AllData: any = [];
-let AllMasterTasks:any[]=[]
+let AllMasterTasks: any[] = []
 var currentUserData: any
+let currentUserId: any
 const EmployeProfile = (props: any) => {
   let allData: any = [];
   const [AllSite, setAllSite] = useState([]);
-  const [data, setData] = React.useState({ DraftCatogary: [], TodaysTask: [], BottleneckTask: [], ThisWeekTask: [], ImmediateTask: [], ApprovalTask: [] });
+  const [data, setData]: any = React.useState({ DraftCatogary: [], TodaysTask: [], BottleneckTask: [], AssignedTask: [], ThisWeekTask: [], ImmediateTask: [], ApprovalTask: [] });
   const [currentTime, setCurrentTime]: any = useState([]);
   const [annouceMents, setAnnouceMents]: any = useState([]);
   const [approverEmail, setApproverEmail]: any = useState([]);
@@ -27,14 +28,14 @@ const EmployeProfile = (props: any) => {
     annouceMent();
   }, []);
 
-  const loadMasterTask = ()=>{
+  const loadMasterTask = () => {
     let web = new Web("https://hhhhteams.sharepoint.com/sites/HHHH/SP/");
     web.lists
       .getById("ec34b38f-0669-480a-910c-f84e92e58adf")
       .items
       .select('ComponentCategory/Id', 'PortfolioStructureID', 'Item_x0020_Type', 'PortfolioType/Id', 'PortfolioType/Color', 'PortfolioType/Title', 'Id', 'ValueAdded', 'Idea', 'Sitestagging', 'TechnicalExplanations', 'Short_x0020_Description_x0020_On', 'Short_x0020_Description_x0020__x', 'Short_x0020_description_x0020__x0', 'AdminNotes', 'Background', 'Help_x0020_Information', 'ItemType', 'Title', 'Parent/Id', 'Parent/Title')
       .expand('Parent', 'ComponentCategory', "PortfolioType")
-  
+
       .orderBy('Modified', false)
       .getAll(4000).then((data: any) => {
         AllMasterTasks = data;
@@ -55,7 +56,6 @@ const EmployeProfile = (props: any) => {
   }
 
   const smartMetaData = async () => {
-    let sites = [];
 
     const web = new Web(props.props?.siteUrl);
     await web.lists
@@ -210,6 +210,7 @@ const EmployeProfile = (props: any) => {
           let ApprovalTask: any = [];
           let ImmediateTask: any = [];
           let ThisWeekTask: any = [];
+          let AssignedTask: any = [];
           array?.map((items: any) => {
             items.AssignedTo?.forEach((assign: any) => {
               if (assign && assign.Id === currentUserData.AssingedToUser.Id) {
@@ -226,11 +227,12 @@ const EmployeProfile = (props: any) => {
                 } else if (items.percentage == "1%") {
                   ApprovalTask.push(items);
                 }
+                AssignedTask.push(items);
               }
             });
-          });          
+          });
           // setCurrentTaskUser(currentUserData);
-          setData({ DraftCatogary: DraftArray, TodaysTask: TodaysTask, BottleneckTask: BottleneckTask, ApprovalTask: ApprovalTask, ImmediateTask: ImmediateTask, ThisWeekTask: ThisWeekTask });
+          setData({ DraftCatogary: DraftArray, AssignedTask: AssignedTask, TodaysTask: TodaysTask, BottleneckTask: BottleneckTask, ApprovalTask: ApprovalTask, ImmediateTask: ImmediateTask, ThisWeekTask: ThisWeekTask });
         }
       })
       .catch((err: any) => {
@@ -238,10 +240,10 @@ const EmployeProfile = (props: any) => {
       });
   };
   return (
-    <myContextValue.Provider value={{ ...myContextValue, approverEmail: approverEmail, propsValue: props.props, currentTime:currentTime, annouceMents: annouceMents, siteUrl: props?.props?.siteUrl, AllSite: AllSite, currentUserData: currentUserData, AlltaskData: data, timesheetListConfig: timesheetListConfig, AllMasterTasks : AllMasterTasks }}>
+    <myContextValue.Provider value={{ ...myContextValue, approverEmail: approverEmail, propsValue: props.props, currentTime: currentTime, annouceMents: annouceMents, siteUrl: props?.props?.siteUrl, AllSite: AllSite, currentUserData: currentUserData, AlltaskData: data, timesheetListConfig: timesheetListConfig, AllMasterTasks: AllMasterTasks }}>
       <div> <Header /></div>
       <TaskStatusTbl />
-      <MultipleWebpart/>
+      <MultipleWebpart />
     </myContextValue.Provider>
   );
 };

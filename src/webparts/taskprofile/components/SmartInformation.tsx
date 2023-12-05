@@ -13,7 +13,7 @@ import EditTaskPopup from '../../../globalComponents/EditTaskPopup/EditTaskPopup
 // import ComponentPortPolioPopup from "../../EditPopupFiles/ComponentPortfolioSelection"
 // import LinkedComponent from '../../../globalComponents/EditTaskPopup/LinkedComponent'
 import ServiceComponentPortfolioPopup from "../../../globalComponents/EditTaskPopup/ServiceComponentPortfolioPopup"
-
+import { myContextValue } from "../../../globalComponents/globalCommon";
 import ImageTabComponenet from './ImageTabComponent'
 import { Mention } from 'react-mentions';
 let AllTasktagsmartinfo: any = [];
@@ -23,6 +23,7 @@ let mastertaskdetails: any = [];
 let MovefolderItemUrl2 = "";
 let addSmartInfoPopupAddlinkDoc2 = false;
 const SmartInformation = (props: any, ref: any) => {
+  const myContextData2: any = React.useContext<any>(myContextValue)
   const [show, setShow] = useState(false);
   const [popupEdit, setpopupEdit] = useState(false);
   const [smartInformationArrow, setsmartInformationArrow] = useState(true);
@@ -84,6 +85,12 @@ const SmartInformation = (props: any, ref: any) => {
       setEditSmartinfoValue(item)
       setallSetValue({ ...allValue, Title: item.Title, URL: item?.URL?.Url, Description: item?.Description, InfoType: item?.InfoType?.Title, Acronym: item?.Acronym, SelectedFolder: item.SelectedFolder });
       setShow(true);
+      setTimeout(() => {
+        const panelMain: any = document.querySelector('.ms-Panel-main');
+        if (panelMain && myContextData2?.ColorCode) {
+            $('.ms-Panel-main').css('--SiteBlue', myContextData2?.ColorCode); // Set the desired color value here
+        }
+    }, 1000)
     } else {
       setallSetValue({ ...allValue, Title: "", URL: "", Acronym: "", Description: "", InfoType: "SmartNotes", SelectedFolder: "Public", fileupload: "", LinkTitle: "", LinkUrl: "", taskTitle: "", Dragdropdoc: "", emailDragdrop: "", ItemRank: "", componentservicesetdata: { smartComponent: undefined, linkedComponent: undefined }, componentservicesetdataTag: undefined, EditTaskpopupstatus: false, DocumentType: "", masterTaskdetails: [] });
       if (props.showHide === "projectManagement") {
@@ -94,6 +101,12 @@ const SmartInformation = (props: any, ref: any) => {
       }
 
       setShow(true);
+      setTimeout(() => {
+        const panelMain: any = document.querySelector('.ms-Panel-main');
+        if (panelMain && myContextData2?.ColorCode) {
+            $('.ms-Panel-main').css('--SiteBlue', myContextData2?.ColorCode); // Set the desired color value here
+        }
+    }, 1000)
     }
 
   }
@@ -285,6 +298,7 @@ const SmartInformation = (props: any, ref: any) => {
                   task?.SmartInformation?.map((tagtask: any) => {
                     if (tagtask?.Id == items?.Id) {
                       var tagtaskarray: any = [];
+                      
                       tagtaskarray.push(task)
                       items.TagTask = tagtaskarray
 
@@ -569,7 +583,10 @@ const SmartInformation = (props: any, ref: any) => {
       }
     }
     else {
+    
       alert("Please fill the Title")
+      setsmartDocumentpostData
+    
       // setallSetValue({...allValue,AstricMesaage:true})
       setaddSmartInfoPopupAddlinkDoc(false)
       addSmartInfoPopupAddlinkDoc2 = false;
@@ -632,6 +649,12 @@ const SmartInformation = (props: any, ref: any) => {
     setsmartDocumentpostData(items)
     if (Status == "AddDocument") {
       setshowAdddocument(true)
+      setTimeout(() => {
+        const panelMain: any = document.querySelector('.ms-Panel-main');
+        if (panelMain && myContextData2?.ColorCode) {
+            $('.ms-Panel-main').css('--SiteBlue', myContextData2?.ColorCode); // Set the desired color value here
+        }
+    }, 1000)
     }
     else {
       setaddSmartInfoPopupAddlinkDoc(true);
@@ -640,6 +663,12 @@ const SmartInformation = (props: any, ref: any) => {
       // if (addSmartInfoPopupAddlinkDoc) {
       alert('Information saved now items can be attached.');
       setshowAdddocument(true)
+      setTimeout(() => {
+        const panelMain: any = document.querySelector('.ms-Panel-main');
+        if (panelMain && myContextData2?.ColorCode) {
+            $('.ms-Panel-main').css('--SiteBlue', myContextData2?.ColorCode); // Set the desired color value here
+        }
+    }, 1000)
       // }
 
     }
@@ -798,7 +827,7 @@ const SmartInformation = (props: any, ref: any) => {
       await web.lists.getByTitle(props?.listName).items.add(
         {
           Title: allValue?.taskTitle,
-          SmartInformationId: { "results": [(smartDocumentpostData?.Id)] }
+          SmartInformationId: { "results": [(smartDocumentpostData!=undefined && smartDocumentpostData!=null?smartDocumentpostData?.Id:PostSmartInfo?.data?.Id)] }
 
         }
       )
@@ -869,6 +898,7 @@ const SmartInformation = (props: any, ref: any) => {
     console.log(editTaskData);
     editTaskData.siteUrl = props?.AllListId?.siteUrl;
     editTaskData.listName = props?.listName;
+    editTaskData.siteType=props?.listName
     setEditTaskdata(editTaskData);
     setallSetValue({ ...allValue, EditTaskpopupstatus: true })
   }
@@ -1329,7 +1359,7 @@ const SmartInformation = (props: any, ref: any) => {
       </Panel>
 
       {/* ===============edit  uploaded documents and link both  data panel============== */}
-      {Editdocpanel && <EditDocument editData={EditdocumentsData} AllListId={props.AllListId} Context={props.Context} editdocpanel={Editdocpanel} callbackeditpopup={callbackeditpopup} />}
+      {Editdocpanel && <EditDocument editData={EditdocumentsData} ColorCode={myContextData2?.ColorCode} AllListId={props.AllListId} Context={props.Context} editdocpanel={Editdocpanel} callbackeditpopup={callbackeditpopup} />}
       {allValue.EditTaskpopupstatus && <EditTaskPopup Items={EditTaskdata} context={props?.Context} AllListId={props?.AllListId} Call={() => { CallBack() }} />}
       {/* {isopencomonentservicepopup && componentpopup && <ComponentPortPolioPopup props={allValue?.componentservicesetdata} Call={ServiceComponentCallBack} Dynamic={props.AllListId}></ComponentPortPolioPopup>}
       {isopencomonentservicepopup && servicespopup && <LinkedComponent props={allValue?.componentservicesetdata} Call={ServiceComponentCallBack} Dynamic={props.AllListId}></LinkedComponent>} */}

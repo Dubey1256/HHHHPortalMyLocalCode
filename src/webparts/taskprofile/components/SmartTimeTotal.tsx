@@ -1,11 +1,12 @@
-import { styled } from 'office-ui-fabric-react';
+import { Tooltip, styled } from 'office-ui-fabric-react';
 import * as React from 'react';
 import { Web } from "sp-pnp-js";
 import TimeEntry from './TimeEntry';
-
+import SmartTooltipComponent from './SmartTimeToolTip';
+// import { Tooltip as ReactTooltip } from 'react-tooltip'
 var AllTimeSpentDetails: any = [];
 let AllAvailableTitle: any = [];
-
+let allTaskUsers:any;
      const SmartTimeTotalFunction = (item: any) => {
     var TaskTimeSheetCategoriesGrouping: any = [];
    const [isTimeEntry, setisTimeEntry] = React.useState(false);
@@ -20,6 +21,7 @@ let AllAvailableTitle: any = [];
     console.log(AllTimeSheetDataNew);
     React.useEffect(() => {
     if(item.props!=undefined){
+        allTaskUsers=item?.allTaskUsers
         EditData(item.props);
     }
       
@@ -207,13 +209,19 @@ let AllAvailableTitle: any = [];
                     <div className='hoverpopupbody'>
                         <table className='table mb-0'>
                            { additionalTime.length > 0?<tbody>
-                                {additionalTime.length > 0 && additionalTime.map((items: any) => {
+                                {additionalTime.length > 0 && additionalTime.map((items: any,index:any) => {
                                     return (
                                         <>
                                             <tr className='for-c0l'>
                                                 <td style={{ width: "20%" }}>
                                                     <img className='workmember '  src={items?.AuthorImage != undefined && items?.AuthorImage !="" ? items?.AuthorImage:"https://hhhhteams.sharepoint.com/sites/HHHH/SiteCollectionImages/ICONS/32/icon_user.jpg"}></img>
                                                 </td>
+                                                <td >
+                                                <SmartTooltipComponent items={items}allTaskUsers={allTaskUsers}siteUrl={item?.AllListId?.siteUrl}/>
+                                               
+                                              
+                                                </td>
+                                               
                                                 <td style={{ width: "80%" }} colSpan={2}><span className='px-2'>Total Time</span>{items.hoverTime.toFixed(2)}<span className='mx-1'>{items.hoverTime>1?'hours':'hour'}</span></td>
                                             </tr>
 
@@ -234,6 +242,8 @@ let AllAvailableTitle: any = [];
                             </tbody>:<div className='p-2'><div className='noTimeEntry'>No Time Entry</div></div>}
 
                         </table>
+                        {/* <ReactTooltip id="authorTooltip" /> */}
+                        
                     </div> </div>
             </span>
             {isTimeEntry ? <TimeEntry data={item?.props} context={item.Context} Context={item.Context} isopen={isTimeEntry} CallBackTimesheet={() => { CallBackTimesheet() }}  parentCallback={ComponentCallBack}/> : ''}

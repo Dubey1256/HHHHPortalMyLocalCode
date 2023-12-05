@@ -37,7 +37,7 @@ const MeetingPopupComponent = (Props: any) => {
     const [TaskTeamMembers, setTaskTeamMembers] = React.useState([]);
     const [hoverImageModal, setHoverImageModal] = React.useState('None');
     const AllTaskUsersData: any = contextdata?.taskUsers;
-    const AllListIdData = contextdata?.AllListId;
+    const AllListIdData = Props?.AllListIdData !== undefined ? Props?.AllListIdData :contextdata?.AllListId;
     const Context: any = contextdata?.Context;
     const CurrentUserData: any = contextdata?.currentUser;
     currentUserBackupArray = contextdata?.currentUser;
@@ -76,7 +76,7 @@ const MeetingPopupComponent = (Props: any) => {
             smartMeta = await web.lists
                 .getById(AllListIdData?.MasterTaskListID)
                 .items
-                .select("Id", "Title", "DueDate", "AssignedTo/Id", "Attachments", "FeedBack", "Created", "Modified", "PortfolioStructureID", "AssignedTo/Title", "ResponsibleTeam/Title", "ResponsibleTeam/Id", 'AttachmentFiles', "ShortDescriptionVerified", "BasicImageInfo", 'Author/Id', 'Author/Title', "Editor/Title", "Editor/Id", "OffshoreComments", "OffshoreImageUrl", "TeamMembers/Id", "TeamMembers/Title")
+                .select("Id", "Title", "DueDate", "Priority","PriorityRank","AssignedTo/Id", "Attachments", "FeedBack", "Created", "Modified", "PortfolioStructureID", "AssignedTo/Title", "ResponsibleTeam/Title", "ResponsibleTeam/Id", 'AttachmentFiles', "ShortDescriptionVerified", "BasicImageInfo", 'Author/Id', 'Author/Title', "Editor/Title", "Editor/Id", "OffshoreComments", "OffshoreImageUrl", "TeamMembers/Id", "TeamMembers/Title")
                 .top(5000)
                 .filter(`Id eq ${Props.Items.Id}`).expand("AssignedTo", 'ResponsibleTeam', "AttachmentFiles", "Author", "Editor", "TeamMembers").get();
 
@@ -264,7 +264,19 @@ const MeetingPopupComponent = (Props: any) => {
                 ResponsibleTeamIds.push(taskInfo.Id);
             })
         }
-
+        let Priority: any;
+        if (MeetingData.PriorityRank) {
+            let rank = MeetingData.PriorityRank
+            if (rank <= 10 && rank >= 8) {
+                Priority = "(1) High"
+            }
+            if (rank <= 7 && rank >= 4) {
+                Priority = "(2) Normal"
+            }
+            if (rank <= 3 && rank >= 0) {
+                Priority = "(3) Low"
+            }
+        }
         try {
             let web = new Web(siteUrls);
             await web.lists.getById(AllListIdData?.MasterTaskListID).items.getById(Props.Items.Id).update({
@@ -273,7 +285,9 @@ const MeetingPopupComponent = (Props: any) => {
                 FeedBack: updateFeedbackArray?.length > 0 ? JSON.stringify(updateFeedbackArray) : null,
                 AssignedToId: { "results": (AssignedToIds != undefined && AssignedToIds.length > 0) ? AssignedToIds : [] },
                 ResponsibleTeamId: { "results": (ResponsibleTeamIds != undefined && ResponsibleTeamIds.length > 0) ? ResponsibleTeamIds : [] },
-                TeamMembersId: { "results": (TeamMemberIds != undefined && TeamMemberIds.length > 0) ? TeamMemberIds : [] }
+                TeamMembersId: { "results": (TeamMemberIds != undefined && TeamMemberIds.length > 0) ? TeamMemberIds : [] },
+                Priority: Priority,
+                PriorityRank : MeetingData.PriorityRank
             }).then(async (res: any) => {
                 console.log("Updated Succesfully !!!!!!", res);
                 closeMeetingPopupFunction();
@@ -294,7 +308,7 @@ const MeetingPopupComponent = (Props: any) => {
                         {`${MeetingData.PortfolioStructureID != undefined || MeetingData.PortfolioStructureID != null ? MeetingData.PortfolioStructureID : ""} ${MeetingData.Title != undefined || MeetingData.Title != null ? MeetingData.Title : ""}`}
                     </span>
                 </div>
-                <Tooltip ComponentId="1683" isServiceTask={true} />
+                <Tooltip ComponentId="6510" isServiceTask={true} />
             </div>
         )
     }
@@ -721,6 +735,15 @@ const MeetingPopupComponent = (Props: any) => {
     const closeReplaceImagePopup = () => {
         setReplaceImagePopup(false)
     }
+    const ChangePriorityStatusFunction = (e: any) => {
+        let value = e.target.value;
+        if (Number(value) != 0 && Number(value) <= 10) {
+            setMeetingData({ ...MeetingData, PriorityRank: e.target.value })
+        } else {
+            alert("Priority Status should not be greater than 10 and should not be 0.");
+            setMeetingData({ ...MeetingData, PriorityRank: 0 })
+        }
+    }
 
     return (
         <div>
@@ -736,22 +759,69 @@ const MeetingPopupComponent = (Props: any) => {
                     <div className="d-flex justify-content-between">
                         <div className="col-md-8 d-flex justify-content-between">
                             <div className="col-4">
-                                <label className="form-label">Title</label>
-                                <input type="text" className="form-control" placeholder="Task Name"
-                                    defaultValue={MeetingData.Title}
-                                    onChange={(e) => setMeetingData({ ...MeetingData, Title: e.target.value })}
-                                />
+                                <div className="input-group">
+                                    <label className="form-label full-width">Title</label>
+                                    <input type="text" className="form-control" placeholder="Task Name"
+                                        defaultValue={MeetingData.Title}
+                                        onChange={(e) => setMeetingData({ ...MeetingData, Title: e.target.value })}
+                                    />
+                                </div>
                             </div>
                             <div className="col-4 mx-2">
-                                <label className="form-label full-width">Meeting Date
-                                </label>
-                                <input type="date" className="form-control" placeholder="Enter Due Date" max="9999-12-31"
-                                    min={MeetingData.Created ? Moment(MeetingData.Created).format("YYYY-MM-DD") : ""}
-                                    defaultValue={MeetingData.DueDate ? Moment(MeetingData.DueDate).format("YYYY-MM-DD") : ''}
-                                    onChange={(e) => setMeetingData({
-                                        ...MeetingData, DueDate: e.target.value
-                                    })}
-                                />
+                                <div className="input-group">
+                                    <label className="form-label full-width">Meeting Date
+                                    </label>
+                                    <input type="date" className="form-control" placeholder="Enter Due Date" max="9999-12-31"
+                                        min={MeetingData.Created ? Moment(MeetingData.Created).format("YYYY-MM-DD") : ""}
+                                        defaultValue={MeetingData.DueDate ? Moment(MeetingData.DueDate).format("YYYY-MM-DD") : ''}
+                                        onChange={(e) => setMeetingData({
+                                            ...MeetingData, DueDate: e.target.value
+                                        })}
+                                    />
+                                </div>
+                            </div>
+                            <div className="col-4 mx-2">
+                                <div className="col-10 ps-0 pe-0 pt-4">
+                                                <div className="time-status mt--2">
+                                                    <div className="input-group">
+                                                        <label className="form-label full-width">Priority
+                                                        </label>
+                                                        <input type="text" className="form-control"
+                                                            placeholder="Enter Priority"
+                                                            value={MeetingData.PriorityRank ? MeetingData.PriorityRank : ''}
+                                                            onChange={(e) => ChangePriorityStatusFunction(e)}
+                                                        />
+                                                    </div>
+                                                    <ul className="p-0 mt-1">
+                                                        <li className="form-check ">
+                                                            <label className="SpfxCheckRadio">
+                                                                <input className="radio"
+                                                                    name="radioPriority" type="radio"
+                                                                    checked={MeetingData.PriorityRank <= 10 && MeetingData.PriorityRank >= 8}
+                                                                    onChange={() => setMeetingData({ ...MeetingData, PriorityRank: 8 })}
+                                                                />
+                                                                High </label>
+                                                        </li>
+                                                        <li className="form-check ">
+                                                            <label className="SpfxCheckRadio">
+                                                                <input className="radio" name="radioPriority"
+                                                                    type="radio" checked={MeetingData.PriorityRank <= 7 && MeetingData.PriorityRank >= 4}
+                                                                    onChange={() => setMeetingData({ ...MeetingData, PriorityRank: 4 })}
+                                                                />
+                                                                Normal </label>
+                                                        </li>
+                                                        <li className="form-check ">
+                                                            <label className="SpfxCheckRadio">
+                                                                <input className="radio" name="radioPriority"
+                                                                    type="radio" checked={MeetingData.PriorityRank <= 3 && MeetingData.PriorityRank > 0}
+                                                                    onChange={() => setMeetingData({ ...MeetingData, PriorityRank: 1 })}
+                                                                />
+                                                                Low </label>
+                                                        </li>
+                                                    </ul>
+                                                </div>
+                                            </div>
+                                
                             </div>
                             <div className="col-3">
                                 <div className="input-group">
@@ -909,7 +979,7 @@ const MeetingPopupComponent = (Props: any) => {
                                         ApprovalStatus={false}
                                         SmartLightStatus={false}
                                         SmartLightPercentStatus={false}
-                                        Context={Props.Items?.context}
+                                        Context={Context}
                                     />
                                     <Example
                                         textItems={MeetingData.FeedBackArray}
@@ -920,7 +990,7 @@ const MeetingPopupComponent = (Props: any) => {
                                         ApprovalStatus={false}
                                         SmartLightStatus={false}
                                         SmartLightPercentStatus={false}
-                                        Context={Props.Items.context}
+                                        Context={Context}
                                     />
                                 </>
                                     : null}

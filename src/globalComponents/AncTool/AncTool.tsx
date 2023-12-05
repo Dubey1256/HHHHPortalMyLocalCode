@@ -7,8 +7,7 @@ import { SlArrowRight, SlArrowLeft, SlArrowUp, SlArrowDown } from "react-icons/s
 import { Card, CardBody, CardFooter, CardHeader, CardTitle, Col, CustomInput, Pagination, PaginationItem, PaginationLink, Progress, Row, Table } from "reactstrap";
 import "react-popper-tooltip/dist/styles.css";
 import Tooltip from '../Tooltip';
-import { sp } from 'sp-pnp-js'
-import { Web } from "@pnp/sp/webs";
+import { Web } from 'sp-pnp-js'
 import { IList } from "@pnp/sp/lists";
 
 import pptxgen from 'pptxgenjs';
@@ -86,6 +85,14 @@ const AncTool = (props: any) => {
         pathGenerator();
         rootSiteName = props.Context.pageContext.site.absoluteUrl.split(props.Context.pageContext.site.serverRelativeUrl)[0];
     }, [])
+    React.useEffect(() => {
+        setTimeout(() => {
+            const panelMain: any = document.querySelector('.ms-Panel-main');
+            if (panelMain && props?.selectedItem?.PortfolioType?.Color) {
+                $('.ms-Panel-main').css('--SiteBlue', props?.selectedItem?.PortfolioType?.Color); // Set the desired color value here
+            }
+        }, 2000)
+    }, [CreateFolderLocation, modalIsOpen]);
     // Generate Path And Basic Calls
     const pathGenerator = async () => {
         const params = new URLSearchParams(window.location.search);
@@ -98,7 +105,7 @@ const AncTool = (props: any) => {
         Href = Href.split('#')[0];
         siteName = params.get("Site");
         if ((siteName == undefined || siteName == '' || siteName?.length == 0) && props?.listName == "Master Tasks") {
-            siteName = 'SharewebTask'
+            siteName = 'Portfolios'
         }
         if (siteName?.length > 0) {
             if (siteName === "Offshore Tasks") {
@@ -137,7 +144,8 @@ const AncTool = (props: any) => {
     }
     const GetSmartMetadata = async () => {
         let MetaData = [];
-        MetaData = await sp.web.lists
+        let web = new Web(props?.AllListId?.siteUrl);
+        MetaData = await web.lists
             .getById(props.AllListId.SmartMetadataListID)
             .items
             .select("Id,Title,listId,siteUrl,siteName,Item_x005F_x0020_Cover,ParentID,Parent/Id,Parent/Title,EncodedAbsUrl,IsVisible,Created,Item_x0020_Cover,Modified,Description1,SortOrder,Selectable,TaxType,Created,Modified,Author/Name,Author/Title,Editor/Name,Editor/Title,AlternativeTitle")
@@ -188,13 +196,14 @@ const AncTool = (props: any) => {
     async function getExistingUploadedDocuments(): Promise<any[]> {
         try {
             let alreadyTaggedFiles: any = [];
-            let selectQuery = 'Id,Title,Url,FileSystemObjectType,ItemRank,Author/Id,Author/Title,Editor/Id,Editor/Title,File_x0020_Type,FileDirRef,FileLeafRef,File_x0020_Type,Year,EncodedAbsUrl,Created,Modified&$expand=Author,Editor'
+            let selectQuery = 'Id,Title,Url,FileSystemObjectType,ItemRank,Author/Id,Author/Title,Editor/Id,Editor/Title,File_x0020_Type,FileDirRef,FileLeafRef,File_x0020_Type,Year,EncodedAbsUrl,Created,Modified,Portfolios/Id,Portfolios/Title&$expand=Author,Editor,Portfolios'
 
             if (siteName?.length > 0) {
-                selectQuery = `Id,Title,Url,FileSystemObjectType,ItemRank,Author/Id,Author/Title,${siteName}/Id,${siteName}/Title,File_x0020_Type,Editor/Id,Editor/Title,FileDirRef,FileLeafRef,File_x0020_Type,Year,EncodedAbsUrl,Created,Modified&$expand=Author,Editor,${siteName}`
+                selectQuery = `Id,Title,Url,FileSystemObjectType,ItemRank,Author/Id,Author/Title,${siteName}/Id,${siteName}/Title,File_x0020_Type,Editor/Id,Editor/Title,FileDirRef,FileLeafRef,File_x0020_Type,Year,EncodedAbsUrl,Created,Modified,Portfolios/Id,Portfolios/Title&$expand=Author,Editor,${siteName},Portfolios`
             }
             // const files = await folder.files.get();
-            const files = await sp.web.lists.getByTitle('Documents').items.select(selectQuery).getAll();
+            let web = new Web(props?.AllListId?.siteUrl);
+            const files = await web.lists.getByTitle('Documents').items.select(selectQuery).getAll();
             let newFilesArr: any = [];
             files?.map((file: any) => {
                 if (file?.Title != undefined && file?.File_x0020_Type != undefined) {
@@ -220,6 +229,9 @@ const AncTool = (props: any) => {
                 }
                 if (file?.File_x0020_Type == 'doc') {
                     file.docType = 'docx'
+                }
+                if (file?.Portfolios == undefined) {
+                    file.Portfolios = [];
                 }
 
                 if (file[siteName] != undefined && file[siteName].length > 0 && file[siteName].some((task: any) => task.Id == props?.item?.Id)) {
@@ -258,7 +270,13 @@ const AncTool = (props: any) => {
     }
     async function fetchFilesFromFolder(folderPath: string): Promise<any[]> {
         try {
-            const folder = sp.web.getFolderByServerRelativeUrl(folderPath);
+            let selectQuery = 'Id,Title,Url,FileSystemObjectType,ItemRank,Author/Id,Author/Title,Editor/Id,Editor/Title,File_x0020_Type,FileDirRef,FileLeafRef,File_x0020_Type,Year,EncodedAbsUrl,Created,Modified,Portfolios/Id,Portfolios/Title&$expand=Author,Editor,Portfolios'
+
+            if (siteName?.length > 0) {
+                selectQuery = `Id,Title,Url,FileSystemObjectType,ItemRank,Author/Id,Author/Title,${siteName}/Id,${siteName}/Title,File_x0020_Type,Editor/Id,Editor/Title,FileDirRef,FileLeafRef,File_x0020_Type,Year,EncodedAbsUrl,Created,Modified,Portfolios/Id,Portfolios/Title&$expand=Author,Editor,${siteName},Portfolios`
+            }
+            let web = new Web(props?.AllListId?.siteUrl);
+            const folder = web.getFolderByServerRelativeUrl(folderPath).select();
             const files = await folder.files.get();
 
             return files;
@@ -316,7 +334,7 @@ const AncTool = (props: any) => {
                         {`Add & Connect Tool - ${Item.TaskId != undefined || Item.TaskId != null ? Item.TaskId : ""} ${Item.Title != undefined || Item.Title != null ? Item.Title : ""}`}
                     </span>
                 </div>
-                <Tooltip ComponentId="528" />
+                <Tooltip ComponentId="7640" />
             </div>
         );
     };
@@ -329,7 +347,7 @@ const AncTool = (props: any) => {
                         Select Upload Folder
                     </span>
                 </div>
-                {/* <Tooltip ComponentId="528" /> */}
+                <Tooltip ComponentId="7643" />
             </div>
         );
     };
@@ -343,6 +361,7 @@ const AncTool = (props: any) => {
                         Upload Email
                     </span>
                 </div>
+                <Tooltip ComponentId="7641" />
                 {/* <Tooltip ComponentId="528" /> */}
             </div>
         );
@@ -353,9 +372,9 @@ const AncTool = (props: any) => {
         const file = event.dataTransfer.files[0];
         console.log('Dropped file:', file); // Log the dropped file for debugging
         setSelectedFile(file);
-        setTimeout(()=>{
+        setTimeout(() => {
             handleUpload(file);
-        },2000)
+        }, 2000)
     };
     const handleFileInputChange = (event: any) => {
         const file = event.target.files[0];
@@ -385,7 +404,7 @@ const AncTool = (props: any) => {
         }
     }
 
-    const handleUpload = async (uploadselectedFile:any) => {
+    const handleUpload = async (uploadselectedFile: any) => {
         let emailDoc: any = [];
         let attachmentFile = false;
         let uploadedAttachmentFile: any = []
@@ -404,7 +423,7 @@ const AncTool = (props: any) => {
         if (renamedFileName?.length > 0) {
             fileName = renamedFileName;
         } else {
-            fileName = selectedFile!=undefined?selectedFile.name:uploadselectedFile.name;
+            fileName = selectedFile != undefined ? selectedFile.name : uploadselectedFile.name;
         }
         if (isFolderAvailable == false) {
             try {
@@ -424,8 +443,8 @@ const AncTool = (props: any) => {
                 let msgfile: any = {};
                 reader.onloadend = async () => {
                     const fileContent = reader.result as ArrayBuffer;
-                    setCreateNewDocType(getFileType(selectedFile!=undefined?selectedFile.name:uploadselectedFile.name));
-                    if (getFileType(selectedFile!=undefined?selectedFile.name:uploadselectedFile.name) == 'msg') {
+                    setCreateNewDocType(getFileType(selectedFile != undefined ? selectedFile.name : uploadselectedFile.name));
+                    if (getFileType(selectedFile != undefined ? selectedFile.name : uploadselectedFile.name) == 'msg') {
 
                         const reader = new FileReader();
                         attachmentFile = true;
@@ -433,8 +452,8 @@ const AncTool = (props: any) => {
                         const testMsgInfo = testMsg.getFileData()
                         console.log(testMsgInfo);
                         msgfile = testMsgInfo
-                        reader.readAsArrayBuffer(selectedFile!=undefined?selectedFile:uploadselectedFile);
-                        emailDoc = emailDoc.concat(selectedFile!=undefined?selectedFile:uploadselectedFile);
+                        reader.readAsArrayBuffer(selectedFile != undefined ? selectedFile : uploadselectedFile);
+                        emailDoc = emailDoc.concat(selectedFile != undefined ? selectedFile : uploadselectedFile);
                         emailDoc = emailDoc.concat(msgfile.attachments);
                         emailDoc?.map((AttachFile: any, index: any) => {
                             attachmentFileIndex = index
@@ -445,21 +464,21 @@ const AncTool = (props: any) => {
                         // };
 
                     } else {
-                       
+
                         uploadFile(fileContent)
                     }
 
 
                 };
-              
-                reader.readAsArrayBuffer(selectedFile!=undefined?selectedFile:uploadselectedFile);
-                
-              
+
+                reader.readAsArrayBuffer(selectedFile != undefined ? selectedFile : uploadselectedFile);
+
+
                 const uploadFile = async (fileToUpload: any) => {
                     return new Promise<void>(function (myResolve, myReject) {
                         let fileItems: any;
-                        sp.web
-                            .getFolderByServerRelativeUrl(uploadPath)
+                        let web = new Web(props?.AllListId?.siteUrl);
+                        web.getFolderByServerRelativeUrl(uploadPath)
                             .files.add(fileName, fileToUpload, true).then(async (uploadedFile: any) => {
                                 console.log(uploadedFile);
                                 uploadedAttachmentFile.push(uploadedFile?.data);
@@ -488,6 +507,9 @@ const AncTool = (props: any) => {
                                                     ItemRank: itemRank,
                                                     Title: attachfile?.Name
                                                 }
+                                                if (props?.item?.Portfolio?.Id != undefined) {
+                                                    postData.PortfoliosId = { "results": [props?.item?.Portfolio?.Id] };
+                                                }
                                                 if (getFileType(attachfile?.Name) == 'msg') {
                                                     postData = {
                                                         ...postData,
@@ -497,7 +519,8 @@ const AncTool = (props: any) => {
                                                         creationTime: msgfile?.creationTime != undefined ? new Date(msgfile?.creationTime).toISOString() : null
                                                     }
                                                 }
-                                                await sp.web.lists.getByTitle('Documents').items.getById(file.Id)
+                                                let web = new Web(props?.AllListId?.siteUrl);
+                                                await web.lists.getByTitle('Documents').items.getById(file.Id)
                                                     .update(postData).then((updatedFile: any) => {
                                                         file[siteName].push({ Id: props?.item?.Id, Title: props?.item?.Title });
                                                         setAllReadytagged([...AllReadytagged, ...[file]])
@@ -517,7 +540,7 @@ const AncTool = (props: any) => {
                                         })
                                     }
                                     )
-                                }else{
+                                } else {
                                     setTimeout(async () => {
                                         if (attachmentFile == false) {
                                             fileItems = await getExistingUploadedDocuments()
@@ -530,7 +553,7 @@ const AncTool = (props: any) => {
                                                     taggedDocument = {
                                                         ...taggedDocument,
                                                         fileName: fileName,
-                                                        docType: getFileType(selectedFile!=undefined?selectedFile.name:uploadselectedFile.name),
+                                                        docType: getFileType(selectedFile != undefined ? selectedFile.name : uploadselectedFile.name),
                                                         uploaded: true,
                                                         link: `${rootSiteName}${selectedPath.displayPath}/${fileName}?web=1`,
                                                         size: fileSize
@@ -542,7 +565,8 @@ const AncTool = (props: any) => {
                                                         ItemRank: itemRank,
                                                         Title: fileName
                                                     }
-                                                    await sp.web.lists.getByTitle('Documents').items.getById(file.Id)
+                                                    let web = new Web(props?.AllListId?.siteUrl);
+                                                    await web.lists.getByTitle('Documents').items.getById(file.Id)
                                                         .update(postData).then((updatedFile: any) => {
                                                             file[siteName].push({ Id: props?.item?.Id, Title: props?.item?.Title });
                                                             setAllReadytagged([...AllReadytagged, ...[file]])
@@ -555,23 +579,24 @@ const AncTool = (props: any) => {
                                                             setRenamedFileName('')
                                                             return file;
                                                         })
-    
+
                                                     console.log("File uploaded successfully.", file);
                                                 }
                                             })
                                         }
                                     }, 2000);
                                 }
-                              
+
 
                             });
                         setUploadedDocDetails(taggedDocument);
                         setShowConfirmation(true)
+                        setModalIsOpenToFalse()
                     })
                 }
 
             } catch (error) {
-              console.log("File upload failed:", error);
+                console.log("File upload failed:", error);
             }
         }
         setSelectedFile(null);
@@ -589,12 +614,20 @@ const AncTool = (props: any) => {
                 }
             })
         }
+        if (!file?.Portfolios?.some((portfolio: any) => portfolio == props?.item?.Portfolio?.Id) && props?.item?.Portfolio?.Id != undefined) {
+            file?.Portfolios?.push(props?.item?.Portfolio?.Id);
+        }
         if (!AllReadytagged?.some((doc: any) => file.Id == doc.Id) && !resultArray.some((taskID: any) => taskID == props?.item?.Id)) {
             resultArray.push(props?.item?.Id)
             let siteColName = `${siteName}Id`
             // Update the document file here
-            await sp.web.lists.getByTitle('Documents').items.getById(file.Id)
-                .update({ [siteColName]: { "results": resultArray } }).then((updatedFile: any) => {
+            let web = new Web(props?.AllListId?.siteUrl);
+            let PostData = {
+                [siteColName]: { "results": resultArray },
+                PortfoliosId:  { "results": file?.Portfolios != undefined ? file?.Portfolios : [] }
+            }
+            await web.lists.getByTitle('Documents').items.getById(file.Id)
+                .update(PostData).then((updatedFile: any) => {
                     file[siteName].push({ Id: props?.item?.Id, Title: props?.item?.Title });
                     setAllReadytagged([...AllReadytagged, ...[file]])
                     props?.callBack()
@@ -607,8 +640,13 @@ const AncTool = (props: any) => {
             resultArray = resultArray.filter((taskID: any) => taskID != props?.item?.Id)
             let siteColName = `${siteName}Id`
             // Update the document file here
-            await sp.web.lists.getByTitle('Documents').items.getById(file.Id)
-                .update({ [siteColName]: { "results": resultArray } }).then((updatedFile: any) => {
+            let PostData = {
+                [siteColName]: { "results": resultArray },
+                PortfoliosId:  { "results": file?.Portfolios != undefined ? file?.Portfolios : [] }
+            }
+            let web = new Web(props?.AllListId?.siteUrl);
+            await web.lists.getByTitle('Documents').items.getById(file.Id)
+                .update(PostData).then((updatedFile: any) => {
                     file[siteName] = file[siteName].filter((task: any) => task.Id != props?.item?.Id);
                     setAllReadytagged((prevFile: any) => {
                         return prevFile.filter((item: any) => {
@@ -678,8 +716,8 @@ const AncTool = (props: any) => {
                 } else {
                     fileName = `${props?.item?.Title}.${createNewDocType}`
                 }
-                await sp.web
-                    .getFolderByServerRelativeUrl(selectedPath.displayPath)
+                let web = new Web(props?.AllListId?.siteUrl);
+                await web.getFolderByServerRelativeUrl(selectedPath.displayPath)
                     .files.add(fileName, newlyCreatedFile, true).then(async (uploadedFile: any) => {
                         let fileSize = getSizeString(newlyCreatedFile?.byteLength)
                         taggedDocument = {
@@ -704,7 +742,11 @@ const AncTool = (props: any) => {
                                         ItemRank: 5,
                                         Title: fileName
                                     }
-                                    await sp.web.lists.getByTitle('Documents').items.getById(file.Id)
+                                    if (props?.item?.Portfolio?.Id != undefined) {
+                                        postData.PortfoliosId = { "results": [props?.item?.Portfolio?.Id] };
+                                    }
+                                    let web = new Web(props?.AllListId?.siteUrl);
+                                    await web.lists.getByTitle('Documents').items.getById(file.Id)
                                         .update(postData).then((updatedFile: any) => {
                                             file[siteName].push({ Id: props?.item?.Id, Title: props?.item?.Title });
                                             setAllReadytagged([...AllReadytagged, ...[file]])
@@ -722,6 +764,7 @@ const AncTool = (props: any) => {
                     });
                 setUploadedDocDetails(taggedDocument);
                 setShowConfirmation(true)
+                setModalIsOpenToFalse()
             } catch (error) {
                 console.log("File upload failed:", error);
             }
@@ -854,8 +897,9 @@ const AncTool = (props: any) => {
     // Create New Folder
     const CreateFolder = async (path: any, folderName: any): Promise<any> => {
         try {
-            const library = sp.web.lists.getByTitle('Documents');
-            const parentFolder = sp.web.getFolderByServerRelativeUrl(path);
+            let web = new Web(props?.AllListId?.siteUrl);
+            const library = web.lists.getByTitle('Documents');
+            const parentFolder = web.getFolderByServerRelativeUrl(path);
             const data = await parentFolder.folders.add(folderName);
             console.log('Folder created successfully.');
             data?.data?.ServerRelativeUrl?.replaceAll('%20', ' ');
@@ -974,8 +1018,8 @@ const AncTool = (props: any) => {
                     '</form>' +
                     '</body>' +
                     '</html>';
-                await sp.web
-                    .getFolderByServerRelativeUrl(selectedPath.displayPath)
+                let web = new Web(props?.AllListId?.siteUrl);
+                await web.getFolderByServerRelativeUrl(selectedPath.displayPath)
                     .files.add(fileName, vardata, true).then(async (uploadedFile: any) => {
                         let fileSize = '10Kb'
                         taggedDocument = {
@@ -1006,7 +1050,8 @@ const AncTool = (props: any) => {
                                         },
                                         File_x0020_Type: 'aspx'
                                     }
-                                    await sp.web.lists.getByTitle('Documents').items.getById(file.Id)
+                                    let web = new Web(props?.AllListId?.siteUrl);
+                                    await web.lists.getByTitle('Documents').items.getById(file.Id)
                                         .update(postData).then((updatedFile: any) => {
                                             file[siteName].push({ Id: props?.item?.Id, Title: props?.item?.Title });
                                             setAllReadytagged([...AllReadytagged, ...[file]])
@@ -1024,6 +1069,7 @@ const AncTool = (props: any) => {
                     });
                 setUploadedDocDetails(taggedDocument);
                 setShowConfirmation(true)
+                setModalIsOpenToFalse()
             } catch (error) {
                 console.log("File upload failed:", error);
             }
@@ -1045,7 +1091,7 @@ const AncTool = (props: any) => {
                             <a className='siteColor' onClick={() => { setUploadEmailModal(true) }}> Upload Email</a>
                         </div>
                         <div className="comment-box hreflink mb-2 col-sm-12">
-                            <a className='siteColor' onClick={() => { setFileNamePopup(true) }}> Create New Item</a>
+                            <a className='siteColor' onClick={() => { setFileNamePopup(true) }}> Create New Online File</a>
                         </div>
                         <div className="comment-box hreflink mb-2 col-sm-12">
                             <a className='siteColor' onClick={() => { setRemark(true) }}> Add SmartNote</a>
@@ -1345,7 +1391,7 @@ const AncTool = (props: any) => {
                 onDismiss={cancelPathFolder}
                 onRenderHeader={ChoosePathCustomHeader}
                 onRenderFooter={onRenderCustomFooterMain}
-                isBlocking={choosePathPopup}>
+                isBlocking={false}>
                 <div id="folderHierarchy">
                     <ul id="groupedFolders" className='p-0'>
                         {AllFoldersGrouped.map((folder: any) => (
@@ -1362,12 +1408,12 @@ const AncTool = (props: any) => {
                 isOpen={uploadEmailModal}
                 onDismiss={cancelPathFolder}
                 onRenderHeader={ChoosePathCustomHeaderEmail}
-                isBlocking={choosePathPopup}>
+                isBlocking={false}>
 
                 <Col>
                     <div className="panel">
-                      <Col>
-                         
+                        <Col>
+
                             <div className='dragDropbox my-3' onDragOver={(event) => event.preventDefault()} onDrop={handleFileDrop}>
                                 {selectedFile ? <p>Selected file: {selectedFile.name}</p> : <p>Drag and drop file here </p>}
                             </div>
@@ -1380,17 +1426,17 @@ const AncTool = (props: any) => {
                                 <input type="text" onChange={(e) => { setRenamedFileName(e.target.value) }} value={renamedFileName} placeholder='Rename your document' className='full-width' />
                             </Row>
                             <div className='text-end'>
-                            <button onClick={handleUpload} disabled={selectedFile?.name?.length > 0 ? false : true} className="btnCol btn btn-primary">Upload</button>
-                            <Button className='btn btn-default mx-1' onClick={() =>setUploadEmailModal(false)}>
-                            Cancel
-                           </Button>
-                      
+                                <button onClick={handleUpload} disabled={selectedFile?.name?.length > 0 ? false : true} className="btnCol btn btn-primary">Upload</button>
+                                <Button className='btn btn-default mx-1' onClick={() => setUploadEmailModal(false)}>
+                                    Cancel
+                                </Button>
+
                             </div>
-                          
+
                         </Col>
 
                     </div>
-                   
+
                 </Col>
 
 
@@ -1398,36 +1444,46 @@ const AncTool = (props: any) => {
             </Panel>
 
 
-            <Modal show={FileNamePopup} isOpen={FileNamePopup} size='mg' isBlocking={FileNamePopup} backdrop={true} >
-                <div className="modal-content rounded-0">
-                    <div className="modal-header">
-                        <h5 className="modal-title">Create New File {createNewDocType?.length > 0 ? ` - ${createNewDocType}` : ''}</h5>
-                        <span onClick={() => cancelNewCreateFile()}><i className="svg__iconbox svg__icon--cross crossBtn"></i></span>
-                    </div>
-                    <div className="modal-body p-2 row">
-                        <div className="AnC-CreateDoc-Icon">
-                            <div className={createNewDocType == 'docx' ? 'selected' : ''}>
-                                <span onClick={() => createBlankWordDocx()} className='svg__iconbox svg__icon--docx hreflink' title='Word'></span>
+            {FileNamePopup ?
+                <div className="modal Anc-Confirmation-modal" >
+                    <div className="modal-dialog modal-mg rounded-0 " style={{ maxWidth: "400px" }}>
+                        <div className="modal-content rounded-0">
+                            <div className="modal-header">
+                                <div className='subheading'>
+                                    {/* <img className="imgWid29 pe-1 mb-1 " src={Item?.SiteIcon} /> */}
+                                    <span className="siteColor">
+                                        Create New Online File {createNewDocType?.length > 0 ? ` - ${createNewDocType}` : ''}
+                                    </span>
+                                </div>
+                                <Tooltip ComponentId="7642" />
+                                <span onClick={() => cancelNewCreateFile()}><i className="svg__iconbox svg__icon--cross crossBtn me-1"></i></span>
                             </div>
-                            <div className={createNewDocType == 'xlsx' ? 'selected' : ''}>
-                                <span onClick={() => createBlankExcelXlsx()} className='svg__iconbox svg__icon--xlsx hreflink' title='Excel'></span>
+                            <div className="modal-body p-2 row">
+                                <div className="AnC-CreateDoc-Icon">
+                                    <div className={createNewDocType == 'docx' ? 'selected' : ''}>
+                                        <span onClick={() => createBlankWordDocx()} className='svg__iconbox svg__icon--docx hreflink' title='Word'></span>
+                                    </div>
+                                    <div className={createNewDocType == 'xlsx' ? 'selected' : ''}>
+                                        <span onClick={() => createBlankExcelXlsx()} className='svg__iconbox svg__icon--xlsx hreflink' title='Excel'></span>
+                                    </div>
+                                    <div className={createNewDocType == 'pptx' ? 'selected' : ''}>
+                                        <span onClick={() => createBlankPowerPointPptx()} className='svg__iconbox svg__icon--ppt hreflink' title='Presentation'></span>
+                                    </div>
+                                </div>
+                                <div className="col-sm-12 mt-2">
+                                    <input type="text" onChange={(e) => { setRenamedFileName(e.target.value) }} value={renamedFileName} placeholder='Enter File Name' className='full-width' />
+                                </div>
                             </div>
-                            <div className={createNewDocType == 'pptx' ? 'selected' : ''}>
-                                <span onClick={() => createBlankPowerPointPptx()} className='svg__iconbox svg__icon--ppt hreflink' title='Presentation'></span>
-                            </div>
-                        </div>
-                        <div className="col-sm-12 mt-2">
-                            <input type="text" onChange={(e) => { setRenamedFileName(e.target.value) }} value={renamedFileName} placeholder='Enter File Name' className='full-width' />
-                        </div>
-                    </div>
-                    <footer className='text-end p-2'>
+                            <footer className='text-end p-2'>
 
 
-                        <button className="btn btnPrimary" disabled={renamedFileName?.length > 0 ? false : true} onClick={() => { CreateNewAndTag() }}>Create</button>
-                        <button className='btn btn-default ms-1' onClick={() => cancelNewCreateFile()}>Cancel</button>
-                    </footer>
-                </div>
-            </Modal>
+                                <button className="btn btnPrimary" disabled={renamedFileName?.length > 0 ? false : true} onClick={() => { CreateNewAndTag() }}>Create</button>
+                                <button className='btn btn-default ms-1' onClick={() => cancelNewCreateFile()}>Cancel</button>
+                            </footer>
+                        </div>
+                    </div>
+                </div> : ''
+            }
             {ShowConfirmation ?
                 <div className="modal Anc-Confirmation-modal" >
                     <div className="modal-dialog modal-mg rounded-0 " style={{ maxWidth: "700px" }}>

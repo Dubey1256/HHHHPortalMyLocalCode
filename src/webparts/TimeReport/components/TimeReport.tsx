@@ -424,30 +424,31 @@ QATime = 0.00;
         myData = await web.lists
             .getById(props?.ContextData?.LeaveCalenderListID)
             .items
-            .select("RecurrenceData,Duration,Author/Title,Editor/Title,Category,Description,ID,EndDate,EventDate,Location,Title,fAllDayEvent,EventType,UID,fRecurrence,Event_x002d_Type,Employee/Id")
+            .select("RecurrenceData,Duration,Author/Title,Editor/Title,Category,HalfDay,Description,ID,EndDate,EventDate,Location,Title,fAllDayEvent,EventType,UID,fRecurrence,Event_x002d_Type,Employee/Id")
             .top(499)
             .expand("Author,Editor,Employee")
             .getAll()
             console.log(myData);
            
             myData?.forEach((val:any)=>{
-              
+                val.EndDate = new Date(val?.EndDate);
+                val?.EndDate.setHours(val?.EndDate.getHours() - 9);
                     // var TodayDate:any = new Date()
                     // TodayDate =  Moment(TodayDate).format("DD/MM/YYYY")
                    //var TodayDate =  selectDate.split("/")  
-                   var itemDate = Moment(val.EventDate)
-                              
-                    var a = val.EndDate?.substring(0, 10);                                    
+                   var itemDate = Moment(val.EventDate)                                    
                     var TodayDate =  selectDate[2] + selectDate[1] + selectDate[0]
-                    var endDate = Moment(a).format("DD/MM/YYYY")
+                    var endDate = Moment(val?.EndDate).format("DD/MM/YYYY")
                     var eventDate = Moment(val.EventDate).format("DD/MM/YYYY")
- 
+                    const date = val.EndDate
                     var NewEndDate = endDate.split("/")
                     var NewEventDate = eventDate.split("/")
- 
+
+                    
+
                     var End = NewEndDate[2] + NewEndDate[1] + NewEndDate[0]
                     var start = NewEventDate[2] + NewEventDate[1] + NewEventDate[0]
-                    // if(start === End)
+                    // if(start === End)ss
                     //  totaltime = stattime - endtime;
  
                     if (TodayDate >= start && TodayDate <= End){
@@ -457,8 +458,12 @@ QATime = 0.00;
                             val.totaltime = 8
                         }
                         else{
-                            val.totaltime = Math.abs(parseInt(endtime[0]) - parseInt(stattime[0]));
+                            val.totaltime = 8
                         }
+                        if(val?.HalfDay == true) {
+                            val.totaltime = 4
+                        }
+                       
                                     
                         console.log(val)
                         leaveData.push(val)                       
@@ -493,7 +498,7 @@ QATime = 0.00;
           var De=[]
           var QAteam=[]
           AllUsers?.forEach((item:any)=>{
-            if((item?.TimeCategory == 'Development' && item?.Company == 'Smalsus') || item?.UserGroup?.Title == 'Senior Developer Team' || item?.UserGroup?.Title == 'Smalsus Lead Team' || item?.UserGroup?.Title == 'External Staff' || item?.UserGroup?.Title == 'Junior Developer Team'){
+            if((item?.TimeCategory == 'Development' && item?.Company == 'Smalsus') && (item?.UserGroup?.Title == 'Senior Developer Team' || item?.UserGroup?.Title == 'Mobile Team' || item?.UserGroup?.Title == 'Smalsus Lead Team' ||  item?.UserGroup?.Title == 'Junior Developer Team')){
                 D.push(item)
             }
             if((item?.TimeCategory == 'Design'  && item.Company == 'Smalsus') ||  item?.UserGroup?.Title == 'Design Team'){
@@ -749,6 +754,7 @@ QATime = 0.00;
                         item.siteUrl = task.siteUrl
                         item.NewTaskId = task.TaskId
                         item.siteType = item.siteType
+                        item.TaskID = task.TaskId
                         item.SiteIcon = task?.SiteIcon
                         item.SiteIconTitle = item?.siteType;
                         item.PercentComplete = task.PercentComplete
@@ -768,6 +774,7 @@ QATime = 0.00;
                         item.PercentComplete = task.PercentComplete
                         item.TaskType = task.TaskType
                         item.NewTaskId = task.TaskId
+                        item.TaskID = task.TaskId
                         item.Status = task.Status
                         item.SiteIcon = task?.SiteIcon
                         item.SiteIconTitle = item?.siteType;
@@ -783,6 +790,7 @@ QATime = 0.00;
                         item.siteUrl = task.siteUrl
                         item.siteType = item.siteType
                         item.TaskType = task.TaskType
+                        item.TaskID = task.TaskId
                         item.NewTaskId = task.TaskId
                         item.PercentComplete = task.PercentComplete
                         item.Status = task.Status
@@ -799,6 +807,7 @@ QATime = 0.00;
                         item.Features = task.Portfolio.Title
                         item.siteUrl = task.siteUrl
                         item.siteType = item.siteType
+                        item.TaskID = task.TaskId
                         item.PercentComplete = task.PercentComplete
                         item.NewTaskId = task.TaskId
                         item.TaskType = task.TaskType
@@ -1294,7 +1303,7 @@ QATime = 0.00;
         + '<tr>'
         + '<td style="border: 1px solid #aeabab;padding: 5px;width: 50%;" bgcolor="#f5f5f5">' + '<strong>' + 'Total' + '</strong>' + '</td>'        
         + '<td style="border: 1px solid #aeabab;padding: 4px">' + '<strong>' + TotalMembers.toFixed(2) + '</strong>' + '</td>'
-        + '<td style="border: 1px solid #aeabab;padding: 4px">' + '<strong>' + TotalleaveMembers.toFixed(2) * 8 + '</strong>' + '</td>'
+        + '<td style="border: 1px solid #aeabab;padding: 4px">' + '<strong>' + TotalleaveMembers.toFixed(2)  + '</strong>' + '</td>'
         + '<td style="border: 1px solid #aeabab;padding: 4px">' + '<strong>' + TotlaTime.toFixed(2) + '</strong>' + '</td>'
         + '<td style="border: 1px solid #aeabab;padding: 4px">' + '<strong>' + TotalleaveHours + '</strong>' + '</td>'
         + '</tr>';

@@ -81,6 +81,8 @@ function TeamPortlioTable(SelectedProp: any) {
     const [AllMetadata, setMetadata] = React.useState([])
     const [AllClientCategory, setAllClientCategory] = React.useState([])
     const [IsUpdated, setIsUpdated] = React.useState("");
+    const [IsSmartfavoriteId, setIsSmartfavoriteId] = React.useState("");
+    const [IsSmartfavorite, setIsSmartfavorite] = React.useState("");
     const [checkedList, setCheckedList] = React.useState<any>({});
     const [AllSiteTasksData, setAllSiteTasksData] = React.useState([]);
     const [AllMasterTasksData, setAllMasterTasks] = React.useState([]);
@@ -274,8 +276,6 @@ function TeamPortlioTable(SelectedProp: any) {
         return user ? Image : null;
     };
 
-
-
     const LoadAllSiteTasks = function () {
         let AllTasksData: any = [];
         let Counter = 0;
@@ -468,7 +468,7 @@ function TeamPortlioTable(SelectedProp: any) {
                                 // if (title) result.joinedData.push(`Title: ${title}`);
                                 // if (dueDate) result.joinedData.push(`Due Date: ${dueDate}`);
                             }
-                            result["Item_x0020_Type"] = "Task";
+                            result["Item_x0020_Type"] = "Task"; 
                             TasksItem.push(result);
                             AllTasksData.push(result)
                         });
@@ -512,6 +512,7 @@ function TeamPortlioTable(SelectedProp: any) {
         console.log(componentDetails);
         ProjectData = componentDetails.filter((projectItem: any) => projectItem.Item_x0020_Type === "Project")
         componentDetails.forEach((result: any) => {
+            result.siteUrl = ContextValue?.siteUrl;
             result["siteType"] = "Master Tasks";
             result.AllTeamName = "";
             result.descriptionsSearch = '';
@@ -641,6 +642,14 @@ function TeamPortlioTable(SelectedProp: any) {
             setIsUpdated(query);
             isUpdated = query;
         }
+        let smartFavoriteIdParam = params.get("SmartfavoriteId");
+        if (smartFavoriteIdParam) {
+            setIsSmartfavoriteId(smartFavoriteIdParam);
+        }
+        let smartFavoriteParam = params.get("smartfavorite");
+        if (smartFavoriteParam) {
+            setIsSmartfavorite(smartFavoriteParam);
+        }
     }, [])
 
     React.useEffect(() => {
@@ -674,7 +683,6 @@ function TeamPortlioTable(SelectedProp: any) {
 
     React.useEffect(() => {
         if (AllMetadata.length > 0 && portfolioTypeData.length > 0) {
-            // GetComponents();
             LoadAllSiteTasks()
         }
     }, [AllMetadata.length > 0 && portfolioTypeData.length > 0])
@@ -696,7 +704,6 @@ function TeamPortlioTable(SelectedProp: any) {
                     }
                 })
             }
-            // if (count === portfolioTypeData?.length) {
             countAllTasksData = countAllTasksData?.filter((ele: any, ind: any, arr: any) => {
                 const isDuplicate = arr.findIndex((elem: any) => {
                     return (elem.ID === ele.ID || elem.Id === ele.Id) && elem.siteType === ele.siteType;
@@ -705,7 +712,6 @@ function TeamPortlioTable(SelectedProp: any) {
             })
             countTaskAWTLevel(countAllTasksData, '');
             setFilterCounters(true);
-            // }
         }
     }, [AllSiteTasksData.length > 0 && AllMasterTasksData.length > 0 && allLoadeDataMasterTaskAndTask?.length > 0])
 
@@ -1205,32 +1211,44 @@ function TeamPortlioTable(SelectedProp: any) {
         setclickFlatView(false);
         setData(groupByButtonClickData);
     }
-    const setTableHeight = () => {
-        const table = document.getElementById('runtimeTable');
-        const screenHeight = window.innerHeight;
-        const tableHeight = screenHeight * 0.8 - 5;
-        table.style.maxHeight = `${tableHeight}px`;
-    };
-    React.useEffect(() => {
-        setTableHeight();
-        window.addEventListener('resize', setTableHeight);
-        return () => {
-            window.removeEventListener('resize', setTableHeight);
-        };
-    }, []);
-
-
-    // const sortFn = (row: any, rowb: any) => {
-    //     let datePartsA = row?.DueDate?.split('/');
-    //     let datePartsB = rowb?.DueDate?.split('/');
-    //     let newDateA:any = new Date(datePartsA[2], datePartsA[1] - 1, datePartsA[0]);
-    //     let newDateB:any = new Date(datePartsB[2], datePartsB[1] - 1, datePartsB[0]);
-    //     return new Date(newDateB).getTime() - new Date(newDateA).getTime();
+    // const setTableHeight = () => {
+    //     const table = document.getElementById('runtimeTable');
+    //     const screenHeight = window.innerHeight;
+    //     const tableHeight = screenHeight * 0.8 - 5;
+    //     table.style.maxHeight = `${tableHeight}px`;
     // };
-    // const sortCreatedFn = (row: any, rowb: any) => {
-    //     return new Date(rowb.Created).getTime() - new Date(row.Created).getTime();
+    // React.useEffect(() => {
+    //     setTableHeight();
+    //     window.addEventListener('resize', setTableHeight);
+    //     return () => {
+    //         window.removeEventListener('resize', setTableHeight);
+    //     };
+    // }, []);
+
+   
+
+    // const setTableDimensions = () => {
+    //     const table = document.getElementById('runtimeTable');
+    //     const screenHeight = window.innerHeight;
+    //     const screenWidth = window.innerWidth;
+
+    //     // Set table height
+    //     const tableHeight = screenHeight * 0.8 - 5;
+    //     table.style.maxHeight = `${tableHeight}px`;
+
+    //     // Set table width (example: 80% of screen width)
+    //     const tableWidth = screenWidth * 0.8;
+    //     table.style.maxWidth = `${tableWidth}px`;
     // };
 
+    // React.useEffect(() => {
+    //     setTableDimensions();
+    //     window.addEventListener('resize', setTableDimensions);
+
+    //     return () => {
+    //         window.removeEventListener('resize', setTableDimensions);
+    //     };
+    // }, []);
 
     const columns: any = React.useMemo<ColumnDef<any, unknown>[]>(
         () => [
@@ -1443,7 +1461,7 @@ function TeamPortlioTable(SelectedProp: any) {
                     <div className="alignCenter">
                         {row?.original?.Created == null ? ("") : (
                             <>
-                                <HighlightableCell value={row?.original?.DisplayCreateDate} searchTerm={column.getFilterValue() != undefined ? column.getFilterValue() : childRef?.current?.globalFilter} />
+                                <div style={{ width: "75px" }} className="me-1"><HighlightableCell value={row?.original?.DisplayCreateDate} searchTerm={column.getFilterValue() != undefined ? column.getFilterValue() : childRef?.current?.globalFilter} /></div>
                                 {/* <div className='ms-1'>{row?.original?.DisplayCreateDate} </div> */}
                                 {row?.original?.Author != undefined &&
                                     <>
@@ -1837,53 +1855,6 @@ function TeamPortlioTable(SelectedProp: any) {
             setIsOpenActivity(false)
             setIsOpenWorkstream(false)
             setActivityPopup(false)
-            // copyDtaArray?.forEach((val: any) => {
-            //     if (res?.data?.PortfolioId === val.Id) {
-            //         val.subRows = val.subRows === undefined ? [] : val.subRows;
-            //         val.subRows.push(res.data)
-            //     }
-            //     else if (val?.subRows != undefined && val?.subRows.length > 0) {
-            //         val.subRows?.forEach((ele: any) => {
-            //             if (res?.data?.PortfolioId == ele?.Id) {
-            //                 ele.subRows = ele.subRows === undefined ? [] : ele.subRows;
-            //                 ele.subRows.push(res.data)
-
-            //             }
-            //             else {
-            //                 ele.subRows?.forEach((elev: any) => {
-            //                     if (res?.data?.PortfolioId == elev.Id) {
-            //                         elev.subRows = elev.subRows === undefined ? [] : elev.subRows;
-            //                         elev.subRows.push(res.data)
-
-            //                     }
-            //                     else {
-            //                         elev.subRows?.forEach((child: any) => {
-            //                             if (res?.data?.PortfolioId == child?.Id) {
-            //                                 child.subRows = child.subRows === undefined ? [] : child.subRows;
-
-            //                                 child.subRows.push(res.data)
-
-            //                             }
-            //                             else {
-            //                                 {
-            //                                     child.subRows?.forEach((Sub: any) => {
-            //                                         if (res?.data?.PortfolioId == Sub.Id) {
-            //                                             Sub.subRows = Sub.subRows === undefined ? [] : Sub.subRows;
-
-            //                                             Sub.subRows.push(res.data)
-
-            //                                         }
-            //                                     })
-            //                                 }
-            //                             }
-            //                         })
-            //                     }
-            //                 })
-            //             }
-            //         })
-            //     }
-
-            // })
             if (addedCreatedDataFromAWT(copyDtaArray, res.data)) {
                 renderData = [];
                 renderData = renderData.concat(copyDtaArray)
@@ -2033,19 +2004,19 @@ function TeamPortlioTable(SelectedProp: any) {
                     </h2>
                 </div>
                 <div className="togglecontent mt-1">
-                    {filterCounters == true ? <TeamSmartFilter ProjectData={ProjectData} portfolioTypeData={portfolioTypeData} setLoaded={setLoaded} AllSiteTasksData={AllSiteTasksData} AllMasterTasksData={AllMasterTasksData} SelectedProp={SelectedProp.SelectedProp} ContextValue={ContextValue} smartFiltercallBackData={smartFiltercallBackData} portfolioColor={portfolioColor} /> : ''}
+                    {filterCounters == true ? <TeamSmartFilter IsUpdated={IsUpdated} IsSmartfavorite={IsSmartfavorite} IsSmartfavoriteId={IsSmartfavoriteId} ProjectData={ProjectData} portfolioTypeData={portfolioTypeData} setLoaded={setLoaded} AllSiteTasksData={AllSiteTasksData} AllMasterTasksData={AllMasterTasksData} SelectedProp={SelectedProp.SelectedProp} ContextValue={ContextValue} smartFiltercallBackData={smartFiltercallBackData} portfolioColor={portfolioColor} /> : ''}
                 </div>
             </section>
 
 
-            <section className="TableContentSection row taskprofilepagegreen">
+            <section className="Tabl1eContentSection row taskprofilepagegreen">
                 <div className="container-fluid p-0">
                     <section className="TableSection">
                         <div className="container p-0">
                             <div className="Alltable mt-2 ">
                                 <div className="col-sm-12 p-0 smart">
                                     <div className="">
-                                        <div className="wrapper" id="runtimeTable">
+                                        <div>
                                             <Loader loaded={loaded} lines={13} length={20} width={10} radius={30} corners={1} rotate={0} direction={1}
                                                 color={portfolioColor ? portfolioColor : "#000069"}
                                                 speed={2}

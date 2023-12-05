@@ -762,10 +762,10 @@ table.indicator_search td fieldset .add_box, .smartSearch-Filter-Section .td-man
   color: #ffffff;
 }
 
-.Component input[type=radio], input[type=checkbox] {
+/* .Component input[type=radio], input[type=checkbox] {
   margin: -2px 0 0;
   line-height: normal;
-}
+} */
 
 .alertmsg {
   overflow: hidden !important;

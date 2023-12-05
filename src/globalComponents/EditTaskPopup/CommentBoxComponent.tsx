@@ -60,7 +60,7 @@ const CommentBoxComponent = (commentData: any) => {
             setIsCurrentUserApprover(true);
         }
         getCurrentUserDetails();
-    }, [commentData.FeedbackCount])
+    }, [])
 
     const getCurrentUserDetails = async () => {
         let currentUserId: number;
@@ -82,30 +82,42 @@ const CommentBoxComponent = (commentData: any) => {
         }
     }
 
+
     function handleChangeComment(e: any) {
-        if (e.target.matches("input")) {
-            const { id } = e.currentTarget.dataset;
-            const { name, value } = e.target;
-            const copy = [...commentArray];
-            const obj = { ...commentArray[id], [name]: value == "true" ? false : true };
-            copy[id] = obj;
-            if (name == "Phone") {
-                FirstFeedBackArray[id].Phone = (value == "true" ? false : true)
+        const id = parseInt(e.currentTarget.dataset.id, 10);
+        const { name, type, checked, value } = e.target;
+        let updatedValue = type === "checkbox" ? checked : value;
+        if (name === "SeeAbove") {
+            let newTitle = FirstFeedBackArray[id].Title;
+            const seeText = ` (See ${id + 1})`;
+            if (updatedValue) {
+                if (!newTitle.includes(seeText)) {
+                    newTitle += seeText;
+                }
+            } else {
+                newTitle = newTitle.replace(seeText, "").trim();
             }
-            if (name == "LowImportance") {
-                FirstFeedBackArray[id].LowImportance = (value == "true" ? false : true)
-            }
-            if (name == "HighImportance") {
-                FirstFeedBackArray[id].HighImportance = (value == "true" ? false : true)
-            }
-            if (name == "Completed") {
-                FirstFeedBackArray[id].Completed = (value == "true" ? false : true)
-            }
-            setCommentArray(copy);
-            Array = copy;
+            FirstFeedBackArray[id].Title = newTitle;
+            FirstFeedBackArray[id].SeeAbove = updatedValue;
+        } else if (type === "textarea") {
+            FirstFeedBackArray[id].Title = updatedValue;
+        } else if (type === "checkbox") {
+            FirstFeedBackArray[id][name] = updatedValue;
         }
+        const updatedCommentArray = commentArray.map((item, idx) => {
+            if (idx === id) {
+                return {
+                    ...item,
+                    Title: FirstFeedBackArray[id].Title,
+                    [name]: updatedValue
+                };
+            }
+            return item;
+        });
+        setCommentArray(updatedCommentArray);
         CallBack(FirstFeedBackArray);
     }
+
     const HtmlEditorCallBack = useCallback((EditorData: any) => {
         FirstFeedBackArray[0].Title = EditorData;
         CallBack(FirstFeedBackArray);
@@ -119,7 +131,6 @@ const CommentBoxComponent = (commentData: any) => {
             ApprovalDate: Moment(new Date()).tz("Europe/Berlin").format('DD MMM YYYY HH:mm'),
             isShowLight: value
         }
-        // currentUserData.isShowLight = value;
         FirstFeedBackArray[index].isShowLight = value;
         FirstFeedBackArray[index].ApproverData.push(temObject);
         let tempApproverData: any = FirstFeedBackArray[index].ApproverData;
@@ -182,7 +193,8 @@ const CommentBoxComponent = (commentData: any) => {
                     commentArray?.map((obj, i) => {
                         return (
                             <div className="row">
-                                <div data-id={i}
+                                <div
+                                    data-id={i}
                                     className="col"
                                     onChange={handleChangeComment}
                                 >
@@ -190,7 +202,7 @@ const CommentBoxComponent = (commentData: any) => {
                                         <div className="d-flex">
                                             {ApprovalStatus ?
                                                 <div>
-                                                    {/* {isCurrentUserApprover ? */}
+
                                                     <div className={isCurrentUserApprover ? "alignCenter mt-1" : "alignCenter Disabled-Link mt-1"}>
                                                         <span className="MR5">
                                                             <span title="Rejected" onClick={() => SmartLightUpdate(i, "Reject")}
@@ -203,7 +215,7 @@ const CommentBoxComponent = (commentData: any) => {
                                                             </span>
                                                         </span>
                                                     </div>
-                                                    {/* : null } */}
+
                                                 </div>
                                                 : null
                                             }
@@ -217,16 +229,23 @@ const CommentBoxComponent = (commentData: any) => {
 
                                         <div>
                                             <span className="mx-1">
-                                                <input className="form-check-input mt--3" type="checkbox"
+
+                                                <input className="form-check-input mt--3"
+                                                    type="checkbox"
+                                                    data-id={i}
+                                                    name="Phone"
                                                     checked={obj.Phone}
-                                                    value={obj.Phone}
-                                                    name='Phone'
+
                                                 />
                                                 <label className="commentSectionLabel ms-1">Phone</label>
                                             </span>
                                             <span> | </span>
                                             <span className="mx-1">
-                                                <input type="checkbox" name='LowImportance' checked={obj.LowImportance} value={obj.LowImportance} className="form-check-input mt--3"
+                                                <input className="form-check-input mt--3"
+                                                    type="checkbox"
+                                                    data-id={i}
+                                                    name="LowImportance"
+                                                    checked={obj.LowImportance}
                                                 />
                                                 <label className="commentSectionLabel ms-1">
                                                     Low Importance
@@ -234,8 +253,11 @@ const CommentBoxComponent = (commentData: any) => {
                                             </span>
                                             <span> | </span>
                                             <span className="mx-1">
-                                                <input type="checkbox" name='HighImportance' checked={obj.HighImportance}
-                                                    value={obj.HighImportance} className="form-check-input mt--3"
+                                                <input className="form-check-input mt--3"
+                                                    type="checkbox"
+                                                    data-id={i}
+                                                    name="HighImportance"
+                                                    checked={obj.HighImportance}
                                                 />
                                                 <label className="commentSectionLabel ms-1">
                                                     High Importance
@@ -243,8 +265,14 @@ const CommentBoxComponent = (commentData: any) => {
                                             </span>
                                             <span> | </span>
                                             <span className="mx-1">
-                                                <input type="checkbox" id="" className="form-check-input mt--3"
-                                                    name='Completed' checked={obj.Completed} value={obj.Completed} />
+
+                                                <input className="form-check-input mt--3"
+                                                    type="checkbox"
+                                                    data-id={i}
+                                                    name="Completed"
+                                                    checked={obj.Completed}
+
+                                                />
                                                 <label className="commentSectionLabel ms-1">
                                                     Mark As Completed
                                                 </label>
@@ -282,8 +310,6 @@ const CommentBoxComponent = (commentData: any) => {
                                             Context={Context}
                                             ApprovalStatus={ApprovalStatus}
                                             isCurrentUserApprover={isCurrentUserApprover}
-                                            FeedbackCount = {commentData.FeedbackCount}
-                                            SmartLightStatus = {obj.isShowLight}
                                         />
                                     </div>
                                     <div>
@@ -299,8 +325,7 @@ const CommentBoxComponent = (commentData: any) => {
                                             SmartLightPercentStatus={SmartLightPercentStatus}
                                             Context={Context}
                                             isCurrentUserApprover={isCurrentUserApprover}
-                                            isFirstComment = {true}
-                                            FeedbackCount = {commentData.FeedbackCount}
+                                            isFirstComment={true}
                                         />
                                     </div>
                                 </div>

@@ -12,8 +12,10 @@ import {
     getSortedRowModel,
     SortingState,
     FilterFn,
-    getPaginationRowModel
+    getPaginationRowModel,
+    Row
 } from "@tanstack/react-table";
+import { useVirtualizer, notUndefined } from "@tanstack/react-virtual";
 import { RankingInfo, rankItem, compareItems } from "@tanstack/match-sorter-utils";
 import { FaSort, FaSortDown, FaSortUp, FaChevronRight, FaChevronLeft, FaAngleDoubleRight, FaAngleDoubleLeft, FaInfoCircle, FaPlus, FaMinus, FaListAlt } from 'react-icons/fa';
 import { HTMLProps } from 'react';
@@ -369,6 +371,19 @@ const GlobalCommanTable = (items: any, ref: any) => {
             }
         }
     }, [columns])
+
+    /****************** defult Expend Other Section  part *******************/
+    React.useEffect(() => {
+        if (table?.getRowModel()?.rows.length > 0) {
+            table?.getRowModel()?.rows.map((elem: any) => {
+                if (elem?.original?.Title === "Others") {
+                    const newExpandedState = { [elem.id]: true };
+                    setExpanded(newExpandedState);
+                }
+            })
+        }
+    }, [data])
+    /****************** defult Expend Other Section end *******************/
     /****************** defult sorting  part end *******************/
 
     const table: any = useReactTable({
@@ -403,19 +418,6 @@ const GlobalCommanTable = (items: any, ref: any) => {
         enableSubRowSelection: false,
         // filterFns: undefined
     });
-    /****************** defult Expend Other Section  part *******************/
-    React.useEffect(() => {
-        if (table?.getRowModel()?.rows.length > 0) {
-            table?.getRowModel()?.rows.map((elem: any) => {
-                if (elem?.original?.Title === "Others") {
-                    const newExpandedState = { [elem.id]: true };
-                    setExpanded(newExpandedState);
-                }
-            })
-        }
-    }, [data])
-    /****************** defult Expend Other Section end *******************/
-
     React.useEffect(() => {
         CheckDataPrepre()
     }, [table?.getSelectedRowModel()?.flatRows])
@@ -752,20 +754,61 @@ const GlobalCommanTable = (items: any, ref: any) => {
 
     ////////////////  end /////////////////
 
+    //Virual rows
+    const parentRef = React.useRef<HTMLDivElement>(null);
+    const { rows } = table.getRowModel();
+    const virtualizer = useVirtualizer({
+        count: rows.length,
+        getScrollElement: () => parentRef.current,
+        // estimateSize: () => 24,
+        // overscan: 15,
+        estimateSize: () => 200,
+        overscan: 50,
+    });
+
+    const itemsVirtualizer: any = virtualizer.getVirtualItems();
+    const [before, after] =
+        itemsVirtualizer.length > 0
+            ? [
+                notUndefined(itemsVirtualizer[0]).start - virtualizer.options.scrollMargin,
+                virtualizer.getTotalSize() -
+                notUndefined(itemsVirtualizer[itemsVirtualizer.length - 1]).end,
+            ]
+            : [0, 0];
+
+    const setTableHeight = () => {
+        const screenHeight = window.innerHeight;
+        const tableHeight = screenHeight * 0.8 - 5;
+        parentRef.current.style.height = `${tableHeight}px`;
+    };
+    React.useEffect(() => {
+        if (items.wrapperHeight) {
+            parentRef.current.style.height = items.wrapperHeight;
+        } else {
+            setTableHeight();
+            window.addEventListener('resize', setTableHeight);
+            return () => {
+                window.removeEventListener('resize', setTableHeight);
+            };
+        }
+    }, []);
+    //Virtual rows
+
+
     return (
         <>
             {showHeader === true && <div className='tbl-headings justify-content-between fixed-Header top-0' style={{ background: '#e9e9e9' }}>
                 <span className='leftsec'>
-                {showingAllPortFolioCount === true ? <div className='alignCenter mt--2'>
+                    {showingAllPortFolioCount === true ? <div className='alignCenter mt--2'>
                         <label>
-                            <label style={{ color: `${portfolioColor}` }}>
+                            <label style={{ color: "#333333" }}>
                                 Showing
                             </label>
                             {portfolioTypeData?.map((type: any, index: any) => {
                                 return (
                                     <>
-                                        {isShowingDataAll === true ? <><label className='ms-1' style={{ color: `${portfolioColor}` }}>{` ${type[type.Title + 'numberCopy']} `} of {" "} </label> <label style={{ color: `${portfolioColor}` }} className='ms-0'>{` ${type[type.Title + 'number']} `}</label><label style={{ color: `${portfolioColor}` }} className='ms-1'>{" "} {type.Title}</label>{index < type.length - 1 && <label style={{ color: `${portfolioColor}` }} className="ms-1"> | </label>}</> :
-                                            <><label className='ms-1' style={{ color: `${portfolioColor}` }}>{` ${type[type.Title + 'filterNumber']} `} of {" "} </label> <label style={{ color: `${portfolioColor}` }} className='ms-0'>{` ${type[type.Title + 'number']} `}</label><label style={{ color: `${portfolioColor}` }} className='ms-1'>{" "} {type.Title}</label>{index < type.length - 1 && <label style={{ color: `${portfolioColor}` }} className="ms-1"> | </label>}</>}
+                                        {isShowingDataAll === true ? <><label className='ms-1' style={{ color: "#333333" }}>{` ${type[type.Title + 'numberCopy']} `} of {" "} </label> <label style={{ color: "#333333" }} className='ms-0'>{` ${type[type.Title + 'number']} `}</label><label style={{ color: "#333333" }} className='ms-1'>{" "} {type.Title}</label>{index < type.length - 1 && <label style={{ color: "#333333" }} className="ms-1"> | </label>}</> :
+                                            <><label className='ms-1' style={{ color: "#333333" }}>{` ${type[type.Title + 'filterNumber']} `} of {" "} </label> <label style={{ color: "#333333" }} className='ms-0'>{` ${type[type.Title + 'number']} `}</label><label style={{ color: "#333333" }} className='ms-1'>{" "} {type.Title}</label>{index < type.length - 1 && <label style={{ color: "#333333" }} className="ms-1"> | </label>}</>}
                                     </>
                                 )
                             })}
@@ -773,22 +816,22 @@ const GlobalCommanTable = (items: any, ref: any) => {
                         {!items?.pageName ? <span className="popover__wrapper ms-1 mt--5" style={{ position: "unset" }} data-bs-toggle="tooltip" data-bs-placement="auto">
                             <span className='svg__iconbox svg__icon--info alignIcon dark mt--2'></span>
                             <span className="popover__content mt-3 m-3 mx-3" style={{ zIndex: 100 }}>
-                                <label style={{ color: `${portfolioColor}` }}>
+                                <label style={{ color: "#333333" }}>
                                     Showing
                                 </label>
                                 {portfolioTypeData?.map((type: any, index: any) => {
                                     return (
                                         <>
-                                            {isShowingDataAll === true ? <><label className='ms-1' style={{ color: `${portfolioColor}` }}>{` ${type[type.Title + 'numberCopy']} `} of {" "} </label> <label style={{ color: `${portfolioColor}` }} className='ms-0'>{` ${type[type.Title + 'number']} `}</label><label style={{ color: `${portfolioColor}` }} className='ms-1'>{" "} {type.Title}</label><label style={{ color: `${portfolioColor}` }} className="ms-1"> | </label></> :
-                                                <><label className='ms-1' style={{ color: `${portfolioColor}` }}>{` ${type[type.Title + 'filterNumber']} `} of {" "} </label> <label style={{ color: `${portfolioColor}` }} className='ms-0'>{` ${type[type.Title + 'number']} `}</label><label style={{ color: `${portfolioColor}` }} className='ms-1'>{" "} {type.Title}</label><label style={{ color: `${portfolioColor}` }} className="ms-1"> | </label></>}
+                                            {isShowingDataAll === true ? <><label className='ms-1' style={{ color: "#333333" }}>{` ${type[type.Title + 'numberCopy']} `} of {" "} </label> <label style={{ color: "#333333" }} className='ms-0'>{` ${type[type.Title + 'number']} `}</label><label style={{ color: "#333333" }} className='ms-1'>{" "} {type.Title}</label><label style={{ color: "#333333" }} className="ms-1"> | </label></> :
+                                                <><label className='ms-1' style={{ color: "#333333" }}>{` ${type[type.Title + 'filterNumber']} `} of {" "} </label> <label style={{ color: "#333333" }} className='ms-0'>{` ${type[type.Title + 'number']} `}</label><label style={{ color: "#333333" }} className='ms-1'>{" "} {type.Title}</label><label style={{ color: "#333333" }} className="ms-1"> | </label></>}
                                         </>
                                     )
                                 })}
                                 {items?.taskTypeDataItem?.map((type: any, index: any) => {
                                     return (
                                         <>
-                                            {isShowingDataAll === true ? <><label className='ms-1' style={{ color: `${portfolioColor}` }}>{` ${type[type.Title + 'numberCopy']} `} of {" "} </label> <label style={{ color: `${portfolioColor}` }} className='ms-0'>{` ${type[type.Title + 'number']} `}</label><label style={{ color: `${portfolioColor}` }} className='ms-1'>{" "} {type.Title}</label>{index < items?.taskTypeDataItem?.length - 1 && <label style={{ color: `${portfolioColor}` }} className="ms-1"> | </label>}</> :
-                                                <><label className='ms-1' style={{ color: `${portfolioColor}` }}>{` ${type[type.Title + 'filterNumber']} `} of {" "} </label> <label style={{ color: `${portfolioColor}` }} className='ms-0'>{` ${type[type.Title + 'number']} `}</label><label style={{ color: `${portfolioColor}` }} className='ms-1'>{" "} {type.Title}</label>{index < items?.taskTypeDataItem?.length - 1 && <label style={{ color: `${portfolioColor}` }} className="ms-1"> | </label>}</>}
+                                            {isShowingDataAll === true ? <><label className='ms-1' style={{ color: "#333333" }}>{` ${type[type.Title + 'numberCopy']} `} of {" "} </label> <label style={{ color: "#333333" }} className='ms-0'>{` ${type[type.Title + 'number']} `}</label><label style={{ color: "#333333" }} className='ms-1'>{" "} {type.Title}</label>{index < items?.taskTypeDataItem?.length - 1 && <label style={{ color: "#333333" }} className="ms-1"> | </label>}</> :
+                                                <><label className='ms-1' style={{ color: "#333333" }}>{` ${type[type.Title + 'filterNumber']} `} of {" "} </label> <label style={{ color: "#333333" }} className='ms-0'>{` ${type[type.Title + 'number']} `}</label><label style={{ color: "#333333" }} className='ms-1'>{" "} {type.Title}</label>{index < items?.taskTypeDataItem?.length - 1 && <label style={{ color: "#333333" }} className="ms-1"> | </label>}</>}
                                         </>
                                     )
                                 })}
@@ -799,8 +842,8 @@ const GlobalCommanTable = (items: any, ref: any) => {
                                     {items?.taskTypeDataItem?.map((type: any, index: any) => {
                                         return (
                                             <>
-                                                {isShowingDataAll === true ? <><label className='ms-1' style={{ color: `${portfolioColor}` }}>{` ${type[type.Title + 'numberCopy']} `} of {" "} </label> <label style={{ color: `${portfolioColor}` }} className='ms-0'>{` ${type[type.Title + 'number']} `}</label><label style={{ color: `${portfolioColor}` }} className='ms-1'>{" "} {type.Title}</label>{index < items?.taskTypeDataItem?.length - 1 && <label style={{ color: `${portfolioColor}` }} className="ms-1"> | </label>}</> :
-                                                    <><label className='ms-1' style={{ color: `${portfolioColor}` }}>{` ${type[type.Title + 'filterNumber']} `} of {" "} </label> <label style={{ color: `${portfolioColor}` }} className='ms-0'>{` ${type[type.Title + 'number']} `}</label><label style={{ color: `${portfolioColor}` }} className='ms-1'>{" "} {type.Title}</label>{index < items?.taskTypeDataItem?.length - 1 && <label style={{ color: `${portfolioColor}` }} className="ms-1"> | </label>}</>}
+                                                {isShowingDataAll === true ? <><label className='ms-1' style={{ color: "#333333" }}>{` ${type[type.Title + 'numberCopy']} `} of {" "} </label> <label style={{ color: "#333333" }} className='ms-0'>{` ${type[type.Title + 'number']} `}</label><label style={{ color: "#333333" }} className='ms-1'>{" "} {type.Title}</label>{index < items?.taskTypeDataItem?.length - 1 && <label style={{ color: "#333333" }} className="ms-1"> | </label>}</> :
+                                                    <><label className='ms-1' style={{ color: "#333333" }}>{` ${type[type.Title + 'filterNumber']} `} of {" "} </label> <label style={{ color: "#333333" }} className='ms-0'>{` ${type[type.Title + 'number']} `}</label><label style={{ color: "#333333" }} className='ms-1'>{" "} {type.Title}</label>{index < items?.taskTypeDataItem?.length - 1 && <label style={{ color: "#333333" }} className="ms-1"> | </label>}</>}
                                             </>
                                         )
                                     })}
@@ -808,7 +851,7 @@ const GlobalCommanTable = (items: any, ref: any) => {
                             </>}
 
                     </div> :
-                        <span style={{ color: `${portfolioColor}` }} className='Header-Showing-Items'>{`Showing ${table?.getFilteredRowModel()?.rows?.length} of ${items?.catogryDataLength ? items?.catogryDataLength : data?.length}`}</span>}
+                        <span style={{ color: "#333333", flex: "none" }} className='Header-Showing-Items'>{`Showing ${table?.getFilteredRowModel()?.rows?.length} of ${items?.catogryDataLength ? items?.catogryDataLength : data?.length}`}</span>}
                     <span className="mx-1">{items?.showDateTime}</span>
                     <DebouncedInput
                         value={globalFilter ?? ""}
@@ -817,8 +860,8 @@ const GlobalCommanTable = (items: any, ref: any) => {
                         portfolioColor={portfolioColor}
                     />
                     <span className="svg__iconbox svg__icon--setting" style={{ backgroundColor: `${portfolioColor}` }} onClick={() => setSelectedFilterPanelIsOpen(true)}></span>
-                    <span className='ms-1'>
-                        <select style={{ height: "30px", color: `${portfolioColor}` }}
+                    <span className='mx-1'>
+                        <select style={{ height: "30px", paddingTop: "3px", color: `${portfolioColor}` }}
                             className="w-100"
                             aria-label="Default select example"
                             value={globalSearchType}
@@ -876,15 +919,15 @@ const GlobalCommanTable = (items: any, ref: any) => {
                     {table?.getSelectedRowModel()?.flatRows?.length > 0 ? <a className="teamIcon" onClick={() => ShowTeamFunc()}><span title="Create Teams Group" style={{ color: `${portfolioColor}`, backgroundColor: `${portfolioColor}` }} className="svg__iconbox svg__icon--team"></span></a>
                         : <a className="teamIcon"><span title="Create Teams Group" style={{ backgroundColor: "gray" }} className="svg__iconbox svg__icon--team"></span></a>}
                     {table?.getSelectedRowModel()?.flatRows?.length > 0 ?
-                        <a onClick={() => openTaskAndPortfolioMulti()} title='Open in new tab' className="openWebIcon p-0"><span style={{ color: `${portfolioColor}`, backgroundColor: `${portfolioColor}` }} className="svg__iconbox svg__icon--openWeb"></span></a>
-                        : <a className="openWebIcon p-0" title='Open in new tab'><span className="svg__iconbox svg__icon--openWeb" style={{ backgroundColor: "gray" }}></span></a>}
+                        <a onClick={() => openTaskAndPortfolioMulti()} title='Open in New Tab' className="openWebIcon p-0"><span style={{ color: `${portfolioColor}`, backgroundColor: `${portfolioColor}` }} className="svg__iconbox svg__icon--openWeb"></span></a>
+                        : <a className="openWebIcon p-0" title='Open in New Tab'><span className="svg__iconbox svg__icon--openWeb" style={{ backgroundColor: "gray" }}></span></a>}
 
                     {items?.OpenAdjustedTimePopupCategory && items?.showCatIcon === true && <a onClick={items.OpenAdjustedTimePopupCategory} title="Open Adjusted Time Popup">
                         <i className="fa fa-cog brush" aria-hidden="true"></i>
                     </a>}
 
-                    {items?.showCatIcon != true ? <a className='excal' title='Export to excal' onClick={() => exportToExcel()}><RiFileExcel2Fill style={{ color: `${portfolioColor}` }} /></a> :
-                        <a className='excal' title='Export to excal' onClick={items?.exportToExcelCategoryReport}><RiFileExcel2Fill style={{ color: `${portfolioColor}` }} /></a>}
+                    {items?.showCatIcon != true ? <a className='excal' title='Export to Excel' onClick={() => exportToExcel()}><RiFileExcel2Fill style={{ color: `${portfolioColor}` }} /></a> :
+                        <a className='excal' title='Export to Excel' onClick={items?.exportToExcelCategoryReport}><RiFileExcel2Fill style={{ color: `${portfolioColor}` }} /></a>}
 
                     {/* <a className='excal' title='Export To Excel' onClick={() => exportToExcel()}><RiFileExcel2Fill style={{ color: `${portfolioColor}` }} /></a> */}
 
@@ -908,71 +951,86 @@ const GlobalCommanTable = (items: any, ref: any) => {
                     <Tooltip ComponentId={5756} />
                 </span>
             </div>}
-
-            <table className="SortingTable table table-hover mb-0" id='my-table' style={{ width: "100%" }}>
-                <thead className={showHeader === true ? 'fixedSmart-Header top-0' : 'fixed-Header top-0'}>
-                    {table.getHeaderGroups().map((headerGroup: any) => (
-                        <tr key={headerGroup.id} >
-                            {headerGroup.headers.map((header: any) => {
-                                return (
-                                    <th key={header.id} colSpan={header.colSpan} style={header.column.columnDef.size != undefined && header.column.columnDef.size != 150 ? { width: header.column.columnDef.size + "px" } : {}}>
-                                        {header.isPlaceholder ? null : (
-                                            <div className='position-relative' style={{ display: "flex" }}>
-                                                {flexRender(
-                                                    header.column.columnDef.header,
-                                                    header.getContext()
+            <div ref={parentRef} style={{ overflow: "auto" }}>
+                <div style={{ height: `${virtualizer.getTotalSize()}px` }}>
+                    <table className="SortingTable table table-hover mb-0" id='my-table' style={{ width: "100%" }}>
+                        <thead className={showHeader === true ? 'fixedSmart-Header top-0' : 'fixed-Header top-0'}>
+                            {table.getHeaderGroups().map((headerGroup: any) => (
+                                <tr key={headerGroup.id} >
+                                    {headerGroup.headers.map((header: any) => {
+                                        return (
+                                            <th key={header.id} colSpan={header.colSpan} style={header.column.columnDef.size != undefined && header.column.columnDef.size != 150 ? { width: header.column.columnDef.size + "px" } : {}}>
+                                                {header.isPlaceholder ? null : (
+                                                    <div className='position-relative' style={{ display: "flex" }}>
+                                                        {flexRender(
+                                                            header.column.columnDef.header,
+                                                            header.getContext()
+                                                        )}
+                                                        {header.column.getCanFilter() ? (
+                                                            // <span>
+                                                            <Filter column={header.column} table={table} placeholder={header.column.columnDef} />
+                                                            // </span>
+                                                        ) : null}
+                                                        {header.column.getCanSort() ? <div
+                                                            {...{
+                                                                className: header.column.getCanSort()
+                                                                    ? "cursor-pointer select-none shorticon"
+                                                                    : "",
+                                                                onClick: header.column.getToggleSortingHandler(),
+                                                            }}
+                                                        >
+                                                            {header.column.getIsSorted()
+                                                                ? { asc: <FaSortDown style={{ color: `${portfolioColor}` }} />, desc: <FaSortUp style={{ color: `${portfolioColor}` }} /> }[
+                                                                header.column.getIsSorted() as string
+                                                                ] ?? null
+                                                                : <FaSort style={{ color: "gray" }} />}
+                                                        </div> : ""}
+                                                    </div>
                                                 )}
-                                                {header.column.getCanFilter() ? (
-                                                    // <span>
-                                                    <Filter column={header.column} table={table} placeholder={header.column.columnDef} />
-                                                    // </span>
-                                                ) : null}
-                                                {header.column.getCanSort() ? <div
-                                                    {...{
-                                                        className: header.column.getCanSort()
-                                                            ? "cursor-pointer select-none shorticon"
-                                                            : "",
-                                                        onClick: header.column.getToggleSortingHandler(),
-                                                    }}
-                                                >
-                                                    {header.column.getIsSorted()
-                                                        ? { asc: <FaSortDown style={{ color: `${portfolioColor}` }} />, desc: <FaSortUp style={{ color: `${portfolioColor}` }} /> }[
-                                                        header.column.getIsSorted() as string
-                                                        ] ?? null
-                                                        : <FaSort style={{ color: "gray" }} />}
-                                                </div> : ""}
-                                            </div>
-                                        )}
-                                    </th>
+                                            </th>
+                                        );
+                                    })}
+                                </tr>
+                            ))}
+                        </thead>
+                        <tbody>
+                            {before > 0 && (
+                                <tr>
+                                    <td className="col-span-full" style={{ height: before }}></td>
+                                </tr>
+                            )}
+                            {virtualizer.getVirtualItems().map((virtualRow: any, index: any) => {
+                                const row = rows[virtualRow.index] as Row<any>;
+                                return (
+                                    <tr
+                                        // className={row?.original?.lableColor}
+                                        className={row?.original?.IsSCProtected != undefined && row?.original?.IsSCProtected == true ? `Disabled-Link opacity-75 ${row?.original?.lableColor}` : `${row?.original?.lableColor}`}
+                                        key={row.id}
+                                        data-index={virtualRow.index}
+                                        ref={virtualizer.measureElement}
+                                    >
+                                        {row.getVisibleCells().map((cell: any) => {
+                                            return (
+                                                <td className={row?.original?.boldRow} key={cell.id} style={row?.original?.fontColorTask != undefined ? { color: `${row?.original?.fontColorTask}` } : { color: `${row?.original?.PortfolioType?.Color}` }}>
+                                                    {flexRender(
+                                                        cell.column.columnDef.cell,
+                                                        cell.getContext()
+                                                    )}
+                                                </td>
+                                            );
+                                        })}
+                                    </tr>
                                 );
                             })}
-                        </tr>
-                    ))}
-                </thead>
-                <tbody>
-                    {table?.getRowModel()?.rows?.map((row: any) => {
-                        return (
-                            <tr
-                                // className={row?.original?.lableColor}
-                                className={row?.original?.IsSCProtected != undefined && row?.original?.IsSCProtected == true ? `Disabled-Link opacity-75 ${row?.original?.lableColor}` : `${row?.original?.lableColor}`}
-                                key={row.id}
-                            >
-                                {row.getVisibleCells().map((cell: any) => {
-                                    return (
-                                        <td className={row?.original?.boldRow} key={cell.id} style={row?.original?.fontColorTask != undefined ? { color: `${row?.original?.fontColorTask}` } : { color: `${row?.original?.PortfolioType?.Color}` }}>
-                                            {flexRender(
-                                                cell.column.columnDef.cell,
-                                                cell.getContext()
-                                            )}
-                                        </td>
-                                    );
-                                })}
-                            </tr>
-                        );
-                    })}
-
-                </tbody>
-            </table>
+                            {after > 0 && (
+                                <tr>
+                                    <td className="col-span-full" style={{ height: after }}></td>
+                                </tr>
+                            )}
+                        </tbody>
+                    </table>
+                </div>
+            </div>
             {data?.length === 0 && <div className='mt-2'>
                 <div className='d-flex justify-content-center' style={{ height: "30px", color: portfolioColor ? `${portfolioColor}` : "#000069" }}>No data available</div>
             </div>}

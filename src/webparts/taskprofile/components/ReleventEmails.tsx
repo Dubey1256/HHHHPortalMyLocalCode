@@ -6,9 +6,10 @@ import EditDocument from './EditDocunentPanel'
 import { useState, useEffect, forwardRef, useImperativeHandle, createContext } from 'react';
 // import { MyContext } from './Taskprofile'
 import { myContextValue } from "../../../globalComponents/globalCommon";
+
 let mastertaskdetails: any = [];
 const RelevantEmail = (props: any, ref: any) => {
-
+  const myContextData2: any = React.useContext<any>(myContextValue)
   const [documentData, setDocumentData] = useState([]);
 
   // const [FileName, setFileName] = useState(props?.folderName);
@@ -25,12 +26,12 @@ const RelevantEmail = (props: any, ref: any) => {
     loadAllSitesDocuments
   }))
   const loadAllSitesDocuments = async () => {
-    let query ="Id,Title,PriorityRank,Year,Body,Item_x0020_Cover,SharewebTask/Id,SharewebTask/Title,SharewebTask/ItemType,Portfolios/Id,Portfolios/Title,File_x0020_Type,FileLeafRef,FileDirRef,ItemRank,ItemType,Url,Created,Modified,Author/Id,Author/Title,Editor/Id,Editor/Title,EncodedAbsUrl&$expand=Author,Editor,SharewebTask,Portfolios"
+    let query ="Id,Title,PriorityRank,Year,Body,Item_x0020_Cover,Portfolios/Id,Portfolios/Title,File_x0020_Type,FileLeafRef,FileDirRef,ItemRank,ItemType,Url,Created,Modified,Author/Id,Author/Title,Editor/Id,Editor/Title,EncodedAbsUrl&$expand=Author,Editor,Portfolios"
     if (props.siteName == "Offshore Tasks") {
       props.siteName = "OffShoreTask"
     } else if (props.siteName == "Master Tasks") {
-      props.siteName = 'SharewebTask';
-      query ="Id,Title,PriorityRank,Year,Body,Item_x0020_Cover,SharewebTask/Id,SharewebTask/Title,SharewebTask/ItemType,File_x0020_Type,FileLeafRef,FileDirRef,ItemRank,ItemType,Url,Created,Modified,Author/Id,Author/Title,Editor/Id,Editor/Title,EncodedAbsUrl&$expand=Author,Editor,SharewebTask"
+      props.siteName = 'Portfolios';
+      query ="Id,Title,PriorityRank,Year,Body,Item_x0020_Cover,Portfolios/Id,Portfolios/Title,File_x0020_Type,FileLeafRef,FileDirRef,ItemRank,ItemType,Url,Created,Modified,Author/Id,Author/Title,Editor/Id,Editor/Title,EncodedAbsUrl&$expand=Author,Editor,Portfolios"
       
     }
     const web = new Web(props.siteUrl);
@@ -189,7 +190,7 @@ const RelevantEmail = (props: any, ref: any) => {
       </div>
       } */}
 
-      {editdocpanel && <EditDocument editData={EditdocData} AllListId={props.AllListId} Context={props.Context} editdocpanel={editdocpanel} callbackeditpopup={callbackeditpopup} />}
+      {editdocpanel && <EditDocument editData={EditdocData} ColorCode={myContextData2?.ColorCode} AllListId={props.AllListId} Context={props.Context} editdocpanel={editdocpanel} callbackeditpopup={callbackeditpopup} />}
 
     </>
 

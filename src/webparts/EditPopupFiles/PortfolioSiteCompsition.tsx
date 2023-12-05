@@ -30,7 +30,7 @@ var MasterTaskListId: any;
 let SelectedFromTable: any = [];
 let ClientTimeDataBackup: any = [];
 let GloablChangeCountCC: any = 0;
-let GloablChangeCountSC: any = 0;
+let GlobalChangeCountSC: any = 0;
 const SiteCompositionComponent = (Props: any) => {
     const SiteData = Props.SiteTypes;
     var SitesTaggingData: any = Props.SitesTaggingData;
@@ -70,7 +70,7 @@ const SiteCompositionComponent = (Props: any) => {
     const [EIClientCategory, setEIClientCategory] = useState([]);
     const [EducationClientCategory, setEducationClientCategory] = useState([]);
     const [MigrationClientCategory, setMigrationClientCategory] = useState([]);
-    const [ComponentChildExist, setComponentChildExist] = useState(false);
+    const [IsChildUpdated, setIsChildUpdated] = useState(false);
     const [IsSCProtected, setIsSCProtected] = useState<any>(false);
     const [isCalloutVisible, { toggle: toggleIsCalloutVisible }] = useBoolean(false);
     const [currentDataIndex, setCurrentDataIndex] = useState<any>(0);
@@ -78,6 +78,7 @@ const SiteCompositionComponent = (Props: any) => {
     const calloutProps = { gapSpace: 0 };
     const [isPortfolioComposition, setIsPortfolioComposition] = useState(false);
     const [checkBoxStatus, setCheckBoxStatus] = useState(false);
+    const [MakeScProtected, setMakeScProtected] = useState(false);
     const StandardComposition =
         [
             {
@@ -210,11 +211,10 @@ const SiteCompositionComponent = (Props: any) => {
                     setProportionalStatus(false);
                 }
             }
-            // if (SiteCompositionSettings[0].Protected) {
-            //     setIsSCProtected(true);
-            // }
+            if (SiteCompositionSettings[0].Protected) {
+                setMakeScProtected(true);
+            }
         }
-        getChildDataForSelectedTask()
     }, [Props.SelectedClientCategory])
 
     const getSmartMetadataItemsByTaxType = function (metadataItems: any, taxType: any) {
@@ -253,7 +253,7 @@ const SiteCompositionComponent = (Props: any) => {
             SiteTypes.map((DataItem: any, DataIndex: any) => {
                 if (DataIndex == Index) {
                     if (DataItem.BtnStatus) {
-                        GloablChangeCountSC++;
+                        GlobalChangeCountSC++;
                         DataItem.BtnStatus = false
                         DataItem.ClienTimeDescription = 0;
                         setSelectedSiteCount(selectedSiteCount - 1);
@@ -471,17 +471,18 @@ const SiteCompositionComponent = (Props: any) => {
 
         if (Type == "Protected") {
             if (SiteCompositionSettings[0]?.Protected == true) {
-                if (SiteCompositionSettings[0].Deluxe == true || SiteCompositionSettings[0].Standard == true) {
-                    // setIsSCProtected(true);
-                } else {
-                    SiteCompositionSettings[0].Protected = false;
-                    // setIsSCProtected(false);
-                }
-
+                // if (SiteCompositionSettings[0].Deluxe == true || SiteCompositionSettings[0].Standard == true) {
+                //     // setIsSCProtected(true);
+                // } else {
+                SiteCompositionSettings[0].Protected = false;
+                // setIsSCProtected(false);
+                // }/
+                setMakeScProtected(false);
             } else {
                 SiteCompositionSettings[0].Protected = true;
                 // SiteTaggingFinalData = ClientTimeData;
-                setIsSCProtected(true);
+                setMakeScProtected(true);
+                // setIsSCProtected(true);
             }
         }
         if (Type == "Deluxe") {
@@ -867,38 +868,152 @@ const SiteCompositionComponent = (Props: any) => {
         }
     }
 
+
+
+    // const UpdateSmartMetaDataSiteEndDate = async (siteData: any) => {
+    //     let web = new Web(siteData.siteUrl.Url);
+    //     try {
+    //         await Promise.all([
+    //             web.lists.getById(AllListIdData?.SmartMetadataListID).items.getById(siteData.Id).update({
+    //                 Configurations: JSON.stringify(siteData?.ConfigurationsData)
+    //             }).then(() => {
+    //                 console.log("Site End Date Updated in Smart Meta Data List")
+    //             })
+    //         ]);
+    //     } catch (error) {
+    //         console.error("Error updating client category:", error);
+    //     }
+    // }
+
+    const removeSelectedClientCategory = (SiteType: any) => {
+        GloablChangeCountCC++;
+        if (SiteType == "EPS") {
+            setEPSClientCategory([])
+            EPSClientCategory.pop();
+        }
+        if (SiteType == "EI") {
+            setEIClientCategory([])
+            EIClientCategory.pop();
+        }
+        if (SiteType == "Education") {
+            setEducationClientCategory([])
+            EducationClientCategory.pop();
+        }
+        if (SiteType == "Migration") {
+            setMigrationClientCategory([])
+            MigrationClientCategory.pop();
+        }
+        saveSelectedClientCategoryData("Main");
+    }
+
+    const closeClientCategoryPopup = () => {
+        setClientCategoryPopupStatus(false)
+        setSelectedClientCategory(SelectedClientCategoryBackupArray);
+    }
+
+    // ************************ this is for the auto Suggestion fuction for all Client Category ******************
+    const closeComponentChildrenPopup = (FnType: any) => {
+        setComponentChildrenPopupStatus(false);
+        // setIsChildUpdated(true);
+        setTimeout(() => {
+            Props.closePopupCallBack(FnType);
+            // callBack(SiteCompositionObject, "dataExits");
+            makeAllGlobalVariableAsDefault();
+        }, 500);
+        // makeAllGlobalVariableAsDefault();
+    }
+
+    const autoSuggestionsForClientCategoryIdividual = (e: any, siteType: any, SiteId: any) => {
+        let SearchedKey: any = e.target.value;
+        CommoneFunctionForGettingSiteData(siteType);
+        setClientCategoryPopupSiteName(siteType);
+        ClientCategoryPopupSiteNameGlobal = siteType;
+        if (siteType == "EPS") {
+            BuildIndividualAllDataArray(SiteId, siteType);
+            AutoSuggestionForClientCategory(e, "For-Input");
+            setSearchedKeyForEPS(SearchedKey);
+        }
+        if (siteType == "EI") {
+            BuildIndividualAllDataArray(SiteId, siteType);
+            AutoSuggestionForClientCategory(e, "For-Input");
+            setSearchedKeyForEI(SearchedKey);
+        }
+        if (siteType == "Education") {
+            BuildIndividualAllDataArray(SiteId, siteType);
+            AutoSuggestionForClientCategory(e, "For-Input");
+            setSearchedKeyForEducation(SearchedKey);
+        }
+        if (siteType == "Migration") {
+            BuildIndividualAllDataArray(SiteId, siteType);
+            AutoSuggestionForClientCategory(e, "For-Input");
+            setSearchedKeyForMigration(SearchedKey);
+        }
+    }
+
+    //    ************* this is Custom Header For Client Category Popup *****************
+    const onRenderCustomClientCategoryHeader = () => {
+        return (
+            <div className="d-flex full-width pb-1">
+                <div className="subheading">
+                    <span>
+                        Select Client Category
+                    </span>
+                </div>
+                <Tooltip ComponentId="1626" />
+            </div>
+        )
+    }
+
+    // Here is all functions for updating the all CSF and AWT on backend Side 
+
+    const callBackData = React.useCallback((elem: any, AllSiteDataWithSCC: any) => {
+        SelectedFromTable = elem;
+        let TempCCForCSF: any = [];
+        AllSiteDataWithSCC?.map((AllSiteItem: any) => {
+            if (AllSiteItem?.ClientCategories?.length > 0) {
+                AllSiteItem?.ClientCategories?.map((ExistingCCItem: any) => {
+                    if (ExistingCCItem.checked == true) {
+                        TempCCForCSF.push(ExistingCCItem);
+                    }
+                })
+            }
+        })
+        if (TempCCForCSF?.length > 0) {
+            SiteClientCatgeoryFinalData = TempCCForCSF;
+        }
+    }, []);
+
     const UpdateSiteTaggingAndClientCategory = async () => {
         let SitesTaggingData: any = [];
-        let ClientCategoryIDs: any = [];
-        let ClientCategoryData: any = [];
-        let SiteCompositionSettingData: any = [];
+        // let ClientCategoryIDs: any = [];
+        // let ClientCategoryData: any = [];
+        // let SiteCompositionSettingData: any = [];
         let SiteTaggingJSON: any = [];
         let TotalPercentageCount: any = 0;
-        let TaskShuoldBeUpdate: any = true;
+        let TaskShouldBeUpdate: any = true;
 
-        if (SiteTaggingFinalData?.length > 0 || GloablChangeCountSC > 0) {
+        if (SiteTaggingFinalData?.length > 0 || GlobalChangeCountSC > 0) {
             SitesTaggingData = SiteTaggingFinalData
         } else {
             SitesTaggingData = ClientTimeDataBackup;
         }
-        if (SiteClientCatgeoryFinalData?.length > 0 || GloablChangeCountCC > 0) {
-            ClientCategoryData = SiteClientCatgeoryFinalData
-        } else {
-            ClientCategoryData = SelectedClientCategoryFromProps;
-        }
-        if (SiteSettingsFinalData?.length > 0) {
-            SiteCompositionSettingData = SiteSettingsFinalData
-        } else {
-            SiteCompositionSettingData = SiteCompositionSettings;
-        }
-        if (ClientCategoryData?.length > 0) {
-            ClientCategoryData.map((dataItem: any) => {
-                ClientCategoryIDs.push(dataItem.Id);
-            })
-
-        } else {
-            ClientCategoryIDs = [];
-        }
+        // if (SiteClientCatgeoryFinalData?.length > 0 || GloablChangeCountCC > 0) {
+        //     ClientCategoryData = SiteClientCatgeoryFinalData
+        // } else {
+        //     ClientCategoryData = SelectedClientCategoryFromProps;
+        // }
+        // if (SiteSettingsFinalData?.length > 0) {
+        //     SiteCompositionSettingData = SiteSettingsFinalData
+        // } else {
+        //     SiteCompositionSettingData = SiteCompositionSettings;
+        // }
+        // if (ClientCategoryData?.length > 0) {
+        //     ClientCategoryData.map((dataItem: any) => {
+        //         ClientCategoryIDs.push(dataItem.Id);
+        //     })
+        // } else {
+        //     ClientCategoryIDs = [];
+        // }
 
         if (SitesTaggingData != undefined && SitesTaggingData.length > 0) {
             let SiteIconStatus: any = false
@@ -930,7 +1045,7 @@ const SiteCompositionComponent = (Props: any) => {
             })
         }
         if (TotalPercentageCount > 101) {
-            TaskShuoldBeUpdate = false;
+            TaskShouldBeUpdate = false;
             TotalPercentageCount = 0
             alert("site composition allocation should not be more than 100%");
         }
@@ -938,181 +1053,90 @@ const SiteCompositionComponent = (Props: any) => {
             TotalPercentageCount = 0
             let conformationSTatus = confirm("Site composition should not be less than 100% if you still want to do it click on OK")
             if (conformationSTatus) {
-                TaskShuoldBeUpdate = true;
+                TaskShouldBeUpdate = true;
             } else {
-                TaskShuoldBeUpdate = false;
+                TaskShouldBeUpdate = false;
             }
         }
-        if (TaskShuoldBeUpdate) {
-            if (ComponentChildExist) {
-                setComponentChildrenPopupStatus(true);
-            }
-            let UpdateSiteInSMD: any = [];
-            // if (SiteTypes?.length > 0) {
-            //     SiteTypes.map((siteData: any) => {
-            //         SiteTaggingJSON?.map((CompositionData: any) => {
-            //             if (siteData.Title == CompositionData.Title) {
-            //                 if (CompositionData.EndDate != undefined || CompositionData.EndDate != null) {
-            //                     siteData.ConfigurationsData[0].EndDate = CompositionData.EndDate;
-            //                     UpdateSiteInSMD.push(siteData);
-            //                     UpdateSmartMetaDataSiteEndDate(siteData);
-            //                 }
-            //             }
-            //         })
-            //     })
+        if (TaskShouldBeUpdate) {
+            // if (!IsChildUpdated) {
+            setComponentChildrenPopupStatus(true);
+            // } else {
+            //     closeComponentChildrenPopup("Save");
+            //     Props.closePopupCallBack("Save");
+            //     // callBack(SiteCompositionObject, "dataExits");
             // }
-            try {
-                let web = new Web(AllListIdData.siteUrl);
-                await web.lists.getById(AllListIdData.MasterTaskListID).items.getById(ItemId).update({
-                    Sitestagging: SiteTaggingJSON?.length > 0 ? JSON.stringify(SiteTaggingJSON) : null,
-                    ClientCategoryId: { "results": (ClientCategoryIDs != undefined && ClientCategoryIDs.length > 0) ? ClientCategoryIDs : [] },
-                    SiteCompositionSettings: (SiteCompositionSettingData != undefined && SiteCompositionSettingData.length > 0) ? JSON.stringify(SiteCompositionSettingData) : SiteCompositionSettings,
-                }).then(() => {
-                    console.log("Site Composition Updated !!!");
-                    if (!ComponentChildExist) {
-                        // Props.closePopupCallBack();
-                        closeComponentChildrenPopup("Save");
-                        callBack(SiteCompositionObject, "dataExits");
+        }
+    }
+
+    const UpdateParentComponentFunction = async () => {
+        let SiteCompositionSettingData: any = [];
+        let SitesTaggingData: any = [];
+        let SiteTaggingJSON: any = [];
+        let ClientCategoryIDs: any = [];
+
+        if (SiteTaggingFinalData?.length > 0 || GlobalChangeCountSC > 0) {
+            SitesTaggingData = SiteTaggingFinalData
+        } else {
+            SitesTaggingData = ClientTimeDataBackup;
+        }
+        if (SiteSettingsFinalData?.length > 0) {
+            SiteCompositionSettingData = SiteSettingsFinalData
+        } else {
+            SiteCompositionSettingData = SiteCompositionSettings;
+        }
+        if (SiteClientCatgeoryFinalData?.length > 0) {
+            SiteClientCatgeoryFinalData.map((dataItem: any) => {
+                ClientCategoryIDs.push(dataItem.Id);
+            })
+        } else {
+            ClientCategoryIDs = [];
+        }
+
+        if (SitesTaggingData != undefined && SitesTaggingData.length > 0) {
+            let SiteIconStatus: any = false
+            SitesTaggingData?.map((ClientTimeItems: any) => {
+                if (ClientTimeItems?.siteIcons != undefined) {
+                    if (ClientTimeItems.siteIcons?.length > 0 || ClientTimeItems.siteIcons?.Url?.length > 0) {
+                        SiteIconStatus = true;
                     }
-                })
-            } catch (error) {
-                console.log("Error : ", error.message)
-            }
-        }
-
-    }
-
-    const UpdateSmartMetaDataSiteEndDate = async (siteData: any) => {
-        let web = new Web(siteData.siteUrl.Url);
-        try {
-            await Promise.all([
-                web.lists.getById(AllListIdData?.SmartMetadataListID).items.getById(siteData.Id).update({
-                    Configurations: JSON.stringify(siteData?.ConfigurationsData)
-                }).then(() => {
-                    console.log("Site End Date Updated in Smart Meta Data List")
-                })
-            ]);
-        } catch (error) {
-            console.error("Error updating client category:", error);
-        }
-    }
-
-    const removeSelectedClientCategory = (SiteType: any) => {
-        GloablChangeCountCC++;
-        if (SiteType == "EPS") {
-            setEPSClientCategory([])
-            EPSClientCategory.pop();
-        }
-        if (SiteType == "EI") {
-            setEIClientCategory([])
-            EIClientCategory.pop();
-        }
-        if (SiteType == "Education") {
-            setEducationClientCategory([])
-            EducationClientCategory.pop();
-        }
-        if (SiteType == "Migration") {
-            setMigrationClientCategory([])
-            MigrationClientCategory.pop();
-        }
-        saveSelectedClientCategoryData("Main");
-    }
-
-    const closeClientCategoryPopup = () => {
-        setClientCategoryPopupStatus(false)
-        setSelectedClientCategory(SelectedClientCategoryBackupArray);
-    }
-
-    // ************************ this is for the auto Suggestion fuction for all Client Category ******************
-    const closeComponentChildrenPopup = (FnType: any) => {
-        setComponentChildrenPopupStatus(false);
-        setTimeout(() => {
-            Props.closePopupCallBack(FnType);
-            // callBack(SiteCompositionObject, "dataExits");
-            makeAllGlobalVariableAsDefault();
-        }, 1500);
-    }
-
-    const autoSuggestionsForClientCategoryIdividual = (e: any, siteType: any, SiteId: any) => {
-        let SearchedKey: any = e.target.value;
-        CommoneFunctionForGettingSiteData(siteType);
-        setClientCategoryPopupSiteName(siteType);
-        ClientCategoryPopupSiteNameGlobal = siteType;
-        if (siteType == "EPS") {
-            BuildIndividualAllDataArray(SiteId, siteType);
-            AutoSuggestionForClientCategory(e, "For-Input");
-            setSearchedKeyForEPS(SearchedKey);
-        }
-        if (siteType == "EI") {
-            BuildIndividualAllDataArray(SiteId, siteType);
-            AutoSuggestionForClientCategory(e, "For-Input");
-            setSearchedKeyForEI(SearchedKey);
-        }
-        if (siteType == "Education") {
-            BuildIndividualAllDataArray(SiteId, siteType);
-            AutoSuggestionForClientCategory(e, "For-Input");
-            setSearchedKeyForEducation(SearchedKey);
-        }
-        if (siteType == "Migration") {
-            BuildIndividualAllDataArray(SiteId, siteType);
-            AutoSuggestionForClientCategory(e, "For-Input");
-            setSearchedKeyForMigration(SearchedKey);
-        }
-    }
-
-    // ******************* this is used for Childern Table section functions ****************
-    const getChildDataForSelectedTask = async () => {
-        let GroupByData: any = [];
-        let PropsObject: any = {
-            MasterTaskListID: AllListIdData.MasterTaskListID,
-            siteUrl: AllListIdData.siteUrl,
-            ComponentType: "Component",
-            TaskUserListId: AllListIdData.TaskUsertListID
-        }
-        let CallBackData = await globalCommon.GetServiceAndComponentAllData(PropsObject);
-        if (CallBackData.AllData != undefined && CallBackData.AllData.length > 0) {
-            GroupByData = CallBackData.GroupByData
-        }
-        if (GroupByData?.length > 0) {
-            recursiveLog(GroupByData, ItemId);
-        }
-    }
-
-    function recursiveLog(data: any, itemId: any) {
-        data.forEach((dataItem: any) => {
-            if (dataItem.Id === itemId) {
-                console.log(`Item with ID ${itemId} found.`, dataItem);
-                if (dataItem.subRows?.length > 0) {
-                    setComponentChildExist(true);
                 }
-            }
-            if (dataItem.subRows?.length > 0) {
-                recursiveLog(dataItem.subRows, itemId);
-            }
-        });
+                if (ClientTimeItems?.ClientCategory != undefined || SiteIconStatus) {
+                    let newObject: any = {
+                        Title: ClientTimeItems.SiteName != undefined ? ClientTimeItems.SiteName : ClientTimeItems.Title,
+                        ClienTimeDescription: ClientTimeItems.ClienTimeDescription,
+                        Selected: true,
+                        Date: ClientTimeItems.Date,
+                        EndDate: ClientTimeItems.EndDate,
+                        Available: true,
+                        SiteImages: ClientTimeItems.siteIcons ? ClientTimeItems.siteIcons : ClientTimeItems.SiteImages
+                    }
+                    SiteTaggingJSON.push(newObject);
+                } else {
+                    SiteTaggingJSON.push(ClientTimeItems);
+                }
+            })
+        }
+
+        if (MakeScProtected) {
+            SiteCompositionSettingData[0].Protected = true;
+        } else {
+            SiteCompositionSettingData[0].Protected = false;
+        }
+
+        try {
+            let web = new Web(AllListIdData.siteUrl);
+            await web.lists.getById(AllListIdData.MasterTaskListID).items.getById(ItemId).update({
+                Sitestagging: SiteTaggingJSON?.length > 0 ? JSON.stringify(SiteTaggingJSON) : null,
+                ClientCategoryId: { "results": (ClientCategoryIDs != undefined && ClientCategoryIDs.length > 0) ? ClientCategoryIDs : [] },
+                SiteCompositionSettings: (SiteCompositionSettingData != undefined && SiteCompositionSettingData.length > 0) ? JSON.stringify(SiteCompositionSettingData) : SiteCompositionSettings,
+            }).then(() => {
+                SaveClientCategoryFunction();
+            })
+        } catch (error) {
+            console.log("Error : ", error.message)
+        }
     }
-
-
-
-
-    //    ************* this is Custom Header For Client Category Popup *****************
-    const onRenderCustomClientCategoryHeader = () => {
-        return (
-            <div className={ServicesTaskCheck ? "d-flex full-width pb-1 serviepannelgreena" : "d-flex full-width pb-1"} >
-                <div className="subheading">
-                    <span>
-                        Select Client Category
-                    </span>
-                </div>
-                <Tooltip ComponentId="1626" />
-            </div>
-        )
-    }
-
-    const callBackData = React.useCallback((elem: any, ShowingData: any) => {
-        SelectedFromTable = elem;
-    }, []);
-
 
     const SaveClientCategoryFunction = () => {
         if (SelectedFromTable?.length > 0) {
@@ -1148,9 +1172,12 @@ const SiteCompositionComponent = (Props: any) => {
             }
         } else {
             closeComponentChildrenPopup("Save");
-            // Props.closePopupCallBack();
         }
     }
+
+    const MakeSCProtectedFunction = React.useCallback((Status: any) => {
+        setMakeScProtected(Status);
+    }, [])
 
     const CommonFunctionForUpdateCC = (AllTaskListData: any, SiteTaskListData: any) => {
         let web = AllListIdData.siteUrl;
@@ -1204,11 +1231,11 @@ const SiteCompositionComponent = (Props: any) => {
         } else {
             finalSiteCompositionJSON = ClientTimeData;
         }
-        if (SiteClientCatgeoryFinalData?.length > 0) {
-            finalClientCategoryData = SiteClientCatgeoryFinalData
-        } else {
-            finalClientCategoryData = SelectedClientCategoryFromProps;
-        }
+        // if (SiteClientCatgeoryFinalData?.length > 0) {
+        //     finalClientCategoryData = SiteClientCatgeoryFinalData
+        // } else {
+        //     finalClientCategoryData = SelectedClientCategoryFromProps;
+        // }
         if (SiteSettingsFinalData?.length > 0) {
             finalSiteCompositionSettingData = SiteSettingsFinalData
         } else {
@@ -1242,24 +1269,34 @@ const SiteCompositionComponent = (Props: any) => {
         let TempArray: any = [];
         let TempClientCategoryIds: any = [];
 
-        if (finalClientCategoryData?.length > 0) {
-            let count: any = 0;
-            finalClientCategoryData?.map((CCItems: any) => {
-                if ("EPS" == siteType || "Education" == siteType || "Migration" == siteType || "EI" == siteType) {
-                    count++;
-                    TempArray.push(CCItems.Id);
-                }
-            })
-            if (count == 0) {
-                finalClientCategoryData?.map((CCItems: any) => {
-                    TempArray.push(CCItems.Id);
-                })
-            }
-        }
+        // if (ClientCategoryIds?.length > 0) {
+        //     let count: any = 0;
+        //     ClientCategoryIds?.map((CCItems: any) => {
+        //         if ("EPS" == siteType || "Education" == siteType || "Migration" == siteType || "EI" == siteType) {
+        //             count++;
+        //             TempArray.push(CCItems.Id);
+        //         }
+        //     })
+        //     if (count == 0) {
+        //         finalClientCategoryData?.map((CCItems: any) => {
+        //             TempArray.push(CCItems.Id);
+        //         })
+        //     }
+        // }
 
-        TempClientCategoryIds = TempArray.filter((val: any, id: any, array: any) => {
+        TempClientCategoryIds = ClientCategoryIds.filter((val: any, id: any, array: any) => {
             return array.indexOf(val) == id;
         })
+
+        // if (siteType == "Shareweb") {
+        //     ClientCategoryIds = TempClientCategoryIds;
+        // }
+
+        if (MakeScProtected) {
+            finalSiteCompositionSettingData[0].Protected = true;
+        } else {
+            finalSiteCompositionSettingData[0].Protected = false;
+        }
 
         let MakeUpdateJSONDataObject: any;
         if (TaskType == "MasterTask") {
@@ -1307,7 +1344,7 @@ const SiteCompositionComponent = (Props: any) => {
             <footer
                 className="fixed-bottom bg-f4 p-3 text-end"
             >
-                <button type="button" className="btn btn-primary px-3 mx-1" onClick={SaveClientCategoryFunction}>
+                <button type="button" className="btn btn-primary px-3 mx-1" onClick={UpdateParentComponentFunction}>
                     Save
                 </button>
                 <button type="button" className="btn btn-default px-3 mx-1" onClick={() => closeComponentChildrenPopup("Save")} >
@@ -1873,6 +1910,7 @@ const SiteCompositionComponent = (Props: any) => {
                             <div className="">{isPortfolioComposition == true || ProportionalStatus == false ? `${TotalPercent} %` : "100%"}</div>
                         </div>
                         <button className="btn ms-1 btn-primary px-4" onClick={UpdateSiteTaggingAndClientCategory}>Save</button>
+                        <button className="btn btn-default ms-1 px-3" onClick={() => Props.closePopupCallBack("Close")}>Cancel</button>
                     </div>
                 </footer>
             </div>
@@ -2047,6 +2085,7 @@ const SiteCompositionComponent = (Props: any) => {
 
                 </div>
             </Panel>
+
             {/* ********************* this Main Component Children Popup panel ****************** */}
             {ComponentChildrenPopupStatus ?
                 <Panel
@@ -2055,19 +2094,20 @@ const SiteCompositionComponent = (Props: any) => {
                     onDismiss={closeComponentChildrenPopup}
                     isBlocking={false}
                     type={PanelType.custom}
-                    customWidth="1200px"
+                    customWidth="1400px"
                     onRenderFooter={onRenderFooterComponentChildren}
                 >
-                    <div className={ServicesTaskCheck ? "serviepannelgreena SelectProjectTable " : 'SelectProjectTable '}>
-                        <div className="modal-body wrapper p-0 mt-2">
-                            <div className="wrapper">
-                                {/* <GlobalCommanTable columns={columns} data={ComponentChildrenData} usedFor={"SiteComposition"} callBackData={callBackData} /> */}
+                    <div>
+                        <div className="modal-body p-0 mt-2">
+                            <div className="">
                                 <ComponentChildDataTable
                                     props={selectedComponent}
                                     NextProp={AllListIdData}
                                     callback={callBackData}
+                                    isProtected={MakeSCProtectedFunction}
+                                    IsSCProtected={MakeScProtected}
                                     usedFor={"Site-Compositions"}
-                                    prevSelectedCC={SiteClientCatgeoryFinalData}
+                                    prevSelectedCC={SiteClientCatgeoryFinalData?.length > 0 ? SiteClientCatgeoryFinalData : SelectedClientCategoryFromProps}
                                 />
                             </div>
                         </div>
@@ -2075,34 +2115,7 @@ const SiteCompositionComponent = (Props: any) => {
                 </Panel>
                 : null
             }
-            {/* {IsOpenDateModal ?
-                <Modal
-                    show={IsOpenDateModal}
-                    isOpen={IsOpenDateModal}
-                    size='sm'
-                    isBlocking={IsOpenDateModal}
-                    containerClassName="custommodalpopup p-2"
-                >
-                    <div className="modal-content rounded-0">
-                        <div className="modal-header">
-                            <h5 className="modal-title">Edit Date</h5>
-                            <span onClick={() => closeDateModelFunction()}><i className="svg__iconbox svg__icon--cross crossBtn"></i></span>
-                        </div>
-                        <div className="modal-body p-2">
-                            <div>
-                                <input type="date" />
-                            </div>
-                            <div>
-                                <input type="date" />
-                            </div>
-                        </div>
-                        <footer className='text-end p-2'>
-                            <button className="btn btnPrimary" onClick={SaveDateButtonFunction}>Save</button>
-                            <button className='btn btn-default ms-1' onClick={() => closeDateModelFunction()}>Cancel</button>
-                        </footer>
-                    </div>
-                </Modal> : null
-            } */}
+
             {isCalloutVisible ? (
                 <FocusTrapCallout
                     role="alertdialog"
@@ -2148,16 +2161,11 @@ const SiteCompositionComponent = (Props: any) => {
                         </div>
 
                     </Text>
-                    {/* <FocusZone handleTabKey={FocusZoneTabbableElements.all} isCircularNavigation>
-                        <Stack className={styles.buttons} gap={8} horizontal>
-                            <PrimaryButton onClick={toggleIsCalloutVisible}>Save</PrimaryButton>
-                            <DefaultButton onClick={toggleIsCalloutVisible}>Cancel</DefaultButton>
-                        </Stack>
-                    </FocusZone> */}
+
                 </FocusTrapCallout>
             ) : null
             }
-        </div >
+        </div>
     )
 }
 export default SiteCompositionComponent;

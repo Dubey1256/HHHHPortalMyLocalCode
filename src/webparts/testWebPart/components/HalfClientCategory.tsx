@@ -90,7 +90,8 @@ const HalfClientCategory = (props: any) => {
             TaskTypeID: props?.props?.TaskTypeID,
             siteUrl: props?.props?.siteUrl,
             isShowTimeEntry: isShowTimeEntry,
-            isShowSiteCompostion: isShowSiteCompostion
+            isShowSiteCompostion: isShowSiteCompostion,
+            Context:props?.props?.Context
         }
         TaskUser()
         GetMetaData()
