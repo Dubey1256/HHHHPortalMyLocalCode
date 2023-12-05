@@ -46,6 +46,7 @@ import BackgroundCommentComponent from "./BackgroundCommentComponent";
 //import EODReportComponent from "../EOD Report Component/EODReportComponent";
 import { CurrentUser } from "sp-pnp-js/lib/sharepoint/siteusers";
 import { filter } from "lodash";
+import EmailNotificationMail from "./EmailNotificationMail";
 
 
 
@@ -63,6 +64,7 @@ var tempCategoryData: any = '';
 var SiteTypeBackupArray: any = [];
 var currentUserBackupArray: any = [];
 let AutoCompleteItemsArray: any = [];
+let ValueStatus:any=''
 let SelectedSite: any = ''
 var FeedBackBackupArray: any = [];
 var SiteId = ''
@@ -118,6 +120,7 @@ const EditTaskPopup = (Items: any) => {
     const [SearchedCategoryData, setSearchedCategoryData] = useState([]);
     let [TaskAssignedTo, setTaskAssignedTo] = useState([]);
     let [TaskTeamMembers, setTaskTeamMembers] = useState([]);
+    const [sendEmailNotification, setSendEmailNotification] = useState(false);
     let [TaskResponsibleTeam, setTaskResponsibleTeam] = useState([]);
     const [UpdateTaskInfo, setUpdateTaskInfo] = useState(
         {
@@ -2347,6 +2350,12 @@ const EditTaskPopup = (Items: any) => {
                         // if(TaskDetailsFromCall[0].TaskID == null && TaskDetailsFromCall[0].TaskID ==  undefined){
                         //     TaskDetailsFromCall[0].TaskID = 'T'+ TaskDetailsFromCall[0].Id
                         // }
+
+                        if (IsTaskCompleted == true){
+                            setLastUpdateTaskData(TaskDetailsFromCall[0]);
+                            ValueStatus='90'
+                            setSendEmailNotification(true)
+                        }
                         setLastUpdateTaskData(TaskDetailsFromCall[0]);
                         if (usedFor == "Image-Tab") {
                             GetExtraLookupColumnData();
@@ -2378,8 +2387,9 @@ const EditTaskPopup = (Items: any) => {
                                     setSendEmailComponentStatus(false)
                                 }
                             }
-                            if (CalculateStatusPercentage == 5 && ImmediateStatus) {
-                                setSendEmailComponentStatus(true);
+                            if ((CalculateStatusPercentage == 5 ||CalculateStatusPercentage == 10 || CalculateStatusPercentage == 80) && ImmediateStatus) {
+                                ValueStatus = CalculateStatusPercentage
+                                setSendEmailNotification(true);
                                 Items.StatusUpdateMail = true;
                             } else {
                                 setSendEmailComponentStatus(false);
@@ -3990,6 +4000,7 @@ const EditTaskPopup = (Items: any) => {
 
     const SendEmailNotificationCallBack = useCallback((items: any) => {
         setSendEmailComponentStatus(false);
+        setSendEmailNotification(false)
         Items.Call(items);
     }, [])
     // ************************ this is for Site Composition Component Section Functions ***************************
@@ -5421,6 +5432,19 @@ const EditTaskPopup = (Items: any) => {
                             ApprovalTaskStatus={ApprovalTaskStatus}
                             callBack={SendEmailNotificationCallBack}
                         /> : null}
+                         {sendEmailNotification ?
+                        <EmailNotificationMail
+                            AllTaskUser={AllTaskUser}
+                            CurrentUser={currentUserData}
+                            CreatedApprovalTask={Items.sendApproverMail}
+                            statusUpdateMailSendStatus={ImmediateStatus && sendEmailComponentStatus ? true : false}
+                            IsEmailCategoryTask={EmailStatus}
+                            items={LastUpdateTaskData}
+                            Context={Context}
+                            ApprovalTaskStatus={ApprovalTaskStatus}
+                            callBack={SendEmailNotificationCallBack}
+                            statusValue={ValueStatus}/>
+                             : null}
                     {/* {OpenEODReportPopup ? <EODReportComponent TaskDetails={EditData} siteUrl={siteUrls} Context={Context} Callback={EODReportComponentCallback} /> : null} */}
                 </div>
             </Panel>
