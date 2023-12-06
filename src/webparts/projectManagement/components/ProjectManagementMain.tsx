@@ -222,7 +222,7 @@ const ProjectManagementMain = (props: any) => {
             } else {
               fetchedProject.DisplayDueDate = '';
             }
-            if(fetchedProject?.PortfolioStructureID!=undefined){
+          if(fetchedProject?.PortfolioStructureID!=undefined){
               fetchedProject.TaskID = fetchedProject?.PortfolioStructureID;
             }else{
               fetchedProject.TaskID =''
@@ -338,10 +338,10 @@ const ProjectManagementMain = (props: any) => {
       setData(backupAllTasks);
       setPageLoader(false)
       if (timeEntryIndex) {
-        try{
-          const dataString = JSON.stringify(timeEntryIndex);
-          localStorage.setItem('timeEntryIndex', dataString);
-        }catch(e){console.log(e)}
+try{
+        const dataString = JSON.stringify(timeEntryIndex);
+        localStorage.setItem('timeEntryIndex', dataString);
+}catch(e){console.log(e)}
       }
     } catch (error) {
       setPageLoader(false)
@@ -577,10 +577,10 @@ const ProjectManagementMain = (props: any) => {
         items.subRows = [];
         AllTask.push(items);
       });
-      try {
-        backupAllTasks = JSON.parse(JSON.stringify(AllTask));
-        setAllTasks(backupAllTasks);
-      } catch (error) {
+try {
+      backupAllTasks = JSON.parse(JSON.stringify(AllTask));
+      setAllTasks(backupAllTasks);
+} catch (error) {
   
       }
 
@@ -1176,7 +1176,7 @@ const ProjectManagementMain = (props: any) => {
             <div
               className="d-flex justify-content-between p-0"
             >
-              <ul className="spfxbreadcrumb mb-2 ms-2 p-0">
+              <ul className="spfxbreadcrumb mb-2 ms-2 mt-16 p-0">
                 <li>
                   <a href={`${props?.siteUrl}/SitePages/Project-Management-Overview.aspx`}>
                     Project Management
