@@ -348,7 +348,7 @@ const EmailComponenet = (props: any) => {
     <div style="display: flex;justify-content: center;align-items: center;gap: 8px;flex-shrink: 0;color: #FFF;border-radius: 4px;
     background: #2F5596;width: 260px;height:40px;font-family: Segoe UI;font-size: 14px;font-style: normal;font-weight: 600;line-height: normal;">See Full Leave Report Online</div>
 </div>
-<div style="display: flex;align-items: center;padding-bottom: 88px;">
+<div style="display: flex;align-items: center;padding-bottom: 56px;">
     <img src="" style="height: 48px;" alt="Site Icon">
     <div style="color: var(--black, #333);text-align: center;font-family: Segoe UI;font-size: 14px;font-style: normal; font-weight: 600;margin-left: 4px;">Hochhuth Consulting GmbH</div>
 </div>`
@@ -366,7 +366,7 @@ const EmailComponenet = (props: any) => {
                     <a style="text-decoration: none;color: white;" href="https://hhhhteams.sharepoint.com/sites/HHHH/SP/SitePages/SmalsusLeaveCalendar.aspx">See Full Leave Report Online</a>
                 </div>
             </div>
-            <div style="display: flex;align-items: center;padding-bottom: 88px;">
+            <div style="display: flex;align-items: center;padding-bottom: 56px;">
                 <img src="https://www.hochhuth-consulting.de/images/logo.png" style="height: 48px;" alt="Site Icon">
                 <div style="color: var(--black, #333);text-align: center;font-family: Segoe UI;font-size: 14px;font-style: normal; font-weight: 600;margin-left: 4px;">Hochhuth Consulting GmbH</div>
             </div>
