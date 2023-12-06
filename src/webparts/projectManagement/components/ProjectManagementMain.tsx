@@ -222,6 +222,11 @@ const ProjectManagementMain = (props: any) => {
             } else {
               fetchedProject.DisplayDueDate = '';
             }
+            if(fetchedProject?.PortfolioStructureID!=undefined){
+              fetchedProject.TaskID = fetchedProject?.PortfolioStructureID;
+            }else{
+              fetchedProject.TaskID =''
+            }
             if (fetchedProject?.Item_x0020_Type == "Project") {
               fetchedProject.subRows = AllFlatProject?.filter((data: any) => data?.Parent?.Id == fetchedProject?.Id && data?.Item_x0020_Type == "Sprint")
             }
