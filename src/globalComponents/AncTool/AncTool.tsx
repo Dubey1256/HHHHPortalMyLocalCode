@@ -232,7 +232,14 @@ const AncTool = (props: any) => {
                 }
                 if (file?.Portfolios == undefined) {
                     file.Portfolios = [];
+                    file.PortfoliosId=[]
+                }else{
+                    file.PortfoliosId=[]
+                    file?.Portfolios?.map((Port:any)=>{
+                        file?.PortfoliosId?.push(Port?.Id)
+                    })
                 }
+
 
                 if (file[siteName] != undefined && file[siteName].length > 0 && file[siteName].some((task: any) => task.Id == props?.item?.Id)) {
                     alreadyTaggedFiles.push(file);
@@ -614,8 +621,8 @@ const AncTool = (props: any) => {
                 }
             })
         }
-        if (!file?.Portfolios?.some((portfolio: any) => portfolio == props?.item?.Portfolio?.Id) && props?.item?.Portfolio?.Id != undefined) {
-            file?.Portfolios?.push(props?.item?.Portfolio?.Id);
+        if (!file?.PortfoliosId?.some((portfolio: any) => portfolio == props?.item?.Portfolio?.Id) && props?.item?.Portfolio?.Id != undefined) {
+            file?.PortfoliosId?.push(props?.item?.Portfolio?.Id);
         }
         if (!AllReadytagged?.some((doc: any) => file.Id == doc.Id) && !resultArray.some((taskID: any) => taskID == props?.item?.Id)) {
             resultArray.push(props?.item?.Id)
@@ -624,7 +631,7 @@ const AncTool = (props: any) => {
             let web = new Web(props?.AllListId?.siteUrl);
             let PostData = {
                 [siteColName]: { "results": resultArray },
-                PortfoliosId:  { "results": file?.Portfolios != undefined ? file?.Portfolios : [] }
+                PortfoliosId:  { "results": file?.PortfoliosId != undefined ? file?.PortfoliosId : [] }
             }
             await web.lists.getByTitle('Documents').items.getById(file.Id)
                 .update(PostData).then((updatedFile: any) => {
@@ -642,7 +649,7 @@ const AncTool = (props: any) => {
             // Update the document file here
             let PostData = {
                 [siteColName]: { "results": resultArray },
-                PortfoliosId:  { "results": file?.Portfolios != undefined ? file?.Portfolios : [] }
+                PortfoliosId:  { "results": file?.PortfoliosId != undefined ? file?.PortfoliosId : [] }
             }
             let web = new Web(props?.AllListId?.siteUrl);
             await web.lists.getByTitle('Documents').items.getById(file.Id)

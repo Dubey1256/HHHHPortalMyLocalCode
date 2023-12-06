@@ -49,7 +49,7 @@ import {
 import { RankingInfo, rankItem, compareItems } from "@tanstack/match-sorter-utils";
 import "bootstrap/dist/css/bootstrap.min.css";
 import { HTMLProps } from "react";
-import HighlightableCell from "../../componentPortfolio/components/highlight";
+import HighlightableCell from "../../../globalComponents/highlight";
 import Loader from "react-loader";
 import ShowTeamMembers from "../../../globalComponents/ShowTeamMember";
 import ShowClintCatogory from "../../../globalComponents/ShowClintCatogory";

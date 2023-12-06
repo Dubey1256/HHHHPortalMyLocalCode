@@ -34,7 +34,7 @@ const HHHHEditComponent = (props: any) => {
     // const [instituteStatus, setInstituteStatus] = useState(false);
 
     const [URLs, setURLs] = useState([]);
-   
+
     const [selectedState, setSelectedState] = useState({
         Title: ''
     });
@@ -124,10 +124,10 @@ const HHHHEditComponent = (props: any) => {
         try {
             let web = new Web(myContextData2?.allListId?.siteUrl);
             await web.lists.getById(myContextData2?.allSite?.GMBHSite ? myContextData2?.allListId?.GMBH_CONTACT_SEARCH_LISTID : myContextData2?.allListId?.HR_EMPLOYEE_DETAILS_LIST_ID)
-            .items.getById(Id)
-            .select("Id", "Title", "FirstName", "FullName", "Company", "WorkCity", "Suffix", "WorkPhone", "HomePhone", "Comments", "WorkAddress", "WorkFax", "WorkZip", "ItemType", "JobTitle", "Item_x0020_Cover", "WebPage", "CellPhone", "Email", "LinkedIn", "Created", "SocialMediaUrls", "Author/Title", "Modified", "Editor/Title", "Division/Title", "Division/Id", "EmployeeID/Title", "StaffID", "EmployeeID/Id", "Institution/Id", "Institution/FullName", "IM")
-            .expand("EmployeeID", "Division", "Author", "Editor", "Institution")
-              .get().then((data: any) => {
+                .items.getById(Id)
+                .select("Id", "Title", "FirstName", "FullName", "Company", "SmartContactId", "WorkCity", "Suffix", "WorkPhone", "HomePhone", "Comments", "WorkAddress", "WorkFax", "WorkZip", "ItemType", "JobTitle", "Item_x0020_Cover", "WebPage", "CellPhone", "Email", "LinkedIn", "Created", "SocialMediaUrls", "Author/Title", "Modified", "Editor/Title", "Division/Title", "Division/Id", "EmployeeID/Title", "StaffID", "EmployeeID/Id", "Institution/Id", "Institution/FullName", "IM")
+                .expand("EmployeeID", "Division", "Author", "Editor", "Institution")
+                .get().then((data: any) => {
 
                     HrGmbhEmployeData = data;
                     let URL: any[] = JSON.parse(data.SocialMediaUrls != null ? data.SocialMediaUrls : ["{}"]);
@@ -234,12 +234,12 @@ const HHHHEditComponent = (props: any) => {
     //*****************Save for Joint,GMBH,HR Data Update***************************************** */
     const UpdateDetails = async () => {
         let urlData: any;
-        if (updateData?.WebPage != undefined) {
-            let spliceString = updateData?.WebPage.slice(0, 8)
+        if (updateData?.WebPage != undefined && updateData?.WebPage?.Url != undefined) {
+            let spliceString = updateData?.WebPage?.Url?.slice(0, 8)
             if (spliceString == "https://") {
-                urlData = updateData?.WebPage;
+                urlData = updateData?.WebPage?.Url;
             } else {
-                urlData = "https://" + updateData?.WebPage;
+                urlData = "https://" + updateData?.WebPage?.Url;
             }
         }
         let SocialUrls: any = {};
@@ -656,7 +656,7 @@ const HHHHEditComponent = (props: any) => {
                                                         {updateData?.Institution?.FullName ?
                                                             <div className="block wid90 alignCenter">
                                                                 <a className="hreflink" target="_blank"> {updateData?.Institution?.FullName}</a>
-                                                                <span className="bg-light svg__icon--cross svg__iconbox hreflink ml-auto" onClick={() => setUpdateData({ ...updateData, Institution:undefined })}></span>
+                                                                <span className="bg-light svg__icon--cross svg__iconbox hreflink ml-auto" onClick={() => setUpdateData({ ...updateData, Institution: undefined })}></span>
                                                             </div> : <input type='text' />
 
                                                         }
@@ -679,11 +679,11 @@ const HHHHEditComponent = (props: any) => {
                                                 </div>
                                                 <div className="col pad0">
                                                     <label className="full_width form-label"> D.O.J</label>
-                                                    <div> <input type="date" value={updateData?.DOJ!=undefined?moment(updateData?.DOJ).format('YYYY-MM-DD'):null} onChange={(e) => setUpdateData({ ...updateData, DOJ: moment(e.target.value).format('YYYY-MM-DD') })} /></div>
+                                                    <div> <input type="date" value={updateData?.DOJ != undefined ? moment(updateData?.DOJ).format('YYYY-MM-DD') : null} onChange={(e) => setUpdateData({ ...updateData, DOJ: moment(e.target.value).format('YYYY-MM-DD') })} /></div>
                                                 </div>
                                                 <div className="col pad0">
                                                     <label className="full_width form-label"> D.O.E</label>
-                                                    <div><input type='date' value={updateData?.DOE!=undefined?moment(updateData?.DOE).format('YYYY-MM-DD'):null} onChange={(e) => setUpdateData({ ...updateData, DOE: moment(e.target.value).format('YYYY-MM-DD') })} /></div>
+                                                    <div><input type='date' value={updateData?.DOE != undefined ? moment(updateData?.DOE).format('YYYY-MM-DD') : null} onChange={(e) => setUpdateData({ ...updateData, DOE: moment(e.target.value).format('YYYY-MM-DD') })} /></div>
                                                 </div>
                                             </div>
                                         </div>
@@ -775,7 +775,7 @@ const HHHHEditComponent = (props: any) => {
                                                     <div className='input-group'>
                                                         <label className="full-width label-form">WebPage</label>
 
-                                                        <input className="form-control" type="text" defaultValue={updateData?.WebPage ? updateData?.WebPage.Url : ""} onChange={(e) => setUpdateData({ ...updateData, WebPage: e.target.value })} aria-label="WebPage" />
+                                                        <input className="form-control" type="text" defaultValue={updateData?.WebPage ? updateData?.WebPage.Url : ""} onChange={(e) => setUpdateData({ ...updateData, WebPage:{...updateData.WebPage,Url: e.target.value}} )} aria-label="WebPage" />
                                                     </div>
                                                 </div>
                                                 <div className="col">
@@ -881,232 +881,232 @@ const HHHHEditComponent = (props: any) => {
                                 </ul>
                                 <div className="border border-top-0 clearfix p-3 tab-content" id="myTabContent">
                                     {HrTagData?.map((item: any, index) => {
-                                            return (
-                                          <>
-                                    <div className="tab-pane show active" id="PERSONALINFORMATION1" role="tabpanel" aria-labelledby="PERSONALINFORMATION">
-                                        {hrBtnStatus.personalInfo ? <div>
-                                            <div className='user-form-3 row'>
-                                                <div className="col">
-                                                    <label className="full-width label-form">Federal state </label>
-                                                    <div className='d-flex org-section'>
-                                                        <span>{selectedState.Title != undefined && selectedState.Title != '' ?
-                                                            <>
-                                                                {selectedState.Title} <img className='mx-2' src='https://hhhhteams.sharepoint.com/_layouts/images/delete.gif' />
-                                                            </> : (item.Fedral_State ?
-                                                                <>{item.Fedral_State}
-                                                                    <img className='mx-2' src='https://hhhhteams.sharepoint.com/_layouts/images/delete.gif' />
+                                        return (
+                                            <>
+                                                <div className="tab-pane show active" id="PERSONALINFORMATION1" role="tabpanel" aria-labelledby="PERSONALINFORMATION">
+                                                    {hrBtnStatus.personalInfo ? <div>
+                                                        <div className='user-form-3 row'>
+                                                            <div className="col">
+                                                                <label className="full-width label-form">Federal state </label>
+                                                                <div className='d-flex org-section'>
+                                                                    <span>{selectedState.Title != undefined && selectedState.Title != '' ?
+                                                                        <>
+                                                                            {selectedState.Title} <img className='mx-2' src='https://hhhhteams.sharepoint.com/_layouts/images/delete.gif' />
+                                                                        </> : (item.Fedral_State ?
+                                                                            <>{item.Fedral_State}
+                                                                                <img className='mx-2' src='https://hhhhteams.sharepoint.com/_layouts/images/delete.gif' />
 
-                                                                </>
-                                                                : '')}
-                                                        </span>
-                                                        <button className='popup-btn' onClick={(e) => selectState(e, item)}>
-                                                            <GoRepoPush />
-                                                        </button>
-                                                    </div>
-                                                </div>
-                                                <div className="col">
-                                                    <div className='input-group'>
-                                                        <label className="full-width label-form">Nationality</label>
-                                                        <input type="text" className="form-control" defaultValue={item.Nationality ? item.Nationality : ''} onChange={(e) => setHrUpdateData({ ...HrUpdateData, Nationality: e.target.value })} placeholder='Enter Nationality' />
-                                                    </div></div>
-                                                <div className="col">
-                                                    <div className='input-group'>
-                                                        <label className="full-width label-form">Date of Birth</label>
-                                                        <input type="date" className="form-control"
-                                                            defaultValue={item.dateOfBirth ? Moment(item.dateOfBirth).format("YYYY-MM-DD") : ''} onChange={(e) => setHrUpdateData({ ...HrUpdateData, dateOfBirth: Moment(e.target.value).format("YYYY-MM-DD") })} />
-                                                    </div></div>
-                                            </div>
-                                            <div className='user-form-3 row'>
-                                                <div className="col">
-                                                    <div className='input-group'>
-                                                        <label className="full-width label-form">Place of birth</label>
-                                                        <input type="text" className="form-control" defaultValue={item.placeOfBirth} onChange={(e) => setHrUpdateData({ ...HrUpdateData, placeOfBirth: e.target.value })} placeholder='Enter Place of birth' />
-                                                    </div></div>
-                                                <div className="col">
-                                                    <div className='input-group'>
-                                                        <label className="full-width label-form">Marital status</label>
-                                                        <select className="form-control" onChange={(e) => setHrUpdateData({ ...HrUpdateData, maritalStatus: e.target.value })}>
-                                                            {item.maritalStatus ? null :
-                                                                <option selected>Select an Option</option>
-                                                            }
-                                                            <option selected={item.maritalStatus == "Single"}>Single</option>
-                                                            <option selected={item.maritalStatus == "Married"}>Married</option>
-                                                            <option selected={item.maritalStatus == "Divorced"}>Divorced</option>
-                                                            <option selected={item.maritalStatus == "Widowed"}>Widowed</option>
-                                                        </select>
-                                                    </div>
-                                                </div>
-                                                <div className="col">
-                                                    <div className='input-group'>
-                                                        <label className="full-width label-form">Parenthood</label>
-                                                        <div>
-                                                            <label className='SpfxCheckRadio'><input type="radio" checked={HrUpdateData.Parenthood == 'yes'} className='radio' onChange={(e) => setHrUpdateData({ ...HrUpdateData, Parenthood: 'yes' })} /> Yes</label>
-                                                            <label className='SpfxCheckRadio'><input type="radio" checked={HrUpdateData.Parenthood == 'no'} className='radio' onChange={(e) => setHrUpdateData({ ...HrUpdateData, Parenthood: 'no' })} /> No</label>
+                                                                            </>
+                                                                            : '')}
+                                                                    </span>
+                                                                    <button className='popup-btn' onClick={(e) => selectState(e, item)}>
+                                                                        <GoRepoPush />
+                                                                    </button>
+                                                                </div>
+                                                            </div>
+                                                            <div className="col">
+                                                                <div className='input-group'>
+                                                                    <label className="full-width label-form">Nationality</label>
+                                                                    <input type="text" className="form-control" defaultValue={item.Nationality ? item.Nationality : ''} onChange={(e) => setHrUpdateData({ ...HrUpdateData, Nationality: e.target.value })} placeholder='Enter Nationality' />
+                                                                </div></div>
+                                                            <div className="col">
+                                                                <div className='input-group'>
+                                                                    <label className="full-width label-form">Date of Birth</label>
+                                                                    <input type="date" className="form-control"
+                                                                        defaultValue={item.dateOfBirth ? Moment(item.dateOfBirth).format("YYYY-MM-DD") : ''} onChange={(e) => setHrUpdateData({ ...HrUpdateData, dateOfBirth: Moment(e.target.value).format("YYYY-MM-DD") })} />
+                                                                </div></div>
                                                         </div>
-                                                    </div>
-                                                </div>
-                                            </div>
-                                        </div> : null}</div>
-                                    <div className="tab-pane" id="BANKINFORMATION1" role="tabpanel" aria-labelledby="BANKINFORMATION1">
-                                        {hrBtnStatus.bankInfo ?
-                                            <div className="card-body">
-                                                <div className='user-form-2 row'>
-                                                    <div className="col">
-                                                        <div className='input-group'>
-                                                            <label className="full-width label-form">IBAN</label>
-                                                            <input type="text" className="form-control" placeholder='Enter IBAN' defaultValue={item.IBAN ? item.IBAN : ''} onChange={(e) => setHrUpdateData({ ...HrUpdateData, IBAN: e.target.value })} />
-                                                        </div></div>
-                                                    <div className="col">
-                                                        <div className='input-group'>
-                                                            <label className="full-width label-form">BIC</label>
-                                                            <input type="text" className="form-control" defaultValue={item.BIC ? item.BIC : ''} placeholder='Enter BIC' onChange={(e) => setHrUpdateData({ ...HrUpdateData, BIC: e.target.value })} />
-                                                        </div></div>
-                                                </div>
-                                            </div> : null}</div>
-                                    <div className="tab-pane" id="TAXINFORMATION1" role="tabpanel" aria-labelledby="TAXINFORMATION1">
-                                        {hrBtnStatus.taxInfo ?
-                                            <div className="card-body">
-                                                <div className='user-form-3 row'>
-                                                    <div className="col">
-                                                        <div className='input-group'>
-                                                            <label className="full-width label-form">Tax No.
-                                                            </label>
-                                                            <input type="text" className="form-control" placeholder='Enter Tax No.' defaultValue={item.taxNo ? item.taxNo : ''} onChange={(e) => setHrUpdateData({ ...HrUpdateData, taxNo: e.target.value })} />
-                                                        </div></div>
-                                                    <div className="col mx-2">
-                                                        <div className='input-group'>
-                                                            <label className="full-width label-form">Tax class</label>
-                                                            <select className="form-control py-1" onChange={(e) => setHrUpdateData({ ...HrUpdateData, taxClass: e.target.value })}>
-                                                                {item.taxClass ? null :
-                                                                    <option selected>Select an Option</option>
-                                                                }
-                                                                <option selected={item.taxClass == "I"}>I</option>
-                                                                <option selected={item.taxClass == "II"}>II</option>
-                                                                <option selected={item.taxClass == "III"}>III</option>
-                                                                <option selected={item.taxClass == "IV"}>IV</option>
-                                                                <option selected={item.taxClass == "V"}>V</option>
-                                                                <option selected={item.taxClass == "VI"}>VI</option>
-                                                                <option selected={item.taxClass == "none"}>None</option>
-                                                            </select>
+                                                        <div className='user-form-3 row'>
+                                                            <div className="col">
+                                                                <div className='input-group'>
+                                                                    <label className="full-width label-form">Place of birth</label>
+                                                                    <input type="text" className="form-control" defaultValue={item.placeOfBirth} onChange={(e) => setHrUpdateData({ ...HrUpdateData, placeOfBirth: e.target.value })} placeholder='Enter Place of birth' />
+                                                                </div></div>
+                                                            <div className="col">
+                                                                <div className='input-group'>
+                                                                    <label className="full-width label-form">Marital status</label>
+                                                                    <select className="form-control" onChange={(e) => setHrUpdateData({ ...HrUpdateData, maritalStatus: e.target.value })}>
+                                                                        {item.maritalStatus ? null :
+                                                                            <option selected>Select an Option</option>
+                                                                        }
+                                                                        <option selected={item.maritalStatus == "Single"}>Single</option>
+                                                                        <option selected={item.maritalStatus == "Married"}>Married</option>
+                                                                        <option selected={item.maritalStatus == "Divorced"}>Divorced</option>
+                                                                        <option selected={item.maritalStatus == "Widowed"}>Widowed</option>
+                                                                    </select>
+                                                                </div>
+                                                            </div>
+                                                            <div className="col">
+                                                                <div className='input-group'>
+                                                                    <label className="full-width label-form">Parenthood</label>
+                                                                    <div>
+                                                                        <label className='SpfxCheckRadio'><input type="radio" checked={HrUpdateData.Parenthood == 'yes'} className='radio' onChange={(e) => setHrUpdateData({ ...HrUpdateData, Parenthood: 'yes' })} /> Yes</label>
+                                                                        <label className='SpfxCheckRadio'><input type="radio" checked={HrUpdateData.Parenthood == 'no'} className='radio' onChange={(e) => setHrUpdateData({ ...HrUpdateData, Parenthood: 'no' })} /> No</label>
+                                                                    </div>
+                                                                </div>
+                                                            </div>
                                                         </div>
-                                                    </div>
-                                                    <div className="col">
-                                                        <div className='input-group'>
-                                                            <label className="full-width label-form">Child allowance</label>
-                                                            <select className="form-control" onChange={(e) => setHrUpdateData({ ...HrUpdateData, childAllowance: e.target.value })}>
-                                                                {item.childAllowance ? null :
-                                                                    <option selected>Select an Option</option>
-                                                                }
-                                                                <option selected={item.childAllowance == "0.5"}>0.5</option>
-                                                                <option selected={item.childAllowance == "1"}>1</option>
-                                                                <option selected={item.childAllowance == "1.5"}>1.5</option>
-                                                                <option selected={item.childAllowance == "2"}>2</option>
-                                                                <option selected={item.childAllowance == "2.5"}>2.5</option>
-                                                                <option selected={item.childAllowance == "3"}>3</option>
-                                                                <option selected={item.childAllowance == "3.5"}>3.5</option>
-                                                                <option selected={item.childAllowance == "4"}>4</option>
-                                                                <option selected={item.childAllowance == "4.5"}>4.5</option>
-                                                                <option selected={item.childAllowance == "5"}>5</option>
-                                                                <option selected={item.childAllowance == "5.5"}>5.5</option>
-                                                                <option selected={item.childAllowance == "6"}>6</option>
-                                                                <option selected={item.childAllowance == "6.5"}>6.5</option>
-                                                                <option selected={item.childAllowance == "7"}>7</option>
-                                                                <option selected={item.childAllowance == "7.5"}>7.5</option>
-                                                                <option selected={item.childAllowance == "8"}>8</option>
-                                                                <option selected={item.childAllowance == "8.5"}>8.5</option>
-                                                                <option selected={item.childAllowance == "9"}>9</option>
-                                                                <option selected={item.childAllowance == "9.5"}>9.5</option>
-                                                                <option selected={item.childAllowance == "none"}>None</option>
-                                                            </select>
-                                                        </div>
-                                                    </div>
-                                                </div>
-                                                <div className='user-form-2 row'>
-                                                    <div className="col">
-                                                        <div className='input-group'>
-                                                            <label className="full-width label-form">Church tax</label>
-                                                            <div>
-                                                                <label className='SpfxCheckRadio'><input className='radio' type="radio" onChange={(e) => setHrUpdateData({ ...HrUpdateData, churchTax: 'yes' })} checked={HrUpdateData.churchTax == 'yes'} /> Yes</label>
-                                                                <label className='SpfxCheckRadio'><input className='radio' type="radio" onChange={(e) => setHrUpdateData({ ...HrUpdateData, churchTax: 'no' })} checked={HrUpdateData.churchTax == 'no'} /> No</label>
-                                                            </div></div>
-                                                    </div>
-                                                    <div className="col">
-                                                        <div className='input-group'>
-                                                            <label className="full-width label-form">Monthly tax allowance</label>
-                                                            <input type="number" className="form-control" placeholder='Enter Monthly tax allowance' defaultValue={item.monthlyTaxAllowance ? item.monthlyTaxAllowance : ''} />
-                                                        </div></div>
+                                                    </div> : null}</div>
+                                                <div className="tab-pane" id="BANKINFORMATION1" role="tabpanel" aria-labelledby="BANKINFORMATION1">
+                                                    {hrBtnStatus.bankInfo ?
+                                                        <div className="card-body">
+                                                            <div className='user-form-2 row'>
+                                                                <div className="col">
+                                                                    <div className='input-group'>
+                                                                        <label className="full-width label-form">IBAN</label>
+                                                                        <input type="text" className="form-control" placeholder='Enter IBAN' defaultValue={item.IBAN ? item.IBAN : ''} onChange={(e) => setHrUpdateData({ ...HrUpdateData, IBAN: e.target.value })} />
+                                                                    </div></div>
+                                                                <div className="col">
+                                                                    <div className='input-group'>
+                                                                        <label className="full-width label-form">BIC</label>
+                                                                        <input type="text" className="form-control" defaultValue={item.BIC ? item.BIC : ''} placeholder='Enter BIC' onChange={(e) => setHrUpdateData({ ...HrUpdateData, BIC: e.target.value })} />
+                                                                    </div></div>
+                                                            </div>
+                                                        </div> : null}</div>
+                                                <div className="tab-pane" id="TAXINFORMATION1" role="tabpanel" aria-labelledby="TAXINFORMATION1">
+                                                    {hrBtnStatus.taxInfo ?
+                                                        <div className="card-body">
+                                                            <div className='user-form-3 row'>
+                                                                <div className="col">
+                                                                    <div className='input-group'>
+                                                                        <label className="full-width label-form">Tax No.
+                                                                        </label>
+                                                                        <input type="text" className="form-control" placeholder='Enter Tax No.' defaultValue={item.taxNo ? item.taxNo : ''} onChange={(e) => setHrUpdateData({ ...HrUpdateData, taxNo: e.target.value })} />
+                                                                    </div></div>
+                                                                <div className="col mx-2">
+                                                                    <div className='input-group'>
+                                                                        <label className="full-width label-form">Tax class</label>
+                                                                        <select className="form-control py-1" onChange={(e) => setHrUpdateData({ ...HrUpdateData, taxClass: e.target.value })}>
+                                                                            {item.taxClass ? null :
+                                                                                <option selected>Select an Option</option>
+                                                                            }
+                                                                            <option selected={item.taxClass == "I"}>I</option>
+                                                                            <option selected={item.taxClass == "II"}>II</option>
+                                                                            <option selected={item.taxClass == "III"}>III</option>
+                                                                            <option selected={item.taxClass == "IV"}>IV</option>
+                                                                            <option selected={item.taxClass == "V"}>V</option>
+                                                                            <option selected={item.taxClass == "VI"}>VI</option>
+                                                                            <option selected={item.taxClass == "none"}>None</option>
+                                                                        </select>
+                                                                    </div>
+                                                                </div>
+                                                                <div className="col">
+                                                                    <div className='input-group'>
+                                                                        <label className="full-width label-form">Child allowance</label>
+                                                                        <select className="form-control" onChange={(e) => setHrUpdateData({ ...HrUpdateData, childAllowance: e.target.value })}>
+                                                                            {item.childAllowance ? null :
+                                                                                <option selected>Select an Option</option>
+                                                                            }
+                                                                            <option selected={item.childAllowance == "0.5"}>0.5</option>
+                                                                            <option selected={item.childAllowance == "1"}>1</option>
+                                                                            <option selected={item.childAllowance == "1.5"}>1.5</option>
+                                                                            <option selected={item.childAllowance == "2"}>2</option>
+                                                                            <option selected={item.childAllowance == "2.5"}>2.5</option>
+                                                                            <option selected={item.childAllowance == "3"}>3</option>
+                                                                            <option selected={item.childAllowance == "3.5"}>3.5</option>
+                                                                            <option selected={item.childAllowance == "4"}>4</option>
+                                                                            <option selected={item.childAllowance == "4.5"}>4.5</option>
+                                                                            <option selected={item.childAllowance == "5"}>5</option>
+                                                                            <option selected={item.childAllowance == "5.5"}>5.5</option>
+                                                                            <option selected={item.childAllowance == "6"}>6</option>
+                                                                            <option selected={item.childAllowance == "6.5"}>6.5</option>
+                                                                            <option selected={item.childAllowance == "7"}>7</option>
+                                                                            <option selected={item.childAllowance == "7.5"}>7.5</option>
+                                                                            <option selected={item.childAllowance == "8"}>8</option>
+                                                                            <option selected={item.childAllowance == "8.5"}>8.5</option>
+                                                                            <option selected={item.childAllowance == "9"}>9</option>
+                                                                            <option selected={item.childAllowance == "9.5"}>9.5</option>
+                                                                            <option selected={item.childAllowance == "none"}>None</option>
+                                                                        </select>
+                                                                    </div>
+                                                                </div>
+                                                            </div>
+                                                            <div className='user-form-2 row'>
+                                                                <div className="col">
+                                                                    <div className='input-group'>
+                                                                        <label className="full-width label-form">Church tax</label>
+                                                                        <div>
+                                                                            <label className='SpfxCheckRadio'><input className='radio' type="radio" onChange={(e) => setHrUpdateData({ ...HrUpdateData, churchTax: 'yes' })} checked={HrUpdateData.churchTax == 'yes'} /> Yes</label>
+                                                                            <label className='SpfxCheckRadio'><input className='radio' type="radio" onChange={(e) => setHrUpdateData({ ...HrUpdateData, churchTax: 'no' })} checked={HrUpdateData.churchTax == 'no'} /> No</label>
+                                                                        </div></div>
+                                                                </div>
+                                                                <div className="col">
+                                                                    <div className='input-group'>
+                                                                        <label className="full-width label-form">Monthly tax allowance</label>
+                                                                        <input type="number" className="form-control" placeholder='Enter Monthly tax allowance' defaultValue={item.monthlyTaxAllowance ? item.monthlyTaxAllowance : ''} />
+                                                                    </div></div>
 
-                                                </div>
-                                            </div> : null}</div>
-                                    <div className="tab-pane" id="SOCIALSECURITYINFORMATION1" role="tabpanel" aria-labelledby="SOCIALSECURITYINFORMATION1">
-                                        {hrBtnStatus.socialSecurityInfo ? <div className="card-body">
-                                            <div className='user-form-3 row'>
+                                                            </div>
+                                                        </div> : null}</div>
+                                                <div className="tab-pane" id="SOCIALSECURITYINFORMATION1" role="tabpanel" aria-labelledby="SOCIALSECURITYINFORMATION1">
+                                                    {hrBtnStatus.socialSecurityInfo ? <div className="card-body">
+                                                        <div className='user-form-3 row'>
 
-                                                <div className="col">
-                                                    <div className='input-group'>
-                                                        <label className="full-width label-form">Health Insurance Type</label>
-                                                        <select className="form-control" onChange={(e) => setHrUpdateData({ ...HrUpdateData, healthInsuranceType: e.target.value })}>
-                                                            {item.healthInsuranceType ? null :
-                                                                <option selected>Select an Option</option>
-                                                            }
-                                                            <option selected={item.healthInsuranceType == "None"}>None</option>
-                                                            <option selected={item.healthInsuranceType == "Statutory"}>Statutory</option>
-                                                            <option selected={item.healthInsuranceType == "Private"}>Private</option>
-                                                        </select>
-                                                    </div></div>
-                                                <div className="col">
-                                                    <div className='input-group'>
-                                                        <label className="full-width label-form">Health Insurance Company
-                                                        </label>
-                                                        <input type="text" className="form-control" placeholder='Enter Company Name' defaultValue={item.healthInsuranceCompany ? item.healthInsuranceCompany : ''} onChange={(e) => setHrUpdateData({ ...HrUpdateData, healthInsuranceCompany: e.target.value })} />
-                                                    </div></div>
-                                                <div className="col">
-                                                    <div className='input-group'>
-                                                        <label className="full-width label-form">Health Insurance No
-                                                        </label>
-                                                        <input type="text" className="form-control" placeholder='Enter Health Insurance No' defaultValue={item.insuranceNo ? item.insuranceNo : ''} onChange={(e) => setHrUpdateData({ ...HrUpdateData, insuranceNo: e.target.value })} />
-                                                    </div></div>
-                                            </div>
-
-                                        </div> : null}</div>
-                                    <div className="tab-pane" id="QUALIFICATIONS1" role="tabpanel" aria-labelledby="QUALIFICATIONS1">
-                                        {hrBtnStatus.qualificationInfo ?
-                                            <div className='card-body'>
-                                                <div className='user-form-2 row'>
-                                                    <div className="col">
-                                                        <div className='input-group'>
-                                                            <label className="full-width label-form">Highest school diploma
-                                                            </label>
-                                                            <input type="text" className="form-control" placeholder='Enter Highest school diploma' defaultValue={item.highestSchoolDiploma ? item.highestSchoolDiploma : ''} onChange={(e) => setHrUpdateData({ ...HrUpdateData, highestSchoolDiploma: e.target.value })} />
-                                                        </div></div>
-                                                    <div className="col">
-                                                        <div className='input-group'>
-                                                            <label className="full-width label-form">Highest vocational education
-                                                            </label>
-                                                            <input type="text" className="form-control" placeholder='Enter Highest vocational education' defaultValue={item.highestVocationalEducation ? item.highestVocationalEducation : ''} onChange={(e) => setHrUpdateData({ ...HrUpdateData, highestVocationalEducation: e.target.value })} />
-                                                        </div></div>
-                                                </div>
-                                                <div className='user-form-2 row'>
-                                                    <div className="col">
-                                                        <div className='input-group'>
-                                                            <label className="full-width label-form">Other qualifications
-                                                            </label>
-                                                            <input type="text" className="form-control" placeholder='Enter Other qualifications' defaultValue={item.otherQualifications ? item.otherQualifications : ''} onChange={(e) => setHrUpdateData({ ...HrUpdateData, otherQualifications: e.target.value })} />
-                                                        </div></div>
-                                                    <div className="col">
-                                                        <div className='input-group'>
-                                                            <label className="full-width label-form">Languages
-                                                            </label>
-                                                            <input type="text" className="form-control" />
+                                                            <div className="col">
+                                                                <div className='input-group'>
+                                                                    <label className="full-width label-form">Health Insurance Type</label>
+                                                                    <select className="form-control" onChange={(e) => setHrUpdateData({ ...HrUpdateData, healthInsuranceType: e.target.value })}>
+                                                                        {item.healthInsuranceType ? null :
+                                                                            <option selected>Select an Option</option>
+                                                                        }
+                                                                        <option selected={item.healthInsuranceType == "None"}>None</option>
+                                                                        <option selected={item.healthInsuranceType == "Statutory"}>Statutory</option>
+                                                                        <option selected={item.healthInsuranceType == "Private"}>Private</option>
+                                                                    </select>
+                                                                </div></div>
+                                                            <div className="col">
+                                                                <div className='input-group'>
+                                                                    <label className="full-width label-form">Health Insurance Company
+                                                                    </label>
+                                                                    <input type="text" className="form-control" placeholder='Enter Company Name' defaultValue={item.healthInsuranceCompany ? item.healthInsuranceCompany : ''} onChange={(e) => setHrUpdateData({ ...HrUpdateData, healthInsuranceCompany: e.target.value })} />
+                                                                </div></div>
+                                                            <div className="col">
+                                                                <div className='input-group'>
+                                                                    <label className="full-width label-form">Health Insurance No
+                                                                    </label>
+                                                                    <input type="text" className="form-control" placeholder='Enter Health Insurance No' defaultValue={item.insuranceNo ? item.insuranceNo : ''} onChange={(e) => setHrUpdateData({ ...HrUpdateData, insuranceNo: e.target.value })} />
+                                                                </div></div>
                                                         </div>
-                                                    </div>
+
+                                                    </div> : null}</div>
+                                                <div className="tab-pane" id="QUALIFICATIONS1" role="tabpanel" aria-labelledby="QUALIFICATIONS1">
+                                                    {hrBtnStatus.qualificationInfo ?
+                                                        <div className='card-body'>
+                                                            <div className='user-form-2 row'>
+                                                                <div className="col">
+                                                                    <div className='input-group'>
+                                                                        <label className="full-width label-form">Highest school diploma
+                                                                        </label>
+                                                                        <input type="text" className="form-control" placeholder='Enter Highest school diploma' defaultValue={item.highestSchoolDiploma ? item.highestSchoolDiploma : ''} onChange={(e) => setHrUpdateData({ ...HrUpdateData, highestSchoolDiploma: e.target.value })} />
+                                                                    </div></div>
+                                                                <div className="col">
+                                                                    <div className='input-group'>
+                                                                        <label className="full-width label-form">Highest vocational education
+                                                                        </label>
+                                                                        <input type="text" className="form-control" placeholder='Enter Highest vocational education' defaultValue={item.highestVocationalEducation ? item.highestVocationalEducation : ''} onChange={(e) => setHrUpdateData({ ...HrUpdateData, highestVocationalEducation: e.target.value })} />
+                                                                    </div></div>
+                                                            </div>
+                                                            <div className='user-form-2 row'>
+                                                                <div className="col">
+                                                                    <div className='input-group'>
+                                                                        <label className="full-width label-form">Other qualifications
+                                                                        </label>
+                                                                        <input type="text" className="form-control" placeholder='Enter Other qualifications' defaultValue={item.otherQualifications ? item.otherQualifications : ''} onChange={(e) => setHrUpdateData({ ...HrUpdateData, otherQualifications: e.target.value })} />
+                                                                    </div></div>
+                                                                <div className="col">
+                                                                    <div className='input-group'>
+                                                                        <label className="full-width label-form">Languages
+                                                                        </label>
+                                                                        <input type="text" className="form-control" />
+                                                                    </div>
+                                                                </div>
+                                                            </div>
+                                                        </div> : null}
                                                 </div>
-                                            </div> : null}
-                                            </div>
                                             </>
-                                 )
-                                        })}
-                                    </div> 
+                                        )
+                                    })}
+                                </div>
                             </div>
                             <div className="tab-pane" id="SMALSUS" role="tabpanel" aria-labelledby="SMALSUS">
                                 <div>
