@@ -253,6 +253,14 @@
         }
       ]
     },
+    "employe-profile-web-part": {
+      "components": [
+        {
+          "entrypoint": "./lib/webparts/employeProfile/EmployeProfileWebPart.js",
+          "manifest": "./src/webparts/employeProfile/EmployeProfileWebPart.manifest.json"
+        }
+      ]
+    },
     "test-project-web-part": {
       "components": [
         {
@@ -409,6 +417,7 @@
     }
   },
   "localizedResources": {
+    "EmployeProfileWebPartStrings": "lib/webparts/employeProfile/loc/{locale}.js",
     "MeetingOverViewPageWebPartStrings": "lib/webparts/meetingOverViewPage/loc/{locale}.js",
     "ServicePortfolioWebPartStrings": "lib/webparts/servicePortfolio/loc/{locale}.js",
     "AlertManagementWebPartStrings": "lib/webparts/alertManagement/loc/{locale}.js",

@@ -3,8 +3,8 @@ import * as $ from 'jquery';
 import * as globalCommon from '../../../globalComponents/globalCommon';
 import EditTaskPopup from '../../../globalComponents/EditTaskPopup/EditTaskPopup'
 import TimeEntryPopup from '../../../globalComponents/TimeEntry/TimeEntryComponent';
-import CreateActivity from '../../servicePortfolio/components/CreateActivity';
-import CreateWS from '../../servicePortfolio/components/CreateWS';
+import CreateActivity from '../../../globalComponents/CreateActivity';
+import CreateWS from '../../../globalComponents/CreateWS';
 import ShowTaskTeamMembers from '../../../globalComponents/ShowTaskTeamMembers';
 import Loader from "react-loader";
 import * as moment from 'moment';

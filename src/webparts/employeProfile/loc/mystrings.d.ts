@@ -1,4 +1,4 @@
-declare interface ILastModifiedItemsWebPartStrings {
+declare interface IEmployeProfileWebPartStrings {
   PropertyPaneDescription: string;
   BasicGroupName: string;
   DescriptionFieldLabel: string;
@@ -12,7 +12,7 @@ declare interface ILastModifiedItemsWebPartStrings {
   AppOutlookEnvironment: string;
 }
 
-declare module 'LastModifiedItemsWebPartStrings' {
-  const strings: ILastModifiedItemsWebPartStrings;
+declare module 'EmployeProfileWebPartStrings' {
+  const strings: IEmployeProfileWebPartStrings;
   export = strings;
 }

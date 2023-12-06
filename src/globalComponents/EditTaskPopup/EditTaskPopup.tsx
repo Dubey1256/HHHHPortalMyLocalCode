@@ -1172,7 +1172,9 @@ const EditTaskPopup = (Items: any) => {
                     let tempArray: any = [FeedBackItem]
                     item.FeedBack = JSON.stringify(tempArray);
                     item.FeedBackArray = tempArray[0]?.FeedBackDescriptions;
+                    item.FeedBackBackup=tempArray;
                     FeedBackBackupArray = JSON.stringify(tempArray);
+                   
                 }
 
                 if (item.OffshoreComments != null || item.OffshoreComments != undefined) {
