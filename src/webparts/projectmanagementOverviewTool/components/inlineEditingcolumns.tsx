@@ -103,6 +103,10 @@ const inlineEditingcolumns = (props: any) => {
     { value: 100, status: "100% Closed", taskStatusComment: "Closed" }
   ];
   React.useEffect(() => {
+   try{
+    if (props?.columnName == 'Priority'){
+      comments = JSON.parse(props?.item?.Comments)
+    }
     if (props?.item?.metaDataListId != undefined) {
       smartMetadataListId = props?.item?.metaDataListId;
     } else {
@@ -159,6 +163,7 @@ const inlineEditingcolumns = (props: any) => {
       setTaskStatusInNumber(props.item.PercentComplete);
     }
     GetSmartMetadata();
+   }catch(e){console.log(e)}
 
   }, [props, props?.item?.TaskCategories?.results]);
   const getPercentCompleteTitle = (percent: any) => {
@@ -351,6 +356,9 @@ const inlineEditingcolumns = (props: any) => {
     }
   };
   const getChilds = (item: any, items: any) => {
+    try{
+
+   
     let parent = JSON.parse(JSON.stringify(item));
     parent.Newlabel = `${parent?.Title}`;
     AutoCompleteItemsArray.push(parent);
@@ -366,7 +374,7 @@ const inlineEditingcolumns = (props: any) => {
         AutoCompleteItemsArray.push(child);
         getChilds(child, items);
       }
-    });
+    }); }catch(e){console.log(e)}
   };
   var getSmartMetadataItemsByTaxType = function (
     metadataItems: any,
@@ -1129,9 +1137,7 @@ const inlineEditingcolumns = (props: any) => {
     setOnHoldComment(false);
   };
   
-  if (props?.columnName == 'Priority'){
-    comments = JSON.parse(props?.item?.Comments)
-  }
+
   
   return (
     <>
