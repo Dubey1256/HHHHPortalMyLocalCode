@@ -214,7 +214,7 @@ const addToLocalDBComponent = (props: any) => {
                                             IM: (Item?.Skype ),
                                             SocialMediaUrls:item?.UrlData!=undefined&&item?.UrlData!=null? JSON.stringify( item?.UrlData):null,
                                             SmartCountriesId: {
-                                                results:Item?.SmartCountries?.length>0?[Item?.SmartCountries?.Id ]: []
+                                                results:Item?.SmartCountries?.length>0?[Item?.SmartCountries[0]?.Id ]: []
                                             },
                                             SmartContactId:Item.Id
                                         }
@@ -245,7 +245,7 @@ const addToLocalDBComponent = (props: any) => {
                                                
                                                 SocialMediaUrls:item?.UrlData!=undefined&&item?.UrlData!=null? JSON.stringify( item?.UrlData):null,
                                                 SmartCountriesId: {
-                                                    results:Item?.SmartCountries?.length>0?[Item?.SmartCountries?.Id ]: []
+                                                    results:Item?.SmartCountries?.length>0?[Item?.SmartCountries[0]?.Id ]: []
                                                 }
                                             }
 
@@ -266,6 +266,7 @@ const addToLocalDBComponent = (props: any) => {
                                             let web = new Web('https://hhhhteams.sharepoint.com/sites/HHHH/GmBH');
                                             await web.lists.getById(myContextData2?.allListId?.GMBH_CONTACT_SEARCH_LISTID).items.add(addData).then((e) => {
                                                 console.log("request success", e);
+                                                props.callBack()
                                             })
                                         } catch (error) {
                                             console.log("Error:", error.message);
@@ -278,7 +279,7 @@ const addToLocalDBComponent = (props: any) => {
                         })
                     })
             }
-            props.callBack()
+           
         }
          //***************** END GMBH  data tag function */
 

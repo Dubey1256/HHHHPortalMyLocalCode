@@ -37,8 +37,8 @@ import { GlobalConstants } from "../../../globalComponents/LocalCommon";
 import * as globalCommon from "../../../globalComponents/globalCommon";
 import ShowTaskTeamMembers from "../../../globalComponents/ShowTaskTeamMembers";
 import { PortfolioStructureCreationCard } from "../../../globalComponents/tableControls/PortfolioStructureCreation";
-import CreateActivity from "../../servicePortfolio/components/CreateActivity";
-import CreateWS from "../../servicePortfolio/components/CreateWS";
+import CreateActivity from "../../../globalComponents/CreateActivity";
+import CreateWS from "../../../globalComponents/CreateWS";
 import "bootstrap/dist/css/bootstrap.min.css";
 import Tooltip from "../../../globalComponents/Tooltip";
 import {
@@ -49,7 +49,7 @@ import {
 import { RankingInfo, rankItem, compareItems } from "@tanstack/match-sorter-utils";
 import "bootstrap/dist/css/bootstrap.min.css";
 import { HTMLProps } from "react";
-import HighlightableCell from "../../componentPortfolio/components/highlight";
+import HighlightableCell from "../../../globalComponents/highlight";
 import Loader from "react-loader";
 import ShowTeamMembers from "../../../globalComponents/ShowTeamMember";
 import ShowClintCatogory from "../../../globalComponents/ShowClintCatogory";

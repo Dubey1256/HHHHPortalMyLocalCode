@@ -2,8 +2,10 @@ import { colors } from '@material-ui/core';
 import * as React from 'react';
 import ReactApexChart from 'react-apexcharts';
 import { myContextValue } from '../../../globalComponents/globalCommon'
-import { Web } from 'sp-pnp-js';
+import { Items, Web } from 'sp-pnp-js';
 import moment from 'moment';
+import { Panel, PanelType, Tooltip } from 'office-ui-fabric-react';
+import VersionHistory from '../../../globalComponents/VersionHistroy/VersionHistory';
 interface ApexChartProps {
   // Define any props your component needs here
 }
@@ -13,7 +15,7 @@ const barChartColorsXYaxis = ['#000', '#000', '#000', '#000', '#000', '#000', '#
 var timesheetListConfig: any;
 
 
-const EmployeePieChart = () => {
+const EmployeePieChart = (SelectedProps: any) => {
   var barChartData: any
   var weekDate: any = []
   const contextdata: any = React.useContext(myContextValue)
@@ -213,20 +215,69 @@ const EmployeePieChart = () => {
     },
   };
   // }
-
-
+  const setModalIsOpenToFalse = () => {
+    SelectedProps?.Call();
+  }
+  const onRenderCustomHeaderMain = () => {
+    return (
+      <>
+        <div className="subheading alignCenter">
+          <span className="siteColor">
+            This Week's TimeSheet ({sumBarTime})
+          </span>
+        </div>
+      </>
+    );
+  };
+  const onRenderCustomFooterMain = () => {
+    return (
+      <footer className="bg-f4 fixed-bottom">
+        <div className="text-end me-2">
+          <div>
+            <div className="footer-right">
+              <span >
+                {/* <button className="btn btn-primary mx-1 px-3"  onClick={UpdateTaskInfoFunction}>
+                  Save
+                </button> */}
+                <button type="button" className="btn btn-default px-3" onClick={setModalIsOpenToFalse}>
+                  Cancel
+                </button>
+              </span>
+            </div>
+          </div>
+        </div>
+      </footer>
+    )
+  }
   return (
-    <div id="bar-chart border">
-      {console.log(contextdata)}
-      <div className='alignCenter'>
-        <span className='fw-bold'>
-          This Week's TimeSheet ({sumBarTime})
-        </span>
-        <span title='Refresh TimeSheet ' className="ml-auto svg__iconbox svg__icon--refresh dark me-2" onClick={() => GetDate()}></span>
-      </div>
-      <ReactApexChart options={barChartData?.options} series={barChartData?.series} type="bar" height={350} />
+    <>
+      <Panel
+        type={PanelType.medium}
+        isOpen={SelectedProps?.IsOpenTimeSheetPopup}
+        onDismiss={setModalIsOpenToFalse}
+        onRenderHeader={onRenderCustomHeaderMain}
+        isBlocking={false}
+        onRenderFooter={onRenderCustomFooterMain}
+      >
 
-    </div>
+        <div id="bar-chart border">
+          {console.log(contextdata)}
+          <div className='alignCenter'>
+            <span className='fw-bold'>
+              {/* This Week's TimeSheet ({sumBarTime}) */}
+            </span>
+            <span title='Refresh TimeSheet ' className="ml-auto svg__iconbox svg__icon--refresh dark me-2" onClick={() => GetDate()}></span>
+          </div>
+          <ReactApexChart options={barChartData?.options} series={barChartData?.series} type="bar" height={350} />
+
+        </div>
+
+
+      </Panel>
+    </>
+
+
+
   );
 };
 

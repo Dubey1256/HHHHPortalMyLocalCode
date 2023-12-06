@@ -107,7 +107,7 @@ const HrGmbhInstitutionDeatails=async(Id:any)=>{
                     <img className='workmember' 
                     src={updateData?.ItemImage != undefined ? updateData?.ItemImage.Url : "https://hhhhteams.sharepoint.com/sites/HHHH/SiteCollectionImages/ICONS/32/InstitutionPicture.jpg"}
                      />Edit Institution- 
-                      {updateData?.Title}
+                      {updateData?.FullName}
                 </div>
                 <Tooltip ComponentId='3299' />
             </>
@@ -206,6 +206,7 @@ const HrGmbhInstitutionDeatails=async(Id:any)=>{
 
        let postData:any= {
             Title: (updateData?.Title ),
+            FullName: (updateData?.FullName ),
           Categories:updateData?.Categories,
             Email: (updateData?.Email ),
             WorkPhone: (updateData?.WorkPhone ),
@@ -229,7 +230,7 @@ const HrGmbhInstitutionDeatails=async(Id:any)=>{
            
             SocialMediaUrls: JSON.stringify(UrlData),
             SmartCountriesId: {
-                results:updateData?.SmartCountries?.length>0?[updateData?.SmartCountries?.Id ]: []
+                results:updateData?.SmartCountries?.length>0?[updateData?.SmartCountries[0]?.Id ]: []
             }
         }
         if (updateData?.Id != undefined) {
@@ -334,11 +335,11 @@ return(
                             <div className="tab-pane show active" id="BASICINFORMATION" role="tabpanel" aria-labelledby="BASICINFORMATION">
                                 <div className='general-section'>
                                     <div className="card-body">
-                                            <div className="user-form-5">
+                                            <div className="user-form-5 row">
                                                 <div className="col">
                                                     <div className='input-group'>
                                                         <label className='full-width label-form'>Title </label>
-                                                        <input type="text" className="form-control" defaultValue={updateData ? updateData?.Title : null} onChange={(e) => setUpdateData({ ...updateData, Title: e.target.value })} aria-label="First name" placeholder='First Name' />
+                                                        <input type="text" className="form-control" defaultValue={updateData ? updateData?.FullName : null} onChange={(e) => setUpdateData({ ...updateData, FullName: e.target.value })} aria-label="full name" placeholder='full Name' />
                                                     </div>
                                                 </div>
                                                 <div className="col">
@@ -363,7 +364,7 @@ return(
 
                                             </div>
                                             <div className="card-body">
-                                            <div className="user-form-4">
+                                            <div className="user-form-4 row">
                                                   <div className="col">
                                                     <div className='input-group'>
                                                         <label className="full-width label-form">Country</label>
@@ -403,7 +404,7 @@ return(
                                             </div>
                                         </div>
                                         <div className="card-body">
-                                            <div className="user-form-5">
+                                            <div className="user-form-5 row">
                                                 <div className="col">
                                                     <div className='input-group'>
                                                         <label className="full-width label-form">Phone</label>
@@ -427,7 +428,7 @@ return(
                                                         <input type="text" className="form-control" defaultValue={URLs.length ? URLs[0].Facebook : ""} onChange={(e) => setUpdateData({ ...updateData, Facebook: e.target.value })} aria-label="Facebook" />
                                                     </div></div>
                                               </div>
-                                            <div className="user-form-5 mt-2">
+                                            <div className="user-form-5 row mt-2">
                                               
                                             <div className="col" >
                                                     <div className='input-group'>

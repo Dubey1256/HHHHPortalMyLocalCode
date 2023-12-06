@@ -1152,6 +1152,11 @@ const ProjectManagementMain = (props: any) => {
   };
 
 
+  const inlineCallBackMasterTask = React.useCallback((item: any) => {
+    
+    setMasterdata(item);
+
+}, []);
   return (
     <div>
       {QueryId != "" ? (
@@ -1331,11 +1336,15 @@ const ProjectManagementMain = (props: any) => {
                                     <dl>
                                       <dt className="bg-fxdark">Priority</dt>
                                       <dd className="bg-light">
-                                        <a>
-                                          {Masterdata.Priority != null
-                                            ? Masterdata.Priority
-                                            : ""}
-                                        </a>
+                                      <InlineEditingcolumns
+                                          mypriority={true}
+                                          AllListId={AllListId}
+                                          callBack={inlineCallBackMasterTask}
+                                          columnName='Priority'
+                                          item={Masterdata}
+                                          TaskUsers={AllUser}
+                                          pageName={'ProjectManagment'}
+                                        />
                                         <span
                                           className="hreflink pull-right"
                                           title="Edit Inline"
@@ -1352,17 +1361,27 @@ const ProjectManagementMain = (props: any) => {
                                     <dl>
                                       <dt className="bg-fxdark">Project Team</dt>
                                       <dd className="bg-light">
-                                        {Masterdata?.AssignedTo?.length > 0 || Masterdata?.TeamMembers?.length > 0 || Masterdata?.ResponsibleTeam?.length > 0 ? <ShowTaskTeamMembers props={Masterdata} TaskUsers={AllTaskUsers} /> : ''}
-                                      </dd>
+                                      <InlineEditingcolumns
+                                          AllListId={AllListId}
+                                          callBack={inlineCallBackMasterTask}
+                                          columnName='Team'
+                                          item={Masterdata}
+                                          TaskUsers={AllUser}
+                                          pageName={'ProjectManagment'}
+                                        /></dd>
                                     </dl>
                                     <dl>
                                       <dt className="bg-fxdark">Status</dt>
                                       <dd className="bg-light">
-                                        <a>
-                                          {Masterdata.PercentComplete != null
-                                            ? getPercentCompleteTitle(Masterdata.PercentComplete)
-                                            : ""}
-                                        </a>
+                                      <InlineEditingcolumns
+                                        AllListId={AllListId}
+                                        callBack={inlineCallBackMasterTask}
+                                        columnName='PercentComplete'
+                                        item={Masterdata}
+                                        TaskUsers={AllUser}
+                                        pageName={'ProjectManagment'}
+                                      />
+                                       
                                         <span className="pull-right">
                                           <span className="pencil_icon">
                                             <span
