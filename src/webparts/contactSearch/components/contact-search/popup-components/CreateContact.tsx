@@ -161,7 +161,7 @@ const CreateContactComponent = (props: any) => {
     >
 
             <div className="modal-body">
-                <div className="input-group">
+                <div className="">
                     <label className="form-label full-width"></label>
                 
                 <input type='text' placeholder="Enter Contacts Name" onChange={(e) => searchedName(e)} className="form-control" />

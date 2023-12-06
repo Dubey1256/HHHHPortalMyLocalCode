@@ -9,6 +9,8 @@ import TeamConfigurationCards from "../../EditPopupFiles/TeamConfigurationPortfo
 import { OverlayTrigger, Popover } from "react-bootstrap";
 import Picker from "../../../globalComponents/EditTaskPopup/SmartMetaDataPicker";
 import Tooltip from "../../../globalComponents/Tooltip";
+import { IoHandRightOutline } from "react-icons/io5";
+
 var ChangeTaskUserStatus: any = true;
 let ApprovalStatusGlobal: any = false;
 let taskUsers: any = [];
@@ -24,6 +26,7 @@ let smartMetadataListId: any = "";
 let AllMetadata: any = [];
 let TaskCreatorApproverBackupArray: any = [];
 let TaskApproverBackupArray: any = [];
+let comments: any = []
 const inlineEditingcolumns = (props: any) => {
   const [TimeInHours, setTimeInHours] = React.useState(0);
   const [taskStatusInNumber, setTaskStatusInNumber] = React.useState(0);
@@ -32,6 +35,7 @@ const inlineEditingcolumns = (props: any) => {
   const [CategoriesData, setCategoriesData] = React.useState<any>([]);
   const [SearchedCategoryData, setSearchedCategoryData] = React.useState([]);
   const [TeamConfig, setTeamConfig] = React.useState();
+  const [onHoldComment ,setOnHoldComment]:any=React.useState(false)
   const [teamMembersPopup, setTeamMembersPopup] = React.useState(false);
   const [TaskStatusPopup, setTaskStatusPopup] = React.useState(false);
   const [taskCategoriesPopup, setTaskCategoriesPopup] = React.useState(false);
@@ -98,25 +102,6 @@ const inlineEditingcolumns = (props: any) => {
     { value: 99, status: "99% Completed", taskStatusComment: "Completed" },
     { value: 100, status: "100% Closed", taskStatusComment: "Closed" }
   ];
-
-  React.useEffect(() => {
-    
-    
-    setTimeout(() => {
-      let targetDiv: any = document?.querySelector('.ms-Panel-main');
-    let PortfolioTypeColor:any;
-    if(props?.item?.PortfolioType?.Color){
-      PortfolioTypeColor = props?.item?.PortfolioType?.Color;
-    }else if(props?.item?.Portfolio?.PortfolioType?.Color){
-      PortfolioTypeColor =props?.item?.Portfolio?.PortfolioType?.Color; 
-    }
-      if (targetDiv && PortfolioTypeColor) {
-        // Change the --SiteBlue variable for elements under the targetDiv
-        targetDiv?.style?.setProperty('--SiteBlue', PortfolioTypeColor); // Change the color to your desired value
-      }
-    }, 1000)
-  }, [dueDate,TaskPriorityPopup,UpdateEstimatedTime,taskCategoriesPopup,TaskStatusPopup,remark,teamMembersPopup])
-
   React.useEffect(() => {
     if (props?.item?.metaDataListId != undefined) {
       smartMetadataListId = props?.item?.metaDataListId;
@@ -626,7 +611,7 @@ const inlineEditingcolumns = (props: any) => {
         web.lists
           .getById(props?.item?.listId)
           .items.select(
-            "Id,Title,FeedBack,PriorityRank,Remark,Project/PriorityRank,ParentTask/Id,ParentTask/Title,ParentTask/TaskID,TaskID,SmartInformation/Id,SmartInformation/Title,Project/Id,Project/Title,workingThisWeek,EstimatedTime,TaskLevel,TaskLevel,OffshoreImageUrl,OffshoreComments,ClientTime,Priority,Status,ItemRank,IsTodaysTask,Body,PercentComplete,Categories,StartDate,PriorityRank,DueDate,TaskType/Id,TaskType/Title,Created,Modified,Author/Id,Author/Title,TaskCategories/Id,TaskCategories/Title,AssignedTo/Id,AssignedTo/Title,TeamMembers/Id,TeamMembers/Title,ResponsibleTeam/Id,ResponsibleTeam/Title,ClientCategory/Id,ClientCategory/Title"
+            "Id,Title,FeedBack,PriorityRank,Remark,Project/PriorityRank,ParentTask/Id,ParentTask/Title,ParentTask/TaskID,TaskID,SmartInformation/Id,SmartInformation/Title,Project/Id,Project/Title,workingThisWeek,EstimatedTime,TaskLevel,TaskLevel,OffshoreImageUrl,OffshoreComments,Comments,ClientTime,Priority,Status,ItemRank,IsTodaysTask,Body,PercentComplete,Categories,StartDate,PriorityRank,DueDate,TaskType/Id,TaskType/Title,Created,Modified,Author/Id,Author/Title,TaskCategories/Id,TaskCategories/Title,AssignedTo/Id,AssignedTo/Title,TeamMembers/Id,TeamMembers/Title,ResponsibleTeam/Id,ResponsibleTeam/Title,ClientCategory/Id,ClientCategory/Title"
           )
           .expand(
             "AssignedTo,Project,ParentTask,SmartInformation,Author,TaskType,TeamMembers,ResponsibleTeam,TaskCategories,ClientCategory"
@@ -1136,7 +1121,18 @@ const inlineEditingcolumns = (props: any) => {
     );
   };
 
+  const showOnHoldComment = () => {
+    setOnHoldComment(true);
+  };
 
+  const hideOnHoldComment = () => {
+    setOnHoldComment(false);
+  };
+  
+  if (props?.columnName == 'Priority'){
+    comments = JSON.parse(props?.item?.Comments)
+  }
+  
   return (
     <>
       {props?.columnName == "Team" ? (
@@ -1180,8 +1176,36 @@ const inlineEditingcolumns = (props: any) => {
             onClick={() => setTaskPriorityPopup(true)}
           >
             &nbsp;
-            {props?.mypriority === true ? `(${props?.item?.PriorityRank}) ${props?.item?.Priority?.slice(3)}` : props?.item?.PriorityRank}
-
+            {props?.mypriority === true ? `(${props?.item?.PriorityRank}) ${props?.item?.Priority?.slice(3)}`:props?.item?.PriorityRank}
+            {props?.item.TaskCategories.map((items: any) =>
+              items.Title === "On-Hold" ? (
+                <div className="hover-text">
+                  <IoHandRightOutline
+                    onMouseEnter={showOnHoldComment}
+                    onMouseLeave={hideOnHoldComment}
+                  />
+                  <span className="tooltip-text pop-right">
+                    {onHoldComment &&
+                      comments.map((commentItem: any, index: any) => 
+                        commentItem.CommentFor !== undefined &&
+                        commentItem.CommentFor === "On-Hold" ? (
+                          <div key={index}>
+                            <span className="siteColor p-1 border-bottom">
+                              Task On-Hold by{" "}
+                              <span>{commentItem.AuthorName}</span>{" "}
+                              <span>{Moment(commentItem.Created).format('DD/MM/YY')}</span>
+                            </span>
+                            {commentItem.CommentFor !== undefined &&
+                            commentItem.CommentFor === "On-Hold" ? (
+                              <div key={index}>{commentItem.Description}</div>
+                            ) : null}
+                          </div>
+                        ) : null
+                        )}
+                  </span>
+                </div>
+              ) : null
+            )}
             {props?.item?.TaskCategories?.map((category: any) => {
               if (category?.Title == "Immediate") {
                 return (
