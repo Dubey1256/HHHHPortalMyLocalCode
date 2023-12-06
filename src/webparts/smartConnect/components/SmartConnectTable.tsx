@@ -6,7 +6,7 @@ import * as Moment from 'moment';
 import {
     ColumnDef,
 } from "@tanstack/react-table";
-import HighlightableCell from '../../componentPortfolio/components/highlight';
+import HighlightableCell from '../../../globalComponents/highlight';
 import { FaChevronDown, FaChevronRight, FaCompressArrowsAlt } from 'react-icons/fa';
 import GlobalCommanTable, { IndeterminateCheckbox } from '../../../globalComponents/GroupByReactTableComponents/GlobalCommanTable';
 import ShowClintCatogory from '../../../globalComponents/ShowClintCatogory';
