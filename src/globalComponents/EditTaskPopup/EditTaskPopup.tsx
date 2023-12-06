@@ -2709,7 +2709,7 @@ const EditTaskPopup = (Items: any) => {
             Title: UpdateTaskInfo.Title ? UpdateTaskInfo.Title : EditData.Title,
             Priority: Priority,
             StartDate: EditData.StartDate ? Moment(EditData.StartDate).format("MM-DD-YYYY") : null,
-            PercentComplete: UpdateTaskInfo.PercentCompleteStatus ? (Number(UpdateTaskInfo.PercentCompleteStatus) / 100) : (EditData.PercentComplete ? (EditData.PercentComplete / 100) : null),
+            PercentComplete:  UpdateTaskInfo.PercentCompleteStatus != '' ? (Number(UpdateTaskInfo.PercentCompleteStatus) / 100) : (EditData.PercentComplete ? (EditData.PercentComplete / 100) : 0),
             Categories: CategoriesData ? CategoriesData : null,
             PortfolioId: smartComponentsIds === '' ? null : smartComponentsIds,
             RelevantPortfolioId: { "results": (RelevantPortfolioIds != undefined && RelevantPortfolioIds?.length > 0) ? RelevantPortfolioIds : [] },
