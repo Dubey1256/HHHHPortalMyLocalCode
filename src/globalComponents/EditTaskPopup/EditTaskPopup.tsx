@@ -5271,11 +5271,13 @@ const EditTaskPopup = (Items: any) => {
                                                                                 <img className="imgAuthor" title={ImageDtl.UserName} src={ImageDtl.UserImage ? ImageDtl.UserImage : ''} />
                                                                             </span>
                                                                         </div>
-                                                                        <div className="alignCenter">
-                                                                            <span onClick={() => openReplaceImagePopup(index)} title="Replace Image"><TbReplace /> </span>
-                                                                            <span className="mx-1" title="Delete" onClick={() => RemoveImageFunction(index, ImageDtl.ImageName, "Remove")}> | <RiDeleteBin6Line /> | </span>
-                                                                            <span title="Customize the Width of Page" onClick={() => ImageCustomizeFunction(index)}>
+                                                                        < div className="alignCenter">
+                                                                            <span className="hover-text" onClick={() => openReplaceImagePopup(index)}><TbReplace /> <span className="tooltip-text pop-right">Replace Image</span></span>
+                                                                            <span className="mx-1 hover-text" onClick={() => RemoveImageFunction(index, ImageDtl.ImageName, "Remove")}> | <RiDeleteBin6Line /> | 
+                                                                            <span className="tooltip-text pop-right">Delete</span></span>
+                                                                            <span className="hover-text" onClick={() => ImageCustomizeFunction(index)}>
                                                                                 <FaExpandAlt /> |
+                                                                                <span className="tooltip-text pop-right">Customize the Width of Page</span>
                                                                             </span>
                                                                             <span className="ms-1 m-0 img-info hover-text" onClick={() => openAddImageDescriptionFunction(index, ImageDtl, "Opne-Model")}>
                                                                                 <span className="svg__iconbox svg__icon--info dark"></span>
