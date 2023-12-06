@@ -222,6 +222,11 @@ const ProjectManagementMain = (props: any) => {
             } else {
               fetchedProject.DisplayDueDate = '';
             }
+            if(fetchedProject?.PortfolioStructureID!=undefined){
+              fetchedProject.TaskID = fetchedProject?.PortfolioStructureID;
+            }else{
+              fetchedProject.TaskID =''
+            }
             if (fetchedProject?.Item_x0020_Type == "Project") {
               fetchedProject.subRows = AllFlatProject?.filter((data: any) => data?.Parent?.Id == fetchedProject?.Id && data?.Item_x0020_Type == "Sprint")
             }
@@ -333,8 +338,10 @@ const ProjectManagementMain = (props: any) => {
       setData(backupAllTasks);
       setPageLoader(false)
       if (timeEntryIndex) {
-        const dataString = JSON.stringify(timeEntryIndex);
-        localStorage.setItem('timeEntryIndex', dataString);
+        try{
+          const dataString = JSON.stringify(timeEntryIndex);
+          localStorage.setItem('timeEntryIndex', dataString);
+        }catch(e){console.log(e)}
       }
     } catch (error) {
       setPageLoader(false)
@@ -570,9 +577,13 @@ const ProjectManagementMain = (props: any) => {
         items.subRows = [];
         AllTask.push(items);
       });
+      try {
+        backupAllTasks = JSON.parse(JSON.stringify(AllTask));
+        setAllTasks(backupAllTasks);
+      } catch (error) {
+  
+      }
 
-      backupAllTasks = JSON.parse(JSON.stringify(AllTask));
-      setAllTasks(backupAllTasks);
       let allSprints = [];
       if (projectData?.subRows?.length > 0 && projectData?.Item_x0020_Type == "Project") {
         allSprints = projectData?.subRows
