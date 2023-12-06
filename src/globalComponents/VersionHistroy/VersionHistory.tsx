@@ -152,7 +152,7 @@ export default function VersionHistory(props: any) {
           <div style={{ marginRight: "auto", fontSize: "20px", fontWeight: "600", marginLeft: '15px' }}>
             Version History
           </div>
-          <Tooltip componentId={1950}/>
+          <Tooltip ComponentId={1950}/>
         </>
       );
     };
