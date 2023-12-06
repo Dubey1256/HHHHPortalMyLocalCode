@@ -255,8 +255,8 @@ function CreateTaskComponent(props: any) {
             siteUrlData = siteUrlData?.split('&OR')[0]
             siteUrlData = siteUrlData?.slice(1, siteUrlData?.length)
             let paramSiteUrl = siteUrlData;
-            //  let paramComponentId = params.get('ComponentID');
-            let paramComponentId = params.get('Component');
+            let paramComponentId = params.get('ComponentID');
+            // let paramComponentId = params.get('Component');
             let paramType = params.get('Type');
             let paramTaskType = params.get('TaskType');
             let paramServiceId = params.get('ServiceID');
@@ -828,14 +828,18 @@ function CreateTaskComponent(props: any) {
                             })
                         }
                         if (save?.siteType?.toLowerCase() == "shareweb" && selectedPortfolio?.length > 0) {
-                            postClientTime = JSON.parse(selectedPortfolio[0]?.Sitestagging)
-                            postClientTime?.map((sitecomp: any) => {
-                                if (sitecomp.Title != undefined && sitecomp.Title != "" && sitecomp.SiteName == undefined) {
-                                    sitecomp.SiteName = sitecomp.Title
-                                }
+                            try {
+                                postClientTime = JSON.parse(selectedPortfolio[0]?.Sitestagging)
+                                postClientTime?.map((sitecomp: any) => {
+                                    if (sitecomp.Title != undefined && sitecomp.Title != "" && sitecomp.SiteName == undefined) {
+                                        sitecomp.SiteName = sitecomp.Title
+                                    }
 
-                            })
-                            siteCompositionDetails = selectedPortfolio[0]?.SiteCompositionSettings;
+                                })
+                                siteCompositionDetails = selectedPortfolio[0]?.SiteCompositionSettings;
+                            } catch (error) {
+                                console.log(error,"Error Client Time")
+                            }
                         } else {
                             var siteComp: any = {};
                             siteComp.SiteName = save?.siteType,
@@ -1118,16 +1122,12 @@ function CreateTaskComponent(props: any) {
                 let URLDataArr: any = TestUrl.split('/');
                 for (let index = 0; index < SitesTypes?.length; index++) {
                     let site = SitesTypes[index];
-
-
                     let Isfound = false;
-
                     if (TestUrl !== undefined && URLDataArr?.find((urlItem: any) => urlItem?.toLowerCase() == site?.Title?.toLowerCase()) || (site?.AlternativeTitle != null && URLDataArr?.find((urlItem: any) => urlItem?.toLowerCase() == site?.AlternativeTitle?.toLowerCase()))) {
                         item = site.Title;
                         selectedSiteTitle = site.Title;
                         Isfound = true;
                     }
-
                     if (!Isfound) {
                         if (TestUrl !== undefined && site.AlternativeTitle != null) {
                             let sitesAlterNatives = site.AlternativeTitle.toLowerCase().split(';');
@@ -1567,7 +1567,11 @@ function CreateTaskComponent(props: any) {
             passdata: null
         })
         if (items == 'Delete' || items == undefined) {
-            location.reload();
+            if (burgerMenuTaskDetails?.TaskType == 'Bug' && burgerMenuTaskDetails?.TaskType == 'Design') {
+                window.open(base_Url + "/SitePages/CreateTask.aspx", "_self")
+            } else {
+                location.reload();
+            }
         } else if (items == "Save") {
             setTimeout(() => {
                 window.open(base_Url + "/SitePages/Task-Profile.aspx?taskId=" + createdTask?.Id + "&Site=" + createdTask?.siteType, "_self")
@@ -1682,34 +1686,34 @@ function CreateTaskComponent(props: any) {
 
                         </ul>
                         <div className="border border-top-0 clearfix p-2 tab-content " id="myTabContent">
-                            <div className="tab-pane Alltable  p-0 show active" id="URLTasks" role="tabpanel" style={{height:'500px'}} aria-labelledby="URLTasks">
+                            <div className="tab-pane Alltable mx-height p-0 show active" id="URLTasks" role="tabpanel" aria-labelledby="URLTasks">
                                 {TaskUrlRelevantTask?.length > 0 ?
                                     <>
                                         <div className={TaskUrlRelevantTask?.length > 0 ? 'fxhg' : ''}>
-                                            <GlobalCommanTable columns={column2} wrapperHeight="100%"  data={TaskUrlRelevantTask} callBackData={callBackData} />
+                                            <GlobalCommanTable columns={column2} data={TaskUrlRelevantTask} callBackData={callBackData} />
                                         </div>
                                     </> : <div className='text-center full-width'>
                                         <span>No Tasks Available</span>
                                     </div>
                                 }
                             </div>
-                            <div className="tab-pane Alltable p-0 " id="PageTasks" role="tabpanel"  style={{height:'500px'}} aria-labelledby="PageTasks">
+                            <div className="tab-pane Alltable p-0 mx-height" id="PageTasks" role="tabpanel" aria-labelledby="PageTasks">
                                 {PageRelevantTask?.length > 0 ?
                                     <>
                                         <div className={PageRelevantTask?.length > 0 ? 'fxhg' : ''}>
-                                            <GlobalCommanTable columns={column2} wrapperHeight="100%" data={PageRelevantTask} callBackData={callBackData} />
+                                            <GlobalCommanTable columns={column2} data={PageRelevantTask} callBackData={callBackData} />
                                         </div>
                                     </> : <div className='text-center full-width'>
                                         <span>No Tasks Available</span>
                                     </div>
                                 }
                             </div>
-                            <div className="tab-pane Alltable  p-0" id="ComponentTasks" role="tabpanel" style={{height:'500px'}} aria-labelledby="ComponentTasks">
+                            <div className="tab-pane Alltable mx-height p-0" id="ComponentTasks" role="tabpanel" aria-labelledby="ComponentTasks">
 
                                 {ComponentRelevantTask?.length > 0 ?
                                     <>
                                         <div className={ComponentRelevantTask?.length > 0 ? 'fxhg' : ''}>
-                                            <GlobalCommanTable columns={column2} wrapperHeight="100%" data={ComponentRelevantTask} callBackData={callBackData} />
+                                            <GlobalCommanTable columns={column2} data={ComponentRelevantTask} callBackData={callBackData} />
                                         </div>
                                     </> : <div className='text-center full-width'>
                                         <span>No Tasks Available</span>
