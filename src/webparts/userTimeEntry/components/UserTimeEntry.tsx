@@ -1205,7 +1205,7 @@ export default class UserTimeEntry extends React.Component<IUserTimeEntryProps, 
                   addtime.NewTimeEntryDate = TaskDate;
                   let datesplite = addtime.TaskDate.split("/");
                   addtime.TimeEntrykDateNew = new Date(parseInt(datesplite[2], 10), parseInt(datesplite[1], 10) - 1, parseInt(datesplite[0], 10));
-                  const maxTitleLength: number = 40;
+                  const maxTitleLength: number = 70;
                   if (addtime["Description"] != undefined && addtime["Description"].length > maxTitleLength) {
                     addtime.truncatedTitle = addtime["Description"].substring(0, maxTitleLength - 3) + "...";
                   }
@@ -2188,7 +2188,7 @@ export default class UserTimeEntry extends React.Component<IUserTimeEntryProps, 
       {
         accessorKey: "Description",
         cell: (info: any) => <><span className='popover__wrapper ms-1' data-bs-toggle="tooltip" data-bs-placement="auto">
-          <span title={info?.row?.original?.Description}>{info?.row?.original.truncatedTitle?.length > 0 ? info?.row?.original?.truncatedTitle : info?.row?.original?.Description}</span>
+          <span>{info?.row?.original.truncatedTitle?.length > 0 ? info?.row?.original?.truncatedTitle : info?.row?.original?.Description}</span>
           {info?.row?.original.truncatedTitle?.length > 0 && <span className="f-13 popover__content" >
             {info?.row?.original?.Description}
           </span>}
@@ -2236,6 +2236,7 @@ export default class UserTimeEntry extends React.Component<IUserTimeEntryProps, 
         resetColumnFilters: false,
         resetSorting: false,
         placeholder: "Time Entry",
+        isColumnDefultSortingAsc: true,
         header: "",
         size: 91
       },
