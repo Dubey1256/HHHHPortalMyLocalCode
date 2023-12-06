@@ -1764,11 +1764,11 @@ export const GetServiceAndComponentAllData = async (Props: any) => {
             } else {
                 result.ClientCategorySearch = "";
             }
-            if (result.ClientCategory != undefined && result.ClientCategory.length > 0) {
-                $.each(result.TeamMembers, function (index: any, categoryData: any) {
-                    result.ClientCategory.push(categoryData);
-                })
-            }
+            // if (result.ClientCategory != undefined && result.ClientCategory.length > 0) {
+            //     $.each(result.TeamMembers, function (index: any, categoryData: any) {
+            //         result.ClientCategory.push(categoryData);
+            //     })
+            // }
 
             if (result?.Item_x0020_Type != undefined) {
                 result.SiteIconTitle = result?.Item_x0020_Type?.charAt(0);
@@ -1779,7 +1779,7 @@ export const GetServiceAndComponentAllData = async (Props: any) => {
                 AllPathGeneratedData = [...AllPathGeneratedData, ...groupedResult?.PathArray];
                 ComponentsData.push(groupedResult?.comp);
             }
-            if (result.Item_x0020_Type == 'Project' && Props?.projectSelection!=true) {
+            if (result.Item_x0020_Type == 'Project' && Props?.projectSelection==true) {
                 const groupedResult = componentGrouping(result, AllMasterTaskData)
                 AllPathGeneratedData = [...AllPathGeneratedData, ...groupedResult?.PathArray];
                 ComponentsData.push(groupedResult?.comp);

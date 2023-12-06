@@ -1,6 +1,6 @@
 import * as React from 'react'
 import { Panel, PanelType } from 'office-ui-fabric-react';
-import { sp } from 'sp-pnp-js';
+import { Web, sp } from 'sp-pnp-js';
 import "bootstrap/dist/css/bootstrap.min.css";  
 import Tooltip from '../Tooltip';
 import * as moment from 'moment';
@@ -22,8 +22,8 @@ export default function VersionHistory(props: any) {
         var siteTypeUrl = props.siteUrls;
         let listId = props.listId
         var itemId = props.taskId;
-
-        sp.web.lists.getById(props?.listId).items.getById(props.taskId).versions.get().then(versions => {
+        let web = new Web(siteTypeUrl);
+        web.lists.getById(props?.listId).items.getById(props.taskId).versions.get().then(versions => {
             console.log('Version History:', versions);
             versionData = versions;
 
@@ -152,7 +152,7 @@ export default function VersionHistory(props: any) {
           <div style={{ marginRight: "auto", fontSize: "20px", fontWeight: "600", marginLeft: '15px' }}>
             Version History
           </div>
-          <Tooltip />
+          <Tooltip ComponentId={1950}/>
         </>
       );
     };

@@ -2365,16 +2365,22 @@ function TimeEntryPopup(item: any) {
                     <span>
                       {row?.original?.AuthorImage != "" &&
                         row?.original.AuthorImage != null ? (
+                          <span>
+                            <a href={`${CurrentSiteUrl}/SitePages/TaskDashboard.aspx?UserId=${row?.original?.AuthorId}&Name=${row?.original?.AuthorTitle}`} target="_blank" data-interception="off" title={row?.original?.AuthorTitle}>
                         <img
                           className="AssignUserPhoto1 bdrbox m-0 wid29"
                           title={row?.original.AuthorName}
                           data-toggle="popover"
                           data-trigger="hover"
-                          src={row?.original.AuthorImage}
+                          src={row?.original?.AuthorImage}
                         ></img>
+                        </a>
+                        </span>
                       ) : (
                         <>
                           {" "}
+                          <span>
+                            <a href={`${CurrentSiteUrl}/SitePages/TaskDashboard.aspx?UserId=${row?.original.AuthorId}&Name=${row?.original.AuthorTitle}`} target="_blank" data-interception="off" title={row?.original.AuthorTitle}>
                           <img
                             className="AssignUserPhoto1 bdrbox m-0 wid29"
                             title={row?.original.AuthorName}
@@ -2382,6 +2388,8 @@ function TimeEntryPopup(item: any) {
                             data-trigger="hover"
                             src="https://hhhhteams.sharepoint.com/sites/HHHH/SiteCollectionImages/ICONS/32/icon_user.jpg"
                           ></img>
+                          </a>
+                          </span>
                         </>
                       )}
                       <span className="mx-1">{row?.original?.AuthorName}</span>

@@ -3,7 +3,6 @@ import { Web } from 'sp-pnp-js';
 import * as globalCommoan from '../../../globalComponents/globalCommon';
 import EmployeePieChart from './EmployeePieChart';
 import { myContextValue } from '../../../globalComponents/globalCommon'
-import WorldClock from './worldclock2';
 import Header from './HeaderSection';
 import TaskStatusTbl from './TaskStausTable';
 import MultipleWebpart from './MutltipleWebpart';
@@ -48,7 +47,7 @@ const EmployeProfile = (props: any) => {
     const web = new Web(props.props?.siteUrl);
     await web.lists
       .getById(props?.props?.Announcements)
-      .items.select("Title", "ID", "Body")
+      .items.select("Title", "ID", "Body", "isShow").filter("isShow eq 1")
       .getAll().then(async (data: any) => {
         setAnnouceMents(data)
       }).catch((err: any) => {
@@ -99,7 +98,7 @@ const EmployeProfile = (props: any) => {
       taskUsers = await web.lists
         .getById(props?.props?.TaskUsertListID)
         .items
-        .select("Id,UserGroupId,Suffix,Title,Email,TeamLeader/Id,TeamLeader/Title,SortOrder,Role,IsShowTeamLeader,Company,ParentID1,Status,Item_x0020_Cover,AssingedToUserId,isDeleted,AssingedToUser/Title,AssingedToUser/Id,AssingedToUser/EMail,ItemType,Approver/Id,Approver/Title,Approver/Name&$expand=TeamLeader,AssingedToUser,Approver")
+        .select("Id,UserGroupId,UserGroup/Title,Suffix,Title,Email,TeamLeader/Id,TeamLeader/Title,SortOrder,Role,IsShowTeamLeader,Company,ParentID1,Status,Item_x0020_Cover,AssingedToUserId,isDeleted,AssingedToUser/Title,AssingedToUser/Id,AssingedToUser/EMail,ItemType,Approver/Id,Approver/Title,Approver/Name&$expand=TeamLeader,UserGroup,AssingedToUser,Approver")
         .get();
       let mailApprover: any;
       taskUsers?.map((item: any) => {
@@ -265,7 +264,7 @@ const EmployeProfile = (props: any) => {
       });
   };
   return (
-    <myContextValue.Provider value={{ ...myContextValue, approverEmail: approverEmail, propsValue: props.props, currentTime: currentTime, annouceMents: annouceMents, siteUrl: props?.props?.siteUrl, AllSite: AllSite, currentUserData: currentUserData, AlltaskData: data, timesheetListConfig: timesheetListConfig, AllMasterTasks: AllMasterTasks }}>
+    <myContextValue.Provider value={{ ...myContextValue, approverEmail: approverEmail, propsValue: props.props, currentTime: currentTime, annouceMents: annouceMents, siteUrl: props?.props?.siteUrl, AllSite: AllSite, currentUserData: currentUserData, AlltaskData: data, timesheetListConfig: timesheetListConfig, AllMasterTasks: AllMasterTasks, AllTaskUser: taskUsers }}>
       <div> <Header /></div>
       <TaskStatusTbl />
       <MultipleWebpart />

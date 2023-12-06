@@ -46,6 +46,7 @@ import BackgroundCommentComponent from "./BackgroundCommentComponent";
 //import EODReportComponent from "../EOD Report Component/EODReportComponent";
 import { CurrentUser } from "sp-pnp-js/lib/sharepoint/siteusers";
 import { filter } from "lodash";
+import EmailNotificationMail from "./EmailNotificationMail";
 
 
 
@@ -63,6 +64,7 @@ var tempCategoryData: any = '';
 var SiteTypeBackupArray: any = [];
 var currentUserBackupArray: any = [];
 let AutoCompleteItemsArray: any = [];
+let ValueStatus:any=''
 let SelectedSite: any = ''
 var FeedBackBackupArray: any = [];
 var SiteId = ''
@@ -118,6 +120,7 @@ const EditTaskPopup = (Items: any) => {
     const [SearchedCategoryData, setSearchedCategoryData] = useState([]);
     let [TaskAssignedTo, setTaskAssignedTo] = useState([]);
     let [TaskTeamMembers, setTaskTeamMembers] = useState([]);
+    const [sendEmailNotification, setSendEmailNotification] = useState(false);
     let [TaskResponsibleTeam, setTaskResponsibleTeam] = useState([]);
     const [UpdateTaskInfo, setUpdateTaskInfo] = useState(
         {
@@ -1169,7 +1172,9 @@ const EditTaskPopup = (Items: any) => {
                     let tempArray: any = [FeedBackItem]
                     item.FeedBack = JSON.stringify(tempArray);
                     item.FeedBackArray = tempArray[0]?.FeedBackDescriptions;
+                    item.FeedBackBackup=tempArray;
                     FeedBackBackupArray = JSON.stringify(tempArray);
+                   
                 }
 
                 if (item.OffshoreComments != null || item.OffshoreComments != undefined) {
@@ -2347,6 +2352,12 @@ const EditTaskPopup = (Items: any) => {
                         // if(TaskDetailsFromCall[0].TaskID == null && TaskDetailsFromCall[0].TaskID ==  undefined){
                         //     TaskDetailsFromCall[0].TaskID = 'T'+ TaskDetailsFromCall[0].Id
                         // }
+
+                        if (IsTaskCompleted == true){
+                            setLastUpdateTaskData(TaskDetailsFromCall[0]);
+                            ValueStatus='90'
+                            setSendEmailNotification(true)
+                        }
                         setLastUpdateTaskData(TaskDetailsFromCall[0]);
                         if (usedFor == "Image-Tab") {
                             GetExtraLookupColumnData();
@@ -2378,8 +2389,9 @@ const EditTaskPopup = (Items: any) => {
                                     setSendEmailComponentStatus(false)
                                 }
                             }
-                            if (CalculateStatusPercentage == 5 && ImmediateStatus) {
-                                setSendEmailComponentStatus(true);
+                            if ((CalculateStatusPercentage == 5 ||CalculateStatusPercentage == 10 || CalculateStatusPercentage == 80) && ImmediateStatus) {
+                                ValueStatus = CalculateStatusPercentage
+                                setSendEmailNotification(true);
                                 Items.StatusUpdateMail = true;
                             } else {
                                 setSendEmailComponentStatus(false);
@@ -2697,7 +2709,7 @@ const EditTaskPopup = (Items: any) => {
             Title: UpdateTaskInfo.Title ? UpdateTaskInfo.Title : EditData.Title,
             Priority: Priority,
             StartDate: EditData.StartDate ? Moment(EditData.StartDate).format("MM-DD-YYYY") : null,
-            PercentComplete: UpdateTaskInfo.PercentCompleteStatus ? (Number(UpdateTaskInfo.PercentCompleteStatus) / 100) : (EditData.PercentComplete ? (EditData.PercentComplete / 100) : null),
+            PercentComplete:  UpdateTaskInfo.PercentCompleteStatus != '' ? (Number(UpdateTaskInfo.PercentCompleteStatus) / 100) : (EditData.PercentComplete ? (EditData.PercentComplete / 100) : 0),
             Categories: CategoriesData ? CategoriesData : null,
             PortfolioId: smartComponentsIds === '' ? null : smartComponentsIds,
             RelevantPortfolioId: { "results": (RelevantPortfolioIds != undefined && RelevantPortfolioIds?.length > 0) ? RelevantPortfolioIds : [] },
@@ -3990,6 +4002,7 @@ const EditTaskPopup = (Items: any) => {
 
     const SendEmailNotificationCallBack = useCallback((items: any) => {
         setSendEmailComponentStatus(false);
+        setSendEmailNotification(false)
         Items.Call(items);
     }, [])
     // ************************ this is for Site Composition Component Section Functions ***************************
@@ -5198,6 +5211,7 @@ const EditTaskPopup = (Items: any) => {
                                     </div>
                                     <div className="col-md-4">
                                         <div className="full_width ">
+                                           
                                             <CommentCard siteUrl={siteUrls} listName={Items?.Items?.siteType} itemID={Items.Items.Id} AllListId={AllListIdData} Context={Context} />
                                         </div>
                                         <div className="pull-right">
@@ -5257,11 +5271,13 @@ const EditTaskPopup = (Items: any) => {
                                                                                 <img className="imgAuthor" title={ImageDtl.UserName} src={ImageDtl.UserImage ? ImageDtl.UserImage : ''} />
                                                                             </span>
                                                                         </div>
-                                                                        <div className="alignCenter">
-                                                                            <span onClick={() => openReplaceImagePopup(index)} title="Replace Image"><TbReplace /> </span>
-                                                                            <span className="mx-1" title="Delete" onClick={() => RemoveImageFunction(index, ImageDtl.ImageName, "Remove")}> | <RiDeleteBin6Line /> | </span>
-                                                                            <span title="Customize the Width of Page" onClick={() => ImageCustomizeFunction(index)}>
+                                                                        < div className="alignCenter">
+                                                                            <span className="hover-text" onClick={() => openReplaceImagePopup(index)}><TbReplace /> <span className="tooltip-text pop-right">Replace Image</span></span>
+                                                                            <span className="mx-1 hover-text" onClick={() => RemoveImageFunction(index, ImageDtl.ImageName, "Remove")}> | <RiDeleteBin6Line /> | 
+                                                                            <span className="tooltip-text pop-right">Delete</span></span>
+                                                                            <span className="hover-text" onClick={() => ImageCustomizeFunction(index)}>
                                                                                 <FaExpandAlt /> |
+                                                                                <span className="tooltip-text pop-right">Customize the Width of Page</span>
                                                                             </span>
                                                                             <span className="ms-1 m-0 img-info hover-text" onClick={() => openAddImageDescriptionFunction(index, ImageDtl, "Opne-Model")}>
                                                                                 <span className="svg__iconbox svg__icon--info dark"></span>
@@ -5420,6 +5436,19 @@ const EditTaskPopup = (Items: any) => {
                             ApprovalTaskStatus={ApprovalTaskStatus}
                             callBack={SendEmailNotificationCallBack}
                         /> : null}
+                         {sendEmailNotification ?
+                        <EmailNotificationMail
+                            AllTaskUser={AllTaskUser}
+                            CurrentUser={currentUserData}
+                            CreatedApprovalTask={Items.sendApproverMail}
+                            statusUpdateMailSendStatus={ImmediateStatus && sendEmailComponentStatus ? true : false}
+                            IsEmailCategoryTask={EmailStatus}
+                            items={LastUpdateTaskData}
+                            Context={Context}
+                            ApprovalTaskStatus={ApprovalTaskStatus}
+                            callBack={SendEmailNotificationCallBack}
+                            statusValue={ValueStatus}/>
+                             : null}
                     {/* {OpenEODReportPopup ? <EODReportComponent TaskDetails={EditData} siteUrl={siteUrls} Context={Context} Callback={EODReportComponentCallback} /> : null} */}
                 </div>
             </Panel>

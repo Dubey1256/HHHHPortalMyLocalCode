@@ -265,6 +265,19 @@ export default function ProjectOverview(props: any) {
             siteConfig = [];
         }
     };
+    const findUserByName = (name: any) => {
+        const user = AllTaskUsers.filter(
+            (user: any) => user?.AssingedToUser?.Id === name
+        );
+        let Image: any;
+        if (user[0]?.Item_x0020_Cover != undefined) {
+            Image = user[0].Item_x0020_Cover.Url;
+        } else {
+            Image =
+                "https://hhhhteams.sharepoint.com/sites/HHHH/PublishingImages/Portraits/icon_user.jpg";
+        }
+        return user ? Image : null;
+    };
     const columns = React.useMemo<ColumnDef<any, unknown>[]>(
         () => [
             {
@@ -436,6 +449,65 @@ export default function ProjectOverview(props: any) {
                 resetSorting: false,
                 header: "",
                 size: 60,
+            },
+            {
+                accessorFn: (row) => row?.TaskCategories,
+                cell: ({ row }) => (
+                    <span>
+                        {row?.original?.TaskCategories && row?.original?.TaskCategories.length > 0
+                            ? row?.original?.TaskCategories.map((category: any, index: any) => (
+                                <div key={index}>{category.Title}</div>
+                            ))
+                            : ''}
+                    </span>
+                ),
+                id: 'TaskCategories',
+                placeholder: "Task Categories",
+                resetColumnFilters: false,
+                resetSorting: false,
+                header: "",
+                size: 100
+            },
+            {
+                accessorFn: (row) => row?.Created,
+                cell: ({ row }) => (
+                    <span>
+                        {row?.original?.Created == null ? (
+                            ""
+                        ) : (
+                            <>
+                                <span className='ms-1'>{row?.original?.DisplayCreateDate} </span>
+
+                                {row?.original?.Author != undefined ? (
+                                    <>
+                                        <a
+                                            href={`${AllListId?.siteUrl}/SitePages/TaskDashboard.aspx?UserId=${row?.original?.Author?.Id}&Name=${row?.original?.Author?.Title}`}
+                                            target="_blank"
+                                            data-interception="off"
+                                        >
+                                            <img title={row?.original?.Author?.Title} className="workmember ms-1" src={findUserByName(row?.original?.Author?.Id)} />
+                                        </a>
+                                    </>
+                                ) : (
+                                    <span className='svg__iconbox svg__icon--defaultUser grey' title={row?.original?.Author?.Title}></span>
+                                )}
+                            </>
+                        )}
+                    </span>
+                ),
+                id: 'Created',
+                resetColumnFilters: false,
+                resetSorting: false,
+                placeholder: "Created",
+                filterFn: (row: any, columnName: any, filterValue: any) => {
+                    if (row?.original?.Author?.Title?.toLowerCase()?.includes(filterValue?.toLowerCase()) || row?.original?.DisplayCreateDate?.includes(filterValue)) {
+                        return true
+                    } else {
+                        return false
+                    }
+                },
+                header: "",
+                size: 125
             },
             {
                 accessorKey: "descriptionsSearch",
@@ -696,6 +768,65 @@ export default function ProjectOverview(props: any) {
                 size: 60,
             },
             {
+                accessorFn: (row) => row?.TaskCategories,
+                cell: ({ row }) => (
+                    <span>
+                        {row?.original?.TaskCategories && row?.original?.TaskCategories.length > 0
+                            ? row?.original?.TaskCategories.map((category: any, index: any) => (
+                                <div key={index}>{category.Title}</div>
+                            ))
+                            : ''}
+                    </span>
+                ),
+                id: 'TaskCategories',
+                placeholder: "Task Categories",
+                resetColumnFilters: false,
+                resetSorting: false,
+                header: "",
+                size: 100
+            },
+            {
+                accessorFn: (row) => row?.Created,
+                cell: ({ row }) => (
+                    <span>
+                        {row?.original?.Created == null ? (
+                            ""
+                        ) : (
+                            <>
+                                <span className='ms-1'>{row?.original?.DisplayCreateDate} </span>
+
+                                {row?.original?.Author != undefined ? (
+                                    <>
+                                        <a
+                                            href={`${AllListId?.siteUrl}/SitePages/TaskDashboard.aspx?UserId=${row?.original?.Author?.Id}&Name=${row?.original?.Author?.Title}`}
+                                            target="_blank"
+                                            data-interception="off"
+                                        >
+                                            <img title={row?.original?.Author?.Title} className="workmember ms-1" src={findUserByName(row?.original?.Author?.Id)} />
+                                        </a>
+                                    </>
+                                ) : (
+                                    <span className='svg__iconbox svg__icon--defaultUser grey' title={row?.original?.Author?.Title}></span>
+                                )}
+                            </>
+                        )}
+                    </span>
+                ),
+                id: 'Created',
+                resetColumnFilters: false,
+                resetSorting: false,
+                placeholder: "Created",
+                filterFn: (row: any, columnName: any, filterValue: any) => {
+                    if (row?.original?.Author?.Title?.toLowerCase()?.includes(filterValue?.toLowerCase()) || row?.original?.DisplayCreateDate?.includes(filterValue)) {
+                        return true
+                    } else {
+                        return false
+                    }
+                },
+                header: "",
+                size: 125
+            },
+            {
 
                 cell: ({ row }) => (
                     <>
@@ -878,7 +1009,65 @@ export default function ProjectOverview(props: any) {
                 header: "",
                 size: 100,
             },
+            {
+                accessorFn: (row) => row?.TaskCategories,
+                cell: ({ row }) => (
+                    <span>
+                        {row?.original?.TaskCategories && row?.original?.TaskCategories.length > 0
+                            ? row?.original?.TaskCategories.map((category: any, index: any) => (
+                                <div key={index}>{category.Title}</div>
+                            ))
+                            : ''}
+                    </span>
+                ),
+                id: 'TaskCategories',
+                placeholder: "Task Categories",
+                resetColumnFilters: false,
+                resetSorting: false,
+                header: "",
+                size: 100
+            },
+            {
+                accessorFn: (row) => row?.Created,
+                cell: ({ row }) => (
+                    <span>
+                        {row?.original?.Created == null ? (
+                            ""
+                        ) : (
+                            <>
+                                <span className='ms-1'>{row?.original?.DisplayCreateDate} </span>
 
+                                {row?.original?.Author != undefined ? (
+                                    <>
+                                        <a
+                                            href={`${AllListId?.siteUrl}/SitePages/TaskDashboard.aspx?UserId=${row?.original?.Author?.Id}&Name=${row?.original?.Author?.Title}`}
+                                            target="_blank"
+                                            data-interception="off"
+                                        >
+                                            <img title={row?.original?.Author?.Title} className="workmember ms-1" src={findUserByName(row?.original?.Author?.Id)} />
+                                        </a>
+                                    </>
+                                ) : (
+                                    <span className='svg__iconbox svg__icon--defaultUser grey' title={row?.original?.Author?.Title}></span>
+                                )}
+                            </>
+                        )}
+                    </span>
+                ),
+                id: 'Created',
+                resetColumnFilters: false,
+                resetSorting: false,
+                placeholder: "Created",
+                filterFn: (row: any, columnName: any, filterValue: any) => {
+                    if (row?.original?.Author?.Title?.toLowerCase()?.includes(filterValue?.toLowerCase()) || row?.original?.DisplayCreateDate?.includes(filterValue)) {
+                        return true
+                    } else {
+                        return false
+                    }
+                },
+                header: "",
+                size: 125
+            },
             {
 
                 cell: ({ row }) => (
@@ -1109,6 +1298,65 @@ export default function ProjectOverview(props: any) {
                 resetSorting: false,
                 header: "",
                 size: 60,
+            },
+            {
+                accessorFn: (row) => row?.TaskCategories,
+                cell: ({ row }) => (
+                    <span>
+                        {row?.original?.TaskCategories && row?.original?.TaskCategories.length > 0
+                            ? row?.original?.TaskCategories.map((category: any, index: any) => (
+                                <div key={index}>{category.Title}</div>
+                            ))
+                            : ''}
+                    </span>
+                ),
+                id: 'TaskCategories',
+                placeholder: "Task Categories",
+                resetColumnFilters: false,
+                resetSorting: false,
+                header: "",
+                size: 100
+            },
+            {
+                accessorFn: (row) => row?.Created,
+                cell: ({ row }) => (
+                    <span>
+                        {row?.original?.Created == null ? (
+                            ""
+                        ) : (
+                            <>
+                                <span className='ms-1'>{row?.original?.DisplayCreateDate} </span>
+
+                                {row?.original?.Author != undefined ? (
+                                    <>
+                                        <a
+                                            href={`${AllListId?.siteUrl}/SitePages/TaskDashboard.aspx?UserId=${row?.original?.Author?.Id}&Name=${row?.original?.Author?.Title}`}
+                                            target="_blank"
+                                            data-interception="off"
+                                        >
+                                            <img title={row?.original?.Author?.Title} className="workmember ms-1" src={findUserByName(row?.original?.Author?.Id)} />
+                                        </a>
+                                    </>
+                                ) : (
+                                    <span className='svg__iconbox svg__icon--defaultUser grey' title={row?.original?.Author?.Title}></span>
+                                )}
+                            </>
+                        )}
+                    </span>
+                ),
+                id: 'Created',
+                resetColumnFilters: false,
+                resetSorting: false,
+                placeholder: "Created",
+                filterFn: (row: any, columnName: any, filterValue: any) => {
+                    if (row?.original?.Author?.Title?.toLowerCase()?.includes(filterValue?.toLowerCase()) || row?.original?.DisplayCreateDate?.includes(filterValue)) {
+                        return true
+                    } else {
+                        return false
+                    }
+                },
+                header: "",
+                size: 125
             },
             {
                 cell: ({ row }) => (
@@ -1413,6 +1661,7 @@ export default function ProjectOverview(props: any) {
                 items.commentsSearch = items?.Comments != null && items?.Comments != undefined ? items.Comments.replace(/(<([^>]+)>)/gi, "").replace(/\n/g, '') : '';
                 items['TaskID'] = items?.PortfolioStructureID
                 items.DisplayDueDate = items.DueDate != null ? Moment(items.DueDate).format('DD/MM/YYYY') : ""
+                items.DisplayCreateDate = items.Created != null ? Moment(items.Created).format("DD/MM/YYYY") : "";
             })
             let AllProject = Alltask?.filter((item: any) => item?.Item_x0020_Type == "Project")
 
@@ -1715,7 +1964,7 @@ export default function ProjectOverview(props: any) {
 
                                     </dl>
                                     <div className="m-0 text-end">
-                                        <AddProject CallBack={CallBack} items={CheckBoxData} AllListId={AllListId} />
+                                        <AddProject CallBack={CallBack} items={CheckBoxData} AllListId={AllListId} data={data}/>
                                         {currentUserData?.Title == "Deepak Trivedi" || currentUserData?.Title == "Ranu Trivedi" || currentUserData?.Title == "Abhishek Tiwari" || currentUserData?.Title == "Prashant Kumar" ?
                                             <>
                                                 <a className="hreflink  ms-1" onClick={() => { sendAllWorkingTodayTasks() }}>Share Working Todays's Task</a></>
