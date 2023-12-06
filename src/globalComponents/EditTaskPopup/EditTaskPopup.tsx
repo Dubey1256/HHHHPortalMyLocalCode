@@ -2348,12 +2348,14 @@ const EditTaskPopup = (Items: any) => {
                             TaskDetailsFromCall[0].FeedBack = JSON.parse(TaskDetailsFromCall[0].FeedBack)
                             TaskDetailsFromCall[0].siteType = EditData.siteType;
                             TaskDetailsFromCall[0].siteUrl = siteUrls;
+                            TaskDetailsFromCall[0].siteIcon = Items.Items.SiteIcon
                         }
                         // if(TaskDetailsFromCall[0].TaskID == null && TaskDetailsFromCall[0].TaskID ==  undefined){
                         //     TaskDetailsFromCall[0].TaskID = 'T'+ TaskDetailsFromCall[0].Id
                         // }
 
-                        if (IsTaskCompleted == true){
+                        let CalculateStatusPercentages: any = TaskDetailsFromCall[0].PercentComplete ? TaskDetailsFromCall[0].PercentComplete * 100 : 0;
+                        if (CalculateStatusPercentages == 90 && EmailStatus == true){
                             setLastUpdateTaskData(TaskDetailsFromCall[0]);
                             ValueStatus='90'
                             setSendEmailNotification(true)
@@ -2389,7 +2391,7 @@ const EditTaskPopup = (Items: any) => {
                                     setSendEmailComponentStatus(false)
                                 }
                             }
-                            if ((CalculateStatusPercentage == 5 ||CalculateStatusPercentage == 10 || CalculateStatusPercentage == 80) && ImmediateStatus) {
+                            if ((CalculateStatusPercentage == 5 ||CalculateStatusPercentage == 10 || CalculateStatusPercentage == 80 || CalculateStatusPercentage == 90) && ImmediateStatus) {
                                 ValueStatus = CalculateStatusPercentage
                                 setSendEmailNotification(true);
                                 Items.StatusUpdateMail = true;
