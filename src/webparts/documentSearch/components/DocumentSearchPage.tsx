@@ -196,12 +196,12 @@ export default function DocumentSearchPage(Props: any) {
             <section className='ContentSection'>
                 <div className='row'>
                     <div className='col-sm-3 text-primary'>
-                        <h3 className="heading">Document Serach
+                        <h3 className="heading">Document Search
                         </h3>
                     </div>
                     <div className='col-sm-9 text-primary'>
                         <h6 className='pull-right'><b><a data-interception="off"
-                            target="_blank" href="https://hhhhteams.sharepoint.com/sites/HHHH/SP/SitePages/document-search-old.aspx">Old Document Serach</a></b>
+                            target="_blank" href="https://hhhhteams.sharepoint.com/sites/HHHH/SP/SitePages/document-search-old.aspx">Old Document Search</a></b>
                         </h6>
                     </div>
                 </div>

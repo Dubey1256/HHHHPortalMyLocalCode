@@ -680,20 +680,23 @@ export class PortfolioStructureCreationCard extends React.Component<IStructureCr
 
                     {this.state.OpenModal == 'Component' &&
                         <div >
-                            <div className='row'>
-                                <div className="col form-group">
-                                    <div className="d-flex">
-                                        <label className='full-width'>Title</label>
-                                        {(this.props.PortfolioType === "" || this.props.PortfolioType === undefined) && <div className="mx-auto  col-auto mb-1">{this.state.PortfolioTypeArray != undefined && this.state.PortfolioTypeArray?.length > 0 && this.state.PortfolioTypeArray?.map((item: any) => {
+                            <div>
+                                <div className='mb-3 mt-2'>
+                                    <label className='full-width form-label'>Select type of component</label>
+                            {(this.props.PortfolioType === "" || this.props.PortfolioType === undefined) && <div className="mx-auto col-auto mb-1">{this.state.PortfolioTypeArray != undefined && this.state.PortfolioTypeArray?.length > 0 && this.state.PortfolioTypeArray?.map((item: any) => {
                                             return (
-                                                <label className='SpfxCheckRadio me-1'><input className='radio' defaultChecked={this.state.defaultPortfolioType.toLowerCase() === item.Title.toLowerCase()} name='PortfolioType'  type='radio'  onClick={() => this.CheckPortfolioType(item)} ></input> {item.Title}</label>
+                                                <label className='SpfxCheckRadio'><input className='radio' defaultChecked={this.state.defaultPortfolioType.toLowerCase() === item.Title.toLowerCase()} name='PortfolioType'  type='radio'  onClick={() => this.CheckPortfolioType(item)} ></input> {item.Title}</label>
                                             )
                                         }
                                         )}
 
-                                        </div>}
+                                        </div>}</div>
+                                <div>
+                                    <div className="mt-2">
+                                        <label className='full-width'>Title</label>
+                                        
                                     </div>
-                                    <div className="col">
+                                    <div className="col input-group">
                                         <input className="form-control full_width" type="text" value={this.state.textTitle} onChange={(e) => this.handleInputChange(e)}
                                             placeholder="Enter Component Title..." ng-required="true" />
                                         <div className="dropdown">
@@ -768,8 +771,8 @@ export class PortfolioStructureCreationCard extends React.Component<IStructureCr
                                             return <>
 
                                                 <div>
-                                                    <div className='card mb-2 mt-2 p-0 rounded-0'>
-                                                        <div className='card-header p-1'>
+                                                    <div className='mt-2'>
+                                                        <div>
                                                             <h6 className='my-0 fw-normal'>
                                                                 {
                                                                     this.state.ChildItemTitle.length > 1 ?
@@ -781,9 +784,9 @@ export class PortfolioStructureCreationCard extends React.Component<IStructureCr
                                                                         : ''}
                                                             </h6>
                                                         </div>
-                                                        <div className="card-body">
+                                                        <div className='mt-2'>
                                                             <div className='d-flex justify-content-between align-items-center mb-0'>
-                                                                <label className='mb-1'>
+                                                                <label className='mb-1 alignCenter'>
                                                                     {
                                                                         (item.MasterItemsType == 'SubComponent') ?
                                                                             <span className="Dyicons ">S</span>
@@ -792,12 +795,12 @@ export class PortfolioStructureCreationCard extends React.Component<IStructureCr
 
 
                                                                     }
-                                                                    <span className='ms-1'><strong>Title</strong> </span> </label>
+                                                                    <span className='ms-1'>Title</span> </label>
 
                                                                 {this.state.SelectedItem.Item_x0020_Type == 'Component' &&
                                                                     <>
                                                                         <div>
-                                                                            <span className='me-2 SpfxCheckRadio'>
+                                                                            <span className='SpfxCheckRadio'>
                                                                                 <input
                                                                                 className='radio'
                                                                                     type="radio"
@@ -805,18 +808,16 @@ export class PortfolioStructureCreationCard extends React.Component<IStructureCr
                                                                                     checked={item.MasterItemsType === 'SubComponent'}
                                                                                     onChange={(e) => this.handleTypeChange(e, index)}
                                                                                 />
-                                                                                <label className='ms-1'>SubComponent</label>
+                                                                                SubComponent
                                                                             </span>
-                                                                            <span className='SpfxCheckRadio'>
+                                                                            <span className='SpfxCheckRadio me-0'>
                                                                                 <input
                                                                                 className='radio'
                                                                                     type="radio"
                                                                                     value="Feature"
                                                                                     checked={item.MasterItemsType === 'Feature'}
                                                                                     onChange={(e) => this.handleTypeChange(e, index)}
-                                                                                />
-
-                                                                                <label className='ms-1'>  Feature</label>
+                                                                                />Feature
 
                                                                             </span>
                                                                         </div>
@@ -824,18 +825,16 @@ export class PortfolioStructureCreationCard extends React.Component<IStructureCr
                                                                 }
                                                             </div>
                                                             <div className="d-flex">
-
-                                                                <div className="col ">
+                                                                <div className="col input-group">
                                                                     <input className="form-control full_width mb-10" type="text" value={this.state.ChildItemTitle[index].Title} onChange={(e) => this.handleChildItemInput(e, index)}
                                                                         placeholder="Enter Child Item Title" ng-required="true" />
                                                                 </div>
-
                                                             </div>
                                                             <div className="row mt-3">
                                                                 {item.Child.length > 0 &&
                                                                     <div ng-repeat="items in item.Child">
-                                                                        <label className="  titleclrgreen "><strong>Short
-                                                                            Description</strong> </label>
+                                                                        <label className="  titleclrgreen ">Short
+                                                                            Description </label>
                                                                         <div className="col">
                                                                             <textarea className='full-width' rows={4}
                                                                                 value={this.state.ChildItemTitle[index].Child[0].Short_x0020_Description_x0020_On} onChange={(e) => this.handleChildItemSD(e, index)}></textarea>
@@ -862,8 +861,9 @@ export class PortfolioStructureCreationCard extends React.Component<IStructureCr
                                 </div>
                                 <footer className={(this.state.defaultPortfolioType == 'Service' || this.state.defaultPortfolioType == 'Service Portfolio') ? "serviepannelgreena text-end  mt-2" : "text-end  mt-2"}>
                                     <a className="me-1" onClick={() => this.addNewTextField()} ng-click="addNewTextField()">
-                                        <img className="icon-sites-img"
-                                            src="https://hhhhteams.sharepoint.com/sites/HHHH/SiteCollectionImages/ICONS/Shareweb/Add-New.png" />
+                                        {/* <img className="icon-sites-img"
+                                            src="https://hhhhteams.sharepoint.com/sites/HHHH/SiteCollectionImages/ICONS/Shareweb/Add-New.png" /> */}
+                                            <span className="svg__iconbox svg__icon--Plus mini alignIcon"></span>
                                         Add more child items
                                     </a>
 
