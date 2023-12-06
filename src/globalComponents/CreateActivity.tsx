@@ -90,11 +90,12 @@ const CreateActivity = (props: any) => {
         }
         setSelectedItem(props?.selectedItem)
         let targetDiv :any = document?.querySelector('.ms-Panel-main');
-        if(props?.selectedItem?.PortfolioType?.Color!=undefined){
+        if(props?.portfolioTypeData?.Color!=undefined){
             setTimeout(()=>{
                 if (targetDiv ) {
                     // Change the --SiteBlue variable for elements under the targetDiv
-                    $('.ms-Panel-main').css('--SiteBlue', props?.selectedItem?.PortfolioType?.Color);
+                    // $('.ms-Panel-main').css('--SiteBlue', props?.selectedItem?.PortfolioType?.Color);
+                    $('.ms-Panel-main').css('--SiteBlue', props?.portfolioTypeData?.Color);
                 }
             },1000)
         }
@@ -102,8 +103,8 @@ const CreateActivity = (props: any) => {
     React.useEffect(() => {
         setTimeout(()=>{
          const panelMain: any = document.querySelector('.ms-Panel-main');
-         if (panelMain && props?.selectedItem?.PortfolioType?.Color) {
-             $('.ms-Panel-main').css('--SiteBlue', props?.selectedItem?.PortfolioType?.Color);; // Set the desired color value here
+         if (panelMain && props?.portfolioTypeData?.Color) {
+             $('.ms-Panel-main').css('--SiteBlue', props?.portfolioTypeData?.Color); // Set the desired color value here
          }
         },2000)
      }, [IsComponentPicker]);
@@ -1249,7 +1250,7 @@ const CreateActivity = (props: any) => {
                 isOpen={true}
                 onDismiss={() => closePopup("item")}
                 isBlocking={false}
-                className={props?.props?.PortfolioType?.Color}
+                className={props?.portfolioTypeData?.Color}
             >
                 <div className="modal-body active">
                     {siteType?.length > 1 && selectedItem?.TaskType?.Title != "Workstream" ?
