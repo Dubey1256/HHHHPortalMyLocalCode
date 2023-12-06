@@ -34,7 +34,7 @@ const EmailComponenet = (props: any) => {
   const loadleave = () => {
     const web = new Web(props.Listdata.siteUrl);
     web.lists.getById(props.Listdata.SmalsusLeaveCalendar).items.select(
-      "RecurrenceData,Duration,Author/Title,Editor/Title,NameId,Employee/Id,Employee/Title,Category,Description,ID,EndDate,EventDate,Location,Title,fAllDayEvent,EventType,UID,fRecurrence,Event_x002d_Type"
+      "RecurrenceData,Duration,Author/Title,Editor/Title,NameId,Employee/Id,Employee/Title,Category,Description,ID,EndDate,EventDate,Location,Title,fAllDayEvent,EventType,UID,fRecurrence,HalfDay,Event_x002d_Type"
     ).expand("Author,Editor,Employee").top(500).getAll()
       .then((results: any) => {
         setleaveData(results);
@@ -68,14 +68,13 @@ const EmailComponenet = (props: any) => {
         membersWorkfromHome.push(items)
       }
     })
-
+let SendEmailMessage =
     sp.utility
       .sendEmail({
         Body: BindHtmlBody(),
          Subject: "HHHH - Team Attendance " + formattedDate + " " + Allteamoforganization + " available - " + (Object?.keys(nameidTotals)?.length - membersWorkfromHome?.length) + " on leave",
         To: [" deepak@hochhuth-consulting.de","stefan.hochhuth@hochhuth-consulting.de","robert.ungethuem@hochhuth-consulting.de","prashant.kumar@hochhuth-consulting.de"],
         // ,"prashant.kumar@hochhuth-consulting.de","ranu.trivedi@hochhuth-consulting.de","jyoti.prasad@hochhuth-consulting.de"
-        // " deepak@hochhuth-consulting.de","stefan.hochhuth@hochhuth-consulting.de","robert.ungethuem@hochhuth-consulting.de","prashant.kumar@hochhuth-consulting.de"
         AdditionalHeaders: {
           "content-type": "text/html",
         },
@@ -119,10 +118,6 @@ const EmailComponenet = (props: any) => {
   let year = new Date().getFullYear();
   let yeardata = leaveData.filter((item) => item?.EventDate?.substring(0, 4) === `${year}`)
 
-
-
-
-
   const calculateTotalWorkingDays = (matchedData: any) => {
     const currentYear = new Date().getFullYear();
 
@@ -146,8 +141,8 @@ const EmailComponenet = (props: any) => {
 
           if (dayOfWeek !== 0 && dayOfWeek !== 6 && !isWeekend(currentDate, adjustedEndDate)) {
             // Exclude Sunday (0) and Saturday (6), and the event date and end date if they're both on a weekend
-            if (item.Event_x002d_Type != "Work From Home") {
-              if (item.HalfDay) {
+            if (item?.Event_x002d_Type != "Work From Home") {
+              if (item?.HalfDay) {
                 workingDays += 0.5; // Consider half-day
               } else {
                 workingDays++;
@@ -270,7 +265,7 @@ const EmailComponenet = (props: any) => {
   designteamavailabel = designttotal.length - designteamleave.length;
 
   const returnEmailHtml = (): any => {
-    let WorkfromHomeEmp: any = []
+     let WorkfromHomeEmp: any = []
     props?.data.filter((items: any) => {
       if (items?.eventType == 'Work From Home') {
         WorkfromHomeEmp.push(items)
@@ -285,7 +280,7 @@ const EmailComponenet = (props: any) => {
                 <div style="color: var(--black, #333);text-align: center;font-family: Segoe UI;font-size: 14px;font-style: normal; font-weight: 600;margin-left: 4px;">Attendance Report</div>
             </div>
             <div style="margin-bottom: 40px;font-size: 32px;font-weight: 600;line-height: 40px;color: #2F5596;font-family: Segoe UI;">
-             
+
                 ${Object?.keys(nameidTotals)?.length === 0 ? `The ${formattedDate} is a great Day! All ${Allteamoforganization} are in Office today!` : `${formattedDate}: ${(Object?.keys(nameidTotals)?.length - WorkfromHomeEmp?.length)} are on leave, ${Allteamoforganization - (Object?.keys(nameidTotals)?.length - WorkfromHomeEmp?.length)} are working`}
             </div>
         `;
@@ -341,20 +336,22 @@ const EmailComponenet = (props: any) => {
 
     tableBody += innerTableRow + ` </table></div>`
 
-    let CompleteEmployeeBody = ` <div style="width: 264px;height: 264px;flex-shrink: 0;border-radius: 264px;background: #EEF4FF;margin-bottom: 40px;padding: 32px;display: flex; align-items: center;justify-content: space-around; margin: 0 auto;">
-    <div style="width: 200px;height: 200px;flex-shrink: 0;background: url(<path-to-image>), lightgray 50% / cover no-repeat;"></div>
+    let CompleteEmployeeBody = ` <div style="width: 264px;height: 264px;flex-shrink: 0;border-radius: 264px;background: #EEF4FF;margin-bottom: 40px;padding: 20px;display: flex; align-items: center;justify-content: space-around; margin: 0 auto;">
+    <div style="width: 200px;height: 200px;flex-shrink: 0;">
+    <img src="https://hhhhteams.sharepoint.com/sites/HHHH/SP/SiteCollectionImages/CalendarImages/image%2048.png">
+    </div>
 </div>
 <div style="margin-bottom: 88px;">
     <div style="display: flex;justify-content: center;align-items: center;gap: 8px;flex-shrink: 0;color: #FFF;border-radius: 4px;
     background: #2F5596;width: 260px;height:40px;font-family: Segoe UI;font-size: 14px;font-style: normal;font-weight: 600;line-height: normal;">See Full Leave Report Online</div>
 </div>
 <div style="display: flex;align-items: center;padding-bottom: 56px;">
-    <img src="" style="height: 48px;" alt="Site Icon">
+    <img src="https://www.hochhuth-consulting.de/images/logo.png" style="height: 48px;" alt="Site Icon">
     <div style="color: var(--black, #333);text-align: center;font-family: Segoe UI;font-size: 14px;font-style: normal; font-weight: 600;margin-left: 4px;">Hochhuth Consulting GmbH</div>
 </div>`
 
     let allEmpPresent = false;
-    Object?.keys(nameidTotals)?.length != 0 ? (allEmpPresent = false) : (allEmpPresent = true);
+     Object?.keys(nameidTotals)?.length != 0 ? (allEmpPresent = false) : (allEmpPresent = true);
 
     if (allEmpPresent) {
       structure += CompleteEmployeeBody + `</div></div></div></div></div>`;
