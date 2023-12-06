@@ -295,7 +295,7 @@ const EmailComponenet = (props: any) => {
         <table style="height: 88px;border-collapse: collapse;">
             <tr>
                 <td style="color: #333;width:158px;height:48px;font-family: Segoe UI;font-size: 14px;font-style: normal;font-weight: 600;padding: 0px 8px;border: 1px solid #EEE;background: #FAFAFA;">Smalsus Lead Team</td>
-                <td style="color: #333;width:190px;height:48px;font-family: Segoe UI;font-size: 14px;font-style: normal;font-weight: 600;padding: 0px 8px;border-top: 1px solid #EEE; border-right: 1px solid #EEE;border-bottom: 1px solid #EEE;background: #FAFAFA;">Senoir Developer Team</td>
+                <td style="color: #333;width:190px;height:48px;font-family: Segoe UI;font-size: 14px;font-style: normal;font-weight: 600;padding: 0px 8px;border-top: 1px solid #EEE; border-right: 1px solid #EEE;border-bottom: 1px solid #EEE;background: #FAFAFA;">Senior Developer Team</td>
                 <td style="color: #333;width:185px;height:48px;font-family: Segoe UI;font-size: 14px;font-style: normal;font-weight: 600;padding: 0px 8px;border-top: 1px solid #EEE; border-right: 1px solid #EEE;border-bottom: 1px solid #EEE;background: #FAFAFA;">Junior Developer Team</td>
                 <td style="color: #333;width:103px;height:48px;font-family: Segoe UI;font-size: 14px;font-style: normal;font-weight: 600;padding: 0px 8px;border-top: 1px solid #EEE; border-right: 1px solid #EEE;border-bottom: 1px solid #EEE;background: #FAFAFA;">Design Team</td>
                 <td style="color: #333;width:104px;height:48px;font-family: Segoe UI;font-size: 14px;font-style: normal;font-weight: 600;padding: 0px 8px;border-top: 1px solid #EEE; border-right: 1px solid #EEE;border-bottom: 1px solid #EEE;background: #FAFAFA;">QA Team</td>

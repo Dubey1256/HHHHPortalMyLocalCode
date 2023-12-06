@@ -1815,7 +1815,7 @@ private async updateProjectComponentServices(dataUpdate:any) {
             <div className='row'>
               <div className="col-sm-12 p-0 ">
 
-                <ul className="spfxbreadcrumb m-0 p-0">
+                <ul className="spfxbreadcrumb mt-16 mb-0 p-0">
                   {this.state?.Result["Portfolio"] == undefined && this.state.breadCrumData?.length == 0 && this.state.Result.Title != undefined ?
                     <>
                       <li  >
