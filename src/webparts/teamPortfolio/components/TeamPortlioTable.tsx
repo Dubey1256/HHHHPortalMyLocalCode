@@ -489,7 +489,7 @@ function TeamPortlioTable(SelectedProp: any) {
             portfolioTypeData?.map((elem: any) => {
                 if (isUpdated === "") {
                     filt = "";
-                } else if (isUpdated === elem.Title || isUpdated?.toLowerCase() === elem?.Title?.toLowerCase()) { filt = "(Portfolio_x0020_Type eq '" + elem.Title + "')" }
+                } else if (isUpdated === elem.Title || isUpdated?.toLowerCase() === elem?.Title?.toLowerCase()) { filt = "(PortfolioType/Title eq '" + elem.Title + "')" }
             })
         }
         let web = new Web(ContextValue.siteUrl);
