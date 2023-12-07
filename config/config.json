@@ -42,14 +42,6 @@
         }
       ]
     },
-    "component-edit-popup-web-part": {
-      "components": [
-        {
-          "entrypoint": "./lib/webparts/componentEditPopup/ComponentEditPopupWebPart.js",
-          "manifest": "./src/webparts/componentEditPopup/ComponentEditPopupWebPart.manifest.json"
-        }
-      ]
-    },
     
     "taskprofile-web-part": {
       "components": [
@@ -290,7 +282,7 @@
       "components": [
         {
           "entrypoint": "./lib/webparts/teamPortfolio/TeamPortfolioWebPart.js",
-          "manifest": "./src/webparts/teamPortfolio/TeamPortfolioWebPart.manifest.json"
+          "manifest": "./src/webparts/teamPortfolio/TeamPortfolicomponentEditPopupoWebPart.manifest.json"
         }
       ]
     },
