@@ -1499,7 +1499,7 @@ const AncTool = (props: any) => {
                             <footer className='text-end p-2'>
 
 
-                                <button className="btn btnPrimary" disabled={renamedFileName?.length > 0 ? false : true} onClick={() => { CreateNewAndTag() }}>Create</button>
+                                <button className="btn btnPrimary" disabled={renamedFileName?.length > 0 && createNewDocType?.length > 0 ? false : true} onClick={() => { CreateNewAndTag() }}>Create</button>
                                 <button className='btn btn-default ms-1' onClick={() => cancelNewCreateFile()}>Cancel</button>
                             </footer>
                         </div>

@@ -27,8 +27,9 @@ let loggedInUser: any = {};
 let ClientCategoriesData: any = [];
 let AutoCompleteItemsArray: any = [];
 let FeedBackItem: any = {};
-let uploadedImage:any;
-let imgdefaultContent=""
+let uploadedImage: any;
+let imgdefaultContent = ""
+let quickCategory: any = []
 const CreateActivity = (props: any) => {
     const [isActive, setIsActive] = React.useState({
         siteType: false,
@@ -39,6 +40,7 @@ const CreateActivity = (props: any) => {
     });
     const [siteType, setSiteType] = React.useState([]);
     const [TaskTitle, setTaskTitle] = React.useState(props?.selectedItem?.Title);
+    const [TaskUrl, setTaskUrl] = React.useState('');
     const [instantCategories, setInstantCategories] = React.useState([])
     const [sendApproverMail, setSendApproverMail] = React.useState(false)
     const [selectedSites, setSelectedSites] = React.useState([]);
@@ -69,6 +71,16 @@ const CreateActivity = (props: any) => {
         AllListId = props?.AllListId
         getTaskUsers();
         GetSmartMetadata();
+        if (props?.pageName == 'QuickTask') {
+            if (props?.Title?.length > 0) {
+                setTaskTitle(`Quick - ${props?.Title}`)
+            } else {
+                setTaskTitle('Quick Task')
+            }
+            if (props?.SiteUrl != undefined && props?.SiteUrl?.length > 0) {
+                setTaskUrl(props?.SiteUrl)
+            }
+        }
 
         if (props?.selectedItem?.AssignedTo?.length > 0) {
             setTaskAssignedTo(props?.selectedItem?.AssignedTo)
@@ -89,25 +101,25 @@ const CreateActivity = (props: any) => {
             ClientCategoriesData = props?.selectedItem?.ClientCategory?.results
         }
         setSelectedItem(props?.selectedItem)
-        let targetDiv :any = document?.querySelector('.ms-Panel-main');
-        if(props?.portfolioTypeData?.Color!=undefined){
-            setTimeout(()=>{
-                if (targetDiv ) {
+        let targetDiv: any = document?.querySelector('.ms-Panel-main');
+        if (props?.portfolioTypeData?.Color != undefined) {
+            setTimeout(() => {
+                if (targetDiv) {
                     // Change the --SiteBlue variable for elements under the targetDiv
                     // $('.ms-Panel-main').css('--SiteBlue', props?.selectedItem?.PortfolioType?.Color);
                     $('.ms-Panel-main').css('--SiteBlue', props?.portfolioTypeData?.Color);
                 }
-            },1000)
+            }, 1000)
         }
     }, [])
     React.useEffect(() => {
-        setTimeout(()=>{
-         const panelMain: any = document.querySelector('.ms-Panel-main');
-         if (panelMain && props?.portfolioTypeData?.Color) {
-             $('.ms-Panel-main').css('--SiteBlue', props?.portfolioTypeData?.Color); // Set the desired color value here
-         }
-        },2000)
-     }, [IsComponentPicker]);
+        setTimeout(() => {
+            const panelMain: any = document.querySelector('.ms-Panel-main');
+            if (panelMain && props?.portfolioTypeData?.Color) {
+                $('.ms-Panel-main').css('--SiteBlue', props?.portfolioTypeData?.Color); // Set the desired color value here
+            }
+        }, 2000)
+    }, [IsComponentPicker]);
     //***************** Load All task Users***************** */
     const getTaskUsers = async () => {
         if (AllListId?.TaskUsertListID != undefined) {
@@ -181,6 +193,10 @@ const CreateActivity = (props: any) => {
             })
         }
         TaskTypes = getSmartMetadataItemsByTaxType(AllMetadata, 'Categories');
+        quickCategory = TaskTypes?.filter((item: any) => { return item?.Title == 'Quick' })
+        if (props?.pageName != undefined && props?.pageName == 'QuickTask') {
+            setCategoriesData(quickCategory)
+        }
         let instantCat: any = [];
         TaskTypes?.map((cat: any) => {
             cat.ActiveTile = false;
@@ -249,6 +265,9 @@ const CreateActivity = (props: any) => {
             setTaskTitle(e.target.value);
         }
     }
+    const changeTaskUrl = (e: any)=>{
+        setTaskUrl(e.target.value);
+    }
 
     // *************** START  Select Tiles Function ********************************
     const setActiveTile = (site: any) => {
@@ -308,10 +327,10 @@ const CreateActivity = (props: any) => {
                 <div className="subheading"
                 >
                     <h2 className="siteColor">
-                        {`Create Quick Option - ${selectedItem?.NoteCall}`}
+                        {props?.pageName == 'QuickTask' ? `Create Quick Option - Task` : `Create Quick Option - ${selectedItem?.NoteCall}`}
                     </h2>
                 </div>
-                <Tooltip ComponentId={1746} />
+                {props?.pageName != undefined && props?.pageName == 'QuickTask' ? null : <Tooltip ComponentId={1746} />}
             </>
         );
     };
@@ -393,54 +412,54 @@ const CreateActivity = (props: any) => {
 
 
     const FlorarImageUploadComponentCallBack = (item: any, FileName: any) => {
-        imgdefaultContent=item;
+        imgdefaultContent = item;
         console.log(item)
         let DataObject: any = {
             fileURL: item,
             file: "Image/jpg",
             fileName: FileName
         }
-        uploadedImage=DataObject;
+        uploadedImage = DataObject;
     }
     const onUploadImageFunction = async (
-        postData:any) => {
-      
+        postData: any) => {
+
         let fileName: any = '';
         let tempArray: any = [];
         let SiteUrl = AllListId?.siteUrl;
-         let date = new Date()
-                let timeStamp = date.getTime();
-                let imageIndex = 0
-                fileName = "T" + postData.Id + '-Image' + imageIndex + "-" + postData.Title?.replace(/["/':?]/g, '')?.slice(0, 40) + " " + timeStamp + ".jpg";
-           
-              
-                let ImgArray = {
-                    ImageName: fileName,
-                    UploadeDate: Moment(new Date()).format("DD/MM/YYYY"),
-                    ImageUrl: SiteUrl + '/Lists/' + postData.siteType + '/Attachments/' + postData?.Id + '/' + fileName,
+        let date = new Date()
+        let timeStamp = date.getTime();
+        let imageIndex = 0
+        fileName = "T" + postData.Id + '-Image' + imageIndex + "-" + postData.Title?.replace(/["/':?]/g, '')?.slice(0, 40) + " " + timeStamp + ".jpg";
 
-                    UserImage: loggedInUser != undefined && loggedInUser.Item_x0020_Cover?.Url?.length > 0 ? loggedInUser.Item_x0020_Cover?.Url : "https://hhhhteams.sharepoint.com/sites/HHHH/SiteCollectionImages/ICONS/32/icon_user.jpg",
-                    UserName: loggedInUser != undefined && loggedInUser.Title?.length > 0 ? loggedInUser.Title : props.context.pageContext._user.displayName,
-                    Description: ''
-                };
-                tempArray.push(ImgArray);
-       
-    
+
+        let ImgArray = {
+            ImageName: fileName,
+            UploadeDate: Moment(new Date()).format("DD/MM/YYYY"),
+            ImageUrl: SiteUrl + '/Lists/' + postData.siteType + '/Attachments/' + postData?.Id + '/' + fileName,
+
+            UserImage: loggedInUser != undefined && loggedInUser.Item_x0020_Cover?.Url?.length > 0 ? loggedInUser.Item_x0020_Cover?.Url : "https://hhhhteams.sharepoint.com/sites/HHHH/SiteCollectionImages/ICONS/32/icon_user.jpg",
+            UserName: loggedInUser != undefined && loggedInUser.Title?.length > 0 ? loggedInUser.Title : props.context.pageContext._user.displayName,
+            Description: ''
+        };
+        tempArray.push(ImgArray);
+
+
         tempArray?.map((tempItem: any) => {
             tempItem.Checked = false
         })
         // setTaskImages(tempArray);
         // UploadImageFunction(lastindexArray, fileName);
-      
-                UploadImageFunction(postData,fileName, tempArray);
 
-            
-           
-        }
-  
+        UploadImageFunction(postData, fileName, tempArray);
+
+
+
+    }
+
     const UploadImageFunction = (postData: any, imageName: any, DataJson: any) => {
         let listId = postData.listId;
-       
+
         let Id = postData.Id
         var src = uploadedImage?.fileURL?.split(",")[1];
         var byteArray = new Uint8Array(atob(src)?.split("")?.map(function (c) {
@@ -458,17 +477,17 @@ const CreateActivity = (props: any) => {
                     let item = web.lists.getById(listId).items.getById(Id);
                     item.attachmentFiles.add(imageName, data).then(() => {
                         console.log("Attachment added");
-                        UpdateBasicImageInfoJSON(DataJson, "Upload", 0,postData);
+                        UpdateBasicImageInfoJSON(DataJson, "Upload", 0, postData);
                         postData.UploadedImage = DataJson;
                     });
-                   
+
                 })().catch(console.log)
-            } 
+            }
         }, 2500);
     }
 
 
-    const UpdateBasicImageInfoJSON = async (JsonData: any, usedFor: any, ImageIndex: any,postData:any) => {
+    const UpdateBasicImageInfoJSON = async (JsonData: any, usedFor: any, ImageIndex: any, postData: any) => {
         var UploadImageArray: any = []
         if (JsonData != undefined && JsonData.length > 0) {
             JsonData?.map((imgItem: any, Index: any) => {
@@ -533,10 +552,7 @@ const CreateActivity = (props: any) => {
 
 
     //--------Edit client categroy and categrioes open popup function  -------------
-    // const EditClientCategory = (item: any) => {
-    //     setIsClientPopup(true);
-    //     setSharewebCategory(item);
-    // };
+
     const EditComponentPicker = (item: any) => {
         setIsComponentPicker(true);
         setSharewebCategory(item);
@@ -1047,7 +1063,10 @@ const CreateActivity = (props: any) => {
                                 let url = `${AllListId.siteUrl}/SitePages/Task-Profile.aspx?taskId=${res.data.Id}&Site=${res.data.siteType}`;
                                 window.location.href = url;
                             }
-                            else {
+                            else if (selectedItem.PageType == "QuickTask") {
+                                let url = `${AllListId.siteUrl}/SitePages/Task-Profile.aspx?taskId=${res.data.Id}&Site=${res.data.siteType}`;
+                                window.open(url, "_blank")
+                            } else {
 
                                 closeTaskStatusUpdatePoup(res);
                             }
@@ -1060,7 +1079,7 @@ const CreateActivity = (props: any) => {
         }
     };
     const closeTaskStatusUpdatePoup = (res: any) => {
-    
+
         if (res === "item") {
             //   setTaskStatuspopup(false);
             props.Call("Close");
@@ -1068,7 +1087,7 @@ const CreateActivity = (props: any) => {
             //   setTaskStatuspopup(false);
             props.Call(res);
         }
-        imgdefaultContent=""
+        imgdefaultContent = ""
     };
     //----------- save function end --------------
 
@@ -1090,33 +1109,13 @@ const CreateActivity = (props: any) => {
             setSearchedCategoryData([]);
         }
     };
-    // const setSelectedCategoryData = (selectCategoryData: any, usedFor: any) => {
-    //     setCategorySearchKey("");
-    //     let item = selectCategoryData[0]
-    //     setIsComponentPicker(false);
-    //     let data: any = CategoriesData;
-    //     if (selectCategoryData[0].Id != undefined) {
-    //         data?.push(selectCategoryData[0]);
-    //     }
-    //     let uniqueData: any = [];
-    //     data?.map((item: any) => {
-    //         if (!uniqueData.find((secItem: any) => secItem?.Id == item?.Id)) {
-    //             uniqueData.push(item)
-    //         }
-    //     })
-    //     selectSubTaskCategory(item?.Title, item?.Id, item)
-    //     // setCategoriesData((CategoriesData: any) => [...uniqueData]);
-    //     setSearchedCategoryData([]);
-    // };
-    //End
 
-    // select category Functionality
 
     const selectSubTaskCategory = (title: any, Id: any, item: any) => {
         setCategorySearchKey("");
         setIsComponentPicker(false);
         setSearchedCategoryData([]);
-        if (loggedInUser?.IsApprovalMail?.toLowerCase() == 'approve all but selected items'||loggedInUser?.IsApprovalMail?.toLowerCase() == 'approve selected'  && !IsapprovalTask) {
+        if (loggedInUser?.IsApprovalMail?.toLowerCase() == 'approve all but selected items' || loggedInUser?.IsApprovalMail?.toLowerCase() == 'approve selected' && !IsapprovalTask) {
             try {
                 let selectedApprovalCat = JSON.parse(loggedInUser?.CategoriesItemsJson)
                 IsapprovalTask = selectedApprovalCat?.some((selectiveApproval: any) => selectiveApproval?.Title == title)
@@ -1139,7 +1138,7 @@ const CreateActivity = (props: any) => {
             } else {
                 item.ActiveTile = !item.ActiveTile;
                 TaskCategories = TaskCategories.filter((category: any) => category?.Id !== Id);
-                if (loggedInUser?.IsApprovalMail?.toLowerCase() == 'approve all but selected items'||loggedInUser?.IsApprovalMail?.toLowerCase() == 'approve selected'  && IsapprovalTask) {
+                if (loggedInUser?.IsApprovalMail?.toLowerCase() == 'approve all but selected items' || loggedInUser?.IsApprovalMail?.toLowerCase() == 'approve selected' && IsapprovalTask) {
                     try {
                         let selectedApprovalCat = JSON.parse(loggedInUser?.CategoriesItemsJson)
                         IsapprovalTask = !selectedApprovalCat?.some((selectiveApproval: any) => selectiveApproval?.Title == title)
@@ -1232,24 +1231,17 @@ const CreateActivity = (props: any) => {
             </span>
         </div>
     ));
-    // const deleteCategories = (id: any) => {
-    //     CategoriesData.map((catId: { Id: any }, index: any) => {
-    //         if (id == catId.Id) {
-    //             CategoriesData.splice(index, 1);
-    //         }
-    //     });
-    //     setCategoriesData((CategoriesData: any) => [...CategoriesData]);
-    // };
-    //End
+
     return (
         <>
             <Panel
                 onRenderHeader={onRenderCustomHeaderMain}
                 type={PanelType.custom}
-                customWidth="1280px"
+                customWidth={props?.pageName == 'QuickTask' && props?.pageName != undefined ? "100%" : "1280px"}
                 isOpen={true}
                 onDismiss={() => closePopup("item")}
                 isBlocking={false}
+                hasCloseButton={props?.pageName == 'QuickTask' && props?.pageName != undefined ? false : true}
                 className={props?.portfolioTypeData?.Color}
             >
                 <div className="modal-body active">
@@ -1305,18 +1297,19 @@ const CreateActivity = (props: any) => {
                                             showYearDropdown
                                             scrollableYearDropdown
                                         />
-                                        {/* <DatePicker selected={save?.DueDate} onChange={(date) => handleDatedue(date)} /> */}
-                                        {/* <input
-                                            type="date"
-                                            className="form-control"
-                                            value={save.DueDate}
-                                            // defaultValue={Moment(save.DueDate).format("YYYY/MM/DD/")}
-                                            onChange={handleDatedue}
-                                        /> */}
+
                                     </div>
 
                                 </div>
                             </div>
+                            {props?.pageName == 'QuickTask' && props?.pageName != undefined ? <div className="row">
+                                <div className="input-group">
+                                    <div className="col-sm-12">
+                                        <label className='full-width'>URL</label>
+                                        <input type="text" placeholder='Enter Url' className='form-control' value={TaskUrl} onChange={(e) => { changeTaskUrl(e) }}></input>
+                                    </div>
+                                </div>
+                            </div> : null}
                             <div className="row mt-3">
                                 <TeamConfigurationCard
                                     ItemInfo={selectedItem}
@@ -1332,10 +1325,10 @@ const CreateActivity = (props: any) => {
                                         className="Florar-Editor-Image-Upload-Container"
                                         id="uploadImageFroalaEditor"
                                     >
-                                       <div>
-                                        <FlorarImageUploadComponent callBack={FlorarImageUploadComponentCallBack} 
-                                        defaultContent={imgdefaultContent}
-                                         />
+                                        <div>
+                                            <FlorarImageUploadComponent callBack={FlorarImageUploadComponentCallBack}
+                                                defaultContent={imgdefaultContent}
+                                            />
                                         </div>
                                     </div>
                                 </div>
@@ -1507,60 +1500,9 @@ const CreateActivity = (props: any) => {
                                         })}
                                     </div>
                                 ) : null}
-                                {/* <div className="col-sm-12">
-                                    <div className="col-sm-12 padding-0 input-group">
-                                        <label className="full_width">Client Category</label>
-                                        <input
-                                            type="text"
-                                            className="ui-autocomplete-input form-control"
-                                            id="txtCategories"
-                                        />
-
-                                        <span className="input-group-text">
-                                            <a className="hreflink" title="Edit Categories">
-                                                <img
-                                                    src="https://hhhhteams.sharepoint.com/sites/HHHH/SP/_layouts/15/images/EMMCopyTerm.png"
-                                                    onClick={() => EditClientCategory(selectedItem)}
-                                                />
-                                            </a>
-                                        </span>
-                                    </div>
-
-                                </div> */}
 
                             </div>
-                            {/* 
-                            {ClientCategoriesData != undefined &&
-                                ClientCategoriesData?.length > 0 ? (
-                                <div>
-                                    {ClientCategoriesData?.map((type: any, index: number) => {
-                                        return (
-                                            <>
 
-                                                <div className="block d-flex full-width justify-content-between mb-1 p-2">
-                                                    <a
-                                                        target="_blank"
-                                                        data-interception="off"
-                                                        href={`${AllListId.siteUrl}/SitePages/Portfolio-Profile.aspx?${props?.selectedItem?.Id}`}
-                                                    >
-                                                        {type.Title}
-                                                    </a>
-                                                    <span
-                                                        className="bg-light svg__iconbox svg__icon--cross"
-                                                      onClick={() =>
-                                                        deleteClientCategories(type.Id)
-                                                      }
-                                                    >
-                                                        {" "}
-                                                    </span>
-                                                    <img src="https://hhhhteams.sharepoint.com/sites/HHHH/SP/_layouts/images/delete.gif" onClick={() => deleteClientCategories(type.Id)} className="p-1" />
-                                                </div>
-
-                                            </>
-                                        );
-                                    })}
-                                </div>
-                            ) : null} */}
 
                         </div>
 
@@ -1607,13 +1549,7 @@ const CreateActivity = (props: any) => {
                     Call={Call}
                 ></Picker>
             )}
-            {/* {IsClientPopup && (
-                <ClientCategoryPupup
-                    props={SharewebCategory}
-                    selectedClientCategoryData={ClientCategoriesData}
-                    Call={Call}
-                ></ClientCategoryPupup>
-            )} */}
+
         </>
     );
 };
