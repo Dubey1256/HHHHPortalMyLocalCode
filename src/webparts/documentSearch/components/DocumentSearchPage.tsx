@@ -1,12 +1,8 @@
 import React, { useEffect, useState } from 'react'
 import { Web } from 'sp-pnp-js';
-<<<<<<< HEAD
 import GlobalCommanTable from "../../../globalComponents/GroupByReactTableComponents/GlobalCommanTable";
-=======
-import GlobalCommanTable from '../../../globalComponents/GroupByReactTableComponents/GlobalCommanTable';
->>>>>>> e1bb1d0286c1660a74363c3ffaaac6fe9afca80f
 import { ColumnDef } from '@tanstack/react-table';
-import EditDocument from './EditDocunentPanel'
+import EditDocumentpanel from '../../taskprofile/components/EditDocunentPanel';
 import moment from 'moment';
 var TaskUser: any = []
 export default function DocumentSearchPage(Props: any) {
@@ -214,13 +210,13 @@ export default function DocumentSearchPage(Props: any) {
                 <div className="TableSection">
                 <div className='Alltable mt-2'>
                     <div className='col-md-12 p-0 smart'>
-                        <GlobalCommanTable columns={columns} data={AllDocs} showHeader={true} callBackData={callBackData} />
+                        <GlobalCommanTable columns={columns} data={AllDocs} showHeader={true} callBackData={callBackData} expendedTrue={true} />
                     </div>
                 </div>
             </div>
             </div>}
             {isEditModalOpen ?
-                <EditDocument closeEditPopup={closeEditPopup} editData={selectedItemId} AllListId={PageContext} Context={PageContext?.context} editdocpanel={isEditModalOpen} />
+                <EditDocumentpanel closeEditPopup={closeEditPopup} editData={selectedItemId} AllListId={PageContext} Context={PageContext?.context} editdocpanel={isEditModalOpen} />
                 :
                 null
             }    </>

@@ -1860,9 +1860,7 @@ async function updateMultiLookupField(itemIds: number[], lookupIds: number[],All
         </section>
       </section>
       {/* table secation artical */}
-      <section className="TableContentSection taskprofilepagegreen">
-        <div className="container-fluid">
-          <section className="TableSection">
+      
             {data.map((item) => (
               <ComponentTable
                 props={item}
@@ -1870,9 +1868,7 @@ async function updateMultiLookupField(itemIds: number[], lookupIds: number[],All
                 Iconssc={Iconpps}
               />
             ))}
-          </section>
-        </div>
-      </section>
+         
       <footer className="float-start full_width mt-2 ">
         <div className="d-flex justify-content-between me-3 p-2">
           {data.map((item: any) => {
