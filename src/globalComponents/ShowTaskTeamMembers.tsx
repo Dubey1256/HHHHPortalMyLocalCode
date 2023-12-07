@@ -12,7 +12,13 @@ function ShowTaskTeamMembers(item: any) {
   React.useEffect(() => {
     if (item?.props != undefined) {
       let taskDetails = item?.props;
-      const LeadCount = taskDetails["ResponsibleTeam"] != undefined && taskDetails["ResponsibleTeam"].length > 0 ? taskDetails["ResponsibleTeam"].length : 0;
+      let LeadCount =0;
+      if(taskDetails["ResponsibleTeam"] != undefined&&taskDetails["ResponsibleTeam"].length > 0){
+        taskDetails["ResponsibleTeam"]=GetUserObjectFromCollection(taskDetails["ResponsibleTeam"]);
+        LeadCount=taskDetails["ResponsibleTeam"].length;
+      }
+      // GetUserObjectFromCollection
+      // const LeadCount = taskDetails["ResponsibleTeam"] != undefined && taskDetails["ResponsibleTeam"].length > 0 ? taskDetails["ResponsibleTeam"].length : 0;
       setLeadCount(LeadCount);
       if (taskDetails["ResponsibleTeam"] != undefined) {
         taskDetails["ResponsibleTeam"]?.map((item: any, index: any) => {
@@ -53,6 +59,9 @@ function ShowTaskTeamMembers(item: any) {
       CompleteTeamMembers = CompleteTeamMembers.filter((item: any, index: any) => {
         return CompleteTeamMembers.indexOf(item) === index;
       });
+      if(CompleteTeamMembers?.length>0){
+        CompleteTeamMembers= GetUserObjectFromCollection(CompleteTeamMembers)
+      }
 
       // Check if there are more than 3 members
       if (CompleteTeamMembers.length > 3) {
@@ -62,12 +71,12 @@ function ShowTaskTeamMembers(item: any) {
         //   taskDetails.TeamMembersTip = GetUserObjectFromCollection(CompleteTeamMembers.slice(1));
         // } else if (LeadCount === 1) {
         //   // If there is a lead, show the lead and the first member and the rest in a tooltip
-        taskDetails.TeamMembersFlat = GetUserObjectFromCollection(CompleteTeamMembers.toSpliced(2));
-        taskDetails.TeamMembersTip = GetUserObjectFromCollection(CompleteTeamMembers.slice(2));
+        taskDetails.TeamMembersFlat = CompleteTeamMembers?.toSpliced(2);
+        taskDetails.TeamMembersTip = CompleteTeamMembers?.slice(2);
         // }
       } else {
         // If there are less than or equal to 3 members, show all of them
-        taskDetails.TeamMembersFlat = GetUserObjectFromCollection(CompleteTeamMembers);
+        taskDetails.TeamMembersFlat = CompleteTeamMembers;
         taskDetails.TeamMembersTip = [];
       }
 
@@ -81,14 +90,17 @@ function ShowTaskTeamMembers(item: any) {
     UsersValues?.map((item: any) => {
       let workingToday=item?.workingMember!=undefined?item?.workingMember:false;
       item = TaskUsers?.find((User: any) => User?.AssingedToUser?.Id == item?.Id)
-      userDeatails.push({
-        'Id': item?.AssingedToUser.Id,
-        'Name': item?.Email,
-        'Suffix': item?.Suffix,
-        'Title': item?.Title,
-        'userImage': item?.Item_x0020_Cover?.Url,
-        "workingMember": workingToday
-      });
+      if(item?.Id!=undefined){
+        userDeatails.push({
+          'Id': item?.AssingedToUser.Id,
+          'Name': item?.Email,
+          'Suffix': item?.Suffix,
+          'Title': item?.Title,
+          'userImage': item?.Item_x0020_Cover?.Url,
+          "workingMember": workingToday
+        });
+      }
+      
     })
 
     setKey((prevKey) => prevKey + 1);
@@ -114,22 +126,20 @@ function ShowTaskTeamMembers(item: any) {
           </div> :
          
         } */}
-        <div key={key} className="">
+        <div key={key} className="alignCenter">
           {taskData?.TeamMembersFlat != null &&
             taskData?.TeamMembersFlat?.length > 0 &&
             taskData?.TeamMembersFlat?.map((rcData: any, i: any) => {
               return (
-                <a
-                  style={{ marginRight: "4px" }}
-                  href={`${siteUrl}/SitePages/TaskDashboard.aspx?UserId=${rcData?.Id}&Name=${rcData?.Title}`}
+                <a style={{marginRight:"4px"}} href={`${siteUrl}/SitePages/TaskDashboard.aspx?UserId=${rcData?.Id}&Name=${rcData?.Title}`}
                   target="_blank"
-                  className={i == (LeadCount - 1) && i != 3 ? "teamLeader-IconEnd" : ''}
+                  className={i == (LeadCount - 1) && i != 3 ? "teamLeader-IconEnd alignCenter" : 'alignCenter'}
                   data-interception="off"
                   title={rcData?.Title}
                 >
                   {rcData.userImage != null && (
                     <img
-                      className={rcData?.workingMember ? "workmember activeimg" : "workmember"}
+                      className={rcData?.workingMember ? "suffix_Usericon activeimg" : "suffix_Usericon"}
                       src={rcData?.userImage}
                     />
                   )}
@@ -137,8 +147,8 @@ function ShowTaskTeamMembers(item: any) {
                     <span
                       className={
                         rcData?.workingMember
-                          ? "workmember activeimg bg-fxdark"
-                          : "workmember bg-fxdark"
+                          ? "suffix_Usericon activeimg"
+                          : "suffix_Usericon "
                       }
                     >
                       {rcData?.Suffix}
@@ -151,12 +161,12 @@ function ShowTaskTeamMembers(item: any) {
         {taskData?.TeamMembersTip != null &&
           taskData?.TeamMembersTip?.length > 0 && (
             <div
-              className="position-relative user_Member_img_suffix2 ms-1 alignCenter"
+              className="hover-text user_Member_img_suffix2 alignCenter"
               onMouseOver={(e) => handleSuffixHover()}
               onMouseLeave={(e) => handleSuffixLeave()}
             >
               +{taskData?.TeamMembersTip?.length}
-              <span className="tooltiptext" style={{ display: Display, padding: "10px" }}>
+              <span className="tooltip-text pop-right" style={{ display: Display, padding: "10px" }}>
                 <div key={key}>
                   {taskData?.TeamMembersTip?.map((rcData: any, i: any) => {
                     return (
@@ -173,7 +183,7 @@ function ShowTaskTeamMembers(item: any) {
                           {rcData.userImage != null && (
                             <img
                               className={
-                                rcData?.workingMember ? "workmember activeimg" : "workmember"
+                                rcData?.workingMember ? "suffix_Usericon activeimg" : "suffix_Usericon"
                               }
                               src={rcData?.userImage}
                             />
@@ -182,8 +192,8 @@ function ShowTaskTeamMembers(item: any) {
                             <span
                               className={
                                 rcData?.workingMember
-                                  ? "workmember activeimg bg-fxdark border bg-e9"
-                                  : "workmember bg-fxdark border bg-e9"
+                                  ? "suffix_Usericon activeimg "
+                                  : "suffix_Usericon "
                               }
                             >
                               {rcData?.Suffix}

@@ -148,13 +148,13 @@ const getFirstColHeader = ({ hasCheckbox, hasExpanded, isHeaderNotAvlable, portf
     return ({ table }: any) => (
         <>
             {hasExpanded && isHeaderNotAvlable != true && (<>
-                <span className="border-0 bg-Ff ms-1" {...{ onClick: table.getToggleAllRowsExpandedHandler(), }}>
+                <span className="border-0 bg-Ff ms-1 mb-1" {...{ onClick: table.getToggleAllRowsExpandedHandler(), }}>
                     {table.getIsAllRowsExpanded() ? (
                         <SlArrowDown style={{ color: portfolioColor, width: '12px' }} title='Tap to collapse the childs' />) : (<SlArrowRight style={{ color: portfolioColor, width: '12px' }} title='Tap to expand the childs' />)}
                 </span>{" "}
             </>)}
             {hasCheckbox && (
-                <span style={hasExpanded ? { marginLeft: '7px', marginBottom: '5px' } : {}} ><IndeterminateCheckbox className="mx-1 " {...{ checked: table.getIsAllRowsSelected(), indeterminate: table.getIsSomeRowsSelected(), onChange: table.getToggleAllRowsSelectedHandler(), }} />{" "}</span>
+                <span style={hasExpanded ? { marginLeft: '7px', marginBottom: '0px' } : {}} ><IndeterminateCheckbox className="mx-1 " style={{ marginTop: "5px" }} {...{ checked: table.getIsAllRowsSelected(), indeterminate: table.getIsSomeRowsSelected(), onChange: table.getToggleAllRowsSelectedHandler(), }} />{" "}</span>
             )}
         </>
     );
@@ -269,11 +269,12 @@ const GlobalCommanTable = (items: any, ref: any) => {
     const [tablecontiner, settablecontiner]: any = React.useState("hundred");
     const [trueRestructuring, setTrueRestructuring] = React.useState(false);
     // const [clickFlatView, setclickFlatView] = React.useState(false);
-    const [columnVisibility, setColumnVisibility] = React.useState({ descriptionsSearch: false, commentsSearch: false });
+    const [columnVisibility, setColumnVisibility] = React.useState({ descriptionsSearch: false, commentsSearch: false, timeSheetsDescriptionSearch: false });
     const [selectedFilterPannelData, setSelectedFilterPannelData] = React.useState({
         Title: { Title: 'Title', Selected: true },
         commentsSearch: { commentsSearch: 'commentsSearch', Selected: true },
         descriptionsSearch: { descriptionsSearch: 'descriptionsSearch', Selected: true },
+        timeSheetsDescriptionSearch: { timeSheetsDescriptionSearch: 'timeSheetsDescriptionSearch', Selected: true }
     });
 
     React.useEffect(() => {
@@ -294,7 +295,7 @@ const GlobalCommanTable = (items: any, ref: any) => {
         if (String(query).trim() === "") return true;
 
         if ((selectedFilterPannelData?.Title?.Title === id && selectedFilterPannelData?.Title?.Selected === true) || (selectedFilterPannelData?.commentsSearch?.commentsSearch === id && selectedFilterPannelData?.commentsSearch?.Selected === true) ||
-            (selectedFilterPannelData?.descriptionsSearch?.descriptionsSearch === id && selectedFilterPannelData?.descriptionsSearch?.Selected === true)) {
+            (selectedFilterPannelData?.descriptionsSearch?.descriptionsSearch === id && selectedFilterPannelData?.descriptionsSearch?.Selected === true) || (selectedFilterPannelData?.timeSheetsDescriptionSearch?.timeSheetsDescriptionSearch === id && selectedFilterPannelData?.timeSheetsDescriptionSearch?.Selected === true)) {
 
             const cellValue: any = String(row.getValue(id)).toLowerCase();
 
@@ -760,8 +761,10 @@ const GlobalCommanTable = (items: any, ref: any) => {
     const virtualizer = useVirtualizer({
         count: rows.length,
         getScrollElement: () => parentRef.current,
-        estimateSize: () => 24,
-        overscan: 15,
+        // estimateSize: () => 24,
+        // overscan: 15,
+        estimateSize: () => 200,
+        overscan: 50,
     });
 
     const itemsVirtualizer: any = virtualizer.getVirtualItems();
@@ -775,17 +778,20 @@ const GlobalCommanTable = (items: any, ref: any) => {
             : [0, 0];
 
     const setTableHeight = () => {
-        const table = document.getElementById('table-container');
         const screenHeight = window.innerHeight;
         const tableHeight = screenHeight * 0.8 - 5;
-        table.style.height = `${tableHeight}px`;
+        parentRef.current.style.height = `${tableHeight}px`;
     };
     React.useEffect(() => {
-        setTableHeight();
-        window.addEventListener('resize', setTableHeight);
-        return () => {
-            window.removeEventListener('resize', setTableHeight);
-        };
+        if (items.wrapperHeight) {
+            parentRef.current.style.height = items.wrapperHeight;
+        } else {
+            setTableHeight();
+            window.addEventListener('resize', setTableHeight);
+            return () => {
+                window.removeEventListener('resize', setTableHeight);
+            };
+        }
     }, []);
     //Virtual rows
 
@@ -899,7 +905,8 @@ const GlobalCommanTable = (items: any, ref: any) => {
                     }
 
                     {items.taskProfile === true && items?.showCreationAllButton === true && <>
-                        {table?.getSelectedRowModel()?.flatRows.length < 2 ? <button type="button" className="btn btn-primary" title='Add Activity' style={{ backgroundColor: `${portfolioColor}`, borderColor: `${portfolioColor}`, color: '#fff' }} onClick={() => openCreationAllStructure("Add Workstream-Task")}>Add Workstream-Task</button> :
+                        {table?.getSelectedRowModel()?.flatRows.length < 2 && table?.getSelectedRowModel()?.flatRows[0]?.original
+                        ?.TaskType?.Title != "Task" ? <button type="button" className="btn btn-primary" title='Add Activity' style={{ backgroundColor: `${portfolioColor}`, borderColor: `${portfolioColor}`, color: '#fff' }} onClick={() => openCreationAllStructure("Add Workstream-Task")}>Add Workstream-Task</button> :
                             <button type="button" className="btn btn-primary" style={{ backgroundColor: `${portfolioColor}`, borderColor: `${portfolioColor}`, color: '#fff' }} disabled={true} > Add Workstream-Task</button>}
 
                         {
@@ -946,7 +953,7 @@ const GlobalCommanTable = (items: any, ref: any) => {
                     <Tooltip ComponentId={5756} />
                 </span>
             </div>}
-            <div ref={parentRef} id="table-container" style={{ overflow: "auto" }}>
+            <div ref={parentRef} style={{ overflow: "auto" }}>
                 <div style={{ height: `${virtualizer.getTotalSize()}px` }}>
                     <table className="SortingTable table table-hover mb-0" id='my-table' style={{ width: "100%" }}>
                         <thead className={showHeader === true ? 'fixedSmart-Header top-0' : 'fixed-Header top-0'}>
@@ -1000,7 +1007,10 @@ const GlobalCommanTable = (items: any, ref: any) => {
                                     <tr
                                         // className={row?.original?.lableColor}
                                         className={row?.original?.IsSCProtected != undefined && row?.original?.IsSCProtected == true ? `Disabled-Link opacity-75 ${row?.original?.lableColor}` : `${row?.original?.lableColor}`}
-                                        key={row.id}>
+                                        key={row.id}
+                                        data-index={virtualRow.index}
+                                        ref={virtualizer.measureElement}
+                                    >
                                         {row.getVisibleCells().map((cell: any) => {
                                             return (
                                                 <td className={row?.original?.boldRow} key={cell.id} style={row?.original?.fontColorTask != undefined ? { color: `${row?.original?.fontColorTask}` } : { color: `${row?.original?.PortfolioType?.Color}` }}>

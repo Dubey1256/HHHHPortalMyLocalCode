@@ -21,6 +21,7 @@ import RelevantDocuments from "../../taskprofile/components/RelevantDocuments";
 import { myContextValue } from '../../../globalComponents/globalCommon'
 import { IsAny } from "@tanstack/react-table";
 import InlineEditingcolumns from "../../projectmanagementOverviewTool/components/inlineEditingcolumns";
+import ServiceComponentPortfolioPopup from "../../../globalComponents/EditTaskPopup/ServiceComponentPortfolioPopup";
 const sp = spfi();
 
 // Work the Inline Editing
@@ -378,6 +379,7 @@ let imageArray: any = [];
 let AllTaskuser:any=[];
 let hoveroverstructureId:any;
 let combinedArray:any=[];
+let mydata:any[]=[];
 function getQueryVariable(variable: any) {
   let query = window.location.search.substring(1);
   console.log(query); //"app=article&act=news_content&aid=160990"
@@ -426,6 +428,8 @@ function Portfolio({ SelectedProp,TaskUser }: any) {
 // For the image over 
 const [showOverlay, setShowOverlay] = React.useState(false);
 const [currentImage, setCurrentImage] = React.useState(null);
+const [filterdata,setfilterdata] = React.useState([]);
+const [isopenProjectpopup, setisopenProjectpopup] = React.useState(false);
 
 const openImageInNewTab = (imageUrl:any) => {
   window.open(imageUrl, '_blank');
@@ -622,21 +626,7 @@ const handleMouseOut = () => {
       });
     }
     // Get Project Data
-    let getMasterTaskListTasks = async function () {
-      let web = new Web(ContextValue?.siteUrl);
-
-      componentDetails = await web.lists
-      .getById(ContextValue.MasterTaskListID)
-      .items.select("Item_x0020_Type", "Title", "Id", "PercentComplete", "Portfolios/Id", "Portfolios/Title")
-      .expand("Portfolios")
-      .filter("Item_x0020_Type eq 'Project' and Portfolios/Id eq " + ID)
-      .top(4000)
-      .get();
-    
-
-      // Project Data for HHHH Project Management
-      filterdata = componentDetails;
-    };
+   
     GetListItems();
     
     getMasterTaskListTasks();
@@ -644,7 +634,22 @@ const handleMouseOut = () => {
     getPortFolioType();
  
   }, [count]);
+  let getMasterTaskListTasks = async function () {
+    let web = new Web(ContextValue?.siteUrl);
 
+    componentDetails = await web.lists
+    .getById(ContextValue.MasterTaskListID)
+    .items.select("Item_x0020_Type", "Title","PortfolioStructureID", "Id", "PercentComplete", "Portfolios/Id", "Portfolios/Title")
+    .expand("Portfolios")
+    .filter("Item_x0020_Type eq 'Project' and Portfolios/Id eq " + ID)
+    .top(4000)
+    .get();
+  
+
+    // Project Data for HHHH Project Management
+     
+    setfilterdata(componentDetails)
+  };
   // Make Folder data unique
 
   Folderdatas = FolderData.reduce(function (previous: any, current: any) {
@@ -888,8 +893,63 @@ const inlineCallBack = React.useCallback((item: any) => {
 }
 
 
-
+// ProjectInline Editing 
+const openPortfolioPopupFunction=(change:any)=>{
+    setisopenProjectpopup(true)
+    mydata.push(data[0])
+}
  
+const callServiceComponent = React.useCallback((item1: any, type: any, functionType: any) => {
+  if (functionType === "Close") {
+    if (type === "Multi") {
+      setisopenProjectpopup(false); 
+    } else {
+      setisopenProjectpopup(false); 
+    }
+  } else {
+    if (type === "Multi" || type === "Single") { 
+      let mydataid:any=[mydata[0]?.Id];
+      let filteredIds = item1.filter((item: { Id: null; }) => item.Id !== null).map((item: { Id: any; }) => item.Id);
+      
+      updateMultiLookupField(filteredIds,mydataid,SelectedProp);
+      setisopenProjectpopup(false);
+    }
+  }
+}, []); 
+
+
+async function updateMultiLookupField(itemIds: number[], lookupIds: number[],AllListId:any) {
+  try {
+    
+    let web = new Web(AllListId?.siteUrl);
+    for (const itemId of itemIds) {
+      // Update the multi-lookup field for each item
+      await web.lists
+      .getById(AllListId?.MasterTaskListID)
+      .items.getById(itemId)
+      .update({
+        PortfoliosId: {
+          results:
+          lookupIds !== undefined && lookupIds?.length > 0
+              ? lookupIds
+              : [],
+        }
+      })
+      .then((res: any) => {
+        getMasterTaskListTasks();
+        count++;
+        console.log(res);
+      });
+     
+    }
+  } catch (error) {
+    console.error("Error updating multi-lookup field:", error);
+  }
+}
+
+
+
+
   return (
     <myContextValue.Provider value={{ ...myContextValue, FunctionCall: contextCall, keyDoc:keydoc, FileDirRef: FileDirRef }}>
     <div >
@@ -1158,7 +1218,8 @@ const inlineCallBack = React.useCallback((item: any) => {
                       )}
                     </dd>
                   </dl>
-                
+              
+
                       </div>
                     <div className="col-md-6 p-0">
                     {data.map((item: any) => {
@@ -1282,6 +1343,38 @@ const inlineCallBack = React.useCallback((item: any) => {
                           ))}
                         </dd>
                       </dl>
+                      <dl>
+    <dt className="bg-fxdark" title="TaggedProject">
+        Project
+    </dt>
+    <dd className="bg-light">
+        <div>
+            {filterdata?.map((item: any, Index: any) => (
+                <span
+                    className="accordion-body pt-1"
+                    id="testDiv1"
+                    key={Index}
+                >
+                    <a
+                        href={
+                            SelectedProp.siteUrl +
+                            "/SitePages/Project-Management.aspx?ProjectId=" +
+                            item?.Id
+                        }
+                        data-interception="off"
+                        target="_blank"
+                    >
+                        {item?.PortfolioStructureID}{" "}
+                    </a>{" "}
+                    {Index !== filterdata.length - 1 ? ", " : ""}
+                </span>
+            ))}
+            <a className="pancil-icons" onClick={() => openPortfolioPopupFunction("Project")}>
+          <span className="svg__iconbox svg__icon--editBox"></span>
+        </a>
+        </div>
+    </dd>
+</dl>
                   {/* {data.map((item: any) => {
                     return (
                       <>
@@ -1688,8 +1781,8 @@ const inlineCallBack = React.useCallback((item: any) => {
           )}
 
           {showOverlay && currentImage && (currentImage === item?.Item_x002d_Image?.Url) && (
-            <div className="imghover " style={{left:'300px !important'}}>
-              <div className="popup">
+            <div className="imghover " >
+              <div className="popup" style={{left: "400px",top: "118px"}}>
                 <div className="parentDiv">
                   <span style={{ color: 'white' }}>
                     {currentImage}
@@ -1813,9 +1906,25 @@ const inlineCallBack = React.useCallback((item: any) => {
           portfolioTypeData={portfolioTyped}
         ></EditInstituton>
       )}
+    {isopenProjectpopup&&(
+    <ServiceComponentPortfolioPopup
+
+        props={data[0]}
+        Dynamic={SelectedProp}
+        ComponentType={"Component"}
+        selectionType={"Multi"}
+        Call={ (DataItem: any, Type: any, functionType: any)=>{callServiceComponent(DataItem,Type,functionType)}}
+        showProject={isopenProjectpopup}
+        />
+
+)}
+
     </div>
     </myContextValue.Provider>
   );
 }
 export default Portfolio;
 export {myContextValue}
+
+
+

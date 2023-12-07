@@ -236,7 +236,7 @@ export default class TaskTeamMembers extends Component<ITeamMembersProps, ITeamM
             smartMetadataItems.push(smartMetadataItem);
         });
 
-        const listTasks: any[] = [..._tasks].map(({ Title, Group, Category, Role, Team, SortOrder, Suffix, Item_x0020_Cover, Company, Approver, TaskId }) => ({ Title, Group, Category, Role, SortOrder, Team, Suffix, Item_x0020_Cover, Company, Approver, TaskId }));
+        const listTasks: any[] = [..._tasks].map(({ Title, Group, Category, Role, technicalGroup, SortOrder, Suffix, Item_x0020_Cover, Company, Approver, TaskId }) => ({ Title, Group, Category, Role, SortOrder, technicalGroup, Suffix, Item_x0020_Cover, Company, Approver, TaskId }));
         let filteredImages: any = []
         let _filteredImages: any = []
         //let filteredImages = await this.props.spService.getImages(this.props.imagesLibraryId, this.state.selImageFolder);
@@ -286,7 +286,7 @@ export default class TaskTeamMembers extends Component<ITeamMembersProps, ITeamM
             Approver: taskItem.Approver ? taskItem.Approver.map((i: { Title: any; }) => i.Title).join(", ") : "",
             TaskId: taskItem.Id,
             Suffix: taskItem.Suffix,
-            Team: taskItem.Team,
+            technicalGroup: taskItem.technicalGroup,
             SortOrder: taskItem.SortOrder,
             GroupId: taskItem.UserGroup ? taskItem.UserGroup.Id.toString() : "",
             AssignedToUserMail: taskItem.AssingedToUser ? [taskItem.AssingedToUser.Name.split("|")[2]] : [],
@@ -591,6 +591,9 @@ export default class TaskTeamMembers extends Component<ITeamMembersProps, ITeamM
             });
     };
     private async createTask() {
+        this.setState({
+            showCreatePanel: false,
+        });
         let SiteUrl = ''
         let taskItem = this.state.taskItem;
         let newTaskItem = {
@@ -610,6 +613,7 @@ export default class TaskTeamMembers extends Component<ITeamMembersProps, ITeamM
                     this.createNewFolder(taskItem.userTitle, taskItem, SiteUrl, 'TasksTimesheet2')
             })
             .catch((error) => {
+                this.onCancelTask();
                 console.error('An error occurred:', error);
             });
         if (newTask) {
@@ -631,6 +635,7 @@ export default class TaskTeamMembers extends Component<ITeamMembersProps, ITeamM
                 taskItem: _taskItem
             });
         }
+        this.onCancelTask();
     }
 
     private async updateTask() {
@@ -722,7 +727,7 @@ export default class TaskTeamMembers extends Component<ITeamMembersProps, ITeamM
         const allTasks = await this.props.spService.getTasks(this.props.taskUsersListId);
 
         const teamMembersTasks = allTasks.filter((taskItem: { ItemType: string; }) => taskItem.ItemType == "User").map((taskItem: {
-            Team: any; Title: any; UserGroup: { Title: any; Id: { toString: () => any; }; }; TimeCategory: any; Role: string[]; Company: any; Approver: any[]; Id: any; Suffix: any; AssingedToUser: { Name: string; }; IsApprovalMail: any; CategoriesItemsJson: string; SortOrder: null; IsActive: any; IsTaskNotifications: any; Item_x0020_Cover: any; Created: string; Author: { Title: any; }; Modified: string; Editor: { Title: any; };
+            technicalGroup: any; Title: any; UserGroup: { Title: any; Id: { toString: () => any; }; }; TimeCategory: any; Role: string[]; Company: any; Approver: any[]; Id: any; Suffix: any; AssingedToUser: { Name: string; }; IsApprovalMail: any; CategoriesItemsJson: string; SortOrder: null; IsActive: any; IsTaskNotifications: any; Item_x0020_Cover: any; Created: string; Author: { Title: any; }; Modified: string; Editor: { Title: any; };
         }) => ({
             Title: taskItem.Title,
             Group: taskItem.UserGroup ? taskItem.UserGroup.Title : "",
@@ -735,7 +740,7 @@ export default class TaskTeamMembers extends Component<ITeamMembersProps, ITeamM
             Approver: taskItem.Approver ? taskItem.Approver.map((i: { Title: any; }) => i.Title).join(", ") : "",
             TaskId: taskItem.Id,
             Suffix: taskItem.Suffix,
-            Team: taskItem.Team != undefined ? taskItem.Team : '',
+            technicalGroup: taskItem.technicalGroup != undefined ? taskItem.technicalGroup : '',
             GroupId: taskItem.UserGroup ? taskItem.UserGroup.Id.toString() : "",
             AssignedToUserMail: taskItem.AssingedToUser ? [taskItem.AssingedToUser.Name.split("|")[2]] : [],
             ApproverMail: taskItem.Approver ? taskItem.Approver.map((i: { Name: string; }) => i.Name.split("|")[2]) : [],
@@ -752,7 +757,7 @@ export default class TaskTeamMembers extends Component<ITeamMembersProps, ITeamM
             ModifiedBy: taskItem.Editor.Title
         }));
 
-        let listTasks = teamMembersTasks.map(({ Title, Group, Category, SortOrder, Team, CategoriesItemsJson, Role, Company, Approver, TaskId }) => ({ Title, Group, Category, SortOrder, Team, CategoriesItemsJson, Role, Company, Approver, TaskId }));
+        let listTasks = teamMembersTasks.map(({ Title, Group, Category, SortOrder, technicalGroup, CategoriesItemsJson, Role, Company, Approver, TaskId }) => ({ Title, Group, Category, SortOrder, technicalGroup, CategoriesItemsJson, Role, Company, Approver, TaskId }));
 
         this.setState({
             selTaskId: undefined,

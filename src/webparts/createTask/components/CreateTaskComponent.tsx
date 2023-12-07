@@ -19,6 +19,7 @@ let AssignedToUsers: any = []
 let AllClientCategories: any = [];
 let SitesTypes: any = []
 let subCategories: any = []
+let selectedPortfolio: any = [];
 let TeamMessagearray: any = [];
 let AllComponents: any = []
 let taskUsers: any = [];
@@ -108,7 +109,7 @@ function CreateTaskComponent(props: any) {
         base_Url = AllListId?.siteUrl
         pageContext();
         setRefreshPage(!refreshPage);
-    }, [PageRelevantTask,TaskUrlRelevantTask,ComponentRelevantTask])
+    }, [PageRelevantTask, TaskUrlRelevantTask, ComponentRelevantTask])
 
     const GetComponents = async () => {
         let PropsObject: any = {
@@ -144,6 +145,7 @@ function CreateTaskComponent(props: any) {
                 }));
                 // setSave({ ...save, Component: DataItem });
                 setSmartComponentData(DataItem);
+                selectedPortfolio = DataItem;
                 setSearchedServiceCompnentData([]);
                 setSearchedServiceCompnentKey('');
                 // selectPortfolioType('Component');
@@ -253,7 +255,8 @@ function CreateTaskComponent(props: any) {
             siteUrlData = siteUrlData?.split('&OR')[0]
             siteUrlData = siteUrlData?.slice(1, siteUrlData?.length)
             let paramSiteUrl = siteUrlData;
-            let paramComponentId = params.get('ComponentID');
+              let paramComponentId = params.get('ComponentID');
+        //    let paramComponentId = params.get('Component');
             let paramType = params.get('Type');
             let paramTaskType = params.get('TaskType');
             let paramServiceId = params.get('ServiceID');
@@ -301,6 +304,7 @@ function CreateTaskComponent(props: any) {
                         setComponent.push(item)
                         setSave((prev: any) => ({ ...prev, Component: setComponent }));
                         setSmartComponentData(setComponent);
+                        selectedPortfolio = setComponent
                     }
                 })
                 if (SDCCreatedBy != undefined && SDCCreatedDate != undefined && SDCTaskUrl != undefined) {
@@ -427,9 +431,11 @@ function CreateTaskComponent(props: any) {
                     }
                     UrlPasteTitle(e);
                 }
-                await loadRelevantTask(paramComponentId, paramSiteUrl, PageName).then((response: any) => {
-                    setRefreshPage(!refreshPage);
-                })
+                if (paramTaskType != 'Bug' && paramTaskType != 'Design') {
+                    await loadRelevantTask(paramComponentId, paramSiteUrl, PageName).then((response: any) => {
+                        setRefreshPage(!refreshPage);
+                    })
+                }
             }
         } else if (props?.projectId != undefined && props?.projectItem != undefined) {
             AllComponents?.map((item: any) => {
@@ -438,6 +444,7 @@ function CreateTaskComponent(props: any) {
                         setComponent.push(item)
                         setSave((prev: any) => ({ ...prev, portfolioType: 'Component' }))
                         setSmartComponentData(setComponent);
+                        selectedPortfolio = setComponent
                     }
                 }
             })
@@ -452,7 +459,7 @@ function CreateTaskComponent(props: any) {
         let PageRelevant = PageRelevantTask;
         let TaskUrlRelevant = TaskUrlRelevantTask;
         let ComponentRelevant = ComponentRelevantTask;
-      
+
         const web = new Web(AllListId?.siteUrl);
         const batch = sp.createBatch();
         let count: any = 0;
@@ -800,8 +807,8 @@ function CreateTaskComponent(props: any) {
                     })
 
                     try {
-                        if (smartComponentData !== undefined && smartComponentData.length >= 0) {
-                            $.each(smartComponentData, function (index: any, smart: any) {
+                        if (selectedPortfolio !== undefined && selectedPortfolio.length >= 0) {
+                            $.each(selectedPortfolio, function (index: any, smart: any) {
                                 selectedComponent.push(smart.Id);
                                 portfolioId = smart?.Id
                                 if (selectedSite?.Parent?.Title == "SDC Sites") {
@@ -820,15 +827,15 @@ function CreateTaskComponent(props: any) {
                                 }
                             })
                         }
-                        if (save?.siteType?.toLowerCase() == "shareweb" && smartComponentData?.length > 0) {
-                            postClientTime = JSON.parse(smartComponentData[0]?.Sitestagging)
+                        if (save?.siteType?.toLowerCase() == "shareweb" && selectedPortfolio?.length > 0) {
+                            postClientTime = JSON.parse(selectedPortfolio[0]?.Sitestagging)
                             postClientTime?.map((sitecomp: any) => {
                                 if (sitecomp.Title != undefined && sitecomp.Title != "" && sitecomp.SiteName == undefined) {
                                     sitecomp.SiteName = sitecomp.Title
                                 }
 
                             })
-                            siteCompositionDetails = smartComponentData[0]?.SiteCompositionSettings;
+                            siteCompositionDetails = selectedPortfolio[0]?.SiteCompositionSettings;
                         } else {
                             var siteComp: any = {};
                             siteComp.SiteName = save?.siteType,
@@ -1098,8 +1105,16 @@ function CreateTaskComponent(props: any) {
                     TestUrl = TestUrl.split('.com')[1];
                 else if (TestUrl.toLowerCase().indexOf('.ch') > -1)
                     TestUrl = TestUrl.split('.ch')[1];
-                else if (TestUrl.toLowerCase().indexOf('.de') > -1)
-                    TestUrl = TestUrl.split('.de')[1];
+                else if (TestUrl.toLowerCase().indexOf('.de') > -1) {
+                    TestUrl = TestUrl.split('.de');
+                    try {
+                        if (TestUrl[0]?.toLowerCase()?.indexOf('gruene-washington') > -1) {
+                            TestUrl = TestUrl[0];
+                        } else {
+                            TestUrl = TestUrl[1];
+                        }
+                    } catch (e) { }
+                }
                 let URLDataArr: any = TestUrl.split('/');
                 for (let index = 0; index < SitesTypes?.length; index++) {
                     let site = SitesTypes[index];
@@ -1553,7 +1568,7 @@ function CreateTaskComponent(props: any) {
         })
         if (items == 'Delete' || items == undefined) {
             location.reload();
-        } else if (items=="Save") {
+        } else if (items == "Save") {
             setTimeout(() => {
                 window.open(base_Url + "/SitePages/Task-Profile.aspx?taskId=" + createdTask?.Id + "&Site=" + createdTask?.siteType, "_self")
                 createdTask = {};
@@ -1624,7 +1639,7 @@ function CreateTaskComponent(props: any) {
                                                     <div className="block d-flex justify-content-between pt-1 px-2" style={{ width: "95%" }}>
                                                         <a style={{ color: "#fff !important" }} data-interception="off" target="_blank" href={`${base_Url}/SitePages/Portfolio-Profile.aspx?taskId=${com.ID}`}>{com.Title}</a>
                                                         <a>
-                                                            <span title="Remove Component" onClick={() => setSmartComponentData([])}
+                                                            <span title="Remove Component" onClick={() => { setSmartComponentData([]), selectedPortfolio = [] }}
                                                                 style={{ backgroundColor: 'white' }} className="svg__iconbox svg__icon--cross hreflink mx-2"></span>
                                                         </a>
                                                     </div>
@@ -1667,34 +1682,34 @@ function CreateTaskComponent(props: any) {
 
                         </ul>
                         <div className="border border-top-0 clearfix p-2 tab-content " id="myTabContent">
-                            <div className="tab-pane Alltable mx-height p-0 show active" id="URLTasks" role="tabpanel" aria-labelledby="URLTasks">
+                            <div className="tab-pane Alltable  p-0 show active" id="URLTasks" role="tabpanel" style={{height:'500px'}} aria-labelledby="URLTasks">
                                 {TaskUrlRelevantTask?.length > 0 ?
                                     <>
                                         <div className={TaskUrlRelevantTask?.length > 0 ? 'fxhg' : ''}>
-                                            <GlobalCommanTable columns={column2} data={TaskUrlRelevantTask} callBackData={callBackData} />
+                                            <GlobalCommanTable columns={column2} wrapperHeight="100%"  data={TaskUrlRelevantTask} callBackData={callBackData} />
                                         </div>
                                     </> : <div className='text-center full-width'>
                                         <span>No Tasks Available</span>
                                     </div>
                                 }
                             </div>
-                            <div className="tab-pane Alltable p-0 mx-height" id="PageTasks" role="tabpanel" aria-labelledby="PageTasks">
+                            <div className="tab-pane Alltable p-0 " id="PageTasks" role="tabpanel"  style={{height:'500px'}} aria-labelledby="PageTasks">
                                 {PageRelevantTask?.length > 0 ?
                                     <>
                                         <div className={PageRelevantTask?.length > 0 ? 'fxhg' : ''}>
-                                            <GlobalCommanTable columns={column2} data={PageRelevantTask} callBackData={callBackData} />
+                                            <GlobalCommanTable columns={column2} wrapperHeight="100%" data={PageRelevantTask} callBackData={callBackData} />
                                         </div>
                                     </> : <div className='text-center full-width'>
                                         <span>No Tasks Available</span>
                                     </div>
                                 }
                             </div>
-                            <div className="tab-pane Alltable mx-height p-0" id="ComponentTasks" role="tabpanel" aria-labelledby="ComponentTasks">
+                            <div className="tab-pane Alltable  p-0" id="ComponentTasks" role="tabpanel" style={{height:'500px'}} aria-labelledby="ComponentTasks">
 
                                 {ComponentRelevantTask?.length > 0 ?
                                     <>
                                         <div className={ComponentRelevantTask?.length > 0 ? 'fxhg' : ''}>
-                                            <GlobalCommanTable columns={column2} data={ComponentRelevantTask} callBackData={callBackData} />
+                                            <GlobalCommanTable columns={column2} wrapperHeight="100%" data={ComponentRelevantTask} callBackData={callBackData} />
                                         </div>
                                     </> : <div className='text-center full-width'>
                                         <span>No Tasks Available</span>

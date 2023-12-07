@@ -13,7 +13,7 @@ import { data } from 'jquery';
  var ParentData:any = []
  var childData:any =[]
  var newData:any=''
-var MydataSorted:any=''
+var MydataSorted:any=[]
 const TopNavigation = (dynamicData: any) => {
     var ListId = dynamicData.dynamicData.TopNavigationListID
     const [root, setRoot] = React.useState([])
@@ -69,7 +69,7 @@ const TopNavigation = (dynamicData: any) => {
                 })
                
             })
-        }
+        }2
         if (type == 'subchild') {
             setSubChild(event.target.value);
            
@@ -214,8 +214,8 @@ const TopNavigation = (dynamicData: any) => {
             ParentID: postData?.ParentId != undefined && postData?.ParentId != '' ? postData?.ParentId : item?.ParentID,
             href: {
                 "__metadata": { type: "SP.FieldUrlValue" },
-                Description: postData != undefined && postData?.Url != '' ? postData?.Url : item?.href.Url,
-                Url: postData != undefined && postData.Url != '' ? postData?.Url : item?.href.Url,
+                Description: postData != undefined && postData?.Url != '' ? postData?.Url : item?.href != null ? item?.href.Url : '',
+                Url: postData != undefined && postData.Url != '' ? postData?.Url : item?.href != null ? item?.href.Url : '' ,
             },
             IsVisible: isVisible,
             ownersonly: owner
@@ -330,7 +330,7 @@ const TopNavigation = (dynamicData: any) => {
         }
         setData(copy)
         setData((copy)=>[...copy])
-
+        
     }
 const updateSortOrder=async ()=>{
     console.log(sortId)
@@ -357,7 +357,7 @@ if(childData != undefined && childData.length > 0){
 }
 else {
    if (ParentData != undefined && ParentData.length > 0){
-    setPostData({ ...postData, ParentId: childData[0]?.Id })} 
+    setPostData({ ...postData, ParentId: ParentData[0]?.Id })} 
        
     }
  
@@ -392,26 +392,39 @@ const callBackData = React.useCallback((elem: any, ShowingData: any) => {
 
   const SortedData=(newDatas:any,items:any)=>{
      newData = newDatas
-     MydataSorted = items
-  }
+     items['newSortOrder'] = newData;
+     MydataSorted.push(items);
+     
+      }
+
+
 const inputSortOrder=async ()=>{
-    let web = new Web(dynamicData.dynamicData.siteUrl);
-
-    await web.lists.getById(ListId).items.getById(MydataSorted.Id).update({
-
-
-        SortOrder:parseInt(newData),
-
-    }).then((res: any) => {
-
-        console.log(res);
-        ClosesortItem();
-         newData = ''
-        MydataSorted = ''
-        loadTopNavigation();
-
-
-    })
+     let count : number = 0;
+     const uniqueArray = MydataSorted.filter(
+        (item:any, index:any, self:any) => index === self.findIndex((i:any) => i.Id === item.Id)
+      );
+    if(uniqueArray?.length > 0 && uniqueArray != undefined){
+     uniqueArray?.map(async (items:any)=>{
+        let web = new Web(dynamicData.dynamicData.siteUrl);
+        await web.lists.getById(ListId).items.getById(items.Id).update({
+        SortOrder:parseInt(items.newSortOrder),
+    
+        }).then((res: any) => {
+              count = count+1;
+           if(count == uniqueArray?.length){
+                console.log(res);
+                ClosesortItem();
+                 newData = '';
+                MydataSorted = [];
+                loadTopNavigation();
+              }
+           
+    
+    
+        })
+     })
+    }
+   
 }
     return (
         <>
@@ -468,8 +481,33 @@ const inputSortOrder=async ()=>{
                                                                                 <span className='svg__iconbox svg__icon--Switcher' onClick={() => sortItem(child.childs)}></span>
                                                                                 <span className='svg__iconbox svg__icon--trash' onClick={() => deleteDataFunction(subchild)}></span>
                                                                             </span>
+
+                                                                            <ul className='sub-menu'>
+                                                            <li onClick={() => AddNewItem(subchild)}><span className='svg__
+                                                            iconbox svg__icon--Plus'></span> Add New </li>
+                                                            {subchild.childs?.map((subchildLast: any) => {
+                                                                return (
+                                                                    <>
+                                                                        <li className="pre">
+                                                                        {subchildLast.image != undefined ? <span><img src={subchildLast?.image} className='workmember'/></span>: <span><img src={subchildLast?.image} /></span>}
+                                                                        <span><img src={subchildLast?.image} className='workmember'/></span>
+                                                                            <span><a href={subchildLast.href?.Url}>{subchildLast.Title}</a></span>
+                                                                            <span className='float-end'>
+                                                                                <span className='svg__iconbox svg__icon--editBox' onClick={() => editPopup(subchildLast)}></span>
+                                                                                <span className='svg__iconbox svg__icon--Switcher' onClick={() => sortItem(subchild.childs)}></span>
+                                                                                <span className='svg__iconbox svg__icon--trash' onClick={() => deleteDataFunction(subchildLast)}></span>
+                                                                            </span>
+                                                                            
                                                                         </li>
                                                                     </>
+
+                                                                )
+                                                            })}
+
+                                                        </ul>
+                                                                        </li>
+                                                                    </>
+
                                                                 )
                                                             })}
 
@@ -738,6 +776,7 @@ const inputSortOrder=async ()=>{
                         </div>
                         <div className='col-sm-10'>
                             <select className='full-width' value={value == ''?'Select Item':value} onChange={(e) => handleChange('Parent', e)}>
+                            <option value={""}>Root</option>
                                 {
                                     root?.map((item: any) => {
                                         return (
@@ -759,7 +798,8 @@ const inputSortOrder=async ()=>{
                             <label><b>Second Level</b></label>
                         </div>
                         <div className='col-sm-10'>
-                            <select className='full-width' value={child == ''?'Select Item':child} onChange={(e) => handleChange('child', e)}>
+                            <select className='full-width' value={child ==  ''?'Select Item':child} onChange={(e) => handleChange('child', e)}>
+                           <option value={""}>Select</option>
                                 {
                                     ParentData?.map((item: any) => {
                                         return (
@@ -785,7 +825,7 @@ const inputSortOrder=async ()=>{
                         </div>
                         <div className='col-sm-10'>
                             <select className='full-width' value={subchild} onChange={(e) => handleChange('subchild', e)}>
-                                
+                            <option value={""}>Select</option>
                                    
                                                 {childData?.map((child: any) => {
                                                     return (
@@ -793,7 +833,7 @@ const inputSortOrder=async ()=>{
                                                             {child.childs?.map((subchild: any) => {
                                                                 return (
                                                                     <>
-                                                                        <option value={child.Title}>{child.Title}</option>
+                                                                        <option value={subchild.Title}>{subchild.Title}</option>
                                                                     </>
                                                                 )
                                                             })}

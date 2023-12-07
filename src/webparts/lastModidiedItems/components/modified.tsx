@@ -9,10 +9,15 @@ import ShowTaskTeamMembers from '../../../globalComponents/ShowTaskTeamMembers'
 import EditTaskPopup from '../../../globalComponents/EditTaskPopup/EditTaskPopup';
 import EditComponent from '../../EditPopupFiles/EditComponent'
 import DocumentPopup from '../../documentSearch/components/DocumentPopup';
+import ReactPopperTooltipSingleLevel from "../../../globalComponents/Hierarchy-Popper-tooltipSilgleLevel/Hierarchy-Popper-tooltipSingleLevel";
+import TimeEntryPopup from "../../../globalComponents/TimeEntry/TimeEntryComponent";
+let masterTaskData: any;
+let ActualSites: any = []
 export const Modified = (props: any) => {
   let columns: any = [];
   let portfolioColor: any = '#000066';
   var baseUrl: any = props?.props.context?._pageContext?.web?.absoluteUrl;
+
   const [sites, setSites] = useState<any>([])
   const [allSiteData, setallSiteData] = useState<any>([])
   const [allUsers, setAllUsers] = useState<any>([]);
@@ -28,12 +33,12 @@ export const Modified = (props: any) => {
   const [Portfoliotyped, setPortfoliotyped] = useState<any>();
   const [editDocLists, setEditDocLists] = useState<any>();
   const [loader, setLoader] = useState<any>(false);
-  const [storeMasterData, setStoreMasterData] = useState<any>([]);
   const [componentChecked, setComponentChecked] = useState<any>(false);
   const [serviceChecked, setServiceChecked] = useState<any>(false);
   const [isButtonDisabled, setIsButtonDisabled] = useState(true);
+  const [currentTimeEntry, setCurrentTimeEntry] = useState<any>([]);
+  const [istimeEntryOpen, setIsTimeEntryOpen] = useState(false);
   const childRef = React.useRef<any>();
-  let masterTaskData:any;
   let context = props?.props?.context
   let allDataFinal: any = [];
   let allSitesDummy: any = [];
@@ -87,7 +92,6 @@ export const Modified = (props: any) => {
   }
   const getSites = async function () {
     var web: any = new Web(baseUrl);
-    var ActualSites: any = []
     try {
       var siteData = await web.lists.getById(props.props.ListConfigurationListId).items.select("Id,Key,Configuration,Value&$filter=Key eq 'LastModifiedItems'").getAll();
     } catch (error) {
@@ -99,19 +103,22 @@ export const Modified = (props: any) => {
       sites.AllTask = false;
       sites.editFunction = false;
       sites.allEditFunction = false;
-    }) 
+    })
     setSites(ActualSites)
-    getCurrentData(ActualSites[0]);
     getMasterTaskList();
   }
-  const getMasterTaskList = async () => {
+  const getMasterTaskList = () => {
     var web = new Web(baseUrl);
     try {
-       masterTaskData = await web.lists.getById(props?.props?.MasterTaskListID).items.select("Id,Title,PortfolioStructureID,ComponentCategory/Id,ComponentCategory/Title,PortfolioType/Id,PortfolioType/Title").expand('PortfolioType,ComponentCategory').getAll();
+      web.lists.getById(props?.props?.MasterTaskListID).items.select("Id,Title,PortfolioStructureID,ComponentCategory/Id,ComponentCategory/Title,PortfolioType/Id,PortfolioType/Title").expand('PortfolioType,ComponentCategory').getAll().then((masterValue: any) => {
+        if (masterValue.length > 0) {
+          masterTaskData = masterValue;
+          getCurrentData(ActualSites[0])
+        }
+      });
     } catch (error) {
       console.error(error)
     }
-    setStoreMasterData(masterTaskData)
   }
   const getCurrentData = async (allSite: any) => {
     childRef?.current?.setRowSelection({});
@@ -189,10 +196,10 @@ export const Modified = (props: any) => {
           item.listId = allSite.ListId;
           if (allSite.TabName == 'SERVICES') {
             item.fontColorTask = '#228b22'
-          }else{
-            item.fontColorTask ='#000066'
+          } else {
+            item.fontColorTask = '#000066'
           }
-          
+
           if (item.ItemType != undefined) {
             if (item.ItemType == 'Component') {
               item.photoComponent = allSite.SiteIcon1
@@ -213,43 +220,59 @@ export const Modified = (props: any) => {
           if (item.Created != undefined) {
             item.createdNew = moment(item?.Created).format('DD/MM/YYYY')
           }
+          if (item.File_x0020_Type != undefined) {
+            if (item.File_x0020_Type == "doc") {
+              item.File_x0020_Type = 'docx'
+            }
+            if (item.File_x0020_Type == 'jfif') {
+              item.File_x0020_Type = 'jpg'
+            }
+          }
+
           if (allSite.TabName == 'FOLDERS') {
             item.File_x0020_Type = 'folder';
           }
           if (item.Author != undefined) {
-            allUsers.map((Users: any) => {
+            (Users != undefined ? Users : allUsers).map((Users: any) => {
               if (item.Author.Id == Users?.AssingedToUser?.Id) {
                 item.authorImage = Users.Item_x0020_Cover?.Url;
+                item.authorSuffix = Users.Suffix;
                 item.authorName = Users?.AssingedToUser?.Title;
-                item.authorId = Users?.AssingedToUser?.Id
-                item.authorDateSearch = item.Created + item.authorName;
+                item.authorId = Users?.AssingedToUser?.Id;
+
               }
             })
-            if( item?.authorImage==undefined){
-              item.authorName=item.Author.Title;
-              item.authorImage="https://hhhhteams.sharepoint.com/sites/HHHH/SiteCollectionImages/ICONS/32/icon_user.jpg";    
+            if (item?.authorImage == undefined && item.authorSuffix == undefined) {
+              item.authorDefaultName = item.Author?.Title;
+              item.authorDefaultImage = "https://hhhhteams.sharepoint.com/sites/HHHH/SiteCollectionImages/ICONS/32/icon_user.jpg";
             }
           }
           if (item.Editor != undefined) {
-            allUsers.map((Users: any) => {
+            (Users != undefined ? Users : allUsers).map((Users: any) => {
               if (item.Editor.Id == Users?.AssingedToUser?.Id) {
                 item.editorImage = Users.Item_x0020_Cover?.Url;
+                item.editorSuffix = Users.Suffix;
                 item.editorName = Users?.AssingedToUser?.Title;
                 item.editorId = Users?.AssingedToUser?.Id;
               }
+              if (item?.editorImage == undefined && item.editorSuffix == undefined) {
+                item.editorDefaultName = item.Editor.Title;
+                item.editorDefaultImage = "https://hhhhteams.sharepoint.com/sites/HHHH/SiteCollectionImages/ICONS/32/icon_user.jpg";
+              }
+
             })
           }
         })
       }
       else {
         data?.map((item: any) => {
-          item.fontColorTask ='#000066';
-          (masterTaskData!=undefined?masterTaskData:storeMasterData).map((masterTaskValue: any) => {
+          item.fontColorTask = '#000066';
+          masterTaskData.map((masterTaskValue: any) => {
             if (item?.Portfolio?.Id == masterTaskValue?.Id) {
               if (masterTaskValue?.PortfolioType?.Title == 'Service') {
                 item.fontColorTask = '#228b22'
               }
-            }      
+            }
           })
           item.siteType = allSite?.TabName
           item.listId = allSite.ListId;
@@ -276,24 +299,30 @@ export const Modified = (props: any) => {
             (Users != undefined ? Users : allUsers).map((Users: any) => {
               if (item.Author.Id == Users?.AssingedToUser?.Id) {
                 item.authorImage = Users.Item_x0020_Cover?.Url;
+                item.authorSuffix = Users.Suffix;
                 item.authorName = Users?.AssingedToUser?.Title;
                 item.authorId = Users?.AssingedToUser?.Id;
 
               }
             })
-            if( item?.authorImage==undefined){
-              item.authorName=item.Author.Title;
-              item.authorImage="https://hhhhteams.sharepoint.com/sites/HHHH/SiteCollectionImages/ICONS/32/icon_user.jpg";    
+            if (item?.authorImage == undefined && item.authorSuffix == undefined) {
+              item.authorDefaultName = item.Author?.Title;
+              item.authorDefaultImage = "https://hhhhteams.sharepoint.com/sites/HHHH/SiteCollectionImages/ICONS/32/icon_user.jpg";
             }
           }
           if (item.Editor != undefined) {
             (Users != undefined ? Users : allUsers).map((Users: any) => {
               if (item.Editor.Id == Users?.AssingedToUser?.Id) {
                 item.editorImage = Users.Item_x0020_Cover?.Url;
+                item.editorSuffix = Users.Suffix;
                 item.editorName = Users?.AssingedToUser?.Title;
                 item.editorId = Users?.AssingedToUser?.Id;
-
               }
+              if (item?.editorImage == undefined && item.editorSuffix == undefined) {
+                item.editorDefaultName = item.Editor.Title;
+                item.editorDefaultImage = "https://hhhhteams.sharepoint.com/sites/HHHH/SiteCollectionImages/ICONS/32/icon_user.jpg";
+              }
+
             })
           }
           if (item.Portfolio != undefined) {
@@ -314,6 +343,15 @@ export const Modified = (props: any) => {
             item.ResponsibleTeam?.map((teamLeader: any) => {
               (Users != undefined ? Users : allUsers).map((users: any) => {
                 if (teamLeader?.Id == users.AssingedToUserId) {
+                  item.AllusersName.push(users)
+                }
+              })
+            })
+          }
+          if (item.AssignedTo?.length > 0) {
+            item.AssignedTo?.map((workingMember: any) => {
+              (Users != undefined ? Users : allUsers).map((users: any) => {
+                if (workingMember?.Id == users.AssingedToUserId) {
                   item.AllusersName.push(users)
                 }
               })
@@ -443,22 +481,8 @@ export const Modified = (props: any) => {
     if (event.target.checked && serviceChecked == true) {
       duplicate.map((dupdata: any) => {
         dupdata.map((item: any) => {
-          if (type=='ALL'&& item.siteType!='DOCUMENTS' && item.siteType != 'FOLDERS' && item.siteType != 'COMPONENTS' && item.siteType != 'SERVICES') {
-            storeMasterData.map((masterTaskValue: any) => {
-              if (item?.Portfolio?.Id == masterTaskValue?.Id) {
-                if (masterTaskValue?.PortfolioType?.Title == 'Component') {               
-                  storeComponent.push(item)
-                }
-                if (masterTaskValue?.PortfolioType?.Title == 'Service') {
-                  item.fontColorTask = '#228b22'
-                  storeComponent.push(item)
-                }
-                
-              }
-            })
-          }
-          if (item.siteType == type) {
-            storeMasterData.map((masterTaskValue: any) => {
+          if (type == 'ALL' && item.siteType != 'DOCUMENTS' && item.siteType != 'FOLDERS' && item.siteType != 'COMPONENTS' && item.siteType != 'SERVICES') {
+            masterTaskData.map((masterTaskValue: any) => {
               if (item?.Portfolio?.Id == masterTaskValue?.Id) {
                 if (masterTaskValue?.PortfolioType?.Title == 'Component') {
                   storeComponent.push(item)
@@ -467,7 +491,21 @@ export const Modified = (props: any) => {
                   item.fontColorTask = '#228b22'
                   storeComponent.push(item)
                 }
-                
+
+              }
+            })
+          }
+          if (item.siteType == type) {
+            masterTaskData.map((masterTaskValue: any) => {
+              if (item?.Portfolio?.Id == masterTaskValue?.Id) {
+                if (masterTaskValue?.PortfolioType?.Title == 'Component') {
+                  storeComponent.push(item)
+                }
+                if (masterTaskValue?.PortfolioType?.Title == 'Service') {
+                  item.fontColorTask = '#228b22'
+                  storeComponent.push(item)
+                }
+
               }
             })
           }
@@ -477,7 +515,7 @@ export const Modified = (props: any) => {
     }
     else if (event.target.checked) {
       allSiteData.map((item: any) => {
-        storeMasterData.map((masterTaskValue: any) => {
+        masterTaskData.map((masterTaskValue: any) => {
           if (item?.Portfolio?.Id == masterTaskValue.Id) {
             if (masterTaskValue.PortfolioType?.Title == 'Component') {
               storeComponent.push(item)
@@ -486,26 +524,26 @@ export const Modified = (props: any) => {
         })
       })
     }
-    else if(event.target.checked==false && serviceChecked == true){
+    else if (event.target.checked == false && serviceChecked == true) {
       duplicate.map((dupdata: any) => {
         dupdata.map((item: any) => {
-          if (type=='ALL'&& item.siteType!='DOCUMENTS' && item.siteType != 'FOLDERS' && item.siteType != 'COMPONENTS' && item.siteType != 'SERVICES') {
-            storeMasterData.map((masterTaskValue: any) => {
+          if (type == 'ALL' && item.siteType != 'DOCUMENTS' && item.siteType != 'FOLDERS' && item.siteType != 'COMPONENTS' && item.siteType != 'SERVICES') {
+            masterTaskData.map((masterTaskValue: any) => {
               if (item?.Portfolio?.Id == masterTaskValue?.Id) {
                 if (masterTaskValue.PortfolioType?.Title == 'Service') {
                   item.fontColorTask = '#228b22'
                   storeComponent.push(item)
-                }             
+                }
               }
             })
           }
-         else if (item.siteType == type) {
-            storeMasterData.map((masterTaskValue: any) => {
+          else if (item.siteType == type) {
+            masterTaskData.map((masterTaskValue: any) => {
               if (item?.Portfolio?.Id == masterTaskValue?.Id) {
                 if (masterTaskValue.PortfolioType?.Title == 'Service') {
                   item.fontColorTask = '#228b22'
                   storeComponent.push(item)
-                }             
+                }
               }
             })
           }
@@ -513,10 +551,10 @@ export const Modified = (props: any) => {
 
       })
     }
-    else if(event.target.checked==false){
+    else if (event.target.checked == false) {
       duplicate.map((dupdata: any) => {
         dupdata.map((data: any) => {
-          if(type=='ALL'&& data.siteType!='DOCUMENTS' && data.siteType != 'FOLDERS' && data.siteType != 'COMPONENTS' && data.siteType != 'SERVICES'){
+          if (type == 'ALL' && data.siteType != 'DOCUMENTS' && data.siteType != 'FOLDERS' && data.siteType != 'COMPONENTS' && data.siteType != 'SERVICES') {
             storeComponent.push(data)
           }
           else if (data.siteType == type) {
@@ -535,8 +573,8 @@ export const Modified = (props: any) => {
     if (event.target.checked && componentChecked == true) {
       duplicate.map((dupdata: any) => {
         dupdata.map((item: any) => {
-          if (type=='ALL'&& item.siteType!='DOCUMENTS' && item.siteType != 'FOLDERS' && item.siteType != 'COMPONENTS' && item.siteType != 'SERVICES') {
-            storeMasterData.map((masterTaskValue: any) => {
+          if (type == 'ALL' && item.siteType != 'DOCUMENTS' && item.siteType != 'FOLDERS' && item.siteType != 'COMPONENTS' && item.siteType != 'SERVICES') {
+            masterTaskData.map((masterTaskValue: any) => {
               if (item?.Portfolio?.Id == masterTaskValue?.Id) {
                 if (masterTaskValue?.PortfolioType?.Title == 'Component') {
                   storeServices.push(item)
@@ -545,12 +583,12 @@ export const Modified = (props: any) => {
                   item.fontColorTask = '#228b22'
                   storeServices.push(item)
                 }
-                
+
               }
             })
           }
           else if (item.siteType == type) {
-            storeMasterData.map((masterTaskValue: any) => {
+            masterTaskData.map((masterTaskValue: any) => {
               if (item?.Portfolio?.Id == masterTaskValue.Id) {
                 if (masterTaskValue.PortfolioType?.Title == 'Component') {
                   storeServices.push(item)
@@ -559,7 +597,7 @@ export const Modified = (props: any) => {
                   item.fontColorTask = '#228b22'
                   storeServices.push(item)
                 }
-                
+
               }
             })
           }
@@ -568,9 +606,9 @@ export const Modified = (props: any) => {
       })
     }
 
-   else if (event.target.checked) {
+    else if (event.target.checked) {
       allSiteData.map((item: any) => {
-        storeMasterData.map((masterTaskValue: any) => {
+        masterTaskData.map((masterTaskValue: any) => {
           if (item?.Portfolio?.Id == masterTaskValue.Id) {
             if (masterTaskValue?.PortfolioType?.Title == 'Service') {
               item.fontColorTask = '#228b22'
@@ -580,24 +618,24 @@ export const Modified = (props: any) => {
         })
       })
     }
-    else if(event.target.checked==false && componentChecked == true){
+    else if (event.target.checked == false && componentChecked == true) {
       duplicate.map((dupdata: any) => {
         dupdata.map((item: any) => {
-          if (type=='ALL'&& item.siteType!='DOCUMENTS' && item.siteType != 'FOLDERS' && item.siteType != 'COMPONENTS' && item.siteType != 'SERVICES') {
-            storeMasterData.map((masterTaskValue: any) => {
+          if (type == 'ALL' && item.siteType != 'DOCUMENTS' && item.siteType != 'FOLDERS' && item.siteType != 'COMPONENTS' && item.siteType != 'SERVICES') {
+            masterTaskData.map((masterTaskValue: any) => {
               if (item?.Portfolio?.Id == masterTaskValue.Id) {
                 if (masterTaskValue?.PortfolioType?.Title == 'Component') {
                   storeServices.push(item)
-                }             
+                }
               }
             })
           }
-         else if (item.siteType == type) {
-            storeMasterData.map((masterTaskValue: any) => {
+          else if (item.siteType == type) {
+            masterTaskData.map((masterTaskValue: any) => {
               if (item?.Portfolio?.Id == masterTaskValue.Id) {
                 if (masterTaskValue?.PortfolioType?.Title == 'Component') {
                   storeServices.push(item)
-                }             
+                }
               }
             })
           }
@@ -608,7 +646,7 @@ export const Modified = (props: any) => {
     else {
       duplicate.map((dupdata: any) => {
         dupdata.map((data: any) => {
-          if(type=='ALL'&& data.siteType!='DOCUMENTS' && data.siteType != 'FOLDERS' && data.siteType != 'COMPONENTS' && data.siteType != 'SERVICES'){
+          if (type == 'ALL' && data.siteType != 'DOCUMENTS' && data.siteType != 'FOLDERS' && data.siteType != 'COMPONENTS' && data.siteType != 'SERVICES') {
             storeServices.push(data)
           }
           if (data.siteType == type) {
@@ -690,51 +728,26 @@ export const Modified = (props: any) => {
 
   const closeEditComponent = (item: any) => {
     setEditComponentPopUps(false)
-    var updateDataComponent: any = item;
-    var dummyValueComponent: any = [];
-    var CurretUpdateValue: any = [];
-    allSiteData.map((data: any,) => {
-      if (data.Id == updateDataComponent.Id) {
-        if (data.Title != updateDataComponent.Title) {
-          data.Title = updateDataComponent.Title
+    // Portfolio_x0020_Type
+    if(item?.PortfolioType?.Title=="Component"){
+      sites.map((siteValue: any) => {
+        if (siteValue.TabName == 'COMPONENTS') {
+          siteValue.noRepeat = false;
+          siteValue.editFunction = true;
+          getCurrentData(siteValue)
         }
-        if (data.PercentComplete != updateDataComponent.PercentComplete) {
-          data.PercentComplete = updateDataComponent.PercentComplete
+      })    
+    }
+    else if(item?.PortfolioType?.Title=="Service"){
+      sites.map((siteValue: any) => {
+        if (siteValue.TabName == 'SERVICES') {
+          siteValue.noRepeat = false;
+          siteValue.editFunction = true;
+          getCurrentData(siteValue)
         }
-        if (item.Modified != undefined) {
-          data.Modified = item.Modified;
-          data.modifiedNew = moment(data?.Modified).format('DD/MM/YYYY');
-
-        }
-        if (item?.Editor?.Id != data?.Editor?.Id) {
-          allUsers.map((Users: any) => {
-            if (item?.Editor?.Id == Users?.AssingedToUser?.Id) {
-              data.editorImage = Users.Item_x0020_Cover?.Url;
-              data.editorName = Users?.AssingedToUser?.Title;
-              data.editorId = Users?.AssingedToUser?.Id;
-
-            }
-          })
-
-        }
-        if (data.DueDate != updateDataComponent.DueDate) {
-          data.DueDate = updateDataComponent?.DueDate;
-          data.dueDateNew = moment(data?.DueDate).format('DD/MM/YYYY');
-        }
-        if (data.PriorityRank != updateDataComponent.PriorityRank) {
-          data.PriorityRank = updateDataComponent.PriorityRank
-        }
-        CurretUpdateValue = data;
-      }
-    })
-    if (updateDataComponent != 'Close') {
-      dummyValueComponent = allSiteData.filter((data: any) => { return (updateDataComponent.Id != data.Id) })
-      dummyValueComponent.unshift(CurretUpdateValue);
+      })
     }
 
-    if (updateDataComponent != 'Close') {
-      setallSiteData([...dummyValueComponent])
-    }
   };
   const closeDocEditPopUp = () => {
     seteditDocPopUpOpen(false);
@@ -746,6 +759,15 @@ export const Modified = (props: any) => {
       }
     })
   }
+  const EditDataTimeEntryData = (item: any) => {
+    setIsTimeEntryOpen(true);
+    setCurrentTimeEntry(item);
+  }
+  const TimeEntryCallBack = () => {
+     setIsTimeEntryOpen(false);
+  }
+
+
   const callBackData = React.useCallback((elem: any, getSelectedRowModel: any, ShowingData: any) => {
 
     if (elem) {
@@ -780,7 +802,9 @@ export const Modified = (props: any) => {
               {row.original.modifiedNew}
               <a target='_blank' href={`${baseUrl}/SitePages/TaskDashboard.aspx?UserId=${row.original.editorId}&Name=${row.original.editorName}`}>
                 {row.original.editorImage != undefined ?
-                  <img title={row.original.editorName} className='workmember ms-1' src={`${row.original.editorImage}`} alt="" /> : undefined}
+                  <img title={row.original.editorName} className='workmember ms-1' src={`${row.original.editorImage}`} alt="" />
+                  : row.original.editorSuffix != undefined ? <span title={row.original.editorName} className="workmember ms-1 bg-fxdark" >{row.original.editorSuffix}</span>
+                    : <img title={row.original.editorDefaultName} className='workmember ms-1' src={`${row.original.editorDefaultImage}`} alt="" />}
               </a>
             </>,
           filterFn: (row: any, columnName: any, filterValue: any) => {
@@ -804,7 +828,9 @@ export const Modified = (props: any) => {
               {row.original.createdNew}
               <a data-interception="off" target='_blank' href={`${baseUrl}/SitePages/TaskDashboard.aspx?UserId=${row.original.authorId}&Name=${row.original.authorName}`}>
                 {row.original.authorImage != undefined ?
-                  <img title={row.original.authorName} className='workmember ms-1' src={`${row.original.authorImage}`} alt="" /> : undefined}
+                  <img title={row.original.authorName} className='workmember ms-1' src={`${row.original.authorImage}`} alt="" />
+                  : row.original.authorSuffix != undefined ? <span title={row.original.authorName} className="workmember ms-1 bg-fxdark" >{row.original.authorSuffix}</span>
+                    : <img title={row.original.authorDefaultName} className='workmember ms-1' src={`${row.original.authorDefaultImage}`} alt="" />}
               </a>
             </>,
           filterFn: (row: any, columnName: any, filterValue: any) => {
@@ -862,13 +888,13 @@ export const Modified = (props: any) => {
           cell: ({ row }) =>
             <>
               <img className='workmember ms-1' src={`${baseUrl}${row.original.photoComponent}`} alt="" />
-              <span style={row?.original?.fontColorTask != undefined ? { color: `${row?.original?.fontColorTask}` } : { color: '#0000BC'}}>{row.original.PortfolioStructureID}</span>      
+              <span style={row?.original?.fontColorTask != undefined ? { color: `${row?.original?.fontColorTask}` } : { color: '#0000BC' }}>{row.original.PortfolioStructureID}</span>
             </>
         },
         {
           accessorKey: "Title", placeholder: "Title", header: "",
           cell: ({ row }) =>
-            <span>  <a data-interception="off" style={row?.original?.fontColorTask != undefined ? { color: `${row?.original?.fontColorTask}` } : { color: '#0000BC'}} target='_blank' href={`${baseUrl}/SitePages/Portfolio-Profile.aspx?taskId=${row.original.Id}`}>
+            <span>  <a data-interception="off" style={row?.original?.fontColorTask != undefined ? { color: `${row?.original?.fontColorTask}` } : { color: '#0000BC' }} target='_blank' href={`${baseUrl}/SitePages/Portfolio-Profile.aspx?taskId=${row.original.Id}`}>
               {row.original.Title}
             </a></span>
 
@@ -877,8 +903,8 @@ export const Modified = (props: any) => {
           accessorKey: 'DueDate',
           cell: ({ row }) =>
             <>
-            <span style={row?.original?.fontColorTask != undefined ? { color: `${row?.original?.fontColorTask}` } : { color: '#0000BC'}}>
-              {row.original.dueDateNew}
+              <span style={row?.original?.fontColorTask != undefined ? { color: `${row?.original?.fontColorTask}` } : { color: '#0000BC' }}>
+                {row.original.dueDateNew}
               </span>
             </>
           , filterFn: (row: any, columnName: any, filterValue: any) => {
@@ -893,7 +919,7 @@ export const Modified = (props: any) => {
           resetSorting: false,
           placeholder: "DueDate",
           header: "",
-          size:90,
+          size: 90,
         },
         {
           accessorKey: 'PercentCompleteShow', placeholder: '%', header: ''
@@ -906,12 +932,14 @@ export const Modified = (props: any) => {
           accessorKey: 'Modified'
           , cell: ({ row }) =>
             <>
-            <span style={row?.original?.fontColorTask != undefined ? { color: `${row?.original?.fontColorTask}` } : { color: '#0000BC'}}>
-            {row.original.modifiedNew}
+              <span style={row?.original?.fontColorTask != undefined ? { color: `${row?.original?.fontColorTask}` } : { color: '#0000BC' }}>
+                {row.original.modifiedNew}
               </span>
               <a data-interception="off" target='_blank' href={`${baseUrl}/SitePages/TaskDashboard.aspx?UserId=${row.original.editorId}&Name=${row.original.editorName}`}>
                 {row.original.editorImage != undefined ?
-                  <img title={row.original.editorName} className='workmember ms-1' src={`${row.original.editorImage}`} alt="" /> : undefined}
+                  <img title={row.original.editorName} className='workmember ms-1' src={`${row.original.editorImage}`} alt="" />
+                  : row.original.editorSuffix != undefined ? <span title={row.original.editorName} className="workmember ms-1 bg-fxdark" >{row.original.editorSuffix}</span>
+                    : <img title={row.original.editorDefaultName} className='workmember ms-1' src={`${row.original.editorDefaultImage}`} alt="" />}
               </a>
             </>
           , filterFn: (row: any, columnName: any, filterValue: any) => {
@@ -933,12 +961,14 @@ export const Modified = (props: any) => {
           accessorKey: "Created",
           cell: ({ row }) =>
             <>
-            <span style={row?.original?.fontColorTask != undefined ? { color: `${row?.original?.fontColorTask}` } : { color: '#0000BC'}}>
-            {row.original.createdNew}
+              <span style={row?.original?.fontColorTask != undefined ? { color: `${row?.original?.fontColorTask}` } : { color: '#0000BC' }}>
+                {row.original.createdNew}
               </span>
               <a data-interception="off" target='_blank' href={`${baseUrl}/SitePages/TaskDashboard.aspx?UserId=${row.original.authorId}&Name=${row.original.authorName}`}>
                 {row.original.authorImage != undefined ?
-                  <img title={row.original.authorName} className='workmember ms-1' src={`${row.original.authorImage}`} alt="" /> : undefined}
+                  <img title={row.original.authorName} className='workmember ms-1' src={`${row.original.authorImage}`} alt="" />
+                  : row.original.authorSuffix != undefined ? <span title={row.original.authorName} className="workmember ms-1 bg-fxdark" >{row.original.authorSuffix}</span>
+                    : <img title={row.original.authorDefaultName} className='workmember ms-1' src={`${row.original.authorDefaultImage}`} alt="" />}
               </a>
             </>
           , filterFn: (row: any, columnName: any, filterValue: any) => {
@@ -975,7 +1005,6 @@ export const Modified = (props: any) => {
   }
   else {
     columns = React.useMemo<ColumnDef<any, unknown>[]>(() =>
-
       [
         {
           accessorKey: "",
@@ -984,26 +1013,32 @@ export const Modified = (props: any) => {
           size: 5,
           id: 'Id',
         }, {
-          accessorKey: 'TaskID', placeholder: " TaskID", header: "", size: 90,
-          cell: ({ row }) =>
+          accessorFn: (row) => row?.TaskID,
+          cell: ({ row, getValue }) => (
             <>
               {<img className='workmember me-1' src={`${row.original.SiteIcon}`}></img>}
-              {row.original.TaskID}
+              <ReactPopperTooltipSingleLevel ShareWebId={getValue()} row={row?.original} AllListId={editTasksLists} singleLevel={true} masterTaskData={masterTaskData} AllSitesTaskData={allSiteData} />
             </>
+          ),
+          id: "TaskID",
+          placeholder: "ID",
+          header: "",
+          resetColumnFilters: false,
+          size: 90,
         },
         {
           accessorKey: "Title", placeholder: "Title", header: "",
           cell: ({ row }) =>
-          <a style={row?.original?.fontColorTask != undefined ? { color: `${row?.original?.fontColorTask}` } : { color: '#0000BC' }}  data-interception="off" target='_blank' href={`${baseUrl}/SitePages/Task-Profile.aspx?taskId=${row.original.Id}&Site=${row.original.siteType}`}>
-          {row.original.Title}
-        </a>
+            <a style={row?.original?.fontColorTask != undefined ? { color: `${row?.original?.fontColorTask}` } : { color: '#0000BC' }} data-interception="off" target='_blank' href={`${baseUrl}/SitePages/Task-Profile.aspx?taskId=${row.original.Id}&Site=${row.original.siteType}`}>
+              {row.original.Title}
+            </a>
         },
         {
           accessorKey: 'PortfolioTitle', placeholder: 'Component', header: '',
           cell: ({ row }) =>
-          <a style={row?.original?.fontColorTask != undefined ? { color: `${row?.original?.fontColorTask}` } : { color: '#0000BC' }} data-interception="off" target='_blank' href={`${baseUrl}/SitePages/Portfolio-Profile.aspx?taskId=${row.original.PortfolioID}`}>
-          {row.original.PortfolioTitle}
-        </a>
+            <a style={row?.original?.fontColorTask != undefined ? { color: `${row?.original?.fontColorTask}` } : { color: '#0000BC' }} data-interception="off" target='_blank' href={`${baseUrl}/SitePages/Portfolio-Profile.aspx?taskId=${row.original.PortfolioID}`}>
+              {row.original.PortfolioTitle}
+            </a>
 
         },
         {
@@ -1031,7 +1066,7 @@ export const Modified = (props: any) => {
 
         },
         {
-          accessorKey: 'PriorityRank', placeholder: 'Priority', header: '' 
+          accessorKey: 'PriorityRank', placeholder: 'Priority', header: ''
         },
         {
           accessorKey: "teamUserName", placeholder: "Team Member", header: "", size: 100,
@@ -1048,7 +1083,9 @@ export const Modified = (props: any) => {
               {row.original.modifiedNew}
               <a data-interception="off" target='_blank' href={`${baseUrl}/SitePages/TaskDashboard.aspx?UserId=${row.original.editorId}&Name=${row.original.editorName}`}>
                 {row.original.editorImage != undefined ?
-                  <img title={row.original.editorName} className='workmember ms-1' src={`${row.original.editorImage}`} alt="" /> : undefined}
+                  <img title={row.original.editorName} className='workmember ms-1' src={`${row.original.editorImage}`} alt="" />
+                  : row.original.editorSuffix != undefined ? <span title={row.original.editorName} className="workmember ms-1 bg-fxdark" >{row.original.editorSuffix}</span>
+                    : <img title={row.original.editorDefaultName} className='workmember ms-1' src={`${row.original.editorDefaultImage}`} alt="" />}
               </a>
             </>,
           filterFn: (row: any, columnName: any, filterValue: any) => {
@@ -1073,7 +1110,9 @@ export const Modified = (props: any) => {
               {row.original.createdNew}
               <a data-interception="off" target='_blank' href={`${baseUrl}/SitePages/TaskDashboard.aspx?UserId=${row.original.authorId}&Name=${row.original.authorName}`}>
                 {row.original.authorImage != undefined ?
-                  <img title={row.original.authorName} className='workmember ms-1' src={`${row.original.authorImage}`} alt="" /> : undefined}
+                  <img title={row.original.authorName} className='workmember ms-1' src={`${row.original.authorImage}`} alt="" />
+                  : row.original.authorSuffix != undefined ? <span title={row.original.authorName} className="workmember ms-1 bg-fxdark" >{row.original.authorSuffix}</span>
+                    : <img title={row.original.authorDefaultName} className='workmember ms-1' src={`${row.original.authorDefaultImage}`} alt="" />}
               </a>
             </>,
           filterFn: (row: any, columnName: any, filterValue: any) => {
@@ -1089,8 +1128,21 @@ export const Modified = (props: any) => {
           placeholder: "Created",
           header: "",
           size: 125,
-        }
-        , {
+        }, {
+          cell: (info: any) => (
+            <>
+              <a className="alignCenter" onClick={() => EditDataTimeEntryData(info?.row?.original)} data-bs-toggle="tooltip" data-bs-placement="auto" title="Click To Edit Timesheet">
+                <span className="svg__iconbox svg__icon--clock dark" data-bs-toggle="tooltip" data-bs-placement="bottom"></span>
+              </a></>
+          ),
+          id: 'AllEntry',
+          accessorKey: "",
+          canSort: false,
+          resetSorting: false,
+          resetColumnFilters: false,
+          placeholder: "",
+          size: 25
+        }, {
           id: 'updateTask',
           cell: ({ row }) =>
 
@@ -1112,36 +1164,36 @@ export const Modified = (props: any) => {
   }
   return (
     <>
-    <div className="p-0  d-flex justify-content-between align-items-center " style={{ verticalAlign: "top" }}>
-      <h2 className="heading ">
-      <span>Last Modified Views</span></h2>
-      <div className="d-flex float-end">
-        <div className="me-1" >
-        <input className="form-check-input me-2"
-            type="checkbox"
-            checked={componentChecked}
-            onChange={componentCheckboxChange}
-          />
-        <label> COMPONENTS </label>
-       
-       
+      <div className="p-0  d-flex justify-content-between align-items-center " style={{ verticalAlign: "top" }}>
+        <h2 className="heading ">
+          <span>Last Modified Views</span></h2>
+        <div className="d-flex float-end">
+          <div className="me-1" >
+            <input className="form-check-input me-2"
+              type="checkbox"
+              checked={componentChecked}
+              onChange={componentCheckboxChange}
+            />
+            <label> COMPONENTS </label>
+
+
+          </div>
+
+          <div className="">
+            <input className="form-check-input me-1"
+              type="checkbox"
+              checked={serviceChecked}
+              onChange={serviceCheckboxChange}
+            />
+            <label>
+              SERVICES </label>
+
+
+          </div>
         </div>
-       
-       <div className="">
-       <input className="form-check-input me-1"
-            type="checkbox"
-            checked={serviceChecked}
-            onChange={serviceCheckboxChange}
-          />
-       <label>  
-          SERVICES </label>
-        
-     
-       </div>
       </div>
-      </div>
-  
-      
+
+
       <nav className="lastmodify">
         <div className="nav nav-tabs" id="nav-tab" role="tablist">
           {
@@ -1159,18 +1211,18 @@ export const Modified = (props: any) => {
       <div className="tab-content lastmodifylist px-2 clearfix" id="nav-tabContent">
         <div className="tab-pane fade show active" id={`nav-${type}`} role="tabpanel" aria-labelledby={`nav-${type}-tab`}>
           {allSiteData &&
-          <div className="TableSection">
-            <div className="container p-0">
-            <div className="Alltable mt-2">
-              <div className="col-md-12 p-0 smart">
-                <div className="wrapper">
-            <GlobalCommanTable columns={columns} ref={childRef} data={allSiteData} showHeader={true} callBackData={callBackData} multiSelect={true} TaskUsers={allUsers} portfolioColor={portfolioColor} AllListId={editTasksLists} />
-          </div>
-          </div>
-          </div>
+            <div className="TableSection">
+              <div className="container p-0">
+                <div className="Alltable mt-2">
+                  <div className="col-md-12 p-0 smart">
+                    <div className="wrapper">
+                      <GlobalCommanTable columns={columns} ref={childRef} data={allSiteData} showHeader={true} callBackData={callBackData} multiSelect={true} TaskUsers={allUsers} portfolioColor={portfolioColor} AllListId={editTasksLists} />
+                    </div>
+                  </div>
+                </div>
+              </div>
+              {/* <div className="clearfix"></div> */}
             </div>
-            {/* <div className="clearfix"></div> */}
-          </div>
           }
         </div>
       </div>
@@ -1179,6 +1231,7 @@ export const Modified = (props: any) => {
       {editTaskPopUpOpen ? <EditTaskPopup Items={editValue} context={context} AllListId={editTasksLists} pageName={"TaskFooterTable"} Call={(Type: any) => { editTaskCallBack(Type) }} /> : ''}
       {editComponentPopUps ? <EditComponent item={editValue} SelectD={editComponentLists} Calls={closeEditComponent} portfolioTypeData={Portfoliotyped} /> : ''}
       {editDocPopUpOpen ? <DocumentPopup closeEditPopup={closeDocEditPopUp} pagecontext={editDocLists} Item={editValue} editData={editValue} /> : ''}
+      {istimeEntryOpen && (<TimeEntryPopup props={currentTimeEntry} CallBackTimeEntry={TimeEntryCallBack} Context={editTasksLists.Context}></TimeEntryPopup>)}
     </>
   )
 }

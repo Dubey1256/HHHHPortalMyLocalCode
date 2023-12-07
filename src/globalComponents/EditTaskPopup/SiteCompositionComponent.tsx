@@ -986,7 +986,7 @@ const SiteCompositionComponent = (Props: any) => {
                     SiteCompositionSettings: (SiteCompositionSettingData != undefined && SiteCompositionSettingData.length > 0) ? JSON.stringify(SiteCompositionSettingData) : SiteCompositionSettings,
                 }).then(() => {
                     console.log("Site Composition Updated !!!");
-                    alert("save successfully !!!");
+                    // alert("save successfully !!!");
                     ClientTimeData = [];
                     ClientTimeDataBackup = [];
                     closePopupCallBack("Save");

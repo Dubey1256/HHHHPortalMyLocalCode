@@ -3,10 +3,10 @@ import { Web } from 'sp-pnp-js';
 import * as globalCommoan from '../../../globalComponents/globalCommon';
 import EmployeePieChart from './EmployeePieChart';
 import { myContextValue } from '../../../globalComponents/globalCommon'
-import WorldClock from './worldclock2';
 import Header from './HeaderSection';
 import TaskStatusTbl from './TaskStausTable';
 import MultipleWebpart from './MutltipleWebpart';
+import * as Moment from "moment";
 var taskUsers: any
 var dataLength: any = [];
 var count: number = 0;
@@ -17,7 +17,7 @@ let currentUserId: any
 const EmployeProfile = (props: any) => {
   let allData: any = [];
   const [AllSite, setAllSite] = useState([]);
-  const [data, setData] = React.useState({ DraftCatogary: [], TodaysTask: [], BottleneckTask: [], ThisWeekTask: [], ImmediateTask: [], ApprovalTask: [] });
+  const [data, setData]: any = React.useState({ DraftCatogary: [], TodaysTask: [], BottleneckTask: [], AssignedTask: [], ThisWeekTask: [], ImmediateTask: [], ApprovalTask: [], AllTaskUser: [] });
   const [currentTime, setCurrentTime]: any = useState([]);
   const [annouceMents, setAnnouceMents]: any = useState([]);
   const [approverEmail, setApproverEmail]: any = useState([]);
@@ -47,7 +47,7 @@ const EmployeProfile = (props: any) => {
     const web = new Web(props.props?.siteUrl);
     await web.lists
       .getById(props?.props?.Announcements)
-      .items.select("Title", "ID", "Body")
+      .items.select("Title", "ID", "Body", "isShow").filter("isShow eq 1")
       .getAll().then(async (data: any) => {
         setAnnouceMents(data)
       }).catch((err: any) => {
@@ -56,7 +56,6 @@ const EmployeProfile = (props: any) => {
   }
 
   const smartMetaData = async () => {
-    let sites = [];
 
     const web = new Web(props.props?.siteUrl);
     await web.lists
@@ -99,11 +98,11 @@ const EmployeProfile = (props: any) => {
       taskUsers = await web.lists
         .getById(props?.props?.TaskUsertListID)
         .items
-        .select("Id,UserGroupId,Suffix,Title,Email,TeamLeader/Id,TeamLeader/Title,SortOrder,Role,IsShowTeamLeader,Company,ParentID1,Status,Item_x0020_Cover,AssingedToUserId,isDeleted,AssingedToUser/Title,AssingedToUser/Id,AssingedToUser/EMail,ItemType,Approver/Id,Approver/Title,Approver/Name&$expand=TeamLeader,AssingedToUser,Approver")
+        .select("Id,UserGroupId,UserGroup/Title,Suffix,Title,Email,TeamLeader/Id,TeamLeader/Title,SortOrder,Role,IsShowTeamLeader,Company,ParentID1,Status,Item_x0020_Cover,AssingedToUserId,isDeleted,AssingedToUser/Title,AssingedToUser/Id,AssingedToUser/EMail,ItemType,Approver/Id,Approver/Title,Approver/Name&$expand=TeamLeader,UserGroup,AssingedToUser,Approver")
         .get();
       let mailApprover: any;
       taskUsers?.map((item: any) => {
-        currentUserId = props?.props?.Context?.pageContext?.legacyPageContext?.userId
+        let currentUserId: any = props?.props?.Context?.pageContext?.legacyPageContext?.userId
         if (currentUserId == item?.AssingedToUser?.Id && currentUserId != undefined) {
           currentUserData = item;
           //  setCurrentUserData(item);
@@ -131,34 +130,27 @@ const EmployeProfile = (props: any) => {
     }
     return taskUser;
   }
-  const isTaskItemExists = (array: any, items: any) => {
-    let isExists = false;
-    for (let index = 0; index < array.length; index++) {
-      let item = array[index];
-      if (item.Id == items.Id && item?.siteType.toLowerCase() == items?.siteType.toLowerCase()) {
-        isExists = true;
-        break;
-      }
-    }
-    return isExists;
-  }
+  const findUserByName = (name: any) => {
+    const user = taskUsers.filter(
+      (user: any) => user?.AssingedToUser?.Id === name
+    );
+    let Image: any;
+    if (user[0]?.Item_x0020_Cover != undefined) {
+      Image = user[0].Item_x0020_Cover.Url;
+    } else { Image = "https://hhhhteams.sharepoint.com/sites/HHHH/PublishingImages/Portraits/icon_user.jpg"; }
+    return user ? Image : null;
+  };
   const getAllData = async (ConfigItem: any) => {
     const web = new Web(ConfigItem.siteUrl);
     await web.lists
       .getById(ConfigItem.listId)
-      .items.select("Title", "PercentComplete", "FeedBack", "Categories", "Approver/Id", "Approver/Title", "Portfolio/Id", "Portfolio/ItemType", "Body", "Portfolio/PortfolioStructureID", "Portfolio/Title", "TaskType/Id", "TaskType/Title", "TaskType/Level", "workingThisWeek", 'TaskID', "IsTodaysTask", "Priority", "PriorityRank", "DueDate", "Created", "Modified", "Team_x0020_Members/Id", "Team_x0020_Members/Title", "ID", "Responsible_x0020_Team/Id", "Responsible_x0020_Team/Title", "Editor/Title", "Editor/Id", "Author/Title", "Author/Id", "AssignedTo/Id", "AssignedTo/Title")
-      .expand("Team_x0020_Members", "Portfolio", "Approver", "TaskType", "Author", "Editor", "Responsible_x0020_Team", "AssignedTo")
+      .items.select("Title", "PercentComplete", "Categories", "FeedBack", "Portfolio/Id", "Portfolio/ItemType", "Body", "Portfolio/PortfolioStructureID", "Portfolio/Title", "TaskType/Id", "TaskType/Title", "TaskType/Level", "workingThisWeek", 'TaskID', "IsTodaysTask", "Priority", "PriorityRank", "DueDate", "Created", "Modified", "Team_x0020_Members/Id", "Team_x0020_Members/Title", "ID", "Responsible_x0020_Team/Id", "Responsible_x0020_Team/Title", "Editor/Title", "Editor/Id", "Author/Title", "Author/Id", "AssignedTo/Id", "AssignedTo/Title")
+      .expand("Team_x0020_Members", "Portfolio", "TaskType", "Author", "Editor", "Responsible_x0020_Team", "AssignedTo")
       .top(5000)
       .getAll()
       .then((data: any) => {
         count++;
         data?.map((items: any) => {
-          if (items?.Body != undefined) {
-            items.descriptionsSearch = items?.Body.replace(
-              /(<([^>]+)>)/gi,
-              ""
-            ).replace(/\n/g, "");
-          }
           items.descriptionsSearch = '';
           if (items?.FeedBack != undefined) {
             let DiscriptionSearchData: any = '';
@@ -170,9 +162,18 @@ const EmployeProfile = (props: any) => {
             }).join('');
             items.descriptionsSearch = DiscriptionSearchData
           }
+          if (items?.Created != null && items?.Created != undefined) {
+            items.serverCreatedDate = new Date(items?.Created).setHours(0, 0, 0, 0)
+          }
+          items.DisplayCreateDate = Moment(items.Created).format("DD/MM/YYYY");
+          if (items.DisplayCreateDate == "Invalid date" || "") {
+            items.DisplayCreateDate = items.DisplayCreateDate.replaceAll("Invalid date", "");
+          }
+          if (items.Author) {
+            items.Author.autherImage = findUserByName(items.Author?.Id)
+          }
           items.listId = ConfigItem.listId;
           items.site = ConfigItem.Title;
-          items.listName = ConfigItem.Title;
           items.siteType = ConfigItem.Title;
           items.siteUrl = ConfigItem.siteUrl;
           items.percentage = items.PercentComplete * 100 + "%";
@@ -212,27 +213,6 @@ const EmployeProfile = (props: any) => {
               allData.push(items);
             }
           });
-          if (items?.Categories != undefined && items?.Categories?.toLowerCase().indexOf('draft') > -1) {
-            if (!isTaskItemExists(allData, items)) {
-              allData.push(items);
-            }
-          }
-          let senderObject = taskUsers?.filter(function (user: any, i: any) {
-            if (user?.AssingedToUser != undefined) {
-              return user?.AssingedToUser["Id"] == items.Author.Id
-            }
-          });
-
-          let userDeatails: any = []
-          if (senderObject.length > 0) {
-            userDeatails.push({
-              'Id': senderObject[0]?.AssingedToUser.Id,
-              'Name': senderObject[0]?.Email,
-              'Suffix': senderObject[0]?.Suffix,
-              'Title': senderObject[0]?.Title,
-            })
-          }
-          items.Author = userDeatails;
         })
         if (count == dataLength.length) {
           var today = new Date();
@@ -254,13 +234,13 @@ const EmployeProfile = (props: any) => {
           let ApprovalTask: any = [];
           let ImmediateTask: any = [];
           let ThisWeekTask: any = [];
+          let AssignedTask: any = [];
           array?.map((items: any) => {
             items.AssignedTo?.forEach((assign: any) => {
               if (assign && assign.Id === currentUserData.AssingedToUser.Id) {
                 if (items.Categories?.indexOf('Draft') > -1) {
                   DraftArray.push(items);
-                }
-                else if (items.IsTodaysTask === true) {
+                } else if (items.IsTodaysTask === true) {
                   TodaysTask.push(items);
                 } else if (items.Categories?.indexOf('Bottleneck') > -1) {
                   BottleneckTask.push(items);
@@ -271,19 +251,12 @@ const EmployeProfile = (props: any) => {
                 } else if (items.percentage == "1%") {
                   ApprovalTask.push(items);
                 }
+                AssignedTask.push(items);
               }
             });
-            items.Author?.forEach((author: any) => {
-              if (author && author.Id === currentUserData.AssingedToUser.Id) {
-                if (items.Categories?.indexOf('Draft') > -1) {
-                  if (!isTaskItemExists(DraftArray, items))
-                    DraftArray.push(items);
-                }
-              }
-            })
           });
           // setCurrentTaskUser(currentUserData);
-          setData({ DraftCatogary: DraftArray, TodaysTask: TodaysTask, BottleneckTask: BottleneckTask, ApprovalTask: ApprovalTask, ImmediateTask: ImmediateTask, ThisWeekTask: ThisWeekTask });
+          setData({ DraftCatogary: DraftArray, AssignedTask: AssignedTask, TodaysTask: TodaysTask, BottleneckTask: BottleneckTask, ApprovalTask: ApprovalTask, ImmediateTask: ImmediateTask, ThisWeekTask: ThisWeekTask, AllTaskUser: taskUsers });
         }
       })
       .catch((err: any) => {
@@ -291,7 +264,7 @@ const EmployeProfile = (props: any) => {
       });
   };
   return (
-    <myContextValue.Provider value={{ ...myContextValue, taskUsers: taskUsers, approverEmail: approverEmail, Context: props.props.Context, propsValue: props.props, currentTime: currentTime, annouceMents: annouceMents, siteUrl: props?.props?.siteUrl, AllSite: AllSite, currentUserData: currentUserData, AlltaskData: data, currentUserId: currentUserId, timesheetListConfig: timesheetListConfig, AllMasterTasks: AllMasterTasks }}>
+    <myContextValue.Provider value={{ ...myContextValue, approverEmail: approverEmail, propsValue: props.props, currentTime: currentTime, annouceMents: annouceMents, siteUrl: props?.props?.siteUrl, AllSite: AllSite, currentUserData: currentUserData, AlltaskData: data, timesheetListConfig: timesheetListConfig, AllMasterTasks: AllMasterTasks, AllTaskUser: taskUsers }}>
       <div> <Header /></div>
       <TaskStatusTbl />
       <MultipleWebpart />

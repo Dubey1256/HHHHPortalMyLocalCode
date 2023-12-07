@@ -4,6 +4,9 @@ import React, { useState } from 'react'
 import { myContextValue } from '../../../globalComponents/globalCommon'
 import WorldClock from './WorldClock';
 import TaskStatusTbl from './TaskStausTable';
+import EmployeePieChart from './EmployeePieChart';
+import { Web } from 'sp-pnp-js';
+import { Panel, PanelType } from 'office-ui-fabric-react';
 const Header = () => {
   const ContextData: any = React.useContext(myContextValue)
   let userName: any = ContextData?.currentUserData;
@@ -14,12 +17,96 @@ const Header = () => {
   const thisWeekTask: any = ContextData?.AlltaskData.ThisWeekTask;
   const draftArray: any = ContextData?.AlltaskData?.DraftCatogary;
   const assignedTask: any = ContextData?.AlltaskData?.AssignedTask;
+<<<<<<< HEAD
   const annouceMents: any = ContextData?.annouceMents;
   const [activeTile, setActiveTile] = useState('workingToday'); // Initialize the active tile
 
+=======
+  let annouceMents: any = ContextData?.annouceMents;
+  const [activeTile, setActiveTile] = useState('workingToday');
+  const [IsOpenTimeSheetPopup, setIsOpenTimeSheetPopup] = useState(false);
+  const [IsAnnouncement, setIsAnnouncement] = React.useState(false);
+  const [newAnnouncement, setNewAnnouncement] = React.useState('');
+  const [, rerender] = React.useReducer(() => ({}), {});
+  let UserGroup: any = ContextData?.AllTaskUser?.filter((x: any) => x.AssingedToUser?.Id === ContextData?.propsValue?.Context._pageContext._legacyPageContext.userId)
+>>>>>>> e1bb1d0286c1660a74363c3ffaaac6fe9afca80f
   const handleTileClick = (tileName: any) => {
-    setActiveTile(tileName); // Set the active tile when a tile is clicked
+
+    if (tileName == 'TimeSheet') {
+      setIsOpenTimeSheetPopup(true)
+    }
+    else {
+      setActiveTile(tileName);
+    }
+    // Set the active tile when a tile is clicked
   };
+  const openAnnouncementPopup = (event: any) => {
+    console.log(event.target);
+    setIsAnnouncement(true);
+  }
+  const deleteAnnouncement = (deleteitem: any) => {
+    const web = new Web(ContextData?.propsValue?.siteUrl);
+    web.lists.getById(ContextData?.propsValue?.Announcements).items.getById(deleteitem.Id).update({
+      Title: deleteitem.Title,
+      Body: deleteitem.Body,
+      isShow: false
+    })
+      .then((updatedItem: any) => {
+        console.log(updatedItem)
+        annouceMents.map((itm: any, index: any) => {
+          if (deleteitem.Id === itm.Id) {
+            itm.isShow = false;
+            annouceMents.splice(index, 1)
+          }
+
+        })
+
+        rerender();
+        // GetResult();
+      }).catch((err: any) => {
+        console.log(err)
+      })
+  };
+
+  const closeAnnouncementpopup = () => {
+    setIsAnnouncement(false)
+  }
+  const onRenderCustomHeaderAnnouncement = () => {
+    return (
+      <>
+        <div className='siteColor subheading'>
+          Add New Announcement
+        </div>
+      </>
+    );
+  };
+  const handleInputChange = (e: any) => {
+    const value = e.target.value;
+    setNewAnnouncement(value);
+  };
+  const saveAnnounceMents = () => {
+    const web = new Web(ContextData?.propsValue?.siteUrl);
+    web.lists.getById(ContextData?.propsValue?.Announcements).items.add(
+      {
+        Title: newAnnouncement,
+        isShow: true
+      })
+      .then((result: any) => {
+        console.log('Announcement added successfully:', result);
+        annouceMents.push(result.data);
+        closeAnnouncementpopup();
+        setNewAnnouncement('');
+        rerender();
+      })
+      .catch((error) => {
+        console.error('Error adding announcement:', error);
+      });
+  }
+  const CallBack = () => {
+    //  setActiveTile('workingToday');
+    setIsOpenTimeSheetPopup(false)
+
+  }
   return (
     <div>
       <section className="NameTopSec">
@@ -43,19 +130,32 @@ const Header = () => {
               </svg>
             </span>
             <WorldClock />
-            <img className="rounded-circle" title='{userName}' width={"30px"} height={"30px"} src={userName?.Item_x0020_Cover?.Url} />
+            <img className="rounded-circle" title={userName?.Title} width={"30px"} height={"30px"} src={userName?.Item_x0020_Cover?.Url} />
           </div>
         </div>
       </section>
-      <section className='annocumentSec'>
-        <div className="alignCenter p-2 mb-3 empBg">
-          <span title='Announcement' className="svg__iconbox svg__icon--annocument light me-2"></span>
-          {
-            annouceMents?.map((items: any) =>
-              <span>{items.Title}</span>
+      {UserGroup != undefined && (UserGroup[0]?.UserGroup?.Title === 'Senior Developer Team' || UserGroup[0]?.UserGroup?.Title === 'Smalsus Lead Team') ? <div className='mb-5'><a className="pull-right empCol hreflink" onClick={(e) => openAnnouncementPopup(e)}> Add Announcement </a></div> : ''}
+      {annouceMents.length && (<section className='annocumentSec'>
+        <div id="carouselExampleIndicators" className="carousel slide" data-bs-ride="carousel">
+          <div className="carousel-indicators">
+            {annouceMents?.map((items: any, index: number) => {
+              return (<button type="button" data-bs-target="#carouselExampleIndicators" data-bs-slide-to={`${index}`} className={`${index == 0 ? 'active' : ''}`} key={index} aria-current={`${index == 0 && true}`} aria-label={`Slide ${index}`}></button>)
+            })}
+          </div>
+          <div className="carousel-inner">
+            {annouceMents?.map((items: any, index: any) => {
+              return (
+                <div className={`carousel-item ${index == 0 ? 'active' : ''}`} data-bs-interval="2000" key={index}>
+                  <div className="alignCenter px-2 pb-4 pt-2 mb-3 empBg">
+                    <span title='Announcement' className="svg__iconbox svg__icon--annocument light me-2 wid30"></span>
+                    {items.Title}{UserGroup != undefined && (UserGroup[0]?.UserGroup?.Title === 'Senior Developer Team' || UserGroup[0]?.UserGroup?.Title === 'Smalsus Lead Team') ? <span title='delete' className="ml-auto svg__iconbox svg__icon--cross light wid30" onClick={() => deleteAnnouncement(items)}></span> : ''}
+                  </div></div>
+              )
+            }
             )}
+          </div>
         </div>
-      </section>
+      </section>)}
       <section className="tabSec">
         <div className="d-flex justify-content-center">
           <div
@@ -78,7 +178,11 @@ const Header = () => {
                       <path d="M15.354 3.354a.5.5 0 0 0-.708-.708L8 9.293 5.354 6.646a.5.5 0 1 0-.708.708l3 3a.5.5 0 0 0 .708 0l7-7z" />
                     </svg>
                   </span>
+<<<<<<< HEAD
                   <span className='fw-semibold ms-1'>{todaysTask.length}</span></div>
+=======
+                  <span className='fw-semibold ms-1'>{todaysTask?.length}</span></div>
+>>>>>>> e1bb1d0286c1660a74363c3ffaaac6fe9afca80f
                 <div className="mx-2">|</div>
                 <div className='alignCenter'>
                   <span title='Todays Time'>
@@ -99,7 +203,7 @@ const Header = () => {
             </span>
             <span className='ms-2'>
               <div>Working This Week</div>
-              <div className="f-18 fw-semibold">{thisWeekTask.length}</div>
+              <div className="f-18 fw-semibold">{thisWeekTask?.length}</div>
             </span>
           </div>
           <div
@@ -111,10 +215,17 @@ const Header = () => {
             </span>
             <span className='ms-2'>
               <div>Assigned Task</div>
+<<<<<<< HEAD
               <div className="f-18 fw-semibold">{assignedTask.length}</div>
             </span>
           </div>
           <div
+=======
+              <div className="f-18 fw-semibold">{assignedTask?.length}</div>
+            </span>
+          </div>
+          {/* <div
+>>>>>>> e1bb1d0286c1660a74363c3ffaaac6fe9afca80f
             className={`${activeTile === 'bottleneck' ? 'col alignCenter me-3 hreflink  mb-3 p-3 empBg shadow-sm active empBg' : 'col alignCenter me-3 p-3 bg-white hreflink  mb-3 shadow-sm'}`}
             onClick={() => handleTileClick('bottleneck')}
           >
@@ -124,7 +235,7 @@ const Header = () => {
             <span className='ms-2'>
               <div>Bottleneck Tasks </div>
               <div className="f-18 fw-semibold">
-                {bottleneckTask.length}
+                {bottleneckTask?.length}
               </div>
             </span>
           </div>
@@ -136,9 +247,9 @@ const Header = () => {
             </span>
             <span className='ms-2'>
               <div>Immediate Tasks</div>
-              <div className="f-18 fw-semibold">{immediateTask.length}</div>
+              <div className="f-18 fw-semibold">{immediateTask?.length}</div>
             </span>
-          </div>
+          </div> */}
           <div
             className={`${activeTile === 'draft' ? 'col alignCenter hreflink  mb-3 p-3 empBg shadow-sm active empBg' : 'col alignCenter p-3 hreflink  bg-white mb-3 shadow-sm'}`}
             onClick={() => handleTileClick('draft')}>
@@ -150,6 +261,17 @@ const Header = () => {
               <div className="f-18 fw-semibold">{draftArray?.length}</div>
             </span>
           </div>
+          <div
+            className={`${activeTile === 'TimeSheet' ? 'col alignCenter hreflink  mb-3 p-3 empBg shadow-sm active empBg' : 'col alignCenter p-3 hreflink  bg-white mb-3 shadow-sm'}`}
+            onClick={() => handleTileClick('TimeSheet')}>
+            <span className="iconSec">
+              <span title='Draft Task' style={{ width: '24px', height: '24px' }} className=" svg__iconbox svg__icon--draftOther"></span>
+            </span>
+            <span className='ms-2'>
+              <div>TimeSheet</div>
+              {/* <div className="f-18 fw-semibold">{draftArray?.length}</div> */}
+            </span>
+          </div>
         </div>
         {activeTile === 'workingToday' && <div><TaskStatusTbl activeTile={activeTile} /></div>}
         {activeTile === 'workingThisWeek' && <div><TaskStatusTbl activeTile={activeTile} /></div>}
@@ -157,7 +279,29 @@ const Header = () => {
         {activeTile === 'bottleneck' && <div><TaskStatusTbl activeTile={activeTile} /></div>}
         {activeTile === 'immediate' && <div><TaskStatusTbl activeTile={activeTile} /></div>}
         {activeTile === 'draft' && <div><TaskStatusTbl activeTile={activeTile} /></div>}
+        {/* {activeTile === 'TimeSheet' && <div><TaskStatusTbl activeTile={activeTile} /></div>} */}
       </section>
+<<<<<<< HEAD
+=======
+      <span>
+        {IsOpenTimeSheetPopup == true && <EmployeePieChart IsOpenTimeSheetPopup={IsOpenTimeSheetPopup} Call={() => { CallBack() }} />}
+      </span>
+      <Panel onRenderHeader={onRenderCustomHeaderAnnouncement}
+        isOpen={IsAnnouncement}
+        onDismiss={closeAnnouncementpopup}
+        type={PanelType.medium}>
+        <div className='modal-body'>
+          <div className='input-group'>
+            <label className='form-label full-width'>Title</label>
+            <textarea className="form-control" defaultValue={newAnnouncement} onChange={handleInputChange} />
+          </div>
+        </div>
+        <div className='modal-footer mt-2'>
+          <button className="btn btn-primary ms-1" onClick={saveAnnounceMents}>Save</button>
+          <button className='btn btn-default ms-1' onClick={closeAnnouncementpopup}>Cancel</button>
+        </div>
+      </Panel>
+>>>>>>> e1bb1d0286c1660a74363c3ffaaac6fe9afca80f
     </div>
   );
 }

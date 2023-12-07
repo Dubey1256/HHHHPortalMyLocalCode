@@ -100,7 +100,7 @@ function ComponentChildDataTable(SelectedProp: any) {
     ]);
 
   const [flatView, setFlatView] = React.useState(true);
-  const [IsMakeSCProtected, setIsMakeSCProtected] = React.useState(false);
+  const [IsMakeSCProtected, setIsMakeSCProtected] = React.useState(SelectedProp?.IsSCProtected ? SelectedProp.IsSCProtected : false);
   const [IsClientCategoryPopupOpen, setIsClientCategoryPopupOpen] = React.useState(false);
   const [SelectedClientCategory, setSelectedClientCategory] = React.useState([]);
   const [CurrentSiteName, setCurrentSiteName] = React.useState('');
@@ -391,8 +391,12 @@ function ComponentChildDataTable(SelectedProp: any) {
                   }
                   if (checkIsSCProctected) {
                     item.IsSCProtected = true;
+                    item.IsSCProtectedStatus = "Protected";
+
                   } else {
                     item.IsSCProtected = false;
+                    item.IsSCProtectedStatus = "";
+
                   }
                   let tempArray: any = [];
                   if (item.ClientCategory?.length > 0) {
@@ -679,8 +683,12 @@ function ComponentChildDataTable(SelectedProp: any) {
       }
       if (checkIsSCProctected) {
         result.IsSCProtected = true;
+        result.IsSCProtectedStatus = "Protected";
+
       } else {
         result.IsSCProtected = false;
+        result.IsSCProtectedStatus = "";
+
       }
 
       result.DisplayCreateDate = Moment(result.Created).format("DD/MM/YYYY");
@@ -963,8 +971,10 @@ function ComponentChildDataTable(SelectedProp: any) {
       }
       if (checkIsSCProctected) {
         ItemDataCheckSC.IsSCProtected = true;
+        ItemDataCheckSC.IsSCProtectedStatus = "Protected";
       } else {
         ItemDataCheckSC.IsSCProtected = false;
+        ItemDataCheckSC.IsSCProtectedStatus = "";
       }
       if (ItemDataCheckSC?.SiteCompositionSettings != undefined) {
         ItemDataCheckSC.compositionType = siteCompositionType(ItemDataCheckSC?.SiteCompositionSettings);
@@ -1002,8 +1012,7 @@ function ComponentChildDataTable(SelectedProp: any) {
     console.log(AllFlitteredData);
     GroupByClientCategoryData();
     // console.log("Filter Site and Client Category Data ======", tempSiteAndCategoryData);
-    // console.log("Filter Site and Client Category Data  AllSiteClientCategories AllSiteClientCategories AllSiteClientCategories======", AllSiteClientCategories);
-
+    // console.log("Filter Site and Client Category Data AllSiteClientCategories======", AllSiteClientCategories);
   };
 
 
@@ -1012,7 +1021,6 @@ function ComponentChildDataTable(SelectedProp: any) {
   const findAllClientCategories = (AllData: any) => {
     AllData.forEach((AllDataItem: any) => {
       if (AllDataItem.Item_x0020_Type == "SubComponent" || AllDataItem.Item_x0020_Type == "Feature" || AllDataItem.Item_x0020_Type == "Component") {
-
         allMasterTaskGlobalArray.push(AllDataItem)
       }
       if (AllDataItem.TaskType?.Title == "Task" || AllDataItem.TaskType?.Title == "Activities" || AllDataItem.TaskType?.Title == "Workstream") {
@@ -1020,8 +1028,8 @@ function ComponentChildDataTable(SelectedProp: any) {
           AllDataItem?.ClientCategory?.map((CCItem: any) => {
             AllsiteClientCategories.push(CCItem);
           })
-          allSiteGlobalArray.push(AllDataItem);
         }
+        allSiteGlobalArray.push(AllDataItem);
       }
       if (AllDataItem.subRows?.length > 0) {
         AllDataItem.subRows?.map((ChildArray: any) => {
@@ -1083,10 +1091,11 @@ function ComponentChildDataTable(SelectedProp: any) {
         })
 
       }
-      removeDuplicateClientCategories();
+
       lastUpdatedAllSites = [...AllSitesData];
-      console.log(" vfs fb gsdf bdfd df bdf bdf bvs sf ds v ===============", lastUpdatedAllSites)
+
     }
+    removeDuplicateClientCategories();
   }
 
 
@@ -1361,7 +1370,7 @@ function ComponentChildDataTable(SelectedProp: any) {
         header: "",
         resetColumnFilters: false,
         // isColumnDefultSortingAsc:true,
-        size: 190
+        size: 100
       },
       {
         accessorFn: (row) => row?.Title,
@@ -1402,28 +1411,21 @@ function ComponentChildDataTable(SelectedProp: any) {
         size: 500,
       },
       {
-        accessorFn: (row) => row?.IsSCProtected,
-        cell: ({ row }) => (
-          <span>{row?.original?.IsSCProtected == true ? "Protected" : ""}</span>
-        ),
-        id: 'Type',
+        accessorKey: "IsSCProtectedStatus",
         placeholder: "Protected",
         header: "",
         resetColumnFilters: false,
-        resetSorting: false,
         size: 80,
+        id: "IsSCProtectedStatus"
       },
+
       {
-        accessorFn: (row) => row?.compositionType,
-        cell: ({ row }) => (
-          <span>{row?.original?.compositionType}</span>
-        ),
-        id: 'Type',
+        accessorKey: "compositionType",
         placeholder: "Composition Type",
         header: "",
         resetColumnFilters: false,
-        resetSorting: false,
         size: 80,
+        id: "compositionType"
       },
       {
         accessorFn: (row) => row?.ClientCategorySearch,
@@ -1606,8 +1608,8 @@ function ComponentChildDataTable(SelectedProp: any) {
   //-------------------------------------------------- restructuring function end---------------------------------------------------------------
   //-------------------------------------------------------------End---------------------------------------------------------------------------------
   return (
-    <section className="TableContentSection taskprofilepagegreen">
-      <div className="container-fluid">
+    <section className="">
+      <div className="">
         <section className="TableSection">
           <div className="container p-0">
             <div className="Alltable mt-2">
@@ -1670,7 +1672,7 @@ function ComponentChildDataTable(SelectedProp: any) {
                   </tbody>
                 </table>
               </div>
-              <div className="wrapper">
+              <div className="">
                 <Loader
                   loaded={loaded}
                   lines={13}

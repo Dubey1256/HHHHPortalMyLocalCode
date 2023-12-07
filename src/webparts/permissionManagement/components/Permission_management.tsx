@@ -1,109 +1,49 @@
-import * as React from "react";
-import { useState, useEffect } from "react";
 import { Panel, PanelType } from "office-ui-fabric-react";
-import pnp from "sp-pnp-js";
+import React, { useEffect, useState } from "react";
+import Tooltip from "../../../globalComponents/Tooltip";
+import { event } from "jquery";
+import GlobalCommanTable from "../../../globalComponents/GroupByReactTableComponents/GlobalCommanTable";
 import { Web } from "sp-pnp-js";
-import { Table } from "react-bootstrap";
-import * as $ from "jquery";
-import "./pm.css";
+import EditPage from "../../../globalComponents/EditPanelPage/EditPage";
 
-var BaseURL1: any;
-var BaseUrl: any = window.location.href;
-BaseURL1 = window.location.href.split("/_layouts");
 
-var newGrp: any = [];
-const Per_management = () => {
-  var Group: any = [],
-    count = 0,
-    arr: any = [],
-    item: any = [],
-    newGroups: any = [],
-    userName: any = [],
-    grp: any = [],
-    valuess: any = [],
-    userId: any,
-    usersArr: any = [],
-    SpGroups: any = [],
-    Flag = true,
-    sGgroup: any = [],
-    temp: any = [],
-    addUsers: any = [];
-  // var sitegroup:any=[]
-  var checkGroups: any = [];
 
-  const [showgroups, setShowGroups] = useState([
-    {
-      Title: "Manage Permission-Users",
-      Ggroups: [],
-      child: [],
-      GroupPermission: "Design,Read",
-    },
-    {
-      Title: "Manage Permission- Teams",
-      Ggroups: [],
-      child: [],
-      GroupPermission: "Edit",
-    },
-    {
-      Title: "Manage Permission- Admins",
-      Ggroups: [],
-      child: [],
-      GroupPermission: "Full Control",
-    },
-  ]);
 
-  const [userHierarchy, setuserHierarchy]: any = React.useState([
-    { Title: "Approvers", Ugroups: [] },
-    { Title: "Designers", Ugroups: [] },
-    { Title: "GmBH HR", Ugroups: [] },
-    { Title: "GmbH Members ", Ugroups: [] },
-    { Title: "GmbH Owners", Ugroups: [] },
-    { Title: "GmbH Visitors", Ugroups: [] },
-    { Title: "HHHH Administrator", Ugroups: [] },
-    { Title: "HHHH HR", Ugroups: [] },
-    { Title: "HHHH Members", Ugroups: [] },
-    { Title: "HHHH Owners", Ugroups: [] },
-    { Title: "HHHH Visitors", Ugroups: [] },
-    { Title: "Hierarchy Managers", Ugroups: [] },
-    { Title: "HR Members", Ugroups: [] },
-    { Title: "HR Owners", Ugroups: [] },
-    { Title: "HR Visitors", Ugroups: [] },
-    { Title: "Offshore Timesheet Admins", Ugroups: [] },
-    { Title: "Quick Deploy Users", Ugroups: [] },
-    { Title: "Restricted Readers", Ugroups: [] },
-    { Title: "Shareweb Migration-Network Members", Ugroups: [] },
-    { Title: "Shareweb Migration-Network Owners", Ugroups: [] },
-    { Title: "Shareweb Migration-Network Visitors", Ugroups: [] },
-    { Title: "SH Members", Ugroups: [] },
-    { Title: "SH Owners", Ugroups: [] },
-    { Title: "SH Visitors", Ugroups: [] },
-    { Title: "Smalsus Members", Ugroups: [] },
-    { Title: "Smalsus Owners", Ugroups: [] },
-    { Title: "Smalsus Visitors", Ugroups: [] },
-    { Title: "Style Resource Readers", Ugroups: [] },
-    { Title: "Time sheet admin group", Ugroups: [] },
-    { Title: "Training  Members", Ugroups: [] },
-    { Title: "Training Owners", Ugroups: [] },
-    { Title: "Training Visitors", Ugroups: [] },
-    { Title: "Translaton Managers", Ugroups: [] },
-  ]);
 
-  const [refreshState, setRefreshState] = useState(false);
-  const [readPanel, setreadPanel] = useState(false);
-  const [readPanel1, setreadPanel1] = useState(false);
-  const [readopenPanel, setReadOpenPanel] = useState<any>(false);
+var id: any = [];
+const Permission_management = () => {
+  let arr: any = [];
+  const [groups, setGroups]: any = useState([]);
+  const [truePanel, setTruePanel]: any = useState(false);
+  const [optionsData, setOptionsData]: any = useState('');
+  const [data, setData]: any = useState([]);
+  const [addUser, setAddUser]: any = useState(false);
+  const [taskUser, setTaskUser]: any = useState([]);
+  const [inputValue, setInputValue]: any = useState({ Title: '', Id: '' });
+  const [suggestions, setSuggestions] = useState([]);
+  const [checkPermission, setCheckPermission] = useState(false);
+  const [permissionUserGroup, setPermissionUserGroup]: any = useState([]);
 
-  // const [edit, setEdit] = useState({});
-  const [valNew, setValNew] = useState("");
-  const [valueSearch, setValueSearch] = useState("");
-  const [usersGrp, setUsersGrp]: any = useState([]);
-  const [newUsersGroupp, setnewUsersGroupp] = useState([]);
-  const [visitors, setVisitors] = useState();
-  const [newGrps, setNewGrps] = useState([]);
-  const [counts, setcounts] = useState<any>(0);
-  const [addds, setAddds] = useState([]);
 
-  const [addUserTemp, setaddUserTemp] = useState([]);
+
+
+  useEffect(() => {
+    taskUserData()
+    getData();
+  }, []);
+
+
+  const taskUserData = async () => {
+    let web = new Web("https://hhhhteams.sharepoint.com/sites/HHHH/SP");
+    let AllTasksMatches: any = [];
+    AllTasksMatches = await web.lists
+      .getById("B318BA84-E21D-4876-8851-88B94B9DC300")
+      .items.getAll(4000).then((data: any) => {
+        setTaskUser(data);
+      }).catch((err: any) => {
+        console.log(err);
+      })
+  }
 
   const getData = async () => {
     await $.ajax({
@@ -114,748 +54,509 @@ const Per_management = () => {
         "content-Type": "application/json;odata=verbose",
       },
       success: async function (res: any) {
+        let newArray: any = [];
         console.log(res);
         arr = res.d.results;
 
-        for (let i = 0; i < arr.length; i++) {
-          if (arr[i].OwnerTitle != "System Account") item.push(arr[i]);
-        }
-        //   if(BaseUrl.indexOf('SP')>-1)
-        //   for(let i in item){
-        //     if(!(item[i].OwnerTitle.indexOf("KSL")>-1))
-        //     newGrp.push(item)
-        // }
-
-        //  item.forEach((val:any)=>{
-        //   val.OwnerTitle=item.OwnerTitle
-        //  })
-
-        if (BaseUrl.indexOf("SP") > -1) {
-          for (let i in item) {
-            if (!(item[i].OwnerTitle.indexOf("KSL") > -1)) newGrp.push(item[i]);
+        arr.map((items: any) => {
+          if (items?.OwnerTitle !== 'System Account' && !(items?.OwnerTitle.indexOf("KSL") > -1) && !(items?.LoginName.indexOf("KSL") > -1) && !(items?.LoginName.indexOf("Test") > -1) && !(items?.LoginName.indexOf("test")! > -1)) {
+            newArray.push(items);
           }
-        }
-        $.each(newGrp, function (index: any, group: any) {
-          count = count + 1;
+        })
 
-          Daata(group);
-        });
+        setGroups(newArray);
+
+
       },
     });
 
-    console.log(Group);
-  };
-  useEffect(() => {
-    getData();
-  }, []);
-
-  const Daata = async (val: any) => {
-    if (val.Id != "196") {
-      await $.ajax({
-        url:
-          "https://hhhhteams.sharepoint.com/sites/HHHH/SP/_api/web/RoleAssignments/GetByPrincipalId(" +
-          val.Id +
-          ")/RoleDefinitionBindings",
-        method: "GET",
-        headers: {
-          accept: "application/json;odata=verbose",
-          "content-Type": "application/json;odata=verbose",
-        },
-        success: function (data1) {
-          // console.log( "my data is",data1)
-          val["Permissionname"] = data1.d.results[0].Name;
-          if (count == newGrp.length) {
-            groupData();
-          }
-        },
-        error: function (data1) {
-          console.log(data1);
-        },
-      });
-    }
-
-    // useEffect(()=>{
-    //     Daata()
-    // },[]);
+    // console.log(Group);
   };
 
-  const groupData = async () => {
-    let local = showgroups;
-    var a = false;
-    $.each(local, function (_index: any, hierarchy: any) {
-      $.each(newGrp, function (_index: any, Group: any) {
-        if (
-          hierarchy["GroupPermission"].indexOf(Group["Permissionname"]) > -1
-        ) {
-          hierarchy.Ggroups.push(Group);
-        }
-      });
-      //  setShowGroups(local)
-    });
-    setRefreshState(!refreshState);
 
-    local?.forEach((ba: any) => {
-      ba.child = ba.Ggroups?.filter((val: any, id: any, array: any) => {
-        return array.indexOf(val) == id;
-      });
-      setShowGroups(local);
-    });
-    setcounts(count + 1);
-    setcounts((counts: any) => [...counts]);
-  };
-  // useEffect(()=>{
-  //     groupData()
-  //   },[]);
 
-  // const uniqueValues=showgroups.filter((_dup:any,index:any)=>{
-  //   return(showgroups.indexOf(_dup)== index)
-  // })
-  //   console.log(uniqueValues)
-  const onSearch = (event: any) => {
-    var s = event.target.value;
-    setValNew(s);
-    console.log(s);
+  const GetUserByGroupId = (groupId: any) => {
 
-    if (s.length > 0) {
-      var a = usersGrp.filter((data: any) =>
-        data.title.toLowerCase().includes(s)
-      );
-      setUsersGrp(a);
-      console.log(a);
-    } else {
-      setUsersGrp(newUsersGroupp);
-    }
-  };
+    id = groupId;
+    setOptionsData(groupId);
+    if (typeof groupId == "string") {
+      id = groupId
+      const findByTitle = (array: any, title: any) => {
+        return array.find((item: any) => item.Title === title);
+      }
 
-  /*---Functions for Add/Remove users from group---*/
+      // Use the function to find the object with the specified title
+      var foundObject = findByTitle(groups, groupId);
 
-  const BindUsersByGroup: any = async () => {
-    Flag = true;
-    await LoadUserByGroupId(checkGroups.Id, checkGroups.Title);
-  };
-
-  const DisplayOwners = async (d1: any) => {
-    if (BaseUrl.indexOf("SP") > -1) {
-      for (let i = 0; i < newGrp.length; i++) {
-        if (
-          !(newGrp[i].OwnerTitle.indexOf("KSL") > -1) &&
-          !(newGrp[i].LoginName.indexOf("KSL") > -1) &&
-          !(newGrp[i].LoginName.indexOf("Test") > -1) &&
-          !(newGrp[i].LoginName.indexOf("test")! > -1)
-        ) {
-          SpGroups.push(newGrp[i]);
-        }
+      // Check if the object was found
+      if (foundObject) {
+        id = foundObject.Id;
+      } else {
+        id = 0;
       }
     }
-    // SpGroups?.forEach((group:any, _index:any)=>{
-    //   if(group.Title == d1)
-    //   checkGroups = group
 
-    // })
-    $.each(SpGroups, function (index: any, group: any) {
-      if (group.Title == d1) checkGroups = group;
-    });
 
-    // await LoadUserByGroupId(checkGroups.Id, checkGroups.Title);
-    // showGroupps(checkGroups.Id, checkGroups.Title);
-    // if (Flag == true) {
-    //   setreadPanel(true);
-    // }
-    showGroupps(checkGroups.Id, checkGroups.Title);
-    console.log(newGrp);
-    setNewGrps(SpGroups);
-  };
 
-  const showGroupps = async (groupId: any, groupName: any) => {
-    var newArr: any[];
-
-    usersArr.length = 0;
-    var query = "/_api/web/SiteGroups/GetById(" + groupId + ")/Users";
-    await $.ajax({
-      url: BaseURL1[0] + query,
+    var query = "/_api/web/SiteGroups/GetById(" + id + ")/Users";
+    var SiteUrl = "https://hhhhteams.sharepoint.com/sites/HHHH/SP"
+    $.ajax({
+      url: SiteUrl + query,
       method: "GET",
       async: false,
       headers: {
-        accept: "application/json;odata=verbose",
-        "content-Type": "application/json;odata=verbose",
+        "accept": "application/json;odata=verbose",
+        "content-Type": "application/json;odata=verbose"
       },
-      success: function (data1) {
-        newArr = data1.d.results;
-        $.each(newArr, function (i: any, value: any) {
-          if (
-            newArr[i].Title != "System Account" &&
-            newArr[i].Title != groupName
-          ) {
-            Flag = true;
-            userId = newArr[i].Id;
-            var userEmail = newArr[i].Email;
-            var userTitle = newArr[i].Title;
-            var userLoginName = newArr[i].LoginName.replace("#", "%23");
-            var userObj: any = {
-              userLoginName: userLoginName,
-              id: userId,
-              title: userTitle,
-              email: userEmail,
-            };
+      success: function (data) {
+        setTruePanel(true);
+        setData(data?.d?.results);
 
-            userObj.userLoginName = userLoginName;
-            userObj.id = userId;
-            userObj.title = userTitle;
-            userObj.email = userEmail;
-
-            usersArr.push(userObj);
-          } // end of IF system account
-        });
-        setUsersGrp(usersArr);
-
-        setnewUsersGroupp(usersArr);
-        console.log(addds);
       },
-      error: function (data1) {
-        setreadPanel(false);
-        Flag = false;
+      error: function (data) {
         alert("You do not have rights to access this section");
+
       },
+
     });
   };
 
-  const LoadUserByGroupId = async (GroupId: any, GroupName: any) => {
-    showGroupps(GroupId, GroupName);
-  };
 
-  const onSearching = (event: any) => {
-    var sr = event.target.value;
-    setValueSearch(sr);
-    console.log(sr);
-  };
 
-  const changex = () => {
-    setValNew("");
-  };
-
-  const titlex = () => {
-    console.log(usersGrp);
-    var tile = [...usersGrp].reverse();
-    console.log(tile);
-    setUsersGrp(tile);
-  };
-
-  const changeCancel = () => {
-    setValueSearch("");
-  };
-
-  // const userData=async ()=>{
-  //   const web =new Web('https://smalsusinfolabs.sharepoint.com/sites/Dashboard');
-  //   const res = await web.lists.getByTitle('').items.get();
-
-  // }
-
-  const saveData = (searchTerm: any) => {
-    let v = searchTerm,
-      s: any;
-    setValueSearch(v);
-
-    $.each(addds, function (i: any, user: any) {
-      if (v == user.title) {
-        s = user.userLoginName;
-        InsertUserByLoginNameInGroupById(user.userLoginName, checkGroups.Id);
-      }
-
-      console.log(s);
-    });
-  };
-
-  const InsertUserByLoginNameInGroupById = async (
-    userLoginName: any,
-    groupId: any
-  ) => {
-    var url =
-      "https://hhhhteams.sharepoint.com/sites/HHHH/admin/_api/web/sitegroups(" +
-      groupId +
-      ")/users";
+  const postUser = async () => {
+    var url = "https://hhhhteams.sharepoint.com/sites/HHHH/sp" + "/_api/web/sitegroups(" + optionsData + ")/users";
     var data = {
-      __metadata: {
-        type: "SP.User",
+      "__metadata": {
+        "type": "SP.User"
       },
-      LoginName: userLoginName,
+      "LoginName": inputValue.Email,
     };
 
-    postRequest(data, url);
-  };
-
-  const postRequest = (data: any, url: any) => {
     $.ajax({
       url: url,
       method: "POST",
       headers: {
-        accept: "application/json;odata=verbose",
-        "content-Type": "application/json;odata=verbose",
+        "accept": "application/json;odata=verbose",
+        "content-Type": "application/json;odata=verbose"
       },
       data: JSON.stringify(data),
       success: function (result) {
-        BindUsersByGroup();
+        console.log(result);
       },
       error: function (result, status) {
+        console.log(result);
         alert("You do not have the necessary rights to access this section");
-        BindUsersByGroup();
-        setReadOpenPanel(false);
-      },
-    });
-  };
-
-  const openreadPanel = (d1: any, Id: any) => {
-    let visitorsSet = visitors;
-    visitorsSet = d1;
-    setVisitors(visitorsSet);
-    setreadPanel(true);
-    DisplayOwners(d1);
-    // setreadPanel(true)
-    // setEdit(Ide)
-  };
-  //  ---- main panel open start-----
-
-  const dismissPanel = () => {
-    setreadPanel(false);
-  };
-  // -----close----
-
-  //  add user Panel functionality
-
-  const closereadPanel3 = () => {
-    setReadOpenPanel(false);
-  };
-
-  const oppenAddPanel = () => {
-    setReadOpenPanel(true);
-    setcounts(counts + 1);
-    insertData();
-  };
-
-  const insertData = () => {
-    let localU = userHierarchy,
-      userEmail,
-      userTitle;
-    var newArr: any = [],
-      ntmp = [];
-
-    if (BaseUrl.indexOf("SP") > -1) {
-      for (let i = 0; i < newGrp.length; i++) {
-        if (
-          !(newGrp[i].OwnerTitle.indexOf("KSL") > -1) &&
-          !(newGrp[i].LoginName.indexOf("KSL") > -1) &&
-          !(newGrp[i].LoginName.indexOf("Test") > -1) &&
-          !(newGrp[i].LoginName.indexOf("test")! > -1)
-        ) {
-          SpGroups.push(newGrp[i]);
-        }
       }
-    }
-    $.each(SpGroups, function (index: any, group: any) {
-      $.each(localU, function (i: any, groups: any) {
-        var localvar: any = [];
-        if (groups.Title == group.Title) {
-          var query = "/_api/web/SiteGroups/GetById(" + group.Id + ")/Users";
-          $.ajax({
-            url: BaseURL1[0] + query,
-            method: "GET",
-            async: false,
-            headers: {
-              accept: "application/json;odata=verbose",
-              "content-Type": "application/json;odata=verbose",
-            },
-            success: function (data) {
-              newArr = data.d.results;
-              $.each(newArr, function (i: any, value: any) {
-                if (
-                  newArr[i].Title != "System Account" &&
-                  newArr[i].Title != group.Title
-                ) {
-                  userId = newArr[i].Id;
-                  userEmail = newArr[i].Email;
-                  userTitle = newArr[i].Title;
-                  var userLoginAddName = newArr[i].LoginName;
-
-                  var userObj: any = {
-                    Name: userTitle,
-                    id: userId,
-                    email: userEmail,
-                    // userUrl:'',
-                    // pictureUrl:''
-                  };
-
-                  var userAdd: any = {
-                    userLoginName: userLoginAddName,
-                    id: userId,
-                    title: userTitle,
-                    email: userEmail,
-                    // userUrl:'',
-                    // pictureUrl:''
-                  };
-                } // end of IF system account
-                temp.push(userObj?.Name);
-                // console.log(temp);
-                // groups.Ugroups.push(userObj);
-                localvar.push(userObj);
-                groups.Ugroups = localvar;
-                addUsers.push(userAdd);
-              });
-            },
-            error: function () {
-              console.log("error");
-            },
-          });
-        }
-      });
-      // userNameArray=[...new Set(temp)]
-      setuserHierarchy(localU);
-      setAddds(addUsers);
-      // setReadOpenPanel(true);
     });
-
-    for (let i = 0; i < temp.length; i++) {
-      if (ntmp.indexOf(temp[i]) === -1) {
-        ntmp.push(temp[i]);
-      }
-    }
-
-    setaddUserTemp(ntmp);
   };
 
-  const onOptionHandle = (event: any) => {
-    valuess = event.target.value;
-    setVisitors(valuess);
-    DisplayOwners(valuess);
-    openreadssPanel(valuess);
-    console.log(event.target.value);
-  };
 
-  const openreadssPanel = (gg: any) => {
-    setreadPanel1(true);
-  };
+  const checkUser = async () => {
+    let newArray: any = [];
+    var targetId = inputValue?.AuthorId;
+    var query = "/_api/web/GetUserById(" + targetId + ")/Groups";
+    var SiteUrl = "https://hhhhteams.sharepoint.com/sites/HHHH/SP";
 
-  const RemoveSiteOwner = async (U: any) => {
-    pnp.sp.web.currentUser.get().then((result: { Id: any }) => {
-      console.log(result);
-      userId = result.Id;
-    });
-
-    if (userId == U) {
-      alert("You cannot remove yourself!");
-      return false;
-    }
-    var flag = confirm("Are you sure, you want to delete this?");
-    if (flag) {
-      RemoveUserByLoginName(U, checkGroups.Id);
-    }
-  };
-
-  const RemoveUserByLoginName = async (userId: any, groupId: any) => {
-    var url =
-      BaseURL1 +
-      "/_api/web/sitegroups(" +
-      groupId +
-      ")/users/removebyid(" +
-      userId +
-      ")";
-    return postRequestWithOutData(url);
-  };
-
-  const postRequestWithOutData = (baseUrl: any) => {
-    $.ajax({
-      url: baseUrl,
-      method: "POST",
+    await $.ajax({
+      url: SiteUrl + query,
+      method: "GET",
+      async: false,
       headers: {
-        accept: "application/json;odata=verbose",
-        "content-Type": "application/json;odata=verbose",
+        "accept": "application/json;odata=verbose",
+        "content-Type": "application/json;odata=verbose"
       },
-      success: function (result) {
-        BindUsersByGroup();
+      success: function (data) {
+        data?.d?.results?.map((items: any) => {
+          if (items?.OwnerTitle !== 'System Account' && !(items?.OwnerTitle.indexOf("KSL") > -1) && !(items?.LoginName.indexOf("KSL") > -1) && !(items?.LoginName.indexOf("Test") > -1) && !(items?.LoginName.indexOf("test")! > -1)) {
+            newArray.push(items);
+          }
+        })
+        setPermissionUserGroup(newArray);
+
       },
       error: function (data) {
-        alert("You do not have the necessary rights to access this section");
+        console.log("You do not have rights to access this section");
+
       },
     });
   };
+
+
+  const deleteRequestWithOutData = (id: any) => {
+    let confirmation = confirm("Are you sure you want to delete this User ?");
+    if (confirmation) {
+      var url = "https://hhhhteams.sharepoint.com/sites/HHHH/sp" + "/_api/web/sitegroups(" + optionsData + ")/users/removebyid(" + id + ")";
+      $.ajax({
+        url: url,
+        method: "DELETE",
+        headers: {
+          accept: "application/json;odata=verbose",
+          "content-Type": "application/json;odata=verbose",
+        },
+        success: function (result) {
+          console.log(result);
+        },
+        error: function (data) {
+          alert("You do not have the necessary rights to access this section");
+        },
+      });
+    }
+  };
+
+
+
+
+  const onRenderCustomCalculateSC = () => {
+    return (
+      <>
+        <div className='subheading siteColor'>Manage Permissions</div>
+        <div><Tooltip ComponentId="1229" /></div>
+      </>
+    )
+  }
+
+
+  const onRenderCustomCalculateSC1 = () => {
+    return (
+      <>
+        <div className='subheading siteColor'>Add User in {optionsData}</div>
+        <div><Tooltip ComponentId="1126" /></div>
+      </>
+    )
+  }
+
+  const onRenderCustomCalculateSC3 = () => {
+    return (
+      <>
+        <div className='subheading siteColor'>Check User Permissions</div>
+        <div><Tooltip ComponentId="1126" /></div>
+      </>
+    )
+  }
+
+  const setSelectOptions = (event: any) => {
+    id = event.target.value;
+    GetUserByGroupId(event.target.value);
+  }
+
+
+  const columns = React.useMemo(
+    () => [
+      {
+        accessorFn: (row: any) => row?.Title,
+        cell: ({ row, getValue }: any) => (
+
+          <>{row?.original?.Title}</>
+
+
+        ),
+        id: "Title",
+        placeholder: "Title",
+        header: "",
+        resetColumnFilters: false,
+        size: 40,
+      },
+      {
+        accessorFn: (row: any) => row?.Email,
+        cell: ({ row, getValue }: any) => (
+
+          <>{row?.original?.Email}</>
+
+        ),
+        id: "Email",
+        placeholder: "Email",
+        header: "",
+        resetColumnFilters: false,
+        size: 40,
+      },
+      {
+        cell: ({ row, getValue }: any) => (
+          <div className='alignCenter'>
+            <span onClick={() => { deleteRequestWithOutData(row?.original?.Id) }} className="bg-dark hreflink ml-auto svg__icon--cross svg__iconbox"></span>
+          </div>
+        ),
+        id: "ID",
+        placeholder: "",
+        header: "",
+        resetColumnFilters: false,
+        size: 60,
+      },
+    ],
+    [data]
+  );
+
+  const callBackData = () => {
+
+  }
+
+
+
+
+
+  const handleInputChange = (e: any) => {
+    const value = e.target.value;
+    setInputValue(value);
+
+    const filteredSuggestions = taskUser.filter(
+      (item: any) => item?.Title.toLowerCase().includes(value.toLowerCase())
+    );
+
+    if (value != undefined && value != null && value != '') {
+      setSuggestions(filteredSuggestions);
+    } else {
+      setSuggestions([]);
+    }
+
+  };
+
+  const handleSuggestionClick = (suggestion: any) => {
+    setInputValue(suggestion);
+    setSuggestions([]);
+    setPermissionUserGroup([]);
+  };
+
+
+
+
+
 
   return (
     <>
-    {/*-------common header----- */}
-      <div>
-        <h2 className="d-flex justify-content-between align-items-center siteColor  serviceColor_Active">
-          <div>Permission-Management</div>
-
-          <div className="text-end fs-6">
-            <a href="#">Check User Permissions</a>
-          </div>
-        </h2>
-      </div>
-      <div>
-            {/*------- common header-----*/}
-        <Panel
-          className="p1"
-          headerText="Manage Permissions"
-          isOpen={readPanel}
-          onDismiss={dismissPanel}
-          isFooterAtBottom={true}
-          isBlocking={!readPanel && !openreadPanel}
-          type={PanelType.custom}
-          customWidth="850px"
-        >
-          <a href="#" className="Permissionss" onClick={() => oppenAddPanel()}>
-            <span className="iconss">
-              <i className="fa fa-plus" aria-hidden="true"></i>Add User
-            </span>
+      <div className="alignCenter">
+        <div className="alignCenter">
+          <h2 className="heading">Permission-Management</h2>
+          <EditPage />
+        </div>
+        <div className="ml-auto">
+          <a target="_blank" className="fw-bold" href="https://hhhhteams.sharepoint.com/sites/HHHH/SP/SitePages/Permission-Management.aspx">
+            Old Permission-Management
           </a>
-
-          <div className="container">
-            <div className="row">
-              <div className="col-sm-6">
-                <select
-                  className="select"
-                  value={visitors}
-                  onChange={(event) => onOptionHandle(event)}
-                >
-                  {showgroups?.map((option: any, index: any) => {
-                    return (
-                      <>
-                        {option?.child.map((_ie: any, index: any) => {
-                          return (
-                            <>
-                              <option value={_ie.Title} key={index}>
-                                {_ie.Title}
-                              </option>
-                            </>
-                          );
-                        })}
-                      </>
-                    );
-                  })}
-                </select>
-              </div>
-              <div className="col-sm-6">
-                <input
-                  type="text"
-                  className="search"
-                  placeholder="Search User..."
-                  value={valNew}
-                  onChange={onSearch}
+        </div>
+      </div>
+      <div className="d-flex justify-content-end" onClick={() => { setCheckPermission(true) }} role="button">
+        Check User Permissions
+      </div>
+      <div className="mb-3 card commentsection">
+        <div className="card-header">
+          <div className="align-items-center card-title d-flex h5 justify-content-between my-2">Manage Permissions - Users</div>
+        </div>
+        <div className="card-body d-flex justify-content-around  my-3">
+          <div className="card" style={{ width: "14rem" }} onClick={() => { GetUserByGroupId("Designers") }} >
+            <div className="card-body" style={{ backgroundColor: "#000066" }} >
+              <a className="d-flex flex-column align-items-center mt-2">
+                <h6 className="text-white">Designers</h6>
+                <img
+                  className="m-3"
+                  src="https://hhhhteams.sharepoint.com/sites/HHHH/SiteCollectionImages/ICONS/24/PermisssionUser_Icon2.png"
                 />
-                <button className="btnn" onClick={() => changex()}>
-                  {" "}
-                  X{" "}
-                </button>
-              </div>
+                <span className="fw-bold text-white">Design</span>
+              </a>
             </div>
           </div>
-          <table>
-            <thead>
-              <tr className="inner">
-                <th onClick={() => titlex()}>
-                  <span className="ty">Title</span>
-                </th>
-                <th onClick={() => titlex()}>
-                  <span className="ty1">Email</span>
-                </th>
-              </tr>
-            </thead>
-            {/* <tbody>
-              {usersArr?.map((ins1:any, i:any)=>{
-              return(
-                  <>
-                  <tr>
-                     <td><span> {ins1.title}</span> </td>               
-                    <td><span> {ins1.email}</span></td>
-                   
-                  </tr>
-                  
-                  </>
-
-                
-              )
-                
-               })} 
-
-            </tbody> */}
-
-            <tbody>
-              {usersGrp?.map((op: any, i: any) => {
-                return (
-                  <tr className="roww">
-                    <td>
-                      <span>{op.title}</span>
-                    </td>
-                    <td className="emails">{op.email}</td>
-                    <td>
-                      <a className="pull-right">
-                        <img
-                          src="/_layouts/images/delete.gif"
-                          onClick={() => RemoveSiteOwner(op.id)}
-                        />
-                      </a>
-                    </td>
-                  </tr>
-                );
-              })}
-            </tbody>
-          </table>
-        </Panel>
+          <div className="card" style={{ width: "14rem" }} onClick={() => { GetUserByGroupId("HHHH Visitors") }} >
+            <div className="card-body" style={{ backgroundColor: "#000066" }} >
+              <a className="d-flex flex-column align-items-center mt-2">
+                <h6 className="text-white">HHHH Visitors</h6>
+                <img
+                  className="m-3"
+                  src="https://hhhhteams.sharepoint.com/sites/HHHH/SiteCollectionImages/ICONS/24/PermisssionUser_Icon2.png"
+                />
+                <span className="fw-bold text-white">Read</span>
+              </a>
+            </div>
+          </div>
+        </div>
       </div>
 
-      {/* add user panel open*/}
+      <div className="mb-3 card commentsection">
+        <div className="card-header">
+          <div className="align-items-center card-title d-flex h5 justify-content-between my-2">Manage Permissions - Admins</div>
+        </div>
+        <div className="card-body d-flex justify-content-center  my-3" onClick={() => { GetUserByGroupId("HHHH Members") }}>
+          <div className="card" style={{ width: "14rem" }}>
+            <div className="card-body" style={{ backgroundColor: "#000066" }}>
+              <a className="d-flex flex-column align-items-center mt-2">
+                <h6 className="text-white">HHHH Members</h6>
+                <img
+                  className="m-3"
+                  src="https://hhhhteams.sharepoint.com/sites/HHHH/SiteCollectionImages/ICONS/24/PermisssionUser_Icon2.png"
+                />
+                <span className="fw-bold text-white">Edit</span>
+              </a>
+            </div>
+          </div>
+        </div>
+      </div>
 
-      <div>
-        <Panel
-          headerText={`Add User in ${visitors}`}
-          isOpen={readopenPanel}
-          onDismiss={closereadPanel3}
-          isBlocking={!readopenPanel && !oppenAddPanel}
-          isFooterAtBottom={true}
-        >
-          <div>
-            <div>
-              <div>
-                <label className="labels">User </label>
-                <span>
-                  <input
-                    type="text"
-                    className="search_icon"
-                    placeholder="Enter names or email addresses..."
-                    value={valueSearch}
-                    onChange={onSearching}
-                  />
-                </span>
-                <br></br>
-                {/* <button className="savebutton  btn btn-primary"  onClick={() => saveData(valueSearch)} >Save</button>
-                <button className="buttoncancel" onClick={() => changeCancel()} > Cancel</button> */}
+      <div className="mb-3 card commentsection">
+        <div className="card-header">
+          <div className="align-items-center card-title d-flex h5 justify-content-between my-2">Manage Permissions - Users</div>
+        </div>
+        <div className="card-body d-flex justify-content-around  my-3" >
+          <div className="card" style={{ width: "14rem" }} onClick={() => { GetUserByGroupId("HHHH Administrator") }}>
+            <div className="card-body" style={{ backgroundColor: "#000066" }}>
+              <a className="d-flex flex-column align-items-center mt-2">
+                <h6 className="text-white">HHHH Administrator</h6>
+                <img
+                  className="m-3"
+                  src="https://hhhhteams.sharepoint.com/sites/HHHH/SiteCollectionImages/ICONS/24/PermisssionUser_Icon2.png"
+                />
+                <span className="fw-bold text-white">Full Control</span>
+              </a>
+            </div>
+          </div>
+
+          <div className="card" style={{ width: "14rem" }} onClick={() => { GetUserByGroupId("HHHH Owners") }} >
+            <div className="card-body" style={{ backgroundColor: "#000066" }}>
+              <a className="d-flex flex-column align-items-center mt-2">
+                <h6 className="text-white">HHHH Owners</h6>
+                <img
+                  className="m-3"
+                  src="https://hhhhteams.sharepoint.com/sites/HHHH/SiteCollectionImages/ICONS/24/PermisssionUser_Icon2.png"
+                />
+                <span className="fw-bold text-white">Full Control</span>
+              </a>
+            </div>
+          </div>
+
+          <div className="card" style={{ width: "14rem" }} onClick={() => { GetUserByGroupId("Offshore Timesheet Admins") }} >
+            <div className="card-body" style={{ backgroundColor: "#000066" }}>
+              <a className="d-flex flex-column align-items-center mt-2">
+                <h6 className="text-white">Offshore Timesheet Admins</h6>
+                <img
+                  className="m-3"
+                  src="https://hhhhteams.sharepoint.com/sites/HHHH/SiteCollectionImages/ICONS/24/PermisssionUser_Icon2.png"
+                />
+                <span className="fw-bold text-white">Full Control</span>
+              </a>
+            </div>
+          </div>
+
+          <div className="card" style={{ width: "14rem" }} onClick={() => { GetUserByGroupId("Time sheet admin group") }}>
+            <div className="card-body" style={{ backgroundColor: "#000066" }}>
+              <a className="d-flex flex-column align-items-center mt-2">
+                <h6 className="text-white">Time sheet admin group</h6>
+                <img
+                  className="m-3"
+                  src="https://hhhhteams.sharepoint.com/sites/HHHH/SiteCollectionImages/ICONS/24/PermisssionUser_Icon2.png"
+                />
+                <span className="fw-bold text-white">Full Control</span>
+              </a>
+            </div>
+          </div>
+        </div>
+      </div>
+      <a href="https://hhhhteams.sharepoint.com/sites/HHHH/SP/_layouts/15/user.aspx" className="d-flex justify-content-end">
+        OOTB Permissions Management
+      </a>
+
+
+      <Panel
+        onRenderHeader={onRenderCustomCalculateSC}
+        type={PanelType.large}
+        isOpen={truePanel}
+        isBlocking={false}
+        onDismiss={() => { setTruePanel(false) }}
+      >
+        <div className="modal-body">
+          <div className="text-end hreflink" onClick={() => { setAddUser(true) }} ><span className="svg__iconbox svg__icon--Plus mini" title="Add Document"></span> Add User</div>
+          <div className="">
+            <select value={optionsData} onChange={setSelectOptions}>
+              {
+                groups?.map((items: any) =>
+                  <option value={items.Title} key={items.Title} >{items.Title}</option>
+                )}
+            </select>
+          </div>
+          <div className="Alltable my-3">
+            <GlobalCommanTable showHeader={true} showPagination={true} callBackData={callBackData} columns={columns} data={data} />
+          </div>
+        </div>
+        <footer className="text-end">
+          <button className="btn btn-primary">Ok</button>
+        </footer>
+      </Panel>
+
+      <Panel
+        onRenderHeader={onRenderCustomCalculateSC1}
+        type={PanelType.medium}
+        isOpen={addUser}
+        isBlocking={false}
+        onDismiss={() => { setAddUser(false), setSuggestions([]) }}
+      >
+        <div className="modal-body">
+          <div className="input-group">
+            <label className="form-label full-width">User*</label>
+            <input type="text" className="form-control"
+              value={inputValue?.Title}
+              onChange={handleInputChange} placeholder="Enter names or email addresses..." />
+          </div>
+          <div className="SmartTableOnTaskPopup w-50">
+            <ul className="list-group">
+              {suggestions.map((suggestion: any, index: any) => (
+                <li className="hreflink list-group-item rounded-0 p-1 list-group-item-action" key={index} onClick={() => handleSuggestionClick(suggestion)}>
+                  {suggestion?.Title}
+                </li>
+              ))}
+            </ul>
+          </div>
+        </div>
+        <footer className="mt-4 text-end">
+          <button className="me-2 btn btn-primary" onClick={postUser} >Save</button>
+          <button className="btn btn-default" onClick={() => { setAddUser(false), setSuggestions([]) }} >Cancel</button>
+        </footer>
+      </Panel>
+
+
+      <Panel
+        onRenderHeader={onRenderCustomCalculateSC3}
+        type={PanelType.medium}
+        isOpen={checkPermission}
+        isBlocking={false}
+        onDismiss={() => { setCheckPermission(false), setSuggestions([]) }}
+      >
+        <div className="modal-body">
+          <div className="row">
+            <div className="col-sm-9">
+              <div className="input-group">
+                <label className="form-label full-width">User*</label>
+                <input type="text" className="form-control"
+                  value={inputValue?.Title}
+                  onChange={handleInputChange} placeholder="Enter names or email addresses..." />
               </div>
-              <div className="dropdown">
-                {addUserTemp
-                  ?.filter((item) => {
-                    // item?.toLowerCase().includes(item);
-
-                    const searchTerm = valueSearch?.toLowerCase();
-                    const fullName = item?.toLowerCase();
-
-                    return (
-                      searchTerm &&
-                      fullName?.startsWith(searchTerm) &&
-                      fullName !== searchTerm
-                    );
-                  })
-                  .slice(0, 10)
-                  .map((item) => (
-                    <div
-                      onClick={() => saveData(item)}
-                      className="dropdown-row"
-                      key={item}
-                    >
-                      {item}
-                    </div>
+              <div className="SmartTableOnTaskPopup w-50">
+                <ul className="list-group">
+                  {suggestions.map((suggestion: any, index: any) => (
+                    <li className="hreflink list-group-item rounded-0 p-1 list-group-item-action" key={index} onClick={() => handleSuggestionClick(suggestion)}>
+                      {suggestion?.Title}
+                    </li>
                   ))}
+                </ul></div>
+            </div>
+            <div className="col-sm-3">
+              <div className="mt-3">
+                <button className="btnCol mt-1 btn btn-primary" onClick={checkUser} >Check Permission</button>
               </div>
-              <button
-                className="savebutton  btn btn-primary"
-                onClick={() => saveData(valueSearch)}
-              >
-                Save
-              </button>
-              <button className="buttoncancel" onClick={() => changeCancel()}>
-                {" "}
-                Cancel
-              </button>
             </div>
           </div>
-        </Panel>
-      </div>
-      {/* -----end add user panel----- */}
+          <div className="mt-16">
+            <ul className="p-0">
+              {permissionUserGroup.map((checkItem: any, index: any) => (
+                <li className="alignCenter p-1 bg-ee mb-1 full-width">
+                  {checkItem?.Title}
+                  <span className="hreflink ml-auto svg__icon--cross svg__iconbox dark"></span>
+                </li>
+              ))}
+            </ul>
+          </div>
+        </div>
 
-      <div>
-
-        {showgroups?.map((options: any, _index: any) => {
-
-          return (
-
-          <>
-
-            <div className="pannel">
-
-              <div className="heading">
-
-                <h3 className="panel-title ">
-
-                  {options.Title}
-
-                </h3>
-
-              </div>
-
-              {/* <div className='large-div'>
-
-                <div  className='min-div'>
-
-                 <div className='groups'>
-
-                   {options.GroupPermission}
-
-                 </div>
-
-                </div>
-
-              </div> */}
-
-              <div className='panel-body'>
-
-              <div className='d-flex justify-content-center  mb-3'>
-
-                    {options?.child.map((option: any, _index: any)=>{
-
-                      return(
-
-                        <>
-
-                       
-
-                        <div className='cardbox block'>
-
-                        <a href="#"  onClick={() => openreadPanel(option.Title, option.Id)}>
-
-                          <h2>{option.Title }</h2>
-
-                          <span>  <img src="https://hhhhteams.sharepoint.com/sites/HHHH/SiteCollectionImages/ICONS/24/PermisssionUser_Icon2.png" /></span>
-
-                          <span>{option.Permissionname}</span>
-
-                        </a>
-
-                        </div>
-
-                        </>
-
-                      )
-
-                     
-
-                     })    
-
-                   }
-
-                           
-
-              </div>
-
-              </div>
-
-            </div>
-
-          </>
-
-          )
-
-        })}
-
-      </div>
+        <footer className="mt-4 text-end">
+          <button className="btn btn-primary" onClick={() => { setCheckPermission(false), setSuggestions([]) }} >Ok</button>
+        </footer>
+      </Panel>
     </>
   );
 };
 
-export default Per_management;
+export default Permission_management;

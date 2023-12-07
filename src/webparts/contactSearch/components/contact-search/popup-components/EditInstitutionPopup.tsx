@@ -33,7 +33,7 @@ const HrGmbhInstitutionDeatails=async(Id:any)=>{
         let web = new Web(myContextData2?.allListId?.siteUrl);
         await web.lists.getById(myContextData2?.allSite?.GMBHSite?myContextData2?.allListId?.GMBH_CONTACT_SEARCH_LISTID:myContextData2?.allListId?.HR_EMPLOYEE_DETAILS_LIST_ID)
             .items.getById(Id)
-            .select("Id", "Title", "FirstName", "FullName","About","InstitutionType","SocialMediaUrls", "DOJ","DOE","Company","SmartCountriesId","SmartContactId","SmartInstitutionId", "WorkCity", "Suffix", "WorkPhone", "HomePhone", "Comments", "WorkAddress", "WorkFax", "WorkZip",  "ItemType", "JobTitle", "Item_x0020_Cover", "WebPage",  "CellPhone", "Email", "Created", "SocialMediaUrls","Author/Title", "Modified", "Editor/Title", "Division/Title", "Division/Id", "EmployeeID/Title", "StaffID", "EmployeeID/Id", "Institution/Id", "Institution/FullName", "IM")
+            .select("Id", "Title", "FirstName", "FullName","About","Description","InstitutionType","SocialMediaUrls", "DOJ","DOE","Company","SmartCountriesId","SmartContactId","SmartInstitutionId", "WorkCity", "Suffix", "WorkPhone", "HomePhone", "Comments", "WorkAddress", "WorkFax", "WorkZip",  "ItemType", "JobTitle", "Item_x0020_Cover", "WebPage",  "CellPhone", "Email", "Created", "SocialMediaUrls","Author/Title", "Modified", "Editor/Title", "Division/Title", "Division/Id", "EmployeeID/Title", "StaffID", "EmployeeID/Id", "Institution/Id", "Institution/FullName", "IM")
             .expand("EmployeeID", "Division", "Author", "Editor",  "Institution")
             .get().then((data:any)=>{
                
@@ -68,7 +68,7 @@ const HrGmbhInstitutionDeatails=async(Id:any)=>{
             let web = new Web(myContextData2?.allListId?.jointSiteUrl);
             await web.lists.getById(myContextData2?.allListId?.HHHHInstitutionListId)
                 .items .getById(id)
-                .select("Id","Title","FirstName","FullName","Company","JobTitle","About","InstitutionType","SocialMediaUrls","ItemType","WorkCity","ItemImage","WorkCountry","WorkAddress","WebPage","CellPhone","HomePhone","Email","SharewebSites","Created","Author/Id","Author/Title","Modified","Editor/Id","Editor/Title")
+                .select("Id","Title","FirstName","Description","FullName","Company","JobTitle","About","InstitutionType","SocialMediaUrls","ItemType","WorkCity","ItemImage","WorkCountry","WorkAddress","WebPage","CellPhone","HomePhone","Email","SharewebSites","Created","Author/Id","Author/Title","Modified","Editor/Id","Editor/Title")
                 .expand("Author", "Editor",)
               .get().then((data: any) => {
                 let URL: any[] = JSON.parse(data.SocialMediaUrls != null ? data.SocialMediaUrls : ["{}"]);
@@ -107,7 +107,7 @@ const HrGmbhInstitutionDeatails=async(Id:any)=>{
                     <img className='workmember' 
                     src={updateData?.ItemImage != undefined ? updateData?.ItemImage.Url : "https://hhhhteams.sharepoint.com/sites/HHHH/SiteCollectionImages/ICONS/32/InstitutionPicture.jpg"}
                      />Edit Institution- 
-                      {updateData?.Title}
+                      {updateData?.FullName}
                 </div>
                 <Tooltip ComponentId='3299' />
             </>
@@ -206,6 +206,7 @@ const HrGmbhInstitutionDeatails=async(Id:any)=>{
 
        let postData:any= {
             Title: (updateData?.Title ),
+            FullName: (updateData?.FullName ),
           Categories:updateData?.Categories,
             Email: (updateData?.Email ),
             WorkPhone: (updateData?.WorkPhone ),
@@ -213,7 +214,8 @@ const HrGmbhInstitutionDeatails=async(Id:any)=>{
            InstitutionType:updateData?.InstitutionType,
             WorkCity: (updateData?.WorkCity),
             WorkAddress: (updateData?.WorkAddress),
-          
+            Description:updateData?.Description,
+            About:updateData?.About,
             WebPage: {
                 "__metadata": { type: "SP.FieldUrlValue" },
                 Description: updateData?.WebPage ? urlData : (updateData?.WebPage ? updateData?.WebPage?.Url :null),
@@ -228,14 +230,14 @@ const HrGmbhInstitutionDeatails=async(Id:any)=>{
            
             SocialMediaUrls: JSON.stringify(UrlData),
             SmartCountriesId: {
-                results:updateData?.SmartCountries?.length>0?[updateData?.SmartCountries?.Id ]: []
+                results:updateData?.SmartCountries?.length>0?[updateData?.SmartCountries[0]?.Id ]: []
             }
         }
         if (updateData?.Id != undefined) {
             let web = new Web(myContextData2?.allListId?.jointSiteUrl);
             await web.lists.getById(myContextData2?.allListId?.HHHHInstitutionListId).items.getById(myContextData2?.allSite?.GMBHSite||myContextData2?.allSite?.HrSite?JointData?.Id:updateData?.Id).update(postData).then((e) => {
                 console.log("Your information has been updated successfully");
-           if(props?.allSite?.GMBHSite){
+           if(myContextData2.allSite?.GMBHSite){
             // UpdateGmbhDetails();
            
            }else{
@@ -333,11 +335,11 @@ return(
                             <div className="tab-pane show active" id="BASICINFORMATION" role="tabpanel" aria-labelledby="BASICINFORMATION">
                                 <div className='general-section'>
                                     <div className="card-body">
-                                            <div className="user-form-5">
+                                            <div className="user-form-5 row">
                                                 <div className="col">
                                                     <div className='input-group'>
                                                         <label className='full-width label-form'>Title </label>
-                                                        <input type="text" className="form-control" defaultValue={updateData ? updateData?.Title : null} onChange={(e) => setUpdateData({ ...updateData, Title: e.target.value })} aria-label="First name" placeholder='First Name' />
+                                                        <input type="text" className="form-control" defaultValue={updateData ? updateData?.FullName : null} onChange={(e) => setUpdateData({ ...updateData, FullName: e.target.value })} aria-label="full name" placeholder='full Name' />
                                                     </div>
                                                 </div>
                                                 <div className="col">
@@ -362,7 +364,7 @@ return(
 
                                             </div>
                                             <div className="card-body">
-                                            <div className="user-form-4">
+                                            <div className="user-form-4 row">
                                                   <div className="col">
                                                     <div className='input-group'>
                                                         <label className="full-width label-form">Country</label>
@@ -402,7 +404,7 @@ return(
                                             </div>
                                         </div>
                                         <div className="card-body">
-                                            <div className="user-form-5">
+                                            <div className="user-form-5 row">
                                                 <div className="col">
                                                     <div className='input-group'>
                                                         <label className="full-width label-form">Phone</label>
@@ -426,7 +428,7 @@ return(
                                                         <input type="text" className="form-control" defaultValue={URLs.length ? URLs[0].Facebook : ""} onChange={(e) => setUpdateData({ ...updateData, Facebook: e.target.value })} aria-label="Facebook" />
                                                     </div></div>
                                               </div>
-                                            <div className="user-form-5 mt-2">
+                                            <div className="user-form-5 row mt-2">
                                               
                                             <div className="col" >
                                                     <div className='input-group'>

@@ -196,10 +196,10 @@ const AncTool = (props: any) => {
     async function getExistingUploadedDocuments(): Promise<any[]> {
         try {
             let alreadyTaggedFiles: any = [];
-            let selectQuery = 'Id,Title,Url,FileSystemObjectType,ItemRank,Author/Id,Author/Title,Editor/Id,Editor/Title,File_x0020_Type,FileDirRef,FileLeafRef,File_x0020_Type,Year,EncodedAbsUrl,Created,Modified&$expand=Author,Editor'
+            let selectQuery = 'Id,Title,Url,FileSystemObjectType,ItemRank,Author/Id,Author/Title,Editor/Id,Editor/Title,File_x0020_Type,FileDirRef,FileLeafRef,File_x0020_Type,Year,EncodedAbsUrl,Created,Modified,Portfolios/Id,Portfolios/Title&$expand=Author,Editor,Portfolios'
 
             if (siteName?.length > 0) {
-                selectQuery = `Id,Title,Url,FileSystemObjectType,ItemRank,Author/Id,Author/Title,${siteName}/Id,${siteName}/Title,File_x0020_Type,Editor/Id,Editor/Title,FileDirRef,FileLeafRef,File_x0020_Type,Year,EncodedAbsUrl,Created,Modified&$expand=Author,Editor,${siteName}`
+                selectQuery = `Id,Title,Url,FileSystemObjectType,ItemRank,Author/Id,Author/Title,${siteName}/Id,${siteName}/Title,File_x0020_Type,Editor/Id,Editor/Title,FileDirRef,FileLeafRef,File_x0020_Type,Year,EncodedAbsUrl,Created,Modified,Portfolios/Id,Portfolios/Title&$expand=Author,Editor,${siteName},Portfolios`
             }
             // const files = await folder.files.get();
             let web = new Web(props?.AllListId?.siteUrl);
@@ -229,6 +229,9 @@ const AncTool = (props: any) => {
                 }
                 if (file?.File_x0020_Type == 'doc') {
                     file.docType = 'docx'
+                }
+                if (file?.Portfolios == undefined) {
+                    file.Portfolios = [];
                 }
 
                 if (file[siteName] != undefined && file[siteName].length > 0 && file[siteName].some((task: any) => task.Id == props?.item?.Id)) {
@@ -267,8 +270,13 @@ const AncTool = (props: any) => {
     }
     async function fetchFilesFromFolder(folderPath: string): Promise<any[]> {
         try {
+            let selectQuery = 'Id,Title,Url,FileSystemObjectType,ItemRank,Author/Id,Author/Title,Editor/Id,Editor/Title,File_x0020_Type,FileDirRef,FileLeafRef,File_x0020_Type,Year,EncodedAbsUrl,Created,Modified,Portfolios/Id,Portfolios/Title&$expand=Author,Editor,Portfolios'
+
+            if (siteName?.length > 0) {
+                selectQuery = `Id,Title,Url,FileSystemObjectType,ItemRank,Author/Id,Author/Title,${siteName}/Id,${siteName}/Title,File_x0020_Type,Editor/Id,Editor/Title,FileDirRef,FileLeafRef,File_x0020_Type,Year,EncodedAbsUrl,Created,Modified,Portfolios/Id,Portfolios/Title&$expand=Author,Editor,${siteName},Portfolios`
+            }
             let web = new Web(props?.AllListId?.siteUrl);
-            const folder = web.getFolderByServerRelativeUrl(folderPath);
+            const folder = web.getFolderByServerRelativeUrl(folderPath).select();
             const files = await folder.files.get();
 
             return files;
@@ -499,6 +507,9 @@ const AncTool = (props: any) => {
                                                     ItemRank: itemRank,
                                                     Title: attachfile?.Name
                                                 }
+                                                if (props?.item?.Portfolio?.Id != undefined) {
+                                                    postData.PortfoliosId = { "results": [props?.item?.Portfolio?.Id] };
+                                                }
                                                 if (getFileType(attachfile?.Name) == 'msg') {
                                                     postData = {
                                                         ...postData,
@@ -603,13 +614,20 @@ const AncTool = (props: any) => {
                 }
             })
         }
+        if (!file?.Portfolios?.some((portfolio: any) => portfolio == props?.item?.Portfolio?.Id) && props?.item?.Portfolio?.Id != undefined) {
+            file?.Portfolios?.push(props?.item?.Portfolio?.Id);
+        }
         if (!AllReadytagged?.some((doc: any) => file.Id == doc.Id) && !resultArray.some((taskID: any) => taskID == props?.item?.Id)) {
             resultArray.push(props?.item?.Id)
             let siteColName = `${siteName}Id`
             // Update the document file here
             let web = new Web(props?.AllListId?.siteUrl);
+            let PostData = {
+                [siteColName]: { "results": resultArray },
+                PortfoliosId:  { "results": file?.Portfolios != undefined ? file?.Portfolios : [] }
+            }
             await web.lists.getByTitle('Documents').items.getById(file.Id)
-                .update({ [siteColName]: { "results": resultArray } }).then((updatedFile: any) => {
+                .update(PostData).then((updatedFile: any) => {
                     file[siteName].push({ Id: props?.item?.Id, Title: props?.item?.Title });
                     setAllReadytagged([...AllReadytagged, ...[file]])
                     props?.callBack()
@@ -622,9 +640,13 @@ const AncTool = (props: any) => {
             resultArray = resultArray.filter((taskID: any) => taskID != props?.item?.Id)
             let siteColName = `${siteName}Id`
             // Update the document file here
+            let PostData = {
+                [siteColName]: { "results": resultArray },
+                PortfoliosId:  { "results": file?.Portfolios != undefined ? file?.Portfolios : [] }
+            }
             let web = new Web(props?.AllListId?.siteUrl);
             await web.lists.getByTitle('Documents').items.getById(file.Id)
-                .update({ [siteColName]: { "results": resultArray } }).then((updatedFile: any) => {
+                .update(PostData).then((updatedFile: any) => {
                     file[siteName] = file[siteName].filter((task: any) => task.Id != props?.item?.Id);
                     setAllReadytagged((prevFile: any) => {
                         return prevFile.filter((item: any) => {
@@ -719,6 +741,9 @@ const AncTool = (props: any) => {
                                         [siteColName]: { "results": resultArray },
                                         ItemRank: 5,
                                         Title: fileName
+                                    }
+                                    if (props?.item?.Portfolio?.Id != undefined) {
+                                        postData.PortfoliosId = { "results": [props?.item?.Portfolio?.Id] };
                                     }
                                     let web = new Web(props?.AllListId?.siteUrl);
                                     await web.lists.getByTitle('Documents').items.getById(file.Id)
@@ -993,7 +1018,7 @@ const AncTool = (props: any) => {
                     '</form>' +
                     '</body>' +
                     '</html>';
-                    let web = new Web(props?.AllListId?.siteUrl);
+                let web = new Web(props?.AllListId?.siteUrl);
                 await web.getFolderByServerRelativeUrl(selectedPath.displayPath)
                     .files.add(fileName, vardata, true).then(async (uploadedFile: any) => {
                         let fileSize = '10Kb'

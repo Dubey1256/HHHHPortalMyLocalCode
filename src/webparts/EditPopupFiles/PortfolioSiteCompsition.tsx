@@ -211,9 +211,9 @@ const SiteCompositionComponent = (Props: any) => {
                     setProportionalStatus(false);
                 }
             }
-            // if (SiteCompositionSettings[0].Protected) {
-            //     setIsSCProtected(true);
-            // }
+            if (SiteCompositionSettings[0].Protected) {
+                setMakeScProtected(true);
+            }
         }
     }, [Props.SelectedClientCategory])
 
@@ -471,17 +471,18 @@ const SiteCompositionComponent = (Props: any) => {
 
         if (Type == "Protected") {
             if (SiteCompositionSettings[0]?.Protected == true) {
-                if (SiteCompositionSettings[0].Deluxe == true || SiteCompositionSettings[0].Standard == true) {
-                    // setIsSCProtected(true);
-                } else {
-                    SiteCompositionSettings[0].Protected = false;
-                    // setIsSCProtected(false);
-                }
-
+                // if (SiteCompositionSettings[0].Deluxe == true || SiteCompositionSettings[0].Standard == true) {
+                //     // setIsSCProtected(true);
+                // } else {
+                SiteCompositionSettings[0].Protected = false;
+                // setIsSCProtected(false);
+                // }/
+                setMakeScProtected(false);
             } else {
                 SiteCompositionSettings[0].Protected = true;
                 // SiteTaggingFinalData = ClientTimeData;
-                setIsSCProtected(true);
+                setMakeScProtected(true);
+                // setIsSCProtected(true);
             }
         }
         if (Type == "Deluxe") {
@@ -1119,7 +1120,7 @@ const SiteCompositionComponent = (Props: any) => {
 
         if (MakeScProtected) {
             SiteCompositionSettingData[0].Protected = true;
-        }else{
+        } else {
             SiteCompositionSettingData[0].Protected = false;
         }
 
@@ -1293,7 +1294,7 @@ const SiteCompositionComponent = (Props: any) => {
 
         if (MakeScProtected) {
             finalSiteCompositionSettingData[0].Protected = true;
-        }else{
+        } else {
             finalSiteCompositionSettingData[0].Protected = false;
         }
 
@@ -2093,17 +2094,18 @@ const SiteCompositionComponent = (Props: any) => {
                     onDismiss={closeComponentChildrenPopup}
                     isBlocking={false}
                     type={PanelType.custom}
-                    customWidth="1600px"
+                    customWidth="1400px"
                     onRenderFooter={onRenderFooterComponentChildren}
                 >
-                    <div className={ServicesTaskCheck ? "serviepannelgreena SelectProjectTable " : 'SelectProjectTable '}>
-                        <div className="modal-body wrapper p-0 mt-2">
-                            <div className="wrapper">
+                    <div>
+                        <div className="modal-body p-0 mt-2">
+                            <div className="">
                                 <ComponentChildDataTable
                                     props={selectedComponent}
                                     NextProp={AllListIdData}
                                     callback={callBackData}
                                     isProtected={MakeSCProtectedFunction}
+                                    IsSCProtected={MakeScProtected}
                                     usedFor={"Site-Compositions"}
                                     prevSelectedCC={SiteClientCatgeoryFinalData?.length > 0 ? SiteClientCatgeoryFinalData : SelectedClientCategoryFromProps}
                                 />

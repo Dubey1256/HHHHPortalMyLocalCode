@@ -13,7 +13,7 @@ import ServiceComponentPortfolioPopup from './ServiceComponentPortfolioPopup';
 import "bootstrap/js/dist/tab.js";
 import "bootstrap/js/dist/carousel.js";
 import CommentCard from "../../globalComponents/Comments/CommentCard";
-import { Panel, PanelType } from 'office-ui-fabric-react';
+import { Panel, PanelType, resetControlledWarnings } from 'office-ui-fabric-react';
 import { Modal } from '@fluentui/react';
 import { FaExpandAlt } from 'react-icons/fa'
 import { RiDeleteBin6Line, RiH6 } from 'react-icons/ri'
@@ -45,6 +45,8 @@ import "react-datepicker/dist/react-datepicker.css";
 import BackgroundCommentComponent from "./BackgroundCommentComponent";
 //import EODReportComponent from "../EOD Report Component/EODReportComponent";
 import { CurrentUser } from "sp-pnp-js/lib/sharepoint/siteusers";
+import { filter } from "lodash";
+import EmailNotificationMail from "./EmailNotificationMail";
 
 
 
@@ -62,6 +64,7 @@ var tempCategoryData: any = '';
 var SiteTypeBackupArray: any = [];
 var currentUserBackupArray: any = [];
 let AutoCompleteItemsArray: any = [];
+let ValueStatus:any=''
 let SelectedSite: any = ''
 var FeedBackBackupArray: any = [];
 var SiteId = ''
@@ -70,6 +73,7 @@ var TimeSheetlistId = ''
 let siteConfig: any = [];
 let siteConfigs: any = [];
 var TimeSheets: any = []
+let tempArrayJsonData: any = []
 var MigrationListId = ''
 var newGeneratedId: any = ''
 var siteUrl = ''
@@ -111,10 +115,12 @@ const EditTaskPopup = (Items: any) => {
     const [linkedPortfolioData, setLinkedPortfolioData] = useState([]);
     const [CategoriesData, setCategoriesData] = useState('');
     const [ShareWebTypeData, setShareWebTypeData] = useState([]);
+    const [BasicImageData, setBasicImageData] = useState([]);
     const [AllCategoryData, setAllCategoryData] = useState([]);
     const [SearchedCategoryData, setSearchedCategoryData] = useState([]);
     let [TaskAssignedTo, setTaskAssignedTo] = useState([]);
     let [TaskTeamMembers, setTaskTeamMembers] = useState([]);
+    const [sendEmailNotification, setSendEmailNotification] = useState(false);
     let [TaskResponsibleTeam, setTaskResponsibleTeam] = useState([]);
     const [UpdateTaskInfo, setUpdateTaskInfo] = useState(
         {
@@ -1075,7 +1081,7 @@ const EditTaskPopup = (Items: any) => {
                                         ApprovarDataId = userData?.Approver[0].Id
                                     }
                                 })
-                                if (Approver.Id == current.AssingedToUserId ||  current.AssingedToUserId == ApprovarDataId) {
+                                if (Approver.Id == current.AssingedToUserId || current.AssingedToUserId == ApprovarDataId) {
                                     setSmartLightStatus(true);
                                 }
                             })
@@ -1166,7 +1172,9 @@ const EditTaskPopup = (Items: any) => {
                     let tempArray: any = [FeedBackItem]
                     item.FeedBack = JSON.stringify(tempArray);
                     item.FeedBackArray = tempArray[0]?.FeedBackDescriptions;
+                    item.FeedBackBackup=tempArray;
                     FeedBackBackupArray = JSON.stringify(tempArray);
+                   
                 }
 
                 if (item.OffshoreComments != null || item.OffshoreComments != undefined) {
@@ -1197,6 +1205,7 @@ const EditTaskPopup = (Items: any) => {
                 }
                 item.ClientCategory = selectedClientCategoryData;
                 setEditData(item)
+                setBasicImageData(saveImage)
                 EditDataBackup = item;
                 setPriorityStatus(item.Priority)
                 console.log("Task All Details from backend  ==================", item)
@@ -2343,6 +2352,12 @@ const EditTaskPopup = (Items: any) => {
                         // if(TaskDetailsFromCall[0].TaskID == null && TaskDetailsFromCall[0].TaskID ==  undefined){
                         //     TaskDetailsFromCall[0].TaskID = 'T'+ TaskDetailsFromCall[0].Id
                         // }
+
+                        if (IsTaskCompleted == true){
+                            setLastUpdateTaskData(TaskDetailsFromCall[0]);
+                            ValueStatus='90'
+                            setSendEmailNotification(true)
+                        }
                         setLastUpdateTaskData(TaskDetailsFromCall[0]);
                         if (usedFor == "Image-Tab") {
                             GetExtraLookupColumnData();
@@ -2374,8 +2389,9 @@ const EditTaskPopup = (Items: any) => {
                                     setSendEmailComponentStatus(false)
                                 }
                             }
-                            if (CalculateStatusPercentage == 5 && ImmediateStatus) {
-                                setSendEmailComponentStatus(true);
+                            if ((CalculateStatusPercentage == 5 ||CalculateStatusPercentage == 10 || CalculateStatusPercentage == 80) && ImmediateStatus) {
+                                ValueStatus = CalculateStatusPercentage
+                                setSendEmailNotification(true);
                                 Items.StatusUpdateMail = true;
                             } else {
                                 setSendEmailComponentStatus(false);
@@ -2448,6 +2464,12 @@ const EditTaskPopup = (Items: any) => {
                 }
             })
         }
+        
+     
+
+     
+
+
         let PrecentStatus: any = UpdateTaskInfo.PercentCompleteStatus ? (Number(UpdateTaskInfo.PercentCompleteStatus)) : 0;
 
         if (PrecentStatus == 1) {
@@ -2705,7 +2727,7 @@ const EditTaskPopup = (Items: any) => {
                 Description: EditData.Relevant_Url ? EditData.Relevant_Url : '',
                 Url: EditData.Relevant_Url ? EditData.Relevant_Url : ''
             },
-            // BasicImageInfo: UploadImageArray != undefined && UploadImageArray.length > 0 ? JSON.stringify(UploadImageArray) : JSON.stringify(UploadImageArray),
+         //BasicImageInfo: UploadImageArray != undefined && UploadImageArray.length > 0 ? JSON.stringify(UploadImageArray) : JSON.stringify(UploadImageArray),
             ProjectId: (selectedProject.length > 0 ? selectedProject[0].Id : null),
             ApproverId: { "results": (ApproverIds != undefined && ApproverIds.length > 0) ? ApproverIds : [] },
             // ClientTime: JSON.stringify(ClientCategoryData),
@@ -3087,14 +3109,6 @@ const EditTaskPopup = (Items: any) => {
                 tempArray.push(ImgArray);
             } else {
                 imgItem.Description = imgItem.Description != undefined ? imgItem.Description : '';
-                let checkImageURL: any = imgItem.ImageUrl?.includes("https://www.hochhuth-consulting.de/sp");
-                let checkUserImage: any = imgItem.UserImage?.includes("https://www.hochhuth-consulting.de/sp");
-                if (checkImageURL) {
-                    imgItem.ImageUrl = imgItem?.ImageUrl.replace("https://www.hochhuth-consulting.de/sp", "https://hhhhteams.sharepoint.com/sites/HHHH/SP");
-                }
-                if (checkUserImage) {
-                    imgItem.UserImage = imgItem?.UserImage.replace("https://www.hochhuth-consulting.de/sp", "https://hhhhteams.sharepoint.com/sites/HHHH/SP");
-                }
                 tempArray.push(imgItem);
             }
         })
@@ -3494,7 +3508,7 @@ const EditTaskPopup = (Items: any) => {
     }
 
     const copyAndMoveTaskFunction = async (FunctionsType: number) => {
-        let CopyAndMoveTaskStatus = confirm(`Uploaded Task Images still not moving we are working on it. Click OK if you still would like to proceed without Images`)
+        let CopyAndMoveTaskStatus = confirm(`Are you sure want to copy/move task`)
         if (CopyAndMoveTaskStatus) {
             copyAndMoveTaskFunctionOnBackendSide(FunctionsType);
         } else {
@@ -3568,8 +3582,9 @@ const EditTaskPopup = (Items: any) => {
 
                     //       console.log(MyImage)
                     //   }
-
-
+                    await CopyImageData(SelectedSite,res.data)
+                     CopydocumentData(SelectedSite,res.data)
+                    
                     if (FunctionsType == "Copy-Task") {
                         newGeneratedId = res.data.Id;
                         console.log(`Task Copied Successfully on ${SelectedSite} !!!!!`);
@@ -3593,7 +3608,117 @@ const EditTaskPopup = (Items: any) => {
         // Items.Call();
     }
 
+    const CopydocumentData= async(NewList:any,NewItem:any)=>{
+        var ArrayData:any=[]
+        let RelativeUrl = Items?.context?.pageContext?.web?.serverRelativeUrl;
+        let web =  new Web(siteUrls);
+        await web.lists
+            .getById(AllListIdData?.DocumentsListID)
+            .items
+            .select(`Id,Title,${Items?.Items.siteType}/Id,${Items?.Items.siteType}/Title`)
+            .filter(`${Items?.Items.siteType}/Id eq ${Items?.Items.Id}`)
+            .expand(`${Items?.Items.siteType}`).get()
+            .then(async (res: any) => {
+                console.log(res);
+                var MoveDataId = res[0]?.ID
+                ArrayData.push(NewItem.Id)
+                var NewListData:any = NewList + "Id"
+                await web.lists.getById(AllListIdData?.DocumentsListID).items.getById(res[0]?.ID)
+                .update({
+                    [NewListData] : { "results":ArrayData}
+                }).then(async (res: any) => {
+                    console.log(res)
+                })
+
+            });
+           
+    }
+    const CopyImageData = async (NewList: any, NewItem: any) => {
+        var attachmentFileName: any = ''
+        let web = new Web(siteUrls);
+        const response = await web.lists
+            .getById(`${Items?.Items?.listId}`)
+            .items.getById(Items?.Items?.Id)
+            .select("Id,Title,Attachments,AttachmentFiles")
+            .expand("AttachmentFiles").get()
+        await SaveImageDataOnLoop(response, NewList, NewItem)
+
+    }
+    const SaveImageDataOnLoop = async (response: any, NewList: any, NewItem: any) => {
+        var count = 0;
+        let currentUserDataObject: any;
+        if (currentUserBackupArray != null && currentUserBackupArray.length > 0) {
+            currentUserDataObject = currentUserBackupArray[0];
+        }
+        var fetchPromises = response?.AttachmentFiles?.map(async (value: any, index: any) => {
+            const sourceEndpoint = `${siteUrls}/_api/web/lists/getbytitle('${Items?.Items?.siteType}')/items(${Items?.Items?.Id})/AttachmentFiles/getByFileName('${value.FileName}')/$value`;
+
+            try {
+                const response = await fetch(sourceEndpoint, {
+                    method: 'GET',
+                    headers: {
+                        'Accept': 'application/json;odata=nometadata',
+                    },
+                });
+
+                if (response.ok) {
+                    count++;
+                    const binaryData = await response.arrayBuffer();
+                    console.log('Binary Data:', binaryData);
+                    var uint8Array = new Uint8Array(binaryData);
+                    console.log(uint8Array);
+
+                    console.log(uint8Array)
+                    let fileName: any = '';
+                    let date = new Date()
+                    let timeStamp = date.getTime();
+                    let imageIndex = index + 1
+                    var file = "T" + NewItem.Id + '-Image' + imageIndex + "-" + NewItem.Title?.replace(/["/':?]/g, '')?.slice(0, 40) + " " + timeStamp + ".jpg";
+
+                    // Your existing code for creating ImgArray
+                    let ImgArray = {
+                        ImageName: file,
+                        UploadeDate: Moment(new Date()).format("DD/MM/YYYY"),
+                        ImageUrl: siteUrls + '/Lists/' + NewList + '/Attachments/' + NewItem?.Id + '/' + file,
+                        UserImage: currentUserDataObject != undefined && currentUserDataObject.Item_x0020_Cover?.Url?.length > 0 ? currentUserDataObject.Item_x0020_Cover?.Url : "https://hhhhteams.sharepoint.com/sites/HHHH/SiteCollectionImages/ICONS/32/icon_user.jpg",
+                        UserName: currentUserDataObject != undefined && currentUserDataObject.Title?.length > 0 ? currentUserDataObject.Title : Items.context.pageContext._user.displayName,
+                        Description: ''
+                    };
+                    tempArrayJsonData.push(ImgArray);
+
+                    await sp.web.lists.getByTitle(NewList).items.getById(NewItem.Id).attachmentFiles.add(file, uint8Array);
+
+                } else {
+                    console.error('Error:', response.statusText);
+                }
+            } catch (error) {
+                console.log(error, 'HHHH Time');
+            }
+        });
+
+        // Wait for all promises to resolve
+        try {
+            await Promise.all(fetchPromises);
+
+            // Call another function after all promises are resolved
+            await SaveJSONData(NewList, NewItem);
+        } catch (error) {
+            console.error("Error updating client category:", error);
+        }
+
+    }
+    const SaveJSONData = async (NewList: any, NewItem: any) => {
+        let web = new Web(siteUrls);
+        var Data = await web.lists.getByTitle(NewList).items.getById(NewItem.Id).update({
+            BasicImageInfo: tempArrayJsonData != undefined && tempArrayJsonData.length > 0 ? JSON.stringify(tempArrayJsonData) : JSON.stringify(tempArrayJsonData),
+        })
+        console.log(Data)
+        
+    }
+          
+    
     const moveTimeSheet = async (SelectedSite: any, newItem: any) => {
+      
         newGeneratedId = newItem.Id;
         var TimesheetConfiguration: any = []
         var folderUri = ''
@@ -3877,6 +4002,7 @@ const EditTaskPopup = (Items: any) => {
 
     const SendEmailNotificationCallBack = useCallback((items: any) => {
         setSendEmailComponentStatus(false);
+        setSendEmailNotification(false)
         Items.Call(items);
     }, [])
     // ************************ this is for Site Composition Component Section Functions ***************************
@@ -5085,6 +5211,7 @@ const EditTaskPopup = (Items: any) => {
                                     </div>
                                     <div className="col-md-4">
                                         <div className="full_width ">
+                                           
                                             <CommentCard siteUrl={siteUrls} listName={Items?.Items?.siteType} itemID={Items.Items.Id} AllListId={AllListIdData} Context={Context} />
                                         </div>
                                         <div className="pull-right">
@@ -5191,7 +5318,7 @@ const EditTaskPopup = (Items: any) => {
                                     <div className={IsShowFullViewImage != true ? 'col-sm-9 toggle-task' : 'col-sm-6 editsectionscroll toggle-task'}>
                                         {EditData.Id != null ? <>
                                             <CommentBoxComponent
-                                                data={EditData.FeedBackArray}
+                                                data={EditData?.FeedBackBackup?.length>0?EditData?.FeedBackBackup[0]?.FeedBackDescriptions:[]}
                                                 callBack={CommentSectionCallBack}
                                                 allUsers={taskUsers}
                                                 ApprovalStatus={ApprovalStatus}
@@ -5201,7 +5328,7 @@ const EditTaskPopup = (Items: any) => {
                                                 FeedbackCount={FeedBackCount}
                                             />
                                             <Example
-                                                textItems={EditData.FeedBackArray}
+                                                textItems={EditData?.FeedBackBackup?.length>0?EditData?.FeedBackBackup[0]?.FeedBackDescriptions:[]}
                                                 callBack={SubCommentSectionCallBack}
                                                 allUsers={taskUsers}
                                                 ItemId={EditData.Id}
@@ -5307,6 +5434,19 @@ const EditTaskPopup = (Items: any) => {
                             ApprovalTaskStatus={ApprovalTaskStatus}
                             callBack={SendEmailNotificationCallBack}
                         /> : null}
+                         {sendEmailNotification ?
+                        <EmailNotificationMail
+                            AllTaskUser={AllTaskUser}
+                            CurrentUser={currentUserData}
+                            CreatedApprovalTask={Items.sendApproverMail}
+                            statusUpdateMailSendStatus={ImmediateStatus && sendEmailComponentStatus ? true : false}
+                            IsEmailCategoryTask={EmailStatus}
+                            items={LastUpdateTaskData}
+                            Context={Context}
+                            ApprovalTaskStatus={ApprovalTaskStatus}
+                            callBack={SendEmailNotificationCallBack}
+                            statusValue={ValueStatus}/>
+                             : null}
                     {/* {OpenEODReportPopup ? <EODReportComponent TaskDetails={EditData} siteUrl={siteUrls} Context={Context} Callback={EODReportComponentCallback} /> : null} */}
                 </div>
             </Panel>
@@ -6229,7 +6369,7 @@ const EditTaskPopup = (Items: any) => {
                                     <div>
                                         {EditData.Id != null ? <>
                                             <CommentBoxComponent
-                                                data={EditData.FeedBackArray}
+                                                data={EditData?.FeedBackBackup?.length>0?EditData?.FeedBackBackup[0]?.FeedBackDescriptions:[]}
                                                 callBack={CommentSectionCallBack}
                                                 allUsers={taskUsers}
                                                 ApprovalStatus={ApprovalStatus}
@@ -6238,7 +6378,7 @@ const EditTaskPopup = (Items: any) => {
                                                 Context={Context}
                                             />
                                             <Example
-                                                textItems={EditData.FeedBackArray}
+                                                textItems={EditData?.FeedBackBackup?.length>0?EditData?.FeedBackBackup[0]?.FeedBackDescriptions:[]}
                                                 callBack={SubCommentSectionCallBack}
                                                 allUsers={taskUsers}
                                                 ItemId={EditData.Id}
