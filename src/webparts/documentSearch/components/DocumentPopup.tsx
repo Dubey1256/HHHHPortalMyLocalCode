@@ -4,8 +4,8 @@ import { Web } from 'sp-pnp-js';
 import { Panel, PanelType } from 'office-ui-fabric-react';
 import moment from 'moment';
 import { FaArrowDown, FaArrowUp, } from "react-icons/fa";
-import ImageTabComponenet from './ImageTabComponent'
-import Tooltip from '../../../Tooltip';
+import ImagetabFunction from "../../EditPopupFiles/ImageInformation";
+import Tooltip from "../../../globalComponents/Tooltip";
 // var AllComponentItem: any[] = [];
 // var AllServiceItem: any[] = [];
 const DocumentPopup = (props: any) => {
@@ -732,7 +732,7 @@ const DocumentPopup = (props: any) => {
                             </div>
                         </div>
                         <div className="tab-pane fade" id="profile" role="tabpanel" aria-labelledby="profile-tab">
-                            <ImageTabComponenet EditdocumentsData={props?.editData} AllListId={props?.AllListId} Context={PageContext?.context} />
+                            <ImagetabFunction EditdocumentsData={props?.editData} AllListId={props?.AllListId} Context={PageContext?.context} />
                         </div>
                     </div>
                 </div>

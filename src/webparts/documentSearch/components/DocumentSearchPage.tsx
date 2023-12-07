@@ -1,8 +1,8 @@
 import React, { useEffect, useState } from 'react'
 import { Web } from 'sp-pnp-js';
-import GlobalCommanTable from "./GlobalCommanTable";
+import GlobalCommanTable from '../../../globalComponents/GroupByReactTableComponents/GlobalCommanTable';
 import { ColumnDef } from '@tanstack/react-table';
-import EditDocument from './EditDocunentPanel'
+import EditDocumentpanel from '../../taskprofile/components/EditDocunentPanel';
 import moment from 'moment';
 var TaskUser: any = []
 export default function DocumentSearchPage(Props: any) {
@@ -216,7 +216,7 @@ export default function DocumentSearchPage(Props: any) {
             </div>
             </div>}
             {isEditModalOpen ?
-                <EditDocument closeEditPopup={closeEditPopup} editData={selectedItemId} AllListId={PageContext} Context={PageContext?.context} editdocpanel={isEditModalOpen} />
+                <EditDocumentpanel closeEditPopup={closeEditPopup} editData={selectedItemId} AllListId={PageContext} Context={PageContext?.context} editdocpanel={isEditModalOpen} />
                 :
                 null
             }    </>
