@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from 'react'
 import { Web } from 'sp-pnp-js';
-import GlobalCommanTable from '../../../globalComponents/GroupByReactTableComponents/GlobalCommanTable';
+import GlobalCommanTable from "./GlobalCommanTable";
 import { ColumnDef } from '@tanstack/react-table';
 import EditDocument from './EditDocunentPanel'
 import moment from 'moment';
@@ -210,7 +210,7 @@ export default function DocumentSearchPage(Props: any) {
                 <div className="TableSection">
                 <div className='Alltable mt-2'>
                     <div className='col-md-12 p-0 smart'>
-                        <GlobalCommanTable columns={columns} data={AllDocs} showHeader={true} callBackData={callBackData} />
+                        <GlobalCommanTable columns={columns} data={AllDocs} showHeader={true} callBackData={callBackData} expendedTrue={true} />
                     </div>
                 </div>
             </div>

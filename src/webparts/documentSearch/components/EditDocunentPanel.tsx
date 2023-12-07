@@ -5,9 +5,9 @@ import { Button, Tabs, Tab } from 'react-bootstrap';
 import moment from 'moment';
 import { Web } from 'sp-pnp-js';
 
-import HtmlEditorCard from '../../../globalComponents/./HtmlEditor/HtmlEditor'
+import HtmlEditorCard from './HtmlEditor'
 import ImageTabComponenet from './ImageTabComponent'
-import ServiceComponentPortfolioPopup from '../../../globalComponents/EditTaskPopup/ServiceComponentPortfolioPopup';
+import ServiceComponentPortfolioPopup from './ServiceComponentPortfolioPopup';
 //import Mycontext from './RelevantDocuments'
 const EditDocumentpanel = (props: any) => {
   // const contextdata: any = React.useContext<any>(Mycontext)
@@ -59,7 +59,7 @@ const EditDocumentpanel = (props: any) => {
     // await web.lists.getByTitle("SmartInformation")
     var text: any = "Are you sure want to Delete ?";
     if (confirm(text) == true) {
-      await web.lists.getById(props?.AllListId?.DocumentListID)
+      await web.lists.getById(props?.AllListId?.DocumentsListID)
         .items.getById(DeletItemId).recycle()
         .then((res: any) => {
           console.log(res);
@@ -95,7 +95,7 @@ const EditDocumentpanel = (props: any) => {
     }
 
     const web = new Web(props?.AllListId?.siteUrl);
-    await web.lists.getById(props?.AllListId?.DocumentListID)
+    await web.lists.getById(props?.AllListId?.DocumentsListID)
       .items.getById(EditdocumentsData.Id).update({
         Title: EditdocumentsData.docTitle,
         ItemRank: EditdocumentsData.ItemRank,

@@ -11,7 +11,7 @@ export default function SiteStructureTool(Props: any) {
     //#endregion
     //#region code to load All Documents By PB
     const LoadTopNavigation = () => {
-        let web = new Web(PageContext?.ContextData?.web?.absoluteUrl)
+        let web = new Web(PageContext.ContextData._web.absoluteUrl)
         web.lists.getById(PageContext.TopNavigationListID).items.select('ID', 'Id', 'Title', 'href', 'ParentID', 'Order0', 'SortOrder', 'ownersonly', 'IsVisible', 'Modified', 'Created', 'Author/Id', 'Author/Title', 'Editor/Id', 'Editor/Title')
             .expand('Editor,Author')
             .top(4999)
