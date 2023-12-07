@@ -166,14 +166,7 @@
      }
    ]
  },
-    "manage-smart-metadata-web-part": {
-      "components": [
-        {
-          "entrypoint": "./lib/webparts/manageSmartMetadata/ManageSmartMetadataWebPart.js",
-          "manifest": "./src/webparts/manageSmartMetadata/ManageSmartMetadataWebPart.manifest.json"
-        }
-      ]
-    },
+
     "tasks-view-web-part": {
       "components": [
         {
