@@ -958,7 +958,7 @@ async function updateMultiLookupField(itemIds: number[], lookupIds: number[],All
         <section>
           <div className="col">
             <div className="d-flex justify-content-between p-0">
-              <ul className="spfxbreadcrumb m-0 p-0">
+              <ul className="spfxbreadcrumb mb-0 mt-16 p-0">
                 <li>
                   <a href="#">
                     <FaHome />{" "}
