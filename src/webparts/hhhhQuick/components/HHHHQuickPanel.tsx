@@ -1,5 +1,5 @@
 import React from 'react'
-import CreateActivity from '../../servicePortfolio/components/CreateActivity'
+import CreateActivity from "../../../globalComponents/CreateActivity"
 const HHHHQuickPanel = (props: any) => {
     
     const params = new URLSearchParams(window.location.search)
