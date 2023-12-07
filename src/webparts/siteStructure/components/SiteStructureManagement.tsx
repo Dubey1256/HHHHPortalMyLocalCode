@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from 'react'
 import { Web } from 'sp-pnp-js';
-import GlobalCommanTable from "./GlobalCommanTable";
+import GlobalCommanTable from "../../../globalComponents/GroupByReactTableComponents/GlobalCommanTable";
 import { ColumnDef } from '@tanstack/react-table';
 import moment from 'moment';
 let ParentTopNavigation: any = []
@@ -11,7 +11,7 @@ export default function SiteStructureTool(Props: any) {
     //#endregion
     //#region code to load All Documents By PB
     const LoadTopNavigation = () => {
-        let web = new Web('https://hhhhteams.sharepoint.com/sites/HHHH')
+        let web = new Web(PageContext?.ContextData?.web?.absoluteUrl)
         web.lists.getById(PageContext.TopNavigationListID).items.select('ID', 'Id', 'Title', 'href', 'ParentID', 'Order0', 'SortOrder', 'ownersonly', 'IsVisible', 'Modified', 'Created', 'Author/Id', 'Author/Title', 'Editor/Id', 'Editor/Title')
             .expand('Editor,Author')
             .top(4999)
@@ -145,7 +145,7 @@ export default function SiteStructureTool(Props: any) {
             <section className='ContentSection'>
                 <div className='row'>
                     <div className='col-sm-3 text-primary'>
-                        <h3 className="heading">SiteStructureManagement
+                        <h3 className="heading">Site Structure Management
                         </h3>
                     </div>
                 </div>
