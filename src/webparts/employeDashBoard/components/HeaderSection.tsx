@@ -1,4 +1,5 @@
 import React, { useState } from 'react'
+import React, { useState } from 'react'
 // import TaskStatusTbl from './TaskStatusTbl';
 import { myContextValue } from '../../../globalComponents/globalCommon'
 import WorldClock from './WorldClock';
@@ -16,6 +17,11 @@ const Header = () => {
   const thisWeekTask: any = ContextData?.AlltaskData.ThisWeekTask;
   const draftArray: any = ContextData?.AlltaskData?.DraftCatogary;
   const assignedTask: any = ContextData?.AlltaskData?.AssignedTask;
+<<<<<<< HEAD
+  const annouceMents: any = ContextData?.annouceMents;
+  const [activeTile, setActiveTile] = useState('workingToday'); // Initialize the active tile
+
+=======
   let annouceMents: any = ContextData?.annouceMents;
   const [activeTile, setActiveTile] = useState('workingToday');
   const [IsOpenTimeSheetPopup, setIsOpenTimeSheetPopup] = useState(false);
@@ -23,6 +29,7 @@ const Header = () => {
   const [newAnnouncement, setNewAnnouncement] = React.useState('');
   const [, rerender] = React.useReducer(() => ({}), {});
   let UserGroup: any = ContextData?.AllTaskUser?.filter((x: any) => x.AssingedToUser?.Id === ContextData?.propsValue?.Context._pageContext._legacyPageContext.userId)
+>>>>>>> e1bb1d0286c1660a74363c3ffaaac6fe9afca80f
   const handleTileClick = (tileName: any) => {
 
     if (tileName == 'TimeSheet') {
@@ -171,7 +178,11 @@ const Header = () => {
                       <path d="M15.354 3.354a.5.5 0 0 0-.708-.708L8 9.293 5.354 6.646a.5.5 0 1 0-.708.708l3 3a.5.5 0 0 0 .708 0l7-7z" />
                     </svg>
                   </span>
+<<<<<<< HEAD
+                  <span className='fw-semibold ms-1'>{todaysTask.length}</span></div>
+=======
                   <span className='fw-semibold ms-1'>{todaysTask?.length}</span></div>
+>>>>>>> e1bb1d0286c1660a74363c3ffaaac6fe9afca80f
                 <div className="mx-2">|</div>
                 <div className='alignCenter'>
                   <span title='Todays Time'>
@@ -204,10 +215,17 @@ const Header = () => {
             </span>
             <span className='ms-2'>
               <div>Assigned Task</div>
+<<<<<<< HEAD
+              <div className="f-18 fw-semibold">{assignedTask.length}</div>
+            </span>
+          </div>
+          <div
+=======
               <div className="f-18 fw-semibold">{assignedTask?.length}</div>
             </span>
           </div>
           {/* <div
+>>>>>>> e1bb1d0286c1660a74363c3ffaaac6fe9afca80f
             className={`${activeTile === 'bottleneck' ? 'col alignCenter me-3 hreflink  mb-3 p-3 empBg shadow-sm active empBg' : 'col alignCenter me-3 p-3 bg-white hreflink  mb-3 shadow-sm'}`}
             onClick={() => handleTileClick('bottleneck')}
           >
@@ -263,6 +281,8 @@ const Header = () => {
         {activeTile === 'draft' && <div><TaskStatusTbl activeTile={activeTile} /></div>}
         {/* {activeTile === 'TimeSheet' && <div><TaskStatusTbl activeTile={activeTile} /></div>} */}
       </section>
+<<<<<<< HEAD
+=======
       <span>
         {IsOpenTimeSheetPopup == true && <EmployeePieChart IsOpenTimeSheetPopup={IsOpenTimeSheetPopup} Call={() => { CallBack() }} />}
       </span>
@@ -281,6 +301,7 @@ const Header = () => {
           <button className='btn btn-default ms-1' onClick={closeAnnouncementpopup}>Cancel</button>
         </div>
       </Panel>
+>>>>>>> e1bb1d0286c1660a74363c3ffaaac6fe9afca80f
     </div>
   );
 }
