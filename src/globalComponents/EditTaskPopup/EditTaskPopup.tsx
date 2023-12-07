@@ -43,9 +43,6 @@ import EditSiteComposition from "./EditSiteComposition";
 import SmartTotalTime from './SmartTimeTotal';
 import "react-datepicker/dist/react-datepicker.css";
 import BackgroundCommentComponent from "./BackgroundCommentComponent";
-//import EODReportComponent from "../EOD Report Component/EODReportComponent";
-import { CurrentUser } from "sp-pnp-js/lib/sharepoint/siteusers";
-import { filter } from "lodash";
 import EmailNotificationMail from "./EmailNotificationMail";
 
 
@@ -64,7 +61,7 @@ var tempCategoryData: any = '';
 var SiteTypeBackupArray: any = [];
 var currentUserBackupArray: any = [];
 let AutoCompleteItemsArray: any = [];
-let ValueStatus:any=''
+let ValueStatus: any = ''
 let SelectedSite: any = ''
 var FeedBackBackupArray: any = [];
 var SiteId = ''
@@ -780,7 +777,7 @@ const EditTaskPopup = (Items: any) => {
                     let ApprovalCheck = item.Categories.search("Approval");
                     let OnlyCompletedCheck = item.Categories.search("Only Completed");
                     let DesignCheck: any;
-                    if (item.Categories == "Design" || item.Categories == "Design;") {
+                    if (item.Categories == "Design" || item.Categories == "Design;" || item.Categories == "Design;Approval" || item.Categories == "Design;Approval;") {
                         DesignCheck = item.Categories.search("Design");
                     }
                     if (phoneCheck >= 0) {
@@ -1172,9 +1169,9 @@ const EditTaskPopup = (Items: any) => {
                     let tempArray: any = [FeedBackItem]
                     item.FeedBack = JSON.stringify(tempArray);
                     item.FeedBackArray = tempArray[0]?.FeedBackDescriptions;
-                    item.FeedBackBackup=tempArray;
+                    item.FeedBackBackup = tempArray;
                     FeedBackBackupArray = JSON.stringify(tempArray);
-                   
+
                 }
 
                 if (item.OffshoreComments != null || item.OffshoreComments != undefined) {
@@ -1302,59 +1299,109 @@ const EditTaskPopup = (Items: any) => {
 
     //  ###################  Service And Component Portfolio Popup Call Back Functions and Validations ##################
 
-    const ComponentServicePopupCallBack = useCallback((DataItem: any, Type: any, functionType: any) => {
-        if (functionType == "Close") {
-            setOpenTeamPortfolioPopup(false);
-            setopenLinkedPortfolioPopup(false);
-
-        } else {
-            if (DataItem != undefined && DataItem.length > 0) {
-                if (DataItem[0].Sitestagging != null || DataItem[0].Sitestagging != undefined) {
-                    let ClientData = JSON.parse(DataItem[0].Sitestagging ? DataItem[0].Sitestagging : [{}]);
-                    let TempSiteCompositionArray: any = [];
-                    if (ClientData != undefined && ClientData.length > 0) {
-                        ClientData.map((SiteData: any) => {
-                            let TempObject: any = {
-                                SiteName: SiteData.Title,
-                                ClienTimeDescription: SiteData.ClienTimeDescription,
-                                localSiteComposition: true
-                            }
-                            TempSiteCompositionArray.push(TempObject);
-                        })
-                        if (TempSiteCompositionArray != undefined && TempSiteCompositionArray.length > 0) {
-                            setSitesTaggingData(TempSiteCompositionArray);
-                        }
-                    }
-                }
-                if (Type == "Multi") {
-                    if (LinkedPortfolioDataBackup?.length > 0) {
-                        LinkedPortfolioDataBackup = LinkedPortfolioDataBackup.concat(DataItem);
-                        const finalData = LinkedPortfolioDataBackup?.filter((val: any, id: any, array: any) => {
-                            return array.indexOf(val) == id;
-                        });
-                        setLinkedPortfolioData(finalData);
-                    } else {
-                        setLinkedPortfolioData(DataItem)
-                        LinkedPortfolioDataBackup = DataItem;
-                    }
-                }
-                if (Type == "Single") {
-                    setTaggedPortfolioData(DataItem);
-                    let ComponentType: any = DataItem[0].PortfolioType.Title;
-                    getLookUpColumnListId(siteUrls, AllListIdData?.MasterTaskListID, 'PortfolioType', ComponentType, "Updated-phase");
-                    // setTimeout(() => {
-                    //     if (PortfolioTypeListId?.length > 0) {
-                    //         GetTaskStatusOptionData(PortfolioTypeListId, ComponentType);
-                    //     }
-                    // }, 2000);
-
-                }
+    const ComponentServicePopupCallBack = useCallback(
+        (DataItem: any, Type: any, functionType: any) => {
+            if (functionType == "Close") {
                 setOpenTeamPortfolioPopup(false);
                 setopenLinkedPortfolioPopup(false);
-                console.log("Popup component smartComponent ", DataItem);
+            } else {
+                if (DataItem != undefined && DataItem.length > 0) {
+                    if (DataItem[0].ClientCategory?.length > 0) {
+                        let tempTaggedCCData: any = [];
+                        AllClientCategoryDataBackup?.map((AllCCItem: any) => {
+                            DataItem[0]?.ClientCategory?.map((TaggedCCItem: any) => {
+                                if (AllCCItem.Title == TaggedCCItem.Title) {
+                                    tempTaggedCCData.push(AllCCItem);
+                                }
+                            })
+                        })
+                        if (Items?.Items?.siteType == "Shareweb") {
+                            setSelectedClientCategory([...tempTaggedCCData]);
+
+                        }
+
+                        if (Items?.Items?.siteType == "EI" || Items?.Items?.siteType == "EPS" || Items?.Items?.siteType == "Education" || Items?.Items?.siteType == "Migration") {
+                            let tempArray: any = [];
+                            tempTaggedCCData?.map((FinalCCItem: any) => {
+                                if (FinalCCItem.siteName == Items?.Items?.siteType) {
+                                    tempArray.push(FinalCCItem)
+                                }
+                            })
+                            setSelectedClientCategory([...tempArray]);
+                        }
+                    }
+                    if (
+                        DataItem[0].Sitestagging != null ||
+                        DataItem[0].Sitestagging != undefined
+                    ) {
+                        let ClientData = JSON.parse(
+                            DataItem[0].Sitestagging ? DataItem[0].Sitestagging : [{}]
+                        );
+                        let TempSiteCompositionArray: any = [];
+                        if (ClientData != undefined && ClientData.length > 0) {
+                            ClientData.map((SiteData: any) => {
+                                let TempObject: any = {
+                                    SiteName: SiteData.Title,
+                                    ClienTimeDescription: SiteData.ClienTimeDescription,
+                                    localSiteComposition: true,
+                                };
+                                TempSiteCompositionArray.push(TempObject);
+                            });
+                            if (
+                                TempSiteCompositionArray != undefined &&
+                                TempSiteCompositionArray.length > 0
+                            ) {
+                                if (Items?.Items?.siteType == "Shareweb") {
+                                    setClientTimeData(TempSiteCompositionArray);
+                                } else {
+                                    let TempObject: any = {
+                                        SiteName: Items?.Items?.siteType,
+                                        ClienTimeDescription: 100,
+                                        localSiteComposition: true,
+                                        siteIcons: Items.Items.SiteIcon,
+                                    };
+                                    setClientTimeData([TempObject]);
+                                }
+                            }
+                        }
+                    }
+                    if (DataItem[0].SiteCompositionSettings) {
+                        setSiteCompositionSetting(DataItem[0].SiteCompositionSettings);
+                    }
+                    if (Type == "Multi") {
+                        if (LinkedPortfolioDataBackup?.length > 0) {
+                            LinkedPortfolioDataBackup =
+                                LinkedPortfolioDataBackup.concat(DataItem);
+                            const finalData = LinkedPortfolioDataBackup?.filter(
+                                (val: any, id: any, array: any) => {
+                                    return array.indexOf(val) == id;
+                                }
+                            );
+                            setLinkedPortfolioData(finalData);
+                        } else {
+                            setLinkedPortfolioData(DataItem);
+                            LinkedPortfolioDataBackup = DataItem;
+                        }
+                    }
+                    if (Type == "Single") {
+                        setTaggedPortfolioData(DataItem);
+                        let ComponentType: any = DataItem[0].PortfolioType.Title;
+                        getLookUpColumnListId(
+                            siteUrls,
+                            AllListIdData?.MasterTaskListID,
+                            "PortfolioType",
+                            ComponentType,
+                            "Updated-phase"
+                        );
+                    }
+                    setOpenTeamPortfolioPopup(false);
+                    setopenLinkedPortfolioPopup(false);
+                    console.log("Popup component smartComponent ", DataItem);
+                }
             }
-        }
-    }, [])
+        },
+        []
+    );
 
 
 
@@ -2355,9 +2402,9 @@ const EditTaskPopup = (Items: any) => {
                         // }
 
                         let CalculateStatusPercentages: any = TaskDetailsFromCall[0].PercentComplete ? TaskDetailsFromCall[0].PercentComplete * 100 : 0;
-                        if (CalculateStatusPercentages == 90 && EmailStatus == true){
+                        if (CalculateStatusPercentages == 90 && EmailStatus == true) {
                             setLastUpdateTaskData(TaskDetailsFromCall[0]);
-                            ValueStatus='90'
+                            ValueStatus = '90'
                             setSendEmailNotification(true)
                         }
                         setLastUpdateTaskData(TaskDetailsFromCall[0]);
@@ -2391,7 +2438,7 @@ const EditTaskPopup = (Items: any) => {
                                     setSendEmailComponentStatus(false)
                                 }
                             }
-                            if ((CalculateStatusPercentage == 5 ||CalculateStatusPercentage == 10 || CalculateStatusPercentage == 80 || CalculateStatusPercentage == 90) && ImmediateStatus) {
+                            if ((CalculateStatusPercentage == 5 || CalculateStatusPercentage == 10 || CalculateStatusPercentage == 80 || CalculateStatusPercentage == 90) && ImmediateStatus) {
                                 ValueStatus = CalculateStatusPercentage
                                 setSendEmailNotification(true);
                                 Items.StatusUpdateMail = true;
@@ -2466,10 +2513,10 @@ const EditTaskPopup = (Items: any) => {
                 }
             })
         }
-        
-     
 
-     
+
+
+
 
 
         let PrecentStatus: any = UpdateTaskInfo.PercentCompleteStatus ? (Number(UpdateTaskInfo.PercentCompleteStatus)) : 0;
@@ -2711,7 +2758,7 @@ const EditTaskPopup = (Items: any) => {
             Title: UpdateTaskInfo.Title ? UpdateTaskInfo.Title : EditData.Title,
             Priority: Priority,
             StartDate: EditData.StartDate ? Moment(EditData.StartDate).format("MM-DD-YYYY") : null,
-            PercentComplete:  UpdateTaskInfo.PercentCompleteStatus != '' ? (Number(UpdateTaskInfo.PercentCompleteStatus) / 100) : (EditData.PercentComplete ? (EditData.PercentComplete / 100) : 0),
+            PercentComplete: UpdateTaskInfo.PercentCompleteStatus != '' ? (Number(UpdateTaskInfo.PercentCompleteStatus) / 100) : (EditData.PercentComplete ? (EditData.PercentComplete / 100) : 0),
             Categories: CategoriesData ? CategoriesData : null,
             PortfolioId: smartComponentsIds === '' ? null : smartComponentsIds,
             RelevantPortfolioId: { "results": (RelevantPortfolioIds != undefined && RelevantPortfolioIds?.length > 0) ? RelevantPortfolioIds : [] },
@@ -2729,12 +2776,12 @@ const EditTaskPopup = (Items: any) => {
                 Description: EditData.Relevant_Url ? EditData.Relevant_Url : '',
                 Url: EditData.Relevant_Url ? EditData.Relevant_Url : ''
             },
-         //BasicImageInfo: UploadImageArray != undefined && UploadImageArray.length > 0 ? JSON.stringify(UploadImageArray) : JSON.stringify(UploadImageArray),
+            //BasicImageInfo: UploadImageArray != undefined && UploadImageArray.length > 0 ? JSON.stringify(UploadImageArray) : JSON.stringify(UploadImageArray),
             ProjectId: (selectedProject.length > 0 ? selectedProject[0].Id : null),
             ApproverId: { "results": (ApproverIds != undefined && ApproverIds.length > 0) ? ApproverIds : [] },
-            // ClientTime: JSON.stringify(ClientCategoryData),
-            // ClientCategoryId: { "results": (ClientCategoryIDs != undefined && ClientCategoryIDs.length > 0) ? ClientCategoryIDs : [] },
-            // SiteCompositionSettings: (SiteCompositionSetting != undefined && SiteCompositionSetting.length > 0) ? JSON.stringify(SiteCompositionSetting) : EditData.SiteCompositionSettings,
+            ClientTime: JSON.stringify(ClientCategoryData),
+            ClientCategoryId: { "results": (ClientCategoryIDs != undefined && ClientCategoryIDs.length > 0) ? ClientCategoryIDs : [] },
+            // SiteCompositionSettings: SiteCompositionSetting,
             ApproverHistory: ApproverHistoryData?.length > 0 ? JSON.stringify(ApproverHistoryData) : null,
             EstimatedTime: EditData.EstimatedTime ? EditData.EstimatedTime : null,
             EstimatedTimeDescription: EditData.EstimatedTimeDescriptionArray ? JSON.stringify(EditData.EstimatedTimeDescriptionArray) : null,
@@ -3584,9 +3631,9 @@ const EditTaskPopup = (Items: any) => {
 
                     //       console.log(MyImage)
                     //   }
-                    await CopyImageData(SelectedSite,res.data)
-                     CopydocumentData(SelectedSite,res.data)
-                    
+                    await CopyImageData(SelectedSite, res.data)
+                    CopydocumentData(SelectedSite, res.data)
+
                     if (FunctionsType == "Copy-Task") {
                         newGeneratedId = res.data.Id;
                         console.log(`Task Copied Successfully on ${SelectedSite} !!!!!`);
@@ -3610,10 +3657,10 @@ const EditTaskPopup = (Items: any) => {
         // Items.Call();
     }
 
-    const CopydocumentData= async(NewList:any,NewItem:any)=>{
-        var ArrayData:any=[]
+    const CopydocumentData = async (NewList: any, NewItem: any) => {
+        var ArrayData: any = []
         let RelativeUrl = Items?.context?.pageContext?.web?.serverRelativeUrl;
-        let web =  new Web(siteUrls);
+        let web = new Web(siteUrls);
         await web.lists
             .getById(AllListIdData?.DocumentsListID)
             .items
@@ -3624,16 +3671,16 @@ const EditTaskPopup = (Items: any) => {
                 console.log(res);
                 var MoveDataId = res[0]?.ID
                 ArrayData.push(NewItem.Id)
-                var NewListData:any = NewList + "Id"
+                var NewListData: any = NewList + "Id"
                 await web.lists.getById(AllListIdData?.DocumentsListID).items.getById(res[0]?.ID)
-                .update({
-                    [NewListData] : { "results":ArrayData}
-                }).then(async (res: any) => {
-                    console.log(res)
-                })
+                    .update({
+                        [NewListData]: { "results": ArrayData }
+                    }).then(async (res: any) => {
+                        console.log(res)
+                    })
 
             });
-           
+
     }
     const CopyImageData = async (NewList: any, NewItem: any) => {
         var attachmentFileName: any = ''
@@ -3715,12 +3762,12 @@ const EditTaskPopup = (Items: any) => {
             BasicImageInfo: tempArrayJsonData != undefined && tempArrayJsonData.length > 0 ? JSON.stringify(tempArrayJsonData) : JSON.stringify(tempArrayJsonData),
         })
         console.log(Data)
-        
+
     }
-          
-    
+
+
     const moveTimeSheet = async (SelectedSite: any, newItem: any) => {
-      
+
         newGeneratedId = newItem.Id;
         var TimesheetConfiguration: any = []
         var folderUri = ''
@@ -5213,7 +5260,7 @@ const EditTaskPopup = (Items: any) => {
                                     </div>
                                     <div className="col-md-4">
                                         <div className="full_width ">
-                                           
+
                                             <CommentCard siteUrl={siteUrls} listName={Items?.Items?.siteType} itemID={Items.Items.Id} AllListId={AllListIdData} Context={Context} />
                                         </div>
                                         <div className="pull-right">
@@ -5275,8 +5322,8 @@ const EditTaskPopup = (Items: any) => {
                                                                         </div>
                                                                         < div className="alignCenter">
                                                                             <span className="hover-text" onClick={() => openReplaceImagePopup(index)}><TbReplace /> <span className="tooltip-text pop-right">Replace Image</span></span>
-                                                                            <span className="mx-1 hover-text" onClick={() => RemoveImageFunction(index, ImageDtl.ImageName, "Remove")}> | <RiDeleteBin6Line /> | 
-                                                                            <span className="tooltip-text pop-right">Delete</span></span>
+                                                                            <span className="mx-1 hover-text" onClick={() => RemoveImageFunction(index, ImageDtl.ImageName, "Remove")}> | <RiDeleteBin6Line /> |
+                                                                                <span className="tooltip-text pop-right">Delete</span></span>
                                                                             <span className="hover-text" onClick={() => ImageCustomizeFunction(index)}>
                                                                                 <FaExpandAlt /> |
                                                                                 <span className="tooltip-text pop-right">Customize the Width of Page</span>
@@ -5322,7 +5369,7 @@ const EditTaskPopup = (Items: any) => {
                                     <div className={IsShowFullViewImage != true ? 'col-sm-9 toggle-task' : 'col-sm-6 editsectionscroll toggle-task'}>
                                         {EditData.Id != null ? <>
                                             <CommentBoxComponent
-                                                data={EditData?.FeedBackBackup?.length>0?EditData?.FeedBackBackup[0]?.FeedBackDescriptions:[]}
+                                                data={EditData?.FeedBackBackup?.length > 0 ? EditData?.FeedBackBackup[0]?.FeedBackDescriptions : []}
                                                 callBack={CommentSectionCallBack}
                                                 allUsers={taskUsers}
                                                 ApprovalStatus={ApprovalStatus}
@@ -5332,7 +5379,7 @@ const EditTaskPopup = (Items: any) => {
                                                 FeedbackCount={FeedBackCount}
                                             />
                                             <Example
-                                                textItems={EditData?.FeedBackBackup?.length>0?EditData?.FeedBackBackup[0]?.FeedBackDescriptions:[]}
+                                                textItems={EditData?.FeedBackBackup?.length > 0 ? EditData?.FeedBackBackup[0]?.FeedBackDescriptions : []}
                                                 callBack={SubCommentSectionCallBack}
                                                 allUsers={taskUsers}
                                                 ItemId={EditData.Id}
@@ -5438,7 +5485,7 @@ const EditTaskPopup = (Items: any) => {
                             ApprovalTaskStatus={ApprovalTaskStatus}
                             callBack={SendEmailNotificationCallBack}
                         /> : null}
-                         {sendEmailNotification ?
+                    {sendEmailNotification ?
                         <EmailNotificationMail
                             AllTaskUser={AllTaskUser}
                             CurrentUser={currentUserData}
@@ -5449,8 +5496,8 @@ const EditTaskPopup = (Items: any) => {
                             Context={Context}
                             ApprovalTaskStatus={ApprovalTaskStatus}
                             callBack={SendEmailNotificationCallBack}
-                            statusValue={ValueStatus}/>
-                             : null}
+                            statusValue={ValueStatus} />
+                        : null}
                     {/* {OpenEODReportPopup ? <EODReportComponent TaskDetails={EditData} siteUrl={siteUrls} Context={Context} Callback={EODReportComponentCallback} /> : null} */}
                 </div>
             </Panel>
@@ -6373,7 +6420,7 @@ const EditTaskPopup = (Items: any) => {
                                     <div>
                                         {EditData.Id != null ? <>
                                             <CommentBoxComponent
-                                                data={EditData?.FeedBackBackup?.length>0?EditData?.FeedBackBackup[0]?.FeedBackDescriptions:[]}
+                                                data={EditData?.FeedBackBackup?.length > 0 ? EditData?.FeedBackBackup[0]?.FeedBackDescriptions : []}
                                                 callBack={CommentSectionCallBack}
                                                 allUsers={taskUsers}
                                                 ApprovalStatus={ApprovalStatus}
@@ -6382,7 +6429,7 @@ const EditTaskPopup = (Items: any) => {
                                                 Context={Context}
                                             />
                                             <Example
-                                                textItems={EditData?.FeedBackBackup?.length>0?EditData?.FeedBackBackup[0]?.FeedBackDescriptions:[]}
+                                                textItems={EditData?.FeedBackBackup?.length > 0 ? EditData?.FeedBackBackup[0]?.FeedBackDescriptions : []}
                                                 callBack={SubCommentSectionCallBack}
                                                 allUsers={taskUsers}
                                                 ItemId={EditData.Id}
