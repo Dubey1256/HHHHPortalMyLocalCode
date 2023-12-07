@@ -1190,7 +1190,7 @@ const switchGroupbyData = () => {
         placeholder: "Title",
         resetColumnFilters: false,
         header: "",
-        size: 480
+        size: 410
       },
       {
         accessorFn: (row) => row?.projectStructerId + "." + row?.ProjectTitle,
@@ -1312,7 +1312,7 @@ const switchGroupbyData = () => {
         resetSorting: false,
         placeholder: "DueDate",
         header: "",
-        size: 100
+        size: 91
       },
       {
         accessorFn: (row) => row?.Created,
@@ -1353,7 +1353,7 @@ const switchGroupbyData = () => {
           }
         },
         header: "",
-        size: 130
+        size: 150
       },
       {
         accessorKey: "descriptionsSearch",
@@ -2013,7 +2013,7 @@ const updatedDataDataFromPortfolios = (copyDtaArray: any, dataToUpdate: any) => 
       </section>
 
       <section className="TableContentSection taskprofilepagegreen">
-        <div className="container-fluid">
+        <div className="container-fluid p-0">
           <section className="TableSection">
             <div className="container p-0">
               <div className="Alltable mt-2 ">

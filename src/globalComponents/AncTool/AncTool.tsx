@@ -88,11 +88,11 @@ const AncTool = (props: any) => {
     React.useEffect(() => {
         setTimeout(() => {
             const panelMain: any = document.querySelector('.ms-Panel-main');
-            if (panelMain && props?.selectedItem?.PortfolioType?.Color) {
-                $('.ms-Panel-main').css('--SiteBlue', props?.selectedItem?.PortfolioType?.Color); // Set the desired color value here
+            if (panelMain && props?.item?.PortfolioType?.Color) {
+                $('.ms-Panel-main').css('--SiteBlue', props?.item?.PortfolioType?.Color); // Set the desired color value here
             }
         }, 2000)
-    }, [CreateFolderLocation, modalIsOpen]);
+    }, [CreateFolderLocation, modalIsOpen, choosePathPopup]);
     // Generate Path And Basic Calls
     const pathGenerator = async () => {
         const params = new URLSearchParams(window.location.search);
@@ -205,6 +205,7 @@ const AncTool = (props: any) => {
             let web = new Web(props?.AllListId?.siteUrl);
             const files = await web.lists.getByTitle('Documents').items.select(selectQuery).getAll();
             let newFilesArr: any = [];
+            folders = [];
             files?.map((file: any) => {
                 if (file?.Title != undefined && file?.File_x0020_Type != undefined) {
                     file.docType = file?.File_x0020_Type
@@ -232,10 +233,10 @@ const AncTool = (props: any) => {
                 }
                 if (file?.Portfolios == undefined) {
                     file.Portfolios = [];
-                    file.PortfoliosId=[]
-                }else{
-                    file.PortfoliosId=[]
-                    file?.Portfolios?.map((Port:any)=>{
+                    file.PortfoliosId = []
+                } else {
+                    file.PortfoliosId = []
+                    file?.Portfolios?.map((Port: any) => {
                         file?.PortfoliosId?.push(Port?.Id)
                     })
                 }
@@ -598,6 +599,7 @@ const AncTool = (props: any) => {
                             });
                         setUploadedDocDetails(taggedDocument);
                         setShowConfirmation(true)
+                        setUploadEmailModal(false)
                         setModalIsOpenToFalse()
                     })
                 }
@@ -631,7 +633,7 @@ const AncTool = (props: any) => {
             let web = new Web(props?.AllListId?.siteUrl);
             let PostData = {
                 [siteColName]: { "results": resultArray },
-                PortfoliosId:  { "results": file?.PortfoliosId != undefined ? file?.PortfoliosId : [] }
+                PortfoliosId: { "results": file?.PortfoliosId != undefined ? file?.PortfoliosId : [] }
             }
             await web.lists.getByTitle('Documents').items.getById(file.Id)
                 .update(PostData).then((updatedFile: any) => {
@@ -649,7 +651,7 @@ const AncTool = (props: any) => {
             // Update the document file here
             let PostData = {
                 [siteColName]: { "results": resultArray },
-                PortfoliosId:  { "results": file?.PortfoliosId != undefined ? file?.PortfoliosId : [] }
+                PortfoliosId: { "results": file?.PortfoliosId != undefined ? file?.PortfoliosId : [] }
             }
             let web = new Web(props?.AllListId?.siteUrl);
             await web.lists.getByTitle('Documents').items.getById(file.Id)
@@ -771,6 +773,7 @@ const AncTool = (props: any) => {
                     });
                 setUploadedDocDetails(taggedDocument);
                 setShowConfirmation(true)
+                setUploadEmailModal(false)
                 setModalIsOpenToFalse()
             } catch (error) {
                 console.log("File upload failed:", error);
@@ -781,14 +784,24 @@ const AncTool = (props: any) => {
         const kbThreshold = 1024;
         const mbThreshold = kbThreshold * 1024;
 
-        if (sizeInBytes < kbThreshold) {
+        if (!isNaN(sizeInBytes) && sizeInBytes < kbThreshold) {
             return `${sizeInBytes} KB`;
         } else if (sizeInBytes < mbThreshold) {
-            const sizeInKB = (sizeInBytes / kbThreshold).toFixed(2);
-            return `${sizeInKB} KB`;
+            const sizeInKB = (sizeInBytes / kbThreshold)
+            if(!isNaN(sizeInKB)){
+                sizeInKB.toFixed(2);
+                return `${sizeInKB} KB`;
+            }else{
+                return `128 KB`;
+            }
         } else {
-            const sizeInMB = (sizeInBytes / mbThreshold).toFixed(2);
-            return `${sizeInMB} MB`;
+            const sizeInMB = (sizeInBytes / mbThreshold)
+            if(!isNaN(sizeInMB)){
+                sizeInMB.toFixed(2);
+                return `${sizeInMB} MB`;
+            }else{
+                return `1.2 MB`;
+            }
         }
     };
     //File Name Popup
@@ -964,6 +977,7 @@ const AncTool = (props: any) => {
     // Confirmation Popup Functions//
     const cancelConfirmationPopup = () => {
         setShowConfirmation(false)
+        setUploadEmailModal(false)
         setShowConfirmationInside(false)
         setUploadedDocDetails(undefined);
     }
@@ -1076,6 +1090,7 @@ const AncTool = (props: any) => {
                     });
                 setUploadedDocDetails(taggedDocument);
                 setShowConfirmation(true)
+                setUploadEmailModal(false)
                 setModalIsOpenToFalse()
             } catch (error) {
                 console.log("File upload failed:", error);
