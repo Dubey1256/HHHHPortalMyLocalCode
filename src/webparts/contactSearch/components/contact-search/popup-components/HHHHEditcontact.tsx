@@ -11,8 +11,8 @@ import { Panel, PanelType } from 'office-ui-fabric-react';
 import ImagesC from '../../../../EditPopupFiles/ImageInformation';
 import { Site } from '@pnp/sp/sites';
 import { myContextValue } from '../../../../../globalComponents/globalCommon'
-let HrGmbhEmployeData:any=[]
-let JointData:any=[];
+let HrGmbhEmployeData: any = []
+let JointData: any = [];
 const HHHHEditComponent = (props: any) => {
     const myContextData2: any = React.useContext<any>(myContextValue)
     const [countryData, setCountryData] = useState([]);
@@ -26,21 +26,21 @@ const HHHHEditComponent = (props: any) => {
     });
     const [siteTaggedHR, setSiteTaggedHR] = useState(false);
     const [siteTaggedSMALSUS, setSiteTaggedSMALSUS] = useState(false);
- 
-    const [updateData, setUpdateData]:any = useState({});
+
+    const [updateData, setUpdateData]: any = useState({});
     const [HrUpdateData, setHrUpdateData] = useState({
         Nationality: "", placeOfBirth: '', BIC: '', IBAN: '', taxNo: '', monthlyTaxAllowance: 0, insuranceNo: "", highestSchoolDiploma: '', highestVocationalEducation: '', otherQualifications: '', Country: '', Fedral_State: '', childAllowance: '', churchTax: '', healthInsuranceType: '', healthInsuranceCompany: '', maritalStatus: '', taxClass: '', SmartContactId: '', SmartLanguagesId: '', SmartStateId: '', dateOfBirth: '', Parenthood: '',
     })
     // const [instituteStatus, setInstituteStatus] = useState(false);
-   
+
     const [URLs, setURLs] = useState([]);
-    const [selectedOrg, setSelectedOrg] = useState();
+
     const [selectedState, setSelectedState] = useState({
         Title: ''
     });
-  
-    const [currentCountry, setCurrentCountry] :any= useState([])
-  
+
+    const [currentCountry, setCurrentCountry]: any = useState([])
+
     const [hrBtnStatus, setHrBtnStatus] = useState({
         personalInfo: true,
         bankInfo: false,
@@ -56,14 +56,14 @@ const HHHHEditComponent = (props: any) => {
         socialSecurityInfo: false
     })
     let callBack = props?.callBack;
-  
+
     useEffect(() => {
         getSmartMetaData();
-        if(myContextData2.allSite?.MainSite){
+        if (myContextData2.allSite?.MainSite) {
             getUserData(props?.props?.Id);
-         
-        }else{
-           
+
+        } else {
+
             HrGmbhEmployeDeatails(props?.props?.Id);
         }
         pnp.sp.web.currentUser.get().then((result: any) => {
@@ -74,9 +74,9 @@ const HHHHEditComponent = (props: any) => {
     const getUserData = async (Id: any) => {
         try {
             let web = new Web(myContextData2?.allListId?.siteUrl);
-             await web.lists.getById(myContextData2?.allListId?.HHHHContactListId)
+            await web.lists.getById(myContextData2?.allListId?.HHHHContactListId)
                 .items.getById(Id).select("Id, Title, FirstName, FullName, Department,DOJ,DOE, Company, WorkCity, Suffix, WorkPhone, HomePhone, Comments, WorkAddress, WorkFax, WorkZip, Site, ItemType, JobTitle, Item_x0020_Cover, WebPage, Site, CellPhone, Email, LinkedIn, Created, SocialMediaUrls, SmartCountries/Title, SmartCountries/Id, Author/Title, Modified, Editor/Title, Division/Title, Division/Id, EmployeeID/Title, StaffID, EmployeeID/Id, Institution/Id, Institution/FullName, IM")
-                .expand("EmployeeID, Division, Author, Editor, SmartCountries, Institution").get().then((data:any)=>{
+                .expand("EmployeeID, Division, Author, Editor, SmartCountries, Institution").get().then((data: any) => {
                     let URL: any[] = JSON.parse(data.SocialMediaUrls != null ? data.SocialMediaUrls : ["{}"]);
                     setURLs(URL);
                     // if (data.Institution != null) {
@@ -85,7 +85,7 @@ const HHHHEditComponent = (props: any) => {
                     if (data.SmartCountries.length > 0) {
                         setCurrentCountry(data.SmartCountries);
                     }
-                   
+
                     let SitesTagged = '';
                     if (data.Site != null) {
                         if (data.Site.length >= 0) {
@@ -107,62 +107,62 @@ const HHHHEditComponent = (props: any) => {
                         setSiteTaggedSMALSUS(true);
                     }
                     data.Item_x002d_Image = data?.Item_x0020_Cover;
-                    setUpdateData(data);  
-                }).catch((error:any)=>{
+                    setUpdateData(data);
+                }).catch((error: any) => {
                     console.log(error)
                 })
 
-            
+
 
         } catch (error) {
             console.log("Error:", error.message);
         }
 
     }
-    const HrGmbhEmployeDeatails=async(Id:any)=>{
-    
+    const HrGmbhEmployeDeatails = async (Id: any) => {
+
         try {
             let web = new Web(myContextData2?.allListId?.siteUrl);
-            await web.lists.getById(myContextData2?.allSite?.GMBHSite?myContextData2?.allListId?.GMBH_CONTACT_SEARCH_LISTID:myContextData2?.allListId?.HR_EMPLOYEE_DETAILS_LIST_ID)
+            await web.lists.getById(myContextData2?.allSite?.GMBHSite ? myContextData2?.allListId?.GMBH_CONTACT_SEARCH_LISTID : myContextData2?.allListId?.HR_EMPLOYEE_DETAILS_LIST_ID)
                 .items.getById(Id)
-                .select("Id", "Title", "FirstName", "FullName", "DOJ","DOE","SmartContact/Id","Company","SmartCountries/Id","SmartCountries/Title","SmartContactId","SmartInstitutionId", "WorkCity", "Suffix", "WorkPhone", "HomePhone", "Comments", "WorkAddress", "WorkFax", "WorkZip",  "ItemType", "JobTitle", "Item_x0020_Cover", "WebPage",  "CellPhone", "Email", "LinkedIn", "Created", "SocialMediaUrls","Author/Title", "Modified", "Editor/Title", "Division/Title", "Division/Id", "EmployeeID/Title", "StaffID", "EmployeeID/Id", "Institution/Id", "Institution/FullName", "IM")
-                .expand("EmployeeID", "Division", "Author", "Editor",  "Institution","SmartCountries","SmartContact")
-                .get().then((data:any)=>{
-                    
-                    HrGmbhEmployeData=data;
+                .select("Id", "Title", "FirstName", "FullName", "Company", "SmartContactId", "WorkCity", "Suffix", "WorkPhone", "HomePhone", "Comments", "WorkAddress", "WorkFax", "WorkZip", "ItemType", "JobTitle", "Item_x0020_Cover", "WebPage", "CellPhone", "Email", "LinkedIn", "Created", "SocialMediaUrls", "Author/Title", "Modified", "Editor/Title", "Division/Title", "Division/Id", "EmployeeID/Title", "StaffID", "EmployeeID/Id", "Institution/Id", "Institution/FullName", "IM")
+                .expand("EmployeeID", "Division", "Author", "Editor", "Institution")
+                .get().then((data: any) => {
+
+                    HrGmbhEmployeData = data;
                     let URL: any[] = JSON.parse(data.SocialMediaUrls != null ? data.SocialMediaUrls : ["{}"]);
                     setURLs(URL);
                     // if (data?.Institution != null && data?.Institution!=undefined) {
                     //    setCurrentInstitute(data?.Institution);
                     // }
                     data.Item_x002d_Image = data?.Item_x0020_Cover;
-                   
-                    if(data?.SmartContactId!=undefined){
+
+                    if (data?.SmartContactId != undefined) {
                         JointDetails(data)
-                    }else{
+                    } else {
                         setUpdateData(data)
                     }
-                
-                    
-                }).catch((error:any)=>{
+
+
+                }).catch((error: any) => {
                     console.log(error)
                 });
-          
-           
-           
+
+
+
         } catch (error) {
             console.log("Error:", error.message);
-        }  
+        }
     }
-    const JointDetails = async (siteData:any) => {
+    const JointDetails = async (siteData: any) => {
         try {
             let web = new Web(myContextData2?.allListId?.jointSiteUrl);
-           await web.lists.getById(myContextData2?.allListId?.HHHHContactListId)
+            await web.lists.getById(myContextData2?.allListId?.HHHHContactListId)
                 .items.getById(siteData?.SmartContactId)
                 .select("Id", "Title", "FirstName", "FullName", "Department", "Company", "WorkCity", "Suffix", "WorkPhone", "HomePhone", "Comments", "WorkAddress", "WorkFax", "WorkZip", "Site", "ItemType", "JobTitle", "Item_x0020_Cover", "WebPage", "Site", "CellPhone", "Email", "LinkedIn", "Created", "SocialMediaUrls", "SmartCountries/Title", "SmartCountries/Id", "Author/Title", "Modified", "Editor/Title", "Division/Title", "Division/Id", "EmployeeID/Title", "StaffID", "EmployeeID/Id", "Institution/Id", "Institution/FullName", "IM")
                 .expand("EmployeeID", "Division", "Author", "Editor", "SmartCountries", "Institution")
-              .get().then((data:any)=>{
-                // data.map((Item: any) => {
+                .get().then((data: any) => {
+                    // data.map((Item: any) => {
                     data.SitesTagged = ''
                     if (data.Site != null) {
                         if (data.Site.length >= 0) {
@@ -175,13 +175,13 @@ const HHHHEditComponent = (props: any) => {
                             })
                         }
                     }
-                // })
-                
-                siteData.Site=data.Site
-                setUpdateData(siteData)
-                JointData=data;
-              });
-          
+                    // })
+
+                    siteData.Site = data.Site
+                    setUpdateData(siteData)
+                    JointData = data;
+                });
+
         } catch (error) {
             console.log("Error:", error.message);
         }
@@ -197,7 +197,7 @@ const HHHHEditComponent = (props: any) => {
                 // let stateData:any=[];
                 if (item.TaxType == "Countries") {
                     countryData.push(item)
-                   
+
                 }
                 else if (item.TaxType == "State") {
                     stateData.push(item)
@@ -231,18 +231,18 @@ const HHHHEditComponent = (props: any) => {
             console.log("error:", error.message);
         }
     };
- //*****************Save for Joint,GMBH,HR Data Update***************************************** */
+    //*****************Save for Joint,GMBH,HR Data Update***************************************** */
     const UpdateDetails = async () => {
         let urlData: any;
-        if(updateData?.WebPage!=undefined){
-            let spliceString = updateData?.WebPage.slice(0, 8)
+        if (updateData?.WebPage != undefined && updateData?.WebPage?.Url != undefined) {
+            let spliceString = updateData?.WebPage?.Url?.slice(0, 8)
             if (spliceString == "https://") {
-                urlData = updateData?.WebPage;
+                urlData = updateData?.WebPage?.Url;
             } else {
-                urlData = "https://" + updateData?.WebPage;
+                urlData = "https://" + updateData?.WebPage?.Url;
             }
         }
-       let SocialUrls: any = {};
+        let SocialUrls: any = {};
         SocialUrls["LinkedIn"] = (updateData?.LinkedIn ? updateData?.LinkedIn : (URLs.length ? URLs[0].LinkedIn : null));
         SocialUrls["Facebook"] = (updateData?.Facebook ? updateData?.Facebook : (URLs.length ? URLs[0].Facebook : null));
         SocialUrls["Twitter"] = (updateData?.Twitter ? updateData?.Twitter : (URLs.length ? URLs[0].Twitter : null));
@@ -251,53 +251,53 @@ const HHHHEditComponent = (props: any) => {
         UrlData.push(SocialUrls);
         try {
 
-           let postData:any= {
-                Title: (updateData?.Title ),
-                FirstName: (updateData?.FirstName ),
-                Suffix: (updateData?.Suffix ),
-                JobTitle: (updateData?.JobTitle ),
-                FullName: (updateData?.FirstName ) + " " + (updateData?.Title ),
-                InstitutionId: (updateData?.Institution!=undefined? updateData?.Institution?.Id :null),
-                Email: (updateData?.Email ),
-                Department: (updateData?.Department ),
-                WorkPhone: (updateData?.WorkPhone ),
-                CellPhone: (updateData?.CellPhone ),
-                HomePhone: (updateData?.HomePhone ),
+            let postData: any = {
+                Title: (updateData?.Title),
+                FirstName: (updateData?.FirstName),
+                Suffix: (updateData?.Suffix),
+                JobTitle: (updateData?.JobTitle),
+                FullName: (updateData?.FirstName) + " " + (updateData?.Title),
+                InstitutionId: (updateData?.Institution != undefined ? updateData?.Institution?.Id : null),
+                Email: (updateData?.Email),
+                Department: (updateData?.Department),
+                WorkPhone: (updateData?.WorkPhone),
+                CellPhone: (updateData?.CellPhone),
+                HomePhone: (updateData?.HomePhone),
                 WorkCity: (updateData?.WorkCity),
                 WorkAddress: (updateData?.WorkAddress),
-                DOJ:updateData?.DOJ!=undefined?new Date(updateData?.DOJ).toISOString():null,
-                DOE:updateData?.DOE!=undefined?new Date(updateData?.DOE).toISOString():null,
+                DOJ: updateData?.DOJ != undefined ? new Date(updateData?.DOJ).toISOString() : null,
+                DOE: updateData?.DOE != undefined ? new Date(updateData?.DOE).toISOString() : null,
                 WebPage: {
                     "__metadata": { type: "SP.FieldUrlValue" },
                     Description: "Description",
                     Url: updateData?.WebPage ? urlData : (updateData?.WebPage ? updateData?.WebPage.Url : null)
                 },
-                Item_x0020_Cover:{
+                Item_x0020_Cover: {
                     "__metadata": { type: "SP.FieldUrlValue" },
                     Description: "Description",
-                    Url: updateData?.Item_x002d_Image!=undefined ? updateData?.Item_x002d_Image?.Url : (updateData?.Item_x0020_Cover!=undefined?updateData?.Item_x0020_Cover?.Url:null)
+                    Url: updateData?.Item_x002d_Image != undefined ? updateData?.Item_x002d_Image?.Url : (updateData?.Item_x0020_Cover != undefined ? updateData?.Item_x0020_Cover?.Url : null)
                 },
-                WorkZip: (updateData?.WorkZip ),
-                IM: (updateData?.Skype ),
+                WorkZip: (updateData?.WorkZip),
+                IM: (updateData?.Skype),
                 SocialMediaUrls: JSON.stringify(UrlData),
                 SmartCountriesId: {
-                    results:updateData?.SmartCountries?.length>0?[updateData?.SmartCountries[0]?.Id ]: []
+                    results: updateData?.SmartCountries?.length > 0 ? [updateData?.SmartCountries[0]?.Id] : []
                 }
             }
             if (updateData?.Id != undefined) {
                 let web = new Web(myContextData2?.allListId?.jointSiteUrl);
-                await web.lists.getById(myContextData2?.allListId?.HHHHContactListId).items.getById(myContextData2?.allSite?.GMBHSite||myContextData2?.allSite?.HrSite?JointData?.Id:updateData?.Id).update(postData).then((e) => {
+                await web.lists.getById(myContextData2?.allListId?.HHHHContactListId).items.getById(myContextData2?.allSite?.GMBHSite || myContextData2?.allSite?.HrSite ? JointData?.Id : updateData?.Id).update(postData).then((e) => {
                     console.log("Your information has been updated successfully");
-               if(myContextData2?.allSite?.GMBHSite){
-                UpdateGmbhDetails(postData);
-               
-               }else{
-                callBack();
-               }
-              });
-             
+                    if (myContextData2?.allSite?.GMBHSite) {
+                        UpdateGmbhDetails(postData);
+
+                    } else {
+                        callBack();
+                    }
+                });
+
             }
-           } catch (error) {
+        } catch (error) {
             console.log("Error:", error.message);
         }
         if (updateData?.Site?.toString().search("HR") >= 0) {
@@ -305,19 +305,19 @@ const HHHHEditComponent = (props: any) => {
             callBack();
         }
 
-       
+
 
     }
 
- //********************End Save for Joint,GMBH,HR Data Update ************************************ */
+    //********************End Save for Joint,GMBH,HR Data Update ************************************ */
 
 
 
     // ************************Update GMBH fUNCTION ***********************
 
-   const UpdateGmbhDetails= async(postData:any)=>{
+    const UpdateGmbhDetails = async (postData: any) => {
 
-         delete(postData?.Department)
+        delete (postData?.Department)
         // let updateGmbhData:any={
         //     Title: (updateData.Title ),
         //     FirstName: (updateData.FirstName),
@@ -332,23 +332,23 @@ const HHHHEditComponent = (props: any) => {
         //     WorkAddress: (updateData.WorkAddress ),
         //     WorkZip: (updateData.WorkZip ),
         //     IM: (updateData.IM ),
-           
+
         // }
         let web = new Web('https://hhhhteams.sharepoint.com/sites/HHHH/GmBH');
-      await web.lists.getById('6CE99A82-F577-4467-9CDA-613FADA2296F').items.getById(updateData.Id).update(postData).then((e:any) => {
-       console.log("request success", e);
-       callBack();
-       }).catch((error:any)=>{
-        console.log(error)
-       })
-        
+        await web.lists.getById('6CE99A82-F577-4467-9CDA-613FADA2296F').items.getById(updateData.Id).update(postData).then((e: any) => {
+            console.log("request success", e);
+            callBack();
+        }).catch((error: any) => {
+            console.log(error)
+        })
+
 
     }
 
-  // ************************End Update GMBH fUNCTION ***********************
+    // ************************End Update GMBH fUNCTION ***********************
 
 
-   //*************************UpdateHr Deatils   Function ***************************** */
+    //*************************UpdateHr Deatils   Function ***************************** */
     const updateHrDetails = async () => {
         let Id: any = HrTagData[0].ID;
         try {
@@ -383,34 +383,34 @@ const HHHHEditComponent = (props: any) => {
         }
         alert("Your information has been updated successfully")
     }
- //************************* End UpdateHr Deatils   Function ***************************** */
+    //************************* End UpdateHr Deatils   Function ***************************** */
 
 
     //*******************Delete function***************************  */
     const deleteUserDtl = async () => {
         try {
             if (confirm("Are you sure, you want to delete this?")) {
-                 if(myContextData2?.allSite?.MainSite){
+                if (myContextData2?.allSite?.MainSite) {
                     let web = new Web(myContextData2?.allListId?.jointSiteUrl);
-                    await web.lists.getById(myContextData2?.allListId?.HHHHContactListId).items.getById(myContextData2?.allSite?.GMBHSite||myContextData2?.allSite?.HrSite?JointData?.Id:updateData?.Id).recycle().then(async(data:any)=>{
-                        if(myContextData2?.allSite?.GMBHSite||myContextData2?.allSite?.HrSite){
+                    await web.lists.getById(myContextData2?.allListId?.HHHHContactListId).items.getById(myContextData2?.allSite?.GMBHSite || myContextData2?.allSite?.HrSite ? JointData?.Id : updateData?.Id).recycle().then(async (data: any) => {
+                        if (myContextData2?.allSite?.GMBHSite || myContextData2?.allSite?.HrSite) {
                             let web = new Web(myContextData2?.allListId?.siteUrl);
-                            await web.lists.getById(myContextData2?.allSite?.GMBHSite ? myContextData2?.allListId?.GMBH_CONTACT_SEARCH_LISTID : myContextData2?.allListId?.HR_EMPLOYEE_DETAILS_LIST_ID).items.getById(updateData.Id).recycle(); 
-                         }
-                    }).catch(async(error:any)=>{
+                            await web.lists.getById(myContextData2?.allSite?.GMBHSite ? myContextData2?.allListId?.GMBH_CONTACT_SEARCH_LISTID : myContextData2?.allListId?.HR_EMPLOYEE_DETAILS_LIST_ID).items.getById(updateData.Id).recycle();
+                        }
+                    }).catch(async (error: any) => {
                         console.log(error)
-                       
+
                     });
-                 }
-                
-                if(myContextData2?.allSite?.GMBHSite||myContextData2?.allSite?.HrSite){
+                }
+
+                if (myContextData2?.allSite?.GMBHSite || myContextData2?.allSite?.HrSite) {
                     let web = new Web(myContextData2?.allListId?.siteUrl);
-                    await web.lists.getById(myContextData2?.allSite?.GMBHSite ? myContextData2?.allListId?.GMBH_CONTACT_SEARCH_LISTID : myContextData2?.allListId?.HR_EMPLOYEE_DETAILS_LIST_ID).items.getById(updateData.Id).recycle(); 
-                 }
-             
-            
-            //  props.userUpdateFunction();
-            callBack();
+                    await web.lists.getById(myContextData2?.allSite?.GMBHSite ? myContextData2?.allListId?.GMBH_CONTACT_SEARCH_LISTID : myContextData2?.allListId?.HR_EMPLOYEE_DETAILS_LIST_ID).items.getById(updateData.Id).recycle();
+                }
+
+
+                //  props.userUpdateFunction();
+                callBack();
             }
         } catch (error) {
             console.log("Error:", error.message);
@@ -427,7 +427,7 @@ const HHHHEditComponent = (props: any) => {
             countryPopup: false,
             statePopup: false
         })
-       
+
     }
     const openCountry = (item: any) => {
         setStatus({
@@ -436,39 +436,39 @@ const HHHHEditComponent = (props: any) => {
             statePopup: false
         })
     }
-    const CloseOrgPopup = useCallback((data:any) => {
+    const CloseOrgPopup = useCallback((data: any) => {
         setStatus({ ...status, orgPopup: false })
-        if(data!=undefined){
+        if (data != undefined) {
             setUpdateData(data);
         }
-       
+
     }, []);
-    const CloseCountryPopup = useCallback((data:any) => {
+    const CloseCountryPopup = useCallback((data: any) => {
         setStatus({ ...status, countryPopup: false })
         // setCountryPopup(false);
-        if(data!=undefined){
+        if (data != undefined) {
             setUpdateData(data);
         }
     }, []);
- 
-//     const selectedCountryStatus = useCallback((item: any) => {
-//           setCurrentCountry(item);
-//      let backupdata=JSON.parse(JSON.stringify(updateData));
-//         // setInstituteStatus(true);
-//        backupdata={
-//           ...backupdata,...{
-//         SmartCountriesId: item[0].Id,
-          
-//        }
-//    } 
-//    setUpdateData(backupdata);
-       
 
-//     }, [])
- //****************************  End Open organation popup & Country popup All callback and openPOPUP handle */
+    //     const selectedCountryStatus = useCallback((item: any) => {
+    //           setCurrentCountry(item);
+    //      let backupdata=JSON.parse(JSON.stringify(updateData));
+    //         // setInstituteStatus(true);
+    //        backupdata={
+    //           ...backupdata,...{
+    //         SmartCountriesId: item[0].Id,
+
+    //        }
+    //    } 
+    //    setUpdateData(backupdata);
 
 
- //**********Hr smalsus functionality popup */
+    //     }, [])
+    //****************************  End Open organation popup & Country popup All callback and openPOPUP handle */
+
+
+    //**********Hr smalsus functionality popup */
     const changeHrTabBtnStatus = (e: any, btnName: any) => {
         if (btnName == "personal-info") {
             setHrBtnStatus({ ...hrBtnStatus, personalInfo: true, bankInfo: false, taxInfo: false, qualificationInfo: false, socialSecurityInfo: false })
@@ -525,7 +525,7 @@ const HHHHEditComponent = (props: any) => {
         return (
             <>
                 <div className='subheading alignCenter'>
-                    <img className='workmember' src={updateData?.Item_x0020_Cover != undefined ? updateData?.Item_x0020_Cover.Url : "NA"} />Edit Contact - {updateData?.FullName}
+                    <img className='workmember' src={updateData?.Item_x0020_Cover != undefined ? updateData?.Item_x0020_Cover.Url : "https://hhhhteams.sharepoint.com/sites/HHHH/GmBH/SiteCollectionImages/ICONS/32/icon_user.jpg"} />Edit Contact - {updateData?.FullName}
                 </div>
                 <Tooltip ComponentId='3433' />
             </>
@@ -535,9 +535,9 @@ const HHHHEditComponent = (props: any) => {
     //***************image information call back Function***********************************/
     function imageta() {
         setImagetab(true);
-      }
+    }
     const imageTabCallBack = React.useCallback((data: any) => {
-        
+
         // setUpdateData(data);
         console.log(updateData);
         console.log(data);
@@ -557,7 +557,7 @@ const HHHHEditComponent = (props: any) => {
                 <div>
                     <div className="modal-body mb-5">
                         <ul className="fixed-Header nav nav-tabs" id="myTab" role="tablist">
-                           
+
 
                             <button className="nav-link active"
                                 id="BASIC-INFORMATION"
@@ -577,36 +577,36 @@ const HHHHEditComponent = (props: any) => {
                                 onClick={(e) => {
                                     e.stopPropagation();
                                     imageta()
-                                  }}
+                                }}
                                 aria-selected="true">IMAGE INFORMATION</button>
                             {siteTaggedHR &&
-                            <button className="nav-link" id="HR-Tab"
-                                data-bs-toggle="tab"
-                                data-bs-target="#HR"
-                                type="button"
-                                role="tab"
-                                aria-controls="HR"
-                                aria-selected="true">HR</button>}
-                            {siteTaggedSMALSUS&&<button className="nav-link" id="SMALSUS-Tab"
+                                <button className="nav-link" id="HR-Tab"
+                                    data-bs-toggle="tab"
+                                    data-bs-target="#HR"
+                                    type="button"
+                                    role="tab"
+                                    aria-controls="HR"
+                                    aria-selected="true">HR</button>}
+                            {siteTaggedSMALSUS && <button className="nav-link" id="SMALSUS-Tab"
                                 data-bs-toggle="tab"
                                 data-bs-target="#SMALSUS"
                                 type="button"
                                 role="tab"
                                 aria-controls="SMALSUS"
                                 aria-selected="true">SMALSUS</button>}
- 
+
                         </ul>
 
-                       
+
                         <div className="border border-top-0 clearfix p-3 tab-content " id="myTabContent">
                             <div className="tab-pane show active" id="BASICINFORMATION" role="tabpanel" aria-labelledby="BASICINFORMATION">
                                 <div className='general-section'>
                                     <div className="card">
-                                        <div className="card-header">
+                                        <div className="card-header fw-semibold">
                                             General
                                         </div>
                                         <div className="card-body">
-                                            <div className="user-form-5">
+                                            <div className="user-form-5 row mb-3">
                                                 <div className="col">
                                                     <div className='input-group'>
                                                         <label className='full-width label-form'>First Name </label>
@@ -649,18 +649,18 @@ const HHHHEditComponent = (props: any) => {
                                                 </div>
 
                                             </div>
-                                            <div className="user-form-4 mt-2">
+                                            <div className="user-form-4 row mb-3">
                                                 <div className="col">
                                                     <div className='input-group'>
                                                         <label className="full-width label-form">Organization</label>
                                                         {updateData?.Institution?.FullName ?
                                                             <div className="block wid90 alignCenter">
                                                                 <a className="hreflink" target="_blank"> {updateData?.Institution?.FullName}</a>
-                                                                <span className="bg-light svg__icon--cross svg__iconbox hreflink ml-auto" onClick={()=>setUpdateData({ ...updateData, Institution:{} })}></span>
-                                                            </div> :<input type='text'/>
-                                                          
+                                                                <span className="bg-light svg__icon--cross svg__iconbox hreflink ml-auto" onClick={() => setUpdateData({ ...updateData, Institution: undefined })}></span>
+                                                            </div> : <input type='text' />
+
                                                         }
-                                                       
+
                                                         <span className="input-group-text" title="Select Organisation">
                                                             <span onClick={() => openOrg()} className="svg__iconbox svg__icon--editBox"></span>
                                                         </span>
@@ -679,11 +679,11 @@ const HHHHEditComponent = (props: any) => {
                                                 </div>
                                                 <div className="col pad0">
                                                     <label className="full_width form-label"> D.O.J</label>
-                                                    <div> <input type="date" value={moment(updateData?.DOJ).format('YYYY-MM-DD') } onChange={(e)=>setUpdateData({...updateData,DOJ:moment(e.target.value).format('YYYY-MM-DD') })} /></div>
+                                                    <div> <input type="date" value={updateData?.DOJ != undefined ? moment(updateData?.DOJ).format('YYYY-MM-DD') : null} onChange={(e) => setUpdateData({ ...updateData, DOJ: moment(e.target.value).format('YYYY-MM-DD') })} /></div>
                                                 </div>
                                                 <div className="col pad0">
                                                     <label className="full_width form-label"> D.O.E</label>
-                                                    <div><input type='date' value={moment(updateData?.DOE).format('YYYY-MM-DD') } onChange={(e)=>setUpdateData({...updateData,DOE:moment(e.target.value).format('YYYY-MM-DD') })} /></div>
+                                                    <div><input type='date' value={updateData?.DOE != undefined ? moment(updateData?.DOE).format('YYYY-MM-DD') : null} onChange={(e) => setUpdateData({ ...updateData, DOE: moment(e.target.value).format('YYYY-MM-DD') })} /></div>
                                                 </div>
                                             </div>
                                         </div>
@@ -691,11 +691,11 @@ const HHHHEditComponent = (props: any) => {
                                 </div>
                                 <div className="Social-media-account my-2">
                                     <div className="card">
-                                        <div className="card-header">
+                                        <div className="card-header fw-semibold">
                                             Social Media Accounts
                                         </div>
                                         <div className="card-body">
-                                            <div className="user-form-4">
+                                            <div className="user-form-4 row">
                                                 <div className="col" >
                                                     <div className='input-group'>
                                                         <label className="full-width label-form">LinkedIn</label>
@@ -727,11 +727,11 @@ const HHHHEditComponent = (props: any) => {
                                 </div>
                                 <div className="Contact-details my-2">
                                     <div className="card">
-                                        <div className="card-header">
+                                        <div className="card-header fw-semibold">
                                             Contacts
                                         </div>
                                         <div className="card-body">
-                                            <div className="user-form-5">
+                                            <div className="user-form-5 row mb-3">
                                                 <div className="col">
                                                     <div className='input-group'>
                                                         <label className="full-width label-form">Business Phone</label>
@@ -758,7 +758,7 @@ const HHHHEditComponent = (props: any) => {
                                                         <input type="text" className="form-control" defaultValue={updateData?.WorkAddress ? updateData?.WorkAddress : ''} onChange={(e) => setUpdateData({ ...updateData, WorkAddress: e.target.value })} aria-label="Address" />
                                                     </div></div>
                                             </div>
-                                            <div className="user-form-5 mt-2">
+                                            <div className="user-form-5 row mb-3">
                                                 <div className="col">
                                                     <div className='input-group'>
                                                         <label className="full-width label-form">Skpye</label>
@@ -775,7 +775,7 @@ const HHHHEditComponent = (props: any) => {
                                                     <div className='input-group'>
                                                         <label className="full-width label-form">WebPage</label>
 
-                                                        <input className="form-control" type="text" defaultValue={updateData?.WebPage ? updateData?.WebPage.Url : ""} onChange={(e) => setUpdateData({ ...updateData, WebPage: e.target.value })} aria-label="WebPage" />
+                                                        <input className="form-control" type="text" defaultValue={updateData?.WebPage ? updateData?.WebPage.Url : ""} onChange={(e) => setUpdateData({ ...updateData, WebPage:{...updateData.WebPage,Url: e.target.value}} )} aria-label="WebPage" />
                                                     </div>
                                                 </div>
                                                 <div className="col">
@@ -786,17 +786,17 @@ const HHHHEditComponent = (props: any) => {
                                                 <div className="col">
                                                     <div className='input-group'>
                                                         <label className="full-width label-form">Country</label>
-                                                            
-                                                           {updateData?.SmartCountries?.length>0?<div className="block wid90 alignCenter">
-                                                                <a className="hreflink" target="_blank">{updateData?.SmartCountries?.[0]?.Title}</a>
-                                                                <span
-                                                                 onClick={() =>setUpdateData({...updateData,SmartCountries:[]})}
-                                                                    className="bg-light ml-auto svg__icon--cross svg__iconbox"></span>
-                                                            </div>:<input type='text'></input>} 
-                                                            
-                                                            <span className="input-group-text" title="Smart Category Popup">
-                                                                <span onClick={() => openCountry(updateData?.SmartCountries)}className="svg__iconbox svg__icon--editBox"></span>
-                                                            </span></div>
+
+                                                        {updateData?.SmartCountries?.length > 0 ? <div className="block wid90 alignCenter">
+                                                            <a className="hreflink" target="_blank">{updateData?.SmartCountries?.[0]?.Title}</a>
+                                                            <span
+                                                                onClick={() => setUpdateData({ ...updateData, SmartCountries: [] })}
+                                                                className="bg-light ml-auto svg__icon--cross svg__iconbox"></span>
+                                                        </div> : <input type='text'></input>}
+
+                                                        <span className="input-group-text" title="Smart Category Popup">
+                                                            <span onClick={() => openCountry(updateData?.SmartCountries)} className="svg__iconbox svg__icon--editBox"></span>
+                                                        </span></div>
                                                 </div>
                                             </div>
                                         </div>
@@ -805,32 +805,87 @@ const HHHHEditComponent = (props: any) => {
                             </div>
                             <div className="tab-pane" id="IMAGEINFORMATION" role="tabpanel" aria-labelledby="IMAGEINFORMATION">
                                 <div className="row col-sm-12">
-                                {imagetab && (
-                      <ImagesC
-                        EditdocumentsData={updateData}
-                        setData={setUpdateData}
-                        AllListId={myContextData2?.allListId}
-                        Context={myContextData2?.allListId?.Context}
-                        callBack={imageTabCallBack}
-                      />
-                    )}
-                                    </div>
+                                    {imagetab && (
+                                        <ImagesC
+                                            EditdocumentsData={updateData}
+                                            setData={setUpdateData}
+                                            AllListId={myContextData2?.allListId}
+                                            Context={myContextData2?.allListId?.Context}
+                                            callBack={imageTabCallBack}
+                                        />
+                                    )}
+                                </div>
                             </div>
                             <div className="tab-pane" id="HR" role="tabpanel" aria-labelledby="HR">
-                                <div className="card">
-                                    <div className="card-header">
-                                        <button className={hrBtnStatus.personalInfo ? 'hr-tab-btn-active' : 'hr-tab-btn'} onClick={(e) => changeHrTabBtnStatus(e, "personal-info")}>PERSONAL INFORMATION</button>
+                                {/* <button className={hrBtnStatus.personalInfo ? 'hr-tab-btn-active' : 'hr-tab-btn'} onClick={(e) => changeHrTabBtnStatus(e, "personal-info")}>PERSONAL INFORMATION</button>
                                         <button className={hrBtnStatus.bankInfo ? 'hr-tab-btn-active' : 'hr-tab-btn'} onClick={(e) => changeHrTabBtnStatus(e, "bank-info")}>BANK INFORMATION</button>
                                         <button className={hrBtnStatus.taxInfo ? 'hr-tab-btn-active' : 'hr-tab-btn'} onClick={(e) => changeHrTabBtnStatus(e, "tax-info")}>TAX INFORMATION</button>
                                         <button className={hrBtnStatus.socialSecurityInfo ? 'hr-tab-btn-active' : 'hr-tab-btn'} onClick={(e) => changeHrTabBtnStatus(e, "social-security-info")}>SOCIAL SECURITY INFORMATION</button>
-                                        <button className={hrBtnStatus.qualificationInfo ? 'hr-tab-btn-active' : 'hr-tab-btn'} onClick={(e) => changeHrTabBtnStatus(e, "qualification-info")}>QUALIFICATIONS</button>
-                                    </div>
-                                    <div className="card-body">
-                                        {HrTagData?.map((item: any, index) => {
-                                            return (
-                                                <div key={index}>
+                                        <button className={hrBtnStatus.qualificationInfo ? 'hr-tab-btn-active' : 'hr-tab-btn'} onClick={(e) => changeHrTabBtnStatus(e, "qualification-info")}>QUALIFICATIONS</button> */}
+                                <ul className="fixed-Header nav nav-tabs" id="myTab" role="tablist">
+                                    <button
+                                        className="nav-link active"
+                                        id="PERSONALIN-FORMATION1"
+                                        data-bs-toggle="tab"
+                                        data-bs-target="#PERSONALINFORMATION1"
+                                        type="button"
+                                        role="tab"
+                                        aria-controls="PERSONALINFORMATION1"
+                                        aria-selected="true">
+                                        PERSONAL INFORMATION
+                                    </button>
+                                    <button
+                                        className="nav-link"
+                                        id="BANK-INFORMATION1"
+                                        data-bs-toggle="tab"
+                                        data-bs-target="#BANKINFORMATION1"
+                                        type="button"
+                                        role="tab"
+                                        aria-controls="BANKINFORMATION1"
+                                        aria-selected="false">
+                                        BANK INFORMATION
+                                    </button>
+                                    <button
+                                        className="nav-link"
+                                        id="TAX-INFORMATION1"
+                                        data-bs-toggle="tab"
+                                        data-bs-target="#TAXINFORMATION1"
+                                        type="button"
+                                        role="tab"
+                                        aria-controls="TAXINFORMATION1"
+                                        aria-selected="false">
+                                        TAX INFORMATION
+                                    </button>
+                                    <button
+                                        className="nav-link"
+                                        id="SOCIALSECURITY-INFORMATION1"
+                                        data-bs-toggle="tab"
+                                        data-bs-target="#SOCIALSECURITYINFORMATION1"
+                                        type="button"
+                                        role="tab"
+                                        aria-controls="SOCIALSECURITYINFORMATION1"
+                                        aria-selected="false">
+                                        SOCIAL SECURITY INFORMATION
+                                    </button>
+                                    <button
+                                        className="nav-link"
+                                        id="QUALIFICATIONS-Tab1"
+                                        data-bs-toggle="tab"
+                                        data-bs-target="#QUALIFICATIONS1"
+                                        type="button"
+                                        role="tab"
+                                        aria-controls="QUALIFICATIONS1"
+                                        aria-selected="false">
+                                        QUALIFICATIONS
+                                    </button>
+                                </ul>
+                                <div className="border border-top-0 clearfix p-3 tab-content" id="myTabContent">
+                                    {HrTagData?.map((item: any, index) => {
+                                        return (
+                                            <>
+                                                <div className="tab-pane show active" id="PERSONALINFORMATION1" role="tabpanel" aria-labelledby="PERSONALINFORMATION">
                                                     {hrBtnStatus.personalInfo ? <div>
-                                                        <div className='user-form-3'>
+                                                        <div className='user-form-3 row'>
                                                             <div className="col">
                                                                 <label className="full-width label-form">Federal state </label>
                                                                 <div className='d-flex org-section'>
@@ -861,7 +916,7 @@ const HHHHEditComponent = (props: any) => {
                                                                         defaultValue={item.dateOfBirth ? Moment(item.dateOfBirth).format("YYYY-MM-DD") : ''} onChange={(e) => setHrUpdateData({ ...HrUpdateData, dateOfBirth: Moment(e.target.value).format("YYYY-MM-DD") })} />
                                                                 </div></div>
                                                         </div>
-                                                        <div className='user-form-3'>
+                                                        <div className='user-form-3 row'>
                                                             <div className="col">
                                                                 <div className='input-group'>
                                                                     <label className="full-width label-form">Place of birth</label>
@@ -891,10 +946,11 @@ const HHHHEditComponent = (props: any) => {
                                                                 </div>
                                                             </div>
                                                         </div>
-                                                    </div> : null}
+                                                    </div> : null}</div>
+                                                <div className="tab-pane" id="BANKINFORMATION1" role="tabpanel" aria-labelledby="BANKINFORMATION1">
                                                     {hrBtnStatus.bankInfo ?
                                                         <div className="card-body">
-                                                            <div className='user-form-2'>
+                                                            <div className='user-form-2 row'>
                                                                 <div className="col">
                                                                     <div className='input-group'>
                                                                         <label className="full-width label-form">IBAN</label>
@@ -906,10 +962,11 @@ const HHHHEditComponent = (props: any) => {
                                                                         <input type="text" className="form-control" defaultValue={item.BIC ? item.BIC : ''} placeholder='Enter BIC' onChange={(e) => setHrUpdateData({ ...HrUpdateData, BIC: e.target.value })} />
                                                                     </div></div>
                                                             </div>
-                                                        </div> : null}
+                                                        </div> : null}</div>
+                                                <div className="tab-pane" id="TAXINFORMATION1" role="tabpanel" aria-labelledby="TAXINFORMATION1">
                                                     {hrBtnStatus.taxInfo ?
                                                         <div className="card-body">
-                                                            <div className='user-form-3'>
+                                                            <div className='user-form-3 row'>
                                                                 <div className="col">
                                                                     <div className='input-group'>
                                                                         <label className="full-width label-form">Tax No.
@@ -964,7 +1021,7 @@ const HHHHEditComponent = (props: any) => {
                                                                     </div>
                                                                 </div>
                                                             </div>
-                                                            <div className='user-form-2'>
+                                                            <div className='user-form-2 row'>
                                                                 <div className="col">
                                                                     <div className='input-group'>
                                                                         <label className="full-width label-form">Church tax</label>
@@ -980,9 +1037,10 @@ const HHHHEditComponent = (props: any) => {
                                                                     </div></div>
 
                                                             </div>
-                                                        </div> : null}
+                                                        </div> : null}</div>
+                                                <div className="tab-pane" id="SOCIALSECURITYINFORMATION1" role="tabpanel" aria-labelledby="SOCIALSECURITYINFORMATION1">
                                                     {hrBtnStatus.socialSecurityInfo ? <div className="card-body">
-                                                        <div className='user-form-3'>
+                                                        <div className='user-form-3 row'>
 
                                                             <div className="col">
                                                                 <div className='input-group'>
@@ -1010,10 +1068,11 @@ const HHHHEditComponent = (props: any) => {
                                                                 </div></div>
                                                         </div>
 
-                                                    </div> : null}
+                                                    </div> : null}</div>
+                                                <div className="tab-pane" id="QUALIFICATIONS1" role="tabpanel" aria-labelledby="QUALIFICATIONS1">
                                                     {hrBtnStatus.qualificationInfo ?
                                                         <div className='card-body'>
-                                                            <div className='user-form-2'>
+                                                            <div className='user-form-2 row'>
                                                                 <div className="col">
                                                                     <div className='input-group'>
                                                                         <label className="full-width label-form">Highest school diploma
@@ -1027,7 +1086,7 @@ const HHHHEditComponent = (props: any) => {
                                                                         <input type="text" className="form-control" placeholder='Enter Highest vocational education' defaultValue={item.highestVocationalEducation ? item.highestVocationalEducation : ''} onChange={(e) => setHrUpdateData({ ...HrUpdateData, highestVocationalEducation: e.target.value })} />
                                                                     </div></div>
                                                             </div>
-                                                            <div className='user-form-2'>
+                                                            <div className='user-form-2 row'>
                                                                 <div className="col">
                                                                     <div className='input-group'>
                                                                         <label className="full-width label-form">Other qualifications
@@ -1044,26 +1103,81 @@ const HHHHEditComponent = (props: any) => {
                                                             </div>
                                                         </div> : null}
                                                 </div>
-                                            )
-                                        })}
-                                    </div>
+                                            </>
+                                        )
+                                    })}
                                 </div>
                             </div>
                             <div className="tab-pane" id="SMALSUS" role="tabpanel" aria-labelledby="SMALSUS">
-                                <div className="card">
-                                    <div className="card-header">
+                                <div>
+                                    {/* <div className="card-header">
                                         <button className={SmalsusBtnStatus.personalInfo ? 'hr-tab-btn-active' : 'hr-tab-btn'} onClick={(e) => changeSmalsusTabBtnStatus(e, "personal-info")}>PERSONAL INFORMATION</button>
                                         <button className={SmalsusBtnStatus.bankInfo ? 'hr-tab-btn-active' : 'hr-tab-btn'} onClick={(e) => changeSmalsusTabBtnStatus(e, "bank-info")}>BANK INFORMATION</button>
                                         <button className={SmalsusBtnStatus.taxInfo ? 'hr-tab-btn-active' : 'hr-tab-btn'} onClick={(e) => changeSmalsusTabBtnStatus(e, "tax-info")}>TAX INFORMATION</button>
                                         <button className={SmalsusBtnStatus.socialSecurityInfo ? 'hr-tab-btn-active' : 'hr-tab-btn'} onClick={(e) => changeSmalsusTabBtnStatus(e, "social-security-info")}>SOCIAL SECURITY INFORMATION</button>
                                         <button className={SmalsusBtnStatus.qualificationInfo ? 'hr-tab-btn-active' : 'hr-tab-btn'} onClick={(e) => changeSmalsusTabBtnStatus(e, "qualification-info")}>QUALIFICATIONS</button>
-                                    </div>
-                                    <div className="card-body">
-
-                                        <div>
+                                    </div> */}
+                                    <ul className="fixed-Header nav nav-tabs" id="myTab" role="tablist">
+                                        <button
+                                            className="nav-link active"
+                                            id="PERSONALIN-FORMATION"
+                                            data-bs-toggle="tab"
+                                            data-bs-target="#PERSONALINFORMATION"
+                                            type="button"
+                                            role="tab"
+                                            aria-controls="PERSONALINFORMATION"
+                                            aria-selected="true">
+                                            PERSONAL INFORMATION
+                                        </button>
+                                        <button
+                                            className="nav-link"
+                                            id="BANK-INFORMATION"
+                                            data-bs-toggle="tab"
+                                            data-bs-target="#BANKINFORMATION"
+                                            type="button"
+                                            role="tab"
+                                            aria-controls="BANKINFORMATION"
+                                            aria-selected="false">
+                                            BANK INFORMATION
+                                        </button>
+                                        <button
+                                            className="nav-link"
+                                            id="TAX-INFORMATION"
+                                            data-bs-toggle="tab"
+                                            data-bs-target="#TAXINFORMATION"
+                                            type="button"
+                                            role="tab"
+                                            aria-controls="TAXINFORMATION"
+                                            aria-selected="false">
+                                            TAX INFORMATION
+                                        </button>
+                                        <button
+                                            className="nav-link"
+                                            id="SOCIALSECURITYIN-FORMATION"
+                                            data-bs-toggle="tab"
+                                            data-bs-target="#SOCIALSECURITYINFORMATION"
+                                            type="button"
+                                            role="tab"
+                                            aria-controls="SOCIALSECURITYINFORMATION"
+                                            aria-selected="false">
+                                            SOCIAL SECURITY INFORMATION
+                                        </button>
+                                        <button
+                                            className="nav-link"
+                                            id="QUALIFICATIONS-Tab"
+                                            data-bs-toggle="tab"
+                                            data-bs-target="#QUALIFICATIONS"
+                                            type="button"
+                                            role="tab"
+                                            aria-controls="QUALIFICATIONS"
+                                            aria-selected="false">
+                                            QUALIFICATIONS
+                                        </button>
+                                    </ul>
+                                    <div className="border border-top-0 clearfix p-3 tab-content " id="myTabContent" >
+                                        <div className="tab-pane show active" id="PERSONALINFORMATION" role="tabpanel" aria-labelledby="PERSONALINFORMATION">
                                             {SmalsusBtnStatus.personalInfo ? <div>
-                                                <div className='user-form-4'>
-
+                                                <div className='user-form-4 row'>
                                                     <div className="col">
                                                         <div className='input-group'>
                                                             <label className='full-width label-form'>Adhar Card No. </label>
@@ -1085,7 +1199,7 @@ const HHHHEditComponent = (props: any) => {
                                                             <input type="text" className="form-control" aria-label="JobTitle" placeholder='Job-Title' />
                                                         </div></div>
                                                 </div>
-                                                <div className='user-form-4'>
+                                                <div className='user-form-4 row'>
                                                     <div className="col">
                                                         <div className='input-group'>
                                                             <label className="full-width label-form">Nationality</label>
@@ -1117,11 +1231,11 @@ const HHHHEditComponent = (props: any) => {
                                                     </div>
                                                 </div>
                                                 <div className='card my-2'>
-                                                    <div className='card-header'>
-                                                        <h3>Permanent Address</h3>
+                                                    <div className='card-header fw-semibold'>
+                                                        Permanent Address
                                                     </div>
                                                     <div className='card-body'>
-                                                        <div className='user-form-4'>
+                                                        <div className='user-form-4 row'>
                                                             <div className="col">
                                                                 <div className='input-group'>
                                                                     <label className="full-width label-form">Country</label>
@@ -1143,7 +1257,7 @@ const HHHHEditComponent = (props: any) => {
                                                                     <input type="text" className="form-control" placeholder='District' />
                                                                 </div></div>
                                                         </div>
-                                                        <div className='user-form-4'>
+                                                        <div className='user-form-4 row'>
 
                                                             <div className="col">
                                                                 <div className='input-group'>
@@ -1169,10 +1283,11 @@ const HHHHEditComponent = (props: any) => {
                                                         </div>
                                                     </div>
                                                 </div>
-                                            </div> : null}
+                                            </div> : null}</div>
+                                        <div className="tab-pane" id="BANKINFORMATION" role="tabpanel" aria-labelledby="BANKINFORMATION">
                                             {SmalsusBtnStatus.bankInfo ?
                                                 <div className="card-body">
-                                                    <div className='user-form-2'>
+                                                    <div className='user-form-2 row'>
                                                         <div className="col">
                                                             <div className='input-group'>
                                                                 <label className='full-width label-form'>Bank Name</label>
@@ -1184,7 +1299,7 @@ const HHHHEditComponent = (props: any) => {
                                                                 <input type="text" className="form-control" placeholder='Account Number' />
                                                             </div></div>
                                                     </div>
-                                                    <div className='user-form-2'>
+                                                    <div className='user-form-2 row'>
                                                         <div className="col">
                                                             <div className='input-group'>
                                                                 <label className="full-width label-form">IFSC</label>
@@ -1196,10 +1311,11 @@ const HHHHEditComponent = (props: any) => {
                                                                 <input type="number" className="form-control" placeholder='Branch Name' />
                                                             </div></div>
                                                     </div>
-                                                </div> : null}
+                                                </div> : null}</div>
+                                        <div className="tab-pane" id="TAXINFORMATION" role="tabpanel" aria-labelledby="TAXINFORMATION">
                                             {SmalsusBtnStatus.taxInfo ?
                                                 <div className="card-body">
-                                                    <div className='user-form-3'>
+                                                    <div className='user-form-3 row'>
                                                         <div className="col">
                                                             <div className='input-group'>
                                                                 <label className="full-width label-form">UN Number
@@ -1220,7 +1336,7 @@ const HHHHEditComponent = (props: any) => {
 
 
                                                     </div>
-                                                    <div className='user-form-2'>
+                                                    <div className='user-form-2 row'>
                                                         <div className="col">
                                                             <div className='input-group'>
                                                                 <label className="full-width label-form">{`(PF) Provident Fund nomination form`}</label>
@@ -1234,10 +1350,11 @@ const HHHHEditComponent = (props: any) => {
 
                                                     </div>
                                                 </div>
-                                                : null}
+                                                : null}</div>
+                                        <div className="tab-pane" id="SOCIALSECURITYINFORMATION" role="tabpanel" aria-labelledby="SOCIALSECURITYINFORMATION">
                                             {SmalsusBtnStatus.socialSecurityInfo ?
                                                 <div className="card-body">
-                                                    <div className='user-form-2'>
+                                                    <div className='user-form-2 row'>
                                                         <div className="col">
                                                             <div className='input-group'>
                                                                 <label className="full-width label-form">Health Insurance Type</label>
@@ -1255,7 +1372,7 @@ const HHHHEditComponent = (props: any) => {
                                                                 <input type="text" className="form-control" placeholder='Enter Company Name' />
                                                             </div></div>
                                                     </div>
-                                                    <div className='user-form-2'>
+                                                    <div className='user-form-2 row'>
                                                         <div className="col">
                                                             <div className='input-group'>
                                                                 <label className="full-width label-form">Health Insurance Number
@@ -1270,10 +1387,11 @@ const HHHHEditComponent = (props: any) => {
                                                             </div></div>
                                                     </div>
 
-                                                </div> : null}
+                                                </div> : null}</div>
+                                        <div className="tab-pane" id="QUALIFICATIONS" role="tabpanel" aria-labelledby="QUALIFICATIONS">
                                             {SmalsusBtnStatus.qualificationInfo ?
                                                 <div className='card-body'>
-                                                    <div className='user-form-2'>
+                                                    <div className='user-form-2 row'>
                                                         <div className="col">
                                                             <div className='input-group'>
                                                                 <label className="full-width label-form">Highest school diploma
@@ -1287,7 +1405,7 @@ const HHHHEditComponent = (props: any) => {
                                                                 <input type="text" className="form-control" placeholder='Enter Highest vocational education' />
                                                             </div></div>
                                                     </div>
-                                                    <div className='user-form-2'>
+                                                    <div className='user-form-2 row'>
                                                         <div className="col">
                                                             <div className='input-group'>
                                                                 <label className="full-width label-form">Other qualifications
@@ -1301,17 +1419,16 @@ const HHHHEditComponent = (props: any) => {
                                                                 <input type="text" className="form-control" />
                                                             </div></div>
                                                     </div>
-                                                </div> : null}
-                                        </div>
+                                                </div> : null}</div>
 
                                     </div>
                                 </div>
                             </div>
                         </div>
                     </div>
-                    {status.orgPopup ? <OrgContactEditPopup callBack={CloseOrgPopup}  updateData={updateData}/> : null}
+                    {status.orgPopup ? <OrgContactEditPopup callBack={CloseOrgPopup} updateData={updateData} /> : null}
                     {status.countryPopup ? <CountryContactEditPopup popupName="Country" selectedCountry={currentCountry} callBack={CloseCountryPopup} data={countryData} updateData={updateData} /> : null}
-                    {status.statePopup ? <CountryContactEditPopup popupName="State"  selectedState={selectedState} callBack={CloseCountryPopup} data={stateData}updateData={updateData} /> : null}
+                    {status.statePopup ? <CountryContactEditPopup popupName="State" selectedState={selectedState} callBack={CloseCountryPopup} data={stateData} updateData={updateData} /> : null}
                 </div >
                 <footer className='bg-f4 fixed-bottom'>
                     <div className='align-items-center d-flex justify-content-between me-3 px-4 py-2'>
@@ -1325,26 +1442,26 @@ const HHHHEditComponent = (props: any) => {
                         </div>
 
                         <div>
-                          
-                           {myContextData2.allSite?.MainSite && <span>
+
+                            {myContextData2.allSite?.MainSite && <span>
                                 <a className="ForAll hreflink" target="_blank" data-interception="off"
-                                    href={`${myContextData2.allSite?.MainSite?myContextData2?.allListId?.jointSiteUrl:myContextData2?.allListId?.siteUrl}/SitePages/contact-Profile.aspx?contactId=${updateData.Id}`}>
+                                    href={`${myContextData2.allSite?.MainSite ? myContextData2?.allListId?.jointSiteUrl : myContextData2?.allListId?.siteUrl}/SitePages/contact-Profile.aspx?contactId=${updateData.Id}`}>
                                     <img className="mb-3 icon_siz19" style={{ marginRight: '3px' }}
                                         src="/_layouts/15/images/ichtm.gif?rev=23" alt="icon" />Go to Profile page
                                 </a>
                             </span>}
-                        
+
                             {myContextData2.allSite?.MainSite && <span>|</span>}
-                            {myContextData2.allSite?.MainSite &&<span>
+                            {myContextData2.allSite?.MainSite && <span>
                                 <a className="ForAll hreflink" target="_blank" data-interception="off"
                                     href={`https://hhhhteams.sharepoint.com/sites/HHHH/SitePages/SmartMetaDataPortfolio.aspx`}>
-                                  Manage Contact-Categories 
+                                    Manage Contact-Categories
                                 </a>
                             </span>}
                             {myContextData2.allSite?.MainSite && <span>|</span>}
 
-                         <a href={`${myContextData2.allSite?.MainSite?myContextData2?.allListId?.jointSiteUrl:myContextData2?.allListId?.siteUrl}/Lists/Contacts/EditForm.aspx?ID=${updateData?.Id}`}  data-interception="off"
-                            target="_blank">Open out-of-the-box form</a> 
+                            <a href={`${myContextData2.allSite?.MainSite ? myContextData2?.allListId?.jointSiteUrl : myContextData2?.allListId?.siteUrl}/Lists/Contacts/EditForm.aspx?ID=${updateData?.Id}`} data-interception="off"
+                                target="_blank">Open out-of-the-box form</a>
 
                             <button className='btn btn-primary ms-1  mx-2'
                                 onClick={UpdateDetails}

@@ -222,6 +222,11 @@ const ProjectManagementMain = (props: any) => {
             } else {
               fetchedProject.DisplayDueDate = '';
             }
+          if(fetchedProject?.PortfolioStructureID!=undefined){
+              fetchedProject.TaskID = fetchedProject?.PortfolioStructureID;
+            }else{
+              fetchedProject.TaskID =''
+            }
             if (fetchedProject?.Item_x0020_Type == "Project") {
               fetchedProject.subRows = AllFlatProject?.filter((data: any) => data?.Parent?.Id == fetchedProject?.Id && data?.Item_x0020_Type == "Sprint")
             }
@@ -333,8 +338,10 @@ const ProjectManagementMain = (props: any) => {
       setData(backupAllTasks);
       setPageLoader(false)
       if (timeEntryIndex) {
+try{
         const dataString = JSON.stringify(timeEntryIndex);
         localStorage.setItem('timeEntryIndex', dataString);
+}catch(e){console.log(e)}
       }
     } catch (error) {
       setPageLoader(false)
@@ -570,9 +577,13 @@ const ProjectManagementMain = (props: any) => {
         items.subRows = [];
         AllTask.push(items);
       });
-
+try {
       backupAllTasks = JSON.parse(JSON.stringify(AllTask));
       setAllTasks(backupAllTasks);
+} catch (error) {
+  
+      }
+
       let allSprints = [];
       if (projectData?.subRows?.length > 0 && projectData?.Item_x0020_Type == "Project") {
         allSprints = projectData?.subRows
@@ -1152,6 +1163,11 @@ const ProjectManagementMain = (props: any) => {
   };
 
 
+  const inlineCallBackMasterTask = React.useCallback((item: any) => {
+    
+    setMasterdata(item);
+
+}, []);
   return (
     <div>
       {QueryId != "" ? (
@@ -1160,7 +1176,7 @@ const ProjectManagementMain = (props: any) => {
             <div
               className="d-flex justify-content-between p-0"
             >
-              <ul className="spfxbreadcrumb mb-2 ms-2 p-0">
+              <ul className="spfxbreadcrumb mb-2 ms-2 mt-16 p-0">
                 <li>
                   <a href={`${props?.siteUrl}/SitePages/Project-Management-Overview.aspx`}>
                     Project Management
@@ -1331,11 +1347,15 @@ const ProjectManagementMain = (props: any) => {
                                     <dl>
                                       <dt className="bg-fxdark">Priority</dt>
                                       <dd className="bg-light">
-                                        <a>
-                                          {Masterdata.Priority != null
-                                            ? Masterdata.Priority
-                                            : ""}
-                                        </a>
+                                      <InlineEditingcolumns
+                                          mypriority={true}
+                                          AllListId={AllListId}
+                                          callBack={inlineCallBackMasterTask}
+                                          columnName='Priority'
+                                          item={Masterdata}
+                                          TaskUsers={AllUser}
+                                          pageName={'ProjectManagment'}
+                                        />
                                         <span
                                           className="hreflink pull-right"
                                           title="Edit Inline"
@@ -1352,17 +1372,27 @@ const ProjectManagementMain = (props: any) => {
                                     <dl>
                                       <dt className="bg-fxdark">Project Team</dt>
                                       <dd className="bg-light">
-                                        {Masterdata?.AssignedTo?.length > 0 || Masterdata?.TeamMembers?.length > 0 || Masterdata?.ResponsibleTeam?.length > 0 ? <ShowTaskTeamMembers props={Masterdata} TaskUsers={AllTaskUsers} /> : ''}
-                                      </dd>
+                                      <InlineEditingcolumns
+                                          AllListId={AllListId}
+                                          callBack={inlineCallBackMasterTask}
+                                          columnName='Team'
+                                          item={Masterdata}
+                                          TaskUsers={AllUser}
+                                          pageName={'ProjectManagment'}
+                                        /></dd>
                                     </dl>
                                     <dl>
                                       <dt className="bg-fxdark">Status</dt>
                                       <dd className="bg-light">
-                                        <a>
-                                          {Masterdata.PercentComplete != null
-                                            ? getPercentCompleteTitle(Masterdata.PercentComplete)
-                                            : ""}
-                                        </a>
+                                      <InlineEditingcolumns
+                                        AllListId={AllListId}
+                                        callBack={inlineCallBackMasterTask}
+                                        columnName='PercentComplete'
+                                        item={Masterdata}
+                                        TaskUsers={AllUser}
+                                        pageName={'ProjectManagment'}
+                                      />
+                                       
                                         <span className="pull-right">
                                           <span className="pencil_icon">
                                             <span

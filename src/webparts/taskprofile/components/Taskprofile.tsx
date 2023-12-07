@@ -35,14 +35,14 @@ import ApprovalHistoryPopup from '../../../globalComponents/EditTaskPopup/Approv
 import { Modal, Panel, PanelType } from 'office-ui-fabric-react';
 import { ImReply } from 'react-icons/im';
 import KeyDocuments from './KeyDocument';
-import EODReportComponent from '../../../globalComponents/EOD Report Component/EODReportComponent';
+// import EODReportComponent from '../../../globalComponents/EOD Report Component/EODReportComponent';
 import ShowTaskTeamMembers from '../../../globalComponents/ShowTaskTeamMembers';
 import ReactPopperTooltipSingleLevel from '../../../globalComponents/Hierarchy-Popper-tooltipSilgleLevel/Hierarchy-Popper-tooltipSingleLevel';
 // import InlineEditingcolumns from '../../projectmanagementOverviewTool/components/inlineEditingcolumns';
 import { EditableField } from "../../componentProfile/components/Portfoliop";
 import InlineEditingcolumns from '../../projectmanagementOverviewTool/components/inlineEditingcolumns';
 import ServiceComponentPortfolioPopup from '../../../globalComponents/EditTaskPopup/ServiceComponentPortfolioPopup';
-
+import { IoHandRightOutline } from 'react-icons/io5';
 // import {MyContext} from './myContext'
 // const MyContext: any = React.createContext<any>({})
 var ClientTimeArray: any = [];
@@ -56,6 +56,7 @@ let countemailbutton: number;
 var changespercentage = false;
 var buttonId: any;
 let truncatedTitle: any
+let comments: any = []
 export interface ITaskprofileState {
   Result: any;
   listName: string;
@@ -109,6 +110,8 @@ export interface ITaskprofileState {
   currentDataIndex: any
   buttonIdCounter: number
   replyTextComment: any;
+  showOnHoldComment: boolean;
+  counter: any;
 }
 
 class Taskprofile extends React.Component<ITaskprofileProps, ITaskprofileState> {
@@ -189,7 +192,9 @@ class Taskprofile extends React.Component<ITaskprofileProps, ITaskprofileState> 
       SharewebTimeComponent: [],
       smarttimefunction: false,
       ApprovalStatus: false,
-      EditSiteCompositionStatus: false
+      EditSiteCompositionStatus: false,
+      showOnHoldComment: false,
+      counter: 1
     }
     let web = new Web(this.props?.siteUrl);
     web.lists
@@ -299,30 +304,6 @@ class Taskprofile extends React.Component<ITaskprofileProps, ITaskprofileState> 
 
       });
     }
-
-
-    if (taskDetails["AssignedTo"] != undefined) {
-      taskDetails["AssignedTo"]?.map((item: any, index: any) => {
-        if (taskDetails?.TeamMembers != undefined) {
-          for (let i = 0; i < taskDetails?.TeamMembers?.length; i++) {
-            if (item.Id == taskDetails?.TeamMembers[i]?.Id) {
-              taskDetails?.TeamMembers?.splice(i, true);
-              i--;
-            }
-          }
-        }
-
-        item.workingMember = "activeimg";
-
-      });
-    }
-
-    var array2: any = taskDetails["AssignedTo"] != undefined ? taskDetails["AssignedTo"] : []
-    if (taskDetails["TeamMembers"] != undefined) {
-      taskDetails.array = array2.concat(taskDetails["TeamMembers"]?.filter((item: any) => array2?.Id != item?.Id))
-    } else {
-      taskDetails.array = array2;
-    }
     var OffshoreComments: any = [];
     if (taskDetails["OffshoreComments"] != null) {
       let myarray: any = []
@@ -347,9 +328,8 @@ class Taskprofile extends React.Component<ITaskprofileProps, ITaskprofileState> 
     await this.GetSmartMetaData(taskDetails?.ClientCategory, taskDetails?.ClientTime);
 
     this.currentUser = this.GetUserObject(this.props?.userDisplayName);
-    let comment: any;
     if (taskDetails["Comments"] != null && taskDetails["Comments"] != undefined) {
-      try { comment = JSON.parse(taskDetails["Comments"]) }
+      try { comments = JSON.parse(taskDetails["Comments"]) }
       catch (e: any) {
         console.log(e)
       }
@@ -387,7 +367,7 @@ class Taskprofile extends React.Component<ITaskprofileProps, ITaskprofileState> 
     let tempTask = {
       SiteIcon: this.GetSiteIcon(this.state?.listName),
       sitePage: this.props.Context?._pageContext?._web?.title,
-      Comments: comment != null && comment != undefined ? comment : "",
+      Comments: comments != null && comments != undefined ? comments : "",
       Id: taskDetails["ID"],
       ID: taskDetails["ID"],
       TaskCategories:taskDetails["TaskCategories"],
@@ -399,7 +379,7 @@ class Taskprofile extends React.Component<ITaskprofileProps, ITaskprofileState> 
       ApproverHistory: taskDetails["ApproverHistory"] != null ? JSON.parse(taskDetails["ApproverHistory"]) : "",
       OffshoreComments: OffshoreComments.length > 0 ? OffshoreComments.reverse() : null,
       OffshoreImageUrl: taskDetails["OffshoreImageUrl"] != null && JSON.parse(taskDetails["OffshoreImageUrl"]),
-      AssignedTo: taskDetails["AssignedTo"] != null ? this.GetUserObjectFromCollection(taskDetails["AssignedTo"]) : null,
+   
       ClientCategory: taskDetails["ClientCategory"],
       siteType: taskDetails["siteType"],
       listName: taskDetails["listName"],
@@ -413,9 +393,10 @@ class Taskprofile extends React.Component<ITaskprofileProps, ITaskprofileState> 
       Status: taskDetails["Status"],
       StartDate: taskDetails["StartDate"] != null ? moment(taskDetails["StartDate"]).format("DD/MM/YYYY") : "",
       CompletedDate: taskDetails["CompletedDate"] != null ? moment(taskDetails["CompletedDate"])?.format("DD/MM/YYYY") : "",
-      TeamLeader: taskDetails["ResponsibleTeam"] != null ? this.GetUserObjectFromCollection(taskDetails["ResponsibleTeam"]) : null,
-      ResponsibleTeam:taskDetails["ResponsibleTeam"] != null ? this.GetUserObjectFromCollection(taskDetails["ResponsibleTeam"]) : null,
-      TeamMembers: taskDetails.array != null ? this.GetUserObjectFromCollection(taskDetails.array) : null,
+      TeamLeader: taskDetails["ResponsibleTeam"] != null ? taskDetails["ResponsibleTeam"] : null,
+      ResponsibleTeam:taskDetails["ResponsibleTeam"] != null ? taskDetails["ResponsibleTeam"] : null,
+      TeamMembers: taskDetails.TeamMembers!= null  ? taskDetails.TeamMembers : null,
+      AssignedTo: taskDetails["AssignedTo"] != null ? taskDetails["AssignedTo"] : null,
       ItemRank: taskDetails["ItemRank"],
       PercentComplete: (taskDetails["PercentComplete"] * 100),
       Priority: taskDetails["Priority"],
@@ -477,6 +458,18 @@ class Taskprofile extends React.Component<ITaskprofileProps, ITaskprofileState> 
 
     });
   }
+
+  private showOnHoldReason = () => {
+    this.setState({
+      showOnHoldComment: true,
+    });
+  };
+
+  private hideOnHoldReason = () => {
+    this.setState({
+      showOnHoldComment: false,
+    });
+  };
 
   private sortAlphaNumericAscending = (a: any, b: any) => a.FileName.localeCompare(b.FileName, 'en', { numeric: true });
   private AncCallback = (type: any) => {
@@ -712,28 +705,6 @@ class Taskprofile extends React.Component<ITaskprofileProps, ITaskprofileState> 
 
   }
 
-  private GetUserObjectFromCollection(UsersValues: any) {
-    let userDeatails = [];
-    for (let index = 0; index < UsersValues?.length; index++) {
-      let senderObject = this.taskUsers?.filter(function (user: any, i: any) {
-        if (user?.AssingedToUser != undefined) {
-          return user?.AssingedToUser["Id"] == UsersValues[index]?.Id
-        }
-      });
-      if (senderObject.length > 0) {
-        userDeatails.push({
-          'Id': senderObject[0]?.AssingedToUser.Id,
-          'Name': senderObject[0]?.Email,
-          'Suffix': senderObject[0]?.Suffix,
-          'Title': senderObject[0]?.Title,
-          'userImage': senderObject[0]?.Item_x0020_Cover?.Url,
-          'activeimg2': UsersValues[index]?.workingMember ? UsersValues[index]?.workingMember : "",
-        })
-      }
-
-    }
-    return userDeatails;
-  }
 
   private GetUserObject(username: any) {
 
@@ -801,20 +772,7 @@ class Taskprofile extends React.Component<ITaskprofileProps, ITaskprofileState> 
     });
   }
 
-  private handleSuffixHover() {
-    //e.preventDefault();
-    this.setState({
-      Display: 'block'
-    });
-  }
-
-  private handleuffixLeave() {
-    //e.preventDefault();
-
-    this.setState({
-      Display: 'none'
-    });
-  }
+ 
 
   private showhideComposition() {
     if (this.state.showComposition) {
@@ -877,6 +835,7 @@ class Taskprofile extends React.Component<ITaskprofileProps, ITaskprofileState> 
       this.setState({
         isOpenEditPopup: false,
         EditSiteCompositionStatus: false,
+        counter: this.state.counter + 1
       })
       this.GetResult();
     }
@@ -1798,7 +1757,7 @@ private async updateProjectComponentServices(dataUpdate:any) {
             <div className='row'>
               <div className="col-sm-12 p-0 ">
 
-                <ul className="spfxbreadcrumb m-0 p-0">
+                <ul className="spfxbreadcrumb mt-16 mb-0 p-0">
                   {this.state?.Result["Portfolio"] == undefined && this.state.breadCrumData?.length == 0 && this.state.Result.Title != undefined ?
                     <>
                       <li  >
@@ -2008,6 +1967,44 @@ private async updateProjectComponentServices(dataUpdate:any) {
                       <dl>
                         <dt className='bg-Fa'>Priority</dt>
                         <dd className='bg-Ff'>
+
+                        {this.state.Result.Categories != undefined && this.state.Result?.Categories?.indexOf('On-Hold') >= 0 ? (
+                            <div className="hover-text">
+                              <IoHandRightOutline
+                                onMouseEnter={this.showOnHoldReason}
+                                onMouseLeave={this.hideOnHoldReason}
+                              />
+                              <span className="tooltip-text pop-right">
+                                {this.state.showOnHoldComment &&
+                                  comments.map((item: any, index: any) =>
+                                    item.CommentFor !== undefined &&
+                                    item.CommentFor === "On-Hold" ? (
+                                      <div key={index}>
+                                        <span className="siteColor p-1 border-bottom">
+                                          Task On-Hold by{" "}
+                                          <span>
+                                            {
+                                              item.AuthorName
+                                            }
+                                          </span>{" "}
+                                          <span>
+                                            {
+                                              moment(item.Created).format('DD/MM/YY')
+                                            }
+                                          </span>
+                                        </span>
+                                        {item.CommentFor !== undefined &&
+                                        item.CommentFor !== "" ? (
+                                          <div key={index}>
+                                            {item.Description}
+                                          </div>
+                                        ) : null}
+                                      </div>
+                                    ) : null
+                                  )}
+                              </span>
+                            </div>
+                          ) : null}
                         <EditableField
                               // key={index}
                               listName={this?.state?.Result?.listName}
@@ -2683,7 +2680,7 @@ private async updateProjectComponentServices(dataUpdate:any) {
                 </div>
                 <div className="col-3">
                   <div>
-                    {this.state.Result != undefined && AllListId != undefined && <CommentCard siteUrl={this.props.siteUrl} AllListId={AllListId} Context={this.props.Context}></CommentCard>}
+                    {this.state.Result != undefined && AllListId != undefined && <CommentCard siteUrl={this.props.siteUrl} AllListId={AllListId} Context={this.props.Context} counter={this.state.counter}></CommentCard>}
                     {this.state.Result?.Id != undefined && AllListId != undefined && <>
                       <AncTool item={this?.state?.Result} callBack={this.AncCallback} AllListId={AllListId} Context={this.props.Context} />
                     </>}
@@ -2774,7 +2771,7 @@ private async updateProjectComponentServices(dataUpdate:any) {
           {/* {this.state.isTimeEntry ? <TimeEntry props={this.state.Result} isopen={this.state.isTimeEntry} CallBackTimesheet={() => { this.CallBackTimesheet() }} /> : ''} */}
           {this.state.EditSiteCompositionStatus ? <EditSiteComposition EditData={this.state.Result} SmartTotalTimeData={this.state.TotalTimeEntry} context={this.props.Context} AllListId={AllListId} Call={(Type: any) => { this.CallBack(Type) }} /> : ''}
           {this.state?.emailcomponentopen && countemailbutton == 0 && <EmailComponenet approvalcallback={() => { this.approvalcallback() }} Context={this.props?.Context} emailStatus={this.state?.emailComponentstatus} currentUser={this?.currentUser} items={this.state?.Result} />}
-          {this.state?.OpenEODReportPopup ? <EODReportComponent TaskDetails={this.state.Result} siteUrl={this.props?.siteUrl} Callback={() => { this.EODReportComponentCallback() }} /> : null}
+          {/* {this.state?.OpenEODReportPopup ? <EODReportComponent TaskDetails={this.state.Result} siteUrl={this.props?.siteUrl} Callback={() => { this.EODReportComponentCallback() }} /> : null} */}
           {(this.state?.isopencomonentservicepopup ||this.state?.isopenProjectpopup) &&
         <ServiceComponentPortfolioPopup
 
@@ -2791,7 +2788,7 @@ private async updateProjectComponentServices(dataUpdate:any) {
       ComponentType={"Component"}
       Call={ (DataItem: any, Type: any, functionType: any)=>{this.ComponentServicePopupCallBack(DataItem,Type,functionType)}}
       showProject={this.state?.isopenProjectpopup}
-            />} */}
+          />} */}
         </div>
       </myContextValue.Provider>
     );

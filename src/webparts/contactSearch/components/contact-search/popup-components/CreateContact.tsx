@@ -12,23 +12,23 @@ const CreateContactComponent = (props: any) => {
     const listData = props.data;
     const [listIsVisible, setListIsVisible] = useState(false);
     const [profileStatus, setProfileStatus] = useState(false);
-    const [contactdata, setContactdata]:any = useState();
-    const [institutionData, setInstitutionData]:any = useState();
+    const [contactdata, setContactdata]: any = useState();
+    const [institutionData, setInstitutionData]: any = useState();
     const [searchedNameData, setSearchedDataName] = useState(props?.data)
     const [isUserExist, setUserExits] = useState(true);
     const [newContact, setNewContact] = useState(false);
     const [newInstitution, setNewInstitution] = useState(false);
-   
+
     const [searchKey, setSearchKey] = useState({
         Title: '',
         FirstName: '',
     });
-    React.useEffect(()=>{
-   if(props?.data!=undefined){
-  
-    setSearchedDataName(props?.data)
-   }
-    },[])
+    React.useEffect(() => {
+        if (props?.data != undefined) {
+
+            setSearchedDataName(props?.data)
+        }
+    }, [])
     let updateCallBack = props.userUpdateFunction;
     const searchedName = async (e: any) => {
         setListIsVisible(true);
@@ -51,79 +51,99 @@ const CreateContactComponent = (props: any) => {
         }
     }
     const saveDataFunction = async () => {
-        if(props?.CreateInstituteStatus){
-            CreateInstitution() ;
-        }else{
+        if (props?.CreateInstituteStatus) {
+            CreateInstitution();
+        } else {
             try {
-           
-                let web = new Web(myContextData2?.allListId?.jointSiteUrl);
-                await web.lists.getById(myContextData2?.allListId?.HHHHContactListId).items.add({
+                let jointData:any
+                if (myContextData2?.allSite?.GMBHSite || myContextData2?.allSite?.HrSite) {
+                    jointData= {
+                    //     SharewebSites: {
+                    //     results: (myContextData2?.allSite?.GMBHSite?["GMBH"]:["HR"])
+                    // },
+                    Site: {
+                        results: (myContextData2?.allSite?.GMBHSite?["GMBH"]:["HR"])
+                    },
                     Title: (searchKey.FirstName[1] ? searchKey.FirstName[1] : " "),
                     FirstName: searchKey.FirstName[0],
                     FullName: searchKey.FirstName[0] + " " + (searchKey.FirstName[1] ? searchKey.FirstName[1] : " "),
-                    ItemType:"Contact"
-                }).then(async(data) => {
-                    if(myContextData2?.GMBHSite|| myContextData2?.HrSite){
+                    ItemType: "Contact"
+                    
+                }   
+                }else{
+                    jointData= {
+                        Title: (searchKey.FirstName[1] ? searchKey.FirstName[1] : " "),
+                        FirstName: searchKey.FirstName[0],
+                        FullName: searchKey.FirstName[0] + " " + (searchKey.FirstName[1] ? searchKey.FirstName[1] : " "),
+                        ItemType: "Contact"
+                    }
+                   
+                }
+                let web = new Web(myContextData2?.allListId?.jointSiteUrl);
+                await web.lists.getById(myContextData2?.allListId?.HHHHContactListId).items.add(jointData).then(async (data: any) => {
+                    if (myContextData2?.allSite?.GMBHSite || myContextData2?.allSite?.HrSite) {
                         let web = new Web(myContextData2?.allListId?.siteUrl);
                         await web.lists.getById(myContextData2?.allSite?.GMBHSite ? myContextData2?.allListId?.GMBH_CONTACT_SEARCH_LISTID : myContextData2?.allListId?.HR_EMPLOYEE_DETAILS_LIST_ID).items.add({
                             Title: (searchKey.FirstName[1] ? searchKey.FirstName[1] : " "),
                             FirstName: searchKey.FirstName[0],
-                            FullName: searchKey.FirstName[0] + " " + (searchKey.FirstName[1] ? searchKey.FirstName[1] : " ")
+                            FullName: searchKey.FirstName[0] + " " + (searchKey.FirstName[1] ? searchKey.FirstName[1] : " "),
+                            SmartContactId: data?.data?.Id
                         }).then((LocalData) => {
                             setContactdata(LocalData?.data)
-                        }).catch((error:any)=>{
-    
+                        }).catch((error: any) => {
+                         console.log(error)
                         })
-                    }else{
+                    } else {
                         setContactdata(data?.data)
                         console.log("request success");
                     }
-                   
+                    props.userUpdateFunction();
+                    setTimeout(() => {
+                        setNewContact(true)
+                    }, 1000)
                 })
             } catch (error) {
                 console.log("Error:", error.message);
             }
             //    props.callBack();
-            props.userUpdateFunction();
-            setTimeout(() => {
-                setNewContact(true)
-            }, 1000)
+           
         }
-        
+
     }
-    const CreateInstitution=async()=>{
-        try{
+    const CreateInstitution = async () => {
+        try {
 
             let web = new Web(myContextData2?.allListId?.jointSiteUrl);
-             await web.lists.getById(myContextData2?.allListId?.HHHHInstitutionListId).items.add({
+            await web.lists.getById(myContextData2?.allListId?.HHHHInstitutionListId).items.add({
                 Title: (searchKey.FirstName[1] ? searchKey.FirstName[1] : " "),
                 FirstName: searchKey.FirstName[0],
                 FullName: searchKey.FirstName[0] + " " + (searchKey.FirstName[1] ? searchKey.FirstName[1] : " "),
                 ItemType: "Institution"
-            }).then(async(data) => {
-                console.log( "joint institution post sucessfully",data)
-                if(myContextData2?.GMBHSite|| myContextData2?.HrSite){
+            }).then(async (data) => {
+                console.log("joint institution post sucessfully", data)
+                if (myContextData2?.allSite?.GMBHSite || myContextData2?.allSite?.HrSite) {
                     let web = new Web(myContextData2?.allListId?.siteUrl);
                     await web.lists.getById(myContextData2?.allSite?.GMBHSite ? myContextData2?.allListId?.GMBH_CONTACT_SEARCH_LISTID : myContextData2?.allListId?.HR_EMPLOYEE_DETAILS_LIST_ID).items.add({
                         Title: (searchKey.FirstName[1] ? searchKey.FirstName[1] : " "),
                         FirstName: searchKey.FirstName[0],
                         FullName: searchKey.FirstName[0] + " " + (searchKey.FirstName[1] ? searchKey.FirstName[1] : " "),
-                        ItemType: "Institution"
+                        ItemType: "Institution",
+                        SmartInstitutionId:data?.data?.Id
                     }).then((newData) => {
-                       console.log("local institution also done")
-                       setInstitutionData(newData?.data)
-                    }).catch((error:any)=>{
-
+                        console.log("local institution also done")
+                        setInstitutionData(newData?.data)
+                    }).catch((error: any) => {
+                    console.log(error)
                     })
-                }else{
+                } else {
                     setInstitutionData(data?.data)
-                 
+
                     console.log("request success");
                 }
-               
+
             })
-        }catch(error){
-            console.log("eeeorCreate Institution",error.message)
+        } catch (error) {
+            console.log("eeeorCreate Institution", error.message)
         }
         setTimeout(() => {
             setNewInstitution(true)
@@ -142,8 +162,9 @@ const CreateContactComponent = (props: any) => {
     const onRenderCustomHeadersmartinfo = () => {
         return (
             <>
-            <div className='subheading alignCenter'>
-                Create Contact
+                <div className='subheading alignCenter'>
+                    {props?.CreateInstituteStatus?"Create Institution":"Create Contact"}
+                 
                 </div>
                 <Tooltip ComponentId='3299' />
             </>
@@ -152,38 +173,38 @@ const CreateContactComponent = (props: any) => {
     return (
 
         <Panel
-        onRenderHeader={onRenderCustomHeadersmartinfo}
-        isOpen={true}
-        type={PanelType.custom}
-        customWidth="450px"
-        isBlocking={false}
-        onDismiss={()=>props?.callBack()}
-    >
+            onRenderHeader={onRenderCustomHeadersmartinfo}
+            isOpen={true}
+            type={PanelType.custom}
+            customWidth="450px"
+            isBlocking={false}
+            onDismiss={() => props?.callBack()}
+        >
 
             <div className="modal-body">
-                <div className="input-group">
+                <div className="">
                     <label className="form-label full-width"></label>
-                
-                <input type='text' placeholder="Enter Contacts Name" onChange={(e) => searchedName(e)} className="form-control" />
-                {listIsVisible ? <div>
-                    <ul className="list-group">
-                        {searchedNameData.map((item: any) => {
-                            return (
-                                <li className="list-group-item" onClick={() => editProfile(item)} >{item.FullName}</li>
-                            )
-                        })}
-                    </ul>
-                </div>
-                    : null}
-            </div></div>
+
+                    <input type='text' placeholder="Enter Contacts Name" onChange={(e) => searchedName(e)} className="form-control" />
+                    {listIsVisible ? <div>
+                        <ul className="list-group">
+                            {searchedNameData.map((item: any) => {
+                                return (
+                                    <li className="list-group-item" onClick={() => editProfile(item)} >{item.FullName}</li>
+                                )
+                            })}
+                        </ul>
+                    </div>
+                        : null}
+                </div></div>
             <footer className="mt-2 pull-right">
                 <button className="btn btn-primary mx-1" onClick={saveDataFunction} disabled={isUserExist}>Save</button>
                 <button onClick={() => props.callBack()} className="btn btn-default">Cancel</button>
             </footer>
-          
-            {profileStatus ? <HHHHEditComponent  props={contactdata} callBack={ClosePopup} /> : null}
+
+            {profileStatus ? <HHHHEditComponent props={contactdata} callBack={ClosePopup} /> : null}
             {newContact ? <HHHHEditComponent props={contactdata} userUpdateFunction={updateCallBack} callBack={ClosePopup} /> : null}
-           {newInstitution?<EditInstitutionPopup props={institutionData} callBack={ClosePopup}/>:null}
+            {newInstitution ? <EditInstitutionPopup props={institutionData} callBack={ClosePopup} /> : null}
         </Panel>
     )
 }

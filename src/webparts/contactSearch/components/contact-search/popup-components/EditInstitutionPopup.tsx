@@ -47,8 +47,13 @@ const HrGmbhInstitutionDeatails=async(Id:any)=>{
                 //    setCurrentInstitute(data?.Institution);
                 // }
                 data.Item_x002d_Image = data?.Item_x0020_Cover;
-                   JointData=data
-                 setUpdateData(data)
+                if (data?.SmartInstitutionId != undefined) {
+                    jointInstitutionDetails(data?.SmartInstitutionId)
+                }
+                    setUpdateData(data)
+                
+                  
+                
                 
             
                 
@@ -81,9 +86,12 @@ const HrGmbhInstitutionDeatails=async(Id:any)=>{
                 // delete data?.Facebook;
                 // delete data?.Twitter;
                 // delete data?.Instagram;
-                   setUpdateData(data);
-                   JointData=data;
-                }).catch((error: any) => {
+                  if(myContextData2?.allSite?.GMBHSite || myContextData2?.allSite?.HrSite){
+                    JointData=data;
+                  }else{
+                    setUpdateData(data);
+                  }
+                   }).catch((error: any) => {
                     console.log(error)
                 });
 
@@ -107,7 +115,7 @@ const HrGmbhInstitutionDeatails=async(Id:any)=>{
                     <img className='workmember' 
                     src={updateData?.ItemImage != undefined ? updateData?.ItemImage.Url : "https://hhhhteams.sharepoint.com/sites/HHHH/SiteCollectionImages/ICONS/32/InstitutionPicture.jpg"}
                      />Edit Institution- 
-                      {updateData?.Title}
+                      {updateData?.FullName}
                 </div>
                 <Tooltip ComponentId='3299' />
             </>
@@ -206,6 +214,7 @@ const HrGmbhInstitutionDeatails=async(Id:any)=>{
 
        let postData:any= {
             Title: (updateData?.Title ),
+            FullName: (updateData?.FullName ),
           Categories:updateData?.Categories,
             Email: (updateData?.Email ),
             WorkPhone: (updateData?.WorkPhone ),
@@ -229,7 +238,7 @@ const HrGmbhInstitutionDeatails=async(Id:any)=>{
            
             SocialMediaUrls: JSON.stringify(UrlData),
             SmartCountriesId: {
-                results:updateData?.SmartCountries?.length>0?[updateData?.SmartCountries?.Id ]: []
+                results:updateData?.SmartCountries?.length>0?[updateData?.SmartCountries[0]?.Id ]: []
             }
         }
         if (updateData?.Id != undefined) {
@@ -237,7 +246,7 @@ const HrGmbhInstitutionDeatails=async(Id:any)=>{
             await web.lists.getById(myContextData2?.allListId?.HHHHInstitutionListId).items.getById(myContextData2?.allSite?.GMBHSite||myContextData2?.allSite?.HrSite?JointData?.Id:updateData?.Id).update(postData).then((e) => {
                 console.log("Your information has been updated successfully");
            if(myContextData2.allSite?.GMBHSite){
-            // UpdateGmbhDetails();
+            UpdateGmbhDetails(postData);
            
            }else{
             callBack();
@@ -256,7 +265,41 @@ const HrGmbhInstitutionDeatails=async(Id:any)=>{
    
 
 }
+
 //*****************save function End *************** */
+
+
+
+const UpdateGmbhDetails = async (postData: any) => {
+
+    // delete (postData?.Department)
+    // let updateGmbhData:any={
+    //     Title: (updateData.Title ),
+    //     FirstName: (updateData.FirstName),
+    //     FullName: (updateData.FullName ),
+    //     Suffix: (updateData.Suffix ),
+    //     JobTitle: (updateData.JobTitle ),
+    //     Email: (updateData.Email ),
+    //     WorkPhone: (updateData.WorkPhone ),
+    //     CellPhone: (updateData.CellPhone ),
+    //     HomePhone: (updateData.HomePhone ),
+    //     WorkCity: (updateData.WorkCity ),
+    //     WorkAddress: (updateData.WorkAddress ),
+    //     WorkZip: (updateData.WorkZip ),
+    //     IM: (updateData.IM ),
+
+    // }
+    let web = new Web('https://hhhhteams.sharepoint.com/sites/HHHH/GmBH');
+    await web.lists.getById('6CE99A82-F577-4467-9CDA-613FADA2296F').items.getById(updateData.Id).update(postData).then((e: any) => {
+        console.log("request success", e);
+        callBack();
+    }).catch((error: any) => {
+        console.log(error)
+    })
+
+
+}
+
 
 //***********samrt Meta data call function To get The country data ********************* */
 const getSmartMetaData = async () => {
@@ -334,11 +377,11 @@ return(
                             <div className="tab-pane show active" id="BASICINFORMATION" role="tabpanel" aria-labelledby="BASICINFORMATION">
                                 <div className='general-section'>
                                     <div className="card-body">
-                                            <div className="user-form-5">
+                                            <div className="user-form-5 row">
                                                 <div className="col">
                                                     <div className='input-group'>
                                                         <label className='full-width label-form'>Title </label>
-                                                        <input type="text" className="form-control" defaultValue={updateData ? updateData?.Title : null} onChange={(e) => setUpdateData({ ...updateData, Title: e.target.value })} aria-label="First name" placeholder='First Name' />
+                                                        <input type="text" className="form-control" defaultValue={updateData ? updateData?.FullName : null} onChange={(e) => setUpdateData({ ...updateData, FullName: e.target.value })} aria-label="full name" placeholder='full Name' />
                                                     </div>
                                                 </div>
                                                 <div className="col">
@@ -363,7 +406,7 @@ return(
 
                                             </div>
                                             <div className="card-body">
-                                            <div className="user-form-4">
+                                            <div className="user-form-4 row">
                                                   <div className="col">
                                                     <div className='input-group'>
                                                         <label className="full-width label-form">Country</label>
@@ -403,7 +446,7 @@ return(
                                             </div>
                                         </div>
                                         <div className="card-body">
-                                            <div className="user-form-5">
+                                            <div className="user-form-5 row">
                                                 <div className="col">
                                                     <div className='input-group'>
                                                         <label className="full-width label-form">Phone</label>
@@ -427,7 +470,7 @@ return(
                                                         <input type="text" className="form-control" defaultValue={URLs.length ? URLs[0].Facebook : ""} onChange={(e) => setUpdateData({ ...updateData, Facebook: e.target.value })} aria-label="Facebook" />
                                                     </div></div>
                                               </div>
-                                            <div className="user-form-5 mt-2">
+                                            <div className="user-form-5 row mt-2">
                                               
                                             <div className="col" >
                                                     <div className='input-group'>

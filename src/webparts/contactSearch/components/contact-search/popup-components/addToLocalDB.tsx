@@ -197,8 +197,8 @@ const addToLocalDBComponent = (props: any) => {
                                             HomePhone: (Item?.HomePhone ),
                                             WorkCity: (Item?.WorkCity),
                                             WorkAddress: (Item?.WorkAddress),
-                                            DOJ:Item?.DOJ!=undefined?new Date(Item?.DOJ).toISOString():null,
-                                            DOE:Item?.DOE!=undefined?new Date(Item?.DOE).toISOString():null,
+                                            DOJ:Item?.DOJ!=undefined?Item?.DOJ:null,
+                                            DOE:Item?.DOE!=undefined?Item?.DOE:null,
                                             WebPage: {
                                                 "__metadata": { type: "SP.FieldUrlValue" },
                                                 Description: (Item?.WebPage ? Item?.WebPage?.Url :null) ,
@@ -212,9 +212,9 @@ const addToLocalDBComponent = (props: any) => {
                                             },
                                             WorkZip: (Item?.WorkZip ),
                                             IM: (Item?.Skype ),
-                                            SocialMediaUrls:item?.UrlData!=undefined&&item?.UrlData!=null? JSON.stringify( item?.UrlData):null,
+                                            SocialMediaUrls:Item?.SocialMediaUrls!=undefined && Item?.SocialMediaUrls!=null? Item?.SocialMediaUrls:null,
                                             SmartCountriesId: {
-                                                results:Item?.SmartCountries?.length>0?[Item?.SmartCountries?.Id ]: []
+                                                results:Item?.SmartCountries?.length>0?[Item?.SmartCountries[0]?.Id ]: []
                                             },
                                             SmartContactId:Item.Id
                                         }
@@ -222,7 +222,12 @@ const addToLocalDBComponent = (props: any) => {
                                         }else{
                                             addData = {
                                                 Title: (Item?.Title ),
+                                                FirstName: (Item?.FirstName ),
+                                                Suffix: (Item?.Suffix ),
+                                                JobTitle: (Item?.JobTitle ),
+                                                FullName: (Item?.FirstName ) + " " + (Item?.Title ),
                                               Categories:Item?.Categories,
+                                                ItemType: "Institution",
                                                 Email: (Item?.Email ),
                                                 WorkPhone: (Item?.WorkPhone ),
                                                 CellPhone: (Item?.CellPhone ),
@@ -243,29 +248,21 @@ const addToLocalDBComponent = (props: any) => {
                                                 },
                                                 WorkZip: (Item?.WorkZip ),
                                                
-                                                SocialMediaUrls:item?.UrlData!=undefined&&item?.UrlData!=null? JSON.stringify( item?.UrlData):null,
+                                                SocialMediaUrls:item?.SocialMediaUrls!=undefined&&item?.SocialMediaUrls!=null? item?.SocialMediaUrls:null,
                                                 SmartCountriesId: {
-                                                    results:Item?.SmartCountries?.length>0?[Item?.SmartCountries?.Id ]: []
-                                                }
+                                                    results:Item?.SmartCountries?.length>0?[Item?.SmartCountries[0]?.Id ]: []
+                                                },
+                                                SmartInstitutionId:Item?.Id
+                                                
                                             }
 
-
-                                            
-
-                                        //     addData= {
-                                        //         Title: (Item.Title ? Item.Title : " "),
-                                        //           FirstName: Item.FirstName,
-                                        //         FullName: Item.FullName,
-                                        //           ItemType: "Institution",
-                                        //         SmartInstitutionId:Item.Id
-                                            
-                                        // }
                                         }
                                            
                                         try {
                                             let web = new Web('https://hhhhteams.sharepoint.com/sites/HHHH/GmBH');
                                             await web.lists.getById(myContextData2?.allListId?.GMBH_CONTACT_SEARCH_LISTID).items.add(addData).then((e) => {
                                                 console.log("request success", e);
+                                                props.callBack()
                                             })
                                         } catch (error) {
                                             console.log("Error:", error.message);
@@ -278,7 +275,7 @@ const addToLocalDBComponent = (props: any) => {
                         })
                     })
             }
-            props.callBack()
+           
         }
          //***************** END GMBH  data tag function */
 
@@ -391,7 +388,7 @@ const addToLocalDBComponent = (props: any) => {
         return (
             <>
                 <div className='subheading alignCenter'>
-                        Tag Contact
+                    {props.data[0]?.ItemType=="Institution"?"Tag Institution":"Tag Contact"}    
                 </div>
                 <Tooltip ComponentId='3299' />
             </>

@@ -1,6 +1,6 @@
 import * as React from 'react';
 import { useEffect, useState, useCallback } from 'react';
-import './style.css'
+// import './style.css'
 import { Web } from 'sp-pnp-js';
 import HHHHEditComponent from './popup-components/HHHHEditcontact';
 import AddToLocalDBComponent from './popup-components/addToLocalDB';
@@ -75,8 +75,8 @@ const ContactMainPage = (props: any) => {
             let web = new Web(allListId?.siteUrl);
             let data = await web.lists.getById(props?.props?.HHHHContactListId)
                 .items
-                .select("Id", "Title", "FirstName", "FullName", "Department", "Company", "WorkCity", "Suffix", "WorkPhone", "HomePhone", "Comments", "WorkAddress", "WorkFax", "WorkZip", "Site", "ItemType", "JobTitle", "Item_x0020_Cover", "WebPage", "Site", "CellPhone", "Email", "LinkedIn", "Created", "SocialMediaUrls", "SmartCountries/Title", "SmartCountries/Id", "Author/Title", "Modified", "Editor/Title", "Division/Title", "Division/Id", "EmployeeID/Title", "StaffID", "EmployeeID/Id", "Institution/Id", "Institution/FullName", "IM")
-                .expand("EmployeeID", "Division", "Author", "Editor", "SmartCountries", "Institution")
+                .select("Id, Title, FirstName, FullName, Department,DOJ,DOE, Company, WorkCity, Suffix, WorkPhone, HomePhone, Comments, WorkAddress, WorkFax, WorkZip, Site, ItemType, JobTitle, Item_x0020_Cover, WebPage, Site, CellPhone, Email, LinkedIn, Created, SocialMediaUrls, SmartCountries/Title, SmartCountries/Id, Author/Title, Modified, Editor/Title, Division/Title, Division/Id, EmployeeID/Title, StaffID, EmployeeID/Id, Institution/Id, Institution/FullName, IM")
+                .expand("EmployeeID, Division, Author, Editor, SmartCountries, Institution")
                 .orderBy("Created", true)
                 .get();
             data.map((Item: any) => {
@@ -125,8 +125,8 @@ const ContactMainPage = (props: any) => {
                                 }
                             }
                         })
-                        setInstitutionsData(data);
-                        setSearchedInstituteData(data);
+                        setInstitutionsData(instData);
+                        setSearchedInstituteData(instData);
                     }
 
                 }).catch((error: any) => {
@@ -270,7 +270,7 @@ const ContactMainPage = (props: any) => {
                 accessorFn: (row: any) => row?.FullName,
                 cell: ({ row }: any) => (
                     <a target='_blank'
-                        href={`${allListId?.siteUrl}/SitePages/Contact-Profile.aspx?contactId=${row?.original.Id}`}
+                        href={allSite?.HrSite?`${allListId?.siteUrl}/SitePages/EmployeeInfo.aspx?employeeId=${row?.original.Id}`:`${allListId?.siteUrl}/SitePages/Contact-Profile.aspx?contactId=${row?.original.Id}`}
                     >{row.original.FullName}</a>
 
                 ),
@@ -367,7 +367,7 @@ const ContactMainPage = (props: any) => {
             cell: ({ row }: any) => (
                 <a target='_blank'
                     href={`${allListId?.siteUrl}/SitePages/Institution-Profile.aspx?InstitutionId=${row?.original.Id}`}
-                >{row.original.Title}</a>
+                >{row.original.FullName}</a>
 
             ),
 

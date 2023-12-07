@@ -3,10 +3,10 @@ import * as $ from 'jquery';
 import * as globalCommon from '../../../globalComponents/globalCommon';
 import EditTaskPopup from '../../../globalComponents/EditTaskPopup/EditTaskPopup'
 import TimeEntryPopup from '../../../globalComponents/TimeEntry/TimeEntryComponent';
-import CreateActivity from '../../servicePortfolio/components/CreateActivity';
-import CreateWS from '../../servicePortfolio/components/CreateWS';
+import CreateActivity from '../../../globalComponents/CreateActivity';
+import CreateWS from '../../../globalComponents/CreateWS';
 import ShowTaskTeamMembers from '../../../globalComponents/ShowTaskTeamMembers';
-import Loader from "react-loader";
+import Loader from "react-loader"; 
 import * as moment from 'moment';
 import { SlArrowRight } from "react-icons/sl";
 import GlobalCommanTable from "../../../globalComponents/GroupByReactTableComponents/GlobalCommanTable";
@@ -21,7 +21,7 @@ import {
 import {
   Column,
   Table,
-  ExpandedState,
+                     ExpandedState,
   useReactTable,
   getCoreRowModel,
   getFilteredRowModel,
@@ -58,7 +58,7 @@ let siteIconAllTask: any = [];
 let finalData: any = [];
 let childRefdata: any;
 let TasksItem: any = [];
-let AllTasksData :any=[];
+let AllTasksData: any = [];
 function IndeterminateCheckbox(
   {
     indeterminate,
@@ -168,11 +168,11 @@ function TasksTable(props: any) {
     });
 
     // var filter: any = '';
-    if ( props?.props?.TaskType != undefined && props?.props?.TaskType?.Title === 'Activities') {
+    if (props?.props?.TaskType != undefined && props?.props?.TaskType?.Title === 'Activities') {
       filter += '(ParentTask/Id eq ' + props.props.Id + ' ) or '
       loadWSTasks(props.props);
     }
-    else if ( props?.props?.TaskType != undefined && props?.props?.TaskType?.Title === 'Workstream') {
+    else if (props?.props?.TaskType != undefined && props?.props?.TaskType?.Title === 'Workstream') {
       filter += '(ParentTask/Id eq ' + props.props.Id + ' )'
       loadActivityTasks(props.props);
 
@@ -233,7 +233,7 @@ function TasksTable(props: any) {
 
 
   const LoadAllSiteTasks = async function (filter: any) {
-     AllTasksData = [];
+    AllTasksData = [];
     let Counter = 0;
     if (siteConfig != undefined && siteConfig?.length > 0) {
       const batch = sp.createBatch();
@@ -268,7 +268,7 @@ function TasksTable(props: any) {
                 });
               }
               AllTasks = AllTasks.concat(AllTasksMatches);
-              AllTasksData=AllTasksData.concat(AllTasksMatches);
+              AllTasksData = AllTasksData.concat(AllTasksMatches);
               AllTasks = $.grep(AllTasks, function (type: any) {
                 return type.isDrafted == false;
               });
@@ -304,17 +304,17 @@ function TasksTable(props: any) {
                     let DiscriptionSearchData: any = '';
                     let feedbackdata: any = JSON.parse(result?.FeedBack)
                     DiscriptionSearchData = feedbackdata[0]?.FeedBackDescriptions?.map((child: any) => {
-                        const childText = child?.Title?.replace(/(<([^>]+)>)/gi, '')?.replace(/\n/g, '');
-                        const subtextText = (child?.Subtext || [])?.map((elem: any) =>
-                            elem.Title?.replace(/(<([^>]+)>)/gi, '')?.replace(/\n/g, '')
-                        ).join('');
-                        return childText + subtextText;
+                      const childText = child?.Title?.replace(/(<([^>]+)>)/gi, '')?.replace(/\n/g, '');
+                      const subtextText = (child?.Subtext || [])?.map((elem: any) =>
+                        elem.Title?.replace(/(<([^>]+)>)/gi, '')?.replace(/\n/g, '')
+                      ).join('');
+                      return childText + subtextText;
                     }).join('');
                     result.descriptionsSearch = DiscriptionSearchData
-                }
+                  }
 
                   if (result?.Comments != null) {
-                    result.commentsSearch = result?.Comments?.replace(/(<([^>]+)>)/gi,"").replace(/\n/g, "");
+                    result.commentsSearch = result?.Comments?.replace(/(<([^>]+)>)/gi, "").replace(/\n/g, "");
                   }
                   if (
                     result.AssignedTo != undefined &&
@@ -397,15 +397,15 @@ function TasksTable(props: any) {
                   }
                   result["Item_x0020_Type"] = "Task";
                 })
-                let allParentTasks = $.grep(AllTasks, function (type: any) { return (type.ParentTask != undefined && type.ParentTask.Id === props.props.Id && type?.siteType==props?.props?.siteType ) && (type.TaskType != undefined && type.TaskType.Title != 'Workstream') });
+                let allParentTasks = $.grep(AllTasks, function (type: any) { return (type.ParentTask != undefined && type.ParentTask.Id === props.props.Id && type?.siteType == props?.props?.siteType) && (type.TaskType != undefined && type.TaskType.Title != 'Workstream') });
                 if (props?.props?.TaskType != undefined && props.props.TaskType != undefined && props.props.TaskType?.Title === 'Activities')
-                  allworkstreamTasks = $.grep(AllTasks, function (task: any) { return (task.TaskType != undefined && task?.TaskType?.Title === 'Workstream' && task?.siteType==props?.props?.siteType) });
+                  allworkstreamTasks = $.grep(AllTasks, function (task: any) { return (task.TaskType != undefined && task?.TaskType?.Title === 'Workstream' && task?.siteType == props?.props?.siteType) });
 
                 if (allworkstreamTasks != undefined && allworkstreamTasks?.length > 0) {
                   allworkstreamTasks.forEach((obj: any) => {
                     if (obj.Id != undefined) {
                       AllTasks.forEach((task: any) => {
-                        if (task?.ParentTask != undefined && obj?.Id === task?.ParentTask?.Id && task?.siteType==props?.props?.siteType) {
+                        if (task?.ParentTask != undefined && obj?.Id === task?.ParentTask?.Id && task?.siteType == props?.props?.siteType) {
                           obj.subRows = obj?.subRows != undefined ? obj?.subRows : []
                           obj.subRows.push(task)
                         }
@@ -456,8 +456,8 @@ function TasksTable(props: any) {
       // .top(4999)
       // .filter(filt)
       .getAll()
-    componentDetails = compo?.filter((items:any)=>{
-      items.Id==Item?.Portfolio?.Id
+    componentDetails = compo?.filter((items: any) => {
+      items.Id == Item?.Portfolio?.Id
     })
     setAllMasterTasksData(compo)
     IsUpdated = componentDetails[0]?.PortfoliType?.Title;
@@ -494,11 +494,13 @@ function TasksTable(props: any) {
     setRowSelection({});
     setMeetingPopup(false);
     setWSPopup(false);
-    MeetingItems = []
+    if(childItem !== "Close"){
+      MeetingItems = []
+    }
     var MainId: any = ''
     let ParentTaskId: any;
     if (childItem != undefined && childItem.data?.ItmesDelete == undefined) {
- 
+
 
 
       childItem.data['flag'] = true;
@@ -508,7 +510,7 @@ function TasksTable(props: any) {
       if (childItem.data.PortfolioId != undefined) {
         MainId = childItem.data.PortfolioId
       }
-     
+
       if (childItem.data.ParentTaskId != undefined && childItem.data.ParentTaskId != "") {
         ParentTaskId = childItem.data.ParentTaskId;
       }
@@ -698,8 +700,8 @@ function TasksTable(props: any) {
           <div>
             {row?.original?.TitleNew != "Tasks" ?
               <span className="d-flex">
-              <ReactPopperTooltipSingleLevel ShareWebId={row?.original?.TaskID} row={row?.original} singleLevel={true} masterTaskData={props?.AllMasterTasks} AllSitesTaskData={props?.AllSiteTasks} AllListId={props.AllListId} />
-          </span>
+                <ReactPopperTooltipSingleLevel ShareWebId={row?.original?.TaskID} row={row?.original} singleLevel={true} masterTaskData={props?.AllMasterTasks} AllSitesTaskData={props?.AllSiteTasks} AllListId={props.AllListId} />
+              </span>
               : ''}
           </div>
         ),
@@ -728,7 +730,7 @@ function TasksTable(props: any) {
               <FaCompressArrowsAlt style={{ height: '11px', width: '20px' }} /> : ''}
             {row?.original?.subRows?.length > 0 ?
               <span className='ms-1'>{row?.original?.subRows?.length ? '(' + row?.original?.subRows?.length + ')' : ""}</span> : ''}
-            {row?.original?.descriptionsSearch!='' && <InfoIconsToolTip
+            {row?.original?.descriptionsSearch != '' && <InfoIconsToolTip
               Discription={row?.original?.descriptionsSearch}
               row={row?.original}
             />}
@@ -856,11 +858,11 @@ function TasksTable(props: any) {
       {
         cell: ({ row, getValue }) => (
           <>
-            
-              <a className='time-icons' onClick={(e) => EditData(e, row?.original)} >
-                <span title='Time' className="svg__iconbox svg__icon--clock"></span>
-              </a>
-            
+
+            <a className='time-icons' onClick={(e) => EditData(e, row?.original)} >
+              <span title='Time' className="svg__iconbox svg__icon--clock"></span>
+            </a>
+
             {getValue()}
           </>
         ),
@@ -894,9 +896,9 @@ function TasksTable(props: any) {
                   <span className="svg__iconbox svg__icon--re-structure"></span>
                 </span>)}
 
-            
-                <span title='Edit' onClick={(e) => EditItemTaskPopup(row?.original)} className="svg__iconbox svg__icon--edit"></span>
-            
+
+              <span title='Edit' onClick={(e) => EditItemTaskPopup(row?.original)} className="svg__iconbox svg__icon--edit"></span>
+
             </a>
             {getValue()}
           </>
@@ -952,13 +954,17 @@ function TasksTable(props: any) {
 
   const openActivity = () => {
     let data2 = props?.props
+    // if (MeetingItems.length === 0) {
+    //   MeetingItems.push(checkData);
+    // }
     // let data2: any = structuredClone(props?.props)
     if (checkData != undefined && checkData != null && checkData?.TaskType != null) {
       if (checkData?.TaskType?.Title == 'Workstream') {
         checkData['NoteCall'] = 'Task'
         console.log(MeetingItems[MeetingItems?.length - 1])
         if (MeetingItems[MeetingItems?.length - 1]?.ClientTime?.length > 0 && MeetingItems[MeetingItems?.length - 1].ClientTime != undefined) {
-          MeetingItems[MeetingItems?.length - 1].ClientTime = JSON.parse(MeetingItems[MeetingItems?.length - 1]?.ClientTime)
+          // MeetingItems[MeetingItems?.length - 1].ClientTime = JSON.parse(MeetingItems[MeetingItems?.length - 1]?.ClientTime)
+          MeetingItems[MeetingItems?.length - 1].ClientTime = MeetingItems[MeetingItems?.length - 1]?.ClientTime
         }
 
         setMeetingPopup(true)
@@ -1146,6 +1152,7 @@ function TasksTable(props: any) {
       {IsTimeEntry && <TimeEntryPopup props={SharewebTimeComponent} CallBackTimeEntry={TimeEntryCallBack} AllListId={props.AllListId} TimeEntryPopup Context={props.Context}></TimeEntryPopup>}
       {MeetingPopup &&
         <CreateActivity
+          portfolioTypeData={props.props.PortfolioType}
           selectedItem={MeetingItems[MeetingItems.length - 1]}
           Call={Call}
           TaskUsers={AllUsers}
@@ -1153,9 +1160,10 @@ function TasksTable(props: any) {
           LoadAllSiteTasks={LoadAllSiteTasks}
           AllListId={props.AllListId}
           context={props.Context}>
-        
+
         </CreateActivity>}
       {WSPopup && <CreateWS
+        portfolioTypeData={props.props.PortfolioType}
         selectedItem={MeetingItems[MeetingItems.length - 1]}
         Call={Call}
         data={data}

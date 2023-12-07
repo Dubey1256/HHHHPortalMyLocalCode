@@ -105,53 +105,55 @@ const onRenderCustomCalculateSC = () => {
               onDismiss={()=>setOpenEditPanel(false)}
             >
                    
-              <div className='container'>
-                <div className='row'>
-                    <div className='col'>
-                        <label>
+              <div className=''>
+                <div className='row mb-3'>
+                    <div className='col input-group'>
+                        <label className='form-label full-width'>
                               Name
                         </label>
-                        <div>
-                            <input type='text'  value={data?.FileLeafRef.replace(/\.[^.]+$/, '')}  onChange={(e:any)=>onChangeInput("FileLeafRef" , e.target.value)}  /> <span>.aspx</span>
+                        <div className='alignCenter input-group'>
+                            <input type='text' className='form-control' value={data?.FileLeafRef.replace(/\.[^.]+$/, '')}  onChange={(e:any)=>onChangeInput("FileLeafRef" , e.target.value)}  /> <span className='ms-1'>.aspx</span>
                         </div>
                     </div>
-                   <div className='col'>
-                   <label>
+                   <div className='col input-group'>
+                      <label className='form-label full-width'>
                               Title
-                        </label>
-                        <div>
-                            <input type='text'  value={data?.Page_x002d_Title != undefined && data?.Page_x002d_Title != null ? data?.Page_x002d_Title : ''} onChange={(e:any)=>onChangeInput("Page_x002d_Title" , e.target.value)} /> 
-                        </div>
+                      </label>
+                      <input type='text' className='form-control' value={data?.Page_x002d_Title != undefined && data?.Page_x002d_Title != null ? data?.Page_x002d_Title : ''} onChange={(e:any)=>onChangeInput("Page_x002d_Title" , e.target.value)} /> 
+                        
                    </div>
-                   <div className='col'>
-                   <label>
+                   <div className='col input-group'>
+                        <label className='form-label full-width'>
                               Item Rank
                         </label>
-                        <div>
-                        <select  value={data?.ItemRank != undefined && data?.ItemRank != null ? data?.ItemRank : ''} onChange={(e:any)=>onChangeInput("ItemRank" , e.target.value)}>
-                        <option value="0"></option>
-                        <option value="0">(8) Top Highlights</option>
-                        <option value="0">(7) Featured Item</option>
-                        <option value="0">(6) Key Item</option>
-                        <option value="0">(5) Relevant Item</option>
-                        <option value="0">(4) Unsure</option>
-                        <option value="0">(2) to be verified</option>
-                        <option value="0">(1) Archive</option>
-                        <option value="0">(0) No Show</option>
-                
-                 </select>
-                        </div>
+                        <select className='form-control' value={data?.ItemRank != undefined && data?.ItemRank != null ? data?.ItemRank : ''} onChange={(e:any)=>onChangeInput("ItemRank" , e.target.value)}>
+                        <option value=""></option>
+
+<option value="(8) Top Highlights">(8) Top Highlights</option>
+
+<option value="(7) Featured Item">(7) Featured Item</option>
+
+<option value="(6) Key Item">(6) Key Item</option>
+
+<option value="(5) Relevant Item">(5) Relevant Item</option>
+
+<option value="(4) Unsure">(4) Unsure</option>
+
+<option value="(2) to be verified">(2) to be verified</option>
+
+<option value="(1) Archive">(1) Archive</option>
+
+<option value="(0) No Show">(0) No Show</option>
+                        </select>
                    </div>
                 </div>
                 <HtmlEditorCard editorValue={data?.Page_x0020_Content != undefined && data?.Page_x0020_Content != null ? data?.Page_x0020_Content : ''} HtmlEditorStateChange={HtmlEditorStateChange}/>
               </div>
  
-              <div className="mt-2">
                 <footer className="mt-4 text-end">
                   <button className="me-2 btn btn-primary" onClick={postData}>Save</button>
-                  <button className="me-2 btn btn-default" onClick={()=>setOpenEditPanel(false)} >Cancel</button>
+                  <button className="btn btn-default" onClick={()=>setOpenEditPanel(false)} >Cancel</button>
                 </footer>
-               </div>
             </Panel>
     </>
   )

@@ -170,7 +170,7 @@ const ImagetabFunction = (props: any) => {
     }
     return (
         <>
-            <div className='d-flex '>
+           <div className='d-flex '>
                 <div className="input-group "><label className=" full-width ">Image Url </label>
                     <input type="text" className="form-control" placeholder='Serach' value={editData?.Item_x0020_Cover != null ? editData?.Item_x0020_Cover?.Url : ""} />
                 </div>
