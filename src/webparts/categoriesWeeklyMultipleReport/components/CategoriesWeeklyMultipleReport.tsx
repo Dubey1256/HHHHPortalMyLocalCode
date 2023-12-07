@@ -167,7 +167,7 @@ export default class CategoriesWeeklyMultipleReport extends React.Component<ICat
         id: "Secondlevel",
       },
       {
-        accessorFn: (row: any) => row?.Secondlevel,
+        accessorFn: (row: any) => row?.TotalValue,
         cell: ({ row }: any) => (
           <div className="alignCenter">
             <span className="columnFixedTitle">
@@ -190,17 +190,11 @@ export default class CategoriesWeeklyMultipleReport extends React.Component<ICat
         id: "TotalValue",
       },
       {
-        accessorFn: (row: any) => row?.CategoriesItems,
+        accessorFn: (row: any) => row?.clientCategory,
         cell: ({ row }: any) => (
           <div className="alignCenter">
             <span className="columnFixedTitle">
-              {row?.original?.CategoriesItems !== undefined ? (
-                <span>
-                  {row?.original?.CategoriesItems}
-                </span>
-              ) : (
-                <span>{row?.original?.clientCategory}</span>
-              )}
+              <span>{row?.original?.clientCategory}</span>
             </span>
           </div>
         ),
@@ -1592,6 +1586,7 @@ export default class CategoriesWeeklyMultipleReport extends React.Component<ICat
               filterItem.ClientTime = Client;
             }
             filterItem.ClientCategory = getItem.ClientCategory;
+            // filterItem.clientCategory ='';
             filterItem.ClientCategorySearch = getItem.ClientCategorySearch;
             filterItem.PercentComplete = getItem.PercentComplete;
             filterItem.Priority_x0020_Rank = getItem.Priority_x0020_Rank;
@@ -1965,6 +1960,7 @@ export default class CategoriesWeeklyMultipleReport extends React.Component<ICat
               child.AdjustedTime = totalnew;
               child.TotalValue = totalnew;
               child.TotalSmartTime = totalnew;
+              child.SmartHoursTotal =child.TotalSmartTime;
               child.SmartHoursTime = parseFloat(totalnew.toString()).toFixed(2);
               child.Rountfiguretime = parseFloat(totalnew.toString()).toFixed(2);
               if (child.Rountfiguretime != undefined && child.Rountfiguretime.toString().indexOf('.') > -1) {
@@ -2007,11 +2003,14 @@ export default class CategoriesWeeklyMultipleReport extends React.Component<ICat
             })
           }
           filte.TotalValue = total;
+          filte.TotalSmartTime =total;
           filte.AdjustedTime = filte.TotalValue;
           filte.RoundAdjustedTime = Roundfigurtotal;
           filte.TimeInExcel = TimeInExcel;
           filte.SmartHoursTotal = SmartHoursTimetotal;
-
+          filte.clientCategory = '';
+          filte.Firstlevel ='';
+          filte.Secondlevel ='';
           if (AdjustedimeEntry == undefined || AdjustedimeEntry == '')
             AdjustedimeEntry = 0
           AdjustedimeEntry += filte.AdjustedTime;

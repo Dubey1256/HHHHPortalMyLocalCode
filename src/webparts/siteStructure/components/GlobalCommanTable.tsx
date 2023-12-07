@@ -12,26 +12,23 @@ import {
     getSortedRowModel,
     SortingState,
     FilterFn,
-    getPaginationRowModel,
-    Row
+    getPaginationRowModel
 } from "@tanstack/react-table";
-import { useVirtualizer, notUndefined } from "@tanstack/react-virtual";
-import { RankingInfo, rankItem, compareItems } from "@tanstack/match-sorter-utils";
-import { FaSort, FaSortDown, FaSortUp, FaChevronRight, FaChevronLeft, FaAngleDoubleRight, FaAngleDoubleLeft, FaInfoCircle, FaPlus, FaMinus, FaListAlt } from 'react-icons/fa';
+import { RankingInfo, rankItem } from "@tanstack/match-sorter-utils";
+import { FaSort, FaSortDown, FaSortUp, FaChevronRight, FaChevronLeft, FaAngleDoubleRight, FaAngleDoubleLeft, FaPlus, FaMinus, FaListAlt } from 'react-icons/fa';
 import { HTMLProps } from 'react';
 import jsPDF from 'jspdf';
 import autoTable from 'jspdf-autotable';
 import * as XLSX from "xlsx";
 import saveAs from "file-saver";
 import { RiFileExcel2Fill } from 'react-icons/ri';
-import ShowTeamMembers from '../ShowTeamMember';
-import SelectFilterPanel from './selectFilterPannel';
-import ExpndTable from '../ExpandTable/Expandtable';
-import RestructuringCom from '../Restructuring/RestructuringCom';
+// import ShowTeamMembers from '../ShowTeamMember';
+// import SelectFilterPanel from './selectFilterPannel';
+// import ExpndTable from '../ExpandTable/Expandtable';
+// import RestructuringCom from '../Restructuring/RestructuringCom';
 import { SlArrowDown, SlArrowRight } from 'react-icons/sl';
 import { BsClockHistory, BsList, BsSearch } from 'react-icons/bs';
-import Tooltip from "../../globalComponents/Tooltip";
-import { Alert } from 'react-bootstrap';
+// import Tooltip from "../../globalComponents/Tooltip";
 // ReactTable Part/////
 declare module "@tanstack/table-core" {
     interface FilterFns {
@@ -98,7 +95,6 @@ function DebouncedInput({
 
 export function Filter({
     column,
-    table,
     placeholder
 }: {
     column: Column<any, any>;
@@ -108,7 +104,7 @@ export function Filter({
     const columnFilterValue = column.getFilterValue();
     // style={{ width: placeholder?.size }}
     return (
-        <input style={{ width: "100%", paddingRight: "10px" }} className="m-1 ps-10 on-search-cross"
+        <input style={{ width: "100%" }} className="m-1 ps-10 on-search-cross"
             // type="text"
             title={placeholder?.placeholder}
             type="search"
@@ -148,13 +144,13 @@ const getFirstColHeader = ({ hasCheckbox, hasExpanded, isHeaderNotAvlable, portf
     return ({ table }: any) => (
         <>
             {hasExpanded && isHeaderNotAvlable != true && (<>
-                <span className="border-0 bg-Ff ms-1 mb-1" {...{ onClick: table.getToggleAllRowsExpandedHandler(), }}>
+                <span className="border-0 bg-Ff ms-1" {...{ onClick: table.getToggleAllRowsExpandedHandler(), }}>
                     {table.getIsAllRowsExpanded() ? (
                         <SlArrowDown style={{ color: portfolioColor, width: '12px' }} title='Tap to collapse the childs' />) : (<SlArrowRight style={{ color: portfolioColor, width: '12px' }} title='Tap to expand the childs' />)}
                 </span>{" "}
             </>)}
             {hasCheckbox && (
-                <span style={hasExpanded ? { marginLeft: '7px', marginBottom: '0px' } : {}} ><IndeterminateCheckbox className="mx-1 " style={{ marginTop: "5px" }} {...{ checked: table.getIsAllRowsSelected(), indeterminate: table.getIsSomeRowsSelected(), onChange: table.getToggleAllRowsSelectedHandler(), }} />{" "}</span>
+                <span style={hasExpanded ? { marginLeft: '7px', marginBottom: '5px' } : {}} ><IndeterminateCheckbox className="mx-1 " {...{ checked: table.getIsAllRowsSelected(), indeterminate: table.getIsSomeRowsSelected(), onChange: table.getToggleAllRowsSelectedHandler(), }} />{" "}</span>
             )}
         </>
     );
@@ -234,10 +230,10 @@ const getFirstColCell = ({ setExpanded, hasCheckbox, hasCustomExpanded, hasExpan
 // ReactTable Part end/////
 let isShowingDataAll: any = false;
 const GlobalCommanTable = (items: any, ref: any) => {
-    let childRefdata: any;
+    // let childRefdata: any;
     const childRef = React.useRef<any>();
     if (childRef != null) {
-        childRefdata = { ...childRef };
+        //childRefdata = { ...childRef };
 
     }
     let expendedTrue = items?.expendedTrue
@@ -246,12 +242,12 @@ const GlobalCommanTable = (items: any, ref: any) => {
     let callBackData = items?.callBackData;
     let callBackDataToolTip = items?.callBackDataToolTip;
     let pageName = items?.pageName;
-    let siteUrl: any = '';
+    //let siteUrl: any = '';
     let showHeader = items?.showHeader;
     let showPagination: any = items?.showPagination;
     let usedFor: any = items?.usedFor;
     let portfolioColor = items?.portfolioColor;
-    let expandIcon = items?.expandIcon;
+   // let expandIcon = items?.expandIcon;
     let fixedWidth = items?.fixedWidth;
     let portfolioTypeData = items?.portfolioTypeData;
     let showingAllPortFolioCount = items?.showingAllPortFolioCount
@@ -262,19 +258,18 @@ const GlobalCommanTable = (items: any, ref: any) => {
     const [expanded, setExpanded] = React.useState<ExpandedState>({});
     const [rowSelection, setRowSelection] = React.useState({});
     const [globalFilter, setGlobalFilter] = React.useState("");
-    const [ShowTeamPopup, setShowTeamPopup] = React.useState(false);
-    const [showTeamMemberOnCheck, setShowTeamMemberOnCheck] = React.useState(false)
+    const [, setShowTeamPopup] = React.useState(false);
+    //const [showTeamMemberOnCheck, setShowTeamMemberOnCheck] = React.useState(false)
     const [globalSearchType, setGlobalSearchType] = React.useState("ALL");
-    const [selectedFilterPanelIsOpen, setSelectedFilterPanelIsOpen] = React.useState(false);
-    const [tablecontiner, settablecontiner]: any = React.useState("hundred");
-    const [trueRestructuring, setTrueRestructuring] = React.useState(false);
+    const [, setSelectedFilterPanelIsOpen] = React.useState(false);
+   // const [tablecontiner, settablecontiner]: any = React.useState("hundred");
+    const [, setTrueRestructuring] = React.useState(false);
     // const [clickFlatView, setclickFlatView] = React.useState(false);
-    const [columnVisibility, setColumnVisibility] = React.useState({ descriptionsSearch: false, commentsSearch: false, timeSheetsDescriptionSearch: false });
-    const [selectedFilterPannelData, setSelectedFilterPannelData] = React.useState({
+    const [columnVisibility] = React.useState({ descriptionsSearch: false, commentsSearch: false });
+    const [selectedFilterPannelData] = React.useState({
         Title: { Title: 'Title', Selected: true },
         commentsSearch: { commentsSearch: 'commentsSearch', Selected: true },
         descriptionsSearch: { descriptionsSearch: 'descriptionsSearch', Selected: true },
-        timeSheetsDescriptionSearch: { timeSheetsDescriptionSearch: 'timeSheetsDescriptionSearch', Selected: true }
     });
 
     React.useEffect(() => {
@@ -295,7 +290,7 @@ const GlobalCommanTable = (items: any, ref: any) => {
         if (String(query).trim() === "") return true;
 
         if ((selectedFilterPannelData?.Title?.Title === id && selectedFilterPannelData?.Title?.Selected === true) || (selectedFilterPannelData?.commentsSearch?.commentsSearch === id && selectedFilterPannelData?.commentsSearch?.Selected === true) ||
-            (selectedFilterPannelData?.descriptionsSearch?.descriptionsSearch === id && selectedFilterPannelData?.descriptionsSearch?.Selected === true) || (selectedFilterPannelData?.timeSheetsDescriptionSearch?.timeSheetsDescriptionSearch === id && selectedFilterPannelData?.timeSheetsDescriptionSearch?.Selected === true)) {
+            (selectedFilterPannelData?.descriptionsSearch?.descriptionsSearch === id && selectedFilterPannelData?.descriptionsSearch?.Selected === true)) {
 
             const cellValue: any = String(row.getValue(id)).toLowerCase();
 
@@ -345,12 +340,6 @@ const GlobalCommanTable = (items: any, ref: any) => {
     }, [columns]);
     // ***************** coustmize Global Expende And Check Box End *****************
 
-    const selectedFilterCallBack = React.useCallback((item: any) => {
-        if (item != undefined) {
-            setSelectedFilterPannelData(item)
-        }
-        setSelectedFilterPanelIsOpen(false)
-    }, []);
 
     /****************** defult sorting  part *******************/
     React.useEffect(() => {
@@ -372,19 +361,6 @@ const GlobalCommanTable = (items: any, ref: any) => {
             }
         }
     }, [columns])
-
-    /****************** defult Expend Other Section  part *******************/
-    React.useEffect(() => {
-        if (table?.getRowModel()?.rows.length > 0) {
-            table?.getRowModel()?.rows.map((elem: any) => {
-                if (elem?.original?.Title === "Others") {
-                    const newExpandedState = { [elem.id]: true };
-                    setExpanded(newExpandedState);
-                }
-            })
-        }
-    }, [data])
-    /****************** defult Expend Other Section end *******************/
     /****************** defult sorting  part end *******************/
 
     const table: any = useReactTable({
@@ -410,7 +386,7 @@ const GlobalCommanTable = (items: any, ref: any) => {
         getSubRows: (row: any) => row?.subRows,
         onRowSelectionChange: setRowSelection,
         getCoreRowModel: getCoreRowModel(),
-        getPaginationRowModel: showPagination === true ? getPaginationRowModel() : null,
+        getPaginationRowModel: showPagination === true ? getPaginationRowModel() : undefined,
         getFilteredRowModel: getFilteredRowModel(),
         getExpandedRowModel: getExpandedRowModel(),
         getSortedRowModel: getSortedRowModel(),
@@ -419,6 +395,19 @@ const GlobalCommanTable = (items: any, ref: any) => {
         enableSubRowSelection: false,
         // filterFns: undefined
     });
+    /****************** defult Expend Other Section  part *******************/
+    React.useEffect(() => {
+        if (table?.getRowModel()?.rows.length > 0) {
+            table?.getRowModel()?.rows.map((elem: any) => {
+                if (elem?.original?.Title === "Others") {
+                    const newExpandedState = { [elem.id]: true };
+                    setExpanded(newExpandedState);
+                }
+            })
+        }
+    }, [data])
+    /****************** defult Expend Other Section end *******************/
+
     React.useEffect(() => {
         CheckDataPrepre()
     }, [table?.getSelectedRowModel()?.flatRows])
@@ -506,8 +495,6 @@ const GlobalCommanTable = (items: any, ref: any) => {
 
 
     const CheckDataPrepre = () => {
-        let itrm: any;
-        let parentData: any;
         let parentDataCopy: any;
         if (usedFor == "SiteComposition" || items?.multiSelect === true) {
             let finalData: any = table?.getSelectedRowModel()?.flatRows;
@@ -563,9 +550,6 @@ const GlobalCommanTable = (items: any, ref: any) => {
     const ShowTeamFunc = () => {
         setShowTeamPopup(true)
     }
-    const showTaskTeamCAllBack = React.useCallback(() => {
-        setShowTeamPopup(false)
-    }, []);
     const openTaskAndPortfolioMulti = () => {
         table?.getSelectedRowModel()?.flatRows?.map((item: any) => {
             let siteUrl: any = ''
@@ -653,7 +637,7 @@ const GlobalCommanTable = (items: any, ref: any) => {
             }
         };
         table.getRowModel().rows.forEach(flattenRowData);
-        const worksheet = XLSX.utils.aoa_to_sheet([]);
+        const worksheet: any = XLSX.utils.aoa_to_sheet([]);
         function removeDuplicates(arr: any) {
             const uniqueArray = [];
             const seen = new Set();
@@ -711,9 +695,6 @@ const GlobalCommanTable = (items: any, ref: any) => {
     };
     ////Export to excel end/////
 
-    const expndpopup = (e: any) => {
-        settablecontiner(e);
-    };
     const openCreationAllStructure = (eventValue: any) => {
         if (eventValue === "Add Structure") {
             items?.OpenAddStructureModal();
@@ -746,7 +727,7 @@ const GlobalCommanTable = (items: any, ref: any) => {
     };
 
     React.useImperativeHandle(ref, () => ({
-        callChildFunction, trueTopIcon, setRowSelection, globalFilter, setColumnFilters, setGlobalFilter
+        callChildFunction, trueTopIcon, setRowSelection, globalFilter
     }));
 
     const restructureFunct = (items: any) => {
@@ -755,105 +736,51 @@ const GlobalCommanTable = (items: any, ref: any) => {
 
     ////////////////  end /////////////////
 
-    //Virual rows
-    const parentRef = React.useRef<HTMLDivElement>(null);
-    const { rows } = table.getRowModel();
-    const virtualizer = useVirtualizer({
-        count: rows.length,
-        getScrollElement: () => parentRef.current,
-        // estimateSize: () => 24,
-        // overscan: 15,
-        estimateSize: () => 200,
-        overscan: 50,
-    });
-
-    const itemsVirtualizer: any = virtualizer.getVirtualItems();
-    const [before, after] =
-        itemsVirtualizer.length > 0
-            ? [
-                notUndefined(itemsVirtualizer[0]).start - virtualizer.options.scrollMargin,
-                virtualizer.getTotalSize() -
-                notUndefined(itemsVirtualizer[itemsVirtualizer.length - 1]).end,
-            ]
-            : [0, 0];
-
-    const setTableHeight = () => {
-        const screenHeight = window.innerHeight;
-        const tableHeight = screenHeight * 0.8 - 5;
-        parentRef.current.style.height = `${tableHeight}px`;
-    };
-    React.useEffect(() => {
-        if (items.wrapperHeight) {
-            parentRef.current.style.height = items.wrapperHeight;
-        } else {
-            setTableHeight();
-            window.addEventListener('resize', setTableHeight);
-            return () => {
-                window.removeEventListener('resize', setTableHeight);
-            };
-        }
-    }, []);
-    //Virtual rows
-
-
     return (
         <>
             {showHeader === true && <div className='tbl-headings justify-content-between fixed-Header top-0' style={{ background: '#e9e9e9' }}>
                 <span className='leftsec'>
                     {showingAllPortFolioCount === true ? <div className='alignCenter mt--2'>
                         <label>
-                            <label style={{ color: "#333333" }}>
+                            <label style={{ color: `${portfolioColor}` }}>
                                 Showing
                             </label>
-                            {portfolioTypeData?.map((type: any, index: any) => {
+                            {portfolioTypeData.map((type: any, index: any) => {
                                 return (
                                     <>
-                                        {isShowingDataAll === true ? <><label className='ms-1' style={{ color: "#333333" }}>{` ${type[type.Title + 'numberCopy']} `} of {" "} </label> <label style={{ color: "#333333" }} className='ms-0'>{` ${type[type.Title + 'number']} `}</label><label style={{ color: "#333333" }} className='ms-1'>{" "} {type.Title}</label>{index < type.length - 1 && <label style={{ color: "#333333" }} className="ms-1"> | </label>}</> :
-                                            <><label className='ms-1' style={{ color: "#333333" }}>{` ${type[type.Title + 'filterNumber']} `} of {" "} </label> <label style={{ color: "#333333" }} className='ms-0'>{` ${type[type.Title + 'number']} `}</label><label style={{ color: "#333333" }} className='ms-1'>{" "} {type.Title}</label>{index < type.length - 1 && <label style={{ color: "#333333" }} className="ms-1"> | </label>}</>}
+                                        {isShowingDataAll === true ? <><label className='ms-1' style={{ color: `${portfolioColor}` }}>{` ${type[type.Title + 'numberCopy']} `} of {" "} </label> <label style={{ color: `${portfolioColor}` }} className='ms-0'>{` ${type[type.Title + 'number']} `}</label><label style={{ color: `${portfolioColor}` }} className='ms-1'>{" "} {type.Title}</label>{index < type.length - 1 && <label style={{ color: `${portfolioColor}` }} className="ms-1"> | </label>}</> :
+                                            <><label className='ms-1' style={{ color: `${portfolioColor}` }}>{` ${type[type.Title + 'filterNumber']} `} of {" "} </label> <label style={{ color: `${portfolioColor}` }} className='ms-0'>{` ${type[type.Title + 'number']} `}</label><label style={{ color: `${portfolioColor}` }} className='ms-1'>{" "} {type.Title}</label>{index < type.length - 1 && <label style={{ color: `${portfolioColor}` }} className="ms-1"> | </label>}</>}
                                     </>
                                 )
                             })}
                         </label>
-                        {!items?.pageName ? <span className="popover__wrapper ms-1 mt--5" style={{ position: "unset" }} data-bs-toggle="tooltip" data-bs-placement="auto">
+                        <span className="popover__wrapper ms-1 mt--5" style={{ position: "unset" }} data-bs-toggle="tooltip" data-bs-placement="auto">
                             <span className='svg__iconbox svg__icon--info alignIcon dark mt--2'></span>
                             <span className="popover__content mt-3 m-3 mx-3" style={{ zIndex: 100 }}>
-                                <label style={{ color: "#333333" }}>
+                                <label style={{ color: `${portfolioColor}` }}>
                                     Showing
                                 </label>
-                                {portfolioTypeData?.map((type: any, index: any) => {
+                                {portfolioTypeData.map((type: any) => {
                                     return (
                                         <>
-                                            {isShowingDataAll === true ? <><label className='ms-1' style={{ color: "#333333" }}>{` ${type[type.Title + 'numberCopy']} `} of {" "} </label> <label style={{ color: "#333333" }} className='ms-0'>{` ${type[type.Title + 'number']} `}</label><label style={{ color: "#333333" }} className='ms-1'>{" "} {type.Title}</label><label style={{ color: "#333333" }} className="ms-1"> | </label></> :
-                                                <><label className='ms-1' style={{ color: "#333333" }}>{` ${type[type.Title + 'filterNumber']} `} of {" "} </label> <label style={{ color: "#333333" }} className='ms-0'>{` ${type[type.Title + 'number']} `}</label><label style={{ color: "#333333" }} className='ms-1'>{" "} {type.Title}</label><label style={{ color: "#333333" }} className="ms-1"> | </label></>}
+                                            {isShowingDataAll === true ? <><label className='ms-1' style={{ color: `${portfolioColor}` }}>{` ${type[type.Title + 'numberCopy']} `} of {" "} </label> <label style={{ color: `${portfolioColor}` }} className='ms-0'>{` ${type[type.Title + 'number']} `}</label><label style={{ color: `${portfolioColor}` }} className='ms-1'>{" "} {type.Title}</label><label style={{ color: `${portfolioColor}` }} className="ms-1"> | </label></> :
+                                                <><label className='ms-1' style={{ color: `${portfolioColor}` }}>{` ${type[type.Title + 'filterNumber']} `} of {" "} </label> <label style={{ color: `${portfolioColor}` }} className='ms-0'>{` ${type[type.Title + 'number']} `}</label><label style={{ color: `${portfolioColor}` }} className='ms-1'>{" "} {type.Title}</label><label style={{ color: `${portfolioColor}` }} className="ms-1"> | </label></>}
                                         </>
                                     )
                                 })}
                                 {items?.taskTypeDataItem?.map((type: any, index: any) => {
                                     return (
                                         <>
-                                            {isShowingDataAll === true ? <><label className='ms-1' style={{ color: "#333333" }}>{` ${type[type.Title + 'numberCopy']} `} of {" "} </label> <label style={{ color: "#333333" }} className='ms-0'>{` ${type[type.Title + 'number']} `}</label><label style={{ color: "#333333" }} className='ms-1'>{" "} {type.Title}</label>{index < items?.taskTypeDataItem?.length - 1 && <label style={{ color: "#333333" }} className="ms-1"> | </label>}</> :
-                                                <><label className='ms-1' style={{ color: "#333333" }}>{` ${type[type.Title + 'filterNumber']} `} of {" "} </label> <label style={{ color: "#333333" }} className='ms-0'>{` ${type[type.Title + 'number']} `}</label><label style={{ color: "#333333" }} className='ms-1'>{" "} {type.Title}</label>{index < items?.taskTypeDataItem?.length - 1 && <label style={{ color: "#333333" }} className="ms-1"> | </label>}</>}
+                                            {isShowingDataAll === true ? <><label className='ms-1' style={{ color: `${portfolioColor}` }}>{` ${type[type.Title + 'numberCopy']} `} of {" "} </label> <label style={{ color: `${portfolioColor}` }} className='ms-0'>{` ${type[type.Title + 'number']} `}</label><label style={{ color: `${portfolioColor}` }} className='ms-1'>{" "} {type.Title}</label>{index < items?.taskTypeDataItem?.length - 1 && <label style={{ color: `${portfolioColor}` }} className="ms-1"> | </label>}</> :
+                                                <><label className='ms-1' style={{ color: `${portfolioColor}` }}>{` ${type[type.Title + 'filterNumber']} `} of {" "} </label> <label style={{ color: `${portfolioColor}` }} className='ms-0'>{` ${type[type.Title + 'number']} `}</label><label style={{ color: `${portfolioColor}` }} className='ms-1'>{" "} {type.Title}</label>{index < items?.taskTypeDataItem?.length - 1 && <label style={{ color: `${portfolioColor}` }} className="ms-1"> | </label>}</>}
                                         </>
                                     )
                                 })}
                             </span>
-                        </span> :
-                            <>
-                                <div className='alignCenter mt--2'>
-                                    {items?.taskTypeDataItem?.map((type: any, index: any) => {
-                                        return (
-                                            <>
-                                                {isShowingDataAll === true ? <><label className='ms-1' style={{ color: "#333333" }}>{` ${type[type.Title + 'numberCopy']} `} of {" "} </label> <label style={{ color: "#333333" }} className='ms-0'>{` ${type[type.Title + 'number']} `}</label><label style={{ color: "#333333" }} className='ms-1'>{" "} {type.Title}</label>{index < items?.taskTypeDataItem?.length - 1 && <label style={{ color: "#333333" }} className="ms-1"> | </label>}</> :
-                                                    <><label className='ms-1' style={{ color: "#333333" }}>{` ${type[type.Title + 'filterNumber']} `} of {" "} </label> <label style={{ color: "#333333" }} className='ms-0'>{` ${type[type.Title + 'number']} `}</label><label style={{ color: "#333333" }} className='ms-1'>{" "} {type.Title}</label>{index < items?.taskTypeDataItem?.length - 1 && <label style={{ color: "#333333" }} className="ms-1"> | </label>}</>}
-                                            </>
-                                        )
-                                    })}
-                                </div>
-                            </>}
-
+                        </span>
                     </div> :
-                        <span style={{ color: "#333333", flex: "none" }} className='Header-Showing-Items'>{`Showing ${table?.getFilteredRowModel()?.rows?.length} of ${items?.catogryDataLength ? items?.catogryDataLength : data?.length}`}</span>}
-                    <span className="mx-1">{items?.showDateTime}</span>
+                        <span style={{ color: `${portfolioColor}` }} className='Header-Showing-Items'>{`Showing ${table?.getFilteredRowModel()?.rows?.length} of ${data?.length} `}</span>}
+                    <span>{items?.showDateTime}</span>
                     <DebouncedInput
                         value={globalFilter ?? ""}
                         onChange={(value) => setGlobalFilter(String(value))}
@@ -861,8 +788,8 @@ const GlobalCommanTable = (items: any, ref: any) => {
                         portfolioColor={portfolioColor}
                     />
                     <span className="svg__iconbox svg__icon--setting" style={{ backgroundColor: `${portfolioColor}` }} onClick={() => setSelectedFilterPanelIsOpen(true)}></span>
-                    <span className='mx-1'>
-                        <select style={{ height: "30px", paddingTop: "3px", color: `${portfolioColor}` }}
+                    <span className='ms-1'>
+                        <select style={{ height: "30px", color: `${portfolioColor}` }}
                             className="w-100"
                             aria-label="Default select example"
                             value={globalSearchType}
@@ -896,40 +823,39 @@ const GlobalCommanTable = (items: any, ref: any) => {
                         {items?.protfolioProfileButton === true && <>{items?.protfolioProfileButton === true && table?.getSelectedRowModel()?.flatRows[0]?.original?.TaskType?.Title != "Task" ? <button type="button" className="btn btn-primary" title='Add Activity' style={{ backgroundColor: `${portfolioColor}`, borderColor: `${portfolioColor}`, color: '#fff' }} onClick={() => openCreationAllStructure("Add Activity-Task")}>Add Activity-Task</button> :
                             <button type="button" className="btn btn-primary" style={{ backgroundColor: `${portfolioColor}`, borderColor: `${portfolioColor}`, color: '#fff' }} disabled={true} > Add Activity-Task</button>}</>}
 
-                        {
+                        {/* {
                             trueRestructuring == true ?
                                 <RestructuringCom AllMasterTasksData={items.AllMasterTasksData} queryItems={items.queryItems} restructureFunct={restructureFunct} ref={childRef} taskTypeId={items.TaskUsers} contextValue={items.AllListId} allData={data} restructureCallBack={items.restructureCallBack} restructureItem={table?.getSelectedRowModel()?.flatRows} />
                                 : <button type="button" title="Restructure" disabled={true} className="btn btn-primary">Restructure</button>
-                        }
+                        } */}
                     </>
                     }
 
                     {items.taskProfile === true && items?.showCreationAllButton === true && <>
-                        {table?.getSelectedRowModel()?.flatRows.length < 2 && table?.getSelectedRowModel()?.flatRows[0]?.original
-                        ?.TaskType?.Title != "Task" ? <button type="button" className="btn btn-primary" title='Add Activity' style={{ backgroundColor: `${portfolioColor}`, borderColor: `${portfolioColor}`, color: '#fff' }} onClick={() => openCreationAllStructure("Add Workstream-Task")}>Add Workstream-Task</button> :
+                        {table?.getSelectedRowModel()?.flatRows.length < 2 ? <button type="button" className="btn btn-primary" title='Add Activity' style={{ backgroundColor: `${portfolioColor}`, borderColor: `${portfolioColor}`, color: '#fff' }} onClick={() => openCreationAllStructure("Add Workstream-Task")}>Add Workstream-Task</button> :
                             <button type="button" className="btn btn-primary" style={{ backgroundColor: `${portfolioColor}`, borderColor: `${portfolioColor}`, color: '#fff' }} disabled={true} > Add Workstream-Task</button>}
 
-                        {
+                        {/* {
                             trueRestructuring == true ?
                                 <RestructuringCom AllMasterTasksData={items.AllMasterTasksData} queryItems={items.queryItems} restructureFunct={restructureFunct} ref={childRef} taskTypeId={items.TaskUsers} contextValue={items.AllListId} allData={data} restructureCallBack={items.restructureCallBack} restructureItem={table?.getSelectedRowModel()?.flatRows} />
                                 : <button type="button" title="Restructure" disabled={true} className="btn btn-primary"
                                 >Restructure</button>
-                        }
+                        } */}
                     </>
                     }
 
                     {table?.getSelectedRowModel()?.flatRows?.length > 0 ? <a className="teamIcon" onClick={() => ShowTeamFunc()}><span title="Create Teams Group" style={{ color: `${portfolioColor}`, backgroundColor: `${portfolioColor}` }} className="svg__iconbox svg__icon--team"></span></a>
                         : <a className="teamIcon"><span title="Create Teams Group" style={{ backgroundColor: "gray" }} className="svg__iconbox svg__icon--team"></span></a>}
                     {table?.getSelectedRowModel()?.flatRows?.length > 0 ?
-                        <a onClick={() => openTaskAndPortfolioMulti()} title='Open in New Tab' className="openWebIcon p-0"><span style={{ color: `${portfolioColor}`, backgroundColor: `${portfolioColor}` }} className="svg__iconbox svg__icon--openWeb"></span></a>
-                        : <a className="openWebIcon p-0" title='Open in New Tab'><span className="svg__iconbox svg__icon--openWeb" style={{ backgroundColor: "gray" }}></span></a>}
+                        <a onClick={() => openTaskAndPortfolioMulti()} title='Open in new tab' className="openWebIcon p-0"><span style={{ color: `${portfolioColor}`, backgroundColor: `${portfolioColor}` }} className="svg__iconbox svg__icon--openWeb"></span></a>
+                        : <a className="openWebIcon p-0" title='Open in new tab'><span className="svg__iconbox svg__icon--openWeb" style={{ backgroundColor: "gray" }}></span></a>}
 
                     {items?.OpenAdjustedTimePopupCategory && items?.showCatIcon === true && <a onClick={items.OpenAdjustedTimePopupCategory} title="Open Adjusted Time Popup">
                         <i className="fa fa-cog brush" aria-hidden="true"></i>
                     </a>}
 
-                    {items?.showCatIcon != true ? <a className='excal' title='Export to Excel' onClick={() => exportToExcel()}><RiFileExcel2Fill style={{ color: `${portfolioColor}` }} /></a> :
-                        <a className='excal' title='Export to Excel' onClick={items?.exportToExcelCategoryReport}><RiFileExcel2Fill style={{ color: `${portfolioColor}` }} /></a>}
+                    {items?.showCatIcon != true ? <a className='excal' title='Export to excal' onClick={() => exportToExcel()}><RiFileExcel2Fill style={{ color: `${portfolioColor}` }} /></a> :
+                        <a className='excal' title='Export to excal' onClick={items?.exportToExcelCategoryReport}><RiFileExcel2Fill style={{ color: `${portfolioColor}` }} /></a>}
 
                     {/* <a className='excal' title='Export To Excel' onClick={() => exportToExcel()}><RiFileExcel2Fill style={{ color: `${portfolioColor}` }} /></a> */}
 
@@ -941,101 +867,80 @@ const GlobalCommanTable = (items: any, ref: any) => {
                     {items?.flatView === true && items?.updatedSmartFilterFlatView === true && <a className='smartTotalTime' title='deactivated to Groupby View'><FaListAlt style={{ color: "#918d8d" }} /></a>}
 
 
-                    <a className='brush'><i className="fa fa-paint-brush hreflink" style={{ color: `${portfolioColor}` }} aria-hidden="true" title="Clear All" onClick={() => { setGlobalFilter(''); setColumnFilters([]); setRowSelection({}); }}></i></a>
+                    <a className='brush'><i className="fa fa-paint-brush hreflink" style={{ color: `${portfolioColor}` }} aria-hidden="true" title="Clear All" onClick={() => { setGlobalFilter(''); setColumnFilters([]); }}></i></a>
 
 
                     <a className='Prints' onClick={() => downloadPdf()}>
                         <i className="fa fa-print" aria-hidden="true" style={{ color: `${portfolioColor}` }} title="Print"></i>
                     </a>
-                    {expandIcon === true && <a className="expand" title="Expand table section" style={{ color: `${portfolioColor}` }}>
+                    {/* {expandIcon === true && <a className="expand" title="Expand table section" style={{ color: `${portfolioColor}` }}>
                         <ExpndTable prop={expndpopup} prop1={tablecontiner} />
-                    </a>}
-                    <Tooltip ComponentId={5756} />
+                    </a>} */}
+                    {/* <Tooltip ComponentId={5756} /> */}
                 </span>
             </div>}
-            <div ref={parentRef} style={{ overflow: "auto" }}>
-                <div style={{ height: `${virtualizer.getTotalSize()}px` }}>
-                    <table className="SortingTable table table-hover mb-0" id='my-table' style={{ width: "100%" }}>
-                        <thead className={showHeader === true ? 'fixedSmart-Header top-0' : 'fixed-Header top-0'}>
-                            {table.getHeaderGroups().map((headerGroup: any) => (
-                                <tr key={headerGroup.id} >
-                                    {headerGroup.headers.map((header: any) => {
-                                        return (
-                                            <th key={header.id} colSpan={header.colSpan} style={header.column.columnDef.size != undefined && header.column.columnDef.size != 150 ? { width: header.column.columnDef.size + "px" } : {}}>
-                                                {header.isPlaceholder ? null : (
-                                                    <div className='position-relative' style={{ display: "flex" }}>
-                                                        {flexRender(
-                                                            header.column.columnDef.header,
-                                                            header.getContext()
-                                                        )}
-                                                        {header.column.getCanFilter() ? (
-                                                            // <span>
-                                                            <Filter column={header.column} table={table} placeholder={header.column.columnDef} />
-                                                            // </span>
-                                                        ) : null}
-                                                        {header.column.getCanSort() ? <div
-                                                            {...{
-                                                                className: header.column.getCanSort()
-                                                                    ? "cursor-pointer select-none shorticon"
-                                                                    : "",
-                                                                onClick: header.column.getToggleSortingHandler(),
-                                                            }}
-                                                        >
-                                                            {header.column.getIsSorted()
-                                                                ? { asc: <FaSortDown style={{ color: `${portfolioColor}` }} />, desc: <FaSortUp style={{ color: `${portfolioColor}` }} /> }[
-                                                                header.column.getIsSorted() as string
-                                                                ] ?? null
-                                                                : <FaSort style={{ color: "gray" }} />}
-                                                        </div> : ""}
-                                                    </div>
-                                                )}
-                                            </th>
-                                        );
-                                    })}
-                                </tr>
-                            ))}
-                        </thead>
-                        <tbody>
-                            {before > 0 && (
-                                <tr>
-                                    <td className="col-span-full" style={{ height: before }}></td>
-                                </tr>
-                            )}
-                            {virtualizer.getVirtualItems().map((virtualRow: any, index: any) => {
-                                const row = rows[virtualRow.index] as Row<any>;
+
+            <table className="SortingTable table table-hover mb-0" id='my-table' style={{ width: "100%" }}>
+                <thead className={showHeader === true ? 'fixedSmart-Header top-0' : 'fixed-Header top-0'}>
+                    {table.getHeaderGroups().map((headerGroup: any) => (
+                        <tr key={headerGroup.id} >
+                            {headerGroup.headers.map((header: any) => {
                                 return (
-                                    <tr
-                                        // className={row?.original?.lableColor}
-                                        className={row?.original?.IsSCProtected != undefined && row?.original?.IsSCProtected == true ? `Disabled-Link opacity-75 ${row?.original?.lableColor}` : `${row?.original?.lableColor}`}
-                                        key={row.id}
-                                        data-index={virtualRow.index}
-                                        ref={virtualizer.measureElement}
-                                    >
-                                        {row.getVisibleCells().map((cell: any) => {
-                                            return (
-                                                <td className={row?.original?.boldRow} key={cell.id} style={row?.original?.fontColorTask != undefined ? { color: `${row?.original?.fontColorTask}` } : { color: `${row?.original?.PortfolioType?.Color}` }}>
-                                                    {flexRender(
-                                                        cell.column.columnDef.cell,
-                                                        cell.getContext()
-                                                    )}
-                                                </td>
-                                            );
-                                        })}
-                                    </tr>
+                                    <th key={header.id} colSpan={header.colSpan} style={header.column.columnDef.size != undefined && header.column.columnDef.size != 150 ? { width: header.column.columnDef.size + "px" } : {}}>
+                                        {header.isPlaceholder ? null : (
+                                            <div className='position-relative' style={{ display: "flex" }}>
+                                                {flexRender(
+                                                    header.column.columnDef.header,
+                                                    header.getContext()
+                                                )}
+                                                {header.column.getCanFilter() ? (
+                                                    // <span>
+                                                    <Filter column={header.column} table={table} placeholder={header.column.columnDef} />
+                                                    // </span>
+                                                ) : null}
+                                                {header.column.getCanSort() ? <div
+                                                    {...{
+                                                        className: header.column.getCanSort()
+                                                            ? "cursor-pointer select-none shorticon"
+                                                            : "",
+                                                        onClick: header.column.getToggleSortingHandler(),
+                                                    }}
+                                                >
+                                                    {header.column.getIsSorted()
+                                                        ? { asc: <FaSortDown style={{ color: `${portfolioColor}` }} />, desc: <FaSortUp style={{ color: `${portfolioColor}` }} /> }[
+                                                        header.column.getIsSorted() as string
+                                                        ] ?? null
+                                                        : <FaSort style={{ color: "gray" }} />}
+                                                </div> : ""}
+                                            </div>
+                                        )}
+                                    </th>
                                 );
                             })}
-                            {after > 0 && (
-                                <tr>
-                                    <td className="col-span-full" style={{ height: after }}></td>
-                                </tr>
-                            )}
-                        </tbody>
-                    </table>
-                    {data?.length === 0 && <div className='mt-2'>
-                        <div className='d-flex justify-content-center' style={{ height: "30px", color: portfolioColor ? `${portfolioColor}` : "#000069" }}>No data available</div>
-                    </div>}
-                </div>
-            </div>
+                        </tr>
+                    ))}
+                </thead>
+                <tbody>
+                    {table?.getRowModel()?.rows?.map((row: any) => {
+                        return (
+                            <tr className={row?.original?.lableColor}
+                                key={row.id}>
+                                {row.getVisibleCells().map((cell: any) => {
+                                    return (
+                                        <td className={row?.original?.boldRow} key={cell.id} style={row?.original?.fontColorTask != undefined ? { color: `${row?.original?.fontColorTask}` } : { color: `${row?.original?.PortfolioType?.Color}` }}>
+                                            {flexRender(
+                                                cell.column.columnDef.cell,
+                                                cell.getContext()
+                                            )}
+                                        </td>
+                                    );
+                                })}
+                            </tr>
+                        );
+                    })}
+
+                </tbody>
+            </table>
             {showPagination === true && table?.getFilteredRowModel()?.rows?.length > table.getState().pagination.pageSize ? <div className="d-flex gap-2 items-center mb-3 mx-2">
                 <button
                     className="border rounded p-1"
@@ -1086,8 +991,9 @@ const GlobalCommanTable = (items: any, ref: any) => {
                 </select>
             </div> : ''}
             {/* {ShowTeamPopup === true && items?.TaskUsers?.length > 0 ? <ShowTeamMembers props={table?.getSelectedRowModel()?.flatRows} callBack={showTaskTeamCAllBack} TaskUsers={items?.TaskUsers} /> : ''} */}
-            {ShowTeamPopup === true && items?.TaskUsers?.length > 0 ? <ShowTeamMembers props={table?.getSelectedRowModel()?.flatRows} callBack={showTaskTeamCAllBack} TaskUsers={items?.TaskUsers} portfolioTypeData={items?.portfolioTypeData} context={items?.AllListId?.Context} /> : ''}
+            {/* {ShowTeamPopup === true && items?.TaskUsers?.length > 0 ? <ShowTeamMembers props={table?.getSelectedRowModel()?.flatRows} callBack={showTaskTeamCAllBack} TaskUsers={items?.TaskUsers} portfolioTypeData={items?.portfolioTypeData} context={items?.AllListId?.Context} /> : ''}
             {selectedFilterPanelIsOpen && <SelectFilterPanel isOpen={selectedFilterPanelIsOpen} selectedFilterCallBack={selectedFilterCallBack} setSelectedFilterPannelData={setSelectedFilterPannelData} selectedFilterPannelData={selectedFilterPannelData} portfolioColor={portfolioColor} />}
+        </> */}
         </>
     )
 }
