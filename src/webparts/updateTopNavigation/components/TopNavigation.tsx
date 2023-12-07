@@ -13,7 +13,7 @@ import { data } from 'jquery';
  var ParentData:any = []
  var childData:any =[]
  var newData:any=''
-var MydataSorted:any=''
+var MydataSorted:any=[]
 const TopNavigation = (dynamicData: any) => {
     var ListId = dynamicData.dynamicData.TopNavigationListID
     const [root, setRoot] = React.useState([])
@@ -392,26 +392,39 @@ const callBackData = React.useCallback((elem: any, ShowingData: any) => {
 
   const SortedData=(newDatas:any,items:any)=>{
      newData = newDatas
-     MydataSorted = items
-  }
+     items['newSortOrder'] = newData;
+     MydataSorted.push(items);
+     
+      }
+
+
 const inputSortOrder=async ()=>{
-    let web = new Web(dynamicData.dynamicData.siteUrl);
-
-    await web.lists.getById(ListId).items.getById(MydataSorted.Id).update({
-
-
-        SortOrder:parseInt(newData),
-
-    }).then((res: any) => {
-
-        console.log(res);
-        ClosesortItem();
-         newData = ''
-        MydataSorted = ''
-        loadTopNavigation();
-
-
-    })
+     let count : number = 0;
+     const uniqueArray = MydataSorted.filter(
+        (item:any, index:any, self:any) => index === self.findIndex((i:any) => i.Id === item.Id)
+      );
+    if(uniqueArray?.length > 0 && uniqueArray != undefined){
+     uniqueArray?.map(async (items:any)=>{
+        let web = new Web(dynamicData.dynamicData.siteUrl);
+        await web.lists.getById(ListId).items.getById(items.Id).update({
+        SortOrder:parseInt(items.newSortOrder),
+    
+        }).then((res: any) => {
+              count = count+1;
+           if(count == uniqueArray?.length){
+                console.log(res);
+                ClosesortItem();
+                 newData = '';
+                MydataSorted = [];
+                loadTopNavigation();
+              }
+           
+    
+    
+        })
+     })
+    }
+   
 }
     return (
         <>
@@ -468,8 +481,33 @@ const inputSortOrder=async ()=>{
                                                                                 <span className='svg__iconbox svg__icon--Switcher' onClick={() => sortItem(child.childs)}></span>
                                                                                 <span className='svg__iconbox svg__icon--trash' onClick={() => deleteDataFunction(subchild)}></span>
                                                                             </span>
+
+                                                                            <ul className='sub-menu'>
+                                                            <li onClick={() => AddNewItem(subchild)}><span className='svg__
+                                                            iconbox svg__icon--Plus'></span> Add New </li>
+                                                            {subchild.childs?.map((subchildLast: any) => {
+                                                                return (
+                                                                    <>
+                                                                        <li className="pre">
+                                                                        {subchildLast.image != undefined ? <span><img src={subchildLast?.image} className='workmember'/></span>: <span><img src={subchildLast?.image} /></span>}
+                                                                        <span><img src={subchildLast?.image} className='workmember'/></span>
+                                                                            <span><a href={subchildLast.href?.Url}>{subchildLast.Title}</a></span>
+                                                                            <span className='float-end'>
+                                                                                <span className='svg__iconbox svg__icon--editBox' onClick={() => editPopup(subchildLast)}></span>
+                                                                                <span className='svg__iconbox svg__icon--Switcher' onClick={() => sortItem(subchild.childs)}></span>
+                                                                                <span className='svg__iconbox svg__icon--trash' onClick={() => deleteDataFunction(subchildLast)}></span>
+                                                                            </span>
+                                                                            
                                                                         </li>
                                                                     </>
+
+                                                                )
+                                                            })}
+
+                                                        </ul>
+                                                                        </li>
+                                                                    </>
+
                                                                 )
                                                             })}
 

@@ -18,7 +18,7 @@ import { EditorState } from "draft-js";
 import HtmlEditorCard from "../../globalComponents/HtmlEditor/HtmlEditor";
 import TeamConfigurationCard from "./TeamConfigurationPortfolio";
 import Tooltip from "../../globalComponents/Tooltip";
-import VersionHistoryPopup from "../../globalComponents/VersionHistroy/VersionHistory";
+import VersionHistory from "../../globalComponents/VersionHistroy/VersionHistory";
 import Sitecomposition from "../../globalComponents/SiteComposition";
 
 import ImagesC from "./ImageInformation";
@@ -48,7 +48,7 @@ let subCategories: any = [];
 let IsapprovalTask = false;
 let CategoryAllData: any = [];
 let ID: any;
-function EditInstitution({ item, SelectD, Calls, usedFor }: any) {
+function EditInstitution({ item, SelectD, Calls, usedFor , portfolioTypeData}: any) {
    // var AssignedToIds: any = [];
     ResponsibleTeamIds = [];
     AssignedToIds = [];
@@ -68,6 +68,8 @@ function EditInstitution({ item, SelectD, Calls, usedFor }: any) {
         categoryitem = item.Categories.split(';')
     }
     const [CompoenetItem, setComponent] = React.useState([]);
+    const [changeType, setChangeType] = React.useState(false);
+    const [selectPortfolioType, setSelectPortfolioType]:any = React.useState({Title:item?.PortfolioType?.Title});
     const [SmartHelpDetails, setSmartHelpDetails] = React.useState<any>([]);
     const [update, setUpdate] = React.useState(0);
     const [isDropItem, setisDropItem] = React.useState(false);
@@ -260,22 +262,7 @@ function EditInstitution({ item, SelectD, Calls, usedFor }: any) {
             setAssignUser(Assin);
         });
     };
-    // var ConvertLocalTOServerDate = function (LocalDateTime: any, dtformat: any) {
-    //     if (dtformat == undefined || dtformat == '') dtformat = "MM-DD-YYYY";
-
-    //     // below logic works fine in all condition
-    //     if (LocalDateTime != '') {
-    //         var serverDateTime;
-    //         var vLocalDateTime = new Date(LocalDateTime);
-    //         //var offsetObj = GetServerOffset();
-    //         //var IANATimeZoneName = GetIANATimeZoneName();
-    //         var mDateTime = moment(LocalDateTime);
-    //         // serverDateTime = mDateTime.tz('Europe/Berlin').format(dtformat); // 5am PDT
-    //         //serverDateTime = mDateTime.tz('America/Los_Angeles').format(dtformat);  // 5am PDT
-    //         return serverDateTime;
-    //     }
-    //     return '';
-    // }
+   
     var getMultiUserValues = function (item: any) {
         var users = "";
         var isuserexists = false;
@@ -814,7 +801,11 @@ function EditInstitution({ item, SelectD, Calls, usedFor }: any) {
             <div className="subheading siteColor">Edit Help</div>
         );
     };
-
+    const onRenderHeaderChangeParent = () => {
+        return (
+            <div className="subheading siteColor">Change Portfolio Type</div>
+        );
+    };
     var ListId: any = "";
     var CurrentSiteUrl: any = "";
     //var SharewebItemRank: any = '';
@@ -2770,6 +2761,101 @@ if(res?.ClientCategory != undefined && res?.ClientCategory?.results?.length >0 )
             }
         }, 2000)
     }, [IsComponentPicker, imagetab, IsComponent, IsService, isOpenPopup, editPopup]);
+
+
+
+    // Change Type functionality 
+    
+    const changePortfolioType=async ()=>{
+        let confirmation = confirm("Are you sure you want to change the type ?");
+        if (confirmation) {
+          let web = new Web(item.siteUrl);
+          const selectedPopupItem = item.PortfolioStructureID;
+          const numbersOnly = selectedPopupItem.substring(1);
+          const selectedPorfolioItem = selectPortfolioType?.Title;
+                 let firstWord : any;
+        
+                 if (selectedPorfolioItem.length > 0) {
+                  firstWord = selectedPorfolioItem[0]; 
+                 }
+        
+          var postData: any = {
+            PortfolioTypeId:  selectPortfolioType?.Id,
+            PortfolioStructureID: firstWord+numbersOnly
+         };
+        
+          await web.lists
+            .getById(RequireData.MasterTaskListID)
+            .items.getById(item.Id)
+            .update(postData)
+            .then(async (res: any) => {
+              if(item?.subRows?.length > 0 && item?.subRows != undefined && item?.subRows != null){
+                item?.subRows?.map(async (subRow:any)=>{
+                  if(subRow?.Item_x0020_Type === 'SubComponent' || subRow?.Item_x0020_Type === 'Feature'){
+                    var originalString = subRow.PortfolioStructureID;
+                    var stringWithoutFirstLetter = originalString.substring(1);
+                    const selectedPorfolioItem = selectPortfolioType?.Title;
+                           let firstWord : any;
+                  
+                           if (selectedPorfolioItem.length > 0) {
+                            firstWord = selectedPorfolioItem[0]; 
+                           }
+                  
+                    var postData1: any = {
+                      PortfolioTypeId:  selectPortfolioType?.Id,
+                      PortfolioStructureID: firstWord+stringWithoutFirstLetter
+                  }
+        
+                    await web.lists
+                    .getById(RequireData.MasterTaskListID)
+                    .items.getById(subRow.Id)
+                     .update(postData1)
+                     .then(async (res: any) => {
+                      if(subRow?.subRows?.length > 0 && subRow?.subRows != undefined && subRow?.subRows != null){
+                        subRow?.subRows?.map(async (feat:any)=>{
+                          if(feat?.Item_x0020_Type === 'Feature'){
+                            var originalString = feat.PortfolioStructureID;
+                            var stringWithoutFirstLetter = originalString.substring(1);
+                            const selectedPorfolioItem = selectPortfolioType?.Title;
+                                   let firstWord : any;
+                          
+                                   if (selectedPorfolioItem.length > 0) {
+                                    firstWord = selectedPorfolioItem[0]; 
+                                   }
+                          
+                            var postData2: any = {
+                              PortfolioTypeId:  selectPortfolioType?.Id,
+                              PortfolioStructureID: firstWord+stringWithoutFirstLetter
+                          }
+                          await web.lists
+                          .getById(RequireData.MasterTaskListID)
+                          .items.getById(feat.Id)
+                           .update(postData2)
+                           .then(async (res: any) => {
+                            setChangeType(false);
+                           }).catch((err:any)=>{
+        
+                           })
+                          }
+                        })}else{
+                          setChangeType(false);
+                        }
+                     })
+                     .catch((err:any)=>{
+                      console.log(err);
+                      })};
+                })
+              }else{
+                setChangeType(false);
+              }})
+            .catch((err:any)=>{
+                console.log(err);
+            })
+        }
+      
+       
+      }
+
     return (
         <>
             {console.log("All Done")}
@@ -2915,6 +3001,18 @@ if(res?.ClientCategory != undefined && res?.ClientCategory?.results?.length >0 )
                                         IMAGE INFORMATION
                                     </button>
                                 </li>
+                                <li  className="alignCenter ml-auto">
+                <span  className="mt--2"  role="button"
+                  onClick={()=>{
+                    setChangeType(true)
+                  }}
+                  >
+                    Change Type 
+                  </span>
+                 
+        <span className="svg__iconbox svg__icon--info dark" data-toggle="tooltip" data-placement="bottom" title="This link will be used to change the portfolio type of the Component item.">
+         </span>
+                </li>
                             </ul>
                             <div className="tab-content clearfix " id="myTabContent">
                                 <div
@@ -3163,10 +3261,7 @@ if(res?.ClientCategory != undefined && res?.ClientCategory?.results?.length >0 )
                                                                     })}
                                                                 </div>
                                                             ) : null}
-                                                            {/* <span className="input-group-text">
-                                                          <img src="https://hhhhteams.sharepoint.com/_layouts/images/edititem.gif"
-                                                              onClick={(e) => EditComponent(EditData, 'Component')} />
-                                                      </span> */}
+                                                            
                                                         </div>
                                                     )}
                                                     {EditData?.Portfolio_x0020_Type == "Service" && (
@@ -3199,15 +3294,13 @@ if(res?.ClientCategory != undefined && res?.ClientCategory?.results?.length >0 )
                                                                     })}
                                                                 </div>
                                                             ) : null}
-                                                            {/* <span className="input-group-text">
-                                                          <img src="https://hhhhteams.sharepoint.com/_layouts/images/edititem.gif"
-                                                              onClick={(e) => EditComponent(EditData, 'Component')} />
-                                                      </span> */}
+                                                         
                                                         </div>
                                                     )}
 
                                                     <div className="col-sm-12  inner-tabb">
                                                         <div>
+<<<<<<< HEAD
                                                             {/* {(EditData != undefined && EditData?.smartComponent != undefined)?
                                                               <>
                                                               {(EditData != undefined && EditData?.smartComponent != undefined && EditData?.smartComponent.length>0)&& EditData?.smartComponent.map((childinew: any) =>{
@@ -3298,6 +3391,9 @@ if(res?.ClientCategory != undefined && res?.ClientCategory?.results?.length >0 )
                                                       </> :null
                                                       
                                                   } */}
+=======
+                                                         
+>>>>>>> 0af33f03e80839a3437b5b913d09cb1e8fcad9e6
                                                             {smartComponentData
                                                                 ? smartComponentData?.map((com: any) => {
                                                                     return (
@@ -4213,12 +4309,7 @@ if(res?.ClientCategory != undefined && res?.ClientCategory?.results?.length >0 )
                                                             onChange={(e) => autoSuggestionsForCategory(e)}
                                                         />
                                                         <span className="input-group-text">
-                                                            {/* <a className="hreflink" title="Edit Categories">
-                                              <img
-                                                  src="https://hhhhteams.sharepoint.com/sites/HHHH/SP/_layouts/15/images/EMMCopyTerm.png"
-                                                  onClick={() => EditComponentPicker(item)}
-                                              />
-                                          </a> */}
+                                                          
                                                             <span title="Edit Categories" onClick={() => EditComponentPicker(item)} className="svg__iconbox svg__icon--editBox"></span>
                                                         </span>
 
@@ -4288,6 +4379,7 @@ if(res?.ClientCategory != undefined && res?.ClientCategory?.results?.length >0 )
                                                         })}
                                                     </div>
                                                 ) : null}
+<<<<<<< HEAD
                                                 {/* <div className="col-sm-12">
                                   <div className="col-sm-12 padding-0 input-group">
                                       <label className="full_width">Client Category</label>
@@ -4309,6 +4401,9 @@ if(res?.ClientCategory != undefined && res?.ClientCategory?.results?.length >0 )
                                   </div>
 
                               </div> */}
+=======
+                                            
+>>>>>>> 0af33f03e80839a3437b5b913d09cb1e8fcad9e6
 
                       </div>
 
@@ -4429,7 +4524,16 @@ if(res?.ClientCategory != undefined && res?.ClientCategory?.results?.length >0 )
                             <details>
                               <summary className="alignCenter">
                                 <label className="toggler full_width">
-                                  <div className="pull-left">Admin Notes{`(${EditData?.AdminNotes?.length != undefined ?EditData?.AdminNotes?.length:0 })`}</div>
+                                  <div className="alignCenter">Admin Notes{`(${EditData?.AdminNotes?.length != undefined ?EditData?.AdminNotes?.length:0 })`}<span className="ml-auto">
+                                    <input className="form-check-input me-1 rounded-0"
+                                      type="checkbox"
+                                      defaultChecked={
+                                        EditData?.descriptionVerified ===
+                                        true
+                                      }
+                                    ></input>
+                                    <span>Verified</span>
+                                  </span></div>
                                 </label>
                               </summary>
                               <div className="border border-top-0 p-2">
@@ -4445,6 +4549,7 @@ if(res?.ClientCategory != undefined && res?.ClientCategory?.results?.length >0 )
                                 </div>
                               </div>
                             </details>
+<<<<<<< HEAD
                             {/* <div className="card shadow-none mb-2">
                               <div
                                 className="accordion-item border-0"
@@ -4687,6 +4792,14 @@ if(res?.ClientCategory != undefined && res?.ClientCategory?.results?.length >0 )
                                   id="testDiv1">
                                   <span className="form-check pull-right">
                                     <input className="form-check-input rounded-0"
+=======
+                            
+                            <details>
+                              <summary className="alignCenter">
+                                <label className="toggler full_width">
+                                  <div className="alignCenter">Description{`(${EditData?.Body?.length != undefined ?EditData?.Body?.length:0 })`} <span className="ml-auto">
+                                    <input className="form-check-input me-1 rounded-0"
+>>>>>>> 0af33f03e80839a3437b5b913d09cb1e8fcad9e6
                                       type="checkbox"
                                       defaultChecked={
                                         EditData?.descriptionVerified ===
@@ -4694,7 +4807,14 @@ if(res?.ClientCategory != undefined && res?.ClientCategory?.results?.length >0 )
                                       }
                                     ></input>
                                     <span>Verified</span>
-                                  </span>
+                                  </span></div>
+                                </label>
+                              </summary>
+                              <div className="border border-top-0 p-2">
+
+                                <div
+                                  id="testDiv1">
+                                 
                                   <HtmlEditorCard
                                     editorValue={
                                       EditData?.Body != undefined
@@ -4709,6 +4829,7 @@ if(res?.ClientCategory != undefined && res?.ClientCategory?.results?.length >0 )
 
                               </div>
                             </details>
+<<<<<<< HEAD
                             {/* <div className="card shadow-none  mb-2">
                               <div
                                 className="accordion-item border-0"
@@ -4911,15 +5032,29 @@ if(res?.ClientCategory != undefined && res?.ClientCategory?.results?.length >0 )
                                 <div id="testDiv1"
                                 >
                                   <span className="form-check pull-right">
+=======
+                            
+                            <details>
+                              <summary className="alignCenter">
+                                <label className="toggler full_width">
+                                  <div className="alignCenter">Short Description{`(${EditData?.Short_x0020_Description_x0020_On?.length != undefined ?EditData?.Short_x0020_Description_x0020_On?.length:0 })`}     <span className="ml-auto">
+>>>>>>> 0af33f03e80839a3437b5b913d09cb1e8fcad9e6
                                     <input
-                                      type="checkbox" className="form-check-input rounded-0"
+                                      type="checkbox" className="form-check-input me-1 rounded-0"
                                       defaultChecked={
                                         EditData?.ShortDescriptionVerified ===
                                         true
                                       }
                                     ></input>
                                     <span>Verified</span>
-                                  </span>
+                                  </span></div>
+                                </label>
+                              </summary>
+                              <div className="border border-top-0 p-2">
+
+                                <div id="testDiv1"
+                                >
+                             
 
                                   <HtmlEditorCard
                                     editorValue={
@@ -4936,80 +5071,12 @@ if(res?.ClientCategory != undefined && res?.ClientCategory?.results?.length >0 )
 
                               </div>
                             </details>
-                            {/* <div className="card shadow-none  mb-2">
-                              <div
-                                className="accordion-item border-0"
-                                id="t_draggable1"
-                              >
-                                <div
-                                  className="card-header p-0 border-bottom-0 "
-                                  onClick={() =>
-                                    expendcollapsAccordion(EditData, "show")
-                                  }
-                                >
-                                  <button
-                                    className="accordion-button btn btn-link text-decoration-none d-block w-100 py-2 px-1 border-0 text-start rounded-0 shadow-none"
-                                    data-bs-toggle="collapse"
-                                  >
-                                    <span className="fw-medium font-sans-serif text-900">
-                                      <span className="sign">
-                                        {EditData?.show ? (
-                                          <SlArrowDown />
-                                        ) : (
-                                          <SlArrowRight />
-                                        )}
-                                      </span>{" "}
-                                      Short Description
-                                    </span>
-                                  </button>
-                                </div>
-                                <div className="accordion-collapse collapse show">
-                                  {EditData?.show && (
-                                    <div
-                                      className="accordion-body py-2 px-2"
-                                      id="testDiv1"
-                                    >
-                                      <span className="form-check text-end">
-                                        <input
-                                          type="checkbox"
-                                          defaultChecked={
-                                            EditData?.ShortDescriptionVerified ===
-                                            true
-                                          }
-                                        ></input>
-                                        <span className="ps-1">Verified</span>
-                                      </span>
-
-                                      <HtmlEditorCard
-                                        editorValue={
-                                          EditData?.Short_x0020_Description_x0020_On !=
-                                            undefined
-                                            ? EditData?.Short_x0020_Description_x0020_On
-                                            : ""
-                                        }
-                                        HtmlEditorStateChange={
-                                          SortHtmlEditorCallBack
-                                        }
-                                      ></HtmlEditorCard>
-                                    </div>
-                                  )}
-                                </div>
-                              </div>
-                            </div> */}
+                            
                             <details>
                               <summary className="alignCenter">
                                 <label className="toggler full_width">
-                                  <div className="pull-left">Background{`(${EditData?.Background?.length != undefined ?EditData?.Background?.length:0 })`}</div>
-                                </label>
-                              </summary>
-                              <div className="border border-top-0 p-2">
-
-                                <div
-                                  className="accordion-body py-2 px-2"
-                                  id="testDiv1"
-                                >
-                                  <span className="form-check pull-right">
-                                    <input className="form-check-input rounded-0"
+                                  <div className="alignCenter">Background{`(${EditData?.Background?.length != undefined ?EditData?.Background?.length:0 })`}  <span className="ml-auto">
+                                    <input className="form-check-input me-1 rounded-0"
                                       type="checkbox"
                                       defaultChecked={
                                         EditData?.BackgroundVerified ===
@@ -5021,7 +5088,16 @@ if(res?.ClientCategory != undefined && res?.ClientCategory?.results?.length >0 )
                                       }
                                     ></input>
                                     <span>Verified</span>
-                                  </span>
+                                  </span></div>
+                                </label>
+                              </summary>
+                              <div className="border border-top-0 p-2">
+
+                                <div
+                                  className="accordion-body py-2 px-2"
+                                  id="testDiv1"
+                                >
+                                
                                   <textarea
                                     className="full_width"
                                     defaultValue={EditData?.Background}
@@ -5033,80 +5109,13 @@ if(res?.ClientCategory != undefined && res?.ClientCategory?.results?.length >0 )
 
                               </div></details>
 
-                            {/* <div className="card shadow-none  mb-2">
-                              <div
-                                className="accordion-item border-0"
-                                id="t_draggable1"
-                              >
-                                <div
-                                  className="card-header p-0 border-bottom-0 "
-                                  onClick={() =>
-                                    expendcollapsAccordion(EditData, "showl")
-                                  }
-                                >
-                                  <button
-                                    className="accordion-button btn btn-link text-decoration-none d-block w-100 py-2 px-1 border-0 text-start rounded-0 shadow-none"
-                                    data-bs-toggle="collapse"
-                                  >
-                                    <span className="sign">
-                                      {EditData?.showl ? (
-                                        <SlArrowDown />
-                                      ) : (
-                                        <SlArrowRight />
-                                      )}
-                                    </span>
-                                    <span className="fw-medium font-sans-serif text-900">
-                                      {" "}
-                                      Background
-                                    </span>
-                                  </button>
-                                </div>
-                                <div className="accordion-collapse collapse show">
-                                  {EditData?.showl && (
-                                    <div
-                                      className="accordion-body py-2 px-2"
-                                      id="testDiv1"
-                                    >
-                                      <span className="form-check text-end">
-                                        <input
-                                          type="checkbox"
-                                          defaultChecked={
-                                            EditData?.BackgroundVerified ===
-                                            true
-                                          }
-                                          onChange={(e) =>
-                                          (EditData.BackgroundVerified =
-                                            e.target.value)
-                                          }
-                                        ></input>
-                                        <span className="ps-1">Verified</span>
-                                      </span>
-                                      <textarea
-                                        className="full_width"
-                                        defaultValue={EditData?.Background}
-                                        onChange={(e) =>
-                                          (EditData.Background = e.target.value)
-                                        }
-                                      ></textarea>
-                                    </div>
-                                  )}
-                                </div>
-                              </div>
-                            </div> */}
+                
                             <details>
                               <summary className="alignCenter">
                                 <label className="toggler full_width">
-                                  <div className="pull-left">Idea{`(${EditData?.Idea?.length != undefined ?EditData?.Idea?.length:0 })`}</div>
-                                </label>
-                              </summary>
-                              <div className="border border-top-0 p-2">
-                                
-                                  <div
-                                    className="accordion-body py-2 px-2"
-                                    id="testDiv1"
-                                  >
-                                    <span className="form-check pull-right">
+                                  <div className="alignCenter">Idea{`(${EditData?.Idea?.length != undefined ?EditData?.Idea?.length:0 })`} <span className="ml-auto">
                                       <input
+                                      className="form-check-input me-1 rounded-0"
                                         type="checkbox"
                                         defaultChecked={
                                           EditData?.IdeaVerified === true
@@ -5117,7 +5126,16 @@ if(res?.ClientCategory != undefined && res?.ClientCategory?.results?.length >0 )
                                         }
                                       ></input>
                                       <span>Verified</span>
-                                    </span>
+                                    </span></div>
+                                </label>
+                              </summary>
+                              <div className="border border-top-0 p-2">
+                                
+                                  <div
+                                    className="accordion-body py-2 px-2"
+                                    id="testDiv1"
+                                  >
+                                   
                                     <textarea
                                       className="full_width"
                                       defaultValue={EditData?.Idea}
@@ -5129,6 +5147,7 @@ if(res?.ClientCategory != undefined && res?.ClientCategory?.results?.length >0 )
                                 
                               </div></details>
 
+<<<<<<< HEAD
 >>>>>>> cdbc58207bc02dbf416fe686c65134f1cd0191c1
                             {/* <div className="card shadow-none mb-2">
                               <div
@@ -5236,8 +5255,15 @@ if(res?.ClientCategory != undefined && res?.ClientCategory?.results?.length >0 )
                                   id="testDiv1"
                                 >
                                   <span className="form-check pull-right">
+=======
+                            
+                            <details>
+                              <summary className="alignCenter">
+                                <label className="toggler full_width">
+                                  <div className="alignCenter">Value Added{`(${EditData?.ValueAdded?.length != undefined ?EditData?.ValueAdded?.length:0 })`}<span className="ml-auto">
+>>>>>>> 0af33f03e80839a3437b5b913d09cb1e8fcad9e6
                                     <input
-                                      type="checkbox" className="form-check-input rounded-0"
+                                      type="checkbox" className="form-check-input me-1 rounded-0"
                                       defaultChecked={
                                         EditData?.ValueAddedVerified ===
                                         true
@@ -5248,7 +5274,16 @@ if(res?.ClientCategory != undefined && res?.ClientCategory?.results?.length >0 )
                                       }
                                     ></input>
                                     <span>Verified</span>
-                                  </span>
+                                  </span></div>
+                                </label>
+                              </summary>
+                              <div className="border border-top-0 p-2">
+
+                                <div
+                                  className="accordion-body py-2 px-2"
+                                  id="testDiv1"
+                                >
+                                  
                                   <textarea
                                     className="full_width"
                                     defaultValue={EditData?.ValueAdded}
@@ -5261,65 +5296,9 @@ if(res?.ClientCategory != undefined && res?.ClientCategory?.results?.length >0 )
 >>>>>>> cdbc58207bc02dbf416fe686c65134f1cd0191c1
                               </div>
                             </details>
-                            {/* <div className="card shadow-none mb-2">
-                              <div className="accordion-item border-0"
-                                id="t_draggable1">
-                                <div
-                                  className="card-header p-0 border-bottom-0 "
-                                  onClick={() =>
-                                    expendcollapsAccordion(EditData, "showj")
-                                  }
-                                >
-                                  <button
-                                    className="accordion-button btn btn-link text-decoration-none d-block w-100 py-2 px-1 border-0 text-start rounded-0 shadow-none"
-                                    data-bs-toggle="collapse"
-                                  >
-                                    <span className="sign">
-                                      {EditData?.showj ? (
-                                        <SlArrowDown />
-                                      ) : (
-                                        <SlArrowRight />
-                                      )}
-                                    </span>
-                                    <span className="fw-medium font-sans-serif text-900">
-                                      {" "}
-                                      Value Added
-                                    </span>
-                                  </button>
-                                </div>
-                                <div className="accordion-collapse collapse show">
-                                  {EditData?.showj && (
-                                    <div
-                                      className="accordion-body py-2 px-2"
-                                      id="testDiv1"
-                                    >
-                                      <span className="form-check text-end">
-                                        <input
-                                          type="checkbox"
-                                          defaultChecked={
-                                            EditData?.ValueAddedVerified ===
-                                            true
-                                          }
-                                          onChange={(e) =>
-                                          (EditData.ValueAddedVerified =
-                                            e.target.value)
-                                          }
-                                        ></input>
-                                        <span className="ps-1">Verified</span>
-                                      </span>
-                                      <textarea
-                                        className="full_width"
-                                        defaultValue={EditData?.ValueAdded}
-                                        onChange={(e) =>
-                                          (EditData.ValueAdded = e.target.value)
-                                        }
-                                      ></textarea>
-                                    </div>
-                                  )}
-                                </div>
-                              </div>
-                            </div> */}
+                            
                             <details>
+<<<<<<< HEAD
                               <summary className="alignCenter">
                                 <label className="toggler full_width">
 <<<<<<< HEAD
@@ -5356,6 +5335,20 @@ if(res?.ClientCategory != undefined && res?.ClientCategory?.results?.length >0 )
                                 
 =======
                                   <div className="pull-left">Deliverables{`(${EditData?.Deliverables?.length != undefined ?EditData?.Deliverables?.length:0 })`}</div>
+=======
+                              <summary>
+                                <label className="toggler full_width alignCenter">
+                                  Deliverables{`(${EditData?.Deliverables?.length != undefined ?EditData?.Deliverables?.length:0 })`}  <span className="alignCenter ml-auto">
+                                    <input
+                                      type="checkbox" className="form-check-input me-1 rounded-0"
+                                      defaultChecked={
+                                        EditData?.DeliverablesVerified ===
+                                        true
+                                      }
+                                    ></input>
+                                    <span>Verified</span>
+                                  </span>
+>>>>>>> 0af33f03e80839a3437b5b913d09cb1e8fcad9e6
                                 </label>
                               </summary>
                               <div className="border border-top-0 p-2">
@@ -5364,16 +5357,7 @@ if(res?.ClientCategory != undefined && res?.ClientCategory?.results?.length >0 )
                                   className="accordion-body py-2 px-2"
                                   id="testDiv1"
                                 >
-                                  <span className="form-check pull-right">
-                                    <input
-                                      type="checkbox" className="form-check-input rounded-0"
-                                      defaultChecked={
-                                        EditData?.DeliverablesVerified ===
-                                        true
-                                      }
-                                    ></input>
-                                    <span>Verified</span>
-                                  </span>
+                                
                                   <HtmlEditorCard
                                     editorValue={
                                       EditData?.Deliverables != undefined
@@ -5388,65 +5372,7 @@ if(res?.ClientCategory != undefined && res?.ClientCategory?.results?.length >0 )
 
 >>>>>>> cdbc58207bc02dbf416fe686c65134f1cd0191c1
                               </div></details>
-                            {/* <div className="card shadow-none mb-2">
-                              <div
-                                className="accordion-item border-0"
-                                id="t_draggable1"
-                              >
-                                <div
-                                  className="card-header p-0 border-bottom-0 "
-                                  onClick={() =>
-                                    expendcollapsAccordion(EditData, "showm")
-                                  }
-                                >
-                                  <button
-                                    className="accordion-button btn btn-link text-decoration-none d-block w-100 py-2 px-1 border-0 text-start rounded-0 shadow-none"
-                                    data-bs-toggle="collapse"
-                                  >
-                                    <span className="sign">
-                                      {EditData?.showm ? (
-                                        <SlArrowDown />
-                                      ) : (
-                                        <SlArrowRight />
-                                      )}
-                                    </span>
-                                    <span className="fw-medium font-sans-serif text-900">
-                                      {" "}
-                                      Deliverables
-                                    </span>
-                                  </button>
-                                </div>
-                                <div className="accordion-collapse collapse show">
-                                  {EditData?.showm && (
-                                    <div
-                                      className="accordion-body py-2 px-2"
-                                      id="testDiv1"
-                                    >
-                                      <span className="form-check text-end">
-                                        <input
-                                          type="checkbox"
-                                          defaultChecked={
-                                            EditData?.DeliverablesVerified ===
-                                            true
-                                          }
-                                        ></input>
-                                        <span className="ps-1">Verified</span>
-                                      </span>
-                                      <HtmlEditorCard
-                                        editorValue={
-                                          EditData?.Deliverables != undefined
-                                            ? EditData?.Deliverables
-                                            : ""
-                                        }
-                                        HtmlEditorStateChange={
-                                          DeliverablesHtmlEditorCallBack
-                                        }
-                                      ></HtmlEditorCard>
-                                    </div>
-                                  )}
-                                </div>
-                              </div>
-                            </div> */}
+                           
                           </div>
                         </section>
                       </div>
@@ -5507,31 +5433,7 @@ if(res?.ClientCategory != undefined && res?.ClientCategory?.results?.length >0 )
 
 =======
                                                           </div>
-                                        {/* <div className="col-sm-5 ps-0">
-                    {EditData.Id != null ?
-                      <>
-                        {SiteTypes != undefined && SiteTypes.length > 0 ?
-                          <SiteCompositionComponent
-                            AllListId={RequireData}
-                            ItemId={item.Id}
-                            siteUrls={RequireData.siteUrl}
-                            SiteTypes={SiteTypes}
-                            ClientTime={EditData.siteCompositionData != undefined ? EditData.siteCompositionData : []}
-                            SiteCompositionSettings={EditData.SiteCompositionSettings}
-                            // SmartTotalTimeData={SmartTotalTimeData}
-                            currentListName={EditData.siteType}
-                            callBack={SiteCompositionCallBack}
-                            isServiceTask={EditData?.Portfolio_x0020_Type == "Service" ? true : false}
-                            SelectedClientCategory={selectedClientCategory}
-                          // isPortfolioConncted={ComponentTaskCheck || ServicesTaskCheck ? true : false}
-                          // SitesTaggingData={SitesTaggingData}
-                          /> : null
-                        }
-                      </>
-                      : null
-                    }
-
-                  </div> */}
+                                     
                                     </div>
                                 </div>
                                 <div
@@ -5544,21 +5446,21 @@ if(res?.ClientCategory != undefined && res?.ClientCategory?.results?.length >0 )
                                         <details>
                                             <summary className="alignCenter">
                                                 <label className="toggler full_width">
-                                                    <a className="pull-left">Technical Concept{`(${EditData?.TechnicalExplanations?.length != undefined ?EditData?.TechnicalExplanations?.length:0 })`}</a>
-                                                </label>
-                                            </summary>
-                                            <div className="border border-top-0 p-2">
-                                                {CollapseExpend && (
-                                                    <div>
-                                                        <span className="form-check pull-right">
+                                                    <a className="alignCenter">Technical Concept{`(${EditData?.TechnicalExplanations?.length != undefined ?EditData?.TechnicalExplanations?.length:0 })`} <span className="ml-auto">
                                                             <input
-                                                                type="checkbox" className="form-check-input rounded-0"
+                                                                type="checkbox" className="form-check-input me-1 rounded-0"
                                                                 defaultValue={
                                                                     EditData?.TechnicalExplanationsVerified
                                                                 }
                                                             />
                                                             <span className="ps-1">Verified</span>
-                                                        </span>
+                                                        </span></a>
+                                                </label>
+                                            </summary>
+                                            <div className="border border-top-0 p-2">
+                                                {CollapseExpend && (
+                                                    <div>
+                                                        
 
                                                         <HtmlEditorCard
                                                             editorValue={
@@ -5573,6 +5475,7 @@ if(res?.ClientCategory != undefined && res?.ClientCategory?.results?.length >0 )
                                                     </div>
                                                 )}
                                             </div></details>
+<<<<<<< HEAD
                                         {/* <section className="accordionbox">
                     <div className="accordion p-0  overflow-hidden">
                       <div className="card shadow-none mb-2">
@@ -5684,6 +5587,9 @@ if(res?.ClientCategory != undefined && res?.ClientCategory?.results?.length >0 )
                       </div>
                     </div>
                   </section> */}
+=======
+                                   
+>>>>>>> 0af33f03e80839a3437b5b913d09cb1e8fcad9e6
                                     </div>
                                 </div>
                                 <div
@@ -5696,41 +5602,16 @@ if(res?.ClientCategory != undefined && res?.ClientCategory?.results?.length >0 )
                                         <section className="accordionbox">
                                             <div className="accordion p-0  overflow-hidden">
                                                 <div className="card shadow-none  mb-2">
-                                                    {/* <a className="btn btn-secondary p-0" title="Tap to expand the childs" onClick={() => (setCollapseExpend(CollapseExpend => !CollapseExpend))} >
-
-                                                <span className="sign">{CollapseExpend ? <IoMdArrowDropdown /> : <IoMdArrowDropright />}</span>  Technical Concept
-
-                                            </a> */}
-                                                    <div
-                                                        className="card-header p-0 border-bottom-0 "
-                                                        onClick={() =>
-                                                            setCollapseExpend(
-                                                                (CollapseExpend) => !CollapseExpend
-                                                            )
-                                                        }
-                                                    >
-                                                        <button
-                                                            className="accordion-button btn btn-link text-decoration-none d-block w-100 py-2 px-1 border-0 text-start rounded-0 shadow-none"
-                                                            data-bs-toggle="collapse"
-                                                        >
-                                                            <span className="sign">
-                                                                {CollapseExpend ? (
-                                                                    <SlArrowDown />
-                                                                ) : (
-                                                                    <SlArrowRight />
-                                                                )}
-                                                            </span>
-                                                            <span className="fw-medium font-sans-serif text-900">
-                                                                {" "}
-                                                                Help Information
-                                                            </span>
-                                                        </button>
-                                                    </div>
-
-                                                    {CollapseExpend && (
-                                                        <div>
-                                                            <span className="form-check text-end">
-                                                                <input
+                                                
+                                                    
+                                                        
+                                                            
+                                                            <details>
+                              <summary>
+                                <label className="alignCenter toggler full_width">
+                                   Help Information{`(${EditData?.Help_x0020_Information?.length != undefined ?EditData?.Help_x0020_Information?.length:0 })`}<span className="alignCenter ml-auto">
+                                  <input
+                                                                className="form-check-input me-1 mt-0 rounded-0"
                                                                     type="checkbox"
                                                                     defaultChecked={
                                                                         EditData?.HelpInformationVerified ===
@@ -5741,20 +5622,23 @@ if(res?.ClientCategory != undefined && res?.ClientCategory?.results?.length >0 )
                                                                         e.target.value)
                                                                     }
                                                                 ></input>
-                                                                <span className="ps-1">Verified</span>
-                                                            </span>
-                                                            <HtmlEditorCard
-                                                                editorValue={
-                                                                    EditData?.Help_x0020_Information != undefined
-                                                                        ? EditData?.Help_x0020_Information
-                                                                        : ""
-                                                                }
-                                                                HtmlEditorStateChange={
-                                                                    HelpInformationHtmlEditorCallBack
-                                                                }
-                                                            ></HtmlEditorCard>
-                                                        </div>
-                                                    )}
+                                                                <span className="form-check m-0 p-0">Verified</span>
+                                  </span>
+                                </label>
+                              </summary>
+                              <HtmlEditorCard
+                             editorValue={
+                             EditData?.Help_x0020_Information != undefined
+                            ? EditData?.Help_x0020_Information
+                             : ""
+                            }
+                             HtmlEditorStateChange={
+                             HelpInformationHtmlEditorCallBack
+                             }
+                             ></HtmlEditorCard>
+                            </details>
+                                                           
+                                                   
                                                 </div>
                                             </div>
                                         </section>
@@ -6127,7 +6011,7 @@ if(res?.ClientCategory != undefined && res?.ClientCategory?.results?.length >0 )
                                         <span>
                                             {" "}
                                             {EditData?.ID ? (
-                                                <VersionHistoryPopup
+                                                <VersionHistory
                                                     taskId={EditData?.ID}
                                                     listId={RequireData.MasterTaskListID}
                                                     siteUrls={RequireData?.siteUrl}
@@ -6470,6 +6354,40 @@ if(res?.ClientCategory != undefined && res?.ClientCategory?.results?.length >0 )
                     <DefaultButton className='btn btn-default mx-1' onClick={() => setEditHelpPopup(false)}>Cancel</DefaultButton>
                 </footer>
             </Panel>
+                {/*change portfolio type */}
+      <Panel 
+      className={`${
+        EditData?.Portfolio_x0020_Type == "Service"
+          ? " serviepannelgreena"
+          : ""
+      }`}
+      onRenderHeader={onRenderHeaderChangeParent}
+      isOpen={changeType}
+      onDismiss={()=>{setChangeType(false)}}
+      isBlocking={false}
+      type={PanelType.medium}
+      >
+
+        <div>
+        {portfolioTypeData?.map((value:any) => (
+          <div key={value.ID} className="SpfxCheckRadio">
+            <input
+              className="radio"
+              type="radio"
+              name="selectedTitle"
+              value={value.Title}
+              checked={selectPortfolioType.Title === value.Title}
+              onChange={() => setSelectPortfolioType(value)}
+            />
+            {value.Title}</div>
+        ))}
+      </div>
+      <footer className="mt-4 text-end">
+          <button className="me-2 btn btn-primary" onClick={changePortfolioType}>Save</button>
+          <button className="btn me-2 btn-default ms-1" onClick={()=>{setChangeType(false)}}>Cancel</button>
+       </footer>
+      </Panel>
+      
         </>
     );
 >>>>>>> cdbc58207bc02dbf416fe686c65134f1cd0191c1

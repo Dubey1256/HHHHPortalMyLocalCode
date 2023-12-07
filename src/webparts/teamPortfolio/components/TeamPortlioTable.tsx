@@ -322,6 +322,7 @@ function TeamPortlioTable(SelectedProp: any) {
                             result.chekbox = false;
                             result.descriptionsSearch = '';
                             result.commentsSearch = '';
+                            result.timeSheetsDescriptionSearch = '';
                             result.TaskTypeValue = '';
                             result.portfolioItemsSearch = ''
                             if (result?.DueDate != null && result?.DueDate != undefined) {
@@ -468,7 +469,7 @@ function TeamPortlioTable(SelectedProp: any) {
                                 // if (title) result.joinedData.push(`Title: ${title}`);
                                 // if (dueDate) result.joinedData.push(`Due Date: ${dueDate}`);
                             }
-                            result["Item_x0020_Type"] = "Task"; 
+                            result["Item_x0020_Type"] = "Task";
                             TasksItem.push(result);
                             AllTasksData.push(result)
                         });
@@ -518,6 +519,7 @@ function TeamPortlioTable(SelectedProp: any) {
             result.descriptionsSearch = '';
             result.commentsSearch = '';
             result.TaskTypeValue = '';
+            result.timeSheetsDescriptionSearch = '';
             result.portfolioItemsSearch = result.Item_x0020_Type;
             result.TeamLeaderUser = [];
             if (result.Item_x0020_Type === 'Component') {
@@ -1212,10 +1214,10 @@ function TeamPortlioTable(SelectedProp: any) {
         setData(groupByButtonClickData);
     }
     // const setTableHeight = () => {
-    //     const table = document.getElementById('runtimeTable');
+    //     const table = document.getElementById('table-container');
     //     const screenHeight = window.innerHeight;
     //     const tableHeight = screenHeight * 0.8 - 5;
-    //     table.style.maxHeight = `${tableHeight}px`;
+    //     table.style.height = `${tableHeight}px`;
     // };
     // React.useEffect(() => {
     //     setTableHeight();
@@ -1225,7 +1227,7 @@ function TeamPortlioTable(SelectedProp: any) {
     //     };
     // }, []);
 
-   
+
 
     // const setTableDimensions = () => {
     //     const table = document.getElementById('runtimeTable');
@@ -1502,6 +1504,13 @@ function TeamPortlioTable(SelectedProp: any) {
                 header: "",
                 resetColumnFilters: false,
                 id: "commentsSearch",
+            },
+            {
+                accessorKey: "timeSheetsDescriptionSearch",
+                placeholder: "timeSheetsDescriptionSearch",
+                header: "",
+                resetColumnFilters: false,
+                id: "timeSheetsDescriptionSearch",
             },
             {
                 accessorFn: (row) => row?.TotalTaskTime,
@@ -2015,7 +2024,7 @@ function TeamPortlioTable(SelectedProp: any) {
                         <div className="container p-0">
                             <div className="Alltable mt-2 ">
                                 <div className="col-sm-12 p-0 smart">
-                                    <div className="">
+                                    <div>
                                         <div>
                                             <Loader loaded={loaded} lines={13} length={20} width={10} radius={30} corners={1} rotate={0} direction={1}
                                                 color={portfolioColor ? portfolioColor : "#000069"}
@@ -2214,13 +2223,13 @@ function TeamPortlioTable(SelectedProp: any) {
                     pageName={"TaskFooterTable"}
                 ></EditTaskPopup>
             )}
-            {IsComponent && (
+           {IsComponent && (
                 <EditInstituton
                     item={SharewebComponent}
                     Calls={Call}
                     SelectD={SelectedProp}
+                    portfolioTypeData={portfolioTypeData}
                 >
-                    {" "}
                 </EditInstituton>
             )}
             {IsTimeEntry && (
@@ -2234,4 +2243,3 @@ function TeamPortlioTable(SelectedProp: any) {
     );
 }
 export default TeamPortlioTable;
-
