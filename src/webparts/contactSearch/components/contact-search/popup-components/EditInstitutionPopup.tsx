@@ -271,25 +271,7 @@ const HrGmbhInstitutionDeatails=async(Id:any)=>{
 
 
 const UpdateGmbhDetails = async (postData: any) => {
-
-    // delete (postData?.Department)
-    // let updateGmbhData:any={
-    //     Title: (updateData.Title ),
-    //     FirstName: (updateData.FirstName),
-    //     FullName: (updateData.FullName ),
-    //     Suffix: (updateData.Suffix ),
-    //     JobTitle: (updateData.JobTitle ),
-    //     Email: (updateData.Email ),
-    //     WorkPhone: (updateData.WorkPhone ),
-    //     CellPhone: (updateData.CellPhone ),
-    //     HomePhone: (updateData.HomePhone ),
-    //     WorkCity: (updateData.WorkCity ),
-    //     WorkAddress: (updateData.WorkAddress ),
-    //     WorkZip: (updateData.WorkZip ),
-    //     IM: (updateData.IM ),
-
-    // }
-    let web = new Web('https://hhhhteams.sharepoint.com/sites/HHHH/GmBH');
+let web = new Web('https://hhhhteams.sharepoint.com/sites/HHHH/GmBH');
     await web.lists.getById('6CE99A82-F577-4467-9CDA-613FADA2296F').items.getById(updateData.Id).update(postData).then((e: any) => {
         console.log("request success", e);
         callBack();
