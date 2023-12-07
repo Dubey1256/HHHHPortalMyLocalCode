@@ -304,30 +304,6 @@ class Taskprofile extends React.Component<ITaskprofileProps, ITaskprofileState> 
 
       });
     }
-
-
-    if (taskDetails["AssignedTo"] != undefined) {
-      taskDetails["AssignedTo"]?.map((item: any, index: any) => {
-        if (taskDetails?.TeamMembers != undefined) {
-          for (let i = 0; i < taskDetails?.TeamMembers?.length; i++) {
-            if (item.Id == taskDetails?.TeamMembers[i]?.Id) {
-              taskDetails?.TeamMembers?.splice(i, true);
-              i--;
-            }
-          }
-        }
-
-        item.workingMember = "activeimg";
-
-      });
-    }
-
-    var array2: any = taskDetails["AssignedTo"] != undefined ? taskDetails["AssignedTo"] : []
-    if (taskDetails["TeamMembers"] != undefined) {
-      taskDetails.array = array2.concat(taskDetails["TeamMembers"]?.filter((item: any) => array2?.Id != item?.Id))
-    } else {
-      taskDetails.array = array2;
-    }
     var OffshoreComments: any = [];
     if (taskDetails["OffshoreComments"] != null) {
       let myarray: any = []
@@ -403,7 +379,7 @@ class Taskprofile extends React.Component<ITaskprofileProps, ITaskprofileState> 
       ApproverHistory: taskDetails["ApproverHistory"] != null ? JSON.parse(taskDetails["ApproverHistory"]) : "",
       OffshoreComments: OffshoreComments.length > 0 ? OffshoreComments.reverse() : null,
       OffshoreImageUrl: taskDetails["OffshoreImageUrl"] != null && JSON.parse(taskDetails["OffshoreImageUrl"]),
-      AssignedTo: taskDetails["AssignedTo"] != null ? this.GetUserObjectFromCollection(taskDetails["AssignedTo"]) : null,
+   
       ClientCategory: taskDetails["ClientCategory"],
       siteType: taskDetails["siteType"],
       listName: taskDetails["listName"],
@@ -417,9 +393,10 @@ class Taskprofile extends React.Component<ITaskprofileProps, ITaskprofileState> 
       Status: taskDetails["Status"],
       StartDate: taskDetails["StartDate"] != null ? moment(taskDetails["StartDate"]).format("DD/MM/YYYY") : "",
       CompletedDate: taskDetails["CompletedDate"] != null ? moment(taskDetails["CompletedDate"])?.format("DD/MM/YYYY") : "",
-      TeamLeader: taskDetails["ResponsibleTeam"] != null ? this.GetUserObjectFromCollection(taskDetails["ResponsibleTeam"]) : null,
-      ResponsibleTeam:taskDetails["ResponsibleTeam"] != null ? this.GetUserObjectFromCollection(taskDetails["ResponsibleTeam"]) : null,
-      TeamMembers: taskDetails.array != null ? this.GetUserObjectFromCollection(taskDetails.array) : null,
+      TeamLeader: taskDetails["ResponsibleTeam"] != null ? taskDetails["ResponsibleTeam"] : null,
+      ResponsibleTeam:taskDetails["ResponsibleTeam"] != null ? taskDetails["ResponsibleTeam"] : null,
+      TeamMembers: taskDetails.TeamMembers!= null  ? taskDetails.TeamMembers : null,
+      AssignedTo: taskDetails["AssignedTo"] != null ? taskDetails["AssignedTo"] : null,
       ItemRank: taskDetails["ItemRank"],
       PercentComplete: (taskDetails["PercentComplete"] * 100),
       Priority: taskDetails["Priority"],
@@ -728,28 +705,6 @@ class Taskprofile extends React.Component<ITaskprofileProps, ITaskprofileState> 
 
   }
 
-  private GetUserObjectFromCollection(UsersValues: any) {
-    let userDeatails = [];
-    for (let index = 0; index < UsersValues?.length; index++) {
-      let senderObject = this.taskUsers?.filter(function (user: any, i: any) {
-        if (user?.AssingedToUser != undefined) {
-          return user?.AssingedToUser["Id"] == UsersValues[index]?.Id
-        }
-      });
-      if (senderObject.length > 0) {
-        userDeatails.push({
-          'Id': senderObject[0]?.AssingedToUser.Id,
-          'Name': senderObject[0]?.Email,
-          'Suffix': senderObject[0]?.Suffix,
-          'Title': senderObject[0]?.Title,
-          'userImage': senderObject[0]?.Item_x0020_Cover?.Url,
-          'activeimg2': UsersValues[index]?.workingMember ? UsersValues[index]?.workingMember : "",
-        })
-      }
-
-    }
-    return userDeatails;
-  }
 
   private GetUserObject(username: any) {
 
@@ -817,20 +772,7 @@ class Taskprofile extends React.Component<ITaskprofileProps, ITaskprofileState> 
     });
   }
 
-  private handleSuffixHover() {
-    //e.preventDefault();
-    this.setState({
-      Display: 'block'
-    });
-  }
-
-  private handleuffixLeave() {
-    //e.preventDefault();
-
-    this.setState({
-      Display: 'none'
-    });
-  }
+ 
 
   private showhideComposition() {
     if (this.state.showComposition) {

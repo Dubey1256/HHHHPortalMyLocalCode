@@ -3,8 +3,7 @@ import { usePopperTooltip } from "react-popper-tooltip";
 import "react-popper-tooltip/dist/styles.css";
 import FeedbackGlobalInfoIcon from "./FeedbackGlobalInfoIcon";
 
-
-export default function InfoIconsToolTip({ Discription, row, versionHistory }: any) {
+export default function InfoIconsToolTip({ Discription, row }: any) {
     const [controlledVisible, setControlledVisible] = React.useState(false);
     const [feedbackArray, setfeedbackArray] = React.useState([]);
     const [showHoverTitle, setshowHoverTitle] = React.useState<any>();
@@ -55,7 +54,6 @@ export default function InfoIconsToolTip({ Discription, row, versionHistory }: a
     const handlAction = (newAction: any) => {
         if (action === "click" && newAction === "hover") return;
         let feedback: any = [];
-        let comment: any = [];
         var hoverTitleShow: any
         let hoverdata: any
         if (row != undefined && newAction == 'click' || newAction == 'hover') {
@@ -110,7 +108,7 @@ export default function InfoIconsToolTip({ Discription, row, versionHistory }: a
                 if(row?.ValueAdded!=undefined){
                     addToFeedbackArray(row?.ValueAdded, "ValueAdded");
                 }
-                if (row?.FeedBack !== undefined) {
+               if (row?.FeedBack !== undefined) {
                     feedback = JSON.parse(row.FeedBack);
                     hoverTitleShow = feedback[0].FeedBackDescriptions[0];
                     hoverTitleShow = {
@@ -123,11 +121,6 @@ export default function InfoIconsToolTip({ Discription, row, versionHistory }: a
                         setshowHoverTitle(hoverTitleShow?.Title)
                     }
                 }
-                if (row?.Comments !== undefined) { 
-                    setfeedbackArray(row.CommentsDescription);                  
-                    settaskInfo(true);                   
-                }
-                                
 
             } catch (error) {
             console.log(error)
@@ -159,15 +152,13 @@ export default function InfoIconsToolTip({ Discription, row, versionHistory }: a
     }, [action]);
     return (
         <>
-            {versionHistory != true ? <span ref={setTriggerRef} onClick={() => handlAction("click")} onMouseEnter={() => handlAction("hover")} onMouseLeave={() => handleMouseLeave()} title="Description" className=" svg__iconbox svg__icon--info dark"></span>:
-            <span ref={setTriggerRef} onClick={() => handlAction("click")} title="Description"><a href="#" className="ps-1">Show More</a></span>}
-            
+            <span ref={setTriggerRef} onClick={() => handlAction("click")} onMouseEnter={() => handlAction("hover")} onMouseLeave={() => handleMouseLeave()} title="Description" className=" svg__iconbox svg__icon--info dark"></span>
 
-            {action === "click" && visible &&  (
+            {action === "click" && visible && (
                 <div ref={setTooltipRef} {...getTooltipProps({ className: "tooltip-container p-0 m-0" })}>
 
                     <div>
-                        {versionHistory != true ?<div className="tootltip-title">{row?.TaskID != undefined ? row?.TaskID : ""} :- {row?.Title}</div>:<div className="tootltip-title">{row?.TaskID != undefined ? row?.TaskID : ""} :- {row?.TaskTitle}</div>}
+                        <div className="tootltip-title">{row?.TaskID != undefined ? row?.TaskID : ""} :- {row?.Title}</div>
                         <button className="toolTipCross" onClick={handleCloseClick}><div className="popHoverCross">×</div></button>
                     </div>
                     <div className="toolsbox">
