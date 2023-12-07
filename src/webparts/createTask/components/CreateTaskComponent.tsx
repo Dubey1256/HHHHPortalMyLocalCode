@@ -160,7 +160,7 @@ function CreateTaskComponent(props: any) {
         let TempArray: any = [];
         if (SearchedKeyWord.length > 0) {
             if (AllComponents != undefined && AllComponents?.length > 0) {
-                AllComponents.map((AllDataItem: any) => {
+                AllComponents?.map((AllDataItem: any) => {
                     if ((AllDataItem.Path?.toLowerCase())?.includes(SearchedKeyWord.toLowerCase())) {
                         TempArray.push(AllDataItem);
                     }

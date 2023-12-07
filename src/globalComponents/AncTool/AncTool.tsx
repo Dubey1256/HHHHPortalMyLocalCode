@@ -205,6 +205,7 @@ const AncTool = (props: any) => {
             let web = new Web(props?.AllListId?.siteUrl);
             const files = await web.lists.getByTitle('Documents').items.select(selectQuery).getAll();
             let newFilesArr: any = [];
+            folders=[];
             files?.map((file: any) => {
                 if (file?.Title != undefined && file?.File_x0020_Type != undefined) {
                     file.docType = file?.File_x0020_Type
