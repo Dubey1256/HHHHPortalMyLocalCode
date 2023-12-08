@@ -1682,6 +1682,7 @@ private ComponentServicePopupCallBack = (DataItem: any, Type: any, functionType:
   let dataUpdate:any;
   let selectedCC:any=[];
   let Sitestagging:any
+  let cctag:any=[]
   if (functionType == "Save") {
    if(this?.state?.isopencomonentservicepopup){
     DataItem[0]?.ClientCategory?.map((cc: any) => {
@@ -1689,8 +1690,10 @@ private ComponentServicePopupCallBack = (DataItem: any, Type: any, functionType:
           let foundCC = AllClientCategories?.find((allCC: any) => allCC?.Id == cc.Id)
           if (this?.state?.Result?.siteType?.toLowerCase() == 'shareweb') {
               selectedCC.push(cc.Id)
+              cctag.push(cc)
           } else if (this?.state?.Result?.siteType?.toLowerCase() == foundCC?.siteName?.toLowerCase()) {
               selectedCC.push(cc.Id)
+              cctag.push(cc)
           }
       }
   })
@@ -1704,6 +1707,9 @@ private ComponentServicePopupCallBack = (DataItem: any, Type: any, functionType:
 
         })
         Sitestagging = JSON.stringify(sitetag)
+        ClientTimeArray=[];
+        siteComp.ClientCategory=cctag
+        ClientTimeArray=sitetag;
     } else {
         var siteComp: any = {};
         siteComp.SiteName = this?.state?.Result?.siteType,
@@ -1712,9 +1718,11 @@ private ComponentServicePopupCallBack = (DataItem: any, Type: any, functionType:
             //   siteComp.SiteImages = ,
             siteComp.Date = moment(new Date().toLocaleString()).format("DD-MM-YYYY");
         Sitestagging = JSON?.stringify([siteComp]);
+        ClientTimeArray=[];
+        siteComp.ClientCategory=cctag
+        ClientTimeArray=[siteComp]
     }
-    ClientTimeArray=[];
-    ClientTimeArray=[siteComp]
+   
 
 }
 
