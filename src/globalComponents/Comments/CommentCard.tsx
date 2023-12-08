@@ -1,12 +1,5 @@
 import * as React from 'react';
 import { Web } from "sp-pnp-js";
-/*
-import 'setimmediate'; 
-import { Editor } from "react-draft-wysiwyg";
-import { EditorState, convertToRaw,Modifier, ContentState, convertFromHTML } from 'draft-js';  
-import "react-draft-wysiwyg/dist/react-draft-wysiwyg.css";
-import draftToHtml from 'draftjs-to-html'; 
-*/
 import { MentionsInput, Mention } from 'react-mentions';
 import mentionClass from './mention.module.scss';
 import Tooltip from '../Tooltip';
@@ -218,8 +211,7 @@ export class CommentCard extends React.Component<ICommentCardProps, ICommentCard
     });
   }
   private GetUserObjectFromCollection(UsersValues: any) {
-    console.log("this is GetUserObjectFromCollection function")
-    let userDeatails = [];
+    let userDetails = [];
     if (UsersValues != undefined && UsersValues.length > 0 && this.taskUsers != undefined && this.taskUsers.length > 0) {
       for (let index = 0; index < UsersValues.length; index++) {
         let senderObject = this.taskUsers?.filter(function (user: any, i: any) {
@@ -228,7 +220,7 @@ export class CommentCard extends React.Component<ICommentCardProps, ICommentCard
           }
         });
         if (senderObject.length > 0) {
-          userDeatails.push({
+          userDetails.push({
             'Id': senderObject[0]?.Id,
             'Name': senderObject[0]?.AssingedToUser?.EMail,
             'Suffix': senderObject[0]?.Suffix,
@@ -237,7 +229,7 @@ export class CommentCard extends React.Component<ICommentCardProps, ICommentCard
           })
         }
       }
-      return userDeatails;
+      return userDetails;
     }
 
   }
@@ -279,7 +271,6 @@ export class CommentCard extends React.Component<ICommentCardProps, ICommentCard
       console.log(this.mentionUsers);
     }
   }
-  
   private handleInputChange(e: any) {
     this.setState({ CommenttoPost: e.target.value });
   }
@@ -1354,8 +1345,6 @@ export class CommentCard extends React.Component<ICommentCardProps, ICommentCard
 
           </div>
         }
-
-
       </div >
     );
   }
