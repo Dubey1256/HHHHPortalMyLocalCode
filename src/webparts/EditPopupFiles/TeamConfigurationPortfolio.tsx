@@ -428,8 +428,8 @@ export class TeamConfigurationCard extends React.Component<ITeamConfigurationPro
                                     Select Team Members
                                 </span>
                             </span>
-                            <span>
-                                <a target="_blank " className="me-1" href={`${this.props.AllListId?.siteUrl}/SitePages/TaskUser-Management.aspx`} data-interception="off">
+                            <span className='alignCenter'>
+                                <a target="_blank " className="me-1 mt-2" href={`${this.props.AllListId?.siteUrl}/SitePages/TaskUser-Management.aspx`} data-interception="off">
                                     Task User Management
                                 </a>
                                 <Tooltip ComponentId="1745" />
