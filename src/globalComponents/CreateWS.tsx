@@ -698,9 +698,10 @@ const CreateWS = (props: any) => {
                                                     </div>
 
                                                     <ul className={refreshData ? "p-0 mt-1" : "p-0 mt-1"}>
-                                                        <li className="form-check l-radio">
+                                                        <li>
+                                                        <label className="SpfxCheckRadio">
                                                             <input
-                                                                className="form-check-input"
+                                                                className="radio"
                                                                 name={`radioPriority${multipleWSTask?.UniqueRank}`}
                                                                 type="radio"
                                                                 id={WTindex}
@@ -710,11 +711,11 @@ const CreateWS = (props: any) => {
                                                                 }
                                                                 onChange={() => ChangePriorityStatusFunction("8", WTindex)}
                                                             />
-                                                            <label className="form-check-label">High</label>
+                                                            High</label>
                                                         </li>
-                                                        <li className="form-check l-radio">
-                                                            <input
-                                                                className="form-check-input"
+                                                        <li>
+                                                           <label className="SpfxCheckRadio">
+                                                            <input className="radio"
                                                                 name={`radioPriority${multipleWSTask?.UniqueRank}`}
                                                                 type="radio"
                                                                 checked={
@@ -723,11 +724,12 @@ const CreateWS = (props: any) => {
                                                                 }
                                                                 onChange={() => ChangePriorityStatusFunction("4", WTindex)}
                                                             />
-                                                            <label className="form-check-label">Normal</label>
+                                                            Normal</label>
                                                         </li>
-                                                        <li className="form-check l-radio">
+                                                        <li>
+                                                           <label className="SpfxCheckRadio">
                                                             <input
-                                                                className="form-check-input"
+                                                                className="radio"
                                                                 name={`radioPriority${multipleWSTask?.UniqueRank}`}
                                                                 type="radio"
                                                                 checked={
@@ -736,7 +738,7 @@ const CreateWS = (props: any) => {
                                                                 }
                                                                 onChange={() => ChangePriorityStatusFunction("1", WTindex)}
                                                             />
-                                                            <label className="form-check-label">Low</label>
+                                                            Low</label>
                                                         </li>
                                                     </ul>
                                                 </fieldset>
@@ -754,19 +756,19 @@ const CreateWS = (props: any) => {
                                             <dl className={refreshData ? 'mt-1' : "mt-1"}>
                                                 <dt className="">
                                                     <label className='SpfxCheckRadio'>
-                                                        <input className="radio"   name={`radioDueDate${multipleWSTask?.UniqueRank}`} id={WTindex}
+                                                        <input className="radio" name={`radioDueDate${multipleWSTask?.UniqueRank}`} id={WTindex}
                                                             type="radio" value="(3) Low" checked={multipleWSTask.selectDateName == 'Today'} onClick={(e: any) => handleDuedateChange('Today', WTindex)} />Today
                                                     </label>
                                                 </dt>
                                                 <dt>
                                                     <label className='SpfxCheckRadio'>
-                                                        <input className="radio"  name={`radioDueDate${multipleWSTask?.UniqueRank}`}
+                                                        <input className="radio" name={`radioDueDate${multipleWSTask?.UniqueRank}`}
                                                             type="radio" value="(3) Low" checked={multipleWSTask.selectDateName == 'Tomorrow'} onClick={(e: any) => handleDuedateChange('Tomorrow', WTindex)} />Tomorrow
                                                     </label>
                                                 </dt>
                                                 <dt>
                                                     <label className='SpfxCheckRadio'>
-                                                        <input className="radio"   name={`radioDueDate${multipleWSTask?.UniqueRank}`}
+                                                        <input className="radio" name={`radioDueDate${multipleWSTask?.UniqueRank}`}
                                                             type="radio" value="(3) Low" checked={multipleWSTask.selectDateName == 'This Week'} onClick={(e: any) => handleDuedateChange('This Week', WTindex)} />This Week
                                                     </label>
                                                 </dt>
