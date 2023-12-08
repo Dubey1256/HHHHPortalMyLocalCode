@@ -2713,7 +2713,7 @@ const TeamSmartFilter = (item: any) => {
                                                         />
                                                     </div>
                                                 </div>
-                                                <div className="col-2 mt-2 pull-left">
+                                                <div className="col-2 mt-2 m-0 pull-left">
                                                     <label className="hreflink pt-4" title="Clear Date Filters" onClick={clearDateFilters} ><strong style={{ color: `${portfolioColor}` }} >Clear</strong></label>
                                                 </div>
                                             </Row>

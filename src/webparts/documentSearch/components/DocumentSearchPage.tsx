@@ -210,14 +210,14 @@ export default function DocumentSearchPage(Props: any) {
                 <h2 className="d-flex justify-content-between align-items-center siteColor  serviceColor_Active">
                     <div>Document Search</div>
                     <div className="text-end fs-6">
-                        <a  target="_blank" className="hreflink serviceColor_Active" href="https://hhhhteams.sharepoint.com/sites/HHHH/SP/SitePages/document-search-old.aspx">Old Component Portfolio</a>
+                        <a  data-interception="off" target="_blank" className="hreflink serviceColor_Active" href="https://hhhhteams.sharepoint.com/sites/HHHH/SP/SitePages/document-search-old.aspx">Old Document Search</a>
                     </div>
                 </h2>
             </div>
             {AllDocs && <div>
-                <div className="TableSection">
+                <div className="TableContentSection">
                     <div className='Alltable mt-2'>
-                        <div className='col-md-12 p-0 smart'>
+                        <div className='col-md-12 p-0 '>
                             <GlobalCommanTable columns={columns} data={AllDocs} showHeader={true} callBackData={callBackData} expandIcon={true} />
                         </div>
                     </div>
