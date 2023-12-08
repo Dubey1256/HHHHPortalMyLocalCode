@@ -35,7 +35,7 @@ export default function VersionHistory(props: any) {
 
             const employeesWithoutLastName = result.map(employee => {                                                 
                 employee.childs = []
-                const  { VersionId, VersionLabel,UniqueId,ParentUniqueId,ScopeId,SMLastModifiedDate,GUID,FileRef,FileDirRef,OData__x005f_Moderation,WorkflowVersion, OData__x005f_IsCurrentVersion, OData__x005f_UIVersion, OData__x005f_UIVersionString, odata, ...rest } = employee;
+                const  { VersionId,IsCurrentVersion, VersionLabel,UniqueId,ParentUniqueId,ScopeId,SMLastModifiedDate,GUID,FileRef,FileDirRef,OData__x005f_Moderation,WorkflowVersion, OData__x005f_IsCurrentVersion, OData__x005f_UIVersion, OData__x005f_UIVersionString, odata, ...rest } = employee;
                 return rest;
             });
             console.log(employeesWithoutLastName)
@@ -63,21 +63,16 @@ export default function VersionHistory(props: any) {
                 if(val.Comments !== undefined && val.Comments !== null && val.Comments !== '[]'){
                     val.CommentsDescription = JSON.parse(val?.Comments)         
                 }  
-                if(val?.IsTodaysTask === true){
-                    val.IsTodaysTask = true
-                }
-                else{
-                    val.IsTodaysTask = false;
-                }
+
                 val.No = val.owshiddenversion;
                 val.ModifiedDate = moment(val?.Modified).format("DD/MM/YYYY h:mmA");
-                val.ModifiedBy = val?.Editor?.LookupValue;
+                val.ModifiedBy = val?.Editor?.LookupValue;                
                 val.childs.push(val)
             })
 
             employeesWithoutLastName?.forEach((val:any)=>{                
                 val.childs?.forEach((ele:any)=>{
-                    const  { VersionId, VersionLabel,UniqueId,ParentUniqueId,ScopeId,SMLastModifiedDate,GUID,FileRef,FileDirRef,OData__x005f_Moderation,WorkflowVersion, OData__x005f_IsCurrentVersion, OData__x005f_UIVersion, OData__x005f_UIVersionString, odata,Editor, ...rest } = ele;
+                    const  { VersionId,IsCurrentVersion,VersionLabel,UniqueId,ParentUniqueId,ScopeId,SMLastModifiedDate,GUID,FileRef,FileDirRef,OData__x005f_Moderation,WorkflowVersion, OData__x005f_IsCurrentVersion, OData__x005f_UIVersion, OData__x005f_UIVersionString, odata,Editor, ...rest } = ele;
                     return rest;
                 })
             })
@@ -103,7 +98,7 @@ export default function VersionHistory(props: any) {
         } else {
             setShowEstimatedTimeDescription(true) 
         }
-      }
+    }
 
     const findDifferentColumnValues = (data: any) => {
         const differingValues = [];        
@@ -138,7 +133,7 @@ export default function VersionHistory(props: any) {
             }
             else{
                 const currentObj = data[i];
-                const prevObj = data[i-1];
+                const prevObj = data[i-1];                
                 const differingPairs: any = {};
                 differingPairs['TaskID']= currentObj.ID;
                 differingPairs['TaskTitle']= currentObj.Title;
@@ -147,12 +142,14 @@ export default function VersionHistory(props: any) {
                     differingPairs['ID']= currentObj.ID;
                     differingPairs['owshiddenversion']= currentObj.owshiddenversion; 
                     differingPairs['PercentComplete']= currentObj.PercentComplete;                                              
-                    if (currentObj[key] !== undefined && currentObj[key] !== null && currentObj[key] !== '' && currentObj.hasOwnProperty(key) && key !== 'Checkmark' && key !== 'odata.type'  && key !== 'SMTotalFileStreamSize'  && key !== 'ContentVersion' && key !== 'FolderChildCount'  && key !== 'NoExecute'  && key !== 'FSObjType'  && key !== 'FileLeafRef' && key !== 'Order' && key !== 'Created_x005f_x0020_x005f_Date' && key !== 'Last_x005f_x0020_x005f_Modified' && currentObj[key]?.length>0) {
-                        differingPairs[key] = currentObj[key];
-                        differingPairs['Editor'] = currentObj.Editor;
+                    if ((currentObj[key] !== undefined && currentObj[key] !== null && currentObj[key] !== '' && currentObj.hasOwnProperty(key)) && (key !== 'Checkmark' && key !== 'odata.type'  && key !== 'SMTotalFileStreamSize'  && key !== 'ContentVersion' && key !== 'FolderChildCount'  && key !== 'NoExecute'  && key !== 'FSObjType'  && key !== 'FileLeafRef' && key !== 'Order' && key !== 'Created_x005f_x0020_x005f_Date' && key !== 'Last_x005f_x0020_x005f_Modified')) {
+                        if(currentObj[key]?.length>0){
+                            differingPairs[key] = currentObj[key];
+                            differingPairs['Editor'] = currentObj.Editor;
+                        }                        
                     }
                 }              
-                if (Object.keys(differingPairs).length > 0) {                    
+                if (Object.keys(differingPairs).length > 0) {
                     differingValues.push(differingPairs);
                 }
             }
@@ -280,7 +277,7 @@ export default function VersionHistory(props: any) {
                                 <th style={{width:"80px"}} scope="col">No</th>
                                 <th style={{width:"170px"}} scope="col">Modified</th>
                                 <th  scope="col">Info</th>
-                                <th style={{width:"256px"}} scope="col">Modified by</th>
+                                <th style={{width:"170px"}} scope="col">Modified by</th>
                             </tr>
                         </thead>
                         <tbody>
@@ -314,19 +311,16 @@ export default function VersionHistory(props: any) {
                                                                                             ? renderObject(item[key])
                                                                                             : key === 'FeedBack' 
                                                                                             ? <div className='feedbackItm-text'>
-                                                                                                <span className='d-flex'><p className='text-ellips mb-0'>{`${item?.FeedBackDescription[0]?.Title}`}</p> <InfoIconsToolTip Discription='' row={item} versionHistory={true} /></span>                                                                                           
+                                                                                                {item?.FeedBackDescription?.length > 0 ? <span className='d-flex'><p className='text-ellips mb-0'>{`${item?.FeedBackDescription[0]?.Title}`}</p> <InfoIconsToolTip Discription='' row={item} versionHistory={true} /></span> :''}                                                                                          
                                                                                             </div> : key === 'PercentComplete' ? (item?.PercentComplete)*100 : key === 'BasicImageInfo' 
                                                                                             ? <div className='BasicimagesInfo_groupImages'>
-                                                                                                {JSON.parse(item?.BasicImageInfo).map((image:any,indx:any)=>{
+                                                                                                {item?.BasicImageInfo != undefined && JSON.parse(item?.BasicImageInfo).map((image:any,indx:any)=>{
                                                                                                     return(
-                                                                                                        <>
-                                                                                                            
-                                                                                                                <span className='BasicimagesInfo_group'>
-                                                                                                                    <img src={image.ImageUrl} alt="" />
-                                                                                                                    {image.ImageUrl !== undefined ? <span className='BasicimagesInfo_group-imgIndex'>{indx+1}</span> : ''}
-                                                                                                                </span>
-                                                                                                           
-                                                                                                          
+                                                                                                        <>                                                                                                            
+                                                                                                            <span className='BasicimagesInfo_group'>
+                                                                                                                <img src={image.ImageUrl} alt="" />
+                                                                                                                {image.ImageUrl !== undefined ? <span className='BasicimagesInfo_group-imgIndex'>{indx+1}</span> : ''}
+                                                                                                            </span>
                                                                                                         </>
                                                                                                     )
                                                                                                 })}
@@ -369,7 +363,7 @@ export default function VersionHistory(props: any) {
                                                                                                   </div>
                                                                                                 </dl>                                                                                              
                                                                                             : key === 'Comments'
-                                                                                            ?<><div className='feedbackItm-text'>
+                                                                                            ?<>{item?.CommentsDescription != undefined && <div className='feedbackItm-text'>
                                                                                             
                                                                                                 <div>
                                                                                                     <span className='comment-date'>
@@ -392,7 +386,7 @@ export default function VersionHistory(props: any) {
                                                                                                     </span>
                                                                                                    
                                                                                                 </div>                                                                                                                                                                                                                                                                          
-                                                                                            </div></>:item[key]}
+                                                                                            </div>}</> : item[key]}
                                                                                     </span>
 
                                                                                 </li>}
