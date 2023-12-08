@@ -1697,18 +1697,18 @@ const EditTaskPopup = (Items: any) => {
                     selectCategoryData.map((categoryData: any) => {
                         categoryTitle = categoryData.newTitle;
                         if (usedFor == "For-Auto-Search") {
-                            if (categoryTitle != "On-Hold") {
+                            // if (categoryTitle != "On-Hold") {
                                 tempShareWebTypeData.push(categoryData);
-                            } else if (categoryTitle == "On-Hold") {
-                                onHoldCategory.push(categoryData);
-                            }
+                            // } else if (categoryTitle == "On-Hold") {
+                            //     onHoldCategory.push(categoryData);
+                            // }
                         }
                         if (usedFor == "For-Panel") {
-                            if (categoryTitle != "On-Hold") {
+                            // if (categoryTitle != "On-Hold") {
                                 tempShareWebTypeData.push(categoryData);
-                            } else if (categoryTitle == "On-Hold") {
-                                onHoldCategory.push(categoryData);
-                            }
+                            // } else if (categoryTitle == "On-Hold") {
+                                // onHoldCategory.push(categoryData);
+                            // }
                         }
                         TempArray.push(categoryData);
                         let isExists: any = 0;
@@ -1795,22 +1795,31 @@ const EditTaskPopup = (Items: any) => {
 
         tempShareWebTypeData = result;
 
+        // if (usedFor == "For-Panel") {
+        //     if (onHoldCategory.length > 0 && onHoldCategory[0].Title == "On-Hold") {
+        //         setOnHoldPanel(true);
+        //     } else if (onHoldCategory.length == 0 && tempShareWebTypeData[tempShareWebTypeData.length - 1].Title != "On-Hold") {
+        //         setOnHoldPanel(false);
+        //         setShareWebTypeData(tempShareWebTypeData);
+        //     }
+        // }
+        // if (usedFor == "For-Auto-Search") {
+        //     if (onHoldCategory.length > 0 && onHoldCategory[0].Title == "On-Hold") {
+        //         setOnHoldPanel(true);
+        //     } else if (onHoldCategory.length == 0 && tempShareWebTypeData[tempShareWebTypeData.length - 1].Title != "On-Hold") {
+        //         setOnHoldPanel(false);
+        //         setShareWebTypeData(tempShareWebTypeData);
+        //     }
+        //     setSearchedCategoryData([]);
+        //     setCategorySearchKey("");
+        // }
         if (usedFor == "For-Panel") {
-            if (onHoldCategory.length > 0 && onHoldCategory[0].Title == "On-Hold") {
-                setOnHoldPanel(true);
-            } else if (onHoldCategory.length == 0 && tempShareWebTypeData[tempShareWebTypeData.length - 1].Title != "On-Hold") {
-                setOnHoldPanel(false);
-                setShareWebTypeData(tempShareWebTypeData);
-            }
+            setShareWebTypeData(selectCategoryData);
+            tempShareWebTypeData = selectCategoryData;
         }
         if (usedFor == "For-Auto-Search") {
-            if (onHoldCategory.length > 0 && onHoldCategory[0].Title == "On-Hold") {
-                setOnHoldPanel(true);
-            } else if (onHoldCategory.length == 0 && tempShareWebTypeData[tempShareWebTypeData.length - 1].Title != "On-Hold") {
-                setOnHoldPanel(false);
-                setShareWebTypeData(tempShareWebTypeData);
-            }
-            setSearchedCategoryData([]);
+            setShareWebTypeData(result);
+            setSearchedCategoryData([])
             setCategorySearchKey("");
         }
     };
@@ -5440,7 +5449,7 @@ const EditTaskPopup = (Items: any) => {
                 </div>
             </Panel>
             {/* ************ this is On-Hold Panel ************ */}
-            <Panel
+            {/* <Panel
                 type={PanelType.custom}
                 customWidth="450px"
                 onRenderHeader={onRenderCustomOnHoldPanelHeader}
@@ -5459,7 +5468,7 @@ const EditTaskPopup = (Items: any) => {
                         counter={counter}
                     />
                 </div>
-            </Panel>
+            </Panel> */}
             {/* ***************** this is Main Panel *********** */}
             <Panel
                 type={PanelType.large}
