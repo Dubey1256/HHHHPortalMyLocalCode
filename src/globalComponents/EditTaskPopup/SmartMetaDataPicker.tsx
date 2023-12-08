@@ -162,6 +162,8 @@ const Picker = (item: any) => {
             }
             // setSelect(SelectedCategoryBackupArray => ([...SelectedCategoryBackupArray]));
             setSelect(SelectedCategoryBackupArray);
+            setValue('');
+            setSearchedData([]);
         } else {
             NewArray.push(item)
             showSelectedData(NewArray);
