@@ -104,7 +104,7 @@ const ContactMainPage = (props: any) => {
             let web = new Web(allListId?.siteUrl);
             await web.lists.getById(props?.props?.HHHHInstitutionListId)
                 .items
-                .select("Id,Title,FirstName,FullName,Company,JobTitle,ItemType,WorkCity,ItemImage,WorkCountry,WorkAddress,Twitter,Instagram,Facebook,LinkedIn,WebPage,CellPhone,HomePhone,Email,SharewebSites,Site,Created,Author/Title,Modified,Editor/Title")
+               . select("Id","Title","FirstName","Description","FullName","Company","JobTitle","About","InstitutionType","SocialMediaUrls","ItemType","WorkCity","ItemImage","WorkCountry","WorkAddress","WebPage","CellPhone","HomePhone","Email","SharewebSites","Created","Author/Id","Author/Title","Modified","Editor/Id","Editor/Title")
                 .expand("Author", "Editor",)
                 .orderBy("Created", true)
                 .get().then((data: any) => {
@@ -146,7 +146,7 @@ const ContactMainPage = (props: any) => {
             let web = new Web(allListId?.siteUrl);
             await web.lists.getById(allSite?.GMBHSite ? props?.props?.GMBH_CONTACT_SEARCH_LISTID : props?.props?.HR_EMPLOYEE_DETAILS_LIST_ID)
                 .items
-                .select("Id", "Title", "FirstName", "FullName", "Company", "WorkCity", "Suffix", "WorkPhone", "HomePhone", "Comments", "WorkAddress", "WorkFax", "WorkZip", "ItemType", "JobTitle", "Item_x0020_Cover", "WebPage", "CellPhone", "Email", "LinkedIn", "Created", "SocialMediaUrls", "Author/Title", "Modified", "Editor/Title", "Division/Title", "Division/Id", "EmployeeID/Title", "StaffID", "EmployeeID/Id", "Institution/Id", "Institution/FullName", "IM")
+                .select("Id", "Title", "FirstName", "FullName","DOJ","DOE", "Company", "WorkCity", "Suffix", "WorkPhone", "HomePhone", "Comments", "WorkAddress", "WorkFax", "WorkZip", "ItemType", "JobTitle", "Item_x0020_Cover", "WebPage", "CellPhone", "Email", "LinkedIn", "Created", "SocialMediaUrls", "Author/Title", "Modified", "Editor/Title", "Division/Title", "Division/Id", "EmployeeID/Title", "StaffID", "EmployeeID/Id", "Institution/Id", "Institution/FullName", "IM")
                 .expand("EmployeeID", "Division", "Author", "Editor", "Institution")
                 .orderBy("Created", true)
                 .get().then((data: any) => {

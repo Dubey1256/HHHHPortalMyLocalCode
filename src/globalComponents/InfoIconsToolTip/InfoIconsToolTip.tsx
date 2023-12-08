@@ -3,7 +3,7 @@ import { usePopperTooltip } from "react-popper-tooltip";
 import "react-popper-tooltip/dist/styles.css";
 import FeedbackGlobalInfoIcon from "./FeedbackGlobalInfoIcon";
 
-export default function InfoIconsToolTip({ Discription, row }: any) {
+export default function InfoIconsToolTip(props:any) {
     const [controlledVisible, setControlledVisible] = React.useState(false);
     const [feedbackArray, setfeedbackArray] = React.useState([]);
     const [showHoverTitle, setshowHoverTitle] = React.useState<any>();
@@ -56,7 +56,7 @@ export default function InfoIconsToolTip({ Discription, row }: any) {
         let feedback: any = [];
         var hoverTitleShow: any
         let hoverdata: any
-        if (row != undefined && newAction == 'click' || newAction == 'hover') {
+        if (props?.row != undefined && newAction == 'click' || newAction == 'hover') {
 
             try {
                 let addToFeedbackArray = (value: any, heading: any) => {
@@ -78,7 +78,7 @@ export default function InfoIconsToolTip({ Discription, row }: any) {
                     }
                    
                 }
-                if(row?.Short_x0020_Description_x0020_On==undefined){
+                if(props?.row?.Short_x0020_Description_x0020_On==undefined){
                     let   hovertitle:any;
                 if (newAction == "hover" ) {
                     if(hoverTitleShow==undefined){
@@ -87,29 +87,29 @@ export default function InfoIconsToolTip({ Discription, row }: any) {
                     setshowHoverTitle(hovertitle)
                 }
             }
-                if(row?.Short_x0020_Description_x0020_On!=undefined){
-                    addToFeedbackArray(row?.Short_x0020_Description_x0020_On, "Short Description");
+                if(props?.row?.Short_x0020_Description_x0020_On!=undefined){
+                    addToFeedbackArray(props?.row?.Short_x0020_Description_x0020_On, "Short Description");
                 }
-                if(row?.Background!=undefined){
-                    addToFeedbackArray(row?.Background, "Background");
-                } if(row?.Body!=undefined){
-                    addToFeedbackArray(row?.Body, "Description");
-                } if(row?.AdminNotes!=undefined){
-                    addToFeedbackArray(row?.AdminNotes, "AdminNotes");
-                } if(row?.TechnicalExplanations!=undefined){
-                    addToFeedbackArray(row?.TechnicalExplanations, "Technical Explanations");
+                if(props?.row?.Background!=undefined){
+                    addToFeedbackArray(props?.row?.Background, "Background");
+                } if(props?.row?.Body!=undefined){
+                    addToFeedbackArray(props?.row?.Body, "Description");
+                } if(props?.row?.AdminNotes!=undefined){
+                    addToFeedbackArray(props?.row?.AdminNotes, "AdminNotes");
+                } if(props?.row?.TechnicalExplanations!=undefined){
+                    addToFeedbackArray(props?.row?.TechnicalExplanations, "Technical Explanations");
                 }
-                if(row?.Deliverables!=undefined){
-                    addToFeedbackArray(row?.Deliverables, "Deliverables");
+                if(props?.row?.Deliverables!=undefined){
+                    addToFeedbackArray(props?.row?.Deliverables, "Deliverables");
                 }
-                if(row?.Deliverables!=undefined){
-                    addToFeedbackArray(row?.Idea, "Idea");
+                if(props?.row?.Deliverables!=undefined){
+                    addToFeedbackArray(props?.row?.Idea, "Idea");
                 }
-                if(row?.ValueAdded!=undefined){
-                    addToFeedbackArray(row?.ValueAdded, "ValueAdded");
+                if(props?.row?.ValueAdded!=undefined){
+                    addToFeedbackArray(props?.row?.ValueAdded, "ValueAdded");
                 }
-               if (row?.FeedBack !== undefined) {
-                    feedback = JSON.parse(row.FeedBack);
+               if (props?.row?.FeedBack !== undefined) {
+                    feedback = JSON.parse(props?.row.FeedBack);
                     hoverTitleShow = feedback[0].FeedBackDescriptions[0];
                     hoverTitleShow = {
                         ...hoverTitleShow,
@@ -146,19 +146,20 @@ export default function InfoIconsToolTip({ Discription, row }: any) {
 
     const tooltiphierarchy = React.useMemo(() => {
         if (action === "click") {
-            return Discription;
+            return props?.Discription;
         }
         return '';
     }, [action]);
     return (
         <>
-            <span ref={setTriggerRef} onClick={() => handlAction("click")} onMouseEnter={() => handlAction("hover")} onMouseLeave={() => handleMouseLeave()} title="Description" className=" svg__iconbox svg__icon--info dark"></span>
+             {props?.versionHistory != true ? <span ref={setTriggerRef} onClick={() => handlAction("click")} onMouseEnter={() => handlAction("hover")} onMouseLeave={() => handleMouseLeave()} title="Description" className=" svg__iconbox svg__icon--info dark"></span>:
+            <span ref={setTriggerRef} onClick={() => handlAction("click")} title="Description"><a href="#" className="ps-1">Show More</a></span>}
 
             {action === "click" && visible && (
                 <div ref={setTooltipRef} {...getTooltipProps({ className: "tooltip-container p-0 m-0" })}>
 
                     <div>
-                        <div className="tootltip-title">{row?.TaskID != undefined ? row?.TaskID : ""} :- {row?.Title}</div>
+                    {props?.versionHistory != true ?<div className="tootltip-title">{props?.row?.TaskID != undefined ? props?.row?.TaskID : ""} :- {props?.row?.Title}</div>:<div className="tootltip-title">{props?.row?.TaskID != undefined ? props?.row?.TaskID : ""} :- {props?.row?.TaskTitle}</div>}
                         <button className="toolTipCross" onClick={handleCloseClick}><div className="popHoverCross">×</div></button>
                     </div>
                     <div className="toolsbox">

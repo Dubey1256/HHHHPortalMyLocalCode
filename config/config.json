@@ -26,6 +26,14 @@
         }
       ]
     },
+    "hhhh-quick-web-part": {
+      "components": [
+        {
+          "entrypoint": "./lib/webparts/hhhhQuick/HhhhQuickWebPart.js",
+          "manifest": "./src/webparts/hhhhQuick/HhhhQuickWebPart.manifest.json"
+        }
+      ]
+    },
     "component-profile-web-part": {
       "components": [
         {
@@ -367,6 +375,7 @@
     "SiteStructureWebPartStrings": "lib/webparts/siteStructure/loc/{locale}.js",
     "SiteDataBackupToolWebPartStrings": "lib/webparts/siteDataBackupTool/loc/{locale}.js",
     "SmartmetadataportfolioWebPartStrings": "lib/webparts/smartmetadataportfolio/loc/{locale}.js",
+    "HhhhQuickWebPartStrings": "lib/webparts/hhhhQuick/loc/{locale}.js",
     "ParentPortfolioViewWebPartStrings": "lib/webparts/parentPortfolioView/loc/{locale}.js",
     "EmployeDashBoardWebPartStrings": "lib/webparts/employeDashBoard/loc/{locale}.js",
     "TestProjectWebPartStrings": "lib/webparts/BackupData/loc/{locale}.js",
