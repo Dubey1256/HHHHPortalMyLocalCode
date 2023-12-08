@@ -34,7 +34,7 @@ const CountryContactEditPopup = (props: any) => {
                 <div className='subheading alignCenter'>
                     Select {props.popupName}
                 </div>
-                <Tooltip ComponentId='3299' />
+                <Tooltip ComponentId='1626' />
             </>
         );
     };
