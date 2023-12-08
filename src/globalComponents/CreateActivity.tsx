@@ -1,4 +1,5 @@
 import * as React from "react";
+import ReactDOMServer from 'react-dom/server';
 import { Panel, PanelType } from "office-ui-fabric-react";
 import { Web } from "sp-pnp-js";
 import TeamConfigurationCard from "./TeamConfiguration/TeamConfiguration";
@@ -265,7 +266,7 @@ const CreateActivity = (props: any) => {
             setTaskTitle(e.target.value);
         }
     }
-    const changeTaskUrl = (e: any)=>{
+    const changeTaskUrl = (e: any) => {
         setTaskUrl(e.target.value);
     }
 
@@ -334,6 +335,7 @@ const CreateActivity = (props: any) => {
             </>
         );
     };
+
 
     const closePopup = (res: any) => {
         if (res === "item") {
@@ -938,6 +940,11 @@ const CreateActivity = (props: any) => {
                         .getById(site.listId)
                         .items.add({
                             Title: TaskTitle,
+                            ComponentLink: {
+                                __metadata: { 'type': 'SP.FieldUrlValue' },
+                                Description: TaskUrl?.length > 0 ? TaskUrl?.length : null,
+                                Url: TaskUrl?.length > 0 ? TaskUrl?.length : null,
+                            },
                             Categories: categoriesItem ? categoriesItem : null,
                             PriorityRank: priorityRank,
                             Priority: priority,
@@ -1231,19 +1238,9 @@ const CreateActivity = (props: any) => {
             </span>
         </div>
     ));
-
-    return (
-        <>
-            <Panel
-                onRenderHeader={onRenderCustomHeaderMain}
-                type={PanelType.custom}
-                customWidth={props?.pageName == 'QuickTask' && props?.pageName != undefined ? "100%" : "1280px"}
-                isOpen={true}
-                onDismiss={() => closePopup("item")}
-                isBlocking={false}
-                hasCloseButton={props?.pageName == 'QuickTask' && props?.pageName != undefined ? false : true}
-                className={props?.portfolioTypeData?.Color}
-            >
+    const onRenderMainHtml = (): any => {
+        return (
+            <>
                 <div className="modal-body active">
                     {siteType?.length > 1 && selectedItem?.TaskType?.Title != "Workstream" ?
                         <div className='col mt-4'>
@@ -1537,7 +1534,27 @@ const CreateActivity = (props: any) => {
                         Cancel
                     </button>
                 </footer>
-            </Panel>
+            </>
+        );
+    };
+  
+
+    return (
+        <>
+            {props?.pageName == 'QuickTask' ?
+               <div dangerouslySetInnerHTML={{ __html: onRenderMainHtml() }}></div>  :  <Panel
+                onRenderHeader={onRenderCustomHeaderMain}
+                type={PanelType.custom}
+                customWidth={"1280px"}
+                isOpen={true}
+                onDismiss={() => closePopup("item")}
+                isBlocking={false}
+                hasCloseButton={true}
+                className={props?.portfolioTypeData?.Color}
+            >
+               <div dangerouslySetInnerHTML={{ __html:  onRenderMainHtml() }}></div>
+            </Panel>}
+
 
 
             {IsComponentPicker && (
