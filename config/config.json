@@ -283,7 +283,7 @@
       "components": [
         {
           "entrypoint": "./lib/webparts/teamPortfolio/TeamPortfolioWebPart.js",
-          "manifest": "./src/webparts/teamPortfolio/TeamPortfolicomponentEditPopupoWebPart.manifest.json"
+          "manifest": "./src/webparts/teamPortfolio/TeamPortfolioWebPart.manifest.json"
         }
       ]
     },

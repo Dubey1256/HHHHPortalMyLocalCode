@@ -1,8 +1,8 @@
 import React, { useEffect, useState } from 'react'
 import { Web } from 'sp-pnp-js';
-import GlobalCommanTable from "../../../globalComponents/GroupByReactTableComponents/GlobalCommanTable";
+import GlobalCommanTable from '../../../globalComponents/GroupByReactTableComponents/GlobalCommanTable';
 import { ColumnDef } from '@tanstack/react-table';
-import EditDocumentpanel from '../../taskprofile/components/EditDocunentPanel';
+import EditDocument from './EditDocunentPanel'
 import moment from 'moment';
 var TaskUser: any = []
 export default function DocumentSearchPage(Props: any) {
@@ -59,7 +59,7 @@ export default function DocumentSearchPage(Props: any) {
                         });
                         Doc.AllCreatedImages.push(CreatedUserObj);
                         Doc.AllModifiedImages.push(ModifiedUserObj)
-                    });                  
+                    });
                 } catch (e) {
                     console.log(e)
                 }
@@ -119,10 +119,10 @@ export default function DocumentSearchPage(Props: any) {
         {
             accessorKey: "Title", placeholder: "Title", header: "", id: "Title",
             cell: ({ row }) => (
-                <div className='alignCenter columnFixedTitle'>
+                <div className='alignCenter '>
                     <a target="_blank" href={row?.original?.FileDirRef}>
                         <span className="alignIcon svg__iconbox svg__icon--folder"></span>
-                        {row?.original?.Title ? <a className='ms-1 text-content' title={row?.original?.Title} target="_blank" href={row?.original?.FileDirRef}> {row?.original?.Title} </a> : <a className='ms-1 text-content' title={row?.original?.FileDirRef} target="_blank" href={row?.original?.FileDirRef}> {row?.original?.FileLeafRef} </a>}
+                        {row?.original?.Title ? <a className='ms-1 ' title={row?.original?.Title} target="_blank" href={row?.original?.FileDirRef}> {row?.original?.Title} </a> : <a className='ms-1 ' title={row?.original?.FileDirRef} target="_blank" href={row?.original?.FileDirRef}> {row?.original?.FileLeafRef} </a>}
                     </a>
                 </div>
             ),
@@ -131,8 +131,8 @@ export default function DocumentSearchPage(Props: any) {
         {
             accessorKey: "FileLeafRef", placeholder: "Document Url", header: "", id: "FileLeafRef",
             cell: ({ row }) => (
-                <div className='alignCenter columnFixedTitle'>
-                    {row?.original?.File_x0020_Type != 'msg' && row?.original?.File_x0020_Type != 'docx' && row?.original?.File_x0020_Type != 'doc' && row?.original?.File_x0020_Type != 'rar' && row?.original?.File_x0020_Type != 'jpeg' && row?.original?.File_x0020_Type != 'jpg' && row?.original?.File_x0020_Type != 'aspx'&&row?.original?.File_x0020_Type != 'jfif' && <span className={` svg__iconbox svg__icon--${row?.original?.File_x0020_Type}`}></span>}
+                <div className='alignCenter '>
+                    {row?.original?.File_x0020_Type != 'msg' && row?.original?.File_x0020_Type != 'docx' && row?.original?.File_x0020_Type != 'doc' && row?.original?.File_x0020_Type != 'rar' && row?.original?.File_x0020_Type != 'jpeg' && row?.original?.File_x0020_Type != 'jpg' && row?.original?.File_x0020_Type != 'aspx' && row?.original?.File_x0020_Type != 'jfif' && <span className={` svg__iconbox svg__icon--${row?.original?.File_x0020_Type}`}></span>}
                     {row?.original?.File_x0020_Type == 'rar' && <span className="svg__iconbox svg__icon--zip "></span>}
                     {row?.original?.File_x0020_Type == 'aspx' || row?.original?.File_x0020_Type == 'msg' || row?.original?.File_x0020_Type == 'apk' ? <span className=" svg__iconbox svg__icon--unknownFile "></span> : ''}
                     {row?.original?.File_x0020_Type == 'jpeg' || row?.original?.File_x0020_Type == 'jpg' ? <span className=" svg__iconbox svg__icon--jpeg "></span> : ''}
@@ -148,7 +148,7 @@ export default function DocumentSearchPage(Props: any) {
                 <>
                     {row?.original?.CreatedDate}
                     {row?.original?.AllCreatedImages.map((item: any) => (
-                        <a target="_blank" href={`${PageContext.context._pageContext._web.serverRelativeUrl}/SitePages/TaskDashboard.aspx?UserId=${item.UserId}&Name=${item.Title}`}>
+                        <a className='ms-1' target="_blank" href={`${PageContext.context._pageContext._web.serverRelativeUrl}/SitePages/TaskDashboard.aspx?UserId=${item.UserId}&Name=${item.Title}`}>
                             {item?.UserImage != undefined && item?.UserImage != '' ? <img title={item?.Title} className="workmember" src={item?.UserImage}></img> : <img title={item?.Title} className="workmember" src={`${PageContext.context._pageContext._web.serverRelativeUrl}/SiteCollectionImages/ICONS/32/icon_user.jpg`}></img>}
                         </a>
                     ))}
@@ -163,7 +163,7 @@ export default function DocumentSearchPage(Props: any) {
                 <>
                     {row?.original?.ModifiedDate}
                     {row?.original?.AllModifiedImages.map((item: any) => (
-                        <a target="_blank" href={`${PageContext.context._pageContext._web.serverRelativeUrl}/SitePages/TaskDashboard.aspx?UserId=${item.UserId}&Name=${item.Title}`}>
+                        <a className='ms-1' target="_blank" href={`${PageContext.context._pageContext._web.serverRelativeUrl}/SitePages/TaskDashboard.aspx?UserId=${item.UserId}&Name=${item.Title}`}>
                             {item?.UserImage != undefined && item?.UserImage != '' ? <img title={item?.Title} className="workmember" src={item?.UserImage}></img> : <img title={item?.Title} className="workmember" src={`${PageContext.context._pageContext._web.serverRelativeUrl}/SiteCollectionImages/ICONS/32/icon_user.jpg`}></img>}
                         </a>
                     ))}
@@ -193,7 +193,7 @@ export default function DocumentSearchPage(Props: any) {
     //#endregion
     return (
         <>
-            <section className='ContentSection'>
+            {/* <section className='ContentSection'>
                 <div className='row'>
                     <div className='col-sm-3 text-primary'>
                         <h3 className="heading">Document Search
@@ -205,22 +205,28 @@ export default function DocumentSearchPage(Props: any) {
                         </h6>
                     </div>
                 </div>
-            </section>
+            </section> */}
+            <div className="col-sm-12 clearfix">
+                <h2 className="d-flex justify-content-between align-items-center siteColor  serviceColor_Active">
+                    <div>Document Search</div>
+                    <div className="text-end fs-6">
+                        <a  target="_blank" className="hreflink serviceColor_Active" href="https://hhhhteams.sharepoint.com/sites/HHHH/SP/SitePages/document-search-old.aspx">Old Component Portfolio</a>
+                    </div>
+                </h2>
+            </div>
             {AllDocs && <div>
                 <div className="TableSection">
-                <div className='Alltable mt-2'>
-                    <div className='col-md-12 p-0 smart'>
-                        <GlobalCommanTable columns={columns} data={AllDocs} showHeader={true} callBackData={callBackData} expendedTrue={true} />
+                    <div className='Alltable mt-2'>
+                        <div className='col-md-12 p-0 smart'>
+                            <GlobalCommanTable columns={columns} data={AllDocs} showHeader={true} callBackData={callBackData} expandIcon={true} />
+                        </div>
                     </div>
                 </div>
-            </div>
             </div>}
             {isEditModalOpen ?
-                <EditDocumentpanel closeEditPopup={closeEditPopup} editData={selectedItemId} AllListId={PageContext} Context={PageContext?.context} editdocpanel={isEditModalOpen} />
+                <EditDocument closeEditPopup={closeEditPopup} editData={selectedItemId} AllListId={PageContext} Context={PageContext?.context} editdocpanel={isEditModalOpen} />
                 :
                 null
             }    </>
     )
 }
-
-
