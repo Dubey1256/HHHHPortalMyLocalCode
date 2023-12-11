@@ -106,13 +106,13 @@ export class PortfolioStructureCreationCard extends React.Component<IStructureCr
 
     // }
     private CheckPortfolioType = (item: any) => {
-       // if (item?.Title === 'Service') {
-            this.setState({ PortfolioTypeId: item.Id });
-            this.setState({
-                PortfolioType: item?.Title +' Portfolio',
-                defaultPortfolioType: item.Title
-            })
-       // }
+        // if (item?.Title === 'Service') {
+        this.setState({ PortfolioTypeId: item.Id });
+        this.setState({
+            PortfolioType: item?.Title + ' Portfolio',
+            defaultPortfolioType: item.Title
+        })
+        // }
         // if (item?.Title === 'Component') {
         //     this.setState({ PortfolioTypeId: item.Id });
         //     this.setState({
@@ -464,137 +464,142 @@ export class PortfolioStructureCreationCard extends React.Component<IStructureCr
 
 
         if (self.ChildItemTitle.length == self.GetportfolioIdCount) {
+            const isEmptyTitle = self?.ChildItemTitle?.some((item: any) => item.Title === "");
             let AddedCount = 0;
-            self.ChildItemTitle.forEach(async function (item: any) {
-                //item.Title = self.state.textTitle
-                if (item.Title != undefined && item.Title != '') {
-                    self.TotalCount++;
-                    if (self.state.TeamConfig != undefined) {
-                        if (self.state.TeamConfig.ResponsibleTeam != undefined && self.state.TeamConfig.ResponsibleTeam.length > 0) {
-                            self.state.TeamConfig.ResponsibleTeam.forEach(function (assignto: any) {
-                                self.AssignedIds.push(assignto.AssingedToUserId);
-                                // self.AssignedTo.push(assignto.AssingedToUserId);
-                            })
-                        }
-                        if (self.state.TeamConfig.TeamMemberUsers != undefined && self.state.TeamConfig.TeamMemberUsers.length > 0) {
-
-                            self.state.TeamConfig.TeamMemberUsers.forEach(function (TeamMember: any) {
-                                self.TeamMembersIds.push(TeamMember.AssingedToUserId);
-                            })
-                        }
-                    }
-                    let ClientCategoryIds: any = []
-                    if (self.state.SelectedItem != undefined && self.state.SelectedItem.ClientCategory != undefined ) {
-                        if(  self.state.SelectedItem?.ClientCategory?.length>0){
-                            self.state.SelectedItem?.ClientCategory?.forEach(function (clientCategory: any) {
-                                ClientCategoryIds.push(clientCategory.Id);
-                            })
-                        }else{
-                            self.state.SelectedItem?.ClientCategory?.results?.forEach(function (clientCategory: any) {
-                                ClientCategoryIds.push(clientCategory.Id);
-                            })
-                        }
-                       
-                    }
-                    let AssignedToIds: any = []
-                    let TeamMembersIds: any = []
-                    if (item.AssignedToUsers != undefined && item.AssignedToUsers.length > 0) {
-                        item.AssignedToUsers.forEach(function (user: any) {
-                            AssignedToIds.push(user.AssingedToUserId);
-                        });
-                    }
-                    /*
-                    item.TeamMemberUsers.forEach(item.TeamMemberUsers, function (user:any) {
-                        TeamMembersIds.push(user.AssingedToUserId);
-                    });
-                    */
-                    let postdata: any = {
-                        "Item_x0020_Type": item.MasterItemsType,
-                        "ParentId": self.state.SelectedItem.Id,
-                        "Title": item.Title,
-                        //"Portfolio_x0020_Type": self.Portfolio_x0020_Type,
-                        "AdminStatus": item.AdminStatus,
-                        AssignedToId: { "results": self.AssignedIds },
-                        TeamMembersId: { "results": self.TeamMembersIds },
-                        "PortfolioLevel": item.NextLevel,
-                        "PortfolioStructureID": item.PortfolioStructureIDs,
-                        ClientCategoryId: { "results": ClientCategoryIds },
-                    }
-                    if (self?.state?.SelectedItem?.PortfolioType != undefined) {
-                        postdata.PortfolioTypeId = self?.state?.SelectedItem?.PortfolioType?.Id;
-
-                    }
-                    if (self.state.SelectedItem.Sitestagging != undefined) {
-                        let siteComposition = JSON.parse(self.state.SelectedItem.Sitestagging);
-                        siteComposition.forEach(function (item: any) {
-                            if (item.Date != undefined) {
-                                item.Date = '';
+            if (!isEmptyTitle) {
+                self.ChildItemTitle.forEach(async function (item: any) {
+                    //item.Title = self.state.textTitle
+                    if (item.Title != undefined && item.Title != '') {
+                        self.TotalCount++;
+                        if (self.state.TeamConfig != undefined) {
+                            if (self.state.TeamConfig.ResponsibleTeam != undefined && self.state.TeamConfig.ResponsibleTeam.length > 0) {
+                                self.state.TeamConfig.ResponsibleTeam.forEach(function (assignto: any) {
+                                    self.AssignedIds.push(assignto.AssingedToUserId);
+                                    // self.AssignedTo.push(assignto.AssingedToUserId);
+                                })
                             }
-                        })
-                        //postdata.Sitestagging = angular.toJson(siteComposition);
-                        postdata.Sitestagging = JSON.stringify(siteComposition);
-                    }
-                    if (self.state.SelectedItem.SiteCompositionSettings != undefined) {
-                        postdata.SiteCompositionSettings = self.state.SelectedItem.SiteCompositionSettings;
-                    }
-                    if (self.state.SelectedItem.TaskListId != undefined) {
-                        postdata.TaskListId = self.state.SelectedItem.TaskListId;
-                    }
-                    if (self.state.SelectedItem.TaskListName != undefined) {
-                        postdata.TaskListName = self.state.SelectedItem.TaskListName;
-                    }
-                    if (self.state.SelectedItem.WorkspaceType != undefined) {
-                        postdata.WorkspaceType = self.state.SelectedItem.WorkspaceType;
-                    }
-                    if (self.state.SelectedItem.PermissionGroup != undefined && self.state.SelectedItem.PermissionGroup != undefined && self.state.SelectedItem.PermissionGroup.length > 0) {
-                        let PermissionId: any = [];
-                        self.state.SelectedItem.PermissionGroup.forEach(function (item: any) {
-                            PermissionId.push(item.Id);
+                            if (self.state.TeamConfig.TeamMemberUsers != undefined && self.state.TeamConfig.TeamMemberUsers.length > 0) {
+
+                                self.state.TeamConfig.TeamMemberUsers.forEach(function (TeamMember: any) {
+                                    self.TeamMembersIds.push(TeamMember.AssingedToUserId);
+                                })
+                            }
+                        }
+                        let ClientCategoryIds: any = []
+                        if (self.state.SelectedItem != undefined && self.state.SelectedItem.ClientCategory != undefined) {
+                            if (self.state.SelectedItem?.ClientCategory?.length > 0) {
+                                self.state.SelectedItem?.ClientCategory?.forEach(function (clientCategory: any) {
+                                    ClientCategoryIds.push(clientCategory.Id);
+                                })
+                            } else {
+                                self.state.SelectedItem?.ClientCategory?.results?.forEach(function (clientCategory: any) {
+                                    ClientCategoryIds.push(clientCategory.Id);
+                                })
+                            }
+
+                        }
+                        let AssignedToIds: any = []
+                        let TeamMembersIds: any = []
+                        if (item.AssignedToUsers != undefined && item.AssignedToUsers.length > 0) {
+                            item.AssignedToUsers.forEach(function (user: any) {
+                                AssignedToIds.push(user.AssingedToUserId);
+                            });
+                        }
+                        /*
+                        item.TeamMemberUsers.forEach(item.TeamMemberUsers, function (user:any) {
+                            TeamMembersIds.push(user.AssingedToUserId);
                         });
-                        postdata.PermissionGroupId = { results: PermissionId };
+                        */
+                        let postdata: any = {
+                            "Item_x0020_Type": item.MasterItemsType,
+                            "ParentId": self.state.SelectedItem.Id,
+                            "Title": item.Title,
+                            //"Portfolio_x0020_Type": self.Portfolio_x0020_Type,
+                            "AdminStatus": item.AdminStatus,
+                            AssignedToId: { "results": self.AssignedIds },
+                            TeamMembersId: { "results": self.TeamMembersIds },
+                            "PortfolioLevel": item.NextLevel,
+                            "PortfolioStructureID": item.PortfolioStructureIDs,
+                            ClientCategoryId: { "results": ClientCategoryIds },
+                        }
+                        if (self?.state?.SelectedItem?.PortfolioType != undefined) {
+                            postdata.PortfolioTypeId = self?.state?.SelectedItem?.PortfolioType?.Id;
+
+                        }
+                        if (self.state.SelectedItem.Sitestagging != undefined) {
+                            let siteComposition = JSON.parse(self.state.SelectedItem.Sitestagging);
+                            siteComposition.forEach(function (item: any) {
+                                if (item.Date != undefined) {
+                                    item.Date = '';
+                                }
+                            })
+                            //postdata.Sitestagging = angular.toJson(siteComposition);
+                            postdata.Sitestagging = JSON.stringify(siteComposition);
+                        }
+                        if (self.state.SelectedItem.SiteCompositionSettings != undefined) {
+                            postdata.SiteCompositionSettings = self.state.SelectedItem.SiteCompositionSettings;
+                        }
+                        if (self.state.SelectedItem.TaskListId != undefined) {
+                            postdata.TaskListId = self.state.SelectedItem.TaskListId;
+                        }
+                        if (self.state.SelectedItem.TaskListName != undefined) {
+                            postdata.TaskListName = self.state.SelectedItem.TaskListName;
+                        }
+                        if (self.state.SelectedItem.WorkspaceType != undefined) {
+                            postdata.WorkspaceType = self.state.SelectedItem.WorkspaceType;
+                        }
+                        if (self.state.SelectedItem.PermissionGroup != undefined && self.state.SelectedItem.PermissionGroup != undefined && self.state.SelectedItem.PermissionGroup.length > 0) {
+                            let PermissionId: any = [];
+                            self.state.SelectedItem.PermissionGroup.forEach(function (item: any) {
+                                PermissionId.push(item.Id);
+                            });
+                            postdata.PermissionGroupId = { results: PermissionId };
+                        }
+                        if (item.Child.length > 0) {
+                            postdata.Short_x0020_Description_x0020_On = item.Child[0].Short_x0020_Description_x0020_On;
+                        }
+                        if (self.state.SelectedItem.FolderId != undefined) {
+                            postdata.FolderId = self.state.SelectedItem.FolderId;
+                        }
+                        if (self.state.SelectedItem?.Portfolio != undefined && self.state.SelectedItem?.Portfolio != undefined && self.state.SelectedItem?.Portfolio?.Title != undefined) {
+
+                            postdata.PortfolioId = self.state.SelectedItem?.Portfolio?.Id;
+                        }
+
+                        let web = new Web(self.state.PropValue.siteUrl);
+                        const i = await web.lists
+                            .getById(self.state.PropValue.MasterTaskListID)
+                            .items
+                            .add(postdata);
+                        console.log(i);
+                        i.data['siteType'] = 'Master Tasks';
+                        if (self.state.PortfolioTypeArray != undefined && self.state.PortfolioTypeArray.length > 0) {
+                            self.state.PortfolioTypeArray.forEach((type: any) => {
+                                if (self.state.PortfolioTypeId === type.Id)
+                                    i.data.PortfolioType = type;
+                            })
+                        }
+                        self.Count++;
+                        self.CreatedItem.push(i);
+                        let Type: any = '';
+                        if (self.state.Isflag) {
+                            self.setState({
+                                Isflag: false,
+                            })
+                            self.CreateOpenType = 'CreatePopup';
+                        }
                     }
-                    if (item.Child.length > 0) {
-                        postdata.Short_x0020_Description_x0020_On = item.Child[0].Short_x0020_Description_x0020_On;
-                    }
-                    if (self.state.SelectedItem.FolderId != undefined) {
-                        postdata.FolderId = self.state.SelectedItem.FolderId;
-                    }
-                    if (self.state.SelectedItem?.Portfolio != undefined && self.state.SelectedItem?.Portfolio != undefined && self.state.SelectedItem?.Portfolio?.Title !=undefined) {
-                       
-                        postdata.PortfolioId =self.state.SelectedItem?.Portfolio?.Id;
+                    AddedCount += 1;
+                    if (AddedCount == self.ChildItemTitle.length) {
+                        self.setState({ isModalOpen: false });
+                        //self['SelectedItem'] =SelectedItem;
+                        self.props.Close(self);
                     }
 
-                    let web = new Web(self.state.PropValue.siteUrl);
-                    const i = await web.lists
-                        .getById(self.state.PropValue.MasterTaskListID)
-                        .items
-                        .add(postdata);
-                    console.log(i);
-                    i.data['siteType'] = 'Master Tasks';
-                    if (self.state.PortfolioTypeArray != undefined && self.state.PortfolioTypeArray.length > 0) {
-                        self.state.PortfolioTypeArray.forEach((type: any) => {
-                            if (self.state.PortfolioTypeId === type.Id)
-                                i.data.PortfolioType = type;
-                        })
-                    }
-                    self.Count++;
-                    self.CreatedItem.push(i);
-                    let Type: any = '';
-                    if (self.state.Isflag) {
-                        self.setState({
-                            Isflag: false,
-                        })
-                        self.CreateOpenType = 'CreatePopup';
-                    }
-                }
-                AddedCount += 1;
-                if (AddedCount == self.ChildItemTitle.length) {
-                    self.setState({ isModalOpen: false });
-                    //self['SelectedItem'] =SelectedItem;
-                    self.props.Close(self);
-                }
-
-            });
+                });
+            } else {
+                alert('Please Enter the Title!');
+            }
         }
 
 
@@ -683,18 +688,18 @@ export class PortfolioStructureCreationCard extends React.Component<IStructureCr
                             <div>
                                 <div className='mb-3 mt-2'>
                                     <label className='full-width form-label'>Select type of component</label>
-                            {(this.props.PortfolioType === "" || this.props.PortfolioType === undefined) && <div className="mx-auto col-auto mb-1">{this.state.PortfolioTypeArray != undefined && this.state.PortfolioTypeArray?.length > 0 && this.state.PortfolioTypeArray?.map((item: any) => {
-                                            return (
-                                                <label className='SpfxCheckRadio'><input className='radio' defaultChecked={this.state.defaultPortfolioType.toLowerCase() === item.Title.toLowerCase()} name='PortfolioType'  type='radio'  onClick={() => this.CheckPortfolioType(item)} ></input> {item.Title}</label>
-                                            )
-                                        }
-                                        )}
+                                    {(this.props.PortfolioType === "" || this.props.PortfolioType === undefined) && <div className="mx-auto col-auto mb-1">{this.state.PortfolioTypeArray != undefined && this.state.PortfolioTypeArray?.length > 0 && this.state.PortfolioTypeArray?.map((item: any) => {
+                                        return (
+                                            <label className='SpfxCheckRadio'><input className='radio' defaultChecked={this.state.defaultPortfolioType.toLowerCase() === item.Title.toLowerCase()} name='PortfolioType' type='radio' onClick={() => this.CheckPortfolioType(item)} ></input> {item.Title}</label>
+                                        )
+                                    }
+                                    )}
 
-                                        </div>}</div>
+                                    </div>}</div>
                                 <div>
                                     <div className="mt-2">
                                         <label className='full-width'>Title</label>
-                                        
+
                                     </div>
                                     <div className="col input-group">
                                         <input className="form-control full_width" type="text" value={this.state.textTitle} onChange={(e) => this.handleInputChange(e)}
@@ -802,7 +807,7 @@ export class PortfolioStructureCreationCard extends React.Component<IStructureCr
                                                                         <div>
                                                                             <span className='SpfxCheckRadio'>
                                                                                 <input
-                                                                                className='radio'
+                                                                                    className='radio'
                                                                                     type="radio"
                                                                                     value="SubComponent"
                                                                                     checked={item.MasterItemsType === 'SubComponent'}
@@ -812,7 +817,7 @@ export class PortfolioStructureCreationCard extends React.Component<IStructureCr
                                                                             </span>
                                                                             <span className='SpfxCheckRadio me-0'>
                                                                                 <input
-                                                                                className='radio'
+                                                                                    className='radio'
                                                                                     type="radio"
                                                                                     value="Feature"
                                                                                     checked={item.MasterItemsType === 'Feature'}
@@ -863,7 +868,7 @@ export class PortfolioStructureCreationCard extends React.Component<IStructureCr
                                     <a className="me-1" onClick={() => this.addNewTextField()} ng-click="addNewTextField()">
                                         {/* <img className="icon-sites-img"
                                             src="https://hhhhteams.sharepoint.com/sites/HHHH/SiteCollectionImages/ICONS/Shareweb/Add-New.png" /> */}
-                                            <span className="svg__iconbox svg__icon--Plus mini alignIcon"></span>
+                                        <span className="svg__iconbox svg__icon--Plus mini alignIcon"></span>
                                         Add more child items
                                     </a>
 
