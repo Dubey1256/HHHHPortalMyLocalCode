@@ -250,7 +250,7 @@ const GlobalCommanTable = (items: any, ref: any) => {
     let showHeader = items?.showHeader;
     let showPagination: any = items?.showPagination;
     let usedFor: any = items?.usedFor;
-    let portfolioColor = items?.portfolioColor;
+    let portfolioColor = items?.portfolioColor!=undefined ? items?.portfolioColor:"#000066" ;
     let expandIcon = items?.expandIcon;
     let fixedWidth = items?.fixedWidth;
     let portfolioTypeData = items?.portfolioTypeData;
@@ -278,6 +278,7 @@ const GlobalCommanTable = (items: any, ref: any) => {
     });
 
     React.useEffect(() => {
+       
         if (fixedWidth === true) {
             try {
                 $('#spPageCanvasContent').removeClass();

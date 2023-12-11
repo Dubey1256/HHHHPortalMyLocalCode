@@ -4025,7 +4025,7 @@ function EditInstitution({ item, SelectD, Calls, usedFor, portfolioTypeData }: a
                       {EditData?.ID ? (
                         <VersionHistoryPopup
                           taskId={EditData?.ID}
-                          listId={RequireData.MasterTaskListID}
+                          listId={RequireData?.MasterTaskListID}
                           siteUrls={RequireData?.siteUrl}
                         />
                       ) : (

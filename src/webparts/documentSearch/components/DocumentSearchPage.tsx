@@ -1,8 +1,8 @@
 import React, { useEffect, useState } from 'react'
 import { Web } from 'sp-pnp-js';
-import GlobalCommanTable from '../../../globalComponents/GroupByReactTableComponents/GlobalCommanTable';
+import GlobalCommanTable from "./GlobalCommanTable";
 import { ColumnDef } from '@tanstack/react-table';
-import EditDocument from '../../taskprofile/components/EditDocunentPanel';
+import EditDocument from './EditDocunentPanel'
 import moment from 'moment';
 var TaskUser: any = []
 export default function DocumentSearchPage(Props: any) {
@@ -72,7 +72,7 @@ export default function DocumentSearchPage(Props: any) {
     //#region code to load TaskUser By PB
     const LoadTaskUser = () => {
         let web = new Web(PageContext.context._pageContext._web.absoluteUrl + '/')
-        web.lists.getById(PageContext.TaskUserListID).items.select('Id,Suffix,Title,SortOrder,Item_x0020_Cover,AssingedToUserId,AssingedToUser/Title,AssingedToUser/Id,AssingedToUser/EMail,ItemType').expand('AssingedToUser').getAll().then((response: any) => {
+        web.lists.getById(PageContext.TaskUsertListID).items.select('Id,Suffix,Title,SortOrder,Item_x0020_Cover,AssingedToUserId,AssingedToUser/Title,AssingedToUser/Id,AssingedToUser/EMail,ItemType').expand('AssingedToUser').getAll().then((response: any) => {
             TaskUser = response;
             LoadDocs();
         }).catch((error: any) => {
