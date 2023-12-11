@@ -1,6 +1,6 @@
 import * as React from 'react'
 import { Panel, PanelType } from 'office-ui-fabric-react';
-import { sp } from 'sp-pnp-js';
+import { Web, sp } from 'sp-pnp-js';
 import "bootstrap/dist/css/bootstrap.min.css";  
 import Tooltip from '../Tooltip';
 import * as moment from 'moment';
@@ -20,11 +20,11 @@ export default function VersionHistory(props: any) {
     //------------------------jquery call--------------------------------
     const GetItemsVersionHistory = async () => {
         var versionData: any = []
-        var web = props.siteUrls;
+        var web = new Web(props.siteUrls);
         let listId = props.listId
         var itemId = props.taskId;
         let tempEstimatedArrayData: any;        
-        web.lists.getById(props?.listId).items.getById(props.taskId).versions.get().then((versions:any) => {
+        web.lists.getById(props?.listId).items.getById(props?.taskId).versions.get().then(versions => {
             console.log('Version History:', versions);
             versionData = versions;
 
@@ -76,7 +76,7 @@ export default function VersionHistory(props: any) {
 
             setData(employeesWithoutLastName);
 
-        }).catch((error:any) => {
+        }).catch(error => {
             console.error('Error fetching version history:', error);
         });
 
