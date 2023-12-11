@@ -1,5 +1,12 @@
 import * as React from 'react';
 import { Web } from "sp-pnp-js";
+/*
+import 'setimmediate'; 
+import { Editor } from "react-draft-wysiwyg";
+import { EditorState, convertToRaw,Modifier, ContentState, convertFromHTML } from 'draft-js';  
+import "react-draft-wysiwyg/dist/react-draft-wysiwyg.css";
+import draftToHtml from 'draftjs-to-html'; 
+*/
 import { MentionsInput, Mention } from 'react-mentions';
 import mentionClass from './mention.module.scss';
 import Tooltip from '../Tooltip';
@@ -22,10 +29,10 @@ export interface ICommentCardProps {
   itemID?: number;
   Context?: any;
   AllListId?: any;
-  onHoldCallBack?: () => void
-  commentFor?: string
-  postCommentCallBack?: () => void
-  counter?: number
+  counter?: number;
+  onHoldCallBack?: any;
+  commentFor?:string;
+  postCommentCallBack?:any;
 }
 const sp = spfi();
 export interface ICommentCardState {
@@ -53,6 +60,7 @@ export interface ICommentCardState {
   postButtonHide: boolean;
   topCommenterShow: boolean;
   keyPressed: boolean;
+
 }
 export class CommentCard extends React.Component<ICommentCardProps, ICommentCardState> {
   private taskUsers: any = [];
@@ -95,7 +103,7 @@ export class CommentCard extends React.Component<ICommentCardProps, ICommentCard
       editorValue: '',
       ChildLevel: false,
       ReplyParent: {},
-      editorChangeValue: ''
+      editorChangeValue: '',
     }
     this.GetResult();
     console.log(this.props.Context);
@@ -107,17 +115,6 @@ export class CommentCard extends React.Component<ICommentCardProps, ICommentCard
     this.handleMouseClick = this.handleMouseClick.bind(this);
 
   }
-
-  componentDidUpdate(prevProps:any, prevState: any) {
-    if(this.props?.counter !== prevProps?.counter) {
-      this.GetResult();
-    }
-  }
-
-  componentDidMount(): void {
-    this.GetTaskUsers()
-  }
-
   private async GetResult() {
     let web = new Web(this.props.siteUrl);
     let taskDetails = [];
@@ -145,7 +142,7 @@ export class CommentCard extends React.Component<ICommentCardProps, ICommentCard
         .expand("TeamMembers", "Author", "ClientCategory", "ResponsibleTeam", "SharewebTaskType", "Portfolio", "PortfolioType", "Editor")
         .get()
     }
-    // await this.GetTaskUsers();
+    await this.GetTaskUsers();
     console.log("this is result function")
     //this.currentUser = this.GetUserObject(this.props.Context.pageContext.user.displayName);
     Title = taskDetails["Title"];
@@ -211,7 +208,8 @@ export class CommentCard extends React.Component<ICommentCardProps, ICommentCard
     });
   }
   private GetUserObjectFromCollection(UsersValues: any) {
-    let userDetails = [];
+    console.log("this is GetUserObjectFromCollection function")
+    let userDeatails = [];
     if (UsersValues != undefined && UsersValues.length > 0 && this.taskUsers != undefined && this.taskUsers.length > 0) {
       for (let index = 0; index < UsersValues.length; index++) {
         let senderObject = this.taskUsers?.filter(function (user: any, i: any) {
@@ -220,7 +218,7 @@ export class CommentCard extends React.Component<ICommentCardProps, ICommentCard
           }
         });
         if (senderObject.length > 0) {
-          userDetails.push({
+          userDeatails.push({
             'Id': senderObject[0]?.Id,
             'Name': senderObject[0]?.AssingedToUser?.EMail,
             'Suffix': senderObject[0]?.Suffix,
@@ -229,7 +227,7 @@ export class CommentCard extends React.Component<ICommentCardProps, ICommentCard
           })
         }
       }
-      return userDetails;
+      return userDeatails;
     }
 
   }
@@ -294,8 +292,7 @@ export class CommentCard extends React.Component<ICommentCardProps, ICommentCard
         Header: this.GetMentionValues(this.state.mentionValue),
         ID: this.state.Result["Comments"] != undefined ? this.state.Result["Comments"].length + 1 : 1,
         Title: txtComment,
-        editable: false,
-        CommentFor: this.props.commentFor == 'On-Hold' ? 'On-Hold' : ''
+        editable: false
       };
       if (this.state?.ChildLevel == true) {
         this.state?.Result?.Comments?.forEach((element: any) => {
@@ -348,8 +345,6 @@ export class CommentCard extends React.Component<ICommentCardProps, ICommentCard
         .getById(this.state.itemID).update({
           Comments: JSON.stringify(this.state.Result["Comments"])
         });
-        this.props.postCommentCallBack()
-        this.props.onHoldCallBack()
       if (isPushOnRoot != false)
         this.setState({ updateComment: true }, () => this.GetEmailObjects(txtComment, this.state.mentionValue));
       else
@@ -1345,6 +1340,8 @@ export class CommentCard extends React.Component<ICommentCardProps, ICommentCard
 
           </div>
         }
+
+
       </div >
     );
   }

@@ -479,7 +479,7 @@ const MultipleWebpart = (Tile: any) => {
                 <span className="alignCenter">
                   <a
                     className="empCol hreflink me-2"
-                    target="_blank" title="Create New Task"
+                    target="_blank" data-interception="off" title="Create New Task"
                     href="https://hhhhteams.sharepoint.com/sites/HHHH/SP/SitePages/CreateTask.aspx"
                   >
                     <svg xmlns="http://www.w3.org/2000/svg" width="26" height="26" viewBox="0 0 48 48" fill="none">
