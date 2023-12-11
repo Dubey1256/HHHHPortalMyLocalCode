@@ -108,7 +108,7 @@ export function Filter({
     const columnFilterValue = column.getFilterValue();
     // style={{ width: placeholder?.size }}
     return (
-        <input style={{ width: "100%" }} className="m-1 ps-10 on-search-cross"
+        <input style={{ width: "100%", paddingRight: "10px" }} className="m-1 ps-10 on-search-cross"
             // type="text"
             title={placeholder?.placeholder}
             type="search"
@@ -1031,11 +1031,11 @@ const GlobalCommanTable = (items: any, ref: any) => {
                             )}
                         </tbody>
                     </table>
+                    {data?.length === 0 && <div className='mt-2'>
+                        <div className='d-flex justify-content-center' style={{ height: "30px", color: portfolioColor ? `${portfolioColor}` : "#000069" }}>No data available</div>
+                    </div>}
                 </div>
             </div>
-            {data?.length === 0 && <div className='mt-2'>
-                <div className='d-flex justify-content-center' style={{ height: "30px", color: portfolioColor ? `${portfolioColor}` : "#000069" }}>No data available</div>
-            </div>}
             {showPagination === true && table?.getFilteredRowModel()?.rows?.length > table.getState().pagination.pageSize ? <div className="d-flex gap-2 items-center mb-3 mx-2">
                 <button
                     className="border rounded p-1"

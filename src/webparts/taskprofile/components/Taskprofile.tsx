@@ -57,6 +57,7 @@ var changespercentage = false;
 var buttonId: any;
 let truncatedTitle: any
 let comments: any = []
+let AllClientCategories:any;
 export interface ITaskprofileState {
   Result: any;
   listName: string;
@@ -304,30 +305,6 @@ class Taskprofile extends React.Component<ITaskprofileProps, ITaskprofileState> 
 
       });
     }
-
-
-    if (taskDetails["AssignedTo"] != undefined) {
-      taskDetails["AssignedTo"]?.map((item: any, index: any) => {
-        if (taskDetails?.TeamMembers != undefined) {
-          for (let i = 0; i < taskDetails?.TeamMembers?.length; i++) {
-            if (item.Id == taskDetails?.TeamMembers[i]?.Id) {
-              taskDetails?.TeamMembers?.splice(i, true);
-              i--;
-            }
-          }
-        }
-
-        item.workingMember = "activeimg";
-
-      });
-    }
-
-    var array2: any = taskDetails["AssignedTo"] != undefined ? taskDetails["AssignedTo"] : []
-    if (taskDetails["TeamMembers"] != undefined) {
-      taskDetails.array = array2.concat(taskDetails["TeamMembers"]?.filter((item: any) => array2?.Id != item?.Id))
-    } else {
-      taskDetails.array = array2;
-    }
     var OffshoreComments: any = [];
     if (taskDetails["OffshoreComments"] != null) {
       let myarray: any = []
@@ -403,7 +380,7 @@ class Taskprofile extends React.Component<ITaskprofileProps, ITaskprofileState> 
       ApproverHistory: taskDetails["ApproverHistory"] != null ? JSON.parse(taskDetails["ApproverHistory"]) : "",
       OffshoreComments: OffshoreComments.length > 0 ? OffshoreComments.reverse() : null,
       OffshoreImageUrl: taskDetails["OffshoreImageUrl"] != null && JSON.parse(taskDetails["OffshoreImageUrl"]),
-      AssignedTo: taskDetails["AssignedTo"] != null ? this.GetUserObjectFromCollection(taskDetails["AssignedTo"]) : null,
+   
       ClientCategory: taskDetails["ClientCategory"],
       siteType: taskDetails["siteType"],
       listName: taskDetails["listName"],
@@ -417,9 +394,10 @@ class Taskprofile extends React.Component<ITaskprofileProps, ITaskprofileState> 
       Status: taskDetails["Status"],
       StartDate: taskDetails["StartDate"] != null ? moment(taskDetails["StartDate"]).format("DD/MM/YYYY") : "",
       CompletedDate: taskDetails["CompletedDate"] != null ? moment(taskDetails["CompletedDate"])?.format("DD/MM/YYYY") : "",
-      TeamLeader: taskDetails["ResponsibleTeam"] != null ? this.GetUserObjectFromCollection(taskDetails["ResponsibleTeam"]) : null,
-      ResponsibleTeam:taskDetails["ResponsibleTeam"] != null ? this.GetUserObjectFromCollection(taskDetails["ResponsibleTeam"]) : null,
-      TeamMembers: taskDetails.array != null ? this.GetUserObjectFromCollection(taskDetails.array) : null,
+      TeamLeader: taskDetails["ResponsibleTeam"] != null ? taskDetails["ResponsibleTeam"] : null,
+      ResponsibleTeam:taskDetails["ResponsibleTeam"] != null ? taskDetails["ResponsibleTeam"] : null,
+      TeamMembers: taskDetails.TeamMembers!= null  ? taskDetails.TeamMembers : null,
+      AssignedTo: taskDetails["AssignedTo"] != null ? taskDetails["AssignedTo"] : null,
       ItemRank: taskDetails["ItemRank"],
       PercentComplete: (taskDetails["PercentComplete"] * 100),
       Priority: taskDetails["Priority"],
@@ -627,7 +605,10 @@ class Taskprofile extends React.Component<ITaskprofileProps, ITaskprofileState> 
 
       .expand('Parent').filter("TaxType eq 'Client Category'").top(4000)
       .get();
-
+      if(smartMetaData?.length>0){
+        AllClientCategories=smartMetaData;
+      }
+      
     if (ClientCategory.length > 0) {
       ClientCategory?.map((item: any, index: any) => {
         smartMetaData?.map((items: any, index: any) => {
@@ -728,28 +709,6 @@ class Taskprofile extends React.Component<ITaskprofileProps, ITaskprofileState> 
 
   }
 
-  private GetUserObjectFromCollection(UsersValues: any) {
-    let userDeatails = [];
-    for (let index = 0; index < UsersValues?.length; index++) {
-      let senderObject = this.taskUsers?.filter(function (user: any, i: any) {
-        if (user?.AssingedToUser != undefined) {
-          return user?.AssingedToUser["Id"] == UsersValues[index]?.Id
-        }
-      });
-      if (senderObject.length > 0) {
-        userDeatails.push({
-          'Id': senderObject[0]?.AssingedToUser.Id,
-          'Name': senderObject[0]?.Email,
-          'Suffix': senderObject[0]?.Suffix,
-          'Title': senderObject[0]?.Title,
-          'userImage': senderObject[0]?.Item_x0020_Cover?.Url,
-          'activeimg2': UsersValues[index]?.workingMember ? UsersValues[index]?.workingMember : "",
-        })
-      }
-
-    }
-    return userDeatails;
-  }
 
   private GetUserObject(username: any) {
 
@@ -817,20 +776,7 @@ class Taskprofile extends React.Component<ITaskprofileProps, ITaskprofileState> 
     });
   }
 
-  private handleSuffixHover() {
-    //e.preventDefault();
-    this.setState({
-      Display: 'block'
-    });
-  }
-
-  private handleuffixLeave() {
-    //e.preventDefault();
-
-    this.setState({
-      Display: 'none'
-    });
-  }
+ 
 
   private showhideComposition() {
     if (this.state.showComposition) {
@@ -1734,15 +1680,65 @@ private ComponentServicePopupCallBack = (DataItem: any, Type: any, functionType:
   console.log(Type)
   console.log(functionType)
   let dataUpdate:any;
+  let selectedCC:any=[];
+  let Sitestagging:any
+  let cctag:any=[]
   if (functionType == "Save") {
    if(this?.state?.isopencomonentservicepopup){
+    DataItem[0]?.ClientCategory?.map((cc: any) => {
+      if (cc.Id != undefined) {
+          let foundCC = AllClientCategories?.find((allCC: any) => allCC?.Id == cc.Id)
+          if (this?.state?.Result?.siteType?.toLowerCase() == 'shareweb') {
+              selectedCC.push(cc.Id)
+              cctag.push(cc)
+          } else if (this?.state?.Result?.siteType?.toLowerCase() == foundCC?.siteName?.toLowerCase()) {
+              selectedCC.push(cc.Id)
+              cctag.push(cc)
+          }
+      }
+  })
+      if(DataItem[0]?.Sitestagging!=undefined){
+    if (this?.state?.Result?.siteType?.toLowerCase() == "shareweb") {
+        var sitetag = JSON.parse(DataItem[0]?.Sitestagging)
+        sitetag?.map((sitecomp: any) => {
+            if (sitecomp.Title != undefined && sitecomp.Title != "" && sitecomp.SiteName == undefined) {
+                sitecomp.SiteName = sitecomp.Title
+            }
+
+        })
+        Sitestagging = JSON.stringify(sitetag)
+        ClientTimeArray=[];
+        siteComp.ClientCategory=cctag
+        ClientTimeArray=sitetag;
+    } else {
+        var siteComp: any = {};
+        siteComp.SiteName = this?.state?.Result?.siteType,
+            siteComp.localSiteComposition = true
+        siteComp.ClienTimeDescription = 100,
+            //   siteComp.SiteImages = ,
+            siteComp.Date = moment(new Date().toLocaleString()).format("DD-MM-YYYY");
+        Sitestagging = JSON?.stringify([siteComp]);
+        ClientTimeArray=[];
+        siteComp.ClientCategory=cctag
+        ClientTimeArray=[siteComp]
+    }
+   
+
+}
+
+
+
     this.setState((prevState) => ({
       Result: {
         ...prevState.Result,
         Portfolio:DataItem[0],
+      
+        
       }}))
       dataUpdate={
-        PortfolioId:DataItem[0]?.Id
+        PortfolioId:DataItem[0]?.Id,
+        ClientCategoryId: { results: selectedCC },
+        ClientTime: Sitestagging,
       }
     this?.updateProjectComponentServices(dataUpdate) 
    }else{
@@ -1815,7 +1811,7 @@ private async updateProjectComponentServices(dataUpdate:any) {
             <div className='row'>
               <div className="col-sm-12 p-0 ">
 
-                <ul className="spfxbreadcrumb m-0 p-0">
+                <ul className="spfxbreadcrumb mb-0 mt-16 p-0">
                   {this.state?.Result["Portfolio"] == undefined && this.state.breadCrumData?.length == 0 && this.state.Result.Title != undefined ?
                     <>
                       <li  >
@@ -2132,7 +2128,7 @@ private async updateProjectComponentServices(dataUpdate:any) {
                         </dd>
                       </dl>
                       {isShowSiteCompostion && <dl className="Sitecomposition">
-                        {ClientTimeArray != null && ClientTimeArray.length > 0 &&
+                        {ClientTimeArray != null && ClientTimeArray?.length > 0 &&
                           <div className='dropdown'>
                             <a className="sitebutton bg-fxdark d-flex">
                               <span className="arrowicons" onClick={() => this.showhideComposition()}>{this.state.showComposition ? <SlArrowDown /> : <SlArrowRight />}</span>

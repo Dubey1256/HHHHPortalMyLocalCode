@@ -1,17 +1,21 @@
 import * as React from 'react'
 import { Panel, PanelType } from 'office-ui-fabric-react';
-import { Web, sp } from 'sp-pnp-js';
+import { sp } from 'sp-pnp-js';
 import "bootstrap/dist/css/bootstrap.min.css";  
 import Tooltip from '../Tooltip';
 import * as moment from 'moment';
-
+import InfoIconsToolTip from '../InfoIconsToolTip/InfoIconsToolTip';
+import { SlArrowDown, SlArrowRight } from 'react-icons/sl';
 
 var keys: any = []
 
 export default function VersionHistory(props: any) {
     const [propdata, setpropData] = React.useState(props);
     const [show, setShow] = React.useState(false);
-    const [data, setData]: any = React.useState([])
+    const [data, setData]: any = React.useState([]);  
+    const [ShowEstimatedTimeDescription,setShowEstimatedTimeDescription] = React.useState(false);
+    const [AllCommentModal,setAllCommentModal] = React.useState(false);
+    const [AllComment,setAllComment] = React.useState([]);
     var tableCode
     const handleClose = () => setShow(false);
     const handleShow = () => setShow(true);
@@ -22,29 +26,53 @@ export default function VersionHistory(props: any) {
         var siteTypeUrl = props.siteUrls;
         let listId = props.listId
         var itemId = props.taskId;
-        let web = new Web(siteTypeUrl);
-        web.lists.getById(props?.listId).items.getById(props.taskId).versions.get().then(versions => {
+        let tempEstimatedArrayData: any;        
+        sp.web.lists.getById(props?.listId).items.getById(props.taskId).versions.get().then(versions => {
             console.log('Version History:', versions);
             versionData = versions;
 
             const result = findDifferentColumnValues(versionData)
 
-            const employeesWithoutLastName = result.map(employee => {
+            const employeesWithoutLastName = result.map(employee => {                                                 
                 employee.childs = []
-                const  { VersionId, VersionLabel, OData__x005f_IsCurrentVersion, OData__x005f_UIVersion, OData__x005f_UIVersionString, odata, ...rest } = employee;
+                const  { VersionId,IsCurrentVersion, VersionLabel,UniqueId,ParentUniqueId,ScopeId,SMLastModifiedDate,GUID,FileRef,FileDirRef,OData__x005f_Moderation,WorkflowVersion, OData__x005f_IsCurrentVersion, OData__x005f_UIVersion, OData__x005f_UIVersionString, odata, ...rest } = employee;
                 return rest;
             });
             console.log(employeesWithoutLastName)
-            employeesWithoutLastName?.forEach((val: any) => {
+            employeesWithoutLastName?.forEach((val: any) => { 
+                if(val.FeedBack !== undefined && val.FeedBack !== null){
+                    val.FeedBackDescription = JSON.parse(val?.FeedBack)[0].FeedBackDescriptions    
+                    if(val.FeedBackDescription !== undefined){
+                        val?.FeedBackDescription?.map((feedback:any)=>{
+                            if(feedback.Title != '')
+                             feedback.Title = $.parseHTML(feedback?.Title)[0].textContent;
+                        }) 
+                    }                  
+                }                                   
+                if(val.EstimatedTimeDescription !== undefined && val.EstimatedTimeDescription !== null){
+                    tempEstimatedArrayData = JSON.parse(val?.EstimatedTimeDescription) ;
+                    let TotalEstimatedTimecopy:any = 0;                                             
+                    if (tempEstimatedArrayData?.length > 0) {
+                        tempEstimatedArrayData?.map((TimeDetails: any) => {
+                            TotalEstimatedTimecopy = TotalEstimatedTimecopy + Number(TimeDetails.EstimatedTime);
+                        })
+                    }
+                    val.EstimatedTimeDescriptionArray=tempEstimatedArrayData
+                    val.TotalEstimatedTime=TotalEstimatedTimecopy            
+                }  
+                if(val.Comments !== undefined && val.Comments !== null && val.Comments !== '[]'){
+                    val.CommentsDescription = JSON.parse(val?.Comments)         
+                }  
+
                 val.No = val.owshiddenversion;
                 val.ModifiedDate = moment(val?.Modified).format("DD/MM/YYYY h:mmA");
-                val.ModifiedBy = val?.Editor.LookupValue;
+                val.ModifiedBy = val?.Editor?.LookupValue;                
                 val.childs.push(val)
             })
 
-            employeesWithoutLastName?.forEach((val:any)=>{
+            employeesWithoutLastName?.forEach((val:any)=>{                
                 val.childs?.forEach((ele:any)=>{
-                    const  { VersionId, VersionLabel, OData__x005f_IsCurrentVersion, OData__x005f_UIVersion, OData__x005f_UIVersionString, odata,Editor, ...rest } = ele;
+                    const  { VersionId,IsCurrentVersion,VersionLabel,UniqueId,ParentUniqueId,ScopeId,SMLastModifiedDate,GUID,FileRef,FileDirRef,OData__x005f_Moderation,WorkflowVersion, OData__x005f_IsCurrentVersion, OData__x005f_UIVersion, OData__x005f_UIVersionString, odata,Editor, ...rest } = ele;
                     return rest;
                 })
             })
@@ -56,47 +84,80 @@ export default function VersionHistory(props: any) {
         });
 
     }
+    const openCommentPopup =(comntitem:any)=>{
+        setAllComment(comntitem)
+        setAllCommentModal(true);
+    }
+    const closeAllCommentModal = ()=>{
+        setAllCommentModal(false);
+    }
 
-
+    const showhideEstimatedTime=()=> {
+        if (ShowEstimatedTimeDescription) {          
+            setShowEstimatedTimeDescription(false)         
+        } else {
+            setShowEstimatedTimeDescription(true) 
+        }
+    }
 
     const findDifferentColumnValues = (data: any) => {
+        const differingValues = [];        
 
-
-        const differingValues = [];
-
-        for (let i = 0; i < data.length - 1; i++) {
-            const currentObj = data[i];
-            const nextObj = data[i + 1];
-            const differingPairs: any = {};
-
-            for (const key in currentObj) {
-                if (
-                    currentObj.hasOwnProperty(key)
-                    &&
-                    (!nextObj.hasOwnProperty(key)
-                        || !isEqual(currentObj[key], nextObj[key]))
-                ) {
-                    differingPairs[key] = currentObj[key];
-                    differingPairs['Editor'] = currentObj.Editor;
+        for (let i = 0; i < data.length; i++) {
+            if(i !== data.length-1){
+                const currentObj = data[i];            
+                const nextObj = data[i + 1];
+                const differingPairs: any = {};
+                differingPairs['TaskID']= currentObj.ID;
+                differingPairs['TaskTitle']= currentObj.Title;
+                for (const key in currentObj) {
+                    differingPairs['version'] = currentObj.VersionId;
+                    differingPairs['ID']= currentObj.ID;                              
+                    if (currentObj.hasOwnProperty(key)&&(!nextObj.hasOwnProperty(key) || !isEqual(currentObj[key], nextObj[key]))) {
+                        differingPairs[key] = currentObj[key];
+                        differingPairs['Editor'] = currentObj.Editor;
+                    }
+                }
+    
+                // Check for properties in n+1 but not in n           
+                    for (const key in nextObj) {
+                        if (nextObj.hasOwnProperty(key) && !currentObj.hasOwnProperty(key)) {
+                            differingPairs[key] = currentObj[key];
+                            differingPairs['Editor'] = currentObj.Editor;
+                        }
+                    }                     
+    
+                if (Object.keys(differingPairs).length > 0) {
+                    differingValues.push(differingPairs);
                 }
             }
-
-            // Check for properties in n+1 but not in n
-            for (const key in nextObj) {
-                if (nextObj.hasOwnProperty(key)
-                    && !currentObj.hasOwnProperty(key)) {
-                    differingPairs[key] = currentObj[key];
-                    differingPairs['Editor'] = currentObj.Editor;
+            else{
+                const currentObj = data[i];
+                const prevObj = data[i-1];                
+                const differingPairs: any = {};
+                differingPairs['TaskID']= currentObj.ID;
+                differingPairs['TaskTitle']= currentObj.Title;
+                for (const key in currentObj) {
+                    differingPairs['version'] = currentObj.VersionId;
+                    differingPairs['ID']= currentObj.ID;
+                    differingPairs['owshiddenversion']= currentObj.owshiddenversion; 
+                    differingPairs['PercentComplete']= currentObj.PercentComplete;                                              
+                    if ((currentObj[key] !== undefined && currentObj[key] !== null && currentObj[key] !== '' && currentObj.hasOwnProperty(key)) && (key !== 'Checkmark' && key !== 'odata.type'  && key !== 'SMTotalFileStreamSize'  && key !== 'ContentVersion' && key !== 'FolderChildCount'  && key !== 'NoExecute'  && key !== 'FSObjType'  && key !== 'FileLeafRef' && key !== 'Order' && key !== 'Created_x005f_x0020_x005f_Date' && key !== 'Last_x005f_x0020_x005f_Modified')) {
+                        if(currentObj[key]?.length>0){
+                            differingPairs[key] = currentObj[key];
+                            differingPairs['Editor'] = currentObj.Editor;
+                        }                        
+                    }
+                }              
+                if (Object.keys(differingPairs).length > 0) {
+                    differingValues.push(differingPairs);
                 }
             }
-
-            if (Object.keys(differingPairs).length > 0) {
-                differingValues.push(differingPairs);
-            }
+         
         }
 
         return differingValues;
-    }
+    }    
 
     // Function to compare arrays and objects recursively based on their IDs
     function isEqual(obj1: any, obj2: any) {
@@ -117,12 +178,7 @@ export default function VersionHistory(props: any) {
             return true;
         }
 
-        if (
-            typeof obj1 !== typeof obj2 ||
-            typeof obj1 !== 'object' ||
-            !obj1 ||
-            !obj2
-        ) {
+        if (typeof obj1 !== typeof obj2 || typeof obj1 !== 'object' || !obj1 || !obj2) {
             return false;
         }
 
@@ -152,15 +208,25 @@ export default function VersionHistory(props: any) {
           <div style={{ marginRight: "auto", fontSize: "20px", fontWeight: "600", marginLeft: '15px' }}>
             Version History
           </div>
-          <Tooltip ComponentId={1950}/>
+          <Tooltip />
         </>
       );
     };
+    const onRenderCustomCommentHeader = () => {
+        return (
+          <>
+            <div style={{ marginRight: "auto", fontSize: "20px", fontWeight: "600", marginLeft: '15px' }}>
+              All Comments
+            </div>
+            <Tooltip />
+          </>
+        );
+      };
     const renderArray = (arr: any[]) => {
         return arr.map((item, index) => (
           <div key={index}>{typeof item === 'object' ? item?.LookupValue : item}</div>
         ));
-      };
+    };   
       
       // Helper function to render objects
     //   const renderObject = (obj: object) => {
@@ -211,7 +277,7 @@ export default function VersionHistory(props: any) {
                                 <th style={{width:"80px"}} scope="col">No</th>
                                 <th style={{width:"170px"}} scope="col">Modified</th>
                                 <th  scope="col">Info</th>
-                                <th style={{width:"256px"}} scope="col">Modified by</th>
+                                <th style={{width:"170px"}} scope="col">Modified by</th>
                             </tr>
                         </thead>
                         <tbody>
@@ -223,56 +289,104 @@ export default function VersionHistory(props: any) {
                                                 {itm?.No}
                                             </td>
                                             <td>
-                                            <span className="siteColor">{itm?.ModifiedDate}</span>
+                                            <span className="siteColor"><a href={`https://hhhhteams.sharepoint.com/sites/HHHH/SP/Lists/HHHH/DispForm.aspx?ID=${itm.ID}&VersionNo=${itm.version}`}>{itm?.ModifiedDate}</a></span>
                                             </td>
-                                            <td>
-                               {/* inner table */}
-                                                {/* { <table className="table">
-                                                    {itm?.childs.map((item: any, index: any) => {
-                                                        { keys = Object.keys(itm?.childs[0]) }
-                                                        return (
-                                                            <tr>
-                                                                {keys.map((key: any, index: any) => {
-                                                                    return (
-                                                                        <>
-                                                                        {(key != 'odata.editLink' && key != 'odata.id' && key != 'owshiddenversion' && key != 'Editor' && key != 'childs' && 
-                                                                        key != 'Modified' && key != 'ModifiedDate' && key != 'No'  && key != 'Created'  && key != 'ModifiedBy') &&
-                                                                        <tr>
-                                                                            <td key={index}> 
-                                                                            <b>{key}</b>   
-                                                                            <span style={{margin:'20%'}}> {Array.isArray(item[key])
-                                                                                ? renderArray(item[key])
-                                                                                : typeof item[key] === 'object'
-                                                                                    ? renderObject(item[key])
-                                                                                    : item[key]}
-                                                                            </span> 
-                                                                                    </td>
-                                                                        </tr>}
-                                                                        </> )
-                                                                })}
-                                                            </tr>
-                                                        )
-                                                    })}
-                                                </table> } */}
-                                           
+                                            <td>                                                                      
                                                 <div className='Info-VH-Col'>
                                                     {itm?.childs.map((item: any, index: any) => {
                                                         { keys = Object.keys(itm?.childs[0]) }
                                                         return (
 
-                                                            <ul>
+                                                            <ul className='p-0 mb-0'>
                                                                 {keys.map((key: any, index: any) => {
                                                                     return (
                                                                         <>
                                                                         {(key != 'odata.editLink' && key != 'odata.id' && key != 'owshiddenversion' && key != 'Editor' && key != 'childs' && 
-                                                                        key != 'Modified' && key != 'ModifiedDate' && key != 'No'  && key != 'Created'  && key != 'ModifiedBy') &&
+                                                                        key != 'Modified' && key != 'ModifiedDate' && key != 'No' && key != 'CommentsDescription' && key != 'Created'  && key != 'ModifiedBy' && key !== 'version' && key !== 'TaskTitle' && key !== 'TaskID' && key !== 'FeedBackDescription' && key !== 'ID' && key !=='EstimatedTimeDescriptionArray' &&  key !=='TotalEstimatedTime') &&
                                                                                 <li key={index}>
                                                                                     <span className='vh-textLabel'>{key}</span>
-                                                                                    <span className='vh-textData' style={{wordBreak:'break-all'}}>{Array.isArray(item[key])
+                                                                                    <span className='vh-textData'>{Array.isArray(item[key])
                                                                                         ? renderArray(item[key])
                                                                                         : typeof item[key] === 'object'
                                                                                             ? renderObject(item[key])
-                                                                                            : item[key]}
+                                                                                            : key === 'FeedBack' 
+                                                                                            ? <div className='feedbackItm-text'>
+                                                                                                {item?.FeedBackDescription?.length > 0 ? <span className='d-flex'><p className='text-ellips mb-0'>{`${item?.FeedBackDescription[0]?.Title}`}</p> <InfoIconsToolTip Discription='' row={item} versionHistory={true} /></span> :''}                                                                                          
+                                                                                            </div> : key === 'PercentComplete' ? (item?.PercentComplete)*100 : key === 'BasicImageInfo' 
+                                                                                            ? <div className='BasicimagesInfo_groupImages'>
+                                                                                                {item?.BasicImageInfo != undefined && JSON.parse(item?.BasicImageInfo).map((image:any,indx:any)=>{
+                                                                                                    return(
+                                                                                                        <>                                                                                                            
+                                                                                                            <span className='BasicimagesInfo_group'>
+                                                                                                                <img src={image.ImageUrl} alt="" />
+                                                                                                                {image.ImageUrl !== undefined ? <span className='BasicimagesInfo_group-imgIndex'>{indx+1}</span> : ''}
+                                                                                                            </span>
+                                                                                                        </>
+                                                                                                    )
+                                                                                                })}
+                                                                                              </div>: typeof(item[key]) === 'boolean' ? String(item[key]): key === 'EstimatedTimeDescription'
+                                                                                            ?<dl className="Sitecomposition my-2">
+                                                                                                  <div className='dropdown' key={index} >
+                                                                                                    <a className="sitebutton bg-fxdark d-flex">
+                                                                                                      <span className="arrowicons"  onClick={() => showhideEstimatedTime()}>{ShowEstimatedTimeDescription ? <SlArrowDown /> : <SlArrowRight />}</span>
+                                                                                                      <div className="d-flex justify-content-between full-width">
+                                                                                                        <p className="pb-0 mb-0 ">Estimated Task Time Details</p>
+                                                                                                      </div>
+                                                                                                    </a>
+                                                                                                    <div className="spxdropdown-menu" style={{ display: ShowEstimatedTimeDescription ? 'block' : 'none' }}>
+                                                                                                      <div className="col-12" style={{ fontSize: "14px" }}>
+                                                                                                        {item?.EstimatedTimeDescriptionArray != null && item?.EstimatedTimeDescriptionArray?.length > 0 ?
+                                                                                                          <div>
+                                                                                                            {item?.EstimatedTimeDescriptionArray?.map((EstimatedTimeData: any, Index: any) => {
+                                                                                                              return (
+                                                                                                                <div className={item?.EstimatedTimeDescriptionArray?.length == Index + 1 ? "align-content-center alignCenter justify-content-between p-1 px-2" : "align-content-center justify-content-between border-bottom alignCenter p-1 px-2"}>
+                                                                                                                  <div className='alignCenter'>
+                                                                                                                    <span className='me-2'>{EstimatedTimeData?.Team != undefined ? EstimatedTimeData?.Team : EstimatedTimeData?.Category != undefined ? EstimatedTimeData?.Category : null}</span> |
+                                                                                                                    <span className='mx-2'>{EstimatedTimeData?.EstimatedTime ? (EstimatedTimeData?.EstimatedTime > 1 ? EstimatedTimeData?.EstimatedTime + " hours" : EstimatedTimeData?.EstimatedTime + " hour") : "0 hour"}</span>
+                                                                                                                    <img className="ProirityAssignedUserPhoto m-0 mx-2" title={EstimatedTimeData?.UserName} src={EstimatedTimeData?.UserImage != undefined && EstimatedTimeData?.UserImage?.length > 0 ? EstimatedTimeData?.UserImage : ''} />
+                                                                                                                  </div>
+                                                                                                                  {EstimatedTimeData?.EstimatedTimeDescription?.length > 0 && <div className='alignCenter hover-text'>
+                                                                                                                    <span className="svg__iconbox svg__icon--info"></span>
+                                                                                                                    <span className='tooltip-text pop-right'>{EstimatedTimeData?.EstimatedTimeDescription} </span>
+                                                                                                                  </div>}
+                                                                                                                </div>
+                                                                                                              )
+                                                                                                            })}
+                                                                                                          </div>
+                                                                                                          : null
+                                                                                                        }
+                                                                                                      </div>
+                                                                                                    </div>
+                                                                                                    <div className="boldClable border border-top-0 ps-2 py-1">
+                                                                                                      <span>Total Estimated Time : </span><span className="mx-1">{item?.TotalEstimatedTime > 1 ? item?.TotalEstimatedTime + " hours" : item?.TotalEstimatedTime + " hour"} </span>
+                                                                                                    </div>
+                                                                                                  </div>
+                                                                                                </dl>                                                                                              
+                                                                                            : key === 'Comments'
+                                                                                            ?<>{item?.CommentsDescription != undefined && <div className='feedbackItm-text'>
+                                                                                            
+                                                                                                <div>
+                                                                                                    <span className='comment-date'>
+                                                                                                        <span className='round  pe-1'> <img className='align-self-start me-1' title={item?.CommentsDescription[0]?.AuthorName}
+                                                                                                        src={item?.CommentsDescription[0]?.AuthorImage != undefined && item?.CommentsDescription[0]?.AuthorImage != '' ?
+                                                                                                         item?.CommentsDescription[0].AuthorImage :
+                                                                                                            "https://hhhhteams.sharepoint.com/sites/HHHH/SiteCollectionImages/ICONS/32/icon_user.jpg"}
+                                                                                                        />
+                                                                                                        {item?.CommentsDescription[0]?.Created}
+
+                                                                                                        </span>
+                                                                                                    </span>                                
+                                                                                                </div>
+
+                                                                                                <div className="media-text">
+                                                                                                    <label className='userid m-0'>  {item?.CommentsDescription[0]?.Header != '' && <b>{item?.CommentsDescription[0]?.Header}</b>}</label>
+                                                                                                    <span className='d-flex' id="pageContent">
+                                                                                                        <span className='text-ellips' dangerouslySetInnerHTML={{ __html: item?.CommentsDescription[0]?.Description }}></span>
+                                                                                                        <span><a className="hreflink" onClick={()=>openCommentPopup(item?.CommentsDescription)}>See More</a></span>
+                                                                                                    </span>
+                                                                                                   
+                                                                                                </div>                                                                                                                                                                                                                                                                          
+                                                                                            </div>}</> : item[key]}
                                                                                     </span>
 
                                                                                 </li>}
@@ -294,6 +408,55 @@ export default function VersionHistory(props: any) {
 
                         </tbody>
                     </table >
+
+            </Panel>
+            <Panel
+
+                onRenderHeader={onRenderCustomCommentHeader}
+                type={PanelType.custom}
+                customWidth="500px"
+                onDismiss={closeAllCommentModal}
+                isOpen={AllCommentModal}
+                isBlocking={false}>
+
+                <div id='ShowAllCommentsId'>
+
+                    <div className='modal-body mt-2'>
+                    <div className="col-sm-12 " id="ShowAllComments">
+                        <div className="col-sm-12">                        
+                        {AllComment.map((cmtData: any, i: any) => {
+                            return <div className="p-1 mb-2">
+                            <div>
+                                <div className='d-flex justify-content-between align-items-center'>
+                                    <span className='comment-date'>
+                                        <span className='round  pe-1'> <img className='align-self-start me-1' title={cmtData?.AuthorName}
+                                        src={cmtData?.AuthorImage != undefined && cmtData?.AuthorImage != '' ?
+                                            cmtData.AuthorImage :
+                                            "https://hhhhteams.sharepoint.com/sites/HHHH/SiteCollectionImages/ICONS/32/icon_user.jpg"}
+                                        />
+                                        {cmtData?.Created}
+
+                                        </span>
+                                    </span>                                
+                                </div>
+
+                                <div className="media-text">
+                                    <h6 className='userid m-0 fs-6'>   {cmtData?.Header != '' && <b>{cmtData?.Header}</b>}</h6>
+                                    <p className='m-0' id="pageContent"> <span dangerouslySetInnerHTML={{ __html: cmtData?.Description }}></span></p>
+                                </div>
+                            </div>
+                            </div>
+                        })}
+
+                        </div>
+
+                    </div>
+                    </div>
+                    <footer className='text-end'>
+                    <button type="button" className="btn btn-default" onClick={closeAllCommentModal}>Cancel</button>
+                    </footer>
+
+                </div>
 
             </Panel>
 
