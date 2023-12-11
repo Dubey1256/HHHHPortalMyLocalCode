@@ -47,8 +47,13 @@ const HrGmbhInstitutionDeatails=async(Id:any)=>{
                 //    setCurrentInstitute(data?.Institution);
                 // }
                 data.Item_x002d_Image = data?.Item_x0020_Cover;
-                   JointData=data
-                 setUpdateData(data)
+                if (data?.SmartInstitutionId != undefined) {
+                    jointInstitutionDetails(data?.SmartInstitutionId)
+                }
+                    setUpdateData(data)
+                
+                  
+                
                 
             
                 
@@ -81,9 +86,12 @@ const HrGmbhInstitutionDeatails=async(Id:any)=>{
                 // delete data?.Facebook;
                 // delete data?.Twitter;
                 // delete data?.Instagram;
-                   setUpdateData(data);
-                   JointData=data;
-                }).catch((error: any) => {
+                  if(myContextData2?.allSite?.GMBHSite || myContextData2?.allSite?.HrSite){
+                    JointData=data;
+                  }else{
+                    setUpdateData(data);
+                  }
+                   }).catch((error: any) => {
                     console.log(error)
                 });
 
@@ -238,7 +246,7 @@ const HrGmbhInstitutionDeatails=async(Id:any)=>{
             await web.lists.getById(myContextData2?.allListId?.HHHHInstitutionListId).items.getById(myContextData2?.allSite?.GMBHSite||myContextData2?.allSite?.HrSite?JointData?.Id:updateData?.Id).update(postData).then((e) => {
                 console.log("Your information has been updated successfully");
            if(myContextData2.allSite?.GMBHSite){
-            // UpdateGmbhDetails();
+            UpdateGmbhDetails(postData);
            
            }else{
             callBack();
@@ -257,7 +265,23 @@ const HrGmbhInstitutionDeatails=async(Id:any)=>{
    
 
 }
+
 //*****************save function End *************** */
+
+
+
+const UpdateGmbhDetails = async (postData: any) => {
+let web = new Web('https://hhhhteams.sharepoint.com/sites/HHHH/GmBH');
+    await web.lists.getById('6CE99A82-F577-4467-9CDA-613FADA2296F').items.getById(updateData.Id).update(postData).then((e: any) => {
+        console.log("request success", e);
+        callBack();
+    }).catch((error: any) => {
+        console.log(error)
+    })
+
+
+}
+
 
 //***********samrt Meta data call function To get The country data ********************* */
 const getSmartMetaData = async () => {

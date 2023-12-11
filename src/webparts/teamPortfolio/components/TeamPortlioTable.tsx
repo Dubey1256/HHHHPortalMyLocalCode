@@ -2317,7 +2317,7 @@ function TeamPortlioTable(SelectedProp: any) {
                     </section>
                 </div>
             </section>
-            <Panel onRenderHeader={onRenderCustomHeaderMain1} type={PanelType.large} isOpen={OpenAddStructurePopup} isBlocking={false} onDismiss={AddStructureCallBackCall} >
+            <Panel onRenderHeader={onRenderCustomHeaderMain1} type={PanelType.custom} customWidth="600px" isOpen={OpenAddStructurePopup} isBlocking={false} onDismiss={AddStructureCallBackCall} >
                 <PortfolioStructureCreationCard
                     CreatOpen={CreateOpenCall}
                     Close={AddStructureCallBackCall}
@@ -2338,7 +2338,7 @@ function TeamPortlioTable(SelectedProp: any) {
                 onDismiss={closeActivity}
                 isBlocking={false}
             >
-                <div className="modal-body bg-f5f5 clearfix">
+                <div className="modal-body clearfix">
                     <div
                         className={
                             IsUpdated == "Events Portfolio"
@@ -2351,90 +2351,44 @@ function TeamPortlioTable(SelectedProp: any) {
                         <div id="portfolio" className="section-event pt-0">
                             {checkedList != undefined &&
                                 checkedList?.TaskType?.Title == "Workstream" ? (
-                                <ul className="quick-actions">
-                                    <li className="mx-1 p-2 position-relative bg-siteColor text-center mb-2">
-                                        <div onClick={(e) => CreateActivityPopup("Task")}>
-                                            <span className="icon-sites">
-                                                <img
-                                                    className="icon-sites"
-                                                    src="https://hhhhteams.sharepoint.com/sites/HHHH/SiteCollectionImages/ICONS/Shareweb/bug.png"
-                                                />
-                                            </span>
-                                            Bug
-                                        </div>
-                                    </li>
-                                    <li className="mx-1 p-2 position-relative bg-siteColor text-center mb-2">
-                                        <div onClick={() => CreateActivityPopup("Task")}>
-                                            <span className="icon-sites">
-                                                <img
-                                                    className="icon-sites"
-                                                    src="https://hhhhteams.sharepoint.com/sites/HHHH/SiteCollectionImages/ICONS/Shareweb/feedbck.png"
-                                                />
-                                            </span>
-                                            Feedback
-                                        </div>
-                                    </li>
-                                    <li className="mx-1 p-2 position-relative bg-siteColor text-center mb-2">
-                                        <div onClick={() => CreateActivityPopup("Task")}>
-                                            <span className="icon-sites">
-                                                <img src="	https://hhhhteams.sharepoint.com/sites/HHHH/SiteCollectionImages/ICONS/Shareweb/Impovement.png" />
-                                            </span>
-                                            Improvement
-                                        </div>
-                                    </li>
-                                    <li className="mx-1 p-2 position-relative bg-siteColor text-center mb-2">
-                                        <div onClick={() => CreateActivityPopup("Task")}>
-                                            <span className="icon-sites">
-                                                <img src="https://hhhhteams.sharepoint.com/sites/HHHH/SiteCollectionImages/ICONS/Shareweb/design.png" />
-                                            </span>
-                                            Design
-                                        </div>
-                                    </li>
-                                    <li className="mx-1 p-2 position-relative bg-siteColor text-center mb-2">
-                                        <div onClick={() => CreateActivityPopup("Task")}>
-                                            <span className="icon-sites"></span>
-                                            Task
-                                        </div>
-                                    </li>
-                                </ul>
+                                <div className="mt-4 clearfix">
+                                    <h4 className="titleBorder "> Type</h4>
+                                    <div className="col p-0 taskcatgoryPannel">
+                                        <a id="subcategorytasks936" onClick={(e) => CreateActivityPopup("Task")} className="bg-siteColor subcategoryTask text-center">
+                                            <span className="tasks-label">Bug</span>
+                                        </a>
+                                        <a id="subcategorytasks936" onClick={(e) => CreateActivityPopup("Task")} className="bg-siteColor subcategoryTask text-center">
+                                            <span className="tasks-label">Feedback</span>
+                                        </a>
+                                        <a id="subcategorytasks936" onClick={() => CreateActivityPopup("Task")} className="bg-siteColor subcategoryTask text-center">
+                                            <span className="tasks-label">Improvement</span>
+                                        </a>
+                                        <a id="subcategorytasks936" onClick={(e) => CreateActivityPopup("Task")} className="bg-siteColor subcategoryTask text-center">
+                                            <span className="tasks-label">Design</span>
+                                        </a>
+                                        <a id="subcategorytasks936" onClick={(e) => CreateActivityPopup("Task")} className="bg-siteColor subcategoryTask text-center">
+                                            <span className="tasks-label">Task</span>
+                                        </a>
+                                    </div>
+                                </div>
                             ) : (
-                                <ul className="quick-actions">
-                                    <li className="mx-1 p-2 position-relative bg-siteColor text-center mb-2">
-                                        <div onClick={(e) => CreateActivityPopup("Implementation")}>
-                                            <span className="icon-sites">
-                                                <img
-                                                    className="icon-sites"
-                                                    src="https://hhhhteams.sharepoint.com/sites/HHHH/SiteCollectionImages/ICONS/Shareweb/Implementation.png"
-                                                />
-                                            </span>
-                                            Implmentation
-                                        </div>
-                                    </li>
-                                    <li className="mx-1 p-2 position-relative bg-siteColor text-center mb-2">
-                                        <div onClick={() => CreateActivityPopup("Development")}>
-                                            <span className="icon-sites">
-                                                <img
-                                                    className="icon-sites"
-                                                    src="https://hhhhteams.sharepoint.com/sites/HHHH/SiteCollectionImages/ICONS/Shareweb/development.png"
-                                                />
-                                            </span>
-                                            Development
-                                        </div>
-                                    </li>
-                                    <li className="mx-1 p-2 position-relative bg-siteColor text-center mb-2">
-                                        <div onClick={() => CreateActivityPopup("Activities")}>
-                                            <span className="icon-sites"></span>
-                                            Activity
-                                        </div>
-                                    </li>
-                                    <li className="mx-1 p-2 position-relative bg-siteColor text-center mb-2">
-                                        <div onClick={() => CreateActivityPopup("Task")}>
-                                            <span className="icon-sites"></span>
-                                            Task
-                                        </div>
-                                    </li>
-
-                                </ul>
+                                <div className="mt-4 clearfix">
+                                    <h4 className="titleBorder "> Type</h4>
+                                    <div className="col p-0 taskcatgoryPannel">
+                                        <a id="subcategorytasks936" onClick={(e) => CreateActivityPopup("Implementation")} className="bg-siteColor subcategoryTask text-center">
+                                            <span className="tasks-label">Implmentation</span>
+                                        </a>
+                                        <a id="subcategorytasks936" onClick={() => CreateActivityPopup("Development")} className="bg-siteColor subcategoryTask text-center">
+                                            <span className="tasks-label">Development</span>
+                                        </a>
+                                        <a id="subcategorytasks936" onClick={() => CreateActivityPopup("Activities")} className="bg-siteColor subcategoryTask text-center">
+                                            <span className="tasks-label">Activity</span>
+                                        </a>
+                                        <a id="subcategorytasks936" onClick={() => CreateActivityPopup("Task")} className="bg-siteColor subcategoryTask text-center">
+                                            <span className="tasks-label">Task</span>
+                                        </a>
+                                    </div>
+                                </div>
                             )}
                         </div>
                     </div>
@@ -2463,17 +2417,6 @@ function TeamPortlioTable(SelectedProp: any) {
                     portfolioTypeData={portfolioTypeData}
                 />
             )}
-            {/* {isOpenWorkstream && (
-                <CreateWS
-                    props={checkedList}
-                    Call={Call}
-                    TaskUsers={AllUsers}
-                    AllClientCategory={AllClientCategory}
-                    data={data}
-                    SelectedProp={SelectedProp}
-                    portfolioTypeData={portfolioTypeData}
-                ></CreateWS>
-            )} */}
             {isOpenWorkstream && (
                 <CreateWS
                     selectedItem={checkedList}
@@ -2497,8 +2440,8 @@ function TeamPortlioTable(SelectedProp: any) {
                     item={SharewebComponent}
                     Calls={Call}
                     SelectD={SelectedProp}
+                    portfolioTypeData={portfolioTypeData}
                 >
-                    {" "}
                 </EditInstituton>
             )}
             {IsTimeEntry && (

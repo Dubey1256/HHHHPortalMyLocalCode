@@ -18,7 +18,7 @@ const EmailNotificationMail = (props: any) => {
     if (mention_To.length > 0) {
       let EmailProps = {
         To: mention_To,
-        Subject: `[${props.ValueStatu == '90'?'Your Task has been completed':''} " ${props.items.TaskId} -  ${props.items.Title}]`,
+        Subject: `[${props.ValueStatu == '90'?'Your Task has been completed':''} ${props.items.TaskId} -  ${props.items.Title}]`,
         Body: props.items.Title
       }
       console.log(EmailProps);
@@ -147,14 +147,11 @@ const EmailNotificationMail = (props: any) => {
         <div style={{ backgroundColor: "#FAFAFA" }}>
           <div style={{ width: "900px", backgroundColor: "#fff", padding: "0px 32px", margin: "0 auto" }}>
             <div style={{ display: "flex", alignItems: "center", margin: "56px 0px" }}>
-              <img src={props?.items?.siteIcon} style={{ width: "48px", height: "48px", borderRadius: "50%;" }}></img>
-                <div style={{ color: "var(--black, #333)", textAlign: "center", fontFamily: "Segoe UI", fontSize: "14px", fontStyle: "normal", fontWeight: "600", marginLeft: "4px" }}>- Task Management</div>
-            </div>
-            <div style={{ marginBottom: "40px", fontSize: "32px", fontWeight: "400", color: "#2F5596", fontFamily: "Segoe UI;"}}>
-              Thank you for your Feedback!
+              <img src={props?.items?.siteIcon} style={{ width: "48px", height: "48px", borderRadius: "50%" }}></img>
+                <div style={{ color: "var(--black, #333)", textAlign: "center", fontFamily: "Segoe UI", fontSize: "14px", fontStyle: "normal", fontWeight: "600", marginLeft: "4px" }}></div>
             </div>
             <div style={{ marginBottom: "12px", fontSize: "16px", fontWeight: "400", fontFamily: "Segoe UI" }}>
-              Dear {props?.items.TaskCreatorData[0].Title},
+              Hi {props?.items.TaskCreatorData[0].Title},
             </div>
             <div style={{ marginBottom: "12px", fontSize: "16px", fontWeight: "400", fontFamily: "Segoe UI" }}>
               Task created from your end has been marked to {props?.statusValue}%. Please follow the below link to review it.
@@ -162,26 +159,17 @@ const EmailNotificationMail = (props: any) => {
             <div style={{ marginBottom: "32px", fontSize: "16px", fontWeight: "400", fontFamily: "Segoe UI" }}>
               You can track your Task Status here:
             </div>
-            <div style={{ marginBottom: "40px;" }}>
+            <div style={{ marginBottom: "40px" }}>
               <div style={{
                 display: "flex", padding: "8px", justifyContent: "center", alignItems: 'center', gap: "8px", flexShrink: "0", color: "#FFF", borderRadius: "4px",
                 background: " #2F5596", width: "260px", height: "40px", fontFamily: "Segoe UI", fontSize: "14px", fontStyle: "normal", fontWeight: "600", lineHeight: "normal"
-              }}> <a  style={{ color: "#2F5596", textDecorationLine: "underline" }} data-interception="off" target="_blank" className="hreflink serviceColor_Active"
+              }}> <a  style={{ color: "#fff", textDecorationLine: "underline" }} data-interception="off" target="_blank" className="hreflink serviceColor_Active"
                 href={"https://hhhhteams.sharepoint.com/sites/HHHH/SP/SitePages/Task-Profile.aspx?taskId=" + props?.items?.Id + '&Site=' + props?.items?.siteType}
-              ></a>Track the Task Status</div>
+              >Track the Task Status</a></div>
             </div>
-            {/* <div style={{ marginBottom: " 24px", fontSize: "16px", fontWeight: "400", fontFamily: "Segoe UI" }}>
-              Task URL: <a  style={{ color: "#2F5596", textDecorationLine: "underline" }} data-interception="off" target="_blank" className="hreflink serviceColor_Active"
-                href={"https://hhhhteams.sharepoint.com/sites/HHHH/SP/SitePages/Task-Profile.aspx?taskId=" + props?.items?.Id + '&Site=' + props?.items?.siteType}
-              ></a>
-            </div> */}
-            <div style={{ marginBottom: "88px", fontSize: "16px", fontWeight: "400", fontFamily: "Segoe UI" }}>
-              Thanks,<br></br>
-              Your HHHH Support Team
-            </div>
+
             <div style={{ display: "flex", alignItems: "center", marginBottom: "56px" }}>
-              <img src="https://www.hochhuth-consulting.de/images/logo.png" style={{ width: "48px", height: "48px" }}></img>
-              <div style={{ color: "var(--black, #333)", textAlign: "center", fontFamily: "Segoe UI", fontSize: "14px", fontStyle: "normal", fontWeight: "600", marginLeft: "4px" }}>Hochhuth Consulting GmbH</div>
+              <div style={{ color: "var(--black, #333)", textAlign: "center", fontFamily: "Segoe UI", fontSize: "14px", fontStyle: "normal", fontWeight: "600", marginLeft: "4px" }}>Thanks</div>
             </div>
           </div>
          </div>

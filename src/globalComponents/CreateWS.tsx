@@ -44,6 +44,7 @@ const CreateWS = (props: any) => {
     const [inputFields, setInputFields]: any = React.useState([{
         Title: '',
         ItemRank: '',
+        UniqueRank:'XYZabc',
         Priority: '4',
         DueDate: '',
         Description: [],
@@ -54,11 +55,20 @@ const CreateWS = (props: any) => {
 
 
     const AddchildItem = () => {
+        const characters = 'ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789';
+        let result = '';
+      
+        for (let i = 0; i < 6; i++) {
+          const randomIndex = Math.floor(Math.random() * characters.length);
+          result += characters.charAt(randomIndex);
+        }
+      
         setInputFields([...inputFields, {
             Title: '',
             ItemRank: '',
             Priority: '4',
             DueDate: '',
+            UniqueRank:result,
             Description: [],
             AssignedTo: props?.selectedItem?.AssignedTo?.length > 0 ? props?.selectedItem?.AssignedTo : [],
             TeamMember: props?.selectedItem?.TeamMember?.length > 0 ? props?.selectedItem?.TeamMember : props?.selectedItem?.TeamMembers?.length > 0 ? props?.selectedItem?.TeamMembers : [],
@@ -688,10 +698,11 @@ const CreateWS = (props: any) => {
                                                     </div>
 
                                                     <ul className={refreshData ? "p-0 mt-1" : "p-0 mt-1"}>
-                                                        <li className="form-check l-radio">
+                                                        <li>
+                                                        <label className="SpfxCheckRadio">
                                                             <input
-                                                                className="form-check-input"
-                                                                name={`radioPriority${WTindex}`}
+                                                                className="radio"
+                                                                name={`radioPriority${multipleWSTask?.UniqueRank}`}
                                                                 type="radio"
                                                                 id={WTindex}
                                                                 checked={
@@ -700,12 +711,12 @@ const CreateWS = (props: any) => {
                                                                 }
                                                                 onChange={() => ChangePriorityStatusFunction("8", WTindex)}
                                                             />
-                                                            <label className="form-check-label">High</label>
+                                                            High</label>
                                                         </li>
-                                                        <li className="form-check l-radio">
-                                                            <input
-                                                                className="form-check-input"
-                                                                name="radioPriority"
+                                                        <li>
+                                                           <label className="SpfxCheckRadio">
+                                                            <input className="radio"
+                                                                name={`radioPriority${multipleWSTask?.UniqueRank}`}
                                                                 type="radio"
                                                                 checked={
                                                                     Number(multipleWSTask?.Priority) <= 7 &&
@@ -713,12 +724,13 @@ const CreateWS = (props: any) => {
                                                                 }
                                                                 onChange={() => ChangePriorityStatusFunction("4", WTindex)}
                                                             />
-                                                            <label className="form-check-label">Normal</label>
+                                                            Normal</label>
                                                         </li>
-                                                        <li className="form-check l-radio">
+                                                        <li>
+                                                           <label className="SpfxCheckRadio">
                                                             <input
-                                                                className="form-check-input"
-                                                                name="radioPriority"
+                                                                className="radio"
+                                                                name={`radioPriority${multipleWSTask?.UniqueRank}`}
                                                                 type="radio"
                                                                 checked={
                                                                     Number(multipleWSTask?.Priority) <= 3 &&
@@ -726,7 +738,7 @@ const CreateWS = (props: any) => {
                                                                 }
                                                                 onChange={() => ChangePriorityStatusFunction("1", WTindex)}
                                                             />
-                                                            <label className="form-check-label">Low</label>
+                                                            Low</label>
                                                         </li>
                                                     </ul>
                                                 </fieldset>
@@ -744,25 +756,25 @@ const CreateWS = (props: any) => {
                                             <dl className={refreshData ? 'mt-1' : "mt-1"}>
                                                 <dt className="">
                                                     <label className='SpfxCheckRadio'>
-                                                        <input className="radio" name={`radioPriority2${WTindex}`} id={WTindex}
+                                                        <input className="radio" name={`radioDueDate${multipleWSTask?.UniqueRank}`} id={WTindex}
                                                             type="radio" value="(3) Low" checked={multipleWSTask.selectDateName == 'Today'} onClick={(e: any) => handleDuedateChange('Today', WTindex)} />Today
                                                     </label>
                                                 </dt>
                                                 <dt>
                                                     <label className='SpfxCheckRadio'>
-                                                        <input className="radio" name="radioPriority2"
+                                                        <input className="radio" name={`radioDueDate${multipleWSTask?.UniqueRank}`}
                                                             type="radio" value="(3) Low" checked={multipleWSTask.selectDateName == 'Tomorrow'} onClick={(e: any) => handleDuedateChange('Tomorrow', WTindex)} />Tomorrow
                                                     </label>
                                                 </dt>
                                                 <dt>
                                                     <label className='SpfxCheckRadio'>
-                                                        <input className="radio" name="radioPriority2"
+                                                        <input className="radio" name={`radioDueDate${multipleWSTask?.UniqueRank}`}
                                                             type="radio" value="(3) Low" checked={multipleWSTask.selectDateName == 'This Week'} onClick={(e: any) => handleDuedateChange('This Week', WTindex)} />This Week
                                                     </label>
                                                 </dt>
                                                 <dt>
                                                     <label className='SpfxCheckRadio'>
-                                                        <input className="radio" name="radioPriority2"
+                                                        <input className="radio" name={`radioDueDate${multipleWSTask?.UniqueRank}`}
                                                             type="radio" value="(3) Low" checked={multipleWSTask.selectDateName == 'This Month'} onClick={(e: any) => handleDuedateChange('This Month', WTindex)} />This Month
                                                     </label>
                                                 </dt>

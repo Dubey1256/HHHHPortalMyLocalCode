@@ -103,6 +103,10 @@ const inlineEditingcolumns = (props: any) => {
     { value: 100, status: "100% Closed", taskStatusComment: "Closed" }
   ];
   React.useEffect(() => {
+   try{
+    if (props?.columnName == 'Priority'){
+      comments = JSON.parse(props?.item?.Comments)
+    }
     if (props?.item?.metaDataListId != undefined) {
       smartMetadataListId = props?.item?.metaDataListId;
     } else {
@@ -159,6 +163,7 @@ const inlineEditingcolumns = (props: any) => {
       setTaskStatusInNumber(props.item.PercentComplete);
     }
     GetSmartMetadata();
+   }catch(e){console.log}
 
   }, [props, props?.item?.TaskCategories?.results]);
   const getPercentCompleteTitle = (percent: any) => {
@@ -351,6 +356,9 @@ const inlineEditingcolumns = (props: any) => {
     }
   };
   const getChilds = (item: any, items: any) => {
+    try{
+
+   
     let parent = JSON.parse(JSON.stringify(item));
     parent.Newlabel = `${parent?.Title}`;
     AutoCompleteItemsArray.push(parent);
@@ -366,7 +374,7 @@ const inlineEditingcolumns = (props: any) => {
         AutoCompleteItemsArray.push(child);
         getChilds(child, items);
       }
-    });
+    }); }catch(e){console.log(e)}
   };
   var getSmartMetadataItemsByTaxType = function (
     metadataItems: any,
@@ -1129,9 +1137,7 @@ const inlineEditingcolumns = (props: any) => {
     setOnHoldComment(false);
   };
   
-  if (props?.columnName == 'Priority'){
-    comments = JSON.parse(props?.item?.Comments)
-  }
+
   
   return (
     <>
@@ -1177,8 +1183,8 @@ const inlineEditingcolumns = (props: any) => {
           >
             &nbsp;
             {props?.mypriority === true ? `(${props?.item?.PriorityRank}) ${props?.item?.Priority?.slice(3)}`:props?.item?.PriorityRank}
-            {props?.item.TaskCategories.map((items: any) =>
-              items.Title === "On-Hold" ? (
+            {props?.item?.TaskCategories?.map((items: any) =>
+              items?.Title === "On-Hold" ? (
                 <div className="hover-text">
                   <IoHandRightOutline
                     onMouseEnter={showOnHoldComment}
@@ -1186,18 +1192,18 @@ const inlineEditingcolumns = (props: any) => {
                   />
                   <span className="tooltip-text pop-right">
                     {onHoldComment &&
-                      comments.map((commentItem: any, index: any) => 
-                        commentItem.CommentFor !== undefined &&
-                        commentItem.CommentFor === "On-Hold" ? (
+                      comments?.map((commentItem: any, index: any) => 
+                        commentItem?.CommentFor !== undefined &&
+                        commentItem?.CommentFor === "On-Hold" ? (
                           <div key={index}>
                             <span className="siteColor p-1 border-bottom">
                               Task On-Hold by{" "}
-                              <span>{commentItem.AuthorName}</span>{" "}
-                              <span>{Moment(commentItem.Created).format('DD/MM/YY')}</span>
+                              <span>{commentItem?.AuthorName}</span>{" "}
+                              <span>{Moment(commentItem?.Created).format('DD/MM/YY')}</span>
                             </span>
-                            {commentItem.CommentFor !== undefined &&
-                            commentItem.CommentFor === "On-Hold" ? (
-                              <div key={index}>{commentItem.Description}</div>
+                            {commentItem?.CommentFor !== undefined &&
+                            commentItem?.CommentFor === "On-Hold" ? (
+                              <div key={index}>{commentItem?.Description}</div>
                             ) : null}
                           </div>
                         ) : null
