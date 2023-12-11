@@ -16,6 +16,8 @@ export const getTooltiphierarchyWithoutGroupByTable = (row: any, completeTitle: 
     let tempTitle = '';
     for (let i = 0; i < AllMatsterAndTaskData.length; i++) {
         const Object = AllMatsterAndTaskData[i];
+    }
+    AllMatsterAndTaskData?.find((Object:any)=>{
         if (Object.Id === row?.ParentTask?.Id && row?.siteType === Object?.siteType) {
             Object.subRows = [];
             tempTitle = `${Object?.Title} > ${completeTitle}`
@@ -32,8 +34,7 @@ export const getTooltiphierarchyWithoutGroupByTable = (row: any, completeTitle: 
             tempTitle = `${Object?.Title} > ${completeTitle}`
             return getTooltiphierarchyWithoutGroupByTable(Object, tempTitle);
         }
-
-    }
+    })
     return {
         structureData: row,
         structureTitle: completeTitle
