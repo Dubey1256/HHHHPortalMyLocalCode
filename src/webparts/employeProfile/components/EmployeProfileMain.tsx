@@ -60,7 +60,7 @@ const EmployeProfileMain = (props: any) => {
             OldEmployeeProfile = `https://hhhhteams.sharepoint.com/sites/HHHH/GmBH/SitePages/Contact-Profile.aspx?contactId=${params.get('contactId')}`
         }
         else if(allSite?.HrSite){
-            OldEmployeeProfile = `https://hhhhteams.sharepoint.com/sites/HHHH/GmBH/SitePages/Contact-Profile.aspx?contactId=${params.get('employeeId')}`
+            OldEmployeeProfile = `https://hhhhteams.sharepoint.com/sites/HHHH/HR/SitePages/EmployeeInfo-old.aspx?employeeId=${params.get('employeeId')}`
             let employeeId=params.get('employeeId')
             HrGmbhEmployeDeatails(employeeId) 
         }

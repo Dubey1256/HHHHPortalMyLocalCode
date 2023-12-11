@@ -32,6 +32,7 @@ const TeamSmartFilter = (item: any) => {
     let web = new Web(item?.ContextValue?.Context?.pageContext?._web?.absoluteUrl + '/');
     let allMasterTasksData: any = item.AllMasterTasksData;
     let allTastsData: any = item.AllSiteTasksData;
+    let AllSiteTasksDataLoadAll = item?.AllSiteTasksDataLoadAll;
     let smartFiltercallBackData = item.smartFiltercallBackData;
     let ContextValue = item?.ContextValue;
     let portfolioColor: any = item?.portfolioColor
@@ -1269,6 +1270,9 @@ const TeamSmartFilter = (item: any) => {
     };
     const UpdateFilterData = (event: any) => {
         if (event === "udateClickTrue") {
+            console.log("AllSiteTasksDataLoadAllAllSiteTasksDataLoadAllAllSiteTasksDataLoadAll", AllSiteTasksDataLoadAll)
+            allTastsData = [];
+            allTastsData = allTastsData.concat(AllSiteTasksDataLoadAll);
             item?.setLoaded(false);
             setUpdatedSmartFilter(true);
             FilterDataOnCheck();
@@ -1477,7 +1481,7 @@ const TeamSmartFilter = (item: any) => {
                 const key = `Task${task?.siteType + task.Id}`;
                 if (timeEntryIndexLocalStorage.hasOwnProperty(key) && timeEntryIndexLocalStorage[key]?.Id === task.Id && timeEntryIndexLocalStorage[key]?.siteType === task.siteType) {
                     task.TotalTaskTime = timeEntryIndexLocalStorage[key]?.TotalTaskTime;
-                    task.timeSheetsDescriptionSearch = timeEntryIndex[key]?.timeSheetsDescriptionSearch;
+                    task.timeSheetsDescriptionSearch = timeEntryIndexLocalStorage[key]?.timeSheetsDescriptionSearch;
                 }
             })
             console.log("timeEntryIndexLocalStorage", timeEntryIndexLocalStorage)
@@ -2052,15 +2056,15 @@ const TeamSmartFilter = (item: any) => {
     };
     return (
         <>
-            {isSmartFevShowHide === true && <div className='row text-end' >
+            {/* {isSmartFevShowHide === true && <div className='row text-end' >
                 <a onClick={() => OpenSmartfavorites('goToSmartFilter')}>All Filters</a>
-            </div>}
+            </div>} */}
             {/* {isSmartFevShowHide === false && <div className='row text-end' >
                 <a onClick={() => OpenSmartfavorites('goToSmartFavorites')}>Add Smart Favorite</a>
             </div>} */}
-                  <a className="mx-3" onClick={() => setSelectedFilterPanelIsOpen(true)}>Add Smart Favorite</a>
+            {/* <a className="mx-3" onClick={() => setSelectedFilterPanelIsOpen(true)}>Add Smart Favorite</a> */}
             <div className='justify-content-end d-flex'>
-            {isSmartFevShowHide === true && <div>
+                {isSmartFevShowHide === true && <div>
                     <a className='hreflink' onClick={() => OpenSmartfavorites('goToSmartFilter')}>Go to Smart Filter</a>
                 </div>}
                 {isSmartFevShowHide === false && <div>
@@ -2184,7 +2188,7 @@ const TeamSmartFilter = (item: any) => {
                                         <input className='form-check-input me-1' type='checkbox' id='Component' value='Component' checked={isPortfolioItems} onChange={() => setIsPortfolioItems(!isPortfolioItems)} />Portfolio Items
                                         <span className='mx-2'>|</span>
                                         <input className='form-check-input me-1' type='checkbox' id='Task' value='Task' checked={isTaskItems} onChange={() => setIsTaskItems(!isTaskItems)} />Task Items
-                                        
+
                                     </div>
                                 </div> : ''}
                             </div>
@@ -2724,9 +2728,9 @@ const TeamSmartFilter = (item: any) => {
                             </div>
                         </div >
                         <div className='full-width text-end full-width me-1 my-3 pe-2 text-end'><button className='btn btn-primary me-1 px-3 py-1' onClick={() => UpdateFilterData("udateClickTrue")}>Update Filter</button>
-                                            <button className='btn  btn-default px-3 py-1' onClick={ClearFilter}> Clear Filters</button></div>
+                            <button className='btn  btn-default px-3 py-1' onClick={ClearFilter}> Clear Filters</button></div>
                     </section> : ''}
-                   
+
                 </>}
 
                 {isSmartFevShowHide === true && <>
@@ -2875,6 +2879,30 @@ const TeamSmartFilter = (item: any) => {
                 : null
             }
             <>{PreSetPanelIsOpen && <PreSetDatePikerPannel isOpen={PreSetPanelIsOpen} PreSetPikerCallBack={PreSetPikerCallBack} portfolioColor={portfolioColor} />}</>
+            {/* {selectedFilterPanelIsOpen && <TeamSmartFavorites allFilterClintCatogryData={allFilterClintCatogryData} filterGroupsData={filterGroupsData} allStites={allStites} isOpen={selectedFilterPanelIsOpen} halfCheckBoxIcons={halfCheckBoxIcons} checkBoxIcon={checkBoxIcon} checkIcons={checkIcons} onCheck={onCheck} expanded={expanded} handleSelectAll={handleSelectAll} setExpanded={setExpanded} selectedFilterCallBack={selectedFilterCallBack} portfolioColor={portfolioColor}
+                handleSelectAllChangeTeamSection={handleSelectAllChangeTeamSection}
+                setIsCreatedBy={setIsCreatedBy}
+                setIsModifiedby={setIsModifiedby}
+                setIsAssignedto={setIsAssignedto}
+                setIsTeamLead={setIsTeamLead}
+                setIsTeamMember={setIsTeamMember}
+                setIsTodaysTask={setIsTodaysTask}
+                isSelectAll={isSelectAll}
+                isCreatedBy={isCreatedBy}
+                isModifiedby={isModifiedby}
+                isAssignedto={isAssignedto}
+                isTeamLead={isTeamLead}
+                isTeamMember={isTeamMember}
+                isTodaysTask={isTodaysTask}
+                TaskUsersData={TaskUsersData}
+                isCreatedDateSelected={isCreatedDateSelected}
+                isModifiedDateSelected={isModifiedDateSelected}
+                isDueDateSelected={isDueDateSelected}
+                setIsCreatedDateSelected={setIsCreatedDateSelected}
+                setIsModifiedDateSelected={setIsModifiedDateSelected}
+                setIsDueDateSelected={setIsDueDateSelected}
+            />} */}
+
             {selectedFilterPanelIsOpen && <TeamSmartFavoritesCopy isOpen={selectedFilterPanelIsOpen} selectedFilterCallBack={selectedFilterCallBack}
                 portfolioColor={portfolioColor}
                 filterGroupsData={filterGroupsData}
