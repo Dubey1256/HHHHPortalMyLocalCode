@@ -1353,7 +1353,7 @@ const switchGroupbyData = () => {
           }
         },
         header: "",
-        size: 150
+        size: 149
       },
       {
         accessorKey: "descriptionsSearch",

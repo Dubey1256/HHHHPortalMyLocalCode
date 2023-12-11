@@ -1,4 +1,5 @@
 import * as React from "react";
+import ReactDOMServer from 'react-dom/server';
 import { Panel, PanelType } from "office-ui-fabric-react";
 import { Web } from "sp-pnp-js";
 import TeamConfigurationCard from "./TeamConfiguration/TeamConfiguration";
@@ -265,7 +266,7 @@ const CreateActivity = (props: any) => {
             setTaskTitle(e.target.value);
         }
     }
-    const changeTaskUrl = (e: any)=>{
+    const changeTaskUrl = (e: any) => {
         setTaskUrl(e.target.value);
     }
 
@@ -334,6 +335,7 @@ const CreateActivity = (props: any) => {
             </>
         );
     };
+
 
     const closePopup = (res: any) => {
         if (res === "item") {
@@ -938,6 +940,11 @@ const CreateActivity = (props: any) => {
                         .getById(site.listId)
                         .items.add({
                             Title: TaskTitle,
+                            ComponentLink: {
+                                __metadata: { 'type': 'SP.FieldUrlValue' },
+                                Description: TaskUrl?.length > 0 ? TaskUrl : null,
+                                Url: TaskUrl?.length > 0 ? TaskUrl : null,
+                            },
                             Categories: categoriesItem ? categoriesItem : null,
                             PriorityRank: priorityRank,
                             Priority: priority,
@@ -1231,313 +1238,329 @@ const CreateActivity = (props: any) => {
             </span>
         </div>
     ));
-
-    return (
+    const onRenderMainHtml = (
         <>
-            <Panel
-                onRenderHeader={onRenderCustomHeaderMain}
-                type={PanelType.custom}
-                customWidth={props?.pageName == 'QuickTask' && props?.pageName != undefined ? "100%" : "1280px"}
-                isOpen={true}
-                onDismiss={() => closePopup("item")}
-                isBlocking={false}
-                hasCloseButton={props?.pageName == 'QuickTask' && props?.pageName != undefined ? false : true}
-                className={props?.portfolioTypeData?.Color}
-            >
-                <div className="modal-body active">
-                    {siteType?.length > 1 && selectedItem?.TaskType?.Title != "Workstream" ?
-                        <div className='col mt-4'>
-                            <h4 className="titleBorder ">Websites</h4>
-                            <div className='clearfix p-0'>
-                                <ul className="site-actions">
-                                    {siteType?.map((item: any) => {
-                                        return (
-                                            <>
-                                                {(item.Title !== undefined && item.Title !== 'Offshore Tasks' && item.Title !== 'Master Tasks' && item.Title !== 'DRR' && item.Title !== 'SDC Sites' && item.Title !== 'QA') &&
-                                                    <>
-                                                        <li
-                                                            className={selectedSites?.some((selectedSite: any) => selectedSite?.Id == item?.Id) ? 'bgtile active text-center position-relative' : "position-relative bgtile text-center"} onClick={() => setActiveTile(item)} >
-                                                            {/*  */}
-                                                            <a className={refreshData ? ' text-decoration-none ikkkkddd' : ' text-decoration-none lkjhgfdsa'} >
-                                                                <span className="icon-sites">
-                                                                    {item.Item_x005F_x0020_Cover != undefined &&
-                                                                        <img className="icon-sites"
-                                                                            src={item.Item_x005F_x0020_Cover.Url} />
-                                                                    }
-                                                                </span>{item.Title}
-                                                            </a>
-                                                        </li>
-                                                    </>
-                                                }
-                                            </>)
-                                    })}
-                                </ul>
-                            </div>
-                        </div> : ''}
-                    <div className="row">
-                        <div className="col-sm-10">
-                            <div className="row">
-                                <div className="col-sm-10 mb-10 mt-3">
-                                    <div className='input-group'>
-                                        <label className='full-width'>Task Name</label>
-                                        <input type="text" placeholder='Enter task Name' className='form-control' value={TaskTitle} onChange={(e) => { changeTitle(e) }}></input>
-                                    </div>
-
+            <div className="modal-body active">
+                {siteType?.length > 1 && selectedItem?.TaskType?.Title != "Workstream" ?
+                    <div className='col mt-4'>
+                        <h4 className="titleBorder ">Websites</h4>
+                        <div className='clearfix p-0'>
+                            <ul className="site-actions">
+                                {siteType?.map((item: any) => {
+                                    return (
+                                        <>
+                                            {(item.Title !== undefined && item.Title !== 'Offshore Tasks' && item.Title !== 'Master Tasks' && item.Title !== 'DRR' && item.Title !== 'SDC Sites' && item.Title !== 'QA') &&
+                                                <>
+                                                    <li
+                                                        className={selectedSites?.some((selectedSite: any) => selectedSite?.Id == item?.Id) ? 'bgtile active text-center position-relative' : "position-relative bgtile text-center"} onClick={() => setActiveTile(item)} >
+                                                        {/*  */}
+                                                        <a className={refreshData ? ' text-decoration-none ikkkkddd' : ' text-decoration-none lkjhgfdsa'} >
+                                                            <span className="icon-sites">
+                                                                {item.Item_x005F_x0020_Cover != undefined &&
+                                                                    <img className="icon-sites"
+                                                                        src={item.Item_x005F_x0020_Cover.Url} />
+                                                                }
+                                                            </span>{item.Title}
+                                                        </a>
+                                                    </li>
+                                                </>
+                                            }
+                                        </>)
+                                })}
+                            </ul>
+                        </div>
+                    </div> : ''}
+                <div className="row">
+                    <div className="col-sm-10">
+                        <div className="row">
+                            <div className="col-sm-10 mb-10 mt-3">
+                                <div className='input-group'>
+                                    <label className='full-width'>Task Name</label>
+                                    <input type="text" placeholder='Enter task Name' className='form-control' value={TaskTitle} onChange={(e) => { changeTitle(e) }}></input>
                                 </div>
-                                <div className="col-sm-2 mb-10 padL-0 mt-3">
-                                    <div className="input-group">
-                                        <label className='full-width'>Due Date</label>
-                                        <DatePicker
-                                            selected={save?.DueDate}
-                                            onChange={(date) => handleDatedue(date)}
-                                            dateFormat="dd/MM/yyyy"
-                                            minDate={new Date()}
-                                            customInput={<ExampleCustomInput />}
-                                            isClearable
-                                            showYearDropdown
-                                            scrollableYearDropdown
-                                        />
 
-                                    </div>
-
-                                </div>
                             </div>
-                            {props?.pageName == 'QuickTask' && props?.pageName != undefined ? <div className="row">
+                            <div className="col-sm-2 mb-10 padL-0 mt-3">
                                 <div className="input-group">
-                                    <div className="col-sm-12">
-                                        <label className='full-width'>URL</label>
-                                        <input type="text" placeholder='Enter Url' className='form-control' value={TaskUrl} onChange={(e) => { changeTaskUrl(e) }}></input>
-                                    </div>
+                                    <label className='full-width'>Due Date</label>
+                                    <DatePicker
+                                        selected={save?.DueDate}
+                                        onChange={(date) => handleDatedue(date)}
+                                        dateFormat="dd/MM/yyyy"
+                                        minDate={new Date()}
+                                        customInput={<ExampleCustomInput />}
+                                        isClearable
+                                        showYearDropdown
+                                        scrollableYearDropdown
+                                    />
+
                                 </div>
-                            </div> : null}
-                            <div className="row mt-3">
-                                <TeamConfigurationCard
-                                    ItemInfo={selectedItem}
-                                    AllListId={AllListId}
-                                    parentCallback={DDComponentCallBack}
-                                ></TeamConfigurationCard>
-                            </div>
-                            <div className="row mt-3">
-                                <div className="col-sm-5">
-                                    {/* <FroalaImageUploadComponent 
-                                     callBack={copyImage} /> */}
-                                    <div
-                                        className="Florar-Editor-Image-Upload-Container"
-                                        id="uploadImageFroalaEditor"
-                                    >
-                                        <div>
-                                            <FlorarImageUploadComponent callBack={FlorarImageUploadComponentCallBack}
-                                                defaultContent={imgdefaultContent}
-                                            />
-                                        </div>
-                                    </div>
-                                </div>
-                                <div className="col-sm-7 ps-0">
-                                    <HtmlEditorCard
-                                        editorValue={
-                                            save?.Body != undefined ? save?.Body : ""
-                                        }
-                                        HtmlEditorStateChange={HtmlEditorCallBack}
-                                    ></HtmlEditorCard>
-                                </div>
+
                             </div>
                         </div>
-                        <div className="col-sm-2">
-                            <div className="col-sm-12 padL-0 Prioritytp PadR0 mt-2">
-                                <div>
-                                    <fieldset>
-                                        <label className="full-width">
-                                            Priority
-                                            <span>
-                                                <div
-                                                    className="popover__wrapper ms-1"
-                                                    data-bs-toggle="tooltip"
-                                                    data-bs-placement="auto"
-                                                >
-                                                    <span title="Edit" className="alignIcon svg__icon--info svg__iconbox"
-                                                    ></span>
-
-                                                    <div className="popover__content">
-                                                        <span>
-                                                            8-10 = High Priority,
-                                                            <br />
-                                                            4-7 = Normal Priority,
-                                                            <br />
-                                                            1-3 = Low Priority
-                                                        </span>
-                                                    </div>
-                                                </div>
-                                            </span>
-                                        </label>
-
-                                        <div className="input-group">
-                                            <input
-                                                type="text"
-                                                className="form-control"
-                                                placeholder="Enter Priority"
-                                                value={selectPriority ? selectPriority : ""}
-                                                onChange={(e) => ChangePriorityStatusFunction(e)}
-                                            />
-                                        </div>
-
-                                        <ul className="p-0 mt-1 list-none">
-                                            <li className="SpfxCheckRadio">
-                                                <input
-                                                    className="radio"
-                                                    name="radioPriority"
-                                                    type="radio"
-                                                    checked={
-                                                        Number(selectPriority) <= 10 &&
-                                                        Number(selectPriority) >= 8
-                                                    }
-                                                    onChange={() => setselectPriority("8")}
-                                                />
-                                                <label className="form-check-label">High</label>
-                                            </li>
-                                            <li className="SpfxCheckRadio">
-                                                <input
-                                                    className="radio"
-                                                    name="radioPriority"
-                                                    type="radio"
-                                                    checked={
-                                                        Number(selectPriority) <= 7 &&
-                                                        Number(selectPriority) >= 4
-                                                    }
-                                                    onChange={() => setselectPriority("4")}
-                                                />
-                                                <label className="form-check-label">Normal</label>
-                                            </li>
-                                            <li className="SpfxCheckRadio">
-                                                <input
-                                                    className="radio"
-                                                    name="radioPriority"
-                                                    type="radio"
-                                                    checked={
-                                                        Number(selectPriority) <= 3 &&
-                                                        Number(selectPriority) > 0
-                                                    }
-                                                    onChange={() => setselectPriority("1")}
-                                                />
-                                                <label className="form-check-label">Low</label>
-                                            </li>
-                                        </ul>
-                                    </fieldset>
+                        {props?.pageName == 'QuickTask' && props?.pageName != undefined ? <div className="row">
+                            <div className="input-group">
+                                <div className="col-sm-12">
+                                    <label className='full-width'>URL</label>
+                                    <input type="text" placeholder='Enter Url' className='form-control' value={TaskUrl} onChange={(e) => { changeTaskUrl(e) }}></input>
                                 </div>
                             </div>
-                            <div className="row mt-2">
-                                <div className="col-sm-12">
-                                    <div className="col-sm-12 padding-0 input-group">
-                                        <label className="full_width">Categories</label>
-                                        <input type="text" className="ui-autocomplete-input form-control"
-                                            id="txtCategories" value={categorySearchKey}
-                                            onChange={(e) => autoSuggestionsForCategory(e)} />
-                                        <span className="input-group-text">
-                                            <span onClick={() => EditComponentPicker(selectedItem)} title="Edit Categories" className="hreflink svg__iconbox svg__icon--editBox"></span>
-                                        </span>
+                        </div> : null}
+                        <div className="row mt-3">
+                            <TeamConfigurationCard
+                                ItemInfo={selectedItem}
+                                AllListId={AllListId}
+                                parentCallback={DDComponentCallBack}
+                            ></TeamConfigurationCard>
+                        </div>
+                        <div className="row mt-3">
+                            <div className="col-sm-5">
+                                {/* <FroalaImageUploadComponent 
+                                     callBack={copyImage} /> */}
+                                <div
+                                    className="Florar-Editor-Image-Upload-Container"
+                                    id="uploadImageFroalaEditor"
+                                >
+                                    <div>
+                                        <FlorarImageUploadComponent callBack={FlorarImageUploadComponentCallBack}
+                                            defaultContent={imgdefaultContent}
+                                        />
                                     </div>
-                                    {
-                                        instantCategories?.map((item: any) => {
-                                            return (
-                                                <div className="form-check">
-                                                    <input
-                                                        className="form-check-input rounded-0"
-                                                        type="checkbox"
-                                                        checked={CategoriesData?.some((selectedCat: any) => selectedCat?.Id == item?.Id)}
+                                </div>
+                            </div>
+                            <div className="col-sm-7 ps-0">
+                                <HtmlEditorCard
+                                    editorValue={
+                                        save?.Body != undefined ? save?.Body : ""
+                                    }
+                                    HtmlEditorStateChange={HtmlEditorCallBack}
+                                ></HtmlEditorCard>
+                            </div>
+                        </div>
+                    </div>
+                    <div className="col-sm-2">
+                        <div className="col-sm-12 padL-0 Prioritytp PadR0 mt-2">
+                            <div>
+                                <fieldset>
+                                    <label className="full-width">
+                                        Priority
+                                        <span>
+                                            <div
+                                                className="popover__wrapper ms-1"
+                                                data-bs-toggle="tooltip"
+                                                data-bs-placement="auto"
+                                            >
+                                                <span title="Edit" className="alignIcon svg__icon--info svg__iconbox"
+                                                ></span>
+
+                                                <div className="popover__content">
+                                                    <span>
+                                                        8-10 = High Priority,
+                                                        <br />
+                                                        4-7 = Normal Priority,
+                                                        <br />
+                                                        1-3 = Low Priority
+                                                    </span>
+                                                </div>
+                                            </div>
+                                        </span>
+                                    </label>
+
+                                    <div className="input-group">
+                                        <input
+                                            type="text"
+                                            className="form-control"
+                                            placeholder="Enter Priority"
+                                            value={selectPriority ? selectPriority : ""}
+                                            onChange={(e) => ChangePriorityStatusFunction(e)}
+                                        />
+                                    </div>
+
+                                    <ul className="p-0 mt-1 list-none">
+                                        <li className="SpfxCheckRadio">
+                                            <input
+                                                className="radio"
+                                                name="radioPriority"
+                                                type="radio"
+                                                checked={
+                                                    Number(selectPriority) <= 10 &&
+                                                    Number(selectPriority) >= 8
+                                                }
+                                                onChange={() => setselectPriority("8")}
+                                            />
+                                            <label className="form-check-label">High</label>
+                                        </li>
+                                        <li className="SpfxCheckRadio">
+                                            <input
+                                                className="radio"
+                                                name="radioPriority"
+                                                type="radio"
+                                                checked={
+                                                    Number(selectPriority) <= 7 &&
+                                                    Number(selectPriority) >= 4
+                                                }
+                                                onChange={() => setselectPriority("4")}
+                                            />
+                                            <label className="form-check-label">Normal</label>
+                                        </li>
+                                        <li className="SpfxCheckRadio">
+                                            <input
+                                                className="radio"
+                                                name="radioPriority"
+                                                type="radio"
+                                                checked={
+                                                    Number(selectPriority) <= 3 &&
+                                                    Number(selectPriority) > 0
+                                                }
+                                                onChange={() => setselectPriority("1")}
+                                            />
+                                            <label className="form-check-label">Low</label>
+                                        </li>
+                                    </ul>
+                                </fieldset>
+                            </div>
+                        </div>
+                        <div className="row mt-2">
+                            <div className="col-sm-12">
+                                <div className="col-sm-12 padding-0 input-group">
+                                    <label className="full_width">Categories</label>
+                                    <input type="text" className="ui-autocomplete-input form-control"
+                                        id="txtCategories" value={categorySearchKey}
+                                        onChange={(e) => autoSuggestionsForCategory(e)} />
+                                    <span className="input-group-text">
+                                        <span onClick={() => EditComponentPicker(selectedItem)} title="Edit Categories" className="hreflink svg__iconbox svg__icon--editBox"></span>
+                                    </span>
+                                </div>
+                                {
+                                    instantCategories?.map((item: any) => {
+                                        return (
+                                            <div className="form-check">
+                                                <input
+                                                    className="form-check-input rounded-0"
+                                                    type="checkbox"
+                                                    checked={CategoriesData?.some((selectedCat: any) => selectedCat?.Id == item?.Id)}
+                                                    onClick={() =>
+                                                        selectSubTaskCategory(item?.Title, item?.Id, item)
+                                                    }
+                                                />
+                                                <label>{item?.Title}</label>
+                                            </div>
+                                        )
+                                    })
+                                }
+                                {SearchedCategoryData?.length > 0 ? (
+                                    <div className="SmartTableOnTaskPopup">
+                                        <ul className="list-group">
+                                            {SearchedCategoryData.map((item: any) => {
+                                                return (
+                                                    <li
+                                                        className="hreflink list-group-item rounded-0 list-group-item-action"
+                                                        key={item.id}
                                                         onClick={() =>
                                                             selectSubTaskCategory(item?.Title, item?.Id, item)
+                                                            // setSelectedCategoryData([item], "For-Auto-Search")
                                                         }
-                                                    />
-                                                    <label>{item?.Title}</label>
-                                                </div>
-                                            )
-                                        })
-                                    }
-                                    {SearchedCategoryData?.length > 0 ? (
-                                        <div className="SmartTableOnTaskPopup">
-                                            <ul className="list-group">
-                                                {SearchedCategoryData.map((item: any) => {
-                                                    return (
-                                                        <li
-                                                            className="hreflink list-group-item rounded-0 list-group-item-action"
-                                                            key={item.id}
-                                                            onClick={() =>
-                                                                selectSubTaskCategory(item?.Title, item?.Id, item)
-                                                                // setSelectedCategoryData([item], "For-Auto-Search")
-                                                            }
-                                                        >
-                                                            <a>{item.Newlabel}</a>
-                                                        </li>
-                                                    );
-                                                })}
-                                            </ul>
-                                        </div>
-                                    ) : null}
-                                </div>
-                                {CategoriesData != undefined ? (
-                                    <div>
-                                        {CategoriesData?.map((type: any, index: number) => {
-                                            return (
-                                                <>
-                                                    {!instantCategories?.some((selectedCat: any) => selectedCat?.Title == type?.Title) && (
-                                                        <div className="block d-flex full-width justify-content-between mb-1 p-2">
-                                                            <a className="wid90"
-                                                                style={{ color: "#fff !important" }}
-                                                                target="_blank"
-                                                                data-interception="off"
-                                                                href={`${AllListId.siteUrl.siteUrl}/SitePages/Portfolio-Profile.aspx?${selectedItem?.Id}`}
-                                                            >
-                                                                {type.Title}
-                                                            </a>
-                                                            <span
-                                                                className="bg-light svg__iconbox svg__icon--cross"
-                                                                onClick={() => selectSubTaskCategory(type?.Title, type?.Id, type)}
-                                                            ></span>
-                                                            {/* <img src="https://hhhhteams.sharepoint.com/sites/HHHH/SP/_layouts/images/delete.gif" onClick={() => deleteCategories(type?.Id)} className="p-1" /> */}
-                                                        </div>
-                                                    )}
-                                                </>
-                                            );
-                                        })}
+                                                    >
+                                                        <a>{item.Newlabel}</a>
+                                                    </li>
+                                                );
+                                            })}
+                                        </ul>
                                     </div>
                                 ) : null}
-
                             </div>
-
+                            {CategoriesData != undefined ? (
+                                <div>
+                                    {CategoriesData?.map((type: any, index: number) => {
+                                        return (
+                                            <>
+                                                {!instantCategories?.some((selectedCat: any) => selectedCat?.Title == type?.Title) && (
+                                                    <div className="block d-flex full-width justify-content-between mb-1 p-2">
+                                                        <a className="wid90"
+                                                            style={{ color: "#fff !important" }}
+                                                            target="_blank"
+                                                            data-interception="off"
+                                                            href={`${AllListId.siteUrl.siteUrl}/SitePages/Portfolio-Profile.aspx?${selectedItem?.Id}`}
+                                                        >
+                                                            {type.Title}
+                                                        </a>
+                                                        <span
+                                                            className="bg-light svg__iconbox svg__icon--cross"
+                                                            onClick={() => selectSubTaskCategory(type?.Title, type?.Id, type)}
+                                                        ></span>
+                                                        {/* <img src="https://hhhhteams.sharepoint.com/sites/HHHH/SP/_layouts/images/delete.gif" onClick={() => deleteCategories(type?.Id)} className="p-1" /> */}
+                                                    </div>
+                                                )}
+                                            </>
+                                        );
+                                    })}
+                                </div>
+                            ) : null}
 
                         </div>
-
 
 
                     </div>
+
+
+
                 </div>
-                <footer className={refreshData ? 'col text-end mt-3 lkjhgfds' : 'col text-end mt-3 kkkkk'}>
-                    {
-                        selectedSites?.map((site: any) => {
-                            return (
-                                <span className='ms-2'>
-                                    {(site.Item_x005F_x0020_Cover !== undefined && site.Item_x005F_x0020_Cover?.Url !== undefined) &&
-                                        <img className={refreshData ? "createTask-SiteIcon me-1 rdfgererg" : "createTask-SiteIcon me-1 erfrerg"} style={{ width: '31.5px' }} title={site?.Title} src={site.Item_x005F_x0020_Cover.Url} />
-                                    }
-                                </span>
-                            )
-                        })
-                    }
-                    <button
-                        type="button"
-                        className="btn btn-primary mx-2"
-                        onClick={() => saveNoteCall()}
-                    >
-                        Submit
-                    </button>
-                    <button
-                        type="button"
-                        className="btn btn-default"
-                        onClick={() => closeTaskStatusUpdatePoup("item")}
-                    >
-                        Cancel
-                    </button>
-                </footer>
-            </Panel>
+            </div>
+            <footer className={refreshData ? 'col text-end mt-3 lkjhgfds' : 'col text-end mt-3 kkkkk'}>
+                {
+                    selectedSites?.map((site: any) => {
+                        return (
+                            <span className='ms-2'>
+                                {(site.Item_x005F_x0020_Cover !== undefined && site.Item_x005F_x0020_Cover?.Url !== undefined) &&
+                                    <img className={refreshData ? "createTask-SiteIcon me-1 rdfgererg" : "createTask-SiteIcon me-1 erfrerg"} style={{ width: '31.5px' }} title={site?.Title} src={site.Item_x005F_x0020_Cover.Url} />
+                                }
+                            </span>
+                        )
+                    })
+                }
+                <button
+                    type="button"
+                    className="btn btn-primary mx-2"
+                    onClick={() => saveNoteCall()}
+                >
+                    Submit
+                </button>
+                <button
+                    type="button"
+                    className="btn btn-default"
+                    onClick={() => closeTaskStatusUpdatePoup("item")}
+                >
+                    Cancel
+                </button>
+            </footer>
+        </>
+    );
+
+
+    return (
+        <>
+            {props?.pageName == 'QuickTask' ?
+                <div><><div className="subheading" >
+                    <h2 className="siteColor">
+                        {props?.pageName == 'QuickTask' ? `Create Quick Option - Task` : `Create Quick Option - ${selectedItem?.NoteCall}`}
+                    </h2>
+                </div>
+                    {onRenderMainHtml}
+                </></div> : <Panel
+                    onRenderHeader={onRenderCustomHeaderMain}
+                    type={PanelType.custom}
+                    customWidth={"1280px"}
+                    isOpen={true}
+                    onDismiss={() => closePopup("item")}
+                    isBlocking={false}
+                    hasCloseButton={true}
+                    className={props?.portfolioTypeData?.Color}
+                >
+                    <div>
+                        {onRenderMainHtml}
+                    </div>
+                </Panel>}
+
 
 
             {IsComponentPicker && (
@@ -1553,5 +1576,6 @@ const CreateActivity = (props: any) => {
         </>
     );
 };
+
 
 export default CreateActivity;

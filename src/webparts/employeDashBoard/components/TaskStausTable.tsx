@@ -4,7 +4,6 @@ import { myContextValue } from "../../../globalComponents/globalCommon";
 import ReactPopperTooltip from "../../../globalComponents/Hierarchy-Popper-tooltip";
 import { ColumnDef } from "@tanstack/react-table";
 import EmployeePieChart from "./EmployeePieChart";
-
 import ComingBirthday from "./comingBirthday";
 import MyNotes from "./MyNotes";
 import EditTaskPopup from "../../../globalComponents/EditTaskPopup/EditTaskPopup";
@@ -28,7 +27,6 @@ const TaskStatusTbl = (Tile: any) => {
   const AllMasterTasks: any = ContextData?.AllMasterTasks;
   const [editPopup, setEditPopup]: any = React.useState(false);
   const [result, setResult]: any = React.useState(false);
-  // const [showImideateTask, setShowImideateTask] = React.useState(false);
   let AllListId: any = {
     TaskUsertListID: ContextData?.propsValue?.TaskUsertListID,
     SmartMetadataListID: ContextData?.propsValue?.SmartMetadataListID,
@@ -38,9 +36,6 @@ const TaskStatusTbl = (Tile: any) => {
     isShowTimeEntry: true,
     isShowSiteCompostion: true
   };
-  // React.useEffect(()=>{
-  //   setShowImideateTask(true)
-  // },[Tile.activeTile])
   const draftColumns: any = React.useMemo<ColumnDef<any, unknown>[]>(
     () => [
       {
@@ -84,6 +79,13 @@ const TaskStatusTbl = (Tile: any) => {
             >
               {row?.original?.Title}
             </a>
+            {row?.original?.descriptionsSearch != null &&
+              row?.original?.descriptionsSearch != "" && (
+                <InfoIconsToolTip
+                  Discription={row?.original?.descriptionsSearch}
+                  row={row?.original}
+                />
+              )}
           </div>
         ),
         id: "Title",
@@ -157,118 +159,9 @@ const TaskStatusTbl = (Tile: any) => {
         resetSorting: false,
         size: 50,
       },
-
     ],
     [draftCatogary]
   );
-  // const aprovlColumn: any = React.useMemo<ColumnDef<any, unknown>[]>(
-  //   () => [
-  //     {
-  //       accessorKey: "",
-  //       placeholder: "",
-  //       hasCheckbox: true,
-  //       hasCustomExpanded: false,
-  //       hasExpanded: false,
-  //       size: 55,
-  //       id: "Id"
-  //     },
-  //     {
-  //       cell: ({ row, getValue }: any) => (
-  //         <div>
-  //           <img
-  //             width={"20px"}
-  //             height={"20px"}
-  //             className="rounded-circle"
-  //             src={row?.original?.siteIcon}
-  //           />
-  //         </div>
-  //       ),
-  //       accessorKey: "",
-  //       id: "row?.original.Id",
-  //       canSort: false,
-  //       placeholder: "",
-  //       size: 95
-  //     },
-  //     {
-  //       accessorKey: "TaskID",
-  //       placeholder: "ID",
-  //       id: 'TaskID',
-  //       size: 195,
-  //       cell: ({ row, getValue }) => (
-  //         <span className="d-flex">
-  //           <ReactPopperTooltipSingleLevel ShareWebId={row?.original?.TaskID} row={row?.original} singleLevel={true} masterTaskData={AllMasterTasks} AllSitesTaskData={todaysTask} AllListId={ContextData?.propsValue?.Context} />
-  //         </span>
-  //       ),
-  //     },
-  //     // {
-  //     //   accessorFn: (row: any) => row?.TaskID,
-  //     //   cell: ({ row, getValue }: any) => (
-  //     //     <>
-  //     //       <ReactPopperTooltip ShareWebId={getValue()} row={row} AllListId={ContextData?.propsValue?.Context} />
-  //     //     </>
-  //     //   ),
-  //     //   id: "TaskID",
-  //     //   placeholder: "ID",
-  //     //   header: "",
-  //     //   resetColumnFilters: false,
-  //     //   size: 195
-  //     // },
-  //     {
-
-  //       accessorFn: (row: any) => row?.Title,
-  //       cell: ({ row, getValue }: any) => (
-  //         <div>
-  //           <a className="hreflink"
-  //             target='_blank'
-  //             style={{ textDecoration: 'none', cursor: 'pointer' }}
-  //             href={`${ContextData.siteUrl}/SitePages/Task-Profile.aspx?taskId=${row.original.Id}&Site=${row.original.site}`}
-  //             rel='noopener noreferrer'
-  //             data-interception="off"
-  //           >
-  //             {row?.original?.Title}
-  //           </a>
-  //         </div>
-  //       ),
-  //       id: "Title",
-  //       placeholder: "Title",
-  //       resetColumnFilters: false,
-  //       header: "",
-  //       size: 480
-
-  //     },
-  //     {
-  //       accessorKey: "PriorityRank",
-  //       placeholder: "Priority",
-  //       header: "",
-  //       resetColumnFilters: false,
-  //       size: 42,
-  //       id: "PriorityRank"
-  //     },
-  //     {
-  //       accessorKey: "percentage",
-  //       placeholder: "% Complete",
-  //       header: "",
-  //       resetColumnFilters: false,
-  //       size: 42,
-  //       id: "percentage"
-  //     },
-  //     {
-  //       cell: ({ row, getValue }: any) => (
-  //         <span>
-  //           <span title="Edit Task" className="svg__iconbox svg__icon--edit hreflink ms-1" onClick={() => editPopFunc(row.original)} ></span>
-  //         </span>
-  //       ),
-  //       id: 'Id',
-  //       canSort: false,
-  //       placeholder: "",
-  //       header: "",
-  //       resetColumnFilters: false,
-  //       resetSorting: false,
-  //       size: 50,
-  //     },
-  //   ],
-  //   [approvalTask]
-  // );
   const columnss: any = React.useMemo<ColumnDef<any, unknown>[]>(
     () => [
       {
@@ -307,22 +200,8 @@ const TaskStatusTbl = (Tile: any) => {
             <ReactPopperTooltipSingleLevel ShareWebId={row?.original?.TaskID} row={row?.original} singleLevel={true} masterTaskData={AllMasterTasks} AllSitesTaskData={todaysTask} AllListId={ContextData?.propsValue?.Context} />
           </span>
         ),
-      },
-      // {
-      //   accessorFn: (row: any) => row?.TaskID,
-      //   cell: ({ row, getValue }: any) => (
-      //     <>
-      //       <ReactPopperTooltip ShareWebId={getValue()} row={row} AllListId={ContextData?.propsValue?.Context} />
-      //     </>
-      //   ),
-      //   id: "TaskID",
-      //   placeholder: "ID",
-      //   header: "",
-      //   resetColumnFilters: false,
-      //   size: 195
-      // },
+      },      
       {
-
         accessorFn: (row: any) => row?.Title,
         cell: ({ row, getValue }: any) => (
           <div>
@@ -458,7 +337,6 @@ const TaskStatusTbl = (Tile: any) => {
         ),
       },
       {
-
         accessorFn: (row: any) => row?.Title,
         cell: ({ row, getValue }: any) => (
           <div>
@@ -485,7 +363,6 @@ const TaskStatusTbl = (Tile: any) => {
         resetColumnFilters: false,
         header: "",
         size: 480
-
       },
       {
         accessorKey: "PriorityRank",
@@ -594,7 +471,6 @@ const TaskStatusTbl = (Tile: any) => {
         ),
       },
       {
-
         accessorFn: (row: any) => row?.Title,
         cell: ({ row, getValue }: any) => (
           <div>
@@ -621,7 +497,6 @@ const TaskStatusTbl = (Tile: any) => {
         resetColumnFilters: false,
         header: "",
         size: 480
-
       },
       {
         accessorKey: "PriorityRank",
@@ -731,7 +606,6 @@ const TaskStatusTbl = (Tile: any) => {
         ),
       },
       {
-
         accessorFn: (row: any) => row?.Title,
         cell: ({ row, getValue }: any) => (
           <div>
@@ -827,7 +701,6 @@ const TaskStatusTbl = (Tile: any) => {
     ],
     [immediateTask]
   );
-
   const editPopFunc = (item: any) => {
     setEditPopup(true);
     setResult(item)
@@ -837,7 +710,6 @@ const TaskStatusTbl = (Tile: any) => {
   }
   const callBackData = React.useCallback((elem: any, ShowingData: any) => { },
     []);
-
   const sendAllWorkingTodayTasks = async (sharingTasks: any) => {
     let to: any = [ContextData.approverEmail];
     let body: any = '';
@@ -849,7 +721,6 @@ const TaskStatusTbl = (Tile: any) => {
       tasksCopy = sharingTasks;
       if (tasksCopy?.length > 0) {
         let taskCount = 0;
-
         tasksCopy?.map(async (item: any) => {
           try {
             item.smartTime = 0;
@@ -868,9 +739,7 @@ const TaskStatusTbl = (Tile: any) => {
                   </tr>`
                 ;
             }
-
-          } catch (error) {
-            // setPageLoader(false);
+          } catch (error) {          
             console.log(error)
           }
         })
@@ -892,7 +761,6 @@ const TaskStatusTbl = (Tile: any) => {
                         </table>`
         }
       }
-
       let sendAllTasks =
         `<span style="font-size: 18px;margin-bottom: 10px;">
             Hi there, <br><br>
@@ -905,10 +773,8 @@ const TaskStatusTbl = (Tile: any) => {
             </h3>`
       // setPageLoader(false);
       SendEmailFinal(to, subject, sendAllTasks);
-
     }
   }
-
   const SendEmailFinal = async (to: any, subject: any, body: any) => {
     let sp = spfi().using(spSPFx(ContextData?.propsValue?.Context));
     sp.utility.sendEmail({
@@ -923,15 +789,11 @@ const TaskStatusTbl = (Tile: any) => {
         'Reply-To': 'abhishek.tiwari@smalsus.com'
       },
     }).then(() => {
-      console.log("Email Sent!");
-      // setPageLoader(false);TaskStatusTbl
-
-    }).catch((err) => {
-      // setPageLoader(false);
+      console.log("Email Sent!");    
+    }).catch((err) => {      
       console.log(err.message);
     });
   }
-
   return (
     <div>
       <div className="row m-0 mb-2 empMainSec">
@@ -945,7 +807,7 @@ const TaskStatusTbl = (Tile: any) => {
                   </span>
                   <span className="alignCenter">
                     <a className="empCol hreflink me-2"
-                      target="_blank" title="Create New Task"
+                      target="_blank" data-interception="off" title="Create New Task"
                       href="https://hhhhteams.sharepoint.com/sites/HHHH/SP/SitePages/CreateTask.aspx">
                       <svg xmlns="http://www.w3.org/2000/svg" width="26" height="26" viewBox="0 0 48 48" fill="none">
                         <path d="M27.9601 22.2H26.0401V26.0399H22.2002V27.9599H26.0401V31.8H27.9601V27.9599H31.8002V26.0399H27.9601V22.2Z" fill="#057BD0" />
@@ -980,7 +842,7 @@ const TaskStatusTbl = (Tile: any) => {
                   </span>
                   <span className="alignCenter">
                     <a className="empCol hreflink me-2"
-                      target="_blank" title="Create New Task"
+                      target="_blank" data-interception="off" title="Create New Task"
                       href="https://hhhhteams.sharepoint.com/sites/HHHH/SP/SitePages/CreateTask.aspx">
                       <svg xmlns="http://www.w3.org/2000/svg" width="26" height="26" viewBox="0 0 48 48" fill="none">
                         <path d="M27.9601 22.2H26.0401V26.0399H22.2002V27.9599H26.0401V31.8H27.9601V27.9599H31.8002V26.0399H27.9601V22.2Z" fill="#057BD0" />
@@ -1015,7 +877,7 @@ const TaskStatusTbl = (Tile: any) => {
                   </span>
                   <span className="alignCenter">
                     <a className="empCol hreflink me-2"
-                      target="_blank" title="Create New Task"
+                      target="_blank" data-interception="off" title="Create New Task"
                       href="https://hhhhteams.sharepoint.com/sites/HHHH/SP/SitePages/CreateTask.aspx">
                       <svg xmlns="http://www.w3.org/2000/svg" width="26" height="26" viewBox="0 0 48 48" fill="none">
                         <path d="M27.9601 22.2H26.0401V26.0399H22.2002V27.9599H26.0401V31.8H27.9601V27.9599H31.8002V26.0399H27.9601V22.2Z" fill="#057BD0" />
@@ -1068,14 +930,10 @@ const TaskStatusTbl = (Tile: any) => {
                 </div>
               </div>
             </section>
-          )}
-          {/* <section>
-            <MultipleWebpart />
-          </section> */}
+          )}      
         </div>
         {/* className={Tile?.activeTile === 'TimeSheet' ? 'col-12 pe-0' : 'col-6 pe-0'} */}
-        <div className="col-6 pe-0'">
-          {/* Immediate Task  */}
+        <div className="col-6 pe-0'">    
           {Tile?.activeTile && (
             <section>
               <div className="chartSec empAllSec clearfix">
@@ -1085,7 +943,7 @@ const TaskStatusTbl = (Tile: any) => {
                   </span>
                   <span className="alignCenter">
                     <a className="empCol hreflink me-2"
-                      target="_blank" title="Create New Task"
+                      target="_blank" data-interception="off" title="Create New Task"
                       href="https://hhhhteams.sharepoint.com/sites/HHHH/SP/SitePages/CreateTask.aspx">
                       <svg xmlns="http://www.w3.org/2000/svg" width="26" height="26" viewBox="0 0 48 48" fill="none">
                         <path d="M27.9601 22.2H26.0401V26.0399H22.2002V27.9599H26.0401V31.8H27.9601V27.9599H31.8002V26.0399H27.9601V22.2Z" fill="#057BD0" />
@@ -1112,13 +970,11 @@ const TaskStatusTbl = (Tile: any) => {
             </section>
           )}
         </div>
-
       </div>
-      {/* <span>
+      <span>
         {editPopup && <EditTaskPopup Items={result} context={ContextData?.propsValue?.Context} AllListId={AllListId} Call={() => { CallBack() }} />}
-      </span> */}
+      </span>
     </div>
   );
 };
-
 export default TaskStatusTbl;

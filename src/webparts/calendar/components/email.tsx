@@ -346,7 +346,7 @@ let SendEmailMessage =
     background: #2F5596;width: 260px;height:40px;font-family: Segoe UI;font-size: 14px;font-style: normal;font-weight: 600;line-height: normal;">See Full Leave Report Online</div>
 </div>
 <div style="display: flex;align-items: center;padding-bottom: 56px;">
-    <img src="https://www.hochhuth-consulting.de/images/logo.png" style="height: 48px;" alt="Site Icon">
+    <img src="https://www.hochhuth-consulting.de/images/logo.png" style="height: 48px;width:48px;" alt="Site Icon">
     <div style="color: var(--black, #333);text-align: center;font-family: Segoe UI;font-size: 14px;font-style: normal; font-weight: 600;margin-left: 4px;">Hochhuth Consulting GmbH</div>
 </div>`
 
@@ -364,7 +364,7 @@ let SendEmailMessage =
                 </div>
             </div>
             <div style="display: flex;align-items: center;padding-bottom: 56px;">
-                <img src="https://www.hochhuth-consulting.de/images/logo.png" style="height: 48px;" alt="Site Icon">
+                <img src="https://www.hochhuth-consulting.de/images/logo.png" style="height: 48px;width:48px;" alt="Site Icon">
                 <div style="color: var(--black, #333);text-align: center;font-family: Segoe UI;font-size: 14px;font-style: normal; font-weight: 600;margin-left: 4px;">Hochhuth Consulting GmbH</div>
             </div>
         </div></div></div></div></div></div>`;

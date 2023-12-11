@@ -1648,6 +1648,7 @@ export const GetServiceAndComponentAllData = async (Props: any) => {
         // TaskUsers = await AllTaskUsers(Props.siteUrl, Props.TaskUserListId);
         $.each(AllMasterTaskData, function (index: any, result: any) {
             result.isSelected = false;
+            result.siteUrl=Props?.siteUrl;
             result["siteType"] = "Master Tasks";
             result.AllTeamName = "";
             result.portfolioItemsSearch = result.Item_x0020_Type;
