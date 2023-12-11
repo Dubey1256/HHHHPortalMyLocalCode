@@ -18,7 +18,7 @@ import ShowTaskTeamMembers from "../../../globalComponents/ShowTaskTeamMembers";
 import ReactDOM from "react-dom";
 import AncTool from "../../../globalComponents/AncTool/AncTool";
 import RelevantDocuments from "../../taskprofile/components/RelevantDocuments";
-import { myContextValue } from '../../../globalComponents/globalCommon'
+import { myContextValue , GetServiceAndComponentAllData} from '../../../globalComponents/globalCommon'
 import { IsAny } from "@tanstack/react-table";
 import InlineEditingcolumns from "../../projectmanagementOverviewTool/components/inlineEditingcolumns";
 import ServiceComponentPortfolioPopup from "../../../globalComponents/EditTaskPopup/ServiceComponentPortfolioPopup";
@@ -400,7 +400,7 @@ let web: any = "";
 let count = 0;
 let ParentData:any[]= [];
 
-
+let AllMasterTaskData:any=[];
 function Portfolio({ SelectedProp,TaskUser }: any) {
   AllTaskuser=TaskUser;
   
@@ -460,8 +460,12 @@ const handleMouseOut = () => {
     setPortfolioTypeData(PortFolioType);
   };
   ID = getQueryVariable("taskId");
-
+  const loadAllMasterTask=async()=>{
+    let result = await GetServiceAndComponentAllData(SelectedProp)
+      AllMasterTaskData = result.AllData
+  }
   React.useEffect(() => {
+   
     
     let folderId: any = "";
 
@@ -482,7 +486,7 @@ const handleMouseOut = () => {
       SelectedProp.isShowTimeEntry = isShowTimeEntry;
     }
     ContextValue = SelectedProp;
-
+    loadAllMasterTask();
     let web = ContextValue.siteUrl;
     let url = `${web}/_api/lists/getbyid('${ContextValue.MasterTaskListID}')/items?$select=ItemRank,Item_x0020_Type,Portfolios/Id,Portfolios/Title,PortfolioType/Id,PortfolioType/Title,PortfolioType/Color,PortfolioType/IdRange,Site,FolderID,PortfolioStructureID,ValueAdded,Idea,TaskListName,TaskListId,WorkspaceType,CompletedDate,ClientActivityJson,ClientSite,Item_x002d_Image,Sitestagging,SiteCompositionSettings,TechnicalExplanations,Deliverables,Author/Id,Author/Title,Editor/Id,Editor/Title,Package,Short_x0020_Description_x0020_On,Short_x0020_Description_x0020__x,Short_x0020_description_x0020__x0,AdminNotes,AdminStatus,Background,Help_x0020_Information,BasicImageInfo,Item_x0020_Type,AssignedTo/Title,AssignedTo/Name,AssignedTo/Id,Categories,FeedBack,ComponentLink,FileLeafRef,Title,Id,Comments,StartDate,DueDate,Status,Body,Company,Mileage,PercentComplete,FeedBack,Attachments,Priority,PriorityRank,Created,Modified,TeamMembers/Id,TeamMembers/Title,Parent/Id,Parent/Title,Parent/ItemType,TaskCategories/Id,TaskCategories/Title,ClientCategory/Id,ClientCategory/Title&$expand=Author,Editor,ClientCategory,Parent,AssignedTo,TeamMembers,PortfolioType,Portfolios,TaskCategories&$filter=Id eq ${ID}&$top=4999`;
     let response: any = [];
@@ -1149,7 +1153,7 @@ async function updateMultiLookupField(itemIds: number[], lookupIds: number[],All
                           <span>
                           {data.map((item, index) => (
 
-<ReactPopperTooltipSingleLevel ShareWebId={item?.PortfolioStructureID} row={item} singleLevel={true} masterTaskData={combinedArray} AllSitesTaskData={[]} AllListId={SelectedProp?.NextProp} />
+<ReactPopperTooltipSingleLevel ShareWebId={item?.PortfolioStructureID} row={item} singleLevel={true} masterTaskData={AllMasterTaskData} AllSitesTaskData={[]} AllListId={SelectedProp} />
         ))}
                           </span>
                           {hoveredId && <span>{hoveredId}</span>}

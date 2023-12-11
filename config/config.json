@@ -50,14 +50,6 @@
         }
       ]
     },
-    "component-edit-popup-web-part": {
-      "components": [
-        {
-          "entrypoint": "./lib/webparts/componentEditPopup/ComponentEditPopupWebPart.js",
-          "manifest": "./src/webparts/componentEditPopup/ComponentEditPopupWebPart.manifest.json"
-        }
-      ]
-    },
     
     "taskprofile-web-part": {
       "components": [
@@ -174,14 +166,7 @@
      }
    ]
  },
-    "manage-smart-metadata-web-part": {
-      "components": [
-        {
-          "entrypoint": "./lib/webparts/manageSmartMetadata/ManageSmartMetadataWebPart.js",
-          "manifest": "./src/webparts/manageSmartMetadata/ManageSmartMetadataWebPart.manifest.json"
-        }
-      ]
-    },
+
     "tasks-view-web-part": {
       "components": [
         {
