@@ -81,40 +81,132 @@ const addToLocalDBComponent = (props: any) => {
                                         if (taggedSite == 'HR') {
                                             let  addData:any;
                                             if(Item?.ItemType!="Institution"){
-                                                addData= 
-                                            {
-                                                Title: (Item.Title ? Item.Title : ''),
-                                                FirstName: (Item.FirstName ? Item.FirstName : ''),
-                                                FullName: (Item.FullName ? Item.FullName : ''),
-                                                Suffix: (Item.Suffix ? Item.Suffix : ''),
-                                                JobTitle: (Item.JobTitle ? Item.JobTitle : ''),
-                                                Email: (Item.Email ? Item.Email : ''),
-                                                WorkPhone: (Item.WorkPhone ? Item.WorkPhone : ''),
-                                                CellPhone: (Item.CellPhone ? Item.CellPhone : ''),
-                                                HomePhone: (Item.HomePhone ? Item.HomePhone : ''),
-                                                WorkCity: (Item.WorkCity ? Item.WorkCity : ''),
-                                                WorkAddress: (Item.WorkAddress ? Item.WorkAddress : ''),
-                                                WorkZip: (Item.WorkZip ? Item.WorkZip : ''),
-                                                IM: (Item.IM ? Item.IM : ''),
-                                                staffID0: staffIdData,
-                                                StaffID: staffIdString,
-                                                SmartContactId: Item.Id
-                                            }
-                                        }else{
-                                            addData= {
-                                                Title: (Item.Title ? Item.Title : " "),
-                                                  FirstName: Item.FirstName,
-                                                FullName: Item.FullName,
-                                                  ItemType: "Institution",
-                                                SmartInstitutionId:Item.Id
+                                            //     addData= 
+                                            // {
+                                            //     Title: (Item.Title ? Item.Title : ''),
+                                            //     FirstName: (Item.FirstName ? Item.FirstName : ''),
+                                            //     FullName: (Item.FullName ? Item.FullName : ''),
+                                            //     Suffix: (Item.Suffix ? Item.Suffix : ''),
+                                            //     JobTitle: (Item.JobTitle ? Item.JobTitle : ''),
+                                            //     Email: (Item.Email ? Item.Email : ''),
+                                            //     WorkPhone: (Item.WorkPhone ? Item.WorkPhone : ''),
+                                            //     CellPhone: (Item.CellPhone ? Item.CellPhone : ''),
+                                            //     HomePhone: (Item.HomePhone ? Item.HomePhone : ''),
+                                            //     WorkCity: (Item.WorkCity ? Item.WorkCity : ''),
+                                            //     WorkAddress: (Item.WorkAddress ? Item.WorkAddress : ''),
+                                            //     WorkZip: (Item.WorkZip ? Item.WorkZip : ''),
+                                            //     IM: (Item.IM ? Item.IM : ''),
+                                            //     staffID0: staffIdData,
+                                            //     StaffID: staffIdString,
+                                            //     SmartContactId: Item.Id
+                                            // }
+
                                             
-                                        }   
+                                        addData= {
+                                            Title: (Item?.Title ),
+                                            FirstName: (Item?.FirstName ),
+                                            Suffix: (Item?.Suffix ),
+                                            JobTitle: (Item?.JobTitle ),
+                                            FullName: (Item?.FirstName ) + " " + (Item?.Title ),
+                                            // InstitutionId: (Item?.Institution!=undefined? Item?.Institution?.Id :null),
+                                            Email: (Item?.Email ),
+                                            staffID0: staffIdData,
+                                            StaffID: staffIdString,
+                                            WorkPhone: (Item?.WorkPhone ),
+                                            CellPhone: (Item?.CellPhone ),
+                                            HomePhone: (Item?.HomePhone ),
+                                            WorkCity: (Item?.WorkCity),
+                                            WorkAddress: (Item?.WorkAddress),
+                                            DOJ: Item?.DOJ != undefined ? new Date(Item?.DOJ).toISOString() : null,
+                                            DOE: Item?.DOE != undefined ? new Date(Item?.DOE).toISOString() : null,
+                                          
+                                            WebPage: {
+                                                "__metadata": { type: "SP.FieldUrlValue" },
+                                                Description: (Item?.WebPage ? Item?.WebPage?.Url :null) ,
+                                                Url: (Item?.WebPage ? Item?.WebPage?.Url :null)
+                                            },
+                                           
+                                            Item_x0020_Cover:{
+                                                "__metadata": { type: "SP.FieldUrlValue" },
+                                                Description: Item?.Item_x002d_Image!=undefined ? Item?.Item_x002d_Image?.Url : (Item?.Item_x0020_Cover!=undefined?Item?.Item_x0020_Cover?.Url:""),
+                                                Url: Item?.Item_x002d_Image!=undefined ? Item?.Item_x002d_Image?.Url : (Item?.Item_x0020_Cover!=undefined?Item?.Item_x0020_Cover?.Url:"")
+                                            },
+                                            WorkZip: (Item?.WorkZip ),
+                                            IM: (Item?.IM ),
+                                            SocialMediaUrls:Item?.SocialMediaUrls!=undefined && Item?.SocialMediaUrls!=null? Item?.SocialMediaUrls:null,
+                                            SmartCountriesId: {
+                                                results:Item?.SmartCountries?.length>0?[Item?.SmartCountries[0]?.Id ]: []
+                                            },
+                                           
+                                            SmartContactId:Item.Id
+                                        }
+                                        }else{
+                                        //     addData= {
+                                        //         Title: (Item.Title ? Item.Title : " "),
+                                        //           FirstName: Item.FirstName,
+                                        //         FullName: Item.FullName,
+                                        //           ItemType: "Institution",
+                                        //         SmartInstitutionId:Item.Id
+                                            
+                                        // }  
+                                        addData = {
+                                            Title: (Item?.Title ),
+                                            FirstName: (Item?.FirstName ),
+                                            Suffix: (Item?.Suffix ),
+                                            JobTitle: (Item?.JobTitle ),
+                                            FullName: (Item?.FirstName ) + " " + (Item?.Title ),
+                                          Categories:Item?.Categories,
+                                            ItemType: "Institution",
+                                            Email: (Item?.Email ),
+                                            WorkPhone: (Item?.WorkPhone ),
+                                            CellPhone: (Item?.CellPhone ),
+                                           InstitutionType:Item?.InstitutionType,
+                                            WorkCity: (Item?.WorkCity),
+                                            WorkAddress: (Item?.WorkAddress),
+                                            Description:Item?.Description,
+                                            About:Item?.About,
+                                            WebPage: {
+                                                "__metadata": { type: "SP.FieldUrlValue" },
+                                                Description: (Item?.WebPage ? Item?.WebPage?.Url :null) ,
+                                                Url: (Item?.WebPage ? Item?.WebPage?.Url :null)
+                                            },
+                                            ItemImage:{
+                                                "__metadata": { type: "SP.FieldUrlValue" },
+                                                Description: Item?.Item_x002d_Image!=undefined ? Item?.Item_x002d_Image?.Url : (Item?.Item_x0020_Cover!=undefined?Item?.Item_x0020_Cover?.Url:""),
+                                                Url: Item?.Item_x002d_Image!=undefined ? Item?.Item_x002d_Image?.Url : (Item?.Item_x0020_Cover!=undefined?Item?.Item_x0020_Cover?.Url:"")
+                                            },
+                                            WorkZip: (Item?.WorkZip ),
+                                           
+                                            SocialMediaUrls:item?.SocialMediaUrls!=undefined&&item?.SocialMediaUrls!=null? item?.SocialMediaUrls:null,
+                                            SmartCountriesId: {
+                                                results:Item?.SmartCountries?.length>0?[Item?.SmartCountries[0]?.Id ]: []
+                                            },
+                                            SmartInstitutionId:Item?.Id
+                                            
+                                        }
+                                        
+
+
                                         }
                                             try {
                                                 let web = new Web('https://hhhhteams.sharepoint.com/sites/HHHH/HR');
-                                                await web.lists.getById(myContextData2?.allListId?.HR_EMPLOYEE_DETAILS_LIST_ID).items.add(addData).then((e) => {
+                                                await web.lists.getById(myContextData2?.allListId?.HR_EMPLOYEE_DETAILS_LIST_ID).items.add(addData).then(async(e) => {
                                                     console.log("request success", e);
+                                                    const web = new Web("https://hhhhteams.sharepoint.com/sites/HHHH");
+                                                   await web.lists
+                                                .getById("6DD8038B-40D2-4412-B28D-1C86528C7842")
+                                                     .items.add({
+                                                        Title:(Item?.FirstName ) + " " + (Item?.Title ),
+                                                        SmartContactId:Item.Id
+                                                     }).then((data:any)=>{
+                                                        console.log(data,"hr main post done")
 
+                                                     }).catch((error:any)=>{
+                                                        console.log(error)
+                                                     })
+
+
+                                                    props.callBack()
                                                 })
                                             } catch (error) {
                                                 console.log("Error:", error.message);
@@ -127,7 +219,7 @@ const addToLocalDBComponent = (props: any) => {
                         // })
                     })
             }
-            props.callBack()
+         
         }
 
          //*****************GMBH  data tag function */
@@ -165,23 +257,7 @@ const addToLocalDBComponent = (props: any) => {
                                     if (taggedSite == 'GMBH' ) {
                                         let addData:any
                                         if(Item?.ItemType!="Institution"){
-                                        //     addData= {
-                                        //         Title: (Item.Title ? Item.Title : ''),
-                                        //         FirstName: (Item.FirstName ? Item.FirstName : ''),
-                                        //         FullName: (Item.FullName ? Item.FullName : ''),
-                                        //         Suffix: (Item.Suffix ? Item.Suffix : ''),
-                                        //         JobTitle: (Item.JobTitle ? Item.JobTitle : ''),
-                                        //         Email: (Item.Email ? Item.Email : ''),
-                                        //         WorkPhone: (Item.WorkPhone ? Item.WorkPhone : ''),
-                                        //         CellPhone: (Item.CellPhone ? Item.CellPhone : ''),
-                                        //         HomePhone: (Item.HomePhone ? Item.HomePhone : ''),
-                                        //         WorkCity: (Item.WorkCity ? Item.WorkCity : ''),
-                                        //         WorkAddress: (Item.WorkAddress ? Item.WorkAddress : ''),
-                                        //         WorkZip: (Item.WorkZip ? Item.WorkZip : ''),
-                                        //         IM: (Item.IM ? Item.IM : ''),
-                                        //         SmartContactId:Item.Id
-                                            
-                                        // }
+                                       
 
                                         addData= {
                                             Title: (Item?.Title ),
@@ -189,7 +265,7 @@ const addToLocalDBComponent = (props: any) => {
                                             Suffix: (Item?.Suffix ),
                                             JobTitle: (Item?.JobTitle ),
                                             FullName: (Item?.FirstName ) + " " + (Item?.Title ),
-                                            InstitutionId: (Item?.Institution!=undefined? Item?.Institution?.Id :null),
+                                            // InstitutionId: (Item?.Institution!=undefined? Item?.Institution?.Id :null),
                                             Email: (Item?.Email ),
                                             
                                             WorkPhone: (Item?.WorkPhone ),
@@ -197,8 +273,9 @@ const addToLocalDBComponent = (props: any) => {
                                             HomePhone: (Item?.HomePhone ),
                                             WorkCity: (Item?.WorkCity),
                                             WorkAddress: (Item?.WorkAddress),
-                                            DOJ:Item?.DOJ!=undefined?Item?.DOJ:null,
-                                            DOE:Item?.DOE!=undefined?Item?.DOE:null,
+                                            DOJ: Item?.DOJ != undefined ? new Date(Item?.DOJ).toISOString() : null,
+                                            DOE: Item?.DOE != undefined ? new Date(Item?.DOE).toISOString() : null,
+                                          
                                             WebPage: {
                                                 "__metadata": { type: "SP.FieldUrlValue" },
                                                 Description: (Item?.WebPage ? Item?.WebPage?.Url :null) ,
@@ -211,11 +288,12 @@ const addToLocalDBComponent = (props: any) => {
                                                 Url: Item?.Item_x002d_Image!=undefined ? Item?.Item_x002d_Image?.Url : (Item?.Item_x0020_Cover!=undefined?Item?.Item_x0020_Cover?.Url:"")
                                             },
                                             WorkZip: (Item?.WorkZip ),
-                                            IM: (Item?.Skype ),
+                                            IM: (Item?.IM ),
                                             SocialMediaUrls:Item?.SocialMediaUrls!=undefined && Item?.SocialMediaUrls!=null? Item?.SocialMediaUrls:null,
                                             SmartCountriesId: {
                                                 results:Item?.SmartCountries?.length>0?[Item?.SmartCountries[0]?.Id ]: []
                                             },
+                                           
                                             SmartContactId:Item.Id
                                         }
                                         

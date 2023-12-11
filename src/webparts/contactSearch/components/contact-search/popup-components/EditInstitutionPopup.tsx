@@ -73,8 +73,8 @@ const HrGmbhInstitutionDeatails=async(Id:any)=>{
             let web = new Web(myContextData2?.allListId?.jointSiteUrl);
             await web.lists.getById(myContextData2?.allListId?.HHHHInstitutionListId)
                 .items .getById(id)
-                .select("Id","Title","FirstName","Description","FullName","Company","JobTitle","About","InstitutionType","SocialMediaUrls","ItemType","WorkCity","ItemImage","WorkCountry","WorkAddress","WebPage","CellPhone","HomePhone","Email","SharewebSites","Created","Author/Id","Author/Title","Modified","Editor/Id","Editor/Title")
-                .expand("Author", "Editor",)
+                .select("Id","Title","FirstName","Description","FullName","WorkPhone","SmartCountries/Id","SmartCountries/Title","Company","JobTitle","About","InstitutionType","SocialMediaUrls","ItemType","WorkCity","ItemImage","WorkCountry","WorkAddress","WebPage","CellPhone","HomePhone","Email","SharewebSites","Created","Author/Id","Author/Title","Modified","Editor/Id","Editor/Title")
+                .expand("Author", "Editor","SmartCountries")
               .get().then((data: any) => {
                 let URL: any[] = JSON.parse(data.SocialMediaUrls != null ? data.SocialMediaUrls : ["{}"]);
                 setURLs(URL);
@@ -271,25 +271,7 @@ const HrGmbhInstitutionDeatails=async(Id:any)=>{
 
 
 const UpdateGmbhDetails = async (postData: any) => {
-
-    // delete (postData?.Department)
-    // let updateGmbhData:any={
-    //     Title: (updateData.Title ),
-    //     FirstName: (updateData.FirstName),
-    //     FullName: (updateData.FullName ),
-    //     Suffix: (updateData.Suffix ),
-    //     JobTitle: (updateData.JobTitle ),
-    //     Email: (updateData.Email ),
-    //     WorkPhone: (updateData.WorkPhone ),
-    //     CellPhone: (updateData.CellPhone ),
-    //     HomePhone: (updateData.HomePhone ),
-    //     WorkCity: (updateData.WorkCity ),
-    //     WorkAddress: (updateData.WorkAddress ),
-    //     WorkZip: (updateData.WorkZip ),
-    //     IM: (updateData.IM ),
-
-    // }
-    let web = new Web('https://hhhhteams.sharepoint.com/sites/HHHH/GmBH');
+let web = new Web('https://hhhhteams.sharepoint.com/sites/HHHH/GmBH');
     await web.lists.getById('6CE99A82-F577-4467-9CDA-613FADA2296F').items.getById(updateData.Id).update(postData).then((e: any) => {
         console.log("request success", e);
         callBack();

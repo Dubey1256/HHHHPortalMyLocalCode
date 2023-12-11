@@ -29,10 +29,10 @@ export interface ICommentCardProps {
   itemID?: number;
   Context?: any;
   AllListId?: any;
-  onHoldCallBack?: () => void
-  commentFor?: string
-  postCommentCallBack?: () => void
-  counter?: number
+  counter?: number;
+  onHoldCallBack?: any;
+  commentFor?:string;
+  postCommentCallBack?:any;
 }
 const sp = spfi();
 export interface ICommentCardState {
@@ -60,6 +60,7 @@ export interface ICommentCardState {
   postButtonHide: boolean;
   topCommenterShow: boolean;
   keyPressed: boolean;
+
 }
 export class CommentCard extends React.Component<ICommentCardProps, ICommentCardState> {
   private taskUsers: any = [];
@@ -102,7 +103,7 @@ export class CommentCard extends React.Component<ICommentCardProps, ICommentCard
       editorValue: '',
       ChildLevel: false,
       ReplyParent: {},
-      editorChangeValue: ''
+      editorChangeValue: '',
     }
     this.GetResult();
     console.log(this.props.Context);
@@ -114,17 +115,6 @@ export class CommentCard extends React.Component<ICommentCardProps, ICommentCard
     this.handleMouseClick = this.handleMouseClick.bind(this);
 
   }
-
-  componentDidUpdate(prevProps:any, prevState: any) {
-    if(this.props?.counter !== prevProps?.counter) {
-      this.GetResult();
-    }
-  }
-
-  componentDidMount(): void {
-    this.GetTaskUsers()
-  }
-
   private async GetResult() {
     let web = new Web(this.props.siteUrl);
     let taskDetails = [];
@@ -152,7 +142,7 @@ export class CommentCard extends React.Component<ICommentCardProps, ICommentCard
         .expand("TeamMembers", "Author", "ClientCategory", "ResponsibleTeam", "SharewebTaskType", "Portfolio", "PortfolioType", "Editor")
         .get()
     }
-    // await this.GetTaskUsers();
+    await this.GetTaskUsers();
     console.log("this is result function")
     //this.currentUser = this.GetUserObject(this.props.Context.pageContext.user.displayName);
     Title = taskDetails["Title"];
@@ -279,7 +269,6 @@ export class CommentCard extends React.Component<ICommentCardProps, ICommentCard
       console.log(this.mentionUsers);
     }
   }
-  
   private handleInputChange(e: any) {
     this.setState({ CommenttoPost: e.target.value });
   }
@@ -303,8 +292,7 @@ export class CommentCard extends React.Component<ICommentCardProps, ICommentCard
         Header: this.GetMentionValues(this.state.mentionValue),
         ID: this.state.Result["Comments"] != undefined ? this.state.Result["Comments"].length + 1 : 1,
         Title: txtComment,
-        editable: false,
-        CommentFor: this.props.commentFor == 'On-Hold' ? 'On-Hold' : ''
+        editable: false
       };
       if (this.state?.ChildLevel == true) {
         this.state?.Result?.Comments?.forEach((element: any) => {
@@ -357,8 +345,6 @@ export class CommentCard extends React.Component<ICommentCardProps, ICommentCard
         .getById(this.state.itemID).update({
           Comments: JSON.stringify(this.state.Result["Comments"])
         });
-        this.props.postCommentCallBack()
-        this.props.onHoldCallBack()
       if (isPushOnRoot != false)
         this.setState({ updateComment: true }, () => this.GetEmailObjects(txtComment, this.state.mentionValue));
       else

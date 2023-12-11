@@ -3,51 +3,33 @@ import OrgContactEditPopup from './orgContactEditPopup';
 import CountryContactEditPopup from './CountryContactEditPopup';
 import { useState, useEffect, useCallback } from 'react';
 import pnp, { Web } from 'sp-pnp-js';
-import { GoRepoPush } from 'react-icons/go';
-
 import moment, * as Moment from "moment";
 import Tooltip from '../../../../../globalComponents/Tooltip';
 import { Panel, PanelType } from 'office-ui-fabric-react';
 import ImagesC from '../../../../EditPopupFiles/ImageInformation';
-import { Site } from '@pnp/sp/sites';
 import { myContextValue } from '../../../../../globalComponents/globalCommon'
-let HrGmbhEmployeData: any = []
-let JointData: any = [];
+
+
+let JointData: any;
+let JointHrData:any
 const HHHHEditComponent = (props: any) => {
     const myContextData2: any = React.useContext<any>(myContextValue)
     const [countryData, setCountryData] = useState([]);
     const [stateData, setStateData] = useState([]);
-    const [HrTagData, setHrTagData] = useState([]);
+
     const [imagetab, setImagetab] = React.useState(false);
     const [status, setStatus] = useState({
         orgPopup: false,
         countryPopup: false,
         statePopup: false
     });
+    const [HrTagData, setHrTagData]: any = useState({});
     const [siteTaggedHR, setSiteTaggedHR] = useState(false);
     const [siteTaggedSMALSUS, setSiteTaggedSMALSUS] = useState(false);
-
     const [updateData, setUpdateData]: any = useState({});
-    const [HrUpdateData, setHrUpdateData] = useState({
-        Nationality: "", placeOfBirth: '', BIC: '', IBAN: '', taxNo: '', monthlyTaxAllowance: 0, insuranceNo: "", highestSchoolDiploma: '', highestVocationalEducation: '', otherQualifications: '', Country: '', Fedral_State: '', childAllowance: '', churchTax: '', healthInsuranceType: '', healthInsuranceCompany: '', maritalStatus: '', taxClass: '', SmartContactId: '', SmartLanguagesId: '', SmartStateId: '', dateOfBirth: '', Parenthood: '',
-    })
-    // const [instituteStatus, setInstituteStatus] = useState(false);
-
     const [URLs, setURLs] = useState([]);
-
-    const [selectedState, setSelectedState] = useState({
-        Title: ''
-    });
-
+    const [selectedState, setSelectedState] = useState();
     const [currentCountry, setCurrentCountry]: any = useState([])
-
-    const [hrBtnStatus, setHrBtnStatus] = useState({
-        personalInfo: true,
-        bankInfo: false,
-        taxInfo: false,
-        qualificationInfo: false,
-        socialSecurityInfo: false
-    })
     const [SmalsusBtnStatus, setSmalsusBtnStatus] = useState({
         personalInfo: true,
         bankInfo: false,
@@ -60,18 +42,21 @@ const HHHHEditComponent = (props: any) => {
     useEffect(() => {
         getSmartMetaData();
         if (myContextData2.allSite?.MainSite) {
-            getUserData(props?.props?.Id);
+            getJointCont(props?.props?.Id);
 
         } else {
 
             HrGmbhEmployeDeatails(props?.props?.Id);
+           
         }
         pnp.sp.web.currentUser.get().then((result: any) => {
             let CurrentUserId = result.Id;
             console.log(CurrentUserId)
         });
     }, [])
-    const getUserData = async (Id: any) => {
+
+    //**********Joint Contact  get Data function********************** */
+    const getJointCont = async (Id: any) => {
         try {
             let web = new Web(myContextData2?.allListId?.siteUrl);
             await web.lists.getById(myContextData2?.allListId?.HHHHContactListId)
@@ -102,10 +87,10 @@ const HHHHEditComponent = (props: any) => {
                         HrTagInformation(Id);
                         setSiteTaggedHR(true);
                     }
-                    if (SitesTagged.search("SMALSUS") >= 0 && myContextData2.loggedInUserName == data.Email) {
-                        HrTagInformation(Id);
-                        setSiteTaggedSMALSUS(true);
-                    }
+                    // if (SitesTagged.search("SMALSUS") >= 0 && myContextData2.loggedInUserName == data.Email) {
+                    //     HrTagInformation(Id);
+                    //     setSiteTaggedSMALSUS(true);
+                    // }
                     data.Item_x002d_Image = data?.Item_x0020_Cover;
                     setUpdateData(data);
                 }).catch((error: any) => {
@@ -119,17 +104,27 @@ const HHHHEditComponent = (props: any) => {
         }
 
     }
-    const HrGmbhEmployeDeatails = async (Id: any) => {
+    //***************Joint contact function end***************** */
 
+//*****************Hr gmbh get contact function start*************** */
+    const HrGmbhEmployeDeatails = async (Id: any) => {
+        let selectcolumn:any
+        let expandColumn:any
         try {
+            if(myContextData2?.allSite?.GMBHSite){
+             selectcolumn='Id, Title, FirstName, FullName,DOJ,DOE, Company,SmartCountriesId, SmartContactId, WorkCity, Suffix, WorkPhone, HomePhone, Comments, WorkAddress, WorkFax, WorkZip, ItemType, JobTitle, Item_x0020_Cover, WebPage, CellPhone, Email, LinkedIn, Created, SocialMediaUrls, Author/Title, Modified, Editor/Title, Division/Title, Division/Id, EmployeeID/Title, StaffID, EmployeeID/Id, Institution/Id, Institution/FullName, IM &$expand= EmployeeID,Division, Author, Editor, Institution'
+                
+            }else{
+                selectcolumn='Id,Parenthood,Fedral_State,churchTax,healthInsuranceType,taxClass,childAllowance,healthInsuranceCompany,maritalStatus,dateOfBirth,insuranceNo,otherQualifications,highestVocationalEducation,highestSchoolDiploma,Nationality,placeOfBirth,BIC,IBAN,taxNo,monthlyTaxAllowance, Title, FirstName, FullName,DOJ,DOE, Company,SmartCountriesId, SmartContactId, WorkCity, Suffix, WorkPhone, HomePhone, Comments, WorkAddress, WorkFax, WorkZip, ItemType, JobTitle, Item_x0020_Cover, WebPage, CellPhone, Email, LinkedIn, Created, SocialMediaUrls, Author/Title, Modified, Editor/Title, Division/Title, Division/Id, EmployeeID/Title, StaffID, EmployeeID/Id, Institution/Id, Institution/FullName, IM &$expand= EmployeeID,Division, Author, Editor, Institution'    
+            }
+          
             let web = new Web(myContextData2?.allListId?.siteUrl);
             await web.lists.getById(myContextData2?.allSite?.GMBHSite ? myContextData2?.allListId?.GMBH_CONTACT_SEARCH_LISTID : myContextData2?.allListId?.HR_EMPLOYEE_DETAILS_LIST_ID)
                 .items.getById(Id)
-                .select("Id", "Title", "FirstName", "FullName", "Company", "SmartContactId", "WorkCity", "Suffix", "WorkPhone", "HomePhone", "Comments", "WorkAddress", "WorkFax", "WorkZip", "ItemType", "JobTitle", "Item_x0020_Cover", "WebPage", "CellPhone", "Email", "LinkedIn", "Created", "SocialMediaUrls", "Author/Title", "Modified", "Editor/Title", "Division/Title", "Division/Id", "EmployeeID/Title", "StaffID", "EmployeeID/Id", "Institution/Id", "Institution/FullName", "IM")
-                .expand("EmployeeID", "Division", "Author", "Editor", "Institution")
+                .select(selectcolumn)
                 .get().then((data: any) => {
 
-                    HrGmbhEmployeData = data;
+                    
                     let URL: any[] = JSON.parse(data.SocialMediaUrls != null ? data.SocialMediaUrls : ["{}"]);
                     setURLs(URL);
                     // if (data?.Institution != null && data?.Institution!=undefined) {
@@ -137,9 +132,11 @@ const HHHHEditComponent = (props: any) => {
                     // }
                     data.Item_x002d_Image = data?.Item_x0020_Cover;
 
-                    if (data?.SmartContactId != undefined) {
-                        JointDetails(data)
-                    } else {
+                    if (data?.SmartContactId != undefined ) {
+                        JointContactDetails(data)
+                    } 
+                  
+                    else {
                         setUpdateData(data)
                     }
 
@@ -154,7 +151,11 @@ const HHHHEditComponent = (props: any) => {
             console.log("Error:", error.message);
         }
     }
-    const JointDetails = async (siteData: any) => {
+
+    //*************Hr Gmbh get contact function end******************** */
+
+    //**********Joint conatct function gmbh hr site url************ */
+    const JointContactDetails = async (siteData: any) => {
         try {
             let web = new Web(myContextData2?.allListId?.jointSiteUrl);
             await web.lists.getById(myContextData2?.allListId?.HHHHContactListId)
@@ -163,29 +164,51 @@ const HHHHEditComponent = (props: any) => {
                 .expand("EmployeeID", "Division", "Author", "Editor", "SmartCountries", "Institution")
                 .get().then((data: any) => {
                     // data.map((Item: any) => {
+                        let SitesTagged=''
                     data.SitesTagged = ''
                     if (data.Site != null) {
                         if (data.Site.length >= 0) {
                             data.Site?.map((site: any, index: any) => {
                                 if (index == 0) {
                                     data.SitesTagged = site;
+                                    SitesTagged=site;
                                 } else if (index > 0) {
                                     data.SitesTagged = data.SitesTagged + ', ' + site;
+                                    SitesTagged=data.SitesTagged + ', ' + site;
                                 }
                             })
                         }
                     }
-                    // })
+                    if (SitesTagged.search("HR") >= 0 && myContextData2.allSite?.HrSite) {
+                        // HrTagInformation(data?.Id);
+                        setSiteTaggedHR(true);
+                    }
+                    if (data?.SmartCountries?.length > 0) {
 
-                    siteData.Site = data.Site
-                    setUpdateData(siteData)
+                        setCurrentCountry(data?.SmartCountries);
+                    }
+                    if (myContextData2.allSite?.MainSite == false) {
+                        siteData.Site = data.Site
+                        siteData.SmartCountries = data.SmartCountries
+                        setUpdateData(siteData)
+                        if(myContextData2.allSite?.HrSite){
+                            setHrTagData(siteData);
+                            HrTagInformation(data?.Id)
+                        }
+                    }
+
+
+                    // siteData.Site = data.Site
+
                     JointData = data;
                 });
 
         } catch (error) {
+            setUpdateData(siteData)
             console.log("Error:", error.message);
         }
     }
+     //**********Joint conatct function gmbh hr site url END ************ */
 
     const getSmartMetaData = async () => {
         try {
@@ -211,26 +234,40 @@ const HHHHEditComponent = (props: any) => {
         }
 
     }
-
+//********************* Joint Hr detail function start************** */
     const HrTagInformation = async (Id: any) => {
         try {
             const web = new Web("https://hhhhteams.sharepoint.com/sites/HHHH");
-            let data = await web.lists
+            await web.lists
                 .getById("6DD8038B-40D2-4412-B28D-1C86528C7842")
                 .items.select(
-                    "Id,ID,Title,BIC,Country, Parenthood, IBAN, Nationality,healthInsuranceCompany,highestVocationalEducation,healthInsuranceType,highestSchoolDiploma,insuranceNo,otherQualifications,dateOfBirth,Fedral_State,placeOfBirth,maritalStatus,taxNo,churchTax,taxClass,monthlyTaxAllowance,childAllowance,SmartState/Title,SmartState/Id,SmartLanguages/Title,SmartLanguages/Id,SmartContact/Title,SmartContact/Id").expand("SmartLanguages, SmartState, SmartContact").filter("SmartContact/ID eq " + Id).get();
-            let array = [];
-            array.push(data[0]);
-            setHrUpdateData({
-                ...HrUpdateData,
-                Parenthood: data[0].Parenthood ? data[0].Parenthood : '',
-                churchTax: data[0].churchTax ? data[0].churchTax : ''
-            });
-            setHrTagData(array);
+                    "Id,ID,Title,BIC,Country, Parenthood, IBAN, Nationality,healthInsuranceCompany,highestVocationalEducation,healthInsuranceType,highestSchoolDiploma,insuranceNo,otherQualifications,dateOfBirth,Fedral_State,placeOfBirth,maritalStatus,taxNo,churchTax,taxClass,monthlyTaxAllowance,childAllowance,SmartState/Title,SmartState/Id,SmartLanguages/Title,SmartLanguages/Id,SmartContact/Title,SmartContact/Id")
+                .expand("SmartLanguages, SmartState, SmartContact")
+                .filter("SmartContact/ID eq " + Id).get().then((data: any) => {
+
+                    // ;
+                    //         setHrUpdateData({
+                    //             ...HrUpdateData,
+                    //             Parenthood: data[0].Parenthood ? data[0].Parenthood : '',
+                    //             churchTax: data[0].churchTax ? data[0].churchTax : ''
+                    //         });
+                    if(myContextData2.allSite?.HrSite){
+                        JointHrData=data[0];
+                    }else{
+                        setHrTagData(data[0]);
+                    }
+                    
+                }).catch((error: any) => {
+                    console.log(error)
+                });
+
         } catch (error) {
             console.log("error:", error.message);
         }
     };
+
+    //******************Joint Hr detail function End  */
+
     //*****************Save for Joint,GMBH,HR Data Update***************************************** */
     const UpdateDetails = async () => {
         let urlData: any;
@@ -278,7 +315,7 @@ const HHHHEditComponent = (props: any) => {
                     Url: updateData?.Item_x002d_Image != undefined ? updateData?.Item_x002d_Image?.Url : (updateData?.Item_x0020_Cover != undefined ? updateData?.Item_x0020_Cover?.Url : null)
                 },
                 WorkZip: (updateData?.WorkZip),
-                IM: (updateData?.Skype),
+                IM: (updateData?.IM),
                 SocialMediaUrls: JSON.stringify(UrlData),
                 SmartCountriesId: {
                     results: updateData?.SmartCountries?.length > 0 ? [updateData?.SmartCountries[0]?.Id] : []
@@ -291,7 +328,15 @@ const HHHHEditComponent = (props: any) => {
                     if (myContextData2?.allSite?.GMBHSite) {
                         UpdateGmbhDetails(postData);
 
-                    } else {
+                    }
+                    if(myContextData2?.allSite?.HrSite){
+                        updateHrDetails(postData);
+                    }
+                  if (updateData?.Site?.toString().search("HR") >= 0 && myContextData2?.allSite?.MainSite) {
+                            updateJointHrDetails();
+           
+                           }
+                    else {
                         callBack();
                     }
                 });
@@ -300,10 +345,10 @@ const HHHHEditComponent = (props: any) => {
         } catch (error) {
             console.log("Error:", error.message);
         }
-        if (updateData?.Site?.toString().search("HR") >= 0) {
-            updateHrDetails();
-            callBack();
-        }
+        // if (updateData?.Site?.toString().search("HR") >= 0) {
+        //     updateHrDetails();
+           
+        // }
 
 
 
@@ -313,29 +358,14 @@ const HHHHEditComponent = (props: any) => {
 
 
 
-    // ************************Update GMBH fUNCTION ***********************
+    // ************************Update GMBH fUNCTION Start  ***********************
 
     const UpdateGmbhDetails = async (postData: any) => {
 
         delete (postData?.Department)
-        // let updateGmbhData:any={
-        //     Title: (updateData.Title ),
-        //     FirstName: (updateData.FirstName),
-        //     FullName: (updateData.FullName ),
-        //     Suffix: (updateData.Suffix ),
-        //     JobTitle: (updateData.JobTitle ),
-        //     Email: (updateData.Email ),
-        //     WorkPhone: (updateData.WorkPhone ),
-        //     CellPhone: (updateData.CellPhone ),
-        //     HomePhone: (updateData.HomePhone ),
-        //     WorkCity: (updateData.WorkCity ),
-        //     WorkAddress: (updateData.WorkAddress ),
-        //     WorkZip: (updateData.WorkZip ),
-        //     IM: (updateData.IM ),
-
-        // }
-        let web = new Web('https://hhhhteams.sharepoint.com/sites/HHHH/GmBH');
-        await web.lists.getById('6CE99A82-F577-4467-9CDA-613FADA2296F').items.getById(updateData.Id).update(postData).then((e: any) => {
+      
+        let web = new Web(myContextData2?.allListId?.siteUrl);
+        await web.lists.getById(myContextData2?.allListId?.GMBH_CONTACT_SEARCH_LISTID).items.getById(updateData.Id).update(postData).then((e: any) => {
             console.log("request success", e);
             callBack();
         }).catch((error: any) => {
@@ -347,41 +377,81 @@ const HHHHEditComponent = (props: any) => {
 
     // ************************End Update GMBH fUNCTION ***********************
 
+    //******************* */ Hr update function **************************
+   const updateHrDetails=async(postData:any)=>{
+    delete (postData?.Department)
+      let postDataHr={Nationality: (HrTagData?.Nationality ? HrTagData?.Nationality : null),
+      placeOfBirth: (HrTagData?.placeOfBirth ? HrTagData?.placeOfBirth : null),
+      BIC: (HrTagData?.BIC ? HrTagData?.BIC : null),
+      IBAN: (HrTagData?.IBAN ? HrTagData?.IBAN : null),
+      taxNo: (HrTagData?.taxNo ? HrTagData?.taxNo : null),
+      monthlyTaxAllowance: (HrTagData?.monthlyTaxAllowance ? HrTagData?.monthlyTaxAllowance : null),
+      insuranceNo: (HrTagData?.insuranceNo ? HrTagData?.insuranceNo : null),
+      highestSchoolDiploma: (HrTagData?.highestSchoolDiploma ? HrTagData?.highestSchoolDiploma : null),
+      highestVocationalEducation: (HrTagData?.highestVocationalEducation ? HrTagData?.highestVocationalEducation : null),
+      otherQualifications: (HrTagData?.otherQualifications ? HrTagData?.otherQualifications : null),
+      healthInsuranceCompany: (HrTagData?.healthInsuranceCompany ? HrTagData?.healthInsuranceCompany : null),
+      dateOfBirth: (HrTagData?.dateOfBirth ? HrTagData?.dateOfBirth : null),
+      maritalStatus: (HrTagData?.maritalStatus ? HrTagData?.maritalStatus : null),
+      Parenthood: (HrTagData?.Parenthood ? HrTagData?.Parenthood : null),
+      taxClass: (HrTagData?.taxClass ? HrTagData?.taxClass : null),
+      childAllowance: (HrTagData?.childAllowance ? HrTagData?.childAllowance : null),
+      churchTax: (HrTagData?.churchTax ? HrTagData?.churchTax : null),
+      healthInsuranceType: (HrTagData?.healthInsuranceType ? HrTagData?.healthInsuranceType : null),
+      Fedral_State: (HrTagData?.Fedral_State ? HrTagData?.Fedral_State : null)
+      }
+      let postDataHrSite = {
+        ...postData,
+        ...postDataHr
+    };
+    let web = new Web(myContextData2?.allListId?.siteUrl);
+    await web.lists.getById(myContextData2?.allListId?.HR_EMPLOYEE_DETAILS_LIST_ID).items.getById(updateData.Id).update(postDataHrSite).then((e: any) => {
+        console.log("request success", e);
+        updateJointHrDetails()
+       
+    }).catch((error: any) => {
+        console.log(error)
+    })
 
-    //*************************UpdateHr Deatils   Function ***************************** */
-    const updateHrDetails = async () => {
-        let Id: any = HrTagData[0].ID;
+   }
+//******************* */ Hr update function End **************************
+
+    //*************************UpdateHr Deatils joint   Function Start ***************************** */
+    const updateJointHrDetails = async () => {
+        let Id: any = myContextData2.allSite?.HrSite?JointHrData.Id:HrTagData.ID;
         try {
-            const web = new Web("https://hhhhteams.sharepoint.com/sites/HHHH");
+            const web = new Web(myContextData2?.allListId?.jointSiteUrl);
             await web.lists
-                .getById("6DD8038B-40D2-4412-B28D-1C86528C7842")
+                .getById(myContextData2?.allListId?.MAIN_HR_LISTID)
                 .items.getById(Id).update({
-                    Nationality: (HrUpdateData.Nationality ? HrUpdateData.Nationality : (HrTagData[0].Nationality ? HrTagData[0].Nationality : null)),
-                    placeOfBirth: (HrUpdateData.placeOfBirth ? HrUpdateData.placeOfBirth : (HrTagData[0].placeOfBirth ? HrTagData[0].placeOfBirth : null)),
-                    BIC: (HrUpdateData.BIC ? HrUpdateData.BIC : (HrTagData[0].BIC ? HrTagData[0].BIC : null)),
-                    IBAN: (HrUpdateData.IBAN ? HrUpdateData.IBAN : (HrTagData[0].IBAN ? HrTagData[0].IBAN : null)),
-                    taxNo: (HrUpdateData.taxNo ? HrUpdateData.taxNo : (HrTagData[0].taxNo ? HrTagData[0].taxNo : null)),
-                    monthlyTaxAllowance: (HrUpdateData.monthlyTaxAllowance ? HrUpdateData.monthlyTaxAllowance : (HrTagData[0].monthlyTaxAllowance ? HrTagData[0].monthlyTaxAllowance : null)),
-                    insuranceNo: (HrUpdateData.insuranceNo ? HrUpdateData.insuranceNo : (HrTagData[0].insuranceNo ? HrTagData[0].insuranceNo : null)),
-                    highestSchoolDiploma: (HrUpdateData.highestSchoolDiploma ? HrUpdateData.highestSchoolDiploma : (HrTagData[0].highestSchoolDiploma ? HrTagData[0].highestSchoolDiploma : null)),
-                    highestVocationalEducation: (HrUpdateData.highestVocationalEducation ? HrUpdateData.highestVocationalEducation : (HrTagData[0].highestVocationalEducation ? HrTagData[0].highestVocationalEducation : null)),
-                    otherQualifications: (HrUpdateData.otherQualifications ? HrUpdateData.otherQualifications : (HrTagData[0].otherQualifications ? HrTagData[0].otherQualifications : null)),
-                    healthInsuranceCompany: (HrUpdateData.healthInsuranceCompany ? HrUpdateData.healthInsuranceCompany : (HrTagData[0].healthInsuranceCompany ? HrTagData[0].healthInsuranceCompany : null)),
-                    dateOfBirth: (HrUpdateData.dateOfBirth ? HrUpdateData.dateOfBirth : (HrTagData[0].dateOfBirth ? HrTagData[0].dateOfBirth : null)),
-                    maritalStatus: (HrUpdateData.maritalStatus ? HrUpdateData.maritalStatus : (HrTagData[0].maritalStatus ? HrTagData[0].maritalStatus : null)),
-                    Parenthood: (HrUpdateData.Parenthood ? HrUpdateData.Parenthood : (HrTagData[0].Parenthood ? HrTagData[0].Parenthood : null)),
-                    taxClass: (HrUpdateData.taxClass ? HrUpdateData.taxClass : (HrTagData[0].taxClass ? HrTagData[0].taxClass : null)),
-                    childAllowance: (HrUpdateData.childAllowance ? HrUpdateData.childAllowance : (HrTagData[0].childAllowance ? HrTagData[0].childAllowance : null)),
-                    churchTax: (HrUpdateData.churchTax ? HrUpdateData.churchTax : (HrTagData[0].churchTax ? HrTagData[0].churchTax : null)),
-                    healthInsuranceType: (HrUpdateData.healthInsuranceType ? HrUpdateData.healthInsuranceType : (HrTagData[0].healthInsuranceType ? HrTagData[0].healthInsuranceType : null)),
-                    Fedral_State: (HrUpdateData.Fedral_State ? HrUpdateData.Fedral_State : (HrTagData[0].Fedral_State ? HrTagData[0].Fedral_State : null))
+                    Nationality: (HrTagData?.Nationality ? HrTagData?.Nationality : null),
+                    placeOfBirth: (HrTagData?.placeOfBirth ? HrTagData?.placeOfBirth : null),
+                    BIC: (HrTagData?.BIC ? HrTagData?.BIC : null),
+                    IBAN: (HrTagData?.IBAN ? HrTagData?.IBAN : null),
+                    taxNo: (HrTagData?.taxNo ? HrTagData?.taxNo : null),
+                    monthlyTaxAllowance: (HrTagData?.monthlyTaxAllowance ? HrTagData?.monthlyTaxAllowance : null),
+                    insuranceNo: (HrTagData?.insuranceNo ? HrTagData?.insuranceNo : null),
+                    highestSchoolDiploma: (HrTagData?.highestSchoolDiploma ? HrTagData?.highestSchoolDiploma : null),
+                    highestVocationalEducation: (HrTagData?.highestVocationalEducation ? HrTagData?.highestVocationalEducation : null),
+                    otherQualifications: (HrTagData?.otherQualifications ? HrTagData?.otherQualifications : null),
+                    healthInsuranceCompany: (HrTagData?.healthInsuranceCompany ? HrTagData?.healthInsuranceCompany : null),
+                    dateOfBirth: (HrTagData?.dateOfBirth ? HrTagData?.dateOfBirth : null),
+                    maritalStatus: (HrTagData?.maritalStatus ? HrTagData?.maritalStatus : null),
+                    Parenthood: (HrTagData?.Parenthood ? HrTagData?.Parenthood : null),
+                    taxClass: (HrTagData?.taxClass ? HrTagData?.taxClass : null),
+                    childAllowance: (HrTagData?.childAllowance ? HrTagData?.childAllowance : null),
+                    churchTax: (HrTagData?.churchTax ? HrTagData?.churchTax : null),
+                    healthInsuranceType: (HrTagData?.healthInsuranceType ? HrTagData?.healthInsuranceType : null),
+                    Fedral_State: (HrTagData?.Fedral_State ? HrTagData?.Fedral_State : null)
                 }).then(() => {
                     console.log("Your information has been updated successfully");
+                    alert("Your information has been updated successfully")
+                    callBack();
                 })
         } catch (error) {
             console.log("error", error.message)
         }
-        alert("Your information has been updated successfully")
+      
     }
     //************************* End UpdateHr Deatils   Function ***************************** */
 
@@ -405,7 +475,26 @@ const HHHHEditComponent = (props: any) => {
 
                 if (myContextData2?.allSite?.GMBHSite || myContextData2?.allSite?.HrSite) {
                     let web = new Web(myContextData2?.allListId?.siteUrl);
-                    await web.lists.getById(myContextData2?.allSite?.GMBHSite ? myContextData2?.allListId?.GMBH_CONTACT_SEARCH_LISTID : myContextData2?.allListId?.HR_EMPLOYEE_DETAILS_LIST_ID).items.getById(updateData.Id).recycle();
+                    await web.lists.getById(myContextData2?.allSite?.GMBHSite ? myContextData2?.allListId?.GMBH_CONTACT_SEARCH_LISTID : myContextData2?.allListId?.HR_EMPLOYEE_DETAILS_LIST_ID).items.getById(updateData.Id).recycle()
+                    .then(async(data:any)=>{
+                //        let  updateSiteTag={
+                //             SharewebSites: {
+                //                 results: myContextData2?.allSite?.GMBHSite?["GMBH"]:["HR"]
+                //             },
+                //             Site: {
+                //                 results: myContextData2?.allSite?.GMBHSite?["GMBH"]:["HR"]
+                //             }
+                //         } 
+                //         let web = new Web(myContextData2?.allListId?.jointSiteUrl);
+                // await web.lists.getById(myContextData2?.allListId?.HHHHContactListId)
+                // .items.getById(JointData?.Id).update( updateSiteTag ).then((dataUpdate:any) => {
+                //   console.log("joint data site tag update sucessfully update")
+                // }).catch((error:any)=>{
+                //     console.log(error,"joint data update error")
+                // })
+                    }).catch((error:any)=>{
+                        console.log(error)
+                    });
                 }
 
 
@@ -448,6 +537,7 @@ const HHHHEditComponent = (props: any) => {
         // setCountryPopup(false);
         if (data != undefined) {
             setUpdateData(data);
+            setCurrentCountry(setCurrentCountry?.SmartCountries)
         }
     }, []);
 
@@ -469,40 +559,7 @@ const HHHHEditComponent = (props: any) => {
 
 
     //**********Hr smalsus functionality popup */
-    const changeHrTabBtnStatus = (e: any, btnName: any) => {
-        if (btnName == "personal-info") {
-            setHrBtnStatus({ ...hrBtnStatus, personalInfo: true, bankInfo: false, taxInfo: false, qualificationInfo: false, socialSecurityInfo: false })
-        }
-        if (btnName == "bank-info") {
-            setHrBtnStatus({ ...hrBtnStatus, personalInfo: false, bankInfo: true, taxInfo: false, qualificationInfo: false, socialSecurityInfo: false })
-        }
-        if (btnName == "tax-info") {
-            setHrBtnStatus({ ...hrBtnStatus, personalInfo: false, bankInfo: false, taxInfo: true, qualificationInfo: false, socialSecurityInfo: false })
-        }
-        if (btnName == "social-security-info") {
-            setHrBtnStatus({ ...hrBtnStatus, personalInfo: false, bankInfo: false, taxInfo: false, qualificationInfo: false, socialSecurityInfo: true })
-        }
-        if (btnName == "qualification-info") {
-            setHrBtnStatus({ ...hrBtnStatus, personalInfo: false, bankInfo: false, taxInfo: false, qualificationInfo: true, socialSecurityInfo: false })
-        }
-    }
-    const changeSmalsusTabBtnStatus = (e: any, btnName: any) => {
-        if (btnName == "personal-info") {
-            setSmalsusBtnStatus({ ...SmalsusBtnStatus, personalInfo: true, bankInfo: false, taxInfo: false, qualificationInfo: false, socialSecurityInfo: false })
-        }
-        if (btnName == "bank-info") {
-            setSmalsusBtnStatus({ ...SmalsusBtnStatus, personalInfo: false, bankInfo: true, taxInfo: false, qualificationInfo: false, socialSecurityInfo: false })
-        }
-        if (btnName == "tax-info") {
-            setSmalsusBtnStatus({ ...SmalsusBtnStatus, personalInfo: false, bankInfo: false, taxInfo: true, qualificationInfo: false, socialSecurityInfo: false })
-        }
-        if (btnName == "social-security-info") {
-            setSmalsusBtnStatus({ ...SmalsusBtnStatus, personalInfo: false, bankInfo: false, taxInfo: false, qualificationInfo: false, socialSecurityInfo: true })
-        }
-        if (btnName == "qualification-info") {
-            setSmalsusBtnStatus({ ...SmalsusBtnStatus, personalInfo: false, bankInfo: false, taxInfo: false, qualificationInfo: true, socialSecurityInfo: false })
-        }
-    }
+  
     const selectState = (e: any, item: any) => {
         if (currentCountry.length > 0) {
             setStatus({
@@ -510,15 +567,15 @@ const HHHHEditComponent = (props: any) => {
                 countryPopup: false,
                 statePopup: true
             })
-            setSelectedState(item);
+            setSelectedState(item?.Fedral_State);
         } else {
             alert("Please select country before selecting state");
         }
     }
-    const selectedStateStatus = useCallback((item: any) => {
-        setHrUpdateData({ ...HrUpdateData, Fedral_State: item.Title })
-        setSelectedState(item)
-    }, [])
+    // const selectedStateStatus = useCallback((item: any) => {
+    //     setHrUpdateData({ ...HrUpdateData, Fedral_State: item.Title })
+    //     setSelectedState(item)
+    // }, [])
 
     //****************End Hr sMALSUS POPUP FUNCTIONALITY */
     const onRenderCustomHeadersmartinfo = () => {
@@ -763,7 +820,7 @@ const HHHHEditComponent = (props: any) => {
                                                     <div className='input-group'>
                                                         <label className="full-width label-form">Skpye</label>
                                                         <input type="text" className="form-control" placeholder="Skpye" defaultValue={updateData?.IM ? updateData?.IM : ""}
-                                                            onChange={(e) => setUpdateData({ ...updateData, Skype: e.target.value })} aria-label="Skpye" />
+                                                            onChange={(e) => setUpdateData({ ...updateData, IM: e.target.value })} aria-label="Skpye" />
                                                     </div></div>
                                                 <div className="col">
                                                     <div className='input-group'>
@@ -775,7 +832,7 @@ const HHHHEditComponent = (props: any) => {
                                                     <div className='input-group'>
                                                         <label className="full-width label-form">WebPage</label>
 
-                                                        <input className="form-control" type="text" defaultValue={updateData?.WebPage ? updateData?.WebPage.Url : ""} onChange={(e) => setUpdateData({ ...updateData, WebPage:{...updateData.WebPage,Url: e.target.value}} )} aria-label="WebPage" />
+                                                        <input className="form-control" type="text" defaultValue={updateData?.WebPage ? updateData?.WebPage.Url : ""} onChange={(e) => setUpdateData({ ...updateData, WebPage: { ...updateData.WebPage, Url: e.target.value } })} aria-label="WebPage" />
                                                     </div>
                                                 </div>
                                                 <div className="col">
@@ -880,232 +937,240 @@ const HHHHEditComponent = (props: any) => {
                                     </button>
                                 </ul>
                                 <div className="border border-top-0 clearfix p-3 tab-content" id="myTabContent">
-                                    {HrTagData?.map((item: any, index) => {
-                                        return (
-                                            <>
-                                                <div className="tab-pane show active" id="PERSONALINFORMATION1" role="tabpanel" aria-labelledby="PERSONALINFORMATION">
-                                                    {hrBtnStatus.personalInfo ? <div>
-                                                        <div className='user-form-3 row'>
-                                                            <div className="col">
-                                                                <label className="full-width label-form">Federal state </label>
-                                                                <div className='d-flex org-section'>
-                                                                    <span>{selectedState.Title != undefined && selectedState.Title != '' ?
-                                                                        <>
-                                                                            {selectedState.Title} <img className='mx-2' src='https://hhhhteams.sharepoint.com/_layouts/images/delete.gif' />
-                                                                        </> : (item.Fedral_State ?
-                                                                            <>{item.Fedral_State}
-                                                                                <img className='mx-2' src='https://hhhhteams.sharepoint.com/_layouts/images/delete.gif' />
+                                    <div className="tab-pane show active" id="PERSONALINFORMATION1" role="tabpanel" aria-labelledby="PERSONALINFORMATION">
+                                        <div>
+                                            <div className='user-form-3 row'>
+                                                {/* <div className="col">
+                                                    <label className="full-width label-form">Federal state </label>
+                                                    <div className='d-flex org-section'>
+                                                        <span>{selectedState.Title != undefined && selectedState.Title != '' ?
+                                                            <>
+                                                                {selectedState.Title} <img className='mx-2' src='https://hhhhteams.sharepoint.com/_layouts/images/delete.gif' />
+                                                            </> : (HrTagData?.Fedral_State ?
+                                                                <>{HrTagData?.Fedral_State}
+                                                                    <img className='mx-2' src='https://hhhhteams.sharepoint.com/_layouts/images/delete.gif' />
 
-                                                                            </>
-                                                                            : '')}
-                                                                    </span>
-                                                                    <button className='popup-btn' onClick={(e) => selectState(e, item)}>
-                                                                        <GoRepoPush />
-                                                                    </button>
-                                                                </div>
-                                                            </div>
-                                                            <div className="col">
-                                                                <div className='input-group'>
-                                                                    <label className="full-width label-form">Nationality</label>
-                                                                    <input type="text" className="form-control" defaultValue={item.Nationality ? item.Nationality : ''} onChange={(e) => setHrUpdateData({ ...HrUpdateData, Nationality: e.target.value })} placeholder='Enter Nationality' />
-                                                                </div></div>
-                                                            <div className="col">
-                                                                <div className='input-group'>
-                                                                    <label className="full-width label-form">Date of Birth</label>
-                                                                    <input type="date" className="form-control"
-                                                                        defaultValue={item.dateOfBirth ? Moment(item.dateOfBirth).format("YYYY-MM-DD") : ''} onChange={(e) => setHrUpdateData({ ...HrUpdateData, dateOfBirth: Moment(e.target.value).format("YYYY-MM-DD") })} />
-                                                                </div></div>
-                                                        </div>
-                                                        <div className='user-form-3 row'>
-                                                            <div className="col">
-                                                                <div className='input-group'>
-                                                                    <label className="full-width label-form">Place of birth</label>
-                                                                    <input type="text" className="form-control" defaultValue={item.placeOfBirth} onChange={(e) => setHrUpdateData({ ...HrUpdateData, placeOfBirth: e.target.value })} placeholder='Enter Place of birth' />
-                                                                </div></div>
-                                                            <div className="col">
-                                                                <div className='input-group'>
-                                                                    <label className="full-width label-form">Marital status</label>
-                                                                    <select className="form-control" onChange={(e) => setHrUpdateData({ ...HrUpdateData, maritalStatus: e.target.value })}>
-                                                                        {item.maritalStatus ? null :
-                                                                            <option selected>Select an Option</option>
-                                                                        }
-                                                                        <option selected={item.maritalStatus == "Single"}>Single</option>
-                                                                        <option selected={item.maritalStatus == "Married"}>Married</option>
-                                                                        <option selected={item.maritalStatus == "Divorced"}>Divorced</option>
-                                                                        <option selected={item.maritalStatus == "Widowed"}>Widowed</option>
-                                                                    </select>
-                                                                </div>
-                                                            </div>
-                                                            <div className="col">
-                                                                <div className='input-group'>
-                                                                    <label className="full-width label-form">Parenthood</label>
-                                                                    <div>
-                                                                        <label className='SpfxCheckRadio'><input type="radio" checked={HrUpdateData.Parenthood == 'yes'} className='radio' onChange={(e) => setHrUpdateData({ ...HrUpdateData, Parenthood: 'yes' })} /> Yes</label>
-                                                                        <label className='SpfxCheckRadio'><input type="radio" checked={HrUpdateData.Parenthood == 'no'} className='radio' onChange={(e) => setHrUpdateData({ ...HrUpdateData, Parenthood: 'no' })} /> No</label>
-                                                                    </div>
-                                                                </div>
-                                                            </div>
-                                                        </div>
-                                                    </div> : null}</div>
-                                                <div className="tab-pane" id="BANKINFORMATION1" role="tabpanel" aria-labelledby="BANKINFORMATION1">
-                                                    {hrBtnStatus.bankInfo ?
-                                                        <div className="card-body">
-                                                            <div className='user-form-2 row'>
-                                                                <div className="col">
-                                                                    <div className='input-group'>
-                                                                        <label className="full-width label-form">IBAN</label>
-                                                                        <input type="text" className="form-control" placeholder='Enter IBAN' defaultValue={item.IBAN ? item.IBAN : ''} onChange={(e) => setHrUpdateData({ ...HrUpdateData, IBAN: e.target.value })} />
-                                                                    </div></div>
-                                                                <div className="col">
-                                                                    <div className='input-group'>
-                                                                        <label className="full-width label-form">BIC</label>
-                                                                        <input type="text" className="form-control" defaultValue={item.BIC ? item.BIC : ''} placeholder='Enter BIC' onChange={(e) => setHrUpdateData({ ...HrUpdateData, BIC: e.target.value })} />
-                                                                    </div></div>
-                                                            </div>
-                                                        </div> : null}</div>
-                                                <div className="tab-pane" id="TAXINFORMATION1" role="tabpanel" aria-labelledby="TAXINFORMATION1">
-                                                    {hrBtnStatus.taxInfo ?
-                                                        <div className="card-body">
-                                                            <div className='user-form-3 row'>
-                                                                <div className="col">
-                                                                    <div className='input-group'>
-                                                                        <label className="full-width label-form">Tax No.
-                                                                        </label>
-                                                                        <input type="text" className="form-control" placeholder='Enter Tax No.' defaultValue={item.taxNo ? item.taxNo : ''} onChange={(e) => setHrUpdateData({ ...HrUpdateData, taxNo: e.target.value })} />
-                                                                    </div></div>
-                                                                <div className="col mx-2">
-                                                                    <div className='input-group'>
-                                                                        <label className="full-width label-form">Tax class</label>
-                                                                        <select className="form-control py-1" onChange={(e) => setHrUpdateData({ ...HrUpdateData, taxClass: e.target.value })}>
-                                                                            {item.taxClass ? null :
-                                                                                <option selected>Select an Option</option>
-                                                                            }
-                                                                            <option selected={item.taxClass == "I"}>I</option>
-                                                                            <option selected={item.taxClass == "II"}>II</option>
-                                                                            <option selected={item.taxClass == "III"}>III</option>
-                                                                            <option selected={item.taxClass == "IV"}>IV</option>
-                                                                            <option selected={item.taxClass == "V"}>V</option>
-                                                                            <option selected={item.taxClass == "VI"}>VI</option>
-                                                                            <option selected={item.taxClass == "none"}>None</option>
-                                                                        </select>
-                                                                    </div>
-                                                                </div>
-                                                                <div className="col">
-                                                                    <div className='input-group'>
-                                                                        <label className="full-width label-form">Child allowance</label>
-                                                                        <select className="form-control" onChange={(e) => setHrUpdateData({ ...HrUpdateData, childAllowance: e.target.value })}>
-                                                                            {item.childAllowance ? null :
-                                                                                <option selected>Select an Option</option>
-                                                                            }
-                                                                            <option selected={item.childAllowance == "0.5"}>0.5</option>
-                                                                            <option selected={item.childAllowance == "1"}>1</option>
-                                                                            <option selected={item.childAllowance == "1.5"}>1.5</option>
-                                                                            <option selected={item.childAllowance == "2"}>2</option>
-                                                                            <option selected={item.childAllowance == "2.5"}>2.5</option>
-                                                                            <option selected={item.childAllowance == "3"}>3</option>
-                                                                            <option selected={item.childAllowance == "3.5"}>3.5</option>
-                                                                            <option selected={item.childAllowance == "4"}>4</option>
-                                                                            <option selected={item.childAllowance == "4.5"}>4.5</option>
-                                                                            <option selected={item.childAllowance == "5"}>5</option>
-                                                                            <option selected={item.childAllowance == "5.5"}>5.5</option>
-                                                                            <option selected={item.childAllowance == "6"}>6</option>
-                                                                            <option selected={item.childAllowance == "6.5"}>6.5</option>
-                                                                            <option selected={item.childAllowance == "7"}>7</option>
-                                                                            <option selected={item.childAllowance == "7.5"}>7.5</option>
-                                                                            <option selected={item.childAllowance == "8"}>8</option>
-                                                                            <option selected={item.childAllowance == "8.5"}>8.5</option>
-                                                                            <option selected={item.childAllowance == "9"}>9</option>
-                                                                            <option selected={item.childAllowance == "9.5"}>9.5</option>
-                                                                            <option selected={item.childAllowance == "none"}>None</option>
-                                                                        </select>
-                                                                    </div>
-                                                                </div>
-                                                            </div>
-                                                            <div className='user-form-2 row'>
-                                                                <div className="col">
-                                                                    <div className='input-group'>
-                                                                        <label className="full-width label-form">Church tax</label>
-                                                                        <div>
-                                                                            <label className='SpfxCheckRadio'><input className='radio' type="radio" onChange={(e) => setHrUpdateData({ ...HrUpdateData, churchTax: 'yes' })} checked={HrUpdateData.churchTax == 'yes'} /> Yes</label>
-                                                                            <label className='SpfxCheckRadio'><input className='radio' type="radio" onChange={(e) => setHrUpdateData({ ...HrUpdateData, churchTax: 'no' })} checked={HrUpdateData.churchTax == 'no'} /> No</label>
-                                                                        </div></div>
-                                                                </div>
-                                                                <div className="col">
-                                                                    <div className='input-group'>
-                                                                        <label className="full-width label-form">Monthly tax allowance</label>
-                                                                        <input type="number" className="form-control" placeholder='Enter Monthly tax allowance' defaultValue={item.monthlyTaxAllowance ? item.monthlyTaxAllowance : ''} />
-                                                                    </div></div>
-
-                                                            </div>
-                                                        </div> : null}</div>
-                                                <div className="tab-pane" id="SOCIALSECURITYINFORMATION1" role="tabpanel" aria-labelledby="SOCIALSECURITYINFORMATION1">
-                                                    {hrBtnStatus.socialSecurityInfo ? <div className="card-body">
-                                                        <div className='user-form-3 row'>
-
-                                                            <div className="col">
-                                                                <div className='input-group'>
-                                                                    <label className="full-width label-form">Health Insurance Type</label>
-                                                                    <select className="form-control" onChange={(e) => setHrUpdateData({ ...HrUpdateData, healthInsuranceType: e.target.value })}>
-                                                                        {item.healthInsuranceType ? null :
-                                                                            <option selected>Select an Option</option>
-                                                                        }
-                                                                        <option selected={item.healthInsuranceType == "None"}>None</option>
-                                                                        <option selected={item.healthInsuranceType == "Statutory"}>Statutory</option>
-                                                                        <option selected={item.healthInsuranceType == "Private"}>Private</option>
-                                                                    </select>
-                                                                </div></div>
-                                                            <div className="col">
-                                                                <div className='input-group'>
-                                                                    <label className="full-width label-form">Health Insurance Company
-                                                                    </label>
-                                                                    <input type="text" className="form-control" placeholder='Enter Company Name' defaultValue={item.healthInsuranceCompany ? item.healthInsuranceCompany : ''} onChange={(e) => setHrUpdateData({ ...HrUpdateData, healthInsuranceCompany: e.target.value })} />
-                                                                </div></div>
-                                                            <div className="col">
-                                                                <div className='input-group'>
-                                                                    <label className="full-width label-form">Health Insurance No
-                                                                    </label>
-                                                                    <input type="text" className="form-control" placeholder='Enter Health Insurance No' defaultValue={item.insuranceNo ? item.insuranceNo : ''} onChange={(e) => setHrUpdateData({ ...HrUpdateData, insuranceNo: e.target.value })} />
-                                                                </div></div>
-                                                        </div>
-
-                                                    </div> : null}</div>
-                                                <div className="tab-pane" id="QUALIFICATIONS1" role="tabpanel" aria-labelledby="QUALIFICATIONS1">
-                                                    {hrBtnStatus.qualificationInfo ?
-                                                        <div className='card-body'>
-                                                            <div className='user-form-2 row'>
-                                                                <div className="col">
-                                                                    <div className='input-group'>
-                                                                        <label className="full-width label-form">Highest school diploma
-                                                                        </label>
-                                                                        <input type="text" className="form-control" placeholder='Enter Highest school diploma' defaultValue={item.highestSchoolDiploma ? item.highestSchoolDiploma : ''} onChange={(e) => setHrUpdateData({ ...HrUpdateData, highestSchoolDiploma: e.target.value })} />
-                                                                    </div></div>
-                                                                <div className="col">
-                                                                    <div className='input-group'>
-                                                                        <label className="full-width label-form">Highest vocational education
-                                                                        </label>
-                                                                        <input type="text" className="form-control" placeholder='Enter Highest vocational education' defaultValue={item.highestVocationalEducation ? item.highestVocationalEducation : ''} onChange={(e) => setHrUpdateData({ ...HrUpdateData, highestVocationalEducation: e.target.value })} />
-                                                                    </div></div>
-                                                            </div>
-                                                            <div className='user-form-2 row'>
-                                                                <div className="col">
-                                                                    <div className='input-group'>
-                                                                        <label className="full-width label-form">Other qualifications
-                                                                        </label>
-                                                                        <input type="text" className="form-control" placeholder='Enter Other qualifications' defaultValue={item.otherQualifications ? item.otherQualifications : ''} onChange={(e) => setHrUpdateData({ ...HrUpdateData, otherQualifications: e.target.value })} />
-                                                                    </div></div>
-                                                                <div className="col">
-                                                                    <div className='input-group'>
-                                                                        <label className="full-width label-form">Languages
-                                                                        </label>
-                                                                        <input type="text" className="form-control" />
-                                                                    </div>
-                                                                </div>
-                                                            </div>
-                                                        </div> : null}
+                                                                </>
+                                                                : '')}
+                                                        </span>
+                                                        <button className='popup-btn' onClick={(e) => selectState(e, HrTagData)}>
+                                                            <GoRepoPush />
+                                                        </button>
+                                                    </div>
+                                                </div> */}
+                                                <div className="col">
+                                                    <div className="input-group">
+                                                        <label className="form-label full-width">Federal state</label>
+                                                        <input type="text" className="form-control" id="txtCategories" placeholder="Search Category Here" value="" />
+                                                        <span className="input-group-text" title="Smart Category Popup">
+                                                            <span onClick={(e) => selectState(e, HrTagData)} className="svg__iconbox svg__icon--editBox"></span>
+                                                        </span>
+                                                    </div>
+                                                    {HrTagData?.Fedral_State!=undefined && HrTagData?.Fedral_State != ''&&<div className="block w-100">
+                                                        <a className="hreflink wid90" target="_blank" data-interception="off"></a>
+                                                        <span className="bg-light hreflink ml-auto svg__icon--cross svg__iconbox"></span>
+                                                    </div>}
                                                 </div>
-                                            </>
-                                        )
-                                    })}
+                                                <div className="col">
+                                                    <div className='input-group'>
+                                                        <label className="full-width label-form">Nationality</label>
+                                                        <input type="text" className="form-control" defaultValue={HrTagData?.Nationality ? HrTagData?.Nationality : ''} onChange={(e) => setHrTagData({ ...HrTagData, Nationality: e.target.value })} placeholder='Enter Nationality' />
+                                                    </div></div>
+                                                <div className="col">
+                                                    <div className='input-group'>
+                                                        <label className="full-width label-form">Date of Birth</label>
+                                                        <input type="date" className="form-control"
+                                                            defaultValue={HrTagData?.dateOfBirth ? Moment(HrTagData?.dateOfBirth).format("YYYY-MM-DD") : ''} onChange={(e) => setHrTagData({ ...HrTagData, dateOfBirth: Moment(e.target.value).format("YYYY-MM-DD") })} />
+                                                    </div></div>
+                                            </div>
+                                            <div className='user-form-3 row'>
+                                                <div className="col">
+                                                    <div className='input-group'>
+                                                        <label className="full-width label-form">Place of birth</label>
+                                                        <input type="text" className="form-control" defaultValue={HrTagData?.placeOfBirth} onChange={(e) => setHrTagData({ ...HrTagData, placeOfBirth: e.target.value })} placeholder='Enter Place of birth' />
+                                                    </div></div>
+                                                <div className="col">
+                                                    <div className='input-group'>
+                                                        <label className="full-width label-form">Marital status</label>
+                                                        <select className="form-control" onChange={(e) => setHrTagData({ ...HrTagData, maritalStatus: e.target.value })}>
+                                                            {HrTagData?.maritalStatus ? null :
+                                                                <option selected>Select an Option</option>
+                                                            }
+                                                            <option selected={HrTagData?.maritalStatus == "Single"}>Single</option>
+                                                            <option selected={HrTagData?.maritalStatus == "Married"}>Married</option>
+                                                            <option selected={HrTagData?.maritalStatus == "Divorced"}>Divorced</option>
+                                                            <option selected={HrTagData?.maritalStatus == "Widowed"}>Widowed</option>
+                                                        </select>
+                                                    </div>
+                                                </div>
+                                                <div className="col">
+                                                    <div className='input-group'>
+                                                        <label className="full-width label-form">Parenthood</label>
+                                                        <div>
+                                                            <label className='SpfxCheckRadio'><input type="radio" checked={HrTagData?.Parenthood == 'yes'} className='radio' onChange={(e) => setHrTagData({ ...HrTagData, Parenthood: 'yes' })} /> Yes</label>
+                                                            <label className='SpfxCheckRadio'><input type="radio" checked={HrTagData?.Parenthood == 'no'} className='radio' onChange={(e) => setHrTagData({ ...HrTagData, Parenthood: 'no' })} /> No</label>
+                                                        </div>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                        </div></div>
+                                    <div className="tab-pane" id="BANKINFORMATION1" role="tabpanel" aria-labelledby="BANKINFORMATION1">
+                                            <div className="card-body">
+                                                <div className='user-form-2 row'>
+                                                    <div className="col">
+                                                        <div className='input-group'>
+                                                            <label className="full-width label-form">IBAN</label>
+                                                            <input type="text" className="form-control" placeholder='Enter IBAN' defaultValue={HrTagData?.IBAN ? HrTagData?.IBAN : ''} onChange={(e) => setHrTagData({ ...HrTagData, IBAN: e.target.value })} />
+                                                        </div></div>
+                                                    <div className="col">
+                                                        <div className='input-group'>
+                                                            <label className="full-width label-form">BIC</label>
+                                                            <input type="text" className="form-control" defaultValue={HrTagData?.BIC ? HrTagData?.BIC : ''} placeholder='Enter BIC' onChange={(e) => setHrTagData({ ...HrTagData, BIC: e.target.value })} />
+                                                        </div></div>
+                                                </div>
+                                            </div></div>
+                                    <div className="tab-pane" id="TAXINFORMATION1" role="tabpanel" aria-labelledby="TAXINFORMATION1">
+                                        
+                                            <div className="card-body">
+                                                <div className='user-form-3 row'>
+                                                    <div className="col">
+                                                        <div className='input-group'>
+                                                            <label className="full-width label-form">Tax No.
+                                                            </label>
+                                                            <input type="text" className="form-control" placeholder='Enter Tax No.' defaultValue={HrTagData?.taxNo ? HrTagData?.taxNo : ''} onChange={(e) => setHrTagData({ ...HrTagData, taxNo: e.target.value })} />
+                                                        </div></div>
+                                                    <div className="col mx-2">
+                                                        <div className='input-group'>
+                                                            <label className="full-width label-form">Tax class</label>
+                                                            <select className="form-control py-1" onChange={(e) => setHrTagData({ ...HrTagData, taxClass: e.target.value })}>
+                                                                {HrTagData?.taxClass ? null :
+                                                                    <option selected>Select an Option</option>
+                                                                }
+                                                                <option selected={HrTagData?.taxClass == "I"}>I</option>
+                                                                <option selected={HrTagData?.taxClass == "II"}>II</option>
+                                                                <option selected={HrTagData?.taxClass == "III"}>III</option>
+                                                                <option selected={HrTagData?.taxClass == "IV"}>IV</option>
+                                                                <option selected={HrTagData?.taxClass == "V"}>V</option>
+                                                                <option selected={HrTagData?.taxClass == "VI"}>VI</option>
+                                                                <option selected={HrTagData?.taxClass == "none"}>None</option>
+                                                            </select>
+                                                        </div>
+                                                        
+                                                    </div>
+                                                    <div className="col">
+                                                        <div className='input-group'>
+                                                            <label className="full-width label-form">Child allowance</label>
+                                                            <select className="form-control" onChange={(e) => setHrTagData({ ...HrTagData, childAllowance: e.target.value })}>
+                                                                {HrTagData?.childAllowance ? null :
+                                                                    <option selected>Select an Option</option>
+                                                                }
+                                                                <option selected={HrTagData?.childAllowance == "0.5"}>0.5</option>
+                                                                <option selected={HrTagData?.childAllowance == "1"}>1</option>
+                                                                <option selected={HrTagData?.childAllowance == "1.5"}>1.5</option>
+                                                                <option selected={HrTagData?.childAllowance == "2"}>2</option>
+                                                                <option selected={HrTagData?.childAllowance == "2.5"}>2.5</option>
+                                                                <option selected={HrTagData?.childAllowance == "3"}>3</option>
+                                                                <option selected={HrTagData?.childAllowance == "3.5"}>3.5</option>
+                                                                <option selected={HrTagData?.childAllowance == "4"}>4</option>
+                                                                <option selected={HrTagData?.childAllowance == "4.5"}>4.5</option>
+                                                                <option selected={HrTagData?.childAllowance == "5"}>5</option>
+                                                                <option selected={HrTagData?.childAllowance == "5.5"}>5.5</option>
+                                                                <option selected={HrTagData?.childAllowance == "6"}>6</option>
+                                                                <option selected={HrTagData?.childAllowance == "6.5"}>6.5</option>
+                                                                <option selected={HrTagData?.childAllowance == "7"}>7</option>
+                                                                <option selected={HrTagData?.childAllowance == "7.5"}>7.5</option>
+                                                                <option selected={HrTagData?.childAllowance == "8"}>8</option>
+                                                                <option selected={HrTagData?.childAllowance == "8.5"}>8.5</option>
+                                                                <option selected={HrTagData?.childAllowance == "9"}>9</option>
+                                                                <option selected={HrTagData?.childAllowance == "9.5"}>9.5</option>
+                                                                <option selected={HrTagData?.childAllowance == "none"}>None</option>
+                                                            </select>
+                                                        </div>
+                                                    </div>
+                                                </div>
+                                                <div className='user-form-2 row'>
+                                                    
+                                                    <div className="col">
+                                                        <div className='input-group'>
+                                                            <label className="full-width label-form">Monthly tax allowance</label>
+                                                            <input type="number" className="form-control" placeholder='Enter Monthly tax allowance' defaultValue={HrTagData?.monthlyTaxAllowance ? HrTagData?.monthlyTaxAllowance : ''} />
+                                                        </div></div>
+                                                        <div className="col">
+                                                        <div className='input-group'>
+                                                            <label className="full-width label-form">Church tax</label>
+                                                            <div>
+                                                                <label className='SpfxCheckRadio'><input className='radio' type="radio" onChange={(e) => setHrTagData({ ...HrTagData, churchTax: 'yes' })} checked={HrTagData?.churchTax == 'yes'} /> Yes</label>
+                                                                <label className='SpfxCheckRadio'><input className='radio' type="radio" onChange={(e) => setHrTagData({ ...HrTagData, churchTax: 'no' })} checked={HrTagData?.churchTax == 'no'} /> No</label>
+                                                            </div></div>
+                                                    </div>
+
+                                                </div>
+                                            </div></div>
+                                    <div className="tab-pane" id="SOCIALSECURITYINFORMATION1" role="tabpanel" aria-labelledby="SOCIALSECURITYINFORMATION1">
+                                       <div className="card-body">
+                                            <div className='user-form-3 row'>
+
+                                                <div className="col">
+                                                    <div className='input-group'>
+                                                        <label className="full-width label-form">Health Insurance Type</label>
+                                                        <select className="form-control" onChange={(e) => setHrTagData({ ...HrTagData, healthInsuranceType: e.target.value })}>
+                                                            {HrTagData?.healthInsuranceType ? null :
+                                                                <option selected>Select an Option</option>
+                                                            }
+                                                            <option selected={HrTagData?.healthInsuranceType == "None"}>None</option>
+                                                            <option selected={HrTagData?.healthInsuranceType == "Statutory"}>Statutory</option>
+                                                            <option selected={HrTagData?.healthInsuranceType == "Private"}>Private</option>
+                                                        </select>
+                                                    </div></div>
+                                                <div className="col">
+                                                    <div className='input-group'>
+                                                        <label className="full-width label-form">Health Insurance Company
+                                                        </label>
+                                                        <input type="text" className="form-control" placeholder='Enter Company Name' defaultValue={HrTagData?.healthInsuranceCompany ? HrTagData?.healthInsuranceCompany : ''} onChange={(e) => setHrTagData({ ...HrTagData, healthInsuranceCompany: e.target.value })} />
+                                                    </div></div>
+                                                <div className="col">
+                                                    <div className='input-group'>
+                                                        <label className="full-width label-form">Health Insurance No
+                                                        </label>
+                                                        <input type="text" className="form-control" placeholder='Enter Health Insurance No' defaultValue={HrTagData?.insuranceNo ? HrTagData?.insuranceNo : ''} onChange={(e) => setHrTagData({ ...HrTagData, insuranceNo: e.target.value })} />
+                                                    </div></div>
+                                            </div>
+
+                                        </div></div>
+                                    <div className="tab-pane" id="QUALIFICATIONS1" role="tabpanel" aria-labelledby="QUALIFICATIONS1">
+                                       
+                                            <div className='card-body'>
+                                                <div className='user-form-2 row'>
+                                                    <div className="col">
+                                                        <div className='input-group'>
+                                                            <label className="full-width label-form">Highest school diploma
+                                                            </label>
+                                                            <input type="text" className="form-control" placeholder='Enter Highest school diploma' defaultValue={HrTagData?.highestSchoolDiploma ? HrTagData?.highestSchoolDiploma : ''} onChange={(e) => setHrTagData({ ...HrTagData, highestSchoolDiploma: e.target.value })} />
+                                                        </div></div>
+                                                    <div className="col">
+                                                        <div className='input-group'>
+                                                            <label className="full-width label-form">Highest vocational education
+                                                            </label>
+                                                            <input type="text" className="form-control" placeholder='Enter Highest vocational education' defaultValue={HrTagData?.highestVocationalEducation ? HrTagData?.highestVocationalEducation : ''} onChange={(e) => setHrTagData({ ...HrTagData, highestVocationalEducation: e.target.value })} />
+                                                        </div></div>
+                                                </div>
+                                                <div className='user-form-2 row'>
+                                                    <div className="col">
+                                                        <div className='input-group'>
+                                                            <label className="full-width label-form">Other qualifications
+                                                            </label>
+                                                            <input type="text" className="form-control" placeholder='Enter Other qualifications' defaultValue={HrTagData?.otherQualifications ? HrTagData?.otherQualifications : ''} onChange={(e) => setHrTagData({ ...HrTagData, otherQualifications: e.target.value })} />
+                                                        </div></div>
+                                                    <div className="col">
+                                                        <div className='input-group'>
+                                                            <label className="full-width label-form">Languages
+                                                            </label>
+                                                            <input type="text" className="form-control" />
+                                                        </div>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                    </div>
                                 </div>
                             </div>
                             <div className="tab-pane" id="SMALSUS" role="tabpanel" aria-labelledby="SMALSUS">
@@ -1285,7 +1350,7 @@ const HHHHEditComponent = (props: any) => {
                                                 </div>
                                             </div> : null}</div>
                                         <div className="tab-pane" id="BANKINFORMATION" role="tabpanel" aria-labelledby="BANKINFORMATION">
-                                            {SmalsusBtnStatus.bankInfo ?
+                                            
                                                 <div className="card-body">
                                                     <div className='user-form-2 row'>
                                                         <div className="col">
@@ -1311,9 +1376,9 @@ const HHHHEditComponent = (props: any) => {
                                                                 <input type="number" className="form-control" placeholder='Branch Name' />
                                                             </div></div>
                                                     </div>
-                                                </div> : null}</div>
+                                                </div></div>
                                         <div className="tab-pane" id="TAXINFORMATION" role="tabpanel" aria-labelledby="TAXINFORMATION">
-                                            {SmalsusBtnStatus.taxInfo ?
+                                           
                                                 <div className="card-body">
                                                     <div className='user-form-3 row'>
                                                         <div className="col">
@@ -1350,7 +1415,7 @@ const HHHHEditComponent = (props: any) => {
 
                                                     </div>
                                                 </div>
-                                                : null}</div>
+                                               </div>
                                         <div className="tab-pane" id="SOCIALSECURITYINFORMATION" role="tabpanel" aria-labelledby="SOCIALSECURITYINFORMATION">
                                             {SmalsusBtnStatus.socialSecurityInfo ?
                                                 <div className="card-body">
@@ -1389,7 +1454,7 @@ const HHHHEditComponent = (props: any) => {
 
                                                 </div> : null}</div>
                                         <div className="tab-pane" id="QUALIFICATIONS" role="tabpanel" aria-labelledby="QUALIFICATIONS">
-                                            {SmalsusBtnStatus.qualificationInfo ?
+                                           
                                                 <div className='card-body'>
                                                     <div className='user-form-2 row'>
                                                         <div className="col">
@@ -1419,7 +1484,7 @@ const HHHHEditComponent = (props: any) => {
                                                                 <input type="text" className="form-control" />
                                                             </div></div>
                                                     </div>
-                                                </div> : null}</div>
+                                                </div> </div>
 
                                     </div>
                                 </div>
