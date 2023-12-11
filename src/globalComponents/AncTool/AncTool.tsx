@@ -428,8 +428,11 @@ const AncTool = (props: any) => {
             link: '',
             size: ''
         }
-        if (renamedFileName?.length > 0) {
-            fileName = renamedFileName;
+        let filetype='';
+
+        if (renamedFileName?.length > 0 && selectedFile.name?.length>0) {
+            filetype= getFileType(selectedFile != undefined ? selectedFile.name : uploadselectedFile.name)
+            fileName = renamedFileName+`.${filetype}`;
         } else {
             fileName = selectedFile != undefined ? selectedFile.name : uploadselectedFile.name;
         }
@@ -466,7 +469,13 @@ const AncTool = (props: any) => {
                         emailDoc?.map((AttachFile: any, index: any) => {
                             if(AttachFile?.extension?.toLowerCase()!=".png"&&AttachFile?.extension?.toLowerCase()!=".jpg"&&AttachFile?.extension?.toLowerCase()!=".jpeg"&&AttachFile?.extension?.toLowerCase()!=".svg"){
                                 attachmentFileIndex = index
-                                fileName = AttachFile.fileName != undefined ? AttachFile?.fileName : AttachFile?.name;
+                              
+                                if (renamedFileName?.length > 0 && selectedFile.name?.length>0 && getFileType(selectedFile != undefined ? selectedFile.name : uploadselectedFile.name) == "msg" ) {
+                                    filetype= getFileType(selectedFile != undefined ? selectedFile.name : uploadselectedFile.name)
+                                    fileName = renamedFileName+`.${filetype}`;
+                                } else {
+                                    fileName = AttachFile.fileName != undefined ? AttachFile?.fileName : AttachFile?.name;
+                                }
                                 uploadFile(AttachFile)
                             }
                         })
@@ -790,16 +799,14 @@ const AncTool = (props: any) => {
         } else if (sizeInBytes < mbThreshold) {
             const sizeInKB = (sizeInBytes / kbThreshold)
             if(!isNaN(sizeInKB)){
-                sizeInKB.toFixed(2);
-                return `${sizeInKB} KB`;
+                return `${sizeInKB.toFixed(2)} KB`;
             }else{
                 return `128 KB`;
             }
         } else {
             const sizeInMB = (sizeInBytes / mbThreshold)
             if(!isNaN(sizeInMB)){
-                sizeInMB.toFixed(2);
-                return `${sizeInMB} MB`;
+                return `${sizeInMB.toFixed(2)} MB`;
             }else{
                 return `1.2 MB`;
             }
