@@ -190,8 +190,22 @@ const addToLocalDBComponent = (props: any) => {
                                         }
                                             try {
                                                 let web = new Web('https://hhhhteams.sharepoint.com/sites/HHHH/HR');
-                                                await web.lists.getById(myContextData2?.allListId?.HR_EMPLOYEE_DETAILS_LIST_ID).items.add(addData).then((e) => {
+                                                await web.lists.getById(myContextData2?.allListId?.HR_EMPLOYEE_DETAILS_LIST_ID).items.add(addData).then(async(e) => {
                                                     console.log("request success", e);
+                                                    const web = new Web("https://hhhhteams.sharepoint.com/sites/HHHH");
+                                                   await web.lists
+                                                .getById("6DD8038B-40D2-4412-B28D-1C86528C7842")
+                                                     .items.add({
+                                                        Title:(Item?.FirstName ) + " " + (Item?.Title ),
+                                                        SmartContactId:Item.Id
+                                                     }).then((data:any)=>{
+                                                        console.log(data,"hr main post done")
+
+                                                     }).catch((error:any)=>{
+                                                        console.log(error)
+                                                     })
+
+
                                                     props.callBack()
                                                 })
                                             } catch (error) {

@@ -3,17 +3,15 @@ import OrgContactEditPopup from './orgContactEditPopup';
 import CountryContactEditPopup from './CountryContactEditPopup';
 import { useState, useEffect, useCallback } from 'react';
 import pnp, { Web } from 'sp-pnp-js';
-import { GoRepoPush } from 'react-icons/go';
-
 import moment, * as Moment from "moment";
 import Tooltip from '../../../../../globalComponents/Tooltip';
 import { Panel, PanelType } from 'office-ui-fabric-react';
 import ImagesC from '../../../../EditPopupFiles/ImageInformation';
-import { Site } from '@pnp/sp/sites';
 import { myContextValue } from '../../../../../globalComponents/globalCommon'
-import { data } from 'jquery';
-let HrGmbhEmployeData: any = []
-let JointData: any = [];
+
+
+let JointData: any;
+let JointHrData:any
 const HHHHEditComponent = (props: any) => {
     const myContextData2: any = React.useContext<any>(myContextValue)
     const [countryData, setCountryData] = useState([]);
@@ -30,19 +28,8 @@ const HHHHEditComponent = (props: any) => {
     const [siteTaggedSMALSUS, setSiteTaggedSMALSUS] = useState(false);
     const [updateData, setUpdateData]: any = useState({});
     const [URLs, setURLs] = useState([]);
-    const [selectedState, setSelectedState] = useState({
-        Title: ''
-    });
-
+    const [selectedState, setSelectedState] = useState();
     const [currentCountry, setCurrentCountry]: any = useState([])
-
-    const [hrBtnStatus, setHrBtnStatus] = useState({
-        personalInfo: true,
-        bankInfo: false,
-        taxInfo: false,
-        qualificationInfo: false,
-        socialSecurityInfo: false
-    })
     const [SmalsusBtnStatus, setSmalsusBtnStatus] = useState({
         personalInfo: true,
         bankInfo: false,
@@ -60,6 +47,7 @@ const HHHHEditComponent = (props: any) => {
         } else {
 
             HrGmbhEmployeDeatails(props?.props?.Id);
+           
         }
         pnp.sp.web.currentUser.get().then((result: any) => {
             let CurrentUserId = result.Id;
@@ -120,16 +108,23 @@ const HHHHEditComponent = (props: any) => {
 
 //*****************Hr gmbh get contact function start*************** */
     const HrGmbhEmployeDeatails = async (Id: any) => {
-
+        let selectcolumn:any
+        let expandColumn:any
         try {
+            if(myContextData2?.allSite?.GMBHSite){
+             selectcolumn='Id, Title, FirstName, FullName,DOJ,DOE, Company,SmartCountriesId, SmartContactId, WorkCity, Suffix, WorkPhone, HomePhone, Comments, WorkAddress, WorkFax, WorkZip, ItemType, JobTitle, Item_x0020_Cover, WebPage, CellPhone, Email, LinkedIn, Created, SocialMediaUrls, Author/Title, Modified, Editor/Title, Division/Title, Division/Id, EmployeeID/Title, StaffID, EmployeeID/Id, Institution/Id, Institution/FullName, IM &$expand= EmployeeID,Division, Author, Editor, Institution'
+                
+            }else{
+                selectcolumn='Id,Parenthood,Fedral_State,churchTax,healthInsuranceType,taxClass,childAllowance,healthInsuranceCompany,maritalStatus,dateOfBirth,insuranceNo,otherQualifications,highestVocationalEducation,highestSchoolDiploma,Nationality,placeOfBirth,BIC,IBAN,taxNo,monthlyTaxAllowance, Title, FirstName, FullName,DOJ,DOE, Company,SmartCountriesId, SmartContactId, WorkCity, Suffix, WorkPhone, HomePhone, Comments, WorkAddress, WorkFax, WorkZip, ItemType, JobTitle, Item_x0020_Cover, WebPage, CellPhone, Email, LinkedIn, Created, SocialMediaUrls, Author/Title, Modified, Editor/Title, Division/Title, Division/Id, EmployeeID/Title, StaffID, EmployeeID/Id, Institution/Id, Institution/FullName, IM &$expand= EmployeeID,Division, Author, Editor, Institution'    
+            }
+          
             let web = new Web(myContextData2?.allListId?.siteUrl);
             await web.lists.getById(myContextData2?.allSite?.GMBHSite ? myContextData2?.allListId?.GMBH_CONTACT_SEARCH_LISTID : myContextData2?.allListId?.HR_EMPLOYEE_DETAILS_LIST_ID)
                 .items.getById(Id)
-                .select("Id", "Title", "FirstName", "FullName","DOJ","DOE", "Company","SmartCountriesId", "SmartContactId", "WorkCity", "Suffix", "WorkPhone", "HomePhone", "Comments", "WorkAddress", "WorkFax", "WorkZip", "ItemType", "JobTitle", "Item_x0020_Cover", "WebPage", "CellPhone", "Email", "LinkedIn", "Created", "SocialMediaUrls", "Author/Title", "Modified", "Editor/Title", "Division/Title", "Division/Id", "EmployeeID/Title", "StaffID", "EmployeeID/Id", "Institution/Id", "Institution/FullName", "IM")
-                .expand("EmployeeID", "Division", "Author", "Editor", "Institution")
+                .select(selectcolumn)
                 .get().then((data: any) => {
 
-                    HrGmbhEmployeData = data;
+                    
                     let URL: any[] = JSON.parse(data.SocialMediaUrls != null ? data.SocialMediaUrls : ["{}"]);
                     setURLs(URL);
                     // if (data?.Institution != null && data?.Institution!=undefined) {
@@ -169,17 +164,24 @@ const HHHHEditComponent = (props: any) => {
                 .expand("EmployeeID", "Division", "Author", "Editor", "SmartCountries", "Institution")
                 .get().then((data: any) => {
                     // data.map((Item: any) => {
+                        let SitesTagged=''
                     data.SitesTagged = ''
                     if (data.Site != null) {
                         if (data.Site.length >= 0) {
                             data.Site?.map((site: any, index: any) => {
                                 if (index == 0) {
                                     data.SitesTagged = site;
+                                    SitesTagged=site;
                                 } else if (index > 0) {
                                     data.SitesTagged = data.SitesTagged + ', ' + site;
+                                    SitesTagged=data.SitesTagged + ', ' + site;
                                 }
                             })
                         }
+                    }
+                    if (SitesTagged.search("HR") >= 0 && myContextData2.allSite?.HrSite) {
+                        // HrTagInformation(data?.Id);
+                        setSiteTaggedHR(true);
                     }
                     if (data?.SmartCountries?.length > 0) {
 
@@ -189,6 +191,10 @@ const HHHHEditComponent = (props: any) => {
                         siteData.Site = data.Site
                         siteData.SmartCountries = data.SmartCountries
                         setUpdateData(siteData)
+                        if(myContextData2.allSite?.HrSite){
+                            setHrTagData(siteData);
+                            HrTagInformation(data?.Id)
+                        }
                     }
 
 
@@ -198,6 +204,7 @@ const HHHHEditComponent = (props: any) => {
                 });
 
         } catch (error) {
+            setUpdateData(siteData)
             console.log("Error:", error.message);
         }
     }
@@ -244,7 +251,12 @@ const HHHHEditComponent = (props: any) => {
                     //             Parenthood: data[0].Parenthood ? data[0].Parenthood : '',
                     //             churchTax: data[0].churchTax ? data[0].churchTax : ''
                     //         });
-                    setHrTagData(data[0]);
+                    if(myContextData2.allSite?.HrSite){
+                        JointHrData=data[0];
+                    }else{
+                        setHrTagData(data[0]);
+                    }
+                    
                 }).catch((error: any) => {
                     console.log(error)
                 });
@@ -317,7 +329,13 @@ const HHHHEditComponent = (props: any) => {
                         UpdateGmbhDetails(postData);
 
                     }
-                  
+                    if(myContextData2?.allSite?.HrSite){
+                        updateHrDetails(postData);
+                    }
+                  if (updateData?.Site?.toString().search("HR") >= 0 && myContextData2?.allSite?.MainSite) {
+                            updateJointHrDetails();
+           
+                           }
                     else {
                         callBack();
                     }
@@ -327,10 +345,10 @@ const HHHHEditComponent = (props: any) => {
         } catch (error) {
             console.log("Error:", error.message);
         }
-        if (updateData?.Site?.toString().search("HR") >= 0) {
-            updateHrDetails();
+        // if (updateData?.Site?.toString().search("HR") >= 0) {
+        //     updateHrDetails();
            
-        }
+        // }
 
 
 
@@ -346,8 +364,8 @@ const HHHHEditComponent = (props: any) => {
 
         delete (postData?.Department)
       
-        let web = new Web('https://hhhhteams.sharepoint.com/sites/HHHH/GmBH');
-        await web.lists.getById('6CE99A82-F577-4467-9CDA-613FADA2296F').items.getById(updateData.Id).update(postData).then((e: any) => {
+        let web = new Web(myContextData2?.allListId?.siteUrl);
+        await web.lists.getById(myContextData2?.allListId?.GMBH_CONTACT_SEARCH_LISTID).items.getById(updateData.Id).update(postData).then((e: any) => {
             console.log("request success", e);
             callBack();
         }).catch((error: any) => {
@@ -359,14 +377,52 @@ const HHHHEditComponent = (props: any) => {
 
     // ************************End Update GMBH fUNCTION ***********************
 
+    //******************* */ Hr update function **************************
+   const updateHrDetails=async(postData:any)=>{
+    delete (postData?.Department)
+      let postDataHr={Nationality: (HrTagData?.Nationality ? HrTagData?.Nationality : null),
+      placeOfBirth: (HrTagData?.placeOfBirth ? HrTagData?.placeOfBirth : null),
+      BIC: (HrTagData?.BIC ? HrTagData?.BIC : null),
+      IBAN: (HrTagData?.IBAN ? HrTagData?.IBAN : null),
+      taxNo: (HrTagData?.taxNo ? HrTagData?.taxNo : null),
+      monthlyTaxAllowance: (HrTagData?.monthlyTaxAllowance ? HrTagData?.monthlyTaxAllowance : null),
+      insuranceNo: (HrTagData?.insuranceNo ? HrTagData?.insuranceNo : null),
+      highestSchoolDiploma: (HrTagData?.highestSchoolDiploma ? HrTagData?.highestSchoolDiploma : null),
+      highestVocationalEducation: (HrTagData?.highestVocationalEducation ? HrTagData?.highestVocationalEducation : null),
+      otherQualifications: (HrTagData?.otherQualifications ? HrTagData?.otherQualifications : null),
+      healthInsuranceCompany: (HrTagData?.healthInsuranceCompany ? HrTagData?.healthInsuranceCompany : null),
+      dateOfBirth: (HrTagData?.dateOfBirth ? HrTagData?.dateOfBirth : null),
+      maritalStatus: (HrTagData?.maritalStatus ? HrTagData?.maritalStatus : null),
+      Parenthood: (HrTagData?.Parenthood ? HrTagData?.Parenthood : null),
+      taxClass: (HrTagData?.taxClass ? HrTagData?.taxClass : null),
+      childAllowance: (HrTagData?.childAllowance ? HrTagData?.childAllowance : null),
+      churchTax: (HrTagData?.churchTax ? HrTagData?.churchTax : null),
+      healthInsuranceType: (HrTagData?.healthInsuranceType ? HrTagData?.healthInsuranceType : null),
+      Fedral_State: (HrTagData?.Fedral_State ? HrTagData?.Fedral_State : null)
+      }
+      let postDataHrSite = {
+        ...postData,
+        ...postDataHr
+    };
+    let web = new Web(myContextData2?.allListId?.siteUrl);
+    await web.lists.getById(myContextData2?.allListId?.HR_EMPLOYEE_DETAILS_LIST_ID).items.getById(updateData.Id).update(postDataHrSite).then((e: any) => {
+        console.log("request success", e);
+        updateJointHrDetails()
+       
+    }).catch((error: any) => {
+        console.log(error)
+    })
+
+   }
+//******************* */ Hr update function End **************************
 
     //*************************UpdateHr Deatils joint   Function Start ***************************** */
-    const updateHrDetails = async () => {
-        let Id: any = HrTagData.ID;
+    const updateJointHrDetails = async () => {
+        let Id: any = myContextData2.allSite?.HrSite?JointHrData.Id:HrTagData.ID;
         try {
-            const web = new Web("https://hhhhteams.sharepoint.com/sites/HHHH");
+            const web = new Web(myContextData2?.allListId?.jointSiteUrl);
             await web.lists
-                .getById("6DD8038B-40D2-4412-B28D-1C86528C7842")
+                .getById(myContextData2?.allListId?.MAIN_HR_LISTID)
                 .items.getById(Id).update({
                     Nationality: (HrTagData?.Nationality ? HrTagData?.Nationality : null),
                     placeOfBirth: (HrTagData?.placeOfBirth ? HrTagData?.placeOfBirth : null),
@@ -389,12 +445,13 @@ const HHHHEditComponent = (props: any) => {
                     Fedral_State: (HrTagData?.Fedral_State ? HrTagData?.Fedral_State : null)
                 }).then(() => {
                     console.log("Your information has been updated successfully");
+                    alert("Your information has been updated successfully")
                     callBack();
                 })
         } catch (error) {
             console.log("error", error.message)
         }
-        alert("Your information has been updated successfully")
+      
     }
     //************************* End UpdateHr Deatils   Function ***************************** */
 
@@ -420,21 +477,21 @@ const HHHHEditComponent = (props: any) => {
                     let web = new Web(myContextData2?.allListId?.siteUrl);
                     await web.lists.getById(myContextData2?.allSite?.GMBHSite ? myContextData2?.allListId?.GMBH_CONTACT_SEARCH_LISTID : myContextData2?.allListId?.HR_EMPLOYEE_DETAILS_LIST_ID).items.getById(updateData.Id).recycle()
                     .then(async(data:any)=>{
-                       let  updateSiteTag={
-                            SharewebSites: {
-                                results: myContextData2?.allSite?.GMBHSite?["GMBH"]:["HR"]
-                            },
-                            Site: {
-                                results: myContextData2?.allSite?.GMBHSite?["GMBH"]:["HR"]
-                            }
-                        } 
-                        let web = new Web(myContextData2?.allListId?.jointSiteUrl);
-                await web.lists.getById(myContextData2?.allListId?.HHHHContactListId)
-                .items.getById(JointData?.Id).update( updateSiteTag ).then((dataUpdate:any) => {
-                  console.log("joint data site tag update sucessfully update")
-                }).catch((error:any)=>{
-                    console.log(error,"joint data update error")
-                })
+                //        let  updateSiteTag={
+                //             SharewebSites: {
+                //                 results: myContextData2?.allSite?.GMBHSite?["GMBH"]:["HR"]
+                //             },
+                //             Site: {
+                //                 results: myContextData2?.allSite?.GMBHSite?["GMBH"]:["HR"]
+                //             }
+                //         } 
+                //         let web = new Web(myContextData2?.allListId?.jointSiteUrl);
+                // await web.lists.getById(myContextData2?.allListId?.HHHHContactListId)
+                // .items.getById(JointData?.Id).update( updateSiteTag ).then((dataUpdate:any) => {
+                //   console.log("joint data site tag update sucessfully update")
+                // }).catch((error:any)=>{
+                //     console.log(error,"joint data update error")
+                // })
                     }).catch((error:any)=>{
                         console.log(error)
                     });
@@ -480,6 +537,7 @@ const HHHHEditComponent = (props: any) => {
         // setCountryPopup(false);
         if (data != undefined) {
             setUpdateData(data);
+            setCurrentCountry(setCurrentCountry?.SmartCountries)
         }
     }, []);
 
@@ -509,7 +567,7 @@ const HHHHEditComponent = (props: any) => {
                 countryPopup: false,
                 statePopup: true
             })
-            setSelectedState(item);
+            setSelectedState(item?.Fedral_State);
         } else {
             alert("Please select country before selecting state");
         }

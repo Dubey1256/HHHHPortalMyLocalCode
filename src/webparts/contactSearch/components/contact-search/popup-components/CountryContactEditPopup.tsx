@@ -83,13 +83,13 @@ const CountryContactEditPopup = (props: any) => {
                                 </li>
                                 : null}
 
-                            {/* {props?.popupName == 'State' && selectedStateData?.Title != '' ?
+                            {props?.popupName == 'State' && selectedStateData!= undefined ?
                                 <li className="list-group-item list-group-item-action d-flex justify-content-between" style={{ background: "#000066", color: "#fff" }} >
                                     <span>{selectedStateData.Title}</span>
-                                    <span style={{ cursor: 'pointer' }} onClick={() => setSelectedData({ ...selectedStateData, Title: '' })}><img src='https://hhhhteams.sharepoint.com/_layouts/images/delete.gif' />
+                                    <span style={{ cursor: 'pointer' }} onClick={() => updateData({ ...updateData,Fedral_State : '' })}><img src='https://hhhhteams.sharepoint.com/_layouts/images/delete.gif' />
                                     </span>
                                 </li>
-                                : null} */}
+                                : null}
                         </div>
                     </div>
                 </div>
