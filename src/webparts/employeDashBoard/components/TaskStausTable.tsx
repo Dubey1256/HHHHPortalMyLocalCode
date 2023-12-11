@@ -79,6 +79,13 @@ const TaskStatusTbl = (Tile: any) => {
             >
               {row?.original?.Title}
             </a>
+            {row?.original?.descriptionsSearch != null &&
+              row?.original?.descriptionsSearch != "" && (
+                <InfoIconsToolTip
+                  Discription={row?.original?.descriptionsSearch}
+                  row={row?.original}
+                />
+              )}
           </div>
         ),
         id: "Title",
@@ -964,9 +971,9 @@ const TaskStatusTbl = (Tile: any) => {
           )}
         </div>
       </div>
-      {/* <span>
+      <span>
         {editPopup && <EditTaskPopup Items={result} context={ContextData?.propsValue?.Context} AllListId={AllListId} Call={() => { CallBack() }} />}
-      </span> */}
+      </span>
     </div>
   );
 };
