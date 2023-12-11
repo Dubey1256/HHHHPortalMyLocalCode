@@ -2056,15 +2056,15 @@ const TeamSmartFilter = (item: any) => {
     };
     return (
         <>
-            {isSmartFevShowHide === true && <div className='row text-end' >
+            {/* {isSmartFevShowHide === true && <div className='row text-end' >
                 <a onClick={() => OpenSmartfavorites('goToSmartFilter')}>All Filters</a>
-            </div>}
+            </div>} */}
             {/* {isSmartFevShowHide === false && <div className='row text-end' >
                 <a onClick={() => OpenSmartfavorites('goToSmartFavorites')}>Add Smart Favorite</a>
             </div>} */}
-                  <a className="mx-3" onClick={() => setSelectedFilterPanelIsOpen(true)}>Add Smart Favorite</a>
+            {/* <a className="mx-3" onClick={() => setSelectedFilterPanelIsOpen(true)}>Add Smart Favorite</a> */}
             <div className='justify-content-end d-flex'>
-            {isSmartFevShowHide === true && <div>
+                {isSmartFevShowHide === true && <div>
                     <a className='hreflink' onClick={() => OpenSmartfavorites('goToSmartFilter')}>Go to Smart Filter</a>
                 </div>}
                 {isSmartFevShowHide === false && <div>
@@ -2188,7 +2188,7 @@ const TeamSmartFilter = (item: any) => {
                                         <input className='form-check-input me-1' type='checkbox' id='Component' value='Component' checked={isPortfolioItems} onChange={() => setIsPortfolioItems(!isPortfolioItems)} />Portfolio Items
                                         <span className='mx-2'>|</span>
                                         <input className='form-check-input me-1' type='checkbox' id='Task' value='Task' checked={isTaskItems} onChange={() => setIsTaskItems(!isTaskItems)} />Task Items
-                                        
+
                                     </div>
                                 </div> : ''}
                             </div>
@@ -2728,9 +2728,9 @@ const TeamSmartFilter = (item: any) => {
                             </div>
                         </div >
                         <div className='full-width text-end full-width me-1 my-3 pe-2 text-end'><button className='btn btn-primary me-1 px-3 py-1' onClick={() => UpdateFilterData("udateClickTrue")}>Update Filter</button>
-                                            <button className='btn  btn-default px-3 py-1' onClick={ClearFilter}> Clear Filters</button></div>
+                            <button className='btn  btn-default px-3 py-1' onClick={ClearFilter}> Clear Filters</button></div>
                     </section> : ''}
-                   
+
                 </>}
 
                 {isSmartFevShowHide === true && <>
