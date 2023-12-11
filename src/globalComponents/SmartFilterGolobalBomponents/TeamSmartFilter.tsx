@@ -32,6 +32,7 @@ const TeamSmartFilter = (item: any) => {
     let web = new Web(item?.ContextValue?.Context?.pageContext?._web?.absoluteUrl + '/');
     let allMasterTasksData: any = item.AllMasterTasksData;
     let allTastsData: any = item.AllSiteTasksData;
+    let AllSiteTasksDataLoadAll = item?.AllSiteTasksDataLoadAll;
     let smartFiltercallBackData = item.smartFiltercallBackData;
     let ContextValue = item?.ContextValue;
     let portfolioColor: any = item?.portfolioColor
@@ -1269,6 +1270,9 @@ const TeamSmartFilter = (item: any) => {
     };
     const UpdateFilterData = (event: any) => {
         if (event === "udateClickTrue") {
+            console.log("AllSiteTasksDataLoadAllAllSiteTasksDataLoadAllAllSiteTasksDataLoadAll", AllSiteTasksDataLoadAll)
+            allTastsData = [];
+            allTastsData = allTastsData.concat(AllSiteTasksDataLoadAll);
             item?.setLoaded(false);
             setUpdatedSmartFilter(true);
             FilterDataOnCheck();
@@ -1477,7 +1481,7 @@ const TeamSmartFilter = (item: any) => {
                 const key = `Task${task?.siteType + task.Id}`;
                 if (timeEntryIndexLocalStorage.hasOwnProperty(key) && timeEntryIndexLocalStorage[key]?.Id === task.Id && timeEntryIndexLocalStorage[key]?.siteType === task.siteType) {
                     task.TotalTaskTime = timeEntryIndexLocalStorage[key]?.TotalTaskTime;
-                    task.timeSheetsDescriptionSearch = timeEntryIndex[key]?.timeSheetsDescriptionSearch;
+                    task.timeSheetsDescriptionSearch = timeEntryIndexLocalStorage[key]?.timeSheetsDescriptionSearch;
                 }
             })
             console.log("timeEntryIndexLocalStorage", timeEntryIndexLocalStorage)
@@ -2864,6 +2868,30 @@ const TeamSmartFilter = (item: any) => {
                 : null
             }
             <>{PreSetPanelIsOpen && <PreSetDatePikerPannel isOpen={PreSetPanelIsOpen} PreSetPikerCallBack={PreSetPikerCallBack} portfolioColor={portfolioColor} />}</>
+            {/* {selectedFilterPanelIsOpen && <TeamSmartFavorites allFilterClintCatogryData={allFilterClintCatogryData} filterGroupsData={filterGroupsData} allStites={allStites} isOpen={selectedFilterPanelIsOpen} halfCheckBoxIcons={halfCheckBoxIcons} checkBoxIcon={checkBoxIcon} checkIcons={checkIcons} onCheck={onCheck} expanded={expanded} handleSelectAll={handleSelectAll} setExpanded={setExpanded} selectedFilterCallBack={selectedFilterCallBack} portfolioColor={portfolioColor}
+                handleSelectAllChangeTeamSection={handleSelectAllChangeTeamSection}
+                setIsCreatedBy={setIsCreatedBy}
+                setIsModifiedby={setIsModifiedby}
+                setIsAssignedto={setIsAssignedto}
+                setIsTeamLead={setIsTeamLead}
+                setIsTeamMember={setIsTeamMember}
+                setIsTodaysTask={setIsTodaysTask}
+                isSelectAll={isSelectAll}
+                isCreatedBy={isCreatedBy}
+                isModifiedby={isModifiedby}
+                isAssignedto={isAssignedto}
+                isTeamLead={isTeamLead}
+                isTeamMember={isTeamMember}
+                isTodaysTask={isTodaysTask}
+                TaskUsersData={TaskUsersData}
+                isCreatedDateSelected={isCreatedDateSelected}
+                isModifiedDateSelected={isModifiedDateSelected}
+                isDueDateSelected={isDueDateSelected}
+                setIsCreatedDateSelected={setIsCreatedDateSelected}
+                setIsModifiedDateSelected={setIsModifiedDateSelected}
+                setIsDueDateSelected={setIsDueDateSelected}
+            />} */}
+
             {selectedFilterPanelIsOpen && <TeamSmartFavoritesCopy isOpen={selectedFilterPanelIsOpen} selectedFilterCallBack={selectedFilterCallBack}
                 portfolioColor={portfolioColor}
                 filterGroupsData={filterGroupsData}
