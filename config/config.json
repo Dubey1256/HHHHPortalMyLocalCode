@@ -327,6 +327,22 @@
           "manifest": "./src/webparts/helloSpfx/HelloSpfxWebPart.manifest.json"
         }
       ]
+    },
+    "hr-contract-search-web-part": {
+      "components": [
+        {
+          "entrypoint": "./lib/webparts/hrContractSearch/HrContractSearchWebPart.js",
+          "manifest": "./src/webparts/hrContractSearch/HrContractSearchWebPart.manifest.json"
+        }
+      ]
+    },
+    "hr-contract-profile-web-part": {
+      "components": [
+        {
+          "entrypoint": "./lib/webparts/hrContractProfile/HrContractProfileWebPart.js",
+          "manifest": "./src/webparts/hrContractProfile/HrContractProfileWebPart.manifest.json"
+        }
+      ]
     }
   },
   "externals": {
@@ -388,6 +404,8 @@
     "UserTimeEntryWebPartStrings": "lib/webparts/userTimeEntry/loc/{locale}.js",
     "TeamPortfolioWebPartStrings": "lib/webparts/teamPortfolio/loc/{locale}.js",
     "MeetingOverviewWebPartStrings": "lib/webparts/meetingOverview/loc/{locale}.js",
-    "ContactSearchWebPartStrings": "lib/webparts/contactSearch/loc/{locale}.js"
+    "ContactSearchWebPartStrings": "lib/webparts/contactSearch/loc/{locale}.js",
+    "HrContractSearchWebPartStrings": "lib/webparts/hrContractSearch/loc/{locale}.js",
+    "HrContractProfileWebPartStrings": "lib/webparts/hrContractProfile/loc/{locale}.js"
   }
 }
