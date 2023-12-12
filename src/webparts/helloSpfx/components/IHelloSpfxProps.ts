@@ -1,6 +1,5 @@
-export interface IHrContractSearchProps {
- ContractListID:any
-  siteUrl:any
+export interface IHelloSpfxProps {
+ InterviewFeedbackFormListId: string;
 description: string;
   isDarkTheme: boolean;
   Context: any
@@ -13,5 +12,4 @@ description: string;
   environmentMessage: string;
   hasTeamsContext: boolean;
   userDisplayName: string; 
- 
 }

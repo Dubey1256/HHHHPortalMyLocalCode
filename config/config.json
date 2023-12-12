@@ -327,6 +327,14 @@
           "manifest": "./src/webparts/meetingOverViewPage/MeetingOverViewPageWebPart.manifest.json"
         }
       ]
+    },
+    "hello-spfx-web-part": {
+      "components": [
+        {
+          "entrypoint": "./lib/webparts/helloSpfx/HelloSpfxWebPart.js",
+          "manifest": "./src/webparts/helloSpfx/HelloSpfxWebPart.manifest.json"
+        }
+      ]
     }
   },
   "externals": {
@@ -348,6 +356,7 @@
     }
   },
   "localizedResources": {
+    "HelloSpfxWebPartStrings": "lib/webparts/helloSpfx/loc/{locale}.js",
     "EmployeProfileWebPartStrings": "lib/webparts/employeProfile/loc/{locale}.js",
     "MeetingOverViewPageWebPartStrings": "lib/webparts/meetingOverViewPage/loc/{locale}.js",
     "AlertManagementWebPartStrings": "lib/webparts/alertManagement/loc/{locale}.js",
