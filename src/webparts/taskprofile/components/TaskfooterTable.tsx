@@ -6,7 +6,7 @@ import TimeEntryPopup from '../../../globalComponents/TimeEntry/TimeEntryCompone
 import CreateActivity from '../../../globalComponents/CreateActivity';
 import CreateWS from '../../../globalComponents/CreateWS';
 import ShowTaskTeamMembers from '../../../globalComponents/ShowTaskTeamMembers';
-import Loader from "react-loader"; 
+import Loader from "react-loader";
 import * as moment from 'moment';
 import { SlArrowRight } from "react-icons/sl";
 import GlobalCommanTable from "../../../globalComponents/GroupByReactTableComponents/GlobalCommanTable";
@@ -42,6 +42,7 @@ import ShowClintCatogory from '../../../globalComponents/ShowClintCatogory';
 import ReactPopperTooltipSingleLevel from '../../../globalComponents/Hierarchy-Popper-tooltipSilgleLevel/Hierarchy-Popper-tooltipSingleLevel';
 import InfoIconsToolTip from '../../../globalComponents/InfoIconsToolTip/InfoIconsToolTip';
 import ReactPopperTooltip from '../../../globalComponents/Hierarchy-Popper-tooltip';
+import BulkeditTask from './BulkeditTask';
 var AllTasks: any = [];
 let AllTasksRendar: any = [];
 let siteConfig: any = [];
@@ -59,6 +60,7 @@ let finalData: any = [];
 let childRefdata: any;
 let TasksItem: any = [];
 let AllTasksData: any = [];
+let BulkTaskUpdate: any[] = [];
 function IndeterminateCheckbox(
   {
     indeterminate,
@@ -499,7 +501,7 @@ function TasksTable(props: any) {
     }
     var MainId: any = ''
     let ParentTaskId: any;
-    if (childItem != undefined && childItem.data?.ItmesDelete == undefined) {
+    if (childItem != undefined && childItem.data?.ItmesDelete == undefined && childItem[0]?.NewBulkUpdate == undefined) {
 
 
 
@@ -573,6 +575,30 @@ function TasksTable(props: any) {
         if (ele.Id == childItem.data.Id) {
           finalData.splice(index, 1);
         }
+      })
+      AllTasksRendar = AllTasksRendar?.concat(finalData)
+      finalData = [];
+      finalData = finalData?.concat(AllTasksRendar)
+      console.log(finalData)
+      refreshData();
+    }
+//====================Update Table Value===========================
+    if(childItem != undefined && childItem[0].NewBulkUpdate == true){
+      childItem.map((childelem:any)=>{
+        finalData?.map((elem: any) => {
+          if (elem?.Id === childelem?.Id || elem.ID === childelem?.Id) {
+            if(childelem?.NewDueDate != ''){
+              elem.DueDate = childelem?.NewDueDate
+            }
+            if(childelem?.NewStatus != ''){
+              elem.PercentComplete = childelem?.NewStatus
+            }
+            if(childelem?.NewItemRank != ''){
+              elem.ItemRank = childelem?.NewItemRank
+            }
+            
+          }
+        })
       })
       AllTasksRendar = AllTasksRendar?.concat(finalData)
       finalData = [];
@@ -1049,37 +1075,42 @@ function TasksTable(props: any) {
   }, [table.getState().columnFilters]);
   const callBackData = React.useCallback((checkData: any) => {
     let array: any = [];
-    if (checkData != undefined) {
-
-      if (checkData?.TaskType == undefined) {
-        setActivityDisable(false)
-        checkData['siteUrl'] = props?.AllListId?.siteUrl;
-        checkData['listName'] = 'Master Tasks';
-        MeetingItems.push(checkData)
-        //setMeetingItems(itrm);
-
-      }
-      if (checkData.TaskType != undefined) {
-        if (checkData.TaskType?.Title == 'Activities' || checkData.TaskType?.Title == "Workstream") {
-          setActivityDisable(false)
-          // Arrays.push(itrm)
-          checkData['PortfolioId'] = props?.Id;
-          MeetingItems.push(checkData)
-          setCount(count + 2)
-        }
-        if (checkData.TaskType?.Title == 'Task') {
-          setActivityDisable(true)
-          MeetingItems.push(checkData)
-
-        }
-      }
+    BulkTaskUpdate = []
+    if (checkData != undefined || checkData?.length>0) {
+      checkData.map((item:any)=>{
+        BulkTaskUpdate.push(item.original);
+        BulkTaskUpdate.map((taskitem:any)=>{
+          if (taskitem?.TaskType == undefined) {
+            setActivityDisable(false)
+            taskitem['siteUrl'] = props?.AllListId?.siteUrl;
+            taskitem['listName'] = 'Master Tasks';
+            MeetingItems.push(taskitem)
+            //setMeetingItems(itrm);
+    
+          }
+          if (taskitem.TaskType != undefined) {
+            if (taskitem.TaskType?.Title == 'Activities' || taskitem.TaskType?.Title == "Workstream") {
+              setActivityDisable(false)
+              // Arrays.push(itrm)
+              taskitem['PortfolioId'] = props?.Id;
+              MeetingItems.push(taskitem)
+              setCount(count + 2)
+            }
+            if (taskitem.TaskType?.Title == 'Task') {
+              setActivityDisable(true)
+              MeetingItems.push(taskitem)
+    
+            }
+          }
+        })   
+      })        
       setcheckData(checkData);
       array.push(checkData);
-
 
     } else {
       setcheckData({});
       array = [];
+      BulkTaskUpdate = []
     }
     // setCheckedList1(array);
   }, []);
@@ -1118,6 +1149,7 @@ function TasksTable(props: any) {
         <div className="col-sm-12 pad0 smart" >
           <div className="">
             <div className={`${data?.length > 10 ? "wrapper" : "MinHeight"}`}>
+<div> <BulkeditTask SelectedTask={BulkTaskUpdate} Call={Call}></BulkeditTask></div>
 
               <GlobalCommanTable
                 queryItems={props?.props}
@@ -1140,6 +1172,7 @@ function TasksTable(props: any) {
                 AddWorkstreamTask={openActivity}
                 taskProfile={true}
                 expandIcon={true}
+multiSelect={true}
               />
             </div>
 
