@@ -1,4 +1,4 @@
-declare interface IHRcontractProfileWebPartStrings {
+declare interface IHrContractProfileWebPartStrings {
   PropertyPaneDescription: string;
   BasicGroupName: string;
   DescriptionFieldLabel: string;
@@ -8,7 +8,7 @@ declare interface IHRcontractProfileWebPartStrings {
   AppTeamsTabEnvironment: string;
 }
 
-declare module 'HRcontractProfileWebPartStrings' {
-  const strings: IHRcontractProfileWebPartStrings;
+declare module 'HrContractProfileWebPartStrings' {
+  const strings: IHrContractProfileWebPartStrings;
   export = strings;
 }

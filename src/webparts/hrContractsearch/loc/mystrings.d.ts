@@ -1,4 +1,4 @@
-declare interface IHrContractsearchWebPartStrings {
+declare interface IHrContractSearchWebPartStrings {
   PropertyPaneDescription: string;
   BasicGroupName: string;
   DescriptionFieldLabel: string;
@@ -8,7 +8,7 @@ declare interface IHrContractsearchWebPartStrings {
   AppTeamsTabEnvironment: string;
 }
 
-declare module 'HrContractsearchWebPartStrings' {
-  const strings: IHrContractsearchWebPartStrings;
+declare module 'HrContractSearchWebPartStrings' {
+  const strings: IHrContractSearchWebPartStrings;
   export = strings;
 }
