@@ -7,16 +7,16 @@ import {
 } from '@microsoft/sp-property-pane';
 import { BaseClientSideWebPart } from '@microsoft/sp-webpart-base';
 import { IReadonlyTheme } from '@microsoft/sp-component-base';
-
-import * as strings from 'HrContractProfileWebPartStrings';
-
 import pnp from 'sp-pnp-js';
 import HrContractProfile from './components/HRcontractProfile';
-import { IHrContractProfileProps } from './components/IHRcontractProfileProps';
-
+import { IHrContractProfileProps } from './components/IHrContractProfileProps';
+import * as strings from 'HrContractProfileWebPartStrings';
 export interface IHrContractProfileWebPartProps {
   description: string;
-  ContractListID:'c0106d10-a71c-4153-b204-7cf7b45a68b8'
+  ContractListID:'c0106d10-a71c-4153-b204-7cf7b45a68b8',
+  HR_EMPLOYEE_DETAILS_LIST_ID:'a7b80424-e5e1-47c6-80a1-0ee44a70f92c',
+  MAIN_SMARTMETADATA_LISTID:'D1C6D7C3-F36E-4F95-8715-8DA9F33622E7',
+  MAIN_HR_LISTID:'6DD8038B-40D2-4412-B28D-1C86528C7842',
 }
 
 export default class HrContractProfileWebPart extends BaseClientSideWebPart<IHrContractProfileWebPartProps> {
@@ -34,7 +34,10 @@ export default class HrContractProfileWebPart extends BaseClientSideWebPart<IHrC
         hasTeamsContext: !!this.context.sdks.microsoftTeams,
         userDisplayName: this.context.pageContext.user.displayName,
         siteUrl: this.context.pageContext.web.absoluteUrl,
-        ContractListID : this.properties.ContractListID
+        ContractListID : this.properties.ContractListID,
+        MAIN_SMARTMETADATA_LISTID:'D1C6D7C3-F36E-4F95-8715-8DA9F33622E7',
+        MAIN_HR_LISTID:'6DD8038B-40D2-4412-B28D-1C86528C7842',
+        HR_EMPLOYEE_DETAILS_LIST_ID:'a7b80424-e5e1-47c6-80a1-0ee44a70f92c',
       }
     );
 
@@ -98,6 +101,15 @@ export default class HrContractProfileWebPart extends BaseClientSideWebPart<IHrC
                 }),
                 PropertyPaneTextField('ContractListID', {
                   label: 'ContractListID'
+                }),
+                PropertyPaneTextField('MAIN_SMARTMETADATA_LISTID', {
+                  label: "Main SmartMetadata ListId"
+                }),
+                PropertyPaneTextField('MAIN_HR_LISTID', {
+                  label: "Main Hr ListId"
+                }),
+                PropertyPaneTextField('HR_EMPLOYEE_DETAILS_LIST_ID', {
+                  label: "Hr Employee Details ListId"
                 })
               ]
             }

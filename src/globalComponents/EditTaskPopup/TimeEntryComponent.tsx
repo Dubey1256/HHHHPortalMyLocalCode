@@ -84,6 +84,7 @@ function TimeEntryPopup(item: any) {
   const [showCat, setshowCat] = React.useState("");
   const [modalTimeIsOpen, setTimeModalIsOpen] = React.useState(false);
   // const [AllMetadata, setMetadata] = React.useState([]);
+  const [week, SetWeek] = React.useState(1);
   const [EditTaskItemitle, setEditItem] = React.useState("");
   const [flatview, setFlatview] = React.useState<any>("");
   const [collapseItem, setcollapseItem] = React.useState(true);
@@ -91,6 +92,7 @@ function TimeEntryPopup(item: any) {
   const [search, setSearch]: [string, (search: string) => void] =
     React.useState("");
   const [TaskStatuspopup, setTaskStatuspopup] = React.useState(false);
+  const [buttonDisable, setbuttonDisable] = React.useState(false);
   const [Editcategory, setEditcategory] = React.useState(false);
   const [TaskStatuspopup2, setTaskStatuspopup2] = React.useState(false);
   const [CopyTaskpopup, setCopyTaskpopup] = React.useState(false);
@@ -199,6 +201,22 @@ function TimeEntryPopup(item: any) {
         setediteddata(inputDate);
       }
     }
+    if (val === "week") {
+      SetWeek(week + 1)
+      change = Moment(change).add(1, "week").format();
+      setMyDatee(change);
+      //setMyDatee(change)
+      var inputDate = new Date(change);
+      setMyDatee(inputDate);
+
+      if (Type == "EditTime" || Type == "CopyTime") {
+        changeEdited = Moment(editeddata).add(1, "week").format();
+        var editaskk = Moment(changeEdited).format("ddd, DD MMM yyyy");
+        //setediteddata(editaskk)
+        var inputDate = new Date(editaskk);
+        setediteddata(inputDate);
+      }
+    }
 
     if (val === "Year") {
       setYear(year + 1);
@@ -234,6 +252,21 @@ function TimeEntryPopup(item: any) {
 
       if (Type == "EditTime" || Type == "CopyTime") {
         changeEdited = Moment(editeddata).add(-1, "days").format();
+        var editaskk = Moment(changeEdited).format("ddd, DD MMM yyyy");
+        var inputDate = new Date(editaskk);
+        setediteddata(inputDate);
+      }
+    }
+    if (val === "week") {
+      // setCount(count - 1)
+      var dateeee = change != undefined && change != "" ? change : "";
+      change = Moment(dateeee).add(-1, "week").format();
+      setMyDatee(change);
+      var inputDate = new Date(change);
+      setMyDatee(inputDate);
+
+      if (Type == "EditTime" || Type == "CopyTime") {
+        changeEdited = Moment(editeddata).add(-1, "week").format();
         var editaskk = Moment(changeEdited).format("ddd, DD MMM yyyy");
         var inputDate = new Date(editaskk);
         setediteddata(inputDate);
@@ -311,7 +344,7 @@ function TimeEntryPopup(item: any) {
           changeTime = changeTime + 15;
         }
 
-        if (changeTime != undefined  && TimeInMinutes == 0) {
+        if (changeTime != undefined) {
           var TimeInHour: any = changeTime / 60;
           setTimeInHours(TimeInHour.toFixed(2));
         }
@@ -386,6 +419,7 @@ function TimeEntryPopup(item: any) {
 
 
   const openAddTasktimepopup = async (childitem: any, Type: any) => {
+    setbuttonDisable(false)
     if (Type == 'AddTime') {
       PopupType = 'AddTime'
       CategryTitle = ''
@@ -393,6 +427,7 @@ function TimeEntryPopup(item: any) {
       setTimeInMinutes(0);
       setTimeInHours(0);
       setNewData(undefined);
+      SetWeek(1)
       setediteddata(undefined);
       setCount(1);
       change = Moment().format();
@@ -418,6 +453,7 @@ function TimeEntryPopup(item: any) {
       setTimeInMinutes(0);
       setCount(1);
       setMonth(1);
+      SetWeek(1)
       setYear(1);
       changeTime = 0;
       setMyDatee(new Date());
@@ -487,6 +523,7 @@ function TimeEntryPopup(item: any) {
     setTimeInHours(0);
     setNewData(undefined);
     setTimeInMinutes(0);
+    SetWeek(1)
     setediteddata(undefined);
     setCount(1);
     change = Moment().format();
@@ -1564,7 +1601,7 @@ function TimeEntryPopup(item: any) {
   };
 
   const AddTaskTime = async (child: any, Type: any) => {
-
+    setbuttonDisable(true)
 
     if (Type == 'EditTime') {
       var Dateee = "";
@@ -1600,9 +1637,7 @@ function TimeEntryPopup(item: any) {
 
               updateitem.Description =
                 postData != undefined &&
-                  postData.Description != undefined &&
-                  postData.Description != ""
-                  ? postData.Description
+                  postData.Description != undefined ? postData.Description
                   : child.Description;
               UpdatedData.push(updateitem);
             } else {
@@ -2747,14 +2782,34 @@ function TimeEntryPopup(item: any) {
                         </div> */}
                       </div>
                       <div className="input-group">
-                      
+
                         <div className="d-flex w-100 mb-1">
-                          <button className="btnCol btn-primary" onClick={() => changeDateDec("month", PopupType)}><MdKeyboardDoubleArrowLeft></MdKeyboardDoubleArrowLeft></button> <button className="btnCol btn-primary mx-1" onClick={() => changeDateDec("Date", PopupType)}><MdKeyboardArrowLeft></MdKeyboardArrowLeft></button><DatePicker
+                          <button className="btnCol btn-primary px-2" title='Month' onClick={() => changeDateDec("month", PopupType)}><svg xmlns="http://www.w3.org/2000/svg" width="58" height="32" viewBox="0 0 65 37" fill="#fff">
+                            <line x1="35.0975" y1="19.9826" x2="52.7924" y2="2.29386" stroke="#fff" stroke-width="5" />
+                            <line x1="52.9436" y1="34.5654" x2="35.2546" y2="16.8708" stroke="#fff" stroke-width="5" />
+                            <line x1="18.7682" y1="19.9826" x2="36.4631" y2="2.29386" stroke="#fff" stroke-width="5" />
+                            <line x1="36.6143" y1="34.5654" x2="18.9252" y2="16.8708" stroke="#fff" stroke-width="5" />
+                            <line x1="2.43884" y1="19.9826" x2="20.1337" y2="2.29386" stroke="#fff" stroke-width="5" />
+                            <line x1="20.2849" y1="34.5654" x2="2.5959" y2="16.8708" stroke="#fff" stroke-width="5" />
+                          </svg></button>
+                          <button className="btnCol btn-primary mx-1" title='Week' onClick={() => changeDateDec("week", PopupType)}><MdKeyboardDoubleArrowLeft></MdKeyboardDoubleArrowLeft></button>
+                          <button className="btnCol btn-primary mx-1" title='Day' onClick={() => changeDateDec("Date", PopupType)}><MdKeyboardArrowLeft></MdKeyboardArrowLeft></button>
+                          <DatePicker
                             className="form-control"
                             selected={(PopupType == 'EditTime' || PopupType == 'CopyTime') ? editeddata != undefined ? editeddata : myDatee : myDatee}
                             onChange={handleDatedue}
                             dateFormat="EEE, dd MMM yyyy"
-                          /> <button onClick={() => changeDate("Date", PopupType)} className="btnCol btn-primary mx-1" ><MdKeyboardArrowRight></MdKeyboardArrowRight></button> <button className="btnCol btn-primary" onClick={() => changeDate("month", PopupType)}><MdKeyboardDoubleArrowRight></MdKeyboardDoubleArrowRight></button></div>
+                          />
+                          <button onClick={() => changeDate("Date", PopupType)} title='Day' className="btnCol btn-primary mx-1" ><MdKeyboardArrowRight></MdKeyboardArrowRight></button>
+                          <button className="btnCol btn-primary mx-1" title='Week' onClick={() => changeDate("week", PopupType)}><MdKeyboardDoubleArrowRight></MdKeyboardDoubleArrowRight></button>
+                          <button className="btnCol btn-primary px-2" title='Month' onClick={() => changeDate("month", PopupType)}><svg xmlns="http://www.w3.org/2000/svg" width="58" height="32" viewBox="0 0 65 37" fill="#fff">
+                            <line x1="23.0121" y1="16.6118" x2="5.31719" y2="34.3006" stroke="#fff" stroke-width="5" />
+                            <line x1="5.16599" y1="2.02901" x2="22.855" y2="19.7236" stroke="#fff" stroke-width="5" />
+                            <line x1="39.3414" y1="16.6118" x2="21.6465" y2="34.3006" stroke="#fff" stroke-width="5" />
+                            <line x1="21.4953" y1="2.02901" x2="39.1844" y2="19.7236" stroke="#fff" stroke-width="5" />
+                            <line x1="55.6708" y1="16.6118" x2="37.9759" y2="34.3006" stroke="#fff" stroke-width="5" />
+                            <line x1="37.8247" y1="2.02901" x2="55.5137" y2="19.7236" stroke="#fff" stroke-width="5" />
+                          </svg></button></div>
                       </div>
                     </div>
                   </div>
@@ -2919,7 +2974,7 @@ function TimeEntryPopup(item: any) {
                     >
                       Save
                     </button> : <button
-                      disabled={(PopupType == 'AddTime' ||PopupType == 'AddTimeCat') && TimeInMinutes <= 0 ? true : false}
+                      disabled={(PopupType == 'AddTime' ||PopupType == 'AddTimeCat') && TimeInMinutes <= 0 ? true : false || buttonDisable == true}
                       type="button"
                       className="btn btn-primary ms-2"
                       onClick={() => AddTaskTime(saveEditTaskTimeChild, PopupType)}
