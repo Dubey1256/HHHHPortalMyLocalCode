@@ -84,25 +84,6 @@
       ]
     },
    
-<<<<<<< HEAD
-    "hr-contract-search-web-part": {
-      "components": [
-        {
-          "entrypoint": "./lib/webparts/hrContractSearch/HrContractSearchWebPart.js",
-          "manifest": "./src/webparts/hrContractSearch/HrContractSearchWebPart.manifest.json"
-        }
-      ]
-    },
-    "hr-contract-profile-web-part": {
-      "components": [
-        {
-          "entrypoint": "./lib/webparts/hrContractProfile/HrContractProfileWebPart.js",
-          "manifest": "./src/webparts/hrContractProfile/HrContractProfileWebPart.manifest.json"
-        }
-      ]
-    },
-=======
->>>>>>> 979cda6545eb4e2cf714f3ea8a8e31819a798165
     "projectmanagement-overview-tool-web-part": {
       "components": [
         {
@@ -346,6 +327,22 @@
           "manifest": "./src/webparts/helloSpfx/HelloSpfxWebPart.manifest.json"
         }
       ]
+    },
+    "hr-contract-search-web-part": {
+      "components": [
+        {
+          "entrypoint": "./lib/webparts/hrContractSearch/HrContractSearchWebPart.js",
+          "manifest": "./src/webparts/hrContractSearch/HrContractSearchWebPart.manifest.json"
+        }
+      ]
+    },
+    "hr-contract-profile-web-part": {
+      "components": [
+        {
+          "entrypoint": "./lib/webparts/hrContractProfile/HrContractProfileWebPart.js",
+          "manifest": "./src/webparts/hrContractProfile/HrContractProfileWebPart.manifest.json"
+        }
+      ]
     }
   },
   "externals": {
@@ -385,11 +382,6 @@
     "EmployeDashBoardWebPartStrings": "lib/webparts/employeDashBoard/loc/{locale}.js",
     "TestProjectWebPartStrings": "lib/webparts/BackupData/loc/{locale}.js",
     "ProjectManagementWebPartStrings": "lib/webparts/projectManagement/loc/{locale}.js",
-<<<<<<< HEAD
-    "HrContractSearchWebPartStrings": "lib/webparts/hrContractSearch/loc/{locale}.js",
-    "HrContractProfileWebPartStrings": "lib/webparts/hrContractProfile/loc/{locale}.js",
-=======
->>>>>>> 979cda6545eb4e2cf714f3ea8a8e31819a798165
     "ProjectmanagementOverviewToolWebPartStrings": "lib/webparts/projectmanagementOverviewTool/loc/{locale}.js",
     "CategoriesWeeklyMultipleReportWebPartStrings": "lib/webparts/categoriesWeeklyMultipleReport/loc/{locale}.js",
     "CreateTaskWebPartStrings": "lib/webparts/createTask/loc/{locale}.js",
@@ -412,6 +404,8 @@
     "UserTimeEntryWebPartStrings": "lib/webparts/userTimeEntry/loc/{locale}.js",
     "TeamPortfolioWebPartStrings": "lib/webparts/teamPortfolio/loc/{locale}.js",
     "MeetingOverviewWebPartStrings": "lib/webparts/meetingOverview/loc/{locale}.js",
-    "ContactSearchWebPartStrings": "lib/webparts/contactSearch/loc/{locale}.js"
+    "ContactSearchWebPartStrings": "lib/webparts/contactSearch/loc/{locale}.js",
+    "HrContractSearchWebPartStrings": "lib/webparts/hrContractSearch/loc/{locale}.js",
+    "HrContractProfileWebPartStrings": "lib/webparts/hrContractProfile/loc/{locale}.js"
   }
 }
