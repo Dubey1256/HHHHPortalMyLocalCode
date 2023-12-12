@@ -146,7 +146,7 @@ const EmailNotificationMail = (props: any) => {
       <div id='htmlMailBodyEmail' style={{ display: 'none' }}>
         <div style={{ backgroundColor: "#FAFAFA" }}>
           <div style={{ width: "900px", backgroundColor: "#fff", padding: "0px 32px", margin: "0 auto" }}>
-            <div style={{ display: "flex", alignItems: "center", margin: "56px 0px" }}>
+            <div style={{ display: "flex", alignItems: "center", padding: "56px 0px" }}>
               <img src={props?.items?.siteIcon} style={{ width: "48px", height: "48px", borderRadius: "50%" }}></img>
                 <div style={{ color: "var(--black, #333)", textAlign: "center", fontFamily: "Segoe UI", fontSize: "14px", fontStyle: "normal", fontWeight: "600", marginLeft: "4px" }}></div>
             </div>

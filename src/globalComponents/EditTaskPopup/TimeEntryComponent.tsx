@@ -344,7 +344,7 @@ function TimeEntryPopup(item: any) {
           changeTime = changeTime + 15;
         }
 
-        if (changeTime != undefined  && TimeInMinutes == 0) {
+        if (changeTime != undefined) {
           var TimeInHour: any = changeTime / 60;
           setTimeInHours(TimeInHour.toFixed(2));
         }

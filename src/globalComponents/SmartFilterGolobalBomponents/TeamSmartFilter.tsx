@@ -1270,9 +1270,10 @@ const TeamSmartFilter = (item: any) => {
     };
     const UpdateFilterData = (event: any) => {
         if (event === "udateClickTrue") {
-            console.log("AllSiteTasksDataLoadAllAllSiteTasksDataLoadAllAllSiteTasksDataLoadAll", AllSiteTasksDataLoadAll)
-            allTastsData = [];
-            allTastsData = allTastsData.concat(AllSiteTasksDataLoadAll);
+            if(AllSiteTasksDataLoadAll?.length>0){
+                allTastsData = [];
+                allTastsData = allTastsData.concat(AllSiteTasksDataLoadAll);
+            }
             item?.setLoaded(false);
             setUpdatedSmartFilter(true);
             FilterDataOnCheck();

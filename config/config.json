@@ -84,6 +84,7 @@
       ]
     },
    
+<<<<<<< HEAD
     "hr-contract-search-web-part": {
       "components": [
         {
@@ -100,6 +101,8 @@
         }
       ]
     },
+=======
+>>>>>>> 979cda6545eb4e2cf714f3ea8a8e31819a798165
     "projectmanagement-overview-tool-web-part": {
       "components": [
         {
@@ -312,6 +315,14 @@
         }
       ]
     },
+    "site-structure-web-part": {
+      "components": [
+        {
+          "entrypoint": "./lib/webparts/siteStructure/SiteStructureWebPart.js",
+          "manifest": "./src/webparts/siteStructure/SiteStructureWebPart.manifest.json"
+        }
+      ]
+    },
     "last-modidied-items-web-part": {
       "components": [
         {
@@ -374,8 +385,11 @@
     "EmployeDashBoardWebPartStrings": "lib/webparts/employeDashBoard/loc/{locale}.js",
     "TestProjectWebPartStrings": "lib/webparts/BackupData/loc/{locale}.js",
     "ProjectManagementWebPartStrings": "lib/webparts/projectManagement/loc/{locale}.js",
+<<<<<<< HEAD
     "HrContractSearchWebPartStrings": "lib/webparts/hrContractSearch/loc/{locale}.js",
     "HrContractProfileWebPartStrings": "lib/webparts/hrContractProfile/loc/{locale}.js",
+=======
+>>>>>>> 979cda6545eb4e2cf714f3ea8a8e31819a798165
     "ProjectmanagementOverviewToolWebPartStrings": "lib/webparts/projectmanagementOverviewTool/loc/{locale}.js",
     "CategoriesWeeklyMultipleReportWebPartStrings": "lib/webparts/categoriesWeeklyMultipleReport/loc/{locale}.js",
     "CreateTaskWebPartStrings": "lib/webparts/createTask/loc/{locale}.js",
