@@ -8,40 +8,46 @@ import {
 import { BaseClientSideWebPart } from '@microsoft/sp-webpart-base';
 import { IReadonlyTheme } from '@microsoft/sp-component-base';
 
-import * as strings from 'HRcontractProfileWebPartStrings';
-import HRcontractProfile from './components/HRcontractProfile';
-import { IHRcontractProfileProps } from './components/IHRcontractProfileProps';
+import * as strings from 'HrContractProfileWebPartStrings';
 
-export interface IHRcontractProfileWebPartProps {
+import pnp from 'sp-pnp-js';
+import HrContractProfile from './components/HRcontractProfile';
+import { IHrContractProfileProps } from './components/IHRcontractProfileProps';
+
+export interface IHrContractProfileWebPartProps {
   description: string;
+  ContractListID:'c0106d10-a71c-4153-b204-7cf7b45a68b8'
 }
 
-export default class HRcontractProfileWebPart extends BaseClientSideWebPart<IHRcontractProfileWebPartProps> {
+export default class HrContractProfileWebPart extends BaseClientSideWebPart<IHrContractProfileWebPartProps> {
 
   private _isDarkTheme: boolean = false;
   private _environmentMessage: string = '';
 
   public render(): void {
-    const element: React.ReactElement<IHRcontractProfileProps> = React.createElement(
-      HRcontractProfile,
+    const element: React.ReactElement<IHrContractProfileProps> = React.createElement(
+      HrContractProfile,
       {
         description: this.properties.description,
         isDarkTheme: this._isDarkTheme,
         environmentMessage: this._environmentMessage,
         hasTeamsContext: !!this.context.sdks.microsoftTeams,
-        userDisplayName: this.context.pageContext.user.displayName
+        userDisplayName: this.context.pageContext.user.displayName,
+        siteUrl: this.context.pageContext.web.absoluteUrl,
+        ContractListID : this.properties.ContractListID
       }
     );
 
     ReactDom.render(element, this.domElement);
   }
 
-  protected onInit(): Promise<void> {
-    this._environmentMessage = this._getEnvironmentMessage();
-
-    return super.onInit();
+  protected async onInit(): Promise<void> {
+    //this._environmentMessage = this._getEnvironmentMessage();
+    const _ = await super.onInit();
+    pnp.setup({
+      spfxContext: this.context,
+    });
   }
-
   private _getEnvironmentMessage(): string {
     if (!!this.context.sdks.microsoftTeams) { // running in Teams
       return this.context.isServedFromLocalhost ? strings.AppLocalEnvironmentTeams : strings.AppTeamsTabEnvironment;
@@ -89,6 +95,9 @@ export default class HRcontractProfileWebPart extends BaseClientSideWebPart<IHRc
               groupFields: [
                 PropertyPaneTextField('description', {
                   label: strings.DescriptionFieldLabel
+                }),
+                PropertyPaneTextField('ContractListID', {
+                  label: 'ContractListID'
                 })
               ]
             }

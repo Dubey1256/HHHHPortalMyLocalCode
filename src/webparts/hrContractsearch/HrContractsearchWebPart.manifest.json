@@ -1,7 +1,7 @@
 {
   "$schema": "https://developer.microsoft.com/json-schemas/spfx/client-side-web-part-manifest.schema.json",
-  "id": "c266ee14-6965-4e75-aaff-fc760035de80",
-  "alias": "HrContractsearchWebPart",
+  "id": "a819ddf1-68b8-421a-919c-b8f84127ef40",
+  "alias": "HrContractSearchWebPart",
   "componentType": "WebPart",
 
   // The "*" signifies that the version should be taken from the package.json
@@ -18,11 +18,11 @@
   "preconfiguredEntries": [{
     "groupId": "5c03119e-3074-46fd-976b-c60198311f70", // Advanced
     "group": { "default": "Advanced" },
-    "title": { "default": "HRContractsearch" },
-    "description": { "default": "HRContractsearch description" },
+    "title": { "default": "HrContractSearch" },
+    "description": { "default": "HrContractSearch description" },
     "officeFabricIconFontName": "Page",
     "properties": {
-      "description": "HRContractsearch"
+      "description": "HrContractSearch"
     }
   }]
 }
