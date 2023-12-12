@@ -5733,6 +5733,7 @@ const EditTaskPopup = (Items: any) => {
                                                                             title={com.Title}
                                                                             target="_blank"
                                                                             data-interception="off"
+                                                                            className="textDotted"
                                                                             href={`${siteUrls}/SitePages/Portfolio-Profile.aspx?taskId=${com.Id}`}
                                                                         >
                                                                             {com.Title}
@@ -6303,13 +6304,14 @@ const EditTaskPopup = (Items: any) => {
                                                                             {ProjectData.Title != undefined ? (
                                                                                 <div className="full-width replaceInput alignCenter">
                                                                                     <a
-                                                                                        className="hreflink"
+                                                                                      
                                                                                         target="_blank"
                                                                                         title={ProjectData.Title}
                                                                                         data-interception="off"
+                                                                                        className="textDotted hreflink"
                                                                                         href={`${siteUrls}/SitePages/Project-Management.aspx?ProjectId=${ProjectData.Id}`}
                                                                                     >
-                                                                                        {ProjectData.Title?.length > 0 ? ProjectData.Title?.slice(0, 28) + "..." : ""}
+                                                                                        {ProjectData.Title}
                                                                                     </a>
                                                                                 </div>
                                                                             ) : null}
@@ -7719,6 +7721,7 @@ const EditTaskPopup = (Items: any) => {
                                                                                         title={com.Title}
                                                                                         target="_blank"
                                                                                         data-interception="off"
+                                                                                        className="textDotted"
                                                                                         href={`${siteUrls}/SitePages/Portfolio-Profile.aspx?taskId=${com.Id}`}
                                                                                     >
                                                                                         {com.Title}
@@ -7984,7 +7987,7 @@ const EditTaskPopup = (Items: any) => {
                                                                                                 return (
                                                                                                     <div className="full-width replaceInput alignCenter">
                                                                                                         <a
-                                                                                                            className="hreflink"
+                                                                                                            className="hreflink textDotted"
                                                                                                             target="_blank"
                                                                                                             data-interception="off"
                                                                                                         >
@@ -8317,15 +8320,15 @@ const EditTaskPopup = (Items: any) => {
                                                                                 return (
                                                                                     <>
                                                                                         {ProjectData.Title != undefined ? (
-                                                                                            <div className="block w-100">
+                                                                                            <div className="replaceInput alignCenter w-100">
                                                                                                 <a
-                                                                                                    className="hreflink"
+                                                                                                    className="hreflink textDotted"
                                                                                                     target="_blank"
                                                                                                     title={ProjectData.Title}
                                                                                                     data-interception="off"
                                                                                                     href={`${siteUrls}/SitePages/Project-Management.aspx?ProjectId=${ProjectData.Id}`}
                                                                                                 >
-                                                                                                    {ProjectData.Title?.length > 0 ? ProjectData.Title?.slice(0, 28) + "..." : ""}
+                                                                                                    {ProjectData.Title}
                                                                                                 </a>
                                                                                             </div>
                                                                                         ) : null}
