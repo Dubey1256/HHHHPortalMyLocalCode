@@ -7,12 +7,10 @@ import {
 } from '@microsoft/sp-property-pane';
 import { BaseClientSideWebPart } from '@microsoft/sp-webpart-base';
 import { IReadonlyTheme } from '@microsoft/sp-component-base';
-
-import * as strings from 'HrContractSearchWebPartStrings';
-
 import { IHrContractSearchProps } from './components/IHrContractSearchProps';
 import pnp from 'sp-pnp-js';
-import HrContractSearch from './components/HrContractsearch';
+import * as strings from 'HrContractSearchWebPartStrings';
+import HrContractSearch from './components/ContractSearch';
 
 export interface IHrContractSearchWebPartProps {
   description: string;

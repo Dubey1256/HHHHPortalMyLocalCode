@@ -7,14 +7,10 @@ import {
 } from '@microsoft/sp-property-pane';
 import { BaseClientSideWebPart } from '@microsoft/sp-webpart-base';
 import { IReadonlyTheme } from '@microsoft/sp-component-base';
-
-import * as strings from 'HrContractProfileWebPartStrings';
-
 import pnp from 'sp-pnp-js';
 import HrContractProfile from './components/HRcontractProfile';
 import { IHrContractProfileProps } from './components/IHrContractProfileProps';
-
-
+import * as strings from 'HrContractProfileWebPartStrings';
 export interface IHrContractProfileWebPartProps {
   description: string;
   ContractListID:'c0106d10-a71c-4153-b204-7cf7b45a68b8',
