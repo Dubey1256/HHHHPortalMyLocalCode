@@ -358,7 +358,7 @@
     "ComponentCommentsWebPartStrings": "lib/webparts/componentComments/loc/{locale}.js",
     "FeedbackWebPartStrings": "lib/webparts/TimeReport/loc/{locale}.js",
     "TaskStepsWebPartStrings": "lib/webparts/taskSteps/loc/{locale}.js",
-    "SiteStructureWebPartStrings": "lib/webparts/siteStructure/loc/{locale}.js",
+    "SiteStructureWebPartStrings": "lib/webparts/SiteStructure/loc/{locale}.js",
     "SiteDataBackupToolWebPartStrings": "lib/webparts/siteDataBackupTool/loc/{locale}.js",
     "SmartmetadataportfolioWebPartStrings": "lib/webparts/smartmetadataportfolio/loc/{locale}.js",
     "HhhhQuickWebPartStrings": "lib/webparts/hhhhQuick/loc/{locale}.js",

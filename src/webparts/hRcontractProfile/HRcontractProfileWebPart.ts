@@ -7,51 +7,50 @@ import {
 } from '@microsoft/sp-property-pane';
 import { BaseClientSideWebPart } from '@microsoft/sp-webpart-base';
 import { IReadonlyTheme } from '@microsoft/sp-component-base';
-
-import * as strings from 'DocumentSearchWebPartStrings';
-import DocumentSearch from './components/DocumentSearch';
-import { IDocumentSearchProps } from './components/IDocumentSearchProps';
-
-export interface IDocumentSearchWebPartProps {
+import pnp from 'sp-pnp-js';
+import HrContractProfile from './components/HRcontractProfile';
+import { IHrContractProfileProps } from './components/IHRcontractProfileProps';
+import * as strings from 'HrContractProfileWebPartStrings';
+export interface IHrContractProfileWebPartProps {
   description: string;
-  DocumentsListID: string;
-  context: any;
-  TaskUsertListID: string;
-  MasterTaskListID: string,
-  SmartMetadataListID: string;
+  ContractListID:'c0106d10-a71c-4153-b204-7cf7b45a68b8',
+  HR_EMPLOYEE_DETAILS_LIST_ID:'a7b80424-e5e1-47c6-80a1-0ee44a70f92c',
+  MAIN_SMARTMETADATA_LISTID:'D1C6D7C3-F36E-4F95-8715-8DA9F33622E7',
+  MAIN_HR_LISTID:'6DD8038B-40D2-4412-B28D-1C86528C7842',
 }
 
-export default class DocumentSearchWebPart extends BaseClientSideWebPart<IDocumentSearchWebPartProps> {
+export default class HrContractProfileWebPart extends BaseClientSideWebPart<IHrContractProfileWebPartProps> {
 
   private _isDarkTheme: boolean = false;
   private _environmentMessage: string = '';
 
   public render(): void {
-    const element: React.ReactElement<IDocumentSearchProps> = React.createElement(
-      DocumentSearch,
+    const element: React.ReactElement<IHrContractProfileProps> = React.createElement(
+      HrContractProfile,
       {
         description: this.properties.description,
         isDarkTheme: this._isDarkTheme,
         environmentMessage: this._environmentMessage,
         hasTeamsContext: !!this.context.sdks.microsoftTeams,
         userDisplayName: this.context.pageContext.user.displayName,
-        DocumentsListID: this.properties.DocumentsListID,
-        context: this.context,
-        TaskUsertListID: this.properties.TaskUsertListID,
-        MasterTaskListID: this.properties.MasterTaskListID,
-        SmartMetadataListID: this.properties.SmartMetadataListID,
+        siteUrl: this.context.pageContext.web.absoluteUrl,
+        ContractListID : this.properties.ContractListID,
+        MAIN_SMARTMETADATA_LISTID:'D1C6D7C3-F36E-4F95-8715-8DA9F33622E7',
+        MAIN_HR_LISTID:'6DD8038B-40D2-4412-B28D-1C86528C7842',
+        HR_EMPLOYEE_DETAILS_LIST_ID:'a7b80424-e5e1-47c6-80a1-0ee44a70f92c',
       }
     );
 
     ReactDom.render(element, this.domElement);
   }
 
-  protected onInit(): Promise<void> {
-    this._environmentMessage = this._getEnvironmentMessage();
-
-    return super.onInit();
+  protected async onInit(): Promise<void> {
+    //this._environmentMessage = this._getEnvironmentMessage();
+    const _ = await super.onInit();
+    pnp.setup({
+      spfxContext: this.context,
+    });
   }
-
   private _getEnvironmentMessage(): string {
     if (!!this.context.sdks.microsoftTeams) { // running in Teams
       return this.context.isServedFromLocalhost ? strings.AppLocalEnvironmentTeams : strings.AppTeamsTabEnvironment;
@@ -97,17 +96,20 @@ export default class DocumentSearchWebPart extends BaseClientSideWebPart<IDocume
             {
               groupName: strings.BasicGroupName,
               groupFields: [
-                PropertyPaneTextField('DocumentsListID', {
-                  label: 'DocumentsListID'
+                PropertyPaneTextField('description', {
+                  label: strings.DescriptionFieldLabel
                 }),
-                PropertyPaneTextField('TaskUsertListID', {
-                  label: 'TaskUsertListID'
+                PropertyPaneTextField('ContractListID', {
+                  label: 'ContractListID'
                 }),
-                PropertyPaneTextField('MasterTaskListID', {
-                  label: 'MasterTaskListID'
+                PropertyPaneTextField('MAIN_SMARTMETADATA_LISTID', {
+                  label: "Main SmartMetadata ListId"
                 }),
-                PropertyPaneTextField('SmartMetadataListID', {
-                  label: 'SmartMetadataListID'
+                PropertyPaneTextField('MAIN_HR_LISTID', {
+                  label: "Main Hr ListId"
+                }),
+                PropertyPaneTextField('HR_EMPLOYEE_DETAILS_LIST_ID', {
+                  label: "Hr Employee Details ListId"
                 })
               ]
             }
