@@ -1,7 +1,8 @@
 import * as moment from 'moment';
 import * as React from 'react'
 import { Web } from "sp-pnp-js";
-import EditContractPopup from '../../hrContractSearch/components/EditContractPopup';
+import EditContractPopup from '../../hrContractsearch/components/EditContractPopup';
+
 
 
 let propsData:any = []
