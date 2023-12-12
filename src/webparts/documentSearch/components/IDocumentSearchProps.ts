@@ -6,7 +6,7 @@ export interface IDocumentSearchProps {
   userDisplayName: string;
   context: any;
   TaskUsertListID: string;
-  DocumentListID: string;
+  DocumentsListID: string;
   MasterTaskListID: string;
   SmartMetadataListID: string;
 }
