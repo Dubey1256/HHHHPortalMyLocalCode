@@ -2562,6 +2562,45 @@ function EditInstitution({ item, SelectD, Calls, usedFor, portfolioTypeData }: a
 
   }
 
+  //Deliverables//
+
+function removeTagsDeliverables(input:any) {
+  var tempDiv = document.createElement('p');
+  tempDiv.innerHTML = input;
+  var plainText = tempDiv.textContent || tempDiv.innerText;
+  return plainText;
+}
+  
+  var result = removeTagsDeliverables(PostDeliverables);
+  console.log(result);
+
+  // Description///
+  
+  function removeTagsDescription(input:any) {
+      var tempDiv = document.createElement('p');
+      tempDiv.innerHTML = input;
+      var plainText = tempDiv.textContent || tempDiv.innerText;
+      return plainText;
+  }
+  
+  var result1 = removeTagsDescription( PostBody);
+  
+  console.log(result1);
+  
+  // ShortDescription///
+  
+  function removeTagsShortDescription(input:any) {
+      var tempDiv = document.createElement('p');
+      tempDiv.innerHTML = input;
+      var plainText = tempDiv.textContent || tempDiv.innerText;
+      return plainText;
+  }
+  
+  var result2 = removeTagsShortDescription(PostShort_x0020_Description_x0020_On);
+  
+  console.log(result2);
+
+
   return (
     <>
       {console.log("All Done")}
@@ -3516,7 +3555,7 @@ function EditInstitution({ item, SelectD, Calls, usedFor, portfolioTypeData }: a
                             <details>
                               <summary className="alignCenter">
                                 <label className="toggler full_width">
-                                  <div className="alignCenter">Description{`(${EditData?.Body?.length != undefined ? EditData?.Body?.length : 0})`} <span className="ml-auto">
+                                  <div className="alignCenter">Description{`(${result1?.length != undefined ?result1?.length:0 })`} <span className="ml-auto">
                                     <input
                                       type="checkbox"
                                       className="form-check-input me-1 rounded-0"
@@ -3550,7 +3589,7 @@ function EditInstitution({ item, SelectD, Calls, usedFor, portfolioTypeData }: a
                             <details>
                               <summary className="alignCenter">
                                 <label className="toggler full_width">
-                                  <div className="alignCenter">Short Description{`(${EditData?.Short_x0020_Description_x0020_On?.length != undefined ? EditData?.Short_x0020_Description_x0020_On?.length : 0})`}     <span className="ml-auto">
+                                  <div className="alignCenter">Short Description{`(${result2?.length != undefined ?result2?.length:0 })`}     <span className="ml-auto">
 
                                     <input
                                       type="checkbox"
@@ -3691,7 +3730,7 @@ function EditInstitution({ item, SelectD, Calls, usedFor, portfolioTypeData }: a
                             <details>
                               <summary>
                                 <label className="toggler full_width alignCenter">
-                                  Deliverables{`(${EditData?.Deliverables?.length != undefined ? EditData?.Deliverables?.length : 0})`}  <span className="alignCenter ml-auto">
+                                  Deliverables{`(${result?.length != undefined ? result?.length : 0 })`}  <span className="alignCenter ml-auto">
 
                                     <input
                                       type="checkbox"
