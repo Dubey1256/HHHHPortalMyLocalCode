@@ -1588,7 +1588,7 @@ function CreateTaskComponent(props: any) {
 
     const changeTitle = (e: any) => {
         if (e.target.value.length > 56) {
-            alert("Task Title is too long. Please chose a shorter name and enter the details into the task description.")
+            alert("Task Title is too long. Please choose a shorter name and enter the details into the task description.")
         } else {
             setSave(prevSave => ({
                 ...prevSave,

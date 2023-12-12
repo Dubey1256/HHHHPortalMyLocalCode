@@ -14,7 +14,7 @@ import { IDocumentSearchProps } from './components/IDocumentSearchProps';
 
 export interface IDocumentSearchWebPartProps {
   description: string;
-  DocumentListID: string;
+  DocumentsListID: string;
   context: any;
   TaskUsertListID: string;
   MasterTaskListID: string,
@@ -35,7 +35,7 @@ export default class DocumentSearchWebPart extends BaseClientSideWebPart<IDocume
         environmentMessage: this._environmentMessage,
         hasTeamsContext: !!this.context.sdks.microsoftTeams,
         userDisplayName: this.context.pageContext.user.displayName,
-        DocumentListID: this.properties.DocumentListID,
+        DocumentsListID: this.properties.DocumentsListID,
         context: this.context,
         TaskUsertListID: this.properties.TaskUsertListID,
         MasterTaskListID: this.properties.MasterTaskListID,
@@ -97,8 +97,8 @@ export default class DocumentSearchWebPart extends BaseClientSideWebPart<IDocume
             {
               groupName: strings.BasicGroupName,
               groupFields: [
-                PropertyPaneTextField('DocumentListID', {
-                  label: 'DocumentListID'
+                PropertyPaneTextField('DocumentsListID', {
+                  label: 'DocumentsListID'
                 }),
                 PropertyPaneTextField('TaskUsertListID', {
                   label: 'TaskUsertListID'
