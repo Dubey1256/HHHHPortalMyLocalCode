@@ -428,8 +428,11 @@ const AncTool = (props: any) => {
             link: '',
             size: ''
         }
-        if (renamedFileName?.length > 0) {
-            fileName = renamedFileName;
+        let filetype='';
+
+        if (renamedFileName?.length > 0 && selectedFile.name?.length>0) {
+            filetype= getFileType(selectedFile != undefined ? selectedFile.name : uploadselectedFile.name)
+            fileName = renamedFileName+`.${filetype}`;
         } else {
             fileName = selectedFile != undefined ? selectedFile.name : uploadselectedFile.name;
         }
@@ -464,10 +467,17 @@ const AncTool = (props: any) => {
                         emailDoc = emailDoc.concat(selectedFile != undefined ? selectedFile : uploadselectedFile);
                         emailDoc = emailDoc.concat(msgfile.attachments);
                         emailDoc?.map((AttachFile: any, index: any) => {
-                            attachmentFileIndex = index
-                            fileName = AttachFile.fileName != undefined ? AttachFile?.fileName : AttachFile?.name;
-                            uploadFile(AttachFile)
-
+                            if(AttachFile?.extension?.toLowerCase()!=".png"&&AttachFile?.extension?.toLowerCase()!=".jpg"&&AttachFile?.extension?.toLowerCase()!=".jpeg"&&AttachFile?.extension?.toLowerCase()!=".svg"){
+                                attachmentFileIndex = index
+                              
+                                if (renamedFileName?.length > 0 && selectedFile.name?.length>0 && getFileType(selectedFile != undefined ? selectedFile.name : uploadselectedFile.name) == "msg" ) {
+                                    filetype= getFileType(selectedFile != undefined ? selectedFile.name : uploadselectedFile.name)
+                                    fileName = renamedFileName+`.${filetype}`;
+                                } else {
+                                    fileName = AttachFile.fileName != undefined ? AttachFile?.fileName : AttachFile?.name;
+                                }
+                                uploadFile(AttachFile)
+                            }
                         })
                         // };
 
@@ -789,16 +799,14 @@ const AncTool = (props: any) => {
         } else if (sizeInBytes < mbThreshold) {
             const sizeInKB = (sizeInBytes / kbThreshold)
             if(!isNaN(sizeInKB)){
-                sizeInKB.toFixed(2);
-                return `${sizeInKB} KB`;
+                return `${sizeInKB.toFixed(2)} KB`;
             }else{
                 return `128 KB`;
             }
         } else {
             const sizeInMB = (sizeInBytes / mbThreshold)
             if(!isNaN(sizeInMB)){
-                sizeInMB.toFixed(2);
-                return `${sizeInMB} MB`;
+                return `${sizeInMB.toFixed(2)} MB`;
             }else{
                 return `1.2 MB`;
             }
@@ -894,7 +902,7 @@ const AncTool = (props: any) => {
                     {CreateFolderLocation ?
                         <Row>
                             <div className='col-md-9'><input type="text" className='form-control' placeholder='Folder Name' value={newSubFolderName} onChange={(e) => setNewSubFolderName(e.target.value)} /></div>
-                            <div className='col-md-3 pe-0'><button className="btn btnPrimary pull-right" disabled={newSubFolderName?.length > 0 ? false : true} onClick={() => { CreateSubFolder() }}>Create Folder</button></div>
+                            <div className='col-md-3 pe-0'><button className="btn btn-primary pull-right" disabled={newSubFolderName?.length > 0 ? false : true} onClick={() => { CreateSubFolder() }}>Create Folder</button></div>
                         </Row> : ''}
                 </div>
 
@@ -904,11 +912,11 @@ const AncTool = (props: any) => {
                 {/* <label className='me-1'><input className='form-check-input' type='checkbox' /> Update Default Folder </label> */}
                 {selectPathFromPopup?.length > 0 && CreateFolderLocation != true ?
                     <label className="text-end me-1">
-                        <a className='hreflink btn btnPrimary' onClick={() => showCreateFolderLocation(true)}>
+                        <a className='hreflink btn btn-primary' onClick={() => showCreateFolderLocation(true)}>
                             Create Folder
                         </a>
                     </label> : ''}
-                <button className="btn btnPrimary me-1" disabled={selectPathFromPopup?.length > 0 ? false : true} onClick={() => { selectFolderToUpload() }}>Select</button>
+                <button className="btn btn-primary me-1" disabled={selectPathFromPopup?.length > 0 ? false : true} onClick={() => { selectFolderToUpload() }}>Select</button>
                 <button className='btn btn-default ' onClick={() => cancelPathFolder()}>Cancel</button>
             </footer>
         </>
@@ -1499,7 +1507,7 @@ const AncTool = (props: any) => {
                             <footer className='text-end p-2'>
 
 
-                                <button className="btn btnPrimary" disabled={renamedFileName?.length > 0 && createNewDocType?.length > 0 ? false : true} onClick={() => { CreateNewAndTag() }}>Create</button>
+                                <button className="btn btn-primary" disabled={renamedFileName?.length > 0 ? false : true} onClick={() => { CreateNewAndTag() }}>Create</button>
                                 <button className='btn btn-default ms-1' onClick={() => cancelNewCreateFile()}>Cancel</button>
                             </footer>
                         </div>
@@ -1550,7 +1558,7 @@ const AncTool = (props: any) => {
                                 </Col>
                             </div>
                             <footer className='text-end p-2'>
-                                <button className="btn btnPrimary" onClick={() => cancelConfirmationPopup()}>OK</button>
+                                <button className="btn btn-primary" onClick={() => cancelConfirmationPopup()}>OK</button>
                             </footer>
                         </div>
                     </div>
