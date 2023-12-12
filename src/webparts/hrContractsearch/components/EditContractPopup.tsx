@@ -16,8 +16,8 @@ const EditContractPopup = (props: any) => {
         loadContactDetails();
     }, [])
     const loadContactDetails=async()=>{
-        const web = new Web(props.AllListId.EmployeeDetailListID);
-        await web.lists.getById('a7b80424-e5e1-47c6-80a1-0ee44a70f92c').items.select("Id,Title,ItemType,FirstName,FullName,Company,JobTitle,Item_x0020_Cover,EmployeeID/Title,StaffID,EmployeeID/Id").expand("EmployeeID").orderBy("Created",true).get()
+        const web = new Web(props.AllListId.siteUrl);
+        await web.lists.getById(props.AllListId.HR_EMPLOYEE_DETAILS_LIST_ID).items.select("Id,Title,ItemType,FirstName,FullName,Company,JobTitle,Item_x0020_Cover,EmployeeID/Title,StaffID,EmployeeID/Id").expand("EmployeeID").orderBy("Created",true).get()
         .then((Data: any[])=>{
           console.log(Data);
           var employecopyData:any=[];

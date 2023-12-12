@@ -9,6 +9,7 @@ import { sp, Web } from "sp-pnp-js";
 import * as $ from "jquery";
 import { arraysEqual, Modal, Panel, PanelType } from "office-ui-fabric-react";
 import * as Moment from "moment";
+import CreateContactComponent from "../../contactSearch/components/contact-search/popup-components/CreateContact";
 import EditContractPopup from "./EditContractPopup";
 let ResData:any = {}
 const CreateContract = (props: any) => {
@@ -21,6 +22,7 @@ const CreateContract = (props: any) => {
    const [allContactData, setAllContactData] = React.useState([])
    const [smarttaxonomy, setSmarttaxonomy] = React.useState([]);
    const [contactDetailsId, setcontactDetailsId] = React.useState();
+   const [CreateContactStatus, setCreateContactStatus] = React.useState(false);
    const [postData, setPostData] = React.useState({
       Title: "",
       contractTypeItem: "",
@@ -40,7 +42,7 @@ const CreateContract = (props: any) => {
 
    const loadContactDetails=async()=>{
       const web = new Web(siteUrl);
-      await web.lists.getById(props.AllListId.EmployeeDetailListID).items.select("Id,Title,ItemType,FirstName,FullName,Company,JobTitle,Item_x0020_Cover,EmployeeID/Title,StaffID,EmployeeID/Id").expand("EmployeeID").orderBy("Created",true).get()
+      await web.lists.getById(props.AllListId.HR_EMPLOYEE_DETAILS_LIST_ID).items.select("Id,Title,ItemType,FirstName,FullName,Company,JobTitle,Item_x0020_Cover,EmployeeID/Title,StaffID,EmployeeID/Id").expand("EmployeeID").orderBy("Created",true).get()
       .then((Data: any[])=>{
         console.log(Data);
         var employecopyData:any=[];
@@ -60,7 +62,7 @@ const CreateContract = (props: any) => {
     }
     const LoadSmartTaxonomy=async()=>{
       const web = new Web(siteUrl);
-       await web.lists.getById(props.AllListId.SmartMetaDataListID).items.select("Id,Title,TaxType,Suffix").get()
+       await web.lists.getById(props.AllListId.MAIN_SMARTMETADATA_LISTID).items.select("Id,Title,TaxType,Suffix").get()
        .then((Data: any[])=>{
          console.log("smart metadata",Data);
          let smarttaxonomyArray:any=[];
@@ -223,6 +225,10 @@ const CreateContract = (props: any) => {
      const callback=()=>{
       setOpenEditPopup(false)
      }
+     const ClosePopup = React.useCallback(() => {
+      setCreateContactStatus(false);
+    
+  }, []);
    return (
       <>
          <Panel
@@ -258,7 +264,7 @@ const CreateContract = (props: any) => {
                   <footer>
                      <div className="row">
                         <div className="col-sm-12 text-end mt-2">
-                           <button type="button" className="btn btn-primary ms-2">Add New Employee</button>
+                           <button type="button" className="btn btn-primary ms-2" onClick={()=>setCreateContactStatus(true)}>Add New Employee</button>
                            <button type="button" className="btn btn-primary ms-2" onClick={()=>createEmp()}>Create</button>
                            <button type="button" className="btn btn-default ms-2" onClick={()=>closeAddTaskTimepopup()}>Cancel</button>
                         </div>
@@ -342,6 +348,7 @@ const CreateContract = (props: any) => {
 
          </Panel>
          {openEditPopup && <EditContractPopup props={ResData} AllListId={props.AllListId} callback={callback}></EditContractPopup>}
+         {CreateContactStatus ? <CreateContactComponent callBack={ClosePopup}data={allContactData}/> : null}
       </>
    )
 }

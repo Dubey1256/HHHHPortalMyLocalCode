@@ -4,9 +4,11 @@ import { Web } from "sp-pnp-js";
 import {
     ColumnDef,
 } from "@tanstack/react-table";
-import GlobalCommanTable from './GlobalCommanTable';
+
 import CreateContract from './CreateContract';
 import EditContractPopup from './EditContractPopup';
+import GlobalCommanTable from '../../../globalComponents/GroupByReactTableComponents/GlobalCommanTable';
+import { myContextValue } from '../../../globalComponents/globalCommon';
 
 let editData:any={}
 const ContractSearch=(props:any)=>{
@@ -14,7 +16,30 @@ const [data,setData] =  React.useState([])
 const [create,setCreate] =  React.useState(false)
 const [openEdit,setOpenEdit] =  React.useState(false)
 let callBackArray:any=[]
+let allListId: any = {};
+let allSite: any = {
+    GMBHSite: false,
+    HrSite: false,
+    MainSite: true,
+}
     React.useEffect(()=>{
+        if (props?.props.Context.pageContext.web.absoluteUrl.toLowerCase().includes("hr")) {
+            allSite = {
+                HrSite: true,
+                MainSite: false
+            }
+        }
+        allListId = {
+            Context: props?.props.Context,
+            HHHHContactListId: props?.props?.HHHHContactListId,
+            HHHHInstitutionListId: props?.props?.HHHHInstitutionListId,
+            MAIN_SMARTMETADATA_LISTID: props?.props?.MAIN_SMARTMETADATA_LISTID,
+            MAIN_HR_LISTID: props?.props?.MAIN_HR_LISTID,
+            GMBH_CONTACT_SEARCH_LISTID: props?.props?.GMBH_CONTACT_SEARCH_LISTID,
+            HR_EMPLOYEE_DETAILS_LIST_ID: props?.props?.HR_EMPLOYEE_DETAILS_LIST_ID,
+            siteUrl: props?.props.Context.pageContext.web.absoluteUrl,
+            jointSiteUrl: "https://hhhhteams.sharepoint.com/sites/HHHH"
+        }
     getData()
     },[])
     
@@ -172,14 +197,14 @@ let callBackArray:any=[]
         getData();
     }
     return(
-        <>
+        <myContextValue.Provider value={{ ...myContextValue, allSite:allSite,allListId:allListId ,loggedInUserName:props.props?.userDisplayName}}>
         <button className='btnCol btn btn-primary' type='submit' onClick={()=>createContracts()}>Create Contract</button>
         <div className='Alltable'>
         <GlobalCommanTable columns={column} data={data} callBackData={callBackData} showHeader={true}/>
         </div>
         {create && <CreateContract closeContracts={closeContracts} callback={callBackData} AllListId={props?.props}/>}
         {openEdit && <EditContractPopup props={editData} AllListId={props?.props} callback={callBack}></EditContractPopup>}
-        </>
+        </myContextValue.Provider>
     )
 
 }

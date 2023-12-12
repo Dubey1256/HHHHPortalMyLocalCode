@@ -200,7 +200,7 @@ const Header = () => {
             onClick={() => handleTileClick('assignedTask')}
           >
             <span className="iconSec">
-              <span title='Working This Week' className="svg__iconbox svg__icon--calendar"></span>
+              <span title='Assigned Task' className="svg__iconbox svg__icon--calendar"></span>
             </span>
             <span className='ms-2'>
               <div>Assigned Task</div>
@@ -247,7 +247,7 @@ const Header = () => {
             className={`${activeTile === 'TimeSheet' ? 'col alignCenter hreflink  mb-3 p-3 empBg shadow-sm active empBg' : 'col alignCenter p-3 hreflink  bg-white mb-3 shadow-sm'}`}
             onClick={() => handleTileClick('TimeSheet')}>
             <span className="iconSec">
-              <span title='Draft Task' style={{ width: '24px', height: '24px' }} className=" svg__iconbox svg__icon--draftOther"></span>
+              <span title='TimeSheet' style={{ width: '24px', height: '24px' }} className=" svg__iconbox svg__icon--draftOther"></span>
             </span>
             <span className='ms-2'>
               <div>TimeSheet</div>

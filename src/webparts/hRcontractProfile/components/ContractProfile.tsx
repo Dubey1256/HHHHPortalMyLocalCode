@@ -1,6 +1,8 @@
 import * as moment from 'moment';
 import * as React from 'react'
 import { Web } from "sp-pnp-js";
+import EditContractPopup from '../../hrContractSearch/components/EditContractPopup';
+
 
 let propsData:any = []
 const ContractProfile = (props:any) => {
@@ -62,6 +64,10 @@ const ContractProfile = (props:any) => {
         propsData = data
         setOpenPopup(true)
     }
+    const callback=()=>{
+        setOpenPopup(false)
+        getData();
+       }
     return (
         <>
             <section>
@@ -196,6 +202,7 @@ const ContractProfile = (props:any) => {
 
                 </div>
             </section>
+            {openPopup && <EditContractPopup props={propsData} AllListId={props.AllListId} callback={callback}></EditContractPopup>}
 
         </>
     )

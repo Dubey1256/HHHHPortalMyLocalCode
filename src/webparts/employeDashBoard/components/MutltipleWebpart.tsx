@@ -452,7 +452,7 @@ const MultipleWebpart = (Tile: any) => {
                 <span title="Share Approver Task" onClick={() => sendAllWorkingTodayTasks(approvalTask)} className="svg__iconbox svg__icon--share empBg"></span>
               </span>
             </div>
-            <div className="Alltable maXh-300" style={{ height: "300px",borderBottom: "none" }}>
+            <div className="Alltable maXh-300" style={{ height: "300px"}}>
               {approvalTask && (
                 <GlobalCommanTable
                   wrapperHeight="100%"
@@ -491,7 +491,7 @@ const MultipleWebpart = (Tile: any) => {
                   <span title="Share Ongoing Task" onClick={() => sendAllWorkingTodayTasks(bottleneckTask)} className="hreflink svg__iconbox svg__icon--share empBg"></span>
                 </span>
               </div>
-              <div className="Alltable maXh-300" style={{ height: "300px",borderBottom: "none" }}>
+              <div className="Alltable maXh-300" style={{ height: "300px" }}>
                 {bottleneckTask && (
                   <GlobalCommanTable
                     wrapperHeight="100%"

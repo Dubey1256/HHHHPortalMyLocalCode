@@ -910,7 +910,9 @@ const EditTaskPopup = (Items: any) => {
                         item.Categories == "Design" ||
                         item.Categories == "Design;" ||
                         item.Categories == "Design;Approval" ||
-                        item.Categories == "Design;Approval;"
+                        item.Categories == "Design;Approval;" ||
+                        item.Categories == "Approval;Design;" ||
+                        item.Categories == "Approval;Design"
                     ) {
                         DesignCheck = item.Categories.search("Design");
                     }
