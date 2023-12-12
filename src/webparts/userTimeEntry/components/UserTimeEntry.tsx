@@ -2236,7 +2236,7 @@ export default class UserTimeEntry extends React.Component<IUserTimeEntryProps, 
         resetColumnFilters: false,
         resetSorting: false,
         placeholder: "Time Entry",
-        isColumnDefultSortingAsc: true,
+        isColumnDefultSortingDesc: true,
         header: "",
         size: 91
       },
