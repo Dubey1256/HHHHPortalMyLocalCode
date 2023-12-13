@@ -45,7 +45,7 @@ let subCategories: any = [];
 let IsapprovalTask = false;
 let CategoryAllData: any = [];
 let ID: any;
-function EditInstitution({ item, SelectD, Calls, usedFor, portfolioTypeData }: any) {
+function EditInstitution({ item, SelectD, Calls, usedFor, portfolioTypeData, filterdata, openPortfolioPopup }: any) {
   // var AssignedToIds: any = [];
   ResponsibleTeamIds = [];
   AssignedToIds = [];
@@ -272,6 +272,12 @@ function EditInstitution({ item, SelectD, Calls, usedFor, portfolioTypeData }: a
     });
     return isExists;
   };
+
+  const GetSmartHelpDetails = async () => {
+    let smartHelpDetails = await web.lists.getById(RequireData.SmartHelptListID).items.select("Title, Id, Body, Permission, ItemType, Components/Id, Components/Title").expand("Components").getAll();
+    setSmartHelpDetails(smartHelpDetails)
+  }
+
   const GetTaskUsers = async () => {
     let taskUsers = [];
     taskUsers = await web.lists
@@ -809,22 +815,34 @@ function EditInstitution({ item, SelectD, Calls, usedFor, portfolioTypeData }: a
   // }
   const onRenderCustomHeaderQuestion = () => {
     return (
-      <div className="subheading siteColor">Add Question</div>
+      <>
+        <div className="subheading siteColor">Add Question</div>
+        <Tooltip ComponentId="1626" />
+      </>
     );
   };
   const onRenderCustomHeaderHelp = () => {
     return (
-      <div className="subheading siteColor">Add Help</div>
+      <>
+        <div className="subheading siteColor">Add Help</div>
+        <Tooltip ComponentId="1626" />
+      </>
     );
   };
   const onRenderHeaderQuestionEdit = () => {
     return (
-      <div className="subheading siteColor">Edit Question</div>
+      <>
+        <div className="subheading siteColor">Edit Question</div>
+        <Tooltip ComponentId="1626" />
+      </>
     );
   };
   const onRenderHeaderHelpEdit = () => {
     return (
-      <div className="subheading siteColor">Edit Help</div>
+      <>
+        <div className="subheading siteColor">Edit Help</div>
+        <Tooltip ComponentId="1626" />
+      </>
     );
   };
   const onRenderHeaderChangeParent = () => {
@@ -929,6 +947,7 @@ function EditInstitution({ item, SelectD, Calls, usedFor, portfolioTypeData }: a
   React.useEffect(() => {
     GetTaskUsers();
     getAllSitesData();
+    GetSmartHelpDetails();
     loadAllCategoryData("Categories");
     var initLoading = function () {
       if (item != undefined) {
@@ -1447,7 +1466,8 @@ function EditInstitution({ item, SelectD, Calls, usedFor, portfolioTypeData }: a
       let componentId = CompoenetItem[0].Id;
       const newItem = {
         ItemType: "Question",
-        Title: `${CompoenetItem[0].Title} - ${question}`,
+        // Title: `${CompoenetItem[0].Title} - ${question}`,
+        Title: question,
         ComponentsId: { "results": [componentId] },
         Permission: choice,
         Body: PostQuestionDescription || (EditData?.PostQuestionDescription || ""),
@@ -1473,7 +1493,8 @@ function EditInstitution({ item, SelectD, Calls, usedFor, portfolioTypeData }: a
       let componentId = CompoenetItem[0].Id;
       const newItem = {
         ItemType: "Help",
-        Title: `${CompoenetItem[0].Title} - ${help}`,
+        // Title: `${CompoenetItem[0].Title} - ${help}`,
+        Title: help,
         ComponentsId: { "results": [componentId] },
         Permission: choice,
         Body: PostQuestionDescription || (EditData?.PostQuestionDescription || ""),
@@ -1696,7 +1717,7 @@ function EditInstitution({ item, SelectD, Calls, usedFor, portfolioTypeData }: a
                 {EditData?.Item_x0020_Type == "Feature" && (
                   <a>
                     <>
-                      <span className="Dyicons mt-1">F</span>
+                      <span className="Dyicons mt--3 me-1">F</span>
 
                       {EditData?.Title}
                     </>
@@ -1705,7 +1726,7 @@ function EditInstitution({ item, SelectD, Calls, usedFor, portfolioTypeData }: a
                 {EditData?.Item_x0020_Type == "SubComponent" && (
                   <a>
                     <>
-                      <span className="Dyicons mt-1">S</span>
+                      <span className="Dyicons mt--3 me-1">S</span>
                       {EditData?.Title}
                     </>
                   </a>
@@ -1713,7 +1734,7 @@ function EditInstitution({ item, SelectD, Calls, usedFor, portfolioTypeData }: a
                 {EditData?.Item_x0020_Type == "Component" && (
                   <a>
                     <>
-                      <span className="Dyicons mt-1">C</span>
+                      <span className="Dyicons mt--3 me-1">C</span>
                       {EditData?.Title}
                     </>
                   </a>
@@ -2472,7 +2493,7 @@ function EditInstitution({ item, SelectD, Calls, usedFor, portfolioTypeData }: a
   const changePortfolioType = async () => {
     let confirmation = confirm("Are you sure you want to change the type ?");
     if (confirmation) {
-      let web = new Web(RequireData?.siteUrl);
+      let web = new Web(item.siteUrl);
       const selectedPopupItem = item.PortfolioStructureID;
       const numbersOnly = selectedPopupItem.substring(1);
       const selectedPorfolioItem = selectPortfolioType?.Title;
@@ -2561,45 +2582,6 @@ function EditInstitution({ item, SelectD, Calls, usedFor, portfolioTypeData }: a
 
 
   }
-
-  //Deliverables//
-
-function removeTagsDeliverables(input:any) {
-  var tempDiv = document.createElement('p');
-  tempDiv.innerHTML = input;
-  var plainText = tempDiv.textContent || tempDiv.innerText;
-  return plainText;
-}
-  
-  var result = removeTagsDeliverables(PostDeliverables);
-  console.log(result);
-
-  // Description///
-  
-  function removeTagsDescription(input:any) {
-      var tempDiv = document.createElement('p');
-      tempDiv.innerHTML = input;
-      var plainText = tempDiv.textContent || tempDiv.innerText;
-      return plainText;
-  }
-  
-  var result1 = removeTagsDescription( PostBody);
-  
-  console.log(result1);
-  
-  // ShortDescription///
-  
-  function removeTagsShortDescription(input:any) {
-      var tempDiv = document.createElement('p');
-      tempDiv.innerHTML = input;
-      var plainText = tempDiv.textContent || tempDiv.innerText;
-      return plainText;
-  }
-  
-  var result2 = removeTagsShortDescription(PostShort_x0020_Description_x0020_On);
-  
-  console.log(result2);
-
 
   return (
     <>
@@ -2711,7 +2693,7 @@ function removeTagsDeliverables(input:any) {
                     Change Type
                   </a>
                   <span className="hover-text">
-                    <span className="svg__iconbox svg__icon--info dark">
+                    <span className="svg__iconbox mt-1 svg__icon--info dark">
                     </span>
                     <span className="tooltip-text pop-left">
                       This link will be used to change the portfolio type of the Component item.
@@ -3460,7 +3442,103 @@ function removeTagsDeliverables(input:any) {
                             })}
                           </div>
                         ) : null}
+                        <div className="col-sm-12 mt-2">
+                          <div className="col-sm-12 padding-0 input-group">
+                            <label className="full_width">Project</label>
 
+                            {filterdata && filterdata.length <= 1 ? (
+                              // Render a single item in an input field
+                              <input
+                                type="text"
+                                className="form-control"
+                                defaultValue={filterdata[0]?.PortfolioStructureID}
+                              />
+                            ) : (
+                              // Render multiple items in anchor tags
+                              filterdata?.map((item: any, Index: any) => (
+                                <div className="block alignCenter" key={Index}>
+                                  <a
+                                    href={`${SelectD.siteUrl}/SitePages/Project-Management.aspx?ProjectId=${item.Id}`}
+                                    className="wid-90 light"
+                                    data-interception="off"
+                                    target="_blank"
+                                  >
+                                    {item?.PortfolioStructureID}
+                                  </a>
+                                  <span className="svg__iconbox ml-auto hreflink svg__icon--cross light"
+                                  ></span>
+                                </div>
+                              ))
+                            )}
+
+                            <input type="text" className="form-control" />
+                            <span className="input-group-text" placeholder="Project">
+                              <span title="Project" onClick={() => openPortfolioPopup("Project")} className="svg__iconbox svg__icon--editBox"></span>
+                            </span>
+                          </div>
+
+
+                          {/* <dd className="bg-light">
+                                                        <div>
+                                                            {filterdata && filterdata.length === 1 ? (
+                                                                // Render a single item in an input field
+                                                                <input
+                                                                    type="text"
+                                                                    className="form-control"
+                                                                    defaultValue={filterdata[0].PortfolioStructureID}
+                                                                />
+                                                            ) : (
+                                                                // Render multiple items in anchor tags
+                                                                filterdata?.map((item: any, Index: any) => (
+                                                                    <div className="block alignCenter" key={Index}>
+                                                                        <a
+                                                                            href={`${SelectD.siteUrl}/SitePages/Project-Management.aspx?ProjectId=${item.Id}`}
+                                                                            className="wid-90 light"
+                                                                            data-interception="off"
+                                                                            target="_blank"
+                                                                        >
+                                                                            {item.PortfolioStructureID}
+                                                                        </a>
+                                                                        <span className="svg__iconbox ml-auto hreflink svg__icon--cross light"
+                                                                        ></span>
+                                                                    </div>
+                                                                ))
+                                                            )}
+                                                            <a className="pancil-icons" onClick={() => openPortfolioPopup("Project")}>
+                                                                <span className="svg__iconbox svg__icon--editBox"></span>
+                                                            </a>
+                                                        </div>
+                                                    </dd> */}
+
+
+                          {/* <dd className="bg-light">
+                                                        <div>
+                                                            {filterdata?.map((item: any, Index: any) => (
+                                                                <span
+                                                                    className="accordion-body pt-1"
+                                                                    id="testDiv1"
+                                                                    key={Index}
+                                                                >
+                                                                    <a
+                                                                        href={
+                                                                            SelectD.siteUrl +
+                                                                            "/SitePages/Project-Management.aspx?ProjectId=" +
+                                                                            item?.Id
+                                                                        }
+                                                                        data-interception="off"
+                                                                        target="_blank"
+                                                                    >
+                                                                        {item?.PortfolioStructureID}{", "}
+                                                                    </a>{" "}
+                                                                    {Index !== filterdata.length - 1 ? ", " : ""}
+                                                                </span>
+                                                            ))}
+                                                            <a className="pancil-icons" onClick={() => openPortfolioPopup("Project")}>
+                                                                <span className="svg__iconbox svg__icon--editBox"></span>
+                                                            </a>
+                                                        </div>
+                                                    </dd> */}
+                        </div>
 
                       </div>
 
@@ -3504,6 +3582,7 @@ function removeTagsDeliverables(input:any) {
                         </span>
                       </div>
                     </div>
+
                   </div>
                 </div>
 
@@ -3532,15 +3611,14 @@ function removeTagsDeliverables(input:any) {
                             <details>
                               <summary className="alignCenter">
                                 <label className="toggler full_width">
-                                  <div className="alignCenter">Admin Notes{`(${EditData?.AdminNotes?.length != undefined ? EditData?.AdminNotes?.length : 0})`}<span className="ml-auto">
+                                  <div className="alignCenter">Admin Notes {`(${EditData?.AdminNotes?.length != undefined ? EditData?.AdminNotes?.length : 0})`}<span className="ml-auto">
 
 
                                   </span></div>
                                 </label>
                               </summary>
                               <div className="border border-top-0 p-2">
-                                <div className="accordion-body py-2 px-2"
-                                  id="testDiv1">
+                                <div id="testDiv1">
                                   <textarea
                                     className="full_width"
                                     defaultValue={EditData?.AdminNotes}
@@ -3555,14 +3633,14 @@ function removeTagsDeliverables(input:any) {
                             <details>
                               <summary className="alignCenter">
                                 <label className="toggler full_width">
-                                  <div className="alignCenter">Description{`(${result1?.length != undefined ?result1?.length:0 })`} <span className="ml-auto">
+                                  <div className="alignCenter">Description {`(${EditData?.Body?.length != undefined ? EditData?.Body?.length : 0})`} <span className="ml-auto">
                                     <input
                                       type="checkbox"
                                       className="form-check-input me-1 rounded-0"
                                       checked={descriptionVerifieds}
                                       onChange={handleCheckboxChangedescription}
                                     />
-                                    <span>Verified</span>
+                                    <span className="ps-1">Verified</span>
                                   </span></div>
                                 </label>
                               </summary>
@@ -3589,7 +3667,7 @@ function removeTagsDeliverables(input:any) {
                             <details>
                               <summary className="alignCenter">
                                 <label className="toggler full_width">
-                                  <div className="alignCenter">Short Description{`(${result2?.length != undefined ?result2?.length:0 })`}     <span className="ml-auto">
+                                  <div className="alignCenter">Short Description {`(${EditData?.Short_x0020_Description_x0020_On?.length != undefined ? EditData?.Short_x0020_Description_x0020_On?.length : 0})`}     <span className="ml-auto">
 
                                     <input
                                       type="checkbox"
@@ -3597,7 +3675,7 @@ function removeTagsDeliverables(input:any) {
                                       checked={shortDescriptionVerifieds}
                                       onChange={handleCheckboxChange}
                                     />
-                                    <span>Verified</span>
+                                    <span className="ps-1">Verified</span>
                                   </span></div>
                                 </label>
                               </summary>
@@ -3626,25 +3704,20 @@ function removeTagsDeliverables(input:any) {
                             <details>
                               <summary className="alignCenter">
                                 <label className="toggler full_width">
-                                  <div className="alignCenter">Background{`(${EditData?.Background?.length != undefined ? EditData?.Background?.length : 0})`}  <span className="ml-auto">
-
-                                    <input
-                                      type="checkbox"
-                                      className="form-check-input me-1 rounded-0"
-                                      checked={BackgroundVerifieds}
-                                      onChange={handleCheckboxBackground}
-                                    />
-                                    <span>Verified</span>
-                                  </span></div>
+                                  <div className="alignCenter">Background {`(${EditData?.Background?.length != undefined ? EditData?.Background?.length : 0})`}
+                                    <span className="ml-auto">
+                                      <input type="checkbox"
+                                        className="form-check-input me-1 rounded-0"
+                                        checked={BackgroundVerifieds}
+                                        onChange={handleCheckboxBackground}
+                                      />
+                                      <span className="ps-1">Verified</span>
+                                    </span></div>
                                 </label>
                               </summary>
                               <div className="border border-top-0 p-2">
 
-                                <div
-                                  className="accordion-body py-2 px-2"
-                                  id="testDiv1"
-                                >
-
+                                <div id="testDiv1">
                                   <textarea
                                     className="full_width"
                                     defaultValue={EditData?.Background}
@@ -3660,7 +3733,7 @@ function removeTagsDeliverables(input:any) {
                             <details>
                               <summary className="alignCenter">
                                 <label className="toggler full_width">
-                                  <div className="alignCenter">Idea{`(${EditData?.Idea?.length != undefined ? EditData?.Idea?.length : 0})`} <span className="ml-auto">
+                                  <div className="alignCenter">Idea {`(${EditData?.Idea?.length != undefined ? EditData?.Idea?.length : 0})`} <span className="ml-auto">
 
                                     <input
                                       type="checkbox"
@@ -3669,16 +3742,13 @@ function removeTagsDeliverables(input:any) {
                                       onChange={handleCheckboxIdea}
                                     />
 
-                                    <span>Verified</span>
+                                    <span className="ps-1">Verified</span>
                                   </span></div>
                                 </label>
                               </summary>
                               <div className="border border-top-0 p-2">
 
-                                <div
-                                  className="accordion-body py-2 px-2"
-                                  id="testDiv1"
-                                >
+                                <div id="testDiv1">
 
                                   <textarea
                                     className="full_width"
@@ -3695,25 +3765,22 @@ function removeTagsDeliverables(input:any) {
                             <details>
                               <summary className="alignCenter">
                                 <label className="toggler full_width">
-                                  <div className="alignCenter">Value Added{`(${EditData?.ValueAdded?.length != undefined ? EditData?.ValueAdded?.length : 0})`}<span className="ml-auto">
+                                  <div className="alignCenter">Value Added {`(${EditData?.ValueAdded?.length != undefined ? EditData?.ValueAdded?.length : 0})`}
+                                    <span className="ml-auto alignCenter">
+                                      <input
+                                        type="checkbox"
+                                        className="form-check-input me-1 rounded-0"
+                                        checked={ValueAddedVerifieds}
+                                        onChange={handleCheckboxValueAdded}
+                                      />
 
-                                    <input
-                                      type="checkbox"
-                                      className="form-check-input me-1 rounded-0"
-                                      checked={ValueAddedVerifieds}
-                                      onChange={handleCheckboxValueAdded}
-                                    />
-
-                                    <span>Verified</span>
-                                  </span></div>
+                                      <span className="ps-1">Verified</span>
+                                    </span></div>
                                 </label>
                               </summary>
                               <div className="border border-top-0 p-2">
 
-                                <div
-                                  className="accordion-body py-2 px-2"
-                                  id="testDiv1"
-                                >
+                                <div id="testDiv1">
 
                                   <textarea
                                     className="full_width"
@@ -3729,26 +3796,23 @@ function removeTagsDeliverables(input:any) {
 
                             <details>
                               <summary>
-                                <label className="toggler full_width alignCenter">
-                                  Deliverables{`(${result?.length != undefined ? result?.length : 0 })`}  <span className="alignCenter ml-auto">
+                                <label className="toggler full_width">
+                                  <div className="alignCenter"> Deliverables {`(${EditData?.Deliverables?.length != undefined ? EditData?.Deliverables?.length : 0})`}
+                                    <span className="alignCenter ml-auto">
+                                      <input
+                                        type="checkbox"
+                                        className="form-check-input me-1 rounded-0"
+                                        checked={DeliverablesVerifieds}
+                                        onChange={handleCheckboxDeliverables}
+                                      />
 
-                                    <input
-                                      type="checkbox"
-                                      className="form-check-input me-1 rounded-0"
-                                      checked={DeliverablesVerifieds}
-                                      onChange={handleCheckboxDeliverables}
-                                    />
-
-                                    <span>Verified</span>
-                                  </span>
+                                      <span className="ps-1">Verified</span>
+                                    </span>
+                                  </div>
                                 </label>
                               </summary>
                               <div className="border border-top-0 p-2">
-
-                                <div
-                                  className="accordion-body py-2 px-2"
-                                  id="testDiv1"
-                                >
+                                <div id="testDiv1">
 
                                   <HtmlEditorCard
                                     editorValue={
@@ -3781,7 +3845,7 @@ function removeTagsDeliverables(input:any) {
                     <details>
                       <summary className="alignCenter">
                         <label className="toggler full_width">
-                          <a className="alignCenter">Technical Concept{`(${EditData?.TechnicalExplanations?.length != undefined ? EditData?.TechnicalExplanations?.length : 0})`} <span className="ml-auto">
+                          <div className="alignCenter">Technical Concept {`(${EditData?.TechnicalExplanations?.length != undefined ? EditData?.TechnicalExplanations?.length : 0})`} <span className="ml-auto">
 
                             <input
                               type="checkbox"
@@ -3790,7 +3854,7 @@ function removeTagsDeliverables(input:any) {
                               onChange={handleCheckboxTechnicalExplanations}
                             />
                             <span className="ps-1">Verified</span>
-                          </span></a>
+                          </span></div>
                         </label>
                       </summary>
                       <div className="border border-top-0 p-2">
@@ -3824,35 +3888,38 @@ function removeTagsDeliverables(input:any) {
                     <section className="accordionbox">
                       <details>
                         <summary>
-                          <label className="alignCenter toggler full_width">
-                            Help Information{`(${EditData?.Help_x0020_Information?.length != undefined ? EditData?.Help_x0020_Information?.length : 0})`}<span className="alignCenter ml-auto">
-                              <input
-                                className="form-check-input me-1 mt-0 rounded-0"
-                                type="checkbox"
-                                defaultChecked={
-                                  EditData?.HelpInformationVerified ===
-                                  true
-                                }
-                                onChange={(e) =>
-                                (EditData.HelpInformationVerified =
-                                  e.target.value)
-                                }
-                              ></input>
-                              <span className="form-check m-0 p-0">Verified</span>
-                            </span>
+                          <label className="toggler full_width">
+                            <div className="alignCenter">Help Information {`(${EditData?.Help_x0020_Information?.length != undefined ? EditData?.Help_x0020_Information?.length : 0})`}
+                              <span className="alignCenter ml-auto">
+                                <input
+                                  className="form-check-input me-1 mt-0 rounded-0"
+                                  type="checkbox"
+                                  defaultChecked={
+                                    EditData?.HelpInformationVerified ===
+                                    true
+                                  }
+                                  onChange={(e) =>
+                                  (EditData.HelpInformationVerified =
+                                    e.target.value)
+                                  }
+                                ></input>
+                                <span className="ps-1">Verified</span>
+                              </span></div>
                           </label>
                         </summary>
-                        <HtmlEditorCard
-                          editorValue={
-                            EditData?.Help_x0020_Information != undefined
-                              ? EditData?.Help_x0020_Information
-                              : ""
-                          }
-                          HtmlEditorStateChange={
-                            HelpInformationHtmlEditorCallBack
-                          }
-                        ></HtmlEditorCard>
-                      </details>   
+                        <div className="border border-top-0 p-2">
+                          <HtmlEditorCard
+                            editorValue={
+                              EditData?.Help_x0020_Information != undefined
+                                ? EditData?.Help_x0020_Information
+                                : ""
+                            }
+                            HtmlEditorStateChange={
+                              HelpInformationHtmlEditorCallBack
+                            }
+                          ></HtmlEditorCard>
+                        </div>
+                      </details>
                     </section>
                     <div className="">
                       <div className="col-md-12">
@@ -3866,9 +3933,9 @@ function removeTagsDeliverables(input:any) {
                                     <details open>
                                       <summary>
                                         <label className="toggler full_width alignCenter">
-                                          <a className="pull-left">
+                                          <span className="pull-left">
                                             {item.Title}
-                                          </a>
+                                          </span>
 
                                           <div className="ml-auto alignCenter">
                                             <span className="svg__iconbox svg__icon--edit hreflink" onClick={() => editQuestionHandler(item)}>Edit</span>
@@ -3892,9 +3959,9 @@ function removeTagsDeliverables(input:any) {
                                     <details open>
                                       <summary>
                                         <label className="toggler full_width alignCenter">
-                                          <a className="pull-left">
+                                          <span className="pull-left">
                                             {filteredItem.Title}
-                                          </a>
+                                          </span>
 
                                           <div className="ml-auto alignCenter">
                                             <span className="svg__iconbox svg__icon--edit hreflink" onClick={() => editQuestionHandler(filteredItem)}>Edit</span>
@@ -3935,9 +4002,9 @@ function removeTagsDeliverables(input:any) {
                                   <details open>
                                     <summary>
                                       <label className="toggler full_width alignCenter">
-                                        <a className="pull-left">
+                                        <span className="pull-left">
                                           {item.Title}
-                                        </a>
+                                        </span>
 
                                         <div className="ml-auto alignCenter">
                                           <span className="svg__iconbox svg__icon--edit hreflink" onClick={() => editHelpHandler(item)}>Edit</span>
@@ -3961,9 +4028,9 @@ function removeTagsDeliverables(input:any) {
                                   <details open>
                                     <summary>
                                       <label className="toggler full_width alignCenter">
-                                        <a className="pull-left">
+                                        <span className="pull-left">
                                           {filteredItem.Title}
-                                        </a>
+                                        </span>
 
                                         <div className="ml-auto alignCenter">
                                           <span className="svg__iconbox svg__icon--edit hreflink" onClick={() => editHelpHandler(filteredItem)}>Edit</span>
@@ -4064,7 +4131,7 @@ function removeTagsDeliverables(input:any) {
                       {EditData?.ID ? (
                         <VersionHistoryPopup
                           taskId={EditData?.ID}
-                          listId={RequireData?.MasterTaskListID}
+                          listId={RequireData.MasterTaskListID}
                           siteUrls={RequireData?.siteUrl}
                         />
                       ) : (
@@ -4168,32 +4235,32 @@ function removeTagsDeliverables(input:any) {
         <div className="modal-body clearfix">
           <div className="input-group mb-2">
             <label className="form-label full-width">Title</label>
-            <input type="text" className="form-control" onChange={(e) => { setQuestion(e.target.value) }}></input>
+            <input type="text" className="form-control" defaultValue={`${CompoenetItem[0]?.Title} - ${question}`} onChange={(e) => setQuestion(e.target.value)}></input>
           </div>
-          <div className="input-group mb-2">
-            <label className="full-width form-label">Permission</label>
+          {/* <div className="input-group mb-2">
+                        <label className="full-width form-label">Permission</label>
 
-            <label className="SpfxCheckRadio">
-              <input type="radio" id="public" value="Public" className="radio" checked={choice === 'Public'} onChange={choiceHandler} /> Public
-            </label>
-
-
-            <label className="SpfxCheckRadio">
-              <input type="radio" id="memberarea" value="Memberarea" className="radio" checked={choice === 'Memberarea'} onChange={choiceHandler} />
-              Memberarea</label>
+                        <label className="SpfxCheckRadio">
+                            <input type="radio" id="public" value="Public" className="radio" checked={choice === 'Public'} onChange={choiceHandler} /> Public
+                        </label>
 
 
-            <label className="SpfxCheckRadio">
-              <input type="radio" id="eda Only" value="EDA Only" className="radio" checked={choice === 'EDA Only'} onChange={choiceHandler} /> EDA Only</label>
+                        <label className="SpfxCheckRadio">
+                            <input type="radio" id="memberarea" value="Memberarea" className="radio" checked={choice === 'Memberarea'} onChange={choiceHandler} />
+                            Memberarea</label>
 
 
-            <label className="SpfxCheckRadio">
-              <input type="radio" id="team" value="Team" className="radio" checked={choice === 'Team'} onChange={choiceHandler} /> Team</label>
+                        <label className="SpfxCheckRadio">
+                            <input type="radio" id="eda Only" value="EDA Only" className="radio" checked={choice === 'EDA Only'} onChange={choiceHandler} /> EDA Only</label>
 
 
-            <label className="SpfxCheckRadio">
-              <input type="radio" id="admin" className="radio" value="Admin" checked={choice === 'Admin'} onChange={choiceHandler} /> Admin</label>
-          </div>
+                        <label className="SpfxCheckRadio">
+                            <input type="radio" id="team" value="Team" className="radio" checked={choice === 'Team'} onChange={choiceHandler} /> Team</label>
+
+
+                        <label className="SpfxCheckRadio">
+                            <input type="radio" id="admin" className="radio" value="Admin" checked={choice === 'Admin'} onChange={choiceHandler} /> Admin</label>
+                    </div> */}
           <div className="mb-2">
             <label className="form-label">Description</label>
             <div>
@@ -4209,9 +4276,54 @@ function removeTagsDeliverables(input:any) {
             </div>
           </div>
         </div>
-        <footer className="modal-body pull-right">
-          <button className='btn btn-primary' onClick={() => AddQuestionFunc()}>Save</button>
-          <button className='btn btn-default ms-1' onClick={() => setIsOpenPopup(false)}>Cancel</button>
+        <footer className="footer-right">
+          <div className="align-items-center d-flex justify-content-between">
+            <div className="">
+              <div className="text-left">
+                Created{" "}
+                <span ng-bind="EditData?.Created | date:'MM-DD-YYYY'">
+                  {" "}
+                  {EditData.Created ? moment(EditData.Created).format("DD/MM/YYYY") : ""}
+                </span>{" "}
+                by
+                <span className="panel-title ps-1 hreflink">
+                  {EditData?.Author?.Title != undefined
+                    ? EditData?.Author?.Title
+                    : ""}
+                </span>
+              </div>
+              <div className="text-left">
+                Last modified{" "}
+                <span>
+                  {EditData.Modified ? moment(EditData.Modified).format("DD/MM/YYYY") : ''}
+                </span>{" "}
+                by{" "}
+                <span className="panel-title hreflink">
+                  {EditData?.Editor?.Title != undefined
+                    ? EditData?.Editor?.Title
+                    : ""}
+                </span>
+              </div>
+              <div className="text-left">
+                <span className="hreflink">
+                  {" "}
+                  {EditData?.ID ? (
+                    <VersionHistoryPopup
+                      taskId={EditData?.ID}
+                      listId={RequireData.MasterTaskListID}
+                      siteUrls={RequireData?.siteUrl}
+                    />
+                  ) : (
+                    ""
+                  )}
+                </span>
+              </div>
+            </div>
+            <div className="">
+              <button className='btn btn-primary' onClick={() => AddQuestionFunc()}>Save</button>
+              <button className='btn btn-default ms-1' onClick={() => setIsOpenPopup(false)}>Cancel</button>
+            </div>
+          </div>
         </footer>
       </Panel>
 
@@ -4226,35 +4338,35 @@ function removeTagsDeliverables(input:any) {
         <div className="modal-body clearfix">
           <div className="input-group mb-2">
             <label className="form-label full-width">Title</label>
-            <input type="text" defaultValue={dataUpdate?.Title} onChange={(e) => { setQuestion(e.target.value) }}></input>
+            <input className="form-control" type="text" defaultValue={dataUpdate?.Title} onChange={(e) => { setQuestion(e.target.value) }}></input>
           </div>
 
-          <div className="input-group mb-2">
-            <label className="full-width form-label">Permission</label>
+          {/* <div className="input-group mb-2">
+                        <label className="full-width form-label">Permission</label>
 
-            <label className="SpfxCheckRadio">
-              <input type="radio" id="public" value="Public" className="radio" checked={choice === 'Public'} onChange={choiceHandler} /> Public
-            </label>
-
-
-            <label className="SpfxCheckRadio">
-              <input type="radio" id="memberarea" value="Memberarea" className="radio" checked={choice === 'Memberarea'} onChange={choiceHandler} />
-              Memberarea</label>
+                        <label className="SpfxCheckRadio">
+                            <input type="radio" id="public" value="Public" className="radio" checked={choice === 'Public'} onChange={choiceHandler} /> Public
+                        </label>
 
 
-            <label className="SpfxCheckRadio">
-              <input type="radio" id="eda Only" value="EDA Only" className="radio" checked={choice === 'EDA Only'} onChange={choiceHandler} /> EDA Only</label>
+                        <label className="SpfxCheckRadio">
+                            <input type="radio" id="memberarea" value="Memberarea" className="radio" checked={choice === 'Memberarea'} onChange={choiceHandler} />
+                            Memberarea</label>
 
 
-            <label className="SpfxCheckRadio">
-              <input type="radio" id="team" value="Team" className="radio" checked={choice === 'Team'} onChange={choiceHandler} /> Team</label>
+                        <label className="SpfxCheckRadio">
+                            <input type="radio" id="eda Only" value="EDA Only" className="radio" checked={choice === 'EDA Only'} onChange={choiceHandler} /> EDA Only</label>
 
 
-            <label className="SpfxCheckRadio">
-              <input type="radio" id="admin" className="radio" value="Admin" checked={choice === 'Admin'} onChange={choiceHandler} /> Admin</label>
-          </div>
+                        <label className="SpfxCheckRadio">
+                            <input type="radio" id="team" value="Team" className="radio" checked={choice === 'Team'} onChange={choiceHandler} /> Team</label>
+
+
+                        <label className="SpfxCheckRadio">
+                            <input type="radio" id="admin" className="radio" value="Admin" checked={choice === 'Admin'} onChange={choiceHandler} /> Admin</label>
+                    </div> */}
           <div className="mb-2">
-            <label className="form-label">Description{`(${EditData?.QuestionDescription?.length})`}</label>
+            <label className="form-label full-width">Description{`(${EditData?.QuestionDescription?.length})`}</label>
             <div>
               <HtmlEditorCard editorValue={
                 EditData.QuestionDescription != undefined
@@ -4268,9 +4380,54 @@ function removeTagsDeliverables(input:any) {
             </div>
           </div>
         </div>
-        <footer className="modal-body pull-right">
-          <DefaultButton className='btn btn-primary' onClick={() => updateDetails()}>Save</DefaultButton>
-          <DefaultButton className='btn btn-default mx-1' onClick={() => setEditPopup(false)}>Cancel</DefaultButton>
+        <footer className="footer-right">
+          <div className="align-items-center d-flex justify-content-between">
+            <div>
+              <div className="text-left">
+                Created{" "}
+                <span ng-bind="EditData?.Created | date:'MM-DD-YYYY'">
+                  {" "}
+                  {EditData.Created ? moment(EditData.Created).format("DD/MM/YYYY") : ""}
+                </span>{" "}
+                by
+                <span className="panel-title ps-1 hreflink">
+                  {EditData?.Author?.Title != undefined
+                    ? EditData?.Author?.Title
+                    : ""}
+                </span>
+              </div>
+              <div className="text-left">
+                Last modified{" "}
+                <span>
+                  {EditData.Modified ? moment(EditData.Modified).format("DD/MM/YYYY") : ''}
+                </span>{" "}
+                by{" "}
+                <span className="panel-title hreflink">
+                  {EditData?.Editor?.Title != undefined
+                    ? EditData?.Editor?.Title
+                    : ""}
+                </span>
+              </div>
+              <div className="text-left">
+                <span className="hreflink">
+                  {" "}
+                  {EditData?.ID ? (
+                    <VersionHistoryPopup
+                      taskId={EditData?.ID}
+                      listId={RequireData.MasterTaskListID}
+                      siteUrls={RequireData?.siteUrl}
+                    />
+                  ) : (
+                    ""
+                  )}
+                </span>
+              </div>
+            </div>
+              <div className="">
+                <button className="me-1 btn btn-primary" onClick={() => updateDetails()}>Save</button>
+                <button className="btn btn-default" onClick={() => setEditPopup(false)}>Cancel</button>
+              </div>
+          </div>
         </footer>
       </Panel>
       <Panel
@@ -4284,7 +4441,7 @@ function removeTagsDeliverables(input:any) {
         <div className="modal-body clearfix">
           <div className="input-group mb-2">
             <label className="form-label full-width">Title</label>
-            <input type="text" className="form-control" onChange={(e) => { setHelp(e.target.value) }}></input>
+            <input type="text" className="form-control" defaultValue={`${CompoenetItem[0]?.Title} - ${help}`} onChange={(e) => { setHelp(e.target.value) }}></input>
           </div>
 
           <div className="mb-2">
@@ -4303,9 +4460,54 @@ function removeTagsDeliverables(input:any) {
             </div>
           </div>
         </div>
-        <footer className="modal-body pull-right">
-          <DefaultButton className='btn btn-primary' onClick={() => AddHelpFunc()}>Save</DefaultButton>
-          <DefaultButton className='btn btn-default ms-1' onClick={() => setOpenPopup(false)}>Cancel</DefaultButton>
+        <footer className="footer-right">
+          <div className="align-items-center d-flex justify-content-between">
+            <div>
+              <div className="text-left">
+                Created{" "}
+                <span ng-bind="EditData?.Created | date:'MM-DD-YYYY'">
+                  {" "}
+                  {EditData.Created ? moment(EditData.Created).format("DD/MM/YYYY") : ""}
+                </span>{" "}
+                by
+                <span className="panel-title ps-1 hreflink">
+                  {EditData?.Author?.Title != undefined
+                    ? EditData?.Author?.Title
+                    : ""}
+                </span>
+              </div>
+              <div className="text-left">
+                Last modified{" "}
+                <span>
+                  {EditData.Modified ? moment(EditData.Modified).format("DD/MM/YYYY") : ''}
+                </span>{" "}
+                by{" "}
+                <span className="panel-title hreflink">
+                  {EditData?.Editor?.Title != undefined
+                    ? EditData?.Editor?.Title
+                    : ""}
+                </span>
+              </div>
+              <div className="text-left">
+                <span className="hreflink">
+                  {" "}
+                  {EditData?.ID ? (
+                    <VersionHistoryPopup
+                      taskId={EditData?.ID}
+                      listId={RequireData.MasterTaskListID}
+                      siteUrls={RequireData?.siteUrl}
+                    />
+                  ) : (
+                    ""
+                  )}
+                </span>
+              </div>
+            </div>
+            <div className="">
+              <button className="me-1 btn btn-primary"  onClick={() => AddHelpFunc()}>Save</button>
+              <button className="btn btn-default" onClick={() => setOpenPopup(false)}>Cancel</button>
+            </div>
+          </div>
         </footer>
       </Panel>
       <Panel
@@ -4314,13 +4516,12 @@ function removeTagsDeliverables(input:any) {
         onDismiss={() => setEditHelpPopup(false)}
         closeButtonAriaLabel="Close"
         onRenderHeader={onRenderHeaderHelpEdit}
-        headerText="Edit Help"
         type={PanelType.large}
       >
         <div className="modal-body clearfix">
           <div className="input-group mb-2">
             <label className="form-label full-width">Title</label>
-            <input type="text" defaultValue={helpDataUpdate?.Title} onChange={(e) => { setHelp(e.target.value) }}></input>
+            <input type="text" className="form-control" defaultValue={helpDataUpdate?.Title} onChange={(e) => { setHelp(e.target.value) }}></input>
           </div>
           <div className="mb-2">
             <label className="form-label">Description</label>
@@ -4337,16 +4538,61 @@ function removeTagsDeliverables(input:any) {
             </div>
           </div>
         </div>
-        <footer className="modal-body pull-right">
-          <DefaultButton className='btn btn-primary' onClick={() => updateHelpDetails()}>Save</DefaultButton>
-          <DefaultButton className='btn btn-default mx-1' onClick={() => setEditHelpPopup(false)}>Cancel</DefaultButton>
+        <footer className="footer-right">
+          <div className="align-items-center d-flex justify-content-between">
+            <div>
+              <div className="text-left">
+                Created{" "}
+                <span ng-bind="EditData?.Created | date:'MM-DD-YYYY'">
+                  {" "}
+                  {EditData.Created ? moment(EditData.Created).format("DD/MM/YYYY") : ""}
+                </span>{" "}
+                by
+                <span className="panel-title ps-1 hreflink">
+                  {EditData?.Author?.Title != undefined
+                    ? EditData?.Author?.Title
+                    : ""}
+                </span>
+              </div>
+              <div className="text-left">
+                Last modified{" "}
+                <span>
+                  {EditData.Modified ? moment(EditData.Modified).format("DD/MM/YYYY") : ''}
+                </span>{" "}
+                by{" "}
+                <span className="panel-title hreflink">
+                  {EditData?.Editor?.Title != undefined
+                    ? EditData?.Editor?.Title
+                    : ""}
+                </span>
+              </div>
+              <div className="text-left">
+                <span className="hreflink">
+                  {" "}
+                  {EditData?.ID ? (
+                    <VersionHistoryPopup
+                      taskId={EditData?.ID}
+                      listId={RequireData.MasterTaskListID}
+                      siteUrls={RequireData?.siteUrl}
+                    />
+                  ) : (
+                    ""
+                  )}
+                </span>
+              </div>
+            </div>
+              <div className="">
+                <button className="me-1 btn btn-primary" onClick={() => updateHelpDetails()}>Save</button>
+                <button className="btn btn-default" onClick={() => setEditHelpPopup(false)}>Cancel</button>
+              </div>
+          </div>
         </footer>
       </Panel>
       {/*change portfolio type */}
       <Panel
         className={`${EditData?.Portfolio_x0020_Type == "Service"
-            ? " serviepannelgreena"
-            : ""
+          ? " serviepannelgreena"
+          : ""
           }`}
         onRenderHeader={onRenderHeaderChangeParent}
         isOpen={changeType}
@@ -4355,7 +4601,7 @@ function removeTagsDeliverables(input:any) {
         type={PanelType.medium}
       >
 
-        <div className="modal-body">
+        <div className="modal-body clearfix">
           {portfolioTypeData?.map((value: any) => (
             <div key={value.ID} className="SpfxCheckRadio">
               <input
@@ -4369,9 +4615,54 @@ function removeTagsDeliverables(input:any) {
               {value.Title}</div>
           ))}
         </div>
-        <footer className="mt-4 text-end">
-          <button className="me-2 btn btn-primary" onClick={changePortfolioType}>Save</button>
-          <button className="btn btn-default ms-1" onClick={() => { setChangeType(false) }}>Cancel</button>
+        <footer className="footer-right">
+          <div className="align-items-center d-flex justify-content-between">
+            <div>
+              <div className="text-left">
+                Created{" "}
+                <span className="hreflink" ng-bind="EditData?.Created | date:'MM-DD-YYYY'">
+                  {" "}
+                  {EditData.Created ? moment(EditData.Created).format("DD/MM/YYYY") : ""}
+                </span>{" "}
+                by
+                <span className="panel-title ps-1 hreflink">
+                  {EditData?.Author?.Title != undefined
+                    ? EditData?.Author?.Title
+                    : ""}
+                </span>
+              </div>
+              <div className="text-left">
+                Last modified{" "}
+                <span>
+                  {EditData.Modified ? moment(EditData.Modified).format("DD/MM/YYYY") : ''}
+                </span>{" "}
+                by{" "}
+                <span className="panel-title hreflink">
+                  {EditData?.Editor?.Title != undefined
+                    ? EditData?.Editor?.Title
+                    : ""}
+                </span>
+              </div>
+              <div className="text-left">
+                <span className="hreflink">
+                  {" "}
+                  {EditData?.ID ? (
+                    <VersionHistoryPopup
+                      taskId={EditData?.ID}
+                      listId={RequireData.MasterTaskListID}
+                      siteUrls={RequireData?.siteUrl}
+                    />
+                  ) : (
+                    ""
+                  )}
+                </span>
+              </div>
+            </div>
+            <div className="">
+              <button className="btn btn-primary" onClick={changePortfolioType}>Save</button>
+              <button className="btn btn-default ms-1" onClick={() => setChangeType(false)}>Cancel</button>
+            </div>
+          </div>
         </footer>
       </Panel>
 

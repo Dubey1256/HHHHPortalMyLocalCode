@@ -18,7 +18,7 @@ let AllMetadata: any = [];
 const ServiceComponentPortfolioPopup = ({ props, Dynamic, Call, ComponentType, selectionType, groupedData, showProject }: any) => {
     const [modalIsOpen, setModalIsOpen] = React.useState(true);
     const [data, setData] = React.useState([]);
-    const [CheckBoxData, setCheckBoxData] = React.useState([]);
+    const [CheckBoxData, setCheckBoxData]:any = React.useState([]);
     const [AllMetadataItems, setAllMetadataItems] = React.useState([]);
     const [AllUsers, setTaskUser] = React.useState([]);
     const [ShowingAllData, setShowingData] = React.useState([])
@@ -49,7 +49,7 @@ const ServiceComponentPortfolioPopup = ({ props, Dynamic, Call, ComponentType, s
         if (selectionType == "Multi") {
             Example(MultiSelectedData, selectionType, "Save");
         } else {
-            Example(CheckBoxData, selectionType, "Save");
+            Example(CheckBoxData, CheckBoxData?.Portfolios?.Title, "Save");
         }
         MultiSelectedData = [];
     }

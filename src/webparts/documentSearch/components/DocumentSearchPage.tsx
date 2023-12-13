@@ -2,7 +2,7 @@ import React, { useEffect, useState } from 'react'
 import { Web } from 'sp-pnp-js';
 import GlobalCommanTable from '../../../globalComponents/GroupByReactTableComponents/GlobalCommanTable';
 import { ColumnDef } from '@tanstack/react-table';
-import EditDocumentpanel from '../../taskprofile/components/EditDocunentPanel';
+import EditDocument from './EditDocunentPanel'
 import moment from 'moment';
 var TaskUser: any = []
 export default function DocumentSearchPage(Props: any) {
@@ -120,13 +120,12 @@ export default function DocumentSearchPage(Props: any) {
             accessorKey: "Title", placeholder: "Title", header: "", id: "Title",
             cell: ({ row }) => (
                 <div className='alignCenter '>
-                    <a target="_blank" href={row?.original?.FileDirRef}>
+                    <a target="_blank" data-interception="off" href={row?.original?.FileDirRef}>
                         <span className="alignIcon svg__iconbox svg__icon--folder"></span>
-                        {row?.original?.Title ? <a className='ms-1 ' title={row?.original?.Title} target="_blank" href={row?.original?.FileDirRef}> {row?.original?.Title} </a> : <a className='ms-1 ' title={row?.original?.FileDirRef} target="_blank" href={row?.original?.FileDirRef}> {row?.original?.FileLeafRef} </a>}
+                        {row?.original?.Title ? <a className='ms-1 ' title={row?.original?.Title} target="_blank" data-interception="off" href={row?.original?.FileDirRef}> {row?.original?.Title} </a> : <a className='ms-1 ' title={row?.original?.FileDirRef} target="_blank" data-interception="off" href={row?.original?.FileDirRef}> {row?.original?.FileLeafRef} </a>}
                     </a>
                 </div>
             ),
-
         },
         {
             accessorKey: "FileLeafRef", placeholder: "Document Url", header: "", id: "FileLeafRef",
@@ -138,7 +137,7 @@ export default function DocumentSearchPage(Props: any) {
                     {row?.original?.File_x0020_Type == 'jpeg' || row?.original?.File_x0020_Type == 'jpg' ? <span className=" svg__iconbox svg__icon--jpeg "></span> : ''}
                     {row?.original?.File_x0020_Type == 'doc' || row?.original?.File_x0020_Type == 'docx' ? <span className=" svg__iconbox svg__icon--docx "></span> : ''}
                     {row?.original?.File_x0020_Type == 'jfif' ? <span className=" svg__iconbox svg__icon--jpeg "></span> : ''}
-                    <a className='ms-1 wid90' target="_blank" href={`${row?.original?.EncodedAbsUrl}?web=1`}> {row?.original?.FileLeafRef} </a>
+                    <a className='ms-1 wid90' target="_blank" data-interception="off" href={`${row?.original?.EncodedAbsUrl}?web=1`}> {row?.original?.FileLeafRef} </a>
                 </div>
             ),
         },
@@ -148,12 +147,10 @@ export default function DocumentSearchPage(Props: any) {
                 <>
                     {row?.original?.CreatedDate}
                     {row?.original?.AllCreatedImages.map((item: any) => (
-                        <a className='ms-1' target="_blank" href={`${PageContext.context._pageContext._web.serverRelativeUrl}/SitePages/TaskDashboard.aspx?UserId=${item.UserId}&Name=${item.Title}`}>
+                        <a className='ms-1' target="_blank" data-interception="off" href={`${PageContext.context._pageContext._web.serverRelativeUrl}/SitePages/TaskDashboard.aspx?UserId=${item.UserId}&Name=${item.Title}`}>
                             {item?.UserImage != undefined && item?.UserImage != '' ? <img title={item?.Title} className="workmember" src={item?.UserImage}></img> : <img title={item?.Title} className="workmember" src={`${PageContext.context._pageContext._web.serverRelativeUrl}/SiteCollectionImages/ICONS/32/icon_user.jpg`}></img>}
                         </a>
                     ))}
-
-
                 </>
             ),
         },
@@ -163,17 +160,14 @@ export default function DocumentSearchPage(Props: any) {
                 <>
                     {row?.original?.ModifiedDate}
                     {row?.original?.AllModifiedImages.map((item: any) => (
-                        <a className='ms-1' target="_blank" href={`${PageContext.context._pageContext._web.serverRelativeUrl}/SitePages/TaskDashboard.aspx?UserId=${item.UserId}&Name=${item.Title}`}>
+                        <a className='ms-1' target="_blank" data-interception="off" href={`${PageContext.context._pageContext._web.serverRelativeUrl}/SitePages/TaskDashboard.aspx?UserId=${item.UserId}&Name=${item.Title}`}>
                             {item?.UserImage != undefined && item?.UserImage != '' ? <img title={item?.Title} className="workmember" src={item?.UserImage}></img> : <img title={item?.Title} className="workmember" src={`${PageContext.context._pageContext._web.serverRelativeUrl}/SiteCollectionImages/ICONS/32/icon_user.jpg`}></img>}
                         </a>
                     ))}
-
-
                 </>
             ),
         },
         {
-
             cell: ({ row }) => (
                 <div className='alignCenter'>
                     <a onClick={() => EditItem(row.original)} title="Edit"><span title="Edit Task" className="svg__iconbox svg__icon--edit hreflink me-1"></span></a>
@@ -189,28 +183,17 @@ export default function DocumentSearchPage(Props: any) {
         },
     ],
         [AllDocs]);
-    const callBackData = React.useCallback((elem: any, getSelectedRowModel: any, ShowingData: any) => { }, []);
+    const callBackData = React.useCallback((elem: any, getSelectedRowModel: any, ShowingData: any) => {
+    }, []);
     //#endregion
     return (
         <>
-            {/* <section className='ContentSection'>
-                <div className='row'>
-                    <div className='col-sm-3 text-primary'>
-                        <h3 className="heading">Document Search
-                        </h3>
-                    </div>
-                    <div className='col-sm-9 text-primary'>
-                        <h6 className='pull-right'><b><a data-interception="off"
-                            target="_blank" href="https://hhhhteams.sharepoint.com/sites/HHHH/SP/SitePages/document-search-old.aspx">Old Document Search</a></b>
-                        </h6>
-                    </div>
-                </div>
-            </section> */}
             <div className="col-sm-12 clearfix">
                 <h2 className="d-flex justify-content-between align-items-center siteColor  serviceColor_Active">
-                    <div>Document Search</div>
+                    <div>Document Search
+                    </div>
                     <div className="text-end fs-6">
-                        <a  data-interception="off" target="_blank" className="hreflink serviceColor_Active" href="https://hhhhteams.sharepoint.com/sites/HHHH/SP/SitePages/document-search-old.aspx">Old Document Search</a>
+                        <a data-interception="off" target="_blank" className="hreflink serviceColor_Active" href="https://hhhhteams.sharepoint.com/sites/HHHH/SP/SitePages/document-search-old.aspx">Old Document Search</a>
                     </div>
                 </h2>
             </div>
@@ -224,12 +207,11 @@ export default function DocumentSearchPage(Props: any) {
                 </div>
             </div>}
             {isEditModalOpen ?
-                <EditDocumentpanel callbackeditpopup={closeEditPopup} editData={selectedItemId} AllListId={PageContext} Context={PageContext?.context} editdocpanel={isEditModalOpen} />
+                <EditDocument callbackeditpopup={closeEditPopup} editData={selectedItemId} AllListId={PageContext} Context={PageContext?.context} editdocpanel={isEditModalOpen} />
                 :
                 null
             }    </>
     )
 }
-
 
 
