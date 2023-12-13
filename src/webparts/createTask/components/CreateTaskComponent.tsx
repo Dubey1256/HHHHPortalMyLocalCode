@@ -838,7 +838,7 @@ function CreateTaskComponent(props: any) {
                                 })
                                 siteCompositionDetails = selectedPortfolio[0]?.SiteCompositionSettings;
                             } catch (error) {
-                                console.log(error,"Error Client Time")
+                                console.log(error, "Error Client Time")
                             }
                         } else {
                             var siteComp: any = {};
@@ -1566,13 +1566,16 @@ function CreateTaskComponent(props: any) {
             isOpenEditPopup: false,
             passdata: null
         })
-        if (items == 'Delete' || items == undefined) {
-            if (burgerMenuTaskDetails?.TaskType == 'Bug' && burgerMenuTaskDetails?.TaskType == 'Design') {
+        if (items == 'Delete') {
+            if (burgerMenuTaskDetails?.TaskType == 'Bug' || burgerMenuTaskDetails?.TaskType == 'Design' && createdTask?.Id!=undefined) {
                 window.open(base_Url + "/SitePages/CreateTask.aspx", "_self")
+                createdTask = {};
             } else {
                 location.reload();
+                createdTask = {};
             }
-        } else if (items == "Save") {
+          
+        } else if (items == "Save" && createdTask?.Id != undefined ) {
             setTimeout(() => {
                 window.open(base_Url + "/SitePages/Task-Profile.aspx?taskId=" + createdTask?.Id + "&Site=" + createdTask?.siteType, "_self")
                 createdTask = {};
