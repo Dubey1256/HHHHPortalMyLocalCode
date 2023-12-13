@@ -23,12 +23,17 @@ const CreateContactComponent = (props: any) => {
         Title: '',
         FirstName: '',
     });
+
     React.useEffect(() => {
-        if (props?.data != undefined) {
+        if (props?.data != undefined && props?.pageName!="Recruiting-Tool" ) {
 
             setSearchedDataName(props?.data)
         }
-    }, [])
+        if (props?.data != undefined && props?.pageName=="Recruiting-Tool" ) {
+             saveDataFunction();
+            
+        }
+    }, [props?.data !=undefined])
     let updateCallBack = props.userUpdateFunction;
     const searchedName = async (e: any) => {
         setListIsVisible(true);
@@ -57,21 +62,41 @@ const CreateContactComponent = (props: any) => {
             try {
                 let jointData:any
                 if (myContextData2?.allSite?.GMBHSite || myContextData2?.allSite?.HrSite) {
-                    jointData= {
-                    //     SharewebSites: {
-                    //     results: (myContextData2?.allSite?.GMBHSite?["GMBH"]:["HR"])
-                    // },
-                    Site: {
-                        results: (myContextData2?.allSite?.GMBHSite?["GMBH"]:["HR"])
-                    },
 
-                   
-                    Title: (searchKey.FirstName[1] ? searchKey.FirstName[1] : " "),
-                    FirstName: searchKey.FirstName[0],
-                    FullName: searchKey.FirstName[0] + " " + (searchKey.FirstName[1] ? searchKey.FirstName[1] : " "),
-                    ItemType: "Contact"
+                    if(props?.pageName=="Recruiting-Tool"){
+                        jointData= {
+                            //     SharewebSites: {
+                            //     results: (myContextData2?.allSite?.GMBHSite?["GMBH"]:["HR"])
+                            // },
+                            Site: {
+                                results: (myContextData2?.allSite?.GMBHSite?["GMBH"]:["HR"])
+                            },
+        
+                           
+                            Title: props?.data?.Title.split(" ")[1],
+                            FirstName:  props?.data?.Title.split(" ")[0],
+                            FullName: props?.data?.Title,
+                            ItemType: "Contact"
+                            
+                        }   
+                    }else{
+                        jointData= {
+                            //     SharewebSites: {
+                            //     results: (myContextData2?.allSite?.GMBHSite?["GMBH"]:["HR"])
+                            // },
+                            Site: {
+                                results: (myContextData2?.allSite?.GMBHSite?["GMBH"]:["HR"])
+                            },
+        
+                           
+                            Title: (searchKey.FirstName[1] ? searchKey.FirstName[1] : " "),
+                            FirstName: searchKey.FirstName[0],
+                            FullName: searchKey.FirstName[0] + " " + (searchKey.FirstName[1] ? searchKey.FirstName[1] : " "),
+                            ItemType: "Contact"
+                            
+                        }   
+                    }
                     
-                }   
                 }else{
                     jointData= {
                         Title: (searchKey.FirstName[1] ? searchKey.FirstName[1] : " "),
@@ -114,14 +139,27 @@ const CreateContactComponent = (props: any) => {
                                     if (tempStaffIdLength == 5) {
                                         staffIdString = ("HHHH-" + tempStaffId);
                                     }
-                                    postData={
-                                        Title: (searchKey.FirstName[1] ? searchKey.FirstName[1] : " "),
-                                        FirstName: searchKey.FirstName[0],
-                                        FullName: searchKey.FirstName[0] + " " + (searchKey.FirstName[1] ? searchKey.FirstName[1] : " "),
-                                        staffID0: staffIdData,
-                                        StaffID: staffIdString,
-                                        SmartContactId: data?.data?.Id
+                                    if(props?.pageName=="Recruiting-Tool"){
+                                        postData={
+                                            Title: props?.data?.Title.split(" ")[1],
+                                            FirstName:  props?.data?.Title.split(" ")[0],
+                                            FullName:  props?.data?.Title,
+                                            staffID0: staffIdData,
+                                            StaffID: staffIdString,
+                                            SmartContactId: data?.data?.Id
+                                        }   
+                                    }else{
+                                        postData={
+                                            Title: (searchKey.FirstName[1] ? searchKey.FirstName[1] : " "),
+                                            FirstName: searchKey.FirstName[0],
+                                            FullName: searchKey.FirstName[0] + " " + (searchKey.FirstName[1] ? searchKey.FirstName[1] : " "),
+                                            staffID0: staffIdData,
+                                            StaffID: staffIdString,
+                                            SmartContactId: data?.data?.Id
+                                        }
                                     }
+
+                                   
                                   
                         }
                         else{
@@ -138,19 +176,25 @@ const CreateContactComponent = (props: any) => {
                         await web.lists.getById(myContextData2?.allSite?.GMBHSite ? myContextData2?.allListId?.GMBH_CONTACT_SEARCH_LISTID : myContextData2?.allListId?.HR_EMPLOYEE_DETAILS_LIST_ID).items.add(postData).then((LocalData) => {
                             setContactdata(LocalData?.data)
                             if(myContextData2?.allSite?.HrSite){
-                                PostJointHrDetails(data?.data)
+                                PostJointHrDetails(data?.data).then((data:any)=>{
+                                    setNewContact(true) 
+                                }).catch((error:any)=>{
+                                    console.log(error)
+                                })
                             }
+                          
                         }).catch((error: any) => {
                          console.log(error)
                         })
                     } else {
                         setContactdata(data?.data)
                         console.log("request success");
+                        props?.userUpdateFunction();
+                        setTimeout(() => {
+                            setNewContact(true)
+                        }, 1000)
                     }
-                    props.userUpdateFunction();
-                    setTimeout(() => {
-                        setNewContact(true)
-                    }, 1000)
+                 
                 })
             } catch (error) {
                 console.log("Error:", error.message);
@@ -161,19 +205,22 @@ const CreateContactComponent = (props: any) => {
 
     }
     const PostJointHrDetails=async(data:any)=>{
-        const web = new Web("https://hhhhteams.sharepoint.com/sites/HHHH");
-        await web.lists
-     .getById("6DD8038B-40D2-4412-B28D-1C86528C7842")
+        return new Promise(function(resolve, reject) {
+        const web = new Web(myContextData2?.allListId?.jointSiteUrl);
+        web.lists
+     .getById(myContextData2?.allListId?.MAIN_HR_LISTID)
           .items.add({
-             Title:(data?.FirstName ) + " " + (data?.Title ),
+             Title:(data?.FirstName ) + " " + (data?.Title !=null?data?.Title:""),
              SmartContactId:data?.Id
           }).then((data:any)=>{
+            resolve(data)
              console.log(data,"hr main post done")
-
+             alert("Your information has been updated successfully")
           }).catch((error:any)=>{
+            reject()
              console.log(error)
           })
-
+        })
     }
     const CreateInstitution = async () => {
         try {
@@ -255,7 +302,8 @@ const CreateContactComponent = (props: any) => {
         );
     };
     return (
-
+<>
+       {props?.pageName!="Recruiting-Tool" ?
         <Panel
             onRenderHeader={onRenderCustomHeadersmartinfo}
             isOpen={true}
@@ -272,7 +320,7 @@ const CreateContactComponent = (props: any) => {
                     <input type='text' placeholder="Enter Contacts Name" onChange={(e) => searchedName(e)} className="form-control" />
                     {listIsVisible ? <div>
                         <ul className="list-group">
-                            {searchedNameData.map((item: any) => {
+                            {searchedNameData?.map((item: any) => {
                                 return (
                                     <li className="list-group-item" onClick={() => editProfile(item)} >{item.FullName}</li>
                                 )
@@ -280,7 +328,8 @@ const CreateContactComponent = (props: any) => {
                         </ul>
                     </div>
                         : null}
-                </div></div>
+                </div>
+                </div>
             <footer className="mt-2 pull-right">
                 <button className="btn btn-primary mx-1" onClick={saveDataFunction} disabled={isUserExist}>Save</button>
                 <button onClick={() => props.callBack()} className="btn btn-default">Cancel</button>
@@ -289,7 +338,9 @@ const CreateContactComponent = (props: any) => {
             {profileStatus ? <HHHHEditComponent props={contactdata} callBack={ClosePopup} /> : null}
             {newContact ? <HHHHEditComponent props={contactdata} userUpdateFunction={updateCallBack} callBack={ClosePopup} /> : null}
             {newInstitution ? <EditInstitutionPopup props={institutionData} callBack={ClosePopup} /> : null}
-        </Panel>
+        </Panel>:contactdata!=undefined&&<HHHHEditComponent props={contactdata} userUpdateFunction={updateCallBack} callBack={ClosePopup} />}
+
+        </>
     )
 }
 export default CreateContactComponent;

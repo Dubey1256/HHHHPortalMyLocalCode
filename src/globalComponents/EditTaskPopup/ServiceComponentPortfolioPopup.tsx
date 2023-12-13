@@ -33,6 +33,7 @@ const ServiceComponentPortfolioPopup = ({ props, Dynamic, Call, ComponentType, s
         []);
     function Example(callBack: any, type: any, functionType: any) {
         Call(callBack, type, functionType);
+        setModalIsOpen(false);
     }
     const closePanel = (e: any) => {
         if (e != undefined && e?.type != 'mousedown')
