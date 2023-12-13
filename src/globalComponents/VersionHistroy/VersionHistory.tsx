@@ -1,14 +1,12 @@
 import * as React from 'react'
 import { Panel, PanelType } from 'office-ui-fabric-react';
-import { sp } from 'sp-pnp-js';
+import { Web, sp } from 'sp-pnp-js';
 import "bootstrap/dist/css/bootstrap.min.css";  
 import Tooltip from '../Tooltip';
 import * as moment from 'moment';
 import InfoIconsToolTip from '../InfoIconsToolTip/InfoIconsToolTip';
 import { SlArrowDown, SlArrowRight } from 'react-icons/sl';
-
 var keys: any = []
-
 export default function VersionHistory(props: any) {
     const [propdata, setpropData] = React.useState(props);
     const [show, setShow] = React.useState(false);
@@ -16,18 +14,17 @@ export default function VersionHistory(props: any) {
     const [ShowEstimatedTimeDescription,setShowEstimatedTimeDescription] = React.useState(false);
     const [AllCommentModal,setAllCommentModal] = React.useState(false);
     const [AllComment,setAllComment] = React.useState([]);
-    var tableCode
+   
     const handleClose = () => setShow(false);
     const handleShow = () => setShow(true);
-
     //------------------------jquery call--------------------------------
     const GetItemsVersionHistory = async () => {
         var versionData: any = []
-        var siteTypeUrl = props.siteUrls;
+        var web = new Web(props.siteUrls);
         let listId = props.listId
         var itemId = props.taskId;
         let tempEstimatedArrayData: any;        
-        sp.web.lists.getById(props?.listId).items.getById(props.taskId).versions.get().then(versions => {
+        web.lists.getById(props?.listId).items.getById(props?.taskId).versions.get().then(versions => {
             console.log('Version History:', versions);
             versionData = versions;
 
@@ -91,7 +88,6 @@ export default function VersionHistory(props: any) {
     const closeAllCommentModal = ()=>{
         setAllCommentModal(false);
     }
-
     const showhideEstimatedTime=()=> {
         if (ShowEstimatedTimeDescription) {          
             setShowEstimatedTimeDescription(false)         
@@ -99,7 +95,6 @@ export default function VersionHistory(props: any) {
             setShowEstimatedTimeDescription(true) 
         }
     }
-
     const findDifferentColumnValues = (data: any) => {
         const differingValues = [];        
 
@@ -158,7 +153,6 @@ export default function VersionHistory(props: any) {
 
         return differingValues;
     }    
-
     // Function to compare arrays and objects recursively based on their IDs
     function isEqual(obj1: any, obj2: any) {
         if (obj1 === obj2) return true;
@@ -197,7 +191,6 @@ export default function VersionHistory(props: any) {
         return true;
     }
     //---------------------------------------------------------------------
-
     React.useEffect(() => {
         GetItemsVersionHistory()
     }, [show]);
@@ -318,7 +311,7 @@ export default function VersionHistory(props: any) {
                                                                                                     return(
                                                                                                         <>                                                                                                            
                                                                                                             <span className='BasicimagesInfo_group'>
-                                                                                                                <img src={image.ImageUrl} alt="" />
+                                                                                                                <a target='_blank' href={image.ImageUrl}><img src={image.ImageUrl} alt="" /></a>
                                                                                                                 {image.ImageUrl !== undefined ? <span className='BasicimagesInfo_group-imgIndex'>{indx+1}</span> : ''}
                                                                                                             </span>
                                                                                                         </>

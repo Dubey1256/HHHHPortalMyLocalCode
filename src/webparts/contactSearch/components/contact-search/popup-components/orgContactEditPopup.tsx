@@ -113,7 +113,7 @@ const orgContactEditPopup = (props: any) => {
                 <div className='subheading alignCenter'>
                     Select Organization
                 </div>
-                <Tooltip ComponentId='3558' />
+                <Tooltip ComponentId='1626' />
             </>
         );
     };

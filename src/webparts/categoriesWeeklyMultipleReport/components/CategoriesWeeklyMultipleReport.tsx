@@ -616,6 +616,10 @@ export default class CategoriesWeeklyMultipleReport extends React.Component<ICat
 
   private StartWeekday: any; private endweekday: any;
   private GetTimeEntry() {
+    let startdt1: any = JSON.parse(localStorage.getItem('startDate'));
+    let enddt1: any = JSON.parse(localStorage.getItem('endDate'));
+    if (startdt1 != undefined && enddt1 != undefined)
+      this.setState({ SelecteddateChoice: 'Presettime' });
     this.selectDate(this.state.SelecteddateChoice);
   }
 
@@ -741,7 +745,7 @@ export default class CategoriesWeeklyMultipleReport extends React.Component<ICat
       let item = array[index];
       if (item.Id == Id) {
         isExists = true;
-        return false;
+        //return false;
       }
     }
     return isExists;
@@ -1016,7 +1020,7 @@ export default class CategoriesWeeklyMultipleReport extends React.Component<ICat
         break;
 
       case 'Presettime':
-        let startdt1: any = JSON.parse(localStorage.getItem('startDate')); //new Date(this.state?.StartDatePicker);
+        let startdt1: any = JSON.parse(localStorage.getItem('startDate'));
         if (startdt1 != undefined)
           startdt = new Date(startdt1);
         let enddt1: any = JSON.parse(localStorage.getItem('endDate'));
@@ -1118,8 +1122,15 @@ export default class CategoriesWeeklyMultipleReport extends React.Component<ICat
     }
   }
   private ExpandClientCategory = (expanded: any) => {
+
     this.checkBoxColor(undefined)
     this.setState({ expanded })
+  }
+  private updatefilterAgain =() =>{
+   
+    loadAllTimeEntryData =[];
+    this.setState({AllTimeEntry :[]})
+    this.updatefilter();
   }
   private async generateTimeEntry() {
 
@@ -1295,7 +1306,7 @@ export default class CategoriesWeeklyMultipleReport extends React.Component<ICat
           timeTab.getUserName = '';
           timeTab.siteType = config.Title;
           timeTab.SiteIcon = '';
-          timeTab.SiteUrl =config?.siteUrl?.Url;
+          timeTab.SiteUrl = config?.siteUrl?.Url;
           timeTab.ImageUrl = config.ImageUrl;
           timeTab.TaskItemID = timeTab[ColumnName].Id;
           timeTab.TaskTitle = timeTab[ColumnName].Title;
@@ -1345,7 +1356,7 @@ export default class CategoriesWeeklyMultipleReport extends React.Component<ICat
               addtime.Title = time.Title;
               addtime.selectedSiteType = time.selectedSiteType;
               addtime.siteType = time.siteType;
-              addtime.SiteIcon = globalCommon.GetIconImageUrl(addtime.selectedSiteType, time.SiteUrl,undefined);
+              addtime.SiteIcon = globalCommon.GetIconImageUrl(addtime.selectedSiteType, time.SiteUrl, undefined);
               addtime.ImageUrl = time.ImageUrl;
               if (time.TaskCreated != undefined)
                 addtime.TaskCreatednew = this.ConvertLocalTOServerDate(time.TaskCreated, 'DD/MM/YYYY');
@@ -1485,6 +1496,7 @@ export default class CategoriesWeeklyMultipleReport extends React.Component<ICat
               if (Item?.ClientCategory?.length > 0) {
                 Item.ClientCategorySearch = Item?.ClientCategory?.map((elem: any) => elem.Title).join(" ")
               } else {
+                Item["ClientCategory"] =[];
                 Item.ClientCategorySearch = ''
               }
               Item.siteImage = itemtype.siteImage;
@@ -1595,7 +1607,7 @@ export default class CategoriesWeeklyMultipleReport extends React.Component<ICat
             filterItem.Id = getItem.Id;
             filterItem.listId = getItem.listId;
             filterItem.siteImage = getItem.siteImage;
-           
+
 
           }
         })
@@ -1790,7 +1802,7 @@ export default class CategoriesWeeklyMultipleReport extends React.Component<ICat
                 // isCategorySelected = true;
                 // break;
               }
-              if (selectedFilters[i].Title == "Other" && (item.clientCategoryIds == undefined || item.clientCategoryIds == '')) {
+              if (selectedFilters[i].Title == "Other" &&(item?.ClientCategory?.length ===0) && (item.clientCategoryIds == undefined || item.clientCategoryIds == '')) {
                 let title = selectedFilters[i].ParentTitle == 'PSE' ? 'EPS' : (selectedFilters[i].ParentTitle == 'e+i' ? 'EI' : selectedFilters[i].ParentTitle);
                 if (selectedFilters[i].Title == 'Other') {
                   if ((item.siteType != undefined && item.siteType == title)) {
@@ -1960,7 +1972,7 @@ export default class CategoriesWeeklyMultipleReport extends React.Component<ICat
               child.AdjustedTime = totalnew;
               child.TotalValue = totalnew;
               child.TotalSmartTime = totalnew;
-              child.SmartHoursTotal =child.TotalSmartTime;
+              child.SmartHoursTotal = child.TotalSmartTime;
               child.SmartHoursTime = parseFloat(totalnew.toString()).toFixed(2);
               child.Rountfiguretime = parseFloat(totalnew.toString()).toFixed(2);
               if (child.Rountfiguretime != undefined && child.Rountfiguretime.toString().indexOf('.') > -1) {
@@ -2003,14 +2015,14 @@ export default class CategoriesWeeklyMultipleReport extends React.Component<ICat
             })
           }
           filte.TotalValue = total;
-          filte.TotalSmartTime =total;
+          filte.TotalSmartTime = total;
           filte.AdjustedTime = filte.TotalValue;
           filte.RoundAdjustedTime = Roundfigurtotal;
           filte.TimeInExcel = TimeInExcel;
           filte.SmartHoursTotal = SmartHoursTimetotal;
           filte.clientCategory = '';
-          filte.Firstlevel ='';
-          filte.Secondlevel ='';
+          filte.Firstlevel = '';
+          filte.Secondlevel = '';
           filte.Title = filte.getUserName;
           if (AdjustedimeEntry == undefined || AdjustedimeEntry == '')
             AdjustedimeEntry = 0
@@ -2428,28 +2440,28 @@ export default class CategoriesWeeklyMultipleReport extends React.Component<ICat
   }
   private GetCheckedObject = (arr: any, checked: any, isCheckedValue: any) => {
     let checkObj: any = [];
-    checked?.forEach((value: any) => {
-      arr?.forEach((element: any) => {
-        if (value == element.Id) {
-          element.checked = isCheckedValue;
-          checkObj.push({
-            Id: element?.Id,
-            Title: element?.Title
+    // checked?.forEach((value: any) => {
+    arr?.forEach((element: any) => {
+      // if (value == element.Id) {
+      element.checked = isCheckedValue;
+      checkObj.push({
+        Id: element?.Id,
+        Title: element?.Title
+      })
+      // }
+      if (element?.children != undefined && element?.children?.length > 0) {
+        element?.children?.forEach((chElement: any) => {
+          // if (value == chElement?.Id) {
+          chElement.checked = isCheckedValue;
+          checkObj?.push({
+            Id: chElement?.Id,
+            Title: chElement?.Title
           })
-        }
-        if (element?.children != undefined && element?.children?.length > 0) {
-          element?.children?.forEach((chElement: any) => {
-            if (value == chElement?.Id) {
-              chElement.checked = isCheckedValue;
-              checkObj?.push({
-                Id: chElement?.Id,
-                Title: chElement?.Title
-              })
-            }
-          });
-        }
-      });
+          // }
+        });
+      }
     });
+    // });
     return checkObj;
   }
   private onCheck = (checked: any, item: any) => {
@@ -2518,18 +2530,21 @@ export default class CategoriesWeeklyMultipleReport extends React.Component<ICat
         return;
       }
       obj?.children?.forEach((obj2: any, newlastindex: any) => {
-        if (obj2?.checked === true) {
+        if (obj2?.checked === true && !this.IsExistsData(checkedItems, obj.Id)) {
           IsUpdatedbutton = true;
+          checkedItems.push(obj);
           return;
         }
         obj2?.children?.forEach((obj3: any, newlastindex: any) => {
-          if (obj3?.checked === true) {
+          if (obj3?.checked === true && !this.IsExistsData(checkedItems, obj.Id)) {
             IsUpdatedbutton = true;
+            checkedItems.push(obj);
             return;
           }
           obj3?.children?.forEach((obj4: any, newlastindex: any) => {
-            if (obj4?.checked === true) {
+            if (obj4?.checked === true && !this.IsExistsData(checkedItems, obj.Id)) {
               IsUpdatedbutton = true;
+              checkedItems.push(obj);
             }
           })
         })
@@ -3382,21 +3397,25 @@ export default class CategoriesWeeklyMultipleReport extends React.Component<ICat
   }
   private getAllSubChildenCount(item: any) {
     let count = 1;
-    if (item.children != undefined && item.children.length > 0) {
+    if (item.children != undefined && item?.checked === true && item.children.length > 0) {
       count += item.children.length;
-      item.children.forEach((subchild: any) => {
-        if (subchild.children != undefined && subchild.children.length > 0) {
-          count += subchild.children.length;
-          subchild.children.forEach((subchild2: any) => {
-            if (subchild2.children != undefined && subchild2.children.length > 0) {
-              count += subchild2.children.length;
-              subchild2.children.forEach((subchild3: any) => {
-              });
-            }
-          });
-        }
-      });
     }
+    item?.children?.forEach((subchild: any) => {
+      if (subchild.children != undefined && subchild?.checked === true && subchild.children.length > 0) {
+        count += subchild.children.length;
+      }
+      subchild?.children?.forEach((subchild2: any) => {
+        if (subchild2.children != undefined && subchild2?.checked === true && subchild2.children.length > 0) {
+          count += subchild2.children.length;
+        }
+        subchild2?.children?.forEach((subchild3: any) => {
+          if (subchild3?.checked === true) {
+            count += subchild3.Title;
+          }
+        });
+      });
+
+    });
     return count;
   }
   private onRenderCustomHeaderMains = () => {
@@ -3480,13 +3499,11 @@ export default class CategoriesWeeklyMultipleReport extends React.Component<ICat
                                     {item.Item_x0020_Cover != undefined && item.AssingedToUser != undefined ?
                                       <span>
                                         <img id={"UserImg" + item.Id} className={item?.AssingedToUserId == user?.Id ? 'activeimg seclected-Image ProirityAssignedUserPhoto' : 'ProirityAssignedUserPhoto'} onClick={(e) => this.SelectUserImage(e, item, user)} ui-draggable="true" on-drop-success="dropSuccessHandler($event, $index, user.childs)"
-                                          title={item?.AssingedToUser?.Title}
-                                          src={item?.Item_x0020_Cover?.Url !== undefined ? item?.Item_x0020_Cover?.Url : 'https://hhhhteams.sharepoint.com/sites/HHHH/SiteCollectionImages/ICONS/32/icon_user.jpg'} />
-                                      </span> : <span>
-                                        <img id={"UserImg" + item.Id} className={item?.AssingedToUserId == user?.Id ? 'activeimg seclected-Image ProirityAssignedUserPhoto' : 'ProirityAssignedUserPhoto'} onClick={(e) => this.SelectUserImage(e, item, user)} ui-draggable="true" on-drop-success="dropSuccessHandler($event, $index, user.childs)"
-                                          title={item?.AssingedToUser?.Title}
-                                          src={'https://hhhhteams.sharepoint.com/sites/HHHH/SiteCollectionImages/ICONS/32/icon_user.jpg'} />
-                                      </span>
+                                          title={item.AssingedToUser.Title}
+                                          src={item.Item_x0020_Cover.Url} />
+                                      </span> :
+                                      <span id={"UserImg" + item.Id} className={item?.AssingedToUserId == user?.Id ? 'activeimg seclected-Image suffix_Usericon showSuffixIcon' : 'suffix_Usericon showSuffixIcon'} title={item.Title} onClick={(e) => this.SelectUserImage(e, item, user)} ui-draggable="true" on-drop-success="dropSuccessHandler($event, $index, user.childs)"
+                                      >{item?.Suffix}</span>
                                     }
 
                                   </div>
@@ -3502,7 +3519,7 @@ export default class CategoriesWeeklyMultipleReport extends React.Component<ICat
                   </details>
                   <details className='p-0 m-0' open>
                     <summary>
-                      <a>Date</a>
+                      <a>Date   {Moment(this?.state?.startdate).format("MM/DD/YYYY")} - {Moment(this?.state?.enddate).format("MM/DD/YYYY")}</a>
 
                     </summary>
 
@@ -3646,25 +3663,30 @@ export default class CategoriesWeeklyMultipleReport extends React.Component<ICat
                           </div>
                         </div>
 
-                        <div className="col-sm-12 mt-10 pe-1 text-end">
-                          {/* <div className='col'>
-                            <label className='full_width'></label>
-                            <div className=''>
-                              <button type="button" disabled={this.state?.IsUpdatedbutton === false} className="btnCol btn btn-primary pull-right" onClick={() => this.updatefilter()}>
-                                Update Filters
-                              </button>
-                            </div>
-                          </div> */}
+                        {/* <div className="col-sm-12 mt-10 pe-1 text-end">
+                         
                           <button type="button" className="btnCol btn btn-primary" onClick={() => this.updatefilter()}>
                             Update Filters
                           </button>
                           <button type="button" className="btn btn-default ms-2" onClick={() => this.ClearFilters()}>
                             Clear Filters
                           </button>
-                        </div>
+                        </div> */}
                       </div>
                     </div>
                   </details>
+                  <div className="col-sm-12 mt-10 pe-1 text-end">
+
+                    <button type="button" className="btnCol btn btn-primary ms-2" onClick={() => this.updatefilter()}>
+                      Update Filters
+                    </button>
+                    <button type="button" className="btnCol btn btn-primary ms-2" onClick={() => this.updatefilterAgain()}>
+                      Refresh Data
+                    </button>
+                    <button type="button" className="btn btn-default ms-2" onClick={() => this.ClearFilters()}>
+                      Clear Filters
+                    </button>
+                  </div>
                 </div>
               </div>
             </details>

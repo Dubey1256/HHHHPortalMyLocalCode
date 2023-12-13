@@ -910,7 +910,9 @@ const EditTaskPopup = (Items: any) => {
                         item.Categories == "Design" ||
                         item.Categories == "Design;" ||
                         item.Categories == "Design;Approval" ||
-                        item.Categories == "Design;Approval;"
+                        item.Categories == "Design;Approval;" ||
+                        item.Categories == "Approval;Design;" ||
+                        item.Categories == "Approval;Design"
                     ) {
                         DesignCheck = item.Categories.search("Design");
                     }
@@ -1698,16 +1700,16 @@ const EditTaskPopup = (Items: any) => {
                         categoryTitle = categoryData.newTitle;
                         if (usedFor == "For-Auto-Search") {
                             // if (categoryTitle != "On-Hold") {
-                                tempShareWebTypeData.push(categoryData);
+                            tempShareWebTypeData.push(categoryData);
                             // } else if (categoryTitle == "On-Hold") {
                             //     onHoldCategory.push(categoryData);
                             // }
                         }
                         if (usedFor == "For-Panel") {
                             // if (categoryTitle != "On-Hold") {
-                                tempShareWebTypeData.push(categoryData);
+                            tempShareWebTypeData.push(categoryData);
                             // } else if (categoryTitle == "On-Hold") {
-                                // onHoldCategory.push(categoryData);
+                            // onHoldCategory.push(categoryData);
                             // }
                         }
                         TempArray.push(categoryData);
@@ -5726,58 +5728,49 @@ const EditTaskPopup = (Items: any) => {
                                                         <div className="full-width">
                                                             {TaggedPortfolioData?.map((com: any) => {
                                                                 return (
-                                                                    <>
-                                                                        <div className="block w-100">
-                                                                            <a
-                                                                                title={com.Title}
-                                                                                style={{ color: "#fff !important" }}
-                                                                                className="wid90"
-                                                                                target="_blank"
-                                                                                data-interception="off"
-                                                                                href={`${siteUrls}/SitePages/Portfolio-Profile.aspx?taskId=${com.Id}`}
-                                                                            >
-                                                                                {com.Title}
-                                                                            </a>
-
-                                                                            <span
-                                                                                onClick={() =>
-                                                                                    setTaggedPortfolioData([])
-                                                                                }
-                                                                                className="bg-light hreflink ml-auto svg__icon--cross svg__iconbox"
-                                                                            ></span>
-                                                                        </div>
-                                                                    </>
+                                                                    <div className="full-width replaceInput alignCenter">
+                                                                        <a
+                                                                            title={com.Title}
+                                                                            target="_blank"
+                                                                            data-interception="off"
+                                                                            className="textDotted"
+                                                                            href={`${siteUrls}/SitePages/Portfolio-Profile.aspx?taskId=${com.Id}`}
+                                                                        >
+                                                                            {com.Title}
+                                                                        </a>
+                                                                    </div>
                                                                 );
                                                             })}
                                                         </div>
                                                     ) : (
-                                                        <>
-                                                            <input
-                                                                type="text"
-                                                                className="form-control"
-                                                                value={SearchedServiceCompnentKey}
-                                                                onChange={(e) =>
-                                                                    autoSuggestionsForServiceAndComponent(
-                                                                        e,
-                                                                        "Portfolio"
-                                                                    )
-                                                                }
-                                                                placeholder="Search Portfolio Item"
-                                                            />
-                                                            <span className="input-group-text">
-                                                                <span
-                                                                    title="Component Popup"
-                                                                    onClick={() =>
-                                                                        OpenTeamPortfolioPopupFunction(
-                                                                            EditData,
-                                                                            "Portfolio"
-                                                                        )
-                                                                    }
-                                                                    className="svg__iconbox svg__icon--editBox"
-                                                                ></span>
-                                                            </span>
-                                                        </>
+
+                                                        <input
+                                                            type="text"
+                                                            className="form-control"
+                                                            value={SearchedServiceCompnentKey}
+                                                            onChange={(e) =>
+                                                                autoSuggestionsForServiceAndComponent(
+                                                                    e,
+                                                                    "Portfolio"
+                                                                )
+                                                            }
+                                                            placeholder="Search Portfolio Item"
+                                                        />
+
+
                                                     )}
+                                                    <span className="input-group-text">
+                                                        <span
+                                                            title="Component Popup"
+                                                            onClick={() =>
+                                                                OpenTeamPortfolioPopupFunction(
+                                                                    EditData,
+                                                                    "Portfolio"
+                                                                )
+                                                            }
+                                                            className="svg__iconbox svg__icon--editBox"
+                                                        ></span>
+                                                    </span>
                                                 </div>
                                                 {SearchedServiceCompnentData?.length > 0 ? (
                                                     <div className="SmartTableOnTaskPopup">
@@ -5805,14 +5798,127 @@ const EditTaskPopup = (Items: any) => {
                                                     <label className="form-label full-width">
                                                         Categories
                                                     </label>
-                                                    <input
-                                                        type="text"
-                                                        className="form-control"
-                                                        id="txtCategories"
-                                                        placeholder="Search Category Here"
-                                                        value={categorySearchKey}
-                                                        onChange={(e) => autoSuggestionsForCategory(e)}
-                                                    />
+                                                    {ShareWebTypeData?.length > 1 ? <>
+                                                        <input
+                                                            type="text"
+                                                            className="form-control"
+                                                            id="txtCategories"
+                                                            placeholder="Search Category Here"
+                                                            value={categorySearchKey}
+                                                            onChange={(e) => autoSuggestionsForCategory(e)}
+                                                        />
+                                                        {SearchedCategoryData?.length > 0 ? (
+                                                            <div className="SmartTableOnTaskPopup w-100" style={{ marginTop: "53px" }}>
+                                                                <ul className="list-group">
+                                                                    {SearchedCategoryData.map((item: any) => {
+                                                                        return (
+                                                                            <li
+                                                                                className="hreflink list-group-item rounded-0 list-group-item-action"
+                                                                                key={item.id}
+                                                                                onClick={() =>
+                                                                                    setSelectedCategoryData(
+                                                                                        [item],
+                                                                                        "For-Auto-Search"
+                                                                                    )
+                                                                                }
+                                                                            >
+                                                                                <a>{item.Newlabel}</a>
+                                                                            </li>
+                                                                        );
+                                                                    })}
+                                                                </ul>
+                                                            </div>
+                                                        ) : null}
+                                                        {ShareWebTypeData?.map(
+                                                            (type: any, index: number) => {
+                                                                if (
+                                                                    type.Title != "Phone" &&
+                                                                    type.Title != "Email Notification" &&
+                                                                    type.Title != "Immediate" &&
+                                                                    type.Title != "Approval" &&
+                                                                    type.Title != "Email" &&
+                                                                    type.Title != "Only Completed"
+                                                                ) {
+                                                                    return (
+                                                                        <div className="block w-100">
+                                                                            <a
+                                                                                style={{ color: "#fff !important" }}
+                                                                                className="textDotted"
+                                                                            >
+                                                                                {type.Title}
+                                                                            </a>
+                                                                            <span
+                                                                                onClick={() =>
+                                                                                    removeCategoryItem(
+                                                                                        type.Title,
+                                                                                        type.Id
+                                                                                    )
+                                                                                }
+                                                                                className="bg-light hreflink ml-auto svg__icon--cross svg__iconbox"
+                                                                            ></span>
+                                                                        </div>
+                                                                    );
+                                                                }
+                                                            }
+                                                        )}</> :
+                                                        <>
+                                                            {ShareWebTypeData?.length == 1 ?
+
+                                                                <div className="full-width">
+                                                                    {ShareWebTypeData?.map((CategoryItem: any) => {
+                                                                        return (
+                                                                            <div className="full-width replaceInput alignCenter">
+                                                                                <a
+                                                                                    title={CategoryItem.Title}
+                                                                                    target="_blank"
+                                                                                    data-interception="off"
+                                                                                    className="textDotted"
+                                                                                >
+                                                                                    {CategoryItem.Title}
+                                                                                </a>
+                                                                            </div>
+                                                                        );
+                                                                    })}
+                                                                </div>
+                                                                :
+                                                                <>
+                                                                    <input
+                                                                        type="text"
+                                                                        className="form-control"
+                                                                        id="txtCategories"
+                                                                        placeholder="Search Category Here"
+                                                                        value={categorySearchKey}
+                                                                        onChange={(e) => autoSuggestionsForCategory(e)}
+                                                                    />
+                                                                    {SearchedCategoryData?.length > 0 ? (
+                                                                        <div className="SmartTableOnTaskPopup">
+                                                                            <ul className="list-group">
+                                                                                {SearchedCategoryData.map((item: any) => {
+                                                                                    return (
+                                                                                        <li
+                                                                                            className="hreflink list-group-item rounded-0 list-group-item-action"
+                                                                                            key={item.id}
+                                                                                            onClick={() =>
+                                                                                                setSelectedCategoryData(
+                                                                                                    [item],
+                                                                                                    "For-Auto-Search"
+                                                                                                )
+                                                                                            }
+                                                                                        >
+                                                                                            <a>{item.Newlabel}</a>
+                                                                                        </li>
+                                                                                    );
+                                                                                })}
+                                                                            </ul>
+                                                                        </div>
+                                                                    ) : null}
+                                                                </>
+                                                            }
+
+                                                        </>
+
+                                                    }
+
                                                     <span
                                                         className="input-group-text"
                                                         title="Smart Category Popup"
@@ -5823,28 +5929,7 @@ const EditTaskPopup = (Items: any) => {
                                                         <span className="svg__iconbox svg__icon--editBox"></span>
                                                     </span>
                                                 </div>
-                                                {SearchedCategoryData?.length > 0 ? (
-                                                    <div className="SmartTableOnTaskPopup">
-                                                        <ul className="list-group">
-                                                            {SearchedCategoryData.map((item: any) => {
-                                                                return (
-                                                                    <li
-                                                                        className="hreflink list-group-item rounded-0 list-group-item-action"
-                                                                        key={item.id}
-                                                                        onClick={() =>
-                                                                            setSelectedCategoryData(
-                                                                                [item],
-                                                                                "For-Auto-Search"
-                                                                            )
-                                                                        }
-                                                                    >
-                                                                        <a>{item.Newlabel}</a>
-                                                                    </li>
-                                                                );
-                                                            })}
-                                                        </ul>
-                                                    </div>
-                                                ) : null}
+
                                                 <div className="col">
                                                     <div className="col">
                                                         <div className="form-check">
@@ -5894,7 +5979,7 @@ const EditTaskPopup = (Items: any) => {
                                                             />
                                                             <label>Immediate</label>
                                                         </div>
-                                                        {ShareWebTypeData != undefined &&
+                                                        {/* {ShareWebTypeData != undefined &&
                                                             ShareWebTypeData?.length > 0 ? (
                                                             <div>
                                                                 {ShareWebTypeData?.map(
@@ -5930,7 +6015,7 @@ const EditTaskPopup = (Items: any) => {
                                                                     }
                                                                 )}
                                                             </div>
-                                                        ) : null}
+                                                        ) : null} */}
                                                     </div>
                                                     <div className="form-check mt-2">
                                                         <label className="full-width">Approval</label>
@@ -5980,18 +6065,39 @@ const EditTaskPopup = (Items: any) => {
                                                             <div className="col">
                                                                 <div className="input-group">
                                                                     <label className="form-label full-width"></label>
-                                                                    <input
-                                                                        type="text"
-                                                                        className="form-control"
-                                                                        placeholder="Search Approver's Name Here"
-                                                                        value={ApproverSearchKey}
-                                                                        onChange={(e) =>
-                                                                            autoSuggestionsForApprover(
-                                                                                e,
-                                                                                "OnTaskPopup"
-                                                                            )
-                                                                        }
-                                                                    />
+                                                                    {ApproverData != undefined &&
+                                                                        ApproverData.length > 0 ? (
+                                                                        <>
+                                                                            {ApproverData.map(
+                                                                                (Approver: any, index: number) => {
+                                                                                    return (
+                                                                                        <div className="full-width replaceInput alignCenter">
+                                                                                            <a
+                                                                                                className="hreflink"
+                                                                                                target="_blank"
+                                                                                                data-interception="off"
+                                                                                            >
+                                                                                                {Approver.Title}
+                                                                                            </a>
+                                                                                        </div>
+                                                                                    );
+                                                                                }
+                                                                            )}
+                                                                        </>
+                                                                    ) :
+                                                                        <input
+                                                                            type="text"
+                                                                            className="form-control"
+                                                                            placeholder="Search Approver's Name Here"
+                                                                            value={ApproverSearchKey}
+                                                                            onChange={(e) =>
+                                                                                autoSuggestionsForApprover(
+                                                                                    e,
+                                                                                    "OnTaskPopup"
+                                                                                )
+                                                                            }
+                                                                        />
+                                                                    }
                                                                     <span
                                                                         className="input-group-text mt--10"
                                                                         onClick={OpenApproverPopupFunction}
@@ -6019,33 +6125,6 @@ const EditTaskPopup = (Items: any) => {
                                                                                 );
                                                                             })}
                                                                         </ul>
-                                                                    </div>
-                                                                ) : null}
-
-                                                                {ApproverData != undefined &&
-                                                                    ApproverData.length > 0 ? (
-                                                                    <div>
-                                                                        {ApproverData.map(
-                                                                            (Approver: any, index: number) => {
-                                                                                return (
-                                                                                    <div className="block w-100">
-                                                                                        <a
-                                                                                            className="hreflink wid90"
-                                                                                            target="_blank"
-                                                                                            data-interception="off"
-                                                                                        >
-                                                                                            {Approver.Title}
-                                                                                        </a>
-                                                                                        <span
-                                                                                            onClick={() =>
-                                                                                                setApproverData([])
-                                                                                            }
-                                                                                            className="bg-light ml-auto hreflink svg__icon--cross svg__iconbox"
-                                                                                        ></span>
-                                                                                    </div>
-                                                                                );
-                                                                            }
-                                                                        )}
                                                                     </div>
                                                                 ) : null}
                                                             </div>
@@ -6308,13 +6387,39 @@ const EditTaskPopup = (Items: any) => {
                                                         <label className="form-label full-width">
                                                             Project
                                                         </label>
-                                                        <input
-                                                            type="text"
-                                                            className="form-control"
-                                                            placeholder="Search Project Here"
-                                                            value={ProjectSearchKey}
-                                                            onChange={(e) => autoSuggestionsForProject(e)}
-                                                        />
+                                                        {selectedProject != undefined &&
+                                                            selectedProject.length > 0 ? (
+                                                            <>
+                                                                {selectedProject?.map((ProjectData: any) => {
+                                                                    return (
+                                                                        <>
+                                                                            {ProjectData.Title != undefined ? (
+                                                                                <div className="full-width replaceInput alignCenter">
+                                                                                    <a
+
+                                                                                        target="_blank"
+                                                                                        title={ProjectData.Title}
+                                                                                        data-interception="off"
+                                                                                        className="textDotted hreflink"
+                                                                                        href={`${siteUrls}/SitePages/Project-Management.aspx?ProjectId=${ProjectData.Id}`}
+                                                                                    >
+                                                                                        {ProjectData.Title}
+                                                                                    </a>
+                                                                                </div>
+                                                                            ) : null}
+                                                                        </>
+                                                                    );
+                                                                })}
+                                                            </>
+                                                        ) :
+                                                            <input
+                                                                type="text"
+                                                                className="form-control"
+                                                                placeholder="Search Project Here"
+                                                                value={ProjectSearchKey}
+                                                                onChange={(e) => autoSuggestionsForProject(e)}
+                                                            />
+                                                        }
                                                         <span
                                                             className="input-group-text"
                                                             onClick={() => setProjectManagementPopup(true)}
@@ -6342,33 +6447,7 @@ const EditTaskPopup = (Items: any) => {
                                                             </ul>
                                                         </div>
                                                     ) : null}
-                                                    {selectedProject != undefined &&
-                                                        selectedProject.length > 0 ? (
-                                                        <div>
-                                                            {selectedProject.map((ProjectData: any) => {
-                                                                return (
-                                                                    <div>
-                                                                        {ProjectData.Title != undefined ? (
-                                                                            <div className="block w-100">
-                                                                                <a
-                                                                                    className="hreflink wid90"
-                                                                                    target="_blank"
-                                                                                    data-interception="off"
-                                                                                    href={`https://hhhhteams.sharepoint.com/sites/HHHH/SP/SitePages/Project-Management.aspx?ProjectId=${ProjectData.Id}`}
-                                                                                >
-                                                                                    {ProjectData.Title}
-                                                                                </a>
-                                                                                <span
-                                                                                    onClick={() => setSelectedProject([])}
-                                                                                    className="bg-light hreflink ml-auto svg__icon--cross svg__iconbox"
-                                                                                ></span>
-                                                                            </div>
-                                                                        ) : null}
-                                                                    </div>
-                                                                );
-                                                            })}
-                                                        </div>
-                                                    ) : null}
+
                                                 </div>
                                             </div>
                                         </div>
@@ -6671,9 +6750,9 @@ const EditTaskPopup = (Items: any) => {
                                                     </ul>
                                                 </div>
                                             </div>
-                                            <div className="col mt-2">
+                                            <div className="col mt-2 ps-0">
                                                 <div className="input-group">
-                                                    <label className="form-label full-width  mx-2">
+                                                    <label className="form-label full-width">
                                                         {EditData.TaskAssignedUsers?.length > 0
                                                             ? "Working Member"
                                                             : ""}
@@ -6688,7 +6767,7 @@ const EditTaskPopup = (Items: any) => {
                                                                         href={`${siteUrls}/SitePages/TaskDashboard.aspx?UserId=${userDtl.AssingedToUserId}&Name=${userDtl.Title}`}
                                                                     >
                                                                         <img
-                                                                            className="ProirityAssignedUserPhoto ms-2"
+                                                                            className="ProirityAssignedUserPhoto me-2"
                                                                             data-bs-placement="bottom"
                                                                             title={userDtl.Title ? userDtl.Title : ""}
                                                                             src={
@@ -7729,60 +7808,46 @@ const EditTaskPopup = (Items: any) => {
                                                                     <div className="full-width">
                                                                         {TaggedPortfolioData?.map((com: any) => {
                                                                             return (
-                                                                                <>
-                                                                                    <div className="block w-100">
-                                                                                        <a
-                                                                                            className="wid90"
-                                                                                            title={com.Title}
-                                                                                            style={{
-                                                                                                color: "#fff !important",
-                                                                                            }}
-                                                                                            target="_blank"
-                                                                                            data-interception="off"
-                                                                                            href={`${siteUrls}/SitePages/Portfolio-Profile.aspx?taskId=${com.Id}`}
-                                                                                        >
-                                                                                            {com.Title}
-                                                                                        </a>
-
-                                                                                        <span
-                                                                                            onClick={() =>
-                                                                                                setTaggedPortfolioData([])
-                                                                                            }
-                                                                                            className="bg-light ml-auto hreflink svg__icon--cross svg__iconbox"
-                                                                                        ></span>
-                                                                                    </div>
-                                                                                </>
+                                                                                <div className="full-width replaceInput alignCenter">
+                                                                                    <a
+                                                                                        title={com.Title}
+                                                                                        target="_blank"
+                                                                                        data-interception="off"
+                                                                                        className="textDotted"
+                                                                                        href={`${siteUrls}/SitePages/Portfolio-Profile.aspx?taskId=${com.Id}`}
+                                                                                    >
+                                                                                        {com.Title}
+                                                                                    </a>
+                                                                                </div>
                                                                             );
                                                                         })}
                                                                     </div>
                                                                 ) : (
-                                                                    <>
-                                                                        <input
-                                                                            type="text"
-                                                                            className="form-control"
-                                                                            value={SearchedServiceCompnentKey}
-                                                                            onChange={(e) =>
-                                                                                autoSuggestionsForServiceAndComponent(
-                                                                                    e,
-                                                                                    "Portfolio"
-                                                                                )
-                                                                            }
-                                                                            placeholder="Search Portfolio Items"
-                                                                        />
-                                                                        <span className="input-group-text">
-                                                                            <span
-                                                                                title="Component Popup"
-                                                                                onClick={() =>
-                                                                                    OpenTeamPortfolioPopupFunction(
-                                                                                        EditData,
-                                                                                        "Portfolio"
-                                                                                    )
-                                                                                }
-                                                                                className="svg__iconbox svg__icon--editBox"
-                                                                            ></span>
-                                                                        </span>
-                                                                    </>
+                                                                    <input
+                                                                        type="text"
+                                                                        className="form-control"
+                                                                        value={SearchedServiceCompnentKey}
+                                                                        onChange={(e) =>
+                                                                            autoSuggestionsForServiceAndComponent(
+                                                                                e,
+                                                                                "Portfolio"
+                                                                            )
+                                                                        }
+                                                                        placeholder="Search Portfolio Item"
+                                                                    />
                                                                 )}
+                                                                <span className="input-group-text">
+                                                                    <span
+                                                                        title="Component Popup"
+                                                                        onClick={() =>
+                                                                            OpenTeamPortfolioPopupFunction(
+                                                                                EditData,
+                                                                                "Portfolio"
+                                                                            )
+                                                                        }
+                                                                        className="svg__iconbox svg__icon--editBox"
+                                                                    ></span>
+                                                                </span>
                                                             </div>
                                                             {SearchedServiceCompnentData?.length > 0 ? (
                                                                 <div className="SmartTableOnTaskPopup">
@@ -7814,16 +7879,127 @@ const EditTaskPopup = (Items: any) => {
                                                                 <label className="form-label full-width">
                                                                     Categories
                                                                 </label>
-                                                                <input
-                                                                    type="text"
-                                                                    className="form-control"
-                                                                    id="txtCategories"
-                                                                    placeholder="Search Category Here"
-                                                                    value={categorySearchKey}
-                                                                    onChange={(e) =>
-                                                                        autoSuggestionsForCategory(e)
-                                                                    }
-                                                                />
+                                                                {ShareWebTypeData?.length > 1 ? <>
+                                                                    <input
+                                                                        type="text"
+                                                                        className="form-control"
+                                                                        id="txtCategories"
+                                                                        placeholder="Search Category Here"
+                                                                        value={categorySearchKey}
+                                                                        onChange={(e) => autoSuggestionsForCategory(e)}
+                                                                    />
+                                                                    {SearchedCategoryData?.length > 0 ? (
+                                                                        <div className="SmartTableOnTaskPopup w-100" style={{ marginTop: "53px" }}>
+                                                                            <ul className="list-group">
+                                                                                {SearchedCategoryData.map((item: any) => {
+                                                                                    return (
+                                                                                        <li
+                                                                                            className="hreflink list-group-item rounded-0 list-group-item-action"
+                                                                                            key={item.id}
+                                                                                            onClick={() =>
+                                                                                                setSelectedCategoryData(
+                                                                                                    [item],
+                                                                                                    "For-Auto-Search"
+                                                                                                )
+                                                                                            }
+                                                                                        >
+                                                                                            <a>{item.Newlabel}</a>
+                                                                                        </li>
+                                                                                    );
+                                                                                })}
+                                                                            </ul>
+                                                                        </div>
+                                                                    ) : null}
+                                                                    {ShareWebTypeData?.map(
+                                                                        (type: any, index: number) => {
+                                                                            if (
+                                                                                type.Title != "Phone" &&
+                                                                                type.Title != "Email Notification" &&
+                                                                                type.Title != "Immediate" &&
+                                                                                type.Title != "Approval" &&
+                                                                                type.Title != "Email" &&
+                                                                                type.Title != "Only Completed"
+                                                                            ) {
+                                                                                return (
+                                                                                    <div className="block w-100">
+                                                                                        <a
+                                                                                            style={{ color: "#fff !important" }}
+                                                                                            className="textDotted"
+                                                                                        >
+                                                                                            {type.Title}
+                                                                                        </a>
+                                                                                        <span
+                                                                                            onClick={() =>
+                                                                                                removeCategoryItem(
+                                                                                                    type.Title,
+                                                                                                    type.Id
+                                                                                                )
+                                                                                            }
+                                                                                            className="bg-light hreflink ml-auto svg__icon--cross svg__iconbox"
+                                                                                        ></span>
+                                                                                    </div>
+                                                                                );
+                                                                            }
+                                                                        }
+                                                                    )}</> :
+                                                                    <>
+                                                                        {ShareWebTypeData?.length == 1 ?
+
+                                                                            <div className="full-width">
+                                                                                {ShareWebTypeData?.map((CategoryItem: any) => {
+                                                                                    return (
+                                                                                        <div className="full-width replaceInput alignCenter">
+                                                                                            <a
+                                                                                                title={CategoryItem.Title}
+                                                                                                target="_blank"
+                                                                                                data-interception="off"
+                                                                                                className="textDotted"
+                                                                                            >
+                                                                                                {CategoryItem.Title}
+                                                                                            </a>
+                                                                                        </div>
+                                                                                    );
+                                                                                })}
+                                                                            </div>
+                                                                            :
+                                                                            <>
+                                                                                <input
+                                                                                    type="text"
+                                                                                    className="form-control"
+                                                                                    id="txtCategories"
+                                                                                    placeholder="Search Category Here"
+                                                                                    value={categorySearchKey}
+                                                                                    onChange={(e) => autoSuggestionsForCategory(e)}
+                                                                                />
+                                                                                {SearchedCategoryData?.length > 0 ? (
+                                                                                    <div className="SmartTableOnTaskPopup">
+                                                                                        <ul className="list-group">
+                                                                                            {SearchedCategoryData.map((item: any) => {
+                                                                                                return (
+                                                                                                    <li
+                                                                                                        className="hreflink list-group-item rounded-0 list-group-item-action"
+                                                                                                        key={item.id}
+                                                                                                        onClick={() =>
+                                                                                                            setSelectedCategoryData(
+                                                                                                                [item],
+                                                                                                                "For-Auto-Search"
+                                                                                                            )
+                                                                                                        }
+                                                                                                    >
+                                                                                                        <a>{item.Newlabel}</a>
+                                                                                                    </li>
+                                                                                                );
+                                                                                            })}
+                                                                                        </ul>
+                                                                                    </div>
+                                                                                ) : null}
+                                                                            </>
+                                                                        }
+
+                                                                    </>
+
+                                                                }
+
                                                                 <span
                                                                     className="input-group-text"
                                                                     title="Smart Category Popup"
@@ -7834,28 +8010,6 @@ const EditTaskPopup = (Items: any) => {
                                                                     <span className="svg__iconbox svg__icon--editBox"></span>
                                                                 </span>
                                                             </div>
-                                                            {SearchedCategoryData?.length > 0 ? (
-                                                                <div className="SmartTableOnTaskPopup">
-                                                                    <ul className="list-group">
-                                                                        {SearchedCategoryData.map((item: any) => {
-                                                                            return (
-                                                                                <li
-                                                                                    className="hreflink list-group-item rounded-0 list-group-item-action"
-                                                                                    key={item.id}
-                                                                                    onClick={() =>
-                                                                                        setSelectedCategoryData(
-                                                                                            [item],
-                                                                                            "For-Auto-Search"
-                                                                                        )
-                                                                                    }
-                                                                                >
-                                                                                    <a>{item.Newlabel}</a>
-                                                                                </li>
-                                                                            );
-                                                                        })}
-                                                                    </ul>
-                                                                </div>
-                                                            ) : null}
                                                             <div className="col">
                                                                 <div className="col">
                                                                     <div className="form-check">
@@ -8006,18 +8160,39 @@ const EditTaskPopup = (Items: any) => {
                                                                         <div className="col-12">
                                                                             <div className="input-group">
                                                                                 <label className="form-label full-width"></label>
-                                                                                <input
-                                                                                    type="text"
-                                                                                    className="form-control"
-                                                                                    placeholder="Search Approver's Name Here"
-                                                                                    value={ApproverSearchKey}
-                                                                                    onChange={(e) =>
-                                                                                        autoSuggestionsForApprover(
-                                                                                            e,
-                                                                                            "OnTaskPopup"
-                                                                                        )
-                                                                                    }
-                                                                                />
+                                                                                {ApproverData != undefined &&
+                                                                                    ApproverData.length > 0 ? (
+                                                                                    <>
+                                                                                        {ApproverData.map(
+                                                                                            (Approver: any, index: number) => {
+                                                                                                return (
+                                                                                                    <div className="full-width replaceInput alignCenter">
+                                                                                                        <a
+                                                                                                            className="hreflink textDotted"
+                                                                                                            target="_blank"
+                                                                                                            data-interception="off"
+                                                                                                        >
+                                                                                                            {Approver.Title}
+                                                                                                        </a>
+                                                                                                    </div>
+                                                                                                );
+                                                                                            }
+                                                                                        )}
+                                                                                    </>
+                                                                                ) :
+                                                                                    <input
+                                                                                        type="text"
+                                                                                        className="form-control"
+                                                                                        placeholder="Search Approver's Name Here"
+                                                                                        value={ApproverSearchKey}
+                                                                                        onChange={(e) =>
+                                                                                            autoSuggestionsForApprover(
+                                                                                                e,
+                                                                                                "OnTaskPopup"
+                                                                                            )
+                                                                                        }
+                                                                                    />
+                                                                                }
                                                                                 <span
                                                                                     className="input-group-text mt--10"
                                                                                     onClick={OpenApproverPopupFunction}
@@ -8050,32 +8225,7 @@ const EditTaskPopup = (Items: any) => {
                                                                                 </div>
                                                                             ) : null}
 
-                                                                            {ApproverData != undefined &&
-                                                                                ApproverData.length > 0 ? (
-                                                                                <div>
-                                                                                    {ApproverData.map(
-                                                                                        (Approver: any, index: number) => {
-                                                                                            return (
-                                                                                                <div className="block w-100">
-                                                                                                    <a
-                                                                                                        className="hreflink w-90"
-                                                                                                        target="_blank"
-                                                                                                        data-interception="off"
-                                                                                                    >
-                                                                                                        {Approver.Title}
-                                                                                                    </a>
-                                                                                                    <span
-                                                                                                        onClick={() =>
-                                                                                                            setApproverData([])
-                                                                                                        }
-                                                                                                        className="bg-light ml-auto hreflink svg__icon--cross svg__iconbox"
-                                                                                                    ></span>
-                                                                                                </div>
-                                                                                            );
-                                                                                        }
-                                                                                    )}
-                                                                                </div>
-                                                                            ) : null}
+
                                                                         </div>
                                                                         <div className="Approval-History-section my-2">
                                                                             {ApproverHistoryData != undefined &&
@@ -8344,7 +8494,30 @@ const EditTaskPopup = (Items: any) => {
                                                                     <label className="form-label full-width">
                                                                         Project
                                                                     </label>
-                                                                    <input
+                                                                    {selectedProject != undefined &&
+                                                                        selectedProject.length > 0 ? (
+                                                                        <>
+                                                                            {selectedProject.map((ProjectData: any) => {
+                                                                                return (
+                                                                                    <>
+                                                                                        {ProjectData.Title != undefined ? (
+                                                                                            <div className="replaceInput alignCenter w-100">
+                                                                                                <a
+                                                                                                    className="hreflink textDotted"
+                                                                                                    target="_blank"
+                                                                                                    title={ProjectData.Title}
+                                                                                                    data-interception="off"
+                                                                                                    href={`${siteUrls}/SitePages/Project-Management.aspx?ProjectId=${ProjectData.Id}`}
+                                                                                                >
+                                                                                                    {ProjectData.Title}
+                                                                                                </a>
+                                                                                            </div>
+                                                                                        ) : null}
+                                                                                    </>
+                                                                                );
+                                                                            })}
+                                                                        </>
+                                                                    ) : <input
                                                                         type="text"
                                                                         className="form-control"
                                                                         placeholder="Search Project Here"
@@ -8352,7 +8525,8 @@ const EditTaskPopup = (Items: any) => {
                                                                         onChange={(e) =>
                                                                             autoSuggestionsForProject(e)
                                                                         }
-                                                                    />
+                                                                    />}
+
                                                                     <span
                                                                         className="input-group-text"
                                                                         onClick={() =>
@@ -8384,35 +8558,7 @@ const EditTaskPopup = (Items: any) => {
                                                                         </ul>
                                                                     </div>
                                                                 ) : null}
-                                                                {selectedProject != undefined &&
-                                                                    selectedProject.length > 0 ? (
-                                                                    <div>
-                                                                        {selectedProject.map((ProjectData: any) => {
-                                                                            return (
-                                                                                <div>
-                                                                                    {ProjectData.Title != undefined ? (
-                                                                                        <div className="block w-100">
-                                                                                            <a
-                                                                                                className="hreflink wid90"
-                                                                                                target="_blank"
-                                                                                                data-interception="off"
-                                                                                                href={`https://hhhhteams.sharepoint.com/sites/HHHH/SP/SitePages/Project-Management.aspx?ProjectId=${ProjectData.Id}`}
-                                                                                            >
-                                                                                                {ProjectData.Title}
-                                                                                            </a>
-                                                                                            <span
-                                                                                                onClick={() =>
-                                                                                                    setSelectedProject([])
-                                                                                                }
-                                                                                                className="bg-light hreflink ml-auto svg__icon--cross svg__iconbox"
-                                                                                            ></span>
-                                                                                        </div>
-                                                                                    ) : null}
-                                                                                </div>
-                                                                            );
-                                                                        })}
-                                                                    </div>
-                                                                ) : null}
+
                                                             </div>
                                                         </div>
                                                     </div>
@@ -8743,9 +8889,9 @@ const EditTaskPopup = (Items: any) => {
                                                                 </ul>
                                                             </div>
                                                         </div>
-                                                        <div className="col mt-2">
+                                                        <div className="col mt-2 ps-0">
                                                             <div className="input-group">
-                                                                <label className="form-label full-width  mx-2">
+                                                                <label className="form-label full-width">
                                                                     {EditData.TaskAssignedUsers?.length > 0
                                                                         ? "Working Member"
                                                                         : ""}
@@ -8760,7 +8906,7 @@ const EditTaskPopup = (Items: any) => {
                                                                                     href={`${siteUrls}/SitePages/TaskDashboard.aspx?UserId=${userDtl.AssingedToUserId}&Name=${userDtl.Title}`}
                                                                                 >
                                                                                     <img
-                                                                                        className="ProirityAssignedUserPhoto ms-2"
+                                                                                        className="ProirityAssignedUserPhoto me-2"
                                                                                         data-bs-placement="bottom"
                                                                                         title={
                                                                                             userDtl.Title ? userDtl.Title : ""
