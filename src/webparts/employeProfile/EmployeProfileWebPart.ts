@@ -20,6 +20,7 @@ export interface IEmployeProfileWebPartProps {
   MAIN_HR_LISTID:'6DD8038B-40D2-4412-B28D-1C86528C7842',
   GMBH_CONTACT_SEARCH_LISTID:'6CE99A82-F577-4467-9CDA-613FADA2296F',
   HR_EMPLOYEE_DETAILS_LIST_ID:'a7b80424-e5e1-47c6-80a1-0ee44a70f92c',
+  ContractListID:'c0106d10-a71c-4153-b204-7cf7b45a68b8',
 }
 
 export default class EmployeProfileWebPart extends BaseClientSideWebPart<IEmployeProfileWebPartProps> {
@@ -40,6 +41,7 @@ export default class EmployeProfileWebPart extends BaseClientSideWebPart<IEmploy
         MAIN_HR_LISTID:'6DD8038B-40D2-4412-B28D-1C86528C7842',
         GMBH_CONTACT_SEARCH_LISTID:'6CE99A82-F577-4467-9CDA-613FADA2296F',
         HR_EMPLOYEE_DETAILS_LIST_ID:'a7b80424-e5e1-47c6-80a1-0ee44a70f92c',
+        ContractListID:'c0106d10-a71c-4153-b204-7cf7b45a68b8',
         environmentMessage: this._environmentMessage,
         hasTeamsContext: !!this.context.sdks.microsoftTeams,
         userDisplayName: this.context.pageContext.user.loginName
@@ -137,7 +139,10 @@ export default class EmployeProfileWebPart extends BaseClientSideWebPart<IEmploy
                 }),
                 PropertyPaneTextField('HR_EMPLOYEE_DETAILS_LIST_ID', {
                   label: "Hr Employee Details ListId"
-                })
+                }),
+                PropertyPaneTextField('ContractListID', {
+                  label: 'ContractListID'
+                }),
               ]
             }
           ]

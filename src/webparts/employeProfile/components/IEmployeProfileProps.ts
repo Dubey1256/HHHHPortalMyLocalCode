@@ -3,6 +3,7 @@ export interface IEmployeProfileProps {
   isDarkTheme: boolean;
   Context: any
   HHHHContactListId:any,
+  ContractListID:any
   HHHHInstitutionListId:any,
   MAIN_SMARTMETADATA_LISTID:any,
   MAIN_HR_LISTID:any,
