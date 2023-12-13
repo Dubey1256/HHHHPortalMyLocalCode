@@ -910,7 +910,9 @@ const EditTaskPopup = (Items: any) => {
                         item.Categories == "Design" ||
                         item.Categories == "Design;" ||
                         item.Categories == "Design;Approval" ||
-                        item.Categories == "Design;Approval;"
+                        item.Categories == "Design;Approval;" ||
+                        item.Categories == "Approval;Design;" ||
+                        item.Categories == "Approval;Design"
                     ) {
                         DesignCheck = item.Categories.search("Design");
                     }
@@ -5731,6 +5733,7 @@ const EditTaskPopup = (Items: any) => {
                                                                             title={com.Title}
                                                                             target="_blank"
                                                                             data-interception="off"
+                                                                            className="textDotted"
                                                                             href={`${siteUrls}/SitePages/Portfolio-Profile.aspx?taskId=${com.Id}`}
                                                                         >
                                                                             {com.Title}
@@ -5795,14 +5798,127 @@ const EditTaskPopup = (Items: any) => {
                                                     <label className="form-label full-width">
                                                         Categories
                                                     </label>
-                                                    <input
-                                                        type="text"
-                                                        className="form-control"
-                                                        id="txtCategories"
-                                                        placeholder="Search Category Here"
-                                                        value={categorySearchKey}
-                                                        onChange={(e) => autoSuggestionsForCategory(e)}
-                                                    />
+                                                    {ShareWebTypeData?.length > 1 ? <>
+                                                        <input
+                                                            type="text"
+                                                            className="form-control"
+                                                            id="txtCategories"
+                                                            placeholder="Search Category Here"
+                                                            value={categorySearchKey}
+                                                            onChange={(e) => autoSuggestionsForCategory(e)}
+                                                        />
+                                                        {SearchedCategoryData?.length > 0 ? (
+                                                            <div className="SmartTableOnTaskPopup w-100" style={{ marginTop: "53px" }}>
+                                                                <ul className="list-group">
+                                                                    {SearchedCategoryData.map((item: any) => {
+                                                                        return (
+                                                                            <li
+                                                                                className="hreflink list-group-item rounded-0 list-group-item-action"
+                                                                                key={item.id}
+                                                                                onClick={() =>
+                                                                                    setSelectedCategoryData(
+                                                                                        [item],
+                                                                                        "For-Auto-Search"
+                                                                                    )
+                                                                                }
+                                                                            >
+                                                                                <a>{item.Newlabel}</a>
+                                                                            </li>
+                                                                        );
+                                                                    })}
+                                                                </ul>
+                                                            </div>
+                                                        ) : null}
+                                                        {ShareWebTypeData?.map(
+                                                            (type: any, index: number) => {
+                                                                if (
+                                                                    type.Title != "Phone" &&
+                                                                    type.Title != "Email Notification" &&
+                                                                    type.Title != "Immediate" &&
+                                                                    type.Title != "Approval" &&
+                                                                    type.Title != "Email" &&
+                                                                    type.Title != "Only Completed"
+                                                                ) {
+                                                                    return (
+                                                                        <div className="block w-100">
+                                                                            <a
+                                                                                style={{ color: "#fff !important" }}
+                                                                                className="textDotted"
+                                                                            >
+                                                                                {type.Title}
+                                                                            </a>
+                                                                            <span
+                                                                                onClick={() =>
+                                                                                    removeCategoryItem(
+                                                                                        type.Title,
+                                                                                        type.Id
+                                                                                    )
+                                                                                }
+                                                                                className="bg-light hreflink ml-auto svg__icon--cross svg__iconbox"
+                                                                            ></span>
+                                                                        </div>
+                                                                    );
+                                                                }
+                                                            }
+                                                        )}</> :
+                                                        <>
+                                                            {ShareWebTypeData?.length == 1 ?
+
+                                                                <div className="full-width">
+                                                                    {ShareWebTypeData?.map((CategoryItem: any) => {
+                                                                        return (
+                                                                            <div className="full-width replaceInput alignCenter">
+                                                                                <a
+                                                                                    title={CategoryItem.Title}
+                                                                                    target="_blank"
+                                                                                    data-interception="off"
+                                                                                    className="textDotted"
+                                                                                >
+                                                                                    {CategoryItem.Title}
+                                                                                </a>
+                                                                            </div>
+                                                                        );
+                                                                    })}
+                                                                </div>
+                                                                :
+                                                                <>
+                                                                    <input
+                                                                        type="text"
+                                                                        className="form-control"
+                                                                        id="txtCategories"
+                                                                        placeholder="Search Category Here"
+                                                                        value={categorySearchKey}
+                                                                        onChange={(e) => autoSuggestionsForCategory(e)}
+                                                                    />
+                                                                    {SearchedCategoryData?.length > 0 ? (
+                                                                        <div className="SmartTableOnTaskPopup">
+                                                                            <ul className="list-group">
+                                                                                {SearchedCategoryData.map((item: any) => {
+                                                                                    return (
+                                                                                        <li
+                                                                                            className="hreflink list-group-item rounded-0 list-group-item-action"
+                                                                                            key={item.id}
+                                                                                            onClick={() =>
+                                                                                                setSelectedCategoryData(
+                                                                                                    [item],
+                                                                                                    "For-Auto-Search"
+                                                                                                )
+                                                                                            }
+                                                                                        >
+                                                                                            <a>{item.Newlabel}</a>
+                                                                                        </li>
+                                                                                    );
+                                                                                })}
+                                                                            </ul>
+                                                                        </div>
+                                                                    ) : null}
+                                                                </>
+                                                            }
+
+                                                        </>
+
+                                                    }
+
                                                     <span
                                                         className="input-group-text"
                                                         title="Smart Category Popup"
@@ -5813,28 +5929,7 @@ const EditTaskPopup = (Items: any) => {
                                                         <span className="svg__iconbox svg__icon--editBox"></span>
                                                     </span>
                                                 </div>
-                                                {SearchedCategoryData?.length > 0 ? (
-                                                    <div className="SmartTableOnTaskPopup">
-                                                        <ul className="list-group">
-                                                            {SearchedCategoryData.map((item: any) => {
-                                                                return (
-                                                                    <li
-                                                                        className="hreflink list-group-item rounded-0 list-group-item-action"
-                                                                        key={item.id}
-                                                                        onClick={() =>
-                                                                            setSelectedCategoryData(
-                                                                                [item],
-                                                                                "For-Auto-Search"
-                                                                            )
-                                                                        }
-                                                                    >
-                                                                        <a>{item.Newlabel}</a>
-                                                                    </li>
-                                                                );
-                                                            })}
-                                                        </ul>
-                                                    </div>
-                                                ) : null}
+
                                                 <div className="col">
                                                     <div className="col">
                                                         <div className="form-check">
@@ -5884,7 +5979,7 @@ const EditTaskPopup = (Items: any) => {
                                                             />
                                                             <label>Immediate</label>
                                                         </div>
-                                                        {ShareWebTypeData != undefined &&
+                                                        {/* {ShareWebTypeData != undefined &&
                                                             ShareWebTypeData?.length > 0 ? (
                                                             <div>
                                                                 {ShareWebTypeData?.map(
@@ -5920,7 +6015,7 @@ const EditTaskPopup = (Items: any) => {
                                                                     }
                                                                 )}
                                                             </div>
-                                                        ) : null}
+                                                        ) : null} */}
                                                     </div>
                                                     <div className="form-check mt-2">
                                                         <label className="full-width">Approval</label>
@@ -6301,13 +6396,14 @@ const EditTaskPopup = (Items: any) => {
                                                                             {ProjectData.Title != undefined ? (
                                                                                 <div className="full-width replaceInput alignCenter">
                                                                                     <a
-                                                                                        className="hreflink"
+
                                                                                         target="_blank"
                                                                                         title={ProjectData.Title}
                                                                                         data-interception="off"
+                                                                                        className="textDotted hreflink"
                                                                                         href={`${siteUrls}/SitePages/Project-Management.aspx?ProjectId=${ProjectData.Id}`}
                                                                                     >
-                                                                                        {ProjectData.Title?.length > 0 ? ProjectData.Title?.slice(0, 28) + "..." : ""}
+                                                                                        {ProjectData.Title}
                                                                                     </a>
                                                                                 </div>
                                                                             ) : null}
@@ -6654,9 +6750,9 @@ const EditTaskPopup = (Items: any) => {
                                                     </ul>
                                                 </div>
                                             </div>
-                                            <div className="col mt-2">
+                                            <div className="col mt-2 ps-0">
                                                 <div className="input-group">
-                                                    <label className="form-label full-width  mx-2">
+                                                    <label className="form-label full-width">
                                                         {EditData.TaskAssignedUsers?.length > 0
                                                             ? "Working Member"
                                                             : ""}
@@ -6671,7 +6767,7 @@ const EditTaskPopup = (Items: any) => {
                                                                         href={`${siteUrls}/SitePages/TaskDashboard.aspx?UserId=${userDtl.AssingedToUserId}&Name=${userDtl.Title}`}
                                                                     >
                                                                         <img
-                                                                            className="ProirityAssignedUserPhoto ms-2"
+                                                                            className="ProirityAssignedUserPhoto me-2"
                                                                             data-bs-placement="bottom"
                                                                             title={userDtl.Title ? userDtl.Title : ""}
                                                                             src={
@@ -7717,6 +7813,7 @@ const EditTaskPopup = (Items: any) => {
                                                                                         title={com.Title}
                                                                                         target="_blank"
                                                                                         data-interception="off"
+                                                                                        className="textDotted"
                                                                                         href={`${siteUrls}/SitePages/Portfolio-Profile.aspx?taskId=${com.Id}`}
                                                                                     >
                                                                                         {com.Title}
@@ -7782,16 +7879,127 @@ const EditTaskPopup = (Items: any) => {
                                                                 <label className="form-label full-width">
                                                                     Categories
                                                                 </label>
-                                                                <input
-                                                                    type="text"
-                                                                    className="form-control"
-                                                                    id="txtCategories"
-                                                                    placeholder="Search Category Here"
-                                                                    value={categorySearchKey}
-                                                                    onChange={(e) =>
-                                                                        autoSuggestionsForCategory(e)
-                                                                    }
-                                                                />
+                                                                {ShareWebTypeData?.length > 1 ? <>
+                                                                    <input
+                                                                        type="text"
+                                                                        className="form-control"
+                                                                        id="txtCategories"
+                                                                        placeholder="Search Category Here"
+                                                                        value={categorySearchKey}
+                                                                        onChange={(e) => autoSuggestionsForCategory(e)}
+                                                                    />
+                                                                    {SearchedCategoryData?.length > 0 ? (
+                                                                        <div className="SmartTableOnTaskPopup w-100" style={{ marginTop: "53px" }}>
+                                                                            <ul className="list-group">
+                                                                                {SearchedCategoryData.map((item: any) => {
+                                                                                    return (
+                                                                                        <li
+                                                                                            className="hreflink list-group-item rounded-0 list-group-item-action"
+                                                                                            key={item.id}
+                                                                                            onClick={() =>
+                                                                                                setSelectedCategoryData(
+                                                                                                    [item],
+                                                                                                    "For-Auto-Search"
+                                                                                                )
+                                                                                            }
+                                                                                        >
+                                                                                            <a>{item.Newlabel}</a>
+                                                                                        </li>
+                                                                                    );
+                                                                                })}
+                                                                            </ul>
+                                                                        </div>
+                                                                    ) : null}
+                                                                    {ShareWebTypeData?.map(
+                                                                        (type: any, index: number) => {
+                                                                            if (
+                                                                                type.Title != "Phone" &&
+                                                                                type.Title != "Email Notification" &&
+                                                                                type.Title != "Immediate" &&
+                                                                                type.Title != "Approval" &&
+                                                                                type.Title != "Email" &&
+                                                                                type.Title != "Only Completed"
+                                                                            ) {
+                                                                                return (
+                                                                                    <div className="block w-100">
+                                                                                        <a
+                                                                                            style={{ color: "#fff !important" }}
+                                                                                            className="textDotted"
+                                                                                        >
+                                                                                            {type.Title}
+                                                                                        </a>
+                                                                                        <span
+                                                                                            onClick={() =>
+                                                                                                removeCategoryItem(
+                                                                                                    type.Title,
+                                                                                                    type.Id
+                                                                                                )
+                                                                                            }
+                                                                                            className="bg-light hreflink ml-auto svg__icon--cross svg__iconbox"
+                                                                                        ></span>
+                                                                                    </div>
+                                                                                );
+                                                                            }
+                                                                        }
+                                                                    )}</> :
+                                                                    <>
+                                                                        {ShareWebTypeData?.length == 1 ?
+
+                                                                            <div className="full-width">
+                                                                                {ShareWebTypeData?.map((CategoryItem: any) => {
+                                                                                    return (
+                                                                                        <div className="full-width replaceInput alignCenter">
+                                                                                            <a
+                                                                                                title={CategoryItem.Title}
+                                                                                                target="_blank"
+                                                                                                data-interception="off"
+                                                                                                className="textDotted"
+                                                                                            >
+                                                                                                {CategoryItem.Title}
+                                                                                            </a>
+                                                                                        </div>
+                                                                                    );
+                                                                                })}
+                                                                            </div>
+                                                                            :
+                                                                            <>
+                                                                                <input
+                                                                                    type="text"
+                                                                                    className="form-control"
+                                                                                    id="txtCategories"
+                                                                                    placeholder="Search Category Here"
+                                                                                    value={categorySearchKey}
+                                                                                    onChange={(e) => autoSuggestionsForCategory(e)}
+                                                                                />
+                                                                                {SearchedCategoryData?.length > 0 ? (
+                                                                                    <div className="SmartTableOnTaskPopup">
+                                                                                        <ul className="list-group">
+                                                                                            {SearchedCategoryData.map((item: any) => {
+                                                                                                return (
+                                                                                                    <li
+                                                                                                        className="hreflink list-group-item rounded-0 list-group-item-action"
+                                                                                                        key={item.id}
+                                                                                                        onClick={() =>
+                                                                                                            setSelectedCategoryData(
+                                                                                                                [item],
+                                                                                                                "For-Auto-Search"
+                                                                                                            )
+                                                                                                        }
+                                                                                                    >
+                                                                                                        <a>{item.Newlabel}</a>
+                                                                                                    </li>
+                                                                                                );
+                                                                                            })}
+                                                                                        </ul>
+                                                                                    </div>
+                                                                                ) : null}
+                                                                            </>
+                                                                        }
+
+                                                                    </>
+
+                                                                }
+
                                                                 <span
                                                                     className="input-group-text"
                                                                     title="Smart Category Popup"
@@ -7802,28 +8010,6 @@ const EditTaskPopup = (Items: any) => {
                                                                     <span className="svg__iconbox svg__icon--editBox"></span>
                                                                 </span>
                                                             </div>
-                                                            {SearchedCategoryData?.length > 0 ? (
-                                                                <div className="SmartTableOnTaskPopup">
-                                                                    <ul className="list-group">
-                                                                        {SearchedCategoryData.map((item: any) => {
-                                                                            return (
-                                                                                <li
-                                                                                    className="hreflink list-group-item rounded-0 list-group-item-action"
-                                                                                    key={item.id}
-                                                                                    onClick={() =>
-                                                                                        setSelectedCategoryData(
-                                                                                            [item],
-                                                                                            "For-Auto-Search"
-                                                                                        )
-                                                                                    }
-                                                                                >
-                                                                                    <a>{item.Newlabel}</a>
-                                                                                </li>
-                                                                            );
-                                                                        })}
-                                                                    </ul>
-                                                                </div>
-                                                            ) : null}
                                                             <div className="col">
                                                                 <div className="col">
                                                                     <div className="form-check">
@@ -7982,7 +8168,7 @@ const EditTaskPopup = (Items: any) => {
                                                                                                 return (
                                                                                                     <div className="full-width replaceInput alignCenter">
                                                                                                         <a
-                                                                                                            className="hreflink"
+                                                                                                            className="hreflink textDotted"
                                                                                                             target="_blank"
                                                                                                             data-interception="off"
                                                                                                         >
@@ -8315,15 +8501,15 @@ const EditTaskPopup = (Items: any) => {
                                                                                 return (
                                                                                     <>
                                                                                         {ProjectData.Title != undefined ? (
-                                                                                            <div className="block w-100">
+                                                                                            <div className="replaceInput alignCenter w-100">
                                                                                                 <a
-                                                                                                    className="hreflink"
+                                                                                                    className="hreflink textDotted"
                                                                                                     target="_blank"
                                                                                                     title={ProjectData.Title}
                                                                                                     data-interception="off"
                                                                                                     href={`${siteUrls}/SitePages/Project-Management.aspx?ProjectId=${ProjectData.Id}`}
                                                                                                 >
-                                                                                                    {ProjectData.Title?.length > 0 ? ProjectData.Title?.slice(0, 28) + "..." : ""}
+                                                                                                    {ProjectData.Title}
                                                                                                 </a>
                                                                                             </div>
                                                                                         ) : null}
@@ -8703,9 +8889,9 @@ const EditTaskPopup = (Items: any) => {
                                                                 </ul>
                                                             </div>
                                                         </div>
-                                                        <div className="col mt-2">
+                                                        <div className="col mt-2 ps-0">
                                                             <div className="input-group">
-                                                                <label className="form-label full-width  mx-2">
+                                                                <label className="form-label full-width">
                                                                     {EditData.TaskAssignedUsers?.length > 0
                                                                         ? "Working Member"
                                                                         : ""}
@@ -8720,7 +8906,7 @@ const EditTaskPopup = (Items: any) => {
                                                                                     href={`${siteUrls}/SitePages/TaskDashboard.aspx?UserId=${userDtl.AssingedToUserId}&Name=${userDtl.Title}`}
                                                                                 >
                                                                                     <img
-                                                                                        className="ProirityAssignedUserPhoto ms-2"
+                                                                                        className="ProirityAssignedUserPhoto me-2"
                                                                                         data-bs-placement="bottom"
                                                                                         title={
                                                                                             userDtl.Title ? userDtl.Title : ""

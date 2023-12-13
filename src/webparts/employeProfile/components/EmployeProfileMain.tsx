@@ -173,7 +173,7 @@ const EmployeProfileMain = (props: any) => {
             <div>
                 <div className='alignCenter border-bottom pb-2'>
                     <div>
-                        <img style={{ borderRadius: "25rem", width: "170px", height: "170px", objectFit: "cover" }} src={EmployeeData?.Item_x0020_Cover?.Url} />
+                        <img style={{ borderRadius: "25rem", width: "170px", height: "170px", objectFit: "cover" }} src={EmployeeData?.Item_x0020_Cover?.Url!=undefined?EmployeeData?.Item_x0020_Cover?.Url:"https://hhhhteams.sharepoint.com/sites/HHHH/GmBH/SiteCollectionImages/ICONS/32/icon_user.jpg"} />
                     </div>
                     <div className='w-100 ms-4'>
                         <div className='alignCenter'>

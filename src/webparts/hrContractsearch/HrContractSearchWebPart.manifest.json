@@ -1,14 +1,14 @@
 {
   "$schema": "https://developer.microsoft.com/json-schemas/spfx/client-side-web-part-manifest.schema.json",
-  "id": "37771e54-7a9f-4148-8099-17c77c42a659",
-  "alias": "HrContractProfileWebPart",
+  "id": "a819ddf1-68b8-421a-919c-b8f84127ef40",
+  "alias": "HrContractSearchWebPart",
   "componentType": "WebPart",
 
  
   "version": "*",
   "manifestVersion": 2,
 
-  
+
   "requiresCustomScript": false,
   "supportedHosts": ["SharePointWebPart", "TeamsPersonalApp", "TeamsTab", "SharePointFullPage"],
   "supportsThemeVariants": true,
@@ -16,11 +16,11 @@
   "preconfiguredEntries": [{
     "groupId": "5c03119e-3074-46fd-976b-c60198311f70", 
     "group": { "default": "Advanced" },
-    "title": { "default": "HrContractProfile" },
-    "description": { "default": "HrContractProfile description" },
+    "title": { "default": "HrContractSearch" },
+    "description": { "default": "HrContractSearch description" },
     "officeFabricIconFontName": "Page",
     "properties": {
-      "description": "HrContractProfile"
+      "description": "HrContractSearch"
     }
   }]
 }

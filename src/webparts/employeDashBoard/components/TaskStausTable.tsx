@@ -818,7 +818,7 @@ const TaskStatusTbl = (Tile: any) => {
                     <span title="Share Ongoing Task" onClick={() => sendAllWorkingTodayTasks(todaysTask)} className="hreflink svg__iconbox svg__icon--share empBg"></span>
                   </span>
                 </div>
-                <div className="Alltable maXh-300" style={{ height: "300px",borderBottom: "none" }}>
+                <div className="Alltable maXh-300" style={{ height: "300px"}}>
                   {todaysTask && (
                     <GlobalCommanTable
                       wrapperHeight="100%"
@@ -853,7 +853,7 @@ const TaskStatusTbl = (Tile: any) => {
                     <span title="Share Ongoing Task" onClick={() => sendAllWorkingTodayTasks(thisWeekTask)} className="hreflink svg__iconbox svg__icon--share empBg"></span>
                   </span>
                 </div>
-                <div className="Alltable maXh-300"style={{ height: "300px",borderBottom: "none" }}>
+                <div className="Alltable maXh-300"style={{ height: "300px"}}>
                   {thisWeekTask && (
                     <GlobalCommanTable
                       wrapperHeight="100%"
@@ -888,7 +888,7 @@ const TaskStatusTbl = (Tile: any) => {
                     <span title="Share Ongoing Task" onClick={() => sendAllWorkingTodayTasks(allAssignedTask)} className="hreflink svg__iconbox svg__icon--share empBg"></span>
                   </span>
                 </div>
-                <div className="Alltable maXh-300" style={{ height: "300px",borderBottom: "none" }}>
+                <div className="Alltable maXh-300" style={{ height: "300px" }}>
                   {allAssignedTask?.length > 0 && (
                     <GlobalCommanTable
                       wrapperHeight="100%"
@@ -916,7 +916,7 @@ const TaskStatusTbl = (Tile: any) => {
                     <span title="Share Draft Task" onClick={() => sendAllWorkingTodayTasks(draftCatogary)} className="svg__iconbox svg__icon--share empBg"></span>
                   </span>
                 </div>
-                <div className="Alltable maXh-300"style={{ height: "300px",borderBottom: "none" }}>
+                <div className="Alltable maXh-300"style={{ height: "300px" }}>
                   {draftCatogary && (
                     <GlobalCommanTable
                       wrapperHeight="100%"
@@ -954,7 +954,7 @@ const TaskStatusTbl = (Tile: any) => {
                     <span title="Share Ongoing Task" onClick={() => sendAllWorkingTodayTasks(immediateTask)} className="hreflink svg__iconbox svg__icon--share empBg"></span>
                   </span>
                 </div>
-                <div className="Alltable maXh-300" style={{ height: "300px",borderBottom: "none" }}>
+                <div className="Alltable maXh-300" style={{ height: "300px" }}>
                   {immediateTask && (
                     <GlobalCommanTable
                       wrapperHeight="100%"

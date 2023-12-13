@@ -7,37 +7,50 @@ import {
 } from '@microsoft/sp-property-pane';
 import { BaseClientSideWebPart } from '@microsoft/sp-webpart-base';
 import { IReadonlyTheme } from '@microsoft/sp-component-base';
+import { IHrContractSearchProps } from './components/IHrContractSearchProps';
 import pnp from 'sp-pnp-js';
-import HrContractProfile from './components/HRcontractProfile';
-import { IHrContractProfileProps } from './components/IHrContractProfileProps';
-import * as strings from 'HrContractProfileWebPartStrings';
-export interface IHrContractProfileWebPartProps {
+import * as strings from 'HrContractSearchWebPartStrings';
+import HrContractSearch from './components/ContractSearch';
+
+export interface IHrContractSearchWebPartProps {
   description: string;
-  ContractListID:'c0106d10-a71c-4153-b204-7cf7b45a68b8',
-  HR_EMPLOYEE_DETAILS_LIST_ID:'a7b80424-e5e1-47c6-80a1-0ee44a70f92c',
+  ContractListID:'c0106d10-a71c-4153-b204-7cf7b45a68b8'
+ HHHHContactListId:'edc879b9-50d2-4144-8950-5110cacc267a',
+  HHHHInstitutionListId:'9f13fd36-456a-42bc-a5e0-cd954d97fc5f',
   MAIN_SMARTMETADATA_LISTID:'D1C6D7C3-F36E-4F95-8715-8DA9F33622E7',
   MAIN_HR_LISTID:'6DD8038B-40D2-4412-B28D-1C86528C7842',
+  GMBH_CONTACT_SEARCH_LISTID:'6CE99A82-F577-4467-9CDA-613FADA2296F',
+  HR_EMPLOYEE_DETAILS_LIST_ID:'a7b80424-e5e1-47c6-80a1-0ee44a70f92c',
+
+  
 }
 
-export default class HrContractProfileWebPart extends BaseClientSideWebPart<IHrContractProfileWebPartProps> {
+export default class HrContractSearchWebPart extends BaseClientSideWebPart<IHrContractSearchWebPartProps> {
 
   private _isDarkTheme: boolean = false;
   private _environmentMessage: string = '';
 
   public render(): void {
-    const element: React.ReactElement<IHrContractProfileProps> = React.createElement(
-      HrContractProfile,
+    const element: React.ReactElement<IHrContractSearchProps> = React.createElement(
+      HrContractSearch,
       {
+
         description: this.properties.description,
         isDarkTheme: this._isDarkTheme,
-        environmentMessage: this._environmentMessage,
-        hasTeamsContext: !!this.context.sdks.microsoftTeams,
-        userDisplayName: this.context.pageContext.user.displayName,
-        siteUrl: this.context.pageContext.web.absoluteUrl,
-        ContractListID : this.properties.ContractListID,
+        Context: this.context,
+        HHHHContactListId:'edc879b9-50d2-4144-8950-5110cacc267a',
+        HHHHInstitutionListId:'9f13fd36-456a-42bc-a5e0-cd954d97fc5f',
         MAIN_SMARTMETADATA_LISTID:'D1C6D7C3-F36E-4F95-8715-8DA9F33622E7',
         MAIN_HR_LISTID:'6DD8038B-40D2-4412-B28D-1C86528C7842',
+        GMBH_CONTACT_SEARCH_LISTID:'6CE99A82-F577-4467-9CDA-613FADA2296F',
         HR_EMPLOYEE_DETAILS_LIST_ID:'a7b80424-e5e1-47c6-80a1-0ee44a70f92c',
+        environmentMessage: this._environmentMessage,
+        hasTeamsContext: !!this.context.sdks.microsoftTeams,
+        userDisplayName: this.context.pageContext.user.loginName,
+         siteUrl: this.context.pageContext.web.absoluteUrl,
+        ContractListID : this.properties.ContractListID,
+       
+
       }
     );
 
@@ -51,6 +64,7 @@ export default class HrContractProfileWebPart extends BaseClientSideWebPart<IHrC
       spfxContext: this.context,
     });
   }
+
   private _getEnvironmentMessage(): string {
     if (!!this.context.sdks.microsoftTeams) { // running in Teams
       return this.context.isServedFromLocalhost ? strings.AppLocalEnvironmentTeams : strings.AppTeamsTabEnvironment;
@@ -102,11 +116,20 @@ export default class HrContractProfileWebPart extends BaseClientSideWebPart<IHrC
                 PropertyPaneTextField('ContractListID', {
                   label: 'ContractListID'
                 }),
+                PropertyPaneTextField('HHHHContactListId', {
+                  label: "HHHH Contact ListId"
+                }),
+                PropertyPaneTextField('HHHHInstitutionListId', {
+                  label: "HHHH Institution ListId"
+                }),
                 PropertyPaneTextField('MAIN_SMARTMETADATA_LISTID', {
                   label: "Main SmartMetadata ListId"
                 }),
                 PropertyPaneTextField('MAIN_HR_LISTID', {
                   label: "Main Hr ListId"
+                }),
+                PropertyPaneTextField('GMBH_CONTACT_SEARCH_LISTID', {
+                  label: "Gmbh Contact Search ListId"
                 }),
                 PropertyPaneTextField('HR_EMPLOYEE_DETAILS_LIST_ID', {
                   label: "Hr Employee Details ListId"
