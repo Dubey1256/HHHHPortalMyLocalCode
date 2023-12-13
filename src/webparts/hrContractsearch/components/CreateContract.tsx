@@ -9,8 +9,8 @@ import { sp, Web } from "sp-pnp-js";
 import * as $ from "jquery";
 import { arraysEqual, Modal, Panel, PanelType } from "office-ui-fabric-react";
 import * as Moment from "moment";
-import EditContractPopup from "./EditContractPopup";
 import CreateContactComponent from "../../contactSearch/components/contact-search/popup-components/CreateContact";
+import EditContractPopup from "./EditContractPopup";
 let ResData:any = {}
 const CreateContract = (props: any) => {
    let ContractListId = props.AllListId?.ContractListID

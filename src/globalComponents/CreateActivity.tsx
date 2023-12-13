@@ -81,7 +81,7 @@ const CreateActivity = (props: any) => {
     portfolioType: "Component",
     Component: [],
   });
-  const [siteName, setSiteName] = React.useState(false)
+  const [siteName, setSiteName] = React.useState(false);
 
   React.useEffect(() => {
     AllListId = props?.AllListId;
@@ -217,6 +217,18 @@ const CreateActivity = (props: any) => {
     } else {
       setSiteType(SitesTypes);
     }
+
+    if (props?.SiteUrl != undefined && props?.SiteUrl?.length > 0) {
+      let e = {
+        target:{
+          value:props?.SiteUrl
+        }
+      }
+     setTimeout(()=>{
+        changeTaskUrl(e)
+     },1200)
+    }
+
     if (props?.selectedItem?.NoteCall == "Task") {
       SitesTypes.map((item: any) => {
         if (
@@ -318,6 +330,84 @@ const CreateActivity = (props: any) => {
     }
   };
   const changeTaskUrl = (e: any) => {
+    let TaskUrl = e?.target?.value;
+    let saveValue = save;
+    saveValue.taskUrl = TaskUrl;
+    let siteFromUrl = [];
+    if (SitesTypes?.length > 1) {
+      let selectedSiteTitle = "";
+      var testarray = e?.target?.value?.split("&");
+      // TaskUrl = $scope.ComponentLink;
+      var item = "";
+      if (TaskUrl !== undefined) {
+        if (TaskUrl.toLowerCase().indexOf(".com") > -1)
+          TaskUrl = TaskUrl.split(".com")[1];
+        else if (TaskUrl.toLowerCase().indexOf(".ch") > -1)
+          TaskUrl = TaskUrl.split(".ch")[1];
+        else if (TaskUrl.toLowerCase().indexOf(".de") > -1) {
+          TaskUrl = TaskUrl.split(".de");
+          try {
+            if (TaskUrl[0]?.toLowerCase()?.indexOf("gruene-washington") > -1) {
+              TaskUrl = TaskUrl[0];
+            } else {
+              TaskUrl = TaskUrl[1];
+            }
+          } catch (e) {}
+        }
+        let URLDataArr: any = TaskUrl.split("/");
+        for (let index = 0; index < SitesTypes?.length; index++) {
+          let site = SitesTypes[index];
+          let Isfound = false;
+          if (
+            (TaskUrl !== undefined &&
+              URLDataArr?.find(
+                (urlItem: any) =>
+                  urlItem?.toLowerCase() == site?.Title?.toLowerCase()
+              )) ||
+            (site?.AlternativeTitle != null &&
+              URLDataArr?.find(
+                (urlItem: any) =>
+                  urlItem?.toLowerCase() ==
+                  site?.AlternativeTitle?.toLowerCase()
+              ))
+          ) {
+            item = site.Title;
+            selectedSiteTitle = site.Title;
+            Isfound = true;
+            siteFromUrl?.push(site);
+          }
+
+          if (!Isfound) {
+            if (TaskUrl !== undefined && site.AlternativeTitle != null) {
+              let sitesAlterNatives =
+                site.AlternativeTitle.toLowerCase().split(";");
+              for (let j = 0; j < sitesAlterNatives.length; j++) {
+                let element = sitesAlterNatives[j];
+                if (
+                  URLDataArr?.find(
+                    (urlItem: any) =>
+                      urlItem?.toLowerCase() == element?.toLowerCase()
+                  )
+                ) {
+                  item = site.Title;
+                  selectedSiteTitle = site.Title;
+                  Isfound = true;
+                }
+              }
+            }
+          }
+        }
+      }
+
+      saveValue.siteType = selectedSiteTitle;
+      setSave(saveValue);
+      if (selectedSiteTitle !== undefined) {
+        setIsActive({ ...isActive, siteType: true });
+      } else {
+        setIsActive({ ...isActive, siteType: false });
+      }
+    }
+    setSelectedSites(siteFromUrl);
     setTaskUrl(e.target.value);
   };
 
@@ -326,14 +416,21 @@ const CreateActivity = (props: any) => {
     let saveItem = selectedSites;
     if (saveItem?.some((item: any) => item?.Id == site?.Id)) {
       if (selectedItem?.NoteCall == "Task") {
-        saveItem = [];
+        if (props?.pageName != undefined && props?.pageName == 'QuickTask') {
+          saveItem = [site];
+        }
+        else if (props?.pageName == undefined) {
+          saveItem = []
+        }
       } else {
         saveItem = saveItem?.filter(
           (filterValue: any) => filterValue?.Id != site?.Id
         );
       }
     } else {
-      if (selectedItem?.NoteCall == "Task") {
+      if (
+        selectedItem?.NoteCall == "Task"
+      ) {
         saveItem = [site];
       } else {
         saveItem?.push(site);
@@ -1457,7 +1554,7 @@ const CreateActivity = (props: any) => {
   );
 
   const handleSiteNameClick = () => {
-    setSiteName(!siteName)
+    setSiteName(!siteName);
   };
 
   const onRenderMainHtml = (
@@ -1525,7 +1622,17 @@ const CreateActivity = (props: any) => {
             <div className="row">
               <div className="col-sm-10 mb-10 mt-3">
                 <div className="input-group">
-                  <label className="full-width">Task Name {selectedSites.length >= 1 ? <span className={siteName ? "siteColor fw-bold": null} onClick={handleSiteNameClick}>| SiteName</span>: null}</label>
+                  <label className="full-width">
+                    Task Name{" "}
+                    {selectedItem?.NoteCall != "Task" && props?.pageName == undefined && selectedSites.length >= 1 ? (
+                      <span
+                        className={siteName ? "siteColor fw-bold" : null}
+                        onClick={handleSiteNameClick}
+                      >
+                        | SiteName
+                      </span>
+                    ) : null}
+                  </label>
                   <input
                     type="text"
                     placeholder="Enter task Name"
@@ -1573,8 +1680,16 @@ const CreateActivity = (props: any) => {
             ) : null}
             <div className="row mt-3">
               <TeamConfigurationCard
-                ItemInfo={props?.pageName != undefined && props?.pageName == 'QuickTask' ? props?.selectedItem: selectedItem}
-                AllListId={props?.pageName != undefined && props?.pageName == 'QuickTask' ? props?.AllListId: AllListId}
+                ItemInfo={
+                  props?.pageName != undefined && props?.pageName == "QuickTask"
+                    ? props?.selectedItem
+                    : selectedItem
+                }
+                AllListId={
+                  props?.pageName != undefined && props?.pageName == "QuickTask"
+                    ? props?.AllListId
+                    : AllListId
+                }
                 parentCallback={DDComponentCallBack}
               ></TeamConfigurationCard>
             </div>
