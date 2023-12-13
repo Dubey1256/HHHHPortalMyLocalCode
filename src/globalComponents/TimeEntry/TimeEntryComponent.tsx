@@ -420,7 +420,7 @@ function DisplayTimeEntry(item: any) {
         return (
           <>
     
-            <div className='ps-4' style={{ marginRight: "auto", fontSize: "20px", fontWeight: "600" }}>
+            <div className='subheading'>
             {`All Time Entry -${EditTaskItemitle}`}
             </div>
             <Tooltip ComponentId='1753' />
