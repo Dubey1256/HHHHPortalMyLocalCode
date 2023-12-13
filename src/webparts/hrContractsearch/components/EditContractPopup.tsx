@@ -2,6 +2,7 @@ import * as moment from 'moment';
 import * as React from 'react'
 import { arraysEqual, Modal, Panel, PanelType } from "office-ui-fabric-react";
 import { Web } from "sp-pnp-js";
+import Tooltip from '../../../globalComponents/Tooltip';
 
 const EditContractPopup = (props: any) => {
     const [openPopup, setOpenPopup] = React.useState(false)
@@ -55,6 +56,7 @@ const EditContractPopup = (props: any) => {
                     className="subheading">
                     Edit Contract
                 </div>
+                <Tooltip ComponentId='1753' />
 
             </>
         );
@@ -128,7 +130,7 @@ const EditContractPopup = (props: any) => {
                                     onClick={()=>saveData()}>
                                     Save
                                 </button>
-                                <button type="button" className="btn btn-default px-3">
+                                <button type="button" className="btn btn-default px-3" onClick={() => closeAddEmp()}>
                                     Cancel
                                 </button>
 
@@ -217,8 +219,8 @@ const EditContractPopup = (props: any) => {
                             <div className='col-sm-2'>
                                 <div className="input-group">
                                     <label className="form-label full-width">Contract Signed</label>
-                                    <input type="date" className="form-control" aria-label="Small" aria-describedby="inputGroup-sizing-sm"   placeholder="Enter start Date" max="9999-12-31" min={EditData.ContractSigned ? moment(EditData.ContractSigned).format("YYYY-MM-DD") : ""}
-                                    defaultValue={EditData.ContractSigned ? moment(EditData.ContractSigned).format("YYYY-MM-DD") : ''} onChange={(e)=>setPostData({ ...postData, ContractSigned: e.target.value })}/>
+                                    <input type="date" className="form-control" aria-label="Small" aria-describedby="inputGroup-sizing-sm"   placeholder="Enter start Date" max="9999-12-31" min={EditData?.ContractSigned ? moment(EditData?.ContractSigned).format("YYYY-MM-DD") : ""}
+                                    defaultValue={EditData?.ContractSigned ? moment(EditData?.ContractSigned).format("YYYY-MM-DD") : ''} onChange={(e)=>setPostData({ ...postData, ContractSigned: e.target.value })}/>
 
                                 </div>
                             </div>

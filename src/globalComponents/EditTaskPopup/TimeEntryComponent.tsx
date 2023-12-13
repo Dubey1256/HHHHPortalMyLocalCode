@@ -1637,7 +1637,7 @@ function TimeEntryPopup(item: any) {
 
               updateitem.Description =
                 postData != undefined &&
-                  postData.Description != undefined ? postData.Description
+                  postData.Description != undefined && postData.Description != "" ? postData.Description
                   : child.Description;
               UpdatedData.push(updateitem);
             } else {
@@ -2568,7 +2568,7 @@ function TimeEntryPopup(item: any) {
       </div>
 
       {collapseItem && (
-        <div className="togglecontent clearfix">
+        <div className="togglecontent clearfix mb-2">
           <div id="forShowTask" className="pt-0">
             <div className="Alltable">
               <div className="col-sm-12 p-0 smart">
