@@ -838,7 +838,7 @@ function CreateTaskComponent(props: any) {
                                 })
                                 siteCompositionDetails = selectedPortfolio[0]?.SiteCompositionSettings;
                             } catch (error) {
-                                console.log(error, "Error Client Time")
+                                console.log(error,"Error Client Time")
                             }
                         } else {
                             var siteComp: any = {};
