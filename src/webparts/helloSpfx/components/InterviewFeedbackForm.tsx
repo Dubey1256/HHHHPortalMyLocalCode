@@ -141,9 +141,9 @@ export default function GetData(props: any) {
         { accessorKey: "Position", placeholder: "Positions", header: "" },
         { accessorKey: "Status0", placeholder: "Status", header: "" }, {
             cell: ({ row }) => (
-                <>
-                    <a onClick={() => EditPopupOpen(row.original)} title="Edit" className="svg__iconbox svg__icon--edit"></a>
-                </>
+                <div className='alignCenter'>
+                    <span onClick={() => EditPopupOpen(row.original)} title="Edit" className="svg__iconbox hreflink svg__icon--edit"></span>
+                </div>
             ),
             accessorKey: '',
             canSort: false,
@@ -154,9 +154,9 @@ export default function GetData(props: any) {
         },
         {
             cell: ({ row }) => (
-                <>
-                    <a onClick={() => delItem(row.original)} className="ml-auto svg__iconbox svg__icon--trash" title="Delete" />
-                </>
+                <div className='alignCenter'>
+                    <span onClick={() => delItem(row.original)} className="ml-auto hreflink svg__iconbox svg__icon--trash" title="Delete" ></span>
+                </div>
             ),
             accessorKey: '',
             canSort: false,
@@ -166,8 +166,9 @@ export default function GetData(props: any) {
             size: 10,
         }, {
             cell: ({ row }) => (
-                <a href={`mailto:?subject=Have%20a%20look%20at%20'${(row.original as RowData).CandidateName}'%20for%20the%20Position%20of%20'${(row.original as RowData).Position}'`}
-                    className="svg__iconbox svg__icon--mail" title="Send Email">
+                
+                <a className='alignCenter' href={`mailto:?subject=Have%20a%20look%20at%20'${(row.original as RowData).CandidateName}'%20for%20the%20Position%20of%20'${(row.original as RowData).Position}'`}>
+                    <span className="svg__iconbox svg__icon--mail" title="Send Email"></span>
                 </a>
             ),
             accessorKey: '', // You might want to specify the correct accessorKey
@@ -287,7 +288,7 @@ export default function GetData(props: any) {
     //     });
     // };
     useEffect(() => {
-        if (props?.props.Context.pageContext.web.absoluteUrl.toLowerCase().includes("hr")) {
+if (props?.props.Context.pageContext.web.absoluteUrl.toLowerCase().includes("hr")) {
             allSite = {
                 HrSite: true,
                 MainSite: false
@@ -340,11 +341,30 @@ export default function GetData(props: any) {
             setisChangeStatusPopup(false);
         }
     };
+    const onRenderCustomHeaderMain3 = () => {
+        return (
+            <>
+                <div className='subheading'>
+                    Add / Edit Status
+                </div>
 
+            </>
+        );
+    };
+    const onRenderCustomHeaderMain4 = () => {
+        return (
+            <>
+                <div className='subheading'>
+                    Change Status
+                </div>
+
+            </>
+        );
+    };
     return (
-         <myContextValue.Provider value={{ ...myContextValue, allSite:allSite,allListId:allListId ,loggedInUserName:props.props?.userDisplayName,}}>
-            <div className="container">
-                <h2>Recruiting-Tool</h2>
+        <myContextValue.Provider value={{ ...myContextValue, allSite:allSite,allListId:allListId ,loggedInUserName:props.props?.userDisplayName,}}>
+            <div>
+                <h2 className='heading'>Recruiting-Tool</h2>
                 <ul className="nav nav-tabs" id="myTab" role="tablist">
                     <li className="nav-item" role="presentation">
                         <button onClick={() => handleTabChange('All Candidates')} className={`nav-link ${activeTab === 'All Candidates'
@@ -363,10 +383,10 @@ export default function GetData(props: any) {
                             'active' : ''}`} data-bs-target="#ArchiveCandidates" id="profile-tab" type="button" role="tab" aria-controls="profile" aria-selected="false">Archive</button>
                     </li>
                     <div className='ml-auto'>
-                        <span className='text-right mr-10'><PrimaryButton className='me-1' text="Add Candidate" onClick={() => AddPopupOpen()} /></span>
-                        <span className='text-right mr-10'><PrimaryButton className='me-1' text="Add/Edit Positions" onClick={() => AddEditPositionOpen()} /></span>
-                        <span className='text-right mr-10'><PrimaryButton className='me-1' text="Change Status" disabled={isStatButtonDisabled} onClick={() => openChangeStatus()} /></span>
-                        <span className='text-right'><PrimaryButton text="Add/Remove Status" onClick={() => openModal()} /></span>
+                        <span className='text-right me-1'><button type='button' className='btnCol btn btn-primary' onClick={() => AddPopupOpen()}>Add Candidate</button></span>
+                        <span className='text-right me-1'><button type='button' className='btnCol btn btn-primary' onClick={() => AddEditPositionOpen()}>Add/Edit Positions</button></span>
+                        <span className='text-right me-1'><button type='button' className='btnCol btn btn-primary' disabled={isStatButtonDisabled} onClick={() => openChangeStatus()}>Change Status</button></span>
+                        <span className='text-right'><button type='button' className='btnCol btn btn-primary' onClick={() => openModal()}>Add/Remove Status</button></span>
                     </div>
                 </ul>
                 <div className="tab-content border border-top-0 clearfix " id="nav-tabContent">
@@ -387,32 +407,32 @@ export default function GetData(props: any) {
                         {ArchiveCandidates && <div className='Alltable'><GlobalCommanTable columns={columns} data={ArchiveCandidates} multiSelect={true} showHeader={true} callBackData={callBackData} /></div>}
                     </div>
                 </div>
-                {isEditPopupOpen ? <EditPopup EditPopupClose={EditPopupClose} item={selectedItem} ListID={props?.props?.InterviewFeedbackFormListId} /> : ''}
-                {isAddPopupOpen ? <AddPopup AddPopupClose={AddPopupClose} ListID={props?.props?.InterviewFeedbackFormListId} /> : ''}
+                {isEditPopupOpen ? <EditPopup EditPopupClose={EditPopupClose} item={selectedItem} ListID={props.InterviewFeedbackFormListId} /> : ''}
+                {isAddPopupOpen ? <AddPopup AddPopupClose={AddPopupClose} ListID={props.InterviewFeedbackFormListId.InterviewFeedbackFormListId} /> : ''}
                 {isAddEditPositionOpen ? <AddEditPostion AddEditPositionCLose={AddEditPositionCLose} /> : ''}
             </div>
 
             {/* ********************* this is Add/Edit Status Task panel ****************** */}
             <Panel
-                headerText={"Add/Edit Status"}
+                onRenderHeader={onRenderCustomHeaderMain3}
                 isOpen={isopenModalPopup}
                 onDismiss={CloseCreateStatus}
                 type={PanelType.custom}
                 customWidth="700px"
                 isBlocking={true}
             >
-                <div className="modal-body">
-                    <div className="col-md-12 p-3 select-sites-section">
+                <div className="modal-body mb-5">
+                    <div className="col-md-12 select-sites-section">
                         {/* <div className="card-header">
                                     <h6>Sites</h6>
                                 </div> */}
                         <div className="card-body">
-                            <div className="col-sm-12 pad0 inline-fieldbtn">
+                            <div className="col-sm-12 pad0 inline-fieldbtn input-group">
                                 <input className="form-control" placeholder="Add Status" id="myInputStatus" type="text" />
                                 {/* <button type="button" onClick={AddnewStatusTitle} className="btn btn-primary btn-sm ml-15 pull-right">
                                             Add
                                         </button> */}
-                                <PrimaryButton onClick={AddnewStatusTitle} className="btn-sm ml-15 pull-right" text=" Add" />
+                                <button onClick={AddnewStatusTitle} type='button' className='btn btn-primary btn-sm ml-15 pull-right'>Add</button>
                             </div>
                             <div className="col-sm-12 pad0">
                                 <ul className="full-width mt-10 p0 status-lists">
@@ -430,39 +450,41 @@ export default function GetData(props: any) {
                 </div>
                 <footer className="bg-f4 fixed-bottom px-4 py-2">
                     <div className="float-end text-end">
-                        <PrimaryButton onClick={() => AddnewStatus('item', false)} text="Save" />
-                        <PrimaryButton onClick={CloseCreateStatus} className='ms-1' text="Cancel" />
+                        <button onClick={() => AddnewStatus('item', false)} type='button' className='btn btn-primary'>Save</button>
+                        <button onClick={CloseCreateStatus} type='button' className='btn btn-default ms-1'>Cancel</button>
                     </div>
                 </footer>
             </Panel>
             <Panel
-                headerText={"Change Status"}
+                onRenderHeader={onRenderCustomHeaderMain4}
                 isOpen={isChangeStatusPopup}
                 onDismiss={closeChangeStatus}
                 type={PanelType.custom}
                 customWidth="500px"
                 isBlocking={true}
             >
-                <div className="col-sm-12 pad0">
-                    <Dropdown
-                        id="secAction"
-                        selectedKey={selectedStatus}
-                        onChange={handleStatusAction}
-                        placeholder="Select Status"
-                        options={[
-                            ...AllAvlStatusdata.map((itm) => ({ key: itm.Title, text: itm.Title })),
-                        ]}
-                        styles={{ dropdown: { width: '100%' } }}
-                    />
+                <div className='modal-body'>
+                    <div className="col-sm-12 p-0">
+                        <Dropdown
+                            id="secAction"
+                            selectedKey={selectedStatus}
+                            onChange={handleStatusAction}
+                            placeholder="Select Status"
+                            options={[
+                                ...AllAvlStatusdata.map((itm) => ({ key: itm.Title, text: itm.Title })),
+                            ]}
+                            styles={{ dropdown: { width: '100%' } }}
+                        />
+                    </div>
                 </div>
-                <footer className="bg-f4 fixed-bottom px-4 py-2">
+                <footer className="py-3 clearfix">
                     <div className="float-end text-end">
-                        <PrimaryButton onClick={updateStatusItems} text="Save" />
-                        <PrimaryButton onClick={closeChangeStatus} className='ms-1' text="Cancel" />
+                        <button onClick={updateStatusItems} type='button' className='btn btn-primary'>Save</button>
+                        <button onClick={closeChangeStatus} type='button' className='btn btn-default ms-1'>Cancel</button>
                     </div>
                 </footer>
             </Panel>
-            </myContextValue.Provider>
+        </myContextValue.Provider>
       
     )
 }
