@@ -75,44 +75,45 @@ const EditPopup = (props: any) => {
     const [overAllRemark, setoverAllRemark] = useState(props.item.Remarks);
     const [selectedStatus, setSelectedStatus] = useState(props.item.Status0);
     const [Motivation, setMotivation] = useState(props.item.Motivation)
-    const[CreateContactStatus,setCreateContactStatus]=useState(false)
+const[CreateContactStatus,setCreateContactStatus]=useState(false)
     const onClose = () => {
         props.EditPopupClose();
     }
     const handleEditSave = async () => {
-        let updateData
+let updateData
         try {
             const skillRatingsJson = JSON.stringify(localRatings);
-             updateData={
+            updateData={
                 
-                    Title: CandidateName,
-                    CandidateName: CandidateName,
-                    Email: Email,
-                    PhoneNumber: PhoneNumber,
-                    Experience: Experience,
-                    Remarks: overAllRemark,
-                    Status0: selectedStatus,
-                    Motivation: Motivation,
-                    SkillRatings: skillRatingsJson
-               
+                Title: CandidateName,
+                CandidateName: CandidateName,
+                Email: Email,
+                PhoneNumber: PhoneNumber,
+                Experience: Experience,
+                Remarks: overAllRemark,
+                Status0: selectedStatus,
+                Motivation: Motivation,
+                SkillRatings: skillRatingsJson
+            
             }
             const list = sp.web.lists.getById(props.ListID);
             await list.items.getById(props.item.Id).update(updateData);
-            console.log("Item updated successfully");
-            setCreateContactStatus(true)
             EmployeeData=updateData
+            console.log("Item updated successfully");
+setCreateContactStatus(true)
+           
 
         } catch (error) {
             console.error(error);
             // Handle errors here
         } finally {
-            if(selectedStatus=="Hired"){
+if(selectedStatus=="Hired"){
                
                 
             }else{
-                props.EditPopupClose(); // Close the edit popup after saving or if there's an error
-            }
-           
+            props.EditPopupClose(); // Close the edit popup after saving or if there's an error
+        }
+
         }
     };
 
@@ -206,6 +207,17 @@ const EditPopup = (props: any) => {
             console.error('Error removing document:', error);
         }
     };
+
+    const onRenderCustomHeaderMain = () => {
+        return (
+            <>
+                <div className='subheading'>
+                    Candidate Details -{props.item.CandidateName} {star}
+                </div>
+
+            </>
+        );
+    };
     const ClosePopup = React.useCallback(() => {
        
         setCreateContactStatus(false);
@@ -214,153 +226,187 @@ const EditPopup = (props: any) => {
     }, []);
     return (
         <Panel
-            headerText={headerText}
+            // headerText={headerText}
+            onRenderHeader={onRenderCustomHeaderMain}
             isOpen={true}
             onDismiss={onClose}
-            type={PanelType.medium}
+            type={PanelType.custom}
             isBlocking={false}
+            customWidth={"750px"}
             closeButtonAriaLabel="Close"
         >
-            <TextField className='TextField-Input' label="Name" defaultValue={props.item.CandidateName} onChange={(e, newValue) => setTitle(newValue)} />
-            <TextField className='TextField-Input' label="Email" defaultValue={props.item.Email} onChange={(e, newValue) => setEmail(newValue)} />
-            <TextField className='TextField-Input' label="Phone Number" defaultValue={props.item.PhoneNumber} onChange={(e, newValue) => setPhoneNumber(newValue)} />
-            <TextField className='TextField-Input' label="Experience" defaultValue={props.item.Experience} onChange={(e, newValue) => setExperience(newValue)} />
-            <div className="col-sm-12 mb-2">
-                <label className="form-label full-width">Platform</label>
-                <div className="CustomCheckRadio justify-content-between valign-middle">
-                    {platformChoices.map((item) => (
-                        <label className="label--checkbox" key={item.name}>
-                            <input
-                                type="checkbox"
-                                className="cursor-pointer form-check-input me-1"
-                                defaultChecked={item.selected}
-                                onChange={(e) => handlePlatformClick(e)}
-                            />
-                            {item.name}
-                        </label>
-                    ))}
-                    <label className="label--checkbox">
-                        <input
-                            className="form-control"
-                            type="text"
-                            placeholder="Enter any other platform"
-                            value={otherChoice}
-                            onChange={handleOtherChoiceChange}
-                            style={{ display: showTextInput ? 'block' : 'none' }}
-                        />
-                    </label>
-                </div>
-            </div>
-
-            <div className="col-sm-12 mb-2">
-                <label className="form-label full-width">Feedback</label>
-                <details>
-                    <div className="expand-AccordionContent clearfix">
-                        <div className="star-block">
-                            {localRatings.map((rating: any, index: number) => (
-                                <div key={index} className="skillBlock">
-                                    <div className="skillTitle">{rating.SkillTitle}</div>
-                                    <StarRating
-                                        rating={rating}
-                                        onRatingSelected={(updatedRating: any) => {
-                                            const updatedRatings = [...localRatings];
-                                            updatedRatings[index] = updatedRating;
-                                            setLocalRatings(updatedRatings);
-                                        }}
+            <div className='modal-body mb-5'>
+                <div>
+                    <div className='sectionHead siteBdrBottom mb-1'>Profile</div>
+                    <div className='row'>
+                        <div className='col-sm-6 mb-2'>
+                            <div className='input-group'>
+                                <label className='form-label full-width'>Name</label>
+                                <input className='form-control' type='text' placeholder="Name" defaultValue={props.item.CandidateName} onChange={(newValue: any) => setTitle(newValue)} />
+                            </div>
+                        </div>
+                        <div className='col-sm-6 mb-2'>
+                            <div className='input-group'>
+                                <label className='form-label full-width'>Email</label>
+                                <input className='form-control' type='text' placeholder="Email" defaultValue={props.item.Email} onChange={(newValue: any) => setEmail(newValue)} />
+                            </div></div>
+                        <div className='col-sm-6 mb-2'>
+                            <div className='input-group'>
+                                <label className='form-label full-width'>Phone Number</label>
+                                <input className='form-control' type='number' placeholder="Phone Number" defaultValue={props.item.PhoneNumber} onChange={(newValue: any) => setPhoneNumber(newValue)} />
+                            </div></div>
+                        <div className='col-sm-6 mb-2'>
+                            <div className='input-group'>
+                                <label className='form-label full-width'>Experience</label>
+                                <input className='form-control' type='number' placeholder="Experience" defaultValue={props.item.Experience} onChange={(newValue: any) => setExperience(newValue)} />
+                            </div></div>
+                    </div>
+                    <div className="col-sm-12">
+                        <div className='input-group'>
+                            <label className="form-label full-width">Platform</label>
+                            <div className="CustomCheckRadio justify-content-between valign-middle">
+                                {platformChoices.map((item) => (
+                                    <label className="SpfxCheckRadio" key={item.name}>
+                                        <input
+                                            type="checkbox"
+                                            className="cursor-pointer form-check-input me-1"
+                                            defaultChecked={item.selected}
+                                            onChange={(e) => handlePlatformClick(e)}
+                                        />
+                                        {item.name}
+                                    </label>
+                                ))}
+                                <label className="label--checkbox">
+                                    <input
+                                        className="form-control"
+                                        type="text"
+                                        placeholder="Enter any other platform"
+                                        value={otherChoice}
+                                        onChange={handleOtherChoiceChange}
+                                        style={{ display: showTextInput ? 'block' : 'none' }}
                                     />
-                                    <div className="comment-block">
-                                        <textarea
-                                            value={rating.Comment}
-                                            onChange={(e) => {
-                                                const updatedRating: any = { ...rating, Comment: e.target.value };
+                                </label>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+
+                <div className="col-sm-12 my-4">
+                    <details>
+                        <summary className="alignCenter">
+                            <label className="toggler full_width">
+                                <div className="alignCenter">Feedback</div>
+                            </label>
+                        </summary>
+                        <div className="border border-top-0 p-2">
+                            <div className="star-block">
+                                {localRatings.map((rating: any, index: number) => (
+                                    <div key={index} className="skillBlock">
+                                        <div className="skillTitle">{rating.SkillTitle}</div>
+                                        <StarRating
+                                            rating={rating}
+                                            onRatingSelected={(updatedRating: any) => {
                                                 const updatedRatings = [...localRatings];
                                                 updatedRatings[index] = updatedRating;
                                                 setLocalRatings(updatedRatings);
                                             }}
-                                            name="remarks"
-                                            className="full_width"
-                                            auto-resize
                                         />
+                                        <div className="comment-block">
+                                            <textarea
+                                                value={rating.Comment}
+                                                onChange={(e) => {
+                                                    const updatedRating: any = { ...rating, Comment: e.target.value };
+                                                    const updatedRatings = [...localRatings];
+                                                    updatedRatings[index] = updatedRating;
+                                                    setLocalRatings(updatedRatings);
+                                                }}
+                                                name="remarks"
+                                                className="full_width"
+                                                auto-resize
+                                            />
+                                        </div>
                                     </div>
+                                ))}
+                            </div>
+                        </div>
+                    </details>
+                </div>
+                <div className="col-sm-12 mb-3">
+                    <div className="sectionHead siteBdrBottom mb-1">Cover Letter/Motivation</div>
+                    <HtmlEditorCard
+                        editorValue={props.item.Motivation !== undefined && props.item.Motivation !== null ? props.item.Motivation : ''}
+                        HtmlEditorStateChange={HtmlEditorCallBack}
+                    />
+                </div>
+
+                <div className="col-sm-12 mb-3">
+                    <div className="sectionHead siteBdrBottom mb-1">Overall Remarks</div>
+                    <textarea
+                        name="remarks"
+                        value={overAllRemark}
+                        onChange={(e) => setoverAllRemark(e.target.value)}
+                        className="full_width scrollbar"
+                    />
+                </div>
+                <div className="row">
+                    <div className="col-sm-6">
+                        <div className='input-group'>
+                            <div className="sectionHead siteBdrBottom mb-1 w-100">Documents</div>
+
+                            {TaggedDocuments.map(document => (
+                                <div className="documenttype-list alignCenter" key={document.Id}>
+                                    <span className="mr-10" style={{ display: document.File_x0020_Type === 'pdf' ? 'inline' : 'none' }}>
+                                        <span title={document.Title} className="svg__iconbox svg__icon--pdf"></span>
+                                    </span>
+                                    <span className="mr-10" style={{ display: document.File_x0020_Type === 'xlsx' ? 'inline' : 'none' }}>
+                                        <span title={document.Title} className="svg__iconbox svg__icon--xlsx"></span>
+                                    </span>
+                                    <span className="mr-10" style={{ display: document.File_x0020_Type === 'aspx' ? 'inline' : 'none' }}>
+                                        <span title={document.Title} className="svg__iconbox svg__icon--unknownFile"></span>
+                                    </span>
+                                    <span className="mr-10" style={{ display: document.File_x0020_Type === 'docx' ? 'inline' : 'none' }}>
+                                        <span title={document.Title} className="svg__iconbox svg__icon--docx"></span>
+                                    </span>
+                                    <span className="mr-10" style={{ display: !document.File_x0020_Type || document.File_x0020_Type === 'undefined' ? 'inline' : 'none' }}>
+                                        <span className="svg__iconbox svg__icon--document"></span>
+                                    </span>
+                                    <span style={{ display: document.File_x0020_Type !== 'aspx' ? 'inline' : 'none' }}>
+                                        <a href={`${document.EncodedAbsUrl}?web=1`} target="_blank">
+                                            <span>
+                                                <span style={{ display: document.FileLeafRef !== 'undefined' ? 'inline' : 'none' }}>
+                                                    {document.FileLeafRef}
+                                                </span>
+                                                <span style={{ display: document.FileLeafRef === 'undefined' ? 'inline' : 'none' }}>
+                                                    {document.FileLeafRef}
+                                                </span>
+                                            </span>
+                                        </a>
+                                    </span>
+                                    <span onClick={() => removeDocuments('', document.Id)} className="svg__iconbox svg__icon--trash mx-auto"></span>
                                 </div>
                             ))}
                         </div>
                     </div>
-                </details>
-            </div>
-            <div className="col-sm-12 mb-2">
-                <label className="form-label full-width">Cover Letter/Motivation</label>
-                <HtmlEditorCard
-                    editorValue={props.item.Motivation !== undefined && props.item.Motivation !== null ? props.item.Motivation : ''}
-                    HtmlEditorStateChange={HtmlEditorCallBack}
-                />
-            </div>
-
-            <div className="col-sm-12 mb-2">
-                <label className="form-label full-width">Overall Remarks</label>
-                <textarea
-                    name="remarks"
-                    value={overAllRemark}
-                    onChange={(e) => setoverAllRemark(e.target.value)}
-                    className="full_width scrollbar"
-                />
-            </div>
-            <div className="Row">
-                <div className="col-sm-6">
-                    <label className="form-label full-width">Documents</label>
-                    <div>
-                        {TaggedDocuments.map(document => (
-                            <div className="documenttype-list valign-middle" key={document.Id}>
-                                <span className="mr-10" style={{ display: document.File_x0020_Type === 'pdf' ? 'inline' : 'none' }}>
-                                    <span title={document.Title} className="svg__iconbox svg__icon--pdf"></span>
-                                </span>
-                                <span className="mr-10" style={{ display: document.File_x0020_Type === 'xlsx' ? 'inline' : 'none' }}>
-                                    <span title={document.Title} className="svg__iconbox svg__icon--xlsx"></span>
-                                </span>
-                                <span className="mr-10" style={{ display: document.File_x0020_Type === 'aspx' ? 'inline' : 'none' }}>
-                                    <span title={document.Title} className="svg__iconbox svg__icon--unknownFile"></span>
-                                </span>
-                                <span className="mr-10" style={{ display: document.File_x0020_Type === 'docx' ? 'inline' : 'none' }}>
-                                    <span title={document.Title} className="svg__iconbox svg__icon--docx"></span>
-                                </span>
-                                <span className="mr-10" style={{ display: !document.File_x0020_Type || document.File_x0020_Type === 'undefined' ? 'inline' : 'none' }}>
-                                    <span className="svg__iconbox svg__icon--document"></span>
-                                </span>
-                                <span style={{ display: document.File_x0020_Type !== 'aspx' ? 'inline' : 'none' }}>
-                                    <a href={`${document.EncodedAbsUrl}?web=1`} target="_blank">
-                                        <span>
-                                            <span style={{ display: document.FileLeafRef !== 'undefined' ? 'inline' : 'none' }}>
-                                                {document.FileLeafRef}
-                                            </span>
-                                            <span style={{ display: document.FileLeafRef === 'undefined' ? 'inline' : 'none' }}>
-                                                {document.FileLeafRef}
-                                            </span>
-                                        </span>
-                                    </a>
-                                </span>
-                                <span onClick={() => removeDocuments('', document.Id)} className="svg__iconbox svg__icon--trash mx-auto"></span>
-                            </div>
-                        ))}
+                    <div className="col-sm-6 nextStep">
+                        <div className="fsectionHead siteBdrBottom mb-1">Status</div>
+                        <Dropdown
+                            id="status"
+                            options={Status.map((itm) => ({ key: itm, text: itm }))}
+                            selectedKey={selectedStatus}
+                            onChange={(e, option) => setSelectedStatus(option?.key || '')}
+                            styles={{ dropdown: { width: '100%' } }}
+                        />
                     </div>
-                </div>
-                <div className="col-sm-6 nextStep">
-                    <label className="form-label full-width">Status</label>
-                    <Dropdown
-                        id="status"
-                        options={Status.map((itm) => ({ key: itm, text: itm }))}
-                        selectedKey={selectedStatus}
-                        onChange={(e, option) => setSelectedStatus(option?.key || '')}
-                        styles={{ dropdown: { width: '100%' } }}
-                    />
                 </div>
             </div>
             <footer className="bg-f4 fixed-bottom px-4 py-2">
                 <div className="float-end text-end">
-                    <PrimaryButton onClick={handleEditSave} text="Save" />
-                    <PrimaryButton onClick={onClose} className='ms-1' text="Cancel" />
+                    <button onClick={handleEditSave} type='button' className='btn btn-primary'>Save</button>
+                    <button onClick={onClose} type='button' className='btn btn-default ms-1'>Cancel</button>
                 </div>
             </footer>
-            {CreateContactStatus ? <CreateContactComponent callBack={ClosePopup}data={EmployeeData} pageName={"Recruiting-Tool"}/> : null}
+{CreateContactStatus ? <CreateContactComponent callBack={ClosePopup}data={EmployeeData} pageName={"Recruiting-Tool"}/> : null}
         </Panel>
     );
 };
