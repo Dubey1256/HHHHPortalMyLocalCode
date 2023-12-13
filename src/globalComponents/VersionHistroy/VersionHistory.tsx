@@ -17,6 +17,9 @@ export default function VersionHistory(props: any) {
    
     const handleClose = () => setShow(false);
     const handleShow = () => setShow(true);
+    setTimeout(() => {
+        $('.ms-Panel-scrollableContent').addClass('versionScrollableContent')
+    }, 1000);
     //------------------------jquery call--------------------------------
     const GetItemsVersionHistory = async () => {
         var versionData: any = []

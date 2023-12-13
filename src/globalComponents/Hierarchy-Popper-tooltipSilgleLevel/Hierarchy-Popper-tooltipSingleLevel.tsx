@@ -16,25 +16,24 @@ export const getTooltiphierarchyWithoutGroupByTable = (row: any, completeTitle: 
     let tempTitle = '';
     for (let i = 0; i < AllMatsterAndTaskData.length; i++) {
         const Object = AllMatsterAndTaskData[i];
-    }
-    AllMatsterAndTaskData?.find((Object:any)=>{
         if (Object.Id === row?.ParentTask?.Id && row?.siteType === Object?.siteType) {
             Object.subRows = [];
             tempTitle = `${Object?.Title} > ${completeTitle}`
-            Object.subRows.push(row);
+            Object?.subRows?.push(row);
             return getTooltiphierarchyWithoutGroupByTable(Object, tempTitle);
         } else if (Object.Id === row?.Parent?.Id) {
             Object.subRows = [];
-            Object.subRows.push(row);
+            Object?.subRows?.push(row);
             tempTitle = `${Object?.Title} > ${completeTitle}`
             return getTooltiphierarchyWithoutGroupByTable(Object, tempTitle);
         } else if (row?.Portfolio != undefined && Object.Id === row?.Portfolio?.Id && row?.ParentTask?.Id == undefined) {
             Object.subRows = [];
-            Object.subRows.push(row);
+            Object?.subRows?.push(row);
             tempTitle = `${Object?.Title} > ${completeTitle}`
             return getTooltiphierarchyWithoutGroupByTable(Object, tempTitle);
         }
-    })
+
+    }
     return {
         structureData: row,
         structureTitle: completeTitle
@@ -47,6 +46,7 @@ export const getTooltiphierarchyWithoutGroupByTable = (row: any, completeTitle: 
 
 let scrollToolitem: any = false
 let pageName: any = 'hierarchyPopperToolTip'
+
 export default function ReactPopperTooltipSingleLevel({ ShareWebId, row, masterTaskData, AllSitesTaskData, AllListId }: any) {
     AllMatsterAndTaskData = [...masterTaskData];
     AllMatsterAndTaskData = AllMatsterAndTaskData?.concat(AllSitesTaskData);
