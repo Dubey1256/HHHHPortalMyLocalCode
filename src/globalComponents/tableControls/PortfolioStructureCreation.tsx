@@ -6,6 +6,7 @@ import { arraysEqual, Panel, PanelType } from 'office-ui-fabric-react';
 import { GlobalConstants } from '../LocalCommon';
 import * as globalCommon from '../globalCommon';
 import ListGroup from 'react-bootstrap/ListGroup';
+import moment from 'moment';
 export interface IStructureCreationProps {
     CreatOpen: (item: any) => void;
     Close: (item: any) => void;
@@ -289,7 +290,9 @@ export class PortfolioStructureCreationCard extends React.Component<IStructureCr
             .add(postdata);
 
         console.log(i);
-
+        i.data["Created"] =new Date();
+        i.data["serverCreatedDate"] = new Date(i.data?.Created).setHours(0, 0, 0, 0)
+        i.data["DisplayCreateDate"] = moment(i.data.Created).format("DD/MM/YYYY");
         if (this.state.PortfolioTypeArray != undefined && this.state.PortfolioTypeArray.length > 0) {
             this.state.PortfolioTypeArray.forEach((type: any) => {
                 if (this.state.PortfolioTypeId === type.Id)
@@ -588,6 +591,9 @@ export class PortfolioStructureCreationCard extends React.Component<IStructureCr
                     .add(postdata);
                 console.log(i);
                 i.data['siteType'] = 'Master Tasks';
+                i.data["Created"] =new Date();
+                i.data["serverCreatedDate"] = new Date(i.data?.Created).setHours(0, 0, 0, 0)
+                i.data["DisplayCreateDate"] = moment(i.data.Created).format("DD/MM/YYYY");
                 if (self.state.PortfolioTypeArray != undefined && self.state.PortfolioTypeArray.length > 0) {
                     self.state.PortfolioTypeArray.forEach((type: any) => {
                         if (self.state.PortfolioTypeId === type.Id)
@@ -764,7 +770,7 @@ export class PortfolioStructureCreationCard extends React.Component<IStructureCr
                             <footer className={(this.state.defaultPortfolioType == 'Service' || this.state.defaultPortfolioType == 'Service Portfolio') ? "serviepannelgreena text-end  mt-2" : "text-end  mt-2"}>
                                 <button type="button" className="btn btn-primary me-1" onClick={() => this.CreateFolder('CreatePopup')}
                                 >
-                                    Create & Open
+                                    Create & Open Popup
                                 </button>
                                 <button type="button" className="btn btn-primary" onClick={() => this.CreateFolder('Create')}
                                 >
