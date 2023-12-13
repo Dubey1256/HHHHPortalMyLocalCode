@@ -1611,15 +1611,20 @@ const EditTaskPopup = (Items: any) => {
                         }
                     }
                     if (Type == "Single") {
-                        setTaggedPortfolioData(DataItem);
-                        let ComponentType: any = DataItem[0].PortfolioType.Title;
-                        getLookUpColumnListId(
-                            siteUrls,
-                            AllListIdData?.MasterTaskListID,
-                            "PortfolioType",
-                            ComponentType,
-                            "Updated-phase"
-                        );
+                        if(DataItem[0]?.Item_x0020_Type=="Project"||DataItem[0]?.Item_x0020_Type=="Sprint"){
+                            setSelectedProject(DataItem);
+                            setProjectManagementPopup(false)
+                        }else{
+                            setTaggedPortfolioData(DataItem);
+                            let ComponentType: any = DataItem[0].PortfolioType.Title;
+                            getLookUpColumnListId(
+                                siteUrls,
+                                AllListIdData?.MasterTaskListID,
+                                "PortfolioType",
+                                ComponentType,
+                                "Updated-phase"
+                            );
+                        }
                     }
                     setOpenTeamPortfolioPopup(false);
                     setopenLinkedPortfolioPopup(false);
@@ -4528,17 +4533,6 @@ const EditTaskPopup = (Items: any) => {
         SetAllProjectData(TempArray);
     };
 
-    const saveSelectedProject = () => {
-        if (AllProjectData != undefined && AllProjectData.length > 0) {
-            AllProjectData.map((dataItem: any) => {
-                if (dataItem.Checked) {
-                    setSelectedProject([dataItem]);
-                }
-            });
-        }
-        // setSelectedProject([tempSelectedProjectData]);
-        setProjectManagementPopup(false);
-    };
 
     const autoSuggestionsForProject = (e: any) => {
         let searchedKey: any = e.target.value;
@@ -4562,112 +4556,10 @@ const EditTaskPopup = (Items: any) => {
         setSelectedProject(data);
     };
 
-    const columns = useMemo(
-        () => [
-            {
-                internalHeader: "",
-                id: "Id", // 'id' is required
-                isSorted: false,
-                showSortIcon: false,
-                Cell: ({ row }: any) => (
-                    <span>
-                        <input
-                            type="checkbox"
-                            checked={row.original.Checked}
-                            onClick={() => SelectProjectFunction(row.original)}
-                        />
-                    </span>
-                ),
-            },
-            {
-                internalHeader: "Title",
-                accessor: "Title",
-                showSortIcon: true,
-                Cell: ({ row }: any) => (
-                    <span>
-                        <a
-                            style={{ textDecoration: "none", color: "#000066" }}
-                            href={`${siteUrls}/SitePages/Project-Management.aspx?ProjectId=${row?.original?.Id}`}
-                            data-interception="off"
-                            target="_blank"
-                        >
-                            {row?.values?.Title}
-                        </a>
-                    </span>
-                ),
-            },
-            {
-                internalHeader: "Status",
-                accessor: "PercentComplete",
-                showSortIcon: true,
-            },
-            {
-                internalHeader: "Priority",
-                accessor: "PriorityRank",
-                showSortIcon: true,
-            },
-            {
-                internalHeader: "Team Members",
-                accessor: "TeamMembersSearch",
-                showSortIcon: true,
-                Cell: ({ row }: any) => (
-                    <span>
-                        <ShowTaskTeamMembers
-                            props={row?.original}
-                            TaskUsers={taskUsers}
-                        ></ShowTaskTeamMembers>
-                    </span>
-                ),
-            },
-            {
-                internalHeader: "Due Date",
-                showSortIcon: true,
-                accessor: "DisplayDueDate",
-            },
-        ],
-        [AllProjectData]
-    );
+   
+ 
 
-    const data = AllProjectData;
-
-    const {
-        getTableProps,
-        getTableBodyProps,
-        headerGroups,
-        page,
-        prepareRow,
-        setPageSize,
-        state: { pageIndex, pageSize },
-    }: any = useTable(
-        {
-            columns,
-            data,
-            defaultColumn: { Filter: DefaultColumnFilter },
-            initialState: { pageIndex: 0, pageSize: 10000 },
-        },
-        useFilters,
-        useSortBy,
-        useExpanded,
-        usePagination
-    );
-
-    const generateSortingIndicator = (column: any) => {
-        return column.isSorted ? (
-            column.isSortedDesc ? (
-                <FaSortDown />
-            ) : (
-                <FaSortUp />
-            )
-        ) : column.showSortIcon ? (
-            <FaSort />
-        ) : (
-            ""
-        );
-    };
-
-    const onChangeInSelect = (event: any) => {
-        setPageSize(Number(event.target.value));
-    };
+;
 
     // ************ this is for Approver Popup Function And Approver Related All Functions section **************
     const OpenApproverPopupFunction = () => {
@@ -5312,42 +5204,7 @@ const EditTaskPopup = (Items: any) => {
         );
     };
 
-    const customFooterForProjectManagement = () => {
-        return (
-            <footer
-                className={
-                    ServicesTaskCheck
-                        ? "serviepannelgreena bg-f4 me-4 pe-2 py-3 text-end"
-                        : "bg-f4 me-4 pe-2 py-3 text-end"
-                }
-            >
-                <button type="button" className="btn btn-primary">
-                    <a
-                        target="_blank"
-                        className="text-light"
-                        data-interception="off"
-                        href={`${siteUrls}/SitePages/Project-Management-Overview.aspx`}
-                    >
-                        <span className="text-light">Create New One</span>
-                    </a>
-                </button>
-                <button
-                    type="button"
-                    className="btn btn-primary px-3 mx-1"
-                    onClick={saveSelectedProject}
-                >
-                    Save
-                </button>
-                <button
-                    type="button"
-                    className="btn btn-default px-3"
-                    onClick={closeProjectManagementPopup}
-                >
-                    Cancel
-                </button>
-            </footer>
-        );
-    };
+   
 
     return (
         <div
@@ -7225,13 +7082,14 @@ const EditTaskPopup = (Items: any) => {
                         </div>
                     </div>
 
-                    {openTeamPortfolioPopup && (
+                    {openTeamPortfolioPopup || ProjectManagementPopup && (
                         <ServiceComponentPortfolioPopup
                             props={EditData}
                             Dynamic={AllListIdData}
                             ComponentType={"Component"}
                             Call={ComponentServicePopupCallBack}
                             selectionType={"Single"}
+                            showProject={ProjectManagementPopup}
                         />
                     )}
                     {openLinkedPortfolioPopup && (
@@ -9507,85 +9365,6 @@ const EditTaskPopup = (Items: any) => {
                 </div>
             </Panel>
 
-            {/* ********************* this is Project Management panel ****************** */}
-            {AllProjectData != undefined && AllProjectData.length > 0 ? (
-                <Panel
-                    onRenderHeader={onRenderCustomProjectManagementHeader}
-                    isOpen={ProjectManagementPopup}
-                    onDismiss={closeProjectManagementPopup}
-                    isBlocking={true}
-                    type={PanelType.custom}
-                    customWidth="1100px"
-                    onRenderFooter={customFooterForProjectManagement}
-                >
-                    <div
-                        className={
-                            ServicesTaskCheck
-                                ? "serviepannelgreena SelectProjectTable "
-                                : "SelectProjectTable "
-                        }
-                    >
-                        <div className="modal-body wrapper p-0 mt-2">
-                            <Table
-                                className="SortingTable table table-hover"
-                                bordered
-                                hover
-                                {...getTableProps()}
-                            >
-                                <thead className="fixed-Header">
-                                    {headerGroups.map((headerGroup: any) => (
-                                        <tr {...headerGroup.getHeaderGroupProps()}>
-                                            {headerGroup.headers.map((column: any) => (
-                                                <th {...column.getHeaderProps()}>
-                                                    <span
-                                                        class="Table-SortingIcon"
-                                                        style={{ marginTop: "-6px" }}
-                                                        {...column.getSortByToggleProps()}
-                                                    >
-                                                        {column.render("Header")}
-                                                        {generateSortingIndicator(column)}
-                                                    </span>
-                                                    <Filter column={column} />
-                                                </th>
-                                            ))}
-                                        </tr>
-                                    ))}
-                                </thead>
-
-                                <tbody {...getTableBodyProps()}>
-                                    {page.map((row: any) => {
-                                        prepareRow(row);
-                                        return (
-                                            <tr {...row.getRowProps()}>
-                                                {row.cells.map(
-                                                    (cell: {
-                                                        getCellProps: () => JSX.IntrinsicAttributes &
-                                                            React.ClassAttributes<HTMLTableDataCellElement> &
-                                                            React.TdHTMLAttributes<HTMLTableDataCellElement>;
-                                                        render: (
-                                                            arg0: string
-                                                        ) =>
-                                                            | boolean
-                                                            | React.ReactChild
-                                                            | React.ReactFragment
-                                                            | React.ReactPortal;
-                                                    }) => {
-                                                        return (
-                                                            <td {...cell.getCellProps()}>
-                                                                {cell.render("Cell")}
-                                                            </td>
-                                                        );
-                                                    }
-                                                )}
-                                            </tr>
-                                        );
-                                    })}
-                                </tbody>
-                            </Table>
-                        </div>
-                    </div>
-                </Panel>
-            ) : null}
             {/* ********************* this is Approval panel ****************** */}
             <Panel
                 onRenderHeader={onRenderCustomApproverHeader}

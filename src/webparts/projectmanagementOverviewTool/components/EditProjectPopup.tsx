@@ -1285,6 +1285,11 @@ function EditProjectPopup(item: any) {
                   Project
                 </a>
               </li>
+              {EditData?.Item_x0020_Type != "Project" && EditData?.Parent?.Title ?
+                  <li>
+                    {" "}
+                    <a data-interception="off" href={`${AllListId?.siteUrl}/SitePages/Project-Management.aspx?ProjectId=${EditData?.Parent?.Id}`}>{EditData?.Parent?.Title}</a>{" "}
+                  </li> : ''}
               <li>
                 <a>{EditData.Title}</a>
               </li>

@@ -452,6 +452,7 @@ try{
 
 
   const LoadAllSiteTasks = async function () {
+    setPageLoader(true);
     let taskComponent: any = TaggedPortfoliosToProject;
     let localtimeEntryIndex: any;
     try {
@@ -701,8 +702,10 @@ try {
       allActivities = allActivities.concat(allSprints);
       setData(allActivities);
       setTaskTaggedPortfolios(taskTaggedComponents)
+      setPageLoader(false);
     } catch (error) {
       console.log(error)
+      setPageLoader(false);
 
     }
 
