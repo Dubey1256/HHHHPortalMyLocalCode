@@ -1749,7 +1749,7 @@ private ComponentServicePopupCallBack = (DataItem: any, Type: any, functionType:
           
       }
     }));
-    if(DataItem[0]?.Item_x0020_Type=="Project"){
+    if(DataItem[0]?.Item_x0020_Type=="Project"||DataItem[0]?.Item_x0020_Type=="Sprint"){
       dataUpdate={
         ProjectId:DataItem[0]?.Id
       }

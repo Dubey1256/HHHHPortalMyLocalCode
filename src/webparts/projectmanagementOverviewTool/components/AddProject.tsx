@@ -153,6 +153,7 @@ const AddProject = (props: any) => {
         settitle('')
         setLinkedComponentData([])
         setSmartComponentData([])
+        setProjectData([])
         setLgShow(false)
 
     }
