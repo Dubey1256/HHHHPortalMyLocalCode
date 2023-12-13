@@ -429,7 +429,7 @@ const TopNavigation = (dynamicData: any) => {
           .getById(ListId)
           .items.getById(items.Id)
           .update({
-            SortOrder: parseInt(items.newSortOrder),
+            SortOrder: parseInt(items.SortOrder),
           })
           .then((res: any) => {
             count = count + 1;

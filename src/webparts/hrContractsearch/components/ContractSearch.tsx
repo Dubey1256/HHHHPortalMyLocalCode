@@ -9,6 +9,7 @@ import CreateContract from './CreateContract';
 import EditContractPopup from './EditContractPopup';
 import GlobalCommanTable from '../../../globalComponents/GroupByReactTableComponents/GlobalCommanTable';
 import { myContextValue } from '../../../globalComponents/globalCommon';
+import HighlightableCell from '../../../globalComponents/highlight';
 
 let editData:any={}
 const ContractSearch=(props:any)=>{
@@ -23,30 +24,30 @@ let allSite: any = {
     MainSite: true,
 }
     React.useEffect(()=>{
-        if (props?.props.Context.pageContext.web.absoluteUrl.toLowerCase().includes("hr")) {
+        if (props?.Context.pageContext.web.absoluteUrl.toLowerCase().includes("hr")) {
             allSite = {
                 HrSite: true,
                 MainSite: false
             }
         }
         allListId = {
-            Context: props?.props.Context,
-            HHHHContactListId: props?.props?.HHHHContactListId,
-            HHHHInstitutionListId: props?.props?.HHHHInstitutionListId,
-            MAIN_SMARTMETADATA_LISTID: props?.props?.MAIN_SMARTMETADATA_LISTID,
-            MAIN_HR_LISTID: props?.props?.MAIN_HR_LISTID,
-            GMBH_CONTACT_SEARCH_LISTID: props?.props?.GMBH_CONTACT_SEARCH_LISTID,
-            HR_EMPLOYEE_DETAILS_LIST_ID: props?.props?.HR_EMPLOYEE_DETAILS_LIST_ID,
-            siteUrl: props?.props.Context.pageContext.web.absoluteUrl,
+            Context: props?.Context,
+            HHHHContactListId: props?.HHHHContactListId,
+            HHHHInstitutionListId: props?.HHHHInstitutionListId,
+            MAIN_SMARTMETADATA_LISTID: props?.MAIN_SMARTMETADATA_LISTID,
+            MAIN_HR_LISTID: props?.MAIN_HR_LISTID,
+            GMBH_CONTACT_SEARCH_LISTID: props?.GMBH_CONTACT_SEARCH_LISTID,
+            HR_EMPLOYEE_DETAILS_LIST_ID: props?.HR_EMPLOYEE_DETAILS_LIST_ID,
+            siteUrl: props?.Context.pageContext.web.absoluteUrl,
             jointSiteUrl: "https://hhhhteams.sharepoint.com/sites/HHHH"
         }
     getData()
     },[])
     
     const getData=async ()=>{
-        let web = new Web(props.props?.siteUrl);
+        let web = new Web(props?.siteUrl);
        const myData = await web.lists
-        .getById(props?.props?.ContractListID)
+        .getById(props?.ContractListID)
         .items
         .select("Id,Title,Author/Title,Editor/Title,startDate,endDate,ContractSigned,ContractChanged,GrossSalary,PersonnelNumber,ContractId,typeOfContract,Type_OfContract/Id,Type_OfContract/Title,WorkingHours,FolderID,contractNumber,SmartInformation/Id,SmartInformation/Title,EmployeeID/Id,EmployeeID/Title,EmployeeID/Name,HHHHStaff/Id,HHHHStaff/FullName")
         .top(499)
@@ -101,13 +102,25 @@ let allSite: any = {
                
             },
             {
-    
+                accessorFn: (row) => row?.Title,
+                cell: ({ row, column, getValue }) => (
+                    <div className="alignCenter">
+                        <span className="columnFixedTitle">
+                            
+                                <a className="text-content hreflink" title={row?.original?.Title} data-interception="off" target="_blank"
+                                    href={props.siteUrl + "/SitePages/Contract-Profile.aspx?ContractId=" + row?.original?.ID}>
+                 {getValue()}
+                                </a>
+                            
+                           
+                        </span>
+                      
+                    </div>
+                ),
                 id: 'Title',
                 header: '',
-                accessorFn: (row) => row?.Title,
                 placeholder: "Title",
-                size: 300,
-
+                size: 500,
             },
             {
                 id: 'Employee',
@@ -202,8 +215,8 @@ let allSite: any = {
         <div className='Alltable'>
         <GlobalCommanTable columns={column} data={data} callBackData={callBackData} showHeader={true}/>
         </div>
-        {create && <CreateContract closeContracts={closeContracts} callback={callBackData} AllListId={props?.props}/>}
-        {openEdit && <EditContractPopup props={editData} AllListId={props?.props} callback={callBack}></EditContractPopup>}
+        {create && <CreateContract closeContracts={closeContracts} callback={callBackData} AllListId={props}/>}
+        {openEdit && <EditContractPopup props={editData} AllListId={props} callback={callBack}></EditContractPopup>}
         </myContextValue.Provider>
     )
 
