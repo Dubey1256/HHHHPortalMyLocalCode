@@ -4,8 +4,10 @@ import Information from './Information';
 import { useEffect, useState } from 'react';
 import { Web } from 'sp-pnp-js';
 import moment, * as Moment from "moment";
+import { ColumnDef } from '@tanstack/react-table';
 import { myContextValue } from '../../../globalComponents/globalCommon'
 import HHHHEditComponent from '../../contactSearch/components/contact-search/popup-components/HHHHEditcontact';
+import GlobalCommanTable from '../../../globalComponents/GroupByReactTableComponents/GlobalCommanTable';
 let allListId: any = {};
 let allSite: any = {
     GMBHSite: false,
@@ -15,6 +17,7 @@ let allSite: any = {
 let OldEmployeeProfile: any
 const EmployeProfileMain = (props: any) => {
     const [EmployeeData, setEmployeeData]: any = useState()
+    const [contractData, setContractData] = useState([]);
     const [siteTaggedHR, setSiteTaggedHR] = useState(false);
     const [URLs, setURLs] = useState([]);
     const [hrUpdateData, setHrUpdateData]: any = useState()
@@ -42,6 +45,7 @@ const EmployeProfileMain = (props: any) => {
             MAIN_HR_LISTID: props?.props?.MAIN_HR_LISTID,
             GMBH_CONTACT_SEARCH_LISTID: props?.props?.GMBH_CONTACT_SEARCH_LISTID,
             HR_EMPLOYEE_DETAILS_LIST_ID: props?.props?.HR_EMPLOYEE_DETAILS_LIST_ID,
+            ContractListID:props?.props?.ContractListID,
             siteUrl: props?.props.Context.pageContext.web.absoluteUrl,
             jointSiteUrl: "https://hhhhteams.sharepoint.com/sites/HHHH"
         }
@@ -115,9 +119,9 @@ const EmployeProfileMain = (props: any) => {
     }
     const HrTagInformation = async (Id: any) => {
         try {
-            const web = new Web("https://hhhhteams.sharepoint.com/sites/HHHH");
+            const web = new Web(allListId?.jointSiteUrl);
             let data = await web.lists
-                .getById("6DD8038B-40D2-4412-B28D-1C86528C7842")
+                .getById(allListId?.MAIN_HR_LISTID)
                 .items.select(
                     "Id,ID,Title,BIC,Country, Parenthood, IBAN, Nationality,healthInsuranceCompany,highestVocationalEducation,healthInsuranceType,highestSchoolDiploma,insuranceNo,otherQualifications,dateOfBirth,Fedral_State,placeOfBirth,maritalStatus,taxNo,churchTax,taxClass,monthlyTaxAllowance,childAllowance,SmartState/Title,SmartState/Id,SmartLanguages/Title,SmartLanguages/Id,SmartContact/Title,SmartContact/Id").expand("SmartLanguages, SmartState, SmartContact").filter("SmartContact/ID eq " + Id).get();
             let array = [];
@@ -152,6 +156,7 @@ const EmployeProfileMain = (props: any) => {
                     if ( allSite?.HrSite) {
                         setSiteTaggedHR(true);
                         HrTagInformation(Id);
+                        HrContractDetails(Id)
                     }
                     setEmployeeData(data);
                 }).catch((error: any) => {
@@ -167,6 +172,124 @@ const EmployeProfileMain = (props: any) => {
     const ClosePopup=()=>{
         setEditContactStatus(false) 
     }
+
+    const HrContractDetails=async(Id:any)=>{
+        try {
+            let web = new Web(allListId?.siteUrl);
+            await web.lists.getById(allListId?.ContractListID)
+                .items.select("Id,Title,Author/Title,Editor/Title,startDate,endDate,ContractSigned,ContractChanged,GrossSalary,PersonnelNumber,ContractId,typeOfContract,Type_OfContract/Id,Type_OfContract/Title,WorkingHours,FolderID,contractNumber,SmartInformation/Id,SmartInformation/Title,EmployeeID/Id,EmployeeID/Title,EmployeeID/Name,HHHHStaff/Id,HHHHStaff/FullName")
+                 .expand("Author,Editor,EmployeeID,HHHHStaff,SmartInformation,Type_OfContract").filter("HHHHStaff/ID eq " + Id).get().then((hrContractdata: any) => {
+                    console.log(hrContractdata);
+                    hrContractdata?.map((hrContractdata:any)=>{
+                        hrContractdata.StartDate=  hrContractdata?.startDate!=undefined?moment(hrContractdata?.startDate)?.format('DD-MM-YYYY') : ""
+                        hrContractdata.EndDate=  hrContractdata?.endDate!=undefined?moment(hrContractdata?.endDate)?.format('DD-MM-YYYY') : ""
+                    })
+                    setContractData(hrContractdata)
+                }).catch((error: any) => {
+                    console.log(error)
+                })
+
+
+
+        } catch (error) {
+            console.log("Error:", error.message);
+        }   
+    }
+
+
+    const columns:any = React.useMemo<ColumnDef<unknown, unknown>[]>(() =>
+    [
+        {
+            accessorKey: "",
+            placeholder: "",
+            hasCheckbox: true,
+            hasCustomExpanded: false,
+            hasExpanded: false,
+            isHeaderNotAvlable: true,
+            size: 25,
+            id: 'Id',
+        },
+        { accessorKey: "contractNumber", placeholder: "Contract No.", header: "", size: 100, },
+        {
+            accessorFn: (row: any) => row?.Title,
+            cell: ({ row }: any) => (
+                <a target='_blank'data-interception="off" 
+                    href={allSite?.HrSite?`${allListId?.siteUrl}/SitePages/EmployeeInfo.aspx?employeeId=${row?.original.Id}`:`${allListId?.siteUrl}/SitePages/Contact-Profile.aspx?contactId=${row?.original.Id}`}
+                >{row.original.Title}</a>
+
+            ),
+
+            canSort: false,
+            placeholder: 'Contract Title',
+            header: '',
+            id: 'Title',
+            size: 150,
+        },
+        { accessorKey: "StartDate", placeholder: "Start Date", header: "", size: 140, },
+        { accessorKey: "EndDate", placeholder: "End Date", header: "", size: 140, },
+        
+        // {
+        //     cell: ({ row }: any) => (
+        //         <>
+        //             <img className='workmember ' src={`${row.original.Item_x0020_Cover != null && row.original.Item_x0020_Cover.Url != null ? row.original.Item_x0020_Cover.Url : 'https://hhhhteams.sharepoint.com/sites/HHHH/GmBH/SiteCollectionImages/ICONS/32/icon_user.jpg'}`} />
+        //         </>
+        //     ),
+        //     accessorFn: '',
+        //     canSort: false,
+        //     placeholder: '',
+        //     header: '',
+        //     id: 'row.original',
+        //     size: 25,
+        // },
+       
+       
+        // {
+        //     accessorFn: (row: any) => row?.Institution?.FullName,
+        //     cell: ({ row }: any) => (
+        //         <span>{row?.original?.Institution?.FullName}</span>
+
+        //     ),
+        //     canSort: false,
+        //     placeholder: 'Organization',
+        //     header: '',
+        //     id: 'Company',
+        //     size: 250,
+        // },
+        // {
+        //     accessorFn: (row: any) => row?.Division?.Title,
+        //     cell: ({ row }: any) => (
+        //         <span>{row?.original?.Division?.Title}</span>
+
+        //     ),
+        //     canSort: false,
+        //     placeholder: 'Department',
+        //     header: '',
+        //     id: 'Department',
+        //     size: 80,
+        // },
+       
+        // { accessorKey: "SitesTagged", placeholder: "Site", header: "", size: 80, },
+        // {
+        //     cell: ({ row }) => (
+        //         <>
+        //             {/* <a onClick={() => EditContactPopup(row.original)} title="Edit"><svg xmlns="http://www.w3.org/2000/svg" width="30" height="25" viewBox="0 0 48 48" fill="none"><path fill-rule="evenodd" clip-rule="evenodd" d="M7 21.9323V35.8647H13.3613H19.7226V34.7589V33.6532H14.3458H8.96915L9.0264 25.0837L9.08387 16.5142H24H38.9161L38.983 17.5647L39.0499 18.6151H40.025H41V13.3076V8H24H7V21.9323ZM38.9789 12.2586L39.0418 14.4164L24.0627 14.3596L9.08387 14.3027L9.0196 12.4415C8.98428 11.4178 9.006 10.4468 9.06808 10.2838C9.1613 10.0392 11.7819 9.99719 24.0485 10.0441L38.9161 10.1009L38.9789 12.2586ZM36.5162 21.1565C35.8618 21.3916 34.1728 22.9571 29.569 27.5964L23.4863 33.7259L22.7413 36.8408C22.3316 38.554 22.0056 39.9751 22.017 39.9988C22.0287 40.0225 23.4172 39.6938 25.1029 39.2686L28.1677 38.4952L34.1678 32.4806C41.2825 25.3484 41.5773 24.8948 40.5639 22.6435C40.2384 21.9204 39.9151 21.5944 39.1978 21.2662C38.0876 20.7583 37.6719 20.7414 36.5162 21.1565ZM38.5261 23.3145C39.2381 24.2422 39.2362 24.2447 32.9848 30.562C27.3783 36.2276 26.8521 36.6999 25.9031 36.9189C25.3394 37.0489 24.8467 37.1239 24.8085 37.0852C24.7702 37.0467 24.8511 36.5821 24.9884 36.0529C25.2067 35.2105 25.9797 34.3405 31.1979 29.0644C35.9869 24.2225 37.2718 23.0381 37.7362 23.0381C38.0541 23.0381 38.4094 23.1626 38.5261 23.3145Z" fill="#333333"></path></svg></a> */}
+        //             <span onClick={() => EditContactPopup(row.original)} title="Edit" className='svg__iconbox svg__icon--edit hreflink'></span>
+        //         </>
+        //     ),
+        //     accessorKey: '',
+        //     canSort: false,
+        //     placeholder: '',
+        //     header: '',
+        //     id: 'row.original',
+        //     size: 10,
+        // },
+   
+    ],
+    [contractData]);
+    const callBackData = (data: any) => {
+       
+        console.log(data)
+    }
     return (
 
         <myContextValue.Provider value={{ ...myContextValue, allSite: allSite, allListId: allListId, loggedInUserName: props.props?.userDisplayName }}>
@@ -181,7 +304,7 @@ const EmployeProfileMain = (props: any) => {
                                  {/* <div className="svg__iconbox svg__icon--edit alignIcon hreflink" title="Edit Employee Profile" onClick={()=>setEditContactStatus(true)}></div> */}
                                  <a className="hreflink" onClick={()=>setEditContactStatus(true)} title="Edit Employee Profile"><svg xmlns="http://www.w3.org/2000/svg" width="30" height="25" viewBox="0 0 48 48" fill="none"><path fill-rule="evenodd" clip-rule="evenodd" d="M7 21.9323V35.8647H13.3613H19.7226V34.7589V33.6532H14.3458H8.96915L9.0264 25.0837L9.08387 16.5142H24H38.9161L38.983 17.5647L39.0499 18.6151H40.025H41V13.3076V8H24H7V21.9323ZM38.9789 12.2586L39.0418 14.4164L24.0627 14.3596L9.08387 14.3027L9.0196 12.4415C8.98428 11.4178 9.006 10.4468 9.06808 10.2838C9.1613 10.0392 11.7819 9.99719 24.0485 10.0441L38.9161 10.1009L38.9789 12.2586ZM36.5162 21.1565C35.8618 21.3916 34.1728 22.9571 29.569 27.5964L23.4863 33.7259L22.7413 36.8408C22.3316 38.554 22.0056 39.9751 22.017 39.9988C22.0287 40.0225 23.4172 39.6938 25.1029 39.2686L28.1677 38.4952L34.1678 32.4806C41.2825 25.3484 41.5773 24.8948 40.5639 22.6435C40.2384 21.9204 39.9151 21.5944 39.1978 21.2662C38.0876 20.7583 37.6719 20.7414 36.5162 21.1565ZM38.5261 23.3145C39.2381 24.2422 39.2362 24.2447 32.9848 30.562C27.3783 36.2276 26.8521 36.6999 25.9031 36.9189C25.3394 37.0489 24.8467 37.1239 24.8085 37.0852C24.7702 37.0467 24.8511 36.5821 24.9884 36.0529C25.2067 35.2105 25.9797 34.3405 31.1979 29.0644C35.9869 24.2225 37.2718 23.0381 37.7362 23.0381C38.0541 23.0381 38.4094 23.1626 38.5261 23.3145Z" fill="#333333"></path></svg></a>
                             </h2>
-                            <a className='fw-semibold ml-auto' href={OldEmployeeProfile}>Old Employee Profile</a>
+                            <a className='fw-semibold ml-auto' target='_blank'data-interception="off"  href={OldEmployeeProfile}>Old Employee Profile</a>
                             
                         </div>
 
@@ -213,7 +336,7 @@ const EmployeProfileMain = (props: any) => {
 
                     </div>
                 </div>
-                <div className="my-3">
+                {siteTaggedHR ?<div className="my-3">
                     <ul className="fixed-Header nav nav-tabs" id="myTab" role="tablist">
                         <button
                             className="nav-link active"
@@ -228,11 +351,24 @@ const EmployeProfileMain = (props: any) => {
                             BASIC INFORMATION
                             {/* TASK INFORMATION */}
                         </button>
+                        <button
+                            className="nav-link"
+                            id="CONTRACTS-Tab"
+                            data-bs-toggle="tab"
+                            data-bs-target="#CONTRACTS"
+                            type="button"
+                            role="tab"
+                            aria-controls="CONTRACTS"
+                            aria-selected="true"
+                        >
+                            CONTRACTS
+                            {/* TASK INFORMATION */}
+                        </button>
                     </ul>
                     <div className="border border-top-0 clearfix p-3 tab-content " id="myTabContent">
                         <div className="tab-pane show active" id="BASICINFORMATION2" role="tabpanel" aria-labelledby="BASICINFORMATION2">
 
-                            {siteTaggedHR ? <div className="col-sm-12 imgTab">
+                             <div className="col-sm-12 imgTab">
                                 <Tab.Container id="left-tabs-example" defaultActiveKey="Information2">
                                     <Row>
                                         <Col sm={2} className='pe-0'>
@@ -371,10 +507,18 @@ const EmployeProfileMain = (props: any) => {
                                         </Col>
                                     </Row>
                                 </Tab.Container>
-                            </div> : <Information EmployeeData={EmployeeData} siteTaggedHR={siteTaggedHR}  />}
+                            </div> 
+                        </div>
+
+                        <div className="tab-pane" id="CONTRACTS" role="tabpanel" aria-labelledby="CONTRACTS">
+                            <div className='siteBdrBottom'>Contract Details</div>
+                            <div className='Alltable'>
+
+                        <GlobalCommanTable columns={columns} data={contractData} showHeader={true}callBackData={callBackData}/>
+                        </div>
                         </div>
                     </div>
-                </div>
+                </div>:<Information EmployeeData={EmployeeData} siteTaggedHR={siteTaggedHR}  />}
                 {EditContactStatus ? <HHHHEditComponent props={EmployeeData}  callBack={ClosePopup}  /> : null}
             </div>
         </myContextValue.Provider>
