@@ -224,7 +224,9 @@ const CreateActivity = (props: any) => {
           value:props?.SiteUrl
         }
       }
-      changeTaskUrl(e)
+     setTimeout(()=>{
+        changeTaskUrl(e)
+     },1200)
     }
 
     if (props?.selectedItem?.NoteCall == "Task") {
