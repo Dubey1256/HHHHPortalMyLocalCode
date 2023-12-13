@@ -48,7 +48,7 @@ import SmartTotalTime from "./SmartTimeTotal";
 import "react-datepicker/dist/react-datepicker.css";
 import BackgroundCommentComponent from "./BackgroundCommentComponent";
 import EmailNotificationMail from "./EmailNotificationMail";
-
+import OnHoldCommentCard from '../Comments/OnHoldCommentCard';
 let PortfolioItemColor: any = "";
 var AllMetaData: any = [];
 var taskUsers: any = [];
@@ -58,7 +58,7 @@ var CommentBoxData: any = [];
 var SubCommentBoxData: any = [];
 var timesheetData: any = [];
 var updateFeedbackArray: any = [];
-var tempShareWebTypeData: any = [];
+let tempShareWebTypeData: any = [];
 var tempCategoryData: any = "";
 var SiteTypeBackupArray: any = [];
 var currentUserBackupArray: any = [];
@@ -905,17 +905,8 @@ const EditTaskPopup = (Items: any) => {
                     let ImmediateCheck = item.Categories.search("Immediate");
                     let ApprovalCheck = item.Categories.search("Approval");
                     let OnlyCompletedCheck = item.Categories.search("Only Completed");
-                    let DesignCheck: any;
-                    if (
-                        item.Categories == "Design" ||
-                        item.Categories == "Design;" ||
-                        item.Categories == "Design;Approval" ||
-                        item.Categories == "Design;Approval;" ||
-                        item.Categories == "Approval;Design;" ||
-                        item.Categories == "Approval;Design"
-                    ) {
-                        DesignCheck = item.Categories.search("Design");
-                    }
+                    let DesignCheck = item.Categories.search("Design");
+
                     if (phoneCheck >= 0) {
                         setPhoneStatus(true);
                     } else {
@@ -1655,143 +1646,194 @@ const EditTaskPopup = (Items: any) => {
 
     //  ###################  Smart Category slection Common Functions with Validations ##################
 
+    // const setSelectedCategoryData = (selectCategoryData: any, usedFor: any) => {
+    //     setIsComponentPicker(false);
+    //     let TempArray: any = [];
+    //     selectCategoryData.map((existingData: any) => {
+    //         let elementFoundCount: any = 0;
+    //         if (
+    //             tempShareWebTypeData != undefined &&
+    //             tempShareWebTypeData.length > 0
+    //         ) {
+    //             tempShareWebTypeData = tempShareWebTypeData.reduce(function (
+    //                 previous: any,
+    //                 current: any
+    //             ) {
+    //                 var alredyExists =
+    //                     previous.filter(function (item: any) {
+    //                         return item.Title === current.Title;
+    //                     }).length > 0;
+    //                 if (!alredyExists) {
+    //                     previous.push(current);
+    //                 }
+    //                 return previous;
+    //             },
+    //                 []);
+    //             tempShareWebTypeData.map((currentData: any) => {
+    //                 if (existingData.Title == currentData.Title) {
+    //                     elementFoundCount++;
+    //                 }
+    //             });
+    //         }
+    //         if (existingData?.IsSendAttentionEmail?.Id != undefined) {
+    //             setIsSendAttentionMsgStatus(true);
+    //             userSendAttentionEmails.push(existingData?.IsSendAttentionEmail?.EMail);
+    //             setSendCategoryName(existingData?.Title);
+    //         }
+    //         if (existingData?.Title == "Bottleneck") {
+    //             setIsSendAttentionMsgStatus(true);
+    //             if (EditData?.TaskAssignedUsers?.length > 0) {
+    //                 EditData?.TaskAssignedUsers?.map((AssignedUser: any, Index: any) => {
+    //                     userSendAttentionEmails.push(AssignedUser.Email);
+    //                 });
+    //             }
+    //             setSendCategoryName(existingData?.Title);
+    //         }
+    //         if (elementFoundCount == 0) {
+    //             let category: any;
+    //             if (selectCategoryData != undefined && selectCategoryData.length > 0) {
+    //                 selectCategoryData.map((categoryData: any) => {
+    //                     categoryTitle = categoryData.newTitle;
+
+    //                     tempShareWebTypeData.push(categoryData);
+    //                     TempArray.push(categoryData);
+    //                     let isExists: any = 0;
+    //                     if (tempCategoryData?.length > 0) {
+    //                         isExists = tempCategoryData.search(categoryData.Title);
+    //                     } else {
+    //                         category =
+    //                             category != undefined
+    //                                 ? category + ";" + categoryData.Title
+    //                                 : categoryData.Title;
+    //                     }
+    //                     if (isExists < 0) {
+    //                         category = tempCategoryData
+    //                             ? tempCategoryData + ";" + categoryData.Title
+    //                             : categoryData.Title;
+    //                     }
+    //                 });
+    //             }
+    //             setCategoriesData(category);
+    //             let phoneCheck = category.search("Phone");
+    //             let emailCheck = category.search("Email");
+    //             let ImmediateCheck = category.search("Immediate");
+    //             let ApprovalCheck = category.search("Approval");
+    //             let OnlyCompletedCheck = category.search("Only Completed");
+    //             if (phoneCheck >= 0) {
+    //                 setPhoneStatus(true);
+    //             } else {
+    //                 setPhoneStatus(false);
+    //             }
+    //             if (emailCheck >= 0) {
+    //                 setEmailStatus(true);
+    //             } else {
+    //                 setEmailStatus(false);
+    //             }
+    //             if (ImmediateCheck >= 0) {
+    //                 setImmediateStatus(true);
+    //             } else {
+    //                 setImmediateStatus(false);
+    //             }
+    //             if (ApprovalCheck >= 0) {
+    //                 setApprovalStatus(true);
+    //                 setApproverData(TaskApproverBackupArray);
+    //             } else {
+    //                 setApprovalStatus(false);
+    //             }
+    //             if (OnlyCompletedCheck >= 0) {
+    //                 setOnlyCompletedStatus(true);
+    //             } else {
+    //                 setOnlyCompletedStatus(false);
+    //             }
+    //         }
+    //         currentUserData?.map((CUData: any) => {
+    //             if (CUData?.CategoriesItemsJson?.length > 5) {
+    //                 let PrevDefinedCategories: any = JSON.parse(
+    //                     CUData.CategoriesItemsJson
+    //                 );
+    //                 PrevDefinedCategories?.map((CUCategories: any) => {
+    //                     if (CUCategories.Title == existingData.Title) {
+    //                         setApprovalStatus(true);
+    //                         setApproverData(TaskApproverBackupArray);
+    //                         AutoCompleteItemsArray?.map((itemData: any) => {
+    //                             if (itemData.Title == "Approval") {
+    //                                 CategoryChangeUpdateFunction(
+    //                                     false,
+    //                                     itemData.Title,
+    //                                     itemData.Id
+    //                                 );
+    //                             }
+    //                         });
+    //                     }
+    //                 });
+    //             }
+    //         });
+    //     });
+
+    //     let uniqueIds: any = {};
+    //     const result: any = tempShareWebTypeData.filter((item: any) => {
+    //         if (!uniqueIds[item.Id]) {
+    //             uniqueIds[item.Id] = true;
+    //             return true;
+    //         }
+    //         return false;
+    //     });
+
+    //     tempShareWebTypeData = result;
+
+    //     // if (usedFor == "For-Panel") {
+    //     //     if (onHoldCategory.length > 0 && onHoldCategory[0].Title == "On-Hold") {
+    //     //         setOnHoldPanel(true);
+    //     //     } else if (onHoldCategory.length == 0 && tempShareWebTypeData[tempShareWebTypeData.length - 1].Title != "On-Hold") {
+    //     //         setOnHoldPanel(false);
+    //     //         setShareWebTypeData(tempShareWebTypeData);
+    //     //     }
+    //     // }
+    //     // if (usedFor == "For-Auto-Search") {
+    //     //     if (onHoldCategory.length > 0 && onHoldCategory[0].Title == "On-Hold") {
+    //     //         setOnHoldPanel(true);
+    //     //     } else if (onHoldCategory.length == 0 && tempShareWebTypeData[tempShareWebTypeData.length - 1].Title != "On-Hold") {
+    //     //         setOnHoldPanel(false);
+    //     //         setShareWebTypeData(tempShareWebTypeData);
+    //     //     }
+    //     //     setSearchedCategoryData([]);
+    //     //     setCategorySearchKey("");
+    //     // }
+    //     if (usedFor == "For-Panel") {
+    //         setShareWebTypeData(selectCategoryData);
+    //         tempShareWebTypeData = selectCategoryData;
+    //     }
+    //     if (usedFor == "For-Auto-Search") {
+    //         setShareWebTypeData(result);
+    //         setSearchedCategoryData([])
+    //         setCategorySearchKey("");
+    //     }
+    // };
     const setSelectedCategoryData = (selectCategoryData: any, usedFor: any) => {
         setIsComponentPicker(false);
-        let TempArray: any = [];
-        selectCategoryData.map((existingData: any) => {
-            let elementFoundCount: any = 0;
-            if (
-                tempShareWebTypeData != undefined &&
-                tempShareWebTypeData.length > 0
-            ) {
-                tempShareWebTypeData = tempShareWebTypeData.reduce(function (
-                    previous: any,
-                    current: any
-                ) {
-                    var alredyExists =
-                        previous.filter(function (item: any) {
-                            return item.Title === current.Title;
-                        }).length > 0;
-                    if (!alredyExists) {
-                        previous.push(current);
-                    }
-                    return previous;
-                },
-                    []);
-                tempShareWebTypeData.map((currentData: any) => {
-                    if (existingData.Title == currentData.Title) {
-                        elementFoundCount++;
-                    }
-                });
-            }
-            if (existingData?.IsSendAttentionEmail?.Id != undefined) {
-                setIsSendAttentionMsgStatus(true);
-                userSendAttentionEmails.push(existingData?.IsSendAttentionEmail?.EMail);
-                setSendCategoryName(existingData?.Title);
-            }
-            if (existingData?.Title == "Bottleneck") {
-                setIsSendAttentionMsgStatus(true);
-                if (EditData?.TaskAssignedUsers?.length > 0) {
-                    EditData?.TaskAssignedUsers?.map((AssignedUser: any, Index: any) => {
-                        userSendAttentionEmails.push(AssignedUser.Email);
-                    });
-                }
-                setSendCategoryName(existingData?.Title);
-            }
-            if (elementFoundCount == 0) {
-                let category: any;
-                if (selectCategoryData != undefined && selectCategoryData.length > 0) {
-                    selectCategoryData.map((categoryData: any) => {
-                        categoryTitle = categoryData.newTitle;
-                        if (usedFor == "For-Auto-Search") {
-                            // if (categoryTitle != "On-Hold") {
-                            tempShareWebTypeData.push(categoryData);
-                            // } else if (categoryTitle == "On-Hold") {
-                            //     onHoldCategory.push(categoryData);
-                            // }
-                        }
-                        if (usedFor == "For-Panel") {
-                            // if (categoryTitle != "On-Hold") {
-                            tempShareWebTypeData.push(categoryData);
-                            // } else if (categoryTitle == "On-Hold") {
-                            // onHoldCategory.push(categoryData);
-                            // }
-                        }
-                        TempArray.push(categoryData);
-                        let isExists: any = 0;
-                        if (tempCategoryData?.length > 0) {
-                            isExists = tempCategoryData.search(categoryData.Title);
-                        } else {
-                            category =
-                                category != undefined
-                                    ? category + ";" + categoryData.Title
-                                    : categoryData.Title;
-                        }
-                        if (isExists < 0) {
-                            category = tempCategoryData
-                                ? tempCategoryData + ";" + categoryData.Title
-                                : categoryData.Title;
-                        }
-                    });
-                }
-                setCategoriesData(category);
-                let phoneCheck = category.search("Phone");
-                let emailCheck = category.search("Email");
-                let ImmediateCheck = category.search("Immediate");
-                let ApprovalCheck = category.search("Approval");
-                let OnlyCompletedCheck = category.search("Only Completed");
-                if (phoneCheck >= 0) {
-                    setPhoneStatus(true);
+        let uniqueIds: any = {};
+        let checkForOnHold: any = tempShareWebTypeData?.some((category: any) => category.Title === "On-Hold")
+        if (usedFor == "For-Panel") {
+            let TempArrya: any = [];
+            selectCategoryData?.map((selectedData: any) => {
+                if (selectedData.Title == "On-Hold" && !checkForOnHold) {
+                    onHoldCategory.push(selectedData);
+                    setOnHoldPanel(true);
                 } else {
-                    setPhoneStatus(false);
+                    TempArrya.push(selectedData);
                 }
-                if (emailCheck >= 0) {
-                    setEmailStatus(true);
+            })
+            tempShareWebTypeData = TempArrya;
+        } else {
+            selectCategoryData.forEach((existingData: any) => {
+                if (existingData.Title == "On-Hold" && !checkForOnHold) {
+                    onHoldCategory.push(existingData);
+                    setOnHoldPanel(true);
                 } else {
-                    setEmailStatus(false);
-                }
-                if (ImmediateCheck >= 0) {
-                    setImmediateStatus(true);
-                } else {
-                    setImmediateStatus(false);
-                }
-                if (ApprovalCheck >= 0) {
-                    setApprovalStatus(true);
-                    setApproverData(TaskApproverBackupArray);
-                } else {
-                    setApprovalStatus(false);
-                }
-                if (OnlyCompletedCheck >= 0) {
-                    setOnlyCompletedStatus(true);
-                } else {
-                    setOnlyCompletedStatus(false);
-                }
-            }
-            currentUserData?.map((CUData: any) => {
-                if (CUData?.CategoriesItemsJson?.length > 5) {
-                    let PrevDefinedCategories: any = JSON.parse(
-                        CUData.CategoriesItemsJson
-                    );
-                    PrevDefinedCategories?.map((CUCategories: any) => {
-                        if (CUCategories.Title == existingData.Title) {
-                            setApprovalStatus(true);
-                            setApproverData(TaskApproverBackupArray);
-                            AutoCompleteItemsArray?.map((itemData: any) => {
-                                if (itemData.Title == "Approval") {
-                                    CategoryChangeUpdateFunction(
-                                        false,
-                                        itemData.Title,
-                                        itemData.Id
-                                    );
-                                }
-                            });
-                        }
-                    });
+                    tempShareWebTypeData.push(existingData);
                 }
             });
-        });
-
-        let uniqueIds: any = {};
+        }
         const result: any = tempShareWebTypeData.filter((item: any) => {
             if (!uniqueIds[item.Id]) {
                 uniqueIds[item.Id] = true;
@@ -1799,68 +1841,50 @@ const EditTaskPopup = (Items: any) => {
             }
             return false;
         });
-
         tempShareWebTypeData = result;
-
-        // if (usedFor == "For-Panel") {
-        //     if (onHoldCategory.length > 0 && onHoldCategory[0].Title == "On-Hold") {
-        //         setOnHoldPanel(true);
-        //     } else if (onHoldCategory.length == 0 && tempShareWebTypeData[tempShareWebTypeData.length - 1].Title != "On-Hold") {
-        //         setOnHoldPanel(false);
-        //         setShareWebTypeData(tempShareWebTypeData);
-        //     }
-        // }
-        // if (usedFor == "For-Auto-Search") {
-        //     if (onHoldCategory.length > 0 && onHoldCategory[0].Title == "On-Hold") {
-        //         setOnHoldPanel(true);
-        //     } else if (onHoldCategory.length == 0 && tempShareWebTypeData[tempShareWebTypeData.length - 1].Title != "On-Hold") {
-        //         setOnHoldPanel(false);
-        //         setShareWebTypeData(tempShareWebTypeData);
-        //     }
-        //     setSearchedCategoryData([]);
-        //     setCategorySearchKey("");
-        // }
-        if (usedFor == "For-Panel") {
-            setShareWebTypeData(selectCategoryData);
-            tempShareWebTypeData = selectCategoryData;
+        setPhoneStatus(result?.some((category: any) => category.Title === "Phone"));
+        setEmailStatus(result?.some((category: any) => category.Title === "Email Notification"));
+        setImmediateStatus(result?.some((category: any) => category.Title === "Immediate"));
+        setOnlyCompletedStatus(result?.some((category: any) => category.Title === "Only Completed"));
+        let checkForApproval: any = result?.some((category: any) => category.Title === "Approval")
+        if (checkForApproval) {
+            setApprovalStatus(true);
+            setApproverData(TaskApproverBackupArray);
+        } else {
+            setApprovalStatus(false);
+            setApproverData([]);
         }
-        if (usedFor == "For-Auto-Search") {
+        if (usedFor === "For-Panel" || usedFor === "For-Auto-Search") {
             setShareWebTypeData(result);
-            setSearchedCategoryData([])
-            setCategorySearchKey("");
+            if (usedFor === "For-Auto-Search") {
+                setSearchedCategoryData([]);
+                setCategorySearchKey("");
+            }
         }
     };
+
 
     const smartCategoryPopup = useCallback(() => {
         setIsComponentPicker(false);
     }, []);
 
-    const editTaskPopupCallBack = useCallback(() => {
+    const editTaskPopupCallBack = useCallback((usedFor: any) => {
         setOnHoldPanel(false);
-        if (onHoldCategory[0].Title == "On-Hold") {
-            tempShareWebTypeData = tempShareWebTypeData.reduce(function (
-                previous: any,
-                current: any
-            ) {
-                var alredyExists =
-                    previous.filter(function (item: any) {
-                        return item.Title === current.Title;
-                    }).length > 0;
-                if (!alredyExists) {
-                    previous.push(current);
+        if (usedFor == "Save") {
+            let uniqueIds: any = {};
+            tempShareWebTypeData.push(onHoldCategory[0]);
+            const result: any = tempShareWebTypeData.filter((item: any) => {
+                if (!uniqueIds[item.Id]) {
+                    uniqueIds[item.Id] = true;
+                    return true;
                 }
-                return previous;
-            }, []);
-            tempShareWebTypeData = tempShareWebTypeData.concat(onHoldCategory);
-            setShareWebTypeData(tempShareWebTypeData);
+                return false;
+            });
+            tempShareWebTypeData = result;
+            setShareWebTypeData(result);
         }
         onHoldCategory = [];
     }, []);
-
-    const closeOnHoldPanel = () => {
-        setOnHoldPanel(false);
-        onHoldCategory = [];
-    };
 
     //  ###################  Smart Category Auto Suggesution Functions  ##################
 
@@ -4786,25 +4810,7 @@ const EditTaskPopup = (Items: any) => {
         }
     };
 
-    // ************** this is custom header and custom Footers section functions for panel *************
 
-    const onRenderCustomOnHoldPanelHeader = () => {
-        return (
-            <div
-                className={
-                    ServicesTaskCheck
-                        ? "d-flex full-width pb-1 serviepannelgreena"
-                        : "d-flex full-width pb-1"
-                }
-            >
-                <div className="alignCenter full-width pb-1">
-                    <span className="boldClable f-19 ms-4 pb-2 siteColor">
-                        State the reason why Task is On-Hold
-                    </span>
-                </div>
-            </div>
-        );
-    }
 
     const onRenderCustomHeaderMain = () => {
         return (
@@ -5307,27 +5313,20 @@ const EditTaskPopup = (Items: any) => {
                     <TimeEntryPopup props={Items.Items} />
                 </div>
             </Panel>
+
             {/* ************ this is On-Hold Panel ************ */}
-            {/* <Panel
-                type={PanelType.custom}
-                customWidth="450px"
-                onRenderHeader={onRenderCustomOnHoldPanelHeader}
-                isOpen={onHoldPanel}
-                onDismiss={closeOnHoldPanel}
-            >
-                <div className="full_width ">
-                    <CommentCard
-                        siteUrl={siteUrls}
-                        itemID={Items.Items.Id}
-                        AllListId={AllListIdData}
-                        Context={Context}
-                        onHoldCallBack={editTaskPopupCallBack}
-                        commentFor="On-Hold"
-                        postCommentCallBack={handlePostComment}
-                        counter={counter}
-                    />
-                </div>
-            </Panel> */}
+            {onHoldPanel ?
+
+                <OnHoldCommentCard
+                    siteUrl={siteUrls}
+                    ItemId={Items.Items.Id}
+                    AllListIds={AllListIdData}
+                    Context={Context}
+                    callback={editTaskPopupCallBack}
+                    usedFor="Task-Popup"
+                />
+                : null}
+
             {/* ***************** this is Main Panel *********** */}
             <Panel
                 type={PanelType.large}
@@ -5748,7 +5747,7 @@ const EditTaskPopup = (Items: any) => {
                                                                         onChange={(e) => autoSuggestionsForCategory(e)}
                                                                     />
                                                                     {SearchedCategoryData?.length > 0 ? (
-                                                                        <div className="SmartTableOnTaskPopup">
+                                                                        <div className="SmartTableOnTaskPopup  w-100">
                                                                             <ul className="list-group">
                                                                                 {SearchedCategoryData.map((item: any) => {
                                                                                     return (
@@ -7830,7 +7829,7 @@ const EditTaskPopup = (Items: any) => {
                                                                                     onChange={(e) => autoSuggestionsForCategory(e)}
                                                                                 />
                                                                                 {SearchedCategoryData?.length > 0 ? (
-                                                                                    <div className="SmartTableOnTaskPopup">
+                                                                                    <div className="SmartTableOnTaskPopup w-100">
                                                                                         <ul className="list-group">
                                                                                             {SearchedCategoryData.map((item: any) => {
                                                                                                 return (

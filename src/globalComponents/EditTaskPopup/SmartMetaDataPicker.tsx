@@ -203,6 +203,7 @@ const Picker = (item: any) => {
             }
         })
         setSelect(select => ([...select]));
+        SelectedCategoryBackupArray = [...select]
     }
     // Autosuggestion
 
