@@ -35,7 +35,7 @@ const inlineEditingcolumns = (props: any) => {
   const [CategoriesData, setCategoriesData] = React.useState<any>([]);
   const [SearchedCategoryData, setSearchedCategoryData] = React.useState([]);
   const [TeamConfig, setTeamConfig] = React.useState();
-  const [onHoldComment ,setOnHoldComment]:any=React.useState(false)
+  const [onHoldComment, setOnHoldComment]: any = React.useState(false)
   const [teamMembersPopup, setTeamMembersPopup] = React.useState(false);
   const [TaskStatusPopup, setTaskStatusPopup] = React.useState(false);
   const [taskCategoriesPopup, setTaskCategoriesPopup] = React.useState(false);
@@ -103,67 +103,67 @@ const inlineEditingcolumns = (props: any) => {
     { value: 100, status: "100% Closed", taskStatusComment: "Closed" }
   ];
   React.useEffect(() => {
-   try{
-    if (props?.columnName == 'Priority'){
-      comments = JSON.parse(props?.item?.Comments)
-    }
-    if (props?.item?.metaDataListId != undefined) {
-      smartMetadataListId = props?.item?.metaDataListId;
-    } else {
-      smartMetadataListId = props?.AllListId?.SmartMetadataListID;
-    }
-    if (props?.item?.siteUrl != undefined) {
-      siteUrl = props?.item?.siteUrl;
-    } else {
-      siteUrl = props?.AllListId?.siteUrl;
-    }
-    if (props?.item?.TaskCategories?.length > 0) {
+    try {
+      if (props?.columnName == 'Priority') {
+        comments = JSON.parse(props?.item?.Comments)
+      }
+      if (props?.item?.metaDataListId != undefined) {
+        smartMetadataListId = props?.item?.metaDataListId;
+      } else {
+        smartMetadataListId = props?.AllListId?.SmartMetadataListID;
+      }
+      if (props?.item?.siteUrl != undefined) {
+        siteUrl = props?.item?.siteUrl;
+      } else {
+        siteUrl = props?.AllListId?.siteUrl;
+      }
       if (props?.item?.TaskCategories?.length > 0) {
-        props?.item?.TaskCategories?.map((cat: any) => {
-          cat.ActiveTile = true;
-        });
+        if (props?.item?.TaskCategories?.length > 0) {
+          props?.item?.TaskCategories?.map((cat: any) => {
+            cat.ActiveTile = true;
+          });
+        }
+        setCategoriesData(props?.item?.TaskCategories);
+      } else if (props?.item?.TaskCategories?.results?.length > 0) {
+        if (props?.item?.TaskCategories?.results?.length > 0) {
+          props?.item?.TaskCategories?.results?.map((cat: any) => {
+            cat.ActiveTile = true;
+          });
+        }
+        setCategoriesData(props?.item?.TaskCategories?.results);
+      } else if ((props?.item?.TaskCategories?.length == 0 || props?.item?.TaskCategories?.results?.length == 0) && props?.item?.Categories?.length > 0) {
+        selectedCatTitleVal = [];
+        selectedCatTitleVal = props?.item?.Categories?.split(";")
+
       }
-      setCategoriesData(props?.item?.TaskCategories);
-    } else if (props?.item?.TaskCategories?.results?.length > 0) {
+      loadTaskUsers();
+      if (props?.item?.DueDate != undefined) {
+        setEditDate(props?.item?.DueDate);
+      }
+      let selectedCategoryId: any = [];
       if (props?.item?.TaskCategories?.results?.length > 0) {
-        props?.item?.TaskCategories?.results?.map((cat: any) => {
-          cat.ActiveTile = true;
+        props?.item?.TaskCategories?.results?.map((category: any) => {
+          selectedCategoryId.push(category.Id);
+        });
+      } else if (props?.item?.TaskCategories?.length > 0) {
+        props?.item?.TaskCategories?.map((category: any) => {
+          selectedCategoryId.push(category.Id);
         });
       }
-      setCategoriesData(props?.item?.TaskCategories?.results);
-    } else if ((props?.item?.TaskCategories?.length == 0 || props?.item?.TaskCategories?.results?.length == 0) && props?.item?.Categories?.length > 0) {
-      selectedCatTitleVal = [];
-      selectedCatTitleVal = props?.item?.Categories?.split(";")
 
-    }
-    loadTaskUsers();
-    if (props?.item?.DueDate != undefined) {
-      setEditDate(props?.item?.DueDate);
-    }
-    let selectedCategoryId: any = [];
-    if (props?.item?.TaskCategories?.results?.length > 0) {
-      props?.item?.TaskCategories?.results?.map((category: any) => {
-        selectedCategoryId.push(category.Id);
-      });
-    } else if (props?.item?.TaskCategories?.length > 0) {
-      props?.item?.TaskCategories?.map((category: any) => {
-        selectedCategoryId.push(category.Id);
-      });
-    }
-
-    setTaskAssignedTo(props?.item?.AssignedTo);
-    setTaskTeamMembers(props?.item?.TeamMembers);
-    setTaskResponsibleTeam(props?.item?.ResponsibleTeam);
-    setSelectedCatId(selectedCategoryId);
-    setTaskPriority(props?.item?.PriorityRank);
-    setFeedback(props?.item?.Remark);
-    setEstimatedTimeProps();
-    if (props?.item?.PercentComplete != undefined) {
-      props.item.PercentComplete = parseInt(props?.item?.PercentComplete);
-      setTaskStatusInNumber(props.item.PercentComplete);
-    }
-    GetSmartMetadata();
-   }catch(e){console.log}
+      setTaskAssignedTo(props?.item?.AssignedTo);
+      setTaskTeamMembers(props?.item?.TeamMembers);
+      setTaskResponsibleTeam(props?.item?.ResponsibleTeam);
+      setSelectedCatId(selectedCategoryId);
+      setTaskPriority(props?.item?.PriorityRank);
+      setFeedback(props?.item?.Remark);
+      setEstimatedTimeProps();
+      if (props?.item?.PercentComplete != undefined) {
+        props.item.PercentComplete = parseInt(props?.item?.PercentComplete);
+        setTaskStatusInNumber(props.item.PercentComplete);
+      }
+      GetSmartMetadata();
+    } catch (e) { console.log }
 
   }, [props, props?.item?.TaskCategories?.results]);
   const getPercentCompleteTitle = (percent: any) => {
@@ -356,25 +356,26 @@ const inlineEditingcolumns = (props: any) => {
     }
   };
   const getChilds = (item: any, items: any) => {
-    try{
+    try {
 
-   
-    let parent = JSON.parse(JSON.stringify(item));
-    parent.Newlabel = `${parent?.Title}`;
-    AutoCompleteItemsArray.push(parent);
-    parent.childs = [];
-    items?.map((childItem: any) => {
-      if (
-        childItem?.Parent?.Id !== undefined &&
-        parseInt(childItem?.Parent?.Id) === parent.ID
-      ) {
-        let child = JSON.parse(JSON.stringify(childItem));
-        parent.childs.push(child);
-        child.Newlabel = `${parent?.Newlabel} > ${child?.Title}`;
-        AutoCompleteItemsArray.push(child);
-        getChilds(child, items);
-      }
-    }); }catch(e){console.log(e)}
+
+      let parent = JSON.parse(JSON.stringify(item));
+      parent.Newlabel = `${parent?.Title}`;
+      AutoCompleteItemsArray.push(parent);
+      parent.childs = [];
+      items?.map((childItem: any) => {
+        if (
+          childItem?.Parent?.Id !== undefined &&
+          parseInt(childItem?.Parent?.Id) === parent.ID
+        ) {
+          let child = JSON.parse(JSON.stringify(childItem));
+          parent.childs.push(child);
+          child.Newlabel = `${parent?.Newlabel} > ${child?.Title}`;
+          AutoCompleteItemsArray.push(child);
+          getChilds(child, items);
+        }
+      });
+    } catch (e) { console.log(e) }
   };
   var getSmartMetadataItemsByTaxType = function (
     metadataItems: any,
@@ -1136,9 +1137,9 @@ const inlineEditingcolumns = (props: any) => {
   const hideOnHoldComment = () => {
     setOnHoldComment(false);
   };
-  
 
-  
+
+
   return (
     <>
       {props?.columnName == "Team" ? (
@@ -1182,7 +1183,7 @@ const inlineEditingcolumns = (props: any) => {
             onClick={() => setTaskPriorityPopup(true)}
           >
             &nbsp;
-            {props?.mypriority === true ? `(${props?.item?.PriorityRank}) ${props?.item?.Priority?.slice(3)}`:props?.item?.PriorityRank}
+            {props?.mypriority === true && props?.item?.PriorityRank != null && props?.item?.PriorityRank != undefined ? `(${props?.item?.PriorityRank}) ${props?.item?.Priority?.slice(3)}` : props?.item?.PriorityRank}
             {props?.item?.TaskCategories?.map((items: any) =>
               items?.Title === "On-Hold" ? (
                 <div className="hover-text">
@@ -1192,9 +1193,9 @@ const inlineEditingcolumns = (props: any) => {
                   />
                   <span className="tooltip-text pop-right">
                     {onHoldComment &&
-                      comments?.map((commentItem: any, index: any) => 
+                      comments?.map((commentItem: any, index: any) =>
                         commentItem?.CommentFor !== undefined &&
-                        commentItem?.CommentFor === "On-Hold" ? (
+                          commentItem?.CommentFor === "On-Hold" ? (
                           <div key={index}>
                             <span className="siteColor p-1 border-bottom">
                               Task On-Hold by{" "}
@@ -1202,12 +1203,12 @@ const inlineEditingcolumns = (props: any) => {
                               <span>{Moment(commentItem?.Created).format('DD/MM/YY')}</span>
                             </span>
                             {commentItem?.CommentFor !== undefined &&
-                            commentItem?.CommentFor === "On-Hold" ? (
+                              commentItem?.CommentFor === "On-Hold" ? (
                               <div key={index}>{commentItem?.Description}</div>
                             ) : null}
                           </div>
                         ) : null
-                        )}
+                      )}
                   </span>
                 </div>
               ) : null
