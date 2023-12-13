@@ -2573,7 +2573,7 @@ function TimeEntryPopup(item: any) {
             <div className="Alltable">
               <div className="col-sm-12 p-0 smart">
                 <div>
-                  <div className="AllTime">
+                  <div className="AllTime timentrytb">
                     {data && (
                       <GlobalCommanTable
                         columns={column}
