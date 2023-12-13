@@ -224,7 +224,9 @@ const CreateActivity = (props: any) => {
           value:props?.SiteUrl
         }
       }
-      changeTaskUrl(e)
+      setTimeout(() => {
+        changeTaskUrl(e)
+      }, 1200);
     }
 
     if (props?.selectedItem?.NoteCall == "Task") {
@@ -476,7 +478,7 @@ const CreateActivity = (props: any) => {
       <>
         <div className="subheading">
           <h2 className="siteColor">
-            {props?.pageName == "QuickTask"
+            {props?.pageName == "QuickTask" || props?.pageName == 'Add Task'
               ? `Create Quick Option - Task`
               : `Create Quick Option - ${selectedItem?.NoteCall}`}
           </h2>
@@ -1679,12 +1681,12 @@ const CreateActivity = (props: any) => {
             <div className="row mt-3">
               <TeamConfigurationCard
                 ItemInfo={
-                  props?.pageName != undefined && props?.pageName == "QuickTask"
+                  props?.pageName != undefined && (props?.pageName == "QuickTask" || props?.pageName == 'Add Task')
                     ? props?.selectedItem
                     : selectedItem
                 }
                 AllListId={
-                  props?.pageName != undefined && props?.pageName == "QuickTask"
+                  props?.pageName != undefined && (props?.pageName == "QuickTask" || props?.pageName == 'Add Task')
                     ? props?.AllListId
                     : AllListId
                 }

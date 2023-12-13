@@ -16,7 +16,7 @@ var LinkedServicesBackupArray: any = [];
 var MultiSelectedData: any = [];
 let AllMetadata: any = [];
 const ServiceComponentPortfolioPopup = ({ props, Dynamic, Call, ComponentType, selectionType, groupedData, showProject }: any) => {
-    const [modalIsOpen, setModalIsOpen] = React.useState(false);
+    const [modalIsOpen, setModalIsOpen] = React.useState(true);
     const [data, setData] = React.useState([]);
     const [CheckBoxData, setCheckBoxData] = React.useState([]);
     const [AllMetadataItems, setAllMetadataItems] = React.useState([]);
@@ -33,6 +33,7 @@ const ServiceComponentPortfolioPopup = ({ props, Dynamic, Call, ComponentType, s
         []);
     function Example(callBack: any, type: any, functionType: any) {
         Call(callBack, type, functionType);
+        setModalIsOpen(false);
     }
     const closePanel = (e: any) => {
         if (e != undefined && e?.type != 'mousedown')
@@ -128,8 +129,8 @@ const ServiceComponentPortfolioPopup = ({ props, Dynamic, Call, ComponentType, s
                 setData(GlobalArray.ProjectData);
                 LinkedServicesBackupArray = GlobalArray.ProjectData;
             }
-            setModalIsOpen(true);
         }
+        setModalIsOpen(true);
     }
 
 
