@@ -106,6 +106,8 @@ const AncTool = (props: any) => {
         siteName = params.get("Site");
         if ((siteName == undefined || siteName == '' || siteName?.length == 0) && props?.listName == "Master Tasks") {
             siteName = 'Portfolios'
+            props.item.TaskId =  props?.item?.PortfolioStructureID
+            setItem(props?.item)
         }
         if (siteName?.length > 0) {
             if (siteName === "Offshore Tasks") {
@@ -660,8 +662,10 @@ const AncTool = (props: any) => {
             let siteColName = `${siteName}Id`
             // Update the document file here
             let PostData = {
-                [siteColName]: { "results": resultArray },
-                PortfoliosId: { "results": file?.PortfoliosId != undefined ? file?.PortfoliosId : [] }
+                [siteColName]: { "results": resultArray }
+            }
+            if(siteColName!="PortfoliosId"){
+                PostData.PortfoliosId = { "results": file?.PortfoliosId != undefined ? file?.PortfoliosId : [] };
             }
             let web = new Web(props?.AllListId?.siteUrl);
             await web.lists.getByTitle('Documents').items.getById(file.Id)
