@@ -399,7 +399,7 @@ const EmployeProfileMain = (props: any) => {
                                                                     <div className="bg-Fa profileLeftSec width20">
                                                                         Tax No
                                                                     </div>
-                                                                    <div className="profileRightSec bg-FF width13">
+                                                                    <div className="width13 profileRightSec bg-FF">
                                                                         {hrUpdateData?.taxNo}
                                                                     </div>
                                                                     <div className="bg-Fa profileLeftSec width20">
