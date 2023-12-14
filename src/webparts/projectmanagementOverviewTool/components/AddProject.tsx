@@ -64,7 +64,9 @@ const AddProject = (props: any) => {
                             const newProjectId = res.data.Id;
                             closePopup()
                             props?.CallBack()
-                            window.open(`${props?.AllListId?.siteUrl}/SitePages/Project-Management.aspx?ProjectId=${newProjectId}`, "_blank");
+                            if(props?.PageName=="ProjectOverview"){
+                                window.open(`${props?.AllListId?.siteUrl}/SitePages/Project-Management.aspx?ProjectId=${newProjectId}`, "_blank");
+                            }
                         })
                     })
             } else {
