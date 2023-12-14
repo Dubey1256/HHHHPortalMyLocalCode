@@ -500,6 +500,9 @@ const ProjectManagementMain = (props: any) => {
             }
 
           })
+          items.SmartInformationTitle=items.SmartInformation[0].Title
+        }else{
+          items.SmartInformationTitle = ''
         }
         items.TotalTaskTime = 0;
         const key = `Task${items?.siteType + items.Id}`;
@@ -935,7 +938,7 @@ const ProjectManagementMain = (props: any) => {
       },
 
       {
-        accessorFn: (row) => row?.Portfolio,
+        accessorFn: (row) => row?.PortfolioTitle,
         cell: ({ row }) => (
           <a
             className="hreflink"
@@ -1087,7 +1090,7 @@ const ProjectManagementMain = (props: any) => {
         size: 110
       },
       {
-        accessorFn: (row) => row?.SmartInformation[0]?.Title,
+        accessorFn: (row) => row?.SmartInformationTitle,
         cell: ({ row }) => (
           <span className='d-flex hreflink' >
             &nbsp; {row?.original?.SmartInformation?.length > 0 ? <span onClick={() => openRemark(row?.original)} className="commentDetailFill-active"><BiCommentDetail /></span> : <span onClick={() => openRemark(row?.original)} className="commentDetailFill"><BiCommentDetail /></span>}
