@@ -429,7 +429,7 @@ const TopNavigation = (dynamicData: any) => {
           .getById(ListId)
           .items.getById(items.Id)
           .update({
-            SortOrder: parseInt(items.SortOrder),
+            SortOrder: parseInt(items.newSortOrder),
           })
           .then((res: any) => {
             count = count + 1;
@@ -498,11 +498,12 @@ const TopNavigation = (dynamicData: any) => {
           const updatedItems = data.map((item, i) => ({
             ...item,
             SortOrder: i === index ? newOrder : item.SortOrder,
+            newSortOrder: i === index ? newOrder : item.SortOrder,
           }));
           const updatedItems2: any = updatedItems.sort(
             (a, b) => a.SortOrder - b.SortOrder
           );
-          MydataSorted = updatedItems2;
+          MydataSorted=updatedItems2;
           setData(updatedItems2);
           setEditableOrder(null);
         }
@@ -1215,11 +1216,16 @@ const TopNavigation = (dynamicData: any) => {
       >
        <div className="mb-2">
         <b>NOTE :</b>
-        <span>You can SortOrder by Using Drag & Drop</span>
+        <span>You can SortOrder by using Drag & Drop</span>
        </div>
          
         <div className="Alltable">
+          <DragDropContext onDragEnd={handleDragEnd}>
+            <Droppable droppableId="sortableTable">
+              {(provided) => (
                 <table
+                  {...provided.droppableProps}
+                  ref={provided.innerRef}
                   className="table table-hover"
                   id="EmpTable"
                   style={{ width: "100%" }}
@@ -1304,8 +1310,17 @@ const TopNavigation = (dynamicData: any) => {
                         ) {
                           return (
                             <>
-                              
+                              {" "}
+                              <Draggable
+                                key={item.Id}
+                                draggableId={item.Id.toString()}
+                                index={index}
+                              >
+                                {(provided) => (
                                   <tr
+                                    ref={provided.innerRef}
+                                    {...provided.draggableProps}
+                                    {...provided.dragHandleProps}
                                     className="bold for-c0l"
                                   >
                                     <td className="p-0">{item?.Title}</td>
@@ -1332,7 +1347,6 @@ const TopNavigation = (dynamicData: any) => {
                                             id="searchClientCategory"
                                             title="Client Category"
                                             className="full_width searchbox_height"
-                                           // value={item?.SortOrder}
                                             defaultValue={item?.SortOrder}
                                             onChange={(e) =>
                                               handleOrderChange(e, index)
@@ -1347,19 +1361,23 @@ const TopNavigation = (dynamicData: any) => {
                                           id="searchClientCategory"
                                           title="Client Category"
                                           className="full_width searchbox_height"
-                                          value={item?.SortOrder}
                                           defaultValue={item?.SortOrder}
                                           disabled
                                         />
                                       )}
                                     </td>
                                   </tr>
+                                )}
+                              </Draggable>
                             </>
                           );
                         }
                       })}
                   </tbody>
                 </table>
+              )}
+            </Droppable>
+          </DragDropContext>
         </div>
         <div className="mt-3">
           <footer className="d-flex justify-content-between w-100">
