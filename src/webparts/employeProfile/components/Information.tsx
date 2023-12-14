@@ -30,7 +30,7 @@ const Information = (props: any) => {
     return (
         <>
             <div className='col-sm-12 ps-3 pe-0 mt-3 row'>
-                <div className='siteBdrBottom siteColor ps-0 mb-2'>Contact Information</div>
+                <div className='siteBdrBottom siteColor sectionHead ps-0 mb-2'>Contact Information</div>
                 <div className="col-sm-6 ps-0 alignCenter mb-3">
                     <span className="f-20">
                         <FaSquarePhone />
@@ -47,7 +47,7 @@ const Information = (props: any) => {
                 </div>
             </div>
             <div className='col-sm-12 ps-3 pe-0 mt-3 row'>
-                <div className='siteBdrBottom siteColor ps-0 mb-2'>Social Media Information</div>
+                <div className='siteBdrBottom sectionHead siteColor ps-0 mb-2'>Social Media Information</div>
                 <div className="col-sm-6 ps-0 alignCenter mb-3">
                     <span className="f-20">
                         <BsLinkedin />
@@ -93,9 +93,9 @@ const Information = (props: any) => {
             </div>
             {props?.siteTaggedHR && <div className='col-sm-12 ps-3 pe-0 mt-3 row'>
                 <div className="infoblock Address ps-0 col-sm-6 form-group">
-                    <div className="siteBdrBottom siteColor ps-0 mb-2">Address Information</div>
+                    <div className="siteBdrBottom sectionHead siteColor ps-0 mb-2">Address Information</div>
                     <div className="alignCenter mb-3">
-                        <span className="f-20" title='city'>
+                        <span className="f-20 ps-2" title='city'>
                             <FaCity />
                         </span>
                         <span className="full_width ms-2 mt-1 ">{EmployeeData?.WorkCity}</span>
@@ -123,7 +123,7 @@ const Information = (props: any) => {
                     </div>
                 </div>
                 <div className="infoblock Address col-sm-6 form-group pe-0">
-                    <div className="siteBdrBottom siteColor pe-0 mb-2">Bank Information</div>
+                    <div className="siteBdrBottom sectionHead siteColor pe-0 mb-2">Bank Information</div>
                     <div className="alignCenter mb-3">
                         <span className="f-20">
                             <img title="BIC" src="/sites/HHHH/GmBH/SiteCollectionImages/ICONS/24/BIC.svg" data-themekey="#" />
@@ -139,13 +139,13 @@ const Information = (props: any) => {
                 </div>
             </div>}
             {props?.siteTaggedHR && <div className='col-md-12 ps-3 pe-0 mt-3 mb-2 row'>
-                <div className='siteBdrBottom siteColor p-0 mb-2'>Personal Information</div>
+                <div className='siteBdrBottom siteColor sectionHead p-0 mb-2'>Personal Information</div>
                     <div className='col-md-6 ps-0'>
                         <dl className="profileHead">
                             <dt className="col-md-3 bg-Fa profileLeftSec">
                                 Date of birth
                             </dt>
-                            <dd className="col-md-9 bg-FF profileLeftSec">
+                            <dd className="col-md-9 bg-FF profileRightSec">
                                 {hrUpdateData?.dateOfBirth != undefined && hrUpdateData?.dateOfBirth != "" ? moment(hrUpdateData?.dateOfBirth)?.format('DD-MM-YYYY') : ""}
                             </dd>
                         </dl>
@@ -153,7 +153,7 @@ const Information = (props: any) => {
                             <dt className="col-md-3 bg-Fa profileLeftSec">
                                 Nationality
                             </dt>
-                            <dd className="col-md-9 bg-FF profileLeftSec">
+                            <dd className="col-md-9 bg-FF profileRightSec">
                                 {hrUpdateData?.Nationality}
                             </dd>
                         </dl>
@@ -163,7 +163,7 @@ const Information = (props: any) => {
                             <dt className="col-md-3 bg-Fa profileLeftSec">
                                 Place of birth
                             </dt>
-                            <dd className="col-md-9 bg-FF profileLeftSec">
+                            <dd className="col-md-9 bg-FF profileRightSec">
                                 {hrUpdateData?.placeOfBirth}
                             </dd>
                         </dl>
@@ -171,7 +171,7 @@ const Information = (props: any) => {
                             <dt className="col-md-3 bg-Fa profileLeftSec">
                                 Marital status
                             </dt>
-                            <dd className="col-md-9 bg-FF profileLeftSec">
+                            <dd className="col-md-9 bg-FF profileRightSec">
                                 {hrUpdateData?.maritalStatus}
                             </dd>
                         </dl>
