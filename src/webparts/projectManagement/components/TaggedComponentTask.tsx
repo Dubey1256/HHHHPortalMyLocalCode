@@ -141,24 +141,6 @@ const TaggedComponentTask = (props: any) => {
                 size: 70,
             },
             {
-                accessorFn: (row) => row?.Portfolio,
-                cell: ({ row }) => (
-                    <a
-                        className="hreflink"
-                        data-interception="off"
-                        target="blank"
-                        href={`${props?.AllListId?.siteUrl}/SitePages/Portfolio-Profile.aspx?taskId=${row?.original?.portfolio?.Id}`}
-                    >
-                        {row?.original?.portfolio?.Title}
-                    </a>
-                ),
-                id: "Portfolio",
-                placeholder: "Portfolio",
-                resetColumnFilters: false,
-                resetSorting: false,
-                header: ""
-            },
-            {
                 accessorFn: (row) => row?.PriorityRank,
                 placeholder: "Priority",
                 id: 'Priority',
