@@ -17,6 +17,7 @@ let approveItem: any;
 let currentUser: any;
 let emailStatus: any = ""
 let portfolioColor: any = '#000066';
+let Allapproval: any[] = []
 const MultipleWebpart = (Tile: any) => {
   const ContextData: any = React.useContext(myContextValue);
   const draftCatogary: any = ContextData?.AlltaskData.DraftCatogary;
@@ -42,6 +43,7 @@ const MultipleWebpart = (Tile: any) => {
   };
   const sendEmail = () => {
     approveItem.PercentComplete = 3
+    approveItem.listName = approveItem.site
     setsendMail(true)
     emailStatus = "Approved"
   }
@@ -405,8 +407,9 @@ const MultipleWebpart = (Tile: any) => {
 
 
   const callBackData = React.useCallback((elem: any, ShowingData: any) => {
-    if (elem != undefined)
+    if (elem != undefined) {
       approveItem = elem;
+    }
     else {
       approveItem = undefined
     }
@@ -452,7 +455,7 @@ const MultipleWebpart = (Tile: any) => {
                 <span title="Share Approver Task" onClick={() => sendAllWorkingTodayTasks(approvalTask)} className="svg__iconbox svg__icon--share empBg"></span>
               </span>
             </div>
-            <div className="Alltable maXh-300" style={{ height: "300px"}}>
+            <div className="Alltable maXh-300" style={{ height: "300px" }}>
               {approvalTask && (
                 <GlobalCommanTable
                   wrapperHeight="100%"
