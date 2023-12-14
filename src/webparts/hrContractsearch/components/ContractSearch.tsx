@@ -6,7 +6,7 @@ import {
 } from "@tanstack/react-table";
 
 import CreateContract from './CreateContract';
-import EditContractPopup from './EditContractPopup';
+import EditContractPopup from './EditContractPopup'
 import GlobalCommanTable from '../../../globalComponents/GroupByReactTableComponents/GlobalCommanTable';
 import { myContextValue } from '../../../globalComponents/globalCommon';
 import HighlightableCell from '../../../globalComponents/highlight';
