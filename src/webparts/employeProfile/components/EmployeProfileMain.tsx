@@ -478,7 +478,7 @@ const EmployeProfileMain = (props: any) => {
                                                 <Tab.Pane eventKey="Qualifications2" className='p-0 border'>
                                                     <div className='mt-3'>
                                                         <div className='col-sm-12 px-3 row mb-3'>
-                                                            <div className='border-bottom siteColor sectionHead mb-2 p-0'>Qualifications</div>
+                                                            <div className='siteBdrBottomm siteColor sectionHead mb-2 p-0'>Qualifications</div>
                                                             <div className='col-md-6 ps-0'>
                                                                 <dl className="profileHead">
                                                                     <dt className="col-md-5 bg-Fa profileLeftSec">
@@ -528,9 +528,8 @@ const EmployeProfileMain = (props: any) => {
                         </div>
 
                         <div className="tab-pane" id="CONTRACTS" role="tabpanel" aria-labelledby="CONTRACTS">
-                            <div className='siteBdrBottom mb-1'>Contract Details</div>
+                            <div className='siteBdrBottom sectionHead mb-2 p-0'>Contract Details</div>
                             <div className='Alltable'>
-
                                 <GlobalCommanTable columns={columns} data={contractData} showHeader={true} callBackData={callBackData} />
                             </div>
                         </div>
