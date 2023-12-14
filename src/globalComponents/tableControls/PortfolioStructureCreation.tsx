@@ -770,7 +770,7 @@ export class PortfolioStructureCreationCard extends React.Component<IStructureCr
                             <footer className={(this.state.defaultPortfolioType == 'Service' || this.state.defaultPortfolioType == 'Service Portfolio') ? "serviepannelgreena text-end  mt-2" : "text-end  mt-2"}>
                                 <button type="button" className="btn btn-primary me-1" onClick={() => this.CreateFolder('CreatePopup')}
                                 >
-                                    Create & Open 
+                                    Create & Open
                                 </button>
                                 <button type="button" className="btn btn-primary" onClick={() => this.CreateFolder('Create')}
                                 >
@@ -892,7 +892,7 @@ export class PortfolioStructureCreationCard extends React.Component<IStructureCr
 
                                     {this.state.ChildItemTitle.length == 1 &&
                                         <button type="button" className="btn btn-primary me-1" onClick={() => this.createChildItemsnew('CreatePopup')}>
-                                            Create & Open Popup
+                                            Create & Open
                                         </button>
                                     }
 
