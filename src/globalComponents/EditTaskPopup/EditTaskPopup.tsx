@@ -4906,20 +4906,7 @@ const EditTaskPopup = (Items: any) => {
             </div>
         );
     };
-    const onRenderCustomProjectManagementHeader = () => {
-        return (
-            <div
-                className={
-                    ServicesTaskCheck
-                        ? "d-flex full-width pb-1 serviepannelgreena"
-                        : "d-flex full-width pb-1"
-                }
-            >
-                <div className="subheading siteColor">Select Project</div>
-                <Tooltip ComponentId="1608" isServiceTask={ServicesTaskCheck} />
-            </div>
-        );
-    };
+   
     const onRenderCustomApproverHeader = () => {
         return (
             <div
