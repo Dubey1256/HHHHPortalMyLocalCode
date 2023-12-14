@@ -1674,7 +1674,7 @@ function EditInstitution({ item, SelectD, Calls, usedFor, portfolioTypeData, fil
                   <a
                     target="_blank"
                     data-interception="off"
-                    href={`${RequireData.siteUrl}/SitePages/${EditData?.Portfolio_x0020_Type}-Portfolio.aspx`}
+                    href={`${RequireData.siteUrl}/SitePages/Team-Portfolio.aspx?PortfolioType=${EditData?.Portfolio_x0020_Type}`}
                   >
                     {EditData?.Portfolio_x0020_Type}-Portfolio
                   </a>
