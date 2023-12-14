@@ -1526,6 +1526,7 @@ const EditTaskPopup = (Items: any) => {
         (DataItem: any, Type: any, functionType: any) => {
             if (functionType == "Close") {
                 setOpenTeamPortfolioPopup(false);
+                setProjectManagementPopup(false);
                 setopenLinkedPortfolioPopup(false);
             } else {
                 if (DataItem != undefined && DataItem.length > 0) {

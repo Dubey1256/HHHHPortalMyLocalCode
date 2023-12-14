@@ -354,6 +354,7 @@ try{
 
 
   const CallBack = React.useCallback((item: any) => {
+
     GetMasterData(false)
     setisOpenEditPopup(false);
     setIsTaggedCompTask(false);
@@ -397,8 +398,13 @@ try{
   };
 
   const EditPopup = React.useCallback((item: any) => {
-    setisOpenEditPopup(true);
-    setpassdata(item);
+    if(item?.Item_x0020_Type!="Sprint"){
+      setisOpenEditPopup(true);
+      setpassdata(item);
+    }else{
+      EditComponentPopup(item)
+    }
+    
   }, []);
 
   const untagTask = async (item: any) => {
@@ -695,12 +701,12 @@ try {
           }
         });
       })
-
-      allActivities = allActivities.concat(allWorkStream);
+      allSprints = allSprints.concat(allActivities);
+      allSprints = allSprints.concat(allWorkStream);
       AllTask = AllTask.filter((item: any) => item?.isTaskPushed !== true);
-      allActivities = allActivities.concat(AllTask);
-      allActivities = allActivities.concat(allSprints);
-      setData(allActivities);
+      allSprints = allSprints.concat(AllTask);
+      
+      setData(allSprints);
       setTaskTaggedPortfolios(taskTaggedComponents)
       setPageLoader(false);
     } catch (error) {
@@ -743,7 +749,20 @@ try {
     setIsPortfolio(true);
   };
   const Call = (propsItems: any, type: any) => {
-    GetMasterData(false);
+    if(propsItems?.Item_x0020_Type == "Project"){
+      setMasterdata(propsItems)
+    }else if(propsItems?.Item_x0020_Type == "Sprint"){
+      setData((prev: any) => {
+        return prev?.map((object: any) => {
+          if (object?.Id === propsItems?.Id) {
+            // Update the object here
+            // For example, assigning a new value to a property:
+            object = propsItems;
+          }
+          return object; // Return the object whether it's modified or not
+        });
+      });
+    }
     setIsComponent(false);
   };
 
@@ -1127,7 +1146,7 @@ try {
           <span className="text-end">
             <span
               title="Edit Task"
-              onClick={() => EditPopup(row?.original)}
+              onClick={() =>  EditPopup(row?.original)}
               className="alignIcon  svg__iconbox svg__icon--edit hreflink"
             ></span>
             <span
