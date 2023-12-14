@@ -4,7 +4,7 @@
 /* eslint-disable @typescript-eslint/explicit-function-return-type */
 /* eslint-disable @typescript-eslint/no-explicit-any */
 /* eslint-disable @typescript-eslint/no-unused-vars */
-import { Panel, PrimaryButton, TextField, Dropdown, PanelType, IDropdownOption } from 'office-ui-fabric-react';
+import { Panel, Dropdown, PanelType, IDropdownOption } from 'office-ui-fabric-react';
 import * as React from 'react';
 import { useCallback, useState } from 'react';
 import { Item, sp, Web } from 'sp-pnp-js';
@@ -28,16 +28,16 @@ const HRweb = new Web('https://hhhhteams.sharepoint.com/sites/HHHH/HR');
 const AddPopup = (props: any) => {
     useEffect(() => {
         const fetchData = async () => {
-          try {
-            await Promise.all([getPeople(), getchoicecolumns()]);
-          } catch (error) {
-            console.error(error);
-          } finally {
-            
-          }
-        };    
+            try {
+                await Promise.all([getPeople(), getchoicecolumns()]);
+            } catch (error) {
+                console.error(error);
+            } finally {
+
+            }
+        };
         fetchData();
-      }, []);
+    }, []);
     type FileSection = {
         id: number;
         selectedFiles: File[];
@@ -336,10 +336,19 @@ const AddPopup = (props: any) => {
         );
         setFileSections(updatedFileSections);
     };
+    const onRenderCustomHeaderMains = () => {
+        return (
+            <>
+                <div className='subheading'>
+                    Add Candidate
+                </div>
 
+            </>
+        );
+    };
     return (
         <Panel
-            headerText={"Add Candidate"}
+            onRenderHeader={onRenderCustomHeaderMains}
             isOpen={true}
             onDismiss={onClose}
             isBlocking={false}
@@ -348,175 +357,190 @@ const AddPopup = (props: any) => {
             type={PanelType.custom}
             customWidth={"950px"}
         >
-            
-           <div className="row">
-            
-           
-                <div className="col-sm-3 mb-2">
-                <label className="form-label full-width">Profile</label>
-                <div className="input-group" style={{
-                            height: '35px', }}>
-                    <input
-                        className="form-control"
-                        value={name}
-                        onChange={handleNameChange}
-                        type="text"
-                        placeholder="Name"
-                    />
-                    <span className='input-addon-starIcon'
-                        role="img"
-                        aria-label={isStarFilled ? 'Star filled' : 'Star outline'}
-                        style={{
-                            color: isStarFilled ? '#ff8f00' : 'grey', // Set to 'transparent' when not filled
-                        }}
-                        onClick={toggleStar}
-                    >
-                        ★
-                    </span>
+            <div className='modal-body mb-5'>
+                <div className="row">
+                    <div className="col-sm-3 mb-2">
+                        <div className='input-group'>
+                            <label className="form-label full-width">Profile</label>
+                            <input
+                                className="form-control"
+                                value={name}
+                                onChange={handleNameChange}
+                                type="text"
+                                placeholder="Name"
+                            />
+                            <span className='input-addon-starIcon mt-2'
+                                role="img"
+                                aria-label={isStarFilled ? 'Star filled' : 'Star outline'}
+                                style={{
+                                    color: isStarFilled ? '#ff8f00' : 'grey', // Set to 'transparent' when not filled
+                                }}
+                                onClick={toggleStar}
+                            >
+                                ★
+                            </span>
+                        </div>
                     </div>
-                </div>
-                <div className="col-sm-3 mb-2">
-                <label className="form-label full-width">Total Years of Professional Exp</label>
+                    <div className="col-sm-3 mb-2">
+                    <div className='input-group'>
+                        <label className="form-label full-width">Total Years of Professional Exp</label>
                         <input className=" form-control" type="text" value={exp} onChange={handleExpChange} placeholder="Enter experience in years" />
+                    </div></div>
+                    <div className="col-sm-3 mb-2">
+                        <div className='input-group'>
+                            <label className="form-label full-width">Responsible Staff Member</label>
+                            <Dropdown
+                                id="staff" className='w-100 '
+                                selectedKey={selectedInterviwer}
+                                onChange={handleDropdownInterviewer}
+                                options={SiteUsers.map((itm) => ({ key: itm.Title, text: itm.Title }))}
+                                styles={{ dropdown: { width: '100%' } }}
+                            />
+                        </div>
                     </div>
                     <div className="col-sm-3 mb-2">
-                    <label className="form-label full-width">Responsible Staff Member</label>
-                        
-                                <Dropdown
-                                    id="staff"
-                                    selectedKey={selectedInterviwer}
-                                    onChange={handleDropdownInterviewer}
-                                    options={SiteUsers.map((itm) => ({ key: itm.Title, text: itm.Title }))}
-                                    styles={{ dropdown: { width: '100%' } }}
-                                />
+                        <div className='input-group'>
+                            <label className="form-label full-width">Phone Number</label>
+                            <input className="form-control" value={phone} onChange={handlePhoneChange} type="text" placeholder="Contact Number" />
+                        </div>
                     </div>
                     <div className="col-sm-3 mb-2">
-                    <label className="form-label full-width">Phone Number</label>
-                        <input className="form-control" value={phone} onChange={handlePhoneChange} type="text" placeholder="Contact Number" />
+                        <div className='input-group'>
+                            <label className="form-label full-width">Position</label>
+                            <Dropdown
+                                id="status" className='w-100 '
+                                options={PositionChoices.map((itm) => ({ key: itm.Id, text: itm.Title }))}
+                                selectedKey={selectedPosition}
+                                onChange={handlePosition}
+                                styles={{ dropdown: { width: '100%' } }}
+                            />
+                        </div>
                     </div>
                     <div className="col-sm-3 mb-2">
-                        <label className="form-label full-width">Position</label>
-                                <Dropdown
-                                    id="status"
-                                    options={PositionChoices.map((itm) => ({ key: itm.Id, text: itm.Title }))}
-                                    selectedKey={selectedPosition}
-                                    onChange={handlePosition}
-                                    styles={{ dropdown: { width: '100%' } }}
-                                />
+                        <div className='input-group'>
+                            <label className="form-label full-width">Application Date</label>
+                            <input className="form-control" value={selectedDate}
+                                onChange={handleDateChange} type="date" placeholder="Date" />
+                        </div>
                     </div>
                     <div className="col-sm-3 mb-2">
-                    <label className="form-label full-width">Application Date</label>
-                        <input className="form-control" value={selectedDate}
-                            onChange={handleDateChange} type="date" placeholder="Date" />
+                        <div className='input-group'>
+                            <label className="form-label full-width">Contact Details</label>
+                            <input className="form-control" value={email}
+                                onChange={handleEmailChange} type="email" placeholder="Email" />
+                        </div>
                     </div>
                     <div className="col-sm-3 mb-2">
-                    <label className="form-label full-width">Contact Details</label>
-                        <input className="form-control" value={email}
-                            onChange={handleEmailChange} type="email" placeholder="Email" />
+                        <div className='input-group'>
+                            <label className="form-label full-width">Recommended Action</label>
+                            <Dropdown
+                                id="recAction" className='w-100 '
+                                selectedKey={selectedRecAction}
+                                onChange={handleRecAction}
+                                options={ActionChoices.map((itm) => ({ key: itm, text: itm }))}
+                                styles={{ dropdown: { width: '100%' } }}
+                            />
+                        </div>
                     </div>
-                    <div className="col-sm-3 mb-2">
-                        <label className="form-label full-width">Recommended Action</label>
-                                <Dropdown
-                                    id="recAction"
-                                    selectedKey={selectedRecAction}
-                                    onChange={handleRecAction}
-                                    options={ActionChoices.map((itm) => ({ key: itm, text: itm }))}
-                                    styles={{ dropdown: { width: '100%' } }}
-                                />
-                    </div>
-                    <div className="col-sm-12 mb-2">
-                    <label className="form-label full-width">Platform</label>
-                        <div className="CustomCheckRadio justify-content-between valign-middle">
-                            {platformChoices.map((item) => (
-                                <label className="label--checkbox" key={item.name}>
-                                    <input
-                                        type="checkbox"
-                                        className="mx-1 form-check-input cursor-pointer"
-                                        defaultChecked={item.selected}
-                                        onChange={() => checkboxChanged(item)}
+                    <div className="col-sm-12 my-2">
+                        <div className='input-group'>
+                            <label className="form-label full-width">Platform</label>
+                            <div className="alignCenter">
+                                {platformChoices.map((item) => (
+                                    <label className="SpfxCheckRadio" key={item.name}>
+                                        <input
+                                            type="checkbox"
+                                            className="me-1 form-check-input cursor-pointer"
+                                            defaultChecked={item.selected}
+                                            onChange={() => checkboxChanged(item)}
 
-                                    />
-                                    {item.name}
-                                </label>
-                            ))}
-                            {showTextInput && (
-                                <label className="label--checkbox">
-                                    <input
-                                        className="form-control"
-                                        type="text"
-                                        placeholder="Enter any other platform"
-                                    />
-                                </label>
-                            )}
+                                        />
+                                        {item.name}
+                                    </label>
+                                ))}
+                                {showTextInput && (
+                                    <label className="input-group">
+                                        <input
+                                            className="form-control"
+                                            type="text"
+                                            placeholder="Enter any other platform"
+                                        />
+                                    </label>
+                                )}
+                            </div>
                         </div>
                     </div>
 
 
                     <div className="col-sm-12 mb-2">
-                        <label className="form-label full-width">Cover Letter/Motivation</label>
-                        <HtmlEditorCard
-                            editorValue={motivationText}
-                            HtmlEditorStateChange={HtmlEditorCallBack}
-                        />
+                        <div className='input-group'>
+                            <label className="form-label full-width">Cover Letter/Motivation</label>
+                            <HtmlEditorCard
+                                editorValue={motivationText}
+                                HtmlEditorStateChange={HtmlEditorCallBack}
+                            />
+                        </div>
                     </div>
-               
-                
-                        <div className="col-sm-12 mb-2">
+
+                    <div className="col-sm-12 mb-2">
+                     <div className='input-group'>
                         <label className="form-label full-width">Upload Documents</label>
-                                <Col>
-                                    {fileSections.map((section: any, index: number) => (
-                                        <div key={section.id}>
+                            <Col>
+                                {fileSections.map((section: any, index: number) => (
+                                    <div key={section.id}>
+                                        <Col className='mb-2'>
+                                            <span className='valign-middle'>
+                                                <input type="file" onChange={(e) => handleFileInputChange(e, section.id)} multiple className='form-control full-width' />
+                                                {index > 0 && (
+                                                    <span className='svg__iconbox ms-2 svg__icon--trash hreflink' onClick={() => removeFileSection(section.id)}></span>
+                                                )}
+                                                {index === 0 && (
+                                                    <span className='svg__iconbox ms-2 svg__icon--Plus hreflink' onClick={addFileSection}></span>
+                                                )}
+                                            </span>
+                                        </Col>
+                                        {section.selectedFiles.length > 0 && (
                                             <Col className='mb-2'>
-                                                <span className='valign-middle'>
-                                                    <input type="file" onChange={(e) => handleFileInputChange(e, section.id)} multiple className='form-control full-width' />
-                                                    {index > 0 && (
-                                                        <span style={{ marginLeft: '10px', cursor: 'pointer' }} onClick={() => removeFileSection(section.id)}>🗑️</span>
-                                                    )}
-                                                    {index === 0 && (
-                                                        <span style={{ marginLeft: '10px', cursor: 'pointer' }} onClick={addFileSection}>➕</span>
-                                                    )}
-                                                </span>
+                                                <ul>
+                                                    {section.selectedFiles.map((file: any, fileIndex: any) => (
+                                                        <li key={fileIndex}>{file.name}</li>
+                                                    ))}
+                                                </ul>
                                             </Col>
-                                            {section.selectedFiles.length > 0 && (
-                                                <Col className='mb-2'>
-                                                    <ul>
-                                                        {section.selectedFiles.map((file: any, fileIndex: any) => (
-                                                            <li key={fileIndex}>{file.name}</li>
-                                                        ))}
-                                                    </ul>
-                                                </Col>
-                                            )}
-                                            <Col className='mb-2'>
-                                                <input
-                                                    type="text"
-                                                    onChange={(e) => handleRenamedFileNameChange(e, section.id)}
-                                                    value={section.renamedFileName}
-                                                    placeholder='Rename your document'
-                                                    className='form-control full-width'
-                                                />
-                                            </Col>
-                                        </div>
-                                    ))}
-                                    {/* <Row className='mb-2 px-2'>
-                                        <button onClick={handleUpload} disabled={fileSections.some((section: { selectedFiles: string | any[]; }) => section.selectedFiles.length > 0) ? false : true} className="btn btn-primary mt-2 my-1  float-end px-3">
-                                            Upload
-                                        </button>
-                                    </Row> */}
-                                    <Row className='mb-2 px-2'>
-                                        <a onClick={addFileSection} className="float-end mt-2 my-1 px-3 text-end">
-                                            Add More Documents
-                                        </a>
-                                    </Row>
-                                </Col>
-                            </div>
-                      
-               
-           </div>
-            <footer className="bg-f4 fixed-bottom px-4 py-2">
-            <div className="float-end text-end">
-                <PrimaryButton onClick={addCandidate} text="Save" />
-                <PrimaryButton onClick={onClose} className='ms-1' text="Cancel" />
+                                        )}
+                                        <Col className='mb-2'>
+                                            <input
+                                                type="text"
+                                                onChange={(e) => handleRenamedFileNameChange(e, section.id)}
+                                                value={section.renamedFileName}
+                                                placeholder='Rename your document'
+                                                className='form-control full-width'
+                                            />
+                                        </Col>
+                                    </div>
+                                ))}
+                                {/* <Row className='mb-2 px-2'>
+                                            <button onClick={handleUpload} disabled={fileSections.some((section: { selectedFiles: string | any[]; }) => section.selectedFiles.length > 0) ? false : true} className="btn btn-primary mt-2 my-1  float-end px-3">
+                                                Upload
+                                            </button>
+                                        </Row> */}
+                                <Row className='mb-2 px-2'>
+                                    <a onClick={addFileSection} className="float-end hreflink my-1 px-1 text-end">
+                                        Add More Documents
+                                    </a>
+                                </Row>
+                            </Col>
+                        </div>
+                    </div>
+
+
+                </div>
             </div>
+            <footer className="bg-f4 fixed-bottom px-4 py-2">
+                <div className="float-end text-end">
+                    <button onClick={addCandidate} type='button' className='btn btn-primary'>Save</button>
+                    <button onClick={onClose} type='button' className='btn btn-default ms-1'>Cancel</button>
+                </div>
             </footer>
         </Panel>
     );
