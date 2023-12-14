@@ -63,6 +63,23 @@ const EditContractPopup = (props: any) => {
         setOpenPopup(false)
         props.callback();
     }
+
+    const deleteContract = async (childinew: any) => {
+        var UpdatedData: any = [];
+        var deleteConfirmation = confirm("Are you sure, you want to delete this?");
+        if (deleteConfirmation) {
+          let web = new Web(props.AllListId?.siteUrl);
+    
+          await web.lists
+            .getById(props.AllListId?.ContractListID)
+            .items.getById(childinew)
+            .delete()
+            .then((i) => {
+            console.log(i);
+            closeOpenPopup();
+        });
+        }
+      };
     const saveData=async ()=>{
         let staffId = ''
         let web = new Web(props.AllListId?.siteUrl);
@@ -102,7 +119,7 @@ const EditContractPopup = (props: any) => {
                         </div>
                         <div>
                             <a className="hreflink siteColor">
-                                <span className="alignIcon svg__iconbox hreflink mini svg__icon--trash"></span>
+                                <span className="alignIcon svg__iconbox hreflink mini svg__icon--trash" onClick={()=>deleteContract(EditData?.Id)}></span>
                                 <span >Delete This Item</span>
                             </a>
                             

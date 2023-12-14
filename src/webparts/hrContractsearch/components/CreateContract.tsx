@@ -87,6 +87,18 @@ const CreateContract = (props: any) => {
       setCreatePopup(false)
       props.closeContracts();
    }
+
+   const onRenderSelectEmp =()=>{
+      return (
+         <>
+            <div
+               className="subheading">
+              Select Employee
+            </div>
+
+         </>
+      );
+   }
    const onRenderCustomHeader = () => {
       return (
          <>
@@ -280,7 +292,7 @@ const CreateContract = (props: any) => {
 
          </Panel>
          <Panel
-            onRenderHeader={onRenderCustomHeader}
+            onRenderHeader={onRenderSelectEmp}
             type={PanelType.custom}
             customWidth={'750px'}
             isOpen={addEmp}
