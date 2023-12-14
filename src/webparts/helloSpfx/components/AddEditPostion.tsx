@@ -55,7 +55,7 @@ const AddEditPostion = (props: any) => {
     const [SkillToUpdate, setSkillToUpdate]: any = useState([]);
     const [updatePositionId, setupdatePositionId]: any = useState();
     const [edittableItem, setEdittableItem]: any = useState(null)
-    const headerTextEdit = `Edit Position - ${edittableItem ? edittableItem.Title : ''}`;
+    // const headerTextEdit = `Edit Position - ${edittableItem ? edittableItem.Title : ''}`;
     const AddEditPositionClose = () => {
         props.AddEditPositionCLose();
     }
@@ -109,7 +109,7 @@ const AddEditPostion = (props: any) => {
             {
                 accessorKey: "Title",
                 placeholder: "Title",
-                header: "", size: 30,
+                header: "", size: 155,
             },
             {
                 accessorFn: (row) => row?.ImpSkills,
@@ -121,13 +121,13 @@ const AddEditPostion = (props: any) => {
                                     // eslint-disable-next-line react/jsx-key
                                     <div className='block w-100'>
                                         <span className='width-90'>{items?.SkillTitle}</span>
-                                        <span className='ml-auto svg__iconbox svg__icon--cross light' />
+                                        <span className='ml-auto wid30 svg__iconbox svg__icon--cross light' />
                                     </div>
                                 )
                             })
                             : ""}
                         <span id="plusskill">
-                            <a onClick={() => AddSkill(row)} title="Add Skill"><i className="fa fa-plus" /></a>
+                            <span className='svg__iconbox svg__icon--Plus' onClick={() => AddSkill(row)} title="Add Skill"></span>
                         </span>
                     </>
                 ),
@@ -135,33 +135,34 @@ const AddEditPostion = (props: any) => {
                 placeholder: "Skills",
                 resetColumnFilters: false,
                 header: "",
-                size: 50,
+                size: 400,
             },
-            { accessorKey: "PositionDescription", placeholder: "PositionDescription", header: "", size: 90, }, {
+            { accessorKey: "PositionDescription", placeholder: "Position Description", header: "", },
+            {
                 cell: ({ row }) => (
-                    <>
-                        <a title="Edit" onClick={() => editPosition(row.original)}><svg xmlns="http://www.w3.org/2000/svg" width="30" height="25" viewBox="0 0 48 48" fill="none"><path fill-rule="evenodd" clip-rule="evenodd" d="M7 21.9323V35.8647H13.3613H19.7226V34.7589V33.6532H14.3458H8.96915L9.0264 25.0837L9.08387 16.5142H24H38.9161L38.983 17.5647L39.0499 18.6151H40.025H41V13.3076V8H24H7V21.9323ZM38.9789 12.2586L39.0418 14.4164L24.0627 14.3596L9.08387 14.3027L9.0196 12.4415C8.98428 11.4178 9.006 10.4468 9.06808 10.2838C9.1613 10.0392 11.7819 9.99719 24.0485 10.0441L38.9161 10.1009L38.9789 12.2586ZM36.5162 21.1565C35.8618 21.3916 34.1728 22.9571 29.569 27.5964L23.4863 33.7259L22.7413 36.8408C22.3316 38.554 22.0056 39.9751 22.017 39.9988C22.0287 40.0225 23.4172 39.6938 25.1029 39.2686L28.1677 38.4952L34.1678 32.4806C41.2825 25.3484 41.5773 24.8948 40.5639 22.6435C40.2384 21.9204 39.9151 21.5944 39.1978 21.2662C38.0876 20.7583 37.6719 20.7414 36.5162 21.1565ZM38.5261 23.3145C39.2381 24.2422 39.2362 24.2447 32.9848 30.562C27.3783 36.2276 26.8521 36.6999 25.9031 36.9189C25.3394 37.0489 24.8467 37.1239 24.8085 37.0852C24.7702 37.0467 24.8511 36.5821 24.9884 36.0529C25.2067 35.2105 25.9797 34.3405 31.1979 29.0644C35.9869 24.2225 37.2718 23.0381 37.7362 23.0381C38.0541 23.0381 38.4094 23.1626 38.5261 23.3145Z" fill="#333333" /></svg></a>
-                    </>
+                    <div className='alignCenter'>
+                        <span title="Edit" onClick={() => editPosition(row.original)} className="ml-auto hreflink svg__iconbox svg__icon--edit"></span>
+                    </div>
                 ),
                 accessorKey: '',
                 canSort: false,
                 placeholder: '',
                 header: '',
                 id: 'row.original',
-                size: 10,
+                size: 1,
             },
             {
                 cell: ({ row }) => (
-                    <>
-                        <a onClick={() => delPosition(row.original)} className="ml-auto svg__iconbox svg__icon--trash" title="Delete" />
-                    </>
+                    <div className='alignCenter'>
+                        <span onClick={() => delPosition(row.original)} className="ml-auto svg__iconbox svg__icon--trash hreflink" title="Delete"></span>
+                    </div>
                 ),
                 accessorKey: '',
                 canSort: false,
                 placeholder: '',
                 header: '',
                 id: 'row.original',
-                size: 10,
+                size: 1,
             }
         ],
         [portfiloData]
@@ -337,153 +338,182 @@ const AddEditPostion = (props: any) => {
         }
 
     };
+    const onRenderCustomHeaderMain1 = () => {
+        return (
+            <>
+                <div className='subheading'>
+                    Add/Edit Positions
+                </div>
+
+            </>
+        );
+    };
+    const onRenderCustomHeaderMain2 = () => {
+        return (
+            <>
+                <div className='subheading'>
+                    Add New Position
+                </div>
+
+            </>
+        );
+    };
+    const onRenderCustomHeaderMain5 = () => {
+        return (
+            <>
+                <div className='subheading'>
+                    Add New Skills
+                </div>
+
+            </>
+        );
+    };
+    const onRenderCustomHeaderMain6 = () => {
+        return (
+            <>
+                <div className='subheading'>
+                Edit Position {edittableItem ? edittableItem.Title : ''}
+                </div>
+
+            </>
+        );
+    };
 
     return (
         <>
             <Panel
-                headerText={"Add/Edit Positions"}
+                onRenderHeader={onRenderCustomHeaderMain1}
                 isOpen={true}
                 onDismiss={AddEditPositionClose}
                 isBlocking={false}
                 type={PanelType.large}
                 closeButtonAriaLabel="Close"
             >
-                <div className="panel panel-default">
-                    <div className="panel-body">
-                        <div className='text-right'>
-                            <PrimaryButton className='text-end float-end mb-1' text="Add More Positions" onClick={() => addMorePosition()} />
-                        </div>
-                        {/* <div className='tbl-button'>
-                            <span><PrimaryButton text="Add Team Member" style={{ zIndex: '9999' }} onClick={() => AddPopupOpen()} /></span>
-                        </div>
-                        <div className='tbl-button'>
-                            <span><PrimaryButton text="Add/Edit Positions" style={{ zIndex: '9999' }} onClick={() => AddPopupOpen()} /></span>
-                        </div> */}
-                        {portfiloData && <div className='Alltable'><GlobalCommanTable columns={columns} data={portfiloData} showHeader={true} callBackData={callBackData} /></div>}
+                <div className="modal-body mb-5 clearfix">
+                    <div className='text-right'>
+                        <button type='button' className="btnCol btn btn-primary text-end float-end mb-1" onClick={() => addMorePosition()} >Add More Positions</button>
                     </div>
+                    {/* <div className='tbl-button'>
+                        <span><PrimaryButton text="Add Team Member" style={{ zIndex: '9999' }} onClick={() => AddPopupOpen()} /></span>
+                    </div>
+                    <div className='tbl-button'>
+                        <span><PrimaryButton text="Add/Edit Positions" style={{ zIndex: '9999' }} onClick={() => AddPopupOpen()} /></span>
+                    </div> */}
+                    {portfiloData && <div className='Alltable'><GlobalCommanTable columns={columns} data={portfiloData} showHeader={true} callBackData={callBackData} /></div>}
                 </div>
                 <footer className="bg-f4 fixed-bottom px-4 py-2">
                     <div className="float-end text-end">
-                        <PrimaryButton onClick={AddEditPositionClose} text="Ok" />
+                        <button onClick={AddEditPositionClose} type='button' className='btn btn-primary'>Ok</button>
                     </div>
                 </footer>
             </Panel>
             <Panel
-                headerText={"Add New Position"}
+                onRenderHeader={onRenderCustomHeaderMain2}
                 isOpen={isAddPositionPopup}
                 onDismiss={AddMorePositionClose}
                 isBlocking={false}
                 type={PanelType.medium}
                 closeButtonAriaLabel="Close"
             >
-                <div className="panel panel-default">
-                    <div className="panel-body">
-                        <div className="input-group">
-                            <div className="full-width">Position Title</div>
-                            <input className="form-control" value={positionTitle}
-                                onChange={handleTitleChange} type="text" placeholder="New Position Title" />
-                        </div>
-                        <div className="input-group">
-                            <div className="full-width">Job Description</div>
-                            <textarea
+                <div className="modal-body">
+                    <div className="input-group">
+                        <div className="full-width">Position Title</div>
+                        <input className="form-control" value={positionTitle}
+                            onChange={handleTitleChange} type="text" placeholder="New Position Title" />
+                    </div>
+                    <div className="input-group my-3">
+                        <div className="full-width">Job Description</div>
+                        <textarea
+                            className="form-control"
+                            value={jobDescription}
+                            onChange={handleDescriptionChange}
+                            rows={3} // Set the number of rows as needed
+                        />
+                    </div>
+                    <div className="input-group mb-3">
+                        <label className="full_width">Skills Required</label>
+                            <input
                                 className="form-control"
-                                value={jobDescription}
-                                onChange={handleDescriptionChange}
-                                rows={3} // Set the number of rows as needed
+                                placeholder="Skill"
+                                type="text"
+                                value={skill}
+                                onChange={handleSkillChange}
                             />
-                        </div>
-                        <div className="input-group">
-                            <label className="full_width">Skills Required</label>
-                            <div className="col-sm-12 pad0">
-                                <input
-                                    className="form-control"
-                                    placeholder="Skill"
-                                    type="text"
-                                    value={skill}
-                                    onChange={handleSkillChange}
-                                />
-                                <span
-                                    id="plusskill"
-                                    style={{ display: skill === undefined || skill === '' ? 'none' : 'inline-block' }}
-                                    className="input-addon-tag-icon"
-                                    onClick={addSkill}
-                                >
-                                    <i className="fa fa-plus" />
-                                </span>
-                            </div>
-                            <div className="col-md-12 pad0">
-                                {skills.length > 0 &&
-                                    skills.map((item: any, index: number) => (
-                                        <span key={index} onClick={() => removeSkill(index)} className="block">
-                                            {item}
-                                            <span className="mx-auto svg__iconbox svg__icon--cross light" />
-                                        </span>
-                                    ))}
-                            </div>
+                            <div className='col-12 mt-1'>
+                            <span
+                                id="plusskill"
+                                style={{ display: skill === undefined || skill === '' ? 'none' : 'inline-block' }}
+                                className="svg__iconbox hreflink svg__icon--Plus"
+                                onClick={addSkill}
+                            >
+                            </span></div>
+                        <div className="col-md-12 pad0">
+                            {skills.length > 0 &&
+                                skills.map((item: any, index: number) => (
+                                    <span key={index} onClick={() => removeSkill(index)} className="block me-1">
+                                        {item}
+                                        <span className="mx-auto ms-2 svg__iconbox svg__icon--cross light" />
+                                    </span>
+                                ))}
                         </div>
                     </div>
-
-                    <footer className="bg-f4 fixed-bottom px-4 py-2">
-                        <div className="float-end text-end">
-                            <PrimaryButton onClick={updateChoiceField} text="Save" />
-                            <PrimaryButton onClick={AddMorePositionClose} className='ms-1' text="Cancel" />
-                        </div>
-                    </footer>
                 </div>
+
+                <footer className="py-2 clearfix">
+                    <div className="float-end text-end">
+                        <button onClick={updateChoiceField} type='button' className='btn btn-primary'>Save</button>
+                        <button onClick={AddMorePositionClose} type='button' className='btn btn-default ms-1'>Cancel</button>
+                    </div>
+                </footer>
             </Panel>
             <Panel
-                headerText={"Add New Skills"}
+                onRenderHeader={onRenderCustomHeaderMain5}
                 isOpen={isaddOnlySkill}
                 onDismiss={addOnlySkillClose}
                 isBlocking={false}
-                type={PanelType.large}
+                type={PanelType.medium}
                 closeButtonAriaLabel="Close"
             >
-                <div className="panel panel-default">
-                    <div className="panel-body">
-                        <div className="container">
-                            <div className="input-group">
-                                <label className="full_width">Skills Required</label>
-                                <div className="col-sm-12 pad0">
-                                    <input
-                                        className="form-control"
-                                        placeholder="Skill"
-                                        type="text"
-                                        value={SkillOn}
-                                        onChange={handleSkillChangeOnly}
-                                    />
-                                    <span
-                                        id="plusskill"
-                                        style={{ display: SkillOn === undefined || SkillOn === '' ? 'none' : 'inline-block' }}
-                                        className="input-addon-tag-icon"
-                                        onClick={addSkillsOnly}
-                                    >
-                                        <i className="fa fa-plus" />
-                                    </span>
-                                </div>
-                                <div className="col-md-12 pad0">
-                                    {skillsOnly.length > 0 &&
-                                        skillsOnly.map((item: any, index: number) => (
-                                            <span key={index} onClick={() => removeSmartSkillEdit(item)} className="block">
-                                                {item}
-                                                <span className="mx-auto svg__iconbox svg__icon--cross light" />
-                                            </span>
-                                        ))}
-                                </div>
+                <div className="modal-body">
+                    <div className="input-group">
+                        <label className="full_width form-label">Skills Required</label>
+                            <input
+                                className="form-control"
+                                placeholder="Skill"
+                                type="text"
+                                value={SkillOn}
+                                onChange={handleSkillChangeOnly}
+                            />
+                            <div className='ms-1 mt-1'>
+                                <span
+                                    id="plusskill"
+                                    style={{ display: SkillOn === undefined || SkillOn === '' ? 'none' : 'inline-block' }}
+                                    className="svg__iconbox svg__icon--Plus hreflink"
+                                    onClick={addSkillsOnly}>
+                                </span>
                             </div>
+                        <div className="col-md-12 pad0">
+                            {skillsOnly.length > 0 &&
+                                skillsOnly.map((item: any, index: number) => (
+                                    <div key={index} onClick={() => removeSmartSkillEdit(item)} className="block me-1">
+                                        <a className='wid90 '>{item}</a>
+                                        <span className="bg-light hreflink ms-2 ml-auto svg__icon--cross svg__iconbox" />
+                                    </div>
+                                ))}
                         </div>
                     </div>
                 </div>
-                <footer className="bg-f4 fixed-bottom px-4 py-2">
+                <footer className="py-2 clearfix">
                     <div className="float-end text-end">
-                        <PrimaryButton onClick={updateSkillField} text="Save" />
-                        <PrimaryButton onClick={AddEditPositionClose} className='ms-1' text="Cancel" />
+                        <button onClick={updateSkillField} type='button' className='btn btn-primary'>Save</button>
+                        <button onClick={AddEditPositionClose} type='button' className='btn btn-default ms-1'>Cancel</button>
                     </div>
                 </footer>
 
             </Panel>
             <Panel
-                headerText={headerTextEdit}
+                // headerText={headerTextEdit}
+                onRenderHeader={onRenderCustomHeaderMain6}
                 isOpen={isEditPopup}
                 onDismiss={editPositionClose}
                 isBlocking={false}
@@ -491,13 +521,13 @@ const AddEditPostion = (props: any) => {
                 closeButtonAriaLabel="Close"
             >
                 <div className="panel panel-default">
-                    <div className="panel-body">
+                    <div className="modal-body">
                         <div className="input-group">
                             <div className="full-width">Position Title</div>
                             <input className="form-control" value={edittableItem ? edittableItem.Title : ''} onChange={(e) => setEdittableItem({ ...edittableItem, Title: e.target.value })}
                                 type="text" placeholder="New Position Title" />
                         </div>
-                        <div className="input-group">
+                        <div className="input-group my-3">
                             <div className="full-width">Job Description</div>
                             <textarea
                                 className="form-control"
@@ -508,7 +538,6 @@ const AddEditPostion = (props: any) => {
                         </div>
                         <div className="input-group">
                             <label className="full_width">Skills Required</label>
-                            <div className="col-sm-12 pad0">
                                 <input
                                     className="form-control"
                                     placeholder="Add Skill"
@@ -516,21 +545,26 @@ const AddEditPostion = (props: any) => {
                                     value={SkillOnEdit}
                                     onChange={handleSkillChangeEdit}
                                 />
-                                <IconButton
+                                <div id="plusskill" className='mt-1 ms-1'>
+                                    <span 
+                                    // value={SkillOnEdit}
+                                    // iconProps={{ iconName: 'Add' }}
+                                    onClick={addSkillsOnlyEdit} className='svg__iconbox svg__icon--Plus'></span>
+                                </div>
+                                {/* <IconButton
                                     id="plusskill"
                                     className="input-addon-tag-icon"
                                     value={SkillOnEdit}
                                     iconProps={{ iconName: 'Add' }}
                                     onClick={addSkillsOnlyEdit}
-                                />
-                            </div>
+                                /> */}
                             {/* Display the list of skills */}
                             <div className="col-md-12 pad0">
                                 {edittableItem?.ImpSkills.map.length > 0 &&
                                     edittableItem?.ImpSkills.map((skillI: any, index: any) => (
-                                        <span key={index} onClick={() => removeSmartSkillEditPop(skillI)} className="block">
+                                        <span key={index} onClick={() => removeSmartSkillEditPop(skillI)} className="block me-1">
                                             {skillI.SkillTitle}
-                                            <span className="mx-auto svg__iconbox svg__icon--cross light" />
+                                            <span className="mx-auto ms-2 svg__iconbox svg__icon--cross light" />
                                         </span>
                                     ))}
                             </div>
@@ -538,10 +572,10 @@ const AddEditPostion = (props: any) => {
                     </div>
                 </div>
 
-                <footer className="bg-f4 fixed-bottom px-4 py-2">
+                <footer className="py-2 clearfix">
                     <div className="float-end text-end">
-                        <PrimaryButton onClick={updatePosition} text="Save" />
-                        <PrimaryButton onClick={editPositionClose} className='ms-1' text="Cancel" />
+                        <button onClick={updatePosition} type='button' className='btn btn-primary'>Save</button>
+                        <button onClick={editPositionClose} type='button' className='btn btn-default ms-1'>Cancel</button>
                     </div>
                 </footer>
             </Panel>
