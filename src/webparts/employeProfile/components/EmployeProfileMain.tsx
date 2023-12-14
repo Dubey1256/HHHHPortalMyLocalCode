@@ -310,26 +310,26 @@ const EmployeProfileMain = (props: any) => {
 
                         <div className="row">
                             <div className="col-md-12 ps-2">
-                                <dl className='profileHead'>
-                                    <dt className="bg-Fa profileLeftSec col-md-3">Organization</dt>
-                                    <dd className='bg-Ff profileRightSec col-md-9'>{EmployeeData?.Institution?.FullName} </dd>
-                                </dl>
-                                <dl className='profileHead'>
-                                    <dt className="bg-Fa profileLeftSec col-md-3">Department</dt>
-                                    <dd className='bg-Ff profileRightSec col-md-9'>{EmployeeData?.Department} </dd>
-                                </dl>
-                                <dl className='profileHead'>
-                                    <dt className="bg-Fa profileLeftSec col-md-3">Job Title</dt>
-                                    <dd className='bg-Ff profileRightSec col-md-9'> {EmployeeData?.JobTitle}</dd>
-                                </dl>
-                                <dl className='profileHead'>
-                                    <dt className="bg-Fa profileLeftSec col-md-3">Date of Joining</dt>
-                                    <dd className='bg-Ff profileRightSec col-md-9'>{EmployeeData?.DOJ != undefined ? moment(EmployeeData?.DOJ)?.format('DD-MM-YYYY') : ""} </dd>
-                                </dl>
-                                <dl className='profileHead'>
-                                    <dt className="bg-Fa profileLeftSec col-md-3">Date of Exit</dt>
-                                    <dd className='bg-Ff profileRightSec col-md-9'> {EmployeeData?.DOE != undefined ? moment(EmployeeData?.DOE)?.format('DD-MM-YYYY') : ""}</dd>
-                                </dl>
+                                <div className='profileHead'>
+                                    <div className="bg-Fa profileLeftSec col-md-3">Organization</div>
+                                    <div className='bg-Ff profileRightSec col-md-9'>{EmployeeData?.Institution?.FullName} </div>
+                                </div>
+                                <div className='profileHead'>
+                                    <div className="bg-Fa profileLeftSec col-md-3">Department</div>
+                                    <div className='bg-Ff profileRightSec col-md-9'>{EmployeeData?.Department} </div>
+                                </div>
+                                <div className='profileHead'>
+                                    <div className="bg-Fa profileLeftSec col-md-3">Job Title</div>
+                                    <div className='bg-Ff profileRightSec col-md-9'> {EmployeeData?.JobTitle}</div>
+                                </div>
+                                <div className='profileHead'>
+                                    <div className="bg-Fa profileLeftSec col-md-3">Date of Joining</div>
+                                    <div className='bg-Ff profileRightSec col-md-9'>{EmployeeData?.DOJ != undefined ? moment(EmployeeData?.DOJ)?.format('DD-MM-YYYY') : ""} </div>
+                                </div>
+                                <div className='profileHead'>
+                                    <div className="bg-Fa profileLeftSec col-md-3">Date of Exit</div>
+                                    <div className='bg-Ff profileRightSec col-md-9'> {EmployeeData?.DOE != undefined ? moment(EmployeeData?.DOE)?.format('DD-MM-YYYY') : ""}</div>
+                                </div>
                             </div>
 
                         </div>
@@ -388,133 +388,107 @@ const EmployeProfileMain = (props: any) => {
                                         </Col>
                                         <Col sm={10} className='p-0'>
                                             <Tab.Content>
-                                                <Tab.Pane eventKey="Information2" className='p-0 border' >
+                                                <Tab.Pane eventKey="Information2" className='ps-3 border' >
                                                     <Information EmployeeData={EmployeeData} siteTaggedHR={siteTaggedHR} hrUpdateData={hrUpdateData} />
                                                 </Tab.Pane>
-                                                <Tab.Pane eventKey="TaxAndInsurance2" className='p-0 border'>
+                                                <Tab.Pane eventKey="TaxAndInsurance2" className='border ps-3'>
                                                     <div className='mt-3'>
-                                                        <div className='col-md-12 px-3 row mb-3'>
+                                                        <div className='col-md-12 px-2 row mb-3'>
                                                             <div className='siteBdrBottom siteColor sectionHead p-0 mb-2'>Tax information</div>
-                                                            <div className='col-md-4 ps-0'>
-                                                                <dl className="profileHead">
-                                                                    <dt className="col-md-7 bg-Fa profileLeftSec">
+                                                            <div className='profileHead p-0'>
+                                                                    <div className="bg-Fa profileLeftSec width20">
                                                                         Tax No
-                                                                    </dt>
-                                                                    <dd className="col-md-5 profileRightSec bg-FF">
+                                                                    </div>
+                                                                    <div className="width13 profileRightSec bg-FF">
                                                                         {hrUpdateData?.taxNo}
-                                                                    </dd>
-                                                                </dl>
-                                                                <dl className="profileHead">
-                                                                    <dt className="col-md-7 bg-Fa profileLeftSec">
-                                                                        Monthly Tax Allowance
-                                                                    </dt>
-                                                                    <dd className="col-md-5 profileRightSec bg-FF">
-                                                                        {hrUpdateData?.monthlyTaxAllowance}
-                                                                    </dd>
-                                                                </dl>
-                                                            </div>
-                                                            <div className='col-md-4 p-0'>
-                                                                <dl className="profileHead">
-                                                                    <dt className="col-md-7 bg-Fa profileLeftSec">
+                                                                    </div>
+                                                                    <div className="bg-Fa profileLeftSec width20">
                                                                         Church tax
-                                                                    </dt>
-                                                                    <dd className="col-md-5 profileRightSec bg-FF">
+                                                                    </div>
+                                                                    <div className="profileRightSec bg-FF width13">
                                                                         {hrUpdateData?.churchTax}
-                                                                    </dd>
-                                                                </dl>
-                                                                <dl className="profileHead">
-                                                                    <dt className="col-md-7 bg-Fa profileLeftSec">
-                                                                        Child Allowance
-                                                                    </dt>
-                                                                    <dd className="col-md-5 profileRightSec bg-FF">
-                                                                        {hrUpdateData?.childAllowance}
-                                                                    </dd>
-                                                                </dl>
-                                                            </div>
-                                                            <div className='col-md-4 pe-0'>
-                                                                <dl className="profileHead">
-                                                                    <dt className="col-md-7 bg-Fa profileLeftSec">
+                                                                    </div>
+                                                                    <div className="bg-Fa profileLeftSec width20">
                                                                         Tax class
-                                                                    </dt>
-                                                                    <dd className="col-md-5 profileRightSec bg-FF">
+                                                                    </div>
+                                                                    <div className="profileRightSec bg-FF width13">
                                                                         {hrUpdateData?.taxClass}
-                                                                    </dd>
-                                                                </dl>
+                                                                    </div>
+                                                            </div>
+                                                            <div className='profileHead p-0'>
+                                                                    <div className="bg-Fa profileLeftSec" style={{width:"20%"}}>
+                                                                        Monthly Tax Allowance
+                                                                    </div>
+                                                                    <div className="profileRightSec bg-FF" style={{width:"13.33%"}}>
+                                                                        {hrUpdateData?.monthlyTaxAllowance}
+                                                                    </div>
+                                                                    <div className="bg-Fa profileLeftSec" style={{width:"20%"}}>
+                                                                        Child Allowance
+                                                                    </div>
+                                                                    <div className="profileRightSec bg-FF" style={{width:"13.33%"}}>
+                                                                        {hrUpdateData?.childAllowance}
+                                                                    </div>
                                                             </div>
                                                         </div>
-                                                        <div className='col-md-12 px-3 row mb-2'>
-                                                            <div className='siteBdrBottom sectionHead siteColor p-0'>Social Security Insurance</div>
-                                                            <dl className="profileHead p-0">
-                                                                <dt className="width200 bg-Fa profileLeftSec">
+                                                        <div className='col-md-12 px-2 row mb-2'>
+                                                            <div className='siteBdrBottom sectionHead siteColor mb-2 p-0'>Social Security Insurance</div>
+                                                            <div className="profileHead p-0">
+                                                                <div className="width185x bg-Fa profileLeftSec">
                                                                     Health Insurance Company
-                                                                </dt>
-                                                                <dd className="bg-FF profileRightSec">
+                                                                </div>
+                                                                <div className="bg-FF profileRightSec">
                                                                     {hrUpdateData?.healthInsuranceCompany}
-                                                                </dd>
-                                                            </dl>
-                                                            <div className='col-md-6 ps-0'>
-                                                                <dl className="profileHead">
-                                                                    <dt className="width200 bg-Fa profileLeftSec">
-                                                                        Health Insurance Type
-                                                                    </dt>
-                                                                    <dd className="bg-FF profileRightSec">
-                                                                        {hrUpdateData?.healthInsuranceType}
-                                                                    </dd>
-                                                                </dl>
+                                                                </div>
                                                             </div>
-                                                            <div className='col-md 6 pe-0'>
-                                                                <dl className="profileHead">
-                                                                    <dt className="width200 bg-Fa profileLeftSec">
+                                                            <div className="profileHead p-0">
+                                                                    <div className="width185x bg-Fa profileLeftSec">
+                                                                        Health Insurance Type
+                                                                    </div>
+                                                                    <div className="bg-FF profileRightSec width30">
+                                                                        {hrUpdateData?.healthInsuranceType}
+                                                                    </div>
+                                                                    <div className="width185x bg-Fa profileLeftSec">
                                                                         Health Insurance No
-                                                                    </dt>
-                                                                    <dd className="bg-FF profileRightSec">
+                                                                    </div>
+                                                                    <div className="bg-FF profileRightSec width30">
                                                                         {hrUpdateData?.insuranceNo}
-                                                                    </dd>
-                                                                </dl>
+                                                                    </div>
                                                             </div>
                                                         </div>
                                                     </div>
                                                 </Tab.Pane>
-                                                <Tab.Pane eventKey="Qualifications2" className='p-0 border'>
+                                                <Tab.Pane eventKey="Qualifications2" className='border ps-3'>
                                                     <div className='mt-3'>
-                                                        <div className='col-sm-12 px-3 row mb-3'>
-                                                            <div className='border-bottom siteColor sectionHead mb-2 p-0'>Qualifications</div>
-                                                            <div className='col-md-6 ps-0'>
-                                                                <dl className="profileHead">
-                                                                    <dt className="col-md-5 bg-Fa profileLeftSec">
-                                                                        Highest school diploma
-                                                                    </dt>
-                                                                    <dd className="col-md-7 bg-FF profileRightSec">
-                                                                        {hrUpdateData?.highestSchoolDiploma}
-                                                                    </dd>
-                                                                </dl>
-                                                                <dl className="profileHead">
-                                                                    <dt className="col-md-5 bg-Fa profileLeftSec">
-                                                                        Other qualifications
-                                                                    </dt>
-                                                                    <dd className="col-md-7 bg-FF profileRightSec">
-                                                                        {hrUpdateData?.otherQualifications}
-                                                                    </dd>
-                                                                </dl>
+                                                        <div className='col-sm-12 px-2 row mb-3'>
+                                                            <div className='siteBdrBottom siteColor sectionHead mb-2 p-0'>Qualifications</div>
+                                                            <div className='profileHead p-0'>
+                                                                <div className="bg-Fa profileLeftSec width20">
+                                                                    Highest school diploma
+                                                                </div>
+                                                                <div className="bg-FF profileRightSec width30">
+                                                                    {hrUpdateData?.highestSchoolDiploma}
+                                                                </div>
+                                                                <div className="bg-Fa profileLeftSec width20">
+                                                                    Highest vocational education
+                                                                </div>
+                                                                <div className="bg-FF profileRightSec width30">
+                                                                    {hrUpdateData?.highestVocationalEducation}
+                                                                </div>
                                                             </div>
 
-                                                            <div className='col-md-6 pe-0'>
-                                                                <dl className="profileHead">
-                                                                    <dt className="col-md-5 bg-Fa profileLeftSec">
-                                                                        Highest vocational education
-                                                                    </dt>
-                                                                    <dd className="col-md-7 bg-FF profileRightSec">
-                                                                        {hrUpdateData?.highestVocationalEducation}
-                                                                    </dd>
-                                                                </dl>
-                                                                <dl className="profileHead">
-                                                                    <dt className="col-md-5 bg-Fa profileLeftSec">
+                                                            <div className='profileHead p-0'>
+                                                                    <div className="bg-Fa profileLeftSec width20">
+                                                                        Other qualifications
+                                                                    </div>
+                                                                    <div className="bg-FF profileRightSec width30">
+                                                                        {hrUpdateData?.otherQualifications}
+                                                                    </div>
+                                                                    <div className="bg-Fa profileLeftSec width20">
                                                                         Languages
-                                                                    </dt>
-                                                                    <dd className="col-md-7 bg-FF profileRightSec">
+                                                                    </div>
+                                                                    <div className="bg-FF profileRightSec width30">
                                                                         {hrUpdateData?.Languages}
-                                                                    </dd>
-                                                                </dl>
+                                                                    </div>
                                                             </div>
 
                                                         </div>
@@ -528,7 +502,7 @@ const EmployeProfileMain = (props: any) => {
                         </div>
 
                         <div className="tab-pane" id="CONTRACTS" role="tabpanel" aria-labelledby="CONTRACTS">
-                            <div className='siteBdrBottom mb-1'>Contract Details</div>
+                            <div className='siteBdrBottom siteColor sectionHead mb-2 p-0'>Contract Details</div>
                             <div className='Alltable'>
 
                                 <GlobalCommanTable columns={columns} data={contractData} showHeader={true} callBackData={callBackData} />
