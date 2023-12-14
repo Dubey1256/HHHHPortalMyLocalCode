@@ -72,7 +72,7 @@ const EditContractPopup = (props: any) => {
             endDate: postData.endDate != '' ? moment(postData.endDate).format("MM-DD-YYYY") : EditData?.endDate != null ? moment(EditData?.endDate).format("MM-DD-YYYY"):null,
             ContractChanged: postData.ContractChanged != '' ? moment(postData.ContractChanged).format("MM-DD-YYYY") :  EditData?.ContractChanged != null ? moment(EditData?.ContractChanged).format("MM-DD-YYYY"):null,
             ContractSigned: postData.ContractSigned != ''? moment(postData.ContractSigned).format("MM-DD-YYYY") : EditData.ContractSigned != null ? moment(EditData?.ContractSigned).format("MM-DD-YYYY"):null,
-            PersonnelNumber:postData.PersonalNumber != '' ?postData.PersonalNumber:EditData.PersonnelNumber?EditData.PersonnelNumber:'',
+            PersonnelNumber:postData.PersonalNumber != '' ?postData.PersonalNumber:EditData.PersonnelNumber != null ?EditData.PersonnelNumber:null,
             HHHHStaffId:contactDetailsId != undefined?contactDetailsId:EditData?.HHHHStaff?.Id,
         }).then((res:any)=>{
             console.log(res)

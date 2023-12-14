@@ -98,7 +98,7 @@ let allSite: any = {
                 id: 'Contract ID',
                 header: '',
                 placeholder: "Contract ID",
-                size: 150,
+                size: 110,
                
             },
             {
@@ -120,14 +120,14 @@ let allSite: any = {
                 id: 'Title',
                 header: '',
                 placeholder: "Title",
-                size: 500,
+                
             },
             {
                 id: 'Employee',
                 header: '',
                 accessorFn: (row) => row?.HHHHStaff?.FullName,
                 placeholder: "Employee",
-                size: 300,
+                size: 200,
 
 
             },
@@ -136,7 +136,7 @@ let allSite: any = {
                 header: '',
                 accessorFn: (row) => row?.typeOfContract,
                 placeholder: "Contract Type",
-                size: 300,
+                size: 160,
 
 
             },
@@ -145,7 +145,7 @@ let allSite: any = {
                 header: '',
                 accessorFn: (row) => row?.activeStatus,
                 placeholder: "Contract Type",
-                size: 100,
+                size: 50,
 
 
             },
@@ -182,7 +182,7 @@ let allSite: any = {
             {
                 id: "ff",
                 accessorKey: "",
-                size: 25,
+                size: 1,
                 canSort: false,
                 placeholder: "",
                 cell: ({ row }) => (
