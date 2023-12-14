@@ -35,9 +35,9 @@ var siteConfig: any = [];
 var AllTaskTimeEntries: any = [];
 var AllTasks: any = [];
 var timesheetListConfig: any = [];
-var currentUserId:any = '';
+var currentUserId: any = '';
 var DataSiteIcon: any = [];
-var RemarksData:any = []
+var RemarksData: any = []
 var currentUser: any = [];
 var weekTimeEntry: any = [];
 var today: any = [];
@@ -241,7 +241,7 @@ const TaskDashboard = (props: any) => {
 
 
     const loadAllTimeEntry = async () => {
-        AllTaskTimeEntries=[];
+        AllTaskTimeEntries = [];
         setPageLoader(true)
         if (timesheetListConfig?.length > 0) {
             let timesheetLists: any = [];
@@ -278,63 +278,63 @@ const TaskDashboard = (props: any) => {
     const checkTimeEntrySite = (timeEntry: any) => {
         let result = ''
         result = AllTasks?.filter((task: any) => {
-            let site='';
-            if(task?.siteType=='Offshore Tasks'){
-                site='OffshoreTasks'
-            }else{
-                site=task?.siteType;
+            let site = '';
+            if (task?.siteType == 'Offshore Tasks') {
+                site = 'OffshoreTasks'
+            } else {
+                site = task?.siteType;
             }
-            if (timeEntry[`Task${site}`]!=undefined && task?.Id == timeEntry[`Task${site}`]?.Id) { 
+            if (timeEntry[`Task${site}`] != undefined && task?.Id == timeEntry[`Task${site}`]?.Id) {
                 return task;
             }
-        });    
+        });
         return result;
     }
 
-    const currentUserTimeEntry = (start:any) => {
+    const currentUserTimeEntry = (start: any) => {
         setPageLoader(false)
         setPageLoader(true)
         const startDate = getStartingDate(start);
         const endDate = getEndingDate(start);
         const startDateMidnight = new Date(startDate.setHours(0, 0, 0, 0));
         const endDateMidnight = new Date(endDate.setHours(0, 0, 0, 0));
-      
+
         const { weekTimeEntries, totalTime } = AllTaskTimeEntries?.reduce(
-          (acc:any, timeEntry:any) => {
-           try {
-            if (timeEntry?.AdditionalTimeEntry) {
-                const AdditionalTime = JSON.parse(timeEntry.AdditionalTimeEntry);
-        
-                AdditionalTime?.forEach((filledTime:any) => {
-                  const [day, month, year] = filledTime?.TaskDate?.split('/');
-                  const timeFillDate = new Date(+year, +month - 1, +day);
-        
-                  if (
-                    filledTime?.AuthorId == currentUserId &&
-                    timeFillDate >= startDateMidnight &&
-                    timeFillDate <= endDateMidnight &&
-                    timeEntry.taskDetails[0]
-                  ) {
-                    const data = { ...timeEntry.taskDetails[0] } || {};
-                    const taskTime = parseFloat(filledTime.TaskTime);
-        
-                    data.TaskTime = taskTime;
-                    data.timeDate = filledTime.TaskDate;
-                    data.Description = filledTime.Description;
-                    data.timeFillDate = timeFillDate;
-        
-                    acc.weekTimeEntries.push(data);
-                    acc.totalTime += taskTime;
-                  }
-                });
-              }
-        
-           } catch (error) {
-            setPageLoader(false)
-           }
-            return acc;
-          },
-          { weekTimeEntries: [], totalTime: 0 }
+            (acc: any, timeEntry: any) => {
+                try {
+                    if (timeEntry?.AdditionalTimeEntry) {
+                        const AdditionalTime = JSON.parse(timeEntry.AdditionalTimeEntry);
+
+                        AdditionalTime?.forEach((filledTime: any) => {
+                            const [day, month, year] = filledTime?.TaskDate?.split('/');
+                            const timeFillDate = new Date(+year, +month - 1, +day);
+
+                            if (
+                                filledTime?.AuthorId == currentUserId &&
+                                timeFillDate >= startDateMidnight &&
+                                timeFillDate <= endDateMidnight &&
+                                timeEntry.taskDetails[0]
+                            ) {
+                                const data = { ...timeEntry.taskDetails[0] } || {};
+                                const taskTime = parseFloat(filledTime.TaskTime);
+
+                                data.TaskTime = taskTime;
+                                data.timeDate = filledTime.TaskDate;
+                                data.Description = filledTime.Description;
+                                data.timeFillDate = timeFillDate;
+
+                                acc.weekTimeEntries.push(data);
+                                acc.totalTime += taskTime;
+                            }
+                        });
+                    }
+
+                } catch (error) {
+                    setPageLoader(false)
+                }
+                return acc;
+            },
+            { weekTimeEntries: [], totalTime: 0 }
         );
         weekTimeEntries.sort((a: any, b: any) => {
             return b.timeFillDate - a.timeFillDate;
@@ -344,48 +344,48 @@ const TaskDashboard = (props: any) => {
         setTimeEntryTotal(totalTime);
         weekTimeEntry = weekTimeEntries;
         setPageLoader(false)
-      };
+    };
     const currentUserTimeEntryCalculation = () => {
         const timesheetDistribution = ['Today', 'This Week', 'This Month'];
-      
+
         const allTimeCategoryTime = timesheetDistribution.reduce((totals, start) => {
-          const startDate = getStartingDate(start);
-          const startDateMidnight = new Date(startDate.setHours(0, 0, 0, 0));
-      
-          const total = AllTaskTimeEntries?.reduce((acc:any, timeEntry:any) => {
-            if (timeEntry?.AdditionalTimeEntry) {
-              const AdditionalTime = JSON.parse(timeEntry.AdditionalTimeEntry);
-      
-              const taskTime = AdditionalTime.reduce((taskAcc:any, filledTime:any) => {
-                const [day, month, year] = filledTime?.TaskDate?.split('/');
-                const timeFillDate = new Date(+year, +month - 1, +day);
-      
-                if (
-                  filledTime?.AuthorId === currentUserId &&
-                  timeFillDate.getTime() === startDateMidnight.getTime() &&
-                  timeEntry.taskDetails[0]
-                ) {
-                  return taskAcc + parseFloat(filledTime.TaskTime);
+            const startDate = getStartingDate(start);
+            const startDateMidnight = new Date(startDate.setHours(0, 0, 0, 0));
+
+            const total = AllTaskTimeEntries?.reduce((acc: any, timeEntry: any) => {
+                if (timeEntry?.AdditionalTimeEntry) {
+                    const AdditionalTime = JSON.parse(timeEntry.AdditionalTimeEntry);
+
+                    const taskTime = AdditionalTime.reduce((taskAcc: any, filledTime: any) => {
+                        const [day, month, year] = filledTime?.TaskDate?.split('/');
+                        const timeFillDate = new Date(+year, +month - 1, +day);
+
+                        if (
+                            filledTime?.AuthorId === currentUserId &&
+                            timeFillDate.getTime() === startDateMidnight.getTime() &&
+                            timeEntry.taskDetails[0]
+                        ) {
+                            return taskAcc + parseFloat(filledTime.TaskTime);
+                        }
+
+                        return taskAcc;
+                    }, 0);
+
+                    return acc + taskTime;
                 }
-      
-                return taskAcc;
-              }, 0);
-      
-              return acc + taskTime;
-            }
-      
-            return acc;
-          }, 0);
-      
-          return { ...totals, [start.toLowerCase()]: total };
+
+                return acc;
+            }, 0);
+
+            return { ...totals, [start.toLowerCase()]: total };
         }, {
-          today: 0,
-          thisWeek: 0,
-          thisMonth: 0,
+            today: 0,
+            thisWeek: 0,
+            thisMonth: 0,
         });
-      
+
         return allTimeCategoryTime;
-      };
+    };
 
     //End 
 
@@ -413,8 +413,8 @@ const TaskDashboard = (props: any) => {
                         let smartmeta = [];
                         await web.lists
                             .getById(config.listId)
-                            .items.select("ID", "Title", "ClientCategory/Id","Portfolio/PortfolioStructureID","TaskID", "ParentTask/TaskID","ParentTask/Title","ParentTask/Id","ClientCategory/Title","EstimatedTimeDescription", 'ClientCategory', "Comments", "DueDate", "ClientActivityJson", "EstimatedTime", "Approver/Id", "Approver/Title", "ParentTask/Id", "ParentTask/Title","FeedBack", "workingThisWeek", "IsTodaysTask", "AssignedTo/Id", "TaskLevel", "TaskLevel", "OffshoreComments", "AssignedTo/Title", "OffshoreImageUrl", "TaskCategories/Id", "TaskCategories/Title", "Status", "StartDate", "CompletedDate", "TeamMembers/Title", "TeamMembers/Id", "ItemRank", "PercentComplete", "Priority", "Body", "PriorityRank", "Created", "Author/Title", "Author/Id", "BasicImageInfo", "ComponentLink", "FeedBack", "ResponsibleTeam/Title", "ResponsibleTeam/Id", "TaskType/Title", "ClientTime", "Portfolio/Id", "Portfolio/Title", "Modified")
-                            .expand("TeamMembers", "Approver", "ParentTask", "ClientCategory", "AssignedTo", "TaskCategories", "Author", "ResponsibleTeam", "ParentTask","TaskType", "Portfolio")
+                            .items.select("ID", "Title", "ClientCategory/Id", "Portfolio/PortfolioStructureID", "TaskID", "ParentTask/TaskID", "ParentTask/Title", "ParentTask/Id", "ClientCategory/Title", "EstimatedTimeDescription", 'ClientCategory', "Comments", "DueDate", "ClientActivityJson", "EstimatedTime", "Approver/Id", "Approver/Title", "ParentTask/Id", "ParentTask/Title", "FeedBack", "workingThisWeek", "IsTodaysTask", "AssignedTo/Id", "TaskLevel", "TaskLevel", "OffshoreComments", "AssignedTo/Title", "OffshoreImageUrl", "TaskCategories/Id", "TaskCategories/Title", "Status", "StartDate", "CompletedDate", "TeamMembers/Title", "TeamMembers/Id", "ItemRank", "PercentComplete", "Priority", "Body", "PriorityRank", "Created", "Author/Title", "Author/Id", "BasicImageInfo", "ComponentLink", "FeedBack", "ResponsibleTeam/Title", "ResponsibleTeam/Id", "TaskType/Title", "ClientTime", "Portfolio/Id", "Portfolio/Title", "Modified")
+                            .expand("TeamMembers", "Approver", "ParentTask", "ClientCategory", "AssignedTo", "TaskCategories", "Author", "ResponsibleTeam", "ParentTask", "TaskType", "Portfolio")
                             .getAll().then((data: any) => {
                                 smartmeta = data;
                                 smartmeta?.map((task: any) => {
@@ -436,9 +436,9 @@ const TaskDashboard = (props: any) => {
                                         }
                                         task.siteType = config.Title;
                                         if (task?.FeedBack != undefined) {
-                                            task.descriptionsSearch =globalCommon.descriptionSearchData(task)
-                                        }else{
-                                            task.descriptionsSearch='';
+                                            task.descriptionsSearch = globalCommon.descriptionSearchData(task)
+                                        } else {
+                                            task.descriptionsSearch = '';
                                         }
                                         task.listId = config.listId;
                                         task.siteUrl = config.siteUrl.Url;
@@ -518,7 +518,7 @@ const TaskDashboard = (props: any) => {
                                         if (isBottleneckTask) {
                                             AllBottleNeckTasks.push(task)
                                         }
-                                        if (isImmediate) {
+                                        if (isImmediate && task?.PercentComplete < 80) {
                                             AllImmediates.push(task)
                                         }
                                         if (isEmailNotification) {
@@ -569,8 +569,8 @@ const TaskDashboard = (props: any) => {
                                 filterCurrentUserTask();
                             }
                             backupTaskArray.allTasks = AllSiteTasks;
-                           
-                            if(timesheetListConfig?.length > 0){
+
+                            if (timesheetListConfig?.length > 0) {
                                 loadAllTimeEntry()
                             }
                         }
@@ -841,13 +841,13 @@ const TaskDashboard = (props: any) => {
                 internalHeader: "Created",
                 accessor: "Created",
                 showSortIcon: true,
-                filterFn: (row:any, filterValue:any) => {
-                    if(row?.original?.Author?.Title?.toLowerCase()?.includes(filterValue?.toLowerCase())|| row?.original?.DisplayCreateDate?.includes(filterValue)){
-                      return  true
-                    }else{
-                      return false
+                filterFn: (row: any, filterValue: any) => {
+                    if (row?.original?.Author?.Title?.toLowerCase()?.includes(filterValue?.toLowerCase()) || row?.original?.DisplayCreateDate?.includes(filterValue)) {
+                        return true
+                    } else {
+                        return false
                     }
-                  },
+                },
                 style: { width: "125px" },
                 Cell: ({ row }: any) => (
                     <span>
@@ -1202,7 +1202,7 @@ const TaskDashboard = (props: any) => {
         {
             columns: columns,
             data: UserImmediateTasks,
-           defaultColumn: { Filter: DefaultColumnFilter },
+            defaultColumn: { Filter: DefaultColumnFilter },
             initialState: { pageIndex: 0, pageSize: 100000 },
         },
         useFilters,
@@ -1449,7 +1449,7 @@ const TaskDashboard = (props: any) => {
                 AllMetadata = smartmeta;
                 setAllSmartMetadata(AllMetadata)
                 siteConfig = smartmeta.filter((data: any) => {
-                    if (data?.IsVisible && data?.TaxType == 'Sites' && data?.Title != 'Master Tasks' && data?.listId!=undefined && data?.listId?.length>32) {
+                    if (data?.IsVisible && data?.TaxType == 'Sites' && data?.Title != 'Master Tasks' && data?.listId != undefined && data?.listId?.length > 32) {
                         return data;
                     }
                 });
@@ -1560,7 +1560,7 @@ const TaskDashboard = (props: any) => {
                 let Mail = Approver?.Name?.split('|')[2]
                 childItem.UserManagerMail.push(Mail)
             })
-            if (childItem?.UserGroupId != undefined && parseInt(childItem?.UserGroupId) == item.ID  ) {
+            if (childItem?.UserGroupId != undefined && parseInt(childItem?.UserGroupId) == item.ID) {
                 item.childs.push(childItem);
             }
         })
@@ -1697,10 +1697,10 @@ const TaskDashboard = (props: any) => {
     //Shareworking Today's Task In Email
 
 
-    const sendEmail=()=>{
+    const sendEmail = () => {
         let tasksCopy: any = [];
         let newData: any = [];
-        var dataa:any=[]
+        var dataa: any = []
         let taskUsersGroup = groupedUsers;
         let confirmation = confirm("Are you sure you want to share the working today task of all team members?")
         if (confirmation) {
@@ -1720,26 +1720,26 @@ const TaskDashboard = (props: any) => {
                     userGroup?.childs?.map((teamMember: any) => {
                         if (!onLeaveEmployees.some((emp: any) => emp == teamMember?.AssingedToUserId)) {
                             tasksCopy = filterCurrentUserWorkingTodayTask(teamMember?.AssingedToUserId)
-                            tasksCopy?.forEach((val:any)=>{
+                            tasksCopy?.forEach((val: any) => {
                                 newData.push(val)
                             })
                         }
                     })
-                    
+
                 }
             })
-          
+
 
         }
 
-       
+
         newData?.forEach((item: any) => {
             item.TeamMember = ''
             item.Category = ''
             item.NewJSONData = []
             item.EODData = []
-           
-            
+
+
             if (item.Title != undefined) {
                 item.Title = item.Title?.replace(/<[^>]*><p>/g, '')
             }
@@ -1767,12 +1767,12 @@ const TaskDashboard = (props: any) => {
                 item.Body = ''
             }
             item.NewJSONData?.forEach((ele: any) => {
-                let data:any={}
-                if(ele?.Completed == true){
+                let data: any = {}
+                if (ele?.Completed == true) {
                     data['subTitle'] = ele?.Title?.replaceAll(/<[^>]*><p>/g, '')
                     data['subCompleted'] = ele?.Completed
                     data['subDeployed'] = ele?.Deployed
-                    data['subQAReviews']  = ele?.QAReviews
+                    data['subQAReviews'] = ele?.QAReviews
                     data['subInProgress'] = ele?.InProgress
                     data['subRemarks'] = ele?.Remarks
                     data['subChild'] = ele?.Subtext
@@ -1785,54 +1785,54 @@ const TaskDashboard = (props: any) => {
                     data['Id'] = item?.Id
                     item.EODData.push(data)
                 }
-                
-               
+
+
             })
-           
+
             RemarksData.push(item)
         })
-        RemarksData?.forEach((item:any)=>{
-            item?.EODData.forEach((val:any)=>{
-                val.subChilds=[]
-                if(val.subRemarks != undefined && val.subRemarks != '' ){
+        RemarksData?.forEach((item: any) => {
+            item?.EODData.forEach((val: any) => {
+                val.subChilds = []
+                if (val.subRemarks != undefined && val.subRemarks != '') {
                     val.subChilds.push(val)
                 }
             })
-           
+
         })
-        RemarksData?.forEach((item:any)=>{
-            item?.EODData?.forEach((val:any)=>{
-                if(val.subCompleted == true){
+        RemarksData?.forEach((item: any) => {
+            item?.EODData?.forEach((val: any) => {
+                if (val.subCompleted == true) {
                     val.subDeployed = true
                     val.subQAReviews = true
                     val.subInProgress = true
                     AllWorkingDayData.push(val)
                 }
             })
-           
+
         })
-        AllWorkingDayData?.forEach((val:any)=>{
-            val.subChilds?.forEach((ele:any)=>{
-                if(ele.subCompleted == true && ele.subRemarks != undefined && ele.subRemarks != ''){
-                ele.subTitle = ele?.Title;
-                ele.subCompleted = true
-                ele.subDeployed = true
-                ele.subQAReviews = true
-                ele.subInProgress = true
-               
+        AllWorkingDayData?.forEach((val: any) => {
+            val.subChilds?.forEach((ele: any) => {
+                if (ele.subCompleted == true && ele.subRemarks != undefined && ele.subRemarks != '') {
+                    ele.subTitle = ele?.Title;
+                    ele.subCompleted = true
+                    ele.subDeployed = true
+                    ele.subQAReviews = true
+                    ele.subInProgress = true
+
                 }
             })
         })
-        
+
         setisSendEODReport(true)
-      
+
     }
-    const closeEODReport=()=>{
+    const closeEODReport = () => {
         setisSendEODReport(false)
     }
-  
+
     const shareTaskInEmail = (input: any) => {
-       
+
         let currentLoginUser = currentUserData?.Title;
         let CurrentUserSpace = currentLoginUser.replace(' ', '%20');
         let body: any = '';
@@ -2337,8 +2337,8 @@ const TaskDashboard = (props: any) => {
                                     <summary> Working Today Tasks {'(' + pageToday?.length + ')'}
                                         {
                                             <>
-                                              {currentUserId == 242 && <span className="align-autoplay d-flex float-end" onClick={() => sendEmail()}><span className="svg__iconbox svg__icon--mail mx-1" ></span>Send EOD Email</span>}
-                                            <span className="align-autoplay d-flex float-end" onClick={() => shareTaskInEmail('today working tasks')}><span className="svg__iconbox svg__icon--mail mx-1" ></span>Share Today Working Tasks</span> 
+                                                {currentUserId == 242 && <span className="align-autoplay d-flex float-end" onClick={() => sendEmail()}><span className="svg__iconbox svg__icon--mail mx-1" ></span>Send EOD Email</span>}
+                                                <span className="align-autoplay d-flex float-end" onClick={() => shareTaskInEmail('today working tasks')}><span className="svg__iconbox svg__icon--mail mx-1" ></span>Share Today Working Tasks</span>
                                             </>}</summary>
                                     <div className='AccordionContent mx-height'>
                                         {workingTodayTasks?.length > 0 ?
@@ -3664,7 +3664,7 @@ const TaskDashboard = (props: any) => {
             </div>
             {pageLoaderActive ? <PageLoader /> : ''}
             {openTimeEntryPopup && (<TimeEntryPopup props={taskTimeDetails} CallBackTimeEntry={TimeEntryCallBack} Context={props?.props?.Context} />)}
-            {isSendEODReport && (<SendEmailEODReport WorkingTask={AllWorkingDayData} close={closeEODReport} Context={props?.props?.Context}/>)}
+            {isSendEODReport && (<SendEmailEODReport WorkingTask={AllWorkingDayData} close={closeEODReport} Context={props?.props?.Context} />)}
 
         </>
     )
