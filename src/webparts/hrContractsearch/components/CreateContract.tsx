@@ -6,11 +6,12 @@ import {
    FaChevronRight
 } from "react-icons/fa";
 import { sp, Web } from "sp-pnp-js";
+import EditContractPopup from "./EditContractPopup";
 import * as $ from "jquery";
 import { arraysEqual, Modal, Panel, PanelType } from "office-ui-fabric-react";
 import * as Moment from "moment";
 import CreateContactComponent from "../../contactSearch/components/contact-search/popup-components/CreateContact";
-import EditContractPopup from "./EditContractPopup";
+
 let ResData:any = {}
 const CreateContract = (props: any) => {
    let ContractListId = props.AllListId?.ContractListID
@@ -198,16 +199,15 @@ const CreateContract = (props: any) => {
     const saveContractType=(checkitem:any,type:any)=>{
       closeContractTypePopup();
       closeAddEmp()
-      if(postData.checkContractitem !=undefined && postData.checkContractitem !="" && type==="contract"){
+      if(postData.contractTypeItem !=undefined && postData.contractTypeItem !="" && type==="contract"){
         smarttaxonomy.map ((items,index)=>{
           if(items.Title===checkitem){
-            setPostData({ ...postData, checkContractitem: items.Id})
-        
+            setPostData({ ...postData, contractTypeItem: items.Id})
             setcontractTypeSuffix(items.Suffix);
           }
        
         })
-        setPostData({ ...postData, checkContractitem: checkitem})
+        setPostData({ ...postData, contractTypeItem: checkitem})
         closeContractTypePopup();
        }
        else if(postData.selectEmp !=undefined && postData.selectEmp !="" && type==="contact"){
@@ -224,6 +224,8 @@ const CreateContract = (props: any) => {
      }
      const callback=()=>{
       setOpenEditPopup(false)
+      closeAddTaskTimepopup();
+      props.callBack()
      }
      const ClosePopup = React.useCallback(() => {
       setCreateContactStatus(false);
@@ -348,7 +350,7 @@ const CreateContract = (props: any) => {
 
          </Panel>
          {openEditPopup && <EditContractPopup props={ResData} AllListId={props.AllListId} callback={callback}></EditContractPopup>}
-         {CreateContactStatus ? <CreateContactComponent callBack={ClosePopup}data={allContactData}/> : null}
+         {CreateContactStatus ? <CreateContactComponent callBack={ClosePopup} data={allContactData}/> : null}
       </>
    )
 }

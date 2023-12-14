@@ -630,6 +630,7 @@ export default class CategoriesWeeklyMultipleReport extends React.Component<ICat
       if (childItem.UserGroupId != undefined && parseInt(childItem.UserGroupId) == item.ID) {
         childItem.IsSelected = false
         item.GroupName = childItem?.UserGroup?.Title;
+        childItem.GroupName =childItem?.UserGroup?.Title;
         //if (this.props.Context.pageContext.user. == childItem.AssingedToUserId)
         //childItem.IsSelected = true
         item.childs.push(childItem);
@@ -2135,7 +2136,8 @@ export default class CategoriesWeeklyMultipleReport extends React.Component<ICat
       filterItems.forEach(function (filt: any) {
         if (filt != undefined && filt.ID != undefined && filt.checked === true && filter.ID != undefined && filt.ID == filter.ID) {
           isExistsTitle = filt.Title;
-          item.First += filt.Title + ';';
+          if (item?.First?.indexOf(filt.Title) == -1)
+            item.First += filt.Title + ';';
 
         }
         if (filt.children != undefined && filt.children.length > 0) {
@@ -3359,28 +3361,36 @@ export default class CategoriesWeeklyMultipleReport extends React.Component<ICat
     let checkedItems: any = [];
     let checked: any = [];
     let select = ev.currentTarget.checked;
-    if (select) {
+   
       if (filterItem != undefined && filterItem.length > 0) {
         filterItem.forEach((child: any) => {
           child.isExpand = false;
           child.checked = select;
+          if(select){
           checkedItems.push(child);
+          }
           checked.push(child.Id);
           if (child.children != undefined && child.children.length > 0) {
             child.children.forEach((subchild: any) => {
               subchild.checked = select;
               // checkedItems.push(subchild);
+              if(select){
               checked.push(subchild.Id);
+              }
               if (subchild.children != undefined && subchild.children.length > 0) {
                 subchild.children.forEach((subchild2: any) => {
                   subchild2.checked = select;
                   // checkedItems.push(subchild2);
+                  if(select){
                   checked.push(subchild2.Id);
+                  }
                   if (subchild2.children != undefined && subchild2.children.length > 0) {
                     subchild2.children.forEach((subchild3: any) => {
                       subchild3.checked = select;
                       //   checkedItems.push(subchild3);
+                      if(select){
                       checked.push(subchild3.Id);
+                      }
                     });
                   }
                 });
@@ -3389,9 +3399,6 @@ export default class CategoriesWeeklyMultipleReport extends React.Component<ICat
           }
         });
       }
-    }
-    else {
-    }
     this.setState({
       checked,
       checkedAll: select,
@@ -3402,19 +3409,19 @@ export default class CategoriesWeeklyMultipleReport extends React.Component<ICat
   private getAllSubChildenCount(item: any) {
     let count = 1;
     if (item.children != undefined && item?.checked === true && item.children.length > 0) {
-      count += item.children.length;
+      count += item?.children?.length;
     }
     item?.children?.forEach((subchild: any) => {
       if (subchild.children != undefined && subchild?.checked === true && subchild.children.length > 0) {
-        count += subchild.children.length;
+        count += subchild?.children?.length;
       }
       subchild?.children?.forEach((subchild2: any) => {
         if (subchild2.children != undefined && subchild2?.checked === true && subchild2.children.length > 0) {
-          count += subchild2.children.length;
+          count += subchild2?.children?.length;
         }
         subchild2?.children?.forEach((subchild3: any) => {
-          if (subchild3?.checked === true) {
-            count += subchild3.Title;
+          if (subchild3?.checked === true && subchild3?.children?.length >0) {
+            count += subchild3?.children?.length;
           }
         });
       });

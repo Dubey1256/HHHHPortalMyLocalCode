@@ -1651,6 +1651,7 @@ export const GetServiceAndComponentAllData = async (Props: any) => {
             result.siteUrl=Props?.siteUrl;
             result["siteType"] = "Master Tasks";
             result.AllTeamName = "";
+            result.listId = Props.MasterTaskListID;
             result.portfolioItemsSearch = result.Item_x0020_Type;
             result.isSelected = Props?.selectedItems?.find((obj: any) => obj.Id === result.ID);
             result.TeamLeaderUser = []

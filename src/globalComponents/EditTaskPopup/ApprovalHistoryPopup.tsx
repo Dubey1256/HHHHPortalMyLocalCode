@@ -11,11 +11,11 @@ const ApprovalHistoryPopup = (ApprovalData: any) => {
     useEffect(() => {
         if (ApprovalData != undefined) {
             if (ApprovalData.ApprovalPointUserData != undefined) {
-                let data=[];
-                try{
+                let data = [];
+                try {
                     data = JSON.parse(JSON.stringify(ApprovalData.ApprovalPointUserData))
-                }catch(e){
-                    console.log(e,' error Parsing History JSON')
+                } catch (e) {
+                    console.log(e, ' error Parsing History JSON')
                 }
                 setApprovalPointUserData(data)
             }
@@ -31,13 +31,24 @@ const ApprovalHistoryPopup = (ApprovalData: any) => {
         setApprovalPointHistoryStatus(false)
         ApprovalData.callBack();
     }
+
+    const onRenderApproverHeader = () => {
+        return (
+            <div className="subheading">
+                {`Approval History For Point - ${ApprovalData.currentArrayIndex != undefined || ApprovalData.currentArrayIndex != null ? ApprovalData.currentArrayIndex + 1 + "." : ''} ${ApprovalPointCurrentIndex + 1}`}
+            </div>
+        )
+    }
+
+
     return (
         <div>
             <Panel
-                headerText={`Approval History For Point - ${ApprovalData.currentArrayIndex != undefined || ApprovalData.currentArrayIndex != null ? ApprovalData.currentArrayIndex + 1 + "." : ''} ${ApprovalPointCurrentIndex + 1}`}
+
                 isOpen={ApprovalPointHistoryStatus}
                 onDismiss={ApprovalPointPopupClose}
-                isBlocking={ApprovalPointHistoryStatus}
+                isBlocking={false}
+                onRenderHeader={onRenderApproverHeader}
                 type={PanelType.custom}
                 customWidth="500px"
             >
@@ -54,7 +65,7 @@ const ApprovalHistoryPopup = (ApprovalData: any) => {
                                                     {UserData.isShowLight == "Approve" ?
                                                         <div className="d-flex full-width justify-content-between">
                                                             <div className="d-flex">
-                                                                <span className="circlelight green br_green mx-1 mt-1"></span> {Index===0?"Approved by-":'Pre Approved by-'}
+                                                                <span className="circlelight green br_green mx-1 mt-1"></span> {Index === 0 ? "Approved by-" : 'Pre Approved by-'}
                                                                 <h6 className="siteColor">{UserData.Title != undefined ? UserData.Title : ""}</h6>
                                                             </div>
                                                             <div>
@@ -67,7 +78,7 @@ const ApprovalHistoryPopup = (ApprovalData: any) => {
                                                     {UserData.isShowLight == "Maybe" ?
                                                         <div className="d-flex full-width justify-content-between">
                                                             <div className="d-flex">
-                                                                <span className="circlelight yellow br_yellow mx-1 mt-1"></span> {Index===0?"Set to Maybe by-":'Pre Set to Maybe by-'}
+                                                                <span className="circlelight yellow br_yellow mx-1 mt-1"></span> {Index === 0 ? "Set to Maybe by-" : 'Pre Set to Maybe by-'}
                                                                 <h6 className="siteColor">{UserData.Title != undefined ? UserData.Title : ""}</h6>
                                                             </div>
                                                             <div>
@@ -80,7 +91,7 @@ const ApprovalHistoryPopup = (ApprovalData: any) => {
                                                     {UserData.isShowLight == "Reject" ?
                                                         <div className="d-flex full-width justify-content-between">
                                                             <div className="d-flex">
-                                                                <span className="circlelight red br_red mx-1 mt-1"></span> {Index===0?'Rejected by-':"Pre Rejected by-"}
+                                                                <span className="circlelight red br_red mx-1 mt-1"></span> {Index === 0 ? 'Rejected by-' : "Pre Rejected by-"}
                                                                 <h6 className="siteColor">{UserData.Title != undefined ? UserData.Title : ""}</h6>
                                                             </div>
                                                             <div>
@@ -104,10 +115,10 @@ const ApprovalHistoryPopup = (ApprovalData: any) => {
                                                                 <div className="d-flex">
                                                                     <span className="circlelight green br_green mx-1 mt-1"></span> Approved by-
                                                                     <h6 className="siteColor">
-                                                                        {CommentData.ApproverData != undefined  && CommentData.ApproverData.length > 0 ? CommentData.ApproverData[CommentData.ApproverData.length - 1].Title : ""}</h6>
+                                                                        {CommentData.ApproverData != undefined && CommentData.ApproverData.length > 0 ? CommentData.ApproverData[CommentData.ApproverData.length - 1].Title : ""}</h6>
                                                                 </div>
                                                                 <div>
-                                                                    <span>{CommentData.ApproverData != undefined  && CommentData.ApproverData.length > 0 ? CommentData.ApproverData[CommentData.ApproverData.length - 1].ApproverData : ""}</span>
+                                                                    <span>{CommentData.ApproverData != undefined && CommentData.ApproverData.length > 0 ? CommentData.ApproverData[CommentData.ApproverData.length - 1].ApproverData : ""}</span>
                                                                     <span className="mx-1" style={{ fontSize: "15px" }}><TiMessage /></span>
                                                                 </div>
                                                             </div>
@@ -216,8 +227,6 @@ const ApprovalHistoryPopup = (ApprovalData: any) => {
                                         </div>
                                     </div>
                                 </div>
-
-
                             </div>
                         </div> : null
                     }
