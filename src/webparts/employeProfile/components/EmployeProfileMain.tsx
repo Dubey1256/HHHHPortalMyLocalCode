@@ -308,27 +308,27 @@ const EmployeProfileMain = (props: any) => {
                             
                         </div>
 
-                        <div className="team_member row">
-                            <div className="col-md-12 p-0">
-                                <dl>
-                                    <dt className="bg-Fa col-md-3">Organization</dt>
-                                    <dd className='bg-Ff position-relative'>{EmployeeData?.Institution?.FullName} </dd>
+                        <div className="row">
+                            <div className="col-md-12 ps-2">
+                                <dl className='profileHead'>
+                                    <dt className="bg-Fa profileLeftSec col-md-3">Organization</dt>
+                                    <dd className='bg-Ff profileRightSec col-md-9'>{EmployeeData?.Institution?.FullName} </dd>
                                 </dl>
-                                <dl>
-                                    <dt className="bg-Fa col-md-3">Department</dt>
-                                    <dd className='bg-Ff position-relative'>{EmployeeData?.Department} </dd>
+                                <dl className='profileHead'>
+                                    <dt className="bg-Fa profileLeftSec col-md-3">Department</dt>
+                                    <dd className='bg-Ff profileRightSec col-md-9'>{EmployeeData?.Department} </dd>
                                 </dl>
-                                <dl>
-                                    <dt className="bg-Fa col-md-3">Job Title</dt>
-                                    <dd className='bg-Ff position-relative'> {EmployeeData?.JobTitle}</dd>
+                                <dl className='profileHead'>
+                                    <dt className="bg-Fa profileLeftSec col-md-3">Job Title</dt>
+                                    <dd className='bg-Ff profileRightSec col-md-9'> {EmployeeData?.JobTitle}</dd>
                                 </dl>
-                                <dl>
-                                    <dt className="bg-Fa col-md-3">Date of Joining</dt>
-                                    <dd className='bg-Ff position-relative'>{EmployeeData?.DOJ != undefined ? moment(EmployeeData?.DOJ)?.format('DD-MM-YYYY') : ""} </dd>
+                                <dl className='profileHead'>
+                                    <dt className="bg-Fa profileLeftSec col-md-3">Date of Joining</dt>
+                                    <dd className='bg-Ff profileRightSec col-md-9'>{EmployeeData?.DOJ != undefined ? moment(EmployeeData?.DOJ)?.format('DD-MM-YYYY') : ""} </dd>
                                 </dl>
-                                <dl>
-                                    <dt className="bg-Fa col-md-3">Date of Exit</dt>
-                                    <dd className='bg-Ff position-relative'> {EmployeeData?.DOE != undefined ? moment(EmployeeData?.DOE)?.format('DD-MM-YYYY') : ""}</dd>
+                                <dl className='profileHead'>
+                                    <dt className="bg-Fa profileLeftSec col-md-3">Date of Exit</dt>
+                                    <dd className='bg-Ff profileRightSec col-md-9'> {EmployeeData?.DOE != undefined ? moment(EmployeeData?.DOE)?.format('DD-MM-YYYY') : ""}</dd>
                                 </dl>
                             </div>
 
@@ -393,7 +393,7 @@ const EmployeProfileMain = (props: any) => {
                                                 </Tab.Pane>
                                                 <Tab.Pane eventKey="TaxAndInsurance2" className='p-0 border'>
                                                     <div className='mt-3'>
-                                                        <div className='col-sm-12 px-3 team_member row'>
+                                                        <div className='col-sm-12 px-3 row'>
                                                             <div className='border-bottom siteColor p-0'>Tax information</div>
                                                             <dl className="col-lg-4 ps-0">
                                                                 <dt className="col-lg-3 bg-Fa">
@@ -436,7 +436,7 @@ const EmployeProfileMain = (props: any) => {
                                                                 </dd>
                                                             </dl>
                                                         </div>
-                                                        <div className='col-sm-12 px-3 team_member row'>
+                                                        <div className='col-sm-12 px-3 row'>
                                                             <div className='border-bottom siteColor p-0'>Social Security Insurance</div>
                                                             <dl className="col-lg-12 alignCenter ps-0">
                                                                 <dt className="col-lg-3 bg-Fa">
@@ -466,7 +466,7 @@ const EmployeProfileMain = (props: any) => {
                                                 </Tab.Pane>
                                                 <Tab.Pane eventKey="Qualifications2" className='p-0'>
                                                 <div className='mt-3'>
-                                                        <div className='col-sm-12 px-3 team_member row'>
+                                                        <div className='col-sm-12 px-3 row'>
                                                             <div className='border-bottom siteColor p-0'>Qualifications</div>
                                                             <dl className="col-lg-6 ps-0">
                                                                 <dt className="col-lg-3 bg-Fa">
