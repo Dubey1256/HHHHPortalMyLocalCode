@@ -2,7 +2,6 @@ import * as moment from 'moment';
 import * as React from 'react'
 import { arraysEqual, Modal, Panel, PanelType } from "office-ui-fabric-react";
 import { Web } from "sp-pnp-js";
-import Tooltip from '../../../globalComponents/Tooltip';
 
 const EditContractPopup = (props: any) => {
     const [openPopup, setOpenPopup] = React.useState(false)
@@ -41,7 +40,7 @@ const EditContractPopup = (props: any) => {
         const myData = await web.lists
             .getById(props.AllListId?.ContractListID)
             .items
-            .select("Id,Title,Author/Title,Editor/Title,startDate,endDate,ContractSigned,ContractChanged,GrossSalary,PersonnelNumber,ContractId,typeOfContract,Type_OfContract/Id,Type_OfContract/Title,WorkingHours,FolderID,contractNumber,SmartInformation/Id,SmartInformation/Title,EmployeeID/Id,EmployeeID/Title,EmployeeID/Name,HHHHStaff/Id,HHHHStaff/FullName")
+            .select("Id,Title,Created,Modified,Author/Title,Editor/Title,startDate,endDate,ContractSigned,ContractChanged,GrossSalary,PersonnelNumber,ContractId,typeOfContract,Type_OfContract/Id,Type_OfContract/Title,WorkingHours,FolderID,contractNumber,SmartInformation/Id,SmartInformation/Title,EmployeeID/Id,EmployeeID/Title,EmployeeID/Name,HHHHStaff/Id,HHHHStaff/FullName")
             .top(499)
             .filter(`Id eq ${props?.props?.Id}`)
             .expand("Author,Editor,EmployeeID,HHHHStaff,SmartInformation,Type_OfContract")
@@ -54,9 +53,8 @@ const EditContractPopup = (props: any) => {
             <>
                 <div
                     className="subheading">
-                    Edit Contract
+                    Edit Contract - {EditData?.Title}
                 </div>
-                <Tooltip ComponentId='1753' />
 
             </>
         );
@@ -66,22 +64,14 @@ const EditContractPopup = (props: any) => {
         props.callback();
     }
     const saveData=async ()=>{
-        let staffId =''
-        // if(postData.selectEmp == undefined && postData.selectEmp ==""){
-        //     allContactData.map((items,index)=>{
-        //       if(items.FullName===EditData?.HHHHStaff?.FullName){
-        //         let staffId =''
-        //         staffId = items.EmployeeID?.Id
-        //       }
-        //     })
-        //       }
+        let staffId = ''
         let web = new Web(props.AllListId?.siteUrl);
         await web.lists.getById(props.AllListId?.ContractListID). items.getById(props?.props.Id).update({
             Title :postData.Title != '' ?postData.Title:EditData.Title,
-            startDate: postData.startDate != '' ? moment(postData.startDate).format("MM-DD-YYYY") : EditData?.startDate?moment(EditData?.startDate).format("MM-DD-YYYY"):null,
-            endDate: postData.endDate != '' ? moment(postData.endDate).format("MM-DD-YYYY") :  EditData?.endDate?moment(EditData?.endDate).format("MM-DD-YYYY"):null,
-            ContractChanged: postData.ContractChanged != '' ? moment(postData.ContractChanged).format("MM-DD-YYYY") :  EditData?.ContractChanged?moment(EditData?.ContractChanged).format("MM-DD-YYYY"):null,
-            ContractSigned: postData.ContractSigned != ''? moment(postData.ContractSigned).format("MM-DD-YYYY") :  EditData?.ContractSigned?moment(EditData?.ContractSigned).format("MM-DD-YYYY"):null,
+            startDate: postData.startDate != '' ? moment(postData.startDate).format("MM-DD-YYYY") : EditData.startDate != null ? moment(EditData?.startDate).format("MM-DD-YYYY"):null,
+            endDate: postData.endDate != '' ? moment(postData.endDate).format("MM-DD-YYYY") : EditData?.endDate != null ? moment(EditData?.endDate).format("MM-DD-YYYY"):null,
+            ContractChanged: postData.ContractChanged != '' ? moment(postData.ContractChanged).format("MM-DD-YYYY") :  EditData?.ContractChanged != null ? moment(EditData?.ContractChanged).format("MM-DD-YYYY"):null,
+            ContractSigned: postData.ContractSigned != ''? moment(postData.ContractSigned).format("MM-DD-YYYY") : EditData.ContractSigned != null ? moment(EditData?.ContractSigned).format("MM-DD-YYYY"):null,
             PersonnelNumber:postData.PersonalNumber != '' ?postData.PersonalNumber:EditData.PersonnelNumber?EditData.PersonnelNumber:'',
             HHHHStaffId:contactDetailsId != undefined?contactDetailsId:EditData?.HHHHStaff?.Id,
         }).then((res:any)=>{
@@ -130,7 +120,7 @@ const EditContractPopup = (props: any) => {
                                     onClick={()=>saveData()}>
                                     Save
                                 </button>
-                                <button type="button" className="btn btn-default px-3" onClick={() => closeAddEmp()}>
+                                <button type="button" className="btn btn-default px-3" onClick={()=>closeOpenPopup()}>
                                     Cancel
                                 </button>
 
@@ -146,7 +136,6 @@ const EditContractPopup = (props: any) => {
      }
      const closeAddEmp=()=>{
         setaddEmp(false)
-        setOpenPopup(false)
      }
      const saveContractType=(checkitem:any,type:any)=>{
        
@@ -219,8 +208,8 @@ const EditContractPopup = (props: any) => {
                             <div className='col-sm-2'>
                                 <div className="input-group">
                                     <label className="form-label full-width">Contract Signed</label>
-                                    <input type="date" className="form-control" aria-label="Small" aria-describedby="inputGroup-sizing-sm"   placeholder="Enter start Date" max="9999-12-31" min={EditData?.ContractSigned ? moment(EditData?.ContractSigned).format("YYYY-MM-DD") : ""}
-                                    defaultValue={EditData?.ContractSigned ? moment(EditData?.ContractSigned).format("YYYY-MM-DD") : ''} onChange={(e)=>setPostData({ ...postData, ContractSigned: e.target.value })}/>
+                                    <input type="date" className="form-control" aria-label="Small" aria-describedby="inputGroup-sizing-sm"   placeholder="Enter start Date" max="9999-12-31" min={EditData.ContractSigned ? moment(EditData.ContractSigned).format("YYYY-MM-DD") : ""}
+                                    defaultValue={EditData.ContractSigned ? moment(EditData.ContractSigned).format("YYYY-MM-DD") : ''} onChange={(e)=>setPostData({ ...postData, ContractSigned: e.target.value })}/>
 
                                 </div>
                             </div>
