@@ -8,6 +8,7 @@ import { ColumnDef } from '@tanstack/react-table';
 import { myContextValue } from '../../../globalComponents/globalCommon'
 import HHHHEditComponent from '../../contactSearch/components/contact-search/popup-components/HHHHEditcontact';
 import GlobalCommanTable from '../../../globalComponents/GroupByReactTableComponents/GlobalCommanTable';
+import CreateContract from '../../hrContractsearch/components/CreateContract';
 let allListId: any = {};
 let allSite: any = {
     GMBHSite: false,
@@ -20,6 +21,7 @@ const EmployeProfileMain = (props: any) => {
     const [contractData, setContractData] = useState([]);
     const [siteTaggedHR, setSiteTaggedHR] = useState(false);
     const [URLs, setURLs] = useState([]);
+    const[createContractPopup,setCreateContractPopup]=useState(false);
     const [hrUpdateData, setHrUpdateData]: any = useState()
     const [EditContactStatus, setEditContactStatus] = useState(false);
     useEffect(() => {
@@ -511,6 +513,7 @@ const EmployeProfileMain = (props: any) => {
                 </div> : <Information EmployeeData={EmployeeData} siteTaggedHR={siteTaggedHR} />}
                 {EditContactStatus ? <HHHHEditComponent props={EmployeeData} callBack={ClosePopup} /> : null}
             </div>
+            {createContractPopup && <CreateContract  closeContracts={callBackData} AllListId={allListId}updateData={EmployeeData}pageName="Recruiting-Tool" />}
         </myContextValue.Provider>
 
     )
