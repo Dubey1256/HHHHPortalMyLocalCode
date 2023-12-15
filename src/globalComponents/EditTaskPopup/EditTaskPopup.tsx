@@ -6066,7 +6066,7 @@ const EditTaskPopup = (Items: any) => {
                                                                                 SelectProjectFromAutoSuggestion([item])
                                                                             }
                                                                         >
-                                                                            <a>{item.Title}</a>
+                                                                            <a>{item?.Path}</a>
                                                                         </li>
                                                                     );
                                                                 })}
