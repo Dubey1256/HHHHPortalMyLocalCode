@@ -2643,7 +2643,7 @@ export default class CategoriesWeeklyMultipleReport extends React.Component<ICat
         <div className='subheading siteColor'>
           Task Details {this?.state?.openTaggedTaskArray?.getParentRow().original?.getUserName}
         </div>
-        <Tooltip ComponentId={1746} />
+        <Tooltip ComponentId={1753} />
       </div>
     );
   };
@@ -3126,7 +3126,6 @@ export default class CategoriesWeeklyMultipleReport extends React.Component<ICat
       if (item.SmartHoursTotal != undefined && item.SmartHoursTotal != undefined) {
         contentItem['Adjusted Hours Roundup (In days)'] =  (item.TotalValueHours / 8).toFixed(2);
         contentItem['Adjusted Hours Roundup (In days)'] =  parseFloat(parseFloat(contentItem['Adjusted Hours Roundup (In days)']).toFixed(2));
-        contentItem['Adjusted Hours Roundup (In days)'] = parseFloat(parseFloat(contentItem['Adjusted Hours Roundup (In days)']).toFixed());
       }
 
 
@@ -3191,7 +3190,6 @@ export default class CategoriesWeeklyMultipleReport extends React.Component<ICat
 
       if (item.SmartHoursTotal != undefined && item.SmartHoursTotal != undefined) {
         let daysround: any = (item.TotalValueHours / 8);
-        daysround = daysround.toFixed(2);
         contentItem['Days'] = parseFloat(parseFloat(daysround).toFixed(2));
       } else {
         contentItem['Days'] = '';
