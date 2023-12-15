@@ -2,11 +2,11 @@ import * as React from 'react';
 
 import { escape } from '@microsoft/sp-lodash-subset';
 import ContractProfile from './ContractProfile';
-import { IHrContractProfileProps } from './IHrContractProfileProps';
+import { IHRcontractProfileProps } from './IHRcontractProfileProps';
 
 
-export default class HrContractProfile extends React.Component<IHrContractProfileProps, {}> {
-  public render(): React.ReactElement<IHrContractProfileProps> {
+export default class HrContractProfile extends React.Component<IHRcontractProfileProps, {}> {
+  public render(): React.ReactElement<IHRcontractProfileProps> {
     const {
       description,
       isDarkTheme,
