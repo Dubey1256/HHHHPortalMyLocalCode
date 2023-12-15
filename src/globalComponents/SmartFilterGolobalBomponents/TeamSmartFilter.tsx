@@ -1270,7 +1270,7 @@ const TeamSmartFilter = (item: any) => {
     };
     const UpdateFilterData = (event: any) => {
         if (event === "udateClickTrue") {
-            if(AllSiteTasksDataLoadAll?.length>0){
+            if (AllSiteTasksDataLoadAll?.length > 0) {
                 allTastsData = [];
                 allTastsData = allTastsData.concat(AllSiteTasksDataLoadAll);
             }
@@ -2809,55 +2809,6 @@ const TeamSmartFilter = (item: any) => {
                         </div >
                     </section>
                 </>}
-
-                {/* {isSmartFevShowHide === true && <div className='row'>
-                    <Col>
-                        <div className='bg-69 p-1 text-center'>
-                            <h6>EveryOne</h6>
-                        </div>
-                        <div>{EveryoneSmartFavorites?.length > 0 && EveryoneSmartFavorites.map((item1: any) => {
-                            return (<>
-                                <div className='bg-ee my-1 p-1 w-100'>
-                                    <span className='d-flex'>
-                                        <a className='hreflink' onClick={() => handleOpenSamePage(item1, "filterSmaePage")}>{item1.Title}</a><span className='d-flex'><a className="hreflink" data-interception="off" target="_blank" style={{ color: `${portfolioColor}` }} href={`${ContextValue.siteUrl}/SitePages/Team-Portfolio.aspx${item.IsUpdated ? `?PortfolioType=${encodeURIComponent(item.IsUpdated)}` : ''}${item.IsUpdated ? '&' : '?'}SmartfavoriteId=${encodeURIComponent(item1.Id)}&smartfavorite=${encodeURIComponent(item1?.Title)}`}><span className="svg__iconbox svg__icon--openWeb"></span></a><span onClick={() => handleUpdateFaborites(item1)} className="svg__iconbox svg__icon--edit"></span> <span onClick={() => deleteTask(item1)} className="svg__icon--trash  svg__iconbox"></span></span>
-                                    </span>
-                                </div>
-                            </>)
-                        })}</div>
-                        <div>{EveryoneSmartFavorites?.length == 0 &&
-                            <div className='bg-ee my-1 p-1 w-100'>
-                                <span className='d-flex'>
-                                    No Items Available
-                                </span>
-                            </div>
-                        }</div>
-                    </Col>
-                    <Col>
-                        <div className='bg-69 p-1 text-center'>
-                            <h6>Only Me</h6>
-                        </div>
-                        <div>{CreateMeSmartFavorites?.length > 0 && CreateMeSmartFavorites.map((item2: any) => {
-                            return (<>
-                                <div className='bg-ee my-1 p-1 w-100'>
-                                    <div>
-                                        <span className='d-flex'>
-                                            <a className='hreflink' onClick={() => handleOpenSamePage(item2, "filterSmaePage")}>{item2.Title}</a><span className='d-flex'><a className="hreflink" data-interception="off" target="_blank" style={{ color: `${portfolioColor}` }} href={`${ContextValue.siteUrl}/SitePages/Team-Portfolio.aspx${item.IsUpdated ? `?PortfolioType=${encodeURIComponent(item.IsUpdated)}` : ''}${item.IsUpdated ? '&' : '?'}SmartfavoriteId=${encodeURIComponent(item2.Id)}&smartfavorite=${encodeURIComponent(item2?.Title)}`}><span className="svg__iconbox svg__icon--openWeb"> </span></a><span onClick={() => handleUpdateFaborites(item2)} className="svg__iconbox svg__icon--edit"></span> <span onClick={() => deleteTask(item2)} className="svg__icon--trash  svg__iconbox"></span></span>
-                                        </span>
-                                    </div>
-                                </div>
-                            </>)
-                        })}
-                        </div>
-                        <div>{CreateMeSmartFavorites?.length == 0 &&
-                            <div className='bg-ee my-1 p-1 w-100'>
-                                <span className='d-flex'>
-                                    No Items Available
-                                </span>
-                            </div>
-                        }</div>
-                    </Col>
-                </div>} */}
-
             </section>
             {/* ********************* this is Project Management panel ****************** */}
             {item?.ProjectData != undefined && item?.ProjectData?.length > 0 ?
@@ -2880,30 +2831,6 @@ const TeamSmartFilter = (item: any) => {
                 : null
             }
             <>{PreSetPanelIsOpen && <PreSetDatePikerPannel isOpen={PreSetPanelIsOpen} PreSetPikerCallBack={PreSetPikerCallBack} portfolioColor={portfolioColor} />}</>
-            {/* {selectedFilterPanelIsOpen && <TeamSmartFavorites allFilterClintCatogryData={allFilterClintCatogryData} filterGroupsData={filterGroupsData} allStites={allStites} isOpen={selectedFilterPanelIsOpen} halfCheckBoxIcons={halfCheckBoxIcons} checkBoxIcon={checkBoxIcon} checkIcons={checkIcons} onCheck={onCheck} expanded={expanded} handleSelectAll={handleSelectAll} setExpanded={setExpanded} selectedFilterCallBack={selectedFilterCallBack} portfolioColor={portfolioColor}
-                handleSelectAllChangeTeamSection={handleSelectAllChangeTeamSection}
-                setIsCreatedBy={setIsCreatedBy}
-                setIsModifiedby={setIsModifiedby}
-                setIsAssignedto={setIsAssignedto}
-                setIsTeamLead={setIsTeamLead}
-                setIsTeamMember={setIsTeamMember}
-                setIsTodaysTask={setIsTodaysTask}
-                isSelectAll={isSelectAll}
-                isCreatedBy={isCreatedBy}
-                isModifiedby={isModifiedby}
-                isAssignedto={isAssignedto}
-                isTeamLead={isTeamLead}
-                isTeamMember={isTeamMember}
-                isTodaysTask={isTodaysTask}
-                TaskUsersData={TaskUsersData}
-                isCreatedDateSelected={isCreatedDateSelected}
-                isModifiedDateSelected={isModifiedDateSelected}
-                isDueDateSelected={isDueDateSelected}
-                setIsCreatedDateSelected={setIsCreatedDateSelected}
-                setIsModifiedDateSelected={setIsModifiedDateSelected}
-                setIsDueDateSelected={setIsDueDateSelected}
-            />} */}
-
             {selectedFilterPanelIsOpen && <TeamSmartFavoritesCopy isOpen={selectedFilterPanelIsOpen} selectedFilterCallBack={selectedFilterCallBack}
                 portfolioColor={portfolioColor}
                 filterGroupsData={filterGroupsData}
@@ -2939,4 +2866,3 @@ const TeamSmartFilter = (item: any) => {
     )
 }
 export default TeamSmartFilter;
-

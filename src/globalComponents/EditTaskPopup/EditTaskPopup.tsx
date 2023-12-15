@@ -322,7 +322,6 @@ const EditTaskPopup = (Items: any) => {
         if (FeedBackCount == 0) {
             loadTaskUsers();
             GetExtraLookupColumnData();
-            GetMasterData();
             SmartMetaDataListInformations();
             GetAllComponentAndServiceData("Component");
             AddImageDescriptionsIndex = undefined;
@@ -1469,6 +1468,8 @@ const EditTaskPopup = (Items: any) => {
         );
         if (CallBackData.AllData != undefined && CallBackData.AllData.length > 0) {
             GlobalServiceAndComponentData = CallBackData.AllData;
+            SetAllProjectData(CallBackData?.FlatProjectData);
+            AllProjectBackupArray = CallBackData?.FlatProjectData;
         }
     };
 
@@ -1526,7 +1527,7 @@ const EditTaskPopup = (Items: any) => {
         (DataItem: any, Type: any, functionType: any) => {
             if (functionType == "Close") {
                 setOpenTeamPortfolioPopup(false);
-                setProjectManagementPopup(false);
+                setProjectManagementPopup(false)
                 setopenLinkedPortfolioPopup(false);
             } else {
                 if (DataItem != undefined && DataItem.length > 0) {
@@ -2103,47 +2104,6 @@ const EditTaskPopup = (Items: any) => {
 
     // ************************** this is used for getting All Projects Data From Back End ***********************
 
-    const GetMasterData = async () => {
-        try {
-            const web = new Web(siteUrls);
-            let AllProjects: any = [];
-            AllProjects = await web.lists
-                .getById(AllListIdData?.MasterTaskListID)
-                .items.select(
-                    "Id,Title,DueDate,TeamMembers/Id,TeamMembers/Title,ResponsibleTeam/Id,ResponsibleTeam/Title,AssignedTo/Id,AssignedTo/Title,Parent/Id,Parent/Title,PercentComplete,Status,PriorityRank"
-                )
-                .expand("TeamMembers,Parent,ResponsibleTeam,AssignedTo")
-                .top(4999)
-                .filter("Item_x0020_Type eq 'Project'")
-                .getAll();
-            AllProjects.map((items: any) => {
-                items.PercentComplete = (items.PercentComplete * 100).toFixed(0);
-                items.AssignedUser = [];
-                items.TeamMembersSearch = "";
-                if (items.AssignedTo != undefined) {
-                    items.AssignedTo.map((taskUser: any) => {
-                        taskUsers.map((user: any) => {
-                            if (user.AssingedToUserId == taskUser.Id) {
-                                if (user?.Title != undefined) {
-                                    items.TeamMembersSearch =
-                                        items.TeamMembersSearch + " " + user?.Title;
-                                }
-                            }
-                        });
-                    });
-                }
-                items.DisplayDueDate =
-                    items.DueDate != null
-                        ? Moment(items.DueDate).format("DD/MM/YYYY")
-                        : "";
-                items.Checked = false;
-            });
-            SetAllProjectData(AllProjects);
-            AllProjectBackupArray = AllProjects;
-        } catch (error) {
-            console.log("Error:", error.message);
-        }
-    };
 
     //    ************************* This is for status section Functions **************************
     //   ###################### This is used for Status Auto Suggesution Function #########################
@@ -6892,7 +6852,7 @@ const EditTaskPopup = (Items: any) => {
                         </div>
                     </div>
 
-                    {openTeamPortfolioPopup || ProjectManagementPopup && (
+                    {(openTeamPortfolioPopup || ProjectManagementPopup) && (
                         <ServiceComponentPortfolioPopup
                             props={EditData}
                             Dynamic={AllListIdData}
@@ -8218,7 +8178,7 @@ const EditTaskPopup = (Items: any) => {
                                                                                             ])
                                                                                         }
                                                                                     >
-                                                                                        <a>{item.Title}</a>
+                                                                                        <a>{item?.Path}</a>
                                                                                     </li>
                                                                                 );
                                                                             })}

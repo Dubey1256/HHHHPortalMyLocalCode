@@ -30,6 +30,7 @@ let smartPortfoliosData: any = [];
 let portfolioType = "";
 let AllFlatProject: any = [];
 var AllUser: any = [];
+let allBackupSprintAndTask:any=[]
 var siteConfig: any = [];
 let headerOptions: any = {
   openTab: true,
@@ -46,6 +47,7 @@ let taskTaggedComponents: any = []
 let TaggedPortfoliosToProject: any = [];
 var isShowTimeEntry: any;
 var isShowSiteCompostion: any;
+let renderData :any=[]
 let projectData: any = {}
 const ProjectManagementMain = (props: any) => {
   // const [item, setItem] = React.useState({});
@@ -55,6 +57,8 @@ const ProjectManagementMain = (props: any) => {
   const [pageLoaderActive, setPageLoader] = React.useState(false)
   const [SharewebComponent, setSharewebComponent] = React.useState("");
   const [AllTasks, setAllTasks] = React.useState([]);
+  const rerender = React.useReducer(() => ({}), {})[1]
+  const refreshData = () => setData(() => renderData);
   const [data, setData] = React.useState([]);
   const [isOpenEditPopup, setisOpenEditPopup] = React.useState(false);
   const [isOpenCreateTask, setisOpenCreateTask] = React.useState(false);
@@ -354,7 +358,14 @@ const ProjectManagementMain = (props: any) => {
 
 
   const CallBack = React.useCallback((item: any) => {
-
+    if (item?.Item_x0020_Type == "Sprint") {
+      // let allData = data;
+      allBackupSprintAndTask.unshift(item)
+      renderData = [];
+      renderData = renderData.concat(allBackupSprintAndTask)
+      refreshData();
+     
+    }
     GetMasterData(false)
     setisOpenEditPopup(false);
     setIsTaggedCompTask(false);
@@ -469,7 +480,7 @@ const ProjectManagementMain = (props: any) => {
     }
     try {
       var AllTask: any = [];
-
+      allBackupSprintAndTask=[];
       let web = new Web(props?.siteUrl);
       var arraycount = 0;
 
@@ -500,8 +511,8 @@ const ProjectManagementMain = (props: any) => {
             }
 
           })
-          items.SmartInformationTitle=items.SmartInformation[0].Title
-        }else{
+          items.SmartInformationTitle = items.SmartInformation[0].Title
+        } else {
           items.SmartInformationTitle = ''
         }
         items.TotalTaskTime = 0;
@@ -715,7 +726,7 @@ const ProjectManagementMain = (props: any) => {
       allSprints = allSprints.concat(allWorkStream);
       AllTask = AllTask.filter((item: any) => item?.isTaskPushed !== true);
       allSprints = allSprints.concat(AllTask);
-
+      allBackupSprintAndTask = allSprints
       setData(allSprints);
       setTaskTaggedPortfolios(taskTaggedComponents)
       setPageLoader(false);
@@ -751,6 +762,8 @@ const ProjectManagementMain = (props: any) => {
       AllFlatProject = results?.FlatProjectData
     }
     MasterListData = componentDetails
+    if (AllFlatProject?.length > 0)
+      MasterListData = MasterListData.concat(AllFlatProject)
 
   }
   const EditPortfolio = (item: any, type: any) => {
@@ -765,9 +778,7 @@ const ProjectManagementMain = (props: any) => {
       setData((prev: any) => {
         return prev?.map((object: any) => {
           if (object?.Id === propsItems?.Id) {
-            // Update the object here
-            // For example, assigning a new value to a property:
-            object = propsItems;
+            return { ...object, ...propsItems };
           }
           return object; // Return the object whether it's modified or not
         });
@@ -938,7 +949,7 @@ const ProjectManagementMain = (props: any) => {
       },
 
       {
-        accessorFn: (row) => row?.PortfolioTitle,
+        accessorFn: (row) => row?.Portfolio,
         cell: ({ row }) => (
           <a
             className="hreflink"
@@ -1159,11 +1170,12 @@ const ProjectManagementMain = (props: any) => {
               onClick={() => EditPopup(row?.original)}
               className="alignIcon  svg__iconbox svg__icon--edit hreflink"
             ></span>
-            <span
-              style={{ marginLeft: '6px' }}
-              title='Un-Tag Task From Project'
-              onClick={() => untagTask(row?.original)}
-            ><BsTagFill /></span>
+            {row?.original?.Item_x0020_Type != "Sprint" ?
+              <span
+                style={{ marginLeft: '6px' }}
+                title='Un-Tag Task From Project'
+                onClick={() => untagTask(row?.original)}
+              ><BsTagFill /></span> : ''}
           </span>
         ),
         id: 'Actions',
@@ -1513,11 +1525,10 @@ const ProjectManagementMain = (props: any) => {
                         <div className="Alltable">
                           <div className="section-event ps-0">
                             <div className="wrapper project-management-Table">
-
-                              <GlobalCommanTable AllListId={AllListId} headerOptions={headerOptions}
+                              {(data?.length==0||data?.length>0 )&& <GlobalCommanTable AllListId={AllListId} headerOptions={headerOptions}
                                 columns={column2} data={data} callBackData={callBackData}
                                 smartTimeTotalFunction={smartTimeTotal} SmartTimeIconShow={true}
-                                TaskUsers={AllUser} showHeader={true} expendedTrue={false} />
+                                TaskUsers={AllUser} showHeader={true} expendedTrue={false} />}
                             </div>
 
                           </div>

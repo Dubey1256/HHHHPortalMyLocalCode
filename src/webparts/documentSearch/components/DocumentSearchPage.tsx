@@ -70,7 +70,7 @@ export default function DocumentSearchPage(Props: any) {
     }
     //#endregion
     //#region code to load TaskUser By PB
-    const LoadTaskUser = () => {
+const LoadTaskUser = () => {
         let web = new Web(PageContext.context._pageContext._web.absoluteUrl + '/')
         web.lists.getById(PageContext.TaskUsertListID).items.select('Id,Suffix,Title,SortOrder,Item_x0020_Cover,AssingedToUserId,AssingedToUser/Title,AssingedToUser/Id,AssingedToUser/EMail,ItemType').expand('AssingedToUser').getAll().then((response: any) => {
             TaskUser = response;
