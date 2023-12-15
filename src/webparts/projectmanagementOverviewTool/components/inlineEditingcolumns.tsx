@@ -1740,7 +1740,8 @@ const inlineEditingcolumns = (props: any) => {
       <Panel
         onRenderHeader={() => onRenderCustomHeader("Categories")}
         isOpen={taskCategoriesPopup}
-        customWidth="500px"
+        customWidth="400px"
+        type={PanelType.custom}
         onDismiss={() => setTaskCategoriesPopup(false)}
         isBlocking={true}
       >
