@@ -6,9 +6,9 @@ import { Web } from 'sp-pnp-js';
 
 
 
-const EditPage = () => {
+const EditPage = (props:any) => {
 const [openEditPanel , setOpenEditPanel] : any = useState(false);
-const [data , setData] : any = useState({Page_x0020_Content : '', FileLeafRef : '' , ItemRank : '', Page_x002d_Title : '' });
+const [data , setData] : any = useState({Page_x0020_Content : '', FileLeafRef : '' , ItemRank : '', Page_x002d_Title : '',ItemRank2:'' });
 const [updateId , setUpdateId] : any = useState(0);
 
 
@@ -19,17 +19,21 @@ const [updateId , setUpdateId] : any = useState(0);
 const getData=async ()=>{
   const currentUrl = window.location.href;
   const valueAfterLastSlash = currentUrl.substring(currentUrl.lastIndexOf('/') + 1);
-  let web = new Web("https://hhhhteams.sharepoint.com/sites/HHHH/SP");
+  let web = new Web(props?.context?.siteUrl);
   let taskUsers = [];
   
-  let whereClause = `FileLeafRef eq '${'Permission-Management.aspx'}' and IsStatic eq 1`;
+  let whereClause = `FileLeafRef eq '${valueAfterLastSlash}' and IsStatic eq 1`;
   
   try {
     taskUsers = await web.lists
-      .getById("16839758-4688-49D5-A45F-CFCED9F80BA6")
+      .getById(props?.context?.SitePagesList)
       .items.select("ID", "Page_x0020_Content", "FileLeafRef", "Page_x002d_Title", "Title","ItemRank","Author/ID","Author/Title","Editor/Title","Editor/ID", "IsStatic").expand("Editor","Author").filter(whereClause)
       .get();
+      taskUsers[0].ItemRank2 = taskUsers[0].ItemRank ==   8 ? '(8) Top Highlights'  : (taskUsers[0].ItemRank == 7  ? '(7) Featured Item' : (taskUsers[0].ItemRank ==   6 ?  '(6) Key Item' : 
+      (taskUsers[0].ItemRank == 5  ? '(5) Relevant Item' :(taskUsers[0].ItemRank == 4 ? '(4) Unsure' : (taskUsers[0].ItemRank ==  2  ? '(2) to be verified' : (taskUsers[0].ItemRank == 1  ? '(1) Archive' 
+      : (taskUsers[0].ItemRank == 0 ? '(0) No Show' : null )) ))))),
       setData(...taskUsers);
+      props.changeHeader(taskUsers[0]?.Title)
       setUpdateId(taskUsers[0]?.ID)
   } catch (error) {
     console.error("Error fetching items:", error);
@@ -38,18 +42,20 @@ const getData=async ()=>{
 
 
   const postData=async ()=>{
-    let web = new Web("https://hhhhteams.sharepoint.com/sites/HHHH/SP");
+    let web = new Web(props?.context?.siteUrl);
     
     try {
        await web.lists
-        .getById("16839758-4688-49D5-A45F-CFCED9F80BA6")
+        .getById(props?.context?.SitePagesList)
         .items.getById(updateId).update({
-        Page_x0020_Content: data?.Page_x0020_Content,
-        FileLeafRef:  data?.FileLeafRef,
-        ItemRank:  data?.ItemRank,
-        Page_x002d_Title:  data?.Page_x002d_Title,
-        // Add other properties as needed
-      });
+          Page_x0020_Content: data?.Page_x0020_Content,
+          FileLeafRef:  data?.FileLeafRef,
+          ItemRank:  data?.ItemRank2 == '(8) Top Highlights' ? 8 : (data?.ItemRank2 == '(7) Featured Item' ? 7 : (data?.ItemRank2 == '(6) Key Item' ? 6 : 
+          (data?.ItemRank2 == '(5) Relevant Item' ? 5 :(data?.ItemRank2 == '(4) Unsure' ? 4 : (data?.ItemRank2 == '(2) to be verified' ? 2 : (data?.ItemRank2 == '(1) Archive' ? 1 
+          : (data?.ItemRank2 == '(0) No Show' ? 0 : null )) ))))),
+          Page_x002d_Title:  data?.Page_x002d_Title,
+          // Add other properties as needed
+        });
           setOpenEditPanel(false);
           getData();
     } catch (error) {
@@ -79,7 +85,7 @@ const onRenderCustomCalculateSC = () => {
     setData({...data, Page_x0020_Content : event})
   }
 
-
+ 
 
   const onChangeInput=(name : any , value : any)=>{
     if(name === 'FileLeafRef'){
@@ -112,7 +118,7 @@ const onRenderCustomCalculateSC = () => {
                               Name
                         </label>
                         <div className='alignCenter input-group'>
-                            <input type='text' className='form-control' value={data?.FileLeafRef.replace(/\.[^.]+$/, '')}  onChange={(e:any)=>onChangeInput("FileLeafRef" , e.target.value)}  /> <span className='ms-1'>.aspx</span>
+                            <input type='text' className='form-control' value={data?.FileLeafRef != undefined && data?.FileLeafRef != null ? data?.FileLeafRef.replace(/\.[^.]+$/, '') : ''}  onChange={(e:any)=>onChangeInput("FileLeafRef" , e.target.value)}  /> <span className='ms-1'>.aspx</span>
                         </div>
                     </div>
                    <div className='col input-group'>
@@ -126,24 +132,16 @@ const onRenderCustomCalculateSC = () => {
                         <label className='form-label full-width'>
                               Item Rank
                         </label>
-                        <select className='form-control' value={data?.ItemRank != undefined && data?.ItemRank != null ? data?.ItemRank : ''} onChange={(e:any)=>onChangeInput("ItemRank" , e.target.value)}>
+                        <select className='form-control' value={data?.ItemRank2 != undefined && data?.ItemRank2 != null ? data?.ItemRank2 : ''} onChange={(e:any)=>onChangeInput("ItemRank2" , e.target.value)}>
                         <option value=""></option>
-
-<option value="(8) Top Highlights">(8) Top Highlights</option>
-
-<option value="(7) Featured Item">(7) Featured Item</option>
-
-<option value="(6) Key Item">(6) Key Item</option>
-
-<option value="(5) Relevant Item">(5) Relevant Item</option>
-
-<option value="(4) Unsure">(4) Unsure</option>
-
-<option value="(2) to be verified">(2) to be verified</option>
-
-<option value="(1) Archive">(1) Archive</option>
-
-<option value="(0) No Show">(0) No Show</option>
+                            <option value="(8) Top Highlights">(8) Top Highlights</option>
+                            <option value="(7) Featured Item">(7) Featured Item</option>
+                            <option value="(6) Key Item">(6) Key Item</option>
+                            <option value="(5) Relevant Item">(5) Relevant Item</option>
+                            <option value="(4) Unsure">(4) Unsure</option>
+                            <option value="(2) to be verified">(2) to be verified</option>
+                            <option value="(1) Archive">(1) Archive</option>
+                            <option value="(0) No Show">(0) No Show</option>
                         </select>
                    </div>
                 </div>

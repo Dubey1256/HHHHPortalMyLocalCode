@@ -24,9 +24,9 @@ const EditDocumentpanel = (props: any) => {
   React.useEffect(() => {
     if (props?.editData != undefined) {
 
-      if (props?.editData?.Portfolio != undefined) {
-        setallSetValue({ ...allValue, componentservicesetdataTag: props?.editData?.Portfolio })
-
+      if (props?.editData?.Portfolios != undefined) {
+        setallSetValue({ ...allValue, componentservicesetdataTag: props?.editData?.Portfolios[0] })
+        console.log(allValue);
       }
 
       if (props?.editData != undefined) {
@@ -101,7 +101,7 @@ const EditDocumentpanel = (props: any) => {
     if (allValue.componentservicesetdata.linkedComponent != undefined) {
       componetServicetagData = allValue.componentservicesetdata.linkedComponent.Id;
     }
-
+    console.log(componetServicetagData);
     const web = new Web(props?.AllListId?.siteUrl);
     await web.lists.getById(props?.AllListId?.DocumentsListID)
       .items.getById(EditdocumentsData.Id).update({
@@ -177,12 +177,13 @@ const EditDocumentpanel = (props: any) => {
     console.log(Type)
     console.log(functionType)
     if (functionType == "Save") {
-      if (Type == "Component") {
-        setallSetValue({ ...allValue, componentservicesetdataTag: DataItem })
-      }
-      if (Type == "Service") {
-        setallSetValue({ ...allValue, componentservicesetdataTag: DataItem })
-      }
+      setallSetValue({ ...allValue, componentservicesetdataTag: DataItem[0] })
+      // if (Type == "Component") {
+      //   setallSetValue({ ...allValue, componentservicesetdataTag: DataItem })
+      // }
+      // if (Type == "Service") {
+      //   setallSetValue({ ...allValue, componentservicesetdataTag: DataItem })
+      // }
       setisopencomonentservicepopup(false);
     }
     else {
@@ -193,6 +194,10 @@ const EditDocumentpanel = (props: any) => {
     setisopencomonentservicepopup(true)
 
 
+  }
+  const unTaggedPortfolioItem = () => {
+    setallSetValue({ ...allValue, componentservicesetdataTag: undefined })
+    //allValue?.componentservicesetdataTag?.Title
   }
   /////////folara editor function start//////////
   const HtmlEditorCallBack = (items: any) => {
@@ -268,17 +273,16 @@ const EditDocumentpanel = (props: any) => {
                 </div>
                 <div className="input-group mx-4">
                   <label className="form-label full-width">
-                    Portfolio
-
+                    Portfolio Item
                   </label>
-
                   {allValue?.componentservicesetdataTag != undefined &&
                     <div className="d-flex justify-content-between block px-2 py-1" style={{ width: '85%' }}>
-                      <a target="_blank" data-interception="off" href="HHHH/SitePages/Portfolio-Profile.aspx?taskId=undefined">{allValue?.componentservicesetdataTag.Title}</a>
+                      <a target="_blank" data-interception="off" href="HHHH/SitePages/Portfolio-Profile.aspx?taskId=undefined">{allValue?.componentservicesetdataTag?.Title}</a>
                       <a>
-                        <span className="bg-light svg__icon--cross svg__iconbox"></span>
-                      </a></div>}
-
+                        <span title="Remove Component" onClick={() => unTaggedPortfolioItem()} className="bg-light svg__icon--cross svg__iconbox">
+                        </span>
+                      </a>
+                    </div>}
                   {allValue?.componentservicesetdataTag == undefined && <input type="text" className="form-control" readOnly />}
                   <span className="input-group-text" title="Linked Component Task Popup">
                     <span className="svg__iconbox svg__icon--editBox" onClick={() => opencomonentservicepopup()}></span>

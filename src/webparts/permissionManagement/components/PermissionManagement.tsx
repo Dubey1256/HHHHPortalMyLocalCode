@@ -15,7 +15,7 @@ export default class PermissionManagement extends React.Component<IPermissionMan
     } = this.props;
 
     return (
-    <Permission_management/>
+    <Permission_management context={this.props} />
     );
   }
 }

@@ -6892,7 +6892,7 @@ const EditTaskPopup = (Items: any) => {
                         </div>
                     </div>
 
-                    {openTeamPortfolioPopup || ProjectManagementPopup && (
+                    {(openTeamPortfolioPopup || ProjectManagementPopup) && (
                         <ServiceComponentPortfolioPopup
                             props={EditData}
                             Dynamic={AllListIdData}

@@ -502,9 +502,8 @@ const EmployeProfileMain = (props: any) => {
                         </div>
 
                         <div className="tab-pane" id="CONTRACTS" role="tabpanel" aria-labelledby="CONTRACTS">
-                            <div className='siteBdrBottom siteColor sectionHead mb-2 p-0'>Contract Details</div>
+                            <div className='siteBdrBottom mb-1'>Contract Details</div>
                             <div className='Alltable'>
-
                                 <GlobalCommanTable columns={columns} data={contractData} showHeader={true} callBackData={callBackData} />
                             </div>
                         </div>
