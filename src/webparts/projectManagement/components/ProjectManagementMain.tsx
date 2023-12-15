@@ -354,7 +354,11 @@ const ProjectManagementMain = (props: any) => {
 
 
   const CallBack = React.useCallback((item: any) => {
-
+    if (item?.Item_x0020_Type == "Sprint") {
+      // let allData = data;
+      // allData.unshift(item)
+      // setData(allData)
+    }
     GetMasterData(false)
     setisOpenEditPopup(false);
     setIsTaggedCompTask(false);
@@ -500,8 +504,8 @@ const ProjectManagementMain = (props: any) => {
             }
 
           })
-          items.SmartInformationTitle=items.SmartInformation[0].Title
-        }else{
+          items.SmartInformationTitle = items.SmartInformation[0].Title
+        } else {
           items.SmartInformationTitle = ''
         }
         items.TotalTaskTime = 0;
@@ -751,6 +755,8 @@ const ProjectManagementMain = (props: any) => {
       AllFlatProject = results?.FlatProjectData
     }
     MasterListData = componentDetails
+    if (AllFlatProject?.length > 0)
+      MasterListData = MasterListData.concat(AllFlatProject)
 
   }
   const EditPortfolio = (item: any, type: any) => {
@@ -938,7 +944,7 @@ const ProjectManagementMain = (props: any) => {
       },
 
       {
-        accessorFn: (row) => row?.PortfolioTitle,
+        accessorFn: (row) => row?.Portfolio,
         cell: ({ row }) => (
           <a
             className="hreflink"
@@ -1159,11 +1165,12 @@ const ProjectManagementMain = (props: any) => {
               onClick={() => EditPopup(row?.original)}
               className="alignIcon  svg__iconbox svg__icon--edit hreflink"
             ></span>
-            <span
-              style={{ marginLeft: '6px' }}
-              title='Un-Tag Task From Project'
-              onClick={() => untagTask(row?.original)}
-            ><BsTagFill /></span>
+            {row?.original?.Item_x0020_Type != "Sprint" ?
+              <span
+                style={{ marginLeft: '6px' }}
+                title='Un-Tag Task From Project'
+                onClick={() => untagTask(row?.original)}
+              ><BsTagFill /></span> : ''}
           </span>
         ),
         id: 'Actions',
