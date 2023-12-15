@@ -167,7 +167,7 @@ var BackupCat: any = [];
 let portfolioType = "";
 var CheckCategory: any = [];
 var backcatss: any = [];
-let postedData:any ={};
+let postedData: any = {};
 var TaggedPortfolios: any = [];
 function EditProjectPopup(item: any) {
   // Id:any
@@ -246,7 +246,7 @@ function EditProjectPopup(item: any) {
     [editorState]
   );
   const setModalIsOpenToFalse = () => {
-   
+
     EditComponentCallback();
     setModalIsOpen(false);
   };
@@ -835,8 +835,8 @@ function EditProjectPopup(item: any) {
     console.log(componentDetails);
   };
   function EditComponentCallback() {
-    if(postedData?.Id==undefined&&postedData?.ID==undefined){
-      postedData=EditData
+    if (postedData?.Id == undefined && postedData?.ID == undefined) {
+      postedData = EditData
     }
     item.Call(postedData, "EditPopup");
   }
@@ -1085,7 +1085,7 @@ function EditProjectPopup(item: any) {
         (option: { rankTitle: any }) => option.rankTitle == Items.ItemRankTitle
       )[0].rank;
     let web = new Web(AllListId?.siteUrl);
-    let postData:any = {
+    let postData: any = {
       Title: Items.Title,
       ItemRank: ItemRank,
       PriorityRank: Items.PriorityRank,
@@ -1172,13 +1172,31 @@ function EditProjectPopup(item: any) {
       .items.getById(Items.ID)
       .update(postData)
       .then((res: any) => {
-        postedData ={
+        postData.DisplayDueDate = Moment(postData?.DueDate).format("DD/MM/YYYY");
+        postData.DisplayCreateDate = Moment(postData?.Created).format("DD/MM/YYYY");
+        if (postData.DueDate == 'Invalid date' || '') {
+          postData.DueDate = postData?.DueDate?.replaceAll("Invalid date", "")
+        }
+        if (postData.DisplayDueDate == "Invalid date" || "") {
+          postData.DisplayDueDate = postData.DisplayDueDate.replaceAll(
+            "Invalid date",
+            ""
+          );
+        }
+        if (postData.DisplayCreateDate == "Invalid date" || "") {
+          postData.DisplayCreateDate = postData.DisplayCreateDate.replaceAll(
+            "Invalid date",
+            ""
+          );
+        }
+        postData["TaskID"] = postData?.PortfolioStructureID;
+        postedData = {
           ...postData,
-          TaskCategories:CategoriesData,
-          AssignedTo:TaskAssignedTo,
-          ResponsibleTeam:TaskResponsibleTeam,
-          TeamMembers:TaskTeamMembers,
-          Item_x0020_Type : EditData?.Item_x0020_Type
+          TaskCategories: CategoriesData,
+          AssignedTo: TaskAssignedTo,
+          ResponsibleTeam: TaskResponsibleTeam,
+          TeamMembers: TaskTeamMembers,
+          Item_x0020_Type: EditData?.Item_x0020_Type
         }
         console.log(res);
         TaggedPortfolios = [];
