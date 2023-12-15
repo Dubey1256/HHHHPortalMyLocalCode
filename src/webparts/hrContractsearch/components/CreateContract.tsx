@@ -9,9 +9,11 @@ import { sp, Web } from "sp-pnp-js";
 import * as $ from "jquery";
 import { arraysEqual, Modal, Panel, PanelType } from "office-ui-fabric-react";
 import * as Moment from "moment";
-import EditContractPopup from "./EditContractPopup";
+import EditContractPopup from '../components/EditContractPopup'
 import CreateContactComponent from "../../contactSearch/components/contact-search/popup-components/CreateContact";
+import Tooltip from "../../../globalComponents/Tooltip";
 let ResData:any = {}
+let ContractUser:any = ''
 const CreateContract = (props: any) => {
    let ContractListId = props.AllListId?.ContractListID
    let siteUrl = props.AllListId?.siteUrl
@@ -36,15 +38,12 @@ const CreateContract = (props: any) => {
       if(props?.pageName == 'Recruiting-Tool'){
          setIsDisabled(true)
       }
-          setCreatePopup(true)
          loadContactDetails()
          LoadSmartTaxonomy();
-          AddTaskTimepopup()
+         
    }, [])
 
-   const AddTaskTimepopup = () => {
-      setCreatePopup(true)
-   }
+  
 
    const loadContactDetails=async()=>{
       const web = new Web(siteUrl);
@@ -65,7 +64,8 @@ const CreateContract = (props: any) => {
                employecopyData?.map((items:any,index:any)=>{
                 if(items.Id===props.updateData?.Id){
 
-                  setcontactDetailsId(items.EmployeeID?.Id);
+                  setcontactDetailsId(items?.Id);
+                 
                   
                }
               })
@@ -80,7 +80,7 @@ const CreateContract = (props: any) => {
     }
     const LoadSmartTaxonomy=async()=>{
       const web = new Web(siteUrl);
-       await web.lists.getById("63CAE346-409E-4457-B996-85A788074BCE").items.select("Id,Title,TaxType,Suffix").get()
+       await web.lists.getById(props.AllListId.HR_SMARTMETADATA_LISTID).items.select("Id,Title,TaxType,Suffix").get()
        .then((Data: any[])=>{
          console.log("smart metadata",Data);
          let smarttaxonomyArray:any=[];
@@ -102,7 +102,7 @@ const CreateContract = (props: any) => {
          }
    const closeAddTaskTimepopup = () => {
       setCreatePopup(false)
-      props.closeContracts();
+     
    }
 
    const onRenderSelectEmp =()=>{
@@ -112,7 +112,7 @@ const CreateContract = (props: any) => {
                className="subheading">
               Select Employee
             </div>
-
+            <Tooltip ComponentId="1683" />
          </>
       );
    }
@@ -123,10 +123,24 @@ const CreateContract = (props: any) => {
                className="subheading">
                Create Contract
             </div>
+            <Tooltip ComponentId="1683" />
 
          </>
       );
    };
+   const onRenderCustomContractType = () => {
+      return (
+         <>
+            <div
+               className="subheading">
+               Select Contract
+            </div>
+            <Tooltip ComponentId="1683" />
+
+         </>
+      );
+   };
+   
    const openAddEmployeePopup=()=>{
       setaddEmp(true)
    }
@@ -206,7 +220,7 @@ const CreateContract = (props: any) => {
                typeOfContract:postData?.contractTypeItem,
                HHHHStaffId:contactDetailsId,
                contractNumber:contractNumber,
-               ContractId:contractId
+               ContractId:contractId 
               
               }
         )
@@ -242,7 +256,7 @@ const CreateContract = (props: any) => {
        else if(postData.selectEmp !=undefined && postData.selectEmp !="" && type==="contact"){
         allContactData.map((items,index)=>{
           if(items.FullName===postData?.selectEmp){
-            setcontactDetailsId(items.EmployeeID?.Id);
+            setcontactDetailsId(items?.Id);
             
          }
         })
@@ -253,6 +267,8 @@ const CreateContract = (props: any) => {
      }
      const callback=()=>{
       setOpenEditPopup(false)
+      //props.callback();
+     
      }
      const ClosePopup = React.useCallback(() => {
       setCreateContactStatus(false);
@@ -306,6 +322,7 @@ const CreateContract = (props: any) => {
 
 
          </Panel>
+
          <Panel
             onRenderHeader={onRenderSelectEmp}
             type={PanelType.custom}
@@ -341,7 +358,7 @@ const CreateContract = (props: any) => {
          </Panel>
 
          <Panel
-            onRenderHeader={onRenderCustomHeader}
+            onRenderHeader={onRenderCustomContractType}
             type={PanelType.custom}
             customWidth={'500px'}
             isOpen={contractType}
@@ -374,6 +391,7 @@ const CreateContract = (props: any) => {
       
 
          </Panel>
+
          {openEditPopup && <EditContractPopup props={ResData} AllListId={props.AllListId} callback={callback} pageName={props?.pageName}></EditContractPopup>}
          {CreateContactStatus ? <CreateContactComponent callBack={ClosePopup}data={allContactData}/> : null}
       </>

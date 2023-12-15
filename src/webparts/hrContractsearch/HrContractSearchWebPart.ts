@@ -17,7 +17,7 @@ export interface IHrContractSearchWebPartProps {
   ContractListID:'c0106d10-a71c-4153-b204-7cf7b45a68b8'
  HHHHContactListId:'edc879b9-50d2-4144-8950-5110cacc267a',
   HHHHInstitutionListId:'9f13fd36-456a-42bc-a5e0-cd954d97fc5f',
-  MAIN_SMARTMETADATA_LISTID:'63CAE346-409E-4457-B996-85A788074BCE',
+  HR_SMARTMETADATA_LISTID:'63CAE346-409E-4457-B996-85A788074BCE',
   MAIN_HR_LISTID:'6DD8038B-40D2-4412-B28D-1C86528C7842',
   GMBH_CONTACT_SEARCH_LISTID:'6CE99A82-F577-4467-9CDA-613FADA2296F',
   HR_EMPLOYEE_DETAILS_LIST_ID:'a7b80424-e5e1-47c6-80a1-0ee44a70f92c',
@@ -40,7 +40,7 @@ export default class HrContractSearchWebPart extends BaseClientSideWebPart<IHrCo
         Context: this.context,
         HHHHContactListId:'edc879b9-50d2-4144-8950-5110cacc267a',
         HHHHInstitutionListId:'9f13fd36-456a-42bc-a5e0-cd954d97fc5f',
-        MAIN_SMARTMETADATA_LISTID:'63CAE346-409E-4457-B996-85A788074BCE',
+        HR_SMARTMETADATA_LISTID:'63CAE346-409E-4457-B996-85A788074BCE',
         MAIN_HR_LISTID:'6DD8038B-40D2-4412-B28D-1C86528C7842',
         GMBH_CONTACT_SEARCH_LISTID:'6CE99A82-F577-4467-9CDA-613FADA2296F',
         HR_EMPLOYEE_DETAILS_LIST_ID:'a7b80424-e5e1-47c6-80a1-0ee44a70f92c',
@@ -122,8 +122,8 @@ export default class HrContractSearchWebPart extends BaseClientSideWebPart<IHrCo
                 PropertyPaneTextField('HHHHInstitutionListId', {
                   label: "HHHH Institution ListId"
                 }),
-                PropertyPaneTextField('MAIN_SMARTMETADATA_LISTID', {
-                  label: "Main SmartMetadata ListId"
+                PropertyPaneTextField('HR_SMARTMETADATA_LISTID', {
+                  label: "HR SmartMetadata ListId"
                 }),
                 PropertyPaneTextField('MAIN_HR_LISTID', {
                   label: "Main Hr ListId"
