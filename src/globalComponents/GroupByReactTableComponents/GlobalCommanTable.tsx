@@ -245,7 +245,7 @@ const GlobalCommanTable = (items: any, ref: any) => {
     let showHeader = items?.showHeader;
     let showPagination: any = items?.showPagination;
     let usedFor: any = items?.usedFor;
-    let portfolioColor = items?.portfolioColor!=undefined ? items?.portfolioColor:"#000066" ;
+    let portfolioColor = items?.portfolioColor != undefined ? items?.portfolioColor : "#000066";
     let expandIcon = items?.expandIcon;
     let fixedWidth = items?.fixedWidth;
     let portfolioTypeData = items?.portfolioTypeData;
@@ -275,7 +275,7 @@ const GlobalCommanTable = (items: any, ref: any) => {
     });
     const [selectedFilterCount, setSelectedFilterCount] = React.useState<any>({ selectedFilterCount: 'All content' })
     React.useEffect(() => {
-       
+
         if (fixedWidth === true) {
             try {
                 $('#spPageCanvasContent').removeClass();
@@ -594,15 +594,15 @@ const GlobalCommanTable = (items: any, ref: any) => {
             if (item?.original?.ItemCat === "Project") {
                 window.open(`${siteUrl}/SitePages/Project-Management.aspx?ProjectId=${item?.original?.Id}`, '_blank')
             }
-            else{
-            if (item?.original?.siteType === "Master Tasks") {
-                window.open(`${siteUrl}/SitePages/Portfolio-Profile.aspx?taskId=${item?.original?.Id}`, '_blank')
-            } else if (item?.original?.siteType === "Project") {
-                window.open(`${siteUrl}/SitePages/Project-Management.aspx?ProjectId=${item?.original?.Id}`, '_blank')
-            } else {
-                window.open(`${siteUrl}/SitePages/Task-Profile.aspx?taskId=${item?.original?.Id}&Site=${item?.original?.siteType}`, '_blank')
+            else {
+                if (item?.original?.siteType === "Master Tasks") {
+                    window.open(`${siteUrl}/SitePages/Portfolio-Profile.aspx?taskId=${item?.original?.Id}`, '_blank')
+                } else if (item?.original?.siteType === "Project") {
+                    window.open(`${siteUrl}/SitePages/Project-Management.aspx?ProjectId=${item?.original?.Id}`, '_blank')
+                } else {
+                    window.open(`${siteUrl}/SitePages/Task-Profile.aspx?taskId=${item?.original?.Id}&Site=${item?.original?.siteType}`, '_blank')
+                }
             }
-        }
         })
     }
     // React.useEffect(() => {
@@ -883,7 +883,7 @@ const GlobalCommanTable = (items: any, ref: any) => {
                         portfolioColor={portfolioColor}
                     />
                     {selectedFilterCount?.selectedFilterCount == "No item is selected" ? <span className="svg__iconbox svg__icon--setting hreflink" style={{ backgroundColor: 'gray' }} title={selectedFilterCount?.selectedFilterCount} onClick={() => setSelectedFilterPanelIsOpen(true)}></span> :
-                        <span className="svg__iconbox svg__icon--setting hreflink" style={{ backgroundColor: `${portfolioColor}` }} title={selectedFilterCount?.selectedFilterCount} onClick={() => setSelectedFilterPanelIsOpen(true)}></span>}
+                        <span className="svg__iconbox svg__icon--setting hreflink" style={selectedFilterCount?.selectedFilterCount == 'All content' ? { backgroundColor: `${portfolioColor}` } : { backgroundColor: 'rgb(68 114 199)' }} title={selectedFilterCount?.selectedFilterCount} onClick={() => setSelectedFilterPanelIsOpen(true)}></span>}
                     <span className='mx-1'>
                         <select style={{ height: "30px", paddingTop: "3px", color: `${portfolioColor}` }}
                             className="w-100"
