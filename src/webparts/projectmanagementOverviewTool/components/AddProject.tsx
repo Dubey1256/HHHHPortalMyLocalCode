@@ -62,11 +62,68 @@ const AddProject = (props: any) => {
                             PortfolioStructureID: portfolioStructureId,
                         }).then((res: any) => {
                             const newProjectId = res.data.Id;
-                            closePopup()
-                            props?.CallBack()
-                            if(props?.PageName=="ProjectOverview"){
-                                window.open(`${props?.AllListId?.siteUrl}/SitePages/Project-Management.aspx?ProjectId=${newProjectId}`, "_blank");
+                            let result: any = res.data;
+                           try{
+                            result.siteUrl = props?.AllListId?.siteUrl;
+                            result["siteType"] = "Master Tasks";
+                            result.AllTeamName = "";
+                            result.portfolioItemsSearch = result?.Item_x0020_Type;
+                            result.TeamLeaderUser = []
+                            result.DisplayDueDate = Moment(result?.DueDate).format("DD/MM/YYYY");
+                            result.DisplayCreateDate = Moment(result?.Created).format("DD/MM/YYYY");
+                            result.DueDate = Moment(result?.DueDate).format('DD/MM/YYYY')
+                            if (result.DueDate == 'Invalid date' || '') {
+                                result.DueDate = result?.DueDate?.replaceAll("Invalid date", "")
                             }
+                            if (result.DisplayDueDate == "Invalid date" || "") {
+                                result.DisplayDueDate = result.DisplayDueDate.replaceAll(
+                                    "Invalid date",
+                                    ""
+                                );
+                            }
+                            if (result.DisplayCreateDate == "Invalid date" || "") {
+                                result.DisplayCreateDate = result.DisplayCreateDate.replaceAll(
+                                    "Invalid date",
+                                    ""
+                                );
+                            }
+                            if (result.PercentComplete != undefined)
+                                result.PercentComplete = (result.PercentComplete * 100).toFixed(0);
+
+                            if (result.Item_x0020_Type === "Project") {
+                                result.lableColor = "w-bg";
+                                result.ItemCat = "Project"
+                            }
+                            if (result.Item_x0020_Type === "Sprint") {
+                                result.ItemCat = "Project"
+                            }
+                            if (result?.Item_x0020_Type != undefined) {
+                                result.SiteIconTitle = result?.Item_x0020_Type?.charAt(0);
+                            }
+
+                            result.descriptionsSearch = '';
+                            
+                            result.Id = result.Id != undefined ? result.Id : result.ID;
+                            result["TaskID"] = result?.PortfolioStructureID;
+                          
+                            if (result?.ClientCategory?.length > 0) {
+                                result.ClientCategorySearch = result?.ClientCategory?.map(
+                                    (elem: any) => elem.Title
+                                ).join(" ");
+                            } else {
+                                result.ClientCategorySearch = "";
+                            }
+                           }catch(e){
+                            console.log(e,'Error Creating Data after Post')
+                           }
+                            
+                            if (props?.PageName == "ProjectOverview") {
+                                window.open(`${props?.AllListId?.siteUrl}/SitePages/Project-Management.aspx?ProjectId=${newProjectId}`, "_blank");
+                                props?.CallBack()
+                            }else{
+                                props?.CallBack(result)
+                            }
+                            closePopup()
                         })
                     })
             } else {

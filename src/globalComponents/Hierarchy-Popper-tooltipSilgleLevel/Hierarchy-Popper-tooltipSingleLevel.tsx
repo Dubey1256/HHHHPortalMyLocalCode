@@ -206,7 +206,7 @@ export default function ReactPopperTooltipSingleLevel({ ShareWebId, row, masterT
                 id: 'plushIcon',
                 cell: ({ row }) => (
                     <div>
-                        {row?.original?.TaskType?.Title != 'Task'  ?
+                        {row?.original?.TaskType?.Title != 'Task' && row?.original?.Item_x0020_Type != "Sprint"  && row?.original?.Item_x0020_Type != "Project"  ?
                             <span onClick={() => openActivityPopup(row.original)} className="hreflink"><FaPlus style={{ fontSize: '10px' }} /></span>
                             : ''}
                     </div>
