@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from 'react'
 import { Web } from 'sp-pnp-js';
-import GlobalCommanTable from './GlobalCommanTable';
+import GlobalCommanTable from '../../../globalComponents/GroupByReactTableComponents/GlobalCommanTable';
 import { ColumnDef } from '@tanstack/react-table';
 import EditDocument from './EditDocunentPanel'
 import moment from 'moment';

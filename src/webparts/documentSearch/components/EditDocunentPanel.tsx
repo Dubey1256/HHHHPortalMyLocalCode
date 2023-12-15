@@ -1,12 +1,12 @@
 import * as React from 'react';
 import { Panel, PanelType } from 'office-ui-fabric-react';
-import Tooltip from '../../../Tooltip';
+import Tooltip from '../../../globalComponents/Tooltip';
 import { Button, Tabs, Tab } from 'react-bootstrap';
 import moment from 'moment';
 import { Web } from 'sp-pnp-js';
-import HtmlEditorCard from './HtmlEditor'
-import ImagesC from './ImageTabComponent'
-import ServiceComponentPortfolioPopup from './ServiceComponentPortfolioPopup';
+import HtmlEditorCard from '../../helloSpfx/components/FloraCommentBox';
+import ImagesC from '../../EditPopupFiles/Image';
+import ServiceComponentPortfolioPopup from '../../../globalComponents/EditTaskPopup/ServiceComponentPortfolioPopup';
 var portfolioItemColor: any = "";
 //import Mycontext from './RelevantDocuments'
 const EditDocumentpanel = (props: any) => {

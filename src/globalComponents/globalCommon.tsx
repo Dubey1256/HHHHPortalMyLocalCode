@@ -1827,6 +1827,7 @@ export const GetServiceAndComponentAllData = async (Props: any) => {
         $.each(AllMasterTaskData, function (index: any, result: any) {
             result.isSelected = false;
             result.siteUrl=Props?.siteUrl;
+            result.listId = Props.MasterTaskListID;
             result["siteType"] = "Master Tasks";
             result.AllTeamName = "";
             result.listId = Props.MasterTaskListID;

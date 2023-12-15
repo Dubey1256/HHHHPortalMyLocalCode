@@ -4,7 +4,6 @@ import { escape } from '@microsoft/sp-lodash-subset';
 import ContractProfile from './ContractProfile';
 import { IHRcontractProfileProps } from './IHRcontractProfileProps';
 
-
 export default class HrContractProfile extends React.Component<IHRcontractProfileProps, {}> {
   public render(): React.ReactElement<IHRcontractProfileProps> {
     const {
