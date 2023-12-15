@@ -1526,6 +1526,7 @@ const EditTaskPopup = (Items: any) => {
         (DataItem: any, Type: any, functionType: any) => {
             if (functionType == "Close") {
                 setOpenTeamPortfolioPopup(false);
+                setProjectManagementPopup(false);
                 setopenLinkedPortfolioPopup(false);
             } else {
                 if (DataItem != undefined && DataItem.length > 0) {
@@ -1646,169 +1647,7 @@ const EditTaskPopup = (Items: any) => {
 
     //  ###################  Smart Category slection Common Functions with Validations ##################
 
-    // const setSelectedCategoryData = (selectCategoryData: any, usedFor: any) => {
-    //     setIsComponentPicker(false);
-    //     let TempArray: any = [];
-    //     selectCategoryData.map((existingData: any) => {
-    //         let elementFoundCount: any = 0;
-    //         if (
-    //             tempShareWebTypeData != undefined &&
-    //             tempShareWebTypeData.length > 0
-    //         ) {
-    //             tempShareWebTypeData = tempShareWebTypeData.reduce(function (
-    //                 previous: any,
-    //                 current: any
-    //             ) {
-    //                 var alredyExists =
-    //                     previous.filter(function (item: any) {
-    //                         return item.Title === current.Title;
-    //                     }).length > 0;
-    //                 if (!alredyExists) {
-    //                     previous.push(current);
-    //                 }
-    //                 return previous;
-    //             },
-    //                 []);
-    //             tempShareWebTypeData.map((currentData: any) => {
-    //                 if (existingData.Title == currentData.Title) {
-    //                     elementFoundCount++;
-    //                 }
-    //             });
-    //         }
-    //         if (existingData?.IsSendAttentionEmail?.Id != undefined) {
-    //             setIsSendAttentionMsgStatus(true);
-    //             userSendAttentionEmails.push(existingData?.IsSendAttentionEmail?.EMail);
-    //             setSendCategoryName(existingData?.Title);
-    //         }
-    //         if (existingData?.Title == "Bottleneck") {
-    //             setIsSendAttentionMsgStatus(true);
-    //             if (EditData?.TaskAssignedUsers?.length > 0) {
-    //                 EditData?.TaskAssignedUsers?.map((AssignedUser: any, Index: any) => {
-    //                     userSendAttentionEmails.push(AssignedUser.Email);
-    //                 });
-    //             }
-    //             setSendCategoryName(existingData?.Title);
-    //         }
-    //         if (elementFoundCount == 0) {
-    //             let category: any;
-    //             if (selectCategoryData != undefined && selectCategoryData.length > 0) {
-    //                 selectCategoryData.map((categoryData: any) => {
-    //                     categoryTitle = categoryData.newTitle;
-
-    //                     tempShareWebTypeData.push(categoryData);
-    //                     TempArray.push(categoryData);
-    //                     let isExists: any = 0;
-    //                     if (tempCategoryData?.length > 0) {
-    //                         isExists = tempCategoryData.search(categoryData.Title);
-    //                     } else {
-    //                         category =
-    //                             category != undefined
-    //                                 ? category + ";" + categoryData.Title
-    //                                 : categoryData.Title;
-    //                     }
-    //                     if (isExists < 0) {
-    //                         category = tempCategoryData
-    //                             ? tempCategoryData + ";" + categoryData.Title
-    //                             : categoryData.Title;
-    //                     }
-    //                 });
-    //             }
-    //             setCategoriesData(category);
-    //             let phoneCheck = category.search("Phone");
-    //             let emailCheck = category.search("Email");
-    //             let ImmediateCheck = category.search("Immediate");
-    //             let ApprovalCheck = category.search("Approval");
-    //             let OnlyCompletedCheck = category.search("Only Completed");
-    //             if (phoneCheck >= 0) {
-    //                 setPhoneStatus(true);
-    //             } else {
-    //                 setPhoneStatus(false);
-    //             }
-    //             if (emailCheck >= 0) {
-    //                 setEmailStatus(true);
-    //             } else {
-    //                 setEmailStatus(false);
-    //             }
-    //             if (ImmediateCheck >= 0) {
-    //                 setImmediateStatus(true);
-    //             } else {
-    //                 setImmediateStatus(false);
-    //             }
-    //             if (ApprovalCheck >= 0) {
-    //                 setApprovalStatus(true);
-    //                 setApproverData(TaskApproverBackupArray);
-    //             } else {
-    //                 setApprovalStatus(false);
-    //             }
-    //             if (OnlyCompletedCheck >= 0) {
-    //                 setOnlyCompletedStatus(true);
-    //             } else {
-    //                 setOnlyCompletedStatus(false);
-    //             }
-    //         }
-    //         currentUserData?.map((CUData: any) => {
-    //             if (CUData?.CategoriesItemsJson?.length > 5) {
-    //                 let PrevDefinedCategories: any = JSON.parse(
-    //                     CUData.CategoriesItemsJson
-    //                 );
-    //                 PrevDefinedCategories?.map((CUCategories: any) => {
-    //                     if (CUCategories.Title == existingData.Title) {
-    //                         setApprovalStatus(true);
-    //                         setApproverData(TaskApproverBackupArray);
-    //                         AutoCompleteItemsArray?.map((itemData: any) => {
-    //                             if (itemData.Title == "Approval") {
-    //                                 CategoryChangeUpdateFunction(
-    //                                     false,
-    //                                     itemData.Title,
-    //                                     itemData.Id
-    //                                 );
-    //                             }
-    //                         });
-    //                     }
-    //                 });
-    //             }
-    //         });
-    //     });
-
-    //     let uniqueIds: any = {};
-    //     const result: any = tempShareWebTypeData.filter((item: any) => {
-    //         if (!uniqueIds[item.Id]) {
-    //             uniqueIds[item.Id] = true;
-    //             return true;
-    //         }
-    //         return false;
-    //     });
-
-    //     tempShareWebTypeData = result;
-
-    //     // if (usedFor == "For-Panel") {
-    //     //     if (onHoldCategory.length > 0 && onHoldCategory[0].Title == "On-Hold") {
-    //     //         setOnHoldPanel(true);
-    //     //     } else if (onHoldCategory.length == 0 && tempShareWebTypeData[tempShareWebTypeData.length - 1].Title != "On-Hold") {
-    //     //         setOnHoldPanel(false);
-    //     //         setShareWebTypeData(tempShareWebTypeData);
-    //     //     }
-    //     // }
-    //     // if (usedFor == "For-Auto-Search") {
-    //     //     if (onHoldCategory.length > 0 && onHoldCategory[0].Title == "On-Hold") {
-    //     //         setOnHoldPanel(true);
-    //     //     } else if (onHoldCategory.length == 0 && tempShareWebTypeData[tempShareWebTypeData.length - 1].Title != "On-Hold") {
-    //     //         setOnHoldPanel(false);
-    //     //         setShareWebTypeData(tempShareWebTypeData);
-    //     //     }
-    //     //     setSearchedCategoryData([]);
-    //     //     setCategorySearchKey("");
-    //     // }
-    //     if (usedFor == "For-Panel") {
-    //         setShareWebTypeData(selectCategoryData);
-    //         tempShareWebTypeData = selectCategoryData;
-    //     }
-    //     if (usedFor == "For-Auto-Search") {
-    //         setShareWebTypeData(result);
-    //         setSearchedCategoryData([])
-    //         setCategorySearchKey("");
-    //     }
-    // };
+ 
     const setSelectedCategoryData = (selectCategoryData: any, usedFor: any) => {
         setIsComponentPicker(false);
         let uniqueIds: any = {};
@@ -4509,31 +4348,7 @@ const EditTaskPopup = (Items: any) => {
     };
 
     // ************** this is for Project Management Section Functions ************
-    const closeProjectManagementPopup = () => {
-        let TempArray: any = [];
-        setProjectManagementPopup(false);
-        AllProjectBackupArray.map((ProjectData: any) => {
-            ProjectData.Checked = false;
-            TempArray.push(ProjectData);
-        });
-        SetAllProjectData(TempArray);
-    };
-    const SelectProjectFunction = (selectedData: any) => {
-        let TempArray: any = [];
-        AllProjectBackupArray.map((ProjectData: any) => {
-            if (ProjectData.Id == selectedData.Id) {
-                ProjectData.Checked = true;
-                TempArray.push(ProjectData);
-                // setSelectedProject([ProjectData])
-            } else {
-                ProjectData.Checked = false;
-                TempArray.push(ProjectData);
-            }
-        });
-        SetAllProjectData(TempArray);
-    };
-
-
+    
     const autoSuggestionsForProject = (e: any) => {
         let searchedKey: any = e.target.value;
         setProjectSearchKey(e.target.value);
@@ -4555,11 +4370,6 @@ const EditTaskPopup = (Items: any) => {
         setSearchedProjectData([]);
         setSelectedProject(data);
     };
-
-   
- 
-
-;
 
     // ************ this is for Approver Popup Function And Approver Related All Functions section **************
     const OpenApproverPopupFunction = () => {

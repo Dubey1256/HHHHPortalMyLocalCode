@@ -49,7 +49,7 @@ let allSite: any = {
        const myData = await web.lists
         .getById(props?.ContractListID)
         .items
-        .select("Id,Title,Author/Title,Editor/Title,startDate,endDate,ContractSigned,ContractChanged,GrossSalary,PersonnelNumber,ContractId,typeOfContract,Type_OfContract/Id,Type_OfContract/Title,WorkingHours,FolderID,contractNumber,SmartInformation/Id,SmartInformation/Title,EmployeeID/Id,EmployeeID/Title,EmployeeID/Name,HHHHStaff/Id,HHHHStaff/FullName")
+        .select("Id,Title,Author/Title,Editor/Title,activeStatus,startDate,endDate,ContractSigned,ContractChanged,GrossSalary,PersonnelNumber,ContractId,typeOfContract,Type_OfContract/Id,Type_OfContract/Title,WorkingHours,FolderID,contractNumber,SmartInformation/Id,SmartInformation/Title,EmployeeID/Id,EmployeeID/Title,EmployeeID/Name,HHHHStaff/Id,HHHHStaff/FullName")
         .top(499)
         .expand("Author,Editor,EmployeeID,HHHHStaff,SmartInformation,Type_OfContract")
         .getAll()
@@ -98,7 +98,7 @@ let allSite: any = {
                 id: 'Contract ID',
                 header: '',
                 placeholder: "Contract ID",
-                size: 150,
+                size: 110,
                
             },
             {
@@ -120,14 +120,14 @@ let allSite: any = {
                 id: 'Title',
                 header: '',
                 placeholder: "Title",
-                size: 500,
+                
             },
             {
                 id: 'Employee',
                 header: '',
                 accessorFn: (row) => row?.HHHHStaff?.FullName,
                 placeholder: "Employee",
-                size: 300,
+                size: 200,
 
 
             },
@@ -136,7 +136,16 @@ let allSite: any = {
                 header: '',
                 accessorFn: (row) => row?.typeOfContract,
                 placeholder: "Contract Type",
-                size: 300,
+                size: 160,
+
+
+            },
+            {
+                id: 'activeStatus',
+                header: '',
+                accessorFn: (row) => row?.activeStatus,
+                placeholder: "Contract Type",
+                size: 50,
 
 
             },
@@ -173,7 +182,7 @@ let allSite: any = {
             {
                 id: "ff",
                 accessorKey: "",
-                size: 25,
+                size: 1,
                 canSort: false,
                 placeholder: "",
                 cell: ({ row }) => (
@@ -210,14 +219,23 @@ let allSite: any = {
         getData();
     }
     return(
+        <>
+        <div className="row">
+        <div className="col-sm-3 text-primary">
+          <h3 className="heading">Contract Search</h3>
+        </div>
+        <div className="col-sm-9 text-primary">
+        </div>
+      </div>
         <myContextValue.Provider value={{ ...myContextValue, allSite:allSite,allListId:allListId ,loggedInUserName:props.props?.userDisplayName}}>
-        <button className='btnCol btn btn-primary' type='submit' onClick={()=>createContracts()}>Create Contract</button>
+        <button className='btnCol btn btn-primary pull-right' type='submit' onClick={()=>createContracts()}>Create Contract</button>
         <div className='Alltable'>
         <GlobalCommanTable columns={column} data={data} callBackData={callBackData} showHeader={true}/>
         </div>
         {create && <CreateContract closeContracts={closeContracts} callback={callBackData} AllListId={props}/>}
         {openEdit && <EditContractPopup props={editData} AllListId={props} callback={callBack}></EditContractPopup>}
         </myContextValue.Provider>
+        </>
     )
 
 }
