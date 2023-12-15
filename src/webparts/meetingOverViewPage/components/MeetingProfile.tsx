@@ -18,7 +18,7 @@ import moment from 'moment';
 import SmartInformation from '../../taskprofile/components/SmartInformation';
 import RelevantDocuments from '../../taskprofile/components/RelevantDocuments';
 import MeetingPopupComponent from '../../../globalComponents/MeetingPopup/MeetingPopup';
-// import TagTaskToProjectPopup from '../../projectManagement/components/TagTaskToProjectPopup';
+import TagTaskToProjectPopup from '../../projectManagement/components/TagTaskToProjectPopup';
 import MettingTable from './MeetingFooterTable';
 import { map } from 'jquery';
 var count = 0;
@@ -893,13 +893,13 @@ const MeetingProfile = (props: any) => {
                 > <span className='svg__iconbox svg__icon--edit'></span></a>
 
               </span>
-              {/* {resultData.Id!=null&& <span>< TagTaskToProjectPopup   projectItem={resultData}
-                                  className="ms-2"
-                                  meetingPages={true}
-                                  projectId={resultData.ID}
-                                  AllListId={AllListId}
-                                  callBack={tagAndCreateCallBack}
-                                  projectTitle={resultData.Title}/> </span>} */}
+              {resultData.Id != null && <span>< TagTaskToProjectPopup projectItem={resultData}
+                className="ms-2"
+                meetingPages={true}
+                projectId={resultData.ID}
+                AllListId={AllListId}
+                callBack={tagAndCreateCallBack}
+                projectTitle={resultData.Title} /> </span>}
             </h2>
           </section>
 
