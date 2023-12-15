@@ -287,9 +287,9 @@ const MeetingProfile = (props: any) => {
           }
           let siteTaggJson: any = taskDetails.Sitestagging != undefined ? JSON.parse(taskDetails.Sitestagging) : null
           let siteTagg2: any = []
-          // allData.map((item:any)=>{
-          //     siteTagg2= siteTagg2.concat(siteTaggJson.filter((data:any)=>data.Id==item.Id && data.siteType==item.siteType))
-          // })
+          allData.map((item:any)=>{
+              siteTagg2= siteTagg2.concat(siteTaggJson.filter((data:any)=>data.Id==item.Id && data.siteType==item.siteType))
+          })
 
           var array2: any = taskDetails["AssignedTo"] != undefined ? taskDetails["AssignedTo"] : []
           if (taskDetails["TeamMembers"] != undefined) {

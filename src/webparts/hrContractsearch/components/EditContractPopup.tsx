@@ -2,6 +2,7 @@ import * as moment from 'moment';
 import * as React from 'react'
 import { arraysEqual, Modal, Panel, PanelType } from "office-ui-fabric-react";
 import { Web } from "sp-pnp-js";
+import Tooltip from '../../../globalComponents/Tooltip';
 
 const EditContractPopup = (props: any) => {
     const [openPopup, setOpenPopup] = React.useState(false)
@@ -53,8 +54,9 @@ const EditContractPopup = (props: any) => {
             <>
                 <div
                     className="subheading">
-                    Edit Contract
+                    Edit Contract- {EditData?.Title}
                 </div>
+                <Tooltip ComponentId="1683" />
 
             </>
         );
@@ -63,6 +65,23 @@ const EditContractPopup = (props: any) => {
         setOpenPopup(false)
         props.callback();
     }
+
+    const deleteContract = async (childinew: any) => {
+        var UpdatedData: any = [];
+        var deleteConfirmation = confirm("Are you sure, you want to delete this?");
+        if (deleteConfirmation) {
+            let web = new Web(props.AllListId?.siteUrl);
+
+            await web.lists
+                .getById(props.AllListId?.ContractListID)
+                .items.getById(childinew)
+                .delete()
+                .then((i) => {
+                    console.log(i);
+                    closeOpenPopup();
+                });
+        }
+    };
     const saveData = async () => {
         let staffId = ''
         let web = new Web(props.AllListId?.siteUrl);
@@ -77,8 +96,14 @@ const EditContractPopup = (props: any) => {
         }).then((res: any) => {
             console.log(res)
             if (props?.pageName == 'Recruiting-Tool') {
+
+                closeOpenPopup();
+                props.callback(res.data)
+                setOpenPopup(false)
+              
                 let url = `https://hhhhteams.sharepoint.com/sites/HHHH/HR/SitePages/EmployeeInfo.aspx?employeeId=${contactDetailsId != undefined ? contactDetailsId : EditData?.HHHHStaff?.Id}`
                 window.open(url);
+
             }
             else {
                 props.callback(res.data)
@@ -107,7 +132,7 @@ const EditContractPopup = (props: any) => {
                         </div>
                         <div>
                             <a className="hreflink siteColor">
-                                <span className="alignIcon svg__iconbox hreflink mini svg__icon--trash"></span>
+                                <span className="alignIcon svg__iconbox hreflink mini svg__icon--trash" onClick={() => deleteContract(EditData?.Id)}></span>
                                 <span >Delete This Item</span>
                             </a>
 
@@ -158,12 +183,23 @@ const EditContractPopup = (props: any) => {
         }
 
     }
+    const onRenderSelectEmp =()=>{
+        return (
+           <>
+              <div
+                 className="subheading">
+                Select Employee
+              </div>
+              <Tooltip ComponentId="1683" />
+           </>
+        );
+     }
     return (
         <>
             <div>
                 <Panel
                     onRenderHeader={onRenderCustomHeader}
-                    type={PanelType.large}
+                    type={PanelType.medium}
                     isOpen={openPopup}
                     onDismiss={closeOpenPopup}
                     isBlocking={false}
@@ -171,21 +207,24 @@ const EditContractPopup = (props: any) => {
                 >
                     <div className='modal-body'>
                         <div className='row'>
-                            <div className='col-sm-3'>
+                            <div className='col-sm-6'>
                                 <div className="input-group">
                                     <label className="form-label full-width">Contract Number</label>
                                     <input type="text" className="form-control" aria-label="Small" aria-describedby="inputGroup-sizing-sm" defaultValue={EditData?.contractNumber} />
 
                                 </div>
                             </div>
-                            <div className='col-sm-3'>
+                            <div className='col-sm-6'>
                                 <div className="input-group">
                                     <label className="form-label full-width">Title</label>
                                     <input type="text" className="form-control" aria-label="Small" aria-describedby="inputGroup-sizing-sm" defaultValue={EditData?.Title} onChange={(e) => setPostData({ ...postData, Title: e.target.value })} />
 
                                 </div>
                             </div>
-                            <div className='col-sm-2'>
+                        </div>
+
+                        <div className='row'>
+                            <div className='col-sm-4'>
                                 <div className="input-group">
                                     <label className="form-label full-width">Start Date</label>
                                     <input type="date" className="form-control" aria-label="Small" aria-describedby="inputGroup-sizing-sm" placeholder="Enter start Date" max="9999-12-31" min={EditData.startDate ? moment(EditData.startDate).format("YYYY-MM-DD") : ""}
@@ -193,7 +232,7 @@ const EditContractPopup = (props: any) => {
 
                                 </div>
                             </div>
-                            <div className='col-sm-2'>
+                            <div className='col-sm-4'>
                                 <div className="input-group">
                                     <label className="form-label full-width">End Date</label>
                                     <input type="date" className="form-control" aria-label="Small" aria-describedby="inputGroup-sizing-sm" placeholder="Enter start Date" max="9999-12-31" min={EditData.endDate ? moment(EditData.endDate).format("YYYY-MM-DD") : ""}
@@ -201,59 +240,66 @@ const EditContractPopup = (props: any) => {
 
                                 </div>
                             </div>
-                            <div className='col-sm-2'>
+                            <div className='col-sm-4'>
                                 <div className="input-group">
                                     <label className="form-label full-width">Personal Number</label>
                                     <input type="number" className="form-control" aria-label="Small" aria-describedby="inputGroup-sizing-sm" defaultValue={EditData?.PersonnelNumber} onChange={(e) => setPostData({ ...postData, PersonalNumber: e.target.value })} />
 
                                 </div>
                             </div>
-                        </div>
-                        <div className='row mt-3'>
-                            <div className='col-sm-2'>
-                                <div className="input-group">
-                                    <label className="form-label full-width">Contract Signed</label>
-                                    <input type="date" className="form-control" aria-label="Small" aria-describedby="inputGroup-sizing-sm" placeholder="Enter start Date" max="9999-12-31" min={EditData.ContractSigned ? moment(EditData.ContractSigned).format("YYYY-MM-DD") : ""}
-                                        defaultValue={EditData.ContractSigned ? moment(EditData.ContractSigned).format("YYYY-MM-DD") : ''} onChange={(e) => setPostData({ ...postData, ContractSigned: e.target.value })} />
+                       </div>
 
+
+                            <div className='row mt-3'>
+                                <div className='col-sm-4'>
+                                    <div className="input-group">
+                                        <label className="form-label full-width">Contract Signed</label>
+                                        <input type="date" className="form-control" aria-label="Small" aria-describedby="inputGroup-sizing-sm" placeholder="Enter start Date" max="9999-12-31" min={EditData.ContractSigned ? moment(EditData.ContractSigned).format("YYYY-MM-DD") : ""}
+                                            defaultValue={EditData.ContractSigned ? moment(EditData.ContractSigned).format("YYYY-MM-DD") : ''} onChange={(e) => setPostData({ ...postData, ContractSigned: e.target.value })} />
+
+                                    </div>
+                                </div>
+                                <div className='col-sm-4'>
+                                    <div className="input-group">
+                                        <label className="form-label full-width">Contract Changed</label>
+                                        <input type="date" className="form-control" aria-label="Small" aria-describedby="inputGroup-sizing-sm" placeholder="Enter start Date" max="9999-12-31" min={EditData.ContractChanged ? moment(EditData.ContractChanged).format("YYYY-MM-DD") : ""}
+                                            defaultValue={EditData.ContractChanged ? moment(EditData.ContractChanged).format("YYYY-MM-DD") : ''} onChange={(e) => setPostData({ ...postData, ContractChanged: e.target.value })} />
+
+                                    </div>
+                                </div>
+                                <div className='col-sm-4'>
+                                    <div className="input-group">
+                                        <label className="form-label full-width">Gross Salary</label>
+                                        <input type="number" className="form-control" aria-label="Small" aria-describedby="inputGroup-sizing-sm" value={EditData?.GrossSalary} onChange={(e) => setPostData({ ...postData, GrossSalary: e.target.value })} />
+
+                                    </div>
                                 </div>
                             </div>
-                            <div className='col-sm-2'>
-                                <div className="input-group">
-                                    <label className="form-label full-width">Contract Changed</label>
-                                    <input type="date" className="form-control" aria-label="Small" aria-describedby="inputGroup-sizing-sm" placeholder="Enter start Date" max="9999-12-31" min={EditData.ContractChanged ? moment(EditData.ContractChanged).format("YYYY-MM-DD") : ""}
-                                        defaultValue={EditData.ContractChanged ? moment(EditData.ContractChanged).format("YYYY-MM-DD") : ''} onChange={(e) => setPostData({ ...postData, ContractChanged: e.target.value })} />
 
+                            <div className='row'>
+                                <div className='col-sm-6'>
+                                    <div className="input-group">
+                                        <label className="form-label full-width">HHHH Contact</label>
+                                        <input type="text" className="form-control" aria-label="Small" aria-describedby="inputGroup-sizing-sm" value={postData?.selectEmp != '' ? postData?.selectEmp : EditData?.HHHHStaff?.FullName} />
+                                        <span className="input-group-text" title="Status Popup"><span title="Edit Task" className="svg__iconbox svg__icon--editBox" onClick={() => openAddEmployeePopup()}></span></span>
+
+                                    </div>
+                                </div>
+                                <div className='col-sm-6'>
+                                    <div className="input-group">
+                                        <label className="form-label full-width">Holiday</label>
+                                        <input type="text" className="form-control" aria-label="Small" aria-describedby="inputGroup-sizing-sm" />
+
+                                    </div>
                                 </div>
                             </div>
-                            <div className='col-sm-2'>
-                                <div className="input-group">
-                                    <label className="form-label full-width">Gross Salary</label>
-                                    <input type="number" className="form-control" aria-label="Small" aria-describedby="inputGroup-sizing-sm" value={EditData?.GrossSalary} onChange={(e) => setPostData({ ...postData, GrossSalary: e.target.value })} />
-
-                                </div>
-                            </div>
-                            <div className='col-sm-3'>
-                                <div className="input-group">
-                                    <label className="form-label full-width">HHHH Contact</label>
-                                    <input type="text" className="form-control" aria-label="Small" aria-describedby="inputGroup-sizing-sm" value={postData?.selectEmp != '' ? postData?.selectEmp : EditData?.HHHHStaff?.FullName} />
-                                    <span className="input-group-text" title="Status Popup"><span title="Edit Task" className="svg__iconbox svg__icon--editBox" onClick={() => openAddEmployeePopup()}></span></span>
-
-                                </div>
-                            </div>
-                            <div className='col-sm-3'>
-                                <div className="input-group">
-                                    <label className="form-label full-width">Holiday</label>
-                                    <input type="text" className="form-control" aria-label="Small" aria-describedby="inputGroup-sizing-sm" />
-
-                                </div>
-                            </div>
-                        </div>
+                        
+                        
                     </div>
 
                 </Panel>
                 <Panel
-                    onRenderHeader={onRenderCustomHeader}
+                    onRenderHeader={onRenderSelectEmp}
                     type={PanelType.custom}
                     customWidth={'750px'}
                     isOpen={addEmp}
