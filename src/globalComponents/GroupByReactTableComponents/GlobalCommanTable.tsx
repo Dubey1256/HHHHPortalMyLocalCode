@@ -17,7 +17,7 @@ import {
 } from "@tanstack/react-table";
 import { useVirtualizer, notUndefined } from "@tanstack/react-virtual";
 import { RankingInfo, rankItem, compareItems } from "@tanstack/match-sorter-utils";
-import { FaSort, FaSortDown, FaSortUp, FaChevronRight, FaChevronLeft, FaAngleDoubleRight, FaAngleDoubleLeft, FaInfoCircle, FaPlus, FaMinus, FaListAlt } from 'react-icons/fa';
+import { FaSort, FaSortDown, FaSortUp, FaChevronRight, FaChevronLeft, FaAngleDoubleRight, FaAngleDoubleLeft, FaPlus, FaMinus, FaListAlt } from 'react-icons/fa';
 import { HTMLProps } from 'react';
 import jsPDF from 'jspdf';
 import autoTable from 'jspdf-autotable';
@@ -32,6 +32,9 @@ import { SlArrowDown, SlArrowRight } from 'react-icons/sl';
 import { BsClockHistory, BsList, BsSearch } from 'react-icons/bs';
 import Tooltip from "../../globalComponents/Tooltip";
 import { Alert } from 'react-bootstrap';
+import DateColumnFilter from './DateColumnFilter';
+import { AiOutlineMore } from 'react-icons/ai';
+import { BiDotsVertical } from 'react-icons/bi';
 // ReactTable Part/////
 declare module "@tanstack/table-core" {
     interface FilterFns {
@@ -106,17 +109,9 @@ export function Filter({
     placeholder: any
 }): any {
     const columnFilterValue = column.getFilterValue();
-    // style={{ width: placeholder?.size }}
     return (
-        <input style={{ width: "100%", paddingRight: "10px" }} className="m-1 ps-10 on-search-cross"
-            // type="text"
-            title={placeholder?.placeholder}
-            type="search"
-            value={(columnFilterValue ?? "") as string}
-            onChange={(e) => column.setFilterValue(e.target.value)}
-            placeholder={`${placeholder?.placeholder}`}
-        // className="w-36 border shadow rounded"
-        />
+        <input style={{ width: "100%", paddingRight: "10px" }} className="m-1 ps-10 on-search-cross" title={placeholder?.placeholder} type="search" value={(columnFilterValue ?? "") as string}
+            onChange={(e) => column.setFilterValue(e.target.value)} placeholder={`${placeholder?.placeholder}`} />
     );
 }
 
@@ -266,17 +261,19 @@ const GlobalCommanTable = (items: any, ref: any) => {
     const [showTeamMemberOnCheck, setShowTeamMemberOnCheck] = React.useState(false)
     const [globalSearchType, setGlobalSearchType] = React.useState("ALL");
     const [selectedFilterPanelIsOpen, setSelectedFilterPanelIsOpen] = React.useState(false);
+    const [dateColumnFilter, setDateColumnFilter] = React.useState(false);
+    const [dateColumnFilterData, setDateColumnFilterData] = React.useState({});
     const [tablecontiner, settablecontiner]: any = React.useState("hundred");
     const [trueRestructuring, setTrueRestructuring] = React.useState(false);
     // const [clickFlatView, setclickFlatView] = React.useState(false);
     const [columnVisibility, setColumnVisibility] = React.useState({ descriptionsSearch: false, commentsSearch: false, timeSheetsDescriptionSearch: false });
-    const [selectedFilterPannelData, setSelectedFilterPannelData] = React.useState({
-        Title: { Title: 'Title', Selected: true },
-        commentsSearch: { commentsSearch: 'commentsSearch', Selected: true },
-        descriptionsSearch: { descriptionsSearch: 'descriptionsSearch', Selected: true },
-        timeSheetsDescriptionSearch: { timeSheetsDescriptionSearch: 'timeSheetsDescriptionSearch', Selected: true }
+    const [selectedFilterPannelData, setSelectedFilterPannelData] = React.useState<any>({
+        Title: { Title: 'Title', Selected: true, lebel: 'Title' },
+        commentsSearch: { commentsSearch: 'commentsSearch', Selected: true, lebel: 'Comments' },
+        descriptionsSearch: { descriptionsSearch: 'descriptionsSearch', Selected: true, lebel: 'Descriptions' },
+        timeSheetsDescriptionSearch: { timeSheetsDescriptionSearch: 'timeSheetsDescriptionSearch', Selected: true, lebel: 'Timesheet Data' },
     });
-
+    const [selectedFilterCount, setSelectedFilterCount] = React.useState<any>({ selectedFilterCount: 'All content' })
     React.useEffect(() => {
         if (fixedWidth === true) {
             try {
@@ -349,10 +346,29 @@ const GlobalCommanTable = (items: any, ref: any) => {
         if (item != undefined) {
             setSelectedFilterPannelData(item)
         }
-        setSelectedFilterPanelIsOpen(false)
+        setSelectedFilterPanelIsOpen(false);
     }, []);
 
     /****************** defult sorting  part *******************/
+
+    /****************** DateColumns Filter Part ***************/
+    const selectedDateColumnFilter = React.useCallback((compareItemsValue: any) => {
+        if (compareItemsValue != undefined && compareItemsValue != null) {
+            setDateColumnFilterData(compareItemsValue);
+            setDateColumnFilter(false);
+        } else if (compareItemsValue === "clearFilter") {
+            setDateColumnFilter(false);
+            setDateColumnFilterData({});
+        } else {
+            setDateColumnFilter(false);
+        }
+    }, []);
+    const coustomFilterColumns = (valueEvents: any, event: any) => {
+        if (valueEvents === "DueDate") {
+            setDateColumnFilter(true);
+        }
+    }
+    /****************** DateColumns Filter End ***************/
     React.useEffect(() => {
         if (columns?.length > 0 && columns != undefined) {
             let sortingDescData: any = [];
@@ -746,7 +762,7 @@ const GlobalCommanTable = (items: any, ref: any) => {
     };
 
     React.useImperativeHandle(ref, () => ({
-        callChildFunction, trueTopIcon, setRowSelection, globalFilter, setColumnFilters, setGlobalFilter
+        callChildFunction, trueTopIcon, setRowSelection, globalFilter, setColumnFilters, setGlobalFilter, coustomFilterColumns
     }));
 
     const restructureFunct = (items: any) => {
@@ -860,7 +876,8 @@ const GlobalCommanTable = (items: any, ref: any) => {
                         placeholder="Search All..."
                         portfolioColor={portfolioColor}
                     />
-                    <span className="svg__iconbox svg__icon--setting" style={{ backgroundColor: `${portfolioColor}` }} onClick={() => setSelectedFilterPanelIsOpen(true)}></span>
+                    {selectedFilterCount?.selectedFilterCount == "No item is selected" ? <span className="svg__iconbox svg__icon--setting hreflink" style={{ backgroundColor: 'gray' }} title={selectedFilterCount?.selectedFilterCount} onClick={() => setSelectedFilterPanelIsOpen(true)}></span> :
+                        <span className="svg__iconbox svg__icon--setting hreflink" style={{ backgroundColor: `${portfolioColor}` }} title={selectedFilterCount?.selectedFilterCount} onClick={() => setSelectedFilterPanelIsOpen(true)}></span>}
                     <span className='mx-1'>
                         <select style={{ height: "30px", paddingTop: "3px", color: `${portfolioColor}` }}
                             className="w-100"
@@ -871,9 +888,9 @@ const GlobalCommanTable = (items: any, ref: any) => {
                                 setGlobalFilter("");
                             }}
                         >
-                            <option value="ALL">All Words</option>
-                            <option value="ANY">Any Words</option>
-                            <option value="EXACT">Exact Phrase</option>
+                            <option title='text need to contain word1 and word2. (order not important)' value="ALL">All Words</option>
+                            <option title=' text need to contain any word1 or word2 or Both.' value="ANY">Any Words</option>
+                            <option title=' text must contain exact Phrase in same order.' value="EXACT">Exact Phrase</option>
                         </select>
                     </span>
                 </span>
@@ -905,8 +922,7 @@ const GlobalCommanTable = (items: any, ref: any) => {
                     }
 
                     {items.taskProfile === true && items?.showCreationAllButton === true && <>
-                        {table?.getSelectedRowModel()?.flatRows.length < 2 && table?.getSelectedRowModel()?.flatRows[0]?.original
-                        ?.TaskType?.Title != "Task" ? <button type="button" className="btn btn-primary" title='Add Activity' style={{ backgroundColor: `${portfolioColor}`, borderColor: `${portfolioColor}`, color: '#fff' }} onClick={() => openCreationAllStructure("Add Workstream-Task")}>Add Workstream-Task</button> :
+                        {table?.getSelectedRowModel()?.flatRows.length < 2 ? <button type="button" className="btn btn-primary" title='Add Activity' style={{ backgroundColor: `${portfolioColor}`, borderColor: `${portfolioColor}`, color: '#fff' }} onClick={() => openCreationAllStructure("Add Workstream-Task")}>Add Workstream-Task</button> :
                             <button type="button" className="btn btn-primary" style={{ backgroundColor: `${portfolioColor}`, borderColor: `${portfolioColor}`, color: '#fff' }} disabled={true} > Add Workstream-Task</button>}
 
                         {
@@ -969,11 +985,9 @@ const GlobalCommanTable = (items: any, ref: any) => {
                                                             header.getContext()
                                                         )}
                                                         {header.column.getCanFilter() ? (
-                                                            // <span>
                                                             <Filter column={header.column} table={table} placeholder={header.column.columnDef} />
-                                                            // </span>
                                                         ) : null}
-                                                        {header.column.getCanSort() ? <div
+                                                        {header.column.getCanSort() ? <div style={items?.clickFlatView === true && header?.column?.columnDef?.placeholder === 'DueDate' ? { position: 'absolute', top: '8px', right: '16px' } : {}}
                                                             {...{
                                                                 className: header.column.getCanSort()
                                                                     ? "cursor-pointer select-none shorticon"
@@ -987,6 +1001,7 @@ const GlobalCommanTable = (items: any, ref: any) => {
                                                                 ] ?? null
                                                                 : <FaSort style={{ color: "gray" }} />}
                                                         </div> : ""}
+                                                        {items?.clickFlatView === true && header?.column?.columnDef?.placeholder === 'DueDate' && <div className='dotFilterIcon' style={{ position: "absolute", top: "8px", right: "5px" }} ><BiDotsVertical style={Object?.keys(dateColumnFilterData)?.length ? { color: `${portfolioColor}`, height: '15px', width: '15px' } : { color: 'gray', height: '15px', width: '15px' }} onClick={(event) => coustomFilterColumns('DueDate', event)} /></div>}
                                                     </div>
                                                 )}
                                             </th>
@@ -1087,7 +1102,11 @@ const GlobalCommanTable = (items: any, ref: any) => {
             </div> : ''}
             {/* {ShowTeamPopup === true && items?.TaskUsers?.length > 0 ? <ShowTeamMembers props={table?.getSelectedRowModel()?.flatRows} callBack={showTaskTeamCAllBack} TaskUsers={items?.TaskUsers} /> : ''} */}
             {ShowTeamPopup === true && items?.TaskUsers?.length > 0 ? <ShowTeamMembers props={table?.getSelectedRowModel()?.flatRows} callBack={showTaskTeamCAllBack} TaskUsers={items?.TaskUsers} portfolioTypeData={items?.portfolioTypeData} context={items?.AllListId?.Context} /> : ''}
-            {selectedFilterPanelIsOpen && <SelectFilterPanel isOpen={selectedFilterPanelIsOpen} selectedFilterCallBack={selectedFilterCallBack} setSelectedFilterPannelData={setSelectedFilterPannelData} selectedFilterPannelData={selectedFilterPannelData} portfolioColor={portfolioColor} />}
+            {selectedFilterPanelIsOpen && <SelectFilterPanel isOpen={selectedFilterPanelIsOpen} selectedFilterCount={selectedFilterCount} setSelectedFilterCount={setSelectedFilterCount} selectedFilterCallBack={selectedFilterCallBack} setSelectedFilterPannelData={setSelectedFilterPannelData} selectedFilterPannelData={selectedFilterPannelData} portfolioColor={portfolioColor} />}
+
+
+
+            {dateColumnFilter && <DateColumnFilter portfolioTypeDataItemBackup={items?.portfolioTypeDataItemBackup} taskTypeDataItemBackup={items?.taskTypeDataItemBackup} portfolioTypeData={portfolioTypeData} taskTypeDataItem={items?.taskTypeDataItem} dateColumnFilterData={dateColumnFilterData} flatViewDataAll={items?.flatViewDataAll} data={data} setData={items?.setData} setLoaded={items?.setLoaded} isOpen={dateColumnFilter} selectedDateColumnFilter={selectedDateColumnFilter} portfolioColor={portfolioColor} Lable='DueDate' />}
         </>
     )
 }
