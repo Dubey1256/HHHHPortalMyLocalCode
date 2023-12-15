@@ -9,6 +9,7 @@ import styles from './HelloSpfx.module.scss';
 import HtmlEditorCard from './FloraCommentBox';
 import { useEffect, useState } from 'react';
 import StarRating from './StarRating';
+import Tooltip from '../../../globalComponents/Tooltip';
 import './Recruitment.css'
 import CreateContactComponent from '../../contactSearch/components/contact-search/popup-components/CreateContact';
 const skillArray: any[] = [];
@@ -28,7 +29,7 @@ const EditPopup = (props: any) => {
         { name: 'Others', selected: false }
     ]);
     const [Plats, setPlats] = useState<any[]>([]);
-    const [localRatings, setLocalRatings] = useState(props?.item?.ratings || []);
+    const [localRatings, setLocalRatings] = useState(props.item?.ratings || []);
     const [TaggedDocuments, setTaggedDocuments] = useState<any[]>([]);
     const [showTextInput, setShowTextInput] = useState(false);
     const [otherChoice, setOtherChoice] = useState('');
@@ -50,20 +51,59 @@ const EditPopup = (props: any) => {
         setOtherChoice(event.target.value);
     };
     // eslint-disable-next-line eqeqeq
-    if (props.item.SelectedPlatforms != '') {
+    if (props.item.SelectedPlatforms !== '') {
         const selectedPlatforms = JSON.parse(props.item.SelectedPlatforms);
 
         useEffect(() => {
-            // Create a new array with updated selected properties
+            let Array:any = ['Indeed', 'Agentur für Arbeit', 'Jobcenter', 'GesinesJobtipps']
+            // Check if any selected platform meets the specified conditions
+          const shouldUpdateOthers = selectedPlatforms?.some((item: { selected: any; name:any }) => {
+          
+            return (
+              item.selected &&
+              !Array.includes(item.name)
+            );
+          });
+      
+          // If conditions are met, update Others and other unmatched values
+          if (shouldUpdateOthers) {
             const updatedChoices = platformChoices.map((choice) => {
-                const matchingItem = selectedPlatforms?.find((item: any) => item.name === choice.name);
+                if (choice.name === 'Others') {
+                // Update 'Others' based on conditions, leave others unchanged
+                return { ...choice, selected: true };
+              }
+              const matchingItem = selectedPlatforms?.find((item: { name: string; }) => item.name === choice.name);
+              return matchingItem ? { ...choice, selected: matchingItem.selected } : choice;
+            });
+      
+            const unmatchedNames = selectedPlatforms
+              .filter((item: { selected: any; name: string; }) => item.selected && !Array.includes(item.name))
+              .map((item: { name: string }) => item.name);
+      
+            if (unmatchedNames.length > 0) {
+              setOtherChoice(unmatchedNames);
+              setShowTextInput(true); // Set setShowTextInput to true when there are values in otherChoices
+            } else {
+              setShowTextInput(false); // Set setShowTextInput to false when otherChoices is empty
+            }
+      
+            setPlatformChoices(updatedChoices);
+          } else {
+            // If no conditions are met, update as usual
+            const updatedChoices = platformChoices.map((choice) => {
+              const matchingItem = selectedPlatforms?.find((item: { name: string; }) => item.name === choice.name);
                 return matchingItem ? { ...choice, selected: matchingItem.selected } : choice;
             });
 
+setShowTextInput(false); // Set setShowTextInput to false when no conditions are met
             setPlatformChoices(updatedChoices);
+}
         }, []);
-
     }
+
+      
+      
+      
     //eslint-disable-next-line eqeqeq
     if (props.item.SkillRatings != '') {
         const SkillRatingsdata = JSON.parse(props.item.SkillRatings);
@@ -124,18 +164,20 @@ if(selectedStatus=="Hired"){
         web.lists.getById('e79dfd6d-18aa-40e2-8d6e-930a37fe54e4').items.getAll().then((response: any) => {
             setListData(response);
             const filteredData = response.filter((item: any) => {
-                return item.Id === props.item.PositionsId;
+                return item.Id === props.item.Positions.Id;
             });
             skillArray.push(filteredData);
             initialratings = skillArray[0][0];
-            if (props.item.SkillRatings === undefined || props.item.SkillRatings === '') {
-                props.item.ratings = initialratings.JobSkills
+            if (props.item.SkillRatings === null || props.item.SkillRatings === undefined || props.item.SkillRatings === '' || props.item.SkillRatings === '[]') {
+                props.item.ratings = JSON.parse(initialratings.JobSkills)
             } else {
                 props.item.ratings = JSON.parse(props.item.SkillRatings)
 
             }
+if(props.item.ratings !==null && props.item.ratings !== undefined){
             for (const obj of props.item.ratings) {
                 skillMap[obj.SkillTitle] = true;
+}
             }
             // Filter array two based on SkillTitle availability in array one
             const unavailableSkills = props.item.ratings.filter((rat: any) => {
@@ -146,6 +188,7 @@ if(selectedStatus=="Hired"){
                 return !skillMap[rat.SkillTitle];
             });
             props.item.ratings.push(...unavailableSkills);
+setLocalRatings(props.item.ratings)
         }).catch((error: unknown) => {
             console.error(error);
         });
@@ -214,7 +257,7 @@ if(selectedStatus=="Hired"){
                 <div className='subheading'>
                     Candidate Details -{props.item.CandidateName} {star}
                 </div>
-
+                <Tooltip ComponentId='6025' />
             </>
         );
     };

@@ -2,6 +2,7 @@ export interface IContactSearchProps {
   description: string;
   isDarkTheme: boolean;
   Context: any
+  ContractListID:any
   HHHHContactListId:any,
   HHHHInstitutionListId:any,
   MAIN_SMARTMETADATA_LISTID:any,

@@ -4,6 +4,7 @@
 /* eslint-disable @typescript-eslint/no-unused-vars */
 import { Panel, PrimaryButton, TextField, Dropdown, PanelType, IconButton } from 'office-ui-fabric-react';
 import * as React from 'react';
+import Tooltip from '../../../globalComponents/Tooltip';
 import { Item, sp, Web } from 'sp-pnp-js';
 import {
     Column,
@@ -344,7 +345,7 @@ const AddEditPostion = (props: any) => {
                 <div className='subheading'>
                     Add/Edit Positions
                 </div>
-
+<Tooltip ComponentId='5642' />
             </>
         );
     };
@@ -354,7 +355,7 @@ const AddEditPostion = (props: any) => {
                 <div className='subheading'>
                     Add New Position
                 </div>
-
+<Tooltip ComponentId='4430' />
             </>
         );
     };
@@ -364,7 +365,7 @@ const AddEditPostion = (props: any) => {
                 <div className='subheading'>
                     Add New Skills
                 </div>
-
+<Tooltip ComponentId='4430' />
             </>
         );
     };

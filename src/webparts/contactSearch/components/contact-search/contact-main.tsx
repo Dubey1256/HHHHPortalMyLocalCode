@@ -54,6 +54,7 @@ const ContactMainPage = (props: any) => {
             HHHHInstitutionListId: props?.props?.HHHHInstitutionListId,
             MAIN_SMARTMETADATA_LISTID: props?.props?.MAIN_SMARTMETADATA_LISTID,
             MAIN_HR_LISTID: props?.props?.MAIN_HR_LISTID,
+            ContractListID:props?.props?.ContractListID,
             GMBH_CONTACT_SEARCH_LISTID: props?.props?.GMBH_CONTACT_SEARCH_LISTID,
             HR_EMPLOYEE_DETAILS_LIST_ID: props?.props?.HR_EMPLOYEE_DETAILS_LIST_ID,
             siteUrl: props?.props.Context.pageContext.web.absoluteUrl,

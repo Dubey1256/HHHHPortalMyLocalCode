@@ -14,6 +14,7 @@ import { IContactSearchProps } from './components/IContactSearchProps';
 
 export interface IContactSearchWebPartProps {
   description: string;
+  ContractListID:'c0106d10-a71c-4153-b204-7cf7b45a68b8',
   HHHHContactListId:'edc879b9-50d2-4144-8950-5110cacc267a',
   HHHHInstitutionListId:'9f13fd36-456a-42bc-a5e0-cd954d97fc5f',
   MAIN_SMARTMETADATA_LISTID:'D1C6D7C3-F36E-4F95-8715-8DA9F33622E7',
@@ -31,6 +32,7 @@ export default class ContactSearchWebPart extends BaseClientSideWebPart<IContact
         description: this.properties.description,
         isDarkTheme: this._isDarkTheme,
         Context: this.context,
+        ContractListID:'c0106d10-a71c-4153-b204-7cf7b45a68b8',
         HHHHContactListId:'edc879b9-50d2-4144-8950-5110cacc267a',
         HHHHInstitutionListId:'9f13fd36-456a-42bc-a5e0-cd954d97fc5f',
         MAIN_SMARTMETADATA_LISTID:'D1C6D7C3-F36E-4F95-8715-8DA9F33622E7',
@@ -134,6 +136,9 @@ export default class ContactSearchWebPart extends BaseClientSideWebPart<IContact
                 }),
                 PropertyPaneTextField('HR_EMPLOYEE_DETAILS_LIST_ID', {
                   label: "Hr Employee Details ListId"
+                }),
+                PropertyPaneTextField('ContractListID', {
+                  label: "ContractListID"
                 })
               ]
             }
