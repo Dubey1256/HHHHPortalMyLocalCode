@@ -9,7 +9,7 @@ import { sp, Web } from "sp-pnp-js";
 import * as $ from "jquery";
 import { arraysEqual, Modal, Panel, PanelType } from "office-ui-fabric-react";
 import * as Moment from "moment";
-import EditContractPopup from '../components/EditContractPopup'
+import EditContractPopup from './EditContractPopup'
 import CreateContactComponent from "../../contactSearch/components/contact-search/popup-components/CreateContact";
 import Tooltip from "../../../globalComponents/Tooltip";
 let ResData:any = {}
