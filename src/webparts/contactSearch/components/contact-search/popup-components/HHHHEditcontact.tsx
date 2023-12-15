@@ -8,7 +8,7 @@ import Tooltip from '../../../../../globalComponents/Tooltip';
 import { Panel, PanelType } from 'office-ui-fabric-react';
 import ImagesC from '../../../../EditPopupFiles/ImageInformation';
 import { myContextValue } from '../../../../../globalComponents/globalCommon'
-import CreateContract from '../../../../hrContractSearch/components/CreateContract';
+import CreateContract from '../../../../hrContractsearch/components/CreateContract';
 
 
 let JointData: any;
