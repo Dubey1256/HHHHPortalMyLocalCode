@@ -34,7 +34,7 @@ let allSite: any = {
             Context: props?.Context,
             HHHHContactListId: props?.HHHHContactListId,
             HHHHInstitutionListId: props?.HHHHInstitutionListId,
-            MAIN_SMARTMETADATA_LISTID: props?.MAIN_SMARTMETADATA_LISTID,
+            HR_SMARTMETADATA_LISTID: props?.HR_SMARTMETADATA_LISTID,
             MAIN_HR_LISTID: props?.MAIN_HR_LISTID,
             GMBH_CONTACT_SEARCH_LISTID: props?.GMBH_CONTACT_SEARCH_LISTID,
             HR_EMPLOYEE_DETAILS_LIST_ID: props?.HR_EMPLOYEE_DETAILS_LIST_ID,
