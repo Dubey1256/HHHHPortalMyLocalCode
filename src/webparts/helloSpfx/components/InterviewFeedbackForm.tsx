@@ -5,7 +5,7 @@
 import * as React from 'react';
 import { useState } from 'react';
 import { useEffect } from 'react';
-
+import Tooltip from '../../../globalComponents/Tooltip';
 import { Web, sp } from 'sp-pnp-js';
 import GlobalCommanTable from '../../../globalComponents/GroupByReactTableComponents/GlobalCommanTable';
 import { ColumnDef } from '@tanstack/react-table';
@@ -35,6 +35,7 @@ interface StatusItem {
 interface RowData {
     CandidateName: string;
     Position: any;
+    IsFavorite: boolean;
 }
 // eslint-disable-next-line @typescript-eslint/explicit-function-return-type
 export default function GetData(props: any) {
@@ -127,7 +128,7 @@ export default function GetData(props: any) {
     const DeleteItem = async (values: any, isDEL: boolean) => {
 
     };
-    const columns = React.useMemo<ColumnDef<unknown, unknown>[]>(() =>
+    const columns = React.useMemo<ColumnDef<RowData, unknown>[]>(() =>
         [{
             accessorKey: "",
             placeholder: "",
@@ -136,7 +137,20 @@ export default function GetData(props: any) {
             hasExpanded: false,
             size: 5,
             id: 'Id',
-        }, { accessorKey: "CandidateName", placeholder: "Title", header: "" },
+        }, {
+            accessorKey: "CandidateName",
+            placeholder: "Title",
+            header: "",
+            cell: ({ row }) => (
+                <>
+                    {row.original.CandidateName}
+                    {row.original.IsFavorite && (
+                        <span className="orange-star">⭐</span>
+                    )}
+
+                </>
+            ),
+        },
         { accessorKey: "Email", placeholder: "Email", header: "" },
         { accessorKey: "Position", placeholder: "Positions", header: "" },
         { accessorKey: "Status0", placeholder: "Status", header: "" }, {
@@ -166,7 +180,7 @@ export default function GetData(props: any) {
             size: 10,
         }, {
             cell: ({ row }) => (
-                
+
                 <a className='alignCenter' href={`mailto:?subject=Have%20a%20look%20at%20'${(row.original as RowData).CandidateName}'%20for%20the%20Position%20of%20'${(row.original as RowData).Position}'`}>
                     <span className="svg__iconbox svg__icon--mail" title="Send Email"></span>
                 </a>
@@ -182,7 +196,7 @@ export default function GetData(props: any) {
         [listData]);
     // eslint-disable-next-line @typescript-eslint/no-empty-function
     const callBackData = React.useCallback((elem: any, getSelectedRowModel: any, ShowingData: any) => {
-        if (elem.length > 0) {
+        if (elem?.length > 0) {
             const newArray = elem.map((item: { original: any; }) => item.original);
             setSelectedItem(newArray)
             if (selectedItem !== '') {
@@ -199,8 +213,17 @@ export default function GetData(props: any) {
         const web = new Web('https://hhhhteams.sharepoint.com/sites/HHHH/HR/');
         web.lists
             .getById(props?.props?.InterviewFeedbackFormListId)
-            .items.getAll()
+            .items.select('Id', 'Title', 'Remarks', 'Motivation', 'SelectedPlatforms', 'Result', 'CandidateStaffID', 'ActiveInterv', 'Status0', 'IsFavorite', 'CandidateName', 'SkillRatings', 'Positions/Id', 'Positions/Title', 'Platform', 'IsFavorite', 'PhoneNumber', 'Email', 'Experience', 'Current_x0020_Company', 'Date', 'CurrentCTC', 'ExpectedCTC', 'NoticePeriod', 'CurrentLocation', 'DateOfJoining', 'HRNAME')
+            .expand('Positions')
+            .top(5000)
+            .get()
             .then((response: any) => {
+                const itemsWithPosition = response.map((item: any) => {
+                    return {
+                        ...item,
+                        Position: item.Positions ? item.Positions.Title : null,
+                    };
+                });
                 const categorizedItems = response.reduce((accumulator: { newCandidates: any[]; inProcessCand: any[]; archiveCandidates: any[]; }, currentItem: { Status0: any; }) => {
                     switch (currentItem.Status0) {
                         case undefined:
@@ -223,7 +246,7 @@ export default function GetData(props: any) {
                     return accumulator;
                 }, { newCandidates: [], inProcessCand: [], archiveCandidates: [] });
 
-                setListData(response);
+                setListData(itemsWithPosition);
                 setNewCandidates(categorizedItems.newCandidates);
                 setinProcessCand(categorizedItems.inProcessCand);
                 setArchiveCandidates(categorizedItems.archiveCandidates);
@@ -288,7 +311,7 @@ export default function GetData(props: any) {
     //     });
     // };
     useEffect(() => {
-if (props?.props.Context.pageContext.web.absoluteUrl.toLowerCase().includes("hr")) {
+        if (props?.props.Context.pageContext.web.absoluteUrl.toLowerCase().includes("hr")) {
             allSite = {
                 HrSite: true,
                 MainSite: false
@@ -303,7 +326,8 @@ if (props?.props.Context.pageContext.web.absoluteUrl.toLowerCase().includes("hr"
             GMBH_CONTACT_SEARCH_LISTID: props?.props?.GMBH_CONTACT_SEARCH_LISTID,
             HR_EMPLOYEE_DETAILS_LIST_ID: props?.props?.HR_EMPLOYEE_DETAILS_LIST_ID,
             siteUrl: props?.props.Context.pageContext.web.absoluteUrl,
-            jointSiteUrl: "https://hhhhteams.sharepoint.com/sites/HHHH"
+            jointSiteUrl: "https://hhhhteams.sharepoint.com/sites/HHHH",
+            ContractListID:props?.props?.ContractListID
         }
         getListData();
         loadAdminConfigurations();
@@ -347,7 +371,7 @@ if (props?.props.Context.pageContext.web.absoluteUrl.toLowerCase().includes("hr"
                 <div className='subheading'>
                     Add / Edit Status
                 </div>
-
+                <Tooltip ComponentId='6025' />
             </>
         );
     };
@@ -357,12 +381,12 @@ if (props?.props.Context.pageContext.web.absoluteUrl.toLowerCase().includes("hr"
                 <div className='subheading'>
                     Change Status
                 </div>
-
+                <Tooltip ComponentId='6025' />
             </>
         );
     };
     return (
-        <myContextValue.Provider value={{ ...myContextValue, allSite:allSite,allListId:allListId ,loggedInUserName:props.props?.userDisplayName,}}>
+        <myContextValue.Provider value={{ ...myContextValue, allSite: allSite, allListId: allListId, loggedInUserName: props.props?.userDisplayName, }}>
             <div>
                 <h2 className='heading'>Recruiting-Tool</h2>
                 <ul className="nav nav-tabs" id="myTab" role="tablist">
@@ -407,8 +431,8 @@ if (props?.props.Context.pageContext.web.absoluteUrl.toLowerCase().includes("hr"
                         {ArchiveCandidates && <div className='Alltable'><GlobalCommanTable columns={columns} data={ArchiveCandidates} multiSelect={true} showHeader={true} callBackData={callBackData} /></div>}
                     </div>
                 </div>
-                {isEditPopupOpen ? <EditPopup EditPopupClose={EditPopupClose} item={selectedItem} ListID={props.InterviewFeedbackFormListId} /> : ''}
-                {isAddPopupOpen ? <AddPopup AddPopupClose={AddPopupClose} ListID={props.InterviewFeedbackFormListId.InterviewFeedbackFormListId} /> : ''}
+                {isEditPopupOpen ? <EditPopup EditPopupClose={EditPopupClose} item={selectedItem} ListID={props?.props?.InterviewFeedbackFormListId} /> : ''}
+                {isAddPopupOpen ? <AddPopup AddPopupClose={AddPopupClose} ListID={props?.props?.InterviewFeedbackFormListId} /> : ''}
                 {isAddEditPositionOpen ? <AddEditPostion AddEditPositionCLose={AddEditPositionCLose} /> : ''}
             </div>
 
@@ -485,6 +509,6 @@ if (props?.props.Context.pageContext.web.absoluteUrl.toLowerCase().includes("hr"
                 </footer>
             </Panel>
         </myContextValue.Provider>
-      
+
     )
 }
