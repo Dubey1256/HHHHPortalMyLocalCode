@@ -8,6 +8,7 @@ import { ColumnDef } from '@tanstack/react-table';
 import { myContextValue } from '../../../globalComponents/globalCommon'
 import HHHHEditComponent from '../../contactSearch/components/contact-search/popup-components/HHHHEditcontact';
 import GlobalCommanTable from '../../../globalComponents/GroupByReactTableComponents/GlobalCommanTable';
+import CreateContract from '../../hrContractsearch/components/CreateContract';
 let allListId: any = {};
 let allSite: any = {
     GMBHSite: false,
@@ -20,6 +21,7 @@ const EmployeProfileMain = (props: any) => {
     const [contractData, setContractData] = useState([]);
     const [siteTaggedHR, setSiteTaggedHR] = useState(false);
     const [URLs, setURLs] = useState([]);
+    const[createContractPopup,setCreateContractPopup]=useState(false);
     const [hrUpdateData, setHrUpdateData]: any = useState()
     const [EditContactStatus, setEditContactStatus] = useState(false);
     useEffect(() => {
@@ -138,7 +140,7 @@ const EmployeProfileMain = (props: any) => {
             let web = new Web(allListId?.siteUrl);
             await web.lists.getById(allSite?.GMBHSite ? allListId?.GMBH_CONTACT_SEARCH_LISTID : allListId?.HR_EMPLOYEE_DETAILS_LIST_ID)
                 .items.getById(Id)
-                .select("Id", "Title", "FirstName", "FullName", "Company", "WorkCity", "Suffix", "WorkPhone", "HomePhone", "Comments", "WorkAddress", "WorkFax", "WorkZip", "ItemType", "JobTitle", "Item_x0020_Cover", "WebPage", "CellPhone", "Email", "LinkedIn", "Created", "SocialMediaUrls", "Author/Title", "Modified", "Editor/Title", "Division/Title", "Division/Id", "EmployeeID/Title", "StaffID", "EmployeeID/Id", "Institution/Id", "Institution/FullName", "IM")
+                .select("Id", "Title", "FirstName", "FullName","DOJ","DOE", "Company", "WorkCity", "Suffix", "WorkPhone", "HomePhone", "Comments", "WorkAddress", "WorkFax", "WorkZip", "ItemType", "JobTitle", "Item_x0020_Cover", "WebPage", "CellPhone", "Email", "LinkedIn", "Created", "SocialMediaUrls", "Author/Title", "Modified", "Editor/Title", "Division/Title", "Division/Id", "EmployeeID/Title", "StaffID", "EmployeeID/Id", "Institution/Id", "Institution/FullName", "IM")
                 .expand("EmployeeID", "Division", "Author", "Editor", "Institution")
 
                 .get().then((data: any) => {
@@ -214,7 +216,7 @@ const EmployeProfileMain = (props: any) => {
                 accessorFn: (row: any) => row?.Title,
                 cell: ({ row }: any) => (
                     <a target='_blank' data-interception="off"
-                        href={allSite?.HrSite ? `${allListId?.siteUrl}/SitePages/EmployeeInfo.aspx?employeeId=${row?.original.Id}` : `${allListId?.siteUrl}/SitePages/Contact-Profile.aspx?contactId=${row?.original.Id}`}
+                        href={allSite?.HrSite ? `${allListId?.siteUrl}/SitePages/contract-profile.aspx?ContractId=${row?.original.Id}` : `${allListId?.siteUrl}/SitePages/Contact-Profile.aspx?contactId=${row?.original.Id}`}
                     >{row.original.Title}</a>
 
                 ),
@@ -502,7 +504,12 @@ const EmployeProfileMain = (props: any) => {
                         </div>
 
                         <div className="tab-pane" id="CONTRACTS" role="tabpanel" aria-labelledby="CONTRACTS">
-                            <div className='siteBdrBottom siteColor sectionHead mb-2 p-0'>Contract Details</div>
+                            <div className='siteBdrBottom siteColor alignCenter sectionHead mb-2 p-0'>
+                                Contract Details
+                           
+                                <button type='button' className='btnCol btn btn-primary ml-auto mb-2' onClick={()=>setCreateContractPopup(true)}>Create-Contract</button>
+                            
+                            </div>
                             <div className='Alltable'>
 
                                 <GlobalCommanTable columns={columns} data={contractData} showHeader={true} callBackData={callBackData} />
@@ -512,6 +519,7 @@ const EmployeProfileMain = (props: any) => {
                 </div> : <Information EmployeeData={EmployeeData} siteTaggedHR={siteTaggedHR} />}
                 {EditContactStatus ? <HHHHEditComponent props={EmployeeData} callBack={ClosePopup} /> : null}
             </div>
+            {createContractPopup && <CreateContract  closeContracts={callBackData} AllListId={allListId}updateData={EmployeeData}pageName="Recruiting-Tool" />}
         </myContextValue.Provider>
 
     )

@@ -18,7 +18,7 @@ import moment from 'moment';
 import SmartInformation from '../../taskprofile/components/SmartInformation';
 import RelevantDocuments from '../../taskprofile/components/RelevantDocuments';
 import MeetingPopupComponent from '../../../globalComponents/MeetingPopup/MeetingPopup';
-// import TagTaskToProjectPopup from '../../projectManagement/components/TagTaskToProjectPopup';
+import TagTaskToProjectPopup from '../../projectManagement/components/TagTaskToProjectPopup';
 import MettingTable from './MeetingFooterTable';
 import { map } from 'jquery';
 var count = 0;
@@ -287,9 +287,9 @@ const MeetingProfile = (props: any) => {
           }
           let siteTaggJson: any = taskDetails.Sitestagging != undefined ? JSON.parse(taskDetails.Sitestagging) : null
           let siteTagg2: any = []
-          // allData.map((item:any)=>{
-          //     siteTagg2= siteTagg2.concat(siteTaggJson.filter((data:any)=>data.Id==item.Id && data.siteType==item.siteType))
-          // })
+          allData.map((item:any)=>{
+              siteTagg2= siteTagg2.concat(siteTaggJson.filter((data:any)=>data.Id==item.Id && data.siteType==item.siteType))
+          })
 
           var array2: any = taskDetails["AssignedTo"] != undefined ? taskDetails["AssignedTo"] : []
           if (taskDetails["TeamMembers"] != undefined) {
@@ -893,13 +893,13 @@ const MeetingProfile = (props: any) => {
                 > <span className='svg__iconbox svg__icon--edit'></span></a>
 
               </span>
-              {/* {resultData.Id!=null&& <span>< TagTaskToProjectPopup   projectItem={resultData}
-                                  className="ms-2"
-                                  meetingPages={true}
-                                  projectId={resultData.ID}
-                                  AllListId={AllListId}
-                                  callBack={tagAndCreateCallBack}
-                                  projectTitle={resultData.Title}/> </span>} */}
+              {resultData.Id != null && <span>< TagTaskToProjectPopup projectItem={resultData}
+                className="ms-2"
+                meetingPages={true}
+                projectId={resultData.ID}
+                AllListId={AllListId}
+                callBack={tagAndCreateCallBack}
+                projectTitle={resultData.Title} /> </span>}
             </h2>
           </section>
 

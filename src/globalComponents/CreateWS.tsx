@@ -697,7 +697,7 @@ const CreateWS = (props: any) => {
                                                         />
                                                     </div>
 
-                                                    <ul className={refreshData ? "p-0 mt-1" : "p-0 mt-1"}>
+                                                    <ul className={refreshData ? "list-none p-0 mt-1" : "list-none p-0 mt-1"}>
                                                         <li>
                                                         <label className="SpfxCheckRadio">
                                                             <input
