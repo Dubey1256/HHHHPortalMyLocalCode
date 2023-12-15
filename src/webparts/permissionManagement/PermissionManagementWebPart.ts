@@ -14,6 +14,7 @@ import { IPermissionManagementProps } from './components/IPermissionManagementPr
 
 export interface IPermissionManagementWebPartProps {
   description: string;
+  SitePagesList:"16839758-4688-49D5-A45F-CFCED9F80BA6"
 }
 
 export default class PermissionManagementWebPart extends BaseClientSideWebPart<IPermissionManagementWebPartProps> {
@@ -30,6 +31,8 @@ export default class PermissionManagementWebPart extends BaseClientSideWebPart<I
         environmentMessage: this._environmentMessage,
         hasTeamsContext: !!this.context.sdks.microsoftTeams,
         userDisplayName: this.context.pageContext.user.displayName,
+        siteUrl: this.context.pageContext.web.absoluteUrl,
+        SitePagesList: this.properties.SitePagesList,
         context:this.context.pageContext
       }
     );
@@ -110,7 +113,10 @@ export default class PermissionManagementWebPart extends BaseClientSideWebPart<I
               groupFields: [
                 PropertyPaneTextField('description', {
                   label: strings.DescriptionFieldLabel
-                })
+                }),
+                 PropertyPaneTextField('SitePagesList', {
+                  label: 'Site Pages'
+                }),
               ]
             }
           ]
