@@ -94,7 +94,7 @@ export default class CategoriesWeeklyMultipleReport extends React.Component<ICat
       enddate: new Date(),
       SitesConfig: [],
       AllTimeEntry: [],
-      SelectGroupName: '',
+      SelectGroupName: [],
       opentaggedtask: false,
       openTaggedTaskArray: [],
       IsTimeEntry: false,
@@ -616,6 +616,10 @@ export default class CategoriesWeeklyMultipleReport extends React.Component<ICat
 
   private StartWeekday: any; private endweekday: any;
   private GetTimeEntry() {
+    let startdt1: any = JSON.parse(localStorage.getItem('startDate'));
+    let enddt1: any = JSON.parse(localStorage.getItem('endDate'));
+    if (startdt1 != undefined && enddt1 != undefined)
+      this.setState({ SelecteddateChoice: 'Presettime' });
     this.selectDate(this.state.SelecteddateChoice);
   }
 
@@ -626,6 +630,7 @@ export default class CategoriesWeeklyMultipleReport extends React.Component<ICat
       if (childItem.UserGroupId != undefined && parseInt(childItem.UserGroupId) == item.ID) {
         childItem.IsSelected = false
         item.GroupName = childItem?.UserGroup?.Title;
+        childItem.GroupName = childItem?.UserGroup?.Title;
         //if (this.props.Context.pageContext.user. == childItem.AssingedToUserId)
         //childItem.IsSelected = true
         item.childs.push(childItem);
@@ -741,7 +746,7 @@ export default class CategoriesWeeklyMultipleReport extends React.Component<ICat
       let item = array[index];
       if (item.Id == Id) {
         isExists = true;
-        return false;
+        //return false;
       }
     }
     return isExists;
@@ -762,6 +767,7 @@ export default class CategoriesWeeklyMultipleReport extends React.Component<ICat
 
   private SelectAllGroupMember(ev: any) {
     //$scope.SelectGroupName = ''
+    let SelectedUsersAll: any = [];
     let select = ev.currentTarget.checked;
     let ImageSelectedUsers: any = [];
     if (select == true) {
@@ -803,12 +809,28 @@ export default class CategoriesWeeklyMultipleReport extends React.Component<ICat
         }
       })
     }
-    let SelectGroupName: any = '';
+    let SelectGroupName: any = [];
+    // this.state.taskUsers.forEach((item: any) => {
+    //   if (item.SelectedGroup == true)
+    //     SelectGroupName = SelectGroupName + item.GroupName + ' ,'
+    // })
+    // SelectGroupName = SelectGroupName.replace(/.$/, "");
     this.state.taskUsers.forEach((item: any) => {
-      if (item.SelectedGroup == true)
-        SelectGroupName = SelectGroupName + item.GroupName + ' ,'
+      if (item.SelectedGroup == true) {
+        SelectGroupName.push(item);
+      } else {
+        if (item.childs != undefined && item.childs.length > 0) {
+          let users = item.childs.filter((obj: any) => obj.IsSelected == true);
+          if (users?.length > 0) {
+            let UserItem: any = {};
+            UserItem["GroupName"] = item.GroupName;
+            UserItem["childs"] = users;
+            SelectGroupName.push(UserItem);
+          }
+          // })
+        }
+      }
     })
-    SelectGroupName = SelectGroupName.replace(/.$/, "");
     this.setState({
       SelectGroupName
     }, () => console.log(this.state.ImageSelectedUsers));
@@ -859,12 +881,28 @@ export default class CategoriesWeeklyMultipleReport extends React.Component<ICat
         })
       }
     })
-    let SelectGroupName: any = '';
+    let SelectGroupName: any = [];
+    // this.state.taskUsers.forEach((item: any) => {
+    //   if (item.SelectedGroup == true)
+    //     SelectGroupName = SelectGroupName + item.GroupName + ' ,'
+    // })
+    // SelectGroupName = SelectGroupName.replace(/.$/, "");
     this.state.taskUsers.forEach((item: any) => {
-      if (item.SelectedGroup == true)
-        SelectGroupName = SelectGroupName + item.GroupName + ' ,'
+      if (item.SelectedGroup == true) {
+        SelectGroupName.push(item);
+      } else {
+        if (item.childs != undefined && item.childs.length > 0) {
+          let users = item.childs.filter((obj: any) => obj.IsSelected == true);
+          if (users?.length > 0) {
+            let UserItem: any = {};
+            UserItem["GroupName"] = item.GroupName;
+            UserItem["childs"] = users;
+            SelectGroupName.push(UserItem);
+          }
+          // })
+        }
+      }
     })
-    SelectGroupName = SelectGroupName.replace(/.$/, "");
     this.setState({
       SelectGroupName
     }, () => console.log(this.state.ImageSelectedUsers));
@@ -910,12 +948,28 @@ export default class CategoriesWeeklyMultipleReport extends React.Component<ICat
         }
       }
     }
-    let SelectGroupName: any = '';
+    let SelectGroupName: any = [];
+    // this.state.taskUsers.forEach((item: any) => {
+    //   if (item.SelectedGroup == true)
+    //     SelectGroupName = SelectGroupName + item.GroupName + ' ,'
+    // })
+    // SelectGroupName = SelectGroupName.replace(/.$/, "");
     this.state.taskUsers.forEach((item: any) => {
-      if (item.SelectedGroup == true)
-        SelectGroupName = SelectGroupName + item.GroupName + ' ,'
+      if (item.SelectedGroup == true) {
+        SelectGroupName.push(item);
+      } else {
+        if (item.childs != undefined && item.childs.length > 0) {
+          let users = item.childs.filter((obj: any) => obj.IsSelected == true);
+          if (users?.length > 0) {
+            let UserItem: any = {};
+            UserItem["GroupName"] = item.GroupName;
+            UserItem["childs"] = users;
+            SelectGroupName.push(UserItem);
+          }
+          // })
+        }
+      }
     })
-    SelectGroupName = SelectGroupName.replace(/.$/, "");
     this.setState({
       SelectGroupName
     }, () => console.log(this.state.ImageSelectedUsers));
@@ -1016,7 +1070,7 @@ export default class CategoriesWeeklyMultipleReport extends React.Component<ICat
         break;
 
       case 'Presettime':
-        let startdt1: any = JSON.parse(localStorage.getItem('startDate')); //new Date(this.state?.StartDatePicker);
+        let startdt1: any = JSON.parse(localStorage.getItem('startDate'));
         if (startdt1 != undefined)
           startdt = new Date(startdt1);
         let enddt1: any = JSON.parse(localStorage.getItem('endDate'));
@@ -1042,6 +1096,10 @@ export default class CategoriesWeeklyMultipleReport extends React.Component<ICat
   }
 
   private updatefilter() {
+    if (this.state.ImageSelectedUsers == undefined || this.state.ImageSelectedUsers.length == 0) {
+      alert('Please Select User');
+      return false;
+    }
     if (this.state.IsUpdatedbutton === false) {
       alert('Select Client Category first');
       return false;
@@ -1118,8 +1176,15 @@ export default class CategoriesWeeklyMultipleReport extends React.Component<ICat
     }
   }
   private ExpandClientCategory = (expanded: any) => {
+
     this.checkBoxColor(undefined)
     this.setState({ expanded })
+  }
+  private updatefilterAgain = () => {
+
+    loadAllTimeEntryData = [];
+    this.setState({ AllTimeEntry: [] })
+    this.updatefilter();
   }
   private async generateTimeEntry() {
 
@@ -1295,7 +1360,7 @@ export default class CategoriesWeeklyMultipleReport extends React.Component<ICat
           timeTab.getUserName = '';
           timeTab.siteType = config.Title;
           timeTab.SiteIcon = '';
-          timeTab.SiteUrl =config?.siteUrl?.Url;
+          timeTab.SiteUrl = config?.siteUrl?.Url;
           timeTab.ImageUrl = config.ImageUrl;
           timeTab.TaskItemID = timeTab[ColumnName].Id;
           timeTab.TaskTitle = timeTab[ColumnName].Title;
@@ -1345,7 +1410,7 @@ export default class CategoriesWeeklyMultipleReport extends React.Component<ICat
               addtime.Title = time.Title;
               addtime.selectedSiteType = time.selectedSiteType;
               addtime.siteType = time.siteType;
-              addtime.SiteIcon = globalCommon.GetIconImageUrl(addtime.selectedSiteType, time.SiteUrl,undefined);
+              addtime.SiteIcon = globalCommon.GetIconImageUrl(addtime.selectedSiteType, time.SiteUrl, undefined);
               addtime.ImageUrl = time.ImageUrl;
               if (time.TaskCreated != undefined)
                 addtime.TaskCreatednew = this.ConvertLocalTOServerDate(time.TaskCreated, 'DD/MM/YYYY');
@@ -1485,6 +1550,7 @@ export default class CategoriesWeeklyMultipleReport extends React.Component<ICat
               if (Item?.ClientCategory?.length > 0) {
                 Item.ClientCategorySearch = Item?.ClientCategory?.map((elem: any) => elem.Title).join(" ")
               } else {
+                Item["ClientCategory"] = [];
                 Item.ClientCategorySearch = ''
               }
               Item.siteImage = itemtype.siteImage;
@@ -1595,7 +1661,7 @@ export default class CategoriesWeeklyMultipleReport extends React.Component<ICat
             filterItem.Id = getItem.Id;
             filterItem.listId = getItem.listId;
             filterItem.siteImage = getItem.siteImage;
-           
+
 
           }
         })
@@ -1790,7 +1856,7 @@ export default class CategoriesWeeklyMultipleReport extends React.Component<ICat
                 // isCategorySelected = true;
                 // break;
               }
-              if (selectedFilters[i].Title == "Other" && (item.clientCategoryIds == undefined || item.clientCategoryIds == '')) {
+              if (selectedFilters[i].Title == "Other" && (item?.ClientCategory?.length === 0) && (item.clientCategoryIds == undefined || item.clientCategoryIds == '')) {
                 let title = selectedFilters[i].ParentTitle == 'PSE' ? 'EPS' : (selectedFilters[i].ParentTitle == 'e+i' ? 'EI' : selectedFilters[i].ParentTitle);
                 if (selectedFilters[i].Title == 'Other') {
                   if ((item.siteType != undefined && item.siteType == title)) {
@@ -1960,7 +2026,7 @@ export default class CategoriesWeeklyMultipleReport extends React.Component<ICat
               child.AdjustedTime = totalnew;
               child.TotalValue = totalnew;
               child.TotalSmartTime = totalnew;
-              child.SmartHoursTotal =child.TotalSmartTime;
+              child.SmartHoursTotal = child.TotalSmartTime;
               child.SmartHoursTime = parseFloat(totalnew.toString()).toFixed(2);
               child.Rountfiguretime = parseFloat(totalnew.toString()).toFixed(2);
               if (child.Rountfiguretime != undefined && child.Rountfiguretime.toString().indexOf('.') > -1) {
@@ -2003,14 +2069,14 @@ export default class CategoriesWeeklyMultipleReport extends React.Component<ICat
             })
           }
           filte.TotalValue = total;
-          filte.TotalSmartTime =total;
+          filte.TotalSmartTime = total;
           filte.AdjustedTime = filte.TotalValue;
           filte.RoundAdjustedTime = Roundfigurtotal;
           filte.TimeInExcel = TimeInExcel;
           filte.SmartHoursTotal = SmartHoursTimetotal;
           filte.clientCategory = '';
-          filte.Firstlevel ='';
-          filte.Secondlevel ='';
+          filte.Firstlevel = '';
+          filte.Secondlevel = '';
           filte.Title = filte.getUserName;
           if (AdjustedimeEntry == undefined || AdjustedimeEntry == '')
             AdjustedimeEntry = 0
@@ -2119,7 +2185,8 @@ export default class CategoriesWeeklyMultipleReport extends React.Component<ICat
       filterItems.forEach(function (filt: any) {
         if (filt != undefined && filt.ID != undefined && filt.checked === true && filter.ID != undefined && filt.ID == filter.ID) {
           isExistsTitle = filt.Title;
-          item.First += filt.Title + ';';
+          if (item?.First?.indexOf(filt.Title) == -1)
+            item.First += filt.Title + ';';
 
         }
         if (filt.children != undefined && filt.children.length > 0) {
@@ -2428,28 +2495,28 @@ export default class CategoriesWeeklyMultipleReport extends React.Component<ICat
   }
   private GetCheckedObject = (arr: any, checked: any, isCheckedValue: any) => {
     let checkObj: any = [];
-    checked?.forEach((value: any) => {
-      arr?.forEach((element: any) => {
-        if (value == element.Id) {
-          element.checked = isCheckedValue;
-          checkObj.push({
-            Id: element?.Id,
-            Title: element?.Title
+    // checked?.forEach((value: any) => {
+    arr?.forEach((element: any) => {
+      // if (value == element.Id) {
+      element.checked = isCheckedValue;
+      checkObj.push({
+        Id: element?.Id,
+        Title: element?.Title
+      })
+      // }
+      if (element?.children != undefined && element?.children?.length > 0) {
+        element?.children?.forEach((chElement: any) => {
+          // if (value == chElement?.Id) {
+          chElement.checked = isCheckedValue;
+          checkObj?.push({
+            Id: chElement?.Id,
+            Title: chElement?.Title
           })
-        }
-        if (element?.children != undefined && element?.children?.length > 0) {
-          element?.children?.forEach((chElement: any) => {
-            if (value == chElement?.Id) {
-              chElement.checked = isCheckedValue;
-              checkObj?.push({
-                Id: chElement?.Id,
-                Title: chElement?.Title
-              })
-            }
-          });
-        }
-      });
+          // }
+        });
+      }
     });
+    // });
     return checkObj;
   }
   private onCheck = (checked: any, item: any) => {
@@ -2518,18 +2585,21 @@ export default class CategoriesWeeklyMultipleReport extends React.Component<ICat
         return;
       }
       obj?.children?.forEach((obj2: any, newlastindex: any) => {
-        if (obj2?.checked === true) {
+        if (obj2?.checked === true && !this.IsExistsData(checkedItems, obj.Id)) {
           IsUpdatedbutton = true;
+          checkedItems.push(obj);
           return;
         }
         obj2?.children?.forEach((obj3: any, newlastindex: any) => {
-          if (obj3?.checked === true) {
+          if (obj3?.checked === true && !this.IsExistsData(checkedItems, obj.Id)) {
             IsUpdatedbutton = true;
+            checkedItems.push(obj);
             return;
           }
           obj3?.children?.forEach((obj4: any, newlastindex: any) => {
-            if (obj4?.checked === true) {
+            if (obj4?.checked === true && !this.IsExistsData(checkedItems, obj.Id)) {
               IsUpdatedbutton = true;
+              checkedItems.push(obj);
             }
           })
         })
@@ -2573,7 +2643,7 @@ export default class CategoriesWeeklyMultipleReport extends React.Component<ICat
         <div className='subheading siteColor'>
           Task Details {this?.state?.openTaggedTaskArray?.getParentRow().original?.getUserName}
         </div>
-        <Tooltip ComponentId={1746} />
+        <Tooltip ComponentId={1753} />
       </div>
     );
   };
@@ -2832,10 +2902,10 @@ export default class CategoriesWeeklyMultipleReport extends React.Component<ICat
           }
           contentItem['Adjusted Hours (Roundup)'] = '';
           if (childItem.TotalValue != undefined) {
-            contentItem['Adjusted Hours (Roundup)'] = parseFloat(childItem.Rountfiguretime); //parseFloat(childItem.SmartHoursTime);
+            contentItem['Adjusted Hours (Roundup)'] = parseFloat(parseFloat(childItem.Rountfiguretime).toFixed(2));  //parseFloat(childItem.SmartHoursTime);
           }
           if (childItem.TotalSmartTime != undefined) {
-            contentItem['Adjusted Hours Roundup (In days)'] = (contentItem['Adjusted Hours (Roundup)'] / 8); //childItem.SmartHoursTime / 8;
+            contentItem['Adjusted Hours Roundup (In days)'] =parseFloat((childItem.Rountfiguretime / 8).toFixed(2));// parseFloat(contentItem['Adjusted Hours (Roundup)'] / 8).toFixed(2); //childItem.SmartHoursTime / 8;
           } else {
             contentItem['Adjusted Hours Roundup (In days)'] = '';
           }
@@ -2845,12 +2915,12 @@ export default class CategoriesWeeklyMultipleReport extends React.Component<ICat
 
           contentItem['Client Category'] = contentItem['Client Category'].substring(0, (contentItem['Client Category']).trim().length - 1);
           if (childItem.TotalSmartTime != undefined) {
-            contentItem['Smart Hours'] = parseFloat(childItem.TotalSmartTime);
+            contentItem['Smart Hours'] = parseFloat(parseFloat(childItem.TotalSmartTime).toFixed(2));
           } else {
             contentItem['Smart Hours'] = '';
           }
           if (childItem.TotalValue != undefined) {
-            contentItem['Smart Days'] = contentItem['Days'];
+            contentItem['Smart Days'] = parseFloat((childItem.AdjustedTime /8).toFixed(2)); 
             // contentItem['Smart Days'] = parseFloat(contentItem['Smart Days']);
           } else {
             contentItem['Smart Days'] = 0;
@@ -2880,7 +2950,7 @@ export default class CategoriesWeeklyMultipleReport extends React.Component<ICat
           //   contentItem['Adjusted Days'] = ''
           // }
           if (childItem.AdjustedTime != undefined) {
-            contentItem['Hours'] = parseFloat(childItem.AdjustedTime);// parseFloat(childItem.Rountfiguretime);
+            contentItem['Hours'] = parseFloat(parseFloat(childItem.AdjustedTime).toFixed(2));// parseFloat(childItem.Rountfiguretime);
           }
           else {
             contentItem['Hours'] = '';
@@ -2888,7 +2958,7 @@ export default class CategoriesWeeklyMultipleReport extends React.Component<ICat
 
 
           if (childItem.TotalSmartTime != undefined) {
-            contentItem['Days'] = (contentItem['Hours'] / 8);
+            contentItem['Days'] = parseFloat((contentItem['Hours'] / 8).toExponential(2));
           } else {
             contentItem['Days'] = '';
           }
@@ -2915,8 +2985,8 @@ export default class CategoriesWeeklyMultipleReport extends React.Component<ICat
           // } else {
           //   contentItem['Days'] = '';
           // }
-          contentItem['Hours Actual'] = childItem.TotalValue;
-          contentItem['Days Actual'] = childItem.TotalValue / 8;
+          contentItem['Hours Actual'] = parseFloat(parseFloat(childItem.TotalValue).toFixed(2));
+          contentItem['Days Actual'] = parseFloat((childItem.TotalValue / 8).toFixed(2));
           this.sheetsItems.push(contentItem);
         }
       }
@@ -2987,7 +3057,7 @@ export default class CategoriesWeeklyMultipleReport extends React.Component<ICat
         yearttile.SmartHoursTotal = RoundAdjustedTime;
         yearttile.Firstlevel = Firstlevel;
         if (dayroundeup != 0)
-          yearttile['Adjusted Day (Roundup)'] = parseFloat(dayroundeup);
+          yearttile['Adjusted Day (Roundup)'] = parseFloat(dayroundeup.toFixed(2));
         // yearttile.AdjustedTime="";
       }
 
@@ -3005,16 +3075,16 @@ export default class CategoriesWeeklyMultipleReport extends React.Component<ICat
     contentItemNew['Site'] = this.state.ImageSelectedUsers.length == 1 ? this.state.ImageSelectedUsers[0].Title : '';
     contentItemNew['First Level'] = '';
     contentItemNew['Hours'] = parseFloat(this.RoundAdjustedTimeTimeEntry);
-    contentItemNew['Days'] = (this.RoundAdjustedTimeTimeEntry / 8);
+    contentItemNew['Days'] = parseFloat((this.RoundAdjustedTimeTimeEntry / 8).toFixed(2));
 
     contentItemNew['Client Category'] = ''
-    contentItemNew['Smart Hours'] = parseFloat(TotalValueAll || 0);;
-    contentItemNew['Smart Days'] = (TotalValueAll / 8);
+    contentItemNew['Smart Hours'] = parseFloat((TotalValueAll || 0).toFixed(2));;;
+    contentItemNew['Smart Days'] = parseFloat((TotalValueAll / 8).toFixed(2));
     contentItemNew['Adjusted Hours (Roundup)'] = parseFloat(this.RoundAdjustedTimeTimeEntry);
 
     contentItemNew['Adjusted Hours Roundup (In days)'] = (contentItemNew['Adjusted Hours (Roundup)'] / 8)
-    contentItemNew['Hours Actual'] = TotalValueAll;
-    contentItemNew['Days Actual'] = (TotalValueAll / 8);
+    contentItemNew['Hours Actual'] = parseFloat(TotalValueAll.toFixed(2));;
+    contentItemNew['Days Actual'] = parseFloat((TotalValueAll / 8).toFixed(2));;
     this.sheetsItems.push(contentItemNew);
     var contentItemNew: any = {};
     contentItemNew['User Name'] = '';
@@ -3050,13 +3120,12 @@ export default class CategoriesWeeklyMultipleReport extends React.Component<ICat
       contentItem['Adjusted Hours (Roundup)'] = '';
       if (item.AdjustedTime != undefined) {
         item.TotalValue = item.TotalValue.toFixed(2);
-        contentItem['Adjusted Hours (Roundup)'] = parseFloat(item.TotalValue);
+        contentItem['Adjusted Hours (Roundup)'] = parseFloat(parseFloat(item.TotalValue).toFixed(2));
       }
       contentItem['Adjusted Hours Roundup (In days)'] = '';
       if (item.SmartHoursTotal != undefined && item.SmartHoursTotal != undefined) {
-        contentItem['Adjusted Hours Roundup (In days)'] = item.TotalValueHours / 8;
-        contentItem['Adjusted Hours Roundup (In days)'] = contentItem['Adjusted Hours Roundup (In days)'].toFixed(2);
-        contentItem['Adjusted Hours Roundup (In days)'] = parseFloat(contentItem['Adjusted Hours Roundup (In days)']);
+        contentItem['Adjusted Hours Roundup (In days)'] =  (item.TotalValueHours / 8).toFixed(2);
+        contentItem['Adjusted Hours Roundup (In days)'] =  parseFloat(parseFloat(contentItem['Adjusted Hours Roundup (In days)']).toFixed(2));
       }
 
 
@@ -3102,18 +3171,18 @@ export default class CategoriesWeeklyMultipleReport extends React.Component<ICat
       }
       contentItem['Smart Hours'] = '';
       if (item.SmartHoursTotal != undefined && item.SmartHoursTotal != undefined) {
-        contentItem['Smart Hours'] = parseFloat(item.TotalValueHours);
+        contentItem['Smart Hours'] = parseFloat(parseFloat(item.TotalValueHours).toFixed(2));
       }
       contentItem['Smart Days'] = '';
       if (item.TotalValue != undefined) {
         let days: any = item.TotalValueHours / 8;
         days = days.toFixed(2);
-        contentItem['Smart Days'] = parseFloat(days);
+        contentItem['Smart Days'] = parseFloat(parseFloat(days).toFixed(2));
 
       }
 
       if (item.AdjustedTime != undefined) {
-        contentItem['Hours'] = parseFloat(item.SmartHoursTotal);;
+        contentItem['Hours'] = parseFloat(parseFloat(item.SmartHoursTotal).toFixed(2));;
       }
       else {
         contentItem['Hours'] = ''
@@ -3121,13 +3190,12 @@ export default class CategoriesWeeklyMultipleReport extends React.Component<ICat
 
       if (item.SmartHoursTotal != undefined && item.SmartHoursTotal != undefined) {
         let daysround: any = (item.TotalValueHours / 8);
-        daysround = daysround.toFixed(2);
-        contentItem['Days'] = (parseFloat(daysround));
+        contentItem['Days'] = parseFloat(parseFloat(daysround).toFixed(2));
       } else {
         contentItem['Days'] = '';
       }
-      contentItem['Hours Actual'] = item.TotalValue;
-      contentItem['Days Actual'] = item.TotalValueHours / 8;
+      contentItem['Hours Actual'] =  parseFloat(parseFloat(item.TotalValue).toFixed(2));
+      contentItem['Days Actual'] =  parseFloat((item.TotalValueHours / 8).toFixed(2));
       this.sheetsItems.push(contentItem);
     })
     var contentItemNew: any = {};
@@ -3174,12 +3242,12 @@ export default class CategoriesWeeklyMultipleReport extends React.Component<ICat
 
       contentItem['Adjusted Hours (Roundup)'] = '';
       if (item.AdjustedTime != undefined) {
-        contentItem['Adjusted Hours (Roundup)'] = parseFloat(item.RoundAdjustedTime != undefined ? item.RoundAdjustedTime : item.SmartHoursTotal);;
+        contentItem['Adjusted Hours (Roundup)'] = parseFloat((item.RoundAdjustedTime != undefined ? item.RoundAdjustedTime : item.SmartHoursTotal).toFixed(2));;
       }
       contentItem['Adjusted Hours Roundup (In days)'] = '';
       if (item.SmartHoursTotal != undefined && item.SmartHoursTotal != undefined) {
 
-        contentItem['Adjusted Hours Roundup (In days)'] = (contentItem['Adjusted Hours (Roundup)'] / 8); //item.SmartHoursTotal / 8;
+        contentItem['Adjusted Hours Roundup (In days)'] = parseFloat((contentItem['Adjusted Hours (Roundup)'] / 8).toFixed(2)); //item.SmartHoursTotal / 8;
 
       }
       if (item.Categories != undefined) {
@@ -3223,7 +3291,7 @@ export default class CategoriesWeeklyMultipleReport extends React.Component<ICat
         contentItem['Client Category'] = '';
       }
       if (item.SmartHoursTotal != undefined && item.SmartHoursTotal != undefined) {
-        contentItem['Smart Hours'] = parseFloat(item.TotalValue);
+        contentItem['Smart Hours'] = parseFloat(parseFloat(item.TotalValue).toFixed(2));
       } else {
         contentItem['Smart Hours'] = '';
       }
@@ -3231,26 +3299,26 @@ export default class CategoriesWeeklyMultipleReport extends React.Component<ICat
       if (item.TotalValue != undefined) {
         // let days: any = item.TimeInExcel / 8;
         // contentItem['Smart Days'] = (days);
-        contentItem['Smart Days'] = contentItem['Days'];
+        contentItem['Smart Days'] = parseFloat((item.AdjustedTime / 8).toFixed(2));
       }
       else {
         contentItem['Smart Days'] = 0;
       }
       if (item.AdjustedTime != undefined) {
-        contentItem['Hours'] = parseFloat(item.AdjustedTime);;// parseFloat(item.RoundAdjustedTime != undefined ? item.RoundAdjustedTime : item.SmartHoursTotal);;
+        contentItem['Hours'] = parseFloat(parseFloat(item.AdjustedTime).toFixed(2));;// parseFloat(item.RoundAdjustedTime != undefined ? item.RoundAdjustedTime : item.SmartHoursTotal);;
       }
       else {
         contentItem['Hours'] = ''
       }
 
       if (item.SmartHoursTotal != undefined && item.SmartHoursTotal != undefined) {
-        contentItem['Days'] = (contentItem['Hours'] / 8);
+        contentItem['Days'] = parseFloat((contentItem['Hours'] / 8).toFixed(2));
 
       } else {
         contentItem['Days'] = '';
       }
-      contentItem['Hours Actual'] = item.TotalValue;
-      contentItem['Days Actual'] = item.TimeInExcel / 8;
+      contentItem['Hours Actual'] = parseFloat(parseFloat(item.TotalValue).toFixed(2));
+      contentItem['Days Actual'] = parseFloat((item.TimeInExcel / 8).toFixed(2));
       this.sheetsItems.push(contentItem);
       this.getexportChilds(item.subRows);
 
@@ -3340,38 +3408,43 @@ export default class CategoriesWeeklyMultipleReport extends React.Component<ICat
     let checkedItems: any = [];
     let checked: any = [];
     let select = ev.currentTarget.checked;
-    if (select) {
-      if (filterItem != undefined && filterItem.length > 0) {
-        filterItem.forEach((child: any) => {
-          child.isExpand = false;
-          child.checked = select;
+
+    if (filterItem != undefined && filterItem.length > 0) {
+      filterItem.forEach((child: any) => {
+        child.isExpand = false;
+        child.checked = select;
+        if (select) {
           checkedItems.push(child);
-          checked.push(child.Id);
-          if (child.children != undefined && child.children.length > 0) {
-            child.children.forEach((subchild: any) => {
-              subchild.checked = select;
-              // checkedItems.push(subchild);
+        }
+        checked.push(child.Id);
+        if (child.children != undefined && child.children.length > 0) {
+          child.children.forEach((subchild: any) => {
+            subchild.checked = select;
+            // checkedItems.push(subchild);
+            if (select) {
               checked.push(subchild.Id);
-              if (subchild.children != undefined && subchild.children.length > 0) {
-                subchild.children.forEach((subchild2: any) => {
-                  subchild2.checked = select;
-                  // checkedItems.push(subchild2);
+            }
+            if (subchild.children != undefined && subchild.children.length > 0) {
+              subchild.children.forEach((subchild2: any) => {
+                subchild2.checked = select;
+                // checkedItems.push(subchild2);
+                if (select) {
                   checked.push(subchild2.Id);
-                  if (subchild2.children != undefined && subchild2.children.length > 0) {
-                    subchild2.children.forEach((subchild3: any) => {
-                      subchild3.checked = select;
-                      //   checkedItems.push(subchild3);
+                }
+                if (subchild2.children != undefined && subchild2.children.length > 0) {
+                  subchild2.children.forEach((subchild3: any) => {
+                    subchild3.checked = select;
+                    //   checkedItems.push(subchild3);
+                    if (select) {
                       checked.push(subchild3.Id);
-                    });
-                  }
-                });
-              }
-            });
-          }
-        });
-      }
-    }
-    else {
+                    }
+                  });
+                }
+              });
+            }
+          });
+        }
+      });
     }
     this.setState({
       checked,
@@ -3382,21 +3455,25 @@ export default class CategoriesWeeklyMultipleReport extends React.Component<ICat
   }
   private getAllSubChildenCount(item: any) {
     let count = 1;
-    if (item.children != undefined && item.children.length > 0) {
-      count += item.children.length;
-      item.children.forEach((subchild: any) => {
-        if (subchild.children != undefined && subchild.children.length > 0) {
-          count += subchild.children.length;
-          subchild.children.forEach((subchild2: any) => {
-            if (subchild2.children != undefined && subchild2.children.length > 0) {
-              count += subchild2.children.length;
-              subchild2.children.forEach((subchild3: any) => {
-              });
-            }
-          });
-        }
-      });
+    if (item.children != undefined && item?.checked === true && item.children.length > 0) {
+      count += item?.children?.length;
     }
+    item?.children?.forEach((subchild: any) => {
+      if (subchild.children != undefined && subchild?.checked === true && subchild.children.length > 0) {
+        count += subchild?.children?.length;
+      }
+      subchild?.children?.forEach((subchild2: any) => {
+        if (subchild2.children != undefined && subchild2?.checked === true && subchild2.children.length > 0) {
+          count += subchild2?.children?.length;
+        }
+        subchild2?.children?.forEach((subchild3: any) => {
+          if (subchild3?.checked === true && subchild3?.children?.length > 0) {
+            count += subchild3?.children?.length;
+          }
+        });
+      });
+
+    });
     return count;
   }
   private onRenderCustomHeaderMains = () => {
@@ -3433,9 +3510,10 @@ export default class CategoriesWeeklyMultipleReport extends React.Component<ICat
 
         <div className="smartFilter bg-light border mb-3 col row">
           <div className="report-taskuser ps-0 pe-1" id="TimeSheet-Section">
-            <details className='pt-1 m-0 allfilter' open>
-              <summary>
-                <a className="fw-semibold hreflink mr-5 pe-2 pull-left">All filters :<span className='fw-normal me-1'>Task User :</span><span className='fw-normal me-1'>
+            {/* <details className='pt-1 m-0 allfilter' open> */}
+            {/* <summary>
+                <a className="fw-semibold hreflink mr-5 pe-2 pull-left">All filters 
+                  <span className='fw-normal me-1'>
                   {this.state.SelectGroupName}
                 </span> </a>
                 {this.state.ImageSelectedUsers.length <= 3 ? (
@@ -3451,223 +3529,251 @@ export default class CategoriesWeeklyMultipleReport extends React.Component<ICat
                   this.state.ImageSelectedUsers.length > 3 && <span>({this.state.ImageSelectedUsers.length})</span>)
 
                 }
-              </summary>
-              <div className="subfilters BdrBoxBlue mb-3">
-                <div className="taskTeamBox mt-10">
-                  <details className='p-0 m-0' open>
-                    <summary>
-                      <div className='alignCenter'>
-                        <a className="hreflink pull-left mr-5">Team Members</a>
-                        <span className='alignCenter ml-auto'>
-                          <input type="checkbox" className="form-check-input m-0" onClick={(e) => this.SelectAllGroupMember(e)} />
-                          <label className='ms-1 f-14'>Select All </label>
-                        </span>
-                      </div>
-
-                    </summary>
-                    <div className="BdrBoxBlue ps-20 mb-3 ms-2" style={{ borderTop: "1.5px solid", borderColor: "var(--SiteBlue)" }}>
-                      <div className="taskTeamBox mt-10">
-                        {this.state.taskUsers != null && this.state.taskUsers.length > 0 && this.state.taskUsers.map((user: any, i: number) => {
-                          return <div className="top-assign">
-                            <fieldset className="team">
-                              <label className="BdrBtm">
-                                <input className="form-check-input m-0" checked={user.SelectedGroup === true} type="checkbox" onClick={(e) => this.SelectedGroup(e, user)} />
-                                {user.Title}
-                              </label>
-                              <div className='alignCenter'>
-                                {user.childs.length > 0 && user.childs.map((item: any, i: number) => {
-                                  return <div className="alignCenter">
-                                    {item.Item_x0020_Cover != undefined && item.AssingedToUser != undefined ?
-                                      <span>
-                                        <img id={"UserImg" + item.Id} className={item?.AssingedToUserId == user?.Id ? 'activeimg seclected-Image ProirityAssignedUserPhoto' : 'ProirityAssignedUserPhoto'} onClick={(e) => this.SelectUserImage(e, item, user)} ui-draggable="true" on-drop-success="dropSuccessHandler($event, $index, user.childs)"
-                                          title={item?.AssingedToUser?.Title}
-                                          src={item?.Item_x0020_Cover?.Url !== undefined ? item?.Item_x0020_Cover?.Url : 'https://hhhhteams.sharepoint.com/sites/HHHH/SiteCollectionImages/ICONS/32/icon_user.jpg'} />
-                                      </span> : <span>
-                                        <img id={"UserImg" + item.Id} className={item?.AssingedToUserId == user?.Id ? 'activeimg seclected-Image ProirityAssignedUserPhoto' : 'ProirityAssignedUserPhoto'} onClick={(e) => this.SelectUserImage(e, item, user)} ui-draggable="true" on-drop-success="dropSuccessHandler($event, $index, user.childs)"
-                                          title={item?.AssingedToUser?.Title}
-                                          src={'https://hhhhteams.sharepoint.com/sites/HHHH/SiteCollectionImages/ICONS/32/icon_user.jpg'} />
-                                      </span>
-                                    }
-
-                                  </div>
-                                })}
-                              </div>
-                            </fieldset>
-                          </div>
-                        })
-
-                        }
-                      </div>
-                    </div>
-                  </details>
-                  <details className='p-0 m-0' open>
-                    <summary>
-                      <a>Date</a>
-
-                    </summary>
-
-                    <div className="BdrBoxBlue ps-20 mb-3 ms-2" style={{ borderTop: "1.5px solid", borderColor: "var(--SiteBlue)" }}>
-                      <div className="taskTeamBox mt-10">
-                        <div className="Weekly-TimeReportDays">
-                          <span className='SpfxCheckRadio'>
-                            <input type="radio" name="dateSelection" checked={this.state.SelecteddateChoice === 'Custom'} id="selectedCustom" value="Custom" onClick={() => this.selectDate('Custom')} className="radio" />
-                            <label>Custom</label>
+              </summary> */}
+            <div className="subfilters BdrBoxBlue mb-3">
+              <div className="taskTeamBox mt-10">
+                <details className='p-0 m-0' open>
+                  <summary>
+                    <div className='alignCenter'>
+                      <a className="hreflink pull-left mr-5">Team Members </a>
+                      {this?.state?.taskUsers != null && this?.state?.SelectGroupName.length > 0 && this?.state?.SelectGroupName.map((user: any, i: number) => {
+                        return <div className="top-assign  mt-1">
+                          <span className='fw-normal me-1'>
+                            {user.GroupName} :
                           </span>
-                          <span className='SpfxCheckRadio'>
-                            <input type="radio" name="dateSelection" checked={this.state.SelecteddateChoice === 'today'} id="selectedToday" value="today" onClick={() => this.selectDate('today')} className="radio" />
-                            <label>Today</label>
-                          </span>
-                          <span className='SpfxCheckRadio'>
-                            <input type="radio" name="dateSelection" checked={this.state.SelecteddateChoice === 'yesterday'} id="selectedYesterday" value="yesterday" onClick={() => this.selectDate('yesterday')} className="radio" />
-                            <label> Yesterday </label>
-                          </span>
-                          <span className='SpfxCheckRadio'>
-                            <input type="radio" name="dateSelection" checked={this.state.SelecteddateChoice === 'ThisWeek'} id="selectedAll" value="ThisWeek" onClick={() => this.selectDate('ThisWeek')} className="radio" />
-                            <label> This Week</label>
-                          </span>
-                          <span className='SpfxCheckRadio'>
-                            <input type="radio" name="dateSelection" checked={this.state.SelecteddateChoice === 'LastWeek'} id="selectedAll" value="LastWeek" onClick={() => this.selectDate('LastWeek')} className="radio" />
-                            <label> Last Week</label>
-                          </span>
-                          <span className='SpfxCheckRadio'>
-                            <input type="radio" name="dateSelection" checked={this.state.SelecteddateChoice === 'EntrieMonth'} id="selectedAll" value="EntrieMonth" onClick={() => this.selectDate('EntrieMonth')} className="radio" />
-                            <label>This Month</label>
-                          </span>
-                          <span className='SpfxCheckRadio'>
-                            <input type="radio" name="dateSelection" checked={this.state.SelecteddateChoice === 'LastMonth'} id="selectedAll" value="LastMonth" onClick={() => this.selectDate('LastMonth')} className="radio" />
-                            <label>Last Month</label>
-                          </span>
-                          <span className='SpfxCheckRadio'>
-                            <input type="radio" name="dateSelection" checked={this.state.SelecteddateChoice === 'Last3Month'} value="Last3Month" onClick={() => this.selectDate('Last3Month')} className="radio" />
-                            <label>Last 3 Months</label>
-                          </span>
-                          <span className='SpfxCheckRadio'>
-                            <input type="radio" name="dateSelection" checked={this.state.SelecteddateChoice === 'EntrieYear'} value="EntrieYear" onClick={() => this.selectDate('EntrieYear')} className="radio" />
-                            <label>This Year</label>
-                          </span>
-                          <span className='SpfxCheckRadio'>
-                            <input type="radio" name="dateSelection" checked={this.state.SelecteddateChoice === 'LastYear'} value="LastYear" onClick={() => this.selectDate('LastYear')} className="radio" />
-                            <label>Last Year</label>
-                          </span>
-                          <span className='SpfxCheckRadio'>
-                            <input type="radio" name="dateSelection" checked={this.state.SelecteddateChoice === 'AllTime'} value="AllTime" onClick={() => this.selectDate('AllTime')} className="radio" />
-                            <label>All Time</label>
-                          </span>
-                          <span className='SpfxCheckRadio'>
-                            <input type="radio" name="dateSelection" checked={this.state.SelecteddateChoice === 'Presettime'} value="Presettime" onClick={() => this.selectDate('Presettime')} className="radio" />
-                            <label>Pre-set I</label>
-                            {/* <img className="hreflink wid11 mr-5"  title="open" src="https://hhhhteams.sharepoint.com/sites/HHHH/SiteCollectionImages/ICONS/32/icon_inline.png" /> */}
-                            <span title="open" onClick={(e) => this.OpenPresetDatePopup('Presettime')} className='hreflink alignIcon ms-1 svg__iconbox svg__icon--editBox'></span>
-                          </span>
-                          <span className='SpfxCheckRadio'>
-                            <input type="radio" id="Presettime1" checked={this.state.SelecteddateChoice === 'Presettime1'} name="dateSelection" value="Presettime1" onClick={() => this.selectDate('Presettime1')} className="radio" />
-                            <label>Pre-set II</label>
-
-                            <span title="open" onClick={(e) => this.OpenPresetDate2Popup('Presettime1')} className='hreflink alignIcon ms-1 svg__iconbox svg__icon--editBox'></span>
-                          </span>
-                        </div>
-                        <div className='row mt-2'>
-                          <div className='col-2 ps-2'>
-                            <div className='input-group'>
-                              <label className="full_width form-label">Start Date</label>
-                              <DatePicker selected={this.state.startdate} dateFormat="dd/MM/yyyy" onChange={(date) => this.setStartDate(date)} className="form-control" />
-                            </div>
-                          </div>
-                          <div className='col-2'>
-                            <div className='input-group'>
-                              <label className="full_width form-label">End Date</label>
-                              <DatePicker selected={this.state.enddate} dateFormat="dd/MM/yyyy" onChange={(date) => this.setEndDate(date)} className="form-control" />
-                            </div>
-                          </div>
-                          <div className='col'>
-                            <div className='mt-1'>
-                              <label className='full_width'>Portfolio Item</label>
-                              <div className='alignCenter'>
-                                <label className='SpfxCheckRadio alignCenter'><input type="checkbox" checked={this.state?.IsCheckedComponent} className="form-check-input me-1" onClick={(e) => this.SelectedPortfolioItem(e, 'Component')} /> Component</label>
-                                <label className='SpfxCheckRadio alignCenter'><input type="checkbox" checked={this.state?.IsCheckedService} className="form-check-input ms-2 me-1" onClick={(e) => this.SelectedPortfolioItem(e, 'Service')} /> Service </label>
-                              </div>
-                            </div>
-                          </div>
-
-                        </div>
-                      </div>
-                    </div>
-                  </details>
-                  <details className='p-0 m-0' open>
-                    <summary>
-                      <label className="toggler full_width">
-                        <a className="pull-left">
-                          SmartSearch - Filters
-                        </a>
-                        <span className='ms-3'>
-                          {this?.state?.checkedItems != null && this.state.checkedItems.length > 0 &&
-                            this.state.checkedItems.map((obj: any) => {
-                              return <span> {obj.Title}
-                                <span className='me-1'>
-                                  : ({this.getAllSubChildenCount(obj)})
-                                </span>
+                          {user?.childs?.length <= 3 ? (
+                            user?.childs?.map(function (obj: any) {
+                              return (<span className="marginR41">
+                                <img onClick={(e) => this.SelectUserImage(e, obj)} title={obj?.AssingedToUserTitle}
+                                  className="AssignUserPhoto mb-0"
+                                  src={obj.Item_x0020_Cover.Url}
+                                ></img>
                               </span>
-                            })
+                              )
+                            })) : (
+                            user?.childs.length > 3 && <span>({user.childs.length})</span>)
+
                           }
+                          {(i!== this?.state?.SelectGroupName?.length -1) &&
+
+                            <span className='fw-normal mx-1'> |</span>
+                          }
+
+                        </div>
+                      })}
+                      <span className='alignCenter ml-auto'>
+                        <input type="checkbox" className="form-check-input m-0" onClick={(e) => this.SelectAllGroupMember(e)} />
+                        <label className='ms-1 f-14'>Select All </label>
+                      </span>
+                    </div>
+
+                  </summary>
+                  <div className="BdrBoxBlue ps-20 mb-3 ms-2" style={{ borderTop: "1.5px solid", borderColor: "var(--SiteBlue)" }}>
+                    <div className="taskTeamBox mt-10">
+                      {this.state.taskUsers != null && this.state.taskUsers.length > 0 && this.state.taskUsers.map((user: any, i: number) => {
+                        return <div className="top-assign">
+                          <fieldset className="team">
+                            <label className="BdrBtm">
+                              <input className="form-check-input m-0" checked={user.SelectedGroup === true} type="checkbox" onClick={(e) => this.SelectedGroup(e, user)} />
+                              {user.Title}
+                            </label>
+                            <div className='alignCenter'>
+                              {user.childs.length > 0 && user.childs.map((item: any, i: number) => {
+                                return <div className="alignCenter">
+                                  {item.Item_x0020_Cover != undefined && item.AssingedToUser != undefined ?
+                                    <span>
+                                      <img id={"UserImg" + item.Id} className={item?.AssingedToUserId == user?.Id ? 'activeimg seclected-Image ProirityAssignedUserPhoto' : 'ProirityAssignedUserPhoto'} onClick={(e) => this.SelectUserImage(e, item, user)} ui-draggable="true" on-drop-success="dropSuccessHandler($event, $index, user.childs)"
+                                        title={item.AssingedToUser.Title}
+                                        src={item.Item_x0020_Cover.Url} />
+                                    </span> :
+                                    <span id={"UserImg" + item.Id} className={item?.AssingedToUserId == user?.Id ? 'activeimg seclected-Image suffix_Usericon showSuffixIcon' : 'suffix_Usericon showSuffixIcon'} title={item.Title} onClick={(e) => this.SelectUserImage(e, item, user)} ui-draggable="true" on-drop-success="dropSuccessHandler($event, $index, user.childs)"
+                                    >{item?.Suffix}</span>
+                                  }
+
+                                </div>
+                              })}
+                            </div>
+                          </fieldset>
+                        </div>
+                      })
+
+                      }
+                    </div>
+                  </div>
+                </details>
+                <details className='p-0 m-0' open>
+                  <summary>
+                    <a>Date   {Moment(this?.state?.startdate).format("DD/MM/YYYY")} - {Moment(this?.state?.enddate).format("DD/MM/YYYY")}</a>
+
+                  </summary>
+
+                  <div className="BdrBoxBlue ps-20 mb-3 ms-2" style={{ borderTop: "1.5px solid", borderColor: "var(--SiteBlue)" }}>
+                    <div className="taskTeamBox mt-10">
+                      <div className="Weekly-TimeReportDays">
+                        <span className='SpfxCheckRadio'>
+                          <input type="radio" name="dateSelection" checked={this.state.SelecteddateChoice === 'Custom'} id="selectedCustom" value="Custom" onClick={() => this.selectDate('Custom')} className="radio" />
+                          <label>Custom</label>
                         </span>
-                      </label>
+                        <span className='SpfxCheckRadio'>
+                          <input type="radio" name="dateSelection" checked={this.state.SelecteddateChoice === 'today'} id="selectedToday" value="today" onClick={() => this.selectDate('today')} className="radio" />
+                          <label>Today</label>
+                        </span>
+                        <span className='SpfxCheckRadio'>
+                          <input type="radio" name="dateSelection" checked={this.state.SelecteddateChoice === 'yesterday'} id="selectedYesterday" value="yesterday" onClick={() => this.selectDate('yesterday')} className="radio" />
+                          <label> Yesterday </label>
+                        </span>
+                        <span className='SpfxCheckRadio'>
+                          <input type="radio" name="dateSelection" checked={this.state.SelecteddateChoice === 'ThisWeek'} id="selectedAll" value="ThisWeek" onClick={() => this.selectDate('ThisWeek')} className="radio" />
+                          <label> This Week</label>
+                        </span>
+                        <span className='SpfxCheckRadio'>
+                          <input type="radio" name="dateSelection" checked={this.state.SelecteddateChoice === 'LastWeek'} id="selectedAll" value="LastWeek" onClick={() => this.selectDate('LastWeek')} className="radio" />
+                          <label> Last Week</label>
+                        </span>
+                        <span className='SpfxCheckRadio'>
+                          <input type="radio" name="dateSelection" checked={this.state.SelecteddateChoice === 'EntrieMonth'} id="selectedAll" value="EntrieMonth" onClick={() => this.selectDate('EntrieMonth')} className="radio" />
+                          <label>This Month</label>
+                        </span>
+                        <span className='SpfxCheckRadio'>
+                          <input type="radio" name="dateSelection" checked={this.state.SelecteddateChoice === 'LastMonth'} id="selectedAll" value="LastMonth" onClick={() => this.selectDate('LastMonth')} className="radio" />
+                          <label>Last Month</label>
+                        </span>
+                        <span className='SpfxCheckRadio'>
+                          <input type="radio" name="dateSelection" checked={this.state.SelecteddateChoice === 'Last3Month'} value="Last3Month" onClick={() => this.selectDate('Last3Month')} className="radio" />
+                          <label>Last 3 Months</label>
+                        </span>
+                        <span className='SpfxCheckRadio'>
+                          <input type="radio" name="dateSelection" checked={this.state.SelecteddateChoice === 'EntrieYear'} value="EntrieYear" onClick={() => this.selectDate('EntrieYear')} className="radio" />
+                          <label>This Year</label>
+                        </span>
+                        <span className='SpfxCheckRadio'>
+                          <input type="radio" name="dateSelection" checked={this.state.SelecteddateChoice === 'LastYear'} value="LastYear" onClick={() => this.selectDate('LastYear')} className="radio" />
+                          <label>Last Year</label>
+                        </span>
+                        <span className='SpfxCheckRadio'>
+                          <input type="radio" name="dateSelection" checked={this.state.SelecteddateChoice === 'AllTime'} value="AllTime" onClick={() => this.selectDate('AllTime')} className="radio" />
+                          <label>All Time</label>
+                        </span>
+                        <span className='SpfxCheckRadio'>
+                          <input type="radio" name="dateSelection" checked={this.state.SelecteddateChoice === 'Presettime'} value="Presettime" onClick={() => this.selectDate('Presettime')} className="radio" />
+                          <label>Pre-set I</label>
+                          {/* <img className="hreflink wid11 mr-5"  title="open" src="https://hhhhteams.sharepoint.com/sites/HHHH/SiteCollectionImages/ICONS/32/icon_inline.png" /> */}
+                          <span title="open" onClick={(e) => this.OpenPresetDatePopup('Presettime')} className='hreflink alignIcon ms-1 svg__iconbox svg__icon--editBox'></span>
+                        </span>
+                        <span className='SpfxCheckRadio'>
+                          <input type="radio" id="Presettime1" checked={this.state.SelecteddateChoice === 'Presettime1'} name="dateSelection" value="Presettime1" onClick={() => this.selectDate('Presettime1')} className="radio" />
+                          <label>Pre-set II</label>
 
-                    </summary>
-                    <div className=" BdrBoxBlue ps-20 mb-3 ms-2" style={{ borderTop: "1.5px solid", borderColor: "var(--SiteBlue)" }}>
-                      <div className="taskTeamBox mt-10">
-                        {this?.state?.loaded ? <PageLoader /> : ''}
-                        {/* <Loader loaded={this.state.loaded} lines={13} length={20} width={10} radius={30} corners={1} rotate={0} direction={1} color={portfolioColor ? portfolioColor : "#000066"}
-                          speed={2} trail={60} shadow={false} hwaccel={false} className="spinner" zIndex={2e9} top="28%" left="50%" scale={1.0} loadedClassName="loadedContent" /> */}
-                        <div className="p-0 mt-10 smartSearch-Filter-Section">
-                          <label className='border-bottom full-width alignCenter pb-1'>
-                            <input defaultChecked={this.state.checkedAll} onClick={(e) => this.SelectAllCategories(e)} id='chkAllCategory' type="checkbox" className="form-check-input me-1 mt-1" />
-                            Client Category
-
-
-                          </label>
-                          <div className='custom-checkbox-tree weeklyReport'>
-                            <CheckboxTree
-                              nodes={this.state.filterItems}
-                              checked={this.state.checked}
-                              expanded={this.state.expanded}
-                              onCheck={(e, checked) => this.onCheck(e, checked)}
-                              onExpand={expanded => this.ExpandClientCategory(expanded)}
-                              nativeCheckboxes={true}
-                              showNodeIcon={false}
-                              checkModel={'all'}
-                              icons={{
-                                expandOpen: <SlArrowDown />,
-                                expandClose: <SlArrowRight />,
-                                parentClose: null,
-                                parentOpen: null,
-                                leaf: null,
-                              }}
-                            />
+                          <span title="open" onClick={(e) => this.OpenPresetDate2Popup('Presettime1')} className='hreflink alignIcon ms-1 svg__iconbox svg__icon--editBox'></span>
+                        </span>
+                      </div>
+                      <div className='row mt-2'>
+                        <div className='col-2 ps-2'>
+                          <div className='input-group'>
+                            <label className="full_width form-label">Start Date</label>
+                            <DatePicker selected={this.state.startdate} dateFormat="dd/MM/yyyy" onChange={(date) => this.setStartDate(date)} className="form-control" />
+                          </div>
+                        </div>
+                        <div className='col-2'>
+                          <div className='input-group'>
+                            <label className="full_width form-label">End Date</label>
+                            <DatePicker selected={this.state.enddate} dateFormat="dd/MM/yyyy" onChange={(date) => this.setEndDate(date)} className="form-control" />
+                          </div>
+                        </div>
+                        <div className='col'>
+                          <div className='mt-1'>
+                            <label className='full_width'>Portfolio Item</label>
+                            <div className='alignCenter'>
+                              <label className='SpfxCheckRadio alignCenter'><input type="checkbox" checked={this.state?.IsCheckedComponent} className="form-check-input me-1" onClick={(e) => this.SelectedPortfolioItem(e, 'Component')} /> Component</label>
+                              <label className='SpfxCheckRadio alignCenter'><input type="checkbox" checked={this.state?.IsCheckedService} className="form-check-input ms-2 me-1" onClick={(e) => this.SelectedPortfolioItem(e, 'Service')} /> Service </label>
+                            </div>
                           </div>
                         </div>
 
-                        <div className="col-sm-12 mt-10 pe-1 text-end">
-                          {/* <div className='col'>
-                            <label className='full_width'></label>
-                            <div className=''>
-                              <button type="button" disabled={this.state?.IsUpdatedbutton === false} className="btnCol btn btn-primary pull-right" onClick={() => this.updatefilter()}>
-                                Update Filters
-                              </button>
-                            </div>
-                          </div> */}
+                      </div>
+                    </div>
+                  </div>
+                </details>
+                <details className='p-0 m-0' open>
+                  <summary>
+                    <label className="toggler full_width">
+                      <a className="pull-left">
+                        SmartSearch - Filters
+                      </a>
+                      <span className='ms-3'>
+                        {this?.state?.checkedItems != null && this.state.checkedItems.length > 0 &&
+                          this.state.checkedItems.map((obj: any) => {
+                            return <span> {obj.Title}
+                              <span className='me-1'>
+                                : ({this.getAllSubChildenCount(obj)})
+                              </span>
+                            </span>
+                          })
+                        }
+                      </span>
+                    </label>
+
+                  </summary>
+                  <div className=" BdrBoxBlue ps-20 mb-3 ms-2" style={{ borderTop: "1.5px solid", borderColor: "var(--SiteBlue)" }}>
+                    <div className="taskTeamBox mt-10">
+                      {this?.state?.loaded ? <PageLoader /> : ''}
+                      {/* <Loader loaded={this.state.loaded} lines={13} length={20} width={10} radius={30} corners={1} rotate={0} direction={1} color={portfolioColor ? portfolioColor : "#000066"}
+                          speed={2} trail={60} shadow={false} hwaccel={false} className="spinner" zIndex={2e9} top="28%" left="50%" scale={1.0} loadedClassName="loadedContent" /> */}
+                      <div className="p-0 mt-10 smartSearch-Filter-Section">
+                        <label className='border-bottom full-width alignCenter pb-1'>
+                          <input defaultChecked={this.state.checkedAll} onClick={(e) => this.SelectAllCategories(e)} id='chkAllCategory' type="checkbox" className="form-check-input me-1 mt-1" />
+                          Client Category
+
+
+                        </label>
+                        <div className='custom-checkbox-tree weeklyReport'>
+                          <CheckboxTree
+                            nodes={this.state.filterItems}
+                            checked={this.state.checked}
+                            expanded={this.state.expanded}
+                            onCheck={(e, checked) => this.onCheck(e, checked)}
+                            onExpand={expanded => this.ExpandClientCategory(expanded)}
+                            nativeCheckboxes={true}
+                            showNodeIcon={false}
+                            checkModel={'all'}
+                            icons={{
+                              expandOpen: <SlArrowDown />,
+                              expandClose: <SlArrowRight />,
+                              parentClose: null,
+                              parentOpen: null,
+                              leaf: null,
+                            }}
+                          />
+                        </div>
+                      </div>
+
+                      {/* <div className="col-sm-12 mt-10 pe-1 text-end">
+                         
                           <button type="button" className="btnCol btn btn-primary" onClick={() => this.updatefilter()}>
                             Update Filters
                           </button>
                           <button type="button" className="btn btn-default ms-2" onClick={() => this.ClearFilters()}>
                             Clear Filters
                           </button>
-                        </div>
-                      </div>
+                        </div> */}
                     </div>
-                  </details>
+                  </div>
+                </details>
+                <div className="col-sm-12 mt-10 pe-1 text-end">
+
+                  <button type="button" className="btnCol btn btn-primary ms-2" onClick={() => this.updatefilter()}>
+                    Update Filters
+                  </button>
+                  <button type="button" className="btnCol btn btn-primary ms-2" onClick={() => this.updatefilterAgain()}>
+                    Refresh Data
+                  </button>
+                  <button type="button" className="btn btn-default ms-2" onClick={() => this.ClearFilters()}>
+                    Clear Filters
+                  </button>
                 </div>
               </div>
-            </details>
+            </div>
+            {/* </details> */}
           </div>
         </div>
         <div className='container-fluid p-0'>

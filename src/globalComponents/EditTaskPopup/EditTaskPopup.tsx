@@ -48,7 +48,7 @@ import SmartTotalTime from "./SmartTimeTotal";
 import "react-datepicker/dist/react-datepicker.css";
 import BackgroundCommentComponent from "./BackgroundCommentComponent";
 import EmailNotificationMail from "./EmailNotificationMail";
-
+import OnHoldCommentCard from '../Comments/OnHoldCommentCard';
 let PortfolioItemColor: any = "";
 var AllMetaData: any = [];
 var taskUsers: any = [];
@@ -58,7 +58,7 @@ var CommentBoxData: any = [];
 var SubCommentBoxData: any = [];
 var timesheetData: any = [];
 var updateFeedbackArray: any = [];
-var tempShareWebTypeData: any = [];
+let tempShareWebTypeData: any = [];
 var tempCategoryData: any = "";
 var SiteTypeBackupArray: any = [];
 var currentUserBackupArray: any = [];
@@ -905,15 +905,8 @@ const EditTaskPopup = (Items: any) => {
                     let ImmediateCheck = item.Categories.search("Immediate");
                     let ApprovalCheck = item.Categories.search("Approval");
                     let OnlyCompletedCheck = item.Categories.search("Only Completed");
-                    let DesignCheck: any;
-                    if (
-                        item.Categories == "Design" ||
-                        item.Categories == "Design;" ||
-                        item.Categories == "Design;Approval" ||
-                        item.Categories == "Design;Approval;"
-                    ) {
-                        DesignCheck = item.Categories.search("Design");
-                    }
+                    let DesignCheck = item.Categories.search("Design");
+
                     if (phoneCheck >= 0) {
                         setPhoneStatus(true);
                     } else {
@@ -1533,6 +1526,7 @@ const EditTaskPopup = (Items: any) => {
         (DataItem: any, Type: any, functionType: any) => {
             if (functionType == "Close") {
                 setOpenTeamPortfolioPopup(false);
+                setProjectManagementPopup(false);
                 setopenLinkedPortfolioPopup(false);
             } else {
                 if (DataItem != undefined && DataItem.length > 0) {
@@ -1618,15 +1612,20 @@ const EditTaskPopup = (Items: any) => {
                         }
                     }
                     if (Type == "Single") {
-                        setTaggedPortfolioData(DataItem);
-                        let ComponentType: any = DataItem[0].PortfolioType.Title;
-                        getLookUpColumnListId(
-                            siteUrls,
-                            AllListIdData?.MasterTaskListID,
-                            "PortfolioType",
-                            ComponentType,
-                            "Updated-phase"
-                        );
+                        if(DataItem[0]?.Item_x0020_Type=="Project"||DataItem[0]?.Item_x0020_Type=="Sprint"){
+                            setSelectedProject(DataItem);
+                            setProjectManagementPopup(false)
+                        }else{
+                            setTaggedPortfolioData(DataItem);
+                            let ComponentType: any = DataItem[0].PortfolioType.Title;
+                            getLookUpColumnListId(
+                                siteUrls,
+                                AllListIdData?.MasterTaskListID,
+                                "PortfolioType",
+                                ComponentType,
+                                "Updated-phase"
+                            );
+                        }
                     }
                     setOpenTeamPortfolioPopup(false);
                     setopenLinkedPortfolioPopup(false);
@@ -1648,143 +1647,32 @@ const EditTaskPopup = (Items: any) => {
 
     //  ###################  Smart Category slection Common Functions with Validations ##################
 
+ 
     const setSelectedCategoryData = (selectCategoryData: any, usedFor: any) => {
         setIsComponentPicker(false);
-        let TempArray: any = [];
-        selectCategoryData.map((existingData: any) => {
-            let elementFoundCount: any = 0;
-            if (
-                tempShareWebTypeData != undefined &&
-                tempShareWebTypeData.length > 0
-            ) {
-                tempShareWebTypeData = tempShareWebTypeData.reduce(function (
-                    previous: any,
-                    current: any
-                ) {
-                    var alredyExists =
-                        previous.filter(function (item: any) {
-                            return item.Title === current.Title;
-                        }).length > 0;
-                    if (!alredyExists) {
-                        previous.push(current);
-                    }
-                    return previous;
-                },
-                    []);
-                tempShareWebTypeData.map((currentData: any) => {
-                    if (existingData.Title == currentData.Title) {
-                        elementFoundCount++;
-                    }
-                });
-            }
-            if (existingData?.IsSendAttentionEmail?.Id != undefined) {
-                setIsSendAttentionMsgStatus(true);
-                userSendAttentionEmails.push(existingData?.IsSendAttentionEmail?.EMail);
-                setSendCategoryName(existingData?.Title);
-            }
-            if (existingData?.Title == "Bottleneck") {
-                setIsSendAttentionMsgStatus(true);
-                if (EditData?.TaskAssignedUsers?.length > 0) {
-                    EditData?.TaskAssignedUsers?.map((AssignedUser: any, Index: any) => {
-                        userSendAttentionEmails.push(AssignedUser.Email);
-                    });
-                }
-                setSendCategoryName(existingData?.Title);
-            }
-            if (elementFoundCount == 0) {
-                let category: any;
-                if (selectCategoryData != undefined && selectCategoryData.length > 0) {
-                    selectCategoryData.map((categoryData: any) => {
-                        categoryTitle = categoryData.newTitle;
-                        if (usedFor == "For-Auto-Search") {
-                            // if (categoryTitle != "On-Hold") {
-                                tempShareWebTypeData.push(categoryData);
-                            // } else if (categoryTitle == "On-Hold") {
-                            //     onHoldCategory.push(categoryData);
-                            // }
-                        }
-                        if (usedFor == "For-Panel") {
-                            // if (categoryTitle != "On-Hold") {
-                                tempShareWebTypeData.push(categoryData);
-                            // } else if (categoryTitle == "On-Hold") {
-                                // onHoldCategory.push(categoryData);
-                            // }
-                        }
-                        TempArray.push(categoryData);
-                        let isExists: any = 0;
-                        if (tempCategoryData?.length > 0) {
-                            isExists = tempCategoryData.search(categoryData.Title);
-                        } else {
-                            category =
-                                category != undefined
-                                    ? category + ";" + categoryData.Title
-                                    : categoryData.Title;
-                        }
-                        if (isExists < 0) {
-                            category = tempCategoryData
-                                ? tempCategoryData + ";" + categoryData.Title
-                                : categoryData.Title;
-                        }
-                    });
-                }
-                setCategoriesData(category);
-                let phoneCheck = category.search("Phone");
-                let emailCheck = category.search("Email");
-                let ImmediateCheck = category.search("Immediate");
-                let ApprovalCheck = category.search("Approval");
-                let OnlyCompletedCheck = category.search("Only Completed");
-                if (phoneCheck >= 0) {
-                    setPhoneStatus(true);
+        let uniqueIds: any = {};
+        let checkForOnHold: any = tempShareWebTypeData?.some((category: any) => category.Title === "On-Hold")
+        if (usedFor == "For-Panel") {
+            let TempArrya: any = [];
+            selectCategoryData?.map((selectedData: any) => {
+                if (selectedData.Title == "On-Hold" && !checkForOnHold) {
+                    onHoldCategory.push(selectedData);
+                    setOnHoldPanel(true);
                 } else {
-                    setPhoneStatus(false);
+                    TempArrya.push(selectedData);
                 }
-                if (emailCheck >= 0) {
-                    setEmailStatus(true);
+            })
+            tempShareWebTypeData = TempArrya;
+        } else {
+            selectCategoryData.forEach((existingData: any) => {
+                if (existingData.Title == "On-Hold" && !checkForOnHold) {
+                    onHoldCategory.push(existingData);
+                    setOnHoldPanel(true);
                 } else {
-                    setEmailStatus(false);
-                }
-                if (ImmediateCheck >= 0) {
-                    setImmediateStatus(true);
-                } else {
-                    setImmediateStatus(false);
-                }
-                if (ApprovalCheck >= 0) {
-                    setApprovalStatus(true);
-                    setApproverData(TaskApproverBackupArray);
-                } else {
-                    setApprovalStatus(false);
-                }
-                if (OnlyCompletedCheck >= 0) {
-                    setOnlyCompletedStatus(true);
-                } else {
-                    setOnlyCompletedStatus(false);
-                }
-            }
-            currentUserData?.map((CUData: any) => {
-                if (CUData?.CategoriesItemsJson?.length > 5) {
-                    let PrevDefinedCategories: any = JSON.parse(
-                        CUData.CategoriesItemsJson
-                    );
-                    PrevDefinedCategories?.map((CUCategories: any) => {
-                        if (CUCategories.Title == existingData.Title) {
-                            setApprovalStatus(true);
-                            setApproverData(TaskApproverBackupArray);
-                            AutoCompleteItemsArray?.map((itemData: any) => {
-                                if (itemData.Title == "Approval") {
-                                    CategoryChangeUpdateFunction(
-                                        false,
-                                        itemData.Title,
-                                        itemData.Id
-                                    );
-                                }
-                            });
-                        }
-                    });
+                    tempShareWebTypeData.push(existingData);
                 }
             });
-        });
-
-        let uniqueIds: any = {};
+        }
         const result: any = tempShareWebTypeData.filter((item: any) => {
             if (!uniqueIds[item.Id]) {
                 uniqueIds[item.Id] = true;
@@ -1792,68 +1680,50 @@ const EditTaskPopup = (Items: any) => {
             }
             return false;
         });
-
         tempShareWebTypeData = result;
-
-        // if (usedFor == "For-Panel") {
-        //     if (onHoldCategory.length > 0 && onHoldCategory[0].Title == "On-Hold") {
-        //         setOnHoldPanel(true);
-        //     } else if (onHoldCategory.length == 0 && tempShareWebTypeData[tempShareWebTypeData.length - 1].Title != "On-Hold") {
-        //         setOnHoldPanel(false);
-        //         setShareWebTypeData(tempShareWebTypeData);
-        //     }
-        // }
-        // if (usedFor == "For-Auto-Search") {
-        //     if (onHoldCategory.length > 0 && onHoldCategory[0].Title == "On-Hold") {
-        //         setOnHoldPanel(true);
-        //     } else if (onHoldCategory.length == 0 && tempShareWebTypeData[tempShareWebTypeData.length - 1].Title != "On-Hold") {
-        //         setOnHoldPanel(false);
-        //         setShareWebTypeData(tempShareWebTypeData);
-        //     }
-        //     setSearchedCategoryData([]);
-        //     setCategorySearchKey("");
-        // }
-        if (usedFor == "For-Panel") {
-            setShareWebTypeData(selectCategoryData);
-            tempShareWebTypeData = selectCategoryData;
+        setPhoneStatus(result?.some((category: any) => category.Title === "Phone"));
+        setEmailStatus(result?.some((category: any) => category.Title === "Email Notification"));
+        setImmediateStatus(result?.some((category: any) => category.Title === "Immediate"));
+        setOnlyCompletedStatus(result?.some((category: any) => category.Title === "Only Completed"));
+        let checkForApproval: any = result?.some((category: any) => category.Title === "Approval")
+        if (checkForApproval) {
+            setApprovalStatus(true);
+            setApproverData(TaskApproverBackupArray);
+        } else {
+            setApprovalStatus(false);
+            setApproverData([]);
         }
-        if (usedFor == "For-Auto-Search") {
+        if (usedFor === "For-Panel" || usedFor === "For-Auto-Search") {
             setShareWebTypeData(result);
-            setSearchedCategoryData([])
-            setCategorySearchKey("");
+            if (usedFor === "For-Auto-Search") {
+                setSearchedCategoryData([]);
+                setCategorySearchKey("");
+            }
         }
     };
+
 
     const smartCategoryPopup = useCallback(() => {
         setIsComponentPicker(false);
     }, []);
 
-    const editTaskPopupCallBack = useCallback(() => {
+    const editTaskPopupCallBack = useCallback((usedFor: any) => {
         setOnHoldPanel(false);
-        if (onHoldCategory[0].Title == "On-Hold") {
-            tempShareWebTypeData = tempShareWebTypeData.reduce(function (
-                previous: any,
-                current: any
-            ) {
-                var alredyExists =
-                    previous.filter(function (item: any) {
-                        return item.Title === current.Title;
-                    }).length > 0;
-                if (!alredyExists) {
-                    previous.push(current);
+        if (usedFor == "Save") {
+            let uniqueIds: any = {};
+            tempShareWebTypeData.push(onHoldCategory[0]);
+            const result: any = tempShareWebTypeData.filter((item: any) => {
+                if (!uniqueIds[item.Id]) {
+                    uniqueIds[item.Id] = true;
+                    return true;
                 }
-                return previous;
-            }, []);
-            tempShareWebTypeData = tempShareWebTypeData.concat(onHoldCategory);
-            setShareWebTypeData(tempShareWebTypeData);
+                return false;
+            });
+            tempShareWebTypeData = result;
+            setShareWebTypeData(result);
         }
         onHoldCategory = [];
     }, []);
-
-    const closeOnHoldPanel = () => {
-        setOnHoldPanel(false);
-        onHoldCategory = [];
-    };
 
     //  ###################  Smart Category Auto Suggesution Functions  ##################
 
@@ -4478,42 +4348,7 @@ const EditTaskPopup = (Items: any) => {
     };
 
     // ************** this is for Project Management Section Functions ************
-    const closeProjectManagementPopup = () => {
-        let TempArray: any = [];
-        setProjectManagementPopup(false);
-        AllProjectBackupArray.map((ProjectData: any) => {
-            ProjectData.Checked = false;
-            TempArray.push(ProjectData);
-        });
-        SetAllProjectData(TempArray);
-    };
-    const SelectProjectFunction = (selectedData: any) => {
-        let TempArray: any = [];
-        AllProjectBackupArray.map((ProjectData: any) => {
-            if (ProjectData.Id == selectedData.Id) {
-                ProjectData.Checked = true;
-                TempArray.push(ProjectData);
-                // setSelectedProject([ProjectData])
-            } else {
-                ProjectData.Checked = false;
-                TempArray.push(ProjectData);
-            }
-        });
-        SetAllProjectData(TempArray);
-    };
-
-    const saveSelectedProject = () => {
-        if (AllProjectData != undefined && AllProjectData.length > 0) {
-            AllProjectData.map((dataItem: any) => {
-                if (dataItem.Checked) {
-                    setSelectedProject([dataItem]);
-                }
-            });
-        }
-        // setSelectedProject([tempSelectedProjectData]);
-        setProjectManagementPopup(false);
-    };
-
+    
     const autoSuggestionsForProject = (e: any) => {
         let searchedKey: any = e.target.value;
         setProjectSearchKey(e.target.value);
@@ -4534,113 +4369,6 @@ const EditTaskPopup = (Items: any) => {
         setProjectSearchKey("");
         setSearchedProjectData([]);
         setSelectedProject(data);
-    };
-
-    const columns = useMemo(
-        () => [
-            {
-                internalHeader: "",
-                id: "Id", // 'id' is required
-                isSorted: false,
-                showSortIcon: false,
-                Cell: ({ row }: any) => (
-                    <span>
-                        <input
-                            type="checkbox"
-                            checked={row.original.Checked}
-                            onClick={() => SelectProjectFunction(row.original)}
-                        />
-                    </span>
-                ),
-            },
-            {
-                internalHeader: "Title",
-                accessor: "Title",
-                showSortIcon: true,
-                Cell: ({ row }: any) => (
-                    <span>
-                        <a
-                            style={{ textDecoration: "none", color: "#000066" }}
-                            href={`${siteUrls}/SitePages/Project-Management.aspx?ProjectId=${row?.original?.Id}`}
-                            data-interception="off"
-                            target="_blank"
-                        >
-                            {row?.values?.Title}
-                        </a>
-                    </span>
-                ),
-            },
-            {
-                internalHeader: "Status",
-                accessor: "PercentComplete",
-                showSortIcon: true,
-            },
-            {
-                internalHeader: "Priority",
-                accessor: "PriorityRank",
-                showSortIcon: true,
-            },
-            {
-                internalHeader: "Team Members",
-                accessor: "TeamMembersSearch",
-                showSortIcon: true,
-                Cell: ({ row }: any) => (
-                    <span>
-                        <ShowTaskTeamMembers
-                            props={row?.original}
-                            TaskUsers={taskUsers}
-                        ></ShowTaskTeamMembers>
-                    </span>
-                ),
-            },
-            {
-                internalHeader: "Due Date",
-                showSortIcon: true,
-                accessor: "DisplayDueDate",
-            },
-        ],
-        [AllProjectData]
-    );
-
-    const data = AllProjectData;
-
-    const {
-        getTableProps,
-        getTableBodyProps,
-        headerGroups,
-        page,
-        prepareRow,
-        setPageSize,
-        state: { pageIndex, pageSize },
-    }: any = useTable(
-        {
-            columns,
-            data,
-            defaultColumn: { Filter: DefaultColumnFilter },
-            initialState: { pageIndex: 0, pageSize: 10000 },
-        },
-        useFilters,
-        useSortBy,
-        useExpanded,
-        usePagination
-    );
-
-    const generateSortingIndicator = (column: any) => {
-        return column.isSorted ? (
-            column.isSortedDesc ? (
-                <FaSortDown />
-            ) : (
-                <FaSortUp />
-            )
-        ) : column.showSortIcon ? (
-            <FaSort />
-        ) : (
-            ""
-        );
-    };
-
-    const onChangeInSelect = (event: any) => {
-        setPageSize(Number(event.target.value));
     };
 
     // ************ this is for Approver Popup Function And Approver Related All Functions section **************
@@ -4892,25 +4620,7 @@ const EditTaskPopup = (Items: any) => {
         }
     };
 
-    // ************** this is custom header and custom Footers section functions for panel *************
 
-    const onRenderCustomOnHoldPanelHeader = () => {
-        return (
-            <div
-                className={
-                    ServicesTaskCheck
-                        ? "d-flex full-width pb-1 serviepannelgreena"
-                        : "d-flex full-width pb-1"
-                }
-            >
-                <div className="alignCenter full-width pb-1">
-                    <span className="boldClable f-19 ms-4 pb-2 siteColor">
-                        State the reason why Task is On-Hold
-                    </span>
-                </div>
-            </div>
-        );
-    }
 
     const onRenderCustomHeaderMain = () => {
         return (
@@ -5304,42 +5014,7 @@ const EditTaskPopup = (Items: any) => {
         );
     };
 
-    const customFooterForProjectManagement = () => {
-        return (
-            <footer
-                className={
-                    ServicesTaskCheck
-                        ? "serviepannelgreena bg-f4 me-4 pe-2 py-3 text-end"
-                        : "bg-f4 me-4 pe-2 py-3 text-end"
-                }
-            >
-                <button type="button" className="btn btn-primary">
-                    <a
-                        target="_blank"
-                        className="text-light"
-                        data-interception="off"
-                        href={`${siteUrls}/SitePages/Project-Management-Overview.aspx`}
-                    >
-                        <span className="text-light">Create New One</span>
-                    </a>
-                </button>
-                <button
-                    type="button"
-                    className="btn btn-primary px-3 mx-1"
-                    onClick={saveSelectedProject}
-                >
-                    Save
-                </button>
-                <button
-                    type="button"
-                    className="btn btn-default px-3"
-                    onClick={closeProjectManagementPopup}
-                >
-                    Cancel
-                </button>
-            </footer>
-        );
-    };
+   
 
     return (
         <div
@@ -5448,27 +5123,20 @@ const EditTaskPopup = (Items: any) => {
                     <TimeEntryPopup props={Items.Items} />
                 </div>
             </Panel>
+
             {/* ************ this is On-Hold Panel ************ */}
-            {/* <Panel
-                type={PanelType.custom}
-                customWidth="450px"
-                onRenderHeader={onRenderCustomOnHoldPanelHeader}
-                isOpen={onHoldPanel}
-                onDismiss={closeOnHoldPanel}
-            >
-                <div className="full_width ">
-                    <CommentCard
-                        siteUrl={siteUrls}
-                        itemID={Items.Items.Id}
-                        AllListId={AllListIdData}
-                        Context={Context}
-                        onHoldCallBack={editTaskPopupCallBack}
-                        commentFor="On-Hold"
-                        postCommentCallBack={handlePostComment}
-                        counter={counter}
-                    />
-                </div>
-            </Panel> */}
+            {onHoldPanel ?
+
+                <OnHoldCommentCard
+                    siteUrl={siteUrls}
+                    ItemId={Items.Items.Id}
+                    AllListIds={AllListIdData}
+                    Context={Context}
+                    callback={editTaskPopupCallBack}
+                    usedFor="Task-Popup"
+                />
+                : null}
+
             {/* ***************** this is Main Panel *********** */}
             <Panel
                 type={PanelType.large}
@@ -5726,58 +5394,49 @@ const EditTaskPopup = (Items: any) => {
                                                         <div className="full-width">
                                                             {TaggedPortfolioData?.map((com: any) => {
                                                                 return (
-                                                                    <>
-                                                                        <div className="block w-100">
-                                                                            <a
-                                                                                title={com.Title}
-                                                                                style={{ color: "#fff !important" }}
-                                                                                className="wid90"
-                                                                                target="_blank"
-                                                                                data-interception="off"
-                                                                                href={`${siteUrls}/SitePages/Portfolio-Profile.aspx?taskId=${com.Id}`}
-                                                                            >
-                                                                                {com.Title}
-                                                                            </a>
-
-                                                                            <span
-                                                                                onClick={() =>
-                                                                                    setTaggedPortfolioData([])
-                                                                                }
-                                                                                className="bg-light hreflink ml-auto svg__icon--cross svg__iconbox"
-                                                                            ></span>
-                                                                        </div>
-                                                                    </>
+                                                                    <div className="full-width replaceInput alignCenter">
+                                                                        <a
+                                                                            title={com.Title}
+                                                                            target="_blank"
+                                                                            data-interception="off"
+                                                                            className="textDotted"
+                                                                            href={`${siteUrls}/SitePages/Portfolio-Profile.aspx?taskId=${com.Id}`}
+                                                                        >
+                                                                            {com.Title}
+                                                                        </a>
+                                                                    </div>
                                                                 );
                                                             })}
                                                         </div>
                                                     ) : (
-                                                        <>
-                                                            <input
-                                                                type="text"
-                                                                className="form-control"
-                                                                value={SearchedServiceCompnentKey}
-                                                                onChange={(e) =>
-                                                                    autoSuggestionsForServiceAndComponent(
-                                                                        e,
-                                                                        "Portfolio"
-                                                                    )
-                                                                }
-                                                                placeholder="Search Portfolio Item"
-                                                            />
-                                                            <span className="input-group-text">
-                                                                <span
-                                                                    title="Component Popup"
-                                                                    onClick={() =>
-                                                                        OpenTeamPortfolioPopupFunction(
-                                                                            EditData,
-                                                                            "Portfolio"
-                                                                        )
-                                                                    }
-                                                                    className="svg__iconbox svg__icon--editBox"
-                                                                ></span>
-                                                            </span>
-                                                        </>
+
+                                                        <input
+                                                            type="text"
+                                                            className="form-control"
+                                                            value={SearchedServiceCompnentKey}
+                                                            onChange={(e) =>
+                                                                autoSuggestionsForServiceAndComponent(
+                                                                    e,
+                                                                    "Portfolio"
+                                                                )
+                                                            }
+                                                            placeholder="Search Portfolio Item"
+                                                        />
+
+
                                                     )}
+                                                    <span className="input-group-text">
+                                                        <span
+                                                            title="Component Popup"
+                                                            onClick={() =>
+                                                                OpenTeamPortfolioPopupFunction(
+                                                                    EditData,
+                                                                    "Portfolio"
+                                                                )
+                                                            }
+                                                            className="svg__iconbox svg__icon--editBox"
+                                                        ></span>
+                                                    </span>
                                                 </div>
                                                 {SearchedServiceCompnentData?.length > 0 ? (
                                                     <div className="SmartTableOnTaskPopup">
@@ -5805,14 +5464,127 @@ const EditTaskPopup = (Items: any) => {
                                                     <label className="form-label full-width">
                                                         Categories
                                                     </label>
-                                                    <input
-                                                        type="text"
-                                                        className="form-control"
-                                                        id="txtCategories"
-                                                        placeholder="Search Category Here"
-                                                        value={categorySearchKey}
-                                                        onChange={(e) => autoSuggestionsForCategory(e)}
-                                                    />
+                                                    {ShareWebTypeData?.length > 1 ? <>
+                                                        <input
+                                                            type="text"
+                                                            className="form-control"
+                                                            id="txtCategories"
+                                                            placeholder="Search Category Here"
+                                                            value={categorySearchKey}
+                                                            onChange={(e) => autoSuggestionsForCategory(e)}
+                                                        />
+                                                        {SearchedCategoryData?.length > 0 ? (
+                                                            <div className="SmartTableOnTaskPopup w-100" style={{ marginTop: "53px" }}>
+                                                                <ul className="list-group">
+                                                                    {SearchedCategoryData.map((item: any) => {
+                                                                        return (
+                                                                            <li
+                                                                                className="hreflink list-group-item rounded-0 list-group-item-action"
+                                                                                key={item.id}
+                                                                                onClick={() =>
+                                                                                    setSelectedCategoryData(
+                                                                                        [item],
+                                                                                        "For-Auto-Search"
+                                                                                    )
+                                                                                }
+                                                                            >
+                                                                                <a>{item.Newlabel}</a>
+                                                                            </li>
+                                                                        );
+                                                                    })}
+                                                                </ul>
+                                                            </div>
+                                                        ) : null}
+                                                        {ShareWebTypeData?.map(
+                                                            (type: any, index: number) => {
+                                                                if (
+                                                                    type.Title != "Phone" &&
+                                                                    type.Title != "Email Notification" &&
+                                                                    type.Title != "Immediate" &&
+                                                                    type.Title != "Approval" &&
+                                                                    type.Title != "Email" &&
+                                                                    type.Title != "Only Completed"
+                                                                ) {
+                                                                    return (
+                                                                        <div className="block w-100">
+                                                                            <a
+                                                                                style={{ color: "#fff !important" }}
+                                                                                className="textDotted"
+                                                                            >
+                                                                                {type.Title}
+                                                                            </a>
+                                                                            <span
+                                                                                onClick={() =>
+                                                                                    removeCategoryItem(
+                                                                                        type.Title,
+                                                                                        type.Id
+                                                                                    )
+                                                                                }
+                                                                                className="bg-light hreflink ml-auto svg__icon--cross svg__iconbox"
+                                                                            ></span>
+                                                                        </div>
+                                                                    );
+                                                                }
+                                                            }
+                                                        )}</> :
+                                                        <>
+                                                            {ShareWebTypeData?.length == 1 ?
+
+                                                                <div className="full-width">
+                                                                    {ShareWebTypeData?.map((CategoryItem: any) => {
+                                                                        return (
+                                                                            <div className="full-width replaceInput alignCenter">
+                                                                                <a
+                                                                                    title={CategoryItem.Title}
+                                                                                    target="_blank"
+                                                                                    data-interception="off"
+                                                                                    className="textDotted"
+                                                                                >
+                                                                                    {CategoryItem.Title}
+                                                                                </a>
+                                                                            </div>
+                                                                        );
+                                                                    })}
+                                                                </div>
+                                                                :
+                                                                <>
+                                                                    <input
+                                                                        type="text"
+                                                                        className="form-control"
+                                                                        id="txtCategories"
+                                                                        placeholder="Search Category Here"
+                                                                        value={categorySearchKey}
+                                                                        onChange={(e) => autoSuggestionsForCategory(e)}
+                                                                    />
+                                                                    {SearchedCategoryData?.length > 0 ? (
+                                                                        <div className="SmartTableOnTaskPopup  w-100">
+                                                                            <ul className="list-group">
+                                                                                {SearchedCategoryData.map((item: any) => {
+                                                                                    return (
+                                                                                        <li
+                                                                                            className="hreflink list-group-item rounded-0 list-group-item-action"
+                                                                                            key={item.id}
+                                                                                            onClick={() =>
+                                                                                                setSelectedCategoryData(
+                                                                                                    [item],
+                                                                                                    "For-Auto-Search"
+                                                                                                )
+                                                                                            }
+                                                                                        >
+                                                                                            <a>{item.Newlabel}</a>
+                                                                                        </li>
+                                                                                    );
+                                                                                })}
+                                                                            </ul>
+                                                                        </div>
+                                                                    ) : null}
+                                                                </>
+                                                            }
+
+                                                        </>
+
+                                                    }
+
                                                     <span
                                                         className="input-group-text"
                                                         title="Smart Category Popup"
@@ -5823,28 +5595,7 @@ const EditTaskPopup = (Items: any) => {
                                                         <span className="svg__iconbox svg__icon--editBox"></span>
                                                     </span>
                                                 </div>
-                                                {SearchedCategoryData?.length > 0 ? (
-                                                    <div className="SmartTableOnTaskPopup">
-                                                        <ul className="list-group">
-                                                            {SearchedCategoryData.map((item: any) => {
-                                                                return (
-                                                                    <li
-                                                                        className="hreflink list-group-item rounded-0 list-group-item-action"
-                                                                        key={item.id}
-                                                                        onClick={() =>
-                                                                            setSelectedCategoryData(
-                                                                                [item],
-                                                                                "For-Auto-Search"
-                                                                            )
-                                                                        }
-                                                                    >
-                                                                        <a>{item.Newlabel}</a>
-                                                                    </li>
-                                                                );
-                                                            })}
-                                                        </ul>
-                                                    </div>
-                                                ) : null}
+
                                                 <div className="col">
                                                     <div className="col">
                                                         <div className="form-check">
@@ -5894,7 +5645,7 @@ const EditTaskPopup = (Items: any) => {
                                                             />
                                                             <label>Immediate</label>
                                                         </div>
-                                                        {ShareWebTypeData != undefined &&
+                                                        {/* {ShareWebTypeData != undefined &&
                                                             ShareWebTypeData?.length > 0 ? (
                                                             <div>
                                                                 {ShareWebTypeData?.map(
@@ -5930,7 +5681,7 @@ const EditTaskPopup = (Items: any) => {
                                                                     }
                                                                 )}
                                                             </div>
-                                                        ) : null}
+                                                        ) : null} */}
                                                     </div>
                                                     <div className="form-check mt-2">
                                                         <label className="full-width">Approval</label>
@@ -5980,18 +5731,39 @@ const EditTaskPopup = (Items: any) => {
                                                             <div className="col">
                                                                 <div className="input-group">
                                                                     <label className="form-label full-width"></label>
-                                                                    <input
-                                                                        type="text"
-                                                                        className="form-control"
-                                                                        placeholder="Search Approver's Name Here"
-                                                                        value={ApproverSearchKey}
-                                                                        onChange={(e) =>
-                                                                            autoSuggestionsForApprover(
-                                                                                e,
-                                                                                "OnTaskPopup"
-                                                                            )
-                                                                        }
-                                                                    />
+                                                                    {ApproverData != undefined &&
+                                                                        ApproverData.length > 0 ? (
+                                                                        <>
+                                                                            {ApproverData.map(
+                                                                                (Approver: any, index: number) => {
+                                                                                    return (
+                                                                                        <div className="full-width replaceInput alignCenter">
+                                                                                            <a
+                                                                                                className="hreflink"
+                                                                                                target="_blank"
+                                                                                                data-interception="off"
+                                                                                            >
+                                                                                                {Approver.Title}
+                                                                                            </a>
+                                                                                        </div>
+                                                                                    );
+                                                                                }
+                                                                            )}
+                                                                        </>
+                                                                    ) :
+                                                                        <input
+                                                                            type="text"
+                                                                            className="form-control"
+                                                                            placeholder="Search Approver's Name Here"
+                                                                            value={ApproverSearchKey}
+                                                                            onChange={(e) =>
+                                                                                autoSuggestionsForApprover(
+                                                                                    e,
+                                                                                    "OnTaskPopup"
+                                                                                )
+                                                                            }
+                                                                        />
+                                                                    }
                                                                     <span
                                                                         className="input-group-text mt--10"
                                                                         onClick={OpenApproverPopupFunction}
@@ -6019,33 +5791,6 @@ const EditTaskPopup = (Items: any) => {
                                                                                 );
                                                                             })}
                                                                         </ul>
-                                                                    </div>
-                                                                ) : null}
-
-                                                                {ApproverData != undefined &&
-                                                                    ApproverData.length > 0 ? (
-                                                                    <div>
-                                                                        {ApproverData.map(
-                                                                            (Approver: any, index: number) => {
-                                                                                return (
-                                                                                    <div className="block w-100">
-                                                                                        <a
-                                                                                            className="hreflink wid90"
-                                                                                            target="_blank"
-                                                                                            data-interception="off"
-                                                                                        >
-                                                                                            {Approver.Title}
-                                                                                        </a>
-                                                                                        <span
-                                                                                            onClick={() =>
-                                                                                                setApproverData([])
-                                                                                            }
-                                                                                            className="bg-light ml-auto hreflink svg__icon--cross svg__iconbox"
-                                                                                        ></span>
-                                                                                    </div>
-                                                                                );
-                                                                            }
-                                                                        )}
                                                                     </div>
                                                                 ) : null}
                                                             </div>
@@ -6308,13 +6053,39 @@ const EditTaskPopup = (Items: any) => {
                                                         <label className="form-label full-width">
                                                             Project
                                                         </label>
-                                                        <input
-                                                            type="text"
-                                                            className="form-control"
-                                                            placeholder="Search Project Here"
-                                                            value={ProjectSearchKey}
-                                                            onChange={(e) => autoSuggestionsForProject(e)}
-                                                        />
+                                                        {selectedProject != undefined &&
+                                                            selectedProject.length > 0 ? (
+                                                            <>
+                                                                {selectedProject?.map((ProjectData: any) => {
+                                                                    return (
+                                                                        <>
+                                                                            {ProjectData.Title != undefined ? (
+                                                                                <div className="full-width replaceInput alignCenter">
+                                                                                    <a
+
+                                                                                        target="_blank"
+                                                                                        title={ProjectData.Title}
+                                                                                        data-interception="off"
+                                                                                        className="textDotted hreflink"
+                                                                                        href={`${siteUrls}/SitePages/Project-Management.aspx?ProjectId=${ProjectData.Id}`}
+                                                                                    >
+                                                                                        {ProjectData.Title}
+                                                                                    </a>
+                                                                                </div>
+                                                                            ) : null}
+                                                                        </>
+                                                                    );
+                                                                })}
+                                                            </>
+                                                        ) :
+                                                            <input
+                                                                type="text"
+                                                                className="form-control"
+                                                                placeholder="Search Project Here"
+                                                                value={ProjectSearchKey}
+                                                                onChange={(e) => autoSuggestionsForProject(e)}
+                                                            />
+                                                        }
                                                         <span
                                                             className="input-group-text"
                                                             onClick={() => setProjectManagementPopup(true)}
@@ -6342,33 +6113,7 @@ const EditTaskPopup = (Items: any) => {
                                                             </ul>
                                                         </div>
                                                     ) : null}
-                                                    {selectedProject != undefined &&
-                                                        selectedProject.length > 0 ? (
-                                                        <div>
-                                                            {selectedProject.map((ProjectData: any) => {
-                                                                return (
-                                                                    <div>
-                                                                        {ProjectData.Title != undefined ? (
-                                                                            <div className="block w-100">
-                                                                                <a
-                                                                                    className="hreflink wid90"
-                                                                                    target="_blank"
-                                                                                    data-interception="off"
-                                                                                    href={`https://hhhhteams.sharepoint.com/sites/HHHH/SP/SitePages/Project-Management.aspx?ProjectId=${ProjectData.Id}`}
-                                                                                >
-                                                                                    {ProjectData.Title}
-                                                                                </a>
-                                                                                <span
-                                                                                    onClick={() => setSelectedProject([])}
-                                                                                    className="bg-light hreflink ml-auto svg__icon--cross svg__iconbox"
-                                                                                ></span>
-                                                                            </div>
-                                                                        ) : null}
-                                                                    </div>
-                                                                );
-                                                            })}
-                                                        </div>
-                                                    ) : null}
+
                                                 </div>
                                             </div>
                                         </div>
@@ -6671,9 +6416,9 @@ const EditTaskPopup = (Items: any) => {
                                                     </ul>
                                                 </div>
                                             </div>
-                                            <div className="col mt-2">
+                                            <div className="col mt-2 ps-0">
                                                 <div className="input-group">
-                                                    <label className="form-label full-width  mx-2">
+                                                    <label className="form-label full-width">
                                                         {EditData.TaskAssignedUsers?.length > 0
                                                             ? "Working Member"
                                                             : ""}
@@ -6688,7 +6433,7 @@ const EditTaskPopup = (Items: any) => {
                                                                         href={`${siteUrls}/SitePages/TaskDashboard.aspx?UserId=${userDtl.AssingedToUserId}&Name=${userDtl.Title}`}
                                                                     >
                                                                         <img
-                                                                            className="ProirityAssignedUserPhoto ms-2"
+                                                                            className="ProirityAssignedUserPhoto me-2"
                                                                             data-bs-placement="bottom"
                                                                             title={userDtl.Title ? userDtl.Title : ""}
                                                                             src={
@@ -7147,13 +6892,14 @@ const EditTaskPopup = (Items: any) => {
                         </div>
                     </div>
 
-                    {openTeamPortfolioPopup && (
+                    {openTeamPortfolioPopup || ProjectManagementPopup && (
                         <ServiceComponentPortfolioPopup
                             props={EditData}
                             Dynamic={AllListIdData}
                             ComponentType={"Component"}
                             Call={ComponentServicePopupCallBack}
                             selectionType={"Single"}
+                            showProject={ProjectManagementPopup}
                         />
                     )}
                     {openLinkedPortfolioPopup && (
@@ -7729,60 +7475,46 @@ const EditTaskPopup = (Items: any) => {
                                                                     <div className="full-width">
                                                                         {TaggedPortfolioData?.map((com: any) => {
                                                                             return (
-                                                                                <>
-                                                                                    <div className="block w-100">
-                                                                                        <a
-                                                                                            className="wid90"
-                                                                                            title={com.Title}
-                                                                                            style={{
-                                                                                                color: "#fff !important",
-                                                                                            }}
-                                                                                            target="_blank"
-                                                                                            data-interception="off"
-                                                                                            href={`${siteUrls}/SitePages/Portfolio-Profile.aspx?taskId=${com.Id}`}
-                                                                                        >
-                                                                                            {com.Title}
-                                                                                        </a>
-
-                                                                                        <span
-                                                                                            onClick={() =>
-                                                                                                setTaggedPortfolioData([])
-                                                                                            }
-                                                                                            className="bg-light ml-auto hreflink svg__icon--cross svg__iconbox"
-                                                                                        ></span>
-                                                                                    </div>
-                                                                                </>
+                                                                                <div className="full-width replaceInput alignCenter">
+                                                                                    <a
+                                                                                        title={com.Title}
+                                                                                        target="_blank"
+                                                                                        data-interception="off"
+                                                                                        className="textDotted"
+                                                                                        href={`${siteUrls}/SitePages/Portfolio-Profile.aspx?taskId=${com.Id}`}
+                                                                                    >
+                                                                                        {com.Title}
+                                                                                    </a>
+                                                                                </div>
                                                                             );
                                                                         })}
                                                                     </div>
                                                                 ) : (
-                                                                    <>
-                                                                        <input
-                                                                            type="text"
-                                                                            className="form-control"
-                                                                            value={SearchedServiceCompnentKey}
-                                                                            onChange={(e) =>
-                                                                                autoSuggestionsForServiceAndComponent(
-                                                                                    e,
-                                                                                    "Portfolio"
-                                                                                )
-                                                                            }
-                                                                            placeholder="Search Portfolio Items"
-                                                                        />
-                                                                        <span className="input-group-text">
-                                                                            <span
-                                                                                title="Component Popup"
-                                                                                onClick={() =>
-                                                                                    OpenTeamPortfolioPopupFunction(
-                                                                                        EditData,
-                                                                                        "Portfolio"
-                                                                                    )
-                                                                                }
-                                                                                className="svg__iconbox svg__icon--editBox"
-                                                                            ></span>
-                                                                        </span>
-                                                                    </>
+                                                                    <input
+                                                                        type="text"
+                                                                        className="form-control"
+                                                                        value={SearchedServiceCompnentKey}
+                                                                        onChange={(e) =>
+                                                                            autoSuggestionsForServiceAndComponent(
+                                                                                e,
+                                                                                "Portfolio"
+                                                                            )
+                                                                        }
+                                                                        placeholder="Search Portfolio Item"
+                                                                    />
                                                                 )}
+                                                                <span className="input-group-text">
+                                                                    <span
+                                                                        title="Component Popup"
+                                                                        onClick={() =>
+                                                                            OpenTeamPortfolioPopupFunction(
+                                                                                EditData,
+                                                                                "Portfolio"
+                                                                            )
+                                                                        }
+                                                                        className="svg__iconbox svg__icon--editBox"
+                                                                    ></span>
+                                                                </span>
                                                             </div>
                                                             {SearchedServiceCompnentData?.length > 0 ? (
                                                                 <div className="SmartTableOnTaskPopup">
@@ -7814,16 +7546,127 @@ const EditTaskPopup = (Items: any) => {
                                                                 <label className="form-label full-width">
                                                                     Categories
                                                                 </label>
-                                                                <input
-                                                                    type="text"
-                                                                    className="form-control"
-                                                                    id="txtCategories"
-                                                                    placeholder="Search Category Here"
-                                                                    value={categorySearchKey}
-                                                                    onChange={(e) =>
-                                                                        autoSuggestionsForCategory(e)
-                                                                    }
-                                                                />
+                                                                {ShareWebTypeData?.length > 1 ? <>
+                                                                    <input
+                                                                        type="text"
+                                                                        className="form-control"
+                                                                        id="txtCategories"
+                                                                        placeholder="Search Category Here"
+                                                                        value={categorySearchKey}
+                                                                        onChange={(e) => autoSuggestionsForCategory(e)}
+                                                                    />
+                                                                    {SearchedCategoryData?.length > 0 ? (
+                                                                        <div className="SmartTableOnTaskPopup w-100" style={{ marginTop: "53px" }}>
+                                                                            <ul className="list-group">
+                                                                                {SearchedCategoryData.map((item: any) => {
+                                                                                    return (
+                                                                                        <li
+                                                                                            className="hreflink list-group-item rounded-0 list-group-item-action"
+                                                                                            key={item.id}
+                                                                                            onClick={() =>
+                                                                                                setSelectedCategoryData(
+                                                                                                    [item],
+                                                                                                    "For-Auto-Search"
+                                                                                                )
+                                                                                            }
+                                                                                        >
+                                                                                            <a>{item.Newlabel}</a>
+                                                                                        </li>
+                                                                                    );
+                                                                                })}
+                                                                            </ul>
+                                                                        </div>
+                                                                    ) : null}
+                                                                    {ShareWebTypeData?.map(
+                                                                        (type: any, index: number) => {
+                                                                            if (
+                                                                                type.Title != "Phone" &&
+                                                                                type.Title != "Email Notification" &&
+                                                                                type.Title != "Immediate" &&
+                                                                                type.Title != "Approval" &&
+                                                                                type.Title != "Email" &&
+                                                                                type.Title != "Only Completed"
+                                                                            ) {
+                                                                                return (
+                                                                                    <div className="block w-100">
+                                                                                        <a
+                                                                                            style={{ color: "#fff !important" }}
+                                                                                            className="textDotted"
+                                                                                        >
+                                                                                            {type.Title}
+                                                                                        </a>
+                                                                                        <span
+                                                                                            onClick={() =>
+                                                                                                removeCategoryItem(
+                                                                                                    type.Title,
+                                                                                                    type.Id
+                                                                                                )
+                                                                                            }
+                                                                                            className="bg-light hreflink ml-auto svg__icon--cross svg__iconbox"
+                                                                                        ></span>
+                                                                                    </div>
+                                                                                );
+                                                                            }
+                                                                        }
+                                                                    )}</> :
+                                                                    <>
+                                                                        {ShareWebTypeData?.length == 1 ?
+
+                                                                            <div className="full-width">
+                                                                                {ShareWebTypeData?.map((CategoryItem: any) => {
+                                                                                    return (
+                                                                                        <div className="full-width replaceInput alignCenter">
+                                                                                            <a
+                                                                                                title={CategoryItem.Title}
+                                                                                                target="_blank"
+                                                                                                data-interception="off"
+                                                                                                className="textDotted"
+                                                                                            >
+                                                                                                {CategoryItem.Title}
+                                                                                            </a>
+                                                                                        </div>
+                                                                                    );
+                                                                                })}
+                                                                            </div>
+                                                                            :
+                                                                            <>
+                                                                                <input
+                                                                                    type="text"
+                                                                                    className="form-control"
+                                                                                    id="txtCategories"
+                                                                                    placeholder="Search Category Here"
+                                                                                    value={categorySearchKey}
+                                                                                    onChange={(e) => autoSuggestionsForCategory(e)}
+                                                                                />
+                                                                                {SearchedCategoryData?.length > 0 ? (
+                                                                                    <div className="SmartTableOnTaskPopup w-100">
+                                                                                        <ul className="list-group">
+                                                                                            {SearchedCategoryData.map((item: any) => {
+                                                                                                return (
+                                                                                                    <li
+                                                                                                        className="hreflink list-group-item rounded-0 list-group-item-action"
+                                                                                                        key={item.id}
+                                                                                                        onClick={() =>
+                                                                                                            setSelectedCategoryData(
+                                                                                                                [item],
+                                                                                                                "For-Auto-Search"
+                                                                                                            )
+                                                                                                        }
+                                                                                                    >
+                                                                                                        <a>{item.Newlabel}</a>
+                                                                                                    </li>
+                                                                                                );
+                                                                                            })}
+                                                                                        </ul>
+                                                                                    </div>
+                                                                                ) : null}
+                                                                            </>
+                                                                        }
+
+                                                                    </>
+
+                                                                }
+
                                                                 <span
                                                                     className="input-group-text"
                                                                     title="Smart Category Popup"
@@ -7834,28 +7677,6 @@ const EditTaskPopup = (Items: any) => {
                                                                     <span className="svg__iconbox svg__icon--editBox"></span>
                                                                 </span>
                                                             </div>
-                                                            {SearchedCategoryData?.length > 0 ? (
-                                                                <div className="SmartTableOnTaskPopup">
-                                                                    <ul className="list-group">
-                                                                        {SearchedCategoryData.map((item: any) => {
-                                                                            return (
-                                                                                <li
-                                                                                    className="hreflink list-group-item rounded-0 list-group-item-action"
-                                                                                    key={item.id}
-                                                                                    onClick={() =>
-                                                                                        setSelectedCategoryData(
-                                                                                            [item],
-                                                                                            "For-Auto-Search"
-                                                                                        )
-                                                                                    }
-                                                                                >
-                                                                                    <a>{item.Newlabel}</a>
-                                                                                </li>
-                                                                            );
-                                                                        })}
-                                                                    </ul>
-                                                                </div>
-                                                            ) : null}
                                                             <div className="col">
                                                                 <div className="col">
                                                                     <div className="form-check">
@@ -8006,18 +7827,39 @@ const EditTaskPopup = (Items: any) => {
                                                                         <div className="col-12">
                                                                             <div className="input-group">
                                                                                 <label className="form-label full-width"></label>
-                                                                                <input
-                                                                                    type="text"
-                                                                                    className="form-control"
-                                                                                    placeholder="Search Approver's Name Here"
-                                                                                    value={ApproverSearchKey}
-                                                                                    onChange={(e) =>
-                                                                                        autoSuggestionsForApprover(
-                                                                                            e,
-                                                                                            "OnTaskPopup"
-                                                                                        )
-                                                                                    }
-                                                                                />
+                                                                                {ApproverData != undefined &&
+                                                                                    ApproverData.length > 0 ? (
+                                                                                    <>
+                                                                                        {ApproverData.map(
+                                                                                            (Approver: any, index: number) => {
+                                                                                                return (
+                                                                                                    <div className="full-width replaceInput alignCenter">
+                                                                                                        <a
+                                                                                                            className="hreflink textDotted"
+                                                                                                            target="_blank"
+                                                                                                            data-interception="off"
+                                                                                                        >
+                                                                                                            {Approver.Title}
+                                                                                                        </a>
+                                                                                                    </div>
+                                                                                                );
+                                                                                            }
+                                                                                        )}
+                                                                                    </>
+                                                                                ) :
+                                                                                    <input
+                                                                                        type="text"
+                                                                                        className="form-control"
+                                                                                        placeholder="Search Approver's Name Here"
+                                                                                        value={ApproverSearchKey}
+                                                                                        onChange={(e) =>
+                                                                                            autoSuggestionsForApprover(
+                                                                                                e,
+                                                                                                "OnTaskPopup"
+                                                                                            )
+                                                                                        }
+                                                                                    />
+                                                                                }
                                                                                 <span
                                                                                     className="input-group-text mt--10"
                                                                                     onClick={OpenApproverPopupFunction}
@@ -8050,32 +7892,7 @@ const EditTaskPopup = (Items: any) => {
                                                                                 </div>
                                                                             ) : null}
 
-                                                                            {ApproverData != undefined &&
-                                                                                ApproverData.length > 0 ? (
-                                                                                <div>
-                                                                                    {ApproverData.map(
-                                                                                        (Approver: any, index: number) => {
-                                                                                            return (
-                                                                                                <div className="block w-100">
-                                                                                                    <a
-                                                                                                        className="hreflink w-90"
-                                                                                                        target="_blank"
-                                                                                                        data-interception="off"
-                                                                                                    >
-                                                                                                        {Approver.Title}
-                                                                                                    </a>
-                                                                                                    <span
-                                                                                                        onClick={() =>
-                                                                                                            setApproverData([])
-                                                                                                        }
-                                                                                                        className="bg-light ml-auto hreflink svg__icon--cross svg__iconbox"
-                                                                                                    ></span>
-                                                                                                </div>
-                                                                                            );
-                                                                                        }
-                                                                                    )}
-                                                                                </div>
-                                                                            ) : null}
+
                                                                         </div>
                                                                         <div className="Approval-History-section my-2">
                                                                             {ApproverHistoryData != undefined &&
@@ -8344,7 +8161,30 @@ const EditTaskPopup = (Items: any) => {
                                                                     <label className="form-label full-width">
                                                                         Project
                                                                     </label>
-                                                                    <input
+                                                                    {selectedProject != undefined &&
+                                                                        selectedProject.length > 0 ? (
+                                                                        <>
+                                                                            {selectedProject.map((ProjectData: any) => {
+                                                                                return (
+                                                                                    <>
+                                                                                        {ProjectData.Title != undefined ? (
+                                                                                            <div className="replaceInput alignCenter w-100">
+                                                                                                <a
+                                                                                                    className="hreflink textDotted"
+                                                                                                    target="_blank"
+                                                                                                    title={ProjectData.Title}
+                                                                                                    data-interception="off"
+                                                                                                    href={`${siteUrls}/SitePages/Project-Management.aspx?ProjectId=${ProjectData.Id}`}
+                                                                                                >
+                                                                                                    {ProjectData.Title}
+                                                                                                </a>
+                                                                                            </div>
+                                                                                        ) : null}
+                                                                                    </>
+                                                                                );
+                                                                            })}
+                                                                        </>
+                                                                    ) : <input
                                                                         type="text"
                                                                         className="form-control"
                                                                         placeholder="Search Project Here"
@@ -8352,7 +8192,8 @@ const EditTaskPopup = (Items: any) => {
                                                                         onChange={(e) =>
                                                                             autoSuggestionsForProject(e)
                                                                         }
-                                                                    />
+                                                                    />}
+
                                                                     <span
                                                                         className="input-group-text"
                                                                         onClick={() =>
@@ -8384,35 +8225,7 @@ const EditTaskPopup = (Items: any) => {
                                                                         </ul>
                                                                     </div>
                                                                 ) : null}
-                                                                {selectedProject != undefined &&
-                                                                    selectedProject.length > 0 ? (
-                                                                    <div>
-                                                                        {selectedProject.map((ProjectData: any) => {
-                                                                            return (
-                                                                                <div>
-                                                                                    {ProjectData.Title != undefined ? (
-                                                                                        <div className="block w-100">
-                                                                                            <a
-                                                                                                className="hreflink wid90"
-                                                                                                target="_blank"
-                                                                                                data-interception="off"
-                                                                                                href={`https://hhhhteams.sharepoint.com/sites/HHHH/SP/SitePages/Project-Management.aspx?ProjectId=${ProjectData.Id}`}
-                                                                                            >
-                                                                                                {ProjectData.Title}
-                                                                                            </a>
-                                                                                            <span
-                                                                                                onClick={() =>
-                                                                                                    setSelectedProject([])
-                                                                                                }
-                                                                                                className="bg-light hreflink ml-auto svg__icon--cross svg__iconbox"
-                                                                                            ></span>
-                                                                                        </div>
-                                                                                    ) : null}
-                                                                                </div>
-                                                                            );
-                                                                        })}
-                                                                    </div>
-                                                                ) : null}
+
                                                             </div>
                                                         </div>
                                                     </div>
@@ -8743,9 +8556,9 @@ const EditTaskPopup = (Items: any) => {
                                                                 </ul>
                                                             </div>
                                                         </div>
-                                                        <div className="col mt-2">
+                                                        <div className="col mt-2 ps-0">
                                                             <div className="input-group">
-                                                                <label className="form-label full-width  mx-2">
+                                                                <label className="form-label full-width">
                                                                     {EditData.TaskAssignedUsers?.length > 0
                                                                         ? "Working Member"
                                                                         : ""}
@@ -8760,7 +8573,7 @@ const EditTaskPopup = (Items: any) => {
                                                                                     href={`${siteUrls}/SitePages/TaskDashboard.aspx?UserId=${userDtl.AssingedToUserId}&Name=${userDtl.Title}`}
                                                                                 >
                                                                                     <img
-                                                                                        className="ProirityAssignedUserPhoto ms-2"
+                                                                                        className="ProirityAssignedUserPhoto me-2"
                                                                                         data-bs-placement="bottom"
                                                                                         title={
                                                                                             userDtl.Title ? userDtl.Title : ""
@@ -9362,85 +9175,6 @@ const EditTaskPopup = (Items: any) => {
                 </div>
             </Panel>
 
-            {/* ********************* this is Project Management panel ****************** */}
-            {AllProjectData != undefined && AllProjectData.length > 0 ? (
-                <Panel
-                    onRenderHeader={onRenderCustomProjectManagementHeader}
-                    isOpen={ProjectManagementPopup}
-                    onDismiss={closeProjectManagementPopup}
-                    isBlocking={true}
-                    type={PanelType.custom}
-                    customWidth="1100px"
-                    onRenderFooter={customFooterForProjectManagement}
-                >
-                    <div
-                        className={
-                            ServicesTaskCheck
-                                ? "serviepannelgreena SelectProjectTable "
-                                : "SelectProjectTable "
-                        }
-                    >
-                        <div className="modal-body wrapper p-0 mt-2">
-                            <Table
-                                className="SortingTable table table-hover"
-                                bordered
-                                hover
-                                {...getTableProps()}
-                            >
-                                <thead className="fixed-Header">
-                                    {headerGroups.map((headerGroup: any) => (
-                                        <tr {...headerGroup.getHeaderGroupProps()}>
-                                            {headerGroup.headers.map((column: any) => (
-                                                <th {...column.getHeaderProps()}>
-                                                    <span
-                                                        class="Table-SortingIcon"
-                                                        style={{ marginTop: "-6px" }}
-                                                        {...column.getSortByToggleProps()}
-                                                    >
-                                                        {column.render("Header")}
-                                                        {generateSortingIndicator(column)}
-                                                    </span>
-                                                    <Filter column={column} />
-                                                </th>
-                                            ))}
-                                        </tr>
-                                    ))}
-                                </thead>
-
-                                <tbody {...getTableBodyProps()}>
-                                    {page.map((row: any) => {
-                                        prepareRow(row);
-                                        return (
-                                            <tr {...row.getRowProps()}>
-                                                {row.cells.map(
-                                                    (cell: {
-                                                        getCellProps: () => JSX.IntrinsicAttributes &
-                                                            React.ClassAttributes<HTMLTableDataCellElement> &
-                                                            React.TdHTMLAttributes<HTMLTableDataCellElement>;
-                                                        render: (
-                                                            arg0: string
-                                                        ) =>
-                                                            | boolean
-                                                            | React.ReactChild
-                                                            | React.ReactFragment
-                                                            | React.ReactPortal;
-                                                    }) => {
-                                                        return (
-                                                            <td {...cell.getCellProps()}>
-                                                                {cell.render("Cell")}
-                                                            </td>
-                                                        );
-                                                    }
-                                                )}
-                                            </tr>
-                                        );
-                                    })}
-                                </tbody>
-                            </Table>
-                        </div>
-                    </div>
-                </Panel>
-            ) : null}
             {/* ********************* this is Approval panel ****************** */}
             <Panel
                 onRenderHeader={onRenderCustomApproverHeader}

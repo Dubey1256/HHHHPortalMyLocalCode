@@ -17,6 +17,8 @@ let approveItem: any;
 let currentUser: any;
 let emailStatus: any = ""
 let portfolioColor: any = '#000066';
+let Allapproval: any[] = []
+let flagApproval:boolean = false
 const MultipleWebpart = (Tile: any) => {
   const ContextData: any = React.useContext(myContextValue);
   const draftCatogary: any = ContextData?.AlltaskData.DraftCatogary;
@@ -24,12 +26,17 @@ const MultipleWebpart = (Tile: any) => {
   const bottleneckTask: any = ContextData?.AlltaskData.BottleneckTask;
   const immediateTask: any = ContextData?.AlltaskData.ImmediateTask;
   const thisWeekTask: any = ContextData?.AlltaskData.ThisWeekTask;
-  let approvalTask: any = ContextData?.AlltaskData.ApprovalTask;
+  const AllapprovalTask: any = ContextData?.AlltaskData.ApprovalTask;
   const AllMasterTasks: any = ContextData?.AllMasterTasks;
   const AllTaskUser: any = ContextData?.AlltaskData?.AllTaskUser;
   const [editPopup, setEditPopup]: any = React.useState(false);
   const [sendMail, setsendMail]: any = React.useState(false);
   const [result, setResult]: any = React.useState(false);
+  let [approvalTask, setapprovalTask]: any = React.useState([]);
+  if (AllapprovalTask && AllapprovalTask.length > 0 && flagApproval!=true) {
+    flagApproval=true
+    setapprovalTask(AllapprovalTask)
+  }
 
   let AllListId: any = {
     TaskUsertListID: ContextData?.propsValue?.TaskUsertListID,
@@ -42,6 +49,8 @@ const MultipleWebpart = (Tile: any) => {
   };
   const sendEmail = () => {
     approveItem.PercentComplete = 3
+    approveItem.listName = approveItem.site;
+    approveItem.FeedBack = approveItem?.FeedBack != null ? JSON.parse(approveItem?.FeedBack) : null;
     setsendMail(true)
     emailStatus = "Approved"
   }
@@ -49,7 +58,7 @@ const MultipleWebpart = (Tile: any) => {
     setsendMail(false)
     emailStatus = ""
     const data: any = ContextData?.AlltaskData.ApprovalTask.filter((i: any) => { return i.Id != approveItem.Id })
-    approvalTask = data;
+    setapprovalTask(data);
   }
   const sendAllWorkingTodayTasks = async (sharingTasks: any) => {
     let to: any = [ContextData.approverEmail];
@@ -405,8 +414,9 @@ const MultipleWebpart = (Tile: any) => {
 
 
   const callBackData = React.useCallback((elem: any, ShowingData: any) => {
-    if (elem != undefined)
+    if (elem != undefined) {
       approveItem = elem;
+    }
     else {
       approveItem = undefined
     }
@@ -452,7 +462,7 @@ const MultipleWebpart = (Tile: any) => {
                 <span title="Share Approver Task" onClick={() => sendAllWorkingTodayTasks(approvalTask)} className="svg__iconbox svg__icon--share empBg"></span>
               </span>
             </div>
-            <div className="Alltable maXh-300" style={{ height: "300px",borderBottom: "none" }}>
+            <div className="Alltable maXh-300" style={{ height: "300px" }}>
               {approvalTask && (
                 <GlobalCommanTable
                   wrapperHeight="100%"
@@ -464,7 +474,7 @@ const MultipleWebpart = (Tile: any) => {
                   callBackData={callBackData}
                 />
               )}
-              {sendMail && emailStatus != "" && approveItem && <EmailComponenet approvalcallback={() => { approvalcallback() }} Context={ContextData.Context} emailStatus={"Approved"} items={approveItem} />}
+              {sendMail && emailStatus != "" && approveItem && <EmailComponenet approvalcallback={approvalcallback} Context={ContextData.Context} emailStatus={"Approved"} items={approveItem} />}
             </div>
           </div>
         </div>
@@ -491,7 +501,7 @@ const MultipleWebpart = (Tile: any) => {
                   <span title="Share Ongoing Task" onClick={() => sendAllWorkingTodayTasks(bottleneckTask)} className="hreflink svg__iconbox svg__icon--share empBg"></span>
                 </span>
               </div>
-              <div className="Alltable maXh-300" style={{ height: "300px",borderBottom: "none" }}>
+              <div className="Alltable maXh-300" style={{ height: "300px" }}>
                 {bottleneckTask && (
                   <GlobalCommanTable
                     wrapperHeight="100%"

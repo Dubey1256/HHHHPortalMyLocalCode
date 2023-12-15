@@ -103,6 +103,7 @@ const Header = () => {
   return (
     <div>
       <section className="NameTopSec">
+        <div className='row'><div><h6 className="pull-right"><b><a data-interception="off" target="_blank" href="https://hhhhteams.sharepoint.com/sites/HHHH/SP/SitePages/Dashboard-Old.aspx">Old Dashboard</a></b></h6></div></div>
         <div className="d-flex shadow-sm p-3 mb-3 bg-white">
           <div className="col fw-bold f-18 alignCenter">
             Welcome,
@@ -200,7 +201,7 @@ const Header = () => {
             onClick={() => handleTileClick('assignedTask')}
           >
             <span className="iconSec">
-              <span title='Working This Week' className="svg__iconbox svg__icon--calendar"></span>
+              <span title='Assigned Task' className="svg__iconbox svg__icon--calendar"></span>
             </span>
             <span className='ms-2'>
               <div>Assigned Task</div>
@@ -247,7 +248,7 @@ const Header = () => {
             className={`${activeTile === 'TimeSheet' ? 'col alignCenter hreflink  mb-3 p-3 empBg shadow-sm active empBg' : 'col alignCenter p-3 hreflink  bg-white mb-3 shadow-sm'}`}
             onClick={() => handleTileClick('TimeSheet')}>
             <span className="iconSec">
-              <span title='Draft Task' style={{ width: '24px', height: '24px' }} className=" svg__iconbox svg__icon--draftOther"></span>
+              <span title='TimeSheet' style={{ width: '24px', height: '24px' }} className=" svg__iconbox svg__icon--draftOther"></span>
             </span>
             <span className='ms-2'>
               <div>TimeSheet</div>

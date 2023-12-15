@@ -34,7 +34,7 @@ const EmailComponenet = (props: any) => {
   const loadleave = () => {
     const web = new Web(props.Listdata.siteUrl);
     web.lists.getById(props.Listdata.SmalsusLeaveCalendar).items.select(
-      "RecurrenceData,Duration,Author/Title,Editor/Title,NameId,Employee/Id,Employee/Title,Category,Description,ID,EndDate,EventDate,Location,Title,fAllDayEvent,EventType,UID,fRecurrence,HalfDay,Event_x002d_Type"
+      "RecurrenceData,Duration,Author/Title,Editor/Title,NameId,Employee/Id,Employee/Title,Category,Description,ID,EndDate,EventDate,Location,Title,fAllDayEvent,EventType,UID,fRecurrence,HalfDay,HalfDayTwo,Event_x002d_Type"
     ).expand("Author,Editor,Employee").top(500).getAll()
       .then((results: any) => {
         setleaveData(results);
@@ -67,14 +67,15 @@ const EmailComponenet = (props: any) => {
       if (items?.eventType == 'Work From Home') {
         membersWorkfromHome.push(items)
       }
-    })
+    })    
 let SendEmailMessage =
     sp.utility
       .sendEmail({
         Body: BindHtmlBody(),
          Subject: "HHHH - Team Attendance " + formattedDate + " " + Allteamoforganization + " available - " + (Object?.keys(nameidTotals)?.length - membersWorkfromHome?.length) + " on leave",
-        To: [" deepak@hochhuth-consulting.de","stefan.hochhuth@hochhuth-consulting.de","robert.ungethuem@hochhuth-consulting.de","prashant.kumar@hochhuth-consulting.de"],
+        To: ["deepak@hochhuth-consulting.de","stefan.hochhuth@hochhuth-consulting.de","robert.ungethuem@hochhuth-consulting.de","prashant.kumar@hochhuth-consulting.de"],
         // ,"prashant.kumar@hochhuth-consulting.de","ranu.trivedi@hochhuth-consulting.de","jyoti.prasad@hochhuth-consulting.de"
+       
         AdditionalHeaders: {
           "content-type": "text/html",
         },
@@ -116,7 +117,7 @@ let SendEmailMessage =
   let arr: any = [];
   // Count all the leave of the user
   let year = new Date().getFullYear();
-  let yeardata = leaveData.filter((item) => item?.EventDate?.substring(0, 4) === `${year}`)
+  let yeardata = leaveData.filter((item:any) => item?.EventDate?.substring(0, 4) === `${year}`)
 
   const calculateTotalWorkingDays = (matchedData: any) => {
     const currentYear = new Date().getFullYear();
@@ -134,6 +135,7 @@ let SendEmailMessage =
         const oneDay = 24 * 60 * 60 * 1000; // Number of milliseconds in a day
 
         let workingDays = 0;
+        let workingDayT = 0;
         let currentDate = new Date(eventDate);
 
         while (currentDate <= adjustedEndDate) {
@@ -142,12 +144,17 @@ let SendEmailMessage =
           if (dayOfWeek !== 0 && dayOfWeek !== 6 && !isWeekend(currentDate, adjustedEndDate)) {
             // Exclude Sunday (0) and Saturday (6), and the event date and end date if they're both on a weekend
             if (item?.Event_x002d_Type != "Work From Home") {
-              if (item?.HalfDay) {
-                workingDays += 0.5; // Consider half-day
-              } else {
-                workingDays++;
+              if (item?.HalfDay == true) { 
+                workingDays += 0.5; // Consider first half-day
               }
+              else if(item?.HalfDayTwo == true){
+                workingDays += 0.5;
+              }
+              else {
+                workingDays++;
+              } 
             }
+           
           }
 
           currentDate.setTime(currentDate.getTime() + oneDay); // Move to the next day
@@ -156,9 +163,11 @@ let SendEmailMessage =
         return total + workingDays;
       }
 
-      return total;
+      return total ;
     }, 0);
+    
   };
+ 
 
   // Function to check if a date falls on a weekend
   const isWeekend = (startDate: any, endDate: any) => {
@@ -346,7 +355,7 @@ let SendEmailMessage =
     background: #2F5596;width: 260px;height:40px;font-family: Segoe UI;font-size: 14px;font-style: normal;font-weight: 600;line-height: normal;">See Full Leave Report Online</div>
 </div>
 <div style="display: flex;align-items: center;padding-bottom: 56px;">
-    <img src="https://www.hochhuth-consulting.de/images/logo.png" style="height: 48px;width:48px;" alt="Site Icon">
+    <img src="https://www.hochhuth-consulting.de/images/logo.png" style="height: 48px;" alt="Site Icon">
     <div style="color: var(--black, #333);text-align: center;font-family: Segoe UI;font-size: 14px;font-style: normal; font-weight: 600;margin-left: 4px;">Hochhuth Consulting GmbH</div>
 </div>`
 
@@ -364,7 +373,7 @@ let SendEmailMessage =
                 </div>
             </div>
             <div style="display: flex;align-items: center;padding-bottom: 56px;">
-                <img src="https://www.hochhuth-consulting.de/images/logo.png" style="height: 48px;width:48px;" alt="Site Icon">
+                <img src="https://www.hochhuth-consulting.de/images/logo.png" style="height: 48px;" alt="Site Icon">
                 <div style="color: var(--black, #333);text-align: center;font-family: Segoe UI;font-size: 14px;font-style: normal; font-weight: 600;margin-left: 4px;">Hochhuth Consulting GmbH</div>
             </div>
         </div></div></div></div></div></div>`;

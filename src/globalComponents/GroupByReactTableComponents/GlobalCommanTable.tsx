@@ -245,7 +245,7 @@ const GlobalCommanTable = (items: any, ref: any) => {
     let showHeader = items?.showHeader;
     let showPagination: any = items?.showPagination;
     let usedFor: any = items?.usedFor;
-    let portfolioColor = items?.portfolioColor;
+    let portfolioColor = items?.portfolioColor!=undefined ? items?.portfolioColor:"#000066" ;
     let expandIcon = items?.expandIcon;
     let fixedWidth = items?.fixedWidth;
     let portfolioTypeData = items?.portfolioTypeData;
@@ -275,6 +275,7 @@ const GlobalCommanTable = (items: any, ref: any) => {
     });
     const [selectedFilterCount, setSelectedFilterCount] = React.useState<any>({ selectedFilterCount: 'All content' })
     React.useEffect(() => {
+       
         if (fixedWidth === true) {
             try {
                 $('#spPageCanvasContent').removeClass();
@@ -590,13 +591,18 @@ const GlobalCommanTable = (items: any, ref: any) => {
             } else {
                 siteUrl = items?.AllListId?.siteUrl;
             }
+            if (item?.original?.ItemCat === "Project") {
+                window.open(`${siteUrl}/SitePages/Project-Management.aspx?ProjectId=${item?.original?.Id}`, '_blank')
+            }
+            else{
             if (item?.original?.siteType === "Master Tasks") {
                 window.open(`${siteUrl}/SitePages/Portfolio-Profile.aspx?taskId=${item?.original?.Id}`, '_blank')
             } else if (item?.original?.siteType === "Project") {
-                window.open(`${siteUrl}/SitePages/Project-Management.aspx?taskId=${item?.original?.Id}`, '_blank')
+                window.open(`${siteUrl}/SitePages/Project-Management.aspx?ProjectId=${item?.original?.Id}`, '_blank')
             } else {
                 window.open(`${siteUrl}/SitePages/Task-Profile.aspx?taskId=${item?.original?.Id}&Site=${item?.original?.siteType}`, '_blank')
             }
+        }
         })
     }
     // React.useEffect(() => {

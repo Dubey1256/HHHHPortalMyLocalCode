@@ -1,0 +1,154 @@
+@import '~@fluentui/react/dist/sass/References.scss';
+
+.helloSpfx {
+  overflow: hidden;
+  padding: 1em;
+  color: "[theme:bodyText, default: #323130]";
+  color: var(--bodyText);
+  &.teams {
+    font-family: $ms-font-family-fallbacks;
+  }
+}
+
+.welcome {
+  text-align: center;
+}
+
+.welcomeImage {
+  width: 100%;
+  max-width: 420px;
+}
+.prtblock {
+  display: flex;
+  justify-content: flex-start;
+  margin-bottom: 5px;
+  align-items: center;
+}
+
+.fstblock {
+  flex-basis: 18%;
+  text-align: left;
+  padding: 5px 0;
+  font-size: 14px;
+  font-weight: 500;
+}
+
+.secblock {
+  flex-basis: 82%;
+  text-align: left;
+}
+
+.pl-0 {
+  padding-left: 0px;
+}
+
+.pr-0 {
+  padding-right: 0px;
+}
+
+.rating {
+  color: #a9a9a9;
+  margin: 0;
+  padding: 0;
+}
+
+ul.rating {
+  display: inline-block;
+}
+
+.rating li {
+  list-style-type: none;
+  display: inline-block;
+  padding: 1px;
+  text-align: center;
+  font-weight: bold;
+  cursor: pointer;
+  font-size: 20px;
+}
+
+.rating .filled {
+  color: orangered;
+}
+
+.clear {
+  margin-top: 20px;
+}
+
+.star-block {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 10px;
+}
+
+.star-block>span {
+  display: flex;
+  width: 100%;
+  justify-content: space-between;
+  gap: 10px;
+  align-items: center;
+  border-bottom: 1px solid #dfdfdf;
+  padding-bottom: 10px;
+}
+
+.star-block>span>span.skillTitle {
+  width: 85px;
+  padding: 10px;
+  margin-right: 5px;
+}
+
+.star-block>div {
+  width: auto;
+}
+
+.star-block>span .comment-block {
+  flex: 1 1 auto;
+}
+
+.skillTitle {
+  flex: 0 220px;
+  font-weight: 500;
+}
+
+.skillRating {
+  flex: 0 100px;
+}
+
+.favs {
+  color: #ffac1ff0 !important;
+}
+.favsGrey {
+  color: #CCCCCC !important;
+}
+
+.content {
+  display: none;
+}
+
+.content.ng-show {
+  display: block;
+  /* Additional styles for animation or transition */
+}
+
+.documenttype-list {
+  padding: 4px 0px;
+  border-bottom: 1px solid #e7e7e7;
+}
+
+.inline-label {
+  display: flex;
+  align-items: center;
+}
+
+.links {
+  a {
+    text-decoration: none;
+    color: "[theme:link, default:#03787c]";
+    color: var(--link); // note: CSS Custom Properties support is limited to modern browsers only
+
+    &:hover {
+      text-decoration: underline;
+      color: "[theme:linkHovered, default: #014446]";
+      color: var(--linkHovered); // note: CSS Custom Properties support is limited to modern browsers only
+    }
+  }
+}

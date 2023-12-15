@@ -1,16 +1,29 @@
 import * as React from 'react';
-// import styles from './HRcontractProfile.module.scss';
-import { IHRcontractProfileProps } from './IHRcontractProfileProps';
-import { escape } from '@microsoft/sp-lodash-subset';
-import ContractProfileTable from './contractProfile/ContractProfileTable';
 
-export default class HRcontractProfile extends React.Component<IHRcontractProfileProps, {}> {
-  public render(): React.ReactElement<IHRcontractProfileProps> {
-  
+import { escape } from '@microsoft/sp-lodash-subset';
+import ContractProfile from './ContractProfile';
+import { IHrContractProfileProps } from './IHRcontractProfileProps';
+
+
+export default class HrContractProfile extends React.Component<IHrContractProfileProps, {}> {
+  public render(): React.ReactElement<IHrContractProfileProps> {
+    const {
+      description,
+      isDarkTheme,
+      environmentMessage,
+      hasTeamsContext,
+      userDisplayName,
+      ContractListID,
+      siteUrl,
+      MAIN_SMARTMETADATA_LISTID,
+      MAIN_HR_LISTID,
+      HR_EMPLOYEE_DETAILS_LIST_ID
+    } = this.props;
+
     return (
-     <div>
-<ContractProfileTable/>
-     </div>
+      <div>
+        <ContractProfile props={this.props}/>
+      </div>
     );
   }
 }

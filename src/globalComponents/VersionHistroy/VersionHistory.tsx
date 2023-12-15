@@ -1,14 +1,12 @@
 import * as React from 'react'
 import { Panel, PanelType } from 'office-ui-fabric-react';
-import { sp } from 'sp-pnp-js';
+import { Web, sp } from 'sp-pnp-js';
 import "bootstrap/dist/css/bootstrap.min.css";  
 import Tooltip from '../Tooltip';
 import * as moment from 'moment';
 import InfoIconsToolTip from '../InfoIconsToolTip/InfoIconsToolTip';
 import { SlArrowDown, SlArrowRight } from 'react-icons/sl';
-
 var keys: any = []
-
 export default function VersionHistory(props: any) {
     const [propdata, setpropData] = React.useState(props);
     const [show, setShow] = React.useState(false);
@@ -16,18 +14,23 @@ export default function VersionHistory(props: any) {
     const [ShowEstimatedTimeDescription,setShowEstimatedTimeDescription] = React.useState(false);
     const [AllCommentModal,setAllCommentModal] = React.useState(false);
     const [AllComment,setAllComment] = React.useState([]);
-    var tableCode
+   
     const handleClose = () => setShow(false);
-    const handleShow = () => setShow(true);
-
+    const handleShow = () => {       
+        setShow(true)
+        setTimeout(() => {
+            $('.ms-Panel-scrollableContent').addClass('versionScrollableContent')
+        }, 100);
+    };
     //------------------------jquery call--------------------------------
     const GetItemsVersionHistory = async () => {
         var versionData: any = []
         var siteTypeUrl = props.siteUrls;
+        let webs = new Web(props.siteUrls);
         let listId = props.listId
         var itemId = props.taskId;
         let tempEstimatedArrayData: any;        
-        sp.web.lists.getById(props?.listId).items.getById(props.taskId).versions.get().then(versions => {
+        webs.lists.getById(props?.listId).items.getById(props?.taskId).versions.get().then(versions => {
             console.log('Version History:', versions);
             versionData = versions;
 
@@ -91,7 +94,6 @@ export default function VersionHistory(props: any) {
     const closeAllCommentModal = ()=>{
         setAllCommentModal(false);
     }
-
     const showhideEstimatedTime=()=> {
         if (ShowEstimatedTimeDescription) {          
             setShowEstimatedTimeDescription(false)         
@@ -99,7 +101,6 @@ export default function VersionHistory(props: any) {
             setShowEstimatedTimeDescription(true) 
         }
     }
-
     const findDifferentColumnValues = (data: any) => {
         const differingValues = [];        
 
@@ -141,8 +142,9 @@ export default function VersionHistory(props: any) {
                     differingPairs['version'] = currentObj.VersionId;
                     differingPairs['ID']= currentObj.ID;
                     differingPairs['owshiddenversion']= currentObj.owshiddenversion; 
-                    differingPairs['PercentComplete']= currentObj.PercentComplete;                                              
-                    if ((currentObj[key] !== undefined && currentObj[key] !== null && currentObj[key] !== '' && currentObj.hasOwnProperty(key)) && (key !== 'Checkmark' && key !== 'odata.type'  && key !== 'SMTotalFileStreamSize'  && key !== 'ContentVersion' && key !== 'FolderChildCount'  && key !== 'NoExecute'  && key !== 'FSObjType'  && key !== 'FileLeafRef' && key !== 'Order' && key !== 'Created_x005f_x0020_x005f_Date' && key !== 'Last_x005f_x0020_x005f_Modified')) {
+                    if(currentObj.PercentComplete != undefined && currentObj.PercentComplete != null && currentObj.PercentComplete !== 'NaN')
+                     differingPairs['PercentComplete']= currentObj.PercentComplete;                                              
+                    if ((currentObj[key] !== undefined && currentObj[key] !== null && currentObj[key] !== '' && currentObj.hasOwnProperty(key)) && (key !== 'Checkmark' && key !== 'odata.type'  && key !== 'ItemChildCount' && key !== 'SMTotalFileStreamSize'  && key !== 'ContentVersion' && key !== 'FolderChildCount'  && key !== 'NoExecute'  && key !== 'FSObjType'  && key !== 'FileLeafRef' && key !== 'Order' && key !== 'Created_x005f_x0020_x005f_Date' && key !== 'Last_x005f_x0020_x005f_Modified')) {
                         if(currentObj[key]?.length>0){
                             differingPairs[key] = currentObj[key];
                             differingPairs['Editor'] = currentObj.Editor;
@@ -158,7 +160,6 @@ export default function VersionHistory(props: any) {
 
         return differingValues;
     }    
-
     // Function to compare arrays and objects recursively based on their IDs
     function isEqual(obj1: any, obj2: any) {
         if (obj1 === obj2) return true;
@@ -197,7 +198,6 @@ export default function VersionHistory(props: any) {
         return true;
     }
     //---------------------------------------------------------------------
-
     React.useEffect(() => {
         GetItemsVersionHistory()
     }, [show]);
@@ -205,7 +205,7 @@ export default function VersionHistory(props: any) {
     const onRenderCustomHeader = () => {
       return (
         <>
-          <div style={{ marginRight: "auto", fontSize: "20px", fontWeight: "600", marginLeft: '15px' }}>
+          <div className='subheading mb-0'>
             Version History
           </div>
           <Tooltip />
@@ -215,7 +215,7 @@ export default function VersionHistory(props: any) {
     const onRenderCustomCommentHeader = () => {
         return (
           <>
-            <div style={{ marginRight: "auto", fontSize: "20px", fontWeight: "600", marginLeft: '15px' }}>
+            <div className='subheading mb-0'>
               All Comments
             </div>
             <Tooltip />
@@ -271,7 +271,7 @@ export default function VersionHistory(props: any) {
                 isBlocking={false}
                 type={PanelType.large}>
                 
-                <table className="table VersionHistoryTable">
+                <table className="table VersionHistoryTable mt-2">
                         <thead>
                             <tr>
                                 <th style={{width:"80px"}} scope="col">No</th>
@@ -318,7 +318,7 @@ export default function VersionHistory(props: any) {
                                                                                                     return(
                                                                                                         <>                                                                                                            
                                                                                                             <span className='BasicimagesInfo_group'>
-                                                                                                                <img src={image.ImageUrl} alt="" />
+                                                                                                                <a target='_blank' href={image.ImageUrl}><img src={image.ImageUrl} alt="" /></a>
                                                                                                                 {image.ImageUrl !== undefined ? <span className='BasicimagesInfo_group-imgIndex'>{indx+1}</span> : ''}
                                                                                                             </span>
                                                                                                         </>
@@ -382,7 +382,7 @@ export default function VersionHistory(props: any) {
                                                                                                     <label className='userid m-0'>  {item?.CommentsDescription[0]?.Header != '' && <b>{item?.CommentsDescription[0]?.Header}</b>}</label>
                                                                                                     <span className='d-flex' id="pageContent">
                                                                                                         <span className='text-ellips' dangerouslySetInnerHTML={{ __html: item?.CommentsDescription[0]?.Description }}></span>
-                                                                                                        <span><a className="hreflink" onClick={()=>openCommentPopup(item?.CommentsDescription)}>See More</a></span>
+                                                                                                        <span className='text-end w-25'><a className="hreflink" onClick={()=>openCommentPopup(item?.CommentsDescription)}>See More</a></span>
                                                                                                     </span>
                                                                                                    
                                                                                                 </div>                                                                                                                                                                                                                                                                          
@@ -407,7 +407,7 @@ export default function VersionHistory(props: any) {
                             })}
 
                         </tbody>
-                    </table >
+                </table >
 
             </Panel>
             <Panel
@@ -459,7 +459,6 @@ export default function VersionHistory(props: any) {
                 </div>
 
             </Panel>
-
         </>
     );
 }

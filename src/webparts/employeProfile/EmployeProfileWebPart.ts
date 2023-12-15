@@ -20,6 +20,7 @@ export interface IEmployeProfileWebPartProps {
   MAIN_HR_LISTID:'6DD8038B-40D2-4412-B28D-1C86528C7842',
   GMBH_CONTACT_SEARCH_LISTID:'6CE99A82-F577-4467-9CDA-613FADA2296F',
   HR_EMPLOYEE_DETAILS_LIST_ID:'a7b80424-e5e1-47c6-80a1-0ee44a70f92c',
+  ContractListID:'c0106d10-a71c-4153-b204-7cf7b45a68b8',
 }
 
 export default class EmployeProfileWebPart extends BaseClientSideWebPart<IEmployeProfileWebPartProps> {
@@ -40,6 +41,7 @@ export default class EmployeProfileWebPart extends BaseClientSideWebPart<IEmploy
         MAIN_HR_LISTID:'6DD8038B-40D2-4412-B28D-1C86528C7842',
         GMBH_CONTACT_SEARCH_LISTID:'6CE99A82-F577-4467-9CDA-613FADA2296F',
         HR_EMPLOYEE_DETAILS_LIST_ID:'a7b80424-e5e1-47c6-80a1-0ee44a70f92c',
+        ContractListID:'c0106d10-a71c-4153-b204-7cf7b45a68b8',
         environmentMessage: this._environmentMessage,
         hasTeamsContext: !!this.context.sdks.microsoftTeams,
         userDisplayName: this.context.pageContext.user.loginName
@@ -49,39 +51,23 @@ export default class EmployeProfileWebPart extends BaseClientSideWebPart<IEmploy
     ReactDom.render(element, this.domElement);
   }
 
+
   protected onInit(): Promise<void> {
-    return this._getEnvironmentMessage().then(message => {
-      this._environmentMessage = message;
+    //this._environmentMessage = this._getEnvironmentMessage();
+    return super.onInit().then((_) => {
+    
     });
   }
 
 
-
-  private _getEnvironmentMessage(): Promise<string> {
-    if (!!this.context.sdks.microsoftTeams) { // running in Teams, office.com or Outlook
-      return this.context.sdks.microsoftTeams.teamsJs.app.getContext()
-        .then(context => {
-          let environmentMessage: string = '';
-          switch (context.app.host.name) {
-            case 'Office': // running in Office
-              environmentMessage = this.context.isServedFromLocalhost ? strings.AppLocalEnvironmentOffice : strings.AppOfficeEnvironment;
-              break;
-            case 'Outlook': // running in Outlook
-              environmentMessage = this.context.isServedFromLocalhost ? strings.AppLocalEnvironmentOutlook : strings.AppOutlookEnvironment;
-              break;
-            case 'Teams': // running in Teams
-              environmentMessage = this.context.isServedFromLocalhost ? strings.AppLocalEnvironmentTeams : strings.AppTeamsTabEnvironment;
-              break;
-            default:
-              throw new Error('Unknown host');
-          }
-
-          return environmentMessage;
-        });
+  private _getEnvironmentMessage(): string {
+    if (!!this.context.sdks.microsoftTeams) { // running in Teams
+      return this.context.isServedFromLocalhost ? strings.AppLocalEnvironmentTeams : strings.AppTeamsTabEnvironment;
     }
 
-    return Promise.resolve(this.context.isServedFromLocalhost ? strings.AppLocalEnvironmentSharePoint : strings.AppSharePointEnvironment);
+    return this.context.isServedFromLocalhost ? strings.AppLocalEnvironmentSharePoint : strings.AppSharePointEnvironment;
   }
+
 
   protected onThemeChanged(currentTheme: IReadonlyTheme | undefined): void {
     if (!currentTheme) {
@@ -137,7 +123,10 @@ export default class EmployeProfileWebPart extends BaseClientSideWebPart<IEmploy
                 }),
                 PropertyPaneTextField('HR_EMPLOYEE_DETAILS_LIST_ID', {
                   label: "Hr Employee Details ListId"
-                })
+                }),
+                PropertyPaneTextField('ContractListID', {
+                  label: 'ContractListID'
+                }),
               ]
             }
           ]

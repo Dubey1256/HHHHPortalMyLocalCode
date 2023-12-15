@@ -167,6 +167,7 @@ var BackupCat: any = [];
 let portfolioType = "";
 var CheckCategory: any = [];
 var backcatss: any = [];
+let postedData:any ={};
 var TaggedPortfolios: any = [];
 function EditProjectPopup(item: any) {
   // Id:any
@@ -245,6 +246,7 @@ function EditProjectPopup(item: any) {
     [editorState]
   );
   const setModalIsOpenToFalse = () => {
+   
     EditComponentCallback();
     setModalIsOpen(false);
   };
@@ -833,7 +835,10 @@ function EditProjectPopup(item: any) {
     console.log(componentDetails);
   };
   function EditComponentCallback() {
-    item.Call("", "EditPopup");
+    if(postedData?.Id==undefined&&postedData?.ID==undefined){
+      postedData=EditData
+    }
+    item.Call(postedData, "EditPopup");
   }
   let mentionUsers: any = [];
   //  mentionUsers = this.taskUsers.map((i:any)=>{
@@ -1027,6 +1032,7 @@ function EditProjectPopup(item: any) {
     } else {
       CheckCategory = [];
     }
+    var CategoryID: any = [];
     var categoriesItem = "";
     CategoriesData?.map((category: any) => {
       if (category.Title != undefined) {
@@ -1035,13 +1041,12 @@ function EditProjectPopup(item: any) {
             ? category.Title
             : categoriesItem + ";" + category.Title;
       }
-    });
-    var CategoryID: any = [];
-    CategoriesData?.map((category: any) => {
       if (category.Id != undefined) {
         CategoryID.push(category.Id);
       }
     });
+
+
     if (TaskAssignedTo != undefined && TaskAssignedTo?.length > 0) {
       TaskAssignedTo?.map((taskInfo) => {
         AssignedToIds.push(taskInfo.Id);
@@ -1080,98 +1085,101 @@ function EditProjectPopup(item: any) {
         (option: { rankTitle: any }) => option.rankTitle == Items.ItemRankTitle
       )[0].rank;
     let web = new Web(AllListId?.siteUrl);
+    let postData:any = {
+      Title: Items.Title,
+      ItemRank: ItemRank,
+      PriorityRank: Items.PriorityRank,
+      PortfoliosId: {
+        results:
+          selectedPortfoliosData !== undefined && selectedPortfoliosData?.length > 0
+            ? selectedPortfoliosData
+            : [],
+      },
+      DeliverableSynonyms: Items.DeliverableSynonyms,
+      StartDate: EditData.StartDate
+        ? moment(EditData.StartDate).format("MM-DD-YYYY")
+        : null,
+      DueDate: EditData.DueDate
+        ? moment(EditData.DueDate).format("MM-DD-YYYY")
+        : null,
+      CompletedDate: EditData.CompletedDate
+        ? moment(EditData.CompletedDate).format("MM-DD-YYYY")
+        : null,
+      // Categories:EditData.smartCategories != undefined && EditData.smartCategories != ''?EditData.smartCategories[0].Title:EditData.Categories,
+      Categories: categoriesItem ? categoriesItem : null,
+      TaskCategoriesId: { results: CategoryID },
+      // ClientCategoryId: { "results": RelevantPortfolioIds },
+      ServicePortfolioId:
+        RelevantPortfolioIds != "" ? RelevantPortfolioIds : null,
+      Synonyms: JSON.stringify(Items["Synonyms"]),
+      Package: Items.Package,
+      AdminStatus: Items.AdminStatus,
+      Priority: Items.Priority,
+      Mileage: Items.Mileage,
+      PercentComplete: Items?.PercentComplete ? (Items?.PercentComplete / 100) : null,
+      Status: Items?.Status ? Items?.Status : null,
+      ValueAdded: Items.ValueAdded,
+      Idea: Items.Idea,
+      Background: Items.Background,
+      AdminNotes: Items.AdminNotes,
+      ComponentLink: {
+        Description:
+          Items.ComponentLink != undefined
+            ? Items.ComponentLink
+            : null,
+        Url:
+          Items.ComponentLink != undefined
+            ? Items.ComponentLink
+            : null,
+      },
+      TechnicalExplanations:
+        PostTechnicalExplanations != undefined &&
+          PostTechnicalExplanations != ""
+          ? PostTechnicalExplanations
+          : EditData.TechnicalExplanations,
+      Deliverables:
+        PostDeliverables != undefined && PostDeliverables != ""
+          ? PostDeliverables
+          : EditData.Deliverables,
+      Short_x0020_Description_x0020_On:
+        PostShort_x0020_Description_x0020_On != undefined &&
+          PostShort_x0020_Description_x0020_On != ""
+          ? PostShort_x0020_Description_x0020_On
+          : EditData.Short_x0020_Description_x0020_On,
+      Body:
+        PostBody != undefined && PostBody != "" ? PostBody : EditData.Body,
+      AssignedToId: {
+        results:
+          AssignedToIds != undefined && AssignedToIds?.length > 0
+            ? AssignedToIds
+            : [],
+      },
+      ResponsibleTeamId: {
+        results:
+          ResponsibleTeamIds != undefined && ResponsibleTeamIds?.length > 0
+            ? ResponsibleTeamIds
+            : [],
+      },
+      TeamMembersId: {
+        results:
+          TeamMemberIds != undefined && TeamMemberIds?.length > 0
+            ? TeamMemberIds
+            : [],
+      }
+    }
     await web.lists
       .getById(AllListId?.MasterTaskListID)
       .items.getById(Items.ID)
-      .update({
-        Title: Items.Title,
-
-        ItemRank: ItemRank,
-        PriorityRank: Items.PriorityRank,
-        PortfoliosId: {
-          results:
-            selectedPortfoliosData !== undefined && selectedPortfoliosData?.length > 0
-              ? selectedPortfoliosData
-              : [],
-        },
-        DeliverableSynonyms: Items.DeliverableSynonyms,
-        StartDate: EditData.StartDate
-          ? moment(EditData.StartDate).format("MM-DD-YYYY")
-          : null,
-        DueDate: EditData.DueDate
-          ? moment(EditData.DueDate).format("MM-DD-YYYY")
-          : null,
-        CompletedDate: EditData.CompletedDate
-          ? moment(EditData.CompletedDate).format("MM-DD-YYYY")
-          : null,
-        // Categories:EditData.smartCategories != undefined && EditData.smartCategories != ''?EditData.smartCategories[0].Title:EditData.Categories,
-        Categories: categoriesItem ? categoriesItem : null,
-        SharewebCategoriesId: { results: CategoryID },
-        // ClientCategoryId: { "results": RelevantPortfolioIds },
-        ServicePortfolioId:
-          RelevantPortfolioIds != "" ? RelevantPortfolioIds : null,
-        Synonyms: JSON.stringify(Items["Synonyms"]),
-        Package: Items.Package,
-        AdminStatus: Items.AdminStatus,
-        Priority: Items.Priority,
-        Mileage: Items.Mileage,
-        PercentComplete: Items?.PercentComplete ? (Items?.PercentComplete / 100) : null,
-        Status: Items?.Status ? Items?.Status : null,
-        ValueAdded: Items.ValueAdded,
-        Idea: Items.Idea,
-        Background: Items.Background,
-        AdminNotes: Items.AdminNotes,
-        ComponentLink: {
-          Description:
-            Items.ComponentLink != undefined
-              ? Items.ComponentLink
-              : null,
-          Url:
-            Items.ComponentLink != undefined
-              ? Items.ComponentLink
-              : null,
-        },
-        TechnicalExplanations:
-          PostTechnicalExplanations != undefined &&
-            PostTechnicalExplanations != ""
-            ? PostTechnicalExplanations
-            : EditData.TechnicalExplanations,
-        Deliverables:
-          PostDeliverables != undefined && PostDeliverables != ""
-            ? PostDeliverables
-            : EditData.Deliverables,
-        Short_x0020_Description_x0020_On:
-          PostShort_x0020_Description_x0020_On != undefined &&
-            PostShort_x0020_Description_x0020_On != ""
-            ? PostShort_x0020_Description_x0020_On
-            : EditData.Short_x0020_Description_x0020_On,
-        Body:
-          PostBody != undefined && PostBody != "" ? PostBody : EditData.Body,
-        AssignedToId: {
-          results:
-            AssignedToIds != undefined && AssignedToIds?.length > 0
-              ? AssignedToIds
-              : [],
-        },
-        ResponsibleTeamId: {
-          results:
-            ResponsibleTeamIds != undefined && ResponsibleTeamIds?.length > 0
-              ? ResponsibleTeamIds
-              : [],
-        },
-        TeamMembersId: {
-          results:
-            TeamMemberIds != undefined && TeamMemberIds?.length > 0
-              ? TeamMemberIds
-              : [],
-        },
-        // PercentComplete: saveData.PercentComplete == undefined ? EditData.PercentComplete : saveData.PercentComplete,
-
-        // Categories: Items.Categories
-
-        // BasicImageInfo: JSON.stringify(UploadImage)
-      })
+      .update(postData)
       .then((res: any) => {
+        postedData ={
+          ...postData,
+          TaskCategories:CategoriesData,
+          AssignedTo:TaskAssignedTo,
+          ResponsibleTeam:TaskResponsibleTeam,
+          TeamMembers:TaskTeamMembers,
+          Item_x0020_Type : EditData?.Item_x0020_Type
+        }
         console.log(res);
         TaggedPortfolios = [];
         setModalIsOpenToFalse();
@@ -1285,6 +1293,11 @@ function EditProjectPopup(item: any) {
                   Project
                 </a>
               </li>
+              {EditData?.Item_x0020_Type != "Project" && EditData?.Parent?.Title ?
+                <li>
+                  {" "}
+                  <a data-interception="off" href={`${AllListId?.siteUrl}/SitePages/Project-Management.aspx?ProjectId=${EditData?.Parent?.Id}`}>{EditData?.Parent?.Title}</a>{" "}
+                </li> : ''}
               <li>
                 <a>{EditData.Title}</a>
               </li>

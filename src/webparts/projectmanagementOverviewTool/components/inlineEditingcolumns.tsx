@@ -1118,14 +1118,13 @@ const inlineEditingcolumns = (props: any) => {
         }
       >
         <div className="subheading ">
-          {props?.item?.SiteIcon != null && <img className="imgWid29 pe-1 mb-1 " src={props?.item?.SiteIcon} />}
+          {props?.item?.SiteIcon != null && <img className="imgWid29 pe-1 mt-1 " src={props?.item?.SiteIcon} />}
           <span className="siteColor">
-            {`Update ${columnName} - ${props?.item?.TaskID} ${props?.item?.Title}`}
+            {`Update ${columnName} - ${props?.item?.TaskID!=undefined ? props?.item?.TaskID : '' } ${props?.item?.Title}`}
           </span>
         </div>
         <Tooltip ComponentId={7801} />
       </div>
-
     );
   };
 
@@ -1182,7 +1181,7 @@ const inlineEditingcolumns = (props: any) => {
             onClick={() => setTaskPriorityPopup(true)}
           >
             &nbsp;
-            {props?.mypriority === true ? `(${props?.item?.PriorityRank}) ${props?.item?.Priority?.slice(3)}`:props?.item?.PriorityRank}
+            {props?.mypriority === true && props?.item?.PriorityRank!=null&&props?.item?.PriorityRank!=undefined  ? `(${props?.item?.PriorityRank}) ${props?.item?.Priority?.slice(3)}`:props?.item?.PriorityRank}
             {props?.item?.TaskCategories?.map((items: any) =>
               items?.Title === "On-Hold" ? (
                 <div className="hover-text">
