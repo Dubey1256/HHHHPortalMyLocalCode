@@ -18,7 +18,8 @@ function HelloSpfx(props: IHelloSpfxProps) {
   MAIN_HR_LISTID,
   GMBH_CONTACT_SEARCH_LISTID,
   HR_EMPLOYEE_DETAILS_LIST_ID,
-  InterviewFeedbackFormListId
+  InterviewFeedbackFormListId,
+  ContractListID
   } = props;
   return (
     <InterviewFeedbackForm props ={props}/>

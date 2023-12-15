@@ -1483,6 +1483,7 @@ const App = (props: any) => {
       allDay = false;
       HalfDayT = false;
       HalfDaye = true;
+      setisSecondtHalfDChecked(HalfDayT)
       setIsChecked(allDay);
       //console.log("allDay", allDay);
     } else {
@@ -1506,6 +1507,8 @@ const App = (props: any) => {
       allDay = false;
       HalfDaye = false;
       HalfDayT = true;
+      setIsFirstHalfDChecked(HalfDaye)
+     
       setIsChecked(allDay);
       //console.log("allDay", allDay);
     } else {
