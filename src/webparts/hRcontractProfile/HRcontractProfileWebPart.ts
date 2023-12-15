@@ -9,7 +9,7 @@ import { BaseClientSideWebPart } from '@microsoft/sp-webpart-base';
 import { IReadonlyTheme } from '@microsoft/sp-component-base';
 import pnp from 'sp-pnp-js';
 import HrContractProfile from './components/HRcontractProfile';
-import { IHrContractProfileProps } from './components/IHRcontractProfileProps';
+import { IHrContractProfileProps } from './components/IHrContractProfileProps';
 import * as strings from 'HrContractProfileWebPartStrings';
 export interface IHrContractProfileWebPartProps {
   description: string;
