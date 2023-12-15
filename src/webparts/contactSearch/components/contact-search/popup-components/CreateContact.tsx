@@ -7,6 +7,7 @@ import Tooltip from "../../../../../globalComponents/Tooltip";
 import { myContextValue } from '../../../../../globalComponents/globalCommon'
 import { error } from "jquery";
 import EditInstitutionPopup from "./EditInstitutionPopup";
+
 const CreateContactComponent = (props: any) => {
     const myContextData2: any = React.useContext<any>(myContextValue)
     const listData = props.data;
@@ -18,6 +19,7 @@ const CreateContactComponent = (props: any) => {
     const [isUserExist, setUserExits] = useState(true);
     const [newContact, setNewContact] = useState(false);
     const [newInstitution, setNewInstitution] = useState(false);
+   
 
     const [searchKey, setSearchKey] = useState({
         Title: '',
@@ -72,8 +74,8 @@ const CreateContactComponent = (props: any) => {
                                 results: (myContextData2?.allSite?.GMBHSite?["GMBH"]:["HR"])
                             },
         
-                           
-                            Title: props?.data?.Title.split(" ")[1],
+                          
+                            Title: props?.data?.Title.split(" ")[1]!=null?props?.data?.Title.split(" ")[1]:"",
                             FirstName:  props?.data?.Title.split(" ")[0],
                             FullName: props?.data?.Title,
                             ItemType: "Contact"
@@ -141,7 +143,7 @@ const CreateContactComponent = (props: any) => {
                                     }
                                     if(props?.pageName=="Recruiting-Tool"){
                                         postData={
-                                            Title: props?.data?.Title.split(" ")[1],
+                                            Title: props?.data?.Title.split(" ")[1]!=null?props?.data?.Title.split(" ")[1]:"",
                                             FirstName:  props?.data?.Title.split(" ")[0],
                                             FullName:  props?.data?.Title,
                                             staffID0: staffIdData,
@@ -215,7 +217,7 @@ const CreateContactComponent = (props: any) => {
           }).then((data:any)=>{
             resolve(data)
              console.log(data,"hr main post done")
-             alert("Your information has been updated successfully")
+            //  alert("Your information has been updated successfully")
           }).catch((error:any)=>{
             reject()
              console.log(error)
@@ -301,6 +303,7 @@ const CreateContactComponent = (props: any) => {
             </>
         );
     };
+   
     return (
 <>
        {props?.pageName!="Recruiting-Tool" ?
@@ -336,9 +339,10 @@ const CreateContactComponent = (props: any) => {
             </footer>
 
             {profileStatus ? <HHHHEditComponent props={contactdata} callBack={ClosePopup} /> : null}
-            {newContact ? <HHHHEditComponent props={contactdata} userUpdateFunction={updateCallBack} callBack={ClosePopup} /> : null}
+            {newContact ? <HHHHEditComponent props={contactdata} userUpdateFunction={updateCallBack} callBack={ClosePopup}  /> : null}
             {newInstitution ? <EditInstitutionPopup props={institutionData} callBack={ClosePopup} /> : null}
-        </Panel>:contactdata!=undefined&&<HHHHEditComponent props={contactdata} userUpdateFunction={updateCallBack} callBack={ClosePopup} />}
+       
+        </Panel>:contactdata!=undefined&&<HHHHEditComponent props={contactdata} userUpdateFunction={updateCallBack} callBack={ClosePopup} pageName={props?.pageName}/>}
 
         </>
     )

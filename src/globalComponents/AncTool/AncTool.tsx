@@ -1568,7 +1568,7 @@ const AncTool = (props: any) => {
                     </div>
                 </div> : ''
             }
-            {remark && <SmartInformation Id={props?.item?.Id}
+        {remark && <SmartInformation Id={props?.item?.Id}
                 AllListId={props.AllListId}
                 Context={props?.Context}
                 taskTitle={props?.item?.Title}
