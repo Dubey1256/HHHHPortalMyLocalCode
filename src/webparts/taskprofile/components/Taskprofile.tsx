@@ -2313,7 +2313,7 @@ private async updateProjectComponentServices(dataUpdate:any) {
                                               }
                                             </div>
                                             <div className='m-0'>
-                                              <span className="d-block">
+                                              <span className="siteColor">
                                                 <a style={{ cursor: 'pointer' }} onClick={(e) => this.showhideCommentBox(i)}>Add Comment</a>
                                               </span>
                                             </div>
@@ -2478,7 +2478,7 @@ private async updateProjectComponentServices(dataUpdate:any) {
                                               </div>
                                               <div className='m-0'>
                                                 <a className="d-block text-end">
-                                                  <a style={{ cursor: 'pointer' }}
+                                                  <a className='siteColor' style={{ cursor: 'pointer' }}
                                                     onClick={(e) => this.showhideCommentBoxOfSubText(j, i)}
                                                   >Add Comment</a>
                                                 </a>
