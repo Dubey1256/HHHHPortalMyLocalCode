@@ -9,7 +9,7 @@ import { sp, Web } from "sp-pnp-js";
 import * as $ from "jquery";
 import { arraysEqual, Modal, Panel, PanelType } from "office-ui-fabric-react";
 import * as Moment from "moment";
-import EditContractPopup from '../components/EditContractPopup'
+import EditContractPopup from './EditContractPopup'
 import CreateContactComponent from "../../contactSearch/components/contact-search/popup-components/CreateContact";
 import Tooltip from "../../../globalComponents/Tooltip";
 let ResData:any = {}
@@ -102,7 +102,7 @@ const CreateContract = (props: any) => {
          }
    const closeAddTaskTimepopup = () => {
       setCreatePopup(false)
-     
+      props.callback()
    }
 
    const onRenderSelectEmp =()=>{
@@ -239,9 +239,8 @@ const CreateContract = (props: any) => {
         }
    
     const saveContractType=(checkitem:any,type:any)=>{
-      closeContractTypePopup();
       closeAddEmp()
-      if(postData.checkContractitem !=undefined && postData.checkContractitem !="" && type==="contract"){
+      if(postData.contractTypeItem !=undefined && postData.contractTypeItem  !="" && type==="contract"){
         smarttaxonomy.map ((items,index)=>{
           if(items.Title===checkitem){
             setPostData({ ...postData, checkContractitem: items.Id})
@@ -251,7 +250,7 @@ const CreateContract = (props: any) => {
        
         })
         setPostData({ ...postData, checkContractitem: checkitem})
-        closeContractTypePopup();
+        closeContractTypePopup()
        }
        else if(postData.selectEmp !=undefined && postData.selectEmp !="" && type==="contact"){
         allContactData.map((items,index)=>{
@@ -267,7 +266,7 @@ const CreateContract = (props: any) => {
      }
      const callback=()=>{
       setOpenEditPopup(false)
-      //props.callback();
+      props.callback();
      
      }
      const ClosePopup = React.useCallback(() => {
@@ -398,4 +397,3 @@ const CreateContract = (props: any) => {
    )
 }
 export default CreateContract;
-

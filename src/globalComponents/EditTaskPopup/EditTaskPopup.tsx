@@ -72,7 +72,7 @@ var TimeSheetlistId = "";
 let siteConfig: any = [];
 let siteConfigs: any = [];
 var TimeSheets: any = [];
-let tempArrayJsonData: any = [];
+
 var MigrationListId = "";
 var newGeneratedId: any = "";
 var siteUrl = "";
@@ -4145,6 +4145,7 @@ const EditTaskPopup = (Items: any) => {
             });
     };
     const CopyImageData = async (NewList: any, NewItem: any) => {
+       
         var attachmentFileName: any = "";
         let web = new Web(siteUrls);
         const response = await web.lists
@@ -4160,6 +4161,7 @@ const EditTaskPopup = (Items: any) => {
         NewList: any,
         NewItem: any
     ) => {
+        let tempArrayJsonData: any = [];
         var count = 0;
         let currentUserDataObject: any;
         if (currentUserBackupArray != null && currentUserBackupArray.length > 0) {
@@ -4244,12 +4246,12 @@ const EditTaskPopup = (Items: any) => {
             await Promise.all(fetchPromises);
 
             // Call another function after all promises are resolved
-            await SaveJSONData(NewList, NewItem);
+            await SaveJSONData(NewList, NewItem, tempArrayJsonData);
         } catch (error) {
             console.error("Error updating client category:", error);
         }
     };
-    const SaveJSONData = async (NewList: any, NewItem: any) => {
+    const SaveJSONData = async (NewList: any, NewItem: any, tempArrayJsonData:any) => {
         let web = new Web(siteUrls);
         var Data = await web.lists
             .getByTitle(NewList)
