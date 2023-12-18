@@ -217,6 +217,9 @@ const ProjectManagementMain = (props: any) => {
           .expand("ClientCategory", "ComponentCategory", "AssignedTo", "AttachmentFiles", "Author", "Editor", "TeamMembers", "Portfolios", "TaskCategories", "Parent")
           .getById(QueryId)
           .get().then((fetchedProject: any) => {
+            fetchedProject.siteUrl = props?.siteUrl;
+            fetchedProject.listId = AllListId?.MasterTaskListID;
+            fetchedProject.TaskID = fetchedProject.PortfolioStructureID;
             if ((fetchedProject.PercentComplete != undefined)) {
               fetchedProject.PercentComplete = (fetchedProject?.PercentComplete * 100).toFixed(0)
             } if (fetchedProject?.DueDate != undefined) {
@@ -455,17 +458,16 @@ const ProjectManagementMain = (props: any) => {
     setisOpenCreateTask(false)
   }, []);
   const inlineCallBack = React.useCallback((item: any) => {
-    setAllTasks(prevTasks => {
-      const updatedTasks = prevTasks.map((task: any) => {
+    setData(prevTasks => {
+      return prevTasks.map((task: any) => {
         if (task.Id === item.Id && task.siteType === item.siteType) {
           return { ...task, ...item };
         }
         return task;
       });
-      setData(updatedTasks);
-      return updatedTasks;
     });
   }, []);
+  
 
 
   const LoadAllSiteTasks = async function () {
@@ -1376,11 +1378,11 @@ const ProjectManagementMain = (props: any) => {
                                         <span>
                                           <InlineEditingcolumns
                                             AllListId={AllListId}
-                                            callBack={inlineCallBack}
+                                            callBack={inlineCallBackMasterTask}
                                             columnName='DueDate'
                                             item={Masterdata}
                                             TaskUsers={AllUser}
-                                            pageName={'ProjectManagment'}
+                                            pageName={'ProjectManagmentMaster'}
                                           />
                                         </span>
                                         {/* <span className="" >
@@ -1398,7 +1400,7 @@ const ProjectManagementMain = (props: any) => {
                                           columnName='Priority'
                                           item={Masterdata}
                                           TaskUsers={AllUser}
-                                          pageName={'ProjectManagment'}
+                                          pageName={'ProjectManagmentMaster'}
                                         />
                                         <span
                                           className="hreflink pull-right"
@@ -1422,7 +1424,7 @@ const ProjectManagementMain = (props: any) => {
                                           columnName='Team'
                                           item={Masterdata}
                                           TaskUsers={AllUser}
-                                          pageName={'ProjectManagment'}
+                                          pageName={'ProjectManagmentMaster'}
                                         /></dd>
                                     </dl>
                                     <dl>
@@ -1434,7 +1436,7 @@ const ProjectManagementMain = (props: any) => {
                                           columnName='PercentComplete'
                                           item={Masterdata}
                                           TaskUsers={AllUser}
-                                          pageName={'ProjectManagment'}
+                                          pageName={'ProjectManagmentMaster'}
                                         />
 
                                         <span className="pull-right">

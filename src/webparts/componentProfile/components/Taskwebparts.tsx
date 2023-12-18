@@ -112,6 +112,9 @@ function PortfolioTable(SelectedProp: any) {
     ]);
     const [clickFlatView, setclickFlatView] = React.useState(false);
     const [groupByButtonClickData, setGroupByButtonClickData] = React.useState([]);
+    const [flatViewDataAll, setFlatViewDataAll] = React.useState([]);
+    const [portfolioTypeDataItemBackup, setPortFolioTypeIconBackup] = React.useState([]);
+    const [taskTypeDataItemBackup, setTaskTypeDataItemBackup] = React.useState([]);
   let ComponetsData: any = {};
   let Response: any = [];
   let props = undefined;
@@ -410,6 +413,9 @@ function PortfolioTable(SelectedProp: any) {
                   result.commentsSearch = "";
                   result.TaskTypeValue = '';
                   result.portfolioItemsSearch = '';
+                  if (result?.DueDate != null && result?.DueDate != undefined) {
+                    result.serverDueDate = new Date(result?.DueDate).setHours(0, 0, 0, 0)
+                }
                   result.DueDate = Moment(result.DueDate).format("DD/MM/YYYY");
                   result.DisplayDueDate = Moment(result.DueDate).format("DD/MM/YYYY");
                   if (result.DisplayDueDate == "Invalid date" || "") {
@@ -646,6 +652,8 @@ function PortfolioTable(SelectedProp: any) {
 
 
 
+
+
 const switchFlatViewData = (data: any) => {
   let groupedDataItems = JSON.parse(JSON.stringify(data));
   const flattenedData = flattenData(groupedDataItems);
@@ -655,6 +663,7 @@ const switchFlatViewData = (data: any) => {
   isColumnDefultSortingAsc = true
   setGroupByButtonClickData(data);
   setclickFlatView(true);
+  setFlatViewDataAll(flattenedData)
   setData(flattenedData);
   // setData(smartAllFilterData);
 }
@@ -674,7 +683,6 @@ function flattenData(groupedDataItems: any) {
   return flattenedData;
 }
 const switchGroupbyData = () => {
-  count=1;
   isColumnDefultSortingAsc = false
   hasCustomExpanded = true
   hasExpanded = true
@@ -682,7 +690,6 @@ const switchGroupbyData = () => {
   setclickFlatView(false);
   setData(groupByButtonClickData);
 }
-
 
 
 
@@ -905,6 +912,8 @@ const switchGroupbyData = () => {
           }
         });
       });
+      const taskLabelCountBackup: any = JSON.parse(JSON.stringify(taskTypeDataItem));
+      setTaskTypeDataItemBackup(taskLabelCountBackup)
     }
   };
 
@@ -918,6 +927,8 @@ const switchGroupbyData = () => {
           }
         });
       });
+      const portfolioLabelCountBackup: any = JSON.parse(JSON.stringify(portfolioTypeDataItem));
+        setPortFolioTypeIconBackup(portfolioLabelCountBackup);
     }
   };
 
@@ -2043,6 +2054,7 @@ const updatedDataDataFromPortfolios = (copyDtaArray: any, dataToUpdate: any) => 
                       />
                       <GlobalCommanTable
                         smartTimeTotalFunction={smartTimeTotal} SmartTimeIconShow={true}
+                        portfolioTypeDataItemBackup={portfolioTypeDataItemBackup} taskTypeDataItemBackup={taskTypeDataItemBackup} flatViewDataAll={flatViewDataAll} setData={setData}
                         ref={childRef}
                         AddStructureFeature={
                           SelectedProp?.props?.Item_x0020_Type

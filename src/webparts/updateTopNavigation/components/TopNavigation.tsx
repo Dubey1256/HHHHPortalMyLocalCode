@@ -545,7 +545,7 @@ const TopNavigation = (dynamicData: any) => {
       <div className="container mt-2" id="TopNavRound">
         <ul className="top-navigate mt-4">
           <li className="parent" onClick={() => AddNewItem("New")}>
-            <span className="svg__iconbox svg__icon--Plus"></span> Add New{" "}
+            <span className="alignIcon  svg__iconbox svg__icon--Plus"></span> Add New{" "}
           </li>
           {root.map((item) => {
             return (
@@ -581,7 +581,7 @@ const TopNavigation = (dynamicData: any) => {
                   </span>
                   <ul className="sub-menu">
                     <li onClick={() => AddNewItem(item)}>
-                      <span className="svg__iconbox svg__icon--Plus"></span> Add
+                      <span className="alignIcon  svg__iconbox svg__icon--Plus"></span> Add
                       New{" "}
                     </li>
                     {item.childs?.map((child: any) => {
@@ -619,7 +619,7 @@ const TopNavigation = (dynamicData: any) => {
                             </span>
                             <ul className="sub-menu">
                               <li onClick={() => AddNewItem(child)}>
-                                <span className="svg__iconbox svg__icon--Plus"></span>{" "}
+                                <span className="alignIcon  svg__iconbox svg__icon--Plus"></span>{" "}
                                 Add New{" "}
                               </li>
                               {child.childs?.map((subchild: any) => {
@@ -671,8 +671,7 @@ const TopNavigation = (dynamicData: any) => {
                                           onClick={() => AddNewItem(subchild)}
                                         >
                                           <span
-                                            className="svg__
-                                                            iconbox svg__icon--Plus"
+                                            className=" alignIcon  svg__iconbox svg__icon--Plus"
                                           ></span>{" "}
                                           Add New{" "}
                                         </li>

@@ -166,7 +166,7 @@ export const Modified = (props: any) => {
             })
             setLoader(true);
             setIsButtonDisabled(true)
-          }, 400);
+          }, 600);
         }
 
       }
@@ -174,7 +174,7 @@ export const Modified = (props: any) => {
     // 
     if (allSite.noRepeat != true) {
       var selectQuerry: string = allSite.TabName == 'DOCUMENTS' ? 'Id,Title,FileLeafRef,Item_x0020_Cover,File_x0020_Type,Modified,Created,EncodedAbsUrl,Author/Id,Author/Title,Editor/Id,Editor/Title&$filter=FSObjType eq 0'
-        : allSite.TabName == 'FOLDERS' ? 'Id,Title,FileLeafRef,File_x0020_Type,Modified,Created,EncodedAbsUrl,Author/Id,Author/Title,Editor/Id,Editor/Title&$filter=FSObjType eq 1'
+        : allSite.TabName == 'FOLDERS' ? 'Id,Title,FileLeafRef,FileDirRef,File_x0020_Type,Modified,Created,EncodedAbsUrl,Author/Id,Author/Title,Editor/Id,Editor/Title&$filter=FSObjType eq 1'
           : allSite.TabName == 'COMPONENTS' ? "Id,Title,PercentComplete,ItemType,DueDate,Created,Modified,TeamMembers/Id,ResponsibleTeam/Id,ResponsibleTeam/Title,Author/Id,Author/Title,AssignedTo/Id,AssignedTo/Title,Editor/Id,Priority,PriorityRank,PortfolioStructureID,ComponentCategory/Id,ComponentCategory/Title,PortfolioType/Id,PortfolioType/Title&$filter=PortfolioType/Title eq 'Component'"
             : allSite.TabName == 'SERVICES' ? "Id,Title,PercentComplete,ItemType,DueDate,Created,Modified,TeamMembers/Id,ResponsibleTeam/Id,ResponsibleTeam/Title,Author/Id,Author/Title,AssignedTo/Id,AssignedTo/Title,Editor/Id,Priority,PriorityRank,PortfolioStructureID,Services/Title,Services/Id,ComponentCategory/Id,ComponentCategory/Title,PortfolioType/Id,PortfolioType/Title&$filter=PortfolioType/Title eq 'Service'"
               : 'Id,Title,PercentComplete,DueDate,Created,Modified,TeamMembers/Id,ResponsibleTeam/Id,ResponsibleTeam/Title,TaskType/Id,TaskType/Title,Author/Id,Author/Title,AssignedTo/Id,AssignedTo/Title,Editor/Id,Priority,PriorityRank,Portfolio/Id,Portfolio/Title,ParentTask/Title,ParentTask/Id,TaskID';
@@ -185,7 +185,7 @@ export const Modified = (props: any) => {
               'TeamMembers,ResponsibleTeam,TaskType,Author,AssignedTo,Editor,Portfolio,ParentTask';
       var data: any = [];
       try {
-        data = await web.lists.getById(allSite.ListId).items.select(selectQuerry).expand(expandQuerey).orderBy('Modified', false).top(200).get();
+        data = await web.lists.getById(allSite.ListId).items.select(selectQuerry).expand(expandQuerey).orderBy('Modified', false).getAll();
       }
       catch (error) {
         console.error(error)
@@ -193,7 +193,7 @@ export const Modified = (props: any) => {
       if (allSite.TabName == 'DOCUMENTS' || allSite.TabName == 'FOLDERS' || allSite.TabName == 'COMPONENTS' || allSite.TabName == 'SERVICES') {
         data?.map((item: any) => {
           item.siteType = allSite?.TabName;
-          item.listId = allSite.ListId;
+          item.listId = allSite.ListId;          
           if (allSite.TabName == 'SERVICES') {
             item.fontColorTask = '#228b22'
           } else {
@@ -383,7 +383,7 @@ export const Modified = (props: any) => {
             document.getElementById(`nav-ALL-tab`)?.classList.add('active');
             setLoader(true);
             setIsButtonDisabled(true)
-          }, 400);
+          }, 700);
 
         }
         allSite.AllTask = false;
@@ -660,7 +660,7 @@ export const Modified = (props: any) => {
   }
 
   const deleteData = (dlData: any) => {
-    var flag = confirm(`Are you sure, you want to delete this id?`)
+    var flag = confirm(`Are you sure, you want to delete?`)
     if (flag == true) {
       globalCommon.deleteItemById(baseUrl, dlData.listId, dlData, dlData.Id).then(() => {
         duplicate.map((dupDelte: any) => {
@@ -791,7 +791,7 @@ export const Modified = (props: any) => {
           accessorKey: "FileLeafRef", placeholder: "Title", header: "",
           cell: ({ row }) =>
             <>
-              {row.original.File_x0020_Type != undefined ? <span className={`alignIcon me-1 svg__iconbox svg__icon--${row.original.File_x0020_Type}`}></span> : undefined}
+              {row.original.File_x0020_Type != undefined ? <>{type == 'FOLDERS' ?<a data-interception="off" target='_blank' href={row.original.FileDirRef}><span className={`alignIcon me-1 svg__iconbox svg__icon--${row.original.File_x0020_Type}`}></span></a> : <span className={`alignIcon me-1 svg__iconbox svg__icon--${row.original.File_x0020_Type}`}></span>}</>: undefined}
 
               <a data-interception="off" target='_blank' href={row.original.EncodedAbsUrl}>{row.original.FileLeafRef}</a>
             </>
@@ -1199,7 +1199,7 @@ export const Modified = (props: any) => {
           {
             sites && sites.map((siteValue: any) =>
               <>
-                <button disabled={!isButtonDisabled} onClick={() => { getCurrentData(siteValue); }} className={`nav-link ${siteValue.TabName == sites[0].TabName ? 'active' : ''}`} id={`nav-${siteValue.TabName}-tab`} data-bs-toggle="tab" data-bs-target={`#nav-${siteValue.TabName}`} type="button" role="tab" aria-controls="nav-home" aria-selected="true">{siteValue.DisplaySiteName}</button>
+                <button disabled={!isButtonDisabled} onClick={() => { getCurrentData(siteValue); }} className={`nav-link ${siteValue.TabName == sites[0].TabName ? 'active' : ''}`} id={`nav-${siteValue.TabName}-tab`} data-bs-toggle="tab" data-bs-target={`#nav-${siteValue.TabName}`} type="button" role="tab" aria-controls="nav-home" aria-selected="true">{siteValue.TabName}</button>
               </>
             )
           }
