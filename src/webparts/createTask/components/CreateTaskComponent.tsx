@@ -1566,12 +1566,13 @@ function CreateTaskComponent(props: any) {
             isOpenEditPopup: false,
             passdata: null
         })
-        if (items == 'Delete' || items =="Close") {
-            if (burgerMenuTaskDetails?.TaskType == 'Bug' || burgerMenuTaskDetails?.TaskType == 'Design' && createdTask?.Id!=undefined) {
+        if (items == 'Delete' || items == undefined) {
+            if (burgerMenuTaskDetails?.TaskType == 'Bug' && burgerMenuTaskDetails?.TaskType == 'Design') {
                 window.open(base_Url + "/SitePages/CreateTask.aspx", "_self")
-                createdTask = {};
-            } 
-        } else if (items == "Save" && createdTask?.Id != undefined ) {
+            } else {
+                location.reload();
+            }
+        } else if (items == "Save") {
             setTimeout(() => {
                 window.open(base_Url + "/SitePages/Task-Profile.aspx?taskId=" + createdTask?.Id + "&Site=" + createdTask?.siteType, "_self")
                 createdTask = {};
@@ -1588,7 +1589,7 @@ function CreateTaskComponent(props: any) {
 
     const changeTitle = (e: any) => {
         if (e.target.value.length > 56) {
-            alert("Task Title is too long. Please choose a shorter name and enter the details into the task description.")
+            alert("Task Title is too long. Please chose a shorter name and enter the details into the task description.")
         } else {
             setSave(prevSave => ({
                 ...prevSave,
@@ -1685,34 +1686,34 @@ function CreateTaskComponent(props: any) {
 
                         </ul>
                         <div className="border border-top-0 clearfix p-2 tab-content " id="myTabContent">
-                            <div className="tab-pane Alltable mx-height p-0 show active" id="URLTasks" role="tabpanel" aria-labelledby="URLTasks">
+                            <div className="tab-pane Alltable p-0 show active"  style={{maxHeight:"300px",overflow:'hidden'}} id="URLTasks" role="tabpanel" aria-labelledby="URLTasks">
                                 {TaskUrlRelevantTask?.length > 0 ?
                                     <>
                                         <div className={TaskUrlRelevantTask?.length > 0 ? 'fxhg' : ''}>
-                                            <GlobalCommanTable columns={column2} data={TaskUrlRelevantTask} callBackData={callBackData} />
+                                            <GlobalCommanTable wrapperHeight="100%" columns={column2} data={TaskUrlRelevantTask} callBackData={callBackData} />
                                         </div>
                                     </> : <div className='text-center full-width'>
                                         <span>No Tasks Available</span>
                                     </div>
                                 }
                             </div>
-                            <div className="tab-pane Alltable p-0 mx-height" id="PageTasks" role="tabpanel" aria-labelledby="PageTasks">
+                            <div className="tab-pane Alltable p-0 " style={{maxHeight:"300px",overflow:'hidden'}} id="PageTasks" role="tabpanel" aria-labelledby="PageTasks">
                                 {PageRelevantTask?.length > 0 ?
                                     <>
                                         <div className={PageRelevantTask?.length > 0 ? 'fxhg' : ''}>
-                                            <GlobalCommanTable columns={column2} data={PageRelevantTask} callBackData={callBackData} />
+                                            <GlobalCommanTable wrapperHeight="100%" columns={column2} data={PageRelevantTask} callBackData={callBackData} />
                                         </div>
                                     </> : <div className='text-center full-width'>
                                         <span>No Tasks Available</span>
                                     </div>
                                 }
                             </div>
-                            <div className="tab-pane Alltable mx-height p-0" id="ComponentTasks" role="tabpanel" aria-labelledby="ComponentTasks">
+                            <div className="tab-pane Alltable p-0" style={{maxHeight:"300px",overflow:'hidden'}} id="ComponentTasks" role="tabpanel" aria-labelledby="ComponentTasks">
 
                                 {ComponentRelevantTask?.length > 0 ?
                                     <>
                                         <div className={ComponentRelevantTask?.length > 0 ? 'fxhg' : ''}>
-                                            <GlobalCommanTable columns={column2} data={ComponentRelevantTask} callBackData={callBackData} />
+                                            <GlobalCommanTable wrapperHeight="100%" columns={column2} data={ComponentRelevantTask} callBackData={callBackData} />
                                         </div>
                                     </> : <div className='text-center full-width'>
                                         <span>No Tasks Available</span>
