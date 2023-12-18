@@ -7,13 +7,14 @@ import { Web } from 'sp-pnp-js';
 import HtmlEditorCard from '../../helloSpfx/components/FloraCommentBox';
 import ImagesC from '../../EditPopupFiles/Image';
 import ServiceComponentPortfolioPopup from '../../../globalComponents/EditTaskPopup/ServiceComponentPortfolioPopup';
+var portfolioItemColor: any = "";
 //import Mycontext from './RelevantDocuments'
 const EditDocumentpanel = (props: any) => {
   // const contextdata: any = React.useContext<any>(Mycontext)
   const [, setEditdocpanel] = React.useState(false);
   const [EditdocumentsData, setEditdocumentsData]: any = React.useState(null);
   const [servicespopup] = React.useState(false);
-
+  // const [portfolioItemColor, setPortfolioItemColor]: any = React.useState('');
   const [isOpenImageTab, setisOpenImageTab] = React.useState(false);
   const [isopencomonentservicepopup, setisopencomonentservicepopup] = React.useState(false);
   //const [editvalue, seteditvalue] = React.useState(null);
@@ -177,13 +178,14 @@ const EditDocumentpanel = (props: any) => {
     console.log(Type)
     console.log(functionType)
     if (functionType == "Save") {
-      setallSetValue({ ...allValue, componentservicesetdataTag: DataItem[0] })
-      // if (Type == "Component") {
-      //   setallSetValue({ ...allValue, componentservicesetdataTag: DataItem })
-      // }
-      // if (Type == "Service") {
-      //   setallSetValue({ ...allValue, componentservicesetdataTag: DataItem })
-      // }
+      if (DataItem[0]?.PortfolioType?.Title == "Component") {
+        setallSetValue({ ...allValue, componentservicesetdataTag: DataItem[0] })
+        portfolioItemColor = DataItem[0]?.PortfolioType?.Title;
+      }
+      if (DataItem[0]?.PortfolioType?.Title == "Service") {
+        setallSetValue({ ...allValue, componentservicesetdataTag: DataItem[0] })
+        portfolioItemColor = DataItem[0]?.PortfolioType?.Title;
+      }
       setisopencomonentservicepopup(false);
     }
     else {
@@ -271,7 +273,8 @@ const EditDocumentpanel = (props: any) => {
                     onChange={(e => setallSetValue({ ...allValue, Title: e.target.value }))}
                   />
                 </div>
-                <div className="input-group mx-4">
+
+                <div className={`input-group mx-4 ${portfolioItemColor === 'Service' ? 'serviepannelgreena' : ''}`}>
                   <label className="form-label full-width">
                     Portfolio Item
                   </label>
@@ -327,7 +330,7 @@ const EditDocumentpanel = (props: any) => {
             </div>
           </div>
         </footer>
-      </Panel>
+      </Panel >
       {isopencomonentservicepopup &&
         <ServiceComponentPortfolioPopup
 

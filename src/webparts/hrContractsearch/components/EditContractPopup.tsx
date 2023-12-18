@@ -210,7 +210,7 @@ const EditContractPopup = (props: any) => {
                             <div className='col-sm-6'>
                                 <div className="input-group">
                                     <label className="form-label full-width">Contract Number</label>
-                                    <input type="text" className="form-control" aria-label="Small" aria-describedby="inputGroup-sizing-sm" defaultValue={EditData?.contractNumber} />
+                                    <input type="text" className="form-control" aria-label="Small" aria-describedby="inputGroup-sizing-sm" defaultValue={EditData?.ContractId} />
 
                                 </div>
                             </div>

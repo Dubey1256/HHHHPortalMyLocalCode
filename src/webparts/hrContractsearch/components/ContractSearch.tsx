@@ -61,6 +61,12 @@ let allSite: any = {
             val.ContractSigned = moment(val?.ContractSigned).format('DD/MM/YYYY') 
             val.startDate = moment(val?.startDate).format('DD/MM/YYYY') 
             val.endDate = moment(val?.endDate).format('DD/MM/YYYY') 
+            if(val.activeStatus == true){
+                val.activeStatus = 'Active'
+            }
+            if(val.activeStatus == false){
+                val.activeStatus = 'InActive'
+            }
             if (val.startDate != undefined && val.startDate != null || val.endDate != undefined && val.endDate != null || val.endDate == undefined && val.endDate == null) {
 
                 if (val.startDate < val.endDate && val.endDate > currentdate) {
