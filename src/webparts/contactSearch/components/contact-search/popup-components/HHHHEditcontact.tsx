@@ -87,6 +87,7 @@ const HHHHEditComponent = (props: any) => {
                     if (SitesTagged.search("HR") >= 0 && myContextData2.loggedInUserName == data.Email) {
                         HrTagInformation(Id);
                         setSiteTaggedHR(true);
+                        HrTagInformation(data?.Id)
                     }
                     // if (SitesTagged.search("SMALSUS") >= 0 && myContextData2.loggedInUserName == data.Email) {
                     //     HrTagInformation(Id);
@@ -294,7 +295,7 @@ const HHHHEditComponent = (props: any) => {
                 FirstName: (updateData?.FirstName),
                 Suffix: (updateData?.Suffix),
                 JobTitle: (updateData?.JobTitle),
-                FullName: (updateData?.FirstName) + " " + (updateData?.Title!=null?updateData?.Title!=null:""),
+                FullName: (updateData?.FirstName) + " " + (updateData?.Title!=null?updateData?.Title:""),
                 InstitutionId: (updateData?.Institution != undefined ? updateData?.Institution?.Id : null),
                 Email: (updateData?.Email),
                 Department: (updateData?.Department),
@@ -333,14 +334,18 @@ const HHHHEditComponent = (props: any) => {
                     if(myContextData2?.allSite?.HrSite){
                         updateHrDetails(postData);
                     }
-                  if (updateData?.Site?.toString().search("HR") >= 0 && myContextData2?.allSite?.MainSite) {
-                            updateJointHrDetails();
+                //   if (updateData?.Site?.toString().search("HR") >= 0 && myContextData2?.allSite?.MainSite) {
+                //             updateJointHrDetails();
            
-                    }
-                    if(myContextData2?.allSite?.MainSite && updateData?.Site?.toString().search("HR") == 0){
-                        callBack();
+                //     }
+                    // if(myContextData2?.allSite?.MainSite && updateData?.Site?.toString().search("HR") == 0){
+                    //     callBack();
                        
-                    }
+                    // }
+                    if(myContextData2?.allSite?.MainSite ){
+                            callBack();
+                           
+                        }
                 });
 
             }
@@ -448,16 +453,22 @@ const HHHHEditComponent = (props: any) => {
                 }).then(() => {
                     console.log("Your information has been updated successfully");
                     // alert("Your information has been updated successfully")
-                     if(confirm("Are you want to create Contract ?") && props?.pageName=="Recruiting-Tool"){
-                        setCreateContractPopup(true)
-                        //  callBack();
-                     }else{
-               if( props?.pageName=="Recruiting-Tool"){
-                window.open(`https://hhhhteams.sharepoint.com/sites/HHHH/HR/SitePages/EmployeeInfo.aspx?employeeId=${updateData.Id}`,"_blank")
-                   }
-                    
+                    if( props?.pageName=="Recruiting-Tool"){
+                        if(confirm("Are you want to create Contract ?")){
+                            setCreateContractPopup(true)
+                            //  callBack();
+                         }
+                         else{
+                            if( props?.pageName=="Recruiting-Tool"){
+                             window.open(`https://hhhhteams.sharepoint.com/sites/HHHH/HR/SitePages/EmployeeInfo.aspx?employeeId=${updateData.Id}`,"_blank")
+                                }
+                                 
+                                     callBack();
+                                  }
+                    }else{
                         callBack();
-                     }
+                    }
+                    
                    
                 })
         } catch (error) {
@@ -1558,7 +1569,7 @@ const HHHHEditComponent = (props: any) => {
                         </div>
                     </div>
                 </footer>
-                {createContractPopup && <CreateContract  callback={callBackData} AllListId={myContextData2?.allListId}updateData={updateData}pageName="Recruiting-Tool" />}
+                {createContractPopup && <CreateContract  callback={callBackData} AllListId={myContextData2?.allListId}updateData={updateData} pageName={props?.pageName} />}
             </Panel>
         </>
     )
