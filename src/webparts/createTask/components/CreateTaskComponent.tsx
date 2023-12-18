@@ -1600,13 +1600,12 @@ function CreateTaskComponent(props: any) {
             isOpenEditPopup: false,
             passdata: null
         })
-        if (items == 'Delete' || items == undefined) {
-            if (burgerMenuTaskDetails?.TaskType == 'Bug' && burgerMenuTaskDetails?.TaskType == 'Design') {
+        if (items == 'Delete' || items =="Close") {
+            if (burgerMenuTaskDetails?.TaskType == 'Bug' || burgerMenuTaskDetails?.TaskType == 'Design' && createdTask?.Id!=undefined) {
                 window.open(base_Url + "/SitePages/CreateTask.aspx", "_self")
-            } else {
-                location.reload();
-            }
-        } else if (items == "Save") {
+                createdTask = {};
+            } 
+        } else if (items == "Save" && createdTask?.Id != undefined ) {
             setTimeout(() => {
                 window.open(base_Url + "/SitePages/Task-Profile.aspx?taskId=" + createdTask?.Id + "&Site=" + createdTask?.siteType, "_self")
                 createdTask = {};
