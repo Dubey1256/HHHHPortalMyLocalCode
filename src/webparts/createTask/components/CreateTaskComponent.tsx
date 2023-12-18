@@ -558,9 +558,9 @@ function CreateTaskComponent(props: any) {
             MetaData = await web.lists
                 .getById(ContextValue.SmartMetadataListID)
                 .items
-                .select("Id,Title,listId,siteUrl,siteName,Item_x005F_x0020_Cover,ParentID,Parent/Id,Parent/Title,EncodedAbsUrl,IsVisible,Created,Item_x0020_Cover,Modified,Description1,SortOrder,Selectable,TaxType,Created,Modified,Author/Name,Author/Title,Editor/Name,Editor/Title,AlternativeTitle")
+                .select("Id,Title,listId,siteUrl,siteName,IsSendAttentionEmail/Id,Item_x005F_x0020_Cover,ParentID,Parent/Id,Parent/Title,EncodedAbsUrl,IsVisible,Created,Item_x0020_Cover,Modified,Description1,SortOrder,Selectable,TaxType,Created,Modified,Author/Name,Author/Title,Editor/Name,Editor/Title,AlternativeTitle")
                 .top(4999)
-                .expand('Author,Editor,Parent')
+                .expand('Author,Editor,Parent,IsSendAttentionEmail')
                 .get();
             AllMetadata = MetaData;
             AllMetadata?.map((metadata: any) => {
@@ -982,7 +982,40 @@ function CreateTaskComponent(props: any) {
                         data.data.SiteIcon = selectedSite?.Item_x005F_x0020_Cover?.Url;
                         createdTask.SiteIcon = selectedSite?.Item_x005F_x0020_Cover?.Url;
                         if (UserEmailNotify) {
-                            EmailNotificationOnTeams(data.data.siteUrl, data.data.Id, data.data.Title, save.siteType);
+
+                            if (UserEmailNotify) {
+                             
+                                    let txtComment = `You have been tagged as Attention in the below task by ${loggedInUser?.Title}`;
+                                    let TeamMsg =
+                                        txtComment +
+                                        `</br> <a href=${selectedSite?.siteUrl?.Url}>${CreatedTaskID}-${newTitle}</a>`;
+                                   
+                                        let sendUserEmail: any = [];
+                                        TeamMessagearray?.map((userDtl: any) => {
+                                            taskUsers?.map((allUserItem: any) => {
+                                                if (userDtl?.IsSendAttentionEmail?.Id == allUserItem.AssingedToUserId) {
+                                                    sendUserEmail.push(allUserItem.Email);
+                                                }
+                                            });
+                                        });
+                                        if (sendUserEmail?.length > 0) {
+                                            await globalCommon.SendTeamMessage(
+                                                sendUserEmail,
+                                                TeamMsg,
+                                                props.SelectedProp.Context
+                                            );
+                                        }
+                                    
+                              
+                              
+                            }
+                              
+
+ 
+
+
+
+                            // EmailNotificationOnTeams(data.data.siteUrl, data.data.Id, data.data.Title, save.siteType);
                         }
                         if (props?.projectId != undefined) {
                             EditPopup(data?.data)
@@ -1197,8 +1230,9 @@ function CreateTaskComponent(props: any) {
     }
 
     const selectSubTaskCategory = (title: any, Id: any, item: any) => {
-        if (item?.IsSendAttentionEmail != undefined) {
-            TeamMessagearray.push(item.IsSendAttentionEmail);
+        if (item?.Parent.Title == "Attention") {
+            TeamMessagearray.push(item);
+            setUserEmailNotify(true)
         }
         if (loggedInUser?.IsApprovalMail?.toLowerCase() == 'approve all but selected items' || loggedInUser?.IsApprovalMail?.toLowerCase() == 'approve selected' && !IsapprovalTask) {
             try {
@@ -1566,13 +1600,12 @@ function CreateTaskComponent(props: any) {
             isOpenEditPopup: false,
             passdata: null
         })
-        if (items == 'Delete' || items == undefined) {
-            if (burgerMenuTaskDetails?.TaskType == 'Bug' && burgerMenuTaskDetails?.TaskType == 'Design') {
+        if (items == 'Delete' || items =="Close") {
+            if (burgerMenuTaskDetails?.TaskType == 'Bug' || burgerMenuTaskDetails?.TaskType == 'Design' && createdTask?.Id!=undefined) {
                 window.open(base_Url + "/SitePages/CreateTask.aspx", "_self")
-            } else {
-                location.reload();
-            }
-        } else if (items == "Save") {
+                createdTask = {};
+            } 
+        } else if (items == "Save" && createdTask?.Id != undefined ) {
             setTimeout(() => {
                 window.open(base_Url + "/SitePages/Task-Profile.aspx?taskId=" + createdTask?.Id + "&Site=" + createdTask?.siteType, "_self")
                 createdTask = {};
