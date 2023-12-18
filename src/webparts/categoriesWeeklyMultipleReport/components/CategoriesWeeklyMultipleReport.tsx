@@ -536,16 +536,16 @@ export default class CategoriesWeeklyMultipleReport extends React.Component<ICat
     this.setState({
       showDateTime: (
         <span className='alignCenter'>
-          <label className='ms-1'> items | Time: {this?.TotalTimeEntry} | hours ({this?.TotalTimeEntry / 8} days)</label>
+          <label className='ms-1'> items | Time: {this?.TotalTimeEntry} | hours ({(this?.TotalTimeEntry / 8).toFixed(2)} days)</label>
           <label className="mx-1">|</label>
           <label>
-            <div className="">Smart Hours: {this?.SmartTotalTimeEntry} ({this?.SmartTotalTimeEntry / 8} days)</div>
-            <div className="">Smart Hours (Roundup): {this?.RoundSmartTotalTimeEntry} ({this?.RoundSmartTotalTimeEntry / 8} days)</div>
+            <div className="">Smart Hours: {this?.SmartTotalTimeEntry} ({(this?.SmartTotalTimeEntry / 8).toFixed(2)} days)</div>
+            <div className="">Smart Hours (Roundup): {this?.RoundSmartTotalTimeEntry} ({(this?.RoundSmartTotalTimeEntry / 8).toFixed(2)} days)</div>
           </label>
           <label className="mx-1">|</label>
           <label>
-            <div className="">Adjusted Hours: {this?.AdjustedimeEntry} hours ({this?.AdjustedimeEntry / 8} days)</div>
-            <div className={this?.state?.isFocused === true ? 'NumberchangeGreen' : ''}>Adjusted Hours (Roundup): {this?.RoundAdjustedTimeTimeEntry} ({this?.RoundAdjustedTimeTimeEntry / 8} days)</div>
+            <div className="">Adjusted Hours: {this?.AdjustedimeEntry} hours ({(this?.AdjustedimeEntry / 8).toFixed(2)} days)</div>
+            <div className={this?.state?.isFocused === true ? 'NumberchangeGreen' : ''}>Adjusted Hours (Roundup): {this?.RoundAdjustedTimeTimeEntry} ({(this?.RoundAdjustedTimeTimeEntry / 8).toFixed(2)} days)</div>
           </label>
         </span>
       ),
@@ -2130,16 +2130,16 @@ export default class CategoriesWeeklyMultipleReport extends React.Component<ICat
       this.setState({
         showDateTime: (
           <span className='alignCenter'>
-            <label className='ms-1'> items | Time: {this?.TotalTimeEntry} | hours ({this?.TotalTimeEntry / 8} days)</label>
+            <label className='ms-1'> items | Time: {this?.TotalTimeEntry} | hours ({(this?.TotalTimeEntry / 8).toFixed(2)} days)</label>
             <label className="mx-1">|</label>
             <label>
-              <div className="">Smart Hours: {this?.SmartTotalTimeEntry} ({this?.SmartTotalTimeEntry / 8} days)</div>
-              <div className="">Smart Hours (Roundup): {this?.RoundSmartTotalTimeEntry} ({this?.RoundSmartTotalTimeEntry / 8} days)</div>
+              <div className="">Smart Hours: {this?.SmartTotalTimeEntry} ({(this?.SmartTotalTimeEntry / 8).toFixed(2)} days)</div>
+              <div className="">Smart Hours (Roundup): {this?.RoundSmartTotalTimeEntry} ({(this?.RoundSmartTotalTimeEntry / 8).toFixed(2)} days)</div>
             </label>
             <label className="mx-1">|</label>
             <label>
-              <div className="">Adjusted Hours: {this?.AdjustedimeEntry} hours ({this?.AdjustedimeEntry / 8} days)</div>
-              <div className={this?.state?.isFocused === true ? 'NumberchangeGreen' : ''}>Adjusted Hours (Roundup): {this?.RoundAdjustedTimeTimeEntry} ({this?.RoundAdjustedTimeTimeEntry / 8} days)</div>
+              <div className="">Adjusted Hours: {this?.AdjustedimeEntry} hours ({(this?.AdjustedimeEntry / 8).toFixed(2)} days)</div>
+              <div className={this?.state?.isFocused === true ? 'NumberchangeGreen' : ''}>Adjusted Hours (Roundup): {this?.RoundAdjustedTimeTimeEntry} ({(this?.RoundAdjustedTimeTimeEntry / 8).toFixed(2)} days)</div>
             </label>
           </span>
         ),
@@ -2753,16 +2753,16 @@ export default class CategoriesWeeklyMultipleReport extends React.Component<ICat
     this.setState({
       showDateTime: (
         <span className='alignCenter'>
-          <label className='ms-1'> items | Time: {this?.TotalTimeEntry} | hours ({this?.TotalTimeEntry / 8} days)</label>
+          <label className='ms-1'> items | Time: {this?.TotalTimeEntry} | hours ({(this?.TotalTimeEntry / 8).toFixed(2)} days)</label>
           <label className="mx-1">|</label>
           <label>
-            <div className="">Smart Hours: {this?.SmartTotalTimeEntry} ({this?.SmartTotalTimeEntry / 8} days)</div>
-            <div className="">Smart Hours (Roundup): {this?.RoundSmartTotalTimeEntry} ({this?.RoundSmartTotalTimeEntry / 8} days)</div>
+            <div className="">Smart Hours: {this?.SmartTotalTimeEntry} ({(this?.SmartTotalTimeEntry / 8).toFixed(2)} days)</div>
+            <div className="">Smart Hours (Roundup): {this?.RoundSmartTotalTimeEntry} ({(this?.RoundSmartTotalTimeEntry / 8).toFixed(2)} days)</div>
           </label>
           <label className="mx-1">|</label>
           <label>
-            <div className="">Adjusted Hours: {this?.AdjustedimeEntry} hours ({this?.AdjustedimeEntry / 8} days)</div>
-            <div className={this?.state?.isFocused === true ? 'NumberchangeGreen' : ''}>Adjusted Hours (Roundup): {this?.RoundAdjustedTimeTimeEntry} ({this?.RoundAdjustedTimeTimeEntry / 8} days)</div>
+            <div className="">Adjusted Hours: {this?.AdjustedimeEntry} hours ({(this?.AdjustedimeEntry / 8).toFixed(2)} days)</div>
+            <div className={this?.state?.isFocused === true ? 'NumberchangeGreen' : ''}>Adjusted Hours (Roundup): {this?.RoundAdjustedTimeTimeEntry} ({(this?.RoundAdjustedTimeTimeEntry / 8).toFixed(2)} days)</div>
           </label>
         </span>
       ),
@@ -3082,7 +3082,7 @@ export default class CategoriesWeeklyMultipleReport extends React.Component<ICat
     contentItemNew['Smart Days'] = parseFloat((TotalValueAll / 8).toFixed(2));
     contentItemNew['Adjusted Hours (Roundup)'] = parseFloat(this.RoundAdjustedTimeTimeEntry);
 
-    contentItemNew['Adjusted Hours Roundup (In days)'] = (contentItemNew['Adjusted Hours (Roundup)'] / 8)
+    contentItemNew['Adjusted Hours Roundup (In days)'] =  parseFloat((this.RoundAdjustedTimeTimeEntry / 8).toFixed(2));
     contentItemNew['Hours Actual'] = parseFloat(TotalValueAll.toFixed(2));;
     contentItemNew['Days Actual'] = parseFloat((TotalValueAll / 8).toFixed(2));;
     this.sheetsItems.push(contentItemNew);
@@ -3454,21 +3454,21 @@ export default class CategoriesWeeklyMultipleReport extends React.Component<ICat
     });
   }
   private getAllSubChildenCount(item: any) {
-    let count = 1;
+    let count = 0;
     if (item.children != undefined && item?.checked === true && item.children.length > 0) {
-      count += item?.children?.length;
+      count += item?.children?.length +1;
     }
     item?.children?.forEach((subchild: any) => {
       if (subchild.children != undefined && subchild?.checked === true && subchild.children.length > 0) {
-        count += subchild?.children?.length;
+        count += subchild?.children?.length +1;
       }
       subchild?.children?.forEach((subchild2: any) => {
         if (subchild2.children != undefined && subchild2?.checked === true && subchild2.children.length > 0) {
-          count += subchild2?.children?.length;
+          count += subchild2?.children?.length+1;
         }
         subchild2?.children?.forEach((subchild3: any) => {
           if (subchild3?.checked === true && subchild3?.children?.length > 0) {
-            count += subchild3?.children?.length;
+            count += subchild3?.children?.length+1;
           }
         });
       });

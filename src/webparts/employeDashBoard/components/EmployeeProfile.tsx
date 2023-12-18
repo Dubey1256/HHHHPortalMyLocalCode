@@ -238,7 +238,7 @@ const EmployeProfile = (props: any) => {
           array?.map((items: any) => {
             items.AssignedTo?.forEach((assign: any) => {
               if (assign && assign.Id === currentUserData.AssingedToUser.Id) {
-                if (items.Categories?.indexOf('Draft') > -1) {
+                if (items.Categories?.indexOf('Draft') > -1 && items.Author?.Id == currentUserData.AssingedToUser.Id) {
                   DraftArray.push(items);
                 } else if (items.IsTodaysTask === true) {
                   TodaysTask.push(items);

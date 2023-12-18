@@ -2471,11 +2471,19 @@ function TimeEntryPopup(item: any) {
         size: 125
       },
       {
-        accessorKey: "TaskTime",
+        accessorFn: (row) => row?.TaskTime,
+        cell: ({ row }) => (
+        <>
+        <div className="text-center">{row?.original?.TaskTime}</div>
+        </>
+        ),
+        id: 'TaskTime',
+        resetColumnFilters: false,
         placeholder: "TaskTime",
         header: "",
         size: 95
       },
+     
       {
         accessorKey: "Description",
         placeholder: "Description",

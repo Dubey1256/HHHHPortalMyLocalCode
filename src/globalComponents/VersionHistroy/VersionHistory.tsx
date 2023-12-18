@@ -311,7 +311,7 @@ export default function VersionHistory(props: any) {
                                                                                             ? renderObject(item[key])
                                                                                             : key === 'FeedBack' 
                                                                                             ? <div className='feedbackItm-text'>
-                                                                                                {item?.FeedBackDescription?.length > 0 ? <span className='d-flex'><p className='text-ellips mb-0'>{`${item?.FeedBackDescription[0]?.Title}`}</p> <InfoIconsToolTip Discription='' row={item} versionHistory={true} /></span> :''}                                                                                          
+                                                                                                {(item?.FeedBackDescription != undefined && item?.FeedBackDescription != '' && item?.FeedBackDescription?.length > 0) ? <span className='d-flex'><p className='text-ellips mb-0'>{`${item?.FeedBackDescription[0]?.Title}`}</p> <InfoIconsToolTip Discription='' row={item} versionHistory={true} /></span> :''}                                                                                          
                                                                                             </div> : key === 'PercentComplete' ? (item?.PercentComplete)*100 : key === 'BasicImageInfo' 
                                                                                             ? <div className='BasicimagesInfo_groupImages'>
                                                                                                 {item?.BasicImageInfo != undefined && JSON.parse(item?.BasicImageInfo).map((image:any,indx:any)=>{
@@ -459,6 +459,7 @@ export default function VersionHistory(props: any) {
                 </div>
 
             </Panel>
+
         </>
     );
 }

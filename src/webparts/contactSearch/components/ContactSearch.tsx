@@ -18,6 +18,7 @@ export default class ContactSearch extends React.Component<IContactSearchProps, 
       ContractListID,
       GMBH_CONTACT_SEARCH_LISTID,
       HR_EMPLOYEE_DETAILS_LIST_ID,
+    
     } = this.props;
     return (
      <div>
