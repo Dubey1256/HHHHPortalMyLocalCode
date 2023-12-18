@@ -23,42 +23,42 @@ const Information = (props: any) => {
         if (props?.siteTaggedHR && props?.hrUpdateData != undefined) {
             setHrUpdateData(props?.hrUpdateData)
         }
-    }, [props?.EmployeeData != undefined || props?.hrUpdateData!=undefined])
+    }, [props?.EmployeeData != undefined || props?.hrUpdateData != undefined])
 
 
 
     return (
         <>
-            <div className='col-sm-12 ps-3 pe-0 mt-3 row'>
-                <div className='siteBdrBottom siteColor ps-0 mb-2'>Contact Information</div>
+            <div className='col-sm-12 px-2 mt-3 row'>
+                <div className='siteBdrBottom siteColor sectionHead ps-0 mb-2'>Contact Information</div>
                 <div className="col-sm-6 ps-0 alignCenter mb-3">
                     <span className="f-20">
                         <FaSquarePhone />
                     </span>
-                    <span className="full_width ms-2 mt-1">{EmployeeData?.CellPhone}</span>
+                    <span className="full_widivh ms-2 mt-1">{EmployeeData?.CellPhone}</span>
                 </div>
                 <div className="col-sm-6 pe-0 alignCenter mb-3">
                     <span className="f-20">
                         <IoMdMail />
                     </span>
-                    <span className="full_width ms-2 mt-1">
+                    <span className="full_widivh ms-2 mt-1">
                         <a href={`mailto:${EmployeeData?.Email}`}>{EmployeeData?.Email}</a>
                     </span>
                 </div>
             </div>
-            <div className='col-sm-12 ps-3 pe-0 mt-3 row'>
-                <div className='siteBdrBottom siteColor ps-0 mb-2'>Social Media Information</div>
+            <div className='col-sm-12 px-2 mt-3 row'>
+                <div className='siteBdrBottom sectionHead siteColor ps-0 mb-2'>Social Media Information</div>
                 <div className="col-sm-6 ps-0 alignCenter mb-3">
                     <span className="f-20">
                         <BsLinkedin />
                     </span>
-                    <span className="full_width ms-2 mt-1" style={{wordBreak:"break-all"}}><a href={EmployeeData?.SocialMediaUrlsArray[0]?.LinkedIn}>{EmployeeData?.SocialMediaUrlsArray[0]?.LinkedIn}</a></span>
+                    <span className="full_widivh ms-2 mt-1" style={{ wordBreak: "break-all" }}><a href={EmployeeData?.SocialMediaUrlsArray[0]?.LinkedIn}>{EmployeeData?.SocialMediaUrlsArray[0]?.LinkedIn}</a></span>
                 </div>
                 <div className="col-sm-6 pe-0 alignCenter">
                     <span className="f-20">
                         <BsSkype />
                     </span>
-                    <span className="full_width ms-2 mt-1" style={{wordBreak:"break-all"}}>
+                    <span className="full_widivh ms-2 mt-1" style={{ wordBreak: "break-all" }}>
                         <a href={EmployeeData?.SocialMediaUrlsArray[0]?.LinkedIn}>{EmployeeData?.SocialMediaUrlsArray[0]?.LinkedIn}</a>
                     </span>
                 </div>
@@ -66,13 +66,13 @@ const Information = (props: any) => {
                     <span className="f-20">
                         <FaFacebook />
                     </span>
-                    <span className="full_width ms-2 mt-1" style={{wordBreak:"break-all"}}><a href={EmployeeData?.SocialMediaUrlsArray[0]?.Facebook}>{EmployeeData?.SocialMediaUrlsArray[0]?.Facebook}</a></span>
+                    <span className="full_widivh ms-2 mt-1" style={{ wordBreak: "break-all" }}><a href={EmployeeData?.SocialMediaUrlsArray[0]?.Facebook}>{EmployeeData?.SocialMediaUrlsArray[0]?.Facebook}</a></span>
                 </div>
                 <div className="col-sm-6 pe-0 alignCenter mb-3">
                     <span className="f-20">
                         <FaSquareInstagram />
                     </span>
-                    <span className="full_width ms-2 mt-1" style={{wordBreak:"break-all"}}>
+                    <span className="full_widivh ms-2 mt-1" style={{ wordBreak: "break-all" }}>
                         <a href={EmployeeData?.SocialMediaUrlsArray[0]?.Facebook}>{EmployeeData?.SocialMediaUrlsArray[0]?.Facebook}</a>
                     </span>
                 </div>
@@ -80,102 +80,95 @@ const Information = (props: any) => {
                     <span className="f-20">
                         <FaTwitter />
                     </span>
-                    <span className="full_width ms-2 mt-1" style={{wordBreak:"break-all"}}><a href={EmployeeData?.SocialMediaUrlsArray[0]?.Twitter}>{EmployeeData?.SocialMediaUrlsArray[0]?.Twitter}</a></span>
+                    <span className="full_widivh ms-2 mt-1" style={{ wordBreak: "break-all" }}><a href={EmployeeData?.SocialMediaUrlsArray[0]?.Twitter}>{EmployeeData?.SocialMediaUrlsArray[0]?.Twitter}</a></span>
                 </div>
                 <div className="col-sm-6 pe-0 alignCenter mb-3">
                     <span className="f-20">
                         <CiLink />
                     </span>
-                    <span className="full_width ms-2 mt-1" style={{wordBreak:"break-all"}}>
+                    <span className="full_widivh ms-2 mt-1" style={{ wordBreak: "break-all" }}>
                         <a href={EmployeeData?.WebPage}>{EmployeeData?.WebPage}</a>
                     </span>
                 </div>
             </div>
-            {props?.siteTaggedHR && <div className='col-sm-12 ps-3 pe-0 mt-3 row'>
-                <div className="infoblock Address ps-0 col-sm-6 form-group">
-                    <div className="siteBdrBottom siteColor ps-0 mb-2">Address Information</div>
+            {props?.siteTaggedHR && <div className='col-sm-12 mt-3 px-2 row'>
+                <div className="infoblock Adivress ps-0 col-sm-6 form-group">
+                    <div className="siteBdrBottom sectionHead siteColor ps-0 mb-2">Adivress Information</div>
                     <div className="alignCenter mb-3">
-                        <span className="f-20" title='city'>
+                        <span className="f-20 ps-2" title='city'>
                             <FaCity />
                         </span>
-                        <span className="full_width ms-2 mt-1 ">{EmployeeData?.WorkCity}</span>
+                        <span className="full_widivh ms-2 mt-1 ">{EmployeeData?.WorkCity}</span>
                     </div>
                     <div className="alignCenter mb-3">
                         <span className="f-20">
                             <img title="Country" src="/sites/HHHH/GmBH/SiteCollectionImages/ICONS/24/Website.svg" data-themekey="#" />
                         </span>
-                        <span className="full_width ms-2 mt-1 ">{EmployeeData?.SmartCountries?.length > 0 ? EmployeeData?.SmartCountries[0]?.Title : null}</span>
+                        <span className="full_widivh ms-2 mt-1 ">{EmployeeData?.SmartCountries?.length > 0 ? EmployeeData?.SmartCountries[0]?.Title : null}</span>
                     </div>
 
                     <div className="alignCenter mb-3">
                         <span className="f-20">
                             <img title="Fedral State" src="/sites/HHHH/GmBH/SiteCollectionImages/ICONS/24/state.svg" data-themekey="#" />
                         </span>
-                        <span className="full_width ms-2 mt-1 "></span>
+                        <span className="full_widivh ms-2 mt-1 "></span>
                     </div>
                     <div className="alignCenter mb-3">
                         <span className="f-20">
-                            <img title="Address" src="/sites/HHHH/GmBH/SiteCollectionImages/ICONS/24/location.svg" data-themekey="#" />
+                            <img title="Adivress" src="/sites/HHHH/GmBH/SiteCollectionImages/ICONS/24/location.svg" data-themekey="#" />
                         </span>
-                        <span className="full_width ms-2 mt-1 ">
-                            {EmployeeData?.WorkAddress}
+                        <span className="full_widivh ms-2 mt-1 ">
+                            {EmployeeData?.WorkAdivress}
                         </span>
                     </div>
                 </div>
-                <div className="infoblock Address col-sm-6 form-group pe-0">
-                    <div className="siteBdrBottom siteColor pe-0 mb-2">Bank Information</div>
+                <div className="infoblock Adivress col-sm-6 form-group pe-0">
+                    <div className="siteBdrBottom sectionHead siteColor pe-0 mb-2">Bank Information</div>
                     <div className="alignCenter mb-3">
                         <span className="f-20">
                             <img title="BIC" src="/sites/HHHH/GmBH/SiteCollectionImages/ICONS/24/BIC.svg" data-themekey="#" />
                         </span>
-                        <span className="full_width ms-2 mt-1 ">{hrUpdateData?.BIC}</span>
+                        <span className="full_widivh ms-2 mt-1 ">{hrUpdateData?.BIC}</span>
                     </div>
                     <div className="alignCenter mb-3">
                         <span className="f-20">
                             <img title="IBAN" src="/sites/HHHH/GmBH/SiteCollectionImages/ICONS/24/IBAN.svg" data-themekey="#" />
                         </span>
-                        <span className="full_width ms-2 mt-1 ">{hrUpdateData?.IBAN}</span>
+                        <span className="full_widivh ms-2 mt-1 ">{hrUpdateData?.IBAN}</span>
                     </div>
                 </div>
             </div>}
-            {props?.siteTaggedHR && <div className='col-md-12 ps-3 pe-0 mt-3 mb-2 row'>
-                <div className='siteBdrBottom siteColor p-0 mb-2'>Personal Information</div>
-                    <div className='col-md-6 ps-0'>
-                        <dl className="profileHead">
-                            <dt className="col-md-3 bg-Fa profileLeftSec">
-                                Date of birth
-                            </dt>
-                            <dd className="col-md-9 bg-FF profileLeftSec">
-                                {hrUpdateData?.dateOfBirth != undefined && hrUpdateData?.dateOfBirth != "" ? moment(hrUpdateData?.dateOfBirth)?.format('DD-MM-YYYY') : ""}
-                            </dd>
-                        </dl>
-                        <dl className="profileHead">
-                            <dt className="col-md-3 bg-Fa profileLeftSec">
-                                Nationality
-                            </dt>
-                            <dd className="col-md-9 bg-FF profileLeftSec">
-                                {hrUpdateData?.Nationality}
-                            </dd>
-                        </dl>
+            {props?.siteTaggedHR && <div className='col-md-12 mt-3 px-2 mb-2 row'>
+                <div className='siteBdrBottom siteColor sectionHead p-0 mb-2'>Personal Information</div>
+
+                <div className="profileHead p-0">
+                    <div className="bg-Fa profileLeftSec width15">
+                        Date of birth
                     </div>
-                    <div className='col-md-6 pe-0'>
-                        <dl className="profileHead">
-                            <dt className="col-md-3 bg-Fa profileLeftSec">
-                                Place of birth
-                            </dt>
-                            <dd className="col-md-9 bg-FF profileLeftSec">
-                                {hrUpdateData?.placeOfBirth}
-                            </dd>
-                        </dl>
-                        <dl className="profileHead">
-                            <dt className="col-md-3 bg-Fa profileLeftSec">
-                                Marital status
-                            </dt>
-                            <dd className="col-md-9 bg-FF profileLeftSec">
-                                {hrUpdateData?.maritalStatus}
-                            </dd>
-                        </dl>
+                    <div className="bg-FF profileRightSec width35">
+                        {hrUpdateData?.dateOfBirth != undefined && hrUpdateData?.dateOfBirth != "" ? moment(hrUpdateData?.dateOfBirth)?.format('div-MM-YYYY') : ""}
                     </div>
+                    <div className="bg-Fa profileLeftSec width15">
+                        Place of birth
+                    </div>
+                    <div className="bg-FF profileRightSec width35">
+                        {hrUpdateData?.placeOfBirth}
+                    </div>
+                </div>
+                <div className="profileHead p-0">
+                    <div className="bg-Fa profileLeftSec width15">
+                        Nationality
+                    </div>
+                    <div className="bg-FF profileRightSec width35">
+                        {hrUpdateData?.Nationality}
+                    </div>
+                    <div className="bg-Fa profileLeftSec width15">
+                        Marital status
+                    </div>
+                    <div className="bg-FF profileRightSec width35">
+                        {hrUpdateData?.maritalStatus}
+                    </div>
+                </div>
             </div>}
         </>
     )

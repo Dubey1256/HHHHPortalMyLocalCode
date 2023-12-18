@@ -30,6 +30,7 @@ let smartPortfoliosData: any = [];
 let portfolioType = "";
 let AllFlatProject: any = [];
 var AllUser: any = [];
+let allBackupSprintAndTask:any=[]
 var siteConfig: any = [];
 let headerOptions: any = {
   openTab: true,
@@ -46,6 +47,7 @@ let taskTaggedComponents: any = []
 let TaggedPortfoliosToProject: any = [];
 var isShowTimeEntry: any;
 var isShowSiteCompostion: any;
+let renderData :any=[]
 let projectData: any = {}
 const ProjectManagementMain = (props: any) => {
   // const [item, setItem] = React.useState({});
@@ -55,6 +57,8 @@ const ProjectManagementMain = (props: any) => {
   const [pageLoaderActive, setPageLoader] = React.useState(false)
   const [SharewebComponent, setSharewebComponent] = React.useState("");
   const [AllTasks, setAllTasks] = React.useState([]);
+  const rerender = React.useReducer(() => ({}), {})[1]
+  const refreshData = () => setData(() => renderData);
   const [data, setData] = React.useState([]);
   const [isOpenEditPopup, setisOpenEditPopup] = React.useState(false);
   const [isOpenCreateTask, setisOpenCreateTask] = React.useState(false);
@@ -213,6 +217,9 @@ const ProjectManagementMain = (props: any) => {
           .expand("ClientCategory", "ComponentCategory", "AssignedTo", "AttachmentFiles", "Author", "Editor", "TeamMembers", "Portfolios", "TaskCategories", "Parent")
           .getById(QueryId)
           .get().then((fetchedProject: any) => {
+            fetchedProject.siteUrl = props?.siteUrl;
+            fetchedProject.listId = AllListId?.MasterTaskListID;
+            fetchedProject.TaskID = fetchedProject.PortfolioStructureID;
             if ((fetchedProject.PercentComplete != undefined)) {
               fetchedProject.PercentComplete = (fetchedProject?.PercentComplete * 100).toFixed(0)
             } if (fetchedProject?.DueDate != undefined) {
@@ -222,10 +229,10 @@ const ProjectManagementMain = (props: any) => {
             } else {
               fetchedProject.DisplayDueDate = '';
             }
-          if(fetchedProject?.PortfolioStructureID!=undefined){
+            if (fetchedProject?.PortfolioStructureID != undefined) {
               fetchedProject.TaskID = fetchedProject?.PortfolioStructureID;
-            }else{
-              fetchedProject.TaskID =''
+            } else {
+              fetchedProject.TaskID = ''
             }
             if (fetchedProject?.Item_x0020_Type == "Project") {
               fetchedProject.subRows = AllFlatProject?.filter((data: any) => data?.Parent?.Id == fetchedProject?.Id && data?.Item_x0020_Type == "Sprint")
@@ -338,10 +345,10 @@ const ProjectManagementMain = (props: any) => {
       setData(backupAllTasks);
       setPageLoader(false)
       if (timeEntryIndex) {
-try{
-        const dataString = JSON.stringify(timeEntryIndex);
-        localStorage.setItem('timeEntryIndex', dataString);
-}catch(e){console.log(e)}
+        try {
+          const dataString = JSON.stringify(timeEntryIndex);
+          localStorage.setItem('timeEntryIndex', dataString);
+        } catch (e) { console.log(e) }
       }
     } catch (error) {
       setPageLoader(false)
@@ -354,6 +361,14 @@ try{
 
 
   const CallBack = React.useCallback((item: any) => {
+    if (item?.Item_x0020_Type == "Sprint") {
+      // let allData = data;
+      allBackupSprintAndTask.unshift(item)
+      renderData = [];
+      renderData = renderData.concat(allBackupSprintAndTask)
+      refreshData();
+     
+    }
     GetMasterData(false)
     setisOpenEditPopup(false);
     setIsTaggedCompTask(false);
@@ -397,8 +412,13 @@ try{
   };
 
   const EditPopup = React.useCallback((item: any) => {
-    setisOpenEditPopup(true);
-    setpassdata(item);
+    if (item?.Item_x0020_Type != "Sprint") {
+      setisOpenEditPopup(true);
+      setpassdata(item);
+    } else {
+      EditComponentPopup(item)
+    }
+
   }, []);
 
   const untagTask = async (item: any) => {
@@ -438,17 +458,16 @@ try{
     setisOpenCreateTask(false)
   }, []);
   const inlineCallBack = React.useCallback((item: any) => {
-    setAllTasks(prevTasks => {
-      const updatedTasks = prevTasks.map((task: any) => {
+    setData(prevTasks => {
+      return prevTasks.map((task: any) => {
         if (task.Id === item.Id && task.siteType === item.siteType) {
           return { ...task, ...item };
         }
         return task;
       });
-      setData(updatedTasks);
-      return updatedTasks;
     });
   }, []);
+  
 
 
   const LoadAllSiteTasks = async function () {
@@ -463,7 +482,7 @@ try{
     }
     try {
       var AllTask: any = [];
-
+      allBackupSprintAndTask=[];
       let web = new Web(props?.siteUrl);
       var arraycount = 0;
 
@@ -494,6 +513,9 @@ try{
             }
 
           })
+          items.SmartInformationTitle = items.SmartInformation[0].Title
+        } else {
+          items.SmartInformationTitle = ''
         }
         items.TotalTaskTime = 0;
         const key = `Task${items?.siteType + items.Id}`;
@@ -578,11 +600,11 @@ try{
         items.subRows = [];
         AllTask.push(items);
       });
-try {
-      backupAllTasks = JSON.parse(JSON.stringify(AllTask));
-      setAllTasks(backupAllTasks);
-} catch (error) {
-  
+      try {
+        backupAllTasks = JSON.parse(JSON.stringify(AllTask));
+        setAllTasks(backupAllTasks);
+      } catch (error) {
+
       }
 
       let allSprints = [];
@@ -639,7 +661,14 @@ try {
               }
             });
           })
-          let AllSprintTask = AllTask.filter((item: any) => item?.isTaskPushed !== true && item?.Project?.Id == Sprint?.Id);
+          let AllSprintTask = AllTask.filter((item: any) => {
+            if (item?.isTaskPushed !== true && item?.Project?.Id == Sprint?.Id) {
+              item.isTaskPushed = true;
+              return true
+            } else {
+              return false
+            }
+          });
           allSprintActivities = allSprintActivities.concat(allSprintWorkStream);
           allSprintActivities = allSprintActivities.concat(AllSprintTask);
           Sprint.subRows = allSprintActivities?.length > 0 ? allSprintActivities : [];
@@ -695,12 +724,12 @@ try {
           }
         });
       })
-
-      allActivities = allActivities.concat(allWorkStream);
+      allSprints = allSprints.concat(allActivities);
+      allSprints = allSprints.concat(allWorkStream);
       AllTask = AllTask.filter((item: any) => item?.isTaskPushed !== true);
-      allActivities = allActivities.concat(AllTask);
-      allActivities = allActivities.concat(allSprints);
-      setData(allActivities);
+      allSprints = allSprints.concat(AllTask);
+      allBackupSprintAndTask = allSprints
+      setData(allSprints);
       setTaskTaggedPortfolios(taskTaggedComponents)
       setPageLoader(false);
     } catch (error) {
@@ -735,6 +764,8 @@ try {
       AllFlatProject = results?.FlatProjectData
     }
     MasterListData = componentDetails
+    if (AllFlatProject?.length > 0)
+      MasterListData = MasterListData.concat(AllFlatProject)
 
   }
   const EditPortfolio = (item: any, type: any) => {
@@ -743,7 +774,18 @@ try {
     setIsPortfolio(true);
   };
   const Call = (propsItems: any, type: any) => {
-    GetMasterData(false);
+    if (propsItems?.Item_x0020_Type == "Project") {
+      setMasterdata(propsItems)
+    } else if (propsItems?.Item_x0020_Type == "Sprint") {
+      setData((prev: any) => {
+        return prev?.map((object: any) => {
+          if (object?.Id === propsItems?.Id) {
+            return { ...object, ...propsItems };
+          }
+          return object; // Return the object whether it's modified or not
+        });
+      });
+    }
     setIsComponent(false);
   };
 
@@ -858,47 +900,47 @@ try {
         cell: ({ row, column, getValue }) => (
           <>
             {row?.original?.Item_x0020_Type == "Sprint" ?
-             <span>
-             <a
-               className="hreflink"
-               href={`${props?.siteUrl}/SitePages/Project-Management.aspx?ProjectId=${row?.original?.Id}`}
-               data-interception="off"
-               target="_blank"
-             >
-               {row?.original?.Title}
-             </a>
-             {row?.original?.descriptionsSearch?.length > 0 ? (
-               <span className="alignIcon">
-                 <InfoIconsToolTip
-                   Discription={row?.original?.bodys}
-                   row={row?.original}
-                 />
-               </span>
-             ) : (
-               ""
-             )}
-           </span>
+              <span>
+                <a
+                  className="hreflink"
+                  href={`${props?.siteUrl}/SitePages/Project-Management.aspx?ProjectId=${row?.original?.Id}`}
+                  data-interception="off"
+                  target="_blank"
+                >
+                  {row?.original?.Title}
+                </a>
+                {row?.original?.descriptionsSearch?.length > 0 ? (
+                  <span className="alignIcon">
+                    <InfoIconsToolTip
+                      Discription={row?.original?.bodys}
+                      row={row?.original}
+                    />
+                  </span>
+                ) : (
+                  ""
+                )}
+              </span>
               : <span>
-              <a
-                className="hreflink"
-                href={`${props?.siteUrl}/SitePages/Task-Profile.aspx?taskId=${row?.original?.Id}&Site=${row?.original?.siteType}`}
-                data-interception="off"
-                target="_blank"
-              >
-                {row?.original?.Title}
-              </a>
-              {row?.original?.descriptionsSearch?.length > 0 ? (
-                <span className="alignIcon">
-                  <InfoIconsToolTip
-                    Discription={row?.original?.bodys}
-                    row={row?.original}
-                  />
-                </span>
-              ) : (
-                ""
-              )}
-            </span>}
-            
+                <a
+                  className="hreflink"
+                  href={`${props?.siteUrl}/SitePages/Task-Profile.aspx?taskId=${row?.original?.Id}&Site=${row?.original?.siteType}`}
+                  data-interception="off"
+                  target="_blank"
+                >
+                  {row?.original?.Title}
+                </a>
+                {row?.original?.descriptionsSearch?.length > 0 ? (
+                  <span className="alignIcon">
+                    <InfoIconsToolTip
+                      Discription={row?.original?.bodys}
+                      row={row?.original}
+                    />
+                  </span>
+                ) : (
+                  ""
+                )}
+              </span>}
+
           </>
         ),
         id: "Title",
@@ -1061,7 +1103,7 @@ try {
         size: 110
       },
       {
-        accessorFn: (row) => row?.SmartInformation[0]?.Title,
+        accessorFn: (row) => row?.SmartInformationTitle,
         cell: ({ row }) => (
           <span className='d-flex hreflink' >
             &nbsp; {row?.original?.SmartInformation?.length > 0 ? <span onClick={() => openRemark(row?.original)} className="commentDetailFill-active"><BiCommentDetail /></span> : <span onClick={() => openRemark(row?.original)} className="commentDetailFill"><BiCommentDetail /></span>}
@@ -1130,11 +1172,12 @@ try {
               onClick={() => EditPopup(row?.original)}
               className="alignIcon  svg__iconbox svg__icon--edit hreflink"
             ></span>
-            <span
-              style={{ marginLeft: '6px' }}
-              title='Un-Tag Task From Project'
-              onClick={() => untagTask(row?.original)}
-            ><BsTagFill /></span>
+            {row?.original?.Item_x0020_Type != "Sprint" ?
+              <span
+                style={{ marginLeft: '6px' }}
+                title='Un-Tag Task From Project'
+                onClick={() => untagTask(row?.original)}
+              ><BsTagFill /></span> : ''}
           </span>
         ),
         id: 'Actions',
@@ -1167,10 +1210,10 @@ try {
 
 
   const inlineCallBackMasterTask = React.useCallback((item: any) => {
-    
+
     setMasterdata(item);
 
-}, []);
+  }, []);
   return (
     <div>
       {QueryId != "" ? (
@@ -1335,11 +1378,11 @@ try {
                                         <span>
                                           <InlineEditingcolumns
                                             AllListId={AllListId}
-                                            callBack={inlineCallBack}
+                                            callBack={inlineCallBackMasterTask}
                                             columnName='DueDate'
                                             item={Masterdata}
                                             TaskUsers={AllUser}
-                                            pageName={'ProjectManagment'}
+                                            pageName={'ProjectManagmentMaster'}
                                           />
                                         </span>
                                         {/* <span className="" >
@@ -1350,14 +1393,14 @@ try {
                                     <dl>
                                       <dt className="bg-fxdark">Priority</dt>
                                       <dd className="bg-light">
-                                      <InlineEditingcolumns
+                                        <InlineEditingcolumns
                                           mypriority={true}
                                           AllListId={AllListId}
                                           callBack={inlineCallBackMasterTask}
                                           columnName='Priority'
                                           item={Masterdata}
                                           TaskUsers={AllUser}
-                                          pageName={'ProjectManagment'}
+                                          pageName={'ProjectManagmentMaster'}
                                         />
                                         <span
                                           className="hreflink pull-right"
@@ -1375,27 +1418,27 @@ try {
                                     <dl>
                                       <dt className="bg-fxdark">Project Team</dt>
                                       <dd className="bg-light">
-                                      <InlineEditingcolumns
+                                        <InlineEditingcolumns
                                           AllListId={AllListId}
                                           callBack={inlineCallBackMasterTask}
                                           columnName='Team'
                                           item={Masterdata}
                                           TaskUsers={AllUser}
-                                          pageName={'ProjectManagment'}
+                                          pageName={'ProjectManagmentMaster'}
                                         /></dd>
                                     </dl>
                                     <dl>
                                       <dt className="bg-fxdark">Status</dt>
                                       <dd className="bg-light">
-                                      <InlineEditingcolumns
-                                        AllListId={AllListId}
-                                        callBack={inlineCallBackMasterTask}
-                                        columnName='PercentComplete'
-                                        item={Masterdata}
-                                        TaskUsers={AllUser}
-                                        pageName={'ProjectManagment'}
-                                      />
-                                       
+                                        <InlineEditingcolumns
+                                          AllListId={AllListId}
+                                          callBack={inlineCallBackMasterTask}
+                                          columnName='PercentComplete'
+                                          item={Masterdata}
+                                          TaskUsers={AllUser}
+                                          pageName={'ProjectManagmentMaster'}
+                                        />
+
                                         <span className="pull-right">
                                           <span className="pencil_icon">
                                             <span
@@ -1484,11 +1527,10 @@ try {
                         <div className="Alltable">
                           <div className="section-event ps-0">
                             <div className="wrapper project-management-Table">
-
-                              <GlobalCommanTable AllListId={AllListId} headerOptions={headerOptions}
+                              {(data?.length==0||data?.length>0 )&& <GlobalCommanTable AllListId={AllListId} headerOptions={headerOptions}
                                 columns={column2} data={data} callBackData={callBackData}
                                 smartTimeTotalFunction={smartTimeTotal} SmartTimeIconShow={true}
-                                TaskUsers={AllUser} showHeader={true} expendedTrue={false} />
+                                TaskUsers={AllUser} showHeader={true} expendedTrue={false} />}
                             </div>
 
                           </div>

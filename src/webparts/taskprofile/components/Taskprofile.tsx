@@ -1577,26 +1577,6 @@ class Taskprofile extends React.Component<ITaskprofileProps, ITaskprofileState> 
 
   //****** remove extra space in folora editor  */
 
-//   private cleanHTML=(html: any) =>{
-//     const div = document.createElement('div');
-//     div.innerHTML = html;
-//     const paragraphs = div.querySelectorAll('p');
-
-//     // Filter out empty <p> tags
-//     paragraphs.forEach((p) => {
-//         if (p.innerText.trim() === '') {
-//             p.parentNode.removeChild(p); // Remove empty <p> tags
-//         }
-//     });
-//     const brTags = div.querySelectorAll('br');
-//     if (brTags.length > 1) {
-//       for (let i = brTags.length - 1; i > 0; i--) {
-//         brTags[i].parentNode.removeChild(brTags[i]);
-//       }
-//     }
-  
-//     return div.innerHTML;
-// }
 private cleanHTML = (html:any,folora:any,index:any) => {
   const div = document.createElement('div');
   div.innerHTML = html;
@@ -1690,10 +1670,10 @@ private ComponentServicePopupCallBack = (DataItem: any, Type: any, functionType:
           let foundCC = AllClientCategories?.find((allCC: any) => allCC?.Id == cc.Id)
           if (this?.state?.Result?.siteType?.toLowerCase() == 'shareweb') {
               selectedCC.push(cc.Id)
-              cctag.push(cc)
+              cctag.push(foundCC)
           } else if (this?.state?.Result?.siteType?.toLowerCase() == foundCC?.siteName?.toLowerCase()) {
               selectedCC.push(cc.Id)
-              cctag.push(cc)
+              cctag.push(foundCC)
           }
       }
   })
@@ -1703,12 +1683,17 @@ private ComponentServicePopupCallBack = (DataItem: any, Type: any, functionType:
         sitetag?.map((sitecomp: any) => {
             if (sitecomp.Title != undefined && sitecomp.Title != "" && sitecomp.SiteName == undefined) {
                 sitecomp.SiteName = sitecomp.Title
+              let  ClientCategory=cctag?.filter((data:any)=>data?.siteName== sitecomp.Title)
+                if(ClientCategory.length>0){
+                  sitecomp.ClientCategory=ClientCategory
+                }
+                
             }
 
         })
         Sitestagging = JSON.stringify(sitetag)
         ClientTimeArray=[];
-        siteComp.ClientCategory=cctag
+        // DataItem[0].ClientCategory=cctag
         ClientTimeArray=sitetag;
     } else {
         var siteComp: any = {};
@@ -2729,7 +2714,7 @@ private async updateProjectComponentServices(dataUpdate:any) {
 
                   </section>
                   <div className="row">
-                    <div className='p-0'> {this.state.Result.Id != undefined && <KeyDocuments ref={this?.relevantDocRef} AllListId={AllListId} Context={this.props?.Context} siteUrl={this.props.siteUrl} DocumentsListID={this.props?.DocumentsListID} ID={this.state?.itemID} siteName={this.state.listName} folderName={this.state.Result['Title']} keyDoc={true}></KeyDocuments>}</div>
+                    <div className='p-0'> {this.state.Result.Id != undefined && <KeyDocuments ref={this?.relevantDocRef} AllListId={AllListId} Context={this.props?.Context} siteUrl={this.props.siteUrl} user={this?.taskUsers}  DocumentsListID={this.props?.DocumentsListID} ID={this.state?.itemID} siteName={this.state.listName} folderName={this.state.Result['Title']} keyDoc={true}></KeyDocuments>}</div>
                   </div>
                 </div>
                 <div className="col-3">
@@ -2836,13 +2821,7 @@ private async updateProjectComponentServices(dataUpdate:any) {
           showProject={this.state?.isopenProjectpopup}
         />
       }
-      {/* {this.state?.isopenProjectpopup &&<ServiceComponentPortfolioPopup
-        props={this?.state?.Result?.Portfolio}
-      Dynamic={AllListId}
-      ComponentType={"Component"}
-      Call={ (DataItem: any, Type: any, functionType: any)=>{this.ComponentServicePopupCallBack(DataItem,Type,functionType)}}
-      showProject={this.state?.isopenProjectpopup}
-          />} */}
+     
         </div>
       </myContextValue.Provider>
     );

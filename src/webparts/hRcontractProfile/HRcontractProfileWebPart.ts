@@ -9,7 +9,7 @@ import { BaseClientSideWebPart } from '@microsoft/sp-webpart-base';
 import { IReadonlyTheme } from '@microsoft/sp-component-base';
 import pnp from 'sp-pnp-js';
 import HrContractProfile from './components/HRcontractProfile';
-import { IHrContractProfileProps } from './components/IHRcontractProfileProps';
+import { IHRcontractProfileProps } from './components/IHRcontractProfileProps';
 import * as strings from 'HrContractProfileWebPartStrings';
 export interface IHrContractProfileWebPartProps {
   description: string;
@@ -25,7 +25,7 @@ export default class HrContractProfileWebPart extends BaseClientSideWebPart<IHrC
   private _environmentMessage: string = '';
 
   public render(): void {
-    const element: React.ReactElement<IHrContractProfileProps> = React.createElement(
+    const element: React.ReactElement<IHRcontractProfileProps> = React.createElement(
       HrContractProfile,
       {
         description: this.properties.description,

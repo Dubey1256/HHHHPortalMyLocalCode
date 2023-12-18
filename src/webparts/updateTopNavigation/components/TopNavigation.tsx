@@ -9,6 +9,7 @@ import GlobalCommanTable from "../../../globalComponents/GroupByReactTableCompon
 import { ColumnDef } from "@tanstack/react-table";
 import * as Moment from "moment";
 import { data } from "jquery";
+import VersionHistory from "../../../globalComponents/VersionHistroy/VersionHistory";
 var ParentData: any = [];
 var childData: any = [];
 var newData: any = "";
@@ -22,6 +23,8 @@ const TopNavigation = (dynamicData: any) => {
   const [AddPopup, setAddPopup] = React.useState(false);
   const [sorting, setSorting] = React.useState(false);
   const [changeroot, setChangeroot] = React.useState(false);
+  const [versionHistoryPopup, setVersionHistoryPopup] = React.useState(false);
+
   const [postData, setPostData] = React.useState<any>({
     Title: "",
     Url: "",
@@ -111,12 +114,11 @@ const TopNavigation = (dynamicData: any) => {
     console.log(TaskTypeItems);
     TaskTypeItems?.forEach((item: any) => {
       if (item.ownersonly == true) {
-        item.image =
-          "https://hhhhteams.sharepoint.com/sites/HHHH/SP/SiteCollectionImages/ICONS/24/Facilitators-do-not-disturb.png";
+        item.image =`${dynamicData.dynamicData.siteUrl}/SiteCollectionImages/ICONS/24/Facilitators-do-not-disturb.png`;
       }
       if (item.IsVisible == false) {
         item.image =
-          "https://hhhhteams.sharepoint.com/sites/HHHH/SP/SitecollectionImages/ICONS/24/do-not-disturb-rounded.png";
+        `${dynamicData.dynamicData.siteUrl}/SitecollectionImages/ICONS/24/do-not-disturb-rounded.png`;
       }
       if (item.ParentID == 0) {
         item.Id = item.ID;
@@ -136,11 +138,12 @@ const TopNavigation = (dynamicData: any) => {
       ) {
         if (childItem.ownersonly == true) {
           childItem.image =
-            "https://hhhhteams.sharepoint.com/sites/HHHH/SP/SiteCollectionImages/ICONS/24/Facilitators-do-not-disturb.png";
+          item.image =`${dynamicData.dynamicData.siteUrl}/SiteCollectionImages/ICONS/24/Facilitators-do-not-disturb.png`;
+
         }
         if (childItem.IsVisible == false) {
           childItem.image =
-            "https://hhhhteams.sharepoint.com/sites/HHHH/SP/SitecollectionImages/ICONS/24/do-not-disturb-rounded.png";
+          `${dynamicData.dynamicData.siteUrl}/SitecollectionImages/ICONS/24/do-not-disturb-rounded.png`;
         }
         item.childs.push(childItem);
         getChilds(childItem, items);
@@ -288,11 +291,11 @@ const TopNavigation = (dynamicData: any) => {
           Description:
             postData.Url != undefined && postData.Url != ""
               ? postData.Url
-              : popupData[0]?.href.Url,
+              :popupData[0]?.href != undefined && popupData[0]?.href != null ? popupData[0]?.href.Url : '',
           Url:
             postData.Url != undefined && postData.Url != ""
               ? postData.Url
-              : popupData[0]?.href.Url,
+              : popupData[0]?.href != undefined && popupData[0]?.href != null ? popupData[0]?.href.Url : '',
         },
         IsVisible: isVisible,
         ownersonly: owner,
@@ -542,7 +545,7 @@ const TopNavigation = (dynamicData: any) => {
       <div className="container mt-2" id="TopNavRound">
         <ul className="top-navigate mt-4">
           <li className="parent" onClick={() => AddNewItem("New")}>
-            <span className="svg__iconbox svg__icon--Plus"></span> Add New{" "}
+            <span className="alignIcon  svg__iconbox svg__icon--Plus"></span> Add New{" "}
           </li>
           {root.map((item) => {
             return (
@@ -578,7 +581,7 @@ const TopNavigation = (dynamicData: any) => {
                   </span>
                   <ul className="sub-menu">
                     <li onClick={() => AddNewItem(item)}>
-                      <span className="svg__iconbox svg__icon--Plus"></span> Add
+                      <span className="alignIcon  svg__iconbox svg__icon--Plus"></span> Add
                       New{" "}
                     </li>
                     {item.childs?.map((child: any) => {
@@ -616,7 +619,7 @@ const TopNavigation = (dynamicData: any) => {
                             </span>
                             <ul className="sub-menu">
                               <li onClick={() => AddNewItem(child)}>
-                                <span className="svg__iconbox svg__icon--Plus"></span>{" "}
+                                <span className="alignIcon  svg__iconbox svg__icon--Plus"></span>{" "}
                                 Add New{" "}
                               </li>
                               {child.childs?.map((subchild: any) => {
@@ -668,8 +671,7 @@ const TopNavigation = (dynamicData: any) => {
                                           onClick={() => AddNewItem(subchild)}
                                         >
                                           <span
-                                            className="svg__
-                                                            iconbox svg__icon--Plus"
+                                            className=" alignIcon  svg__iconbox svg__icon--Plus"
                                           ></span>{" "}
                                           Add New{" "}
                                         </li>
@@ -922,12 +924,21 @@ const TopNavigation = (dynamicData: any) => {
                   onClick={() => deleteDataFunction(popupData[0])}
                 ></span>
               </div>
+              <div className="text-left" onClick={()=>setVersionHistoryPopup(false)}>
+              {popupData[0]?.Id &&  <VersionHistory
+                                        taskId={popupData[0]?.Id}
+                                        listId={ListId}
+                                        siteUrls={dynamicData.dynamicData.siteUrl}
+                                    />}
+              </div>
+                                
+                               
             </div>
             <div className="col  text-end">
               <a
                 data-interception="off"
                 target="_blank"
-                href={`https://hhhhteams.sharepoint.com/sites/HHHH/SP/Lists/TopNavigation/EditForm.aspx?ID=${popupData[0]?.Id}`}
+                href={`${dynamicData.dynamicData.siteUrl}/Lists/TopNavigation/AllItems.aspx`}
               >
                 Open out-of-the-box form
               </a>
@@ -1385,7 +1396,7 @@ const TopNavigation = (dynamicData: any) => {
               <a
                 data-interception="off"
                 target="_blank"
-                href={`https://hhhhteams.sharepoint.com/sites/HHHH/SP/Lists/TopNavigation/EditForm.aspx?ID=${popupData[0]?.Id}`}
+                href={`${dynamicData.dynamicData.siteUrl}/Lists/TopNavigation/AllItems.aspx`}
               >
                 Open out-of-the-box form
               </a>

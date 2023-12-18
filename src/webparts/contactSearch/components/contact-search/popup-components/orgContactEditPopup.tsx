@@ -24,12 +24,33 @@ const orgContactEditPopup = (props: any) => {
         }
         if(myContextData2?.allSite?.MainSite){
             InstitutionDetails();
-        }else{
-            setInstitutionData(myContextData2?.InstitutionAllData);
+        }
+        
+        else{
+            GmbhHrInstitution();
             // setSearchedData(myContextData2?.InstitutionAllData);   
         }
         
     }, [])
+    const GmbhHrInstitution=async()=>{
+        try {
+            let web = new Web(myContextData2?.allListId?.siteUrl);
+            await web.lists.getById(myContextData2?.allSite?.GMBHSite ? myContextData2?.allListId?.GMBH_CONTACT_SEARCH_LISTID : myContextData2?.allListId?.HR_EMPLOYEE_DETAILS_LIST_ID)
+                .items
+                .select("Id", "Title", "FirstName","FullName","DOJ","DOE", "Company", "WorkCity", "Suffix", "WorkPhone", "HomePhone", "Comments", "WorkAddress", "WorkFax", "WorkZip", "ItemType", "JobTitle", "Item_x0020_Cover", "WebPage", "CellPhone", "Email", "LinkedIn", "Created", "SocialMediaUrls", "Author/Title", "Modified", "Editor/Title", "Division/Title", "Division/Id", "EmployeeID/Title", "StaffID", "EmployeeID/Id", "Institution/Id", "Institution/FullName", "IM")
+                .expand("EmployeeID", "Division", "Author", "Editor", "Institution")
+                .orderBy("Created", true)
+                .get().then((data: any) => {
+                    let instData = data.filter((instItem: any) => instItem?.ItemType == "Institution")
+                    setInstitutionData(instData);
+                    
+                });
+
+        } catch (error) {
+            console.log("Error user response:", error.message);
+        }
+    }   
+    
     const InstitutionDetails = async () => {
         try {
             let web = new Web("https://hhhhteams.sharepoint.com/sites/HHHH");
@@ -47,62 +68,7 @@ const orgContactEditPopup = (props: any) => {
             console.log("Error user response:", error.message);
         }
     }
-    // const searchFunction = (e: any, item: any) => {
-    //     let Key: any = e.target.value.toLowerCase();
-    //     if (item == 'FullName') {
-    //         setSearchKeys({ ...searchKeys, FullName: Key });
-    //         const data: any = {
-    //             nodes: institutionData?.filter((items: any) =>
-    //                 items.FullName?.toLowerCase().includes(Key)
-    //             ),
-    //         };
-    //         setSearchedData(data.nodes);
-    //         if (Key.length == 0) {
-    //             setSearchedData(institutionData);
-    //         }
-    //     }
-    //     if (item == 'City') {
-    //         setSearchKeys({ ...searchKeys, City: Key });
-    //         const data: any = {
-    //             nodes: institutionData?.filter((items: any) =>
-    //                 items.WorkCity?.toLowerCase().includes(Key)
-    //             ),
-    //         };
-    //         setSearchedData(data.nodes);
-    //         if (Key.length == 0) {
-    //             setSearchedData(institutionData);
-    //         }
-    //     }
-    //     if (item == 'Country') {
-    //         setSearchKeys({ ...searchKeys, Country: Key });
-    //         const data: any = {
-    //             nodes: institutionData?.filter((items: any) =>
-    //                 items.WorkCountry?.toLowerCase().includes(Key)
-    //             ),
-    //         };
-    //         setSearchedData(data.nodes);
-    //         if (Key.length == 0) {
-    //             setSearchedData(institutionData);
-    //         }
-    //     }
-    // }
-    // const selectOrgStatus = (item: any, index: any) => {
-    //     let backupdata=JSON.parse(JSON.stringify(updateData));
-
-    //    backupdata={
-    //   ...backupdata,...{
-    //     Institution: item,
-           
-    //    }
-    // }
-    //    setUpdateData(backupdata);
-    // }
-    // const ClearFilter = () => {
-    //     setSearchedData(institutionData);
-    //     setSearchKeys({
-    //         FullName: '', City: '', Country: ''
-    //     })
-    // }
+ 
     const saveChange = () => {
      
         props.callBack(updateData);
@@ -182,7 +148,7 @@ const orgContactEditPopup = (props: any) => {
                 <div>
                    
                     <div className='Alltable'>
-                    <GlobalCommanTable columns={columns} data={institutionData} showHeader={false}callBackData={callBackData}/>
+                    <GlobalCommanTable columns={columns} data={institutionData.length>0?institutionData:[]} showHeader={false}callBackData={callBackData}/>
                         </div >
                    
                     

@@ -113,6 +113,8 @@ export default function DocumentSearchPage(Props: any) {
             hasCheckbox: false,
             hasCustomExpanded: false,
             hasExpanded: false,
+            hideTeamIcon: true,
+            hideOpenNewTableIcon: true,
             size: 10,
             id: 'Id',
         },
@@ -122,7 +124,7 @@ export default function DocumentSearchPage(Props: any) {
                 <div className='alignCenter '>
                     <a target="_blank" data-interception="off" href={row?.original?.FileDirRef}>
                         <span className="alignIcon svg__iconbox svg__icon--folder"></span>
-                        {row?.original?.Title ? <a className='ms-1 ' title={row?.original?.Title} target="_blank" data-interception="off" href={row?.original?.FileDirRef}> {row?.original?.Title} </a> : <a className='ms-1 ' title={row?.original?.FileDirRef} target="_blank" data-interception="off" href={row?.original?.FileDirRef}> {row?.original?.FileLeafRef} </a>}
+                        {row?.original?.Title ? <a className='ms-1 ' title={row?.original?.Title} target="_blank" data-interception="off" href={`${row?.original?.EncodedAbsUrl}?web=1`}> {row?.original?.Title} </a> : <a className='ms-1 ' title={row?.original?.FileDirRef} target="_blank" data-interception="off" href={`${row?.original?.EncodedAbsUrl}?web=1`}> {row?.original?.FileLeafRef} </a>}
                     </a>
                 </div>
             ),
@@ -213,5 +215,3 @@ export default function DocumentSearchPage(Props: any) {
             }    </>
     )
 }
-
-

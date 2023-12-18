@@ -5,13 +5,15 @@ import { event } from "jquery";
 import GlobalCommanTable from "../../../globalComponents/GroupByReactTableComponents/GlobalCommanTable";
 import { Web } from "sp-pnp-js";
 import EditPage from "../../../globalComponents/EditPanelPage/EditPage";
+// import { SPHttpClient, SPHttpClientResponse } from '@microsoft/sp-http';
 
 
 
 
 
 var id: any = [];
-const Permission_management = () => {
+const Permission_management = (props:any) => {
+  console.log(props);
   let arr: any = [];
   const [groups, setGroups]: any = useState([]);
   const [truePanel, setTruePanel]: any = useState(false);
@@ -23,6 +25,7 @@ const Permission_management = () => {
   const [suggestions, setSuggestions] = useState([]);
   const [checkPermission, setCheckPermission] = useState(false);
   const [permissionUserGroup, setPermissionUserGroup]: any = useState([]);
+  const [headerChange, setHeaderChange]: any = useState('');
 
 
 
@@ -122,14 +125,43 @@ const Permission_management = () => {
   };
 
 
-
+  // const getRequestDigest = async (localizedPath: string): Promise<string> => {
+  //   // Check if 'localizedPath' starts with 'somePrefix'
+  //   const startsWithSomePrefix = /^somePrefix/.test(localizedPath);
+  
+  //   if (startsWithSomePrefix) {
+  //     try {
+  //       // Perform the asynchronous operation
+  //       const response: SPHttpClientResponse = await props.context.spHttpClient.post(
+  //         `${props.context.pageContext.web.absoluteUrl}/_api/contextinfo`,
+  //         SPHttpClient.configurations.v1
+  //       );
+  
+  //       // Parse the response JSON
+  //       const data = await response.json();
+  
+  //       // Return the FormDigestValue
+  //       return data.FormDigestValue;
+  //     } catch (error) {
+  //       console.error('Error while fetching digest:', error);
+  //       // Handle the error or return a default value if needed
+  //       return ''; // or throw error;
+  //     }
+  //   } else {
+  //     // Handle the case where localizedPath does not start with 'somePrefix'
+  //     console.warn('localizedPath does not start with "somePrefix"');
+  //     // Return a default value or throw an error, depending on your requirements
+  //     return ''; // or throw new Error('localizedPath does not start with "somePrefix"');
+  //   }
+  // };
   const postUser = async () => {
-    var url = "https://hhhhteams.sharepoint.com/sites/HHHH/sp" + "/_api/web/sitegroups(" + optionsData + ")/users";
+    // const digestValue = await getRequestDigest('somePrefixExampleString');
+    var url = "https://hhhhteams.sharepoint.com/sites/HHHH/sp" + "/_api/web/sitegroups(" + id + ")/users";
     var data = {
       "__metadata": {
         "type": "SP.User"
       },
-      "LoginName": inputValue.Email,
+      "LoginName": inputValue.LoginName,
     };
 
     $.ajax({
@@ -182,10 +214,10 @@ const Permission_management = () => {
   };
 
 
-  const deleteRequestWithOutData = (id: any) => {
+  const deleteRequestWithOutData = (Idd: any) => {
     let confirmation = confirm("Are you sure you want to delete this User ?");
     if (confirmation) {
-      var url = "https://hhhhteams.sharepoint.com/sites/HHHH/sp" + "/_api/web/sitegroups(" + optionsData + ")/users/removebyid(" + id + ")";
+      var url = "https://hhhhteams.sharepoint.com/sites/HHHH/sp" + "/_api/web/sitegroups(" + id + ")/users/removebyid(" + Idd + ")";
       $.ajax({
         url: url,
         method: "DELETE",
@@ -310,22 +342,29 @@ const Permission_management = () => {
   };
 
   const handleSuggestionClick = (suggestion: any) => {
-    setInputValue(suggestion);
+    data?.map((items:any)=>{
+      if(items?.Id === suggestion?.AssingedToUserId){
+        setInputValue(items);
+      }
+    })
+    
     setSuggestions([]);
     setPermissionUserGroup([]);
   };
 
 
 
-
+const changeHeader=(items:any)=>{
+  setHeaderChange(items)
+}
 
 
   return (
     <>
       <div className="alignCenter">
         <div className="alignCenter">
-          <h2 className="heading">Permission-Management</h2>
-          <EditPage />
+          <h2 className="heading">{headerChange != undefined && headerChange != null && headerChange != '' ? headerChange : 'Permission-Management'} </h2>
+          <EditPage context={props?.context} changeHeader={changeHeader} />
         </div>
         <div className="ml-auto">
           <a target="_blank" className="fw-bold" href="https://hhhhteams.sharepoint.com/sites/HHHH/SP/SitePages/Permission-Management.aspx">

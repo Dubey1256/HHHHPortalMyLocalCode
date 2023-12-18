@@ -8,6 +8,7 @@ import Tooltip from '../../../../../globalComponents/Tooltip';
 import { Panel, PanelType } from 'office-ui-fabric-react';
 import ImagesC from '../../../../EditPopupFiles/ImageInformation';
 import { myContextValue } from '../../../../../globalComponents/globalCommon'
+import CreateContract from '../../../../hrContractsearch/components/CreateContract';
 
 
 let JointData: any;
@@ -16,7 +17,7 @@ const HHHHEditComponent = (props: any) => {
     const myContextData2: any = React.useContext<any>(myContextValue)
     const [countryData, setCountryData] = useState([]);
     const [stateData, setStateData] = useState([]);
-
+    const[createContractPopup,setCreateContractPopup]=useState(false);
     const [imagetab, setImagetab] = React.useState(false);
     const [status, setStatus] = useState({
         orgPopup: false,
@@ -86,6 +87,7 @@ const HHHHEditComponent = (props: any) => {
                     if (SitesTagged.search("HR") >= 0 && myContextData2.loggedInUserName == data.Email) {
                         HrTagInformation(Id);
                         setSiteTaggedHR(true);
+                        HrTagInformation(data?.Id)
                     }
                     // if (SitesTagged.search("SMALSUS") >= 0 && myContextData2.loggedInUserName == data.Email) {
                     //     HrTagInformation(Id);
@@ -293,7 +295,7 @@ const HHHHEditComponent = (props: any) => {
                 FirstName: (updateData?.FirstName),
                 Suffix: (updateData?.Suffix),
                 JobTitle: (updateData?.JobTitle),
-                FullName: (updateData?.FirstName) + " " + (updateData?.Title),
+                FullName: (updateData?.FirstName) + " " + (updateData?.Title!=null?updateData?.Title:""),
                 InstitutionId: (updateData?.Institution != undefined ? updateData?.Institution?.Id : null),
                 Email: (updateData?.Email),
                 Department: (updateData?.Department),
@@ -332,13 +334,18 @@ const HHHHEditComponent = (props: any) => {
                     if(myContextData2?.allSite?.HrSite){
                         updateHrDetails(postData);
                     }
-                  if (updateData?.Site?.toString().search("HR") >= 0 && myContextData2?.allSite?.MainSite) {
-                            updateJointHrDetails();
+                //   if (updateData?.Site?.toString().search("HR") >= 0 && myContextData2?.allSite?.MainSite) {
+                //             updateJointHrDetails();
            
-                           }
-                    else {
-                        callBack();
-                    }
+                //     }
+                    // if(myContextData2?.allSite?.MainSite && updateData?.Site?.toString().search("HR") == 0){
+                    //     callBack();
+                       
+                    // }
+                    if(myContextData2?.allSite?.MainSite ){
+                            callBack();
+                           
+                        }
                 });
 
             }
@@ -418,7 +425,7 @@ const HHHHEditComponent = (props: any) => {
 
     //*************************UpdateHr Deatils joint   Function Start ***************************** */
     const updateJointHrDetails = async () => {
-        let Id: any = myContextData2.allSite?.HrSite?JointHrData.Id:HrTagData.ID;
+        let Id: any = myContextData2.allSite?.HrSite?JointHrData?.Id:HrTagData.ID;
         try {
             const web = new Web(myContextData2?.allListId?.jointSiteUrl);
             await web.lists
@@ -445,8 +452,24 @@ const HHHHEditComponent = (props: any) => {
                     Fedral_State: (HrTagData?.Fedral_State ? HrTagData?.Fedral_State : null)
                 }).then(() => {
                     console.log("Your information has been updated successfully");
-                    alert("Your information has been updated successfully")
-                    callBack();
+                    // alert("Your information has been updated successfully")
+                    if( props?.pageName=="Recruiting-Tool"){
+                        if(confirm("Are you want to create Contract ?")){
+                            setCreateContractPopup(true)
+                            //  callBack();
+                         }
+                         else{
+                            if( props?.pageName=="Recruiting-Tool"){
+                             window.open(`https://hhhhteams.sharepoint.com/sites/HHHH/HR/SitePages/EmployeeInfo.aspx?employeeId=${updateData.Id}`,"_blank")
+                                }
+                                 
+                                     callBack();
+                                  }
+                    }else{
+                        callBack();
+                    }
+                    
+                   
                 })
         } catch (error) {
             console.log("error", error.message)
@@ -602,6 +625,12 @@ const HHHHEditComponent = (props: any) => {
     }, []);
 
     // *****************End image call back function**********************************
+
+    //*****************Contract create function***************** */
+    const callBackData=React.useCallback(()=>{
+        callBack();
+        setCreateContractPopup(false);
+    },[])
     return (
         <>
             <Panel onRenderHeader={onRenderCustomHeadersmartinfo}
@@ -1494,6 +1523,7 @@ const HHHHEditComponent = (props: any) => {
                     {status.orgPopup ? <OrgContactEditPopup callBack={CloseOrgPopup} updateData={updateData} /> : null}
                     {status.countryPopup ? <CountryContactEditPopup popupName="Country" selectedCountry={currentCountry} callBack={CloseCountryPopup} data={countryData} updateData={updateData} /> : null}
                     {status.statePopup ? <CountryContactEditPopup popupName="State" selectedState={selectedState} callBack={CloseCountryPopup} data={stateData} updateData={updateData} /> : null}
+                    
                 </div >
                 <footer className='bg-f4 fixed-bottom'>
                     <div className='align-items-center d-flex justify-content-between me-3 px-4 py-2'>
@@ -1539,6 +1569,7 @@ const HHHHEditComponent = (props: any) => {
                         </div>
                     </div>
                 </footer>
+                {createContractPopup && <CreateContract  callback={callBackData} AllListId={myContextData2?.allListId}updateData={updateData} pageName={props?.pageName} />}
             </Panel>
         </>
     )

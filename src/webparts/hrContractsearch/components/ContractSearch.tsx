@@ -34,7 +34,7 @@ let allSite: any = {
             Context: props?.Context,
             HHHHContactListId: props?.HHHHContactListId,
             HHHHInstitutionListId: props?.HHHHInstitutionListId,
-            MAIN_SMARTMETADATA_LISTID: props?.MAIN_SMARTMETADATA_LISTID,
+            HR_SMARTMETADATA_LISTID: props?.HR_SMARTMETADATA_LISTID,
             MAIN_HR_LISTID: props?.MAIN_HR_LISTID,
             GMBH_CONTACT_SEARCH_LISTID: props?.GMBH_CONTACT_SEARCH_LISTID,
             HR_EMPLOYEE_DETAILS_LIST_ID: props?.HR_EMPLOYEE_DETAILS_LIST_ID,
@@ -61,6 +61,12 @@ let allSite: any = {
             val.ContractSigned = moment(val?.ContractSigned).format('DD/MM/YYYY') 
             val.startDate = moment(val?.startDate).format('DD/MM/YYYY') 
             val.endDate = moment(val?.endDate).format('DD/MM/YYYY') 
+            if(val.activeStatus == true){
+                val.activeStatus = 'Active'
+            }
+            if(val.activeStatus == false){
+                val.activeStatus = 'InActive'
+            }
             if (val.startDate != undefined && val.startDate != null || val.endDate != undefined && val.endDate != null || val.endDate == undefined && val.endDate == null) {
 
                 if (val.startDate < val.endDate && val.endDate > currentdate) {
@@ -98,7 +104,7 @@ let allSite: any = {
                 id: 'Contract ID',
                 header: '',
                 placeholder: "Contract ID",
-                size: 150,
+                size: 110,
                
             },
             {
@@ -120,14 +126,14 @@ let allSite: any = {
                 id: 'Title',
                 header: '',
                 placeholder: "Title",
-                size: 500,
+                
             },
             {
                 id: 'Employee',
                 header: '',
                 accessorFn: (row) => row?.HHHHStaff?.FullName,
                 placeholder: "Employee",
-                size: 300,
+                size: 200,
 
 
             },
@@ -136,7 +142,7 @@ let allSite: any = {
                 header: '',
                 accessorFn: (row) => row?.typeOfContract,
                 placeholder: "Contract Type",
-                size: 300,
+                size: 160,
 
 
             },
@@ -145,7 +151,7 @@ let allSite: any = {
                 header: '',
                 accessorFn: (row) => row?.activeStatus,
                 placeholder: "Contract Type",
-                size: 100,
+                size: 50,
 
 
             },
@@ -182,7 +188,7 @@ let allSite: any = {
             {
                 id: "ff",
                 accessorKey: "",
-                size: 25,
+                size: 1,
                 canSort: false,
                 placeholder: "",
                 cell: ({ row }) => (

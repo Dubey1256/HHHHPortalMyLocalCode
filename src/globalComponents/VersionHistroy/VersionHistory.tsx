@@ -16,18 +16,21 @@ export default function VersionHistory(props: any) {
     const [AllComment,setAllComment] = React.useState([]);
    
     const handleClose = () => setShow(false);
-    const handleShow = () => setShow(true);
-    setTimeout(() => {
-        $('.ms-Panel-scrollableContent').addClass('versionScrollableContent')
-    }, 1000);
+    const handleShow = () => {       
+        setShow(true)
+        setTimeout(() => {
+            $('.ms-Panel-scrollableContent').addClass('versionScrollableContent')
+        }, 100);
+    };
     //------------------------jquery call--------------------------------
     const GetItemsVersionHistory = async () => {
         var versionData: any = []
-        var web = new Web(props.siteUrls);
+        var siteTypeUrl = props.siteUrls;
+        let webs = new Web(props.siteUrls);
         let listId = props.listId
         var itemId = props.taskId;
         let tempEstimatedArrayData: any;        
-        web.lists.getById(props?.listId).items.getById(props?.taskId).versions.get().then(versions => {
+        webs.lists.getById(props?.listId).items.getById(props?.taskId).versions.get().then(versions => {
             console.log('Version History:', versions);
             versionData = versions;
 
@@ -139,8 +142,9 @@ export default function VersionHistory(props: any) {
                     differingPairs['version'] = currentObj.VersionId;
                     differingPairs['ID']= currentObj.ID;
                     differingPairs['owshiddenversion']= currentObj.owshiddenversion; 
-                    differingPairs['PercentComplete']= currentObj.PercentComplete;                                              
-                    if ((currentObj[key] !== undefined && currentObj[key] !== null && currentObj[key] !== '' && currentObj.hasOwnProperty(key)) && (key !== 'Checkmark' && key !== 'odata.type'  && key !== 'SMTotalFileStreamSize'  && key !== 'ContentVersion' && key !== 'FolderChildCount'  && key !== 'NoExecute'  && key !== 'FSObjType'  && key !== 'FileLeafRef' && key !== 'Order' && key !== 'Created_x005f_x0020_x005f_Date' && key !== 'Last_x005f_x0020_x005f_Modified')) {
+                    if(currentObj.PercentComplete != undefined && currentObj.PercentComplete != null && currentObj.PercentComplete !== 'NaN')
+                     differingPairs['PercentComplete']= currentObj.PercentComplete;                                              
+                    if ((currentObj[key] !== undefined && currentObj[key] !== null && currentObj[key] !== '' && currentObj.hasOwnProperty(key)) && (key !== 'Checkmark' && key !== 'odata.type'  && key !== 'ItemChildCount' && key !== 'SMTotalFileStreamSize'  && key !== 'ContentVersion' && key !== 'FolderChildCount'  && key !== 'NoExecute'  && key !== 'FSObjType'  && key !== 'FileLeafRef' && key !== 'Order' && key !== 'Created_x005f_x0020_x005f_Date' && key !== 'Last_x005f_x0020_x005f_Modified')) {
                         if(currentObj[key]?.length>0){
                             differingPairs[key] = currentObj[key];
                             differingPairs['Editor'] = currentObj.Editor;
@@ -201,7 +205,7 @@ export default function VersionHistory(props: any) {
     const onRenderCustomHeader = () => {
       return (
         <>
-          <div style={{ marginRight: "auto", fontSize: "20px", fontWeight: "600", marginLeft: '15px' }}>
+          <div className='subheading mb-0'>
             Version History
           </div>
           <Tooltip />
@@ -211,7 +215,7 @@ export default function VersionHistory(props: any) {
     const onRenderCustomCommentHeader = () => {
         return (
           <>
-            <div style={{ marginRight: "auto", fontSize: "20px", fontWeight: "600", marginLeft: '15px' }}>
+            <div className='subheading mb-0'>
               All Comments
             </div>
             <Tooltip />
@@ -267,7 +271,7 @@ export default function VersionHistory(props: any) {
                 isBlocking={false}
                 type={PanelType.large}>
                 
-                <table className="table VersionHistoryTable">
+                <table className="table VersionHistoryTable mt-2">
                         <thead>
                             <tr>
                                 <th style={{width:"80px"}} scope="col">No</th>
@@ -307,7 +311,7 @@ export default function VersionHistory(props: any) {
                                                                                             ? renderObject(item[key])
                                                                                             : key === 'FeedBack' 
                                                                                             ? <div className='feedbackItm-text'>
-                                                                                                {item?.FeedBackDescription?.length > 0 ? <span className='d-flex'><p className='text-ellips mb-0'>{`${item?.FeedBackDescription[0]?.Title}`}</p> <InfoIconsToolTip Discription='' row={item} versionHistory={true} /></span> :''}                                                                                          
+                                                                                                {(item?.FeedBackDescription != undefined && item?.FeedBackDescription != '' && item?.FeedBackDescription?.length > 0) ? <span className='d-flex'><p className='text-ellips mb-0'>{`${item?.FeedBackDescription[0]?.Title}`}</p> <InfoIconsToolTip Discription='' row={item} versionHistory={true} /></span> :''}                                                                                          
                                                                                             </div> : key === 'PercentComplete' ? (item?.PercentComplete)*100 : key === 'BasicImageInfo' 
                                                                                             ? <div className='BasicimagesInfo_groupImages'>
                                                                                                 {item?.BasicImageInfo != undefined && JSON.parse(item?.BasicImageInfo).map((image:any,indx:any)=>{
@@ -378,7 +382,7 @@ export default function VersionHistory(props: any) {
                                                                                                     <label className='userid m-0'>  {item?.CommentsDescription[0]?.Header != '' && <b>{item?.CommentsDescription[0]?.Header}</b>}</label>
                                                                                                     <span className='d-flex' id="pageContent">
                                                                                                         <span className='text-ellips' dangerouslySetInnerHTML={{ __html: item?.CommentsDescription[0]?.Description }}></span>
-                                                                                                        <span><a className="hreflink" onClick={()=>openCommentPopup(item?.CommentsDescription)}>See More</a></span>
+                                                                                                        <span className='text-end w-25'><a className="hreflink" onClick={()=>openCommentPopup(item?.CommentsDescription)}>See More</a></span>
                                                                                                     </span>
                                                                                                    
                                                                                                 </div>                                                                                                                                                                                                                                                                          
@@ -403,7 +407,7 @@ export default function VersionHistory(props: any) {
                             })}
 
                         </tbody>
-                    </table >
+                </table >
 
             </Panel>
             <Panel

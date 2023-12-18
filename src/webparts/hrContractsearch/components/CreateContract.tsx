@@ -6,18 +6,20 @@ import {
    FaChevronRight
 } from "react-icons/fa";
 import { sp, Web } from "sp-pnp-js";
-import EditContractPopup from "./EditContractPopup";
 import * as $ from "jquery";
 import { arraysEqual, Modal, Panel, PanelType } from "office-ui-fabric-react";
 import * as Moment from "moment";
+import EditContractPopup from './EditContractPopup'
 import CreateContactComponent from "../../contactSearch/components/contact-search/popup-components/CreateContact";
-
+import Tooltip from "../../../globalComponents/Tooltip";
 let ResData:any = {}
+let ContractUser:any = ''
 const CreateContract = (props: any) => {
    let ContractListId = props.AllListId?.ContractListID
    let siteUrl = props.AllListId?.siteUrl
-   const [createPopup, setCreatePopup] = React.useState(false)
+   const [createPopup, setCreatePopup] = React.useState(true)
    const [openEditPopup, setOpenEditPopup] = React.useState(false)
+   const [disabled, setIsDisabled] = React.useState(false)
    const [contractType, setContractType] = React.useState(false)
    const [addEmp, setaddEmp] = React.useState(false)
    const [allContactData, setAllContactData] = React.useState([])
@@ -28,18 +30,20 @@ const CreateContract = (props: any) => {
       Title: "",
       contractTypeItem: "",
       checkContractitem: "",
-      selectEmp: ""
+      selectEmp: "",
+      selectEmpId:null
     });
    const [contractTypeSuffix, setcontractTypeSuffix] = React.useState("");
    React.useEffect(() => {
-      loadContactDetails()
-      LoadSmartTaxonomy();
-      AddTaskTimepopup()
+      if(props?.pageName == 'Recruiting-Tool'){
+         setIsDisabled(true)
+      }
+         loadContactDetails()
+         LoadSmartTaxonomy();
+         
    }, [])
 
-   const AddTaskTimepopup = () => {
-      setCreatePopup(true)
-   }
+  
 
    const loadContactDetails=async()=>{
       const web = new Web(siteUrl);
@@ -54,6 +58,19 @@ const CreateContract = (props: any) => {
                 }
           }
         })
+        if(props?.pageName == 'Recruiting-Tool'){
+         setPostData({ ...postData, selectEmp: props.updateData?.FullName })
+         if(postData.selectEmpId ==null && postData.selectEmpId == undefined){
+               employecopyData?.map((items:any,index:any)=>{
+                if(items.Id===props.updateData?.Id){
+
+                  setcontactDetailsId(items?.Id);
+                 
+                  
+               }
+              })
+        }
+         }
         setAllContactData(employecopyData);
    
         }) 
@@ -63,7 +80,7 @@ const CreateContract = (props: any) => {
     }
     const LoadSmartTaxonomy=async()=>{
       const web = new Web(siteUrl);
-       await web.lists.getById(props.AllListId.MAIN_SMARTMETADATA_LISTID).items.select("Id,Title,TaxType,Suffix").get()
+       await web.lists.getById(props.AllListId.HR_SMARTMETADATA_LISTID).items.select("Id,Title,TaxType,Suffix").get()
        .then((Data: any[])=>{
          console.log("smart metadata",Data);
          let smarttaxonomyArray:any=[];
@@ -85,7 +102,19 @@ const CreateContract = (props: any) => {
          }
    const closeAddTaskTimepopup = () => {
       setCreatePopup(false)
-      props.closeContracts();
+      props.callback()
+   }
+
+   const onRenderSelectEmp =()=>{
+      return (
+         <>
+            <div
+               className="subheading">
+              Select Employee
+            </div>
+            <Tooltip ComponentId="1683" />
+         </>
+      );
    }
    const onRenderCustomHeader = () => {
       return (
@@ -94,10 +123,24 @@ const CreateContract = (props: any) => {
                className="subheading">
                Create Contract
             </div>
+            <Tooltip ComponentId="1683" />
 
          </>
       );
    };
+   const onRenderCustomContractType = () => {
+      return (
+         <>
+            <div
+               className="subheading">
+               Select Contract
+            </div>
+            <Tooltip ComponentId="1683" />
+
+         </>
+      );
+   };
+   
    const openAddEmployeePopup=()=>{
       setaddEmp(true)
    }
@@ -111,7 +154,6 @@ const CreateContract = (props: any) => {
       setContractType(false)
    }
    const createEmp = async () => {
-       
       var contractNumber:any;
       var contractId:any;
       if(postData?.contractTypeItem !=undefined&& postData?.contractTypeItem != ""){
@@ -178,7 +220,7 @@ const CreateContract = (props: any) => {
                typeOfContract:postData?.contractTypeItem,
                HHHHStaffId:contactDetailsId,
                contractNumber:contractNumber,
-               ContractId:contractId
+               ContractId:contractId 
               
               }
         )
@@ -197,23 +239,23 @@ const CreateContract = (props: any) => {
         }
    
     const saveContractType=(checkitem:any,type:any)=>{
-      closeContractTypePopup();
       closeAddEmp()
-      if(postData.contractTypeItem !=undefined && postData.contractTypeItem !="" && type==="contract"){
+      if(postData.contractTypeItem !=undefined && postData.contractTypeItem  !="" && type==="contract"){
         smarttaxonomy.map ((items,index)=>{
           if(items.Title===checkitem){
-            setPostData({ ...postData, contractTypeItem: items.Id})
+            setPostData({ ...postData, checkContractitem: items.Id})
+        
             setcontractTypeSuffix(items.Suffix);
           }
        
         })
-        setPostData({ ...postData, contractTypeItem: checkitem})
-        closeContractTypePopup();
+        setPostData({ ...postData, checkContractitem: checkitem})
+        closeContractTypePopup()
        }
        else if(postData.selectEmp !=undefined && postData.selectEmp !="" && type==="contact"){
         allContactData.map((items,index)=>{
           if(items.FullName===postData?.selectEmp){
-            setcontactDetailsId(items.EmployeeID?.Id);
+            setcontactDetailsId(items?.Id);
             
          }
         })
@@ -224,8 +266,8 @@ const CreateContract = (props: any) => {
      }
      const callback=()=>{
       setOpenEditPopup(false)
-      closeAddTaskTimepopup();
-      props.callBack()
+      props.callback();
+     
      }
      const ClosePopup = React.useCallback(() => {
       setCreateContactStatus(false);
@@ -266,7 +308,7 @@ const CreateContract = (props: any) => {
                   <footer>
                      <div className="row">
                         <div className="col-sm-12 text-end mt-2">
-                           <button type="button" className="btn btn-primary ms-2" onClick={()=>setCreateContactStatus(true)}>Add New Employee</button>
+                           {disabled == false && <button type="button" className="btn btn-primary ms-2" onClick={()=>setCreateContactStatus(true)}>Add New Employee</button>}
                            <button type="button" className="btn btn-primary ms-2" onClick={()=>createEmp()}>Create</button>
                            <button type="button" className="btn btn-default ms-2" onClick={()=>closeAddTaskTimepopup()}>Cancel</button>
                         </div>
@@ -279,8 +321,9 @@ const CreateContract = (props: any) => {
 
 
          </Panel>
+
          <Panel
-            onRenderHeader={onRenderCustomHeader}
+            onRenderHeader={onRenderSelectEmp}
             type={PanelType.custom}
             customWidth={'750px'}
             isOpen={addEmp}
@@ -314,7 +357,7 @@ const CreateContract = (props: any) => {
          </Panel>
 
          <Panel
-            onRenderHeader={onRenderCustomHeader}
+            onRenderHeader={onRenderCustomContractType}
             type={PanelType.custom}
             customWidth={'500px'}
             isOpen={contractType}
@@ -344,15 +387,13 @@ const CreateContract = (props: any) => {
                         </div>
                   </footer>
                
-           
-            
-
+      
 
          </Panel>
-         {openEditPopup && <EditContractPopup props={ResData} AllListId={props.AllListId} callback={callback}></EditContractPopup>}
-         {CreateContactStatus ? <CreateContactComponent callBack={ClosePopup} data={allContactData}/> : null}
+
+         {openEditPopup && <EditContractPopup props={ResData} AllListId={props.AllListId} callback={callback} pageName={props?.pageName}></EditContractPopup>}
+         {CreateContactStatus ? <CreateContactComponent callBack={ClosePopup}data={allContactData}/> : null}
       </>
    )
 }
 export default CreateContract;
-

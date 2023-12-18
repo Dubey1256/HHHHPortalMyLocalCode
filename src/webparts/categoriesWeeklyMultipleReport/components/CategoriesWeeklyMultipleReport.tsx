@@ -94,7 +94,7 @@ export default class CategoriesWeeklyMultipleReport extends React.Component<ICat
       enddate: new Date(),
       SitesConfig: [],
       AllTimeEntry: [],
-      SelectGroupName: '',
+      SelectGroupName: [],
       opentaggedtask: false,
       openTaggedTaskArray: [],
       IsTimeEntry: false,
@@ -536,16 +536,16 @@ export default class CategoriesWeeklyMultipleReport extends React.Component<ICat
     this.setState({
       showDateTime: (
         <span className='alignCenter'>
-          <label className='ms-1'> items | Time: {this?.TotalTimeEntry} | hours ({this?.TotalTimeEntry / 8} days)</label>
+          <label className='ms-1'> items | Time: {this?.TotalTimeEntry} | hours ({(this?.TotalTimeEntry / 8).toFixed(2)} days)</label>
           <label className="mx-1">|</label>
           <label>
-            <div className="">Smart Hours: {this?.SmartTotalTimeEntry} ({this?.SmartTotalTimeEntry / 8} days)</div>
-            <div className="">Smart Hours (Roundup): {this?.RoundSmartTotalTimeEntry} ({this?.RoundSmartTotalTimeEntry / 8} days)</div>
+            <div className="">Smart Hours: {this?.SmartTotalTimeEntry} ({(this?.SmartTotalTimeEntry / 8).toFixed(2)} days)</div>
+            <div className="">Smart Hours (Roundup): {this?.RoundSmartTotalTimeEntry} ({(this?.RoundSmartTotalTimeEntry / 8).toFixed(2)} days)</div>
           </label>
           <label className="mx-1">|</label>
           <label>
-            <div className="">Adjusted Hours: {this?.AdjustedimeEntry} hours ({this?.AdjustedimeEntry / 8} days)</div>
-            <div className={this?.state?.isFocused === true ? 'NumberchangeGreen' : ''}>Adjusted Hours (Roundup): {this?.RoundAdjustedTimeTimeEntry} ({this?.RoundAdjustedTimeTimeEntry / 8} days)</div>
+            <div className="">Adjusted Hours: {this?.AdjustedimeEntry} hours ({(this?.AdjustedimeEntry / 8).toFixed(2)} days)</div>
+            <div className={this?.state?.isFocused === true ? 'NumberchangeGreen' : ''}>Adjusted Hours (Roundup): {this?.RoundAdjustedTimeTimeEntry} ({(this?.RoundAdjustedTimeTimeEntry / 8).toFixed(2)} days)</div>
           </label>
         </span>
       ),
@@ -630,7 +630,7 @@ export default class CategoriesWeeklyMultipleReport extends React.Component<ICat
       if (childItem.UserGroupId != undefined && parseInt(childItem.UserGroupId) == item.ID) {
         childItem.IsSelected = false
         item.GroupName = childItem?.UserGroup?.Title;
-        childItem.GroupName =childItem?.UserGroup?.Title;
+        childItem.GroupName = childItem?.UserGroup?.Title;
         //if (this.props.Context.pageContext.user. == childItem.AssingedToUserId)
         //childItem.IsSelected = true
         item.childs.push(childItem);
@@ -767,6 +767,7 @@ export default class CategoriesWeeklyMultipleReport extends React.Component<ICat
 
   private SelectAllGroupMember(ev: any) {
     //$scope.SelectGroupName = ''
+    let SelectedUsersAll: any = [];
     let select = ev.currentTarget.checked;
     let ImageSelectedUsers: any = [];
     if (select == true) {
@@ -808,12 +809,28 @@ export default class CategoriesWeeklyMultipleReport extends React.Component<ICat
         }
       })
     }
-    let SelectGroupName: any = '';
+    let SelectGroupName: any = [];
+    // this.state.taskUsers.forEach((item: any) => {
+    //   if (item.SelectedGroup == true)
+    //     SelectGroupName = SelectGroupName + item.GroupName + ' ,'
+    // })
+    // SelectGroupName = SelectGroupName.replace(/.$/, "");
     this.state.taskUsers.forEach((item: any) => {
-      if (item.SelectedGroup == true)
-        SelectGroupName = SelectGroupName + item.GroupName + ' ,'
+      if (item.SelectedGroup == true) {
+        SelectGroupName.push(item);
+      } else {
+        if (item.childs != undefined && item.childs.length > 0) {
+          let users = item.childs.filter((obj: any) => obj.IsSelected == true);
+          if (users?.length > 0) {
+            let UserItem: any = {};
+            UserItem["GroupName"] = item.GroupName;
+            UserItem["childs"] = users;
+            SelectGroupName.push(UserItem);
+          }
+          // })
+        }
+      }
     })
-    SelectGroupName = SelectGroupName.replace(/.$/, "");
     this.setState({
       SelectGroupName
     }, () => console.log(this.state.ImageSelectedUsers));
@@ -864,12 +881,28 @@ export default class CategoriesWeeklyMultipleReport extends React.Component<ICat
         })
       }
     })
-    let SelectGroupName: any = '';
+    let SelectGroupName: any = [];
+    // this.state.taskUsers.forEach((item: any) => {
+    //   if (item.SelectedGroup == true)
+    //     SelectGroupName = SelectGroupName + item.GroupName + ' ,'
+    // })
+    // SelectGroupName = SelectGroupName.replace(/.$/, "");
     this.state.taskUsers.forEach((item: any) => {
-      if (item.SelectedGroup == true)
-        SelectGroupName = SelectGroupName + item.GroupName + ' ,'
+      if (item.SelectedGroup == true) {
+        SelectGroupName.push(item);
+      } else {
+        if (item.childs != undefined && item.childs.length > 0) {
+          let users = item.childs.filter((obj: any) => obj.IsSelected == true);
+          if (users?.length > 0) {
+            let UserItem: any = {};
+            UserItem["GroupName"] = item.GroupName;
+            UserItem["childs"] = users;
+            SelectGroupName.push(UserItem);
+          }
+          // })
+        }
+      }
     })
-    SelectGroupName = SelectGroupName.replace(/.$/, "");
     this.setState({
       SelectGroupName
     }, () => console.log(this.state.ImageSelectedUsers));
@@ -915,12 +948,28 @@ export default class CategoriesWeeklyMultipleReport extends React.Component<ICat
         }
       }
     }
-    let SelectGroupName: any = '';
+    let SelectGroupName: any = [];
+    // this.state.taskUsers.forEach((item: any) => {
+    //   if (item.SelectedGroup == true)
+    //     SelectGroupName = SelectGroupName + item.GroupName + ' ,'
+    // })
+    // SelectGroupName = SelectGroupName.replace(/.$/, "");
     this.state.taskUsers.forEach((item: any) => {
-      if (item.SelectedGroup == true)
-        SelectGroupName = SelectGroupName + item.GroupName + ' ,'
+      if (item.SelectedGroup == true) {
+        SelectGroupName.push(item);
+      } else {
+        if (item.childs != undefined && item.childs.length > 0) {
+          let users = item.childs.filter((obj: any) => obj.IsSelected == true);
+          if (users?.length > 0) {
+            let UserItem: any = {};
+            UserItem["GroupName"] = item.GroupName;
+            UserItem["childs"] = users;
+            SelectGroupName.push(UserItem);
+          }
+          // })
+        }
+      }
     })
-    SelectGroupName = SelectGroupName.replace(/.$/, "");
     this.setState({
       SelectGroupName
     }, () => console.log(this.state.ImageSelectedUsers));
@@ -2081,16 +2130,16 @@ export default class CategoriesWeeklyMultipleReport extends React.Component<ICat
       this.setState({
         showDateTime: (
           <span className='alignCenter'>
-            <label className='ms-1'> items | Time: {this?.TotalTimeEntry} | hours ({this?.TotalTimeEntry / 8} days)</label>
+            <label className='ms-1'> items | Time: {this?.TotalTimeEntry} | hours ({(this?.TotalTimeEntry / 8).toFixed(2)} days)</label>
             <label className="mx-1">|</label>
             <label>
-              <div className="">Smart Hours: {this?.SmartTotalTimeEntry} ({this?.SmartTotalTimeEntry / 8} days)</div>
-              <div className="">Smart Hours (Roundup): {this?.RoundSmartTotalTimeEntry} ({this?.RoundSmartTotalTimeEntry / 8} days)</div>
+              <div className="">Smart Hours: {this?.SmartTotalTimeEntry} ({(this?.SmartTotalTimeEntry / 8).toFixed(2)} days)</div>
+              <div className="">Smart Hours (Roundup): {this?.RoundSmartTotalTimeEntry} ({(this?.RoundSmartTotalTimeEntry / 8).toFixed(2)} days)</div>
             </label>
             <label className="mx-1">|</label>
             <label>
-              <div className="">Adjusted Hours: {this?.AdjustedimeEntry} hours ({this?.AdjustedimeEntry / 8} days)</div>
-              <div className={this?.state?.isFocused === true ? 'NumberchangeGreen' : ''}>Adjusted Hours (Roundup): {this?.RoundAdjustedTimeTimeEntry} ({this?.RoundAdjustedTimeTimeEntry / 8} days)</div>
+              <div className="">Adjusted Hours: {this?.AdjustedimeEntry} hours ({(this?.AdjustedimeEntry / 8).toFixed(2)} days)</div>
+              <div className={this?.state?.isFocused === true ? 'NumberchangeGreen' : ''}>Adjusted Hours (Roundup): {this?.RoundAdjustedTimeTimeEntry} ({(this?.RoundAdjustedTimeTimeEntry / 8).toFixed(2)} days)</div>
             </label>
           </span>
         ),
@@ -2594,7 +2643,7 @@ export default class CategoriesWeeklyMultipleReport extends React.Component<ICat
         <div className='subheading siteColor'>
           Task Details {this?.state?.openTaggedTaskArray?.getParentRow().original?.getUserName}
         </div>
-        <Tooltip ComponentId={1746} />
+        <Tooltip ComponentId={1753} />
       </div>
     );
   };
@@ -2704,16 +2753,16 @@ export default class CategoriesWeeklyMultipleReport extends React.Component<ICat
     this.setState({
       showDateTime: (
         <span className='alignCenter'>
-          <label className='ms-1'> items | Time: {this?.TotalTimeEntry} | hours ({this?.TotalTimeEntry / 8} days)</label>
+          <label className='ms-1'> items | Time: {this?.TotalTimeEntry} | hours ({(this?.TotalTimeEntry / 8).toFixed(2)} days)</label>
           <label className="mx-1">|</label>
           <label>
-            <div className="">Smart Hours: {this?.SmartTotalTimeEntry} ({this?.SmartTotalTimeEntry / 8} days)</div>
-            <div className="">Smart Hours (Roundup): {this?.RoundSmartTotalTimeEntry} ({this?.RoundSmartTotalTimeEntry / 8} days)</div>
+            <div className="">Smart Hours: {this?.SmartTotalTimeEntry} ({(this?.SmartTotalTimeEntry / 8).toFixed(2)} days)</div>
+            <div className="">Smart Hours (Roundup): {this?.RoundSmartTotalTimeEntry} ({(this?.RoundSmartTotalTimeEntry / 8).toFixed(2)} days)</div>
           </label>
           <label className="mx-1">|</label>
           <label>
-            <div className="">Adjusted Hours: {this?.AdjustedimeEntry} hours ({this?.AdjustedimeEntry / 8} days)</div>
-            <div className={this?.state?.isFocused === true ? 'NumberchangeGreen' : ''}>Adjusted Hours (Roundup): {this?.RoundAdjustedTimeTimeEntry} ({this?.RoundAdjustedTimeTimeEntry / 8} days)</div>
+            <div className="">Adjusted Hours: {this?.AdjustedimeEntry} hours ({(this?.AdjustedimeEntry / 8).toFixed(2)} days)</div>
+            <div className={this?.state?.isFocused === true ? 'NumberchangeGreen' : ''}>Adjusted Hours (Roundup): {this?.RoundAdjustedTimeTimeEntry} ({(this?.RoundAdjustedTimeTimeEntry / 8).toFixed(2)} days)</div>
           </label>
         </span>
       ),
@@ -2853,10 +2902,10 @@ export default class CategoriesWeeklyMultipleReport extends React.Component<ICat
           }
           contentItem['Adjusted Hours (Roundup)'] = '';
           if (childItem.TotalValue != undefined) {
-            contentItem['Adjusted Hours (Roundup)'] = parseFloat(childItem.Rountfiguretime); //parseFloat(childItem.SmartHoursTime);
+            contentItem['Adjusted Hours (Roundup)'] = parseFloat(parseFloat(childItem.Rountfiguretime).toFixed(2));  //parseFloat(childItem.SmartHoursTime);
           }
           if (childItem.TotalSmartTime != undefined) {
-            contentItem['Adjusted Hours Roundup (In days)'] = (contentItem['Adjusted Hours (Roundup)'] / 8); //childItem.SmartHoursTime / 8;
+            contentItem['Adjusted Hours Roundup (In days)'] =parseFloat((childItem.Rountfiguretime / 8).toFixed(2));// parseFloat(contentItem['Adjusted Hours (Roundup)'] / 8).toFixed(2); //childItem.SmartHoursTime / 8;
           } else {
             contentItem['Adjusted Hours Roundup (In days)'] = '';
           }
@@ -2866,12 +2915,12 @@ export default class CategoriesWeeklyMultipleReport extends React.Component<ICat
 
           contentItem['Client Category'] = contentItem['Client Category'].substring(0, (contentItem['Client Category']).trim().length - 1);
           if (childItem.TotalSmartTime != undefined) {
-            contentItem['Smart Hours'] = parseFloat(childItem.TotalSmartTime);
+            contentItem['Smart Hours'] = parseFloat(parseFloat(childItem.TotalSmartTime).toFixed(2));
           } else {
             contentItem['Smart Hours'] = '';
           }
           if (childItem.TotalValue != undefined) {
-            contentItem['Smart Days'] = contentItem['Days'];
+            contentItem['Smart Days'] = parseFloat((childItem.AdjustedTime /8).toFixed(2)); 
             // contentItem['Smart Days'] = parseFloat(contentItem['Smart Days']);
           } else {
             contentItem['Smart Days'] = 0;
@@ -2901,7 +2950,7 @@ export default class CategoriesWeeklyMultipleReport extends React.Component<ICat
           //   contentItem['Adjusted Days'] = ''
           // }
           if (childItem.AdjustedTime != undefined) {
-            contentItem['Hours'] = parseFloat(childItem.AdjustedTime);// parseFloat(childItem.Rountfiguretime);
+            contentItem['Hours'] = parseFloat(parseFloat(childItem.AdjustedTime).toFixed(2));// parseFloat(childItem.Rountfiguretime);
           }
           else {
             contentItem['Hours'] = '';
@@ -2909,7 +2958,7 @@ export default class CategoriesWeeklyMultipleReport extends React.Component<ICat
 
 
           if (childItem.TotalSmartTime != undefined) {
-            contentItem['Days'] = (contentItem['Hours'] / 8);
+            contentItem['Days'] = parseFloat((contentItem['Hours'] / 8).toExponential(2));
           } else {
             contentItem['Days'] = '';
           }
@@ -2936,8 +2985,8 @@ export default class CategoriesWeeklyMultipleReport extends React.Component<ICat
           // } else {
           //   contentItem['Days'] = '';
           // }
-          contentItem['Hours Actual'] = childItem.TotalValue;
-          contentItem['Days Actual'] = childItem.TotalValue / 8;
+          contentItem['Hours Actual'] = parseFloat(parseFloat(childItem.TotalValue).toFixed(2));
+          contentItem['Days Actual'] = parseFloat((childItem.TotalValue / 8).toFixed(2));
           this.sheetsItems.push(contentItem);
         }
       }
@@ -3008,7 +3057,7 @@ export default class CategoriesWeeklyMultipleReport extends React.Component<ICat
         yearttile.SmartHoursTotal = RoundAdjustedTime;
         yearttile.Firstlevel = Firstlevel;
         if (dayroundeup != 0)
-          yearttile['Adjusted Day (Roundup)'] = parseFloat(dayroundeup);
+          yearttile['Adjusted Day (Roundup)'] = parseFloat(dayroundeup.toFixed(2));
         // yearttile.AdjustedTime="";
       }
 
@@ -3026,16 +3075,16 @@ export default class CategoriesWeeklyMultipleReport extends React.Component<ICat
     contentItemNew['Site'] = this.state.ImageSelectedUsers.length == 1 ? this.state.ImageSelectedUsers[0].Title : '';
     contentItemNew['First Level'] = '';
     contentItemNew['Hours'] = parseFloat(this.RoundAdjustedTimeTimeEntry);
-    contentItemNew['Days'] = (this.RoundAdjustedTimeTimeEntry / 8);
+    contentItemNew['Days'] = parseFloat((this.RoundAdjustedTimeTimeEntry / 8).toFixed(2));
 
     contentItemNew['Client Category'] = ''
-    contentItemNew['Smart Hours'] = parseFloat(TotalValueAll || 0);;
-    contentItemNew['Smart Days'] = (TotalValueAll / 8);
+    contentItemNew['Smart Hours'] = parseFloat((TotalValueAll || 0).toFixed(2));;;
+    contentItemNew['Smart Days'] = parseFloat((TotalValueAll / 8).toFixed(2));
     contentItemNew['Adjusted Hours (Roundup)'] = parseFloat(this.RoundAdjustedTimeTimeEntry);
 
-    contentItemNew['Adjusted Hours Roundup (In days)'] = (contentItemNew['Adjusted Hours (Roundup)'] / 8)
-    contentItemNew['Hours Actual'] = TotalValueAll;
-    contentItemNew['Days Actual'] = (TotalValueAll / 8);
+    contentItemNew['Adjusted Hours Roundup (In days)'] =  parseFloat((this.RoundAdjustedTimeTimeEntry / 8).toFixed(2));
+    contentItemNew['Hours Actual'] = parseFloat(TotalValueAll.toFixed(2));;
+    contentItemNew['Days Actual'] = parseFloat((TotalValueAll / 8).toFixed(2));;
     this.sheetsItems.push(contentItemNew);
     var contentItemNew: any = {};
     contentItemNew['User Name'] = '';
@@ -3071,13 +3120,12 @@ export default class CategoriesWeeklyMultipleReport extends React.Component<ICat
       contentItem['Adjusted Hours (Roundup)'] = '';
       if (item.AdjustedTime != undefined) {
         item.TotalValue = item.TotalValue.toFixed(2);
-        contentItem['Adjusted Hours (Roundup)'] = parseFloat(item.TotalValue);
+        contentItem['Adjusted Hours (Roundup)'] = parseFloat(parseFloat(item.TotalValue).toFixed(2));
       }
       contentItem['Adjusted Hours Roundup (In days)'] = '';
       if (item.SmartHoursTotal != undefined && item.SmartHoursTotal != undefined) {
-        contentItem['Adjusted Hours Roundup (In days)'] = item.TotalValueHours / 8;
-        contentItem['Adjusted Hours Roundup (In days)'] = contentItem['Adjusted Hours Roundup (In days)'].toFixed(2);
-        contentItem['Adjusted Hours Roundup (In days)'] = parseFloat(contentItem['Adjusted Hours Roundup (In days)']);
+        contentItem['Adjusted Hours Roundup (In days)'] =  (item.TotalValueHours / 8).toFixed(2);
+        contentItem['Adjusted Hours Roundup (In days)'] =  parseFloat(parseFloat(contentItem['Adjusted Hours Roundup (In days)']).toFixed(2));
       }
 
 
@@ -3123,18 +3171,18 @@ export default class CategoriesWeeklyMultipleReport extends React.Component<ICat
       }
       contentItem['Smart Hours'] = '';
       if (item.SmartHoursTotal != undefined && item.SmartHoursTotal != undefined) {
-        contentItem['Smart Hours'] = parseFloat(item.TotalValueHours);
+        contentItem['Smart Hours'] = parseFloat(parseFloat(item.TotalValueHours).toFixed(2));
       }
       contentItem['Smart Days'] = '';
       if (item.TotalValue != undefined) {
         let days: any = item.TotalValueHours / 8;
         days = days.toFixed(2);
-        contentItem['Smart Days'] = parseFloat(days);
+        contentItem['Smart Days'] = parseFloat(parseFloat(days).toFixed(2));
 
       }
 
       if (item.AdjustedTime != undefined) {
-        contentItem['Hours'] = parseFloat(item.SmartHoursTotal);;
+        contentItem['Hours'] = parseFloat(parseFloat(item.SmartHoursTotal).toFixed(2));;
       }
       else {
         contentItem['Hours'] = ''
@@ -3142,13 +3190,12 @@ export default class CategoriesWeeklyMultipleReport extends React.Component<ICat
 
       if (item.SmartHoursTotal != undefined && item.SmartHoursTotal != undefined) {
         let daysround: any = (item.TotalValueHours / 8);
-        daysround = daysround.toFixed(2);
-        contentItem['Days'] = (parseFloat(daysround));
+        contentItem['Days'] = parseFloat(parseFloat(daysround).toFixed(2));
       } else {
         contentItem['Days'] = '';
       }
-      contentItem['Hours Actual'] = item.TotalValue;
-      contentItem['Days Actual'] = item.TotalValueHours / 8;
+      contentItem['Hours Actual'] =  parseFloat(parseFloat(item.TotalValue).toFixed(2));
+      contentItem['Days Actual'] =  parseFloat((item.TotalValueHours / 8).toFixed(2));
       this.sheetsItems.push(contentItem);
     })
     var contentItemNew: any = {};
@@ -3195,12 +3242,12 @@ export default class CategoriesWeeklyMultipleReport extends React.Component<ICat
 
       contentItem['Adjusted Hours (Roundup)'] = '';
       if (item.AdjustedTime != undefined) {
-        contentItem['Adjusted Hours (Roundup)'] = parseFloat(item.RoundAdjustedTime != undefined ? item.RoundAdjustedTime : item.SmartHoursTotal);;
+        contentItem['Adjusted Hours (Roundup)'] = parseFloat((item.RoundAdjustedTime != undefined ? item.RoundAdjustedTime : item.SmartHoursTotal).toFixed(2));;
       }
       contentItem['Adjusted Hours Roundup (In days)'] = '';
       if (item.SmartHoursTotal != undefined && item.SmartHoursTotal != undefined) {
 
-        contentItem['Adjusted Hours Roundup (In days)'] = (contentItem['Adjusted Hours (Roundup)'] / 8); //item.SmartHoursTotal / 8;
+        contentItem['Adjusted Hours Roundup (In days)'] = parseFloat((contentItem['Adjusted Hours (Roundup)'] / 8).toFixed(2)); //item.SmartHoursTotal / 8;
 
       }
       if (item.Categories != undefined) {
@@ -3244,7 +3291,7 @@ export default class CategoriesWeeklyMultipleReport extends React.Component<ICat
         contentItem['Client Category'] = '';
       }
       if (item.SmartHoursTotal != undefined && item.SmartHoursTotal != undefined) {
-        contentItem['Smart Hours'] = parseFloat(item.TotalValue);
+        contentItem['Smart Hours'] = parseFloat(parseFloat(item.TotalValue).toFixed(2));
       } else {
         contentItem['Smart Hours'] = '';
       }
@@ -3252,26 +3299,26 @@ export default class CategoriesWeeklyMultipleReport extends React.Component<ICat
       if (item.TotalValue != undefined) {
         // let days: any = item.TimeInExcel / 8;
         // contentItem['Smart Days'] = (days);
-        contentItem['Smart Days'] = contentItem['Days'];
+        contentItem['Smart Days'] = parseFloat((item.AdjustedTime / 8).toFixed(2));
       }
       else {
         contentItem['Smart Days'] = 0;
       }
       if (item.AdjustedTime != undefined) {
-        contentItem['Hours'] = parseFloat(item.AdjustedTime);;// parseFloat(item.RoundAdjustedTime != undefined ? item.RoundAdjustedTime : item.SmartHoursTotal);;
+        contentItem['Hours'] = parseFloat(parseFloat(item.AdjustedTime).toFixed(2));;// parseFloat(item.RoundAdjustedTime != undefined ? item.RoundAdjustedTime : item.SmartHoursTotal);;
       }
       else {
         contentItem['Hours'] = ''
       }
 
       if (item.SmartHoursTotal != undefined && item.SmartHoursTotal != undefined) {
-        contentItem['Days'] = (contentItem['Hours'] / 8);
+        contentItem['Days'] = parseFloat((contentItem['Hours'] / 8).toFixed(2));
 
       } else {
         contentItem['Days'] = '';
       }
-      contentItem['Hours Actual'] = item.TotalValue;
-      contentItem['Days Actual'] = item.TimeInExcel / 8;
+      contentItem['Hours Actual'] = parseFloat(parseFloat(item.TotalValue).toFixed(2));
+      contentItem['Days Actual'] = parseFloat((item.TimeInExcel / 8).toFixed(2));
       this.sheetsItems.push(contentItem);
       this.getexportChilds(item.subRows);
 
@@ -3361,44 +3408,44 @@ export default class CategoriesWeeklyMultipleReport extends React.Component<ICat
     let checkedItems: any = [];
     let checked: any = [];
     let select = ev.currentTarget.checked;
-   
-      if (filterItem != undefined && filterItem.length > 0) {
-        filterItem.forEach((child: any) => {
-          child.isExpand = false;
-          child.checked = select;
-          if(select){
+
+    if (filterItem != undefined && filterItem.length > 0) {
+      filterItem.forEach((child: any) => {
+        child.isExpand = false;
+        child.checked = select;
+        if (select) {
           checkedItems.push(child);
-          }
-          checked.push(child.Id);
-          if (child.children != undefined && child.children.length > 0) {
-            child.children.forEach((subchild: any) => {
-              subchild.checked = select;
-              // checkedItems.push(subchild);
-              if(select){
+        }
+        checked.push(child.Id);
+        if (child.children != undefined && child.children.length > 0) {
+          child.children.forEach((subchild: any) => {
+            subchild.checked = select;
+            // checkedItems.push(subchild);
+            if (select) {
               checked.push(subchild.Id);
-              }
-              if (subchild.children != undefined && subchild.children.length > 0) {
-                subchild.children.forEach((subchild2: any) => {
-                  subchild2.checked = select;
-                  // checkedItems.push(subchild2);
-                  if(select){
+            }
+            if (subchild.children != undefined && subchild.children.length > 0) {
+              subchild.children.forEach((subchild2: any) => {
+                subchild2.checked = select;
+                // checkedItems.push(subchild2);
+                if (select) {
                   checked.push(subchild2.Id);
-                  }
-                  if (subchild2.children != undefined && subchild2.children.length > 0) {
-                    subchild2.children.forEach((subchild3: any) => {
-                      subchild3.checked = select;
-                      //   checkedItems.push(subchild3);
-                      if(select){
+                }
+                if (subchild2.children != undefined && subchild2.children.length > 0) {
+                  subchild2.children.forEach((subchild3: any) => {
+                    subchild3.checked = select;
+                    //   checkedItems.push(subchild3);
+                    if (select) {
                       checked.push(subchild3.Id);
-                      }
-                    });
-                  }
-                });
-              }
-            });
-          }
-        });
-      }
+                    }
+                  });
+                }
+              });
+            }
+          });
+        }
+      });
+    }
     this.setState({
       checked,
       checkedAll: select,
@@ -3407,21 +3454,21 @@ export default class CategoriesWeeklyMultipleReport extends React.Component<ICat
     });
   }
   private getAllSubChildenCount(item: any) {
-    let count = 1;
+    let count = 0;
     if (item.children != undefined && item?.checked === true && item.children.length > 0) {
-      count += item?.children?.length;
+      count += item?.children?.length +1;
     }
     item?.children?.forEach((subchild: any) => {
       if (subchild.children != undefined && subchild?.checked === true && subchild.children.length > 0) {
-        count += subchild?.children?.length;
+        count += subchild?.children?.length +1;
       }
       subchild?.children?.forEach((subchild2: any) => {
         if (subchild2.children != undefined && subchild2?.checked === true && subchild2.children.length > 0) {
-          count += subchild2?.children?.length;
+          count += subchild2?.children?.length+1;
         }
         subchild2?.children?.forEach((subchild3: any) => {
-          if (subchild3?.checked === true && subchild3?.children?.length >0) {
-            count += subchild3?.children?.length;
+          if (subchild3?.checked === true && subchild3?.children?.length > 0) {
+            count += subchild3?.children?.length+1;
           }
         });
       });
@@ -3488,22 +3535,32 @@ export default class CategoriesWeeklyMultipleReport extends React.Component<ICat
                 <details className='p-0 m-0' open>
                   <summary>
                     <div className='alignCenter'>
-                      <a className="hreflink pull-left mr-5">Team Members  <span className='fw-normal me-1'>
-                        {this.state.SelectGroupName}
-                      </span> </a>
-                      {this.state.ImageSelectedUsers.length <= 3 ? (
-                        this.state.ImageSelectedUsers.map(function (obj: any) {
-                          return (<span className="marginR41">
-                            <img onClick={(e) => this.SelectUserImage(e, obj)} title={obj?.AssingedToUserTitle}
-                              className="AssignUserPhoto mb-0"
-                              src={obj.Item_x0020_Cover.Url}
-                            ></img>
+                      <a className="hreflink pull-left mr-5">Team Members </a>
+                      {this?.state?.taskUsers != null && this?.state?.SelectGroupName.length > 0 && this?.state?.SelectGroupName.map((user: any, i: number) => {
+                        return <div className="top-assign  mt-1">
+                          <span className='fw-normal me-1'>
+                            {user.GroupName} :
                           </span>
-                          )
-                        })) : (
-                        this.state.ImageSelectedUsers.length > 3 && <span>({this.state.ImageSelectedUsers.length})</span>)
+                          {user?.childs?.length <= 3 ? (
+                            user?.childs?.map(function (obj: any) {
+                              return (<span className="marginR41">
+                                <img onClick={(e) => this.SelectUserImage(e, obj)} title={obj?.AssingedToUserTitle}
+                                  className="AssignUserPhoto mb-0"
+                                  src={obj.Item_x0020_Cover.Url}
+                                ></img>
+                              </span>
+                              )
+                            })) : (
+                            user?.childs.length > 3 && <span>({user.childs.length})</span>)
 
-                      }
+                          }
+                          {(i!== this?.state?.SelectGroupName?.length -1) &&
+
+                            <span className='fw-normal mx-1'> |</span>
+                          }
+
+                        </div>
+                      })}
                       <span className='alignCenter ml-auto'>
                         <input type="checkbox" className="form-check-input m-0" onClick={(e) => this.SelectAllGroupMember(e)} />
                         <label className='ms-1 f-14'>Select All </label>

@@ -106,6 +106,8 @@ const AncTool = (props: any) => {
         siteName = params.get("Site");
         if ((siteName == undefined || siteName == '' || siteName?.length == 0) && props?.listName == "Master Tasks") {
             siteName = 'Portfolios'
+            props.item.TaskId =  props?.item?.PortfolioStructureID
+            setItem(props?.item)
         }
         if (siteName?.length > 0) {
             if (siteName === "Offshore Tasks") {
@@ -242,14 +244,15 @@ const AncTool = (props: any) => {
                 }
 
 
-                if (file[siteName] != undefined && file[siteName].length > 0 && file[siteName].some((task: any) => task.Id == props?.item?.Id)) {
-                    alreadyTaggedFiles.push(file);
-                }
+               
                 if (file.FileSystemObjectType == 1) {
                     file.isExpanded = false;
                     file.EncodedAbsUrl = file.EncodedAbsUrl.replaceAll('%20', ' ');
                     file.parentFolderUrl = rootSiteName + file.FileDirRef;
                     folders.push(file);
+                }
+                if (file[siteName] != undefined && file[siteName].length > 0 && file[siteName].some((task: any) => task.Id == props?.item?.Id)) {
+                    alreadyTaggedFiles.push(file);
                 }
             })
             backupExistingFiles = newFilesArr;
@@ -518,7 +521,7 @@ const AncTool = (props: any) => {
                                                     link: `${rootSiteName}${selectedPath.displayPath}/${fileName}?web=1`,
                                                     size: fileSize
                                                 }
-                                                taggedDocument.link = file?.EncodedAbsUrl;
+                                                taggedDocument.link = `${file?.EncodedAbsUrl}?web=1`;
                                                 // Update the document file here
                                                 let postData = {
                                                     [siteColName]: { "results": resultArray },
@@ -576,7 +579,7 @@ const AncTool = (props: any) => {
                                                         link: `${rootSiteName}${selectedPath.displayPath}/${fileName}?web=1`,
                                                         size: fileSize
                                                     }
-                                                    taggedDocument.link = file?.EncodedAbsUrl;
+                                                    taggedDocument.link = `${file?.EncodedAbsUrl}?web=1`;
                                                     // Update the document file here
                                                     let postData = {
                                                         [siteColName]: { "results": resultArray },
@@ -660,8 +663,10 @@ const AncTool = (props: any) => {
             let siteColName = `${siteName}Id`
             // Update the document file here
             let PostData = {
-                [siteColName]: { "results": resultArray },
-                PortfoliosId: { "results": file?.PortfoliosId != undefined ? file?.PortfoliosId : [] }
+                [siteColName]: { "results": resultArray }
+            }
+            if(siteColName!="PortfoliosId"){
+                PostData.PortfoliosId = { "results": file?.PortfoliosId != undefined ? file?.PortfoliosId : [] };
             }
             let web = new Web(props?.AllListId?.siteUrl);
             await web.lists.getByTitle('Documents').items.getById(file.Id)
@@ -754,7 +759,7 @@ const AncTool = (props: any) => {
                                     let resultArray: any = [];
                                     resultArray.push(props?.item?.Id);
                                     let siteColName = `${siteName}Id`;
-                                    taggedDocument.link = file.EncodedAbsUrl;
+                                    taggedDocument.link = `${file?.EncodedAbsUrl}?web=1`;
                                     // Update the document file here
                                     let postData = {
                                         [siteColName]: { "results": resultArray },
@@ -1066,7 +1071,7 @@ const AncTool = (props: any) => {
                                     let resultArray: any = [];
                                     resultArray.push(props?.item?.Id);
                                     let siteColName = `${siteName}Id`;
-                                    taggedDocument.link = file.EncodedAbsUrl;
+                                    taggedDocument.link = `${file?.EncodedAbsUrl}?web=1`;
                                     // Update the document file here
                                     let postData = {
                                         [siteColName]: { "results": resultArray },
@@ -1267,7 +1272,7 @@ const AncTool = (props: any) => {
                                                                                 <tr>
                                                                                     <td><input type="checkbox" className='form-check-input hreflink' checked={AllReadytagged?.some((doc: any) => file.Id == doc.Id)} onClick={() => { tagSelectedDoc(file) }} /></td>
                                                                                     <td><span className={`alignIcon  svg__iconbox svg__icon--${file?.docType}`} title={file?.File_x0020_Type}></span></td>
-                                                                                    <td><a href={file?.EncodedAbsUrl} target="_blank" data-interception="off" className='hreflink'>{file?.Title}</a></td>
+                                                                                    <td><a href={`${file?.EncodedAbsUrl}?web=1`} target="_blank" data-interception="off" className='hreflink'>{file?.Title}</a></td>
                                                                                     <td style={{ textAlign: 'center' }}>{file?.ItemRank}</td>
                                                                                 </tr>
                                                                             )
@@ -1351,7 +1356,7 @@ const AncTool = (props: any) => {
                                                                     return (
                                                                         <tr>
                                                                             <td><span className={`alignIcon  svg__iconbox svg__icon--${file?.docType}`} title={file?.docType}></span></td>
-                                                                            <td><a href={file?.EncodedAbsUrl} target="_blank" data-interception="off" className='hreflink'>{file?.Title}</a></td>
+                                                                            <td><a href={`${file?.EncodedAbsUrl}?web=1`} target="_blank" data-interception="off" className='hreflink'>{file?.Title}</a></td>
                                                                             <td>{file?.ItemRank}</td>
                                                                             <td> <span
                                                                                 style={{ marginLeft: '6px' }}
@@ -1564,7 +1569,7 @@ const AncTool = (props: any) => {
                     </div>
                 </div> : ''
             }
-            {remark && <SmartInformation Id={props?.item?.Id}
+        {remark && <SmartInformation Id={props?.item?.Id}
                 AllListId={props.AllListId}
                 Context={props?.Context}
                 taskTitle={props?.item?.Title}

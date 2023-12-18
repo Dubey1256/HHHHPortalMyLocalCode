@@ -521,13 +521,13 @@ const TaskDashboard = (props: any) => {
                                         if (isImmediate && task?.PercentComplete < 80) {
                                             AllImmediates.push(task)
                                         }
-                                        if (isEmailNotification) {
+                                        if (isEmailNotification && task?.PercentComplete < 80) {
                                             AllEmails.push(task)
                                         }
                                         if (task?.ClientActivityJson != undefined) {
                                             SharewebTask.push(task)
                                         }
-                                        if (parseInt(task.PriorityRank) >= 8 && parseInt(task.PriorityRank) <= 10) {
+                                        if (parseInt(task.PriorityRank) >= 8 && parseInt(task.PriorityRank) <= 10 && task?.PercentComplete < 80) {
                                             AllPriority.push(task);
                                         }
                                         AllSiteTasks.push(task)
