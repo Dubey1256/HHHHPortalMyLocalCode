@@ -1,5 +1,5 @@
 import * as React from 'react';
-import styles from './RecruitmentLandingPage.module.scss';
+// import styles from './RecruitmentLandingPage.module.scss';
 import { IRecruitmentLandingPageProps } from './IRecruitmentLandingPageProps';
 import { escape } from '@microsoft/sp-lodash-subset';
 import LandingPage from './LandingPage';
