@@ -197,6 +197,8 @@ const AddProject = (props: any) => {
             if (TempArray != undefined && TempArray.length > 0) {
                 setProjectData(TempArray);
                 setSearchedProjectKey(SearchedKeyWord);
+            }else{
+                setProjectData([]);
             }
         } else {
             setProjectData([]);

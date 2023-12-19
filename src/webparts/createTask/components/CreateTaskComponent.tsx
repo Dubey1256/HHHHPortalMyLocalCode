@@ -558,9 +558,9 @@ function CreateTaskComponent(props: any) {
             MetaData = await web.lists
                 .getById(ContextValue.SmartMetadataListID)
                 .items
-                .select("Id,Title,listId,siteUrl,siteName,Item_x005F_x0020_Cover,ParentID,Parent/Id,Parent/Title,EncodedAbsUrl,IsVisible,Created,Item_x0020_Cover,Modified,Description1,SortOrder,Selectable,TaxType,Created,Modified,Author/Name,Author/Title,Editor/Name,Editor/Title,AlternativeTitle")
+                .select("Id,Title,listId,siteUrl,siteName,IsSendAttentionEmail/Id,Item_x005F_x0020_Cover,ParentID,Parent/Id,Parent/Title,EncodedAbsUrl,IsVisible,Created,Item_x0020_Cover,Modified,Description1,SortOrder,Selectable,TaxType,Created,Modified,Author/Name,Author/Title,Editor/Name,Editor/Title,AlternativeTitle")
                 .top(4999)
-                .expand('Author,Editor,Parent')
+                .expand('Author,Editor,Parent,IsSendAttentionEmail')
                 .get();
             AllMetadata = MetaData;
             AllMetadata?.map((metadata: any) => {
@@ -982,7 +982,40 @@ function CreateTaskComponent(props: any) {
                         data.data.SiteIcon = selectedSite?.Item_x005F_x0020_Cover?.Url;
                         createdTask.SiteIcon = selectedSite?.Item_x005F_x0020_Cover?.Url;
                         if (UserEmailNotify) {
-                            EmailNotificationOnTeams(data.data.siteUrl, data.data.Id, data.data.Title, save.siteType);
+
+                            if (UserEmailNotify) {
+                             
+                                    let txtComment = `You have been tagged as Attention in the below task by ${loggedInUser?.Title}`;
+                                    let TeamMsg =
+                                        txtComment +
+                                        `</br> <a href=${selectedSite?.siteUrl?.Url}>${CreatedTaskID}-${newTitle}</a>`;
+                                   
+                                        let sendUserEmail: any = [];
+                                        TeamMessagearray?.map((userDtl: any) => {
+                                            taskUsers?.map((allUserItem: any) => {
+                                                if (userDtl?.IsSendAttentionEmail?.Id == allUserItem.AssingedToUserId) {
+                                                    sendUserEmail.push(allUserItem.Email);
+                                                }
+                                            });
+                                        });
+                                        if (sendUserEmail?.length > 0) {
+                                            await globalCommon.SendTeamMessage(
+                                                sendUserEmail,
+                                                TeamMsg,
+                                                props.SelectedProp.Context
+                                            );
+                                        }
+                                    
+                              
+                              
+                            }
+                              
+
+ 
+
+
+
+                            // EmailNotificationOnTeams(data.data.siteUrl, data.data.Id, data.data.Title, save.siteType);
                         }
                         if (props?.projectId != undefined) {
                             EditPopup(data?.data)
@@ -1197,8 +1230,9 @@ function CreateTaskComponent(props: any) {
     }
 
     const selectSubTaskCategory = (title: any, Id: any, item: any) => {
-        if (item?.IsSendAttentionEmail != undefined) {
-            TeamMessagearray.push(item.IsSendAttentionEmail);
+        if (item?.Parent.Title == "Attention") {
+            TeamMessagearray.push(item);
+            setUserEmailNotify(true)
         }
         if (loggedInUser?.IsApprovalMail?.toLowerCase() == 'approve all but selected items' || loggedInUser?.IsApprovalMail?.toLowerCase() == 'approve selected' && !IsapprovalTask) {
             try {
@@ -1588,7 +1622,7 @@ function CreateTaskComponent(props: any) {
 
     const changeTitle = (e: any) => {
         if (e.target.value.length > 56) {
-            alert("Task Title is too long. Please choose a shorter name and enter the details into the task description.")
+            alert("Task Title is too long. Please chose a shorter name and enter the details into the task description.")
         } else {
             setSave(prevSave => ({
                 ...prevSave,
@@ -1685,34 +1719,34 @@ function CreateTaskComponent(props: any) {
 
                         </ul>
                         <div className="border border-top-0 clearfix p-2 tab-content " id="myTabContent">
-                            <div className="tab-pane Alltable mx-height p-0 show active" id="URLTasks" role="tabpanel" aria-labelledby="URLTasks">
+                            <div className="tab-pane Alltable p-0 show active"  style={{maxHeight:"300px",overflow:'hidden'}} id="URLTasks" role="tabpanel" aria-labelledby="URLTasks">
                                 {TaskUrlRelevantTask?.length > 0 ?
                                     <>
                                         <div className={TaskUrlRelevantTask?.length > 0 ? 'fxhg' : ''}>
-                                            <GlobalCommanTable columns={column2} data={TaskUrlRelevantTask} callBackData={callBackData} />
+                                            <GlobalCommanTable wrapperHeight="100%" columns={column2} data={TaskUrlRelevantTask} callBackData={callBackData} />
                                         </div>
                                     </> : <div className='text-center full-width'>
                                         <span>No Tasks Available</span>
                                     </div>
                                 }
                             </div>
-                            <div className="tab-pane Alltable p-0 mx-height" id="PageTasks" role="tabpanel" aria-labelledby="PageTasks">
+                            <div className="tab-pane Alltable p-0 " style={{maxHeight:"300px",overflow:'hidden'}} id="PageTasks" role="tabpanel" aria-labelledby="PageTasks">
                                 {PageRelevantTask?.length > 0 ?
                                     <>
                                         <div className={PageRelevantTask?.length > 0 ? 'fxhg' : ''}>
-                                            <GlobalCommanTable columns={column2} data={PageRelevantTask} callBackData={callBackData} />
+                                            <GlobalCommanTable wrapperHeight="100%" columns={column2} data={PageRelevantTask} callBackData={callBackData} />
                                         </div>
                                     </> : <div className='text-center full-width'>
                                         <span>No Tasks Available</span>
                                     </div>
                                 }
                             </div>
-                            <div className="tab-pane Alltable mx-height p-0" id="ComponentTasks" role="tabpanel" aria-labelledby="ComponentTasks">
+                            <div className="tab-pane Alltable p-0" style={{maxHeight:"300px",overflow:'hidden'}} id="ComponentTasks" role="tabpanel" aria-labelledby="ComponentTasks">
 
                                 {ComponentRelevantTask?.length > 0 ?
                                     <>
                                         <div className={ComponentRelevantTask?.length > 0 ? 'fxhg' : ''}>
-                                            <GlobalCommanTable columns={column2} data={ComponentRelevantTask} callBackData={callBackData} />
+                                            <GlobalCommanTable wrapperHeight="100%" columns={column2} data={ComponentRelevantTask} callBackData={callBackData} />
                                         </div>
                                     </> : <div className='text-center full-width'>
                                         <span>No Tasks Available</span>

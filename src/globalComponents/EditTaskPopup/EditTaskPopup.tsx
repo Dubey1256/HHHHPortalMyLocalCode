@@ -72,7 +72,7 @@ var TimeSheetlistId = "";
 let siteConfig: any = [];
 let siteConfigs: any = [];
 var TimeSheets: any = [];
-let tempArrayJsonData: any = [];
+
 var MigrationListId = "";
 var newGeneratedId: any = "";
 var siteUrl = "";
@@ -1613,10 +1613,10 @@ const EditTaskPopup = (Items: any) => {
                         }
                     }
                     if (Type == "Single") {
-                        if(DataItem[0]?.Item_x0020_Type=="Project"||DataItem[0]?.Item_x0020_Type=="Sprint"){
+                        if (DataItem[0]?.Item_x0020_Type == "Project" || DataItem[0]?.Item_x0020_Type == "Sprint") {
                             setSelectedProject(DataItem);
                             setProjectManagementPopup(false)
-                        }else{
+                        } else {
                             setTaggedPortfolioData(DataItem);
                             let ComponentType: any = DataItem[0].PortfolioType.Title;
                             getLookUpColumnListId(
@@ -1648,7 +1648,7 @@ const EditTaskPopup = (Items: any) => {
 
     //  ###################  Smart Category slection Common Functions with Validations ##################
 
- 
+
     const setSelectedCategoryData = (selectCategoryData: any, usedFor: any) => {
         setIsComponentPicker(false);
         let uniqueIds: any = {};
@@ -4145,6 +4145,7 @@ const EditTaskPopup = (Items: any) => {
             });
     };
     const CopyImageData = async (NewList: any, NewItem: any) => {
+
         var attachmentFileName: any = "";
         let web = new Web(siteUrls);
         const response = await web.lists
@@ -4160,6 +4161,7 @@ const EditTaskPopup = (Items: any) => {
         NewList: any,
         NewItem: any
     ) => {
+        let tempArrayJsonData: any = [];
         var count = 0;
         let currentUserDataObject: any;
         if (currentUserBackupArray != null && currentUserBackupArray.length > 0) {
@@ -4244,12 +4246,12 @@ const EditTaskPopup = (Items: any) => {
             await Promise.all(fetchPromises);
 
             // Call another function after all promises are resolved
-            await SaveJSONData(NewList, NewItem);
+            await SaveJSONData(NewList, NewItem, tempArrayJsonData);
         } catch (error) {
             console.error("Error updating client category:", error);
         }
     };
-    const SaveJSONData = async (NewList: any, NewItem: any) => {
+    const SaveJSONData = async (NewList: any, NewItem: any, tempArrayJsonData: any) => {
         let web = new Web(siteUrls);
         var Data = await web.lists
             .getByTitle(NewList)
@@ -4308,7 +4310,7 @@ const EditTaskPopup = (Items: any) => {
     };
 
     // ************** this is for Project Management Section Functions ************
-    
+
     const autoSuggestionsForProject = (e: any) => {
         let searchedKey: any = e.target.value;
         setProjectSearchKey(e.target.value);
@@ -4676,20 +4678,7 @@ const EditTaskPopup = (Items: any) => {
             </div>
         );
     };
-    const onRenderCustomProjectManagementHeader = () => {
-        return (
-            <div
-                className={
-                    ServicesTaskCheck
-                        ? "d-flex full-width pb-1 serviepannelgreena"
-                        : "d-flex full-width pb-1"
-                }
-            >
-                <div className="subheading siteColor">Select Project</div>
-                <Tooltip ComponentId="1608" isServiceTask={ServicesTaskCheck} />
-            </div>
-        );
-    };
+
     const onRenderCustomApproverHeader = () => {
         return (
             <div
@@ -4974,7 +4963,7 @@ const EditTaskPopup = (Items: any) => {
         );
     };
 
-   
+
 
     return (
         <div
@@ -5758,6 +5747,9 @@ const EditTaskPopup = (Items: any) => {
                                                                 {ApproverHistoryData != undefined &&
                                                                     ApproverHistoryData.length > 1 ? (
                                                                     <div className="border p-1">
+                                                                        <div className="siteBdrBottom">
+                                                                            <p className="mb-1">Prev-Approver</p>
+                                                                        </div>
                                                                         {ApproverHistoryData.map(
                                                                             (HistoryData: any, index: any) => {
                                                                                 if (
@@ -5773,8 +5765,10 @@ const EditTaskPopup = (Items: any) => {
                                                                                                     : "alignCenter  border-bottom full-width justify-content-between py-1"
                                                                                             }
                                                                                         >
-                                                                                            <div className="alignCenter">
-                                                                                                Prev-Approver |
+                                                                                            <div>
+                                                                                                {HistoryData.ApprovedDate}
+                                                                                            </div>
+                                                                                            <div>
                                                                                                 <img
                                                                                                     title={
                                                                                                         HistoryData.ApproverName
@@ -5788,12 +5782,9 @@ const EditTaskPopup = (Items: any) => {
                                                                                                     }
                                                                                                 />
                                                                                             </div>
-                                                                                            <div>
-                                                                                                <span>
-                                                                                                    {HistoryData.ApprovedDate}
-                                                                                                </span>
-                                                                                            </div>
+
                                                                                         </div>
+
                                                                                     );
                                                                                 }
                                                                             }
@@ -7858,6 +7849,9 @@ const EditTaskPopup = (Items: any) => {
                                                                             {ApproverHistoryData != undefined &&
                                                                                 ApproverHistoryData.length > 1 ? (
                                                                                 <div className="border p-1">
+                                                                                    <div className="siteBdrBottom">
+                                                                                        <p className="mb-1">Prev-Approver</p>
+                                                                                    </div>
                                                                                     {ApproverHistoryData.map(
                                                                                         (HistoryData: any, index: any) => {
                                                                                             if (
@@ -7868,36 +7862,31 @@ const EditTaskPopup = (Items: any) => {
                                                                                                     <div
                                                                                                         className={
                                                                                                             index + 1 ==
-                                                                                                                ApproverHistoryData.length -
-                                                                                                                1
+                                                                                                                ApproverHistoryData.length - 1
                                                                                                                 ? "alignCenter full-width justify-content-between py-1"
-                                                                                                                : "alignCenter border-bottom full-width justify-content-between py-1"
+                                                                                                                : "alignCenter  border-bottom full-width justify-content-between py-1"
                                                                                                         }
                                                                                                     >
-                                                                                                        <div className="alignCenter">
-                                                                                                            Prev-Approver |
+                                                                                                        <div>
+                                                                                                            {HistoryData.ApprovedDate}
+                                                                                                        </div>
+                                                                                                        <div>
                                                                                                             <img
                                                                                                                 title={
                                                                                                                     HistoryData.ApproverName
                                                                                                                 }
                                                                                                                 className="workmember ms-1"
                                                                                                                 src={
-                                                                                                                    HistoryData
-                                                                                                                        ?.ApproverImage
+                                                                                                                    HistoryData?.ApproverImage
                                                                                                                         ?.length > 0
                                                                                                                         ? HistoryData?.ApproverImage
                                                                                                                         : ""
                                                                                                                 }
                                                                                                             />
                                                                                                         </div>
-                                                                                                        <div>
-                                                                                                            <span>
-                                                                                                                {
-                                                                                                                    HistoryData.ApprovedDate
-                                                                                                                }
-                                                                                                            </span>
-                                                                                                        </div>
+
                                                                                                     </div>
+
                                                                                                 );
                                                                                             }
                                                                                         }

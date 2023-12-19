@@ -25,8 +25,8 @@ export default function VersionHistory(props: any) {
     //------------------------jquery call--------------------------------
     const GetItemsVersionHistory = async () => {
         var versionData: any = []
-        var siteTypeUrl = props.siteUrls;
         let webs = new Web(props.siteUrls);
+        var siteTypeUrl = props.siteUrls;
         let listId = props.listId
         var itemId = props.taskId;
         let tempEstimatedArrayData: any;        
@@ -43,7 +43,7 @@ export default function VersionHistory(props: any) {
             });
             console.log(employeesWithoutLastName)
             employeesWithoutLastName?.forEach((val: any) => { 
-                if(val.FeedBack !== undefined && val.FeedBack !== null){
+                if(val.FeedBack !== undefined && val.FeedBack !== null &&  val.FeedBack !== '[]'){
                     val.FeedBackDescription = JSON.parse(val?.FeedBack)[0].FeedBackDescriptions    
                     if(val.FeedBackDescription !== undefined){
                         val?.FeedBackDescription?.map((feedback:any)=>{
@@ -52,7 +52,7 @@ export default function VersionHistory(props: any) {
                         }) 
                     }                  
                 }                                   
-                if(val.EstimatedTimeDescription !== undefined && val.EstimatedTimeDescription !== null){
+                if(val.EstimatedTimeDescription !== undefined && val.EstimatedTimeDescription !== null && val.EstimatedTimeDescription !== '[]'){
                     tempEstimatedArrayData = JSON.parse(val?.EstimatedTimeDescription) ;
                     let TotalEstimatedTimecopy:any = 0;                                             
                     if (tempEstimatedArrayData?.length > 0) {
@@ -311,7 +311,7 @@ export default function VersionHistory(props: any) {
                                                                                             ? renderObject(item[key])
                                                                                             : key === 'FeedBack' 
                                                                                             ? <div className='feedbackItm-text'>
-                                                                                                {item?.FeedBackDescription?.length > 0 ? <span className='d-flex'><p className='text-ellips mb-0'>{`${item?.FeedBackDescription[0]?.Title}`}</p> <InfoIconsToolTip Discription='' row={item} versionHistory={true} /></span> :''}                                                                                          
+                                                                                                {(item?.FeedBackDescription != undefined && item?.FeedBackDescription != '' && item?.FeedBackDescription?.length > 0) ? <span className='d-flex'><p className='text-ellips mb-0'>{`${item?.FeedBackDescription[0]?.Title}`}</p> <InfoIconsToolTip Discription='' row={item} versionHistory={true} /></span> :''}                                                                                          
                                                                                             </div> : key === 'PercentComplete' ? (item?.PercentComplete)*100 : key === 'BasicImageInfo' 
                                                                                             ? <div className='BasicimagesInfo_groupImages'>
                                                                                                 {item?.BasicImageInfo != undefined && JSON.parse(item?.BasicImageInfo).map((image:any,indx:any)=>{
@@ -459,6 +459,7 @@ export default function VersionHistory(props: any) {
                 </div>
 
             </Panel>
+
         </>
     );
 }

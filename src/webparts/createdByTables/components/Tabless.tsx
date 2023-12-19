@@ -292,10 +292,35 @@ const Tabless = (props: any) => {
             }
           });
 
+            
+         // Ensure dataItem.AllTeamName is initialized as an empty string
+dataItem.AllTeamName = dataItem.AllTeamName || '';
+
+const processTeamMembers = (teamMembers:any) => {
+  if (teamMembers != undefined && teamMembers != null && teamMembers?.length > 0) {
+    teamMembers.forEach((items:any) => {
+      dataItem.AllTeamName += items.Title + ";";
+    });
+  }
+};
+
+processTeamMembers(dataItem.Responsible_x0020_Team);
+processTeamMembers(dataItem.Team_x0020_Members);
+processTeamMembers(dataItem.AssignedTo);
+
+// Use join to concatenate array elements with a separator
+dataItem.AllTeamName = dataItem.AllTeamName.split(';').filter(Boolean).join(';');
+
+          
+       
           const matchingTask = masterTasks?.find((task: any) => dataItem?.Portfolio?.Id === task?.Id);
           if (matchingTask) {
             dataItem.PortfolioType = matchingTask.PortfolioType;
           }
+
+
+          let cleanedString = dataItem?.AllTeamName?.replace(/\bundefined\b/g, '');
+
 
            allData.push({
             idType: dataItem.idType,
@@ -320,6 +345,7 @@ const Tabless = (props: any) => {
             Editorss: dataItem.Editor.Title,
             Team_x0020_Members: dataItem.Team_x0020_Members,
             Responsible_x0020_Team: dataItem.Responsible_x0020_Team,
+            AllTeamName : cleanedString,
             ResponsibleTeam: dataItem.ResponsibleTeam,
             TeamMembers: dataItem.TeamMembers,
             AssignedTo: dataItem.AssignedTo,
@@ -546,8 +572,8 @@ const Tabless = (props: any) => {
         resetColumnFilters: false,
         size: 120,
       },
-      {
-        accessorFn: (row: any) => row?.TeamMembersSearch,
+      { 
+        accessorFn: (row: any) => row?.AllTeamName,
         cell: ({ row, getValue }: any) => (
           <span>
             <ShowTaskTeamMembers key={row?.original?.Id} props={row?.original} TaskUsers={taskUser} />
