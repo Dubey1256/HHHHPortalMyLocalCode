@@ -2193,7 +2193,7 @@ private async updateProjectComponentServices(dataUpdate:any) {
                                 }
                               </div>
                             </div>
-                            <div className="boldClable border bdrBD ps-2 py-1">
+                            <div className="boldClable border border-top-0 ps-2 py-1">
                               <span>Total Estimated Time : </span><span className="mx-1">{this.state.Result?.TotalEstimatedTime > 1 ? this.state.Result?.TotalEstimatedTime + " hours" : this.state.Result?.TotalEstimatedTime + " hour"} </span>
                             </div>
                           </div>
@@ -2313,7 +2313,7 @@ private async updateProjectComponentServices(dataUpdate:any) {
                                               }
                                             </div>
                                             <div className='m-0'>
-                                              <span className="d-block">
+                                              <span className="siteColor">
                                                 <a style={{ cursor: 'pointer' }} onClick={(e) => this.showhideCommentBox(i)}>Add Comment</a>
                                               </span>
                                             </div>
@@ -2478,7 +2478,7 @@ private async updateProjectComponentServices(dataUpdate:any) {
                                               </div>
                                               <div className='m-0'>
                                                 <a className="d-block text-end">
-                                                  <a style={{ cursor: 'pointer' }}
+                                                  <a className='siteColor' style={{ cursor: 'pointer' }}
                                                     onClick={(e) => this.showhideCommentBoxOfSubText(j, i)}
                                                   >Add Comment</a>
                                                 </a>
@@ -2714,7 +2714,7 @@ private async updateProjectComponentServices(dataUpdate:any) {
 
                   </section>
                   <div className="row">
-                    <div className='p-0'> {this.state.Result.Id != undefined && <KeyDocuments ref={this?.relevantDocRef} AllListId={AllListId} Context={this.props?.Context} siteUrl={this.props.siteUrl} DocumentsListID={this.props?.DocumentsListID} ID={this.state?.itemID} siteName={this.state.listName} folderName={this.state.Result['Title']} keyDoc={true}></KeyDocuments>}</div>
+                    <div className='p-0'> {this.state.Result.Id != undefined && <KeyDocuments ref={this?.relevantDocRef} AllListId={AllListId} Context={this.props?.Context} siteUrl={this.props.siteUrl} user={this?.taskUsers}  DocumentsListID={this.props?.DocumentsListID} ID={this.state?.itemID} siteName={this.state.listName} folderName={this.state.Result['Title']} keyDoc={true}></KeyDocuments>}</div>
                   </div>
                 </div>
                 <div className="col-3">

@@ -8,45 +8,28 @@ import {
 import { BaseClientSideWebPart } from '@microsoft/sp-webpart-base';
 import { IReadonlyTheme } from '@microsoft/sp-component-base';
 
-import * as strings from 'EmployeProfileWebPartStrings';
-import EmployeProfile from './components/EmployeProfile';
-import { IEmployeProfileProps } from './components/IEmployeProfileProps';
+import * as strings from 'RecruitmentLandingPageWebPartStrings';
+import RecruitmentLandingPage from './components/RecruitmentLandingPage';
+import { IRecruitmentLandingPageProps } from './components/IRecruitmentLandingPageProps';
 
-export interface IEmployeProfileWebPartProps {
+export interface IRecruitmentLandingPageWebPartProps {
   description: string;
-  HHHHContactListId:'edc879b9-50d2-4144-8950-5110cacc267a',
-  HHHHInstitutionListId:'9f13fd36-456a-42bc-a5e0-cd954d97fc5f',
-  MAIN_SMARTMETADATA_LISTID:'D1C6D7C3-F36E-4F95-8715-8DA9F33622E7',
-  MAIN_HR_LISTID:'6DD8038B-40D2-4412-B28D-1C86528C7842',
-  GMBH_CONTACT_SEARCH_LISTID:'6CE99A82-F577-4467-9CDA-613FADA2296F',
-  HR_EMPLOYEE_DETAILS_LIST_ID:'a7b80424-e5e1-47c6-80a1-0ee44a70f92c',
-  ContractListID:'c0106d10-a71c-4153-b204-7cf7b45a68b8',
-  HR_SMARTMETADATA_LISTID:'63CAE346-409E-4457-B996-85A788074BCE'
 }
 
-export default class EmployeProfileWebPart extends BaseClientSideWebPart<IEmployeProfileWebPartProps> {
+export default class RecruitmentLandingPageWebPart extends BaseClientSideWebPart<IRecruitmentLandingPageWebPartProps> {
 
   private _isDarkTheme: boolean = false;
   private _environmentMessage: string = '';
 
   public render(): void {
-    const element: React.ReactElement<IEmployeProfileProps> = React.createElement(
-      EmployeProfile,
+    const element: React.ReactElement<IRecruitmentLandingPageProps> = React.createElement(
+      RecruitmentLandingPage,
       {
         description: this.properties.description,
         isDarkTheme: this._isDarkTheme,
-        Context: this.context,
-        HHHHContactListId:'edc879b9-50d2-4144-8950-5110cacc267a',
-        HHHHInstitutionListId:'9f13fd36-456a-42bc-a5e0-cd954d97fc5f',
-        MAIN_SMARTMETADATA_LISTID:'D1C6D7C3-F36E-4F95-8715-8DA9F33622E7',
-        MAIN_HR_LISTID:'6DD8038B-40D2-4412-B28D-1C86528C7842',
-        GMBH_CONTACT_SEARCH_LISTID:'6CE99A82-F577-4467-9CDA-613FADA2296F',
-        HR_EMPLOYEE_DETAILS_LIST_ID:'a7b80424-e5e1-47c6-80a1-0ee44a70f92c',
-        ContractListID:'c0106d10-a71c-4153-b204-7cf7b45a68b8',
-        HR_SMARTMETADATA_LISTID:'63CAE346-409E-4457-B996-85A788074BCE',
         environmentMessage: this._environmentMessage,
         hasTeamsContext: !!this.context.sdks.microsoftTeams,
-        userDisplayName: this.context.pageContext.user.loginName
+        userDisplayName: this.context.pageContext.user.displayName
       }
     );
 
@@ -124,30 +107,9 @@ export default class EmployeProfileWebPart extends BaseClientSideWebPart<IEmploy
             {
               groupName: strings.BasicGroupName,
               groupFields: [
-                PropertyPaneTextField('HHHHContactListId', {
-                  label: "HHHH Contact ListId"
-                }),
-                PropertyPaneTextField('HHHHInstitutionListId', {
-                  label: "HHHH Institution ListId"
-                }),
-                PropertyPaneTextField('MAIN_SMARTMETADATA_LISTID', {
-                  label: "Main SmartMetadata ListId"
-                }),
-                PropertyPaneTextField('MAIN_HR_LISTID', {
-                  label: "Main Hr ListId"
-                }),
-                PropertyPaneTextField('GMBH_CONTACT_SEARCH_LISTID', {
-                  label: "Gmbh Contact Search ListId"
-                }),
-                PropertyPaneTextField('HR_EMPLOYEE_DETAILS_LIST_ID', {
-                  label: "Hr Employee Details ListId"
-                }),
-                PropertyPaneTextField('ContractListID', {
-                  label: 'ContractListID'
-                }),
-                PropertyPaneTextField('HR_SMARTMETADATA_LISTID', {
-                  label: 'HR_SMARTMETADATA_LISTID'
-                }),
+                PropertyPaneTextField('InterviewFeedbackFormListId', {
+                  label: "Interview Feedback Form"
+                })
               ]
             }
           ]

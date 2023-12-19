@@ -283,10 +283,10 @@ export default function ProjectOverview(props: any) {
             {
                 accessorKey: "",
                 placeholder: "",
-                hasCheckbox: true,
-                hasCustomExpanded: true,
-                hasExpanded: true,
-                size: 55,
+                hasCheckbox: false,
+                hasCustomExpanded: false,
+                hasExpanded: false,
+                size: 1,
                 id: 'Id',
             },
             {

@@ -113,8 +113,6 @@ export default function DocumentSearchPage(Props: any) {
             hasCheckbox: false,
             hasCustomExpanded: false,
             hasExpanded: false,
-            hideTeamIcon: true,
-            hideOpenNewTableIcon: true,
             size: 10,
             id: 'Id',
         },
@@ -203,7 +201,7 @@ export default function DocumentSearchPage(Props: any) {
                 <div className="TableContentSection">
                     <div className='Alltable mt-2'>
                         <div className='col-md-12 p-0 '>
-                            <GlobalCommanTable columns={columns} data={AllDocs} showHeader={true} callBackData={callBackData} expandIcon={true} />
+                            <GlobalCommanTable columns={columns} data={AllDocs} showHeader={true} callBackData={callBackData} expandIcon={true} hideTeamIcon={true} hideOpenNewTableIcon={true} />
                         </div>
                     </div>
                 </div>
