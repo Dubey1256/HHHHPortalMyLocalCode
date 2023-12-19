@@ -93,7 +93,7 @@ const Information = (props: any) => {
             </div>
             {props?.siteTaggedHR && <div className='col-sm-12 mt-3 px-2 row'>
                 <div className="infoblock Adivress ps-0 col-sm-6 form-group">
-                    <div className="siteBdrBottom sectionHead siteColor ps-0 mb-2">Adivress Information</div>
+                    <div className="siteBdrBottom sectionHead siteColor ps-0 mb-2">Address Information</div>
                     <div className="alignCenter mb-3">
                         <span className="f-20 ps-2" title='city'>
                             <FaCity />
