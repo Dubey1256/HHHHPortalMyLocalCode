@@ -3632,37 +3632,41 @@ export default class CategoriesWeeklyMultipleReport extends React.Component<ICat
               <div className="taskTeamBox mt-10">
                 <details className='p-0 m-0' open>
                   <summary>
-                    <div className='alignCenter'>
-                      <a className="hreflink pull-left mr-5">Team Members </a>
-                      {this?.state?.taskUsers != null && this?.state?.SelectGroupName.length > 0 && this?.state?.SelectGroupName.map((user: any, i: number) => {
-                        return <div className="top-assign  mt-1">
-                          <span className='fw-normal me-1'>
-                            {user.GroupName} :
-                          </span>
-                          {user?.childs?.length <= 3 ? (
-                            user?.childs?.map(function (obj: any) {
-                              return (<span className="marginR41">
-                                <img onClick={(e) => this.SelectUserImage(e, obj)} title={obj?.AssingedToUserTitle}
-                                  className="AssignUserPhoto mb-0"
-                                  src={obj.Item_x0020_Cover.Url}
-                                ></img>
-                              </span>
-                              )
-                            })) : (
-                            user?.childs.length > 3 && <span>({user.childs.length})</span>)
+                    <div className='d-flex'>
+                      <a className="hreflink pull-left me-2" style={{whiteSpace:"nowrap"}}>Team Members </a>
+                      <div className=''>
+                        {this?.state?.taskUsers != null && this?.state?.SelectGroupName.length > 0 && this?.state?.SelectGroupName.map((user: any, i: number) => {
+                          return <div className="top-assign">
+                            <span className='fw-normal me-1'>
+                              {user.GroupName} :
+                            </span>
+                            {user?.childs?.length <= 3 ? (
+                              user?.childs?.map(function (obj: any) {
+                                return (<span className="marginR41 mt--2">
+                                  <img onClick={(e) => this.SelectUserImage(e, obj)} title={obj?.AssingedToUserTitle}
+                                    className="AssignUserPhoto mb-0"
+                                    src={obj.Item_x0020_Cover.Url}
+                                  ></img>
+                                </span>
+                                )
+                              })) : (
+                              user?.childs.length > 3 && <span>({user.childs.length})</span>)
 
-                          }
-                          {(i !== this?.state?.SelectGroupName?.length - 1) &&
+                            }
+                            {(i !== this?.state?.SelectGroupName?.length - 1) &&
 
-                            <span className='fw-normal mx-1'> |</span>
-                          }
+                              <span className='fw-normal mx-1'> |</span>
+                            }
 
-                        </div>
-                      })}
-                      <span className='alignCenter ml-auto'>
-                        <input type="checkbox" className="form-check-input m-0" onClick={(e) => this.SelectAllGroupMember(e)} />
-                        <label className='ms-1 f-14'>Select All </label>
-                      </span>
+                          </div>
+                        })}
+                      </div>
+                      <div className='ml-auto'>
+                        <span className='alignCenter ms-2 SpfxCheckRadio' style={{whiteSpace:"nowrap"}}>
+                          <input type="checkbox" className="form-check-input m-0" onClick={(e) => this.SelectAllGroupMember(e)} />
+                          <label className='ms-1 f-14'>Select All </label>
+                        </span>
+                      </div>
                     </div>
 
                   </summary>
