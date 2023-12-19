@@ -45,6 +45,8 @@ export default function GetData(props: any) {
     const [inProcessCand, setinProcessCand] = useState([]);
     const [ArchiveCandidates, setArchiveCandidates] = useState([]);
     const [AllStatus, setAllStatus] = useState([]);
+    const params = new URLSearchParams(window.location.search);
+    let JobPositionId = params.get('PositionId');
     const [AllAvlStatusdata, setAllAvlStatusdata] = useState<StatusItem[]>([]);
     const [isEditPopupOpen, setIsEditPopupOpen] = useState(false);
     const [isAddPopupOpen, setIsAddPopupOpen] = useState(false);
@@ -215,6 +217,7 @@ export default function GetData(props: any) {
             .getById(props?.props?.InterviewFeedbackFormListId)
             .items.select('Id', 'Title', 'Remarks', 'Motivation', 'SelectedPlatforms', 'Result', 'CandidateStaffID', 'ActiveInterv', 'Status0', 'IsFavorite', 'CandidateName', 'SkillRatings', 'Positions/Id', 'Positions/Title', 'Platform', 'IsFavorite', 'PhoneNumber', 'Email', 'Experience', 'Current_x0020_Company', 'Date', 'CurrentCTC', 'ExpectedCTC', 'NoticePeriod', 'CurrentLocation', 'DateOfJoining', 'HRNAME')
             .expand('Positions')
+            .filter("Positions/Id eq " + JobPositionId + "")
             .top(5000)
             .get()
             .then((response: any) => {
@@ -327,7 +330,7 @@ export default function GetData(props: any) {
             HR_EMPLOYEE_DETAILS_LIST_ID: props?.props?.HR_EMPLOYEE_DETAILS_LIST_ID,
             siteUrl: props?.props.Context.pageContext.web.absoluteUrl,
             jointSiteUrl: "https://hhhhteams.sharepoint.com/sites/HHHH",
-            ContractListID:props?.props?.ContractListID
+            ContractListID: props?.props?.ContractListID
         }
         getListData();
         loadAdminConfigurations();
