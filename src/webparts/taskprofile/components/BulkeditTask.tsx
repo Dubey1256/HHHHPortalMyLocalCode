@@ -44,6 +44,7 @@ export default function BulkeditTask(props: any) {
         { value: 10, status: "10% working on it", taskStatusComment: "working on it" }
     ]);
     const [isTableVisible, setTableVisibility] = useState(true);
+    const [selectedValue, setSelectedValue] = useState('');
     const toggleTable = () => {
         setTableVisibility(!isTableVisible);
     };
@@ -113,8 +114,9 @@ export default function BulkeditTask(props: any) {
             { accessorKey: "NewDueDate", placeholder: "NewDueDate", header: "", size: 10, },
         ], [AllSelectedTask]);
     const PercentCompleted = (StatusData: any) => {
-        setTaskStatusPopup(false);
+        // setTaskStatusPopup(false);
         setStatus(StatusData)
+        setSelectedValue(StatusData);
     }
     const closeTaskStatusUpdatePopup = () => {
         setTaskStatusPopup(false)
@@ -199,7 +201,7 @@ export default function BulkeditTask(props: any) {
                 isOpen={isModalOpen}
                 onDismiss={CloseBulkItemUpdatePopup}
                 onRenderHeader={onRenderCustomHeaderMain}
-                isBlocking={isModalOpen}
+                isBlocking={false}
                 closeButtonAriaLabel="Close">
                 <div className="modal-body">
                     <div>
@@ -314,7 +316,7 @@ export default function BulkeditTask(props: any) {
                 isOpen={TaskStatusPopup}
                 onDismiss={closeTaskStatusUpdatePopup}
                 onRenderHeader={onRenderCustomHeaderUpdatePopup}
-                isBlocking={TaskStatusPopup}
+                isBlocking={false}
                 closeButtonAriaLabel="Close">
             
                 <div>
@@ -331,6 +333,7 @@ export default function BulkeditTask(props: any) {
                                                         onClick={(e) => PercentCompleted(item.taskStatusComment)} // Wrap in an arrow function
                                                         type="radio"
                                                         value={item.taskStatusComment}
+                                                        checked={selectedValue === item.taskStatusComment}
                                                     />
                                                     {item.status} </label>
                                             </div>
