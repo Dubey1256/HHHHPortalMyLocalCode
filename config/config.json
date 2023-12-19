@@ -344,6 +344,14 @@
         }
       ]
     },
+    "profilcandidate-web-part": {
+      "components": [
+        {
+          "entrypoint": "./lib/webparts/profilcandidate/ProfilcandidateWebPart.js",
+          "manifest": "./src/webparts/profilcandidate/ProfilcandidateWebPart.manifest.json"
+        }
+      ]
+    },
     "hello-spfx-web-part": {
       "components": [
         {
@@ -374,6 +382,7 @@
   "localizedResources": {
     "HelloSpfxWebPartStrings": "lib/webparts/helloSpfx/loc/{locale}.js",
     "EmployeProfileWebPartStrings": "lib/webparts/employeProfile/loc/{locale}.js",
+    "ProfilcandidateWebPartStrings": "lib/webparts/profilcandidate/loc/{locale}.js",
     "MeetingOverViewPageWebPartStrings": "lib/webparts/meetingOverViewPage/loc/{locale}.js",
     "AlertManagementWebPartStrings": "lib/webparts/alertManagement/loc/{locale}.js",
     "SmartConnectWebPartStrings": "lib/webparts/smartConnect/loc/{locale}.js",

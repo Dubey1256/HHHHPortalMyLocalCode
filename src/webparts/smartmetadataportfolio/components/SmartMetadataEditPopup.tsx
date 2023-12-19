@@ -183,16 +183,18 @@ export default function SmartMetadataEditPopup(props: any) {
     }
     const changeParentMetadata = () => {
         var subRowsChilds: any = []
-        if (selectedOptionSecond) {
+        if (selectedOptionTop) {
             props?.AllMetadata?.filter((meta: any) => {
-                meta?.Title === selectedOptionSecond ?
-                    SmartTaxonomyItem.ParentID = meta?.Id :
-                    subRowsChilds = [...meta?.subRows]
-
+                if (meta?.Title === selectedOptionTop) {
+                    SmartTaxonomyItem.ParentID = meta?.Id
+                    subRowsChilds = meta?.subRows;
+                }
             })
-            subRowsChilds?.filter((item: any) => {
-                item?.Title === selectedOptionSecond ? SmartTaxonomyItem.ParentID = item?.Id : null;
-            })
+            if (subRowsChilds !== undefined) {
+                subRowsChilds?.filter((item: any) => {
+                    item?.Title === selectedOptionSecond ? SmartTaxonomyItem.ParentID = item?.Id : null;
+                })
+            }
             closeParentPopup()
         }
     }
