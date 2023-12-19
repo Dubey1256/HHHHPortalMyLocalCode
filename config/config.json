@@ -320,6 +320,14 @@
         }
       ]
     },
+    "recruitment-landing-page-web-part": {
+      "components": [
+        {
+          "entrypoint": "./lib/webparts/recruitmentLandingPage/RecruitmentLandingPageWebPart.js",
+          "manifest": "./src/webparts/recruitmentLandingPage/RecruitmentLandingPageWebPart.manifest.json"
+        }
+      ]
+    },
     "hr-contract-search-web-part": {
       "components": [
         {
@@ -370,6 +378,7 @@
     "AlertManagementWebPartStrings": "lib/webparts/alertManagement/loc/{locale}.js",
     "SmartConnectWebPartStrings": "lib/webparts/smartConnect/loc/{locale}.js",
     "ComponentProfileWebPartStrings": "lib/webparts/componentProfile/loc/{locale}.js",
+    "RecruitmentLandingPageWebPartStrings": "lib/webparts/recruitmentLandingPage/loc/{locale}.js",
    "TaskprofileWebPartStrings": "lib/webparts/taskprofile/loc/{locale}.js",
     "ComponentCommentsWebPartStrings": "lib/webparts/componentComments/loc/{locale}.js",
     "FeedbackWebPartStrings": "lib/webparts/TimeReport/loc/{locale}.js",
