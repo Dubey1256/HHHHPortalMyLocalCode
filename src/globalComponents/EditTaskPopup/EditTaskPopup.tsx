@@ -2306,7 +2306,10 @@ const EditTaskPopup = (Items: any) => {
                 CategoryChange(e, "Approval", 227);
             }
             if (StatusData.value == 2) {
+                let updateUserArray: any = [];
                 setInputFieldDisable(true);
+                updateUserArray.push(EditData.TaskCreatorData[0]?.AssingedToUser)
+                setTaskAssignedTo(updateUserArray);
             }
             if (StatusData.value != 2) {
                 setInputFieldDisable(false);

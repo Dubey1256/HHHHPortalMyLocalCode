@@ -1,4 +1,4 @@
-import { Panel, PrimaryButton, PanelType } from 'office-ui-fabric-react';
+import { Panel, PanelType } from 'office-ui-fabric-react';
 import * as React from 'react';
 import { useState } from 'react';
 import { Web } from 'sp-pnp-js';

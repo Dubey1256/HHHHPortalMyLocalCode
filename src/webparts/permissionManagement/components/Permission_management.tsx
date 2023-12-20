@@ -367,7 +367,8 @@ const changeHeader=(items:any)=>{
           <EditPage context={props?.context} changeHeader={changeHeader} />
         </div>
         <div className="ml-auto">
-          <a target="_blank" className="fw-bold" href="https://hhhhteams.sharepoint.com/sites/HHHH/SP/SitePages/Permission-Management.aspx">
+              
+          <a target="_blank" data-interception="off"  className="fw-bold" href="https://hhhhteams.sharepoint.com/sites/HHHH/SP/SitePages/Manage-Permission-Tool.aspx">
             Old Permission-Management
           </a>
         </div>

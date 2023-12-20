@@ -206,7 +206,7 @@ const EditContractPopup = (props: any) => {
                     onRenderFooter={onRenderCustomFooterMain}
                 >
                     <div className='modal-body'>
-                        <div className='row'>
+                        <div className='row mt-2'>
                             <div className='col-sm-6'>
                                 <div className="input-group">
                                     <label className="form-label full-width">Contract Number</label>
@@ -223,7 +223,7 @@ const EditContractPopup = (props: any) => {
                             </div>
                         </div>
 
-                        <div className='row'>
+                        <div className='row mt-2'>
                             <div className='col-sm-4'>
                                 <div className="input-group">
                                     <label className="form-label full-width">Start Date</label>
@@ -276,7 +276,7 @@ const EditContractPopup = (props: any) => {
                                 </div>
                             </div>
 
-                            <div className='row'>
+                            <div className='row mt-2'>
                                 <div className='col-sm-6'>
                                     <div className="input-group">
                                         <label className="form-label full-width">HHHH Contact</label>

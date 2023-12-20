@@ -819,25 +819,31 @@ function TasksTable(props: any) {
         header: "",
         size: 42,
       },
-      {
-        accessorFn: (row) => row?.DueDate,
-        cell: ({ row }) => (
-          <span className='ms-1'>{row?.original?.DisplayDueDate} </span>
+      // {
+      //   accessorFn: (row) => row?.DueDate,
+      //   cell: ({ row }) => (
+      //     <span className='ms-1'>{row?.original?.DisplayDueDate} </span>
 
-        ),
-        id: 'DueDate',
-        filterFn: (row: any, columnName: any, filterValue: any) => {
-          if (row?.original?.DisplayDueDate?.includes(filterValue)) {
-            return true
-          } else {
-            return false
-          }
-        },
-        resetColumnFilters: false,
-        resetSorting: false,
+      //   ),
+      //   id: 'DueDate',
+      //   filterFn: (row: any, columnName: any, filterValue: any) => {
+      //     if (row?.original?.DisplayDueDate?.includes(filterValue)) {
+      //       return true
+      //     } else {
+      //       return false
+      //     }
+      //   },
+      //   resetColumnFilters: false,
+      //   resetSorting: false,
+      //   placeholder: "DueDate",
+      //   header: "",
+      //   size: 100
+      // },
+      {
+        accessorKey: "DueDate",
         placeholder: "DueDate",
         header: "",
-        size: 100
+        size: 120,
       },
       {
         accessorFn: (row) => row?.Created,
@@ -1172,7 +1178,7 @@ function TasksTable(props: any) {
                 AddWorkstreamTask={openActivity}
                 taskProfile={true}
                 expandIcon={true}
-multiSelect={true}
+                multiSelect={true}
               />
             </div>
 
