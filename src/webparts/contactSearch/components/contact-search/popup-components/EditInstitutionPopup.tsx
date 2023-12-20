@@ -11,6 +11,9 @@ let JointData:any=[];
 const EditInstitutionPopup=(props:any)=>{
     const myContextData2: any = React.useContext<any>(myContextValue)
     const [imagetab, setImagetab] = React.useState(false);
+    const [OpenDivision, setOpenDivision] = React.useState(false);
+    const [divisionTitle, setDivisionTitle] = React.useState("");
+    
     const [URLs, setURLs] = React.useState([]);
     const [countryData, setCountryData] = React.useState([]);
     const [status, setStatus] = React.useState({countryPopup: false });
@@ -36,7 +39,7 @@ const HrGmbhInstitutionDeatails=async(Id:any)=>{
             .select("Id", "Title", "FirstName", "FullName","About","Description","InstitutionType","SocialMediaUrls", "DOJ","DOE","Company","SmartCountriesId","SmartContactId","SmartInstitutionId", "WorkCity", "Suffix", "WorkPhone", "HomePhone", "Comments", "WorkAddress", "WorkFax", "WorkZip",  "ItemType", "JobTitle", "Item_x0020_Cover", "WebPage",  "CellPhone", "Email", "Created", "SocialMediaUrls","Author/Title", "Modified", "Editor/Title", "Division/Title", "Division/Id", "EmployeeID/Title", "StaffID", "EmployeeID/Id", "Institution/Id", "Institution/FullName", "IM")
             .expand("EmployeeID", "Division", "Author", "Editor",  "Institution")
             .get().then((data:any)=>{
-               
+               let tagDivision=[];
               
                 let URL: any[] = JSON.parse(data.SocialMediaUrls != null ? data.SocialMediaUrls : ["{}"]);
                 setURLs(URL);
@@ -49,6 +52,12 @@ const HrGmbhInstitutionDeatails=async(Id:any)=>{
                 data.Item_x002d_Image = data?.Item_x0020_Cover;
                 if (data?.SmartInstitutionId != undefined) {
                     jointInstitutionDetails(data?.SmartInstitutionId)
+                }
+                if(myContextData2?.divisionData!=undefined){
+                 tagDivision=   myContextData2?.divisionData?.filter((divData:any)=>divData?.Institution?.Id==data?.Id)
+                }
+                if(tagDivision?.length>0){
+                    data.Institution=  tagDivision
                 }
                     setUpdateData(data)
                 
@@ -76,6 +85,7 @@ const HrGmbhInstitutionDeatails=async(Id:any)=>{
                 .select("Id","Title","FirstName","Description","FullName","WorkPhone","SmartCountries/Id","SmartCountries/Title","Company","JobTitle","About","InstitutionType","SocialMediaUrls","ItemType","WorkCity","ItemImage","WorkCountry","WorkAddress","WebPage","CellPhone","HomePhone","Email","SharewebSites","Created","Author/Id","Author/Title","Modified","Editor/Id","Editor/Title")
                 .expand("Author", "Editor","SmartCountries")
               .get().then((data: any) => {
+                let tagDivision=[];
                 let URL: any[] = JSON.parse(data.SocialMediaUrls != null ? data.SocialMediaUrls : ["{}"]);
                 setURLs(URL);
                 data.Item_x002d_Image = data?.ItemImage;
@@ -89,6 +99,12 @@ const HrGmbhInstitutionDeatails=async(Id:any)=>{
                   if(myContextData2?.allSite?.GMBHSite || myContextData2?.allSite?.HrSite){
                     JointData=data;
                   }else{
+                    if(myContextData2?.divisionData!=undefined){
+                        tagDivision=   myContextData2?.divisionData?.filter((divData:any)=>divData?.Parent?.Id==data?.Id)
+                       }
+                       if(tagDivision?.length>0){
+                           data.Institution=  tagDivision
+                       }
                     setUpdateData(data);
                   }
                    }).catch((error: any) => {
@@ -112,6 +128,17 @@ const HrGmbhInstitutionDeatails=async(Id:any)=>{
         return (
             <>
                 <div className='subheading alignCenter'>
+                Add Division
+                     
+                </div>
+                <Tooltip ComponentId='3299' />
+            </>
+        );
+    };
+    const onRenderCustomHeaderDivision = () => {
+        return (
+            <>
+                <div className='subheading alignCenter'>
                     <img className='workmember' 
                     src={updateData?.ItemImage != undefined ? updateData?.ItemImage.Url : "https://hhhhteams.sharepoint.com/sites/HHHH/SiteCollectionImages/ICONS/32/InstitutionPicture.jpg"}
                      />Edit Institution- 
@@ -121,6 +148,7 @@ const HrGmbhInstitutionDeatails=async(Id:any)=>{
             </>
         );
     };
+
       //***************image information call back Function***********************************/
       function imageta() {
         setImagetab(true);
@@ -282,6 +310,79 @@ let web = new Web('https://hhhhteams.sharepoint.com/sites/HHHH/GmBH');
 
 }
 
+const CreateDivision= async()=>{
+    let Key: any =divisionTitle;
+    let subString = Key.split(" ");
+    let lastName=""
+    let FirstName=""
+    if(subString.length>0){
+        lastName=subString.length==2?subString[1]:""
+         FirstName=subString[0]
+    }
+    
+    try {
+        let jointData:any
+        let localData:any
+            if (myContextData2?.allSite?.GMBHSite || myContextData2?.allSite?.HrSite) {
+                localData= {
+                    
+                Title: lastName ,
+                FirstName: FirstName,
+                FullName: FirstName + " " + lastName,
+                ItemType: "Division",
+                InstitutionId:updateData?.Id
+                
+            } 
+            jointData= {
+                SharewebSites: {
+                    results: (myContextData2?.allSite?.GMBHSite?["GMBH"]:["HR"])
+                },
+                Site: {
+                    results: (myContextData2?.allSite?.GMBHSite?["GMBH"]:["HR"])
+                },
+                Title: lastName ,
+                FirstName: FirstName,
+                FullName: FirstName + " " + lastName,
+                ItemType: "Division",
+                ParentId:updateData?.SmartInstitutionId
+            }  
+            }else{
+                jointData= {
+                    
+                    Title: lastName ,
+                    FirstName: FirstName,
+                    FullName: FirstName + " " + lastName,
+                    ItemType: "Division",
+                    ParentId:updateData?.Id
+                    
+                } 
+            }
+
+        let web = new Web(myContextData2?.allListId?.jointSiteUrl);
+        await web.lists.getById(myContextData2?.allListId?.HHHHInstitutionListId).items.add(jointData ).then(async (data) => {
+            console.log("joint institution post sucessfully", data)
+            if (myContextData2?.allSite?.GMBHSite || myContextData2?.allSite?.HrSite) {
+                let web = new Web(myContextData2?.allListId?.siteUrl);
+                await web.lists.getById(myContextData2?.allSite?.GMBHSite ? myContextData2?.allListId?.GMBH_CONTACT_SEARCH_LISTID : myContextData2?.allListId?.HR_EMPLOYEE_DETAILS_LIST_ID)
+                .items.add(localData).then((newData) => {
+                    console.log("local institution also done")
+                    setOpenDivision(false)
+                    // setInstitutionData(newData?.data)
+                }).catch((error: any) => {
+                console.log(error)
+                })
+            } else {
+                // setInstitutionData(data?.data)
+
+                console.log("request success");
+            }
+
+        })
+    } catch (error) {
+        console.log("eeeorCreate Institution", error.message)
+    }
+    
+}
 
 //***********samrt Meta data call function To get The country data ********************* */
 const getSmartMetaData = async () => {
@@ -349,7 +450,22 @@ return(
                                     e.stopPropagation();
                                     imageta()
                                   }}
-                                aria-selected="true">IMAGE INFORMATION</button>
+                                aria-selected="true">IMAGE INFORMATION
+                                </button>
+
+                                <button className="nav-link"
+                                id="Division-Tab"
+                                data-bs-toggle="tab"
+                                data-bs-target="#Division "
+                                type="button"
+                                role="tab"
+                                aria-controls="Division "
+                                onClick={(e) => {
+                                    e.stopPropagation();
+                                    imageta()
+                                  }}
+                                aria-selected="true">Division 
+                                </button>
                            
  
                         </ul>
@@ -501,7 +617,27 @@ return(
                       />
                     )}
                                     </div>
-                            </div></div>
+                            </div>
+                             <div className="tab-pane" id="Division" role="tabpanel" aria-labelledby="Division">
+                             <span  title="Add Division"className="svg__iconbox svg__icon--Plus mini hreflink" onClick={()=>setOpenDivision(true)}></span>
+                             {updateData?.Institution?.length>0?updateData?.Institution?.map((division:any)=>{
+                                return(
+                                    <div className='col-sm-12'>
+                                    <div className='col-sm-4 block'>
+                                        <a className='wid90'>{division?.FullName}</a>
+                                        <span className='svg__iconbox svg__icon--cross light ml-auto clearfix'></span>
+                                    </div>
+                                 </div>
+                                )
+                               
+                             }):null}
+
+                            </div>
+                            
+                            </div>
+
+
+
                             <footer className='bg-f4 fixed-bottom'>
                     <div className='align-items-center d-flex justify-content-between me-3 px-4 py-2'>
                         <div>
@@ -544,7 +680,33 @@ return(
                     {status.countryPopup ? <CountryContactEditPopup popupName="Country" 
                     selectedCountry={currentCountry} 
                     callBack={CloseCountryPopup} data={countryData} updateData={updateData} /> : null}
+
+
             </Panel>
+            <Panel onRenderHeader={onRenderCustomHeaderDivision}
+                isOpen={OpenDivision}
+                type={PanelType.custom}
+                customWidth="560px"
+                onDismiss={()=>setOpenDivision(false)}
+                isBlocking={false}
+             >
+                <div className='modal-body'>
+                    <div className='input-group'>
+                        <input type='text' className='form-control' onChange={(e)=>setDivisionTitle(e.target.value)}></input>
+                    </div>
+                </div>
+        
+        <div className='modal-footer mt-2 p-0'>
+              <button className='btn btn-primary mx-2' onClick={()=>CreateDivision()}>
+                Save
+              </button>
+              <button className='btn btn-default' onClick={()=>setOpenDivision(false)}>
+                Cancel
+              </button>
+            </div>
+
+      </Panel>
+      
     </>
 )
 }
