@@ -5748,7 +5748,7 @@ const EditTaskPopup = (Items: any) => {
                                                                     ApproverHistoryData.length > 1 ? (
                                                                     <div className="border p-1">
                                                                         <div className="siteBdrBottom">
-                                                                            <p className="mb-1">Prev-Approver</p>
+                                                                            <p className="mb-1">Previous-Approver</p>
                                                                         </div>
                                                                         {ApproverHistoryData.map(
                                                                             (HistoryData: any, index: any) => {
@@ -7850,7 +7850,7 @@ const EditTaskPopup = (Items: any) => {
                                                                                 ApproverHistoryData.length > 1 ? (
                                                                                 <div className="border p-1">
                                                                                     <div className="siteBdrBottom">
-                                                                                        <p className="mb-1">Prev-Approver</p>
+                                                                                        <p className="mb-1">Previous-Approver</p>
                                                                                     </div>
                                                                                     {ApproverHistoryData.map(
                                                                                         (HistoryData: any, index: any) => {
