@@ -59,7 +59,7 @@ export default function ManageSmartMetadata(selectedProps: any) {
     //...........................................................End Filter SmartMetadata Items counts....................................................
     const GetAdminConfig = async () => {
         try {
-            let web = new Web(selectedProps.AllList.SPSitesListUrl);
+            let web = new Web(selectedProps.Context.pageContext.web.absoluteUrl);
             const Config = await web.lists.getById(selectedProps.AllList.SPSiteConfigListID).items.select("ID,Title,OrderBy,WebpartId,DisplayColumns,Columns,QueryType,FilterItems&$filter=WebpartId eq 'AllManageSmartMetadataPortfolioTabs'").getAll();
             if (Config) {
                 setTabs(JSON.parse(Config[0].DisplayColumns));
@@ -72,7 +72,7 @@ export default function ManageSmartMetadata(selectedProps: any) {
     };
     const LoadSmartMetadata = async () => {
         try {
-            let web = new Web(selectedProps.AllList.SPSitesListUrl);
+            let web = new Web(selectedProps.Context.pageContext.web.absoluteUrl);
             const AllMetaDataItems = await web.lists.getById(selectedProps.AllList.SPSmartMetadataListID).items.select("*,Author/Title,Editor/Title,Parent/Id,Parent/Title&$expand=Parent,Author,Editor&$orderby=Title&$filter=isDeleted ne 1").getAll();
             SmartmetadataItems = SmartmetadataItems.concat(AllMetaDataItems)
             ShowingTabsData('Categories')

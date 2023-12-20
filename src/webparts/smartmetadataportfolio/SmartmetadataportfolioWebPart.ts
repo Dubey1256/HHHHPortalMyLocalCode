@@ -14,7 +14,7 @@ import { ISmartmetadataportfolioProps } from './components/ISmartmetadataportfol
 
 export interface ISmartmetadataportfolioWebPartProps {
   SPSiteConfigListID: string;
-  SPSitesListUrl: string;
+  
   SPSmartMetadataListID: string;
   SPTopNavigationListID: string
   description: string;
@@ -35,7 +35,6 @@ export default class SmartmetadataportfolioWebPart extends BaseClientSideWebPart
         environmentMessage: this._environmentMessage,
         hasTeamsContext: !!this.context.sdks.microsoftTeams,
         userDisplayName: this.context.pageContext.user.displayName,
-        SPSitesListUrl: this.context.pageContext.web.absoluteUrl,
         SPSiteConfigListID: this.properties.SPSiteConfigListID,
         SPSmartMetadataListID: this.properties.SPSmartMetadataListID,
         SPTopNavigationListID: this.properties.SPTopNavigationListID,

@@ -21,7 +21,7 @@ export default function SmartMetadataEditPopup(props: any) {
     const [selectedOptionTop, setSelectedOptionTop] = useState('');
     const [selectedOptionSecond, setSelectedOptionSecond] = useState('');
     const [metadatPopupBreadcrum, setMetadatPopupBreadcrum]: any = useState([]);
-    let web = new Web(props.AllList.SPSitesListUrl);
+    let web = new Web(props.Context.pageContext.web.absoluteUrl);
     const [SmartTaxonomyItem, setSmartTaxonomyItem] = useState({
         Id: 0,
         Title: '',

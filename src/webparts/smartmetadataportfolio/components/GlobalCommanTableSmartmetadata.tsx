@@ -24,8 +24,7 @@ import autoTable from 'jspdf-autotable';
 import * as XLSX from "xlsx";
 import saveAs from "file-saver";
 import { RiFileExcel2Fill } from 'react-icons/ri';
-import ShowTeamMembers from '../../../globalComponents/ShowTeamMember';
-
+//import ShowTeamMembers from '../../../ShowTeamMember';
 import SelectFilterPanel from '../../../globalComponents/GroupByReactTableComponents/selectFilterPannel';
 import ExpndTable from '../../../globalComponents/ExpandTable/Expandtable';
 import RestructuringCom from '../../../globalComponents/Restructuring/RestructuringCom';
@@ -33,7 +32,7 @@ import { SlArrowDown, SlArrowRight } from 'react-icons/sl';
 import { BsClockHistory, BsList, BsSearch } from 'react-icons/bs';
 import Tooltip from '../../../globalComponents/Tooltip';
 //import { Alert } from 'react-bootstrap';
-import DateColumnFilter from '../../../globalComponents/GroupByReactTableComponents/DateColumnFilter';
+//import DateColumnFilter from '../../../DateColumnFilter';
 //import { AiOutlineMore } from 'react-icons/ai';
 import { BiDotsVertical } from 'react-icons/bi';
 import RestructureSmartMetaData from './RestructureSmartMetaData';
@@ -273,7 +272,6 @@ const GlobalCommanTable = (items: any, ref: any) => {
     const [SmartmetadataAdd] = React.useState(true);
     const [SmartmetadataCompare, setSmartmetadataCompare] = React.useState(false);
     const [SmartmetadataRestructure, setSmartmetadataRestructure] = React.useState(false);
-    const [DateColumnFilterDataa, setDateColumnFilterData] = React.useState({});
     // const [clickFlatView, setclickFlatView] = React.useState(false);
     const [columnVisibility] = React.useState({ descriptionsSearch: false, commentsSearch: false, timeSheetsDescriptionSearch: false });
     const [selectedFilterPannelData, setSelectedFilterPannelData] = React.useState<any>({
@@ -362,17 +360,17 @@ const GlobalCommanTable = (items: any, ref: any) => {
     /****************** defult sorting  part *******************/
 
     /****************** DateColumns Filter Part ***************/
-    const selectedDateColumnFilter = React.useCallback((compareItemsValue: any) => {
-        if (compareItemsValue != undefined && compareItemsValue != null) {
-            setDateColumnFilterData(compareItemsValue);
-            setDateColumnFilter(false);
-        } else if (compareItemsValue === "clearFilter") {
-            setDateColumnFilter(false);
-            setDateColumnFilterData({});
-        } else {
-            setDateColumnFilter(false);
-        }
-    }, []);
+    // const selectedDateColumnFilter = React.useCallback((compareItemsValue: any) => {
+    //     if (compareItemsValue != undefined && compareItemsValue != null) {
+    //         setDateColumnFilterData(compareItemsValue);
+    //         setDateColumnFilter(false);
+    //     } else if (compareItemsValue === "clearFilter") {
+    //         setDateColumnFilter(false);
+    //         setDateColumnFilterData({});
+    //     } else {
+    //         setDateColumnFilter(false);
+    //     }
+    // }, []);
     const coustomFilterColumns = (valueEvents: any, event: any) => {
         if (valueEvents === "DueDate") {
             setDateColumnFilter(true);
@@ -600,9 +598,9 @@ const GlobalCommanTable = (items: any, ref: any) => {
     const ShowTeamFunc = () => {
         setShowTeamPopup(true)
     }
-    const showTaskTeamCAllBack = React.useCallback(() => {
-        setShowTeamPopup(false)
-    }, []);
+    // const showTaskTeamCAllBack = React.useCallback(() => {
+    //     setShowTeamPopup(false)
+    // }, []);
     const openTaskAndPortfolioMulti = () => {
         table?.getSelectedRowModel()?.flatRows?.map((item: any) => {
             let siteUrl: any = ''
@@ -1152,13 +1150,13 @@ const GlobalCommanTable = (items: any, ref: any) => {
                     ))}
                 </select>
             </div> : ''}
-            {ShowTeamPopup === true && items?.TaskUsers?.length > 0 ? <ShowTeamMembers props={table?.getSelectedRowModel()?.flatRows} callBack={showTaskTeamCAllBack} TaskUsers={items?.TaskUsers} /> : ''}
-            {/* {ShowTeamPopup === true && items?.TaskUsers?.length > 0 ? "<ShowTeamMembers props={table?.getSelectedRowModel()?.flatRows} callBack={showTaskTeamCAllBack} TaskUsers={items?.TaskUsers} portfolioTypeData={items?.portfolioTypeData} context={items?.AllListId?.Context} /> " : ''} */}
+            {/* {ShowTeamPopup === true && items?.TaskUsers?.length > 0 ? <ShowTeamMembers props={table?.getSelectedRowModel()?.flatRows} callBack={showTaskTeamCAllBack} TaskUsers={items?.TaskUsers} /> : ''} */}
+            {ShowTeamPopup === true && items?.TaskUsers?.length > 0 ? "<ShowTeamMembers props={table?.getSelectedRowModel()?.flatRows} callBack={showTaskTeamCAllBack} TaskUsers={items?.TaskUsers} portfolioTypeData={items?.portfolioTypeData} context={items?.AllListId?.Context} /> " : ''}
             {selectedFilterPanelIsOpen && <SelectFilterPanel isOpen={selectedFilterPanelIsOpen} selectedFilterCount={selectedFilterCount} setSelectedFilterCount={setSelectedFilterCount} selectedFilterCallBack={selectedFilterCallBack} setSelectedFilterPannelData={setSelectedFilterPannelData} selectedFilterPannelData={selectedFilterPannelData} portfolioColor={portfolioColor} />}
 
 
 
-            {dateColumnFilter && <DateColumnFilter portfolioTypeDataItemBackup={items?.portfolioTypeDataItemBackup} taskTypeDataItemBackup={items?.taskTypeDataItemBackup} portfolioTypeData={portfolioTypeData} taskTypeDataItem={items?.taskTypeDataItem} dateColumnFilterData={dateColumnFilterData} flatViewDataAll={items?.flatViewDataAll} data={data} setData={items?.setData} setLoaded={items?.setLoaded} isOpen={dateColumnFilter} selectedDateColumnFilter={selectedDateColumnFilter} portfolioColor={portfolioColor} Lable='DueDate' />}
+            {dateColumnFilter && "<DateColumnFilter portfolioTypeDataItemBackup={items?.portfolioTypeDataItemBackup} taskTypeDataItemBackup={items?.taskTypeDataItemBackup} portfolioTypeData={portfolioTypeData} taskTypeDataItem={items?.taskTypeDataItem} dateColumnFilterData={dateColumnFilterData} flatViewDataAll={items?.flatViewDataAll} data={data} setData={items?.setData} setLoaded={items?.setLoaded} isOpen={dateColumnFilter} selectedDateColumnFilter={selectedDateColumnFilter} portfolioColor={portfolioColor} Lable='DueDate' />"}
         </>
     )
 }
