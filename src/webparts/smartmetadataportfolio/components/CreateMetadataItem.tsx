@@ -37,7 +37,7 @@ export default function CreateMetadataItem(props: any) {
         if (buttonType === 'createAndOpenPopup') {
             if (SelectedItem.length > 0) {
                 try {
-                    const web = new Web(props.Context.pageContext.web.absoluteUrl);
+                    const web = new Web(props?.AllList?.SPSitesListUrl);
                     const addedItem = await web.lists.getById(SmartMetadataListID).items.add({
                         "TaxType": SelectedItem[0].TaxType,
                         "Description1": smartDescription,
@@ -54,7 +54,7 @@ export default function CreateMetadataItem(props: any) {
                 }
             } else {
                 try {
-                    const web = new Web(props.Context.pageContext.web.absoluteUrl);
+                    const web = new Web(props?.AllList?.SPSitesListUrl);
                     const addedItem = await web.lists.getById(SmartMetadataListID).items.add({
                         "TaxType": Taxtype,
                         "Description1": smartDescription,
@@ -74,7 +74,7 @@ export default function CreateMetadataItem(props: any) {
         } else {
             if (SelectedItem.length > 0) {
                 try {
-                    const web = new Web(props.Context.pageContext.web.absoluteUrl);
+                    const web = new Web(props?.AllList?.SPSitesListUrl);
                     await web.lists.getById(SmartMetadataListID).items.add({
                         "TaxType": SelectedItem[0].TaxType,
                         "Description1": smartDescription,
@@ -91,7 +91,7 @@ export default function CreateMetadataItem(props: any) {
                 }
             } else {
                 try {
-                    const web = new Web(props.Context.pageContext.web.absoluteUrl);
+                    const web = new Web(props?.AllList?.SPSitesListUrl);
                     await web.lists.getById(SmartMetadataListID).items.add({
                         "TaxType": Taxtype,
                         "Description1": smartDescription,
@@ -111,7 +111,7 @@ export default function CreateMetadataItem(props: any) {
         let array: any = [...props.ParentItem]
         try {
             for (const item of childItemTitle) {
-                const web = new Web(props.Context.pageContext.web.absoluteUrl);
+                const web = new Web(props?.AllList?.SPSitesListUrl);
                 await web.lists.getById(SmartMetadataListID).items.add({
                     TaxType: props.ParentItem.TaxType,
                     ParentId: props.ParentItem.Id,

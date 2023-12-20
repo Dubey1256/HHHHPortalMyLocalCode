@@ -385,13 +385,15 @@ export default function SmartMetadataEditPopup(props: any) {
                 };
             }
             if (modaltype == "Add") {
-                await sp.web.lists.getById(props.AllList.SPSmartMetadataListID).items.add(item);
+                const web = new Web(props?.AllList?.SPSitesListUrl);
+                await web.lists.getById(props.AllList.SPSmartMetadataListID).items.add(item);
                 props.EditItemCallBack('', '', SmartTaxonomyItem?.TaxType)
                 CloseEditSmartMetaPopup()
             }
 
             if (modaltype == "Update") {
-                await sp.web.lists.getById(props.AllList.SPSmartMetadataListID).items.getById(SmartTaxonomyItem.Id).update(item);
+                const web = new Web(props?.AllList?.SPSitesListUrl);
+                await web.lists.getById(props.AllList.SPSmartMetadataListID).items.getById(SmartTaxonomyItem.Id).update(item);
                 props.EditItemCallBack('', '', SmartTaxonomyItem?.TaxType)
                 CloseEditSmartMetaPopup()
             }

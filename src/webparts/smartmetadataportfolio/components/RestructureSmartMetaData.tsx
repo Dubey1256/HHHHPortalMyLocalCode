@@ -154,7 +154,7 @@ const RestructureSmartMetaData = (props: any, ref: any) => {
     };
     const UpdateMetaDataRestructure = async function () {
         if (restructureItem[0] !== undefined) {
-            let web = new Web(props.Context.pageContext.web.absoluteUrl);
+            let web = new Web(props.AllList.SPSitesListUrl);
             if (NewArrayBackup[0].Level === 'Level2') {
                 var postData: any = {
                     ParentId: NewArrayBackup[0].newSubChild?.Id,
