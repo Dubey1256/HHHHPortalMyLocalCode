@@ -3,6 +3,7 @@ import React, { useEffect, useState } from 'react'
 import Tooltip from '../Tooltip';
 import HtmlEditorCard from '../HtmlEditor/HtmlEditor';
 import { Web } from 'sp-pnp-js';
+import moment from 'moment';
 
 
 
@@ -22,21 +23,25 @@ const getData=async ()=>{
   let web = new Web(props?.context?.siteUrl);
   let taskUsers = [];
   
-  let whereClause = `FileLeafRef eq '${valueAfterLastSlash}' and IsStatic eq 1`;
+  let whereClause = `FileLeafRef eq '${'Permission-Management-SPFX.aspx'}' and IsStatic eq 1`;
   
   try {
-    taskUsers = await web.lists
+     await web.lists
       .getById(props?.context?.SitePagesList)
-      .items.select("ID", "Page_x0020_Content", "FileLeafRef", "Page_x002d_Title", "Title","ItemRank","Author/ID","Author/Title","Editor/Title","Editor/ID", "IsStatic").expand("Editor","Author").filter(whereClause)
-      .get();
-      taskUsers[0].ItemRank2 = taskUsers[0].ItemRank ==   8 ? '(8) Top Highlights'  : (taskUsers[0].ItemRank == 7  ? '(7) Featured Item' : (taskUsers[0].ItemRank ==   6 ?  '(6) Key Item' : 
-      (taskUsers[0].ItemRank == 5  ? '(5) Relevant Item' :(taskUsers[0].ItemRank == 4 ? '(4) Unsure' : (taskUsers[0].ItemRank ==  2  ? '(2) to be verified' : (taskUsers[0].ItemRank == 1  ? '(1) Archive' 
-      : (taskUsers[0].ItemRank == 0 ? '(0) No Show' : null )) ))))),
-      setData(...taskUsers);
-      props.changeHeader(taskUsers[0]?.Title)
-      setUpdateId(taskUsers[0]?.ID)
+      .items.select("ID", "Page_x0020_Content", "FileLeafRef", "Page_x002d_Title", "Title","ItemRank","Author/ID","Author/Title","Editor/Title","Editor/ID",'Created','Modified', "IsStatic").expand("Editor","Author").filter(whereClause)
+      .get().then((taskUsers)=>{
+        taskUsers[0].ItemRank2 = taskUsers[0].ItemRank ==   8 ? '(8) Top Highlights'  : (taskUsers[0].ItemRank == 7  ? '(7) Featured Item' : (taskUsers[0].ItemRank ==   6 ?  '(6) Key Item' : 
+        (taskUsers[0].ItemRank == 5  ? '(5) Relevant Item' :(taskUsers[0].ItemRank == 4 ? '(4) Unsure' : (taskUsers[0].ItemRank ==  2  ? '(2) to be verified' : (taskUsers[0].ItemRank == 1  ? '(1) Archive' 
+        : (taskUsers[0].ItemRank == 0 ? '(0) No Show' : null )) ))))),
+        setData(...taskUsers);
+        props.changeHeader(taskUsers[0]?.Title)
+        setUpdateId(taskUsers[0]?.ID)
+      }).catch((err:any)=>{
+        console.log(err);
+      });
+     
   } catch (error) {
-    console.error("Error fetching items:", error);
+    console.log("Error fetching items:", error);
   }
   }
 
@@ -149,8 +154,40 @@ const onRenderCustomCalculateSC = () => {
               </div>
  
                 <footer className="mt-4 text-end">
-                  <button className="me-2 btn btn-primary" onClick={postData}>Save</button>
-                  <button className="btn btn-default" onClick={()=>setOpenEditPanel(false)} >Cancel</button>
+                 
+
+
+          <div className="align-items-center d-flex justify-content-between py-2">
+            <div>
+              <div className="text-left">
+                Created
+                <> {data?.Created != null && data?.Created != undefined ?  moment(data?.Created).format('DD/MM/YYYY') : '' } </>
+                by
+                <span className="siteColor">
+                  {data?.Author?.Title}
+                </span>
+              </div>
+              <div className="text-left">
+                Last modified
+                <span>{data?.Modified != null && data?.Modified != undefined ?  moment(data?.Modified).format('DD/MM/YYYY') : '' }</span>
+                by
+                <span className="siteColor">
+                {data?.Editor?.Title}
+                </span>
+              </div>           
+            </div>
+            <div className="text-end">
+              <a
+                data-interception="off"
+                target="_blank"
+                href={`${props?.context?.siteUrl}/SitePages/Forms/EditForm.aspx?ID=${data?.Id}`}
+              >
+                Open out-of-the-box form
+              </a>
+              <button className="mx-2 btn btn-primary" onClick={postData}>Save</button>
+              <button className="btn btn-default" onClick={()=>setOpenEditPanel(false)} >Cancel</button>
+            </div>
+          </div>
                 </footer>
             </Panel>
     </>

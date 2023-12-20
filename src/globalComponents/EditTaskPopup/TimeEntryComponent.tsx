@@ -2883,8 +2883,8 @@ function TimeEntryPopup(item: any) {
                     className="full_width"
                     id="AdditionalshortDescription"
                     defaultValue={saveEditTaskTimeChild?.Description != undefined ? saveEditTaskTimeChild?.Description : ''}
-                    cols={15}
-                    rows={4}
+                    cols={17}
+                    rows={6}
                     onChange={(e) => ( PopupType == 'EditTime' || PopupType == 'CopyTime' ? saveEditTaskTimeChild.Description = e.target.value :  setPostData({ ...postData, Description: e.target.value }))}
                   ></textarea>
                 </div>

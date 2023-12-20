@@ -33,6 +33,7 @@ interface StatusItem {
     siteName: string;
 }
 interface RowData {
+    Id: any;
     CandidateName: string;
     Position: any;
     IsFavorite: boolean;
@@ -45,6 +46,8 @@ export default function GetData(props: any) {
     const [inProcessCand, setinProcessCand] = useState([]);
     const [ArchiveCandidates, setArchiveCandidates] = useState([]);
     const [AllStatus, setAllStatus] = useState([]);
+    const params = new URLSearchParams(window.location.search);
+    let JobPositionId = params.get('PositionId');
     const [AllAvlStatusdata, setAllAvlStatusdata] = useState<StatusItem[]>([]);
     const [isEditPopupOpen, setIsEditPopupOpen] = useState(false);
     const [isAddPopupOpen, setIsAddPopupOpen] = useState(false);
@@ -141,12 +144,20 @@ export default function GetData(props: any) {
             accessorKey: "CandidateName",
             placeholder: "Title",
             header: "",
-            cell: ({ row }) => (
-                <>
+            cell: ({ row, getValue }) => (
+                <><a
+                    className="text-content hreflink"
+                    title={row?.original?.CandidateName}
+                    data-interception="off"
+                    target="_blank"
+                    href={`https://hhhhteams.sharepoint.com/sites/HHHH/HR/SitePages/Candidate-Profile.aspx?CandidateId=${row?.original?.Id}`}
+                >
                     {row.original.CandidateName}
                     {row.original.IsFavorite && (
                         <span className="orange-star">⭐</span>
                     )}
+                </a>
+
 
                 </>
             ),
@@ -211,46 +222,48 @@ export default function GetData(props: any) {
 
     const getListData = () => {
         const web = new Web('https://hhhhteams.sharepoint.com/sites/HHHH/HR/');
-        web.lists
+        let query = web.lists
             .getById(props?.props?.InterviewFeedbackFormListId)
             .items.select('Id', 'Title', 'Remarks', 'Motivation', 'SelectedPlatforms', 'Result', 'CandidateStaffID', 'ActiveInterv', 'Status0', 'IsFavorite', 'CandidateName', 'SkillRatings', 'Positions/Id', 'Positions/Title', 'Platform', 'IsFavorite', 'PhoneNumber', 'Email', 'Experience', 'Current_x0020_Company', 'Date', 'CurrentCTC', 'ExpectedCTC', 'NoticePeriod', 'CurrentLocation', 'DateOfJoining', 'HRNAME')
             .expand('Positions')
-            .top(5000)
-            .get()
-            .then((response: any) => {
-                const itemsWithPosition = response.map((item: any) => {
-                    return {
-                        ...item,
-                        Position: item.Positions ? item.Positions.Title : null,
-                    };
-                });
-                const categorizedItems = response.reduce((accumulator: { newCandidates: any[]; inProcessCand: any[]; archiveCandidates: any[]; }, currentItem: { Status0: any; }) => {
-                    switch (currentItem.Status0) {
-                        case undefined:
-                        case '':
-                        case 'New Candidate':
-                            accumulator.newCandidates.push(currentItem);
-                            break;
-                        case 'Under Consideration':
-                        case 'Interview':
-                        case 'Negotiation':
-                            accumulator.inProcessCand.push(currentItem);
-                            break;
-                        case 'Hired':
-                        case 'Rejected':
-                            accumulator.archiveCandidates.push(currentItem);
-                            break;
-                        default:
-                            break;
-                    }
-                    return accumulator;
-                }, { newCandidates: [], inProcessCand: [], archiveCandidates: [] });
+            .top(5000);
+        if (JobPositionId !== undefined && JobPositionId !== null) {
+            query = query.filter("Positions/Id eq " + JobPositionId + "")
+        }
+        query.get().then((response: any) => {
+            const itemsWithPosition = response.map((item: any) => {
+                return {
+                    ...item,
+                    Position: item.Positions ? item.Positions.Title : null,
+                };
+            });
+            const categorizedItems = response.reduce((accumulator: { newCandidates: any[]; inProcessCand: any[]; archiveCandidates: any[]; }, currentItem: { Status0: any; }) => {
+                switch (currentItem.Status0) {
+                    case undefined:
+                    case '':
+                    case 'New Candidate':
+                        accumulator.newCandidates.push(currentItem);
+                        break;
+                    case 'Under Consideration':
+                    case 'Interview':
+                    case 'Negotiation':
+                        accumulator.inProcessCand.push(currentItem);
+                        break;
+                    case 'Hired':
+                    case 'Rejected':
+                        accumulator.archiveCandidates.push(currentItem);
+                        break;
+                    default:
+                        break;
+                }
+                return accumulator;
+            }, { newCandidates: [], inProcessCand: [], archiveCandidates: [] });
 
-                setListData(itemsWithPosition);
-                setNewCandidates(categorizedItems.newCandidates);
-                setinProcessCand(categorizedItems.inProcessCand);
-                setArchiveCandidates(categorizedItems.archiveCandidates);
-            })
+            setListData(itemsWithPosition);
+            setNewCandidates(categorizedItems.newCandidates);
+            setinProcessCand(categorizedItems.inProcessCand);
+            setArchiveCandidates(categorizedItems.archiveCandidates);
+        })
             .catch((error: unknown) => {
                 console.error(error);
             });
@@ -327,7 +340,7 @@ export default function GetData(props: any) {
             HR_EMPLOYEE_DETAILS_LIST_ID: props?.props?.HR_EMPLOYEE_DETAILS_LIST_ID,
             siteUrl: props?.props.Context.pageContext.web.absoluteUrl,
             jointSiteUrl: "https://hhhhteams.sharepoint.com/sites/HHHH",
-            ContractListID:props?.props?.ContractListID
+            ContractListID: props?.props?.ContractListID
         }
         getListData();
         loadAdminConfigurations();
