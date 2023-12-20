@@ -269,7 +269,7 @@ const ImmediateTaskTbl = (Tile: any) => {
                                 <span title="Share Ongoing Task" className="svg__iconbox svg__icon--share empBg"></span>
                             </a>
                         </div>
-                        <div className="Alltable maXh-300 scrollbar" style={{ height: "300px" }}>
+                        <div className="Alltable maXh-300 scrollbar" style={{ height:"300px" }}>
                             {immediateTask && (
                                 <GlobalCommanTable
                                     wrapperHeight="77%"
