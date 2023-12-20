@@ -1427,8 +1427,8 @@ class Taskprofile extends React.Component<ITaskprofileProps, ITaskprofileState> 
     this.setState({
       ApprovalHistoryPopup: true,
       ApprovalPointUserData: items,
-      ApprovalPointCurrentParentIndex: parentIndex,
-      currentArraySubTextIndex: subChildIndex
+      ApprovalPointCurrentParentIndex: parentIndex+1,
+      currentArraySubTextIndex: subChildIndex!=null?subChildIndex+1:null
 
     })
 
@@ -2216,6 +2216,7 @@ private async updateProjectComponentServices(dataUpdate:any) {
                       <div className="Taskaddcomment row">
                         {this.state.Result["BasicImageInfo"] != null && this.state.Result["BasicImageInfo"].length > 0 &&
                           <div className="bg-white col-sm-4 mt-2 p-0">
+                            <label className='form-label full-width'>Additional Images</label>
                             {this.state.Result["BasicImageInfo"] != null && this.state.Result["BasicImageInfo"]?.map((imgData: any, i: any) => {
                               return <div className="taskimage border mb-3">
                                 {/*  <BannerImageCard imgData={imgData}></BannerImageCard> */}
@@ -2281,6 +2282,8 @@ private async updateProjectComponentServices(dataUpdate:any) {
                                   return (
                                     <>
                                       <div>
+                                      <label className='form-label full-width'>Task description</label>
+                                       
                                         {/* { this.state?.emailcomponentopen && countemailbutton==0 &&<EmailComponenet approvalcallback={() => { this.approvalcallback() }}  Context={this.props?.Context} emailStatus={this.state?.emailComponentstatus}  currentUser={this.props?.CurrentUser} items={this.props?.Result} />} */}
                                         <div className="col mb-2">
                                           <div className='justify-content-between d-flex'>
@@ -2313,7 +2316,7 @@ private async updateProjectComponentServices(dataUpdate:any) {
                                               }
                                             </div>
                                             <div className='m-0'>
-                                              <span className="siteColor">
+                                              <span className="d-block">
                                                 <a style={{ cursor: 'pointer' }} onClick={(e) => this.showhideCommentBox(i)}>Add Comment</a>
                                               </span>
                                             </div>
@@ -2478,7 +2481,7 @@ private async updateProjectComponentServices(dataUpdate:any) {
                                               </div>
                                               <div className='m-0'>
                                                 <a className="d-block text-end">
-                                                  <a className='siteColor' style={{ cursor: 'pointer' }}
+                                                  <a style={{ cursor: 'pointer' }}
                                                     onClick={(e) => this.showhideCommentBoxOfSubText(j, i)}
                                                   >Add Comment</a>
                                                 </a>
@@ -2628,9 +2631,12 @@ private async updateProjectComponentServices(dataUpdate:any) {
 
                                         {this.state.ApprovalHistoryPopup ? <ApprovalHistoryPopup
                                           ApprovalPointUserData={this.state.ApprovalPointUserData}
-                                          ApprovalPointCurrentIndex={this.state.ApprovalPointCurrentParentIndex}
+                                          indexSHow={this.state.currentArraySubTextIndex!=null?this.state.ApprovalPointCurrentParentIndex+"."+this.state.currentArraySubTextIndex:this.state.ApprovalPointCurrentParentIndex}
+                                          ApprovalPointCurrentIndex={this.state.ApprovalPointCurrentParentIndex-1}
                                           ApprovalPointHistoryStatus={this.state.ApprovalHistoryPopup}
-                                          currentArrayIndex={this.state.currentArraySubTextIndex}
+                                          currentArrayIndex={this.state.currentArraySubTextIndex-1}
+                                          usefor="TaskProfile"
+                                         
                                           callBack={() => this.ApprovalHistoryPopupCallBack()}
                                         />
                                           : null}
