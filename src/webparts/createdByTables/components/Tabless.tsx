@@ -587,9 +587,9 @@ dataItem.AllTeamName = dataItem.AllTeamName.split(';').filter(Boolean).join(';')
       },
       {
         cell: ({ row, getValue }: any) => (
-          <div className='alignCenter'>
+          <div className='alignCenter float-end'>
             <span title="Edit Task" className="svg__iconbox svg__icon--edit hreflink" onClick={() => editPopFunc(row.original)} ></span>
-            <span title="Delete Task" className="svg__iconbox svg__icon--trash hreflink ml-auto" onClick={() => deleteItemFunction(row.original)} ></span>
+            <span title="Delete Task" className="svg__iconbox svg__icon--trash hreflink " onClick={() => deleteItemFunction(row.original)} ></span>
           </div>
         ),
         id: "ID",
