@@ -14,7 +14,7 @@ import { Card, CardBody, CardFooter, CardHeader, CardTitle, Col, Pagination, Pag
 import HtmlEditorCard from './FloraCommentBox';
 import MsgReader from "@kenjiuno/msgreader"
 import { useEffect } from 'react';
-let SiteUsers: any[] = [];
+import { SiteUser } from 'sp-pnp-js/lib/sharepoint/siteusers';
 let showTextInput: boolean = false;
 let PositionChoices: any[] = [];
 let siteName: any = '';
@@ -31,7 +31,7 @@ const AddPopup = (props: any) => {
     useEffect(() => {
         const fetchData = async () => {
             try {
-                await Promise.all([getPeople(), getchoicecolumns(), setDefaultDate(getCurrentDate())]);
+                await Promise.all([getPeople(), getchoicecolumns()]);
             } catch (error) {
                 console.error(error);
             } finally {
@@ -47,7 +47,7 @@ const AddPopup = (props: any) => {
     };
     const [fileSections, setFileSections]: any = useState([{ id: 1, selectedFiles: [], renamedFileName: '' }]);
     const [name, setName] = useState('');
-    const [exp, setExp] = useState('');
+    const [exp, setExp] = useState({ years: '', months: '' });
     const [email, setEmail] = useState('');
     const [phone, setPhone] = useState('');
     const [selectedInterviwer, setSelectedInterviwer] = useState('');
@@ -58,9 +58,9 @@ const AddPopup = (props: any) => {
     const [OtherChoiceText, setOtherChoiceText] = useState('');
     const [content, setContent] = React.useState<string>('');
     const Status = ['New Candidate', 'Under Consideration', 'Interview', 'Negotiation', 'Hired', 'Rejected'];
-    const [selectedFile, setSelectedFile] = useState(null);
-    const [uploadDocumentFile, setUploadDocumentFile] = useState([]);
-    const [dragedItem, setDragedItem] = useState([]);
+
+    const [inputText, setInputText] = useState('');
+    let SiteUsers: any[] = [];
     const [selectedPath, setSelectedPath] = useState({
         displayPath: '',
         completePath: '',
@@ -84,6 +84,8 @@ const AddPopup = (props: any) => {
         { name: 'Agentur für Arbeit', selected: false },
         { name: 'Jobcenter', selected: false },
         { name: 'GesinesJobtipps', selected: false },
+        { name: 'Linkedin', selected: false },
+        { name: 'Naukri', selected: false },
         { name: 'Others', selected: false }
     ]);
     const [isStarFilled, setIsStarFilled] = useState(false);
@@ -95,6 +97,7 @@ const AddPopup = (props: any) => {
         props.AddPopupClose();
     }
     const addCandidate = async () => {
+        let formattedExp = '0.0';
         if (updatedPlatformChoices && updatedPlatformChoices.length > 0) {
             updatedPlatformChoices.forEach(itm => {
                 if (itm.selected && itm.name === 'Others') {
@@ -102,13 +105,16 @@ const AddPopup = (props: any) => {
                 }
             });
         }
+        if (exp !== undefined) {
+            formattedExp = exp.years && exp.months ? `${exp.years}.${exp.months}` : exp.years ? `${exp.years}.0` : `0.${exp.months}`;
+        }
         const selectedPlatforms = JSON.stringify(updatedPlatformChoices);
         try {
             const candidateItem = await HRweb.lists.getById('298bc01c-710d-400e-bf48-8604d297c3c6').items.add({
                 CandidateName: name,
                 Email: email,
                 PhoneNumber: phone,
-                Experience: exp,
+                Experience: formattedExp,
                 Date: new Date(selectedDate),
                 RecommendedAction: selectedRecAction,
                 ActiveInterv: selectedInterviwer,
@@ -128,37 +134,37 @@ const AddPopup = (props: any) => {
         }
     };
 
-    const getPeople = () => {
-        const titles = ["Prashant Kumar", "Robert Ungethuem", "Stefan Hochhuth (Admin)", "Harshit Chauhan", "Stefan Hochhuth"];
-        sp.web.siteUsers.select("ID,Title,LoginName").get()
-            .then((getData) => {
-                SiteUsers = getData;
-                SiteUsers.forEach((emp: any) => {
-                    emp.Email = '';
-                    if (emp.LoginName !== undefined && emp.LoginName !== '') {
-                        try {
-                            emp.Email = emp.LoginName.split("/").join().split("|")[2].split("#")[0];
-                        }
-                        catch (err) {
-                            console.log(err)
-                        }
-                    }
-                })
-                SiteUsers = SiteUsers.filter(function (user) {
-                    return titles.indexOf(user.Title) !== -1;
-                });
-                console.log(SiteUsers)
-            })
-            .catch((error) => {
-                console.log(error);
+    const getPeople = async () => {
+        try {
+            const titles = ["Prashant Kumar", "Robert Ungethuem", "Stefan Hochhuth (Admin)", "Harshit Chauhan", "Stefan Hochhuth"];
+            const getData = await sp.web.siteUsers.select("ID,Title,LoginName").get();
 
+            SiteUsers = getData;
+            SiteUsers.forEach((emp: any) => {
+                emp.Email = '';
+                if (emp.LoginName !== undefined && emp.LoginName !== '') {
+                    try {
+                        emp.Email = emp.LoginName.split("/").join().split("|")[2].split("#")[0];
+                    } catch (err) {
+                        console.log(err);
+                    }
+                }
             });
-    }
+
+            SiteUsers = SiteUsers.filter(function (user) {
+                return titles.indexOf(user.Title) !== -1;
+            });
+
+            console.log(SiteUsers);
+        } catch (error) {
+            console.error(error);
+        }
+    };
     const getCurrentDate = (): string => {
-        const currentDate:any = new Date();
-        const year = currentDate.getFullYear();
-        const month:any = (currentDate.getMonth() + 1)?.padStart(2, '0'); // Month is zero-based
-        const day:any = (currentDate.getDate())?.padStart(2, '0');
+        const currentDate: any = new Date();
+        const year: any = currentDate.getFullYear();
+        const month: any = (currentDate.getMonth() + 1)?.padStart(2, '0'); // Month is zero-based
+        const day: any = (currentDate.getDate())?.padStart(2, '0');
         return `${year}-${month}-${day}`;
     };
     const getchoicecolumns = () => {
@@ -171,9 +177,6 @@ const AddPopup = (props: any) => {
                 console.error(error);
             });
     }
-    const handleEditorChange = (newContent: string) => {
-        setContent(newContent);
-    };
     const HtmlEditorCallBack = useCallback((EditorData: any) => {
         if (EditorData.length > 8) {
             setMotivationText(EditorData);
@@ -235,8 +238,17 @@ const AddPopup = (props: any) => {
     const handlePhoneChange = (e: any) => {
         setPhone(e.target.value);
     };
-    const handleExpChange = (e: any) => {
-        setExp(e.target.value);
+    // const handleExpChange = (e: any) => {
+    //     setExp(e.target.value);
+    // };
+    const handleExpYearsChange = (event: any) => {
+        const years = event.target.value;
+        setExp((prevExp) => ({ ...prevExp, years: years }));
+    };
+
+    const handleExpMonthsChange = (event: any) => {
+        const months = event.target.value;
+        setExp((prevExp) => ({ ...prevExp, months: months }));
     };
     const handleDateChange = (e: any) => {
         setselectedDate(e.target.value);
@@ -389,7 +401,7 @@ const AddPopup = (props: any) => {
                 <div className="row">
                     <div className="col-sm-3 mb-2">
                         <div className='input-group'>
-                            <label className="form-label full-width">Profile</label>
+                            <label className="form-label full-width">Candidate Name</label>
                             <input
                                 className="form-control"
                                 value={name}
@@ -412,13 +424,34 @@ const AddPopup = (props: any) => {
                     <div className="col-sm-3 mb-2">
                         <div className='input-group'>
                             <label className="form-label full-width">Total Years of Professional Exp</label>
-                            <input className=" form-control" type="text" value={exp} onChange={handleExpChange} placeholder="Enter experience in years" />
-                        </div></div>
+                            <div className="d-flex">
+                                <div className="input-group mb-2">
+                                    <input
+                                        className="form-control"
+                                        type="text"
+                                        value={exp.years}
+                                        onChange={handleExpYearsChange}
+                                        placeholder="Years"
+                                    />
+                                </div>
+                                <div className="input-group mb-2">
+                                    <input
+                                        className="form-control"
+                                        type="text"
+                                        value={exp.months}
+                                        onChange={handleExpMonthsChange}
+                                        placeholder="Months"
+                                    />
+                                </div>
+                            </div>
+                        </div>
+                    </div>
                     <div className="col-sm-3 mb-2">
                         <div className='input-group'>
                             <label className="form-label full-width">Responsible Staff Member</label>
                             <Dropdown
                                 id="staff" className='w-100 '
+                                placeholder='Select Member'
                                 selectedKey={selectedInterviwer}
                                 onChange={handleDropdownInterviewer}
                                 options={SiteUsers.map((itm) => ({ key: itm.Title, text: itm.Title }))}
@@ -431,155 +464,152 @@ const AddPopup = (props: any) => {
                             <label className="form-label full-width">Phone Number</label>
                             <input className="form-control" value={phone} onChange={handlePhoneChange} type="text" placeholder="Enter Phone Number" />
                         </div></div>
-                        <div className="col-sm-3 mb-2">
-                            <div className='input-group'>
-                                <label className="form-label full-width">Position</label>
-                                <Dropdown
-                                    id="status" className='w-100 '
-                                    placeholder='Select Position'
-                                    options={PositionChoices.map((itm) => ({ key: itm.Id, text: itm.Title }))}
-                                    selectedKey={selectedPosition}
-                                    onChange={handlePosition}
-                                    styles={{ dropdown: { width: '100%' } }}
-                                />
-                            </div>
+                    <div className="col-sm-3 mb-2">
+                        <div className='input-group'>
+                            <label className="form-label full-width">Position</label>
+                            <Dropdown
+                                id="status" className='w-100 '
+                                placeholder='Select Position'
+                                options={PositionChoices.map((itm) => ({ key: itm.Id, text: itm.Title }))}
+                                selectedKey={selectedPosition}
+                                onChange={handlePosition}
+                                styles={{ dropdown: { width: '100%' } }}
+                            />
                         </div>
-                        <div className="col-sm-3 mb-2">
-                            <div className='input-group'>
-                                <label className="form-label full-width">Application Date</label>
-                                <input className="form-control" value={selectedDate || defaultDate}
-                                    onChange={handleDateChange} type="date" placeholder="Date" />
-                            </div>
+                    </div>
+                    <div className="col-sm-3 mb-2">
+                        <div className='input-group'>
+                            <label className="form-label full-width">Application Date</label>
+                            <input className="form-control" value={selectedDate || defaultDate}
+                                onChange={handleDateChange} type="date" placeholder="Date" />
                         </div>
-                        <div className="col-sm-3 mb-2">
-                            <div className='input-group'>
-                                <label className="form-label full-width">Contact Details</label>
-                                <input className="form-control" value={email}
-                                    onChange={handleEmailChange} type="email" placeholder="Enter Email" />
-                            </div>
+                    </div>
+                    <div className="col-sm-3 mb-2">
+                        <div className='input-group'>
+                            <label className="form-label full-width">Email</label>
+                            <input className="form-control" value={email}
+                                onChange={handleEmailChange} type="email" placeholder="Enter Email" />
                         </div>
-                        <div className="col-sm-3 mb-2">
-                            <div className='input-group'>
-                                <label className="form-label full-width">Recommended Action</label>
-                                <Dropdown
-                                    id="recAction" className='w-100 '
+                    </div>
+                    <div className="col-sm-3 mb-2">
+                        <div className='input-group'>
+                            <label className="form-label full-width">Recommended Action</label>
+                            <Dropdown
+                                id="recAction" className='w-100 '
 
-                                    placeholder='Select Action'
-                                    selectedKey={selectedRecAction}
-                                    onChange={handleRecAction}
-                                    options={ActionChoices.map((itm) => ({ key: itm, text: itm }))}
-                                    styles={{ dropdown: { width: '100%' } }}
-                                />
+                                placeholder='Select Action'
+                                selectedKey={selectedRecAction}
+                                onChange={handleRecAction}
+                                options={ActionChoices.map((itm) => ({ key: itm, text: itm }))}
+                                styles={{ dropdown: { width: '100%' } }}
+                            />
+                        </div>
+                    </div>
+                    <div className="col-sm-12 my-2">
+                        <div className='input-group'>
+                            <label className="form-label full-width">Platform</label>
+                            <div className="alignCenter">
+                                {platformChoices.map((item) => (
+                                    <label className="SpfxCheckRadio" key={item.name}>
+                                        <input
+                                            type="checkbox"
+                                            className="me-1 form-check-input cursor-pointer"
+                                            defaultChecked={item.selected}
+                                            onChange={() => checkboxChanged(item)}
+
+                                        />
+                                        {item.name}
+                                    </label>
+                                ))}
+                                {showTextInput && (
+                                    <label className="input-group">
+                                        <input
+                                            className="form-control"
+                                            type="text"
+                                            value={OtherChoiceText}
+                                            onChange={handleOtherChoiceInputChange}
+                                            placeholder="Enter any other platform"
+                                        />
+                                    </label>
+                                )}
                             </div>
                         </div>
-                        <div className="col-sm-12 my-2">
-                            <div className='input-group'>
-                                <label className="form-label full-width">Platform</label>
-                                <div className="alignCenter">
-                                    {platformChoices.map((item) => (
-                                        <label className="SpfxCheckRadio" key={item.name}>
-                                            <input
-                                                type="checkbox"
-                                                className="me-1 form-check-input cursor-pointer"
-                                                defaultChecked={item.selected}
-                                                onChange={() => checkboxChanged(item)}
+                    </div>
 
-                                            />
-                                            {item.name}
-                                        </label>
-                                    ))}
-                                    {showTextInput && (
-                                        <label className="input-group">
+
+                    <div className="col-sm-12 mb-2">
+                        <div className='input-group'>
+                            <label className="form-label full-width">Cover Letter/Motivation</label>
+                            <HtmlEditorCard
+                                editorValue={motivationText}
+                                HtmlEditorStateChange={HtmlEditorCallBack}
+                            />
+                        </div>
+                    </div>
+
+                    <div className="col-sm-12 mb-2">
+                        <div className='input-group'>
+                            <label className="form-label full-width">Upload Documents</label>
+                            <Col>
+                                {fileSections.map((section: any, index: number) => (
+                                    <div key={section.id}>
+                                        <Col className='mb-2'>
+                                            <span className='valign-middle'>
+                                                <input type="file" onChange={(e) => handleFileInputChange(e, section.id)} multiple className='form-control full-width' />
+                                                {index > 0 && (
+                                                    <span className='svg__iconbox ms-2 svg__icon--trash hreflink' onClick={() => removeFileSection(section.id)}></span>
+                                                )}
+                                                {index === 0 && (
+                                                    <span className='svg__iconbox ms-2 svg__icon--Plus hreflink' onClick={addFileSection}></span>
+                                                )}
+                                            </span>
+                                        </Col>
+                                        {section.selectedFiles.length > 0 && (
+                                            <Col className='mb-2'>
+                                                <ul>
+                                                    {section.selectedFiles.map((file: any, fileIndex: any) => (
+                                                        <li key={fileIndex}>{file.name}</li>
+                                                    ))}
+                                                </ul>
+                                            </Col>
+                                        )}
+                                        <Col className='mb-2'>
                                             <input
-                                                className="form-control"
                                                 type="text"
-                                                value={OtherChoiceText}
-                                                onChange={handleOtherChoiceInputChange}
-                                                placeholder="Enter any other platform"
+                                                onChange={(e) => handleRenamedFileNameChange(e, section.id)}
+                                                value={section.renamedFileName}
+                                                placeholder='Rename the document'
+                                                className='form-control full-width'
                                             />
-                                        </label>
-                                    )}
-                                </div>
-                            </div>
-                        </div>
-
-
-                        <div className="col-sm-12 mb-2">
-                            <div className='input-group'>
-                                <label className="form-label full-width">Cover Letter/Motivation</label>
-                                <HtmlEditorCard
-                                    editorValue={motivationText}
-                                    HtmlEditorStateChange={HtmlEditorCallBack}
-                                />
-                            </div>
-                        </div>
-
-                        <div className="col-sm-12 mb-2">
-                            <div className='input-group'>
-                                <label className="form-label full-width">Upload Documents</label>
-                                <Col>
-                                    {fileSections.map((section: any, index: number) => (
-                                        <div key={section.id}>
-                                            <Col className='mb-2'>
-                                                <span className='valign-middle'>
-                                                    <input type="file" onChange={(e) => handleFileInputChange(e, section.id)} multiple className='form-control full-width' />
-                                                    {index > 0 && (
-                                                        <span className='svg__iconbox ms-2 svg__icon--trash hreflink' onClick={() => removeFileSection(section.id)}></span>
-                                                    )}
-                                                    {index === 0 && (
-                                                        <span className='svg__iconbox ms-2 svg__icon--Plus hreflink' onClick={addFileSection}></span>
-                                                    )}
-                                                </span>
-                                            </Col>
-                                            {section.selectedFiles.length > 0 && (
-                                                <Col className='mb-2'>
-                                                    <ul>
-                                                        {section.selectedFiles.map((file: any, fileIndex: any) => (
-                                                            <li key={fileIndex}>{file.name}</li>
-                                                        ))}
-                                                    </ul>
-                                                </Col>
-                                            )}
-                                            <Col className='mb-2'>
-                                                <input
-                                                    type="text"
-                                                    onChange={(e) => handleRenamedFileNameChange(e, section.id)}
-                                                    value={section.renamedFileName}
-                                                    placeholder='Rename the document'
-                                                    className='form-control full-width'
-                                                />
-                                            </Col>
-                                        </div>
-                                    ))}
-                                    {/* <Row className='mb-2 px-2'>
+                                        </Col>
+                                    </div>
+                                ))}
+                                {/* <Row className='mb-2 px-2'>
                                             <button onClick={handleUpload} disabled={fileSections.some((section: { selectedFiles: string | any[]; }) => section.selectedFiles.length > 0) ? false : true} className="btn btn-primary mt-2 my-1  float-end px-3">
                                                 Upload
                                             </button>
                                         </Row> */}
-                                    <Row className='mb-2 px-2'>
-                                        <a onClick={addFileSection} className="float-end hreflink my-1 px-1 text-end">
-                                            Add More Documents
-                                        </a>
-                                    </Row>
-                                </Col>
-                            </div>
+                                <Row className='mb-2 px-2'>
+                                    <a onClick={addFileSection} className="float-end hreflink my-1 px-1 text-end">
+                                        Add More Documents
+                                    </a>
+                                </Row>
+                            </Col>
                         </div>
-
-
                     </div>
+
+
                 </div>
-                <footer className="bg-f4 fixed-bottom px-4 py-2">
-                    <div className="float-end text-end">
-                        <button onClick={addCandidate} type='button' className='btn btn-primary'>Save</button>
-                        <button onClick={onClose} type='button' className='btn btn-default ms-1'>Cancel</button>
-                    </div>
-                </footer>
-           
+            </div>
+            <footer className="bg-f4 fixed-bottom px-4 py-2">
+                <div className="float-end text-end">
+                    <button onClick={addCandidate} type='button' className='btn btn-primary'>Save</button>
+                    <button onClick={onClose} type='button' className='btn btn-default ms-1'>Cancel</button>
+                </div>
+            </footer>
+
         </Panel>
     );
 };
 export default AddPopup;
-function getExistingUploadedDocuments() {
-    throw new Error('Function not implemented.');
-}
 
