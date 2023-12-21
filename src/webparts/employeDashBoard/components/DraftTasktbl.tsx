@@ -249,7 +249,7 @@ const DraftTasktbl = (Tile: any) => {
                         <div className="Alltable maXh-300" style={{ height: "300px" }}>
                             {draftCatogary && (
                                 <GlobalCommanTable
-                                wrapperHeight="77%"
+                                wrapperHeight="87%"
                                     showHeader={true}
                                     columns={draftColumns}
                                     data={draftCatogary}

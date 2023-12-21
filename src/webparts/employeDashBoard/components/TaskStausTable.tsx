@@ -353,7 +353,7 @@ const TaskStatusTbl = (Tile: any) => {
                 <div className="Alltable maXh-300" style={{ height: "300px" }}>
                   {todaysTask && (
                     <GlobalCommanTable
-                      wrapperHeight="77%"
+                      wrapperHeight="87%"
                       showHeader={true}
                       TaskUsers={AllTaskUser}
                       portfolioColor={portfolioColor}
@@ -388,7 +388,7 @@ const TaskStatusTbl = (Tile: any) => {
                 <div className="Alltable maXh-300" style={{ height: "300px" }}>
                   {thisWeekTask && (
                     <GlobalCommanTable
-                      wrapperHeight="77%"
+                      wrapperHeight="87%"
                       showHeader={true}
                       TaskUsers={AllTaskUser}
                       portfolioColor={portfolioColor}
@@ -423,7 +423,7 @@ const TaskStatusTbl = (Tile: any) => {
                 <div className="Alltable maXh-300" style={{height:"300px"}}>
                   {allAssignedTask?.length > 0 && (
                     <GlobalCommanTable
-                      wrapperHeight="77%"
+                      wrapperHeight="87%"
                       showHeader={true}
                       TaskUsers={AllTaskUser}
                       portfolioColor={portfolioColor}
@@ -450,7 +450,7 @@ const TaskStatusTbl = (Tile: any) => {
                 <div className="Alltable maXh-300" style={{ height: "300px" }}>
                   {draftCatogary && (
                     <GlobalCommanTable
-                      wrapperHeight="77%"
+                      wrapperHeight="87%"
                       TaskUsers={AllTaskUser}
                       portfolioColor={portfolioColor}
                       showHeader={true}
@@ -488,7 +488,7 @@ const TaskStatusTbl = (Tile: any) => {
                 <div className="Alltable maXh-300" style={{ height: "300px" }}>
                   {immediateTask && (
                     <GlobalCommanTable
-                      wrapperHeight="77%"
+                      wrapperHeight="87%"
                       showHeader={true}
                       TaskUsers={AllTaskUser}
                       portfolioColor={portfolioColor}
@@ -518,7 +518,7 @@ const TaskStatusTbl = (Tile: any) => {
               <div className="Alltable maXh-300" style={{ height: "300px" }}>
                 {approvalTask && (
                   <GlobalCommanTable
-                    wrapperHeight="77%"
+                    wrapperHeight="87%"
                     showHeader={true}
                     columns={aprovlColumn}
                     TaskUsers={AllTaskUser}
@@ -558,7 +558,7 @@ const TaskStatusTbl = (Tile: any) => {
                 <div className="Alltable maXh-300" style={{ height: "300px" }}>
                   {bottleneckTask && (
                     <GlobalCommanTable
-                      wrapperHeight="77%"
+                      wrapperHeight="87%"
                       showHeader={true}
                       TaskUsers={AllTaskUser}
                       portfolioColor={portfolioColor}
