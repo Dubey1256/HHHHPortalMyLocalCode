@@ -2677,6 +2677,13 @@ const EditTaskPopup = (Items: any) => {
                                 //EditData.TaskApprovers.push(EditData?.Author)
                             }
                         }
+                        if (ApproverData != undefined && ApproverData.length > 0) {
+                            if (
+                                ApproverData[0].Id == EditData.TaskCreatorData[0]?.AssingedToUserId) {
+                                EditData.TaskApprovers = currentUserData;
+                                //EditData.TaskApprovers.push(EditData?.Author)
+                            }
+                        }
 
                         if (
                             TaskDetailsFromCall != undefined &&
