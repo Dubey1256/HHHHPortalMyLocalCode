@@ -246,9 +246,10 @@ const DraftTasktbl = (Tile: any) => {
                                 <a className="empCol hreflink" onClick={() => sendAllWorkingTodayTasks(draftCatogary)}><span title="Share Draft Task" className="svg__iconbox svg__icon--share empBg"></span></a>
                             </span>
                         </div>
-                        <div className="Alltable maXh-300 scrollbar">
+                        <div className="Alltable maXh-300" style={{ height: "300px" }}>
                             {draftCatogary && (
                                 <GlobalCommanTable
+                                wrapperHeight="77%"
                                     showHeader={true}
                                     columns={draftColumns}
                                     data={draftCatogary}

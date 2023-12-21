@@ -248,9 +248,10 @@ const WorkingTodaytbl = (Tile: any) => {
                                 <a className="empCol hreflink" onClick={() => sendAllWorkingTodayTasks(todaysTask)}><span title="Share Ongoing Task" className="svg__iconbox svg__icon--share empBg"></span></a>
                             </span>
                         </div>
-                        <div className="Alltable maXh-300 scrollbar">
+                        <div className="Alltable maXh-300 scrollbar" style={{ height: "300px" }}>
                             {todaysTask && (
                                 <GlobalCommanTable
+                                    wrapperHeight="77%"
                                     showHeader={true}
                                     columns={columnss}
                                     data={todaysTask}

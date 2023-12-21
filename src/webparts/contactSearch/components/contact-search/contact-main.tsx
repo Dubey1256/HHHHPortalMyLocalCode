@@ -33,6 +33,7 @@ const ContactMainPage = (props: any) => {
     const [CreateInstituteStatus, setCreateInstituteStatus] = useState(false);
     const [isDisabled, setIsDisabled] = useState(true);
     const [btnVisibility, setBtnVisibility] = useState(true);
+    const [divisionData, setDivisionData] = useState([]);
 
     useEffect(() => {
         if (props?.props.Context.pageContext.web.absoluteUrl.toLowerCase().includes("hr")) {
@@ -58,6 +59,7 @@ const ContactMainPage = (props: any) => {
             GMBH_CONTACT_SEARCH_LISTID: props?.props?.GMBH_CONTACT_SEARCH_LISTID,
             HR_EMPLOYEE_DETAILS_LIST_ID: props?.props?.HR_EMPLOYEE_DETAILS_LIST_ID,
             siteUrl: props?.props.Context.pageContext.web.absoluteUrl,
+            HR_SMARTMETADATA_LISTID:props?.props?.HR_SMARTMETADATA_LISTID,
             jointSiteUrl: "https://hhhhteams.sharepoint.com/sites/HHHH"
         }
         if (allSite?.MainSite == true) {
@@ -105,11 +107,12 @@ const ContactMainPage = (props: any) => {
             let web = new Web(allListId?.siteUrl);
             await web.lists.getById(props?.props?.HHHHInstitutionListId)
                 .items
-               . select("Id","Title","FirstName","Description","FullName","Company","JobTitle","About","InstitutionType","SocialMediaUrls","ItemType","WorkCity","ItemImage","WorkCountry","WorkAddress","WebPage","CellPhone","HomePhone","Email","SharewebSites","Created","Author/Id","Author/Title","Modified","Editor/Id","Editor/Title")
-                .expand("Author", "Editor",)
+               . select("Id","Title","FirstName","Description","Parent/Id","FullName","Company","JobTitle","About","InstitutionType","SocialMediaUrls","ItemType","WorkCity","ItemImage","WorkCountry","WorkAddress","WebPage","CellPhone","HomePhone","Email","SharewebSites","Created","Author/Id","Author/Title","Modified","Editor/Id","Editor/Title")
+                .expand("Author", "Editor","Parent")
                 .orderBy("Created", true)
                 .get().then((data: any) => {
                     let instData = data.filter((instItem: any) => instItem.ItemType == "Institution")
+                    let instDivision = data.filter((instItem: any) => instItem.ItemType == "Division")
                     if (instData?.length > 0) {
                         instData?.map((Item: any) => {
                             Item.SitesTagged = ''
@@ -129,6 +132,9 @@ const ContactMainPage = (props: any) => {
                         setInstitutionsData(instData);
                         setSearchedInstituteData(instData);
                     }
+                    if(instDivision?.length>0){
+                        setDivisionData(instDivision);    
+                    }
 
                 }).catch((error: any) => {
                     console.log(error)
@@ -143,6 +149,7 @@ const ContactMainPage = (props: any) => {
     const HrGmbhEmployeDeatails = async () => {
         let employeeData: any = []
         let institutionData: any = []
+        let Division:any=[];
         try {
             let web = new Web(allListId?.siteUrl);
             await web.lists.getById(allSite?.GMBHSite ? props?.props?.GMBH_CONTACT_SEARCH_LISTID : props?.props?.HR_EMPLOYEE_DETAILS_LIST_ID)
@@ -164,21 +171,29 @@ const ContactMainPage = (props: any) => {
                                 })
                             }
                         }
+                        if (Item?.ItemType == "Division") {
+                            Division.push(Item)
+
+                        }
                         if (Item?.ItemType == "Institution") {
                             institutionData.push(Item)
 
-                        } else {
+                        } else if( Item?.ItemType !="Division" && Item?.ItemType !="Institution") {
                             employeeData.push(Item)
 
                         }
                     })
-                    if (employeeData.length > 0) {
+                    if (employeeData?.length > 0) {
                         setEmployeeData(employeeData);
                         setSearchedData(employeeData);
                     }
-                    if (institutionData.length > 0) {
+                    if (institutionData?.length > 0) {
                         setInstitutionsData(institutionData);
                         setSearchedInstituteData(institutionData);
+                    }
+                    if (Division?.length > 0) {
+                        setDivisionData(Division);
+                        
                     }
                 }).catch((error: any) => {
                     console.log(error)
@@ -516,7 +531,7 @@ const ContactMainPage = (props: any) => {
     }
     // **************End *************************************
     return (
-        <myContextValue.Provider value={{ ...myContextValue, allSite:allSite,allListId:allListId ,loggedInUserName:props.props?.userDisplayName,InstitutionAllData:institutionData}}>
+        <myContextValue.Provider value={{ ...myContextValue, allSite:allSite,allListId:allListId ,divisionData:divisionData,loggedInUserName:props.props?.userDisplayName,InstitutionAllData:institutionData}}>
         <div className='contact-section'>
             <div className='contact-container'>
 

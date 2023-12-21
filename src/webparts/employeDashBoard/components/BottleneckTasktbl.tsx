@@ -271,9 +271,10 @@ const BottleneckTasktbl = (Tile: any) => {
                             </a>
                             </span>
                         </div>
-                        <div className="Alltable maXh-300 scrollbar">
+                        <div className="Alltable maXh-300" style={{ height: "300px" }}>
                             {bottleneckTask && (
                                 <GlobalCommanTable
+                                wrapperHeight="77%"
                                     showHeader={true}
                                     columns={Bottlecolumn}
                                     data={bottleneckTask}

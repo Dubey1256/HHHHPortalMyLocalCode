@@ -9,7 +9,7 @@ import { SPFI, spfi, SPFx as spSPFx } from "@pnp/sp";
 import 'bootstrap/dist/css/bootstrap.min.css';
 import GlobalCommanTable from "../../../globalComponents/GroupByReactTableComponents/GlobalCommanTable";
 import ReactPopperTooltipSingleLevel from "../../../globalComponents/Hierarchy-Popper-tooltipSilgleLevel/Hierarchy-Popper-tooltipSingleLevel";
-import EmailComponenet from "../../taskprofile/components/emailComponent";
+import EmailComponent from "../../../globalComponents/EmailComponents";
 import InfoIconsToolTip from "../../../globalComponents/InfoIconsToolTip/InfoIconsToolTip";
 let data: any
 let sendMail: boolean
@@ -465,7 +465,7 @@ const MultipleWebpart = (Tile: any) => {
             <div className="Alltable maXh-300" style={{ height: "300px" }}>
               {approvalTask && (
                 <GlobalCommanTable
-                  wrapperHeight="100%"
+                  wrapperHeight="77%"
                   showHeader={true}
                   columns={aprovlColumn}
                   TaskUsers={AllTaskUser}
@@ -474,7 +474,7 @@ const MultipleWebpart = (Tile: any) => {
                   callBackData={callBackData}
                 />
               )}
-              {sendMail && emailStatus != "" && approveItem && <EmailComponenet approvalcallback={approvalcallback} Context={ContextData.Context} emailStatus={"Approved"} items={approveItem} />}
+              {sendMail && emailStatus != "" && approveItem && <EmailComponent approvalcallback={approvalcallback} Context={ContextData.Context} emailStatus={"Approved"} items={approveItem} />}
             </div>
           </div>
         </div>
@@ -504,7 +504,7 @@ const MultipleWebpart = (Tile: any) => {
               <div className="Alltable maXh-300" style={{ height: "300px" }}>
                 {bottleneckTask && (
                   <GlobalCommanTable
-                    wrapperHeight="100%"
+                    wrapperHeight="77%"
                     showHeader={true}
                     TaskUsers={AllTaskUser}
                     portfolioColor={portfolioColor}
