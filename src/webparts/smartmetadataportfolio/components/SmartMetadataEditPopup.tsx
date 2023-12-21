@@ -2,7 +2,7 @@ import { ColumnDef } from '@tanstack/react-table';
 import { Panel, PanelType } from 'office-ui-fabric-react';
 import * as React from 'react';
 import { useState, useEffect, useMemo, useCallback } from 'react';
-import { Web, sp } from 'sp-pnp-js';
+import { Web } from 'sp-pnp-js';
 import GlobalCommanTable from './GlobalCommanTableSmartmetadata';
 import Tooltip from '../../../globalComponents/Tooltip';
 import ImageTabComponenet from './ImageTabComponent'
@@ -21,7 +21,6 @@ export default function SmartMetadataEditPopup(props: any) {
     const [selectedOptionTop, setSelectedOptionTop] = useState('');
     const [selectedOptionSecond, setSelectedOptionSecond] = useState('');
     const [metadatPopupBreadcrum, setMetadatPopupBreadcrum]: any = useState([]);
-    let web = new Web(props.Context.pageContext.web.absoluteUrl);
     const [SmartTaxonomyItem, setSmartTaxonomyItem] = useState({
         Id: 0,
         Title: '',
@@ -58,6 +57,7 @@ export default function SmartMetadataEditPopup(props: any) {
     };
     const loaddropdown = async () => {
         try {
+            const web = new Web(props?.AllList?.SPSitesListUrl);
             const fieldsData = await web.lists.getById(props.AllList.SPSmartMetadataListID).fields.filter("EntityPropertyName eq 'Status'").select('Choices').get();
             if (fieldsData && fieldsData[0].Choices) {
                 setDropdownArray(fieldsData[0].Choices);
@@ -89,6 +89,7 @@ export default function SmartMetadataEditPopup(props: any) {
     const LoadAllMetaData = async () => {
         try {
             SitesConfig = [];
+            const web = new Web(props?.AllList?.SPSitesListUrl);
             const query = `(TaxType eq 'Categories') or (TaxType eq 'Sites')`
             const select = `Id,Title,TaxType,listId`;
             const AllMetaData = await web.lists.getById(props.AllList.SPSmartMetadataListID).items.select(select).filter(query).getAll()
@@ -109,7 +110,8 @@ export default function SmartMetadataEditPopup(props: any) {
             const filters = CategoryTitle ? `SharewebCategories/Id eq '${CategoryTitle}'` : '';
             allCalls = [];
             allCalls = SitesConfig.map((site) => {
-                return sp.web.lists.getById(site.listId).items.select(`Id,Title,SharewebTaskLevel1No,SharewebTaskLevel2No,SharewebTaskType/Id,SharewebTaskType/Title,Component/Id,Services/Id,Events/Id,PercentComplete,ComponentId,ServicesId,EventsId,Priority_x0020_Rank,DueDate,Created,TaskID,Modified,Author/Id,Author/Title,Editor/Id,Editor/Title,ParentTask/Id,ParentTask/Title,SharewebCategories/Id,SharewebCategories/Title,AssignedTo/Id,AssignedTo/Title,Team_x0020_Members/Id,Team_x0020_Members/Title,Responsible_x0020_Team/Id,Responsible_x0020_Team/Title`).expand('AssignedTo', 'Author', 'Editor', 'Component', 'Services', 'Events', 'Team_x0020_Members', 'ParentTask', 'SharewebCategories', 'Responsible_x0020_Team', 'SharewebTaskType')
+                let web = new Web(props.AllList.SPSitesListUrl);
+                return web.lists.getById(site.listId).items.select(`Id,Title,SharewebTaskLevel1No,SharewebTaskLevel2No,SharewebTaskType/Id,SharewebTaskType/Title,Component/Id,Services/Id,Events/Id,PercentComplete,ComponentId,ServicesId,EventsId,Priority_x0020_Rank,DueDate,Created,TaskID,Modified,Author/Id,Author/Title,Editor/Id,Editor/Title,ParentTask/Id,ParentTask/Title,SharewebCategories/Id,SharewebCategories/Title,AssignedTo/Id,AssignedTo/Title,Team_x0020_Members/Id,Team_x0020_Members/Title,Responsible_x0020_Team/Id,Responsible_x0020_Team/Title`).expand('AssignedTo', 'Author', 'Editor', 'Component', 'Services', 'Events', 'Team_x0020_Members', 'ParentTask', 'SharewebCategories', 'Responsible_x0020_Team', 'SharewebTaskType')
                     .top(4999)
                     .filter(filters)
                     .get();
@@ -213,6 +215,7 @@ export default function SmartMetadataEditPopup(props: any) {
         loaddropdown();
         const getDataOfSmartMetaData = async () => {
             try {
+                const web = new Web(props?.AllList?.SPSitesListUrl);
                 const query = `TaxType eq '${props.modalInstance.TaxType}'`
                 const select = `*,Author/Title,Editor/Title,Parent/Id,Parent/Title`;
                 const items = await web.lists.getById(props.AllList.SPSmartMetadataListID).items.select(select).expand("Author,Editor,Parent").filter(query).getAll();
@@ -298,7 +301,8 @@ export default function SmartMetadataEditPopup(props: any) {
                             let postData = {
                                 SharewebCategoriesId: { "results": Category },
                             };
-                            await sp.web.lists.getById(ListId).items.getById(smart.Id).update(postData);
+                            const web = new Web(props?.AllList?.SPSitesListUrl);
+                            await web.lists.getById(ListId).items.getById(smart.Id).update(postData);
                             AllSitesTask.forEach((taskitem: any, index: any) => {
                                 if (taskitem.Id == selctitemid) {
                                     AllSitesTask.splice(index, 1);

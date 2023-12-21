@@ -2216,7 +2216,7 @@ private async updateProjectComponentServices(dataUpdate:any) {
                       <div className="Taskaddcomment row">
                         {this.state.Result["BasicImageInfo"] != null && this.state.Result["BasicImageInfo"].length > 0 &&
                           <div className="bg-white col-sm-4 mt-2 p-0">
-                            <label className='form-label full-width'>Images</label>
+                            <label className='form-label full-width fw-semibold'>Images</label>
                             {this.state.Result["BasicImageInfo"] != null && this.state.Result["BasicImageInfo"]?.map((imgData: any, i: any) => {
                               return <div className="taskimage border mb-3">
                                 {/*  <BannerImageCard imgData={imgData}></BannerImageCard> */}
@@ -2265,7 +2265,7 @@ private async updateProjectComponentServices(dataUpdate:any) {
                             this.state.Result["FeedBack"][0]?.FeedBackDescriptions?.length > 0 &&
                             this.state.Result["FeedBack"][0]?.FeedBackDescriptions[0]?.Title != '' && this.state.countfeedback >= 0 &&
                             <div className={"Addcomment " + "manage_gap"}>
-                               <label className='form-label full-width'>Task description</label>
+                               <label className='form-label full-width fw-semibold'>Task description</label>
                               {this.state.Result["FeedBack"][0]?.FeedBackDescriptions?.map((fbData: any, i: any) => {
                                 let userdisplay: any = [];
                                 userdisplay.push({ Title: this.props?.userDisplayName })
