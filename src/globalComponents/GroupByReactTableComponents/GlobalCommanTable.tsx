@@ -858,9 +858,9 @@ const GlobalCommanTable = (items: any, ref: any) => {
 
     return (
         <>
-            <span className="toolbox">
+            {items?.bulkEditIcon === true && bulkEditingCongration && <span className="toolbox">
                 <BulkEditingFeature ContextValue={items?.AllListId} priorityRank={items?.priorityRank} dragedTask={dragedTask} precentComplete={items?.precentComplete} bulkEditingCongration={bulkEditingCongration} selectedData={table?.getSelectedRowModel()?.flatRows} />
-            </span>
+            </span>}
             {showHeader === true && <div className='tbl-headings justify-content-between fixed-Header top-0' style={{ background: '#e9e9e9' }}>
                 <span className='leftsec'>
                     {showingAllPortFolioCount === true ? <div className='alignCenter mt--2'>
