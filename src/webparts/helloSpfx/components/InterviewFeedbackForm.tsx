@@ -237,21 +237,28 @@ export default function GetData(props: any) {
                     Position: item.Positions ? item.Positions.Title : null,
                 };
             });
-            const categorizedItems = response.reduce((accumulator: { newCandidates: any[]; inProcessCand: any[]; archiveCandidates: any[]; }, currentItem: { Status0: any; }) => {
+            const categorizedItems = response.reduce((accumulator: { newCandidates: any[]; inProcessCand: any[]; archiveCandidates: any[]; }, currentItem: {
+                Positions: any; Status0: any;
+            }) => {
+                const itemWithPosition = {
+                    ...currentItem,
+                    Position: currentItem.Positions ? currentItem.Positions.Title : null,
+                };
+
                 switch (currentItem.Status0) {
                     case undefined:
                     case '':
                     case 'New Candidate':
-                        accumulator.newCandidates.push(currentItem);
+                        accumulator.newCandidates.push(itemWithPosition);
                         break;
                     case 'Under Consideration':
                     case 'Interview':
                     case 'Negotiation':
-                        accumulator.inProcessCand.push(currentItem);
+                        accumulator.inProcessCand.push(itemWithPosition);
                         break;
                     case 'Hired':
                     case 'Rejected':
-                        accumulator.archiveCandidates.push(currentItem);
+                        accumulator.archiveCandidates.push(itemWithPosition);
                         break;
                     default:
                         break;
@@ -291,27 +298,32 @@ export default function GetData(props: any) {
             })
     }
     const delItem = (itm: any) => {
-        const web = new Web('https://hhhhteams.sharepoint.com/sites/HHHH/HR/')
-        web.lists
-            .getById(props?.props?.InterviewFeedbackFormListId)
-            .items.getById(itm.Id).recycle().then(() => {
-                for (var i = 0; i < listData.length; i++) {
-                    if (listData[i].id === itm.Id) {
-                        itm.Id = i;
-                        break;
+        const confirmDelete = window.confirm("Are you sure you want to delete this item?");
+        if (confirmDelete) {
+            const web = new Web('https://hhhhteams.sharepoint.com/sites/HHHH/HR/');
+            web.lists
+                .getById(props?.props?.InterviewFeedbackFormListId)
+                .items.getById(itm.Id)
+                .recycle()
+                .then(() => {
+                    const index = listData.findIndex((item: { Id: any; }) => item.Id === itm.Id);
+                    if (index !== -1) {
+
+                        listData.splice(index, 1);
+                        setListData([...listData]); // Update state with the new listData
+                        console.log(`Item with ID ${itm.Id} removed from listData.`);
+                    } else {
+                        console.warn(`Item with ID ${itm.Id} not found in listData.`);
                     }
-                }
-                if (itm.Id !== -1) {
-                    listData.splice(itm.Id, 1);
-                    setListData(listData)
-                    console.log(`Item with ID ${itm.Id} removed from listData.`);
-                } else {
-                    console.warn(`Item with ID ${itm.Id} not found in listData.`);
-                }
-            }).catch((error: any) => {
-                console.log(error)
-            })
-    }
+                })
+                .catch((error: any) => {
+                    console.error(error);
+                });
+        } else {
+
+            console.log("Deletion canceled.");
+        }
+    };
     const handleTabChange = (tab: string) => {
         setactiveTab(tab)
     }
@@ -384,7 +396,7 @@ export default function GetData(props: any) {
                 <div className='subheading'>
                     Add / Edit Status
                 </div>
-                <Tooltip ComponentId='6025' />
+                <Tooltip ComponentId='7930' />
             </>
         );
     };
