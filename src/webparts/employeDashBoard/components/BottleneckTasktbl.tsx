@@ -274,7 +274,7 @@ const BottleneckTasktbl = (Tile: any) => {
                         <div className="Alltable maXh-300" style={{ height: "300px" }}>
                             {bottleneckTask && (
                                 <GlobalCommanTable
-                                wrapperHeight="77%"
+                                wrapperHeight="87%"
                                     showHeader={true}
                                     columns={Bottlecolumn}
                                     data={bottleneckTask}

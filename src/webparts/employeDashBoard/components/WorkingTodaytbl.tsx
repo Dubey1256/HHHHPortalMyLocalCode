@@ -251,7 +251,7 @@ const WorkingTodaytbl = (Tile: any) => {
                         <div className="Alltable maXh-300 scrollbar" style={{ height: "300px" }}>
                             {todaysTask && (
                                 <GlobalCommanTable
-                                    wrapperHeight="77%"
+                                    wrapperHeight="87%"
                                     showHeader={true}
                                     columns={columnss}
                                     data={todaysTask}
