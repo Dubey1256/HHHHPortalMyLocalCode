@@ -96,7 +96,7 @@ const TopNavigation = (dynamicData: any) => {
         "Id",
         "Title",
         "href",
-        "ParentID",
+        "Parent/Id","Parent/Title",
         "Order0",
         "SortOrder",
         "ownersonly",
@@ -108,7 +108,7 @@ const TopNavigation = (dynamicData: any) => {
         "Editor/Id",
         "Editor/Title"
       )
-      .expand("Editor,Author")
+      .expand("Editor,Author,Parent")
       .top(4999)
       .get();
     console.log(TaskTypeItems);
