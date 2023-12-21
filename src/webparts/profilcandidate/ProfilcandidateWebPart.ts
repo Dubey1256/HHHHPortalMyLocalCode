@@ -57,7 +57,6 @@ export default class ProfilcandidateWebPart extends BaseClientSideWebPart<IProfi
               environmentMessage = this.context.isServedFromLocalhost ? strings.AppLocalEnvironmentOutlook : strings.AppOutlookEnvironment;
               break;
             case 'Teams': // running in Teams
-            break;
             // case 'TeamsModern':
             //   environmentMessage = this.context.isServedFromLocalhost ? strings.AppLocalEnvironmentTeams : strings.AppTeamsTabEnvironment;
             //   break;

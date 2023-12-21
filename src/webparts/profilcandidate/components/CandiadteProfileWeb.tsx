@@ -5,12 +5,13 @@ import { Web, sp } from 'sp-pnp-js';
 import moment, * as Moment from "moment";
 import { FaSquarePhone } from "react-icons/fa6";
 import { IoMdMail } from "react-icons/io";
+import './CandidateProfile.css';
 import { FaCity } from "react-icons/fa";
 import { ColumnDef } from '@tanstack/react-table';
 import { myContextValue } from '../../../globalComponents/globalCommon'
 import HHHHEditComponent from '../../contactSearch/components/contact-search/popup-components/HHHHEditcontact';
 import GlobalCommanTable from '../../../globalComponents/GroupByReactTableComponents/GlobalCommanTable';
-import StarRating from '../../helloSpfx/components/StarRating';
+import CandidateRating from './CandidateRating';
 import EditPopup from '../../helloSpfx/components/EditPopup';
 
 let allListId: any = {};
@@ -25,13 +26,7 @@ const Profilcandidate = (props: any) => {
     const [localRatings, setLocalRatings] = useState([]);
     const [isEditPopupOpen, setIsEditPopupOpen] = useState(false);
     const [selectedItem, setSelectedItem]: any = useState(null);
-    const [contractData, setContractData] = useState([]);
     const [TaggedDocuments, setTaggedDocuments] = useState<any[]>([]);
-    const [siteTaggedHR, setSiteTaggedHR] = useState(false);
-    const [URLs, setURLs] = useState([]);
-    const [createContractPopup, setCreateContractPopup] = useState(false);
-    const [hrUpdateData, setHrUpdateData]: any = useState()
-    const [EditContactStatus, setEditContactStatus] = useState(false);
     const web = new Web('https://hhhhteams.sharepoint.com/sites/HHHH/HR/');
     useEffect(() => {
         const params = new URLSearchParams(window.location.search);
@@ -128,6 +123,14 @@ const Profilcandidate = (props: any) => {
                                 <div className="bg-Fa profileLeftSec col-md-3">Status</div>
                                 <div className='bg-Ff profileRightSec col-md-9'>{EmployeeData?.Status0} </div>
                             </div>
+                            <div className='profileHead'>
+                                <div className="bg-Fa profileLeftSec col-md-3">Platform</div>
+                                <div className='bg-Ff profileRightSec col-md-9'>
+                                    {EmployeeData?.Platform && EmployeeData?.Platform.length > 0
+                                        ? EmployeeData.Platform.join(', ')
+                                        : 'No Platform specified'}
+                                </div>
+                            </div>
                         </div>
 
                     </div>
@@ -155,93 +158,96 @@ const Profilcandidate = (props: any) => {
                 </div>
                 <div className='col-sm-12 px-2 mt-3 row'>
                     <div className='siteBdrBottom siteColor sectionHead ps-0 mb-2'>Documents</div>
-                    <div className='input-group'>
-                        {TaggedDocuments.map(document => (
-                            <div className="documenttype-list alignCenter" key={document.Id}>
-                                <span className="mr-10" style={{ display: document.File_x0020_Type === 'pdf' ? 'inline' : 'none' }}>
-                                    <span title={document.Title} className="svg__iconbox svg__icon--pdf"></span>
-                                </span>
-                                <span className="mr-10" style={{ display: document.File_x0020_Type === 'xlsx' ? 'inline' : 'none' }}>
-                                    <span title={document.Title} className="svg__iconbox svg__icon--xlsx"></span>
-                                </span>
-                                <span className="mr-10" style={{ display: document.File_x0020_Type === 'aspx' ? 'inline' : 'none' }}>
-                                    <span title={document.Title} className="svg__iconbox svg__icon--unknownFile"></span>
-                                </span>
-                                <span className="mr-10" style={{ display: document.File_x0020_Type === 'docx' ? 'inline' : 'none' }}>
-                                    <span title={document.Title} className="svg__iconbox svg__icon--docx"></span>
-                                </span>
-                                <span className="mr-10" style={{ display: !document.File_x0020_Type || document.File_x0020_Type === 'undefined' ? 'inline' : 'none' }}>
-                                    <span className="svg__iconbox svg__icon--document"></span>
-                                </span>
-                                <span style={{ display: document.File_x0020_Type !== 'aspx' ? 'inline' : 'none' }}>
-                                    <a href={`${document.EncodedAbsUrl}?web=1`} target="_blank">
-                                        <span>
-                                            <span style={{ display: document.FileLeafRef !== 'undefined' ? 'inline' : 'none' }}>
-                                                {document.FileLeafRef}
+                    <div>
+                        {TaggedDocuments.length > 0 ? (
+                            TaggedDocuments.map(document => (
+                                <div className="documenttype-list alignCenter" key={document.Id}>
+                                    <span className="mr-10" style={{ display: document.File_x0020_Type === 'pdf' ? 'inline' : 'none' }}>
+                                        <span title={document.Title} className="svg__iconbox svg__icon--pdf"></span>
+                                    </span>
+                                    <span className="mr-10" style={{ display: document.File_x0020_Type === 'xlsx' ? 'inline' : 'none' }}>
+                                        <span title={document.Title} className="svg__iconbox svg__icon--xlsx"></span>
+                                    </span>
+                                    <span className="mr-10" style={{ display: document.File_x0020_Type === 'aspx' ? 'inline' : 'none' }}>
+                                        <span title={document.Title} className="svg__iconbox svg__icon--unknownFile"></span>
+                                    </span>
+                                    <span className="mr-10" style={{ display: document.File_x0020_Type === 'docx' ? 'inline' : 'none' }}>
+                                        <span title={document.Title} className="svg__iconbox svg__icon--docx"></span>
+                                    </span>
+                                    <span className="mr-10" style={{ display: !document.File_x0020_Type || document.File_x0020_Type === 'undefined' ? 'inline' : 'none' }}>
+                                        <span className="svg__iconbox svg__icon--document"></span>
+                                    </span>
+                                    <span style={{ display: document.File_x0020_Type !== 'aspx' ? 'inline' : 'none' }}>
+                                        <a href={`${document.EncodedAbsUrl}?web=1`} target="_blank">
+                                            <span>
+                                                <span style={{ display: document.FileLeafRef !== 'undefined' ? 'inline' : 'none' }}>
+                                                    {document.FileLeafRef}
+                                                </span>
+                                                <span style={{ display: document.FileLeafRef === 'undefined' ? 'inline' : 'none' }}>
+                                                    {document.FileLeafRef}
+                                                </span>
                                             </span>
-                                            <span style={{ display: document.FileLeafRef === 'undefined' ? 'inline' : 'none' }}>
-                                                {document.FileLeafRef}
-                                            </span>
-                                        </span>
-                                    </a>
-                                </span>
+                                        </a>
+                                    </span>
+                                </div>
+                            ))
+                        ) : (
+                            <div className="no-remarks-message-container">
+                                <div className="no-remarks-message">No Documents to Show</div>
                             </div>
-
-                        ))}
+                        )}
                     </div>
                 </div>
                 <div className='col-sm-12 px-2 mt-3 row'>
                     <div className='siteBdrBottom siteColor sectionHead ps-0 mb-2'>Feedback</div>
-                    <div className="col-sm-12 my-4">
-                        <details>
-                            <summary className="alignCenter">
-                                <label className="toggler full_width">
-                                    <div className="alignCenter">Skill ratings</div>
-                                </label>
-                            </summary>
-                            <div className="border border-top-0 p-2">
-                                <div className="star-block">
-                                    {localRatings?.map((rating: any, index: number) => (
-                                        <div key={index} className="skillBlock alignCenter w-100">
+                    {localRatings && localRatings.length > 0 ? (
+                        <div className="border border-top-0 p-2">
+                            <div className="star-block">
+                                {localRatings.map((rating: any, index: number) => (
+                                    <div key={index} className="skillBlock row alignCenter w-100">
+                                        <div className='col-md-3 p-0'>
                                             <div className="skillTitle">{rating.SkillTitle}</div>
-                                            <StarRating
-                                                rating={rating}
-                                                onRatingSelected={(updatedRating: any) => {
-                                                    const updatedRatings = [...localRatings];
-                                                    // updatedRatings[index] = updatedRating;
-                                                    setLocalRatings(updatedRatings);
-                                                }}
-                                            />
                                         </div>
-                                    ))}
-                                </div>
+                                        <CandidateRating
+                                            rating={rating}
+                                            onRatingSelected={(updatedRating: any) => {
+                                                const updatedRatings = [...localRatings];
+                                                // updatedRatings[index] = updatedRating;
+                                                setLocalRatings(updatedRatings);
+                                            }}
+                                        />
+                                    </div>
+                                ))}
                             </div>
-                        </details>
-                    </div>
+                        </div>
+                    ) : (
+                        <div className="no-remarks-message-container">
+                            <div className="no-remarks-message">No Feedback to Show</div>
+                        </div>
+                    )}
                 </div>
 
                 <div className='col-sm-12 px-2 mt-3 row'>
                     <div className='siteBdrBottom siteColor sectionHead ps-0 mb-2'>Overall Remarks</div>
-                    <textarea
-                        name="remarks"
-                        value={EmployeeData?.Remarks}
-                        // onChange={(e) => setoverAllRemark(e.target.value)}
-                        className="full_width scrollbar"
-                    />
+                    {EmployeeData?.Remarks ? (
+                        <div dangerouslySetInnerHTML={{ __html: EmployeeData?.Remarks }} />
+                    ) : (
+                        <div className="no-remarks-message-container">
+                            <div className="no-remarks-message">No remarks to show</div>
+                        </div>
+                    )}
                 </div>
                 <div className='col-sm-12 px-2 mt-3 row'>
                     <div className='siteBdrBottom siteColor sectionHead ps-0 mb-2'>Cover Letter/Motivation</div>
-                    <textarea
-                        name="remarks"
-                        value={EmployeeData?.Motivation}
-                        // onChange={(e) => setoverAllRemark(e.target.value)}
-                        className="full_width scrollbar"
-                    />
+                    {EmployeeData?.Motivation ? (
+                        <div dangerouslySetInnerHTML={{ __html: EmployeeData?.Motivation }} />
+                    ) : (
+                        <div className="no-remarks-message-container">
+                            <div className="no-remarks-message">No cover letter to show</div>
+                        </div>
+                    )}
                 </div>
-
-
             </div>
-
         </myContextValue.Provider>
     )
 }
