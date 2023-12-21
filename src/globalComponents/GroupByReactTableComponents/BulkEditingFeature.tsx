@@ -94,7 +94,7 @@ export function PrecentCompleteUpdate(taskValue: any) {
         let web = new Web(task?.taskValue?.siteUrl);
         await web.lists.getById(task?.taskValue?.listId).items.getById(task?.taskValue?.Id).update({
             PercentComplete: TaskStatus,
-
+            Status:TaskApproval
         }).then((res: any) => {
             alert('Your PrecentComplete being updated successfully!')
             console.log("Drop Updated", res);
