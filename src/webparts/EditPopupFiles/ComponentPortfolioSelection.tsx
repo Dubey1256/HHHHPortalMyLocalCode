@@ -86,6 +86,7 @@ const ComponentPortPolioPopup = ({ props, Dynamic, Call }: any) => {
         "DueDate",
         "Status",
         "ItemRank",
+        "Sitestagging",
         "ClientTime",
         "Item_x0020_Type",
         "Parent/Id",
