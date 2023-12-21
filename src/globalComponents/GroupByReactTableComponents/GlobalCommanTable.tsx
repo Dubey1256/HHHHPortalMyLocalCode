@@ -23,7 +23,7 @@ import jsPDF from 'jspdf';
 import autoTable from 'jspdf-autotable';
 import * as XLSX from "xlsx";
 import saveAs from "file-saver";
-import { RiFileExcel2Fill } from 'react-icons/ri';
+import { RiFileExcel2Fill, RiListSettingsFill } from 'react-icons/ri';
 import ShowTeamMembers from '../ShowTeamMember';
 import SelectFilterPanel from './selectFilterPannel';
 import ExpndTable from '../ExpandTable/Expandtable';
@@ -35,6 +35,8 @@ import { Alert } from 'react-bootstrap';
 import DateColumnFilter from './DateColumnFilter';
 import { AiOutlineMore } from 'react-icons/ai';
 import { BiDotsVertical } from 'react-icons/bi';
+import BulkEditingFeature from './BulkEditingFeature';
+import BulkEditingConfrigation from './BulkEditingConfrigation';
 // ReactTable Part/////
 declare module "@tanstack/table-core" {
     interface FilterFns {
@@ -262,6 +264,7 @@ const GlobalCommanTable = (items: any, ref: any) => {
     const [globalSearchType, setGlobalSearchType] = React.useState("ALL");
     const [selectedFilterPanelIsOpen, setSelectedFilterPanelIsOpen] = React.useState(false);
     const [dateColumnFilter, setDateColumnFilter] = React.useState(false);
+    const [bulkEditingSettingPopup, setBulkEditingSettingPopup] = React.useState(false);
     const [dateColumnFilterData, setDateColumnFilterData] = React.useState({});
     const [tablecontiner, settablecontiner]: any = React.useState("hundred");
     const [trueRestructuring, setTrueRestructuring] = React.useState(false);
@@ -274,6 +277,10 @@ const GlobalCommanTable = (items: any, ref: any) => {
         timeSheetsDescriptionSearch: { timeSheetsDescriptionSearch: 'timeSheetsDescriptionSearch', Selected: true, lebel: 'Timesheet Data' },
     });
     const [selectedFilterCount, setSelectedFilterCount] = React.useState<any>({ selectedFilterCount: 'All content' })
+
+    const [dragedTask, setDragedTask] = React.useState({ task: {}, taskId: '' });
+    const [bulkEditingCongration, setBulkEditingCongration] = React.useState<any>({});
+
     React.useEffect(() => {
 
         if (fixedWidth === true) {
@@ -370,6 +377,22 @@ const GlobalCommanTable = (items: any, ref: any) => {
         }
     }
     /****************** DateColumns Filter End ***************/
+    /// ******************* Bulk Editing Setting ******************/
+
+    const bulkEditingSetting = React.useCallback((eventSetting: any) => {
+        if (eventSetting != 'close') {
+            setBulkEditingCongration(eventSetting);
+            setBulkEditingSettingPopup(false);
+        } else {
+            setBulkEditingSettingPopup(false);
+        }
+    }, []);
+
+    const bulkEditingSettingPopupEvent = () => {
+        setBulkEditingSettingPopup(true);
+    }
+    ///******************** Bulk Editing Setting End************* */
+
     React.useEffect(() => {
         if (columns?.length > 0 && columns != undefined) {
             let sortingDescData: any = [];
@@ -818,8 +841,26 @@ const GlobalCommanTable = (items: any, ref: any) => {
     //Virtual rows
 
 
+
+    /**************************************** Drag And Drop Functionality ***************************************/
+    const startDrag = (task: any, taskId: any) => {
+        if (items?.bulkEditIcon === true) {
+            let taskDetails = {
+                task: task,
+                taskId: taskId
+            }
+            setDragedTask(taskDetails)
+            console.log(task, origin);
+        }
+    }
+    /**************************************** Drag And Drop Functionality End ***************************************/
+
+
     return (
         <>
+            {items?.bulkEditIcon === true && bulkEditingCongration && <span className="toolbox">
+                <BulkEditingFeature ContextValue={items?.AllListId} priorityRank={items?.priorityRank} dragedTask={dragedTask} precentComplete={items?.precentComplete} bulkEditingCongration={bulkEditingCongration} selectedData={table?.getSelectedRowModel()?.flatRows} />
+            </span>}
             {showHeader === true && <div className='tbl-headings justify-content-between fixed-Header top-0' style={{ background: '#e9e9e9' }}>
                 <span className='leftsec'>
                     {showingAllPortFolioCount === true ? <div className='alignCenter mt--2'>
@@ -974,6 +1015,8 @@ const GlobalCommanTable = (items: any, ref: any) => {
                     <a className='Prints' onClick={() => downloadPdf()}>
                         <i className="fa fa-print" aria-hidden="true" style={{ color: `${portfolioColor}` }} title="Print"></i>
                     </a>
+                    {items?.bulkEditIcon === true && <a className='smartTotalTime' title='Bulk editing setting' onClick={() => bulkEditingSettingPopupEvent()} ><RiListSettingsFill style={{ color: `${portfolioColor}` }} /></a>}
+
                     {expandIcon === true && <a className="expand" title="Expand table section" style={{ color: `${portfolioColor}` }}>
                         <ExpndTable prop={expndpopup} prop1={tablecontiner} />
                     </a>}
@@ -1033,10 +1076,7 @@ const GlobalCommanTable = (items: any, ref: any) => {
                                     <tr
                                         // className={row?.original?.lableColor}
                                         className={row?.original?.IsSCProtected != undefined && row?.original?.IsSCProtected == true ? `Disabled-Link opacity-75 ${row?.original?.lableColor}` : `${row?.original?.lableColor}`}
-                                        key={row.id}
-                                        data-index={virtualRow.index}
-                                        ref={virtualizer.measureElement}
-                                    >
+                                        key={row.id} data-index={virtualRow.index} ref={virtualizer.measureElement} onDragStart={(e) => startDrag(row?.original, row?.original?.TaskId)} onDragOver={(e) => e.preventDefault()}>
                                         {row.getVisibleCells().map((cell: any) => {
                                             return (
                                                 <td className={row?.original?.boldRow} key={cell.id} style={row?.original?.fontColorTask != undefined ? { color: `${row?.original?.fontColorTask}` } : { color: `${row?.original?.PortfolioType?.Color}` }}>
@@ -1118,7 +1158,9 @@ const GlobalCommanTable = (items: any, ref: any) => {
 
 
             {dateColumnFilter && <DateColumnFilter portfolioTypeDataItemBackup={items?.portfolioTypeDataItemBackup} taskTypeDataItemBackup={items?.taskTypeDataItemBackup} portfolioTypeData={portfolioTypeData} taskTypeDataItem={items?.taskTypeDataItem} dateColumnFilterData={dateColumnFilterData} flatViewDataAll={items?.flatViewDataAll} data={data} setData={items?.setData} setLoaded={items?.setLoaded} isOpen={dateColumnFilter} selectedDateColumnFilter={selectedDateColumnFilter} portfolioColor={portfolioColor} Lable='DueDate' />}
+            {bulkEditingSettingPopup && <BulkEditingConfrigation isOpen={bulkEditingSettingPopup} bulkEditingSetting={bulkEditingSetting} />}
         </>
     )
 }
-export default React.forwardRef(GlobalCommanTable);    
+export default React.forwardRef(GlobalCommanTable);
+
