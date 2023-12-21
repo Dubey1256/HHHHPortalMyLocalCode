@@ -112,7 +112,7 @@ const CreateContract = (props: any) => {
                className="subheading">
               Select Employee
             </div>
-            <Tooltip ComponentId="1683" />
+            <Tooltip ComponentId="8048" />
          </>
       );
    }
@@ -123,7 +123,7 @@ const CreateContract = (props: any) => {
                className="subheading">
                Create Contract
             </div>
-            <Tooltip ComponentId="1683" />
+            <Tooltip ComponentId="8048" />
 
          </>
       );
@@ -135,7 +135,7 @@ const CreateContract = (props: any) => {
                className="subheading">
                Select Contract
             </div>
-            <Tooltip ComponentId="1683" />
+            <Tooltip ComponentId="8048" />
 
          </>
       );

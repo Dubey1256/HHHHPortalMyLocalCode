@@ -48,7 +48,9 @@ const EmployeProfileMain = (props: any) => {
             GMBH_CONTACT_SEARCH_LISTID: props?.props?.GMBH_CONTACT_SEARCH_LISTID,
             HR_EMPLOYEE_DETAILS_LIST_ID: props?.props?.HR_EMPLOYEE_DETAILS_LIST_ID,
             ContractListID: props?.props?.ContractListID,
+            HR_SMARTMETADATA_LISTID:props?.props?.HR_SMARTMETADATA_LISTID,
             siteUrl: props?.props.Context.pageContext.web.absoluteUrl,
+
             jointSiteUrl: "https://hhhhteams.sharepoint.com/sites/HHHH"
         }
         if (allSite?.MainSite == true) {

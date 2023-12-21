@@ -1436,8 +1436,8 @@ class Taskprofile extends React.Component<ITaskprofileProps, ITaskprofileState> 
     this.setState({
       ApprovalHistoryPopup: true,
       ApprovalPointUserData: items,
-      ApprovalPointCurrentParentIndex: parentIndex + 1,
-      currentArraySubTextIndex: subChildIndex != null ? subChildIndex + 1 : null
+      ApprovalPointCurrentParentIndex: parentIndex+1,
+      currentArraySubTextIndex: subChildIndex!=null?subChildIndex+1:null
 
     })
 
@@ -2226,7 +2226,7 @@ class Taskprofile extends React.Component<ITaskprofileProps, ITaskprofileState> 
                       <div className="Taskaddcomment row">
                         {this.state.Result["BasicImageInfo"] != null && this.state.Result["BasicImageInfo"].length > 0 &&
                           <div className="bg-white col-sm-4 mt-2 p-0">
-                            <label className='form-label full-width'>Images</label>
+                            <label className='form-label full-width fw-semibold'>Images</label>
                             {this.state.Result["BasicImageInfo"] != null && this.state.Result["BasicImageInfo"]?.map((imgData: any, i: any) => {
                               return <div className="taskimage border mb-3">
                                 {/*  <BannerImageCard imgData={imgData}></BannerImageCard> */}
@@ -2275,7 +2275,7 @@ class Taskprofile extends React.Component<ITaskprofileProps, ITaskprofileState> 
                             this.state.Result["FeedBack"][0]?.FeedBackDescriptions?.length > 0 &&
                             this.state.Result["FeedBack"][0]?.FeedBackDescriptions[0]?.Title != '' && this.state.countfeedback >= 0 &&
                             <div className={"Addcomment " + "manage_gap"}>
-                              <label className='form-label full-width'>Task description</label>
+                               <label className='form-label full-width fw-semibold'>Task description</label>
                               {this.state.Result["FeedBack"][0]?.FeedBackDescriptions?.map((fbData: any, i: any) => {
                                 let userdisplay: any = [];
                                 userdisplay.push({ Title: this.props?.userDisplayName })
@@ -2293,8 +2293,8 @@ class Taskprofile extends React.Component<ITaskprofileProps, ITaskprofileState> 
                                   return (
                                     <>
                                       <div>
-
-
+                                     
+                                       
                                         {/* { this.state?.emailcomponentopen && countemailbutton==0 &&<EmailComponenet approvalcallback={() => { this.approvalcallback() }}  Context={this.props?.Context} emailStatus={this.state?.emailComponentstatus}  currentUser={this.props?.CurrentUser} items={this.props?.Result} />} */}
                                         <div className="col mb-2">
                                           <div className='justify-content-between d-flex'>
@@ -2642,12 +2642,9 @@ class Taskprofile extends React.Component<ITaskprofileProps, ITaskprofileState> 
 
                                         {this.state.ApprovalHistoryPopup ? <ApprovalHistoryPopup
                                           ApprovalPointUserData={this.state.ApprovalPointUserData}
-                                          indexSHow={this.state.currentArraySubTextIndex != null ? this.state.ApprovalPointCurrentParentIndex + "." + this.state.currentArraySubTextIndex : this.state.ApprovalPointCurrentParentIndex}
-                                          ApprovalPointCurrentIndex={this.state.ApprovalPointCurrentParentIndex - 1}
+                                          ApprovalPointCurrentIndex={this.state.ApprovalPointCurrentParentIndex}
                                           ApprovalPointHistoryStatus={this.state.ApprovalHistoryPopup}
-                                          currentArrayIndex={this.state.currentArraySubTextIndex - 1}
-                                          usefor="TaskProfile"
-
+                                          currentArrayIndex={this.state.currentArraySubTextIndex}
                                           callBack={() => this.ApprovalHistoryPopupCallBack()}
                                         />
                                           : null}

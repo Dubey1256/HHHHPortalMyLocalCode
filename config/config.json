@@ -320,6 +320,14 @@
         }
       ]
     },
+    "recruitment-landing-page-web-part": {
+      "components": [
+        {
+          "entrypoint": "./lib/webparts/recruitmentLandingPage/RecruitmentLandingPageWebPart.js",
+          "manifest": "./src/webparts/recruitmentLandingPage/RecruitmentLandingPageWebPart.manifest.json"
+        }
+      ]
+    },
     "hr-contract-search-web-part": {
       "components": [
         {
@@ -333,6 +341,14 @@
         {
           "entrypoint": "./lib/webparts/hrContractProfile/HrContractProfileWebPart.js",
           "manifest": "./src/webparts/hrContractProfile/HrContractProfileWebPart.manifest.json"
+        }
+      ]
+    },
+    "profilcandidate-web-part": {
+      "components": [
+        {
+          "entrypoint": "./lib/webparts/profilcandidate/ProfilcandidateWebPart.js",
+          "manifest": "./src/webparts/profilcandidate/ProfilcandidateWebPart.manifest.json"
         }
       ]
     },
@@ -366,10 +382,12 @@
   "localizedResources": {
     "HelloSpfxWebPartStrings": "lib/webparts/helloSpfx/loc/{locale}.js",
     "EmployeProfileWebPartStrings": "lib/webparts/employeProfile/loc/{locale}.js",
+    "ProfilcandidateWebPartStrings": "lib/webparts/profilcandidate/loc/{locale}.js",
     "MeetingOverViewPageWebPartStrings": "lib/webparts/meetingOverViewPage/loc/{locale}.js",
     "AlertManagementWebPartStrings": "lib/webparts/alertManagement/loc/{locale}.js",
     "SmartConnectWebPartStrings": "lib/webparts/smartConnect/loc/{locale}.js",
     "ComponentProfileWebPartStrings": "lib/webparts/componentProfile/loc/{locale}.js",
+    "RecruitmentLandingPageWebPartStrings": "lib/webparts/recruitmentLandingPage/loc/{locale}.js",
    "TaskprofileWebPartStrings": "lib/webparts/taskprofile/loc/{locale}.js",
     "ComponentCommentsWebPartStrings": "lib/webparts/componentComments/loc/{locale}.js",
     "FeedbackWebPartStrings": "lib/webparts/TimeReport/loc/{locale}.js",
