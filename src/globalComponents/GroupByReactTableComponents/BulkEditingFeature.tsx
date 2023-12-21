@@ -106,7 +106,7 @@ export function PrecentCompleteUpdate(taskValue: any) {
         <>
             <div className='clearfix px-1 my-3'>
                 <div className="percentSec  dueDateSec d-flex justify-content-lg-between">
-                    <span style={{ width: "125px" }}>Percent Complete</span>
+                    <span className="alignCenter" style={{ width: "110px" }}>Percent Complete</span>
                     {taskValue?.precentComplete?.map((item: any) => {
                         return (
                             <div className="percentTile" onDrop={(e: any) => handleDrop(item?.Title, 'precentComplete')} onDragOver={(e: any) => e.preventDefault()}>
