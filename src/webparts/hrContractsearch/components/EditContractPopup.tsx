@@ -56,7 +56,7 @@ const EditContractPopup = (props: any) => {
                     className="subheading">
                     Edit Contract- {EditData?.Title}
                 </div>
-                <Tooltip ComponentId="1683" />
+                <Tooltip ComponentId="3434" />
 
             </>
         );
