@@ -19,11 +19,15 @@ const [updateId , setUpdateId] : any = useState(0);
 
 const getData=async ()=>{
   const currentUrl = window.location.href;
-  const valueAfterLastSlash = currentUrl.substring(currentUrl.lastIndexOf('/') + 1);
+
+// Use a regular expression to extract the substring until ".aspx"
+var match = currentUrl.match(/\/([^/]+\.aspx)(\?.*)?$/);
+
+// Check if there's a match and extract the substring
+var valueAfterLastSlash = match ? match[1] : null;
   let web = new Web(props?.context?.siteUrl);
-  let taskUsers = [];
   
-  let whereClause = `FileLeafRef eq '${'Permission-Management-SPFX.aspx'}' and IsStatic eq 1`;
+  let whereClause = `FileLeafRef eq '${valueAfterLastSlash}' and IsStatic eq 1`;
   
   try {
      await web.lists
