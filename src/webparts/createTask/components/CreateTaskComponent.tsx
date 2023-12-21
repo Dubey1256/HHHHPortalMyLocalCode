@@ -830,23 +830,18 @@ function CreateTaskComponent(props: any) {
                         if (save?.siteType?.toLowerCase() == "shareweb" && selectedPortfolio?.length > 0) {
                             try {
                                 postClientTime = JSON.parse(selectedPortfolio[0]?.Sitestagging)
-                                postClientTime?.map((sitecomp: any) => {
-                                    if (sitecomp.Title != undefined && sitecomp.Title != "" && sitecomp.SiteName == undefined) {
-                                        sitecomp.SiteName = sitecomp.Title
-                                    }
-
-                                })
                                 siteCompositionDetails = selectedPortfolio[0]?.SiteCompositionSettings;
                             } catch (error) {
-                                console.log(error,"Error Client Time")
+                                console.log(error, "Error Client Time")
                             }
                         } else {
                             var siteComp: any = {};
-                            siteComp.SiteName = save?.siteType,
-                                siteComp.localSiteComposition = true
+                            siteComp.Title = save?.siteType,
+                            siteComp.localSiteComposition = true;
+                            siteComp.SiteImages = selectedSite?.Item_x005F_x0020_Cover?.Url;
                             siteComp.ClienTimeDescription = 100,
                                 //   siteComp.SiteImages = ,
-                                siteComp.Date = moment(new Date().toLocaleString()).format("MM-DD-YYYY");
+                            siteComp.Date = moment(new Date().toLocaleString()).format("MM-DD-YYYY");
                             postClientTime = [siteComp]
                         }
 
@@ -903,7 +898,7 @@ function CreateTaskComponent(props: any) {
                         SiteCompositionSettings: siteCompositionDetails != undefined ? siteCompositionDetails : '',
                         AssignedToId: { "results": AssignedToIds },
                         TaskTypeId: 2,
-                        ClientTime: postClientTime != undefined ? JSON.stringify(postClientTime) : '',
+                        Sitestagging: postClientTime != undefined ? JSON.stringify(postClientTime) : '',
                         ComponentLink: {
                             __metadata: { 'type': 'SP.FieldUrlValue' },
                             Description: save.taskUrl?.length > 0 ? save.taskUrl : null,
@@ -984,34 +979,34 @@ function CreateTaskComponent(props: any) {
                         if (UserEmailNotify) {
 
                             if (UserEmailNotify) {
-                             
-                                    let txtComment = `You have been tagged as Attention in the below task by ${loggedInUser?.Title}`;
-                                    let TeamMsg =
-                                        txtComment +
-                                        `</br> <a href=${selectedSite?.siteUrl?.Url}>${CreatedTaskID}-${newTitle}</a>`;
-                                   
-                                        let sendUserEmail: any = [];
-                                        TeamMessagearray?.map((userDtl: any) => {
-                                            taskUsers?.map((allUserItem: any) => {
-                                                if (userDtl?.IsSendAttentionEmail?.Id == allUserItem.AssingedToUserId) {
-                                                    sendUserEmail.push(allUserItem.Email);
-                                                }
-                                            });
-                                        });
-                                        if (sendUserEmail?.length > 0) {
-                                            await globalCommon.SendTeamMessage(
-                                                sendUserEmail,
-                                                TeamMsg,
-                                                props.SelectedProp.Context
-                                            );
-                                        }
-                                    
-                              
-                              
-                            }
-                              
 
- 
+                                let txtComment = `You have been tagged as Attention in the below task by ${loggedInUser?.Title}`;
+                                let TeamMsg =
+                                    txtComment +
+                                    `</br> <a href=${selectedSite?.siteUrl?.Url}>${CreatedTaskID}-${newTitle}</a>`;
+
+                                let sendUserEmail: any = [];
+                                TeamMessagearray?.map((userDtl: any) => {
+                                    taskUsers?.map((allUserItem: any) => {
+                                        if (userDtl?.IsSendAttentionEmail?.Id == allUserItem.AssingedToUserId) {
+                                            sendUserEmail.push(allUserItem.Email);
+                                        }
+                                    });
+                                });
+                                if (sendUserEmail?.length > 0) {
+                                    await globalCommon.SendTeamMessage(
+                                        sendUserEmail,
+                                        TeamMsg,
+                                        props.SelectedProp.Context
+                                    );
+                                }
+
+
+
+                            }
+
+
+
 
 
 
@@ -1600,12 +1595,12 @@ function CreateTaskComponent(props: any) {
             isOpenEditPopup: false,
             passdata: null
         })
-        if (items == 'Delete' || items =="Close") {
-            if (burgerMenuTaskDetails?.TaskType == 'Bug' || burgerMenuTaskDetails?.TaskType == 'Design' && createdTask?.Id!=undefined) {
+        if (items == 'Delete' || items == "Close") {
+            if (burgerMenuTaskDetails?.TaskType == 'Bug' || burgerMenuTaskDetails?.TaskType == 'Design' && createdTask?.Id != undefined) {
                 window.open(base_Url + "/SitePages/CreateTask.aspx", "_self")
                 createdTask = {};
-            } 
-        } else if (items == "Save" && createdTask?.Id != undefined ) {
+            }
+        } else if (items == "Save" && createdTask?.Id != undefined) {
             setTimeout(() => {
                 window.open(base_Url + "/SitePages/Task-Profile.aspx?taskId=" + createdTask?.Id + "&Site=" + createdTask?.siteType, "_self")
                 createdTask = {};
@@ -1719,7 +1714,7 @@ function CreateTaskComponent(props: any) {
 
                         </ul>
                         <div className="border border-top-0 clearfix p-2 tab-content " id="myTabContent">
-                            <div className="tab-pane Alltable p-0 show active"  style={{maxHeight:"300px",overflow:'hidden'}} id="URLTasks" role="tabpanel" aria-labelledby="URLTasks">
+                            <div className="tab-pane Alltable p-0 show active" style={{ maxHeight: "300px", overflow: 'hidden' }} id="URLTasks" role="tabpanel" aria-labelledby="URLTasks">
                                 {TaskUrlRelevantTask?.length > 0 ?
                                     <>
                                         <div className={TaskUrlRelevantTask?.length > 0 ? 'fxhg' : ''}>
@@ -1730,7 +1725,7 @@ function CreateTaskComponent(props: any) {
                                     </div>
                                 }
                             </div>
-                            <div className="tab-pane Alltable p-0 " style={{maxHeight:"300px",overflow:'hidden'}} id="PageTasks" role="tabpanel" aria-labelledby="PageTasks">
+                            <div className="tab-pane Alltable p-0 " style={{ maxHeight: "300px", overflow: 'hidden' }} id="PageTasks" role="tabpanel" aria-labelledby="PageTasks">
                                 {PageRelevantTask?.length > 0 ?
                                     <>
                                         <div className={PageRelevantTask?.length > 0 ? 'fxhg' : ''}>
@@ -1741,7 +1736,7 @@ function CreateTaskComponent(props: any) {
                                     </div>
                                 }
                             </div>
-                            <div className="tab-pane Alltable p-0" style={{maxHeight:"300px",overflow:'hidden'}} id="ComponentTasks" role="tabpanel" aria-labelledby="ComponentTasks">
+                            <div className="tab-pane Alltable p-0" style={{ maxHeight: "300px", overflow: 'hidden' }} id="ComponentTasks" role="tabpanel" aria-labelledby="ComponentTasks">
 
                                 {ComponentRelevantTask?.length > 0 ?
                                     <>

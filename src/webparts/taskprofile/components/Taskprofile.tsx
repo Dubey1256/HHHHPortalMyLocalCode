@@ -272,7 +272,7 @@ class Taskprofile extends React.Component<ITaskprofileProps, ITaskprofileState> 
       .getByTitle(this.state?.listName)
       .items
       .getById(this.state?.itemID)
-      .select("ID", "Title", "Comments", "ApproverHistory", "EstimatedTime", "SiteCompositionSettings", "TaskID", "Portfolio/Id", "Portfolio/Title", "Portfolio/PortfolioStructureID", "DueDate", "IsTodaysTask", 'EstimatedTimeDescription', "Approver/Id", "PriorityRank", "Approver/Title", "ParentTask/Id", "ParentTask/TaskID", "Project/Id", "Project/Title", "Project/PortfolioStructureID", "ParentTask/Title", "SmartInformation/Id", "AssignedTo/Id", "TaskLevel", "TaskLevel", "OffshoreComments", "AssignedTo/Title", "OffshoreImageUrl", "TaskCategories/Id", "TaskCategories/Title", "ClientCategory/Id", "ClientCategory/Title", "Status", "StartDate", "CompletedDate", "TeamMembers/Title", "TeamMembers/Id", "ItemRank", "PercentComplete", "Priority", "Created", "Author/Title", "Author/EMail", "BasicImageInfo", "ComponentLink", "FeedBack", "ResponsibleTeam/Title", "ResponsibleTeam/Id", "TaskType/Title", "ClientTime", "Editor/Title", "Modified", "Attachments", "AttachmentFiles")
+      .select("ID", "Title", "Comments", "ApproverHistory", "EstimatedTime", "SiteCompositionSettings", "TaskID", "Portfolio/Id", "Portfolio/Title", "Portfolio/PortfolioStructureID", "DueDate","Sitestagging", "IsTodaysTask", 'EstimatedTimeDescription', "Approver/Id", "PriorityRank", "Approver/Title", "ParentTask/Id", "ParentTask/TaskID", "Project/Id", "Project/Title", "Project/PortfolioStructureID", "ParentTask/Title", "SmartInformation/Id", "AssignedTo/Id", "TaskLevel", "TaskLevel", "OffshoreComments", "AssignedTo/Title", "OffshoreImageUrl", "TaskCategories/Id", "TaskCategories/Title", "ClientCategory/Id", "ClientCategory/Title", "Status", "StartDate", "CompletedDate", "TeamMembers/Title", "TeamMembers/Id", "ItemRank", "PercentComplete", "Priority", "Created", "Author/Title", "Author/EMail", "BasicImageInfo", "ComponentLink", "FeedBack", "ResponsibleTeam/Title", "ResponsibleTeam/Id", "TaskType/Title", "ClientTime", "Editor/Title", "Modified", "Attachments", "AttachmentFiles")
       .expand("TeamMembers", "Project", "Approver", "ParentTask", "Portfolio", "SmartInformation", "AssignedTo", "TaskCategories", "Author", "ClientCategory", "ResponsibleTeam", "TaskType", "Editor", "AttachmentFiles")
       .get()
     AllListId = {
@@ -331,7 +331,6 @@ class Taskprofile extends React.Component<ITaskprofileProps, ITaskprofileState> 
     taskDetails["Categories"] = category;
     this.taskResult = taskDetails;
     await this.GetTaskUsers(taskDetails);
-    await this.GetSmartMetaData(taskDetails?.ClientCategory, taskDetails?.ClientTime);
 
     this.currentUser = this.GetUserObject(this.props?.userDisplayName);
     if (taskDetails["Comments"] != null && taskDetails["Comments"] != undefined) {
@@ -385,7 +384,7 @@ class Taskprofile extends React.Component<ITaskprofileProps, ITaskprofileState> 
       IsTodaysTask: taskDetails["IsTodaysTask"],
       PriorityRank: taskDetails["PriorityRank"],
       EstimatedTime: taskDetails["EstimatedTime"],
-      ClientTime: taskDetails["ClientTime"] != null && JSON.parse(taskDetails["ClientTime"]),
+      ClientTime: taskDetails["ClientTime"] != null && JSON.parse(taskDetails["Sitestagging"]),
       ApproverHistory: taskDetails["ApproverHistory"] != null ? JSON.parse(taskDetails["ApproverHistory"]) : "",
       OffshoreComments: OffshoreComments.length > 0 ? OffshoreComments.reverse() : null,
       OffshoreImageUrl: taskDetails["OffshoreImageUrl"] != null && JSON.parse(taskDetails["OffshoreImageUrl"]),
@@ -590,63 +589,7 @@ class Taskprofile extends React.Component<ITaskprofileProps, ITaskprofileState> 
 
   }
 
-  private async GetSmartMetaData(ClientCategory: any, ClientTime: any) {
-    let array2: any = [];
-    ClientTimeArray = []
-    if (((ClientTime == null) && ClientTimeArray?.length == 0)) {
-      var siteComp: any = {};
-      siteComp.SiteName = this.state?.listName,
-        siteComp.ClienTimeDescription = 100,
-        siteComp.SiteIcon = this.state?.listName
-      ClientTimeArray.push(siteComp);
-    }
 
-    else if (ClientTime != null) {
-      ClientTimeArray = JSON.parse(ClientTime);
-
-    }
-    let web = new Web(this.props?.siteUrl);
-    var smartMetaData = await web.lists
-
-      .getById(this.props.SmartMetadataListID)
-      .items
-      .select('Id', 'Title', 'IsVisible', 'TaxType', 'Parent/Id', 'Parent/Title', 'siteName', 'siteUrl', 'SmartSuggestions', "SmartFilters",)
-
-      .expand('Parent').filter("TaxType eq 'Client Category'").top(4000)
-      .get();
-    if (smartMetaData?.length > 0) {
-      AllClientCategories = smartMetaData;
-    }
-
-    if (ClientCategory.length > 0) {
-      ClientCategory?.map((item: any, index: any) => {
-        smartMetaData?.map((items: any, index: any) => {
-          if (item?.Id == items?.Id) {
-            item.SiteName = items?.siteName;
-            array2.push(item)
-          }
-        })
-      })
-      console.log(ClientCategory);
-    }
-
-    if (ClientTimeArray != undefined && ClientTimeArray.length > 0) {
-      ClientTimeArray?.map((item: any) => {
-        array2?.map((items: any) => {
-          if ((item?.SiteName == items?.SiteName) || (item?.Title == items?.SiteName)) {
-            if (item.ClientCategory == undefined) {
-              item.ClientCategory = [];
-              item.ClientCategory.push(items);
-            } else {
-              item.ClientCategory.push(items)
-            }
-
-          }
-
-        })
-      })
-    }
-  }
   private GetSiteIcon(listName: string) {
     console.log(this.state.Result)
     if (listName != undefined) {
@@ -2140,7 +2083,7 @@ class Taskprofile extends React.Component<ITaskprofileProps, ITaskprofileState> 
                                 {ClientTimeArray?.map((cltime: any, i: any) => {
                                   return <li className="Sitelist">
                                     <span>
-                                      <img style={{ width: "22px" }} title={cltime?.SiteName} src={this.GetSiteIcon(cltime?.SiteName) ? this.GetSiteIcon(cltime?.SiteName) : this.GetSiteIcon(cltime?.Title)} />
+                                      <img style={{ width: "22px" }} title={cltime?.Title} src={cltime?.SiteImages } />
                                     </span>
                                     {cltime?.ClienTimeDescription != undefined &&
                                       <span>
