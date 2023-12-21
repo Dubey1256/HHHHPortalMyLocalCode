@@ -1622,14 +1622,14 @@ const buttonRestructureDifferentType=()=>{
           let checkPorfiloAlrt : boolean = true;
           array?.map((obj: any) => {
             let newObj: any;
-            if(props?.queryItems?.TaskType?.Title == 'Activities' && props?.queryItems != undefined && props?.queryItems != null && (items?.subRows?.length == 0 || items?.subRows == undefined || items?.subRows == null)){
+            if(props?.queryItems?.TaskType == 'Activities' && props?.queryItems != undefined && props?.queryItems != null && (items?.subRows?.length == 0 || items?.subRows == undefined || items?.subRows == null)){
               topCompo = true;
                 setQuery4TopIcon('Task');
              } 
             if (items?.PortfolioTypeCheck === obj.PortfolioTypeCheck) {
               if (obj.TaskType?.Id !== 2) {
                 if (items?.subRows != undefined && items?.subRows?.length > 0) {
-                  if(props?.queryItems?.TaskType?.Title == 'Activities' && props?.queryItems != undefined && props?.queryItems != null && checkPorfiloAlrt){
+                  if(props?.queryItems?.TaskType == 'Activities' && props?.queryItems != undefined && props?.queryItems != null && checkPorfiloAlrt){
                     topCompo = false;
                      alert('You are noy allowed to restructure this item');
                      checkPorfiloAlrt = false;
@@ -1865,11 +1865,11 @@ const buttonRestructureDifferentType=()=>{
             topCompo = true;
             setQuery4TopIcon('Activity')
           } 
-          if(props?.queryItems?.TaskType?.Title === "Activities"){
+          if(props?.queryItems?.TaskType === "Activities"){
             topCompo = true;
             setQuery4TopIcon('Workstream')
           } 
-          if(props?.queryItems?.TaskType?.Title === "Workstream"){
+          if(props?.queryItems?.TaskType === "Workstream"){
            alert('You are not allowed to restructure this item');
           } 
           let newChildarray: any = [];
@@ -2101,7 +2101,7 @@ const buttonRestructureDifferentType=()=>{
     if (restructureItem[0]?.Item_x0020_Type == 'Task') {
       let ParentTask_Portfolio: any = newItemBackUp?.Item_x0020_Type == 'Task' ? newItemBackUp?.Portfolio?.Id : newItemBackUp?.Id;
       let ParentTask_ID: any = newItemBackUp?.Item_x0020_Type == 'Task' ? newItemBackUp?.Id : null ;
-      let TaskId = newItemBackUp?.TaskID == undefined ? null : newItemBackUp?.TaskID
+      let TaskId = newItemBackUp?.TaskID == undefined ? null : newItemBackUp?.TaskID;
       let TaskLevel: number = 0;
       let Level: number = 0;
       // let ActivityLevel: number = 0;
@@ -2126,6 +2126,7 @@ const buttonRestructureDifferentType=()=>{
      
     
       restructureItem?.map(async (items: any, index: any) => {
+      let TaskId = newItemBackUp?.TaskID == undefined ? null : newItemBackUp?.TaskID;
          TaskLevel = TaskLevel+1;
 
          if(RestructureChecked[0]?.TaskType?.Id === 1){
@@ -2186,6 +2187,8 @@ const buttonRestructureDifferentType=()=>{
             // let checkUpdate: number = 1;
             // let pushData: boolean = false;
             // let spliceData: boolean = false;
+      let TaskId = newItemBackUp?.TaskID == undefined ? null : newItemBackUp?.TaskID;
+
             count = count + 1;
             let backupCheckedList: any = [];
             let latestCheckedList: any = [];
@@ -3167,7 +3170,7 @@ if(restructureItem != undefined && restructureItem != undefined && restructureIt
       TaskType = 1;
       SiteIconTitle = 'A';
     }
-    }else if(props?.queryItems != undefined && props?.queryItems != null && props?.queryItems?.TaskType?.Title == "Activities"){
+    }else if(props?.queryItems != undefined && props?.queryItems != null && props?.queryItems?.TaskType == "Activities"){
       if(restructureItem[0]?.TaskType?.Id == 3){
         Portfolio = { Id: props?.queryItems?.Portfolio?.Id, ItemType:props?.queryItems?.Portfolio?.ItemType, PortfolioStructureID:props?.queryItems?.Portfolio?.PortfolioStructureID, Title:props?.queryItems?.Portfolio?.Title},
         ParentTask = {Id:props?.queryItems?.Id, Title : props?.queryItems?.Title, TaskID : props?.queryItems?.TaskID};
@@ -3265,7 +3268,7 @@ if(restructureItem != undefined && restructureItem != undefined && restructureIt
           checkUpdate = checkUpdate + 1;
           onceRender = false
         }
-        if (obj.Id === newItemBackUp?.Id && obj.Item_x0020_Type === newItemBackUp?.Item_x0020_Type && obj.TaskType?.Title === newItemBackUp?.TaskType?.Title && checkUpdate != 3) {
+        if ((newItemBackUp !== undefined && newItemBackUp !== null && newItemBackUp?.length !== 0) && obj.Id === newItemBackUp?.Id && obj.Item_x0020_Type === newItemBackUp?.Item_x0020_Type && obj.TaskType?.Title === newItemBackUp?.TaskType?.Title && checkUpdate != 3) {
           obj.subRows?.push(...latestCheckedList);
           checkUpdate = checkUpdate + 1;
         }
@@ -3277,7 +3280,7 @@ if(restructureItem != undefined && restructureItem != undefined && restructureIt
         if (obj.subRows != undefined && obj.subRows?.length > 0) {
           obj.subRows.forEach((sub: any, indexsub: any) => {
             sub.isRestructureActive = false;
-            if (sub.Id === newItemBackUp?.Id && sub.Item_x0020_Type === newItemBackUp?.Item_x0020_Type && sub.TaskType?.Title === newItemBackUp?.TaskType?.Title && checkUpdate != 3) {
+            if ((newItemBackUp !== undefined && newItemBackUp !== null && newItemBackUp?.length !== 0) && sub.Id === newItemBackUp?.Id && sub.Item_x0020_Type === newItemBackUp?.Item_x0020_Type && sub.TaskType?.Title === newItemBackUp?.TaskType?.Title && checkUpdate != 3) {
               sub.subRows?.push(...latestCheckedList);
               checkUpdate = checkUpdate + 1;
             }
@@ -3289,7 +3292,7 @@ if(restructureItem != undefined && restructureItem != undefined && restructureIt
             if (sub.subRows != undefined && sub.subRows?.length > 0) {
               sub.subRows.forEach((newsub: any, lastIndex: any) => {
                 newsub.isRestructureActive = false;
-                if (newsub.Id === newItemBackUp?.Id && newsub.Item_x0020_Type === newItemBackUp?.Item_x0020_Type && newsub.TaskType?.Title === newItemBackUp?.TaskType?.Title && checkUpdate != 3) {
+                if ((newItemBackUp !== undefined && newItemBackUp !== null && newItemBackUp?.length !== 0) && newsub.Id === newItemBackUp?.Id && newsub.Item_x0020_Type === newItemBackUp?.Item_x0020_Type && newsub.TaskType?.Title === newItemBackUp?.TaskType?.Title && checkUpdate != 3) {
                   newsub.subRows?.push(...latestCheckedList);
                   checkUpdate = checkUpdate + 1;
                 }
@@ -3301,7 +3304,7 @@ if(restructureItem != undefined && restructureItem != undefined && restructureIt
                 if (newsub.subRows != undefined && newsub.subRows?.length > 0) {
                   newsub.subRows.forEach((activity: any, activityIndex: any) => {
                     activity.isRestructureActive = false;
-                    if (activity.Id === newItemBackUp?.Id && activity.Item_x0020_Type === newItemBackUp?.Item_x0020_Type && activity.TaskType?.Title === newItemBackUp?.TaskType?.Title && checkUpdate != 3) {
+                    if ((newItemBackUp !== undefined && newItemBackUp !== null && newItemBackUp?.length !== 0) && activity.Id === newItemBackUp?.Id && activity.Item_x0020_Type === newItemBackUp?.Item_x0020_Type && activity.TaskType?.Title === newItemBackUp?.TaskType?.Title && checkUpdate != 3) {
                       activity.subRows?.push(...latestCheckedList);
                       checkUpdate = checkUpdate + 1;
                     }
@@ -3313,7 +3316,7 @@ if(restructureItem != undefined && restructureItem != undefined && restructureIt
                     if (activity.subRows != undefined && activity.subRows?.length > 0) {
                       activity.subRows.forEach((workstream: any, workstreamIndex: any) => {
                         workstream.isRestructureActive = false;
-                        if (workstream.Id === newItemBackUp?.Id && workstream.Item_x0020_Type === newItemBackUp?.Item_x0020_Type && workstream.TaskType?.Title === newItemBackUp?.TaskType?.Title && checkUpdate != 3) {
+                        if ((newItemBackUp !== undefined && newItemBackUp !== null && newItemBackUp?.length !== 0) && workstream.Id === newItemBackUp?.Id && workstream.Item_x0020_Type === newItemBackUp?.Item_x0020_Type && workstream.TaskType?.Title === newItemBackUp?.TaskType?.Title && checkUpdate != 3) {
                           workstream.subRows?.push(...latestCheckedList);
                           checkUpdate = checkUpdate + 1;
                         }
@@ -3325,7 +3328,7 @@ if(restructureItem != undefined && restructureItem != undefined && restructureIt
                         if (activity.subRows != undefined && activity.subRows?.length > 0) {
                           activity.subRows.forEach((task: any, taskIndex: any) => {
                             task.isRestructureActive = false;
-                            if (task.Id === newItemBackUp?.Id && task.Item_x0020_Type === newItemBackUp?.Item_x0020_Type && task.TaskType?.Title === newItemBackUp?.TaskType?.Title && checkUpdate != 3) {
+                            if ((newItemBackUp !== undefined && newItemBackUp !== null && newItemBackUp?.length !== 0) && task.Id === newItemBackUp?.Id && task.Item_x0020_Type === newItemBackUp?.Item_x0020_Type && task.TaskType?.Title === newItemBackUp?.TaskType?.Title && checkUpdate != 3) {
                               task.subRows?.push(...latestCheckedList);
                               checkUpdate = checkUpdate + 1;
                             }
@@ -3349,11 +3352,17 @@ if(restructureItem != undefined && restructureItem != undefined && restructureIt
         }
 
       })
+
+      const sortedArray = array.sort((a:any, b:any) => {
+        if (a.Title === 'Others') return 1;
+        if (b.Title === 'Others') return -1;
+        return 0;
+      });
       setResturuningOpen(false);
       setTrueTopCompo(false);
       setNewItemBackUp([])
       setControlUseEffect(false);
-      restructureCallBack(array, false);
+      restructureCallBack(sortedArray, false);
     }).catch((err:any)=>{
       console.log(err);
     })

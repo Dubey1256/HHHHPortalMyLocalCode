@@ -1,0 +1,12 @@
+.no-remarks-message-container {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    border: 1px dashed #ccc;
+    padding: 20px;
+    margin-top: 10px;
+  }
+  
+  .no-remarks-message {
+    margin: 0;
+  }

@@ -1635,10 +1635,7 @@ function TimeEntryPopup(item: any) {
                   ? Dateee
                   : Moment(DateFormate).format("DD/MM/YYYY");
 
-              updateitem.Description =
-                postData != undefined &&
-                  postData.Description != undefined && postData.Description != "" ? postData.Description
-                  : child.Description;
+              updateitem.Description = child?.Description;
               UpdatedData.push(updateitem);
             } else {
               UpdatedData.push(updateitem);
@@ -1740,12 +1737,7 @@ function TimeEntryPopup(item: any) {
             update["TaskDate"] = Dateee != "Invalid date"
               ? Dateee
               : Moment(DateFormate).format("DD/MM/YYYY");
-            update["Description"] =
-              postData != undefined &&
-                postData.Description != undefined &&
-                postData.Description != ""
-                ? postData.Description
-                : child.Description;
+            update["Description"] = child?.Description;
             subItem.AdditionalTime.push(update);
             UpdatedData = subItem.AdditionalTime;
           }
@@ -2479,11 +2471,19 @@ function TimeEntryPopup(item: any) {
         size: 125
       },
       {
-        accessorKey: "TaskTime",
+        accessorFn: (row) => row?.TaskTime,
+        cell: ({ row }) => (
+        <>
+        <div className="text-center">{row?.original?.TaskTime}</div>
+        </>
+        ),
+        id: 'TaskTime',
+        resetColumnFilters: false,
         placeholder: "TaskTime",
         header: "",
         size: 95
       },
+     
       {
         accessorKey: "Description",
         placeholder: "Description",
@@ -2883,11 +2883,9 @@ function TimeEntryPopup(item: any) {
                     className="full_width"
                     id="AdditionalshortDescription"
                     defaultValue={saveEditTaskTimeChild?.Description != undefined ? saveEditTaskTimeChild?.Description : ''}
-                    cols={15}
-                    rows={4}
-                    onChange={(e) =>
-                      setPostData({ ...postData, Description: e.target.value })
-                    }
+                    cols={17}
+                    rows={6}
+                    onChange={(e) => ( PopupType == 'EditTime' || PopupType == 'CopyTime' ? saveEditTaskTimeChild.Description = e.target.value :  setPostData({ ...postData, Description: e.target.value }))}
                   ></textarea>
                 </div>
               </div>

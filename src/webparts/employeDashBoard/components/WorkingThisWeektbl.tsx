@@ -260,9 +260,10 @@ const WorkingThisWeektbl = (Tile: any) => {
                                 Create New Task
                             </a>
                         </div>
-                        <div className="Alltable maXh-300 scrollbar">
+                        <div className="Alltable maXh-300 scrollbar" style={{ height: "300px" }}>
                             {thisWeekTask && (
                                 <GlobalCommanTable
+                                    wrapperHeight="87%"
                                     showHeader={true}
                                     columns={ThisWeekcolumn}
                                     data={thisWeekTask}

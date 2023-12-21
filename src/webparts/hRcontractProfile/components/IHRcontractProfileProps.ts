@@ -1,4 +1,4 @@
-export interface IHrContractProfileProps {
+export interface IHRcontractProfileProps {
   description: string;
   isDarkTheme: boolean;
   environmentMessage: string;

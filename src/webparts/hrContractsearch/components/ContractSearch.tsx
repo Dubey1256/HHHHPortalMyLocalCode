@@ -56,17 +56,33 @@ let allSite: any = {
         console.log(myData);
         var date = new Date();
         var currentdate = moment(date).format("DD/MM/YYYY");
+        var NewCurrentDate = currentdate.split("/")
+
+            var cuurent = NewCurrentDate[2] + NewCurrentDate[1] + NewCurrentDate[0]
         myData?.forEach((val:any)=>{
             val.ContractChanged = moment(val?.ContractChanged).format('DD/MM/YYYY') 
             val.ContractSigned = moment(val?.ContractSigned).format('DD/MM/YYYY') 
             val.startDate = moment(val?.startDate).format('DD/MM/YYYY') 
             val.endDate = moment(val?.endDate).format('DD/MM/YYYY') 
+
+
+            var NewEndDate = val.endDate.split("/")
+            var NewEventDate = val.startDate.split("/")
+
+            var End = NewEndDate[2] + NewEndDate[1] + NewEndDate[0]
+            var start = NewEventDate[2] + NewEventDate[1] + NewEventDate[0]
+            // if(val.activeStatus == true){
+            //     val.activeStatus = 'Active'
+            // }
+            // if(val.activeStatus == false){
+            //     val.activeStatus = 'InActive'
+            // }
             if (val.startDate != undefined && val.startDate != null || val.endDate != undefined && val.endDate != null || val.endDate == undefined && val.endDate == null) {
 
-                if (val.startDate < val.endDate && val.endDate > currentdate) {
+                if (start < End && End > cuurent) {
                   val.contractStatus = "Active";
                 }
-                else if (val.endDate == undefined && val.endDate == null) {
+                else if (End == undefined && End == null) {
                   val.contractStatus = "";
                 }
                 else {
@@ -126,6 +142,20 @@ let allSite: any = {
                 id: 'Employee',
                 header: '',
                 accessorFn: (row) => row?.HHHHStaff?.FullName,
+                cell: ({ row, column, getValue }) => (
+                    <div className="alignCenter">
+                        <span className="columnFixedTitle">
+                            
+                                <a className="text-content hreflink" title={row?.original?.Title} data-interception="off" target="_blank"
+                                    href={props.siteUrl + "/SitePages/EmployeeInfo.aspx?employeeId=" + row?.original?.HHHHStaff?.Id}>
+                 {getValue()}
+                                </a>
+                            
+                           
+                        </span>
+                      
+                    </div>
+                ),
                 placeholder: "Employee",
                 size: 200,
 

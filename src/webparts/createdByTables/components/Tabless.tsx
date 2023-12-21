@@ -28,6 +28,7 @@ import { RiFileExcel2Fill } from 'react-icons/ri';
 import "bootstrap/dist/css/bootstrap.min.css";
 import "bootstrap/dist/js/bootstrap.min.js";
 import GlobalCommanTable from '../../../globalComponents/GroupByReactTableComponents/GlobalCommanTable';
+import HighlightableCell from '../../../globalComponents/GroupByReactTableComponents/highlight';
 
 const Tabless = (props: any) => {
   let count: any = 0;
@@ -83,6 +84,7 @@ const Tabless = (props: any) => {
   const fileType = "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet;charset=UTF-8";
   const fileExtension = ".xlsx";
 
+  const childRef = React.useRef<any>();
 
 
 
@@ -277,9 +279,9 @@ const Tabless = (props: any) => {
               dataItem.idType = "T" + dataItem.Id;
             }
 
-            dataItem["newCreated"] = dataItem.Created != null ? moment(dataItem.Created).format('DD/MM/YYYY') : "";
-            dataItem["newModified"] = dataItem.Modified != null ? moment(dataItem.Modified).format('DD/MM/YYYY') : "";
-            dataItem["newDueDate"] = dataItem.DueDate != null ? moment(dataItem.DueDate).format('DD/MM/YYYY') : "";
+            dataItem["newCreated"] = dataItem.Created != null ? moment(dataItem.Created).format('DD/MM/YYYY')+'' : "";
+            dataItem["newModified"] = dataItem.Modified != null ? moment(dataItem.Modified).format('DD/MM/YYYY')+'' : "";
+            dataItem["newDueDate"] = dataItem.DueDate != null ? moment(dataItem.DueDate).format('DD/MM/YYYY')+'' : "";
 
             if (userItem.AssingedToUser != undefined && userItem.AssingedToUser.Id == dataItem.Author.Id) {
               dataItem.AuthorImg = userItem?.Item_x0020_Cover?.Url;
@@ -292,10 +294,35 @@ const Tabless = (props: any) => {
             }
           });
 
+            
+         // Ensure dataItem.AllTeamName is initialized as an empty string
+dataItem.AllTeamName = dataItem.AllTeamName || '';
+
+const processTeamMembers = (teamMembers:any) => {
+  if (teamMembers != undefined && teamMembers != null && teamMembers?.length > 0) {
+    teamMembers.forEach((items:any) => {
+      dataItem.AllTeamName += items.Title + ";";
+    });
+  }
+};
+
+processTeamMembers(dataItem.Responsible_x0020_Team);
+processTeamMembers(dataItem.Team_x0020_Members);
+processTeamMembers(dataItem.AssignedTo);
+
+// Use join to concatenate array elements with a separator
+dataItem.AllTeamName = dataItem.AllTeamName.split(';').filter(Boolean).join(';');
+
+          
+       
           const matchingTask = masterTasks?.find((task: any) => dataItem?.Portfolio?.Id === task?.Id);
           if (matchingTask) {
             dataItem.PortfolioType = matchingTask.PortfolioType;
           }
+
+
+          let cleanedString = dataItem?.AllTeamName?.replace(/\bundefined\b/g, '');
+
 
            allData.push({
             idType: dataItem.idType,
@@ -314,12 +341,13 @@ const Tabless = (props: any) => {
             Id: dataItem.Id,
             ID: dataItem.Id,
             EstimatedTime:(jsonObject != null && jsonObject !=undefined && jsonObject[0]?.EstimatedTime != undefined && jsonObject[0]?.EstimatedTime != null ? jsonObject[0]?.EstimatedTime : ''),
-            priority: dataItem.Priority_x0020_Rank,
+            priority: dataItem.Priority_x0020_Rank ,
             Author: dataItem.Author,
             Editor: dataItem.Editor,
             Editorss: dataItem.Editor.Title,
             Team_x0020_Members: dataItem.Team_x0020_Members,
             Responsible_x0020_Team: dataItem.Responsible_x0020_Team,
+            AllTeamName : cleanedString,
             ResponsibleTeam: dataItem.ResponsibleTeam,
             TeamMembers: dataItem.TeamMembers,
             AssignedTo: dataItem.AssignedTo,
@@ -469,7 +497,7 @@ const Tabless = (props: any) => {
         size: 50,
       },
       {
-        accessorFn: (row: any) => row?.Priority,
+        accessorFn: (row: any) => row?.priority,
         cell: ({ row, getValue }: any) => (
           <>
             {row?.original?.priority}
@@ -494,60 +522,64 @@ const Tabless = (props: any) => {
         size: 50,
       },
       {
-
-        accessorFn: (row: any) => row?.dueDate,
-        cell: ({ row, getValue }: any) => (
-            <>{row?.original?.newDueDate}</>
+        accessorFn: (row:any) => row?.dueDate,
+        cell: ({ row, column, getValue }:any) => (
+            <HighlightableCell value={row?.original?.newDueDate} searchTerm={column.getFilterValue() != undefined ? column.getFilterValue() : childRef?.current?.globalFilter} />
         ),
+        filterFn: (row: any, columnName: any, filterValue: any) => {
+            if (row?.original?.newDueDate?.includes(filterValue)) {
+                return true
+            } else {
+                return false
+            }
+        },
         id: "dueDate",
         placeholder: "Due Date",
         header: "",
         resetColumnFilters: false,
         size: 75,
+    },
 
+    {
+      accessorFn: (row:any) => row?.modified,
+      cell: ({ row, column, getValue }:any) => (
+          <HighlightableCell value={row?.original?.newModified} searchTerm={column.getFilterValue() != undefined ? column.getFilterValue() : childRef?.current?.globalFilter} />
+      ),
+      filterFn: (row: any, columnName: any, filterValue: any) => {
+          if (row?.original?.newModified?.includes(filterValue)) {
+              return true
+          } else {
+              return false
+          }
       },
-
-      {
-
-        accessorFn: (row: any) => row?.modified,
-        cell: ({ row, getValue }: any) => (
-          <>
-            <a style={{ textDecoration: 'none', cursor: 'pointer', color: `${row?.original?.PortfolioType?.Color}` }} target='_blank' href={`${props.Items.siteUrl}/SitePages/TaskDashboard.aspx?UserId=${row?.original?.Editor?.Id}&Name=${row?.original?.Editor?.Title}`}>
-              {row?.original?.newModified}
-              <span>{
-                row?.original?.editorImg === undefined ? <span className="workmember alignCenter">{row?.original?.EditorSuffix}</span> : <img className='workmember ms-1' src={row?.original?.editorImg} />}
-                </span>
-            </a>
-          </>
-        ),
-        id: "modified",
-        placeholder: "Modified",
-        header: "",
-        resetColumnFilters: false,
-        size: 120,
-      },
-      {
-
-        accessorFn: (row: any) => row?.created,
-        cell: ({ row, getValue }: any) => (
-          <div>
-            <a style={{ textDecoration: 'none', cursor: 'pointer', color: `${row?.original?.PortfolioType?.Color}` }} target='_blank' href={`${props.Items.siteUrl}/SitePages/TaskDashboard.aspx?UserId=${row?.original?.Author?.Id}&Name=${row?.original?.Author?.Title}`}>
-              {row?.original?.newCreated}
-              <span>{
-                row?.original?.authorImg === undefined ? <span className="workmember alignCenter">{row?.original?.AuthorSuffix}</span> : <img className='workmember ms-1' src={row?.original?.authorImg} />}
-                </span>
-            </a>
-          </div>
-        ),
-        id: "created",
-        placeholder: "Created",
-        header: "",
-        isColumnDefultSortingDesc: true ,
-        resetColumnFilters: false,
-        size: 120,
-      },
-      {
-        accessorFn: (row: any) => row?.TeamMembersSearch,
+      id: "modified",
+      placeholder: "Modified",
+      header: "",
+      resetColumnFilters: false,
+      size: 120,
+  },
+  {
+    accessorFn: (row:any) => row?.created,
+    cell: ({ row, column, getValue }:any) => (
+        <HighlightableCell value={row?.original?.newCreated} searchTerm={column.getFilterValue() != undefined ? column.getFilterValue() : childRef?.current?.globalFilter} />
+    ),
+    filterFn: (row: any, columnName: any, filterValue: any) => {
+        if (row?.original?.newCreated?.includes(filterValue)) {
+            return true
+        } else {
+            return false
+        }
+    },
+    id: "created",
+    placeholder: "Created",
+    header: "",
+    isColumnDefultSortingDesc: true ,
+    resetColumnFilters: false,
+    size: 120,
+},
+ 
+      { 
+        accessorFn: (row: any) => row?.AllTeamName,
         cell: ({ row, getValue }: any) => (
           <span>
             <ShowTaskTeamMembers key={row?.original?.Id} props={row?.original} TaskUsers={taskUser} />

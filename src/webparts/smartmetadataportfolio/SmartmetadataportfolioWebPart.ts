@@ -14,7 +14,7 @@ import { ISmartmetadataportfolioProps } from './components/ISmartmetadataportfol
 
 export interface ISmartmetadataportfolioWebPartProps {
   SPSiteConfigListID: string;
-  SPSitesListUrl: string;
+  SPSitesListUrl:string;
   SPSmartMetadataListID: string;
   SPTopNavigationListID: string
   description: string;

@@ -63,6 +63,7 @@ const HHHHEditComponent = (props: any) => {
             await web.lists.getById(myContextData2?.allListId?.HHHHContactListId)
                 .items.getById(Id).select("Id, Title, FirstName, FullName, Department,DOJ,DOE, Company, WorkCity, Suffix, WorkPhone, HomePhone, Comments, WorkAddress, WorkFax, WorkZip, Site, ItemType, JobTitle, Item_x0020_Cover, WebPage, Site, CellPhone, Email, LinkedIn, Created, SocialMediaUrls, SmartCountries/Title, SmartCountries/Id, Author/Title, Modified, Editor/Title, Division/Title, Division/Id, EmployeeID/Title, StaffID, EmployeeID/Id, Institution/Id, Institution/FullName, IM")
                 .expand("EmployeeID, Division, Author, Editor, SmartCountries, Institution").get().then((data: any) => {
+                    let  tagDivision= []
                     let URL: any[] = JSON.parse(data.SocialMediaUrls != null ? data.SocialMediaUrls : ["{}"]);
                     setURLs(URL);
                     // if (data.Institution != null) {
@@ -87,13 +88,22 @@ const HHHHEditComponent = (props: any) => {
                     if (SitesTagged.search("HR") >= 0 && myContextData2.loggedInUserName == data.Email) {
                         HrTagInformation(Id);
                         setSiteTaggedHR(true);
+                        HrTagInformation(data?.Id)
                     }
                     // if (SitesTagged.search("SMALSUS") >= 0 && myContextData2.loggedInUserName == data.Email) {
                     //     HrTagInformation(Id);
                     //     setSiteTaggedSMALSUS(true);
                     // }
                     data.Item_x002d_Image = data?.Item_x0020_Cover;
+                    if(myContextData2?.divisionData!=undefined){
+                        tagDivision=   myContextData2?.divisionData?.filter((divData:any)=>divData?.Parent?.Id==data?.Institution?.Id)
+                       }
+                       if(tagDivision?.length>0){
+                           data.Division=  tagDivision
+                       }
                     setUpdateData(data);
+                  
+                    
                 }).catch((error: any) => {
                     console.log(error)
                 })
@@ -124,7 +134,7 @@ const HHHHEditComponent = (props: any) => {
                 .items.getById(Id)
                 .select(selectcolumn)
                 .get().then((data: any) => {
-
+                    let  tagDivision= []
                     
                     let URL: any[] = JSON.parse(data.SocialMediaUrls != null ? data.SocialMediaUrls : ["{}"]);
                     setURLs(URL);
@@ -132,7 +142,12 @@ const HHHHEditComponent = (props: any) => {
                     //    setCurrentInstitute(data?.Institution);
                     // }
                     data.Item_x002d_Image = data?.Item_x0020_Cover;
-
+                    if(myContextData2?.divisionData!=undefined){
+                        tagDivision=   myContextData2?.divisionData?.filter((divData:any)=>divData?.Institution?.Id==data?.Institution?.Id)
+                       }
+                       if(tagDivision?.length>0){
+                           data.Division=  tagDivision
+                       }
                     if (data?.SmartContactId != undefined ) {
                         JointContactDetails(data)
                     } 
@@ -294,7 +309,7 @@ const HHHHEditComponent = (props: any) => {
                 FirstName: (updateData?.FirstName),
                 Suffix: (updateData?.Suffix),
                 JobTitle: (updateData?.JobTitle),
-                FullName: (updateData?.FirstName) + " " + (updateData?.Title!=null?updateData?.Title!=null:""),
+                FullName: (updateData?.FirstName) + " " + (updateData?.Title!=null?updateData?.Title:""),
                 InstitutionId: (updateData?.Institution != undefined ? updateData?.Institution?.Id : null),
                 Email: (updateData?.Email),
                 Department: (updateData?.Department),
@@ -333,14 +348,18 @@ const HHHHEditComponent = (props: any) => {
                     if(myContextData2?.allSite?.HrSite){
                         updateHrDetails(postData);
                     }
-                  if (updateData?.Site?.toString().search("HR") >= 0 && myContextData2?.allSite?.MainSite) {
-                            updateJointHrDetails();
+                //   if (updateData?.Site?.toString().search("HR") >= 0 && myContextData2?.allSite?.MainSite) {
+                //             updateJointHrDetails();
            
-                    }
-                    if(myContextData2?.allSite?.MainSite && updateData?.Site?.toString().search("HR") == 0){
-                        callBack();
+                //     }
+                    // if(myContextData2?.allSite?.MainSite && updateData?.Site?.toString().search("HR") == 0){
+                    //     callBack();
                        
-                    }
+                    // }
+                    if(myContextData2?.allSite?.MainSite ){
+                            callBack();
+                           
+                        }
                 });
 
             }
@@ -448,16 +467,22 @@ const HHHHEditComponent = (props: any) => {
                 }).then(() => {
                     console.log("Your information has been updated successfully");
                     // alert("Your information has been updated successfully")
-                     if(confirm("Are you want to create Contract ?") && props?.pageName=="Recruiting-Tool"){
-                        setCreateContractPopup(true)
-                        //  callBack();
-                     }else{
-               if( props?.pageName=="Recruiting-Tool"){
-                window.open(`https://hhhhteams.sharepoint.com/sites/HHHH/HR/SitePages/EmployeeInfo.aspx?employeeId=${updateData.Id}`,"_blank")
-                   }
-                    
+                    if( props?.pageName=="Recruiting-Tool"){
+                        if(confirm("Are you want to create Contract ?")){
+                            setCreateContractPopup(true)
+                            //  callBack();
+                         }
+                         else{
+                            if( props?.pageName=="Recruiting-Tool"){
+                             window.open(`https://hhhhteams.sharepoint.com/sites/HHHH/HR/SitePages/EmployeeInfo.aspx?employeeId=${updateData.Id}`,"_blank")
+                                }
+                                 
+                                     callBack();
+                                  }
+                    }else{
                         callBack();
-                     }
+                    }
+                    
                    
                 })
         } catch (error) {
@@ -744,11 +769,14 @@ const HHHHEditComponent = (props: any) => {
                                                 <div className="col">
                                                     <div className='input-group'>
                                                         <label className="full-width label-form">Division</label>
-                                                        <select className="form-control">
+                                                        <select className="form-control"value={updateData?.Department}onChange={(e)=>setUpdateData({ ...updateData,Department:e.target.value})}>
                                                             <option selected>Select Division</option>
-                                                            <option>SDE-01</option>
-                                                            <option>SDE-02</option>
-                                                            <option>SDE-03</option>
+                                                           {updateData?.Division?.length>0&& updateData?.Division?.map((division:any)=>{
+                                                            return(
+                                                           <option>{division?.FullName}</option>
+                                                            )
+                                                           })} 
+                                                            
                                                         </select>
                                                     </div>
                                                 </div>
@@ -892,11 +920,7 @@ const HHHHEditComponent = (props: any) => {
                                 </div>
                             </div>
                             <div className="tab-pane" id="HR" role="tabpanel" aria-labelledby="HR">
-                                {/* <button className={hrBtnStatus.personalInfo ? 'hr-tab-btn-active' : 'hr-tab-btn'} onClick={(e) => changeHrTabBtnStatus(e, "personal-info")}>PERSONAL INFORMATION</button>
-                                        <button className={hrBtnStatus.bankInfo ? 'hr-tab-btn-active' : 'hr-tab-btn'} onClick={(e) => changeHrTabBtnStatus(e, "bank-info")}>BANK INFORMATION</button>
-                                        <button className={hrBtnStatus.taxInfo ? 'hr-tab-btn-active' : 'hr-tab-btn'} onClick={(e) => changeHrTabBtnStatus(e, "tax-info")}>TAX INFORMATION</button>
-                                        <button className={hrBtnStatus.socialSecurityInfo ? 'hr-tab-btn-active' : 'hr-tab-btn'} onClick={(e) => changeHrTabBtnStatus(e, "social-security-info")}>SOCIAL SECURITY INFORMATION</button>
-                                        <button className={hrBtnStatus.qualificationInfo ? 'hr-tab-btn-active' : 'hr-tab-btn'} onClick={(e) => changeHrTabBtnStatus(e, "qualification-info")}>QUALIFICATIONS</button> */}
+                                
                                 <ul className="fixed-Header nav nav-tabs" id="myTab" role="tablist">
                                     <button
                                         className="nav-link active"
@@ -958,24 +982,7 @@ const HHHHEditComponent = (props: any) => {
                                     <div className="tab-pane show active" id="PERSONALINFORMATION1" role="tabpanel" aria-labelledby="PERSONALINFORMATION">
                                         <div>
                                             <div className='user-form-3 row'>
-                                                {/* <div className="col">
-                                                    <label className="full-width label-form">Federal state </label>
-                                                    <div className='d-flex org-section'>
-                                                        <span>{selectedState.Title != undefined && selectedState.Title != '' ?
-                                                            <>
-                                                                {selectedState.Title} <img className='mx-2' src='https://hhhhteams.sharepoint.com/_layouts/images/delete.gif' />
-                                                            </> : (HrTagData?.Fedral_State ?
-                                                                <>{HrTagData?.Fedral_State}
-                                                                    <img className='mx-2' src='https://hhhhteams.sharepoint.com/_layouts/images/delete.gif' />
-
-                                                                </>
-                                                                : '')}
-                                                        </span>
-                                                        <button className='popup-btn' onClick={(e) => selectState(e, HrTagData)}>
-                                                            <GoRepoPush />
-                                                        </button>
-                                                    </div>
-                                                </div> */}
+                                               
                                                 <div className="col">
                                                     <div className="input-group">
                                                         <label className="form-label full-width">Federal state</label>
@@ -1558,7 +1565,7 @@ const HHHHEditComponent = (props: any) => {
                         </div>
                     </div>
                 </footer>
-                {createContractPopup && <CreateContract  callback={callBackData} AllListId={myContextData2?.allListId}updateData={updateData}pageName="Recruiting-Tool" />}
+                {createContractPopup && <CreateContract  callback={callBackData} AllListId={myContextData2?.allListId}updateData={updateData} pageName={props?.pageName} />}
             </Panel>
         </>
     )
