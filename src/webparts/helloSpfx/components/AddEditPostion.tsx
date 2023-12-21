@@ -345,7 +345,7 @@ const AddEditPostion = (props: any) => {
                 <div className='subheading'>
                     Add/Edit Positions
                 </div>
-<Tooltip ComponentId='5642' />
+                <Tooltip ComponentId='5642' />
             </>
         );
     };
@@ -355,7 +355,7 @@ const AddEditPostion = (props: any) => {
                 <div className='subheading'>
                     Add New Position
                 </div>
-<Tooltip ComponentId='4430' />
+                <Tooltip ComponentId='7927' />
             </>
         );
     };
@@ -365,7 +365,7 @@ const AddEditPostion = (props: any) => {
                 <div className='subheading'>
                     Add New Skills
                 </div>
-<Tooltip ComponentId='4430' />
+                <Tooltip ComponentId='7928' />
             </>
         );
     };
@@ -373,9 +373,9 @@ const AddEditPostion = (props: any) => {
         return (
             <>
                 <div className='subheading'>
-                Edit Position {edittableItem ? edittableItem.Title : ''}
+                    Edit Position - {edittableItem ? edittableItem.Title : ''}
                 </div>
-
+                <Tooltip ComponentId='7929' />
             </>
         );
     };
@@ -433,14 +433,14 @@ const AddEditPostion = (props: any) => {
                     </div>
                     <div className="input-group mb-3">
                         <label className="full_width">Skills Required</label>
-                            <input
-                                className="form-control"
-                                placeholder="Skill"
-                                type="text"
-                                value={skill}
-                                onChange={handleSkillChange}
-                            />
-                            <div className='col-12 mt-1'>
+                        <input
+                            className="form-control"
+                            placeholder="Skill"
+                            type="text"
+                            value={skill}
+                            onChange={handleSkillChange}
+                        />
+                        <div className='col-12 mt-1'>
                             <span
                                 id="plusskill"
                                 style={{ display: skill === undefined || skill === '' ? 'none' : 'inline-block' }}
@@ -478,21 +478,21 @@ const AddEditPostion = (props: any) => {
                 <div className="modal-body">
                     <div className="input-group">
                         <label className="full_width form-label">Skills Required</label>
-                            <input
-                                className="form-control"
-                                placeholder="Skill"
-                                type="text"
-                                value={SkillOn}
-                                onChange={handleSkillChangeOnly}
-                            />
-                            <div className='ms-1 mt-1'>
-                                <span
-                                    id="plusskill"
-                                    style={{ display: SkillOn === undefined || SkillOn === '' ? 'none' : 'inline-block' }}
-                                    className="svg__iconbox svg__icon--Plus hreflink"
-                                    onClick={addSkillsOnly}>
-                                </span>
-                            </div>
+                        <input
+                            className="form-control"
+                            placeholder="Skill"
+                            type="text"
+                            value={SkillOn}
+                            onChange={handleSkillChangeOnly}
+                        />
+                        <div className='ms-1 mt-1'>
+                            <span
+                                id="plusskill"
+                                style={{ display: SkillOn === undefined || SkillOn === '' ? 'none' : 'inline-block' }}
+                                className="svg__iconbox svg__icon--Plus hreflink"
+                                onClick={addSkillsOnly}>
+                            </span>
+                        </div>
                         <div className="col-md-12 pad0">
                             {skillsOnly.length > 0 &&
                                 skillsOnly.map((item: any, index: number) => (
@@ -539,20 +539,20 @@ const AddEditPostion = (props: any) => {
                         </div>
                         <div className="input-group">
                             <label className="full_width">Skills Required</label>
-                                <input
-                                    className="form-control"
-                                    placeholder="Add Skill"
-                                    type="text"
-                                    value={SkillOnEdit}
-                                    onChange={handleSkillChangeEdit}
-                                />
-                                <div id="plusskill" className='mt-1 ms-1'>
-                                    <span 
+                            <input
+                                className="form-control"
+                                placeholder="Add Skill"
+                                type="text"
+                                value={SkillOnEdit}
+                                onChange={handleSkillChangeEdit}
+                            />
+                            <div id="plusskill" className='mt-1 ms-1'>
+                                <span
                                     // value={SkillOnEdit}
                                     // iconProps={{ iconName: 'Add' }}
                                     onClick={addSkillsOnlyEdit} className='svg__iconbox svg__icon--Plus'></span>
-                                </div>
-                                {/* <IconButton
+                            </div>
+                            {/* <IconButton
                                     id="plusskill"
                                     className="input-addon-tag-icon"
                                     value={SkillOnEdit}

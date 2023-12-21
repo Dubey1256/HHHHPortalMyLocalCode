@@ -13,7 +13,7 @@ interface StarProps {
 }
 
 const Star: React.FC<StarProps> = ({ filled, onClick }) => (
-    <li className={filled ? 'filled' : ''} onClick={onClick}>
+    <li className={filled ? 'filled list-none' : 'list-none'} onClick={onClick}>
         ★
     </li>
 );
@@ -52,14 +52,14 @@ const StarRating: React.FC<{ rating: Rating; onRatingSelected: (rating: Rating) 
     };
 
     return (
-        <div>
-            <ul className="rating">
+        <div className='alignCenter'>
+            <ul className="rating mb-0 mx-2 p-0 alignCenter">
                 {stars.map((star, index) => (
                     <Star key={index} filled={star.filled} onClick={() => toggle(index)} />
                 ))}
             </ul>
             <div>
-                <label>Feedback Comment:</label>
+                {/* <label>Feedback Comment:</label> */}
                 <textarea
                     value={rating.Comment}
                     onChange={updateComment}
