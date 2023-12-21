@@ -843,50 +843,32 @@ const CreateActivity = (props: any) => {
           if (selectedItem?.Sitestagging != undefined) {
             if (typeof selectedItem?.Sitestagging == "object") {
               if (site?.Title?.toLowerCase() == "shareweb") {
-                selectedItem?.Sitestagging((sitecomp: any) => {
-                  if (
-                    sitecomp.Title != undefined &&
-                    sitecomp.Title != "" &&
-                    sitecomp.SiteName == undefined
-                  ) {
-                    sitecomp.SiteName = sitecomp.Title;
-                  }
-                });
+                
                 Sitestagging = JSON.stringify(selectedItem?.Sitestagging);
               } else {
-                var siteComp: any = {};
-                (siteComp.SiteName = site?.Title),
-                  (siteComp.localSiteComposition = true);
-                (siteComp.ClienTimeDescription = 100),
-                  //   siteComp.SiteImages = ,
-                  (siteComp.Date = Moment(new Date().toLocaleString()).format(
-                    "DD-MM-YYYY"
-                  ));
+                
+                  var siteComp: any = {};
+                  siteComp.Title = save?.siteType,
+                  siteComp.localSiteComposition = true;
+                  siteComp.SiteImages = site?.Item_x005F_x0020_Cover?.Url;
+                  siteComp.ClienTimeDescription = 100,
+                      //   siteComp.SiteImages = ,
+                  siteComp.Date = Moment(new Date().toLocaleString()).format("MM-DD-YYYY");
                 Sitestagging = JSON?.stringify([siteComp]);
               }
               // clientTime = JSON.stringify(selectedItem?.ClientTime);
             } else {
               if (site?.Title?.toLowerCase() == "shareweb") {
                 var sitetag = JSON.parse(selectedItem?.Sitestagging);
-                sitetag?.map((sitecomp: any) => {
-                  if (
-                    sitecomp.Title != undefined &&
-                    sitecomp.Title != "" &&
-                    sitecomp.SiteName == undefined
-                  ) {
-                    sitecomp.SiteName = sitecomp.Title;
-                  }
-                });
                 Sitestagging = JSON.stringify(sitetag);
               } else {
                 var siteComp: any = {};
-                (siteComp.SiteName = site?.Title),
-                  (siteComp.localSiteComposition = true);
-                (siteComp.ClienTimeDescription = 100),
-                  //   siteComp.SiteImages = ,
-                  (siteComp.Date = Moment(new Date().toLocaleString()).format(
-                    "DD-MM-YYYY"
-                  ));
+                  siteComp.Title = save?.siteType,
+                  siteComp.localSiteComposition = true;
+                  siteComp.SiteImages = site?.Item_x005F_x0020_Cover?.Url;
+                  siteComp.ClienTimeDescription = 100,
+                      //   siteComp.SiteImages = ,
+                  siteComp.Date = Moment(new Date().toLocaleString()).format("MM-DD-YYYY");
                 Sitestagging = JSON?.stringify([siteComp]);
               }
             }
@@ -958,7 +940,7 @@ const CreateActivity = (props: any) => {
               },
               SiteCompositionSettings: selectedItem.SiteCompositionSettings,
 
-              ClientTime: Sitestagging,
+              Sitestagging: Sitestagging,
               TaskID: TaskID,
               TaskLevel: Tasklevel,
             })
@@ -1134,53 +1116,32 @@ const CreateActivity = (props: any) => {
             var PortfolioData = selectedItem?.Id;
           }
           let clientTime: any;
-          if (selectedItem?.ClientTime != undefined) {
-            if (typeof selectedItem?.ClientTime == "object") {
+          if (selectedItem?.Sitestagging != undefined) {
+            if (typeof selectedItem?.Sitestagging == "object") {
               if (site?.Title?.toLowerCase() == "shareweb") {
-                selectedItem?.ClientTime?.map((sitecomp: any) => {
-                  if (
-                    sitecomp.Title != undefined &&
-                    sitecomp.Title != "" &&
-                    sitecomp.SiteName == undefined
-                  ) {
-                    sitecomp.SiteName = sitecomp.Title;
-                  }
-                });
-                clientTime = JSON.stringify(selectedItem?.ClientTime);
+                clientTime = JSON.stringify(selectedItem?.Sitestagging);
               } else {
                 var siteComp: any = {};
-                (siteComp.SiteName = site?.Title),
-                  (siteComp.localSiteComposition = true);
-                (siteComp.ClienTimeDescription = 100),
-                  //   siteComp.SiteImages = ,
-                  (siteComp.Date = Moment(new Date().toLocaleString()).format(
-                    "DD-MM-YYYY"
-                  ));
+                siteComp.Title = save?.siteType,
+                siteComp.localSiteComposition = true;
+                siteComp.SiteImages = site?.Item_x005F_x0020_Cover?.Url;
+                siteComp.ClienTimeDescription = 100,
+                    //   siteComp.SiteImages = ,
+                siteComp.Date = Moment(new Date().toLocaleString()).format("MM-DD-YYYY");
                 clientTime = JSON?.stringify([siteComp]);
               }
               // clientTime = JSON.stringify(selectedItem?.ClientTime);
             } else {
               if (site?.Title?.toLowerCase() == "shareweb") {
-                var sitetag = JSON.parse(selectedItem?.ClientTime);
-                sitetag?.map((sitecomp: any) => {
-                  if (
-                    sitecomp.Title != undefined &&
-                    sitecomp.Title != "" &&
-                    sitecomp.SiteName == undefined
-                  ) {
-                    sitecomp.SiteName = sitecomp.Title;
-                  }
-                });
+                var sitetag = JSON.parse(selectedItem?.Sitestagging);
                 clientTime = JSON.stringify(sitetag);
               } else {
                 var siteComp: any = {};
-                (siteComp.SiteName = site?.Title),
-                  (siteComp.localSiteComposition = true);
-                (siteComp.ClienTimeDescription = 100),
-                  //   siteComp.SiteImages = ,
-                  (siteComp.Date = Moment(new Date().toLocaleString()).format(
-                    "DD-MM-YYYY"
-                  ));
+                siteComp.Title = save?.siteType,
+                siteComp.localSiteComposition = true;
+                siteComp.SiteImages = site?.Item_x005F_x0020_Cover?.Url;
+                siteComp.ClienTimeDescription = 100,
+                siteComp.Date = Moment(new Date().toLocaleString()).format("MM-DD-YYYY");
                 clientTime = JSON?.stringify([siteComp]);
               }
             }
@@ -1234,7 +1195,7 @@ const CreateActivity = (props: any) => {
                 selectedItem?.SiteCompositionSettingsbackup != undefined
                   ? JSON.stringify(selectedItem?.SiteCompositionSettingsbackup)
                   : null,
-              ClientTime:
+                  Sitestagging:
                 clientTime != undefined
                   ? clientTime
                   : Sitestagging != undefined
