@@ -1306,6 +1306,19 @@ class Taskprofile extends React.Component<ITaskprofileProps, ITaskprofileState> 
 
           )
         }
+        if(countApprove==0){
+          let TeamMembers:any=[]
+          TeamMembers.push(this.state.Result.TeamMembers[0]?.Id)
+          TeamMembers.push(this.state.Result?.Author[0]?.Id)
+          let changeData:any={
+
+            TeamMembers:TeamMembers,
+            AssignedTo:[this.state.Result?.Author[0]?.Id]
+          }
+        this.ChangeApprovalMember(changeData);
+
+
+        }
         if (isShowLight == 1 && item == "Approve") {
           countemailbutton = 0;
           this.setState({
@@ -1323,6 +1336,34 @@ class Taskprofile extends React.Component<ITaskprofileProps, ITaskprofileState> 
 
       }
     }
+  }
+
+  private ChangeApprovalMember= async(changeData:any)=>{
+    const web = new Web(this.props.siteUrl);
+    await web.lists.getByTitle(this.state.Result.listName)
+
+      .items.getById(this.state.Result.Id).update({
+        TeamMembersId: {
+          results:changeData?.TeamMembers
+         
+      },
+      AssignedToId: {
+        results:changeData?.AssignedTo
+       
+    },
+        // TeamMembers: changeData?.TeamMembers,
+        // AssignedTo: changeData?.AssignedTo,
+      }).then((res: any) => {
+        console.log("team membersetsucessfully",res);
+
+
+
+
+      })
+      .catch((err: any) => {
+        console.log(err.message);
+      }); 
+
   }
   //================percentage changes ==========================
   private async changepercentageStatus(percentageStatus: any, pervious: any, countApprove: any) {
