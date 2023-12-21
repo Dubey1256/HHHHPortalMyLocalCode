@@ -2248,7 +2248,8 @@ const EditTaskPopup = (Items: any) => {
                 }
                 if (StatusInput <= 2 && ApprovalStatusGlobal) {
                     ChangeTaskUserStatus = false;
-                } else {
+                }
+                 else {
                     ChangeTaskUserStatus = true;
                 }
             } else {
@@ -3208,7 +3209,7 @@ const EditTaskPopup = (Items: any) => {
             const timesheetDatass = teamConfigData;
             console.log(timesheetDatass);
         } else {
-            if (ChangeTaskUserStatus) {
+            // if (ChangeTaskUserStatus) {
                 if (teamConfigData?.AssignedTo?.length > 0) {
                     let tempArray: any = [];
                     teamConfigData.AssignedTo?.map((arrayData: any) => {
@@ -3254,7 +3255,7 @@ const EditTaskPopup = (Items: any) => {
                     setTaskResponsibleTeam([]);
                     EditData.ResponsibleTeam = [];
                 }
-            }
+        // }
         }
     }, []);
 
