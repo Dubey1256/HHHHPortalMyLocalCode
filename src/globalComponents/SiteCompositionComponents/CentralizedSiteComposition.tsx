@@ -69,7 +69,7 @@ const CentralizedSiteComposition = (Props: any) => {
     const childRef = React.useRef<any>();
 
     let [SiteSettingJSON, setSiteSettingJSON] = useState([
-        { Name: "Manual", IsSelected: false, Type: "radio", Descriptions: "Proportional Site Composition Allocation : Users have the ability to input their preferred allocation on chosen sites manually.", BtnName: "SiteSettingRadio" },
+        { Name: "Manual", IsSelected: true, Type: "radio", Descriptions: "Proportional Site Composition Allocation : Users have the ability to input their preferred allocation on chosen sites manually.", BtnName: "SiteSettingRadio" },
         { Name: "Proportional", IsSelected: false, Type: "radio", Descriptions: "Proportional Site Composition Allocation: The distribution will be evenly divided, summing up to 100%, across the chosen sites.", BtnName: "SiteSettingRadio" },
         { Name: "Deluxe", IsSelected: false, Type: "radio", Descriptions: "Site composition based on configuration: Predefined in the cockpit, these compositions are dynamic. Any additions or updates to existing ones will automatically update all components wherever this site composition is applied. Deluxe Site composition: EI: 50%. EPS : 50%", BtnName: "SiteSettingRadio" },
         { Name: "Standard", IsSelected: false, Type: "radio", Descriptions: "Site composition based on configuration: Predefined in the cockpit, these compositions are dynamic. Any additions or updates to existing ones will automatically update all components wherever this site composition is applied. Standard Site Composition: EI: 60%, EPS: 30%, Education-5%,migration 5%", BtnName: "SiteSettingRadio" }
@@ -596,7 +596,6 @@ const CentralizedSiteComposition = (Props: any) => {
                     .expand("ClientCategory,TaskType").get();
             }
             if (SelectedItemDetails.SiteCompositionSettings?.length > 0) {
-
                 SiteSettingTemp = JSON.parse(SelectedItemDetails.SiteCompositionSettings);
                 let SelectedSiteSetting: any = siteCompositionType(SelectedItemDetails.SiteCompositionSettings);
                 let TempData: any = [];
@@ -629,6 +628,8 @@ const CentralizedSiteComposition = (Props: any) => {
                 let tempSiteSetting: any = [{ Proportional: false, Manual: true, Protected: false, Deluxe: false, Standard: false }]
                 setSiteCompositionSettings(tempSiteSetting);
                 setIsSCManual(true);
+                setSiteSettingJSON([...SiteSettingJSON])
+
             }
             if (SelectedItemDetails.Sitestagging?.length > 0) {
                 SiteCompositionTemp = JSON.parse(SelectedItemDetails.Sitestagging);
@@ -732,7 +733,7 @@ const CentralizedSiteComposition = (Props: any) => {
             <footer className="bg-f4 alignCenter justify-content-between p-3">
                 <div className="col-sm-6">
                     <a className="btn btn-default ms-2 px-3" target="_blank" data-interception="off"
-                        href={usedFor == "CSF" ? `${siteUrl}/Lists/Master%20Tasks/EditForm.aspx?ID=${ItemDetails?.Id}&?#SiteCompositionSettings` : `${siteUrl}/Lists/${ItemDetails?.siteType}/EditForm.aspx?ID=${ItemDetails?.Id}&?#SiteCompositionSettings`}
+                        href={usedFor == "CSF" ? `${siteUrl}/Lists/Master%20Tasks/EditForm.aspx?ID=${ItemDetails?.Id}&?#Sitestagging` : `${siteUrl}/Lists/${ItemDetails?.siteType}/EditForm.aspx?ID=${ItemDetails?.Id}&?#Sitestagging`}
                     >
                         Open-Out-Of-The-Box
                     </a>
@@ -1375,8 +1376,10 @@ const CentralizedSiteComposition = (Props: any) => {
                 }
             }
         }
+
+        let FinalSitestagging: any[] = commonFunctionForRemoveDataRedundancy(SiteCompositionJSON);
         let MakeUpdateJSONDataObject: object = {
-            Sitestagging: SiteCompositionJSON?.length > 0 ? JSON.stringify(SiteCompositionJSON) : null,
+            Sitestagging: FinalSitestagging?.length > 0 ? JSON.stringify(FinalSitestagging) : null,
             ClientCategoryId: { "results": (ClientCategoriesIds?.length > 0) ? ClientCategoriesIds : [] },
             SiteCompositionSettings: (SiteSettings?.length > 0) ? JSON.stringify(SiteSettings) : null,
         }
@@ -1393,6 +1396,22 @@ const CentralizedSiteComposition = (Props: any) => {
         }
         return UpdateStatus;
     };
+
+
+    // This is a common Function For Remove Data Redundancy on the basis of Title
+
+    const commonFunctionForRemoveDataRedundancy = (Array: any) => {
+        let uniqueIds: any = {};
+        const UniqueCCItems: any = Array?.filter((obj: any) => {
+            if (!uniqueIds[obj.Title]) {
+                uniqueIds[obj.Title] = true;
+                return true;
+            }
+            return false;
+        });
+        return UniqueCCItems;
+    }
+
 
     const filterUpdatedSiteCompositions = () => {
         let GlobalSiteCompositionData: any = [];

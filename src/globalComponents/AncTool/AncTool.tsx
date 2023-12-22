@@ -931,7 +931,7 @@ const AncTool = (props: any) => {
                             <SlArrowDown style={{ color: 'white' }} />
                         )}
                     </span>
-                    <span className='svg__iconbox svg__icon--folder me-1'></span>
+                    <span className='svg__iconbox svg__icon--folder me-1 wid30'></span>
                     <span className={`${rootSiteName}${selectPathFromPopup}` === folder.EncodedAbsUrl ? "highlighted hreflink" : "hreflink"} onClick={() => setFolderPathFromPopup(folder.EncodedAbsUrl)}>{folder.FileLeafRef}</span>
                 </span>
 
@@ -1241,7 +1241,7 @@ const AncTool = (props: any) => {
                         <div className="border border-top-0 clearfix p-3 tab-content Anctoolpopup " id="myTabContent">
                             <div className="tab-pane  show active" id="Documents" role="tabpanel" aria-labelledby="Documents">
                                 <Row>
-                                    <Col>
+                                    <Col xs={6}>
                                         {selectedPath?.displayPath?.length > 0 ?
                                             // <DefaultFolderContent Context={props.Context} AllListId={props?.AllListId} item={Item} folderPath={selectedPath?.displayPath} /> 
                                             <div className='panel  mb-2'>
@@ -1255,7 +1255,7 @@ const AncTool = (props: any) => {
                                                                     <Table className='mb-0' hover responsive>
                                                                         <thead className='fixed-Header top-0'>
                                                                             <tr>
-                                                                                <th className='p-1'>Doc Type</th>
+                                                                                <th className='p-1'>Type</th>
                                                                                 <th className='p-1'>Title</th>
 
                                                                             </tr>
@@ -1304,7 +1304,7 @@ const AncTool = (props: any) => {
                                             : ''
                                         }
                                     </Col>
-                                    <Col>
+                                    <Col xs={6}>
                                         <div className='panel  mb-2'>
                                             {selectPathFromPopup?.length > 0 ?
                                                 <h3 className='pageTitle'> Selected Folder <hr></hr> </h3>
@@ -1339,7 +1339,7 @@ const AncTool = (props: any) => {
 
                                 </Row>
                                 <Row className='mt-2'>
-                                    <Col>
+                                    <Col xs={6}>
                                         {/* <ConnectExistingDoc Context={props.Context} AllListId={props?.AllListId} item={Item} folderPath={selectedPath?.completePath} /> */}
                                         <div className="panel">
                                             <h3 className="pageTitle">
@@ -1354,12 +1354,12 @@ const AncTool = (props: any) => {
                                                         {/* <GlobalCommanTable headerOptions={headerOptions} paginatedTable={true} columns={columns} data={ExistingFiles} callBackData={callBackData} showHeader={true} /> */}
                                                         {ExistingFiles?.length > 0 ?
                                                             <Table hover responsive className='mb-0'>
-                                                                <thead className='fixed-Header top-0'>
+                                                                <thead  className='fixed-Header top-0'>
                                                                     <tr>
-                                                                        <th ></th>
+                                                                        <th></th>
                                                                         <th className='p-1'>Type</th>
                                                                         <th className='p-1'>Title</th>
-                                                                        <th style={{ width: '85px' }} className='p-1'>Item Rank</th>
+                                                                        <th style={{ width: '100px' }} className='p-1'>Item Rank</th>
 
                                                                     </tr>
 
@@ -1392,7 +1392,7 @@ const AncTool = (props: any) => {
                                             </div>
                                         </div>
                                     </Col>
-                                    <Col>
+                                    <Col xs={6}>
                                         <div className="panel">
                                             <h3 className="pageTitle">
                                                 3. Upload a New Document
@@ -1426,7 +1426,7 @@ const AncTool = (props: any) => {
                                     </Col>
                                 </Row>
                                 <Row className='mt-2'>
-                                    <Col>
+                                    <Col xs={6}>
                                         {/* <ConnectExistingDoc Context={props.Context} AllListId={props?.AllListId} item={Item} folderPath={selectedPath?.completePath} /> */}
                                         <div className="panel">
                                             <h3 className="pageTitle">
@@ -1480,7 +1480,7 @@ const AncTool = (props: any) => {
                                             </div>
                                         </div>
                                     </Col>
-                                    <Col>
+                                    <Col xs={6}>
                                         <div className="panel">
 
                                             <h3 className="pageTitle">

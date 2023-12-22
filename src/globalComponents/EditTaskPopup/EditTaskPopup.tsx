@@ -4367,7 +4367,9 @@ const EditTaskPopup = (Items: any) => {
 
     const closeSiteCompsotionPanelFunction = (FnType: any) => {
         if (FnType == "Save") {
+            setTimeout(() => {
             GetExtraLookupColumnData();
+            }, 1000);
         }
         setSiteCompositionShow(false);
     };
