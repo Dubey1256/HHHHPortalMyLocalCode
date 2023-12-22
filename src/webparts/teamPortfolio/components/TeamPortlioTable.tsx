@@ -349,6 +349,8 @@ function TeamPortlioTable(SelectedProp: any) {
                             result.timeSheetsDescriptionSearch = '';
                             result.SmartPriority = '';
                             result.TaskTypeValue = '';
+                            result.projectPriorityOnHover = '';
+                            result.taskPriorityOnHover = result?.PriorityRank;
                             result.portfolioItemsSearch = ''
                             if (result?.DueDate != null && result?.DueDate != undefined) {
                                 result.serverDueDate = new Date(result?.DueDate).setHours(0, 0, 0, 0)
@@ -490,6 +492,9 @@ function TeamPortlioTable(SelectedProp: any) {
                                     result.joinedData.push(`Project ${result?.projectStructerId} - ${title}  ${formattedDueDate == "Invalid date" ? '' : formattedDueDate}`)
                                 }
                                 result.SmartPriority = globalCommon.calculateSmartPriority(result, ProjectData);
+                            } else {
+                                result.projectPriorityOnHover = 1;
+                                result.SmartPriority = globalCommon.calculateSmartPriority(result, '');
                             }
                             result["Item_x0020_Type"] = "Task";
                             TasksItem.push(result);
@@ -581,6 +586,8 @@ function TeamPortlioTable(SelectedProp: any) {
                             result.timeSheetsDescriptionSearch = '';
                             result.SmartPriority = '';
                             result.TaskTypeValue = '';
+                            result.projectPriorityOnHover = '';
+                            result.taskPriorityOnHover = result?.PriorityRank;
                             result.portfolioItemsSearch = ''
                             if (result?.DueDate != null && result?.DueDate != undefined) {
                                 result.serverDueDate = new Date(result?.DueDate).setHours(0, 0, 0, 0)
@@ -723,6 +730,9 @@ function TeamPortlioTable(SelectedProp: any) {
                                     result.joinedData.push(`Project ${result?.projectStructerId} - ${title}  ${formattedDueDate == "Invalid date" ? '' : formattedDueDate}`)
                                 }
                                 result.SmartPriority = globalCommon.calculateSmartPriority(result, ProjectData);
+                            } else {
+                                result.projectPriorityOnHover = 1;
+                                result.SmartPriority = globalCommon.calculateSmartPriority(result, '');
                             }
                             result["Item_x0020_Type"] = "Task";
                             TasksItem.push(result);
@@ -766,7 +776,7 @@ function TeamPortlioTable(SelectedProp: any) {
             .get();
 
         console.log(componentDetails);
-        ProjectData = componentDetails.filter((projectItem: any) => projectItem.Item_x0020_Type === "Project")
+        ProjectData = componentDetails.filter((projectItem: any) => projectItem.Item_x0020_Type === "Project" || projectItem.Item_x0020_Type === 'Sprint');
         componentDetails.forEach((result: any) => {
             result.siteUrl = ContextValue?.siteUrl;
             result["siteType"] = "Master Tasks";
@@ -943,7 +953,7 @@ function TeamPortlioTable(SelectedProp: any) {
 
     React.useEffect(() => {
         if (AllMetadata.length > 0 && portfolioTypeData.length > 0) {
-            LoadAllSiteTasks()
+            LoadAllSiteTasks();
             LoadAllSiteTasksAllData();
         }
     }, [AllMetadata.length > 0 && portfolioTypeData.length > 0])
@@ -1729,7 +1739,7 @@ function TeamPortlioTable(SelectedProp: any) {
             {
                 accessorFn: (row) => row?.SmartPriority,
                 cell: ({ row }) => (
-                    <div className="text-center boldClable">{row?.original?.SmartPriority}</div>
+                    <div className="text-center boldClable" title={`((TaskPriority : ${row?.original?.taskPriorityOnHover}) + (ProjectPriority : ${row?.original?.projectPriorityOnHover} * 4)) / 5`}>{row?.original?.SmartPriority}</div>
                 ),
                 id: "SmartPriority",
                 placeholder: "SmartPriority",
