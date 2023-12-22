@@ -1209,7 +1209,7 @@ const AncTool = (props: any) => {
                 </CardHeader>
                 <CardBody>
                     <Row>
-                        <div className="alignCenter  justify-content-between px-0">
+                        <div className="alignCenter  justify-content-between">
                             {/* <a className='siteColor' onClick={() => { setModalIsOpen(true) }}> Upload Documents</a>  */}
                             <svg className="hreflink" onClick={() => { setModalIsOpen(true) }} xmlns="http://www.w3.org/2000/svg" width="32" height="32" viewBox="0 0 48 48" fill="#333333">
                                 <title>Upload Documents</title>

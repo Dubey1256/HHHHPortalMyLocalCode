@@ -766,7 +766,7 @@ function TeamPortlioTable(SelectedProp: any) {
             .get();
 
         console.log(componentDetails);
-        ProjectData = componentDetails.filter((projectItem: any) => projectItem.Item_x0020_Type === "Project")
+        ProjectData = componentDetails.filter((projectItem: any) => projectItem.Item_x0020_Type === "Project" || projectItem.Item_x0020_Type === 'Sprint');
         componentDetails.forEach((result: any) => {
             result.siteUrl = ContextValue?.siteUrl;
             result["siteType"] = "Master Tasks";
