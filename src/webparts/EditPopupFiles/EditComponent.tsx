@@ -16,9 +16,10 @@ import HtmlEditorCard from "../../globalComponents/HtmlEditor/HtmlEditor";
 import TeamConfigurationCard from "./TeamConfigurationPortfolio";
 import Tooltip from "../../globalComponents/Tooltip";
 import VersionHistoryPopup from "../../globalComponents/VersionHistroy/VersionHistory";
-import Sitecomposition from "../../globalComponents/SiteComposition";
+import CentralizedSiteComposition from "../../globalComponents/SiteCompositionComponents/CentralizedSiteComposition";
 
 import ImagesC from "./ImageInformation";
+import { SlArrowDown, SlArrowRight } from "react-icons/sl";
 var PostTechnicalExplanations = "";
 var PostHelp_x0020_Information = "";
 var PostQuestionDescription = "";
@@ -138,6 +139,8 @@ function EditInstitution({ item, SelectD, Calls, usedFor, portfolioTypeData, fil
   const [ValueAddedVerifieds, setValueAddedVerifieds] = React.useState(false);
   const [DeliverablesVerifieds, setDeliverablesVerifieds] = React.useState(false);
   const [TechnicalExplanationsVerifieds, setTechnicalExplanationsVerifieds] = React.useState(false);
+  const [SiteCompositionShow, setSiteCompositionShow] = React.useState(false);
+  const [composition, setComposition] = React.useState(true);
 
   const handleCheckboxChange = () => {
     setShortDescriptionVerifieds((prevChecked: any) => !prevChecked);
@@ -298,6 +301,21 @@ function EditInstitution({ item, SelectD, Calls, usedFor, portfolioTypeData, fil
       setAssignUser(Assin);
     });
   };
+
+
+  const ClosePopupCallBack = (FnType: any) => {
+    if (FnType == "Close") {
+      setSiteCompositionShow(false)
+    }
+    if (FnType = "Save") {
+      setSiteCompositionShow(false);
+      setTimeout(() => {
+        getMasterTaskListTasks();
+      }, 1000);
+    }
+  }
+
+
   // var ConvertLocalTOServerDate = function (LocalDateTime: any, dtformat: any) {
   //     if (dtformat == undefined || dtformat == '') dtformat = "MM-DD-YYYY";
 
@@ -605,85 +623,7 @@ function EditInstitution({ item, SelectD, Calls, usedFor, portfolioTypeData, fil
         );
       }
 
-      if (item.Sitestagging != null && item.Sitestagging != undefined) {
-        let tempData: any = JSON.parse(item.Sitestagging);
-        let tempData2: any = [];
-        if (tempData != undefined && tempData.length > 0) {
-          tempData.map((siteData: any) => {
-            let siteName: any;
-            if (siteData != undefined) {
-              if (siteData.SiteName != undefined) {
-                siteName = siteData?.SiteName?.toLowerCase();
-              } else {
-                siteName = siteData?.Title?.toLowerCase();
-              }
-            }
-            if (
-              siteName == "migration" ||
-              siteName == "health" ||
-              siteName == "eps" ||
-              siteName == "qa" ||
-              siteName == "ei" ||
-              siteName == "gender" ||
-              siteName == "education" ||
-              siteName == "cep" ||
-              siteName == "shareweb" ||
-              siteName == "small projects" ||
-              siteName == "offshore tasks"
-            ) {
-              siteData.siteIcons = `https://hhhhteams.sharepoint.com/sites/HHHH/SiteCollectionImages/ICONS/Shareweb/site_${siteName}.png`;
-            }
-            if (siteName == "alakdigital" || siteName == "da e+e") {
-              siteData.siteIcons = `https://hhhhteams.sharepoint.com/sites/HHHH/SiteCollectionImages/ICONS/Shareweb/site_da.png`;
-            }
-            if (siteName == "development-effectiveness" || siteName == "de") {
-              siteData.siteIcons = `https://hhhhteams.sharepoint.com/sites/HHHH/SiteCollectionImages/ICONS/Shareweb/site_de.png`;
-            }
-            if (siteName == "kathabeck") {
-              siteData.siteIcons = `https://hhhhteams.sharepoint.com/sites/HHHH/SiteCollectionImages/ICONS/Foundation/Icon_Kathabeck.png`;
-            }
-            if (siteName == "gruene") {
-              siteData.siteIcons = `https://hhhhteams.sharepoint.com/sites/HHHH/SiteCollectionImages/ICONS/Foundation/logo-gruene.png`;
-            }
-            if (siteName == "hhhh") {
-              siteData.siteIcons = `https://hhhhteams.sharepoint.com/sites/HHHH/SiteCollectionImages/ICONS/Foundation/icon_hhhh.png`;
-            }
-            tempData2.push(siteData);
-          });
-        }
 
-        let tempArray3: any = [];
-        if (tempData2 != undefined && tempData2.length > 0) {
-          tempData2.map((siteData: any) => {
-            siteData.ClientCategory = [];
-            if (
-              selectedClientCategoryData != undefined &&
-              selectedClientCategoryData.length > 0
-            ) {
-              selectedClientCategoryData.map((ClientCategoryData: any) => {
-                if (ClientCategoryData.siteName == siteData.SiteName) {
-                  siteData.ClientCategory.push(ClientCategoryData);
-                }
-              });
-              tempArray3.push(siteData);
-            } else {
-              tempArray3.push(siteData);
-            }
-          });
-        }
-        // setClientTimeData(tempArray3)
-        item.siteCompositionData = tempArray3;
-      } else {
-        const object: any = {
-          SiteName: "HHHH",
-          ClienTimeDescription: 100,
-          localSiteComposition: true,
-          siteIcons:
-            "https://hhhhteams.sharepoint.com/sites/HHHH/SiteCollectionImages/ICONS/Service_Icons/component_icon.png"
-        };
-        item.siteCompositionData = [object];
-        // setClientTimeData([object]);
-      }
 
       item.AssignedUsers = [];
       AllUsers?.map((userData: any) => {
@@ -802,6 +742,40 @@ function EditInstitution({ item, SelectD, Calls, usedFor, portfolioTypeData, fil
       }
 
     }
+
+    let SiteCompositionTemp: any = [];
+    if (Tasks[0]?.Sitestagging?.length > 0) {
+      SiteCompositionTemp = JSON.parse(Tasks[0]?.Sitestagging);
+    } else {
+      SiteCompositionTemp = [];
+    }
+    if (Tasks[0]?.ClientCategory?.results?.length > 0) {
+      let TempCCItems: any = [];
+      AllClientCategoryDataBackup?.map((AllCCItem: any) => {
+        item.ClientCategory?.results?.map((SelectedCCItem: any) => {
+          if (SelectedCCItem?.Id == AllCCItem?.Id) {
+            TempCCItems.push(AllCCItem);
+          }
+        })
+      })
+      if (TempCCItems?.length > 0) {
+        SiteCompositionTemp?.map((TaggedSC: any) => {
+          TempCCItems?.map((TaggedCC: any) => {
+            if (TaggedSC.Title == TaggedCC.siteName) {
+              if (TaggedSC?.ClientCategory?.length > 0) {
+                TaggedSC.ClientCategory?.push(TaggedCC)
+              } else {
+                TaggedSC.ClientCategory = [TaggedCC]
+              }
+            }
+          })
+        })
+      }
+    }
+
+    Tasks[0].siteCompositionData = SiteCompositionTemp;
+    Tasks[0].listId = RequireData.MasterTaskListID;
+    Tasks[0].siteUrl = RequireData.siteUrl;
     setEditData(Tasks[0]);
     setModalIsOpenToTrue(true);
 
@@ -3253,11 +3227,81 @@ function EditInstitution({ item, SelectD, Calls, usedFor, portfolioTypeData, fil
                       </div>
                     </div>
                     <div className="col-sm-2 ">
-                      <div className="col">
-                        <Sitecomposition
-                          props={EditData}
-                          sitedata={RequireData}
-                        />
+                      <div className="mb-3 mt-1">
+                        {RequireData?.isShowSiteCompostion ? (
+                          <div className="Sitecomposition mb-2">
+                            <div className="dropdown">
+                              <a className="sitebutton bg-fxdark alignCenter justify-content-between">
+                                <div
+                                  style={{ cursor: "pointer" }}
+                                  onClick={() =>
+                                    setComposition(composition ? false : true)
+                                  }
+                                >
+                                  <span>
+                                    {composition ? (
+                                      <SlArrowDown />
+                                    ) : (
+                                      <SlArrowRight />
+                                    )}
+                                  </span>
+                                  <span className="mx-2">Site Composition</span>
+                                </div>
+                                <span
+                                  className="svg__iconbox svg__icon--editBox hreflink"
+                                  title="Edit Site Composition"
+                                  onClick={() => setSiteCompositionShow(true)}
+                                ></span>
+                              </a>
+                              {composition && EditData?.siteCompositionData?.length > 0 &&
+                                EditData?.siteCompositionData?.length > 0 ? (
+                                <div className="spxdropdown-menu">
+                                  <ul>
+                                    {EditData?.siteCompositionData != undefined &&
+                                      EditData?.siteCompositionData?.length > 0 ? (
+                                      <>
+                                        {EditData?.siteCompositionData?.map(
+                                          (SiteDtls: any, i: any) => {
+                                            return (
+                                              <li className="Sitelist">
+                                                <span className="ms-2" title={SiteDtls.Title}>
+                                                  <img
+                                                    style={{ width: "22px" }}
+                                                    src={SiteDtls.SiteImages}
+                                                  />
+                                                </span>
+
+                                                {SiteDtls.ClienTimeDescription !=
+                                                  undefined && (
+                                                    <span className="mx-2">
+                                                      {Number(
+                                                        SiteDtls.ClienTimeDescription
+                                                      ).toFixed(2)}
+                                                      %
+                                                    </span>
+                                                  )}
+
+                                                <span className="d-inline">
+                                                  {SiteDtls.ClientCategory != undefined && SiteDtls.ClientCategory.length > 0 ? SiteDtls.ClientCategory?.map((clientcat: any, Index: any) => {
+                                                    return (
+                                                      <div className={Index == SiteDtls.ClientCategory?.length - 1 ? "mb-0" : "mb-0 border-bottom"}>{clientcat.Title}</div>
+                                                    )
+                                                  }) : null}
+                                                </span>
+
+                                              </li>
+                                            );
+                                          }
+                                        )}
+                                      </>
+                                    ) : null}
+                                  </ul>
+                                </div>
+                              ) : null}
+
+                            </div>
+                          </div>
+                        ) : null}
                       </div>
                       <div className="col" title="Priority">
                         <div className="input-group mb-2">
@@ -3603,7 +3647,7 @@ function EditInstitution({ item, SelectD, Calls, usedFor, portfolioTypeData, fil
                           ItemInfo={EditData}
                           AllListId={RequireData}
                           parentCallback={DDComponentCallBack}
-                        ></TeamConfigurationCard>
+                        />
                       </div>
                       <div className="row">
                         <section className="accordionbox mt-2">
@@ -4423,10 +4467,10 @@ function EditInstitution({ item, SelectD, Calls, usedFor, portfolioTypeData, fil
                 </span>
               </div>
             </div>
-              <div className="">
-                <button className="me-1 btn btn-primary" onClick={() => updateDetails()}>Save</button>
-                <button className="btn btn-default" onClick={() => setEditPopup(false)}>Cancel</button>
-              </div>
+            <div className="">
+              <button className="me-1 btn btn-primary" onClick={() => updateDetails()}>Save</button>
+              <button className="btn btn-default" onClick={() => setEditPopup(false)}>Cancel</button>
+            </div>
           </div>
         </footer>
       </Panel>
@@ -4504,7 +4548,7 @@ function EditInstitution({ item, SelectD, Calls, usedFor, portfolioTypeData, fil
               </div>
             </div>
             <div className="">
-              <button className="me-1 btn btn-primary"  onClick={() => AddHelpFunc()}>Save</button>
+              <button className="me-1 btn btn-primary" onClick={() => AddHelpFunc()}>Save</button>
               <button className="btn btn-default" onClick={() => setOpenPopup(false)}>Cancel</button>
             </div>
           </div>
@@ -4581,10 +4625,10 @@ function EditInstitution({ item, SelectD, Calls, usedFor, portfolioTypeData, fil
                 </span>
               </div>
             </div>
-              <div className="">
-                <button className="me-1 btn btn-primary" onClick={() => updateHelpDetails()}>Save</button>
-                <button className="btn btn-default" onClick={() => setEditHelpPopup(false)}>Cancel</button>
-              </div>
+            <div className="">
+              <button className="me-1 btn btn-primary" onClick={() => updateHelpDetails()}>Save</button>
+              <button className="btn btn-default" onClick={() => setEditHelpPopup(false)}>Cancel</button>
+            </div>
           </div>
         </footer>
       </Panel>
@@ -4658,13 +4702,21 @@ function EditInstitution({ item, SelectD, Calls, usedFor, portfolioTypeData, fil
                 </span>
               </div>
             </div>
-            <div className="">
+            <div>
               <button className="btn btn-primary" onClick={changePortfolioType}>Save</button>
               <button className="btn btn-default ms-1" onClick={() => setChangeType(false)}>Cancel</button>
             </div>
           </div>
         </footer>
       </Panel>
+      {(SiteCompositionShow && EditData?.Title) && (
+        <CentralizedSiteComposition
+          ItemDetails={EditData}
+          RequiredListIds={RequireData}
+          closePopupCallBack={ClosePopupCallBack}
+          usedFor={"CSF"}
+        />
+      )}
 
     </>
   );
