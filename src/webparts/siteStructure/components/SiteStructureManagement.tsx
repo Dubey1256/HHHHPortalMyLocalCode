@@ -11,7 +11,7 @@ var ParentData: any = [];
 var childData: any = [];
 export default function SiteStructureTool(Props: any) {
     //#region Required Varibale on Page load BY PB
-    const PageContext = Props.Selectedprops;
+    const PageContext: any = Props.Selectedprops;
     const [root, setRoot] = React.useState([]);
     const [SiteStructure, setSiteStructure] = useState([]);
     const [EditPopup, setEditPopup] = useState(false);
@@ -61,8 +61,8 @@ export default function SiteStructureTool(Props: any) {
     };
     //#region code to load All Documents By PB
     const LoadTopNavigation = () => {
-        let web = new Web(PageContext.SPSitesListUrl)
-        web.lists.getById(PageContext.TopNavigationListID).items.select('ID', 'Id', 'Title', 'href', 'ParentID', 'Order0', 'SortOrder', 'ownersonly', 'IsVisible', 'Modified', 'Created', 'Author/Id', 'Author/Title', 'Editor/Id', 'Editor/Title')
+        let web = new Web(PageContext?.SPSitesListUrl)
+        web.lists.getById(PageContext?.TopNavigationListID).items.select('ID', 'Id', 'Title', 'href', 'ParentID', 'Order0', 'SortOrder', 'ownersonly', 'IsVisible', 'Modified', 'Created', 'Author/Id', 'Author/Title', 'Editor/Id', 'Editor/Title')
             .expand('Editor,Author')
             .orderBy('Title')
             .top(4999)
@@ -169,9 +169,9 @@ export default function SiteStructureTool(Props: any) {
         if (popupData[0] == "New") {
             popupData[0] = { ID: 0 };
         }
-        let web = new Web(PageContext.SPSitesListUrl);
+        let web = new Web(PageContext?.SPSitesListUrl);
         await web.lists
-            .getById(PageContext.TopNavigationListID)
+            .getById(PageContext?.TopNavigationListID)
             .items.add({
                 Title: postData.Title,
                 ParentID:
@@ -202,9 +202,9 @@ export default function SiteStructureTool(Props: any) {
         var deleteConfirmation = confirm("Are you sure, you want to delete this?");
 
         if (deleteConfirmation) {
-            let web = new Web(PageContext.SPSitesListUrl);
+            let web = new Web(PageContext?.SPSitesListUrl);
             await web.lists
-                .getById(PageContext.TopNavigationListID)
+                .getById(PageContext?.TopNavigationListID)
                 .items.getById(item.Id)
                 .delete()
                 .then((i) => {
@@ -220,9 +220,9 @@ export default function SiteStructureTool(Props: any) {
         setChangeroot(false);
     };
     const UpdateData = async (item: any) => {
-        let web = new Web(PageContext.SPSitesListUrl);
+        let web = new Web(PageContext?.SPSitesListUrl);
         await web.lists
-            .getById(PageContext.TopNavigationListID)
+            .getById(PageContext?.TopNavigationListID)
             .items.getById(item.Id)
             .update({
                 Title:
@@ -540,8 +540,8 @@ export default function SiteStructureTool(Props: any) {
                             <div className="text-left" onClick={() => setVersionHistoryPopup(false)}>
                                 {popupData[0]?.Id && <VersionHistory
                                     taskId={popupData[0]?.Id}
-                                    siteUrls={PageContext.SPSitesListUrl}
-                                    listId={PageContext.TopNavigationListID}
+                                    siteUrls={PageContext?.SPSitesListUrl}
+                                    listId={PageContext?.TopNavigationListID}
                                 />}
                             </div>
 
@@ -551,7 +551,7 @@ export default function SiteStructureTool(Props: any) {
                             <a
                                 data-interception="off"
                                 target="_blank"
-                                href={`${PageContext.SPSitesListUrl}/Lists/TopNavigation/AllItems.aspx`}
+                                href={`${PageContext?.SPSitesListUrl}/Lists/TopNavigation/AllItems.aspx`}
                             >
                                 Open out-of-the-box form
                             </a>
