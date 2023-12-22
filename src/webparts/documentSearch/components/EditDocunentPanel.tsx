@@ -5,7 +5,8 @@ import { Button, Tabs, Tab } from 'react-bootstrap';
 import moment from 'moment';
 import { Web } from 'sp-pnp-js';
 import HtmlEditorCard from '../../helloSpfx/components/FloraCommentBox';
-import ImagesC from '../../EditPopupFiles/Image';
+import ImagetabFunction from '../../taskprofile/components/ImageTabComponent';
+
 import ServiceComponentPortfolioPopup from '../../../globalComponents/EditTaskPopup/ServiceComponentPortfolioPopup';
 var portfolioItemColor: any = "";
 //import Mycontext from './RelevantDocuments'
@@ -229,7 +230,7 @@ const EditDocumentpanel = (props: any) => {
           defaultActiveKey="BASICINFORMATION"
           transition={false}
           id="noanim-tab-example"
-          className=""
+          className="rounded-0"
           onSelect={imageta}
         >
 
@@ -299,7 +300,7 @@ const EditDocumentpanel = (props: any) => {
           <Tab eventKey="IMAGEINFORMATION" title="IMAGE INFORMATION" className='p-0' >
             <div className='border border-top-0 p-2'>
 
-              {isOpenImageTab && <ImagesC EditdocumentsData={EditdocumentsData} AllListId={props.AllListId} Context={props.Context} callBack={imageTabCallBack} />}
+              {isOpenImageTab && <ImagetabFunction EditdocumentsData={EditdocumentsData} AllListId={props.AllListId} Context={props.Context} callBack={imageTabCallBack} />}
             </div>
           </Tab>
         </Tabs>

@@ -3268,7 +3268,7 @@ if(restructureItem != undefined && restructureItem != undefined && restructureIt
           checkUpdate = checkUpdate + 1;
           onceRender = false
         }
-        if (obj.Id === newItemBackUp?.Id && obj.Item_x0020_Type === newItemBackUp?.Item_x0020_Type && obj.TaskType?.Title === newItemBackUp?.TaskType?.Title && checkUpdate != 3) {
+        if ((newItemBackUp !== undefined && newItemBackUp !== null && newItemBackUp?.length !== 0) && obj.Id === newItemBackUp?.Id && obj.Item_x0020_Type === newItemBackUp?.Item_x0020_Type && obj.TaskType?.Title === newItemBackUp?.TaskType?.Title && checkUpdate != 3) {
           obj.subRows?.push(...latestCheckedList);
           checkUpdate = checkUpdate + 1;
         }
@@ -3280,7 +3280,7 @@ if(restructureItem != undefined && restructureItem != undefined && restructureIt
         if (obj.subRows != undefined && obj.subRows?.length > 0) {
           obj.subRows.forEach((sub: any, indexsub: any) => {
             sub.isRestructureActive = false;
-            if (sub.Id === newItemBackUp?.Id && sub.Item_x0020_Type === newItemBackUp?.Item_x0020_Type && sub.TaskType?.Title === newItemBackUp?.TaskType?.Title && checkUpdate != 3) {
+            if ((newItemBackUp !== undefined && newItemBackUp !== null && newItemBackUp?.length !== 0) && sub.Id === newItemBackUp?.Id && sub.Item_x0020_Type === newItemBackUp?.Item_x0020_Type && sub.TaskType?.Title === newItemBackUp?.TaskType?.Title && checkUpdate != 3) {
               sub.subRows?.push(...latestCheckedList);
               checkUpdate = checkUpdate + 1;
             }
@@ -3292,7 +3292,7 @@ if(restructureItem != undefined && restructureItem != undefined && restructureIt
             if (sub.subRows != undefined && sub.subRows?.length > 0) {
               sub.subRows.forEach((newsub: any, lastIndex: any) => {
                 newsub.isRestructureActive = false;
-                if (newsub.Id === newItemBackUp?.Id && newsub.Item_x0020_Type === newItemBackUp?.Item_x0020_Type && newsub.TaskType?.Title === newItemBackUp?.TaskType?.Title && checkUpdate != 3) {
+                if ((newItemBackUp !== undefined && newItemBackUp !== null && newItemBackUp?.length !== 0) && newsub.Id === newItemBackUp?.Id && newsub.Item_x0020_Type === newItemBackUp?.Item_x0020_Type && newsub.TaskType?.Title === newItemBackUp?.TaskType?.Title && checkUpdate != 3) {
                   newsub.subRows?.push(...latestCheckedList);
                   checkUpdate = checkUpdate + 1;
                 }
@@ -3304,7 +3304,7 @@ if(restructureItem != undefined && restructureItem != undefined && restructureIt
                 if (newsub.subRows != undefined && newsub.subRows?.length > 0) {
                   newsub.subRows.forEach((activity: any, activityIndex: any) => {
                     activity.isRestructureActive = false;
-                    if (activity.Id === newItemBackUp?.Id && activity.Item_x0020_Type === newItemBackUp?.Item_x0020_Type && activity.TaskType?.Title === newItemBackUp?.TaskType?.Title && checkUpdate != 3) {
+                    if ((newItemBackUp !== undefined && newItemBackUp !== null && newItemBackUp?.length !== 0) && activity.Id === newItemBackUp?.Id && activity.Item_x0020_Type === newItemBackUp?.Item_x0020_Type && activity.TaskType?.Title === newItemBackUp?.TaskType?.Title && checkUpdate != 3) {
                       activity.subRows?.push(...latestCheckedList);
                       checkUpdate = checkUpdate + 1;
                     }
@@ -3316,7 +3316,7 @@ if(restructureItem != undefined && restructureItem != undefined && restructureIt
                     if (activity.subRows != undefined && activity.subRows?.length > 0) {
                       activity.subRows.forEach((workstream: any, workstreamIndex: any) => {
                         workstream.isRestructureActive = false;
-                        if (workstream.Id === newItemBackUp?.Id && workstream.Item_x0020_Type === newItemBackUp?.Item_x0020_Type && workstream.TaskType?.Title === newItemBackUp?.TaskType?.Title && checkUpdate != 3) {
+                        if ((newItemBackUp !== undefined && newItemBackUp !== null && newItemBackUp?.length !== 0) && workstream.Id === newItemBackUp?.Id && workstream.Item_x0020_Type === newItemBackUp?.Item_x0020_Type && workstream.TaskType?.Title === newItemBackUp?.TaskType?.Title && checkUpdate != 3) {
                           workstream.subRows?.push(...latestCheckedList);
                           checkUpdate = checkUpdate + 1;
                         }
@@ -3328,7 +3328,7 @@ if(restructureItem != undefined && restructureItem != undefined && restructureIt
                         if (activity.subRows != undefined && activity.subRows?.length > 0) {
                           activity.subRows.forEach((task: any, taskIndex: any) => {
                             task.isRestructureActive = false;
-                            if (task.Id === newItemBackUp?.Id && task.Item_x0020_Type === newItemBackUp?.Item_x0020_Type && task.TaskType?.Title === newItemBackUp?.TaskType?.Title && checkUpdate != 3) {
+                            if ((newItemBackUp !== undefined && newItemBackUp !== null && newItemBackUp?.length !== 0) && task.Id === newItemBackUp?.Id && task.Item_x0020_Type === newItemBackUp?.Item_x0020_Type && task.TaskType?.Title === newItemBackUp?.TaskType?.Title && checkUpdate != 3) {
                               task.subRows?.push(...latestCheckedList);
                               checkUpdate = checkUpdate + 1;
                             }
@@ -3352,11 +3352,17 @@ if(restructureItem != undefined && restructureItem != undefined && restructureIt
         }
 
       })
+
+      const sortedArray = array.sort((a:any, b:any) => {
+        if (a.Title === 'Others') return 1;
+        if (b.Title === 'Others') return -1;
+        return 0;
+      });
       setResturuningOpen(false);
       setTrueTopCompo(false);
       setNewItemBackUp([])
       setControlUseEffect(false);
-      restructureCallBack(array, false);
+      restructureCallBack(sortedArray, false);
     }).catch((err:any)=>{
       console.log(err);
     })

@@ -223,7 +223,7 @@ const EditDocumentpanel = (props: any) => {
           defaultActiveKey="BASICINFORMATION"
           transition={false}
           id="noanim-tab-example"
-          className=""
+          className="rounded-0"
           onSelect={imageta}
         >
 

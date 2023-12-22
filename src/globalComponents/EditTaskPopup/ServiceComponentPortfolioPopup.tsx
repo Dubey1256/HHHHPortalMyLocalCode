@@ -40,11 +40,15 @@ const ServiceComponentPortfolioPopup = ({ props, Dynamic, Call, ComponentType, s
             Example([], ComponentType, "Close");
     }
     const setModalIsOpenToOK = () => {
-        if (props.linkedComponent != undefined && props?.linkedComponent.length == 0)
-            props.linkedComponent = CheckBoxData;
-        else {
-            props.linkedComponent = [];
-            props.linkedComponent = CheckBoxData;
+        try {
+            if (props?.linkedComponent != undefined && props?.linkedComponent?.length == 0)
+                props.linkedComponent = CheckBoxData;
+            else {
+                props.linkedComponent = [];
+                props.linkedComponent = CheckBoxData;
+            }
+        } catch (e) {
+
         }
         // // setModalIsOpen(false);
         if (selectionType == "Multi") {
@@ -351,34 +355,34 @@ const ServiceComponentPortfolioPopup = ({ props, Dynamic, Call, ComponentType, s
             <div className={ComponentType == "Service" ? "serviepannelgreena" : ""}>
                 <div className="modal-body p-0 mt-2">
                     <div className="Alltable mt-10">
-                    {showProject !== true && 
-                        <div className="tbl-headings p-2 bg-white">
-                        <span className="leftsec">
-                            {ShowingAllData[0]?.FilterShowhideShwingData == true ? <label>
-                                Showing {ShowingAllData[0].ComponentCopy}  of {Component} Components
-                            </label> :
-                                <label>
-                                    Showing {Component}  of {Component} Components
-                                </label>}
+                        {showProject !== true &&
+                            <div className="tbl-headings p-2 bg-white">
+                                <span className="leftsec">
+                                    {ShowingAllData[0]?.FilterShowhideShwingData == true ? <label>
+                                        Showing {ShowingAllData[0].ComponentCopy}  of {Component} Components
+                                    </label> :
+                                        <label>
+                                            Showing {Component}  of {Component} Components
+                                        </label>}
 
-                            <label className="ms-1 me-1"> | </label>
-                            {ShowingAllData[0]?.FilterShowhideShwingData == true ? <label>
-                                {ShowingAllData[0].SubComponentCopy} of {SubComponent} SubComponents
-                            </label> :
-                                <label>
-                                    {SubComponent} of {SubComponent} SubComponents
-                                </label>}
-                            <label className="ms-1 me-1"> | </label>
-                            {ShowingAllData[0]?.FilterShowhideShwingData == true ? <label>
-                                {ShowingAllData[0].FeatureCopy}  of {Feature} Features
-                            </label> :
-                                <label>
-                                    {Feature}  of {Feature} Features
-                                </label>}
-                        </span>
-                    </div>
+                                    <label className="ms-1 me-1"> | </label>
+                                    {ShowingAllData[0]?.FilterShowhideShwingData == true ? <label>
+                                        {ShowingAllData[0].SubComponentCopy} of {SubComponent} SubComponents
+                                    </label> :
+                                        <label>
+                                            {SubComponent} of {SubComponent} SubComponents
+                                        </label>}
+                                    <label className="ms-1 me-1"> | </label>
+                                    {ShowingAllData[0]?.FilterShowhideShwingData == true ? <label>
+                                        {ShowingAllData[0].FeatureCopy}  of {Feature} Features
+                                    </label> :
+                                        <label>
+                                            {Feature}  of {Feature} Features
+                                        </label>}
+                                </span>
+                            </div>
                         }
-                        
+
                         <div className="col-sm-12 p-0 smart">
                             <div className="">
                                 <GlobalCommanTable columns={columns} showHeader={true} data={data} selectedData={selectedDataArray} callBackData={callBackData} multiSelect={selectionType == 'Multi' ? true : false} />

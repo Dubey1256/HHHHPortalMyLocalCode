@@ -33,6 +33,7 @@ interface StatusItem {
     siteName: string;
 }
 interface RowData {
+    Id: any;
     CandidateName: string;
     Position: any;
     IsFavorite: boolean;
@@ -143,12 +144,20 @@ export default function GetData(props: any) {
             accessorKey: "CandidateName",
             placeholder: "Title",
             header: "",
-            cell: ({ row }) => (
-                <>
+            cell: ({ row, getValue }) => (
+                <><a
+                    className="text-content hreflink"
+                    title={row?.original?.CandidateName}
+                    data-interception="off"
+                    target="_blank"
+                    href={`https://hhhhteams.sharepoint.com/sites/HHHH/HR/SitePages/Candidate-Profile.aspx?CandidateId=${row?.original?.Id}`}
+                >
                     {row.original.CandidateName}
                     {row.original.IsFavorite && (
                         <span className="orange-star">⭐</span>
                     )}
+                </a>
+
 
                 </>
             ),
@@ -213,47 +222,55 @@ export default function GetData(props: any) {
 
     const getListData = () => {
         const web = new Web('https://hhhhteams.sharepoint.com/sites/HHHH/HR/');
-        web.lists
+        let query = web.lists
             .getById(props?.props?.InterviewFeedbackFormListId)
             .items.select('Id', 'Title', 'Remarks', 'Motivation', 'SelectedPlatforms', 'Result', 'CandidateStaffID', 'ActiveInterv', 'Status0', 'IsFavorite', 'CandidateName', 'SkillRatings', 'Positions/Id', 'Positions/Title', 'Platform', 'IsFavorite', 'PhoneNumber', 'Email', 'Experience', 'Current_x0020_Company', 'Date', 'CurrentCTC', 'ExpectedCTC', 'NoticePeriod', 'CurrentLocation', 'DateOfJoining', 'HRNAME')
             .expand('Positions')
-            .filter("Positions/Id eq " + JobPositionId + "")
-            .top(5000)
-            .get()
-            .then((response: any) => {
-                const itemsWithPosition = response.map((item: any) => {
-                    return {
-                        ...item,
-                        Position: item.Positions ? item.Positions.Title : null,
-                    };
-                });
-                const categorizedItems = response.reduce((accumulator: { newCandidates: any[]; inProcessCand: any[]; archiveCandidates: any[]; }, currentItem: { Status0: any; }) => {
-                    switch (currentItem.Status0) {
-                        case undefined:
-                        case '':
-                        case 'New Candidate':
-                            accumulator.newCandidates.push(currentItem);
-                            break;
-                        case 'Under Consideration':
-                        case 'Interview':
-                        case 'Negotiation':
-                            accumulator.inProcessCand.push(currentItem);
-                            break;
-                        case 'Hired':
-                        case 'Rejected':
-                            accumulator.archiveCandidates.push(currentItem);
-                            break;
-                        default:
-                            break;
-                    }
-                    return accumulator;
-                }, { newCandidates: [], inProcessCand: [], archiveCandidates: [] });
+            .top(5000);
+        if (JobPositionId !== undefined && JobPositionId !== null) {
+            query = query.filter("Positions/Id eq " + JobPositionId + "")
+        }
+        query.get().then((response: any) => {
+            const itemsWithPosition = response.map((item: any) => {
+                return {
+                    ...item,
+                    Position: item.Positions ? item.Positions.Title : null,
+                };
+            });
+            const categorizedItems = response.reduce((accumulator: { newCandidates: any[]; inProcessCand: any[]; archiveCandidates: any[]; }, currentItem: {
+                Positions: any; Status0: any;
+            }) => {
+                const itemWithPosition = {
+                    ...currentItem,
+                    Position: currentItem.Positions ? currentItem.Positions.Title : null,
+                };
 
-                setListData(itemsWithPosition);
-                setNewCandidates(categorizedItems.newCandidates);
-                setinProcessCand(categorizedItems.inProcessCand);
-                setArchiveCandidates(categorizedItems.archiveCandidates);
-            })
+                switch (currentItem.Status0) {
+                    case undefined:
+                    case '':
+                    case 'New Candidate':
+                        accumulator.newCandidates.push(itemWithPosition);
+                        break;
+                    case 'Under Consideration':
+                    case 'Interview':
+                    case 'Negotiation':
+                        accumulator.inProcessCand.push(itemWithPosition);
+                        break;
+                    case 'Hired':
+                    case 'Rejected':
+                        accumulator.archiveCandidates.push(itemWithPosition);
+                        break;
+                    default:
+                        break;
+                }
+                return accumulator;
+            }, { newCandidates: [], inProcessCand: [], archiveCandidates: [] });
+
+            setListData(itemsWithPosition);
+            setNewCandidates(categorizedItems.newCandidates);
+            setinProcessCand(categorizedItems.inProcessCand);
+            setArchiveCandidates(categorizedItems.archiveCandidates);
+        })
             .catch((error: unknown) => {
                 console.error(error);
             });
@@ -281,27 +298,32 @@ export default function GetData(props: any) {
             })
     }
     const delItem = (itm: any) => {
-        const web = new Web('https://hhhhteams.sharepoint.com/sites/HHHH/HR/')
-        web.lists
-            .getById(props?.props?.InterviewFeedbackFormListId)
-            .items.getById(itm.Id).recycle().then(() => {
-                for (var i = 0; i < listData.length; i++) {
-                    if (listData[i].id === itm.Id) {
-                        itm.Id = i;
-                        break;
+        const confirmDelete = window.confirm("Are you sure you want to delete this item?");
+        if (confirmDelete) {
+            const web = new Web('https://hhhhteams.sharepoint.com/sites/HHHH/HR/');
+            web.lists
+                .getById(props?.props?.InterviewFeedbackFormListId)
+                .items.getById(itm.Id)
+                .recycle()
+                .then(() => {
+                    const index = listData.findIndex((item: { Id: any; }) => item.Id === itm.Id);
+                    if (index !== -1) {
+
+                        listData.splice(index, 1);
+                        setListData([...listData]); // Update state with the new listData
+                        console.log(`Item with ID ${itm.Id} removed from listData.`);
+                    } else {
+                        console.warn(`Item with ID ${itm.Id} not found in listData.`);
                     }
-                }
-                if (itm.Id !== -1) {
-                    listData.splice(itm.Id, 1);
-                    setListData(listData)
-                    console.log(`Item with ID ${itm.Id} removed from listData.`);
-                } else {
-                    console.warn(`Item with ID ${itm.Id} not found in listData.`);
-                }
-            }).catch((error: any) => {
-                console.log(error)
-            })
-    }
+                })
+                .catch((error: any) => {
+                    console.error(error);
+                });
+        } else {
+
+            console.log("Deletion canceled.");
+        }
+    };
     const handleTabChange = (tab: string) => {
         setactiveTab(tab)
     }
@@ -374,7 +396,7 @@ export default function GetData(props: any) {
                 <div className='subheading'>
                     Add / Edit Status
                 </div>
-                <Tooltip ComponentId='6025' />
+                <Tooltip ComponentId='7930' />
             </>
         );
     };
