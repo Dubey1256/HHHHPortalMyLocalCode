@@ -1253,7 +1253,7 @@ const TopNavigation = (dynamicData: any) => {
                             type="search"
                             placeholder="Title"
                             title="Client Category"
-                            className="full_width searchbox_height bg-Ff"
+                            className="full_width searchbox_height"
                             onChange={SearchedData}
                             autoComplete="off"
                           />
@@ -1277,14 +1277,14 @@ const TopNavigation = (dynamicData: any) => {
                       <th style={{ width: "20%" }}>
                         <div
                           style={{ width: "100%" }}
-                          className="position-relative smart-relative  p-1"
+                          className="position-relative smart-relative  p-1 bg-Ff"
                         >
                           <input
                             id="searchClientCategory"
                             type="search"
                             placeholder="SortOrder"
                             title="Client Category"
-                            className="full_width searchbox_height"
+                            className="full_width searchbox_height "
                             onChange={SearchedData}
                             autoComplete="off"
                           />

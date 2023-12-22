@@ -224,8 +224,8 @@ export default function GetData(props: any) {
         const web = new Web('https://hhhhteams.sharepoint.com/sites/HHHH/HR/');
         let query = web.lists
             .getById(props?.props?.InterviewFeedbackFormListId)
-            .items.select('Id', 'Title', 'Remarks', 'Motivation', 'SelectedPlatforms', 'Result', 'CandidateStaffID', 'ActiveInterv', 'Status0', 'IsFavorite', 'CandidateName', 'SkillRatings', 'Positions/Id', 'Positions/Title', 'Platform', 'IsFavorite', 'PhoneNumber', 'Email', 'Experience', 'Current_x0020_Company', 'Date', 'CurrentCTC', 'ExpectedCTC', 'NoticePeriod', 'CurrentLocation', 'DateOfJoining', 'HRNAME')
-            .expand('Positions')
+            .items.select('Id', 'Title', 'Remarks', 'Motivation','Created','Modified','AuthorId','Author/Title','Editor/Id','Editor/Title' ,'SelectedPlatforms', 'Result', 'CandidateStaffID', 'ActiveInterv', 'Status0', 'IsFavorite', 'CandidateName', 'SkillRatings', 'Positions/Id', 'Positions/Title', 'Platform', 'IsFavorite', 'PhoneNumber', 'Email', 'Experience', 'Current_x0020_Company', 'Date', 'CurrentCTC', 'ExpectedCTC', 'NoticePeriod', 'CurrentLocation', 'DateOfJoining', 'HRNAME')
+            .expand('Positions','Editor','Author')
             .top(5000);
         if (JobPositionId !== undefined && JobPositionId !== null) {
             query = query.filter("Positions/Id eq " + JobPositionId + "")

@@ -69,9 +69,9 @@ const HalfClientCategory = (props: any) => {
     React.useEffect(() => {
         try {
             $("#spPageCanvasContent").removeClass();
-            $("#spPageCanvasContent").addClass("hundred");
+            $("#spPageCanvasContent").addClass("sixtyHundred");
             $("#workbenchPageContent").removeClass();
-            $("#workbenchPageContent").addClass("hundred");
+            $("#workbenchPageContent").addClass("sixtyHundred");
             isShowTimeEntry = props?.props?.TimeEntry != "" ? JSON.parse(props?.props?.TimeEntry) : "";
             isShowSiteCompostion = props?.props?.SiteCompostion != "" ? JSON.parse(props?.props?.SiteCompostion) : ""
         } catch (error: any) {
@@ -916,7 +916,7 @@ const HalfClientCategory = (props: any) => {
                     }
                 },
                 header: "",
-                size: 105
+                size: 115
             },
             {
 
@@ -1109,7 +1109,7 @@ const HalfClientCategory = (props: any) => {
                     }
                 },
                 header: "",
-                size: 105
+                size: 115
             },
             {
 
@@ -1244,7 +1244,7 @@ const HalfClientCategory = (props: any) => {
                     {filterCounters == true ? <TeamSmartFilter ProjectData={ProjectData} setLoaded={setLoaded} AllSiteTasksData={AllSiteTasksData} AllMasterTasksData={AllMasterTasksData} ContextValue={AllListId} smartFiltercallBackData={smartFiltercallBackData} portfolioColor={portfolioColor} /> : ''}
                 </div>
             </section>
-            <div className='ProjectOverViewRadioFlat SpfxCheckRadio  justify-content-between'>
+            <div className='ProjectOverViewRadioFlat SpfxCheckRadio  justify-content-between mb-2'>
                 <dl className='alignCenter gap-2 mb-0'>
                     <dt>
                         <input className="radio" type="radio" value="grouped" name="date" checked={selectedView == 'MasterTask'} onClick={() => setSelectedView('MasterTask')} /> Portfolio View
