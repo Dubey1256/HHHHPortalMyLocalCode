@@ -1174,7 +1174,7 @@ const ProjectManagementMain = (props: any) => {
             ></span>
             {row?.original?.Item_x0020_Type != "Sprint" ?
               <span
-                style={{ marginLeft: '6px' }}
+                style={{ marginLeft: '4px' }}
                 title='Un-Tag Task From Project'
                 onClick={() => untagTask(row?.original)}
               ><BsTagFill /></span> : ''}

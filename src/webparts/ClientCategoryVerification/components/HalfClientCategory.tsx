@@ -69,9 +69,9 @@ const HalfClientCategory = (props: any) => {
     React.useEffect(() => {
         try {
             $("#spPageCanvasContent").removeClass();
-            $("#spPageCanvasContent").addClass("hundred");
+            $("#spPageCanvasContent").addClass("sixtyHundred");
             $("#workbenchPageContent").removeClass();
-            $("#workbenchPageContent").addClass("hundred");
+            $("#workbenchPageContent").addClass("sixtyHundred");
             isShowTimeEntry = props?.props?.TimeEntry != "" ? JSON.parse(props?.props?.TimeEntry) : "";
             isShowSiteCompostion = props?.props?.SiteCompostion != "" ? JSON.parse(props?.props?.SiteCompostion) : ""
         } catch (error: any) {
@@ -818,7 +818,7 @@ const HalfClientCategory = (props: any) => {
                     <div>
                         <span>{row?.original?.siteCompositionSearch}</span>
                         {row?.original?.ClientTime?.length > 0 ?
-                            <span title="Edit Site Composition" onClick={() => { setSelectedItem(row?.original), setEditSiteCompositionStatus(true) }} className="alignIcon svg__iconbox svg__icon--editBox"></span>
+                            <span title="Edit Site Composition" onClick={() => { setSelectedItem(row?.original), setEditSiteCompositionStatus(true) }} className="alignIcon ms-1 svg__iconbox svg__icon--editBox"></span>
                             : ''}
                     </div>
                 ),
@@ -885,7 +885,7 @@ const HalfClientCategory = (props: any) => {
             {
                 accessorFn: (row) => row?.Created,
                 cell: ({ row }) => (
-                    <span className="d-flex">
+                    <span >
                         <span>{row?.original?.DisplayCreateDate} </span>
 
                         {row?.original?.createdImg != undefined ? (
@@ -899,7 +899,7 @@ const HalfClientCategory = (props: any) => {
                                 </a>
                             </>
                         ) : (
-                            <span className='alignIcon workmember svg__iconbox svg__icon--defaultUser grey' title={row?.original?.Author?.Title}></span>
+                            <span className=' ms-1 workmember svg__iconbox svg__icon--defaultUser grey' title={row?.original?.Author?.Title}></span>
                         )}
                     </span>
                 ),
@@ -916,7 +916,7 @@ const HalfClientCategory = (props: any) => {
                     }
                 },
                 header: "",
-                size: 105
+                size: 115
             },
             {
 
@@ -953,7 +953,7 @@ const HalfClientCategory = (props: any) => {
                 resetSorting: false,
                 size: 95,
                 cell: ({ row, getValue }) => (
-                    <span className="d-flex">
+                    <span>
                         <ReactPopperTooltipSingleLevel ShareWebId={row?.original?.TaskID} row={row?.original} singleLevel={true} masterTaskData={AllMasterTaskItems} AllSitesTaskData={allSitesTasks} AllListId={AllListId} />
                     </span>
                 ),
@@ -963,7 +963,7 @@ const HalfClientCategory = (props: any) => {
                 accessorFn: (row) => row?.Title,
                 cell: ({ row, getValue }) => (
                     <>
-                        <span className='d-flex'>
+                        <span>
                             <a
                                 className="hreflink"
                                 href={`${AllListId?.siteUrl}/SitePages/Portfolio-Profile.aspx?taskId=${row?.original?.Id}`}
@@ -999,7 +999,7 @@ const HalfClientCategory = (props: any) => {
                     <div>
                         <span>{row?.original?.siteCompositionSearch}</span>
                         {row?.original?.Sitestagging?.length > 0 ?
-                            <span title="Edit Site Composition" onClick={() => { setSelectedItem(row?.original), setEditSiteCompositionMaster(true) }} className="svg__iconbox svg__icon--editBox"></span>
+                            <span title="Edit Site Composition" onClick={() => { setSelectedItem(row?.original), setEditSiteCompositionMaster(true) }} className="alignIcon ms-1 svg__iconbox svg__icon--editBox"></span>
                             : ''}
                     </div>
                 ),
@@ -1078,7 +1078,7 @@ const HalfClientCategory = (props: any) => {
             {
                 accessorFn: (row) => row?.Created,
                 cell: ({ row }) => (
-                    <span className="d-flex">
+                    <span>
                         <span>{row?.original?.DisplayCreateDate} </span>
 
                         {row?.original?.createdImg != undefined ? (
@@ -1109,7 +1109,7 @@ const HalfClientCategory = (props: any) => {
                     }
                 },
                 header: "",
-                size: 105
+                size: 115
             },
             {
 
@@ -1233,10 +1233,10 @@ const HalfClientCategory = (props: any) => {
                 loadedClassName="loadedContent"
             />
 
-
+         <div id='ExandTableIds'>
             <section className="ContentSection smartFilterSection">
-                <div className="col-sm-12 clearfix">
-                    <h2 className="d-flex justify-content-between align-items-center siteColor  serviceColor_Active">
+                <div className="align-items-center d-flex justify-content-between mb-2 mt-1">
+                    <h2 className="heading">
                         Client Category Verification Tool
                     </h2>
                 </div>
@@ -1244,21 +1244,25 @@ const HalfClientCategory = (props: any) => {
                     {filterCounters == true ? <TeamSmartFilter ProjectData={ProjectData} setLoaded={setLoaded} AllSiteTasksData={AllSiteTasksData} AllMasterTasksData={AllMasterTasksData} ContextValue={AllListId} smartFiltercallBackData={smartFiltercallBackData} portfolioColor={portfolioColor} /> : ''}
                 </div>
             </section>
-            <div className='ProjectOverViewRadioFlat  d-flex justify-content-between'>
+            <div className='ProjectOverViewRadioFlat SpfxCheckRadio  justify-content-between mb-2'>
                 <dl className='alignCenter gap-2 mb-0'>
-                    <dt className='form-check l-radio'>
-                        <input className='form-check-input' type="radio" value="grouped" name="date" checked={selectedView == 'MasterTask'} onClick={() => setSelectedView('MasterTask')} /> Portfolio View
+                    <dt>
+                        <input className="radio" type="radio" value="grouped" name="date" checked={selectedView == 'MasterTask'} onClick={() => setSelectedView('MasterTask')} /> Portfolio View
                     </dt>
-                    <dt className='form-check l-radio'>
-                        <input className='form-check-input' type="radio" value="flat" name="date" checked={selectedView == 'AllSiteTasks'} onClick={() => setSelectedView('AllSiteTasks')} /> All Sites Task View
+                    <dt>
+                        <input className="radio"  type="radio" value="flat" name="date" checked={selectedView == 'AllSiteTasks'} onClick={() => setSelectedView('AllSiteTasks')} /> All Sites Task View
                     </dt>
-                    <dt className='form-check '>
-                        <input className='form-check-input' type="checkbox" checked={protectedView == true} onClick={() => filterProtectedView(protectedView)} /> Protected View
+                    <dt>
+                        <input className="form-check-input" type="checkbox" checked={protectedView == true} onClick={() => filterProtectedView(protectedView)} /> Protected View
                     </dt>
 
                 </dl>
             </div>
-            <div className="Alltable p-2">
+            <div className='Tabl1eContentSection row taskprofilepagegreen'>
+            <div className='container-fluid p-0'>
+            <section className='TableSection'>
+            <div className='container p-0'>
+            <div className="Alltable ">
                 {selectedView == 'MasterTask' ? <div>
                     <GlobalCommanTable headerOptions={headerOptions} AllListId={AllListId} columns={columnsMaster} data={AllMasterTasks} portfolioTypeData={portfolioTypeDataItem} showingAllPortFolioCount={true} showPagination={true} callBackData={TaskSiteComp} pageName={"ProjectOverviewGrouped"} TaskUsers={AllTaskUser} showHeader={true} />
 
@@ -1269,6 +1273,13 @@ const HalfClientCategory = (props: any) => {
 
                 </div> : ''}
             </div>
+            </div>
+            </section>
+            </div>
+            </div>
+                </div>
+          
+            
             {isOpenEditPopup ? (
                 <EditTaskPopup AllListId={AllListId} context={props?.props?.Context} Items={passdata} pageName="TaskDashBoard" Call={editTaskCallBack} />
             ) : (
