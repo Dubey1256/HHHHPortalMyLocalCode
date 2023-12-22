@@ -1253,7 +1253,7 @@ const TopNavigation = (dynamicData: any) => {
                             type="search"
                             placeholder="Title"
                             title="Client Category"
-                            className="full_width searchbox_height"
+                            className="full_width searchbox_height bg-Ff"
                             onChange={SearchedData}
                             autoComplete="off"
                           />
@@ -1277,14 +1277,15 @@ const TopNavigation = (dynamicData: any) => {
                       <th style={{ width: "20%" }}>
                         <div
                           style={{ width: "100%" }}
-                          className="position-relative smart-relative  p-1 bg-Ff"
+                          className="position-relative smart-relative  p-1"
                         >
                           <input
-                            id="searchClientCategory"
+                            id="
+                            "
                             type="search"
                             placeholder="SortOrder"
                             title="Client Category"
-                            className="full_width searchbox_height "
+                            className="full_width searchbox_height bg-Ff"
                             onChange={SearchedData}
                             autoComplete="off"
                           />
@@ -1357,7 +1358,7 @@ const TopNavigation = (dynamicData: any) => {
                                             type="text"
                                             id="searchClientCategory"
                                             title="Client Category"
-                                            className="full_width searchbox_height"
+                                            className="full_width searchbox_height bg-Ff"
                                             defaultValue={item?.SortOrder}
                                             onChange={(e) =>
                                               handleOrderChange(e, index)
@@ -1371,7 +1372,7 @@ const TopNavigation = (dynamicData: any) => {
                                           type="text"
                                           id="searchClientCategory"
                                           title="Client Category"
-                                          className="full_width searchbox_height"
+                                          className="full_width searchbox_height bg-Ff"
                                           defaultValue={item?.SortOrder}
                                           disabled
                                         />

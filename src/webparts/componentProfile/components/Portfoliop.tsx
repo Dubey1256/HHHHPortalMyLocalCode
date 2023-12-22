@@ -2001,7 +2001,7 @@ function Portfolio({ SelectedProp, TaskUser }: any) {
                     ))}
                   </>
                   <>
-                    {data?.map((item: any) => (
+                    {/* {data?.map((item: any) => (
                       <>
                         <RelevantDocuments ref={relevantDocRef}
                           AllListId={SelectedProp}
@@ -2022,7 +2022,7 @@ function Portfolio({ SelectedProp, TaskUser }: any) {
                           folderName={item?.Title}>
                           </RelevantEmail>
                       </>
-                    ))}
+                    ))} */}
                   </>
                   <>
                     {data?.map((item: any) => (

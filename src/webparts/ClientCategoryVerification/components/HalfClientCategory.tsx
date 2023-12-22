@@ -1235,12 +1235,12 @@ const HalfClientCategory = (props: any) => {
 
          <div id='ExandTableIds'>
             <section className="ContentSection smartFilterSection">
-                <div className="align-items-center d-flex justify-content-between mb-2 mt-1">
+                <div className="align-items-center d-flex justify-content-between  mt-1">
                     <h2 className="heading">
                         Client Category Verification Tool
                     </h2>
                 </div>
-                <div className="togglecontent mt-1">
+                <div className="togglecontent ">
                     {filterCounters == true ? <TeamSmartFilter ProjectData={ProjectData} setLoaded={setLoaded} AllSiteTasksData={AllSiteTasksData} AllMasterTasksData={AllMasterTasksData} ContextValue={AllListId} smartFiltercallBackData={smartFiltercallBackData} portfolioColor={portfolioColor} /> : ''}
                 </div>
             </section>
