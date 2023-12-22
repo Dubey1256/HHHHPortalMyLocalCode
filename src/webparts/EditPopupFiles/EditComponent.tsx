@@ -3647,7 +3647,6 @@ function EditInstitution({ item, SelectD, Calls, usedFor, portfolioTypeData, fil
                           ItemInfo={EditData}
                           AllListId={RequireData}
                           parentCallback={DDComponentCallBack}
-                          Sitel={undefined}
                         />
                       </div>
                       <div className="row">
