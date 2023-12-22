@@ -841,7 +841,9 @@ class Taskprofile extends React.Component<ITaskprofileProps, ITaskprofileState> 
         EditSiteCompositionStatus: false,
         counter: this.state.counter + 1
       })
-      this.GetResult();
+      setTimeout(() => {
+        this.GetResult();
+      }, 1000);
     }
     if (FunctionType == "Delete") {
       this.setState({
