@@ -1227,7 +1227,7 @@ const TopNavigation = (dynamicData: any) => {
       >
        <div className="mb-2">
         <b>NOTE :</b>
-        <span>You can SortOrder by using Drag & Drop</span>
+        <span className="ms-1">You can SortOrder by using Drag & Drop</span>
        </div>
          
         <div className="Alltable">
@@ -1237,7 +1237,7 @@ const TopNavigation = (dynamicData: any) => {
                 <table
                   {...provided.droppableProps}
                   ref={provided.innerRef}
-                  className="table table-hover"
+                  className="table table-hover mb-0"
                   id="EmpTable"
                   style={{ width: "100%" }}
                 >
@@ -1246,18 +1246,18 @@ const TopNavigation = (dynamicData: any) => {
                       <th style={{ width: "80%" }}>
                         <div
                           style={{ width: "100%" }}
-                          className="position-relative smart-relative"
+                          className="position-relative smart-relative p-1"
                         >
                           <input
                             id="searchClientCategory"
                             type="search"
                             placeholder="Title"
                             title="Client Category"
-                            className="full_width searchbox_height"
+                            className="full_width searchbox_height bg-Ff"
                             onChange={SearchedData}
                             autoComplete="off"
                           />
-                          <span className="sorticon" style={{ top: "1px" }}>
+                          <span className="sorticon" style={{ top: "5px" }}>
                             <span
                               className="up"
                               onClick={() => sortBy("Title")}
@@ -1277,18 +1277,19 @@ const TopNavigation = (dynamicData: any) => {
                       <th style={{ width: "20%" }}>
                         <div
                           style={{ width: "100%" }}
-                          className="position-relative smart-relative"
+                          className="position-relative smart-relative  p-1"
                         >
                           <input
-                            id="searchClientCategory"
+                            id="
+                            "
                             type="search"
                             placeholder="SortOrder"
                             title="Client Category"
-                            className="full_width searchbox_height"
+                            className="full_width searchbox_height bg-Ff"
                             onChange={SearchedData}
                             autoComplete="off"
                           />
-                          <span className="sorticon" style={{ top: "1px" }}>
+                          <span className="sorticon" style={{ top: "5px" }}>
                             <span
                               className="up"
                               onClick={() => sortBy("SortOrder")}
@@ -1334,9 +1335,9 @@ const TopNavigation = (dynamicData: any) => {
                                     {...provided.dragHandleProps}
                                     className="bold for-c0l"
                                   >
-                                    <td className="p-0">{item?.Title}</td>
+                                    <td className="px-1">{item?.Title}</td>
                                     <td
-                                      className="p-0"
+                                      className="px-1"
                                       onDoubleClick={() =>
                                         handleOrderDoubleClick(index)
                                       }
@@ -1357,7 +1358,7 @@ const TopNavigation = (dynamicData: any) => {
                                             type="text"
                                             id="searchClientCategory"
                                             title="Client Category"
-                                            className="full_width searchbox_height"
+                                            className="full_width searchbox_height bg-Ff"
                                             defaultValue={item?.SortOrder}
                                             onChange={(e) =>
                                               handleOrderChange(e, index)
@@ -1371,7 +1372,7 @@ const TopNavigation = (dynamicData: any) => {
                                           type="text"
                                           id="searchClientCategory"
                                           title="Client Category"
-                                          className="full_width searchbox_height"
+                                          className="full_width searchbox_height bg-Ff"
                                           defaultValue={item?.SortOrder}
                                           disabled
                                         />
