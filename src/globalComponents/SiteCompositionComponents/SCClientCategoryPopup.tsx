@@ -46,7 +46,6 @@ const ClientCategoryPopup = (Props: any) => {
                 let TempArray: any = [];
                 AllClientCategoriesFlatData?.map((AllCCItem: any) => {
                     if (AllCCItem.TaxType == "Client Category") {
-
                         if (AllCCItem.Title == "e+i") {
                             AllCCItem.Title = "EI"
                         }
@@ -54,7 +53,6 @@ const ClientCategoryPopup = (Props: any) => {
                             AllCCItem.Title = "EPS"
                         }
                         TempArray.push(AllCCItem);
-
                     }
                 })
                 if (TempArray?.length > 0) {
@@ -84,8 +82,6 @@ const ClientCategoryPopup = (Props: any) => {
             }
         }
         AllClientCategoriesForAutoSuggestion = FinalArrayForAutoSuggestions;
-        console.log("Final Group By Client Categories =====", finalArray);
-        console.log("Data for auto suggestions =====", FinalArrayForAutoSuggestions);
     };
 
     const buildClientCategoryAllDataArrayRecursive = (dataItem: any, parentId: number = 0) => {
@@ -258,7 +254,7 @@ const ClientCategoryPopup = (Props: any) => {
                 isBlocking={false}
                 type={PanelType.custom}
                 customWidth="900px"
-                onRenderFooter={onRenderClientCategoryFooter}
+                onRenderFooter={onRenderClientCategoryFooter} 
             >
                 <div className="">
                     <div className='col-sm-12'>

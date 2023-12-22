@@ -16,7 +16,7 @@ import GlobalCommanTable, {
   IndeterminateCheckbox
 } from "../globalComponents/GroupByReactTableComponents/GlobalCommanTable";
 import InfoIconsToolTip from "../globalComponents/InfoIconsToolTip/InfoIconsToolTip";
-import ClientCategoryPopup from "./SiteCompositionComponents/ClientCategoryPopup";
+import ClientCategoryPopup from "./SiteCompositionComponents/SCClientCategoryPopup";
 
 
 var filt: any = "";
