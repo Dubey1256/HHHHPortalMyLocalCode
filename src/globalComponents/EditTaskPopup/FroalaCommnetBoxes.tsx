@@ -559,7 +559,7 @@ export default function FroalaCommnetBoxes(textItems: any) {
                 {ApprovalPointHistoryStatus ?
                     <ApprovalHistoryPopup
                         ApprovalPointUserData={ApprovalPointUserData}
-                        ApprovalPointCurrentIndex={ApprovalPointCurrentIndex}
+                        ApprovalPointCurrentIndex={ApprovalPointCurrentIndex+1}
                         ApprovalPointHistoryStatus={ApprovalPointHistoryStatus}
                         callBack={ApprovalHistoryPopupCallBack}
                     />

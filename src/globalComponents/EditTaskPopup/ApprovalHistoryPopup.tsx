@@ -8,6 +8,7 @@ const ApprovalHistoryPopup = (ApprovalData: any) => {
     const [ApprovalPointUserData, setApprovalPointUserData] = useState<any>([]);
     const [ApprovalPointCurrentIndex, setApprovalPointCurrentIndex] = useState('');
     const [ApprovalPointHistoryStatus, setApprovalPointHistoryStatus] = useState(true);
+    const [indexShow,setIndexShow]=useState("")
     useEffect(() => {
         if (ApprovalData != undefined) {
             if (ApprovalData.ApprovalPointUserData != undefined) {
@@ -19,9 +20,17 @@ const ApprovalHistoryPopup = (ApprovalData: any) => {
                 }
                 setApprovalPointUserData(data)
             }
-            if (ApprovalData.ApprovalPointCurrentIndex != undefined) {
-                setApprovalPointCurrentIndex(ApprovalData.ApprovalPointCurrentIndex);
+            if(ApprovalData?.usefor=="TaskProfile"){
+                setIndexShow(ApprovalData?.indexSHow)
+            }else{
+                let copyApprovalPointCurrentIndex:any;
+                if (ApprovalData.ApprovalPointCurrentIndex != undefined) {
+                     copyApprovalPointCurrentIndex=ApprovalData.ApprovalPointCurrentIndex
+                    setApprovalPointCurrentIndex(ApprovalData.ApprovalPointCurrentIndex);
+                }
+                setIndexShow(`${ApprovalData.currentArrayIndex != undefined || ApprovalData.currentArrayIndex != null ? ApprovalData.currentArrayIndex + 1 +".": ''}${copyApprovalPointCurrentIndex + 1}`)
             }
+           
             if (ApprovalData.ApprovalPointHistoryStatus != undefined) {
                 setApprovalPointHistoryStatus(ApprovalData.ApprovalPointHistoryStatus);
             }
@@ -35,7 +44,14 @@ const ApprovalHistoryPopup = (ApprovalData: any) => {
     const onRenderApproverHeader = () => {
         return (
             <div className="subheading">
-                {`Approval History For Point - ${ApprovalData.currentArrayIndex != undefined || ApprovalData.currentArrayIndex != null ? ApprovalData.currentArrayIndex + 1 + "." : ''} ${ApprovalPointCurrentIndex + 1}`}
+
+                {ApprovalData?.usefor==undefined?
+                
+                `Approval History For Point - ${indexShow}`
+                 :
+                 `Approval History For Point -${indexShow}`
+                }
+                
             </div>
         )
     }
@@ -56,7 +72,7 @@ const ApprovalHistoryPopup = (ApprovalData: any) => {
                     {ApprovalPointUserData != undefined || ApprovalPointUserData != null ?
                         <div className="modal-body py-2">
                             <div className="d-flex">
-                                <span className="SubTestBorder p-1 me-1">{ApprovalPointCurrentIndex + 1}</span>
+                                <span className="SubTestBorder p-1 me-1">{indexShow}</span>
                                 <div className="full-width border p-1">
                                     <div>
                                         {ApprovalPointUserData.ApproverData != undefined && ApprovalPointUserData.ApproverData.length > 0 ? ApprovalPointUserData.ApproverData.reverse().map((UserData: any, Index: any) => {

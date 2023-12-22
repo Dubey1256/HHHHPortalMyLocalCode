@@ -18,7 +18,7 @@ const Star: React.FC<StarProps> = ({ filled, onClick }) => (
     </li>
 );
 
-const StarRating: React.FC<{ rating: Rating; onRatingSelected: (rating: Rating) => void }> = ({ rating, onRatingSelected }) => {
+const CandidateRating: React.FC<{ rating: Rating; onRatingSelected: (rating: Rating) => void }> = ({ rating, onRatingSelected }) => {
     const [stars, setStars] = useState<Array<{ filled: boolean }>>([]);
 
     useEffect(() => {
@@ -52,21 +52,29 @@ const StarRating: React.FC<{ rating: Rating; onRatingSelected: (rating: Rating) 
     };
 
     return (
+        <>
+        <div className='col-md-3'>
         <div className='alignCenter'>
-            <ul className="rating mb-0 mx-2 p-0 alignCenter">
+        <ul className="rating mb-0 mx-2 p-0 alignCenter">
                 {stars.map((star, index) => (
                     <Star key={index} filled={star.filled} onClick={() => toggle(index)} />
                 ))}
             </ul>
-            <div>
-                {/* <label>Feedback Comment:</label> */}
-                <textarea
-                    value={rating.Comment}
-                    onChange={updateComment}
-                />
-            </div>
         </div>
+        </div>
+        
+           <div className='col-md-6 p-0'>
+                <div className='alignCenter'>
+                    {rating?.Comment ? (
+                        <div dangerouslySetInnerHTML={{ __html: rating?.Comment }} />
+                    ) : (
+                        <div className="no-remarks-message-container">
+                            <div className="no-remarks-message">No comment to show</div>
+                        </div>
+                    )}
+                </div></div>
+        </>
     );
 };
 
-export default StarRating;
+export default CandidateRating;

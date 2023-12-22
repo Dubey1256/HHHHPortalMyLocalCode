@@ -2145,7 +2145,8 @@ const EditTaskPopup = (Items: any) => {
                 }
                 if (StatusInput <= 2 && ApprovalStatusGlobal) {
                     ChangeTaskUserStatus = false;
-                } else {
+                }
+                 else {
                     ChangeTaskUserStatus = true;
                 }
             } else {
@@ -2568,6 +2569,13 @@ const EditTaskPopup = (Items: any) => {
                                 currentUserId != EditData?.Author.Id
                             ) {
                                 EditData.TaskApprovers = EditData.TaskCreatorData;
+                                //EditData.TaskApprovers.push(EditData?.Author)
+                            }
+                        }
+                        if (ApproverData != undefined && ApproverData.length > 0) {
+                            if (
+                                ApproverData[0].Id == EditData.TaskCreatorData[0]?.AssingedToUserId) {
+                                EditData.TaskApprovers = currentUserData;
                                 //EditData.TaskApprovers.push(EditData?.Author)
                             }
                         }
@@ -3095,7 +3103,7 @@ const EditTaskPopup = (Items: any) => {
             const timesheetDatass = teamConfigData;
             console.log(timesheetDatass);
         } else {
-            if (ChangeTaskUserStatus) {
+            // if (ChangeTaskUserStatus) {
                 if (teamConfigData?.AssignedTo?.length > 0) {
                     let tempArray: any = [];
                     teamConfigData.AssignedTo?.map((arrayData: any) => {
@@ -3141,7 +3149,7 @@ const EditTaskPopup = (Items: any) => {
                     setTaskResponsibleTeam([]);
                     EditData.ResponsibleTeam = [];
                 }
-            }
+        // }
         }
     }, []);
 
@@ -5233,7 +5241,7 @@ const EditTaskPopup = (Items: any) => {
                                             </div>
                                         </div>
                                         <div className="mx-0 row mt-2 taskservices">
-                                            <div className="col ps-0">
+                                            <div className="col-6 ps-0">
                                                 <div className="input-group mb-2">
                                                     <label className="form-label full-width">
                                                         Portfolio Item
@@ -7307,7 +7315,7 @@ const EditTaskPopup = (Items: any) => {
                                                         </div>
                                                     </div>
                                                     <div className="mx-0 row mt-2 taskservices">
-                                                        <div className="col ps-0">
+                                                        <div className="col-6 ps-0">
                                                             <div className="input-group mb-2">
                                                                 <label className="form-label full-width">
                                                                     Portfolio Item

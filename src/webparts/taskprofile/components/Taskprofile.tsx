@@ -1354,6 +1354,19 @@ class Taskprofile extends React.Component<ITaskprofileProps, ITaskprofileState> 
 
           )
         }
+        if(countApprove==0){
+          let TeamMembers:any=[]
+          TeamMembers.push(this.state.Result.TeamMembers[0]?.Id)
+          TeamMembers.push(this.state.Result?.Author[0]?.Id)
+          let changeData:any={
+
+            TeamMembers:TeamMembers,
+            AssignedTo:[this.state.Result?.Author[0]?.Id]
+          }
+        this.ChangeApprovalMember(changeData);
+
+
+        }
         if (isShowLight == 1 && item == "Approve") {
           countemailbutton = 0;
           this.setState({
@@ -1371,6 +1384,34 @@ class Taskprofile extends React.Component<ITaskprofileProps, ITaskprofileState> 
 
       }
     }
+  }
+
+  private ChangeApprovalMember= async(changeData:any)=>{
+    const web = new Web(this.props.siteUrl);
+    await web.lists.getByTitle(this.state.Result.listName)
+
+      .items.getById(this.state.Result.Id).update({
+        TeamMembersId: {
+          results:changeData?.TeamMembers
+         
+      },
+      AssignedToId: {
+        results:changeData?.AssignedTo
+       
+    },
+        // TeamMembers: changeData?.TeamMembers,
+        // AssignedTo: changeData?.AssignedTo,
+      }).then((res: any) => {
+        console.log("team membersetsucessfully",res);
+
+
+
+
+      })
+      .catch((err: any) => {
+        console.log(err.message);
+      }); 
+
   }
   //================percentage changes ==========================
   private async changepercentageStatus(percentageStatus: any, pervious: any, countApprove: any) {
@@ -1427,8 +1468,8 @@ class Taskprofile extends React.Component<ITaskprofileProps, ITaskprofileState> 
     this.setState({
       ApprovalHistoryPopup: true,
       ApprovalPointUserData: items,
-      ApprovalPointCurrentParentIndex: parentIndex,
-      currentArraySubTextIndex: subChildIndex
+      ApprovalPointCurrentParentIndex: parentIndex+1,
+      currentArraySubTextIndex: subChildIndex!=null?subChildIndex+1:null
 
     })
 
@@ -2216,6 +2257,7 @@ private async updateProjectComponentServices(dataUpdate:any) {
                       <div className="Taskaddcomment row">
                         {this.state.Result["BasicImageInfo"] != null && this.state.Result["BasicImageInfo"].length > 0 &&
                           <div className="bg-white col-sm-4 mt-2 p-0">
+                            <label className='form-label full-width fw-semibold'>Images</label>
                             {this.state.Result["BasicImageInfo"] != null && this.state.Result["BasicImageInfo"]?.map((imgData: any, i: any) => {
                               return <div className="taskimage border mb-3">
                                 {/*  <BannerImageCard imgData={imgData}></BannerImageCard> */}
@@ -2264,6 +2306,7 @@ private async updateProjectComponentServices(dataUpdate:any) {
                             this.state.Result["FeedBack"][0]?.FeedBackDescriptions?.length > 0 &&
                             this.state.Result["FeedBack"][0]?.FeedBackDescriptions[0]?.Title != '' && this.state.countfeedback >= 0 &&
                             <div className={"Addcomment " + "manage_gap"}>
+                               <label className='form-label full-width fw-semibold'>Task description</label>
                               {this.state.Result["FeedBack"][0]?.FeedBackDescriptions?.map((fbData: any, i: any) => {
                                 let userdisplay: any = [];
                                 userdisplay.push({ Title: this.props?.userDisplayName })
@@ -2281,6 +2324,8 @@ private async updateProjectComponentServices(dataUpdate:any) {
                                   return (
                                     <>
                                       <div>
+                                     
+                                       
                                         {/* { this.state?.emailcomponentopen && countemailbutton==0 &&<EmailComponenet approvalcallback={() => { this.approvalcallback() }}  Context={this.props?.Context} emailStatus={this.state?.emailComponentstatus}  currentUser={this.props?.CurrentUser} items={this.props?.Result} />} */}
                                         <div className="col mb-2">
                                           <div className='justify-content-between d-flex'>
@@ -2313,7 +2358,7 @@ private async updateProjectComponentServices(dataUpdate:any) {
                                               }
                                             </div>
                                             <div className='m-0'>
-                                              <span className="siteColor">
+                                              <span className="d-block">
                                                 <a style={{ cursor: 'pointer' }} onClick={(e) => this.showhideCommentBox(i)}>Add Comment</a>
                                               </span>
                                             </div>
@@ -2478,7 +2523,7 @@ private async updateProjectComponentServices(dataUpdate:any) {
                                               </div>
                                               <div className='m-0'>
                                                 <a className="d-block text-end">
-                                                  <a className='siteColor' style={{ cursor: 'pointer' }}
+                                                  <a style={{ cursor: 'pointer' }}
                                                     onClick={(e) => this.showhideCommentBoxOfSubText(j, i)}
                                                   >Add Comment</a>
                                                 </a>
@@ -2628,9 +2673,12 @@ private async updateProjectComponentServices(dataUpdate:any) {
 
                                         {this.state.ApprovalHistoryPopup ? <ApprovalHistoryPopup
                                           ApprovalPointUserData={this.state.ApprovalPointUserData}
-                                          ApprovalPointCurrentIndex={this.state.ApprovalPointCurrentParentIndex}
+                                          indexSHow={this.state.currentArraySubTextIndex!=null?this.state.ApprovalPointCurrentParentIndex+"."+this.state.currentArraySubTextIndex:this.state.ApprovalPointCurrentParentIndex}
+                                          ApprovalPointCurrentIndex={this.state.ApprovalPointCurrentParentIndex-1}
                                           ApprovalPointHistoryStatus={this.state.ApprovalHistoryPopup}
-                                          currentArrayIndex={this.state.currentArraySubTextIndex}
+                                          currentArrayIndex={this.state.currentArraySubTextIndex-1}
+                                          usefor="TaskProfile"
+                                         
                                           callBack={() => this.ApprovalHistoryPopupCallBack()}
                                         />
                                           : null}

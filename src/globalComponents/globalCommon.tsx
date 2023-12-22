@@ -1050,560 +1050,560 @@ export const sendImmediateEmailNotifications = async (
     isLoadNotification: any,
     taskUsers: any,
     Context: any
-  ) => {
+) => {
     await GetImmediateTaskNotificationEmails(
-      item,
-      isLoadNotification,
-      taskUsers
+        item,
+        isLoadNotification,
+        taskUsers
     ).then(
-      async (ToEmails: any) => {
-        if (isLoadNotification == false) ToEmails = [];
-  
-        if (ToEmails?.length > 0 || RecipientMail?.length > 0) {
-          var query = "";
-          query +=
-            "AssignedTo/Title,AssignedTo/Name,AssignedTo/Id,ClientActivityJson,AttachmentFiles/FileName,Component/Id,Component/Title,Component/ItemType,ComponentLink,Categories,FeedBack,ComponentLink,FileLeafRef,Title,Id,Comments,StartDate,DueDate,Status,Body,Company,Mileage,PercentComplete,FeedBack,Attachments,Priority,Created,Modified,Author/Id,Author/Title,Editor/Id,Editor/Title,TaskCategories/Id,TaskCategories/Title,Services/Id,Services/Title,Events/Id,Events/Title,TaskType/Id,TaskType/Title,TaskID,CompletedDate,TaskLevel,TaskLevel&$expand=AssignedTo,Component,AttachmentFiles,Author,Editor,TaskCategories,TaskType,Services,Events&$filter=Id eq " +
-            itemId;
-          await getData(siteUrl, listId, query).then(
-            async (data: any) => {
-              data?.map((task: any) => {
-                task.PercentageCompleted =
-                  task?.PercentComplete < 1
-                    ? task?.PercentComplete * 100
-                    : task?.PercentComplete;
-                task.PercentComplete =
-                  task?.PercentComplete < 1
-                    ? task?.PercentComplete * 100
-                    : task?.PercentComplete;
-                if (task.PercentageCompleted != undefined) {
-                  task.PercentageCompleted = parseInt(
-                    (task?.PercentageCompleted).toFixed(0)
-                  );
-                }
-                if (task.PercentComplete != undefined) {
-                  task.PercentComplete = parseInt(
-                    (task?.PercentComplete).toFixed(0)
-                  );
-                }
-                task.taskLeader = "None";
-                if (task?.AssignedTo?.length > 0)
-                  task.taskLeader = getMultiUserValues(task);
-  
-                if (task?.PercentComplete != undefined) {
-                  task.PercentComplete =
-                    task.PercentComplete < 1
-                      ? task.PercentComplete * 100
-                      : task.PercentComplete;
-                  task.PercentComplete = parseInt(
-                    task.PercentComplete.toFixed(0)
-                  );
-  
-                  task.PercentageCompleted = task.PercentComplete;
-                }
-                if (task?.siteType != undefined) {
-                  task.siteType = task.siteType.replace(/_x0020_/g, " ");
-                }
-              });
-  
-              var UpdateItem = data[0];
-              if (UpdateItem?.ClientActivityJson != undefined) {
-                try {
-                  UpdateItem.ClientActivityJson = JSON.parse(
-                    UpdateItem?.ClientActivityJson
-                  );
-                  if (UpdateItem.ClientActivityJson?.length > 0) {
-                    UpdateItem.ClientActivityJson =
-                      UpdateItem.ClientActivityJson[0];
-                  }
-                } catch (e) {}
-              }
-              var siteType = item?.siteType;
-              UpdateItem.siteType = "";
-              if (UpdateItem.siteType == "") {
-                if (siteType != undefined) {
-                  siteType = siteType.replace(/_x0020_/g, "%20");
-                }
-                UpdateItem.siteType = siteType;
-              }
-              UpdateItem.TaskID = GetTaskId(UpdateItem);
-              if (UpdateItem?.Author != undefined) {
-                UpdateItem.Author1 = "";
-                UpdateItem.Author1 = UpdateItem.Author.Title;
-              } else UpdateItem.Editor1 = "";
-              if (UpdateItem?.Editor != undefined) {
-                UpdateItem.Editor1 = "";
-                UpdateItem.Editor1 = UpdateItem.Editor.Title;
-              } else UpdateItem.Editor1 = "";
-              if (UpdateItem?.ComponentLink?.Url != undefined)
-                UpdateItem.URL = UpdateItem?.ComponentLink?.Url;
-              else UpdateItem.URL = "";
-  
-              if (UpdateItem?.DueDate != undefined)
-                UpdateItem.DueDate = moment(new Date(UpdateItem.DueDate)).format(
-                  "DD/MM/YYYY"
-                );
-              else UpdateItem.DueDate = "";
-              if (UpdateItem?.StartDate != undefined)
-                UpdateItem.StartDate = moment(
-                  new Date(UpdateItem.StartDate)
-                ).format("DD/MM/YYYY");
-              else UpdateItem.StartDate = "";
-              if (UpdateItem?.CompletedDate != undefined)
-                UpdateItem.CompletedDate = moment(
-                  new Date(UpdateItem.CompletedDate)
-                ).format("DD/MM/YYYY");
-              else UpdateItem.CompletedDate = "";
-  
-              if (UpdateItem?.Created != undefined)
-                UpdateItem.Created = moment(new Date(UpdateItem.Created)).format(
-                  "DD/MM/YYYY"
-                );
-              else UpdateItem.Created = "";
-              if (UpdateItem?.Modified != undefined)
-                UpdateItem.Modified = moment(
-                  new Date(UpdateItem.Modified)
-                ).format("DD/MM/YYYY");
-              else UpdateItem.Modified = "";
-              if (UpdateItem?.PercentComplete != undefined)
-                UpdateItem.PercentComplete = UpdateItem.PercentComplete;
-              else UpdateItem.PercentComplete = "";
-              if (UpdateItem?.Priority != undefined)
-                UpdateItem.Priority = UpdateItem.Priority;
-              else UpdateItem.Priority = "";
-              if (UpdateItem?.Body != undefined)
-                UpdateItem.Body = $.parseHTML(UpdateItem.Body)[0]?.textContent;
-              else UpdateItem.Body = "";
-              if (UpdateItem?.Title != undefined)
-                UpdateItem.Title = UpdateItem.Title;
-              else UpdateItem.Title = "";
-              UpdateItem.AssignedToTitle = "";
-              if (UpdateItem?.AssignedTo != undefined) {
-                UpdateItem.AssignedTo.map((item: any) => {
-                  UpdateItem.AssignedToTitle += item.Title + ";";
-                });
-              }
-              UpdateItem.ComponentName = "";
-              if (UpdateItem?.Portfolio?.Id != undefined) {
-                UpdateItem.ComponentName += UpdateItem?.Portfolio.Title;
-              }
-              UpdateItem.Category = "";
-              UpdateItem.Categories = "";
-              if (UpdateItem?.TaskCategories != undefined) {
-                UpdateItem.TaskCategories.map((item: any) => {
-                  UpdateItem.Categories += item.Title + ";";
-                  UpdateItem.Category += item.Title + ",";
-                });
-              }
-              var pos = UpdateItem?.Category?.lastIndexOf(",");
-              UpdateItem.Category =
-                UpdateItem?.Category?.substring(0, pos) +
-                UpdateItem?.Category?.substring(pos + 1);
-              var Commentdata = [];
-              UpdateItem.AllComments = "";
-              if (UpdateItem?.Comments != undefined) {
-                Commentdata = JSON.parse(UpdateItem.Comments);
-                Commentdata.map((comment: any) => {
-                  UpdateItem.AllComments +=
-                    '<div colspan="6" style="padding: 9px;border: 1px solid #ccc;background: #fbfbfb;color: #000;margin-top:5px;">' +
-                    "<span>" +
-                    '<div style="margin-bottom:5px;">' +
-                    comment?.AuthorName +
-                    " - " +
-                    comment?.Created +
-                    "</div>" +
-                    comment?.Title +
-                    "</span>" +
-                    "</div>";
-                });
-              }
-              UpdateItem.Description = "";
-              if (UpdateItem?.Body != undefined && UpdateItem?.Body != "")
-                UpdateItem.Description = UpdateItem.Body;
-              if (UpdateItem?.FeedBack != undefined) {
-                try {
-                  var Description = JSON.parse(UpdateItem?.FeedBack);
-                  if (Description?.length > 0) {
-                    UpdateItem.Description = "";
-                    Description[0]?.FeedBackDescriptions?.map(
-                      (description: any, index: any) => {
-                        var index1 = index + 1;
-                        var Comment = "";
-                        if (description?.Comments?.length > 0) {
-                          description.Comments.map((val: any) => {
-                            Comment +=
-                              '<div colspan="6" style="padding: 9px;border: 1px solid #ccc;background: #fbfbfb;color: #000;margin-top:5px;">' +
-                              "<span>" +
-                              '<div style="margin-bottom:5px;">' +
-                              val?.AuthorName +
-                              " - " +
-                              val?.Created +
-                              "</div>" +
-                              val?.Title +
-                              "</span>" +
-                              "</div>";
-                          });
+        async (ToEmails: any) => {
+            if (isLoadNotification == false) ToEmails = [];
+
+            if (ToEmails?.length > 0 || RecipientMail?.length > 0) {
+                var query = "";
+                query +=
+                    "AssignedTo/Title,AssignedTo/Name,AssignedTo/Id,ClientActivityJson,AttachmentFiles/FileName,Component/Id,Component/Title,Component/ItemType,ComponentLink,Categories,FeedBack,ComponentLink,FileLeafRef,Title,Id,Comments,StartDate,DueDate,Status,Body,Company,Mileage,PercentComplete,FeedBack,Attachments,Priority,Created,Modified,Author/Id,Author/Title,Editor/Id,Editor/Title,TaskCategories/Id,TaskCategories/Title,Services/Id,Services/Title,Events/Id,Events/Title,TaskType/Id,TaskType/Title,TaskID,CompletedDate,TaskLevel,TaskLevel&$expand=AssignedTo,Component,AttachmentFiles,Author,Editor,TaskCategories,TaskType,Services,Events&$filter=Id eq " +
+                    itemId;
+                await getData(siteUrl, listId, query).then(
+                    async (data: any) => {
+                        data?.map((task: any) => {
+                            task.PercentageCompleted =
+                                task?.PercentComplete < 1
+                                    ? task?.PercentComplete * 100
+                                    : task?.PercentComplete;
+                            task.PercentComplete =
+                                task?.PercentComplete < 1
+                                    ? task?.PercentComplete * 100
+                                    : task?.PercentComplete;
+                            if (task.PercentageCompleted != undefined) {
+                                task.PercentageCompleted = parseInt(
+                                    (task?.PercentageCompleted).toFixed(0)
+                                );
+                            }
+                            if (task.PercentComplete != undefined) {
+                                task.PercentComplete = parseInt(
+                                    (task?.PercentComplete).toFixed(0)
+                                );
+                            }
+                            task.taskLeader = "None";
+                            if (task?.AssignedTo?.length > 0)
+                                task.taskLeader = getMultiUserValues(task);
+
+                            if (task?.PercentComplete != undefined) {
+                                task.PercentComplete =
+                                    task.PercentComplete < 1
+                                        ? task.PercentComplete * 100
+                                        : task.PercentComplete;
+                                task.PercentComplete = parseInt(
+                                    task.PercentComplete.toFixed(0)
+                                );
+
+                                task.PercentageCompleted = task.PercentComplete;
+                            }
+                            if (task?.siteType != undefined) {
+                                task.siteType = task.siteType.replace(/_x0020_/g, " ");
+                            }
+                        });
+
+                        var UpdateItem = data[0];
+                        if (UpdateItem?.ClientActivityJson != undefined) {
+                            try {
+                                UpdateItem.ClientActivityJson = JSON.parse(
+                                    UpdateItem?.ClientActivityJson
+                                );
+                                if (UpdateItem.ClientActivityJson?.length > 0) {
+                                    UpdateItem.ClientActivityJson =
+                                        UpdateItem.ClientActivityJson[0];
+                                }
+                            } catch (e) { }
                         }
-                        UpdateItem.Description +=
-                          '<tr><td colspan="1" style="background: #f4f4f4;text - align: left;padding: 10px 5px 10px 5px;color: #6F6F6F;font - family: arial;font - size: 14px;font - weight: bold;border - bottom: 2px solid #fff;border - right: 2px solid #fff;background-color: #fbfbfb;font-size: 13px;flex-basis: 27px !important;border: 1px solid #ccc;"><span>' +
-                          index1 +
-                          "</span>" +
-                          "</td>" +
-                          '<td colspan="11" style="background: #f4f4f4;text - align: left;padding: 10px 5px 10px 5px;color: #6F6F6F;font - family: arial;font - size: 14px;font - weight: bold;border - bottom: 2px solid #fff;border - right: 2px solid #fff;background-color: #fbfbfb;flex-basis: 100%;background-color: #fff;font-weight: normal;font-size: 13px;color: #000;margin-left: 2px;border: 1px solid #ccc;">' +
-                          "<span>" +
-                          description?.Title +
-                          "</span>" +
-                          Comment +
-                          "</td>" +
-                          "</tr>";
-                        if (description?.Subtext?.length > 0) {
-                          description.Subtext.map(
-                            (Childdescription: any, Childindex: any) => {
-                              var Childindex1 = Childindex + 1;
-                              var ChildComment = "";
-                              if (Childdescription?.Comments?.length > 0) {
-                                description.Comments.map((Childval: any) => {
-                                  ChildComment +=
+                        var siteType = item?.siteType;
+                        UpdateItem.siteType = "";
+                        if (UpdateItem.siteType == "") {
+                            if (siteType != undefined) {
+                                siteType = siteType.replace(/_x0020_/g, "%20");
+                            }
+                            UpdateItem.siteType = siteType;
+                        }
+                        UpdateItem.TaskID = GetTaskId(UpdateItem);
+                        if (UpdateItem?.Author != undefined) {
+                            UpdateItem.Author1 = "";
+                            UpdateItem.Author1 = UpdateItem.Author.Title;
+                        } else UpdateItem.Editor1 = "";
+                        if (UpdateItem?.Editor != undefined) {
+                            UpdateItem.Editor1 = "";
+                            UpdateItem.Editor1 = UpdateItem.Editor.Title;
+                        } else UpdateItem.Editor1 = "";
+                        if (UpdateItem?.ComponentLink?.Url != undefined)
+                            UpdateItem.URL = UpdateItem?.ComponentLink?.Url;
+                        else UpdateItem.URL = "";
+
+                        if (UpdateItem?.DueDate != undefined)
+                            UpdateItem.DueDate = moment(new Date(UpdateItem.DueDate)).format(
+                                "DD/MM/YYYY"
+                            );
+                        else UpdateItem.DueDate = "";
+                        if (UpdateItem?.StartDate != undefined)
+                            UpdateItem.StartDate = moment(
+                                new Date(UpdateItem.StartDate)
+                            ).format("DD/MM/YYYY");
+                        else UpdateItem.StartDate = "";
+                        if (UpdateItem?.CompletedDate != undefined)
+                            UpdateItem.CompletedDate = moment(
+                                new Date(UpdateItem.CompletedDate)
+                            ).format("DD/MM/YYYY");
+                        else UpdateItem.CompletedDate = "";
+
+                        if (UpdateItem?.Created != undefined)
+                            UpdateItem.Created = moment(new Date(UpdateItem.Created)).format(
+                                "DD/MM/YYYY"
+                            );
+                        else UpdateItem.Created = "";
+                        if (UpdateItem?.Modified != undefined)
+                            UpdateItem.Modified = moment(
+                                new Date(UpdateItem.Modified)
+                            ).format("DD/MM/YYYY");
+                        else UpdateItem.Modified = "";
+                        if (UpdateItem?.PercentComplete != undefined)
+                            UpdateItem.PercentComplete = UpdateItem.PercentComplete;
+                        else UpdateItem.PercentComplete = "";
+                        if (UpdateItem?.Priority != undefined)
+                            UpdateItem.Priority = UpdateItem.Priority;
+                        else UpdateItem.Priority = "";
+                        if (UpdateItem?.Body != undefined)
+                            UpdateItem.Body = $.parseHTML(UpdateItem.Body)[0]?.textContent;
+                        else UpdateItem.Body = "";
+                        if (UpdateItem?.Title != undefined)
+                            UpdateItem.Title = UpdateItem.Title;
+                        else UpdateItem.Title = "";
+                        UpdateItem.AssignedToTitle = "";
+                        if (UpdateItem?.AssignedTo != undefined) {
+                            UpdateItem.AssignedTo.map((item: any) => {
+                                UpdateItem.AssignedToTitle += item.Title + ";";
+                            });
+                        }
+                        UpdateItem.ComponentName = "";
+                        if (UpdateItem?.Portfolio?.Id != undefined) {
+                            UpdateItem.ComponentName += UpdateItem?.Portfolio.Title;
+                        }
+                        UpdateItem.Category = "";
+                        UpdateItem.Categories = "";
+                        if (UpdateItem?.TaskCategories != undefined) {
+                            UpdateItem.TaskCategories.map((item: any) => {
+                                UpdateItem.Categories += item.Title + ";";
+                                UpdateItem.Category += item.Title + ",";
+                            });
+                        }
+                        var pos = UpdateItem?.Category?.lastIndexOf(",");
+                        UpdateItem.Category =
+                            UpdateItem?.Category?.substring(0, pos) +
+                            UpdateItem?.Category?.substring(pos + 1);
+                        var Commentdata = [];
+                        UpdateItem.AllComments = "";
+                        if (UpdateItem?.Comments != undefined) {
+                            Commentdata = JSON.parse(UpdateItem.Comments);
+                            Commentdata.map((comment: any) => {
+                                UpdateItem.AllComments +=
                                     '<div colspan="6" style="padding: 9px;border: 1px solid #ccc;background: #fbfbfb;color: #000;margin-top:5px;">' +
                                     "<span>" +
                                     '<div style="margin-bottom:5px;">' +
-                                    Childval?.AuthorName +
+                                    comment?.AuthorName +
                                     " - " +
-                                    Childval?.Created +
+                                    comment?.Created +
                                     "</div>" +
-                                    Childval?.Title +
+                                    comment?.Title +
                                     "</span>" +
                                     "</div>";
-                                });
-                              }
-                              UpdateItem.Description +=
-                                '<tr><td colspan="1" style="background: #f4f4f4;text - align: left;padding: 10px 5px 10px 5px;color: #6F6F6F;font - family: arial;font - size: 14px;font - weight: bold;border - bottom: 2px solid #fff;border - right: 2px solid #fff;background-color: #fbfbfb;font-size: 13px;flex-basis: 27px !important;border: 1px solid #ccc;"><span>' +
-                                index1 +
-                                "." +
-                                Childindex1 +
-                                "</span>" +
-                                "</td>" +
-                                '<td colspan="11" style="background: #f4f4f4;text - align: left;padding: 10px 5px 10px 5px;color: #6F6F6F;font - family: arial;font - size: 14px;font - weight: bold;border - bottom: 2px solid #fff;border - right: 2px solid #fff;background-color: #fbfbfb;flex-basis: 100%;background-color: #fff;font-weight: normal;font-size: 13px;color: #000;margin-left: 2px;border: 1px solid #ccc;">' +
-                                "<span>" +
-                                Childdescription?.Title +
-                                "</span>" +
-                                ChildComment +
-                                "</td>" +
-                                "</tr>";
-                            }
-                          );
+                            });
                         }
-                      }
-                    );
-                  }
-                  //$scope.AdditionalTimeSpent.push(item.AdditionalTime[0]);
-                } catch (e) {
-                  console.log(e);
-                }
-              }
-              let pageContent = Context;
-              var siteUrl = pageContent?.pageContext?.web?.absoluteUrl;
-              var Name = "";
-              var OtherDetails = "";
-              let Subject: any = "";
-              var TaskDescriptionStart = "";
-              var NoOfApprovalTask = "";
-              var TaskDescription = "";
-              var ApprovalRejectionComments = "";
-              var TaskComments = "";
-              var TaskDashBoardURl = "";
-              var ApprovalDashboard = "";
-              var TaskDashBoardTitle = "";
-              var ApprovalDashboardTitle = "";
-              var CC: any[] = [];
-              if (item == undefined) {
-                //Subject = "[" + siteType + "-Task] " + UpdateItem.Title + "(" + UpdateItem.Category + ")";
-                Subject =
-                  "[" +
-                  siteType +
-                  " - " +
-                  UpdateItem?.Category +
-                  " (" +
-                  UpdateItem?.PercentComplete +
-                  "%)] " +
-                  UpdateItem?.Title +
-                  "";
-              }
-  
-              if (Subject == undefined || Subject == "") {
-                if (
-                  UpdateItem?.PercentComplete != undefined &&
-                  UpdateItem?.PercentComplete != "" &&
-                  UpdateItem?.PercentComplete != 1 &&
-                  UpdateItem?.Category != undefined &&
-                  UpdateItem?.Category != "" &&
-                  UpdateItem?.Category.toLowerCase("approval") > -1
-                )
-                  item.CategoriesType = item?.Category?.replace("Approval,", "");
-                Subject =
-                  "[" +
-                  siteType +
-                  " - " +
-                  UpdateItem?.Category +
-                  " (" +
-                  UpdateItem?.PercentComplete +
-                  "%)] " +
-                  UpdateItem?.Title +
-                  "";
-              }
-              if (UpdateItem?.PercentComplete != 1) {
-                Subject = Subject?.replaceAll("Approval,", "");
-                Subject = Subject?.replaceAll("Normal Approval,", "");
-                Subject = Subject?.replaceAll("Normal Approval", "");
-                Subject = Subject?.replaceAll("Quick Approval,", "");
-                Subject = Subject?.replaceAll("Quick Approval", "");
-                Subject = Subject?.replaceAll("Complex Approval,", "");
-                Subject = Subject?.replaceAll("Complex Approval", "");
-                Subject = Subject?.replaceAll(",,", ",");
-              }
-              if (
-                UpdateItem?.PercentComplete == 1 &&
-                UpdateItem?.Category?.toLowerCase()?.indexOf("approval") > -1
-              ) {
-                //Subject = Subject.replaceAll('Approval,', '')
-                //if (Subject.indexOf('Normal Approval') <= -1 && Subject.indexOf('Quick Approval') <= -1 && Subject.indexOf('Complex Approval') <= -1)
-                //    Subject = Subject.replaceAll('Approval', '')
-                //Subject = Subject.replaceAll(',,', ',')
-                Subject =
-                  "[" +
-                  siteType +
-                  " - " +
-                  "Approval" +
-                  "] " +
-                  UpdateItem?.Title +
-                  "";
-                if (isLoadNotification == "Client Task") {
-                  Subject =
-                    "[ SDC Client Task - " +
-                    siteType +
-                    " - " +
-                    item?.SDCAuthor +
-                    " ] " +
-                    UpdateItem?.Title +
-                    "";
-                }
-                if (
-                  UpdateItem?.Category?.toLowerCase()?.indexOf(
-                    "email notification"
-                  ) > -1 &&
-                  UpdateItem?.Category?.toLowerCase().indexOf("immediate") > -1
-                ) {
-                  Subject =
-                    "[" +
-                    siteType +
-                    " - " +
-                    "Approval,Email notification,Immediate" +
-                    "] " +
-                    UpdateItem?.Title +
-                    "";
-                } else if (
-                  UpdateItem?.Category?.toLowerCase()?.indexOf(
-                    "email notification"
-                  ) > -1
-                ) {
-                  Subject =
-                    "[" +
-                    siteType +
-                    " - " +
-                    "Approval,Email notification" +
-                    "] " +
-                    UpdateItem?.Title +
-                    "";
-                } else if (
-                  UpdateItem?.Category?.toLowerCase()?.indexOf("immediate") > -1
-                ) {
-                  Subject =
-                    "[" +
-                    siteType +
-                    " - " +
-                    "Approval,Immediate" +
-                    "] " +
-                    UpdateItem?.Title +
-                    "";
-                }
-              } else if (
-                UpdateItem?.PercentComplete == 0 &&
-                UpdateItem?.Category?.toLowerCase()?.indexOf("design") > -1
-              ) {
-                if (isLoadNotification == "DesignMail") {
-                  Subject =
-                    "[" +
-                    siteType +
-                    " - " +
-                    "Design" +
-                    "]" +
-                    UpdateItem?.Title +
-                    "";
-                }
-              }
-              var body =
-                "<div>" +
-                  "</div>" +
-                  '<div style="margin-top:4px">' +
-                  isLoadNotification ==
-                "DesignMail"
-                  ? null
-                  : TaskDescriptionStart +
-                      "</div>" +
-                      '<div style="margin-top:6px">' +
-                      isLoadNotification ==
-                    "DesignMail"
-                  ? null
-                  : TaskDescription +
-                      "</div>" +
-                      '<div style="margin-top:10px">' +
-                      isLoadNotification ==
-                    "DesignMail"
-                  ? null
-                  : NoOfApprovalTask +
-                      "</div>" +
-                      '<div style="margin-top:10px;">' +
-                      '<a style="padding-right: 17px;" href =' +
-                      isLoadNotification ==
-                    "DesignMail"
-                  ? null
-                  : TaskDashBoardURl + ">" + isLoadNotification == "DesignMail"
-                  ? null
-                  : TaskDashBoardTitle +
-                      "</a>" +
-                      "<a href =" +
-                      isLoadNotification ==
-                    "DesignMail"
-                  ? null
-                  : ApprovalDashboard + ">" + isLoadNotification == "DesignMail"
-                  ? null
-                  : ApprovalDashboardTitle +
-                    "</a>" +
-                    "</div>" +
-                    '<div style="margin-top:15px">' +
-                    "<a href =" +
-                    siteUrl +
-                    "/SitePages/Task-Profile.aspx?taskId=" +
-                    UpdateItem?.Id +
-                    "&Site=" +
-                    siteType +
-                    ">" +
-                    UpdateItem?.Title +
-                    "</a>" +
-                    "</div>" +
-                    '<table style="width:100%">' +
-                    "<tbody>" +
-                    '<td style="width:70%;vertical-align: top;">' +
-                    '<table style="width:99%;">' +
-                    "<tbody>" +
-                    "<tr>" +
-                    '<tr><td style="border: 1px solid #ccc;background: #f4f4f4;"><b style="font-size: 13px;">Task Id:</b></td><td colspan="2" style="border: 1px solid #ccc;background: #fafafa;"> <span style="font-size: 13px; margin-left:13px" >' +
-                    UpdateItem?.TaskID +
-                    "</span></td>" +
-                    '<td style="border: 1px solid #ccc;background: #f4f4f4;"><b style="font-size: 13px;">Component:</b></td><td colspan="2" style="border: 1px solid #ccc;background: #fafafa;"> <span style="font-size: 13px; margin-left:13px" >' +
-                    UpdateItem?.ComponentName +
-                    "</span> </td>" +
-                    '<td style="border: 1px solid #ccc;background: #f4f4f4;"><b style="font-size: 13px;">Priority:</b></td><td colspan="2" style="border: 1px solid #ccc;background: #fafafa;"> <span style="font-size: 13px; margin-left:13px" >' +
-                    UpdateItem?.Priority +
-                    "</span> </td>" +
-                    "</tr>" +
-                    '<tr><td style="border: 1px solid #ccc;background: #f4f4f4;"><b style="font-size: 13px;">Start Date:</b></td><td colspan="2" style="border: 1px solid #ccc;background: #fafafa;"> <span style="font-size: 13px; margin-left:13px" >' +
-                    UpdateItem?.StartDate +
-                    "</span></td>" +
-                    '<td style="border: 1px solid #ccc;background: #f4f4f4;"><b style="font-size: 13px;">Completion Date:</b></td><td colspan="2" style="border: 1px solid #ccc;background: #fafafa;"> <span style="font-size: 13px; margin-left:13px" >' +
-                    UpdateItem?.CompletedDate +
-                    "</span> </td>" +
-                    '<td style="border: 1px solid #ccc;background: #f4f4f4;"><b style="font-size: 13px;">Due Date:</b></td><td colspan="2" style="border: 1px solid #ccc;background: #fafafa;"> <span style="font-size: 13px; margin-left:13px" >' +
-                    UpdateItem?.DueDate +
-                    "</span> </td>" +
-                    "</tr>" +
-                    '<tr><td style="border: 1px solid #ccc;background: #f4f4f4;"><b style="font-size: 13px;">Team Members:</b></td><td colspan="2" style="border: 1px solid #ccc;background: #fafafa;"> <span style="font-size: 13px; margin-left:13px" >' +
-                    UpdateItem?.AssignedToTitle +
-                    "</span></td>" +
-                    '<td style="border: 1px solid #ccc;background: #f4f4f4;"><b style="font-size: 13px;">Created By:</b></td><td colspan="2" style="border: 1px solid #ccc;background: #fafafa;"> <span style="font-size: 13px; margin-left:13px" >' +
-                    UpdateItem?.Author1 +
-                    "</span> </td>" +
-                    '<td style="border: 1px solid #ccc;background: #f4f4f4;"><b style="font-size: 13px;">Created:</b></td><td colspan="2" style="border: 1px solid #ccc;background: #fafafa;"> <span style="font-size: 13px; margin-left:13px" >' +
-                    UpdateItem?.Created +
-                    "</span> </td>" +
-                    "</tr>" +
-                    '<tr><td style="border: 1px solid #ccc;background: #f4f4f4;"><b style="font-size: 13px;">Categories:</b></td><td colspan="2" style="border: 1px solid #ccc;background: #fafafa;"> <span style="font-size: 13px; margin-left:13px" >' +
-                    UpdateItem?.Categories +
-                    "</span></td>" +
-                    '<td style="border: 1px solid #ccc;background: #f4f4f4;"><b style="font-size: 13px;">Status:</b></td><td colspan="2" style="border: 1px solid #ccc;background: #fafafa;"> <span style="font-size: 13px; margin-left:13px" >' +
-                    UpdateItem?.Status +
-                    "</span> </td>" +
-                    '<td style="border: 1px solid #ccc;background: #f4f4f4;"><b style="font-size: 13px;">% Complete:</b></td><td colspan="2" style="border: 1px solid #ccc;background: #fafafa;"> <span style="font-size: 13px; margin-left:13px" >' +
-                    UpdateItem?.PercentComplete +
-                    "%</span> </td>" +
-                    "</tr>" +
-                    '<tr><td style="border: 1px solid #ccc;background: #f4f4f4;"><b style="font-size: 13px;">URL:</b> </td><td colspan="7" style="border: 1px solid #ccc;background: #fafafa;"><span style="font-size: 13px; margin-left:13px">' +
-                    UpdateItem?.URL +
-                    "</span> </td>" +
-                    "</tr>" +
-                    ApprovalRejectionComments +
-                    "</tr> " +
-                    "</tr>" +
-                    "</tr>" +
-                    "<tr>" +
-                    "</tbody>" +
-                    "</table>" +
-                    '<table style="width:99%;margin-top: 10px;">' +
-                    "<tbody>" +
-                    "<tr>" +
-                    UpdateItem?.Description +
-                    "</tr>" +
-                    "</tbody>" +
-                    "</table>" +
-                    "</td>" +
-                    '<td style="width:22%">' +
-                    '<table style="border:1px solid #ddd;border-radius:4px;margin-bottom:25%;width:100%">' +
-                    "<tbody>" +
-                    "<tr>" +
-                    '<td style="color:#333; background-color:#f5f5f5;border-bottom:1px solid #ddd">Comments:' +
-                    "</td>" +
-                    "</tr>" +
-                    "<tr>" +
-                    "<td>" +
-                    UpdateItem?.AllComments +
-                    "</td>" +
-                    "</tr>" +
-                    "</tbody>" +
-                    "</table>" +
-                    "</td>" +
-                    "</tr>" +
-                    "</tbody>" +
-                    "</table>" +
-                    "</td>" +
-                    "</tr>" +
-                    "</tbody>" +
-                    "</table>";
-              if (CC.length > 1) CC.splice(1, 1);
-              //'<tr><td colspan="7" style="background: #f4f4f4;text - align: left;padding: 10px 5px 10px 5px;color: #6F6F6F;font - family: arial;font - size: 14px;font - weight: bold;border - bottom: 2px solid #fff;border - right: 2px solid #fff;background-color: #fbfbfb;flex-basis: 100%;background-color: #fff;font-weight: normal;font-size: 13px;color: #000;margin-left: 2px;border: 1px solid #ccc;">' + UpdateItem.Description + '</td></tr>' +
-  
-              //'<tr><td colspan="7" style="background: #f4f4f4;text - align: left;padding: 10px 5px 10px 5px;color: #6F6F6F;font - family: arial;font - size: 14px;font - weight: bold;border - bottom: 2px solid #fff;border - right: 2px solid #fff;background-color: #fbfbfb;flex-basis: 100%;background-color: #fff;font-weight: normal;font-size: 13px;color: #000;margin-left: 2px;border: 1px solid #ccc;">' + UpdateItem.Description + '</td></tr>' +
-              if (RecipientMail?.length > 0) {
-                if (ToEmails == undefined) {
-                  ToEmails = [];
-                }
-                RecipientMail.map((mail: any) => {
-                  ToEmails.push(mail.Email);
-                });
-              }
-              if (isLoadNotification == "Client Task") {
-                let SDCDetails: any = {};
-                let extraBody = "";
-                if (UpdateItem?.ClientActivityJson?.SDCCreatedBy?.length > 0) {
-                  SDCDetails = UpdateItem?.ClientActivityJson;
-                  Subject =
-                    "[ SDC Client Task - " +
-                    siteType +
-                    " - " +
-                    SDCDetails?.SDCCreatedBy +
-                    " ] " +
-                    UpdateItem?.Title +
-                    "";
-                  if (UpdateItem?.PercentComplete < 90) {
-                    extraBody = `<div>
+                        UpdateItem.Description = "";
+                        if (UpdateItem?.Body != undefined && UpdateItem?.Body != "")
+                            UpdateItem.Description = UpdateItem.Body;
+                        if (UpdateItem?.FeedBack != undefined) {
+                            try {
+                                var Description = JSON.parse(UpdateItem?.FeedBack);
+                                if (Description?.length > 0) {
+                                    UpdateItem.Description = "";
+                                    Description[0]?.FeedBackDescriptions?.map(
+                                        (description: any, index: any) => {
+                                            var index1 = index + 1;
+                                            var Comment = "";
+                                            if (description?.Comments?.length > 0) {
+                                                description.Comments.map((val: any) => {
+                                                    Comment +=
+                                                        '<div colspan="6" style="padding: 9px;border: 1px solid #ccc;background: #fbfbfb;color: #000;margin-top:5px;">' +
+                                                        "<span>" +
+                                                        '<div style="margin-bottom:5px;">' +
+                                                        val?.AuthorName +
+                                                        " - " +
+                                                        val?.Created +
+                                                        "</div>" +
+                                                        val?.Title +
+                                                        "</span>" +
+                                                        "</div>";
+                                                });
+                                            }
+                                            UpdateItem.Description +=
+                                                '<tr><td colspan="1" style="background: #f4f4f4;text - align: left;padding: 10px 5px 10px 5px;color: #6F6F6F;font - family: arial;font - size: 14px;font - weight: bold;border - bottom: 2px solid #fff;border - right: 2px solid #fff;background-color: #fbfbfb;font-size: 13px;flex-basis: 27px !important;border: 1px solid #ccc;"><span>' +
+                                                index1 +
+                                                "</span>" +
+                                                "</td>" +
+                                                '<td colspan="11" style="background: #f4f4f4;text - align: left;padding: 10px 5px 10px 5px;color: #6F6F6F;font - family: arial;font - size: 14px;font - weight: bold;border - bottom: 2px solid #fff;border - right: 2px solid #fff;background-color: #fbfbfb;flex-basis: 100%;background-color: #fff;font-weight: normal;font-size: 13px;color: #000;margin-left: 2px;border: 1px solid #ccc;">' +
+                                                "<span>" +
+                                                description?.Title +
+                                                "</span>" +
+                                                Comment +
+                                                "</td>" +
+                                                "</tr>";
+                                            if (description?.Subtext?.length > 0) {
+                                                description.Subtext.map(
+                                                    (Childdescription: any, Childindex: any) => {
+                                                        var Childindex1 = Childindex + 1;
+                                                        var ChildComment = "";
+                                                        if (Childdescription?.Comments?.length > 0) {
+                                                            description.Comments.map((Childval: any) => {
+                                                                ChildComment +=
+                                                                    '<div colspan="6" style="padding: 9px;border: 1px solid #ccc;background: #fbfbfb;color: #000;margin-top:5px;">' +
+                                                                    "<span>" +
+                                                                    '<div style="margin-bottom:5px;">' +
+                                                                    Childval?.AuthorName +
+                                                                    " - " +
+                                                                    Childval?.Created +
+                                                                    "</div>" +
+                                                                    Childval?.Title +
+                                                                    "</span>" +
+                                                                    "</div>";
+                                                            });
+                                                        }
+                                                        UpdateItem.Description +=
+                                                            '<tr><td colspan="1" style="background: #f4f4f4;text - align: left;padding: 10px 5px 10px 5px;color: #6F6F6F;font - family: arial;font - size: 14px;font - weight: bold;border - bottom: 2px solid #fff;border - right: 2px solid #fff;background-color: #fbfbfb;font-size: 13px;flex-basis: 27px !important;border: 1px solid #ccc;"><span>' +
+                                                            index1 +
+                                                            "." +
+                                                            Childindex1 +
+                                                            "</span>" +
+                                                            "</td>" +
+                                                            '<td colspan="11" style="background: #f4f4f4;text - align: left;padding: 10px 5px 10px 5px;color: #6F6F6F;font - family: arial;font - size: 14px;font - weight: bold;border - bottom: 2px solid #fff;border - right: 2px solid #fff;background-color: #fbfbfb;flex-basis: 100%;background-color: #fff;font-weight: normal;font-size: 13px;color: #000;margin-left: 2px;border: 1px solid #ccc;">' +
+                                                            "<span>" +
+                                                            Childdescription?.Title +
+                                                            "</span>" +
+                                                            ChildComment +
+                                                            "</td>" +
+                                                            "</tr>";
+                                                    }
+                                                );
+                                            }
+                                        }
+                                    );
+                                }
+                                //$scope.AdditionalTimeSpent.push(item.AdditionalTime[0]);
+                            } catch (e) {
+                                console.log(e);
+                            }
+                        }
+                        let pageContent = Context;
+                        var siteUrl = pageContent?.pageContext?.web?.absoluteUrl;
+                        var Name = "";
+                        var OtherDetails = "";
+                        let Subject: any = "";
+                        var TaskDescriptionStart = "";
+                        var NoOfApprovalTask = "";
+                        var TaskDescription = "";
+                        var ApprovalRejectionComments = "";
+                        var TaskComments = "";
+                        var TaskDashBoardURl = "";
+                        var ApprovalDashboard = "";
+                        var TaskDashBoardTitle = "";
+                        var ApprovalDashboardTitle = "";
+                        var CC: any[] = [];
+                        if (item == undefined) {
+                            //Subject = "[" + siteType + "-Task] " + UpdateItem.Title + "(" + UpdateItem.Category + ")";
+                            Subject =
+                                "[" +
+                                siteType +
+                                " - " +
+                                UpdateItem?.Category +
+                                " (" +
+                                UpdateItem?.PercentComplete +
+                                "%)] " +
+                                UpdateItem?.Title +
+                                "";
+                        }
+
+                        if (Subject == undefined || Subject == "") {
+                            if (
+                                UpdateItem?.PercentComplete != undefined &&
+                                UpdateItem?.PercentComplete != "" &&
+                                UpdateItem?.PercentComplete != 1 &&
+                                UpdateItem?.Category != undefined &&
+                                UpdateItem?.Category != "" &&
+                                UpdateItem?.Category.toLowerCase("approval") > -1
+                            )
+                                item.CategoriesType = item?.Category?.replace("Approval,", "");
+                            Subject =
+                                "[" +
+                                siteType +
+                                " - " +
+                                UpdateItem?.Category +
+                                " (" +
+                                UpdateItem?.PercentComplete +
+                                "%)] " +
+                                UpdateItem?.Title +
+                                "";
+                        }
+                        if (UpdateItem?.PercentComplete != 1) {
+                            Subject = Subject?.replaceAll("Approval,", "");
+                            Subject = Subject?.replaceAll("Normal Approval,", "");
+                            Subject = Subject?.replaceAll("Normal Approval", "");
+                            Subject = Subject?.replaceAll("Quick Approval,", "");
+                            Subject = Subject?.replaceAll("Quick Approval", "");
+                            Subject = Subject?.replaceAll("Complex Approval,", "");
+                            Subject = Subject?.replaceAll("Complex Approval", "");
+                            Subject = Subject?.replaceAll(",,", ",");
+                        }
+                        if (
+                            UpdateItem?.PercentComplete == 1 &&
+                            UpdateItem?.Category?.toLowerCase()?.indexOf("approval") > -1
+                        ) {
+                            //Subject = Subject.replaceAll('Approval,', '')
+                            //if (Subject.indexOf('Normal Approval') <= -1 && Subject.indexOf('Quick Approval') <= -1 && Subject.indexOf('Complex Approval') <= -1)
+                            //    Subject = Subject.replaceAll('Approval', '')
+                            //Subject = Subject.replaceAll(',,', ',')
+                            Subject =
+                                "[" +
+                                siteType +
+                                " - " +
+                                "Approval" +
+                                "] " +
+                                UpdateItem?.Title +
+                                "";
+                            if (isLoadNotification == "Client Task") {
+                                Subject =
+                                    "[ SDC Client Task - " +
+                                    siteType +
+                                    " - " +
+                                    item?.SDCAuthor +
+                                    " ] " +
+                                    UpdateItem?.Title +
+                                    "";
+                            }
+                            if (
+                                UpdateItem?.Category?.toLowerCase()?.indexOf(
+                                    "email notification"
+                                ) > -1 &&
+                                UpdateItem?.Category?.toLowerCase().indexOf("immediate") > -1
+                            ) {
+                                Subject =
+                                    "[" +
+                                    siteType +
+                                    " - " +
+                                    "Approval,Email notification,Immediate" +
+                                    "] " +
+                                    UpdateItem?.Title +
+                                    "";
+                            } else if (
+                                UpdateItem?.Category?.toLowerCase()?.indexOf(
+                                    "email notification"
+                                ) > -1
+                            ) {
+                                Subject =
+                                    "[" +
+                                    siteType +
+                                    " - " +
+                                    "Approval,Email notification" +
+                                    "] " +
+                                    UpdateItem?.Title +
+                                    "";
+                            } else if (
+                                UpdateItem?.Category?.toLowerCase()?.indexOf("immediate") > -1
+                            ) {
+                                Subject =
+                                    "[" +
+                                    siteType +
+                                    " - " +
+                                    "Approval,Immediate" +
+                                    "] " +
+                                    UpdateItem?.Title +
+                                    "";
+                            }
+                        } else if (
+                            UpdateItem?.PercentComplete == 0 &&
+                            UpdateItem?.Category?.toLowerCase()?.indexOf("design") > -1
+                        ) {
+                            if (isLoadNotification == "DesignMail") {
+                                Subject =
+                                    "[" +
+                                    siteType +
+                                    " - " +
+                                    "Design" +
+                                    "]" +
+                                    UpdateItem?.Title +
+                                    "";
+                            }
+                        }
+                        var body =
+                            "<div>" +
+                                "</div>" +
+                                '<div style="margin-top:4px">' +
+                                isLoadNotification ==
+                                "DesignMail"
+                                ? null
+                                : TaskDescriptionStart +
+                                    "</div>" +
+                                    '<div style="margin-top:6px">' +
+                                    isLoadNotification ==
+                                    "DesignMail"
+                                    ? null
+                                    : TaskDescription +
+                                        "</div>" +
+                                        '<div style="margin-top:10px">' +
+                                        isLoadNotification ==
+                                        "DesignMail"
+                                        ? null
+                                        : NoOfApprovalTask +
+                                            "</div>" +
+                                            '<div style="margin-top:10px;">' +
+                                            '<a style="padding-right: 17px;" href =' +
+                                            isLoadNotification ==
+                                            "DesignMail"
+                                            ? null
+                                            : TaskDashBoardURl + ">" + isLoadNotification == "DesignMail"
+                                                ? null
+                                                : TaskDashBoardTitle +
+                                                    "</a>" +
+                                                    "<a href =" +
+                                                    isLoadNotification ==
+                                                    "DesignMail"
+                                                    ? null
+                                                    : ApprovalDashboard + ">" + isLoadNotification == "DesignMail"
+                                                        ? null
+                                                        : ApprovalDashboardTitle +
+                                                        "</a>" +
+                                                        "</div>" +
+                                                        '<div style="margin-top:15px">' +
+                                                        "<a href =" +
+                                                        siteUrl +
+                                                        "/SitePages/Task-Profile.aspx?taskId=" +
+                                                        UpdateItem?.Id +
+                                                        "&Site=" +
+                                                        siteType +
+                                                        ">" +
+                                                        UpdateItem?.Title +
+                                                        "</a>" +
+                                                        "</div>" +
+                                                        '<table style="width:100%">' +
+                                                        "<tbody>" +
+                                                        '<td style="width:70%;vertical-align: top;">' +
+                                                        '<table style="width:99%;">' +
+                                                        "<tbody>" +
+                                                        "<tr>" +
+                                                        '<tr><td style="border: 1px solid #ccc;background: #f4f4f4;"><b style="font-size: 13px;">Task Id:</b></td><td colspan="2" style="border: 1px solid #ccc;background: #fafafa;"> <span style="font-size: 13px; margin-left:13px" >' +
+                                                        UpdateItem?.TaskID +
+                                                        "</span></td>" +
+                                                        '<td style="border: 1px solid #ccc;background: #f4f4f4;"><b style="font-size: 13px;">Component:</b></td><td colspan="2" style="border: 1px solid #ccc;background: #fafafa;"> <span style="font-size: 13px; margin-left:13px" >' +
+                                                        UpdateItem?.ComponentName +
+                                                        "</span> </td>" +
+                                                        '<td style="border: 1px solid #ccc;background: #f4f4f4;"><b style="font-size: 13px;">Priority:</b></td><td colspan="2" style="border: 1px solid #ccc;background: #fafafa;"> <span style="font-size: 13px; margin-left:13px" >' +
+                                                        UpdateItem?.Priority +
+                                                        "</span> </td>" +
+                                                        "</tr>" +
+                                                        '<tr><td style="border: 1px solid #ccc;background: #f4f4f4;"><b style="font-size: 13px;">Start Date:</b></td><td colspan="2" style="border: 1px solid #ccc;background: #fafafa;"> <span style="font-size: 13px; margin-left:13px" >' +
+                                                        UpdateItem?.StartDate +
+                                                        "</span></td>" +
+                                                        '<td style="border: 1px solid #ccc;background: #f4f4f4;"><b style="font-size: 13px;">Completion Date:</b></td><td colspan="2" style="border: 1px solid #ccc;background: #fafafa;"> <span style="font-size: 13px; margin-left:13px" >' +
+                                                        UpdateItem?.CompletedDate +
+                                                        "</span> </td>" +
+                                                        '<td style="border: 1px solid #ccc;background: #f4f4f4;"><b style="font-size: 13px;">Due Date:</b></td><td colspan="2" style="border: 1px solid #ccc;background: #fafafa;"> <span style="font-size: 13px; margin-left:13px" >' +
+                                                        UpdateItem?.DueDate +
+                                                        "</span> </td>" +
+                                                        "</tr>" +
+                                                        '<tr><td style="border: 1px solid #ccc;background: #f4f4f4;"><b style="font-size: 13px;">Team Members:</b></td><td colspan="2" style="border: 1px solid #ccc;background: #fafafa;"> <span style="font-size: 13px; margin-left:13px" >' +
+                                                        UpdateItem?.AssignedToTitle +
+                                                        "</span></td>" +
+                                                        '<td style="border: 1px solid #ccc;background: #f4f4f4;"><b style="font-size: 13px;">Created By:</b></td><td colspan="2" style="border: 1px solid #ccc;background: #fafafa;"> <span style="font-size: 13px; margin-left:13px" >' +
+                                                        UpdateItem?.Author1 +
+                                                        "</span> </td>" +
+                                                        '<td style="border: 1px solid #ccc;background: #f4f4f4;"><b style="font-size: 13px;">Created:</b></td><td colspan="2" style="border: 1px solid #ccc;background: #fafafa;"> <span style="font-size: 13px; margin-left:13px" >' +
+                                                        UpdateItem?.Created +
+                                                        "</span> </td>" +
+                                                        "</tr>" +
+                                                        '<tr><td style="border: 1px solid #ccc;background: #f4f4f4;"><b style="font-size: 13px;">Categories:</b></td><td colspan="2" style="border: 1px solid #ccc;background: #fafafa;"> <span style="font-size: 13px; margin-left:13px" >' +
+                                                        UpdateItem?.Categories +
+                                                        "</span></td>" +
+                                                        '<td style="border: 1px solid #ccc;background: #f4f4f4;"><b style="font-size: 13px;">Status:</b></td><td colspan="2" style="border: 1px solid #ccc;background: #fafafa;"> <span style="font-size: 13px; margin-left:13px" >' +
+                                                        UpdateItem?.Status +
+                                                        "</span> </td>" +
+                                                        '<td style="border: 1px solid #ccc;background: #f4f4f4;"><b style="font-size: 13px;">% Complete:</b></td><td colspan="2" style="border: 1px solid #ccc;background: #fafafa;"> <span style="font-size: 13px; margin-left:13px" >' +
+                                                        UpdateItem?.PercentComplete +
+                                                        "%</span> </td>" +
+                                                        "</tr>" +
+                                                        '<tr><td style="border: 1px solid #ccc;background: #f4f4f4;"><b style="font-size: 13px;">URL:</b> </td><td colspan="7" style="border: 1px solid #ccc;background: #fafafa;"><span style="font-size: 13px; margin-left:13px">' +
+                                                        UpdateItem?.URL +
+                                                        "</span> </td>" +
+                                                        "</tr>" +
+                                                        ApprovalRejectionComments +
+                                                        "</tr> " +
+                                                        "</tr>" +
+                                                        "</tr>" +
+                                                        "<tr>" +
+                                                        "</tbody>" +
+                                                        "</table>" +
+                                                        '<table style="width:99%;margin-top: 10px;">' +
+                                                        "<tbody>" +
+                                                        "<tr>" +
+                                                        UpdateItem?.Description +
+                                                        "</tr>" +
+                                                        "</tbody>" +
+                                                        "</table>" +
+                                                        "</td>" +
+                                                        '<td style="width:22%">' +
+                                                        '<table style="border:1px solid #ddd;border-radius:4px;margin-bottom:25%;width:100%">' +
+                                                        "<tbody>" +
+                                                        "<tr>" +
+                                                        '<td style="color:#333; background-color:#f5f5f5;border-bottom:1px solid #ddd">Comments:' +
+                                                        "</td>" +
+                                                        "</tr>" +
+                                                        "<tr>" +
+                                                        "<td>" +
+                                                        UpdateItem?.AllComments +
+                                                        "</td>" +
+                                                        "</tr>" +
+                                                        "</tbody>" +
+                                                        "</table>" +
+                                                        "</td>" +
+                                                        "</tr>" +
+                                                        "</tbody>" +
+                                                        "</table>" +
+                                                        "</td>" +
+                                                        "</tr>" +
+                                                        "</tbody>" +
+                                                        "</table>";
+                        if (CC.length > 1) CC.splice(1, 1);
+                        //'<tr><td colspan="7" style="background: #f4f4f4;text - align: left;padding: 10px 5px 10px 5px;color: #6F6F6F;font - family: arial;font - size: 14px;font - weight: bold;border - bottom: 2px solid #fff;border - right: 2px solid #fff;background-color: #fbfbfb;flex-basis: 100%;background-color: #fff;font-weight: normal;font-size: 13px;color: #000;margin-left: 2px;border: 1px solid #ccc;">' + UpdateItem.Description + '</td></tr>' +
+
+                        //'<tr><td colspan="7" style="background: #f4f4f4;text - align: left;padding: 10px 5px 10px 5px;color: #6F6F6F;font - family: arial;font - size: 14px;font - weight: bold;border - bottom: 2px solid #fff;border - right: 2px solid #fff;background-color: #fbfbfb;flex-basis: 100%;background-color: #fff;font-weight: normal;font-size: 13px;color: #000;margin-left: 2px;border: 1px solid #ccc;">' + UpdateItem.Description + '</td></tr>' +
+                        if (RecipientMail?.length > 0) {
+                            if (ToEmails == undefined) {
+                                ToEmails = [];
+                            }
+                            RecipientMail.map((mail: any) => {
+                                ToEmails.push(mail.Email);
+                            });
+                        }
+                        if (isLoadNotification == "Client Task") {
+                            let SDCDetails: any = {};
+                            let extraBody = "";
+                            if (UpdateItem?.ClientActivityJson?.SDCCreatedBy?.length > 0) {
+                                SDCDetails = UpdateItem?.ClientActivityJson;
+                                Subject =
+                                    "[ SDC Client Task - " +
+                                    siteType +
+                                    " - " +
+                                    SDCDetails?.SDCCreatedBy +
+                                    " ] " +
+                                    UpdateItem?.Title +
+                                    "";
+                                if (UpdateItem?.PercentComplete < 90) {
+                                    extraBody = `<div>
                                       <h2>Email Subject : Your Task has been seen - [${SDCDetails?.SDCTaskId} ${UpdateItem?.Title}]</h2>
                                       <p>Message:</p>
                                       <p>Dear ${SDCDetails?.SDCCreatedBy},</p>
@@ -1615,8 +1615,8 @@ export const sendImmediateEmailNotifications = async (
                                       <br>
                                       <h4>Client Email : - ${SDCDetails?.SDCEmail}
                                   </div><br><br>`;
-                  } else if (UpdateItem?.PercentComplete == 90) {
-                    extraBody = `<div>
+                                } else if (UpdateItem?.PercentComplete == 90) {
+                                    extraBody = `<div>
                                       <h2>Email Subject : Your Task has been completed - [${SDCDetails?.SDCTaskId} ${UpdateItem?.Title}]</h2>
                                       <p>Message:</p>
                                       <p>Dear ${SDCDetails?.SDCCreatedBy},</p>
@@ -1628,29 +1628,29 @@ export const sendImmediateEmailNotifications = async (
                                       <br>
                                       <h4>Client Email : - ${SDCDetails?.SDCEmail}
                                   </div><br><br>`;
-                  }
-  
-                  body = extraBody + body;
-                }
-              }
-              var from = "",
-                to = ToEmails,
-                cc = CC,
-                body = body,
-                subject = Subject,
-                ReplyTo = "deepak@hochhuth-consulting.de";
-              SendEmailFinal(to, subject, body, Context);
-            },
-            function (error) {
-              console.log(error);
+                                }
+
+                                body = extraBody + body;
+                            }
+                        }
+                        var from = "",
+                            to = ToEmails,
+                            cc = CC,
+                            body = body,
+                            subject = Subject,
+                            ReplyTo = "deepak@hochhuth-consulting.de";
+                        SendEmailFinal(to, subject, body, Context);
+                    },
+                    function (error) {
+                        console.log(error);
+                    }
+                );
             }
-          );
-        }
-      },
-  
-      function (error) {}
+        },
+
+        function (error) { }
     );
-  };
+};
 const SendEmailFinal = async (to: any, subject: any, body: any, Context: any) => {
     let sp = spfi().using(spSPFx(Context));
     sp.utility.sendEmail({
@@ -1809,7 +1809,7 @@ export const getPortfolio = async (type: any) => {
 export const GetServiceAndComponentAllData = async (Props: any) => {
     var ComponentsData: any = [];
     var AllPathGeneratedData: any = [];
-    let AllPathGeneratedProjectdata:any=[];
+    let AllPathGeneratedProjectdata: any = [];
     // let TaskUsers: any = [];
     let AllMasterTaskData: any = [];
     try {
@@ -1818,25 +1818,21 @@ export const GetServiceAndComponentAllData = async (Props: any) => {
         AllMasterTaskData = await web.lists
             .getById(Props.MasterTaskListID)
             .items
-            .select("ID", "Id", "Title", "PortfolioLevel", "PortfolioStructureID", "Comments", "ItemRank", "Portfolio_x0020_Type", "Parent/Id", "Parent/Title", "DueDate", "Created", "Body", "SiteCompositionSettings","Sitestagging", "Item_x0020_Type", "Categories", "Short_x0020_Description_x0020_On", "PriorityRank", "Priority", "AssignedTo/Title", "TeamMembers/Id", "TeamMembers/Title", "ClientCategory/Id", "ClientCategory/Title", "PercentComplete", "ResponsibleTeam/Id", "Author/Id", "Author/Title", "ResponsibleTeam/Title", "PortfolioType/Id", "PortfolioType/Color", "PortfolioType/IdRange", "PortfolioType/Title", "AssignedTo/Id")
+            .select("ID", "Id", "Title", "PortfolioLevel", "PortfolioStructureID", "Comments", "ItemRank", "Portfolio_x0020_Type", "Parent/Id", "Parent/Title", "DueDate", "Created", "Body", "SiteCompositionSettings", "Sitestagging", "Item_x0020_Type", "Categories", "Short_x0020_Description_x0020_On", "PriorityRank", "Priority", "AssignedTo/Title", "TeamMembers/Id", "TeamMembers/Title", "ClientCategory/Id", "ClientCategory/Title", "PercentComplete", "ResponsibleTeam/Id", "Author/Id", "Author/Title", "ResponsibleTeam/Title", "PortfolioType/Id", "PortfolioType/Color", "PortfolioType/IdRange", "PortfolioType/Title", "AssignedTo/Id")
             .expand("Parent", "PortfolioType", "AssignedTo", "Author", "ClientCategory", "TeamMembers", "ResponsibleTeam")
             .getAll();
-     
+
         // console.log("all Service and Coponent data form global Call=======", AllMasterTaskData);
         // TaskUsers = await AllTaskUsers(Props.siteUrl, Props.TaskUserListId);
         $.each(AllMasterTaskData, function (index: any, result: any) {
             result.isSelected = false;
-            result.siteUrl=Props?.siteUrl;
-            result.listId = Props.MasterTaskListID;
+            result.siteUrl = Props?.siteUrl;
             result["siteType"] = "Master Tasks";
             result.AllTeamName = "";
             result.listId = Props.MasterTaskListID;
             result.portfolioItemsSearch = result.Item_x0020_Type;
             result.isSelected = Props?.selectedItems?.find((obj: any) => obj.Id === result.ID);
             result.TeamLeaderUser = []
-            if (result?.DueDate != null && result?.DueDate != undefined) {
-                result.serverDueDate = new Date(result?.DueDate).setHours(0, 0, 0, 0)
-            }
             result.DisplayDueDate = moment(result.DueDate).format("DD/MM/YYYY");
             result.DisplayCreateDate = moment(result.Created).format("DD/MM/YYYY");
             result.DueDate = moment(result.DueDate).format('DD/MM/YYYY')
@@ -1864,27 +1860,27 @@ export const GetServiceAndComponentAllData = async (Props: any) => {
             if (result.Item_x0020_Type === "Component") {
                 result.boldRow = "boldClable";
                 result.lableColor = "f-bg";
-                result.ItemCat= "Portfolio"
+                result.ItemCat = "Portfolio"
             }
             if (result.Item_x0020_Type === "SubComponent") {
                 result.lableColor = "a-bg";
-                result.ItemCat= "Portfolio"
+                result.ItemCat = "Portfolio"
             }
             if (result.Item_x0020_Type === "Feature") {
                 result.lableColor = "w-bg";
-                result.ItemCat= "Portfolio"
+                result.ItemCat = "Portfolio"
             }
             if (result.Item_x0020_Type === "Project") {
                 result.lableColor = "w-bg";
-                result.ItemCat= "Project"
+                result.ItemCat = "Project"
             }
             if (result.Item_x0020_Type === "Sprint") {
-                result.ItemCat= "Project"
+                result.ItemCat = "Project"
             }
             if (result?.Item_x0020_Type != undefined) {
                 result.SiteIconTitle = result?.Item_x0020_Type?.charAt(0);
             }
-           
+
             result.descriptionsSearch = '';
             try {
                 result.descriptionsSearch = portfolioSearchData(result)
@@ -1958,12 +1954,12 @@ export const GetServiceAndComponentAllData = async (Props: any) => {
                 result.SiteIconTitle = result?.Item_x0020_Type?.charAt(0);
             }
 
-            if (result.Item_x0020_Type == 'Component' && Props?.projectSelection!=true) {
+            if (result.Item_x0020_Type == 'Component' && Props?.projectSelection != true) {
                 const groupedResult = componentGrouping(result, AllMasterTaskData)
                 AllPathGeneratedData = [...AllPathGeneratedData, ...groupedResult?.PathArray];
                 ComponentsData.push(groupedResult?.comp);
             }
-            if (result.Item_x0020_Type == 'Project' && Props?.projectSelection==true) {
+            if (result.Item_x0020_Type == 'Project' && Props?.projectSelection == true) {
                 const groupedResult = componentGrouping(result, AllMasterTaskData)
                 AllPathGeneratedData = [...AllPathGeneratedData, ...groupedResult?.PathArray];
                 ComponentsData.push(groupedResult?.comp);
@@ -1982,7 +1978,7 @@ export const GetServiceAndComponentAllData = async (Props: any) => {
             GroupByData: ComponentsData,
             AllData: AllPathGeneratedData,
             ProjectData: ProjectData,
-            FlatProjectData:AllPathGeneratedProjectdata
+            FlatProjectData: AllPathGeneratedProjectdata
         }
         return dataObject;
 
@@ -2149,7 +2145,7 @@ export const loadAllTimeEntry = async (timesheetListConfig: any) => {
     }
 }
 export const loadAllSiteTasks = async (allListId: any, filter: any) => {
-    let query = "Id,Title,FeedBack,PriorityRank,Remark,Project/PriorityRank,ParentTask/Id,ParentTask/Title,ParentTask/TaskID,TaskID,SmartInformation/Id,SmartInformation/Title,Project/Id,Project/Title,workingThisWeek,EstimatedTime,TaskLevel,TaskLevel,OffshoreImageUrl,OffshoreComments,ClientTime,Priority,Status,ItemRank,IsTodaysTask,Body,Portfolio/Id,Portfolio/Title,Portfolio/PortfolioStructureID,PercentComplete,Categories,StartDate,PriorityRank,DueDate,TaskType/Id,TaskType/Title,Created,Modified,Author/Id,Author/Title,TaskCategories/Id,TaskCategories/Title,AssignedTo/Id,AssignedTo/Title,TeamMembers/Id,TeamMembers/Title,ResponsibleTeam/Id,ResponsibleTeam/Title,ClientCategory/Id,ClientCategory/Title&$expand=AssignedTo,Project,ParentTask,SmartInformation,Author,Portfolio,TaskType,TeamMembers,ResponsibleTeam,TaskCategories,ClientCategory"
+    let query = "Id,Title,FeedBack,PriorityRank,Remark,Project/PriorityRank,ParentTask/Id,ParentTask/Title,ParentTask/TaskID,TaskID,SmartInformation/Id,SmartInformation/Title,Project/Id,Project/Title,workingThisWeek,EstimatedTime,TaskLevel,TaskLevel,OffshoreImageUrl,OffshoreComments,ClientTime,Sitestagging,Priority,Status,ItemRank,IsTodaysTask,Body,Portfolio/Id,Portfolio/Title,Portfolio/PortfolioStructureID,PercentComplete,Categories,StartDate,PriorityRank,DueDate,TaskType/Id,TaskType/Title,Created,Modified,Author/Id,Author/Title,TaskCategories/Id,TaskCategories/Title,AssignedTo/Id,AssignedTo/Title,TeamMembers/Id,TeamMembers/Title,ResponsibleTeam/Id,ResponsibleTeam/Title,ClientCategory/Id,ClientCategory/Title&$expand=AssignedTo,Project,ParentTask,SmartInformation,Author,Portfolio,TaskType,TeamMembers,ResponsibleTeam,TaskCategories,ClientCategory"
     if (filter != undefined) {
         query += `&$filter=${filter}`
     }
@@ -2171,7 +2167,7 @@ export const loadAllSiteTasks = async (allListId: any, filter: any) => {
                         // task["Portfoliotype"] = "Component";
                     }
                     task["SiteIcon"] = site?.Item_x005F_x0020_Cover?.Url;
-                    task.TaskID =GetTaskId(task);
+                    task.TaskID = GetTaskId(task);
                 })
                 AllSiteTasks = [...AllSiteTasks, ...data];
             } catch (error) {
@@ -2240,4 +2236,15 @@ function removeHtmlAndNewline(text: any) {
     } else {
         return ''; // or any other default value you prefer
     }
+}
+
+export const calculateSmartPriority = (result: any, projectData: any) => {
+    let smartPriority = result.SmartPriority;
+    projectData?.forEach((elem: any) => {
+        const priorityRank = elem?.PriorityRank ?? 1;
+        if (priorityRank >= 1 && result?.PriorityRank && result?.Project?.Id === elem.Id) {
+            smartPriority = ((result?.PriorityRank) + (priorityRank * 4)) / 5;
+        }
+    });
+    return smartPriority;
 }

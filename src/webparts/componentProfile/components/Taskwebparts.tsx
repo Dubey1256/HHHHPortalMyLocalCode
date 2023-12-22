@@ -324,6 +324,7 @@ function PortfolioTable(SelectedProp: any) {
             "Title",
             "Id",
             "ID",
+            "Sitestagging",
             "ClientTime",
             "DueDate",
             "Comments",

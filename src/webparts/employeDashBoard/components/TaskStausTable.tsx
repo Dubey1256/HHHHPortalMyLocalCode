@@ -12,7 +12,7 @@ import 'bootstrap/dist/css/bootstrap.min.css';
 import InfoIconsToolTip from "../../../globalComponents/InfoIconsToolTip/InfoIconsToolTip";
 import GlobalCommanTable from "../../../globalComponents/GroupByReactTableComponents/GlobalCommanTable";
 import ReactPopperTooltipSingleLevel from "../../../globalComponents/Hierarchy-Popper-tooltipSilgleLevel/Hierarchy-Popper-tooltipSingleLevel";
-import EmailComponenet from "../../taskprofile/components/emailComponent";
+import EmailComponent from "../../../globalComponents/EmailComponents";
 let IsshowTable = true;
 let DashboardConfig: any = [];
 let flagApproval: boolean = false;
@@ -353,7 +353,7 @@ const TaskStatusTbl = (Tile: any) => {
                 <div className="Alltable maXh-300" style={{ height: "300px" }}>
                   {todaysTask && (
                     <GlobalCommanTable
-                      wrapperHeight="100%"
+                      wrapperHeight="87%"
                       showHeader={true}
                       TaskUsers={AllTaskUser}
                       portfolioColor={portfolioColor}
@@ -388,7 +388,7 @@ const TaskStatusTbl = (Tile: any) => {
                 <div className="Alltable maXh-300" style={{ height: "300px" }}>
                   {thisWeekTask && (
                     <GlobalCommanTable
-                      wrapperHeight="100%"
+                      wrapperHeight="87%"
                       showHeader={true}
                       TaskUsers={AllTaskUser}
                       portfolioColor={portfolioColor}
@@ -420,10 +420,10 @@ const TaskStatusTbl = (Tile: any) => {
                     <span title="Share Ongoing Task" onClick={() => sendAllWorkingTodayTasks(allAssignedTask)} className="hreflink svg__iconbox svg__icon--share empBg"></span>
                   </span>
                 </div>
-                <div className="Alltable maXh-300" style={{ height: "300px" }}>
+                <div className="Alltable maXh-300" style={{height:"300px"}}>
                   {allAssignedTask?.length > 0 && (
                     <GlobalCommanTable
-                      wrapperHeight="100%"
+                      wrapperHeight="87%"
                       showHeader={true}
                       TaskUsers={AllTaskUser}
                       portfolioColor={portfolioColor}
@@ -431,8 +431,7 @@ const TaskStatusTbl = (Tile: any) => {
                       data={allAssignedTask}
                       callBackData={callBackData} />
                   )
-                  }
-                </div>
+                  }</div>
               </div>
             </section>
           )}
@@ -451,7 +450,7 @@ const TaskStatusTbl = (Tile: any) => {
                 <div className="Alltable maXh-300" style={{ height: "300px" }}>
                   {draftCatogary && (
                     <GlobalCommanTable
-                      wrapperHeight="100%"
+                      wrapperHeight="87%"
                       TaskUsers={AllTaskUser}
                       portfolioColor={portfolioColor}
                       showHeader={true}
@@ -489,7 +488,7 @@ const TaskStatusTbl = (Tile: any) => {
                 <div className="Alltable maXh-300" style={{ height: "300px" }}>
                   {immediateTask && (
                     <GlobalCommanTable
-                      wrapperHeight="100%"
+                      wrapperHeight="87%"
                       showHeader={true}
                       TaskUsers={AllTaskUser}
                       portfolioColor={portfolioColor}
@@ -519,7 +518,7 @@ const TaskStatusTbl = (Tile: any) => {
               <div className="Alltable maXh-300" style={{ height: "300px" }}>
                 {approvalTask && (
                   <GlobalCommanTable
-                    wrapperHeight="100%"
+                    wrapperHeight="87%"
                     showHeader={true}
                     columns={aprovlColumn}
                     TaskUsers={AllTaskUser}
@@ -528,7 +527,7 @@ const TaskStatusTbl = (Tile: any) => {
                     callBackData={callBackData}
                   />
                 )}
-                {sendMail && emailStatus != "" && approveItem && <EmailComponenet approvalcallback={approvalcallback} Context={ContextData.Context} emailStatus={"Approved"} items={approveItem} />}
+                {sendMail && emailStatus != "" && approveItem && <EmailComponent approvalcallback={approvalcallback} Context={ContextData.Context} emailStatus={"Approved"} items={approveItem} />}
               </div>
             </div>
           )}
@@ -559,7 +558,7 @@ const TaskStatusTbl = (Tile: any) => {
                 <div className="Alltable maXh-300" style={{ height: "300px" }}>
                   {bottleneckTask && (
                     <GlobalCommanTable
-                      wrapperHeight="100%"
+                      wrapperHeight="87%"
                       showHeader={true}
                       TaskUsers={AllTaskUser}
                       portfolioColor={portfolioColor}
