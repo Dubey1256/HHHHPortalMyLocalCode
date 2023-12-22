@@ -425,26 +425,17 @@ const CreateWS = (props: any) => {
             if (IsapprovalTask) {
                 CategoryID.push(277)
             }
-            let clientTime: any;
-            if (selectedItem?.ClientTime != undefined) {
-                if (typeof selectedItem?.ClientTime == "object") {
-                    selectedItem?.ClientTime?.map((sitecomp: any) => {
-                        if (sitecomp.Title != undefined && sitecomp.Title != "" && sitecomp.SiteName == undefined) {
-                            sitecomp.SiteName = sitecomp.Title
-                        }
-                    })
-                    clientTime = JSON.stringify(selectedItem?.ClientTime);
+            let Sitestagging: any;
+            if (selectedItem?.Sitestagging != undefined) {
+                if (typeof selectedItem?.Sitestagging == "object") {
+               
+                    Sitestagging = JSON.stringify(selectedItem?.Sitestagging);
                 } else {
-                    var sitetag = JSON.parse(selectedItem?.ClientTime)
-                    sitetag?.map((sitecomp: any) => {
-                        if (sitecomp.Title != undefined && sitecomp.Title != "" && sitecomp.SiteName == undefined) {
-                            sitecomp.SiteName = sitecomp.Title
-                        }
-
-                    })
+                    var sitetag = JSON.parse(selectedItem?.Sitestagging)
+                
 
 
-                    clientTime = JSON.stringify(sitetag)
+                    Sitestagging = JSON.stringify(sitetag)
                 }
             }
 
@@ -478,11 +469,11 @@ const CreateWS = (props: any) => {
                 TeamMembersId: { results: TeamMemberIds },
                 SiteCompositionSettings:
                     selectedItem?.SiteCompositionSettings != undefined ? selectedItem?.SiteCompositionSettings : null,
-                ClientTime: clientTime != undefined ? clientTime : null,
+                    Sitestagging: Sitestagging != undefined ? Sitestagging : null,
                 ClientCategoryId: { results: ClientCategory },
             }
-            if (postdata?.ClientTime == false) {
-                postdata.ClientTime = null
+            if (postdata?.Sitestagging == false) {
+                postdata.Sitestagging = null
             }
             web.lists.getById(selectedItem.listId).items.add(postdata).then(async (res: any) => {
                 console.log(res)

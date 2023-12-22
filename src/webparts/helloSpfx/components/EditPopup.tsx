@@ -5,6 +5,7 @@
 import { Panel, PrimaryButton, TextField, Dropdown, PanelType } from 'office-ui-fabric-react';
 import * as React from 'react';
 import { Item, sp, Web } from 'sp-pnp-js';
+import Moment from "moment";
 import styles from './HelloSpfx.module.scss';
 import HtmlEditorCard from './FloraCommentBox';
 import { useEffect, useState } from 'react';
@@ -12,8 +13,9 @@ import StarRating from './StarRating';
 import Tooltip from '../../../globalComponents/Tooltip';
 import './Recruitment.css'
 import CreateContactComponent from '../../contactSearch/components/contact-search/popup-components/CreateContact';
+import moment from 'moment-timezone';
 const skillArray: any[] = [];
-let EmployeeData:any;
+let EmployeeData: any;
 const EditPopup = (props: any) => {
     const starClassName = props.item && props.item.IsFavorite !== null
         ? (props.item.IsFavorite ? styles.favs : styles.favsGrey)
@@ -55,55 +57,55 @@ const EditPopup = (props: any) => {
         const selectedPlatforms = JSON.parse(props.item.SelectedPlatforms);
 
         useEffect(() => {
-            let Array:any = ['Indeed', 'Agentur für Arbeit', 'Jobcenter', 'GesinesJobtipps']
+            let Array: any = ['Indeed', 'Agentur für Arbeit', 'Jobcenter', 'GesinesJobtipps']
             // Check if any selected platform meets the specified conditions
-          const shouldUpdateOthers = selectedPlatforms?.some((item: { selected: any; name:any }) => {
-          
-            return (
-              item.selected &&
-              !Array.includes(item.name)
-            );
-          });
-      
-          // If conditions are met, update Others and other unmatched values
-          if (shouldUpdateOthers) {
-            const updatedChoices = platformChoices.map((choice) => {
-                if (choice.name === 'Others') {
-                // Update 'Others' based on conditions, leave others unchanged
-                return { ...choice, selected: true };
-              }
-              const matchingItem = selectedPlatforms?.find((item: { name: string; }) => item.name === choice.name);
-              return matchingItem ? { ...choice, selected: matchingItem.selected } : choice;
-            });
-      
-            const unmatchedNames = selectedPlatforms
-              .filter((item: { selected: any; name: string; }) => item.selected && !Array.includes(item.name))
-              .map((item: { name: string }) => item.name);
-      
-            if (unmatchedNames.length > 0) {
-              setOtherChoice(unmatchedNames);
-              setShowTextInput(true); // Set setShowTextInput to true when there are values in otherChoices
-            } else {
-              setShowTextInput(false); // Set setShowTextInput to false when otherChoices is empty
-            }
-      
-            setPlatformChoices(updatedChoices);
-          } else {
-            // If no conditions are met, update as usual
-            const updatedChoices = platformChoices.map((choice) => {
-              const matchingItem = selectedPlatforms?.find((item: { name: string; }) => item.name === choice.name);
-                return matchingItem ? { ...choice, selected: matchingItem.selected } : choice;
+            const shouldUpdateOthers = selectedPlatforms?.some((item: { selected: any; name: any }) => {
+
+                return (
+                    item.selected &&
+                    !Array.includes(item.name)
+                );
             });
 
-setShowTextInput(false); // Set setShowTextInput to false when no conditions are met
-            setPlatformChoices(updatedChoices);
-}
+            // If conditions are met, update Others and other unmatched values
+            if (shouldUpdateOthers) {
+                const updatedChoices = platformChoices.map((choice) => {
+                    if (choice.name === 'Others') {
+                        // Update 'Others' based on conditions, leave others unchanged
+                        return { ...choice, selected: true };
+                    }
+                    const matchingItem = selectedPlatforms?.find((item: { name: string; }) => item.name === choice.name);
+                    return matchingItem ? { ...choice, selected: matchingItem.selected } : choice;
+                });
+
+                const unmatchedNames = selectedPlatforms
+                    .filter((item: { selected: any; name: string; }) => item.selected && !Array.includes(item.name))
+                    .map((item: { name: string }) => item.name);
+
+                if (unmatchedNames.length > 0) {
+                    setOtherChoice(unmatchedNames);
+                    setShowTextInput(true); // Set setShowTextInput to true when there are values in otherChoices
+                } else {
+                    setShowTextInput(false); // Set setShowTextInput to false when otherChoices is empty
+                }
+
+                setPlatformChoices(updatedChoices);
+            } else {
+                // If no conditions are met, update as usual
+                const updatedChoices = platformChoices.map((choice) => {
+                    const matchingItem = selectedPlatforms?.find((item: { name: string; }) => item.name === choice.name);
+                    return matchingItem ? { ...choice, selected: matchingItem.selected } : choice;
+                });
+
+                setShowTextInput(false); // Set setShowTextInput to false when no conditions are met
+                setPlatformChoices(updatedChoices);
+            }
         }, []);
     }
 
-      
-      
-      
+
+
+
     //eslint-disable-next-line eqeqeq
     if (props.item.SkillRatings != '') {
         const SkillRatingsdata = JSON.parse(props.item.SkillRatings);
@@ -115,16 +117,16 @@ setShowTextInput(false); // Set setShowTextInput to false when no conditions are
     const [overAllRemark, setoverAllRemark] = useState(props.item.Remarks);
     const [selectedStatus, setSelectedStatus] = useState(props.item.Status0);
     const [Motivation, setMotivation] = useState(props.item.Motivation)
-const[CreateContactStatus,setCreateContactStatus]=useState(false)
+    const [CreateContactStatus, setCreateContactStatus] = useState(false)
     const onClose = () => {
         props.EditPopupClose();
     }
     const handleEditSave = async () => {
-let updateData
+        let updateData
         try {
             const skillRatingsJson = JSON.stringify(localRatings);
-            updateData={
-                
+            updateData = {
+
                 Title: CandidateName,
                 CandidateName: CandidateName,
                 Email: Email,
@@ -134,25 +136,25 @@ let updateData
                 Status0: selectedStatus,
                 Motivation: Motivation,
                 SkillRatings: skillRatingsJson
-            
+
             }
             const list = sp.web.lists.getById(props.ListID);
             await list.items.getById(props.item.Id).update(updateData);
-            EmployeeData=updateData
+            EmployeeData = updateData
             console.log("Item updated successfully");
-setCreateContactStatus(true)
-           
+            setCreateContactStatus(true)
+
 
         } catch (error) {
             console.error(error);
             // Handle errors here
         } finally {
-if(selectedStatus=="Hired"){
-               
-                
-            }else{
-            props.EditPopupClose(); // Close the edit popup after saving or if there's an error
-        }
+            if (selectedStatus == "Hired") {
+
+
+            } else {
+                props.EditPopupClose(); // Close the edit popup after saving or if there's an error
+            }
 
         }
     };
@@ -174,10 +176,10 @@ if(selectedStatus=="Hired"){
                 props.item.ratings = JSON.parse(props.item.SkillRatings)
 
             }
-if(props.item.ratings !==null && props.item.ratings !== undefined){
-            for (const obj of props.item.ratings) {
-                skillMap[obj.SkillTitle] = true;
-}
+            if (props.item.ratings !== null && props.item.ratings !== undefined) {
+                for (const obj of props.item.ratings) {
+                    skillMap[obj.SkillTitle] = true;
+                }
             }
             // Filter array two based on SkillTitle availability in array one
             const unavailableSkills = props.item.ratings.filter((rat: any) => {
@@ -188,7 +190,7 @@ if(props.item.ratings !==null && props.item.ratings !== undefined){
                 return !skillMap[rat.SkillTitle];
             });
             props.item.ratings.push(...unavailableSkills);
-setLocalRatings(props.item.ratings)
+            setLocalRatings(props.item.ratings)
         }).catch((error: unknown) => {
             console.error(error);
         });
@@ -224,15 +226,6 @@ setLocalRatings(props.item.ratings)
     const HtmlEditorCallBack = React.useCallback((EditorData: any) => {
         if (EditorData.length > 8) {
             props.item.Motivation = EditorData;
-            // let param: any = Moment(new Date().toLocaleString())
-
-            // FeedBackItem['Title'] = "FeedBackPicture" + param;
-            // FeedBackItem['FeedBackDescriptions'] = [];
-            // FeedBackItem.FeedBackDescriptions = [{
-            //     'Title': EditorData
-            // }]
-            // FeedBackItem['ImageDate'] = "" + param;
-            // FeedBackItem['Completed'] = '';
         }
     }, [])
     const setRatings = (index: number, selectedRating: number) => {
@@ -250,26 +243,45 @@ setLocalRatings(props.item.ratings)
             console.error('Error removing document:', error);
         }
     };
+    const delItem = (itm: any) => {
+        const confirmDelete = window.confirm("Are you sure you want to delete this item?");
 
+        if (confirmDelete) {
+            const web = new Web('https://hhhhteams.sharepoint.com/sites/HHHH/HR/');
+
+            web.lists
+                .getById(props?.ListID)
+                .items.getById(itm)
+                .recycle()
+                .then(() => {
+                    alert("Item deleted successfully!");
+                })
+                .catch((error: any) => {
+                    console.error(error);
+                });
+        } else {
+            alert("Deletion canceled.");
+        }
+        onClose();
+    };
     const onRenderCustomHeaderMain = () => {
         return (
             <>
                 <div className='subheading'>
-                    Candidate Details -{props.item.CandidateName} {star}
+                    Candidate Details - {props.item.CandidateName} {star}
                 </div>
-                <Tooltip ComponentId='6025' />
+                <Tooltip ComponentId='4442' />
             </>
         );
     };
     const ClosePopup = React.useCallback(() => {
-       
+
         setCreateContactStatus(false);
         props.EditPopupClose()
-        
+
     }, []);
     return (
         <Panel
-            // headerText={headerText}
             onRenderHeader={onRenderCustomHeaderMain}
             isOpen={true}
             onDismiss={onClose}
@@ -355,7 +367,7 @@ setLocalRatings(props.item.ratings)
                                                 setLocalRatings(updatedRatings);
                                             }}
                                         />
-                                        <div className="comment-block">
+                                        {/* <div className="comment-block">
                                             <textarea
                                                 value={rating.Comment}
                                                 onChange={(e) => {
@@ -368,7 +380,7 @@ setLocalRatings(props.item.ratings)
                                                 className="full_width"
                                                 auto-resize
                                             />
-                                        </div>
+                                        </div> */}
                                     </div>
                                 ))}
                             </div>
@@ -396,7 +408,6 @@ setLocalRatings(props.item.ratings)
                     <div className="col-sm-6">
                         <div className='input-group'>
                             <div className="sectionHead siteBdrBottom mb-1 w-100">Documents</div>
-
                             {TaggedDocuments.map(document => (
                                 <div className="documenttype-list alignCenter" key={document.Id}>
                                     <span className="mr-10" style={{ display: document.File_x0020_Type === 'pdf' ? 'inline' : 'none' }}>
@@ -428,6 +439,7 @@ setLocalRatings(props.item.ratings)
                                     </span>
                                     <span onClick={() => removeDocuments('', document.Id)} className="svg__iconbox svg__icon--trash mx-auto"></span>
                                 </div>
+
                             ))}
                         </div>
                     </div>
@@ -444,12 +456,52 @@ setLocalRatings(props.item.ratings)
                 </div>
             </div>
             <footer className="bg-f4 fixed-bottom px-4 py-2">
+                <div className="align-items-center d-flex justify-content-between me-3 px-4 py-2">
+                    <div>
+                        <div className="">
+                            Created{" "}
+                            <span className="font-weight-normal siteColor">
+                                {" "}
+                                {props.item.Created
+                                    ? Moment(props.item.Created).format("DD/MM/YYYY")
+                                    : ""}{" "}
+                            </span>{" "}
+                            By{" "}
+                            <span className="font-weight-normal siteColor">
+                                {props.item.Author?.Title ? props.item.Author?.Title : ""}
+                            </span>
+                        </div>
+                        <div>
+                            Last modified{" "}
+                            <span className="font-weight-normal siteColor">
+                                {" "}
+                                {props.item.Modified
+                                    ? Moment(props.item.Modified).format("DD/MM/YYYY")
+                                    : ""}
+                            </span>{" "}
+                            By{" "}
+                            <span className="font-weight-normal siteColor">
+                                {props.item.Editor?.Title ? props.item.Editor.Title : ""}
+                            </span>
+                        </div>
+                        <div>
+                            <a className="hreflink siteColor">
+                                <span className="alignIcon svg__iconbox hreflink mini svg__icon--trash"></span>
+                                <span
+                                    onClick={() => delItem(props.item.ID)}
+                                >
+                                    Delete This Item
+                                </span>
+                            </a>
+                        </div>
+                    </div>
+                </div>
                 <div className="float-end text-end">
                     <button onClick={handleEditSave} type='button' className='btn btn-primary'>Save</button>
                     <button onClick={onClose} type='button' className='btn btn-default ms-1'>Cancel</button>
                 </div>
             </footer>
-{CreateContactStatus ? <CreateContactComponent callBack={ClosePopup}data={EmployeeData} pageName={"Recruiting-Tool"}/> : null}
+            {CreateContactStatus ? <CreateContactComponent callBack={ClosePopup} data={EmployeeData} pageName={"Recruiting-Tool"} /> : null}
         </Panel>
     );
 };
