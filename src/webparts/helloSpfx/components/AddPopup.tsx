@@ -35,7 +35,7 @@ const AddPopup = (props: any) => {
             } catch (error) {
                 console.error(error);
             } finally {
-
+               // Set loading state to false regardless of success or error
             }
         };
         fetchData();
@@ -60,11 +60,12 @@ const AddPopup = (props: any) => {
     const Status = ['New Candidate', 'Under Consideration', 'Interview', 'Negotiation', 'Hired', 'Rejected'];
 
     const [inputText, setInputText] = useState('');
-    let SiteUsers: any[] = [];
+  
     const [selectedPath, setSelectedPath] = useState({
         displayPath: '',
         completePath: '',
     }); const [selectedFiles, setSelectedFiles] = useState([]);
+    const [SiteUsers, setSiteUsers] = useState([])
     const [defaultDate, setDefaultDate] = useState<string>('');
     const [folderFiles, setfolderFiles]: any = useState([]);
     const [uploadedFile, setuploadedFile]: any = useState({});
@@ -126,6 +127,7 @@ const AddPopup = (props: any) => {
             });
             const candidateItemId = candidateItem.data.Id;
             handleUpload(candidateItemId);
+            props.callbackAdd();
         } catch (error) {
             onClose();
             console.error(error);
@@ -139,7 +141,7 @@ const AddPopup = (props: any) => {
             const titles = ["Prashant Kumar", "Robert Ungethuem", "Stefan Hochhuth (Admin)", "Harshit Chauhan", "Stefan Hochhuth"];
             const getData = await sp.web.siteUsers.select("ID,Title,LoginName").get();
 
-            SiteUsers = getData;
+            setSiteUsers(getData);
             SiteUsers.forEach((emp: any) => {
                 emp.Email = '';
                 if (emp.LoginName !== undefined && emp.LoginName !== '') {
@@ -151,13 +153,15 @@ const AddPopup = (props: any) => {
                 }
             });
 
-            SiteUsers = SiteUsers.filter(function (user) {
+            const users = SiteUsers.filter(function (user:any) {
                 return titles.indexOf(user.Title) !== -1;
             });
-
+            setSiteUsers(users)
             console.log(SiteUsers);
+          
         } catch (error) {
             console.error(error);
+   
         }
     };
     const getCurrentDate = (): string => {
@@ -454,7 +458,7 @@ const AddPopup = (props: any) => {
                                 placeholder='Select Member'
                                 selectedKey={selectedInterviwer}
                                 onChange={handleDropdownInterviewer}
-                                options={SiteUsers.map((itm) => ({ key: itm.Title, text: itm.Title }))}
+                                options={SiteUsers.map((itm:any) => ({ key: itm.Title, text: itm.Title }))}
                                 styles={{ dropdown: { width: '100%' } }}
                             />
                         </div>

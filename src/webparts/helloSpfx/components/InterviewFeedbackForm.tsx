@@ -410,8 +410,17 @@ export default function GetData(props: any) {
             </>
         );
     };
+    const callbackEdit = () => {
+        getListData();
+    };
+    const callbackAdd = () => {
+        getListData();
+    };
+    
+    
     return (
         <myContextValue.Provider value={{ ...myContextValue, allSite: allSite, allListId: allListId, loggedInUserName: props.props?.userDisplayName, }}>
+            <span className="text-end fs-6"> <a target='_blank' data-interception="off" href={'https://hhhhteams.sharepoint.com/sites/HHHH/HR/SitePages/Recruiting-Tool.aspx'} style={{ cursor: "pointer", fontSize: "14px" }}>Old Recruting Tool</a></span>
             <div>
                 <h2 className='heading'>Recruiting-Tool</h2>
                 <ul className="nav nav-tabs" id="myTab" role="tablist">
@@ -456,8 +465,8 @@ export default function GetData(props: any) {
                         {ArchiveCandidates && <div className='Alltable'><GlobalCommanTable columns={columns} data={ArchiveCandidates} multiSelect={true} showHeader={true} callBackData={callBackData} /></div>}
                     </div>
                 </div>
-                {isEditPopupOpen ? <EditPopup EditPopupClose={EditPopupClose} item={selectedItem} ListID={props?.props?.InterviewFeedbackFormListId} /> : ''}
-                {isAddPopupOpen ? <AddPopup AddPopupClose={AddPopupClose} ListID={props?.props?.InterviewFeedbackFormListId} /> : ''}
+                {isEditPopupOpen ? <EditPopup EditPopupClose={EditPopupClose} callbackEdit={callbackEdit} item={selectedItem} ListID={props?.props?.InterviewFeedbackFormListId} /> : ''}
+                {isAddPopupOpen ? <AddPopup AddPopupClose={AddPopupClose} callbackAdd={callbackAdd} ListID={props?.props?.InterviewFeedbackFormListId} /> : ''}
                 {isAddEditPositionOpen ? <AddEditPostion AddEditPositionCLose={AddEditPositionCLose} /> : ''}
             </div>
 

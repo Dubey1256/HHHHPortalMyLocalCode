@@ -16,12 +16,17 @@ import CreateContactComponent from '../../contactSearch/components/contact-searc
 import moment from 'moment-timezone';
 const skillArray: any[] = [];
 let EmployeeData: any;
+const HRweb = new Web('https://hhhhteams.sharepoint.com/sites/HHHH/HR');
 const EditPopup = (props: any) => {
-    const starClassName = props.item && props.item.IsFavorite !== null
-        ? (props.item.IsFavorite ? styles.favs : styles.favsGrey)
-        : styles.favsGrey;
+    const [CandidateTitle, setCandidateTitle] = useState(props.item.CandidateName);
+    const [Email, setEmail] = useState(props.item.Email);
+    const [PhoneNumber, setPhoneNumber] = useState(props.item.PhoneNumber);
+    const [Experience, setExperience] = useState(props.item.Experience);
+    const [overAllRemark, setoverAllRemark] = useState(props.item.Remarks);
+    const [selectedStatus, setSelectedStatus] = useState(props.item.Status0);
+    const [Motivation, setMotivation] = useState(props.item.Motivation)
+    const [CreateContactStatus, setCreateContactStatus] = useState(false)
     const star = props.item.IsFavorite ? '⭐' : '';
-    const headerText = `Candidate Details - ${props.item.CandidateName} ${star}`;
     const Status = ['New Candidate', 'Under Consideration', 'Interview', 'Negotiation', 'Hired', 'Rejected'];
     const [platformChoices, setPlatformChoices] = useState([
         { name: 'Indeed', selected: false },
@@ -110,14 +115,7 @@ const EditPopup = (props: any) => {
     if (props.item.SkillRatings != '') {
         const SkillRatingsdata = JSON.parse(props.item.SkillRatings);
     }
-    const [CandidateName, setTitle] = useState(props.item.CandidateName);
-    const [Email, setEmail] = useState(props.item.Email);
-    const [PhoneNumber, setPhoneNumber] = useState(props.item.PhoneNumber);
-    const [Experience, setExperience] = useState(props.item.Experience);
-    const [overAllRemark, setoverAllRemark] = useState(props.item.Remarks);
-    const [selectedStatus, setSelectedStatus] = useState(props.item.Status0);
-    const [Motivation, setMotivation] = useState(props.item.Motivation)
-    const [CreateContactStatus, setCreateContactStatus] = useState(false)
+ 
     const onClose = () => {
         props.EditPopupClose();
     }
@@ -127,8 +125,8 @@ const EditPopup = (props: any) => {
             const skillRatingsJson = JSON.stringify(localRatings);
             updateData = {
 
-                Title: CandidateName,
-                CandidateName: CandidateName,
+                Title: CandidateTitle,
+                CandidateName: CandidateTitle,
                 Email: Email,
                 PhoneNumber: PhoneNumber,
                 Experience: Experience,
@@ -138,12 +136,12 @@ const EditPopup = (props: any) => {
                 SkillRatings: skillRatingsJson
 
             }
-            const list = sp.web.lists.getById(props.ListID);
+            const list = HRweb.lists.getById(props.ListID);
             await list.items.getById(props.item.Id).update(updateData);
             EmployeeData = updateData
             console.log("Item updated successfully");
             setCreateContactStatus(true)
-
+            props.callbackEdit(props.item.Id);
 
         } catch (error) {
             console.error(error);
@@ -203,7 +201,7 @@ const EditPopup = (props: any) => {
         try {
             const libraryTitle = 'Documents';
             const columnName = 'InterviewCandidates';
-            const documents = await sp.web.lists.getByTitle(libraryTitle)
+            const documents = await HRweb.lists.getByTitle(libraryTitle)
                 .items
                 .filter(`${columnName}/Id eq ${candidateId}`)
                 .select('Id', 'Title', 'Item_x0020_Type', 'File_x0020_Type', 'FileDirRef', 'FileLeafRef', 'EncodedAbsUrl', 'InterviewCandidates/Id')
@@ -236,7 +234,7 @@ const EditPopup = (props: any) => {
     const removeDocuments = async (libraryTitle: string, documentId: number) => {
         try {
             // Get the document library by title
-            const list = sp.web.lists.getByTitle('Documents');
+            const list = HRweb.lists.getByTitle('Documents');
             await list.items.getById(documentId).delete();
             console.log(`Document with ID ${documentId} removed successfully from ${libraryTitle}.`);
         } catch (error) {
@@ -297,23 +295,23 @@ const EditPopup = (props: any) => {
                         <div className='col-sm-6 mb-2'>
                             <div className='input-group'>
                                 <label className='form-label full-width'>Name</label>
-                                <input className='form-control' type='text' placeholder="Name" defaultValue={props.item.CandidateName} onChange={(newValue: any) => setTitle(newValue)} />
+                                <input className='form-control' type='text' placeholder="Name" defaultValue={props.item.CandidateName} onChange={(newValue: any) => setCandidateTitle(newValue.target.value)} />
                             </div>
                         </div>
                         <div className='col-sm-6 mb-2'>
                             <div className='input-group'>
                                 <label className='form-label full-width'>Email</label>
-                                <input className='form-control' type='text' placeholder="Email" defaultValue={props.item.Email} onChange={(newValue: any) => setEmail(newValue)} />
+                                <input className='form-control' type='text' placeholder="Email" defaultValue={props.item.Email} onChange={(newValue: any) => setEmail(newValue.target.value)} />
                             </div></div>
                         <div className='col-sm-6 mb-2'>
                             <div className='input-group'>
                                 <label className='form-label full-width'>Phone Number</label>
-                                <input className='form-control' type='number' placeholder="Phone Number" defaultValue={props.item.PhoneNumber} onChange={(newValue: any) => setPhoneNumber(newValue)} />
+                                <input className='form-control' type='number' placeholder="Phone Number" defaultValue={props.item.PhoneNumber} onChange={(newValue: any) => setPhoneNumber(newValue.target.value)} />
                             </div></div>
                         <div className='col-sm-6 mb-2'>
                             <div className='input-group'>
                                 <label className='form-label full-width'>Experience</label>
-                                <input className='form-control' type='number' placeholder="Experience" defaultValue={props.item.Experience} onChange={(newValue: any) => setExperience(newValue)} />
+                                <input className='form-control' type='number' placeholder="Experience" defaultValue={props.item.Experience} onChange={(newValue: any) => setExperience(newValue.target.value)} />
                             </div></div>
                     </div>
                     <div className="col-sm-12">
