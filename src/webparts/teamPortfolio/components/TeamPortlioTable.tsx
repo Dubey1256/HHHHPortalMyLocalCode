@@ -347,6 +347,7 @@ function TeamPortlioTable(SelectedProp: any) {
                             result.descriptionsSearch = '';
                             result.commentsSearch = '';
                             result.timeSheetsDescriptionSearch = '';
+                            result.SmartPriority = '';
                             result.TaskTypeValue = '';
                             result.portfolioItemsSearch = ''
                             if (result?.DueDate != null && result?.DueDate != undefined) {
@@ -488,6 +489,7 @@ function TeamPortlioTable(SelectedProp: any) {
                                 if (result?.projectStructerId && title || formattedDueDate) {
                                     result.joinedData.push(`Project ${result?.projectStructerId} - ${title}  ${formattedDueDate == "Invalid date" ? '' : formattedDueDate}`)
                                 }
+                                result.SmartPriority = globalCommon.calculateSmartPriority(result, ProjectData);
                             }
                             result["Item_x0020_Type"] = "Task";
                             TasksItem.push(result);
@@ -577,6 +579,7 @@ function TeamPortlioTable(SelectedProp: any) {
                             result.descriptionsSearch = '';
                             result.commentsSearch = '';
                             result.timeSheetsDescriptionSearch = '';
+                            result.SmartPriority = '';
                             result.TaskTypeValue = '';
                             result.portfolioItemsSearch = ''
                             if (result?.DueDate != null && result?.DueDate != undefined) {
@@ -719,9 +722,7 @@ function TeamPortlioTable(SelectedProp: any) {
                                 if (result?.projectStructerId && title || formattedDueDate) {
                                     result.joinedData.push(`Project ${result?.projectStructerId} - ${title}  ${formattedDueDate == "Invalid date" ? '' : formattedDueDate}`)
                                 }
-                                // if (result?.projectStructerId) result.joinedData.push(`Project: ${result?.projectStructerId}`);
-                                // if (title) result.joinedData.push(`Title: ${title}`);
-                                // if (dueDate) result.joinedData.push(`Due Date: ${dueDate}`);
+                                result.SmartPriority = globalCommon.calculateSmartPriority(result, ProjectData);
                             }
                             result["Item_x0020_Type"] = "Task";
                             TasksItem.push(result);
@@ -771,6 +772,7 @@ function TeamPortlioTable(SelectedProp: any) {
             result["siteType"] = "Master Tasks";
             result.AllTeamName = "";
             result.descriptionsSearch = '';
+            result.SmartPriority = '';
             result.commentsSearch = '';
             result.TaskTypeValue = '';
             result.timeSheetsDescriptionSearch = '';
@@ -1724,14 +1726,17 @@ function TeamPortlioTable(SelectedProp: any) {
                 header: "",
                 size: 42,
             },
-            // {
-            //     accessorKey: "DueDate",
-            //     placeholder: "Due Date",
-            //     header: "",
-            //     resetColumnFilters: false,
-            //     size: 91,
-            //     id: "DueDate",
-            // },
+            {
+                accessorFn: (row) => row?.SmartPriority,
+                cell: ({ row }) => (
+                    <div className="text-center boldClable">{row?.original?.SmartPriority}</div>
+                ),
+                id: "SmartPriority",
+                placeholder: "SmartPriority",
+                resetColumnFilters: false,
+                header: "",
+                size: 42,
+            },
             {
                 accessorFn: (row) => row?.DueDate,
                 cell: ({ row, column, getValue }) => (
