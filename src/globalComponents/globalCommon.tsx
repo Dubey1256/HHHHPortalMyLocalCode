@@ -2240,11 +2240,19 @@ function removeHtmlAndNewline(text: any) {
 
 export const calculateSmartPriority = (result: any, projectData: any) => {
     let smartPriority = result.SmartPriority;
-    projectData?.forEach((elem: any) => {
-        const priorityRank = elem?.PriorityRank ?? 1;
-        if (priorityRank >= 1 && result?.PriorityRank && result?.Project?.Id === elem.Id) {
+    if (projectData?.length > 0) {
+        projectData?.forEach((elem: any) => {
+            const priorityRank = elem?.PriorityRank ?? 1;
+            if (priorityRank >= 1 && result?.PriorityRank && result?.Project?.Id === elem.Id) {
+                smartPriority = ((result?.PriorityRank) + (priorityRank * 4)) / 5;
+                result.projectPriorityOnHover = priorityRank
+            }
+        });
+    } else {
+        const priorityRank = 1;
+        if (result?.PriorityRank) {
             smartPriority = ((result?.PriorityRank) + (priorityRank * 4)) / 5;
         }
-    });
+    }
     return smartPriority;
 }
