@@ -224,8 +224,8 @@ export default function GetData(props: any) {
         const web = new Web('https://hhhhteams.sharepoint.com/sites/HHHH/HR/');
         let query = web.lists
             .getById(props?.props?.InterviewFeedbackFormListId)
-            .items.select('Id', 'Title', 'Remarks', 'Motivation', 'SelectedPlatforms', 'Result', 'CandidateStaffID', 'ActiveInterv', 'Status0', 'IsFavorite', 'CandidateName', 'SkillRatings', 'Positions/Id', 'Positions/Title', 'Platform', 'IsFavorite', 'PhoneNumber', 'Email', 'Experience', 'Current_x0020_Company', 'Date', 'CurrentCTC', 'ExpectedCTC', 'NoticePeriod', 'CurrentLocation', 'DateOfJoining', 'HRNAME')
-            .expand('Positions')
+            .items.select('Id', 'Title', 'Remarks', 'Motivation','Created','Modified','AuthorId','Author/Title','Editor/Id','Editor/Title' ,'SelectedPlatforms', 'Result', 'CandidateStaffID', 'ActiveInterv', 'Status0', 'IsFavorite', 'CandidateName', 'SkillRatings', 'Positions/Id', 'Positions/Title', 'Platform', 'IsFavorite', 'PhoneNumber', 'Email', 'Experience', 'Current_x0020_Company', 'Date', 'CurrentCTC', 'ExpectedCTC', 'NoticePeriod', 'CurrentLocation', 'DateOfJoining', 'HRNAME')
+            .expand('Positions','Editor','Author')
             .top(5000);
         if (JobPositionId !== undefined && JobPositionId !== null) {
             query = query.filter("Positions/Id eq " + JobPositionId + "")
@@ -410,8 +410,17 @@ export default function GetData(props: any) {
             </>
         );
     };
+    const callbackEdit = () => {
+        getListData();
+    };
+    const callbackAdd = () => {
+        getListData();
+    };
+    
+    
     return (
         <myContextValue.Provider value={{ ...myContextValue, allSite: allSite, allListId: allListId, loggedInUserName: props.props?.userDisplayName, }}>
+            <span className="text-end fs-6"> <a target='_blank' data-interception="off" href={'https://hhhhteams.sharepoint.com/sites/HHHH/HR/SitePages/Recruiting-Tool.aspx'} style={{ cursor: "pointer", fontSize: "14px" }}>Old Recruting Tool</a></span>
             <div>
                 <h2 className='heading'>Recruiting-Tool</h2>
                 <ul className="nav nav-tabs" id="myTab" role="tablist">
@@ -456,8 +465,8 @@ export default function GetData(props: any) {
                         {ArchiveCandidates && <div className='Alltable'><GlobalCommanTable columns={columns} data={ArchiveCandidates} multiSelect={true} showHeader={true} callBackData={callBackData} /></div>}
                     </div>
                 </div>
-                {isEditPopupOpen ? <EditPopup EditPopupClose={EditPopupClose} item={selectedItem} ListID={props?.props?.InterviewFeedbackFormListId} /> : ''}
-                {isAddPopupOpen ? <AddPopup AddPopupClose={AddPopupClose} ListID={props?.props?.InterviewFeedbackFormListId} /> : ''}
+                {isEditPopupOpen ? <EditPopup EditPopupClose={EditPopupClose} callbackEdit={callbackEdit} item={selectedItem} ListID={props?.props?.InterviewFeedbackFormListId} /> : ''}
+                {isAddPopupOpen ? <AddPopup AddPopupClose={AddPopupClose} callbackAdd={callbackAdd} ListID={props?.props?.InterviewFeedbackFormListId} /> : ''}
                 {isAddEditPositionOpen ? <AddEditPostion AddEditPositionCLose={AddEditPositionCLose} /> : ''}
             </div>
 

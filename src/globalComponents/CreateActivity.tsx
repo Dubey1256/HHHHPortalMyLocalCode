@@ -477,11 +477,9 @@ const CreateActivity = (props: any) => {
     return (
       <>
         <div className="subheading">
-          <h2 className="siteColor">
             {props?.pageName == "QuickTask" || props?.pageName == 'Add Task'
               ? `Create Quick Option - Task`
               : `Create Quick Option - ${selectedItem?.NoteCall}`}
-          </h2>
         </div>
         {props?.pageName != undefined &&
         props?.pageName == "QuickTask" ? null : (
@@ -1520,7 +1518,7 @@ const CreateActivity = (props: any) => {
 
   const onRenderMainHtml = (
     <>
-      <div className="modal-body active">
+      <div className="modal-body">
         {siteType?.length > 1 &&
         selectedItem?.TaskType?.Title != "Workstream" ? (
           <div className="col mt-4">
@@ -1925,8 +1923,7 @@ const CreateActivity = (props: any) => {
       ) : (
         <Panel
           onRenderHeader={onRenderCustomHeaderMain}
-          type={PanelType.custom}
-          customWidth={"1280px"}
+          type={PanelType.large}
           isOpen={true}
           onDismiss={() => closePopup("item")}
           isBlocking={false}
