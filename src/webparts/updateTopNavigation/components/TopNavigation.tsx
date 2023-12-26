@@ -923,14 +923,15 @@ const TopNavigation = (dynamicData: any) => {
                   className="alignIcon  svg__iconbox svg__icon--trash"
                   onClick={() => deleteDataFunction(popupData[0])}
                 ></span>
-              </div>
-              <div className="text-left" onClick={()=>setVersionHistoryPopup(false)}>
+                    <span className="text-left" onClick={()=>setVersionHistoryPopup(false)}>
               {popupData[0]?.Id &&  <VersionHistory
                                         taskId={popupData[0]?.Id}
                                         listId={ListId}
                                         siteUrls={dynamicData.dynamicData.siteUrl}
                                     />}
+              </span>
               </div>
+         
                                 
                                
             </div>
