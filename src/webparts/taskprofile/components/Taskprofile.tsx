@@ -553,7 +553,7 @@ class Taskprofile extends React.Component<ITaskprofileProps, ITaskprofileState> 
 
     // }
     // return ImagesInfo;
-    if(BasicImageInfo.length>0){
+    if(BasicImageInfo?.length>0){
       BasicImageInfo?.forEach(function (item: any) {
         if (item?.ImageUrl != undefined && item?.ImageUrl != "") {
           item.ImageUrl = item?.ImageUrl?.replace(
