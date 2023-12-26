@@ -755,7 +755,6 @@ export const loadAllTaskUsers = async (AllListId: any) => {
     return taskUser;
 }
 export const loadSmartMetadata = async (AllListId: any, TaxType: any) => {
-
     let metadata;
     try {
         let web = new Web(AllListId?.siteUrl);

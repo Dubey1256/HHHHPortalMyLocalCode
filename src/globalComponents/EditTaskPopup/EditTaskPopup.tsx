@@ -2913,40 +2913,11 @@ const EditTaskPopup = (Items: any) => {
             });
         }
 
-        let ClientCategoryData: any = [];
+    
 
-        if (ClientTimeData != undefined && ClientTimeData.length > 0) {
-            let SiteIconStatus: any = false;
-            const finalData = ClientTimeData.filter(
-                (val: any, id: any, array: any) => {
-                    return array.indexOf(val) == id;
-                }
-            );
-            finalData?.map((ClientTimeItems: any) => {
-                if (ClientTimeItems.siteIcons != undefined) {
-                    if (
-                        ClientTimeItems.siteIcons?.length > 0 ||
-                        ClientTimeItems.siteIcons?.Url?.length > 0
-                    ) {
-                        SiteIconStatus = true;
-                    }
-                }
-                if (ClientTimeItems.ClientCategory != undefined || SiteIconStatus) {
-                    let newObject: any = {
-                        SiteName: ClientTimeItems.SiteName,
-                        ClienTimeDescription: ClientTimeItems.ClienTimeDescription,
-                        localSiteComposition: true,
-                    };
-                    ClientCategoryData.push(newObject);
-                } else {
-                    ClientCategoryData.push(ClientTimeItems);
-                }
-            });
-        } else {
-            ClientCategoryData.push({});
-        }
-        if (ClientCategoryData?.length > 0) {
-            ClientCategoryData?.map((ClientData: any) => {
+       
+        if (ClientTimeData?.length > 0) {
+            ClientTimeData?.map((ClientData: any) => {
                 SiteCompositionPrecentageValue =
                     SiteCompositionPrecentageValue +
                     Number(ClientData.ClienTimeDescription);
@@ -3032,7 +3003,7 @@ const EditTaskPopup = (Items: any) => {
                 results:
                     ApproverIds != undefined && ApproverIds.length > 0 ? ApproverIds : [],
             },
-            Sitestagging: JSON.stringify(ClientCategoryData),
+            Sitestagging: JSON.stringify(ClientTimeData),
             ClientCategoryId: {
                 results:
                     ClientCategoryIDs != undefined && ClientCategoryIDs.length > 0
@@ -4360,7 +4331,7 @@ const EditTaskPopup = (Items: any) => {
     const closeSiteCompsotionPanelFunction = (FnType: any) => {
         if (FnType == "Save") {
             setTimeout(() => {
-            GetExtraLookupColumnData();
+                GetExtraLookupColumnData();
             }, 1000);
         }
         setSiteCompositionShow(false);
@@ -5235,7 +5206,7 @@ const EditTaskPopup = (Items: any) => {
                                             </div>
                                         </div>
                                         <div className="mx-0 row mt-2 taskservices">
-                                            <div className="col-6 ps-0">
+                                            <div className="col ps-0">
                                                 <div className="input-group mb-2">
                                                     <label className="form-label full-width">
                                                         Portfolio Item
@@ -7309,7 +7280,7 @@ const EditTaskPopup = (Items: any) => {
                                                         </div>
                                                     </div>
                                                     <div className="mx-0 row mt-2 taskservices">
-                                                        <div className="col-6 ps-0">
+                                                        <div className="col ps-0">
                                                             <div className="input-group mb-2">
                                                                 <label className="form-label full-width">
                                                                     Portfolio Item
