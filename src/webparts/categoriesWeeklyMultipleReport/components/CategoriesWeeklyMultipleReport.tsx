@@ -1520,7 +1520,7 @@ export default class CategoriesWeeklyMultipleReport extends React.Component<ICat
             // .getByTitle(itemtype.ListName)
             .getById(itemtype.listId)
             .items
-            .select('ParentTask/Title', 'ParentTask/Id', 'TaskID', 'Portfolio/ItemType', 'Portfolio/PortfolioStructureID', 'ClientTime',"Sitestagging", 'Portfolio/Id', 'Portfolio/Title', 'ItemRank', 'Portfolio_x0020_Type', 'SiteCompositionSettings', 'TimeSpent', 'BasicImageInfo', 'OffshoreComments', 'OffshoreImageUrl', 'CompletedDate', 'ResponsibleTeam/Id', 'ResponsibleTeam/Title', 'ClientCategory/Id', 'ClientCategory/Title', 'TaskCategories/Id', 'TaskCategories/Title', 'ParentTask/TaskID', 'TaskType/Id', 'TaskType/Title', 'TaskType/Level', 'TaskType/Prefix', 'Priority_x0020_Rank', 'Reference_x0020_Item_x0020_Json', 'TeamMembers/Title', 'TeamMembers/Name', 'TeamMembers/Id', 'Item_x002d_Image', 'component_x0020_link', 'IsTodaysTask', 'AssignedTo/Title', 'AssignedTo/Name', 'AssignedTo/Id', 'AttachmentFiles/FileName', 'FileLeafRef', 'FeedBack', 'Title', 'Id', 'PercentComplete', 'Company', 'StartDate', 'DueDate', 'Comments', 'Categories', 'Status', 'WebpartId', 'Body', 'Mileage', 'PercentComplete', 'Attachments', 'Priority', 'Created', 'Modified', 'Author/Id', 'Author/Title', 'Editor/Id', 'Editor/Title')
+            .select('ParentTask/Title', 'ParentTask/Id', 'TaskID', 'Portfolio/ItemType', 'Portfolio/PortfolioStructureID', 'ClientTime', 'Portfolio/Id', 'Portfolio/Title', 'ItemRank', 'Portfolio_x0020_Type', 'SiteCompositionSettings', 'TimeSpent', 'BasicImageInfo', 'OffshoreComments', 'OffshoreImageUrl', 'CompletedDate', 'ResponsibleTeam/Id', 'ResponsibleTeam/Title', 'ClientCategory/Id', 'ClientCategory/Title', 'TaskCategories/Id', 'TaskCategories/Title', 'ParentTask/TaskID', 'TaskType/Id', 'TaskType/Title', 'TaskType/Level', 'TaskType/Prefix', 'Priority_x0020_Rank', 'Reference_x0020_Item_x0020_Json', 'TeamMembers/Title', 'TeamMembers/Name', 'TeamMembers/Id', 'Item_x002d_Image', 'component_x0020_link', 'IsTodaysTask', 'AssignedTo/Title', 'AssignedTo/Name', 'AssignedTo/Id', 'AttachmentFiles/FileName', 'FileLeafRef', 'FeedBack', 'Title', 'Id', 'PercentComplete', 'Company', 'StartDate', 'DueDate', 'Comments', 'Categories', 'Status', 'WebpartId', 'Body', 'Mileage', 'PercentComplete', 'Attachments', 'Priority', 'Created', 'Modified', 'Author/Id', 'Author/Title', 'Editor/Id', 'Editor/Title')
             .filter(queryType.replace('filter=', '').trim())
             .expand('ParentTask', 'Portfolio', 'TaskType', 'AssignedTo', 'AttachmentFiles', 'Author', 'Editor', 'TeamMembers', 'ResponsibleTeam', 'ClientCategory', 'TaskCategories')
             .orderBy('Id', false)
@@ -2330,19 +2330,39 @@ export default class CategoriesWeeklyMultipleReport extends React.Component<ICat
     }
   }
 
-  private isItemExistsItemsNew(arr: any, title: any, titname: any, SiteName: any) {
+  // private isItemExistsItemsNew(arr: any, title: any, titname: any, SiteName: any) {
+  //   let isExists = false;
+  //   arr.forEach(function (item: any) {
+  //     if (item[titname] == title && item?.Id === SiteName) {
+  //       isExists = true;
+  //       return false;
+  //     }
+  //   });
+  //   return isExists;
+  // }
+  private isRemovedDuplicateItem(array: any, items: any) {
     let isExists = false;
-    arr.forEach(function (item: any) {
-      if (item[titname] == title && item?.Id === SiteName) {
-        isExists = true;
-        return false;
-      }
-    });
+    for (let index = 0; index < array.length; index++) {
+      let item = array[index];
+      if (item?.TaskDate === items.TaskDate && item.Effort === items.Effort)
+        return true;
+      else return false;
+    }
     return isExists;
   }
   private childarray(arrays: any, StartDate: any, EndDate: any) {
     let Item: any = {};
     let DateItem: any = [];
+    function isItemExistsItemsNew(array: any, items: any) {
+      let isExists = false;
+      for (let index = 0; index < array.length; index++) {
+        let item = array[index];
+        if (item?.TaskDate === items.TaskDate && item.Effort === items.Effort)
+          return true;
+        else return false;
+      }
+      return isExists;
+    }
     //let selectedMembers = arrays.filter(m => new Date(m.TimeEntrykDateNew) >= new Date(StartDate) && new Date(m.TimeEntrykDateNew) <= new Date(EndDate));
     let selectedMembers = arrays.filter(function (m: any, i: any) {
       return new Date(m.TimeEntrykDateNew) >= new Date(StartDate) && new Date(m.TimeEntrykDateNew) <= new Date(EndDate)
@@ -2385,10 +2405,22 @@ export default class CategoriesWeeklyMultipleReport extends React.Component<ICat
             })
             let smarttotalvalue = 0;
             let smarttotalvalueNew = 0;
-
+            let resultarray:any =[];
             if (ImageSelectedUsers != undefined && ImageSelectedUsers.length > 0) {
               ImageSelectedUsers.forEach(function (item: any) {
                 let results = selectedMembers.filter((itemnew: any) => itemnew.Secondlevel != '' && obj.Secondlevel != undefined && itemnew.Secondlevel == obj.Secondlevel && itemnew.AuthorId == item.AssingedToUserId);
+             
+              // results.forEach((_obj:any) =>{
+              //   results =results.map((obj:any) =>{obj?.TaskDate != obj.TaskDate && obj.Effort != obj.Effort ; return obj } )
+              // })
+              for (let index = 0; index < results.length; index++) {
+                let client = results[index];
+                // item?.TaskDate === items.TaskDate && item.Effort === items.Effort
+                  if (!isItemExistsItemsNew(resultarray, client))
+                  resultarray.push(client);
+              }
+              results =resultarray;
+                
                 if (results != undefined && results.length > 0) {
                   let smarttotalvalue = 0;
                   let smarttotalvalueNew = 0;
@@ -2420,7 +2452,7 @@ export default class CategoriesWeeklyMultipleReport extends React.Component<ICat
             ChildItem['Secondlevel'] = Secondlevel;
             ChildItem['TotalValue'] = totalValue;
             ChildItem['AdjustedTime'] = ChildItem['TotalValue'];
-            ChildItem['AllTask'] = result;
+            ChildItem['AllTask'] = resultarray;
             //$scope.TotalTimeEntry += totalValue; - will check later
             ChildItem['expanded'] = true;
             ChildItem['flag'] = true;
@@ -3697,7 +3729,7 @@ export default class CategoriesWeeklyMultipleReport extends React.Component<ICat
                       <a className="hreflink pull-left me-2" style={{whiteSpace:"nowrap"}}>Team Members </a>
                       <div className=''>
                       {this?.state?.taskUsers != null && this?.state?.SelectGroupName.length > 0 && this?.state?.SelectGroupName.map((user: any, i: number) => {
-                        return <div className="top-assign  mt-1">
+                        return <div className="top-assign">
                           <span className='fw-normal me-1'>
                             {user.GroupName} :
                           </span>
@@ -4086,6 +4118,8 @@ export default class CategoriesWeeklyMultipleReport extends React.Component<ICat
     );
   }
 }
+
+
 
 
 
