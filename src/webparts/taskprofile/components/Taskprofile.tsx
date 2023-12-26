@@ -372,7 +372,7 @@ class Taskprofile extends React.Component<ITaskprofileProps, ITaskprofileState> 
       Comments: comments != null && comments != undefined ? comments : "",
       Id: taskDetails["ID"],
       ID: taskDetails["ID"],
-      Approvee: taskDetails?.Approvee != undefined ?  this.taskUsers.find((userData:any)=>userData?.AssingedToUser?.Id==taskDetails?.Approvee?.Id): "",
+      Approvee: taskDetails?.Approvee != undefined ?  this.taskUsers.find((userData:any)=>userData?.AssingedToUser?.Id==taskDetails?.Approvee?.Id): undefined,
       TaskCategories:taskDetails["TaskCategories"],
       Project: taskDetails["Project"],
       IsTodaysTask: taskDetails["IsTodaysTask"],
@@ -493,66 +493,80 @@ class Taskprofile extends React.Component<ITaskprofileProps, ITaskprofileState> 
     }
   }
   private GetAllImages(BasicImageInfo: any, AttachmentFiles: any, Attachments: any) {
-    let ImagesInfo: any = [];
-    let arrangedArray: any = []
-    if (Attachments) {
+    // let ImagesInfo: any = [];
+    // let arrangedArray: any = []
+    // if (Attachments) {
 
-      AttachmentFiles?.map((items: any) => {
-        var regex = items?.FileName?.substring(0, 20);
-        items.newFileName = regex;
+    //   AttachmentFiles?.map((items: any) => {
+    //     var regex = items?.FileName?.substring(0, 20);
+    //     items.newFileName = regex;
+    //   })
+    //   // AttachmentFiles?.sort(this.sortAlphaNumericAscending)
+    //   if (AttachmentFiles.length > 9) {
+    //     arrangedArray = AttachmentFiles.slice(AttachmentFiles?.length - 9).concat(AttachmentFiles.slice(0, AttachmentFiles?.length - 9));
+    //   } else {
+    //     arrangedArray = AttachmentFiles
+    //   }
+
+    //   arrangedArray?.forEach(function (Attach: any) {
+    //     let attachdata: any = [];
+    //     if (BasicImageInfo != null || BasicImageInfo != undefined) {
+    //       attachdata = BasicImageInfo?.filter(function (ingInfo: any, i: any) {
+    //         return ingInfo.ImageName == Attach?.FileName
+    //       });
+    //     }
+    //     if (attachdata.length > 0) {
+    //       BasicImageInfo?.forEach(function (item: any) {
+    //         if (item?.ImageUrl != undefined && item?.ImageUrl != "") {
+    //           item.ImageUrl = item?.ImageUrl?.replace(
+    //             "https://www.hochhuth-consulting.de",
+    //             "https://hhhhteams.sharepoint.com/sites/HHHH"
+    //           );
+    //         }
+
+    //         if (item?.ImageName == Attach?.FileName) {
+    //           ImagesInfo.push({
+    //             ImageName: Attach?.FileName,
+    //             ImageUrl: item?.ImageUrl,
+    //             UploadeDate: item?.UploadeDate,
+    //             UserImage: item?.UserImage,
+    //             UserName: item?.UserName,
+    //             Description: item?.Description
+    //           })
+    //         }
+    //       })
+    //     }
+    //     if (attachdata?.length == 0) {
+    //       ImagesInfo.push({
+    //         ImageName: Attach?.FileName,
+    //         ImageUrl: Attach?.ServerRelativeUrl,
+    //         UploadeDate: '',
+    //         UserImage: null,
+    //         UserName: null
+    //       })
+    //     }
+
+
+    //   });
+
+    //   ImagesInfo = ImagesInfo;
+
+    // }
+    // return ImagesInfo;
+    if(BasicImageInfo?.length>0){
+      BasicImageInfo?.forEach(function (item: any) {
+        if (item?.ImageUrl != undefined && item?.ImageUrl != "") {
+          item.ImageUrl = item?.ImageUrl?.replace(
+            "https://www.hochhuth-consulting.de",
+            "https://hhhhteams.sharepoint.com/sites/HHHH"
+          );
+        }
       })
-      // AttachmentFiles?.sort(this.sortAlphaNumericAscending)
-      if (AttachmentFiles.length > 9) {
-        arrangedArray = AttachmentFiles.slice(AttachmentFiles?.length - 9).concat(AttachmentFiles.slice(0, AttachmentFiles?.length - 9));
-      } else {
-        arrangedArray = AttachmentFiles
-      }
-
-      arrangedArray?.forEach(function (Attach: any) {
-        let attachdata: any = [];
-        if (BasicImageInfo != null || BasicImageInfo != undefined) {
-          attachdata = BasicImageInfo?.filter(function (ingInfo: any, i: any) {
-            return ingInfo.ImageName == Attach?.FileName
-          });
-        }
-        if (attachdata.length > 0) {
-          BasicImageInfo?.forEach(function (item: any) {
-            if (item?.ImageUrl != undefined && item?.ImageUrl != "") {
-              item.ImageUrl = item?.ImageUrl?.replace(
-                "https://www.hochhuth-consulting.de",
-                "https://hhhhteams.sharepoint.com/sites/HHHH"
-              );
-            }
-
-            if (item?.ImageName == Attach?.FileName) {
-              ImagesInfo.push({
-                ImageName: Attach?.FileName,
-                ImageUrl: item?.ImageUrl,
-                UploadeDate: item?.UploadeDate,
-                UserImage: item?.UserImage,
-                UserName: item?.UserName,
-                Description: item?.Description
-              })
-            }
-          })
-        }
-        if (attachdata?.length == 0) {
-          ImagesInfo.push({
-            ImageName: Attach?.FileName,
-            ImageUrl: Attach?.ServerRelativeUrl,
-            UploadeDate: '',
-            UserImage: null,
-            UserName: null
-          })
-        }
-
-
-      });
-
-      ImagesInfo = ImagesInfo;
-
+      return BasicImageInfo
     }
-    return ImagesInfo;
+ 
+
+
   }
 
   private async GetTaskUsers(taskDetails: any) {
@@ -1909,20 +1923,19 @@ class Taskprofile extends React.Component<ITaskprofileProps, ITaskprofileState> 
                       {this.state.Result["Portfolio"] != null && this.state.breadCrumData.length > 0 &&
                         <li >
                           {this.state.Result["Portfolio"] != null &&
-                            <a target="_blank" data-interception="off" href={`${this.state.Result["siteUrl"]}/SitePages/Team-Portfolio.aspx`}>Team Portfolio</a>
+                            <a  className="fw-bold"  style={{color:this.state.Result["Portfolio"]?.PortfolioType?.Color}}  target="_blank" data-interception="off" href={`${this.state.Result["siteUrl"]}/SitePages/Team-Portfolio.aspx`}>Team Portfolio</a>
                           }
 
                         </li>
                       }
                       {this.state.breadCrumData?.map((breadcrumbitem: any, index: any) => {
                         return <>
-                          {breadcrumbitem?.siteType == undefined && <li>
-
-                            <a target="_blank" data-interception="off" href={`${this.state.Result["siteUrl"]}/SitePages/Portfolio-Profile.aspx?taskId=${breadcrumbitem?.Id}`}>{breadcrumbitem?.Title}</a>
+                          {breadcrumbitem?.siteType == "Master Tasks" && <li>
+                          <a   style={{color:breadcrumbitem?.PortfolioType?.Color}} className="fw-bold" target="_blank" data-interception="off" href={`${this.state.Result["siteUrl"]}/SitePages/Portfolio-Profile.aspx?taskId=${breadcrumbitem?.Id}`}>{breadcrumbitem?.Title}</a>
                           </li>}
-                          {breadcrumbitem?.siteType != undefined && <li>
+                          {breadcrumbitem?.siteType != "Master Tasks" && <li>
 
-                            <a target="_blank" data-interception="off" href={`${this.state.Result["siteUrl"]}/SitePages/Task-Profile.aspx?taskId=${breadcrumbitem?.Id}&Site=${breadcrumbitem?.siteType} `}>{breadcrumbitem?.Title}</a>
+                            <a   target="_blank" data-interception="off" href={`${this.state.Result["siteUrl"]}/SitePages/Task-Profile.aspx?taskId=${breadcrumbitem?.Id}&Site=${breadcrumbitem?.siteType} `}>{breadcrumbitem?.Title}</a>
                           </li>}
                           {this.state.breadCrumData.length == index &&
                             <li>
@@ -2283,7 +2296,7 @@ class Taskprofile extends React.Component<ITaskprofileProps, ITaskprofileState> 
                                 }
                               </div>
                             </div>
-                            <div className="boldClable border border-top-0 ps-2 py-1">
+                            <div className="spxdropdown-menu ps-2 py-1">
                               <span>Total Estimated Time : </span><span className="mx-1">{this.state.Result?.TotalEstimatedTime > 1 ? this.state.Result?.TotalEstimatedTime + " hours" : this.state.Result?.TotalEstimatedTime + " hour"} </span>
                             </div>
                           </div>
@@ -2304,7 +2317,7 @@ class Taskprofile extends React.Component<ITaskprofileProps, ITaskprofileState> 
                   <section>
                     <div className="col mt-2">
                       <div className="Taskaddcomment row">
-                        {this.state.Result["BasicImageInfo"] != null && this.state.Result["BasicImageInfo"].length > 0 &&
+                        {this.state.Result["BasicImageInfo"] != null && this.state.Result["BasicImageInfo"]?.length > 0 &&
                           <div className="bg-white col-sm-4 mt-2 p-0">
                             <label className='form-label full-width fw-semibold'>Images</label>
                             {this.state.Result["BasicImageInfo"] != null && this.state.Result["BasicImageInfo"]?.map((imgData: any, i: any) => {
@@ -2408,7 +2421,7 @@ class Taskprofile extends React.Component<ITaskprofileProps, ITaskprofileState> 
                                             </div>
                                             <div className='m-0'>
                                               <span className="d-block">
-                                                <a style={{ cursor: 'pointer' }} onClick={(e) => this.showhideCommentBox(i)}>Add Comment</a>
+                                                <a  className="siteColor"style={{ cursor: 'pointer' }} onClick={(e) => this.showhideCommentBox(i)}>Add Comment</a>
                                               </span>
                                             </div>
                                           </div>
@@ -2572,7 +2585,7 @@ class Taskprofile extends React.Component<ITaskprofileProps, ITaskprofileState> 
                                               </div>
                                               <div className='m-0'>
                                                 <a className="d-block text-end">
-                                                  <a style={{ cursor: 'pointer' }}
+                                                  <a className='siteColor' style={{ cursor: 'pointer' }}
                                                     onClick={(e) => this.showhideCommentBoxOfSubText(j, i)}
                                                   >Add Comment</a>
                                                 </a>
