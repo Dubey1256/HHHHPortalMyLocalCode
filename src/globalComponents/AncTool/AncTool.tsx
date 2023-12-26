@@ -923,7 +923,7 @@ const AncTool = (props: any) => {
 
         return (
             <li style={{ listStyle: 'none' }}>
-                <span className='d-flex' onClick={toggleExpand}>
+                <span className='d-flex ancsvgicos' onClick={toggleExpand}>
                     <span className='me-1'>
                         {hasChildren ? (
                             folder.isExpanded ? <SlArrowDown /> : <SlArrowRight />
