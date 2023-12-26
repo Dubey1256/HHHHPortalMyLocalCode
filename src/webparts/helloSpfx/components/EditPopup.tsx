@@ -19,6 +19,7 @@ let EmployeeData: any;
 const HRweb = new Web('https://hhhhteams.sharepoint.com/sites/HHHH/HR');
 let count = 0
 const EditPopup = (props: any) => {
+    count++
     const [CandidateTitle, setCandidateTitle] = useState(props.item.CandidateName);
     const [Email, setEmail] = useState(props.item.Email);
     const [PhoneNumber, setPhoneNumber] = useState(props.item.PhoneNumber);
@@ -29,6 +30,12 @@ const EditPopup = (props: any) => {
     const [CreateContactStatus, setCreateContactStatus] = useState(false)
     const star = props.item.IsFavorite ? '⭐' : '';
     const Status = ['New Candidate', 'Under Consideration', 'Interview', 'Negotiation', 'Hired', 'Rejected'];
+    const [Plats, setPlats] = useState<any[]>([]);
+    const [localRatings, setLocalRatings] = useState(props.item?.ratings || []);
+    const [TaggedDocuments, setTaggedDocuments] = useState<any[]>([]);
+    const [showTextInput, setShowTextInput] = useState(false);
+    const [otherChoice, setOtherChoice] = useState('');
+    const [listData, setListData] = useState([]);
     const [platformChoices, setPlatformChoices] = useState([
         { name: 'Indeed', selected: false },
         { name: 'Agentur für Arbeit', selected: false },
@@ -36,17 +43,9 @@ const EditPopup = (props: any) => {
         { name: 'GesinesJobtipps', selected: false },
         { name: 'Others', selected: false }
     ]);
-    count++
-    const [Plats, setPlats] = useState<any[]>([]);
-    const [localRatings, setLocalRatings] = useState(props.item?.ratings || []);
-    const [TaggedDocuments, setTaggedDocuments] = useState<any[]>([]);
-    const [showTextInput, setShowTextInput] = useState(false);
-    const [otherChoice, setOtherChoice] = useState('');
-    const [listData, setListData] = useState([]);
-
     const handlePlatformClick = (e: any, platform: any) => {
         const updatedChoices = platformChoices.map((item) =>
-            item.name === platform.name?{ ...item, selected: e.target.checked }: item
+            item.name === platform.name ? { ...item, selected: e.target.checked } : item
         );
         setPlatformChoices(updatedChoices);
     };
@@ -65,14 +64,12 @@ const EditPopup = (props: any) => {
     const handleOtherChoiceChange = (event: { target: { value: React.SetStateAction<string>; }; }) => {
         setOtherChoice(event.target.value);
     };
-    
-    if (count==1 && props.item.Platform != undefined && props.item.Platform != null && props.item.Platform.length != undefined && props.item.Platform.length > 0) {
+    if (count == 1 && props.item.Platform != undefined && props.item.Platform != null && props.item.Platform.length != undefined && props.item.Platform.length > 0) {
         platformChoices.forEach((item) => {
             item.selected = props.item.Platform.some((i: any) => item.name === i);
         });
         setPlatformChoices(platformChoices)
     }
-
     // eslint-disable-next-line eqeqeq
     if (props.item.SelectedPlatforms !== '' && props.item.SelectedPlatforms !== '[]') {
         const selectedPlatforms = JSON.parse(props.item.SelectedPlatforms);
@@ -133,6 +130,7 @@ const EditPopup = (props: any) => {
     }
 
     const onClose = () => {
+        count = 0
         props.EditPopupClose();
     }
     const handleEditSave = async () => {
@@ -166,8 +164,10 @@ const EditPopup = (props: any) => {
             // Handle errors here
         } finally {
             if (selectedStatus == "Hired") {
+                count = 0
                 props.EditPopupClose()
             } else {
+                count = 0
                 props.EditPopupClose(); // Close the edit popup after saving or if there's an error
             }
 
