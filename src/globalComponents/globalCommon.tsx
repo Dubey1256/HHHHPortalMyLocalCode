@@ -2243,16 +2243,40 @@ export const calculateSmartPriority = (result: any, projectData: any) => {
         projectData?.forEach((elem: any) => {
             const priorityRank = elem?.PriorityRank ?? 1;
             if (priorityRank >= 1 && result?.PriorityRank && result?.Project?.Id === elem.Id) {
-                smartPriority = ((result?.PriorityRank) + (priorityRank * 4)) / 5;
-                result.projectPriorityOnHover = priorityRank
+                const hasImmediateCategory = result?.TaskCategories?.some((cat: any) => cat.Title === 'Immediate');
+                const hasEmailNotificationCategory = result?.TaskCategories?.some((cat: any) => cat.Title === 'Email Notification');
+                if (hasImmediateCategory) {
+                    smartPriority = ((result?.PriorityRank) + (priorityRank * 4)) / 5 * 2;
+                    result.showFormulaOnHover = `((TaskPriority : ${result?.PriorityRank}) + (ProjectPriority : ${priorityRank} * 4)) / 5 * 2`
+                } else if (hasEmailNotificationCategory) {
+                    smartPriority = ((result?.PriorityRank * 2) + (priorityRank * 4)) / 5;
+                    result.showFormulaOnHover = `((TaskPriority : ${result?.PriorityRank} * 2) + (ProjectPriority : ${priorityRank} * 4)) / 5`
+                } else {
+                    smartPriority = ((result?.PriorityRank) + (priorityRank * 4)) / 5;
+                    result.showFormulaOnHover = `((TaskPriority : ${result?.PriorityRank}) + (ProjectPriority : ${priorityRank} * 4)) / 5`
+                }
+                result.projectPriorityOnHover = priorityRank;
                 smartPriority = parseFloat(smartPriority);
             }
         });
     } else {
         const priorityRank = 1;
         if (result?.PriorityRank) {
-            smartPriority = ((result?.PriorityRank) + (priorityRank * 4)) / 5;
-            smartPriority = parseFloat(smartPriority);
+            const hasImmediateCategory = result?.TaskCategories?.some((cat: any) => cat.Title === 'Immediate');
+            const hasEmailNotificationCategory = result?.TaskCategories?.some((cat: any) => cat.Title === 'Email Notification');
+            if (hasImmediateCategory) {
+                smartPriority = ((result?.PriorityRank) + (priorityRank * 4)) / 5 * 2;
+                smartPriority = parseFloat(smartPriority);
+                result.showFormulaOnHover = `((TaskPriority : ${result?.PriorityRank}) + (ProjectPriority : ${priorityRank} * 4)) / 5 * 2`
+            } else if (hasEmailNotificationCategory) {
+                smartPriority = ((result?.PriorityRank * 2) + (priorityRank * 4)) / 5;
+                smartPriority = parseFloat(smartPriority);
+                result.showFormulaOnHover = `((TaskPriority : ${result?.PriorityRank} * 2) + (ProjectPriority : ${priorityRank} * 4)) / 5`
+            } else {
+                smartPriority = ((result?.PriorityRank) + (priorityRank * 4)) / 5;
+                smartPriority = parseFloat(smartPriority);
+                result.showFormulaOnHover = `((TaskPriority : ${result?.PriorityRank}) + (ProjectPriority : ${priorityRank} * 4)) / 5`
+            }
         }
     }
     return smartPriority;
