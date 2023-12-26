@@ -1830,6 +1830,9 @@ const updatedDataDataFromPortfolios = (copyDtaArray: any, dataToUpdate: any) => 
         setIsOpenActivity(false)
         setIsOpenWorkstream(false)
         setActivityPopup(false)
+        if(res?.data?.PercentComplete!=0){
+          res.data.PercentComplete=res?.data?.PercentComplete*100;
+        }
         const updated = updatedDataDataFromPortfolios(copyDtaArray, res?.data);
         if (updated) {
             renderData = [];

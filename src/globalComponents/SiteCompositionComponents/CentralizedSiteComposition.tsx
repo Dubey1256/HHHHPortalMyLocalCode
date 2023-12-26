@@ -69,7 +69,7 @@ const CentralizedSiteComposition = (Props: any) => {
     const childRef = React.useRef<any>();
 
     let [SiteSettingJSON, setSiteSettingJSON] = useState([
-        { Name: "Manual", IsSelected: true, Type: "radio", Descriptions: "Proportional Site Composition Allocation : Users have the ability to input their preferred allocation on chosen sites manually.", BtnName: "SiteSettingRadio" },
+        { Name: "Manual", IsSelected: true, Type: "radio", Descriptions: "Manual Site Composition Allocation : Users have the ability to input their preferred allocation on chosen sites manually.", BtnName: "SiteSettingRadio" },
         { Name: "Proportional", IsSelected: false, Type: "radio", Descriptions: "Proportional Site Composition Allocation: The distribution will be evenly divided, summing up to 100%, across the chosen sites.", BtnName: "SiteSettingRadio" },
         { Name: "Deluxe", IsSelected: false, Type: "radio", Descriptions: "Site composition based on configuration: Predefined in the cockpit, these compositions are dynamic. Any additions or updates to existing ones will automatically update all components wherever this site composition is applied. Deluxe Site composition: EI: 50%. EPS : 50%", BtnName: "SiteSettingRadio" },
         { Name: "Standard", IsSelected: false, Type: "radio", Descriptions: "Site composition based on configuration: Predefined in the cockpit, these compositions are dynamic. Any additions or updates to existing ones will automatically update all components wherever this site composition is applied. Standard Site Composition: EI: 60%, EPS: 30%, Education-5%,migration 5%", BtnName: "SiteSettingRadio" }
@@ -126,10 +126,6 @@ const CentralizedSiteComposition = (Props: any) => {
     useEffect(() => {
         setIsModelOpen(true);
         getSmartMetaDataListAllItems();
-        loadAllSitesData();
-        if (usedFor == "CSF") {
-            loadAllMasterListData();
-        }
         loadAllTaskUsers();
 
     }, [])
@@ -622,6 +618,11 @@ const CentralizedSiteComposition = (Props: any) => {
                 } else {
                     setIsSCProtected(false);
                 }
+                if (SiteSettingTemp[0].Protected == true) {
+                    setIsMakeSCProtected(true);
+                } else {
+                    setIsMakeSCProtected(false);
+                }
                 setSiteCompositionSettings([...SiteSettingTemp]);
                 SelectedItemDetails.SiteSettingBackup = SiteSettingTemp;
             } else {
@@ -680,9 +681,19 @@ const CentralizedSiteComposition = (Props: any) => {
             SelectedItemDetails.listId = ItemDetails?.listId;
             SelectedItemDetails.siteType = ItemDetails?.siteType;
             SelectedItemDetails.siteIcon = ItemDetails?.siteIcon;
+            if (usedFor == "CSF") {
+                loadAllSitesData();
+                if (SelectedItemDetails?.Item_x0020_Type !== "Feature") {
+                    loadAllMasterListData();
+                }
+            }
+            if (SelectedItemDetails?.TaskType?.Title !== "Task" && usedFor == "AWT") {
+                loadAllSitesData();
+            }else{
+                setLoaded(true);
+            }
             setSelectedItemDetailsFormCall(SelectedItemDetails);
             console.log("Get getSletec task detils   Call");
-
         } catch (error) {
             console.log("Error :", error.message);
         }
@@ -730,20 +741,16 @@ const CentralizedSiteComposition = (Props: any) => {
 
     const CustomFooter = () => {
         return (
-            <footer className="bg-f4 alignCenter justify-content-between p-3">
-                <div className="col-sm-6">
-                    <a className="btn btn-default ms-2 px-3" target="_blank" data-interception="off"
-                        href={usedFor == "CSF" ? `${siteUrl}/Lists/Master%20Tasks/EditForm.aspx?ID=${ItemDetails?.Id}&?#Sitestagging` : `${siteUrl}/Lists/${ItemDetails?.siteType}/EditForm.aspx?ID=${ItemDetails?.Id}&?#Sitestagging`}
-                    >
-                        Open-Out-Of-The-Box
-                    </a>
-                </div>
-                <div className="d-flex justify-content-end col-sm-6 me-4">
-                    <button className="btn ms-1 btn-primary px-4"
-                        onClick={PrepareTheDataForUpdatingOnBackendSide}
-                    >Save</button>
-                    <button className="btn btn-default ms-1 px-3" onClick={() => ClosePanelFunction("Close")}>Cancel</button>
-                </div>
+            <footer className="bg-f4 alignCenter justify-content-end p-3 me-4">
+                <a className="me-2 siteColor" target="_blank" data-interception="off"
+                    href={usedFor == "CSF" ? `${siteUrl}/Lists/Master%20Tasks/EditForm.aspx?ID=${ItemDetails?.Id}&?#Sitestagging` : `${siteUrl}/Lists/${ItemDetails?.siteType}/EditForm.aspx?ID=${ItemDetails?.Id}&?#Sitestagging`}
+                >
+                    Open-Out-Of-The-Box
+                </a>
+                <button className="btn ms-1 btn-primary px-4"
+                    onClick={PrepareTheDataForUpdatingOnBackendSide}
+                >Save</button>
+                <button className="btn btn-default ms-1 px-3" onClick={() => ClosePanelFunction("Close")}>Cancel</button>
             </footer>
         )
     }

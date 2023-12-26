@@ -745,7 +745,7 @@ function TeamPortlioTable(SelectedProp: any) {
                     }
                 }
             });
-            GetComponents();
+            // GetComponents();
         }
 
     };
@@ -953,6 +953,7 @@ function TeamPortlioTable(SelectedProp: any) {
 
     React.useEffect(() => {
         if (AllMetadata.length > 0 && portfolioTypeData.length > 0) {
+            GetComponents();
             LoadAllSiteTasks();
             LoadAllSiteTasksAllData();
         }

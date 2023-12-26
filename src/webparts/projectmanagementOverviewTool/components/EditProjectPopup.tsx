@@ -1752,6 +1752,26 @@ function EditProjectPopup(item: any) {
                                   Archived{" "}
                                 </label>
                               </li>
+                              <li className="form-check">
+                                <label className="SpfxCheckRadio">
+                                  <input
+                                    className="radio"
+                                    name="NotStarted"
+                                    type="radio"
+                                    value="Completed"
+                                    onChange={(e) =>
+                                      setStatus(EditData, "Completed")
+                                    }
+                                    checked={
+                                      EditData.AdminStatus === "Completed"
+                                        ? true
+                                        : false
+                                    }
+                                  ></input>
+
+                                  Completed{" "}
+                                </label>
+                                </li>
                             </ul>
                           </div>
                           <div className="col-sm-6 pe-0">

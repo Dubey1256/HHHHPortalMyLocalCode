@@ -15,6 +15,7 @@ import { ISiteStructureProps } from './components/ISiteStructureProps';
 export interface ISiteStructureWebPartProps {
   description: string;
   ContextData: any
+  SPSitesListUrl: string;
   TopNavigationListID: any;
 }
 
@@ -33,6 +34,7 @@ export default class SiteStructureWebPart extends BaseClientSideWebPart<ISiteStr
         hasTeamsContext: !!this.context.sdks.microsoftTeams,
         userDisplayName: this.context.pageContext.user.displayName,
         ContextData: this.context.pageContext,
+        SPSitesListUrl: this.context.pageContext.web.absoluteUrl,
         TopNavigationListID: this.properties.TopNavigationListID,
       }
     );
