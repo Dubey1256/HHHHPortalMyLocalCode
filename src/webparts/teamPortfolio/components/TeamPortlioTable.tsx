@@ -351,6 +351,7 @@ function TeamPortlioTable(SelectedProp: any) {
                             result.TaskTypeValue = '';
                             result.projectPriorityOnHover = '';
                             result.taskPriorityOnHover = result?.PriorityRank;
+                            result.showFormulaOnHover;
                             result.portfolioItemsSearch = ''
                             if (result?.DueDate != null && result?.DueDate != undefined) {
                                 result.serverDueDate = new Date(result?.DueDate).setHours(0, 0, 0, 0)
@@ -588,6 +589,7 @@ function TeamPortlioTable(SelectedProp: any) {
                             result.TaskTypeValue = '';
                             result.projectPriorityOnHover = '';
                             result.taskPriorityOnHover = result?.PriorityRank;
+                            result.showFormulaOnHover;
                             result.portfolioItemsSearch = ''
                             if (result?.DueDate != null && result?.DueDate != undefined) {
                                 result.serverDueDate = new Date(result?.DueDate).setHours(0, 0, 0, 0)
@@ -736,7 +738,7 @@ function TeamPortlioTable(SelectedProp: any) {
                             }
                             result["Item_x0020_Type"] = "Task";
                             TasksItem.push(result);
-                            AllTasksData.push(result)
+                            AllTasksData.push(result);
                         });
                         setAllSiteTasksData(AllTasksData);
                         // let taskBackup = JSON.parse(JSON.stringify(AllTasksData));
@@ -1740,7 +1742,7 @@ function TeamPortlioTable(SelectedProp: any) {
             {
                 accessorFn: (row) => row?.SmartPriority,
                 cell: ({ row }) => (
-                    <div className="text-center boldClable" title={`((TaskPriority : ${row?.original?.taskPriorityOnHover}) + (ProjectPriority : ${row?.original?.projectPriorityOnHover} * 4)) / 5`}>{row?.original?.SmartPriority}</div>
+                    <div className="text-center boldClable" title={row?.original?.showFormulaOnHover}>{row?.original?.SmartPriority}</div>
                 ),
                 id: "SmartPriority",
                 placeholder: "SmartPriority",
@@ -2487,4 +2489,3 @@ function TeamPortlioTable(SelectedProp: any) {
     );
 }
 export default TeamPortlioTable;
-
