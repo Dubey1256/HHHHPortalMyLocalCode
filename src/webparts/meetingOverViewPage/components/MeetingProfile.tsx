@@ -3,6 +3,9 @@ import { Web } from 'sp-pnp-js';
 import CommentCard from '../../../globalComponents/Comments/CommentCard';
 import AncTool from '../../../globalComponents/AncTool/AncTool';
 import { BiInfoCircle } from 'react-icons/bi';
+import PageLoader from "../../../globalComponents/pageLoader";
+
+
 import { ImReply } from 'react-icons/im';
 import {
   mergeStyleSets,
@@ -46,6 +49,7 @@ const MeetingProfile = (props: any) => {
   const [display, setDisplay] = React.useState('none');
   const [openModelImg, setOpenModelImg] = React.useState<any>({ isModalOpen: false, imageInfo: { ImageName: "", ImageUrl: "" }, showPopup: 'none' })
   const [showMeetingPopup, setshowMeetingPopup] = React.useState(false);
+  const [pageLoaderActive, setPageLoader] = React.useState(true)
   const [feedbackpopup, setfeedbackpopup] = React.useState(
     {
       showcomment: 'none',
@@ -92,8 +96,8 @@ const MeetingProfile = (props: any) => {
     });
 
 
-
   }, [])
+
   const smartMetaData = async () => {
     return new Promise<void>((resolve, reject) => {
       let sites = [];
@@ -127,8 +131,6 @@ const MeetingProfile = (props: any) => {
               }
             }
           });
-
-
           setAllSite(AllsiteData)
         })
 
@@ -169,6 +171,7 @@ const MeetingProfile = (props: any) => {
     })
 
   };
+
 
   //  ============current user details=========
   const GetUserObject = (username: any) => {
@@ -287,8 +290,8 @@ const MeetingProfile = (props: any) => {
           }
           let siteTaggJson: any = taskDetails.Sitestagging != undefined ? JSON.parse(taskDetails.Sitestagging) : null
           let siteTagg2: any = []
-          allData.map((item:any)=>{
-              siteTagg2= siteTagg2.concat(siteTaggJson.filter((data:any)=>data.Id==item.Id && data.siteType==item.siteType))
+          allData.map((item: any) => {
+            siteTagg2 = siteTagg2.concat(siteTaggJson.filter((data: any) => data.Id == item.Id && data.siteType == item.siteType))
           })
 
           var array2: any = taskDetails["AssignedTo"] != undefined ? taskDetails["AssignedTo"] : []
@@ -320,6 +323,7 @@ const MeetingProfile = (props: any) => {
             AssignedTo: taskDetails["AssignedTo"] != null ? GetUserObjectFromCollection(taskDetails["AssignedTo"]) : null,
           }
           resultDatabackup = data;
+          setPageLoader(false);
           setResultData(data);
         })
     }
@@ -1474,6 +1478,7 @@ const MeetingProfile = (props: any) => {
 
 
         }
+        {pageLoaderActive ? <PageLoader /> : ''}
       </mycontextValue.Provider>
     </>
   )

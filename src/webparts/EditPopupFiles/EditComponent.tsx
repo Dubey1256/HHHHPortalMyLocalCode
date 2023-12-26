@@ -1741,14 +1741,16 @@ function EditInstitution({ item, SelectD, Calls, usedFor, portfolioTypeData, fil
           console.log(i);
           setComponent((EditData) => [...EditData]);
 
-          setModalIsOpenToFalse();
+          
           var ItmesDelete: any = {
             data: {
               Id: item.Id,
-              ItmesDelete: true
+              ItmesDelete: true,
+              siteType:item?.siteType
             }
           }
           Calls(ItmesDelete);
+          setModalIsOpenToFalse();
 
           item.showProgressBar();
         });

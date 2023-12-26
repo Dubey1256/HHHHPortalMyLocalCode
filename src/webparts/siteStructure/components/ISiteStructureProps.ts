@@ -6,4 +6,5 @@ export interface ISiteStructureProps {
   userDisplayName: string;
   ContextData: any;
   TopNavigationListID: any;
+  SPSitesListUrl: string;
 }
