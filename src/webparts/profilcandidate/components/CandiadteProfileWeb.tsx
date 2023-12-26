@@ -204,10 +204,10 @@ const Profilcandidate = (props: any) => {
                 <div className='col-sm-12 px-2 mt-3 row'>
                     <div className='siteBdrBottom siteColor sectionHead ps-0 mb-2'>Feedback</div>
                     {localRatings && localRatings.length > 0 ? (
-                        <div className="p-2">
+                        <div className="px-0">
                             <div className="star-block">
                                 {localRatings.map((rating: any, index: number) => (
-                                    <div key={index} className="skillBlock row alignCenter w-100">
+                                    <div key={index} className="skillBlock alignCenter w-100">
                                         <div className='col-md-3 p-0'>
                                             <div className="skillTitle">{rating.SkillTitle}</div>
                                         </div>

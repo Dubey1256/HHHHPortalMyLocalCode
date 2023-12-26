@@ -1225,7 +1225,7 @@ function CreateTaskComponent(props: any) {
     }
 
     const selectSubTaskCategory = (title: any, Id: any, item: any) => {
-        if (item?.Parent.Title == "Attention") {
+        if (item?.Parent?.Title == "Attention") {
             TeamMessagearray.push(item);
             setUserEmailNotify(true)
         }
