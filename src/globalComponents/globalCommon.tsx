@@ -2245,12 +2245,14 @@ export const calculateSmartPriority = (result: any, projectData: any) => {
             if (priorityRank >= 1 && result?.PriorityRank && result?.Project?.Id === elem.Id) {
                 smartPriority = ((result?.PriorityRank) + (priorityRank * 4)) / 5;
                 result.projectPriorityOnHover = priorityRank
+                smartPriority = parseFloat(smartPriority);
             }
         });
     } else {
         const priorityRank = 1;
         if (result?.PriorityRank) {
             smartPriority = ((result?.PriorityRank) + (priorityRank * 4)) / 5;
+            smartPriority = parseFloat(smartPriority);
         }
     }
     return smartPriority;
