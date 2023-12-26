@@ -1316,7 +1316,8 @@ const EditTaskPopup = (Items: any) => {
                     setTotalEstimatedTime(tempTimeData);
                 }
                 item.ClientCategory = selectedClientCategoryData;
-                setEditData(item);
+                item. Approvee= item. Approvee!=undefined? taskUsers.find((userData:any)=>userData?.AssingedToUser?.Id==item?.Approvee?.Id): undefined
+                 setEditData(item);
                 setBasicImageData(saveImage);
                 EditDataBackup = item;
                 setPriorityStatus(item.Priority);
@@ -3319,9 +3320,36 @@ const EditTaskPopup = (Items: any) => {
                 }
             });
             if (ApprovedStatusCount == 0) {
+                let teamMember=[];
+                let AssignedTo=[];
+                setTaskAssignedTo([])
+                setTaskTeamMembers([])
+                teamMember.push(EditDataBackup?.TeamMembers[0])
+                if(EditDataBackup?.Approvee!=undefined){
+                    teamMember.push(EditDataBackup?.Approvee?.AssingedToUser)
+                    AssignedTo.push(EditDataBackup?.Approvee?.AssingedToUser)
+                    setTaskAssignedTo(AssignedTo)
+                    setTaskTeamMembers(teamMember);
+
+                }else{
+                   
+                   teamMember.push(EditDataBackup?.Author) 
+                    AssignedTo.push(EditDataBackup?.Author)
+                    setTaskAssignedTo(AssignedTo)
+                    setTaskTeamMembers(teamMember);
+
+                }
                 setApprovalTaskStatus(false);
+
             } else {
+                let teamMember=[];
+                let AssignedTo=[];
+                teamMember.push(currentUserBackupArray?.[0]?.AssingedToUser) 
+                AssignedTo.push(currentUserBackupArray?.[0]?.AssingedToUser)
+                setTaskAssignedTo(AssignedTo)
+                setTaskTeamMembers(teamMember);
                 setApprovalTaskStatus(true);
+
             }
         }
         if (PhoneCount > 0) {
