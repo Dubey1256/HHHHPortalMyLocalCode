@@ -347,7 +347,7 @@ function TeamPortlioTable(SelectedProp: any) {
                             result.descriptionsSearch = '';
                             result.commentsSearch = '';
                             result.timeSheetsDescriptionSearch = '';
-                            result.SmartPriority = '';
+                            result.SmartPriority;
                             result.TaskTypeValue = '';
                             result.projectPriorityOnHover = '';
                             result.taskPriorityOnHover = result?.PriorityRank;
@@ -584,7 +584,7 @@ function TeamPortlioTable(SelectedProp: any) {
                             result.descriptionsSearch = '';
                             result.commentsSearch = '';
                             result.timeSheetsDescriptionSearch = '';
-                            result.SmartPriority = '';
+                            result.SmartPriority;
                             result.TaskTypeValue = '';
                             result.projectPriorityOnHover = '';
                             result.taskPriorityOnHover = result?.PriorityRank;
@@ -745,7 +745,7 @@ function TeamPortlioTable(SelectedProp: any) {
                     }
                 }
             });
-            GetComponents();
+            // GetComponents();
         }
 
     };
@@ -782,7 +782,7 @@ function TeamPortlioTable(SelectedProp: any) {
             result["siteType"] = "Master Tasks";
             result.AllTeamName = "";
             result.descriptionsSearch = '';
-            result.SmartPriority = '';
+            result.SmartPriority;
             result.commentsSearch = '';
             result.TaskTypeValue = '';
             result.timeSheetsDescriptionSearch = '';
@@ -953,6 +953,7 @@ function TeamPortlioTable(SelectedProp: any) {
 
     React.useEffect(() => {
         if (AllMetadata.length > 0 && portfolioTypeData.length > 0) {
+            GetComponents();
             LoadAllSiteTasks();
             LoadAllSiteTasksAllData();
         }
