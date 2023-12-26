@@ -2123,11 +2123,12 @@ const buttonRestructureDifferentType=()=>{
 
    
       
-     
+     let activityCount=0
     
       restructureItem?.map(async (items: any, index: any) => {
       let TaskId = newItemBackUp?.TaskID == undefined ? null : newItemBackUp?.TaskID;
          TaskLevel = TaskLevel+1;
+       
 
          if(RestructureChecked[0]?.TaskType?.Id === 1){
           // ParentTask_Id = null;
@@ -2144,12 +2145,16 @@ const buttonRestructureDifferentType=()=>{
                if(componentDetails?.length == 0){
                  var LatestId:any =  1;
                  TaskLevel = LatestId
-                 TaskId =  'A' + LatestId
+                 LatestId = LatestId+activityCount;
+                 TaskId =  'A' + LatestId;
+                 activityCount = activityCount + 1;
                }
                else{
                  var LatestId = componentDetails[0].TaskLevel + 1;
                  TaskLevel = LatestId
-                 TaskId =  'A' + LatestId
+                 LatestId = LatestId+activityCount;
+                 TaskId =  'A' + LatestId;
+                 activityCount = activityCount + 1;
                }
                items.TaskID = TaskId;
              }).catch((err:any)=>{
@@ -2159,9 +2164,9 @@ const buttonRestructureDifferentType=()=>{
   
         
       let web = new Web(items.siteUrl);
-        TaskId = RestructureChecked[0]?.TaskType?.Id == 2 ? 'T' + items?.Id : (RestructureChecked[0]?.TaskType?.Id == 1 ? items?.TaskID : TaskId + '-' + 'W' + TaskLevel)    
+      TaskId = RestructureChecked[0]?.TaskType?.Id == 2 ? 'T' + items?.Id : (RestructureChecked[0]?.TaskType?.Id == 1 ? items?.TaskID : TaskId + '-' + 'W' + TaskLevel)    
       
-
+      
         if(newItemBackUp?.Item_x0020_Type != 'Task'){
           ParentTask_ID = null;
           ParentTask_Portfolio = { Id: newItemBackUp?.Id, ItemType:newItemBackUp?.Item_x0020_Type, PortfolioStructureID:newItemBackUp?.PortfolioStructureID, Title:newItemBackUp?.Title}
