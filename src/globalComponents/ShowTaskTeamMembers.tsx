@@ -34,13 +34,13 @@ function ShowTaskTeamMembers(item: any) {
           CompleteTeamMembers.push(item);
         });
       }
-      if (taskDetails["TeamMembers"] != undefined) {
-        taskDetails["TeamMembers"]?.map((item: any, index: any) => {
-          if (taskDetails?.AssignedTo != undefined) {
-            for (let i = 0; i < taskDetails?.AssignedTo?.length; i++) {
-              if (item.Id == taskDetails?.AssignedTo[i]?.Id) {
+      if (taskDetails["AssignedTo"] != undefined) {
+        taskDetails["AssignedTo"]?.map((item: any, index: any) => {
+          if (taskDetails?.TeamMembers != undefined) {
+            for (let i = 0; i < taskDetails?.TeamMembers?.length; i++) {
+              if (item.Id == taskDetails?.TeamMembers[i]?.Id) {
                 item.workingMember = true;
-                taskDetails?.AssignedTo?.splice(i, true);
+                taskDetails?.TeamMembers?.splice(i, true);
                 i--;
               }
             }
@@ -49,9 +49,9 @@ function ShowTaskTeamMembers(item: any) {
           CompleteTeamMembers.push(item);
         });
       }
-      if (taskDetails?.AssignedTo != undefined) {
-        taskDetails["AssignedTo"]?.map((item: any, index: any) => {
-          item.workingMember = true;
+      if (taskDetails?.TeamMembers != undefined) {
+        taskDetails["TeamMembers"]?.map((item: any, index: any) => {
+        
           CompleteTeamMembers.push(item);
         });
       }
@@ -128,7 +128,7 @@ function ShowTaskTeamMembers(item: any) {
         } */}
         <div key={key} className="alignCenter">
           {taskData?.TeamMembersFlat != null &&
-            taskData?.TeamMembersFlat?.length > 0 &&
+            taskData?.TeamMembersFlat?.length > 0 && 
             taskData?.TeamMembersFlat?.map((rcData: any, i: any) => {
               return (
                 <a style={{marginRight:"4px"}} href={`${siteUrl}/SitePages/TaskDashboard.aspx?UserId=${rcData?.Id}&Name=${rcData?.Title}`}

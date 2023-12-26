@@ -17,7 +17,6 @@ import ShowTaskTeamMembers from "../../../globalComponents/ShowTaskTeamMembers";
 import ReactDOM from "react-dom";
 import AncTool from "../../../globalComponents/AncTool/AncTool";
 import RelevantDocuments from "../../taskprofile/components/RelevantDocuments";
-import RelevantEmail from "../../taskprofile/components/ReleventEmails"
 import { myContextValue, GetServiceAndComponentAllData } from '../../../globalComponents/globalCommon'
 import { IsAny } from "@tanstack/react-table";
 import InlineEditingcolumns from "../../projectmanagementOverviewTool/components/inlineEditingcolumns";
@@ -468,7 +467,7 @@ function Portfolio({ SelectedProp, TaskUser }: any) {
     AllMasterTaskData = result.AllData
   }
   React.useEffect(() => {
-
+   
     getSmartMetaDataListAllItems();
   }, [count]);
 
@@ -502,6 +501,8 @@ function Portfolio({ SelectedProp, TaskUser }: any) {
         })
         if (TempArray?.length > 0) {
           AllClientCategoryDataBackup = TempArray;
+          parentFunctionCall();
+        }else{
           parentFunctionCall();
         }
       }
@@ -546,7 +547,7 @@ function Portfolio({ SelectedProp, TaskUser }: any) {
       SelectedProp.isShowTimeEntry = isShowTimeEntry;
     }
     ContextValue = SelectedProp;
-
+    
     loadAllMasterTask();
     let web = ContextValue.siteUrl;
     let url = `${web}/_api/lists/getbyid('${ContextValue.MasterTaskListID}')/items?$select=ItemRank,Item_x0020_Type,Portfolios/Id,Portfolios/Title,PortfolioType/Id,PortfolioType/Title,PortfolioType/Color,PortfolioType/IdRange,Site,FolderID,PortfolioStructureID,ValueAdded,Idea,TaskListName,TaskListId,WorkspaceType,CompletedDate,ClientActivityJson,ClientSite,Item_x002d_Image,Sitestagging,SiteCompositionSettings,TechnicalExplanations,Deliverables,Author/Id,Author/Title,Editor/Id,Editor/Title,Package,Short_x0020_Description_x0020_On,Short_x0020_Description_x0020__x,Short_x0020_description_x0020__x0,AdminNotes,AdminStatus,Background,Help_x0020_Information,BasicImageInfo,Item_x0020_Type,AssignedTo/Title,AssignedTo/Name,AssignedTo/Id,Categories,FeedBack,ComponentLink,FileLeafRef,Title,Id,Comments,StartDate,DueDate,Status,Body,Company,Mileage,PercentComplete,FeedBack,Attachments,Priority,PriorityRank,Created,Modified,TeamMembers/Id,TeamMembers/Title,Parent/Id,Parent/Title,Parent/ItemType,TaskCategories/Id,TaskCategories/Title,ClientCategory/Id,ClientCategory/Title&$expand=Author,Editor,ClientCategory,Parent,AssignedTo,TeamMembers,PortfolioType,Portfolios,TaskCategories&$filter=Id eq ${ID}&$top=4999`;
@@ -2001,28 +2002,17 @@ function Portfolio({ SelectedProp, TaskUser }: any) {
                     ))}
                   </>
                   <>
-                    {/* {data?.map((item: any) => (
-                      <>
-                        <RelevantDocuments ref={relevantDocRef}
-                          AllListId={SelectedProp}
-                          Context={SelectedProp?.Context}
-                          siteUrl={SelectedProp?.siteUrl}
-                          DocumentsListID={ContextValue?.DocumentsListID}
-                          ID={item?.Id}
-                          siteName={"Master Tasks"}
-                          folderName={item?.Title}
-                        ></RelevantDocuments>
-                        <RelevantEmail ref={relevantDocRef}
-                          AllListId={SelectedProp}
-                          Context={SelectedProp?.Context}
-                          siteUrl={SelectedProp?.siteUrl}
-                          DocumentsListID={ContextValue?.DocumentsListID}
-                          ID={item?.Id}
-                          siteName={"Master Tasks"}
-                          folderName={item?.Title}>
-                          </RelevantEmail>
-                      </>
-                    ))} */}
+                    {data?.map((item: any) => (
+                      <RelevantDocuments ref={relevantDocRef}
+                        AllListId={SelectedProp}
+                        Context={SelectedProp?.Context}
+                        siteUrl={SelectedProp?.siteUrl}
+                        DocumentsListID={ContextValue?.DocumentsListID}
+                        ID={item?.Id}
+                        siteName={"Master Tasks"}
+                        folderName={item?.Title}
+                      ></RelevantDocuments>
+                    ))}
                   </>
                   <>
                     {data?.map((item: any) => (
@@ -2110,6 +2100,5 @@ function Portfolio({ SelectedProp, TaskUser }: any) {
 }
 export default Portfolio;
 export { myContextValue }
-
 
 

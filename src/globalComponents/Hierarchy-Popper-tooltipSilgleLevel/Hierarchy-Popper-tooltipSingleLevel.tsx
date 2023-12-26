@@ -47,7 +47,7 @@ export const getTooltiphierarchyWithoutGroupByTable = (row: any, completeTitle: 
 let scrollToolitem: any = false
 let pageName: any = 'hierarchyPopperToolTip'
 
-export default function ReactPopperTooltipSingleLevel({ ShareWebId, row, masterTaskData, AllSitesTaskData, AllListId }: any) {
+export default function ReactPopperTooltipSingleLevel({ ShareWebId, row, masterTaskData, AllSitesTaskData, AllListId , onclickPopup }: any) {
     AllMatsterAndTaskData = [...masterTaskData];
     AllMatsterAndTaskData = AllMatsterAndTaskData?.concat(AllSitesTaskData);
     const [controlledVisible, setControlledVisible] = React.useState(false);
@@ -72,9 +72,11 @@ export default function ReactPopperTooltipSingleLevel({ ShareWebId, row, masterT
     });
 
     const handlAction = (newAction: any) => {
-        if (newAction === "click" && newAction === "hover") return;
-        setAction(newAction);
-        setControlledVisible(true);
+        if(onclickPopup!=false){
+            if (newAction === "click" && newAction === "hover") return;
+            setAction(newAction);
+            setControlledVisible(true);
+        }
     };
 
     const handleMouseLeave = () => {

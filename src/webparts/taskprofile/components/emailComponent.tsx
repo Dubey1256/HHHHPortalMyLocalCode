@@ -116,7 +116,7 @@ const EmailComponenet = (props: any) => {
     console.log(props);
 
     let mention_To: any = [];
-    mention_To.push(props?.items?.Author[0]?.Name?.replace('{', '').replace('}', '').trim());
+    mention_To.push(props?.items?.Approvee!=undefined?props?.items?.Approvee?.Email:props?.items?.Author[0]?.Name?.replace('{', '').replace('}', '').trim());
     console.log(mention_To);
     if (mention_To.length > 0) {
       let emailprops = {
