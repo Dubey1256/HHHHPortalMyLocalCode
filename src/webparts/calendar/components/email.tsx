@@ -123,25 +123,30 @@ let SendEmailMessage =
     const currentYear = new Date().getFullYear();
 
     return matchedData.reduce((total: any, item: any) => {
+      
       const endDate = new Date(item.EndDate);
       const eventDate: any = new Date(item.EventDate);
+      const timezoneOffset = endDate.getTimezoneOffset();
+      const timezoneOffsetInHours = timezoneOffset / 60;
+      const adjustedEndDate = new Date(endDate.getTime() + timezoneOffsetInHours * 60 * 60 * 1000);
+      const adjustedEventDate:any = new Date(eventDate.getTime() + timezoneOffsetInHours * 60 * 60 * 1000);
 
       // Filter data based on the event date being in the current year
-      if (eventDate.getFullYear() === currentYear) {
+      if (adjustedEventDate.getFullYear() === currentYear) {
         // Adjust the end date to the last day of the current year
         const endOfYearDate = new Date(currentYear, 11, 31);
-        const adjustedEndDate = endDate < endOfYearDate ? endDate : endOfYearDate;
+        const adjustedEndDateToYearEnd = adjustedEndDate  < endOfYearDate ? adjustedEndDate  : endOfYearDate;
 
         const oneDay = 24 * 60 * 60 * 1000; // Number of milliseconds in a day
 
         let workingDays = 0;
         let workingDayT = 0;
-        let currentDate = new Date(eventDate);
+        let currentDate = new Date(adjustedEventDate);
 
-        while (currentDate <= adjustedEndDate) {
+        while (currentDate <= adjustedEndDateToYearEnd) {
           const dayOfWeek = currentDate.getDay();
 
-          if (dayOfWeek !== 0 && dayOfWeek !== 6 && !isWeekend(currentDate, adjustedEndDate)) {
+          if (dayOfWeek !== 0 && dayOfWeek !== 6 && !isWeekend(currentDate, adjustedEndDateToYearEnd)) {
             // Exclude Sunday (0) and Saturday (6), and the event date and end date if they're both on a weekend
             if (item?.Event_x002d_Type != "Work From Home") {
               if (item?.HalfDay == true) { 
