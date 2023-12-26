@@ -41,9 +41,7 @@ const RelevantEmail = (props: any, ref: any) => {
     try {
       // await web.lists.getByTitle("Documents")
       await web.lists.getById(props.DocumentsListID)
-        // .items.select("Id,Title,PriorityRank,Year,File_x0020_Type,FileLeafRef,FileDirRef,ItemRank,ItemType,Url,Created,Modified,Author/Id,Author/Title,Editor/Id,Editor/Title,EncodedAbsUrl")
-        // .expand("Author,Editor").filter(`${props?.siteName}/Id eq ${props?.ID}`).top(4999)
-        // .get()
+  
         .items.select(query)
        
         .filter(`(${props?.siteName}/Id eq ${props?.ID})and(File_x0020_Type eq 'msg')`).top(4999)
