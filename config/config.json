@@ -352,6 +352,14 @@
         }
       ]
     },
+    "task-user-management-web-part": {
+      "components": [
+        {
+          "entrypoint": "./lib/webparts/taskUserManagement/TaskUserManagementWebPart.js",
+          "manifest": "./src/webparts/taskUserManagement/TaskUserManagementWebPart.manifest.json"
+        }
+      ]
+    },
     "hello-spfx-web-part": {
       "components": [
         {
@@ -392,6 +400,7 @@
     "ComponentCommentsWebPartStrings": "lib/webparts/componentComments/loc/{locale}.js",
     "FeedbackWebPartStrings": "lib/webparts/TimeReport/loc/{locale}.js",
     "TaskStepsWebPartStrings": "lib/webparts/taskSteps/loc/{locale}.js",
+    "TaskUserManagementWebPartStrings": "lib/webparts/taskUserManagement/loc/{locale}.js",
     "SiteStructureWebPartStrings": "lib/webparts/SiteStructure/loc/{locale}.js",
     "SiteDataBackupToolWebPartStrings": "lib/webparts/siteDataBackupTool/loc/{locale}.js",
     "SmartmetadataportfolioWebPartStrings": "lib/webparts/smartmetadataportfolio/loc/{locale}.js",
