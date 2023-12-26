@@ -99,7 +99,7 @@ const Profilcandidate = (props: any) => {
                 <div className='w-100 ms-4'>
                     <div className='alignCenter'>
                         <h2 className='mb-2 ms-0 heading'>{`${EmployeeData?.CandidateName} `}
-                            <span onClick={() => EditPopupOpen(EmployeeData)} title="Edit" className="svg__iconbox hreflink svg__icon--edit"></span>
+                            <span onClick={() => EditPopupOpen(EmployeeData)} title="Edit" className="svg__iconbox hreflink alignIcon svg__icon--edit"></span>
                         </h2>
                         {/* <a className='fw-semibold ml-auto' target='_blank' data-interception="off" href={OldEmployeeProfile}>Old Employee Profile</a> */}
                     </div>
@@ -161,7 +161,7 @@ const Profilcandidate = (props: any) => {
                 </div>
                 <div className='col-sm-12 px-2 mt-3 row'>
                     <div className='siteBdrBottom siteColor sectionHead ps-0 mb-2'>Documents</div>
-                    <div>
+                    <div className='px-0'>
                         {TaggedDocuments.length > 0 ? (
                             TaggedDocuments.map(document => (
                                 <div className="documenttype-list alignCenter" key={document.Id}>
@@ -204,10 +204,10 @@ const Profilcandidate = (props: any) => {
                 <div className='col-sm-12 px-2 mt-3 row'>
                     <div className='siteBdrBottom siteColor sectionHead ps-0 mb-2'>Feedback</div>
                     {localRatings && localRatings.length > 0 ? (
-                        <div className="border border-top-0 p-2">
+                        <div className="px-0">
                             <div className="star-block">
                                 {localRatings.map((rating: any, index: number) => (
-                                    <div key={index} className="skillBlock row alignCenter w-100">
+                                    <div key={index} className="skillBlock alignCenter w-100">
                                         <div className='col-md-3 p-0'>
                                             <div className="skillTitle">{rating.SkillTitle}</div>
                                         </div>
@@ -233,7 +233,7 @@ const Profilcandidate = (props: any) => {
                 <div className='col-sm-12 px-2 mt-3 row'>
                     <div className='siteBdrBottom siteColor sectionHead ps-0 mb-2'>Overall Remarks</div>
                     {EmployeeData?.Remarks ? (
-                        <div dangerouslySetInnerHTML={{ __html: EmployeeData?.Remarks }} />
+                        <div className='px-0' dangerouslySetInnerHTML={{ __html: EmployeeData?.Remarks }} />
                     ) : (
                         <div className="no-remarks-message-container">
                             <div className="no-remarks-message">No remarks to show</div>
@@ -243,7 +243,7 @@ const Profilcandidate = (props: any) => {
                 <div className='col-sm-12 px-2 mt-3 row'>
                     <div className='siteBdrBottom siteColor sectionHead ps-0 mb-2'>Cover Letter/Motivation</div>
                     {EmployeeData?.Motivation ? (
-                        <div dangerouslySetInnerHTML={{ __html: EmployeeData?.Motivation }} />
+                        <div className='px-0' dangerouslySetInnerHTML={{ __html: EmployeeData?.Motivation }} />
                     ) : (
                         <div className="no-remarks-message-container">
                             <div className="no-remarks-message">No cover letter to show</div>
