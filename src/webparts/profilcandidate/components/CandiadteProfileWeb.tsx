@@ -45,8 +45,8 @@ const Profilcandidate = (props: any) => {
     const EmployeeDetails = async (Id: any) => {
         try {
             await web.lists.getById('298bc01c-710d-400e-bf48-8604d297c3c6')
-                .items.getById(Id).select('Id', 'Title', 'Remarks', 'Motivation', 'SelectedPlatforms', 'Result', 'CandidateStaffID', 'ActiveInterv', 'Status0', 'IsFavorite', 'CandidateName', 'SkillRatings', 'Positions/Id', 'Positions/Title', 'Platform', 'IsFavorite', 'PhoneNumber', 'Email', 'Experience', 'Current_x0020_Company', 'Date', 'CurrentCTC', 'ExpectedCTC', 'NoticePeriod', 'CurrentLocation', 'DateOfJoining', 'HRNAME')
-                .expand('Positions').get().then((data: any) => {
+                .items.getById(Id).select('Id', 'Title', 'Remarks', 'Motivation', 'Created', 'Modified', 'AuthorId', 'Author/Title', 'Editor/Id', 'Editor/Title', 'SelectedPlatforms', 'Result', 'CandidateStaffID', 'ActiveInterv', 'Status0', 'IsFavorite', 'CandidateName', 'SkillRatings', 'Positions/Id', 'Positions/Title', 'Platform', 'IsFavorite', 'PhoneNumber', 'Email', 'Experience', 'Current_x0020_Company', 'Date', 'CurrentCTC', 'ExpectedCTC', 'NoticePeriod', 'CurrentLocation', 'DateOfJoining', 'HRNAME')
+                .expand('Positions', 'Editor', 'Author').get().then((data: any) => {
                     if (data.SkillRatings !== null || data.SkillRatings !== undefined) {
                         const ratings = JSON.parse(data.SkillRatings)
                         setLocalRatings(ratings)
@@ -86,9 +86,12 @@ const Profilcandidate = (props: any) => {
     const EditPopupClose = () => {
         setIsEditPopupOpen(false);
     };
+    const callbackEdit = (Id:any) => {
+        EmployeeDetails(Id)
+    }
     return (
         <myContextValue.Provider value={{ ...myContextValue, allSite: allSite, allListId: allListId, loggedInUserName: props.props?.userDisplayName }}>
-            {isEditPopupOpen ? <EditPopup EditPopupClose={EditPopupClose} item={selectedItem} ListID={'298bc01c-710d-400e-bf48-8604d297c3c6'} /> : ''}
+            {isEditPopupOpen ? <EditPopup EditPopupClose={EditPopupClose} callbackEdit={callbackEdit} item={selectedItem} ListID={'298bc01c-710d-400e-bf48-8604d297c3c6'} /> : ''}
             <div className='alignCenter border-bottom pb-2'>
                 <div>
                     <img className='user-dp' src={EmployeeData?.Item_x0020_Cover?.Url != undefined ? EmployeeData?.Item_x0020_Cover?.Url : "https://hhhhteams.sharepoint.com/sites/HHHH/GmBH/SiteCollectionImages/ICONS/32/icon_user.jpg"} />

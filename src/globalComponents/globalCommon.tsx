@@ -755,7 +755,6 @@ export const loadAllTaskUsers = async (AllListId: any) => {
     return taskUser;
 }
 export const loadSmartMetadata = async (AllListId: any, TaxType: any) => {
-
     let metadata;
     try {
         let web = new Web(AllListId?.siteUrl);
@@ -764,7 +763,7 @@ export const loadSmartMetadata = async (AllListId: any, TaxType: any) => {
             .items
             .select("Id,IsVisible,ParentID,Title,SmartSuggestions,Configurations,TaxType,Item_x005F_x0020_Cover,Color_x0020_Tag,listId,siteName,siteUrl,SortOrder,SmartFilters,Selectable,Parent/Id,Parent/Title")
             .expand('Parent')
-            .get();
+            .getAll();
     }
     catch (error) {
         return Promise.reject(error);
