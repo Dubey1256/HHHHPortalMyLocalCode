@@ -3,7 +3,6 @@ import { Web } from 'sp-pnp-js';
 import GlobalCommanTable from '../../../globalComponents/GroupByReactTableComponents/GlobalCommanTable';
 import { ColumnDef } from '@tanstack/react-table';
 import EditDocument from './EditDocunentPanel'
-
 import moment from 'moment';
 var TaskUser: any = []
 export default function DocumentSearchPage(Props: any) {
@@ -132,12 +131,12 @@ export default function DocumentSearchPage(Props: any) {
             accessorKey: "FileLeafRef", placeholder: "Document Url", header: "", id: "FileLeafRef",
             cell: ({ row }) => (
                 <div className='alignCenter '>
-                    {row?.original?.File_x0020_Type != 'msg' && row?.original?.File_x0020_Type != 'docx' && row?.original?.File_x0020_Type != 'doc' && row?.original?.File_x0020_Type != 'rar' && row?.original?.File_x0020_Type != 'jpeg' && row?.original?.File_x0020_Type != 'jpg' && row?.original?.File_x0020_Type != 'aspx' && row?.original?.File_x0020_Type != 'jfif' && <span className={` svg__iconbox svg__icon--${row?.original?.File_x0020_Type}`}></span>}
-                    {row?.original?.File_x0020_Type == 'rar' && <span className="svg__iconbox svg__icon--zip "></span>}
-                    {row?.original?.File_x0020_Type == 'aspx' || row?.original?.File_x0020_Type == 'msg' || row?.original?.File_x0020_Type == 'apk' ? <span className=" svg__iconbox svg__icon--unknownFile "></span> : ''}
-                    {row?.original?.File_x0020_Type == 'jpeg' || row?.original?.File_x0020_Type == 'jpg' ? <span className=" svg__iconbox svg__icon--jpeg "></span> : ''}
-                    {row?.original?.File_x0020_Type == 'doc' || row?.original?.File_x0020_Type == 'docx' ? <span className=" svg__iconbox svg__icon--docx "></span> : ''}
-                    {row?.original?.File_x0020_Type == 'jfif' ? <span className=" svg__iconbox svg__icon--jpeg "></span> : ''}
+                    {row?.original?.File_x0020_Type != 'msg' && row?.original?.File_x0020_Type != 'docx' && row?.original?.File_x0020_Type != 'doc' && row?.original?.File_x0020_Type != 'rar' && row?.original?.File_x0020_Type != 'jpeg' && row?.original?.File_x0020_Type != 'jpg' && row?.original?.File_x0020_Type != 'aspx' && row?.original?.File_x0020_Type != 'jfif' && <span title={`${row?.original?.File_x0020_Type}`} className={` svg__iconbox svg__icon--${row?.original?.File_x0020_Type}`}></span>}
+                    {row?.original?.File_x0020_Type == 'rar' && <span title={`${row?.original?.File_x0020_Type}`} className="svg__iconbox svg__icon--zip "></span>}
+                    {row?.original?.File_x0020_Type == 'aspx' || row?.original?.File_x0020_Type == 'msg' ? <span title={`${row?.original?.File_x0020_Type}`} className=" svg__iconbox svg__icon--unknownFile "></span> : ''}
+                    {row?.original?.File_x0020_Type == 'jpeg' || row?.original?.File_x0020_Type == 'jpg' ? <span title={`${row?.original?.File_x0020_Type}`} className=" svg__iconbox svg__icon--jpeg "></span> : ''}
+                    {row?.original?.File_x0020_Type == 'doc' || row?.original?.File_x0020_Type == 'docx' ? <span title={`${row?.original?.File_x0020_Type}`} className=" svg__iconbox svg__icon--docx "></span> : ''}
+                    {row?.original?.File_x0020_Type == 'jfif' ? <span title={`${row?.original?.File_x0020_Type}`} className=" svg__iconbox svg__icon--jpeg "></span> : ''}
                     <a className='ms-1 wid90' target="_blank" data-interception="off" href={`${row?.original?.EncodedAbsUrl}?web=1`}> {row?.original?.FileLeafRef} </a>
                 </div>
             ),
