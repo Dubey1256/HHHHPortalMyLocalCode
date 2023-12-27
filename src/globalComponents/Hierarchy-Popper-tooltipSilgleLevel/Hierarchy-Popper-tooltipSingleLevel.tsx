@@ -47,7 +47,7 @@ export const getTooltiphierarchyWithoutGroupByTable = (row: any, completeTitle: 
 let scrollToolitem: any = false
 let pageName: any = 'hierarchyPopperToolTip'
 
-export default function ReactPopperTooltipSingleLevel({ ShareWebId, row, masterTaskData, AllSitesTaskData, AllListId }: any) {
+export default function ReactPopperTooltipSingleLevel({ ShareWebId, row, masterTaskData, AllSitesTaskData, AllListId , onclickPopup }: any) {
     AllMatsterAndTaskData = [...masterTaskData];
     AllMatsterAndTaskData = AllMatsterAndTaskData?.concat(AllSitesTaskData);
     const [controlledVisible, setControlledVisible] = React.useState(false);
@@ -55,7 +55,11 @@ export default function ReactPopperTooltipSingleLevel({ ShareWebId, row, masterT
     const [hoverOverInfo, setHoverOverInfo] = React.useState("");
     const [openActivity, setOpenActivity] = React.useState(false);
     const [openWS, setOpenWS] = React.useState(false);
-
+    React.useEffect(() => {
+        if(row?.TaskID==undefined||row?.TaskID==null && (row?.TaskId!=undefined&&row?.TaskId!=null)){
+            row.TaskID=row?.TaskId
+        }
+    }, [])
     const {
         getArrowProps,
         getTooltipProps,
@@ -71,10 +75,16 @@ export default function ReactPopperTooltipSingleLevel({ ShareWebId, row, masterT
         onVisibleChange: setControlledVisible,
     });
 
-    const handlAction = (newAction: any) => {
-        if (newAction === "click" && newAction === "hover") return;
-        setAction(newAction);
-        setControlledVisible(true);
+     const handlAction = (newAction: any) => {
+        if(onclickPopup!=false&& newAction === "hover"){
+            if ( newAction === "hover") return;
+            setAction(newAction);
+            setControlledVisible(true);
+        }else{
+            if (newAction === "click" && newAction === "hover") return;
+            setAction(newAction);
+            setControlledVisible(true);
+        }
     };
 
     const handleMouseLeave = () => {

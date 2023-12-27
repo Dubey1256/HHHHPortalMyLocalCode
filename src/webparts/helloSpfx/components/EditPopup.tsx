@@ -6,7 +6,7 @@ import { Panel, PrimaryButton, TextField, Dropdown, PanelType } from 'office-ui-
 import * as React from 'react';
 import { Item, sp, Web } from 'sp-pnp-js';
 import Moment from "moment";
-import styles from './HelloSpfx.module.scss';
+//import styles from './HelloSpfx.module.scss';
 import HtmlEditorCard from './FloraCommentBox';
 import { useEffect, useState } from 'react';
 import StarRating from './StarRating';
@@ -17,7 +17,9 @@ import moment from 'moment-timezone';
 const skillArray: any[] = [];
 let EmployeeData: any;
 const HRweb = new Web('https://hhhhteams.sharepoint.com/sites/HHHH/HR');
+let count = 0
 const EditPopup = (props: any) => {
+    count++
     const [CandidateTitle, setCandidateTitle] = useState(props.item.CandidateName);
     const [Email, setEmail] = useState(props.item.Email);
     const [PhoneNumber, setPhoneNumber] = useState(props.item.PhoneNumber);
@@ -28,37 +30,50 @@ const EditPopup = (props: any) => {
     const [CreateContactStatus, setCreateContactStatus] = useState(false)
     const star = props.item.IsFavorite ? '⭐' : '';
     const Status = ['New Candidate', 'Under Consideration', 'Interview', 'Negotiation', 'Hired', 'Rejected'];
-    const [platformChoices, setPlatformChoices] = useState([
-        { name: 'Indeed', selected: false },
-        { name: 'Agentur für Arbeit', selected: false },
-        { name: 'Jobcenter', selected: false },
-        { name: 'GesinesJobtipps', selected: false },
-        { name: 'Others', selected: false }
-    ]);
     const [Plats, setPlats] = useState<any[]>([]);
     const [localRatings, setLocalRatings] = useState(props.item?.ratings || []);
     const [TaggedDocuments, setTaggedDocuments] = useState<any[]>([]);
     const [showTextInput, setShowTextInput] = useState(false);
     const [otherChoice, setOtherChoice] = useState('');
     const [listData, setListData] = useState([]);
-
-    const handlePlatformClick = (e: any) => {
-        console.log(e)
-        //  console.log(item)
-        // setPlatformChoices((prevChoices) =>
-        //     prevChoices.map((platform) =>
-        //         platform.name === item.name ? { ...platform, selected: !platform.selected } : platform
-        //     )
-        // );
-        // setShowTextInput(item.selected);
+    const [platformChoices, setPlatformChoices] = useState([
+        { name: 'Indeed', selected: false },
+        { name: 'Agentur für Arbeit', selected: false },
+        { name: 'Jobcenter', selected: false },
+        { name: 'GesinesJobtipps', selected: false },
+        { name: 'Linkedin', selected: false },
+        { name: 'Naukri', selected: false },
+        { name: 'Others', selected: false }
+    ]);
+    const handlePlatformClick = (e: any, platform: any) => {
+        const updatedChoices = platformChoices.map((item) =>
+            item.name === platform.name ? { ...item, selected: e.target.checked } : item
+        );
+        setPlatformChoices(updatedChoices);
     };
+
+    // const handlePlatformClick = (item: any) => {
+    //      console.log(item)
+    //     setPlatformChoices((prevChoices) =>
+    //         prevChoices.map((platform) =>
+    //             platform.name === item.name ? { ...platform, selected: !platform.selected } : platform
+    //         )
+    //     );
+    //     setShowTextInput(item.selected);
+    // };
 
     // eslint-disable-next-line @typescript-eslint/explicit-function-return-type
     const handleOtherChoiceChange = (event: { target: { value: React.SetStateAction<string>; }; }) => {
         setOtherChoice(event.target.value);
     };
+    if (count == 1 && props.item.Platform != undefined && props.item.Platform != null && props.item.Platform.length != undefined && props.item.Platform.length > 0) {
+        platformChoices.forEach((item) => {
+            item.selected = props.item.Platform.some((i: any) => item.name === i);
+        });
+        setPlatformChoices(platformChoices)
+    }
     // eslint-disable-next-line eqeqeq
-    if (props.item.SelectedPlatforms !== '') {
+    if (props.item.SelectedPlatforms !== '' && props.item.SelectedPlatforms !== '[]') {
         const selectedPlatforms = JSON.parse(props.item.SelectedPlatforms);
 
         useEffect(() => {
@@ -115,14 +130,16 @@ const EditPopup = (props: any) => {
     if (props.item.SkillRatings != '') {
         const SkillRatingsdata = JSON.parse(props.item.SkillRatings);
     }
- 
+
     const onClose = () => {
+        count = 0
         props.EditPopupClose();
     }
     const handleEditSave = async () => {
         let updateData
         try {
             const skillRatingsJson = JSON.stringify(localRatings);
+            const selectedPlatforms = platformChoices.filter((item) => item.selected).map((item) => item.name);
             updateData = {
 
                 Title: CandidateTitle,
@@ -133,6 +150,7 @@ const EditPopup = (props: any) => {
                 Remarks: overAllRemark,
                 Status0: selectedStatus,
                 Motivation: Motivation,
+                Platform: { results: selectedPlatforms },
                 SkillRatings: skillRatingsJson
 
             }
@@ -148,9 +166,10 @@ const EditPopup = (props: any) => {
             // Handle errors here
         } finally {
             if (selectedStatus == "Hired") {
-
-
+                count = 0
+                props.EditPopupClose()
             } else {
+                count = 0
                 props.EditPopupClose(); // Close the edit popup after saving or if there's an error
             }
 
@@ -224,6 +243,7 @@ const EditPopup = (props: any) => {
     const HtmlEditorCallBack = React.useCallback((EditorData: any) => {
         if (EditorData.length > 8) {
             props.item.Motivation = EditorData;
+            setMotivation(props.item.Motivation)
         }
     }, [])
     const setRatings = (index: number, selectedRating: number) => {
@@ -232,14 +252,20 @@ const EditPopup = (props: any) => {
         setLocalRatings(updatedRatings);
     };
     const removeDocuments = async (libraryTitle: string, documentId: number) => {
-        try {
-            // Get the document library by title
-            const list = HRweb.lists.getByTitle('Documents');
-            await list.items.getById(documentId).delete();
-            console.log(`Document with ID ${documentId} removed successfully from ${libraryTitle}.`);
-        } catch (error) {
-            console.error('Error removing document:', error);
+        const confirmDelete = window.confirm("Are you sure you want to delete this document?");
+        if (confirmDelete) {
+            try {
+                await HRweb.lists.getByTitle('Documents').items.getById(documentId).recycle()
+                console.log(`Document with ID ${documentId} removed successfully.`);
+                const UpdateTaggedDocument = TaggedDocuments.filter((item: any) => item.Id != documentId)
+                setTaggedDocuments(UpdateTaggedDocument);
+            } catch (error) {
+                console.error('Error removing document:', error);
+            }
+        } else {
+            alert("Deletion canceled.");
         }
+
     };
     const delItem = (itm: any) => {
         const confirmDelete = window.confirm("Are you sure you want to delete this item?");
@@ -324,7 +350,7 @@ const EditPopup = (props: any) => {
                                             type="checkbox"
                                             className="cursor-pointer form-check-input me-1"
                                             defaultChecked={item.selected}
-                                            onChange={(e) => handlePlatformClick(e)}
+                                            onChange={(e) => handlePlatformClick(e, item)}
                                         />
                                         {item.name}
                                     </label>
@@ -454,7 +480,7 @@ const EditPopup = (props: any) => {
                 </div>
             </div>
             <footer className="bg-f4 fixed-bottom px-4 py-2">
-                <div className="align-items-center d-flex justify-content-between me-3 px-4 py-2">
+                <div className="align-items-center d-flex justify-content-between me-3">
                     <div>
                         <div className="">
                             Created{" "}
@@ -493,10 +519,10 @@ const EditPopup = (props: any) => {
                             </a>
                         </div>
                     </div>
-                </div>
-                <div className="float-end text-end">
-                    <button onClick={handleEditSave} type='button' className='btn btn-primary'>Save</button>
-                    <button onClick={onClose} type='button' className='btn btn-default ms-1'>Cancel</button>
+                    <div className="float-end text-end">
+                        <button onClick={handleEditSave} type='button' className='btn btn-primary'>Save</button>
+                        <button onClick={onClose} type='button' className='btn btn-default ms-1'>Cancel</button>
+                    </div>
                 </div>
             </footer>
             {CreateContactStatus ? <CreateContactComponent callBack={ClosePopup} data={EmployeeData} pageName={"Recruiting-Tool"} /> : null}

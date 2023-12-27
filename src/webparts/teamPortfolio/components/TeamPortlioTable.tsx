@@ -347,10 +347,11 @@ function TeamPortlioTable(SelectedProp: any) {
                             result.descriptionsSearch = '';
                             result.commentsSearch = '';
                             result.timeSheetsDescriptionSearch = '';
-                            result.SmartPriority = '';
+                            result.SmartPriority;
                             result.TaskTypeValue = '';
                             result.projectPriorityOnHover = '';
                             result.taskPriorityOnHover = result?.PriorityRank;
+                            result.showFormulaOnHover;
                             result.portfolioItemsSearch = ''
                             if (result?.DueDate != null && result?.DueDate != undefined) {
                                 result.serverDueDate = new Date(result?.DueDate).setHours(0, 0, 0, 0)
@@ -491,11 +492,8 @@ function TeamPortlioTable(SelectedProp: any) {
                                 if (result?.projectStructerId && title || formattedDueDate) {
                                     result.joinedData.push(`Project ${result?.projectStructerId} - ${title}  ${formattedDueDate == "Invalid date" ? '' : formattedDueDate}`)
                                 }
-                                result.SmartPriority = globalCommon.calculateSmartPriority(result, ProjectData);
-                            } else {
-                                result.projectPriorityOnHover = 1;
-                                result.SmartPriority = globalCommon.calculateSmartPriority(result, '');
                             }
+                            result.SmartPriority = globalCommon.calculateSmartPriority(result);
                             result["Item_x0020_Type"] = "Task";
                             TasksItem.push(result);
                             AllSiteTasksDataBackGroundLoad.push(result)
@@ -584,10 +582,11 @@ function TeamPortlioTable(SelectedProp: any) {
                             result.descriptionsSearch = '';
                             result.commentsSearch = '';
                             result.timeSheetsDescriptionSearch = '';
-                            result.SmartPriority = '';
+                            result.SmartPriority;
                             result.TaskTypeValue = '';
                             result.projectPriorityOnHover = '';
                             result.taskPriorityOnHover = result?.PriorityRank;
+                            result.showFormulaOnHover;
                             result.portfolioItemsSearch = ''
                             if (result?.DueDate != null && result?.DueDate != undefined) {
                                 result.serverDueDate = new Date(result?.DueDate).setHours(0, 0, 0, 0)
@@ -729,14 +728,12 @@ function TeamPortlioTable(SelectedProp: any) {
                                 if (result?.projectStructerId && title || formattedDueDate) {
                                     result.joinedData.push(`Project ${result?.projectStructerId} - ${title}  ${formattedDueDate == "Invalid date" ? '' : formattedDueDate}`)
                                 }
-                                result.SmartPriority = globalCommon.calculateSmartPriority(result, ProjectData);
-                            } else {
-                                result.projectPriorityOnHover = 1;
-                                result.SmartPriority = globalCommon.calculateSmartPriority(result, '');
+                                
                             }
+                            result.SmartPriority = globalCommon.calculateSmartPriority(result);
                             result["Item_x0020_Type"] = "Task";
                             TasksItem.push(result);
-                            AllTasksData.push(result)
+                            AllTasksData.push(result);
                         });
                         setAllSiteTasksData(AllTasksData);
                         // let taskBackup = JSON.parse(JSON.stringify(AllTasksData));
@@ -782,7 +779,7 @@ function TeamPortlioTable(SelectedProp: any) {
             result["siteType"] = "Master Tasks";
             result.AllTeamName = "";
             result.descriptionsSearch = '';
-            result.SmartPriority = '';
+            result.SmartPriority;
             result.commentsSearch = '';
             result.TaskTypeValue = '';
             result.timeSheetsDescriptionSearch = '';
@@ -1740,7 +1737,7 @@ function TeamPortlioTable(SelectedProp: any) {
             {
                 accessorFn: (row) => row?.SmartPriority,
                 cell: ({ row }) => (
-                    <div className="text-center boldClable" title={`((TaskPriority : ${row?.original?.taskPriorityOnHover}) + (ProjectPriority : ${row?.original?.projectPriorityOnHover} * 4)) / 5`}>{row?.original?.SmartPriority}</div>
+                    <div className="text-center boldClable" title={row?.original?.showFormulaOnHover}>{row?.original?.SmartPriority}</div>
                 ),
                 id: "SmartPriority",
                 placeholder: "SmartPriority",
@@ -2487,4 +2484,3 @@ function TeamPortlioTable(SelectedProp: any) {
     );
 }
 export default TeamPortlioTable;
-

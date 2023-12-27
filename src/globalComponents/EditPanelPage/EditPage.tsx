@@ -27,7 +27,7 @@ var match = currentUrl.match(/\/([^/]+\.aspx)(\?.*)?$/);
 var valueAfterLastSlash = match ? match[1] : null;
   let web = new Web(props?.context?.siteUrl);
   
-  let whereClause = `FileLeafRef eq '${valueAfterLastSlash}' and IsStatic eq 1`;
+  let whereClause = `FileLeafRef eq '${valueAfterLastSlash}'`;
   
   try {
      await web.lists
