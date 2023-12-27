@@ -252,12 +252,20 @@ const EditPopup = (props: any) => {
         setLocalRatings(updatedRatings);
     };
     const removeDocuments = async (libraryTitle: string, documentId: number) => {
-        try {
-            await HRweb.lists.getByTitle('Documents').items.getById(documentId).delete();
-            console.log(`Document with ID ${documentId} removed successfully.`);
-        } catch (error) {
-            console.error('Error removing document:', error);
+        const confirmDelete = window.confirm("Are you sure you want to delete this document?");
+        if (confirmDelete) {
+            try {
+                await HRweb.lists.getByTitle('Documents').items.getById(documentId).recycle()
+                console.log(`Document with ID ${documentId} removed successfully.`);
+                const UpdateTaggedDocument = TaggedDocuments.filter((item: any) => item.Id != documentId)
+                setTaggedDocuments(UpdateTaggedDocument);
+            } catch (error) {
+                console.error('Error removing document:', error);
+            }
+        } else {
+            alert("Deletion canceled.");
         }
+
     };
     const delItem = (itm: any) => {
         const confirmDelete = window.confirm("Are you sure you want to delete this item?");
