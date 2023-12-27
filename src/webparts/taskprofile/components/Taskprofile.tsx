@@ -59,8 +59,8 @@ var changespercentage = false;
 var buttonId: any;
 let truncatedTitle: any
 let comments: any = []
-let AllClientCategories:any;
-let project: any = []
+let AllClientCategories: any;
+let ProjectData: any = {}
 export interface ITaskprofileState {
   Result: any;
   listName: string;
@@ -205,16 +205,16 @@ class Taskprofile extends React.Component<ITaskprofileProps, ITaskprofileState> 
 
   private GetAllComponentAndServiceData = async (ComponentType: any) => {
     let PropsObject: any = {
-        MasterTaskListID: this.props?.MasterTaskListID,
-        siteUrl: this.props?.siteUrl,
-        ComponentType: ComponentType,
-        TaskUserListId: this.props?.TaskUsertListID,
+      MasterTaskListID: this.props?.MasterTaskListID,
+      siteUrl: this.props?.siteUrl,
+      ComponentType: ComponentType,
+      TaskUserListId: this.props?.TaskUsertListID,
     };
     let CallBackData = await globalCommon.GetServiceAndComponentAllData(PropsObject)
-      if (CallBackData?.AllData != undefined && CallBackData?.AllData?.length > 0) {
-        this.masterTaskData = this.masterTaskData?.concat([...CallBackData?.FlatProjectData, ...CallBackData?.AllData])
-        this.GetResult();
-      }
+    if (CallBackData?.AllData != undefined && CallBackData?.AllData?.length > 0) {
+      this.masterTaskData = this.masterTaskData?.concat([...CallBackData?.FlatProjectData, ...CallBackData?.AllData])
+      this.GetResult();
+    }
   }
 
 
@@ -264,8 +264,8 @@ class Taskprofile extends React.Component<ITaskprofileProps, ITaskprofileState> 
       .getByTitle(this.state?.listName)
       .items
       .getById(this.state?.itemID)
-      .select("ID", "Title", "Comments", "ApproverHistory","Approvee/Id","Approvee/Title", "EstimatedTime", "SiteCompositionSettings","TaskID", "Portfolio/Id", "Portfolio/Title", "Portfolio/PortfolioStructureID", "DueDate", "IsTodaysTask", 'EstimatedTimeDescription', "Approver/Id", "PriorityRank","Approver/Title", "ParentTask/Id", "ParentTask/TaskID", "Project/Id", "Project/Title","Project/PortfolioStructureID", "ParentTask/Title", "SmartInformation/Id", "AssignedTo/Id", "TaskLevel", "TaskLevel", "OffshoreComments", "AssignedTo/Title", "OffshoreImageUrl", "TaskCategories/Id", "TaskCategories/Title", "ClientCategory/Id", "ClientCategory/Title", "Status", "StartDate", "CompletedDate", "TeamMembers/Title", "TeamMembers/Id", "ItemRank", "PercentComplete", "Priority", "Created", "Author/Title", "Author/EMail", "BasicImageInfo", "ComponentLink", "FeedBack", "ResponsibleTeam/Title", "ResponsibleTeam/Id", "TaskType/Title", "ClientTime", "Editor/Title", "Modified", "Attachments", "AttachmentFiles")
-      .expand("TeamMembers", "Project", "Approver","Approvee", "ParentTask", "Portfolio", "SmartInformation", "AssignedTo", "TaskCategories", "Author", "ClientCategory", "ResponsibleTeam", "TaskType", "Editor", "AttachmentFiles")
+      .select("ID", "Title", "Comments", "ApproverHistory", "Approvee/Id", "Approvee/Title", "EstimatedTime", "SiteCompositionSettings", "TaskID", "Portfolio/Id", "Portfolio/Title", "Portfolio/PortfolioStructureID", "DueDate", "IsTodaysTask", 'EstimatedTimeDescription', "Approver/Id", "PriorityRank", "Approver/Title", "ParentTask/Id", "ParentTask/TaskID", "Project/Id", "Project/Title", "Project/PortfolioStructureID", "ParentTask/Title", "SmartInformation/Id", "AssignedTo/Id", "TaskLevel", "TaskLevel", "OffshoreComments", "AssignedTo/Title", "OffshoreImageUrl", "TaskCategories/Id", "TaskCategories/Title", "ClientCategory/Id", "ClientCategory/Title", "Status", "StartDate", "CompletedDate", "TeamMembers/Title", "TeamMembers/Id", "ItemRank", "PercentComplete", "Priority", "Created", "Author/Title", "Author/EMail", "BasicImageInfo", "ComponentLink", "FeedBack", "ResponsibleTeam/Title", "ResponsibleTeam/Id", "TaskType/Title", "ClientTime", "Editor/Title", "Modified", "Attachments", "AttachmentFiles")
+      .expand("TeamMembers", "Project", "Approver", "Approvee", "ParentTask", "Portfolio", "SmartInformation", "AssignedTo", "TaskCategories", "Author", "ClientCategory", "ResponsibleTeam", "TaskType", "Editor", "AttachmentFiles")
       .get()
     AllListId = {
       MasterTaskListID: this.props.MasterTaskListID,
@@ -362,7 +362,7 @@ class Taskprofile extends React.Component<ITaskprofileProps, ITaskprofileState> 
     }
 
     if (taskDetails?.Project != undefined) {
-      project = this.masterTaskData.filter((items: any) => items?.Id == taskDetails?.Project?.Id)
+      ProjectData = this.masterTaskData?.find((items: any) => items?.Id == taskDetails?.Project?.Id)
     }
     let feedBackData: any = JSON.parse(taskDetails["FeedBack"]);
     console.log(this.masterTaskData)
@@ -372,8 +372,8 @@ class Taskprofile extends React.Component<ITaskprofileProps, ITaskprofileState> 
       Comments: comments != null && comments != undefined ? comments : "",
       Id: taskDetails["ID"],
       ID: taskDetails["ID"],
-      Approvee: taskDetails?.Approvee != undefined ?  this.taskUsers.find((userData:any)=>userData?.AssingedToUser?.Id==taskDetails?.Approvee?.Id): "",
-      TaskCategories:taskDetails["TaskCategories"],
+      Approvee: taskDetails?.Approvee != undefined ? this.taskUsers.find((userData: any) => userData?.AssingedToUser?.Id == taskDetails?.Approvee?.Id) : undefined,
+      TaskCategories: taskDetails["TaskCategories"],
       Project: taskDetails["Project"],
       IsTodaysTask: taskDetails["IsTodaysTask"],
       PriorityRank: taskDetails["PriorityRank"],
@@ -493,66 +493,80 @@ class Taskprofile extends React.Component<ITaskprofileProps, ITaskprofileState> 
     }
   }
   private GetAllImages(BasicImageInfo: any, AttachmentFiles: any, Attachments: any) {
-    let ImagesInfo: any = [];
-    let arrangedArray: any = []
-    if (Attachments) {
+    // let ImagesInfo: any = [];
+    // let arrangedArray: any = []
+    // if (Attachments) {
 
-      AttachmentFiles?.map((items: any) => {
-        var regex = items?.FileName?.substring(0, 20);
-        items.newFileName = regex;
+    //   AttachmentFiles?.map((items: any) => {
+    //     var regex = items?.FileName?.substring(0, 20);
+    //     items.newFileName = regex;
+    //   })
+    //   // AttachmentFiles?.sort(this.sortAlphaNumericAscending)
+    //   if (AttachmentFiles.length > 9) {
+    //     arrangedArray = AttachmentFiles.slice(AttachmentFiles?.length - 9).concat(AttachmentFiles.slice(0, AttachmentFiles?.length - 9));
+    //   } else {
+    //     arrangedArray = AttachmentFiles
+    //   }
+
+    //   arrangedArray?.forEach(function (Attach: any) {
+    //     let attachdata: any = [];
+    //     if (BasicImageInfo != null || BasicImageInfo != undefined) {
+    //       attachdata = BasicImageInfo?.filter(function (ingInfo: any, i: any) {
+    //         return ingInfo.ImageName == Attach?.FileName
+    //       });
+    //     }
+    //     if (attachdata.length > 0) {
+    //       BasicImageInfo?.forEach(function (item: any) {
+    //         if (item?.ImageUrl != undefined && item?.ImageUrl != "") {
+    //           item.ImageUrl = item?.ImageUrl?.replace(
+    //             "https://www.hochhuth-consulting.de",
+    //             "https://hhhhteams.sharepoint.com/sites/HHHH"
+    //           );
+    //         }
+
+    //         if (item?.ImageName == Attach?.FileName) {
+    //           ImagesInfo.push({
+    //             ImageName: Attach?.FileName,
+    //             ImageUrl: item?.ImageUrl,
+    //             UploadeDate: item?.UploadeDate,
+    //             UserImage: item?.UserImage,
+    //             UserName: item?.UserName,
+    //             Description: item?.Description
+    //           })
+    //         }
+    //       })
+    //     }
+    //     if (attachdata?.length == 0) {
+    //       ImagesInfo.push({
+    //         ImageName: Attach?.FileName,
+    //         ImageUrl: Attach?.ServerRelativeUrl,
+    //         UploadeDate: '',
+    //         UserImage: null,
+    //         UserName: null
+    //       })
+    //     }
+
+
+    //   });
+
+    //   ImagesInfo = ImagesInfo;
+
+    // }
+    // return ImagesInfo;
+    if (BasicImageInfo?.length > 0) {
+      BasicImageInfo?.forEach(function (item: any) {
+        if (item?.ImageUrl != undefined && item?.ImageUrl != "") {
+          item.ImageUrl = item?.ImageUrl?.replace(
+            "https://www.hochhuth-consulting.de",
+            "https://hhhhteams.sharepoint.com/sites/HHHH"
+          );
+        }
       })
-      // AttachmentFiles?.sort(this.sortAlphaNumericAscending)
-      if (AttachmentFiles.length > 9) {
-        arrangedArray = AttachmentFiles.slice(AttachmentFiles?.length - 9).concat(AttachmentFiles.slice(0, AttachmentFiles?.length - 9));
-      } else {
-        arrangedArray = AttachmentFiles
-      }
-
-      arrangedArray?.forEach(function (Attach: any) {
-        let attachdata: any = [];
-        if (BasicImageInfo != null || BasicImageInfo != undefined) {
-          attachdata = BasicImageInfo?.filter(function (ingInfo: any, i: any) {
-            return ingInfo.ImageName == Attach?.FileName
-          });
-        }
-        if (attachdata.length > 0) {
-          BasicImageInfo?.forEach(function (item: any) {
-            if (item?.ImageUrl != undefined && item?.ImageUrl != "") {
-              item.ImageUrl = item?.ImageUrl?.replace(
-                "https://www.hochhuth-consulting.de",
-                "https://hhhhteams.sharepoint.com/sites/HHHH"
-              );
-            }
-
-            if (item?.ImageName == Attach?.FileName) {
-              ImagesInfo.push({
-                ImageName: Attach?.FileName,
-                ImageUrl: item?.ImageUrl,
-                UploadeDate: item?.UploadeDate,
-                UserImage: item?.UserImage,
-                UserName: item?.UserName,
-                Description: item?.Description
-              })
-            }
-          })
-        }
-        if (attachdata?.length == 0) {
-          ImagesInfo.push({
-            ImageName: Attach?.FileName,
-            ImageUrl: Attach?.ServerRelativeUrl,
-            UploadeDate: '',
-            UserImage: null,
-            UserName: null
-          })
-        }
-
-
-      });
-
-      ImagesInfo = ImagesInfo;
-
+      return BasicImageInfo
     }
-    return ImagesInfo;
+
+
+
   }
 
   private async GetTaskUsers(taskDetails: any) {
@@ -969,33 +983,33 @@ class Taskprofile extends React.Component<ITaskprofileProps, ITaskprofileState> 
       });
     } else {
       // data.PercentComplete = 2
-      let TeamMembers:any=[]
+      let TeamMembers: any = []
       TeamMembers.push(this.state.Result.TeamMembers[0]?.Id)
-      TeamMembers.push(this?.state.Result?.Approvee!=undefined? this?.state.Result?.Approvee?.AssingedToUser?.Id:this.state.Result?.Author[0]?.Id)
-      let changeData:any={
+      TeamMembers.push(this?.state.Result?.Approvee != undefined ? this?.state.Result?.Approvee?.AssingedToUser?.Id : this.state.Result?.Author[0]?.Id)
+      let changeData: any = {
 
-        TeamMembers:TeamMembers,
-        AssignedTo:[this?.state.Result?.Approvee!=undefined? this?.state.Result?.Approvee?.AssingedToUser?.Id:this.state.Result?.Author[0]?.Id]
+        TeamMembers: TeamMembers,
+        AssignedTo: [this?.state.Result?.Approvee != undefined ? this?.state.Result?.Approvee?.AssingedToUser?.Id : this.state.Result?.Author[0]?.Id]
       }
 
-     
-    this.ChangeApprovalMember(changeData).then((data:any)=>{
-      var data = this.state.Result;
-      this.setState({
-        Result: data,
-      }),
-        console.log(item);
-      this.setState({
-        sendMail: true,
+
+      this.ChangeApprovalMember(changeData).then((data: any) => {
+        var data = this.state.Result;
+        this.setState({
+          Result: data,
+        }),
+          console.log(item);
+        this.setState({
+          sendMail: true,
+        });
+        this.setState({
+          emailStatus: item,
+        });
+      }).catch((error) => {
+        console.log(error)
       });
-      this.setState({
-        emailStatus: item,
-      });
-    }).catch((error)=>{
-      console.log(error)
-    });
     }
-   
+
 
   }
   //================================ taskfeedbackcard===============
@@ -1387,30 +1401,30 @@ class Taskprofile extends React.Component<ITaskprofileProps, ITaskprofileState> 
         if (countApprove == 0) {
           let TeamMembers: any = []
           TeamMembers.push(this.state.Result.TeamMembers[0]?.Id)
-          TeamMembers.push(this?.state.Result?.Approvee!=undefined? this?.state.Result?.Approvee?.AssingedToUser?.Id:this.state.Result?.Author[0]?.Id)
-          let changeData:any={
+          TeamMembers.push(this?.state.Result?.Approvee != undefined ? this?.state.Result?.Approvee?.AssingedToUser?.Id : this.state.Result?.Author[0]?.Id)
+          let changeData: any = {
 
-            TeamMembers:TeamMembers,
-            AssignedTo:[this?.state.Result?.Approvee!=undefined? this?.state.Result?.Approvee?.AssingedToUser?.Id:this.state.Result?.Author[0]?.Id]
+            TeamMembers: TeamMembers,
+            AssignedTo: [this?.state.Result?.Approvee != undefined ? this?.state.Result?.Approvee?.AssingedToUser?.Id : this.state.Result?.Author[0]?.Id]
           }
           this.ChangeApprovalMember(changeData);
 
 
         }
-        if(countApprove==1){
-          let TeamMembers:any=[]
+        if (countApprove == 1) {
+          let TeamMembers: any = []
           TeamMembers.push(this.currentUser?.[0]?.Id)
-         
-          let changeData:any={
 
-            TeamMembers:TeamMembers,
-            AssignedTo:[this.currentUser?.[0]?.Id]
+          let changeData: any = {
+
+            TeamMembers: TeamMembers,
+            AssignedTo: [this.currentUser?.[0]?.Id]
           }
-        this.ChangeApprovalMember(changeData).then((data:any)=>{
-          this.GetResult();
-        }).catch((error:any)=>{
-          console.log(error)
-        });
+          this.ChangeApprovalMember(changeData).then((data: any) => {
+            this.GetResult();
+          }).catch((error: any) => {
+            console.log(error)
+          });
 
 
         }
@@ -1433,32 +1447,32 @@ class Taskprofile extends React.Component<ITaskprofileProps, ITaskprofileState> 
     }
   }
 
-  private ChangeApprovalMember= (changeData:any)=>{
+  private ChangeApprovalMember = (changeData: any) => {
     return new Promise<void>((resolve, reject) => {
       const web = new Web(this.props.siteUrl);
       web.lists.getByTitle(this.state.Result.listName)
-  
+
         .items.getById(this.state.Result.Id).update({
           TeamMembersId: {
-            results:changeData?.TeamMembers
-           
-        },
-        AssignedToId: {
-          results:changeData?.AssignedTo
-         
-      },
+            results: changeData?.TeamMembers
+
+          },
+          AssignedToId: {
+            results: changeData?.AssignedTo
+
+          },
           // TeamMembers: changeData?.TeamMembers,
           // AssignedTo: changeData?.AssignedTo,
         }).then((res: any) => {
           resolve(res)
-          console.log("team membersetsucessfully",res);
-             })
+          console.log("team membersetsucessfully", res);
+        })
         .catch((err: any) => {
           reject(err)
           console.log(err.message);
-        }); 
+        });
     })
-  
+
 
   }
   //================percentage changes ==========================
@@ -1817,13 +1831,7 @@ class Taskprofile extends React.Component<ITaskprofileProps, ITaskprofileState> 
         }
         this?.updateProjectComponentServices(dataUpdate)
       } else {
-        this.setState((prevState) => ({
-          Result: {
-            ...prevState.Result,
-            Project: DataItem[0],
-
-          }
-        }));
+        ProjectData = DataItem[0];
         if (DataItem[0]?.Item_x0020_Type == "Project" || DataItem[0]?.Item_x0020_Type == "Sprint") {
           dataUpdate = {
             ProjectId: DataItem[0]?.Id
@@ -1909,18 +1917,17 @@ class Taskprofile extends React.Component<ITaskprofileProps, ITaskprofileState> 
                       {this.state.Result["Portfolio"] != null && this.state.breadCrumData.length > 0 &&
                         <li >
                           {this.state.Result["Portfolio"] != null &&
-                            <a target="_blank" data-interception="off" href={`${this.state.Result["siteUrl"]}/SitePages/Team-Portfolio.aspx`}>Team Portfolio</a>
+                            <a className="fw-bold" style={{ color: this.state.Result["Portfolio"]?.PortfolioType?.Color }} target="_blank" data-interception="off" href={`${this.state.Result["siteUrl"]}/SitePages/Team-Portfolio.aspx`}>Team Portfolio</a>
                           }
 
                         </li>
                       }
                       {this.state.breadCrumData?.map((breadcrumbitem: any, index: any) => {
                         return <>
-                          {breadcrumbitem?.siteType == undefined && <li>
-
-                            <a target="_blank" data-interception="off" href={`${this.state.Result["siteUrl"]}/SitePages/Portfolio-Profile.aspx?taskId=${breadcrumbitem?.Id}`}>{breadcrumbitem?.Title}</a>
+                          {breadcrumbitem?.siteType == "Master Tasks" && <li>
+                            <a style={{ color: breadcrumbitem?.PortfolioType?.Color }} className="fw-bold" target="_blank" data-interception="off" href={`${this.state.Result["siteUrl"]}/SitePages/Portfolio-Profile.aspx?taskId=${breadcrumbitem?.Id}`}>{breadcrumbitem?.Title}</a>
                           </li>}
-                          {breadcrumbitem?.siteType != undefined && <li>
+                          {breadcrumbitem?.siteType != "Master Tasks" && <li>
 
                             <a target="_blank" data-interception="off" href={`${this.state.Result["siteUrl"]}/SitePages/Task-Profile.aspx?taskId=${breadcrumbitem?.Id}&Site=${breadcrumbitem?.siteType} `}>{breadcrumbitem?.Title}</a>
                           </li>}
@@ -2197,8 +2204,9 @@ class Taskprofile extends React.Component<ITaskprofileProps, ITaskprofileState> 
                         <dt className='bg-Fa'>Project</dt>
                         <dd className='bg-Ff full-width'>
                           <div>
-                    {this.state.Result["Project"] != undefined ? <a className="hreflink" target="_blank" data-interception="off" href={`${this.state.Result["siteUrl"]}/SitePages/Project-Management.aspx?ProjectId=${this.state.Result["Project"]?.Id}`}><span className='d-flex'><ReactPopperTooltipSingleLevel ShareWebId={`${project[0]?.PortfolioStructureID} - ${project[0]?.Title}`} row={project[0]} singleLevel={true} masterTaskData={this.masterTaskData} AllSitesTaskData={this.allDataOfTask} AllListId={AllListId} /></span></a> : null}
-                    <span className="pull-right svg__icon--editBox svg__iconbox" onClick={() => this?.openPortfolioPopupFunction("Project")}></span> 
+                            {ProjectData?.Title != undefined ? <a className="hreflink" target="_blank" data-interception="off" href={`${this.state.Result["siteUrl"]}/SitePages/Project-Management.aspx?ProjectId=${ProjectData?.Id}`}><span className='d-flex'>
+                              <ReactPopperTooltipSingleLevel ShareWebId={`${ProjectData?.PortfolioStructureID} - ${ProjectData?.Title}`} row={ProjectData} singleLevel={true} masterTaskData={this.masterTaskData} AllSitesTaskData={this.allDataOfTask} AllListId={AllListId} /></span></a> : null}
+                            <span className="pull-right svg__icon--editBox svg__iconbox" onClick={() => this?.openPortfolioPopupFunction("Project")}></span>
                           </div>
                         </dd>
                       </dl>
@@ -2283,7 +2291,7 @@ class Taskprofile extends React.Component<ITaskprofileProps, ITaskprofileState> 
                                 }
                               </div>
                             </div>
-                            <div className="boldClable border border-top-0 ps-2 py-1">
+                            <div className="spxdropdown-menu ps-2 py-1">
                               <span>Total Estimated Time : </span><span className="mx-1">{this.state.Result?.TotalEstimatedTime > 1 ? this.state.Result?.TotalEstimatedTime + " hours" : this.state.Result?.TotalEstimatedTime + " hour"} </span>
                             </div>
                           </div>
@@ -2304,7 +2312,7 @@ class Taskprofile extends React.Component<ITaskprofileProps, ITaskprofileState> 
                   <section>
                     <div className="col mt-2">
                       <div className="Taskaddcomment row">
-                        {this.state.Result["BasicImageInfo"] != null && this.state.Result["BasicImageInfo"].length > 0 &&
+                        {this.state.Result["BasicImageInfo"] != null && this.state.Result["BasicImageInfo"]?.length > 0 &&
                           <div className="bg-white col-sm-4 mt-2 p-0">
                             <label className='form-label full-width fw-semibold'>Images</label>
                             {this.state.Result["BasicImageInfo"] != null && this.state.Result["BasicImageInfo"]?.map((imgData: any, i: any) => {
@@ -2408,7 +2416,7 @@ class Taskprofile extends React.Component<ITaskprofileProps, ITaskprofileState> 
                                             </div>
                                             <div className='m-0'>
                                               <span className="d-block">
-                                                <a style={{ cursor: 'pointer' }} onClick={(e) => this.showhideCommentBox(i)}>Add Comment</a>
+                                                <a className="siteColor" style={{ cursor: 'pointer' }} onClick={(e) => this.showhideCommentBox(i)}>Add Comment</a>
                                               </span>
                                             </div>
                                           </div>
@@ -2572,7 +2580,7 @@ class Taskprofile extends React.Component<ITaskprofileProps, ITaskprofileState> 
                                               </div>
                                               <div className='m-0'>
                                                 <a className="d-block text-end">
-                                                  <a style={{ cursor: 'pointer' }}
+                                                  <a className='siteColor' style={{ cursor: 'pointer' }}
                                                     onClick={(e) => this.showhideCommentBoxOfSubText(j, i)}
                                                   >Add Comment</a>
                                                 </a>

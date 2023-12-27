@@ -4,9 +4,8 @@ import Tooltip from '../../../globalComponents/Tooltip';
 import { Button, Tabs, Tab } from 'react-bootstrap';
 import moment from 'moment';
 import { Web } from 'sp-pnp-js';
-import HtmlEditorCard from '../../helloSpfx/components/FloraCommentBox';
-import ImagetabFunction from '../../taskprofile/components/ImageTabComponent';
-
+import HtmlEditorCard from '../../../globalComponents/HtmlEditor/HtmlEditor';
+import ImagesC from '../../EditPopupFiles/Image';
 import ServiceComponentPortfolioPopup from '../../../globalComponents/EditTaskPopup/ServiceComponentPortfolioPopup';
 var portfolioItemColor: any = "";
 //import Mycontext from './RelevantDocuments'
@@ -224,16 +223,13 @@ const EditDocumentpanel = (props: any) => {
         isBlocking={false}
         className={servicespopup == true ? "serviepannelgreena" : "siteColor"}
       >
-
-
         <Tabs
           defaultActiveKey="BASICINFORMATION"
           transition={false}
           id="noanim-tab-example"
-          className="rounded-0"
+          className=""
           onSelect={imageta}
         >
-
           <Tab eventKey="BASICINFORMATION" title="BASIC INFORMATION" className='p-0'>
 
             <div className='border border-top-0 p-2'>
@@ -281,7 +277,7 @@ const EditDocumentpanel = (props: any) => {
                   </label>
                   {allValue?.componentservicesetdataTag != undefined &&
                     <div className="d-flex justify-content-between block px-2 py-1" style={{ width: '85%' }}>
-                      <a target="_blank" data-interception="off" href="HHHH/SitePages/Portfolio-Profile.aspx?taskId=undefined">{allValue?.componentservicesetdataTag?.Title}</a>
+                      <a target="_blank" data-interception="off" href={`${props?.AllListId?.siteUrl}/SitePages/Portfolio-Profile.aspx?taskId=${allValue?.componentservicesetdataTag?.Id}`}>{allValue?.componentservicesetdataTag?.Title}</a>
                       <a>
                         <span title="Remove Component" onClick={() => unTaggedPortfolioItem()} className="bg-light svg__icon--cross svg__iconbox">
                         </span>
@@ -300,14 +296,12 @@ const EditDocumentpanel = (props: any) => {
           <Tab eventKey="IMAGEINFORMATION" title="IMAGE INFORMATION" className='p-0' >
             <div className='border border-top-0 p-2'>
 
-              {isOpenImageTab && <ImagetabFunction EditdocumentsData={EditdocumentsData} AllListId={props.AllListId} Context={props.Context} callBack={imageTabCallBack} />}
+              {isOpenImageTab && <ImagesC EditdocumentsData={EditdocumentsData} AllListId={props.AllListId} Context={props.Context} callBack={imageTabCallBack} />}
             </div>
           </Tab>
         </Tabs>
         <footer className='text-end mt-2'>
           <div className='col-sm-12 row m-0'>
-
-
             <div className="col-sm-6 text-lg-start">
               <div>
                 {console.log("footerdiv")}

@@ -28,10 +28,10 @@ let folders: any = [];
 let rootSiteName = '';
 let TaskTypes: any = [];
 let siteName: any = '';
-let tasktypecopy :any = ''
+let tasktypecopy: any = ''
 let generatedLocalPath = '';
-let TaskTypesItem:any = [];
-let temptasktype:any = '';
+let TaskTypesItem: any = [];
+let temptasktype: any = '';
 
 const itemRanks: any[] = [
     { rankTitle: 'Select Item Rank', rank: null },
@@ -51,9 +51,8 @@ const AncTool = (props: any) => {
     const [FileNamePopup, setFileNamePopup] = React.useState(false);
     const [ServicesTaskCheck, setServicesTaskCheck] = React.useState(false);
     const [uploadEmailModal, setUploadEmailModal] = React.useState(false);
-    const [TaskTypesPopup,setTaskTypesPopup] = React.useState(false);
-    const [isCheck,setisCheck] = React.useState(false);
-
+    const [TaskTypesPopup, setTaskTypesPopup] = React.useState(false);
+    const [SelectedItem, setSelectedItem] = React.useState<string>()
     // const [smartInfoModalIsOpen, setSmartInfoModalIsOpen] = React.useState(false);
     const [remark, setRemark] = React.useState(false)
     const [editSmartInfo, setEditSmartInfo] = React.useState(false)
@@ -82,19 +81,19 @@ const AncTool = (props: any) => {
     const [currentFolderFiles, setCurrentFolderFiles]: any = React.useState([]);
     const [ExistingFiles, setExistingFiles]: any = React.useState([]);
     const [AllReadytagged, setAllReadytagged]: any = React.useState([]);
-    
+
     React.useEffect(() => {
         GetSmartMetadata();
         siteUrl = props?.Context?.pageContext?.web?.absoluteUrl;
         if (props?.item != undefined) {
             setItem(props?.item)
-        }  
+        }
         temptasktype = props?.item?.Categories?.split(';');
-        if(temptasktype != undefined && temptasktype?.length > 0){
-            tasktypecopy = temptasktype[0]            
-        }                          
+        if (temptasktype != undefined && temptasktype?.length > 0) {
+            tasktypecopy = temptasktype[0]
+        }
         pathGenerator();
-        rootSiteName = props.Context.pageContext.site.absoluteUrl.split(props.Context.pageContext.site.serverRelativeUrl)[0];        
+        rootSiteName = props.Context.pageContext.site.absoluteUrl.split(props.Context.pageContext.site.serverRelativeUrl)[0];
     }, [])
     React.useEffect(() => {
         setTimeout(() => {
@@ -117,7 +116,7 @@ const AncTool = (props: any) => {
         siteName = params.get("Site");
         if ((siteName == undefined || siteName == '' || siteName?.length == 0) && props?.listName == "Master Tasks") {
             siteName = 'Portfolios'
-            props.item.TaskId =  props?.item?.PortfolioStructureID
+            props.item.TaskId = props?.item?.PortfolioStructureID
             setItem(props?.item)
         }
         if (siteName?.length > 0) {
@@ -132,15 +131,14 @@ const AncTool = (props: any) => {
                 generatedLocalPath = `/documents/Component-Portfolio/${props?.item?.Title}`
             }
         }
-        if(tasktypecopy != undefined && tasktypecopy != ''){
+        if (tasktypecopy != undefined && tasktypecopy != '') {
             var displayUrl = props?.Context?.pageContext?.web?.serverRelativeUrl + generatedLocalPath + '/' + tasktypecopy;
-            var internalPath = siteUrl + generatedLocalPath + '/' + tasktypecopy;            
+            var internalPath = siteUrl + generatedLocalPath + '/' + tasktypecopy;
         }
-        else{
+        else {
             var displayUrl = props?.Context?.pageContext?.web?.serverRelativeUrl + generatedLocalPath
-            var internalPath = siteUrl + generatedLocalPath;            
+            var internalPath = siteUrl + generatedLocalPath;
         }
-        
         setSelectedPath({
             ...selectedPath,
             displayPath: displayUrl,
@@ -152,20 +150,23 @@ const AncTool = (props: any) => {
         setAllFoldersGrouped(groupedFolders);
         setAllFilesAndFolder(allFiles);
         AllFilesAndFolderBackup = allFiles;
-        if(tasktypecopy != undefined && tasktypecopy != '')
-         checkFolderExistence(tasktypecopy, displayUrl);
+        if (tasktypecopy != undefined && tasktypecopy != '')
+            checkFolderExistence(tasktypecopy, displayUrl);
         else
-         checkFolderExistence(siteName, displayUrl);
+            checkFolderExistence(siteName, displayUrl);
     }
     const checkFolderExistence = (title: any, path: any) => {
         let currentPath: any = `${rootSiteName}${path}`;
-        AllFilesAndFolderBackup?.map((File: any) => {
-            if (File?.FileLeafRef == title && File?.FileSystemObjectType == 1 && File?.EncodedAbsUrl?.toLowerCase() == currentPath?.toLowerCase()) {
+        for (let File = 0; File < AllFilesAndFolderBackup.length; File++) {
+            if (AllFilesAndFolderBackup[File]?.FileLeafRef == title && AllFilesAndFolderBackup[File]?.FileSystemObjectType == 1 && AllFilesAndFolderBackup[File]?.EncodedAbsUrl?.toLowerCase() == currentPath?.toLowerCase()) {
                 setFolderExist(true)
+                break;
             }
-            else{
+            else {
                 setFolderExist(false);
             }
+        }
+        AllFilesAndFolderBackup?.map((File: any) => {
         })
     }
     const GetSmartMetadata = async () => {
@@ -266,7 +267,7 @@ const AncTool = (props: any) => {
                         file?.PortfoliosId?.push(Port?.Id)
                     })
                 }
-                
+
                 if (file[siteName] != undefined && file[siteName].length > 0 && file[siteName].some((task: any) => task.Id == props?.item?.Id)) {
                     alreadyTaggedFiles.push(file);
                 }
@@ -453,29 +454,29 @@ const AncTool = (props: any) => {
             link: '',
             size: ''
         }
-        let filetype='';
+        let filetype = '';
 
-        if (renamedFileName?.length > 0 && selectedFile.name?.length>0) {
-            filetype= getFileType(selectedFile != undefined ? selectedFile.name : uploadselectedFile.name)
-            fileName = renamedFileName+`.${filetype}`;
+        if (renamedFileName?.length > 0 && selectedFile.name?.length > 0) {
+            filetype = getFileType(selectedFile != undefined ? selectedFile.name : uploadselectedFile.name)
+            fileName = renamedFileName + `.${filetype}`;
         } else {
             fileName = selectedFile != undefined ? selectedFile.name : uploadselectedFile.name;
         }
         if (isFolderAvailable == false) {
             try {
-                if(tasktypecopy != undefined && tasktypecopy != ''){
+                if (tasktypecopy != undefined && tasktypecopy != '') {
                     await CreateFolder(`${props?.Context?.pageContext?.web?.serverRelativeUrl}${generatedLocalPath?.split(tasktypecopy)[0]}`, tasktypecopy).then((data: any) => {
                         isFolderAvailable = true
                         setFolderExist(true)
                     })
-    
+
                 }
-                else{
+                else {
                     await CreateFolder(`${props?.Context?.pageContext?.web?.serverRelativeUrl}${generatedLocalPath?.split(siteName)[0]}`, siteName).then((data: any) => {
                         isFolderAvailable = true
                         setFolderExist(true)
                     })
-                }               
+                }
 
             } catch (error) {
                 console.log('An error occurred while creating the folder:', error);
@@ -501,12 +502,12 @@ const AncTool = (props: any) => {
                         emailDoc = emailDoc.concat(selectedFile != undefined ? selectedFile : uploadselectedFile);
                         emailDoc = emailDoc.concat(msgfile.attachments);
                         emailDoc?.map((AttachFile: any, index: any) => {
-                            if(AttachFile?.extension?.toLowerCase()!=".png"&&AttachFile?.extension?.toLowerCase()!=".jpg"&&AttachFile?.extension?.toLowerCase()!=".jpeg"&&AttachFile?.extension?.toLowerCase()!=".svg"){
+                            if (AttachFile?.extension?.toLowerCase() != ".png" && AttachFile?.extension?.toLowerCase() != ".jpg" && AttachFile?.extension?.toLowerCase() != ".jpeg" && AttachFile?.extension?.toLowerCase() != ".svg") {
                                 attachmentFileIndex = index
-                              
-                                if (renamedFileName?.length > 0 && selectedFile.name?.length>0 && getFileType(selectedFile != undefined ? selectedFile.name : uploadselectedFile.name) == "msg" ) {
-                                    filetype= getFileType(selectedFile != undefined ? selectedFile.name : uploadselectedFile.name)
-                                    fileName = renamedFileName+`.${filetype}`;
+
+                                if (renamedFileName?.length > 0 && selectedFile.name?.length > 0 && getFileType(selectedFile != undefined ? selectedFile.name : uploadselectedFile.name) == "msg") {
+                                    filetype = getFileType(selectedFile != undefined ? selectedFile.name : uploadselectedFile.name)
+                                    fileName = renamedFileName + `.${filetype}`;
                                 } else {
                                     fileName = AttachFile.fileName != undefined ? AttachFile?.fileName : AttachFile?.name;
                                 }
@@ -696,7 +697,7 @@ const AncTool = (props: any) => {
             let PostData = {
                 [siteColName]: { "results": resultArray }
             }
-            if(siteColName!="PortfoliosId"){
+            if (siteColName != "PortfoliosId") {
                 PostData.PortfoliosId = { "results": file?.PortfoliosId != undefined ? file?.PortfoliosId : [] };
             }
             let web = new Web(props?.AllListId?.siteUrl);
@@ -755,19 +756,19 @@ const AncTool = (props: any) => {
         let fileName = ''
         if (isFolderAvailable == false) {
             try {
-                if(tasktypecopy != undefined && tasktypecopy != ''){
+                if (tasktypecopy != undefined && tasktypecopy != '') {
                     await CreateFolder(`${props?.Context?.pageContext?.web?.serverRelativeUrl}${generatedLocalPath?.split(tasktypecopy)[0]}`, tasktypecopy).then((data: any) => {
                         isFolderAvailable = true
                         setFolderExist(true)
                     })
                 }
-                else{
+                else {
                     await CreateFolder(`${props?.Context?.pageContext?.web?.serverRelativeUrl}${generatedLocalPath?.split(siteName)[0]}`, siteName).then((data: any) => {
                         isFolderAvailable = true
                         setFolderExist(true)
                     })
                 }
-                
+
 
             } catch (error) {
                 console.log('An error occurred while creating the folder:', error);
@@ -843,16 +844,16 @@ const AncTool = (props: any) => {
             return `${sizeInBytes} KB`;
         } else if (sizeInBytes < mbThreshold) {
             const sizeInKB = (sizeInBytes / kbThreshold)
-            if(!isNaN(sizeInKB)){
+            if (!isNaN(sizeInKB)) {
                 return `${sizeInKB.toFixed(2)} KB`;
-            }else{
+            } else {
                 return `128 KB`;
             }
         } else {
             const sizeInMB = (sizeInBytes / mbThreshold)
-            if(!isNaN(sizeInMB)){
+            if (!isNaN(sizeInMB)) {
                 return `${sizeInMB.toFixed(2)} MB`;
-            }else{
+            } else {
                 return `1.2 MB`;
             }
         }
@@ -878,15 +879,15 @@ const AncTool = (props: any) => {
     }
     const selectFolderToUpload = () => {
         const temp = selectPathFromPopup.split("/")
-        tasktypecopy = temp[temp.length -1]; 
+        tasktypecopy = temp[temp.length - 1];
         setSelectedPath({
             ...selectedPath,
             displayPath: selectPathFromPopup
-        }) 
-        if(isCheck)
-          checkFolderExistence(tasktypecopy, selectPathFromPopup);
+        })
+        if (selectPathFromPopup != undefined && selectPathFromPopup != '' && selectPathFromPopup?.length > 0)
+            checkFolderExistence(tasktypecopy, selectPathFromPopup);
         else
-          setFolderExist(true)                   
+            setFolderExist(true)
         setChoosePathPopup(false);
         showCreateFolderLocation(false);
         setTaskTypesPopup(false);
@@ -910,9 +911,9 @@ const AncTool = (props: any) => {
             return updatedFolders;
         });
     };
-    const setFolderPathFromPopup = (folderName: any) => {        
+    const setFolderPathFromPopup = (folderName: any) => {
         let selectedfolderName = folderName.split(rootSiteName)[1];
-        setSelectPathFromPopup(selectedfolderName === selectPathFromPopup ? '' : selectedfolderName);        
+        setSelectPathFromPopup(selectedfolderName === selectPathFromPopup ? '' : selectedfolderName);
     };
     const Folder = ({ folder, onToggle }: any) => {
         const hasChildren = folder.subRows && folder.subRows.length > 0;
@@ -923,7 +924,7 @@ const AncTool = (props: any) => {
 
         return (
             <li style={{ listStyle: 'none' }}>
-                <span className='d-flex' onClick={toggleExpand}>
+                <span className='d-flex ancsvgicos' onClick={toggleExpand}>
                     <span className='me-1'>
                         {hasChildren ? (
                             folder.isExpanded ? <SlArrowDown /> : <SlArrowRight />
@@ -951,7 +952,7 @@ const AncTool = (props: any) => {
 
             <div className="p-2 pb-0 px-4">
                 <div>
-                    <Row className='mb-1'><span className='highlighted'>{selectPathFromPopup?.length > 0 ? `${selectPathFromPopup}/` : ''}</span></Row>
+                    <Row className='mb-1'><span className='highlighted'>{selectPathFromPopup?.length > 0 ? `${selectPathFromPopup}` : ''}</span></Row>
                     {CreateFolderLocation ?
                         <Row>
                             <div className='col-md-9'><input type="text" className='form-control' placeholder='Folder Name' value={newSubFolderName} onChange={(e) => setNewSubFolderName(e.target.value)} /></div>
@@ -963,12 +964,12 @@ const AncTool = (props: any) => {
             <footer className='text-end p-2'>
 
                 {/* <label className='me-1'><input className='form-check-input' type='checkbox' /> Update Default Folder </label> */}
-                {selectPathFromPopup?.length > 0 && CreateFolderLocation != true ?
+                {/* {selectPathFromPopup?.length > 0 && CreateFolderLocation != true ?
                     <label className="text-end me-1">
                         <a className='hreflink btn btn-primary' onClick={() => showCreateFolderLocation(true)}>
                             Create Folder
                         </a>
-                    </label> : ''}
+                    </label> : ''} */}
                 <button className="btn btn-primary me-1" disabled={selectPathFromPopup?.length > 0 ? false : true} onClick={() => { selectFolderToUpload() }}>Select</button>
                 <button className='btn btn-default ' onClick={() => cancelPathFolder()}>Cancel</button>
             </footer>
@@ -1048,45 +1049,72 @@ const AncTool = (props: any) => {
     }
 
     //Task Types Popup
-        const openTaskTypesPopup = () =>{
-            setTaskTypesPopup(true);            
-            temptasktype.map((itm:any)=>{
-                if(itm != ''){                   
-                    TaskTypesItem.push(itm);
-                }                
-            })
-            
-        }       
-        const ChooseTaskTypesCustomHeader = () => {
-            return (   
-                <>
-                    <div className='subheading mb-0'>                        
-                        <span className="siteColor">
-                            Task Type
-                        </span>
-                    </div>
-                    <Tooltip />    
-                </>            
-            );
-        };
-        const changeTaskTypeValue = (itm:any)=>{            
-            if(selectedPath.displayPath.indexOf(itm.Title) == -1){                
+    const openTaskTypesPopup = () => {
+        let displayUrl;
+        TaskTypesItem = [];
+        setTaskTypesPopup(true);
+        temptasktype.map((itm: any, index: any) => {
+            if (itm != '') {
+                TaskTypesItem.push(itm);
+            }
+        })
+        if (TaskTypesItem != undefined && TaskTypesItem?.length > 0) {
+            if (selectedPath != undefined && selectedPath.displayPath != undefined && selectedPath.displayPath?.length > 0) {
+                displayUrl = props?.Context?.pageContext?.web?.serverRelativeUrl + generatedLocalPath + '/' + selectedPath.displayPath.split('/')[selectedPath.displayPath.split('/').length - 1];
+                let count = 0;
+                displayUrl = displayUrl.replace(new RegExp(`\\b${siteName}\\b`, 'gi'), match => {
+                    count++;
+                    return count === 1 ? match : '';
+                });
+                setSelectedItem(selectedPath.displayPath.split('/')[selectedPath.displayPath.split('/').length - 1])
+            } else {
+                displayUrl = props?.Context?.pageContext?.web?.serverRelativeUrl + generatedLocalPath + '/' + TaskTypesItem[0];
+                setSelectedItem(TaskTypesItem[0])
+            }
+            setSelectPathFromPopup(displayUrl)
+
+
+        }
+    }
+    const ChooseTaskTypesCustomHeader = () => {
+        return (
+            <>
+                <div className='subheading mb-0'>
+                    <span className="siteColor">
+                        Task Type
+                    </span>
+                </div>
+                <Tooltip />
+            </>
+        );
+    };
+    const changeTaskTypeValue = (checked: any, itm: any) => {
+        if (checked == true) {
+            if (selectedPath.displayPath.indexOf(itm.Title) == -1) {
                 var displayUrl = props?.Context?.pageContext?.web?.serverRelativeUrl + generatedLocalPath + '/' + itm
-                var internalPath = siteUrl + generatedLocalPath + '/' + itm;
-                // tasktypecopy = itm;                                
+                var internalPath = props?.Context?.pageContext?.web?.absoluteUrl + generatedLocalPath + '/' + itm;
+                tasktypecopy = itm;
                 setSelectedPath({
                     ...selectedPath,
                     displayPath: displayUrl,
                     completePath: internalPath
                 })
-                TaskTypesItem?.map((itm1:any)=>{
-                    if(itm == itm1){                        
-                        setisCheck(true);                                              
-                    }                    
-                })
-                setSelectPathFromPopup(displayUrl)                
-            }            
+                setSelectPathFromPopup(displayUrl)
+            }
+            setSelectedItem(itm)
         }
+        else {
+            tasktypecopy = '';
+            var displayUrl = props?.Context?.pageContext?.web?.serverRelativeUrl + generatedLocalPath
+            var internalPath = props?.Context?.pageContext?.web?.absoluteUrl + generatedLocalPath;
+            setSelectedPath({
+                ...selectedPath, displayPath: displayUrl, completePath: internalPath
+            })
+            setSelectedItem(null)
+            setSelectPathFromPopup('')
+        }
+
+    }
     // end
     // Add Link to Document And tag//
     const CreateLinkAndTag = async () => {
@@ -1323,30 +1351,36 @@ const AncTool = (props: any) => {
                                     </Col>
                                     <Col xs={6}>
                                         <div className='panel  mb-2'>
-                                            {selectPathFromPopup?.length > 0 ?
-                                                <h3 className='pageTitle'> Selected Folder <hr></hr> </h3>
-                                                : <h3 className='pageTitle'> Default Folder {temptasktype !== undefined && temptasktype?.length > 2 && <span className='alignIcon svg__iconbox svg__icon--setting' onClick={()=>openTaskTypesPopup()}></span>} <hr></hr> </h3>
-                                            }
+                                            {/* {selectPathFromPopup?.length > 0 ?
+                                                <h3 className='pageTitle'> Selected Folder  {temptasktype !== undefined && temptasktype?.length > 2 && <span className='alignIcon svg__iconbox svg__icon--setting' onClick={() => openTaskTypesPopup()}></span>} <hr></hr> </h3>
+                                                : <h3 className='pageTitle'> Default Folder   {temptasktype !== undefined && temptasktype?.length > 2 && <span className='alignIcon svg__iconbox svg__icon--setting' onClick={() => openTaskTypesPopup()}></span>}<hr></hr> </h3>
+                                            } */}
+                                            <h3 className='pageTitle'> Select Upload Folder  {temptasktype !== undefined && temptasktype?.length > 2 && <span className='alignIcon svg__iconbox svg__icon--setting' onClick={() => openTaskTypesPopup()}></span>} <hr></hr> </h3>
+
                                             <div className='alignCenter'>
-                                                <span>{folderExist == true ? <span>{selectedPath?.displayPath}</span> : <>{(tasktypecopy != undefined && tasktypecopy != '') ? <span>{selectedPath?.displayPath?.split(tasktypecopy)}<span className='highlighted'>{tasktypecopy}
-                                                    <div className="popover__wrapper me-1" data-bs-toggle="tooltip" data-bs-placement="auto">
-                                                        <span className="alignIcon svg__iconbox svg__icon--info " ></span>
-                                                        <div className="popover__content">
-                                                            <span>
-                                                                Highlighted folder does not exist. It will be created at the time of document upload.
-                                                            </span>
+                                                <span>{folderExist == true ? <span>{selectedPath?.displayPath}</span> : <>{(tasktypecopy != undefined && tasktypecopy != '') ? <span>{selectedPath?.displayPath?.split(tasktypecopy)}
+                                                    <span className='highlighted'>{tasktypecopy}
+                                                        <div className="popover__wrapper me-1" data-bs-toggle="tooltip" data-bs-placement="auto">
+                                                            <span className="alignIcon svg__iconbox svg__icon--info " ></span>
+                                                            <div className="popover__content">
+                                                                <span>
+                                                                    Highlighted folder does not exist. It will be created at the time of document upload.
+                                                                </span>
+                                                            </div>
                                                         </div>
-                                                    </div>
-                                                </span></span> :<span>{selectedPath?.displayPath?.split(siteName)}<span className='highlighted'>{siteName}
-                                                    <div className="popover__wrapper me-1" data-bs-toggle="tooltip" data-bs-placement="auto">
-                                                        <span className="alignIcon svg__iconbox svg__icon--info " ></span>
-                                                        <div className="popover__content">
-                                                            <span>
-                                                                Highlighted folder does not exist. It will be created at the time of document upload.
-                                                            </span>
-                                                        </div>
-                                                    </div>
-                                                </span></span>}</>}</span>
+                                                    </span>
+                                                </span>
+                                                    :
+                                                    <span>{selectedPath?.displayPath?.split(siteName)}<span className=''>{siteName}
+                                                        {/* <div className="popover__wrapper me-1" data-bs-toggle="tooltip" data-bs-placement="auto">
+                                                            <span className="alignIcon svg__iconbox svg__icon--info " ></span>
+                                                            <div className="popover__content">
+                                                                <span>
+                                                                    Highlighted folder does not exist. It will be created at the time of document upload.
+                                                                </span>
+                                                            </div>
+                                                        </div> */}
+                                                    </span></span>}</>}</span>
                                                 <span><a title="Click for Associated Folder" className='hreflink ms-2' onClick={() => setChoosePathPopup(true)} > Change Path </a></span>
                                             </div>
                                         </div>
@@ -1371,7 +1405,7 @@ const AncTool = (props: any) => {
                                                         {/* <GlobalCommanTable headerOptions={headerOptions} paginatedTable={true} columns={columns} data={ExistingFiles} callBackData={callBackData} showHeader={true} /> */}
                                                         {ExistingFiles?.length > 0 ?
                                                             <Table hover responsive className='mb-0'>
-                                                                <thead  className='fixed-Header top-0'>
+                                                                <thead className='fixed-Header top-0'>
                                                                     <tr>
                                                                         <th></th>
                                                                         <th className='p-1'>Type</th>
@@ -1683,7 +1717,7 @@ const AncTool = (props: any) => {
                     </div>
                 </div> : ''
             }
-        {remark && <SmartInformation Id={props?.item?.Id}
+            {remark && <SmartInformation Id={props?.item?.Id}
                 AllListId={props.AllListId}
                 Context={props?.Context}
                 taskTitle={props?.item?.Title}
@@ -1699,17 +1733,17 @@ const AncTool = (props: any) => {
                 onRenderHeader={ChooseTaskTypesCustomHeader}
                 onRenderFooter={onRenderCustomFooterMain}
                 isBlocking={false}>
-                    <div> 
-                        {TaskTypesItem != undefined && TaskTypesItem.length > 0 && TaskTypesItem.map((itm:any)=> {
-                            return(
-                                <>     
-                                    <label className='label--checkbox d-flex m-1'>
-                                      <input type='checkbox' className='checkbox me-1' defaultChecked={isCheck} onChange={() => changeTaskTypeValue(itm)} /> {itm}
-                                    </label>                                                                                                                                                    
-                                </>
-                            )                            
-                        })}
-                    </div>
+                <div>
+                    {TaskTypesItem != undefined && TaskTypesItem.length > 0 && TaskTypesItem.map((itm: any) => {
+                        return (
+                            <>
+                                <label className='label--checkbox d-flex m-1'>
+                                    <input type='checkbox' className='checkbox me-1' defaultChecked={SelectedItem == itm} checked={SelectedItem == itm} onChange={(e) => changeTaskTypeValue(e.target.checked, itm)} /> {itm}
+                                </label>
+                            </>
+                        )
+                    })}
+                </div>
 
             </Panel>
         </>
