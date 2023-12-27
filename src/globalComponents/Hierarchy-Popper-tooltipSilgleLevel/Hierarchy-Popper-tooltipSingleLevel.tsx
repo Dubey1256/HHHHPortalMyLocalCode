@@ -72,7 +72,11 @@ export default function ReactPopperTooltipSingleLevel({ ShareWebId, row, masterT
     });
 
     const handlAction = (newAction: any) => {
-        if(onclickPopup!=false){
+        if(onclickPopup!=false&& newAction === "hover"){
+            if ( newAction === "hover") return;
+            setAction(newAction);
+            setControlledVisible(true);
+        }else{
             if (newAction === "click" && newAction === "hover") return;
             setAction(newAction);
             setControlledVisible(true);
