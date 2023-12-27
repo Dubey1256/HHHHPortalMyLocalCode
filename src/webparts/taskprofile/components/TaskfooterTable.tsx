@@ -3,8 +3,7 @@ import * as $ from 'jquery';
 import * as globalCommon from '../../../globalComponents/globalCommon';
 import EditTaskPopup from '../../../globalComponents/EditTaskPopup/EditTaskPopup'
 import TimeEntryPopup from '../../../globalComponents/TimeEntry/TimeEntryComponent';
-import CreateActivity from '../../../globalComponents/CreateActivity';
-import CreateWS from '../../../globalComponents/CreateWS';
+
 import ShowTaskTeamMembers from '../../../globalComponents/ShowTaskTeamMembers';
 import Loader from "react-loader";
 import * as moment from 'moment';
@@ -43,6 +42,9 @@ import ReactPopperTooltipSingleLevel from '../../../globalComponents/Hierarchy-P
 import InfoIconsToolTip from '../../../globalComponents/InfoIconsToolTip/InfoIconsToolTip';
 import ReactPopperTooltip from '../../../globalComponents/Hierarchy-Popper-tooltip';
 import BulkeditTask from './BulkeditTask';
+import CreateWS from '../../../globalComponents/CreateWS';
+import CreateActivity from '../../../globalComponents/CreateActivity';
+
 var AllTasks: any = [];
 let AllTasksRendar: any = [];
 let siteConfig: any = [];
@@ -1110,8 +1112,8 @@ function TasksTable(props: any) {
           }
         })   
       })        
-      setcheckData(checkData);
-      array.push(checkData);
+      setcheckData(checkData[0]?.original);
+      array.push(checkData[0]?.original);
 
     } else {
       setcheckData({});
