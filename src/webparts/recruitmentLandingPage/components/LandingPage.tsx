@@ -130,7 +130,7 @@ const LandingPage = (props: any) => {
                 placeholder: "Title",
                 resetColumnFilters: false,
                 header: "",
-                size: 155
+                size: 157
             },
 
             {
@@ -152,10 +152,28 @@ const LandingPage = (props: any) => {
                 placeholder: "Skills",
                 resetColumnFilters: false,
                 header: "",
-                size: 400,
+                size: 500,
             },
+            {
+                accessorFn: (row) => row?.PositionDescription,
+                cell: ({ row, getValue }) => (
+                    <span className="columnFixedTitle">
+                        <span
+                            className="text-content"
+                            title={row?.original?.PositionDescription}
+                        >
+                            {row?.original?.PositionDescription}
+                        </span>
+                    </span>
 
-            { accessorKey: "PositionDescription", placeholder: "Position Description", header: "", },
+                ),
+                id: "PositionDescription",
+                placeholder: "PositionDescription",
+                resetColumnFilters: false,
+                header: "",
+                size: 500
+            },
+            //{ accessorKey: "PositionDescription", placeholder: "Position Description", header: "", },
             {
                 cell: ({ row }) => (
                     <div className='alignCenter'>
@@ -395,7 +413,7 @@ const LandingPage = (props: any) => {
 
     return (
         <>
-        <h2 className='heading'>Recruitment-Landing-Page</h2>
+            <h2 className='heading'>Recruitment-LandingPage</h2>
             <div className="container">
                 <div className="mb-5 clearfix">
                     <div className="text-right">
