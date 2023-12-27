@@ -550,37 +550,28 @@ const TaskUserManagementTable = ({ TaskUsersListData, TaskGroupsListData, baseUr
 
     return (
         <>
-            <Modal
-                show={showConfirmationModal}
-                onHide={() => setShowConfirmationModal(false)}
-                backdrop="static"
-                keyboard={false} style={{ zIndex: "9999999" }}
-            >
-                <Modal.Header closeButton>
-                    <Modal.Title className='subheading'>Warning</Modal.Title>
-                </Modal.Header>
-                <Modal.Body className='text-center p-2'>Are you sure you want to delete this row?</Modal.Body>
-                <Modal.Footer>
-                    <button type='button' onClick={() => setShowConfirmationModal(false)} className='btn me-2 btn-primary'>
-                        Cancel
-                    </button>
-                    <button type='button' onClick={deleteTeamMember} className='btn btn-default'>
-                        Delete
-                    </button>
-                </Modal.Footer>
-            </Modal>
-            <ul className="nav nav-tabs" role="tablist">
-                <li className="nav-item">
-                    <a className="nav-link active" id="team-members-tab" data-bs-toggle="tab" href="#team-members" role="tab" aria-controls="team-members" aria-selected="true">TEAM MEMBERS</a>
-                </li>
-                <li className="nav-item">
-                    <a className="nav-link" id="team-groups-tab" data-bs-toggle="tab" href="#team-groups" role="tab" aria-controls="team-groups" aria-selected="false">TEAM GROUPS</a>
-                </li>
-            </ul>
+            <ul className="fixed-Header nav nav-tabs" id="myTab" role="tablist">
+                <button className="nav-link active" id="TEAM-MEMBERS" data-bs-toggle="tab" data-bs-target="#TEAMMEMBERS"
+                    type="button"
+                    role="tab"
+                    aria-controls="TEAMMEMBERS"
+                    aria-selected="true"
+                >
+                    TEAM MEMBERS
+                </button>
+                <button className="nav-link" id="TEAM-GROUPS" data-bs-toggle="tab" data-bs-target="#TEAMGROUPS"
+                    type="button"
+                    role="tab"
+                    aria-controls="TEAMGROUPS"
+                    aria-selected="true"
+                >
+                    TEAM GROUPS
+                </button>
+            </ul >
 
-            <div className="tab-content">
-                <div className="tab-pane fade show active" id="team-members" role="tabpanel" aria-labelledby="team-members-tab">
-
+            <div className="border border-top-0 clearfix p-3 tab-content" id="myTabContent">
+                {/* <div className="tab-pane fade show active" id="team-members" role="tabpanel" aria-labelledby="teammemberstab"> */}
+                <div className="tab-pane show active" id="TEAMMEMBERS" role="tabpanel" aria-labelledby="TEAMMEMBERS">
                     <div className='Alltable'>
                         <div className='tbl-button'>
                             <button type='button' className='btn btn-primary position-relative' style={{ zIndex: "99" }} onClick={() => setOpenPopup(true)}>Add Team Member</button>
@@ -588,9 +579,10 @@ const TaskUserManagementTable = ({ TaskUsersListData, TaskGroupsListData, baseUr
                         <GlobalCommanTable columns={columns} data={data} callBackData={callBackData} showHeader={true} />
                     </div>
                 </div>
-                <div className="tab-pane fade" id="team-groups" role="tabpanel" aria-labelledby="team-groups-tab">
+                <div className="tab-pane" id="TEAMGROUPS" role="tabpanel" aria-labelledby="TEAMGROUPS">
 
                     <div className='Alltable'>
+
                         <div className='tbl-button'>
                             <button type='button' className='btn btn-primary position-relative' style={{ zIndex: "99" }} onClick={() => setOpenGroupPopup(true)}>Add Team Group</button>
                         </div>
@@ -606,11 +598,9 @@ const TaskUserManagementTable = ({ TaskUsersListData, TaskGroupsListData, baseUr
                 isFooterAtBottom={true}
                 isBlocking={!openPopup}
             >
-                <div className="add-datapanel">
-                    <label className='form-label mb-0 mt-2 w-100'>User Name: </label>
-
-
-                    <span>
+                <div className="modal-body">
+                    <div className='input-group'>
+                        <label className='form-label full-width'>User Name: </label>
                         <input className='form-control' type="text" placeholder='Enter Title' value={title} onChange={(e: any) => { setTitle(e.target.value); autoSuggestionsForTitle(e) }} />
                         {autoSuggestData?.length > 0 ? (
                             <div>
@@ -629,15 +619,15 @@ const TaskUserManagementTable = ({ TaskUsersListData, TaskGroupsListData, baseUr
                                 </ul>
                             </div>
                         ) : null}
-                    </span>
-
-
-                    {/* <input className='form-control' type="text" value={title} onChange={(e: any) => setTitle(e.target.value)} /> */}
-                    <DefaultButton className="btn btn-primary mt-3 p-3 shadow"
-                        onClick={() => addTeamMember()}>Save</DefaultButton>
-                    <DefaultButton className="btn btn-primary mt-3 p-3 shadow"
-                        onClick={() => setOpenPopup(false)}>Cancel</DefaultButton>
+                    </div>
                 </div>
+
+                {/* <input className='form-control' type="text" value={title} onChange={(e: any) => setTitle(e.target.value)} /> */}
+                <footer className='modal-footer mt-2'>
+                    <button type='button' className='btn me-2 btn-primary' onClick={() => addTeamMember()}>Save</button>
+                    <button type='button' className='btn btn-default' onClick={() => setOpenPopup(false)}>Cancel</button>
+                </footer>
+
             </Panel>
             <Panel
                 onRenderHeader={onRenderCustomHeaderAddGroup}
@@ -646,18 +636,24 @@ const TaskUserManagementTable = ({ TaskUsersListData, TaskGroupsListData, baseUr
                 isFooterAtBottom={true}
                 isBlocking={!openGroupPopup}
             >
-                <div className="add-datapanel">
-                    <label className='form-label mb-0 mt-2 w-100'>User Name: </label>
-                    <input className='form-control' type="text" value={title} onChange={(e: any) => setTitle(e.target.value)} />
-                    <label className='form-label mb-0 mt-2 w-100'>Suffix: </label>
-                    <input className='form-control' type="text" value={suffix} onChange={(e: any) => setSuffix(e.target.value)} />
-                    <label className='form-label mb-0 mt-2 w-100'>Sort Order: </label>
-                    <input className='form-control' type="text" value={sortOrder} onChange={(e: any) => setSortOrder(e.target.value)} />
-                    <DefaultButton className="btn btn-primary mt-3 p-3 shadow"
-                        onClick={() => addNewGroup()}>Save</DefaultButton>
-                    <DefaultButton className="btn btn-primary mt-3 p-3 shadow"
-                        onClick={() => setOpenGroupPopup(false)}>Cancel</DefaultButton>
+                <div className="modal-body">
+                    <div className='input-group'>
+                        <label className='form-label full-width'>User Name: </label>
+                        <input className='form-control' type="text" value={title} onChange={(e: any) => setTitle(e.target.value)} />
+                    </div>
+                    <div className='input-group my-2'>
+                        <label className='form-label full-width'>Suffix: </label>
+                        <input className='form-control' type="text" value={suffix} onChange={(e: any) => setSuffix(e.target.value)} />
+                    </div>
+                    <div className='input-group'>
+                        <label className='form-label full-width'>Sort Order: </label>
+                        <input className='form-control' type="text" value={sortOrder} onChange={(e: any) => setSortOrder(e.target.value)} />
+                    </div>
                 </div>
+                <footer className='modal-footer mt-2'>
+                    <button type='button' className='btn me-2 btn-primary' onClick={() => addNewGroup()}>Save</button>
+                    <button type='button' className='btn btn-default' onClick={() => setOpenGroupPopup(false)}>Cancel</button>
+                </footer>
             </Panel>
             <Panel
                 onRenderHeader={onRenderCustomHeaderUpdateGroup}
@@ -855,7 +851,7 @@ const TaskUserManagementTable = ({ TaskUsersListData, TaskGroupsListData, baseUr
                                             <div>
                                                 <label className='SpfxCheckRadio'>
                                                     <input type="checkbox" className='form-check-input me-1' id="IsTaskNotifications" checked={isTaskNotifications} onChange={(e) => setIsTaskNotifications(e.target.checked)} />
-                                                    Task Notificattions</label>
+                                                    Task Notifications</label>
                                             </div>
                                         </div>
                                     </div>
@@ -973,6 +969,25 @@ const TaskUserManagementTable = ({ TaskUsersListData, TaskGroupsListData, baseUr
                     </div>
                 </footer>
             </Panel >
+            <Modal
+                show={showConfirmationModal}
+                onHide={() => setShowConfirmationModal(false)}
+                backdrop="static"
+                keyboard={false} style={{ zIndex: "9999999" }}
+            >
+                <Modal.Header closeButton>
+                    <Modal.Title className='subheading'>Warning</Modal.Title>
+                </Modal.Header>
+                <Modal.Body className='text-center p-2'>Are you sure you want to delete this row?</Modal.Body>
+                <Modal.Footer>
+                    <button type='button' onClick={() => setShowConfirmationModal(false)} className='btn me-2 btn-primary'>
+                        Cancel
+                    </button>
+                    <button type='button' onClick={deleteTeamMember} className='btn btn-default'>
+                        Delete
+                    </button>
+                </Modal.Footer>
+            </Modal>
         </>
     )
 }
