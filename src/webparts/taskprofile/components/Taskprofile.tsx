@@ -60,7 +60,6 @@ var buttonId: any;
 let truncatedTitle: any
 let comments: any = []
 let AllClientCategories:any;
-let project: any = []
 export interface ITaskprofileState {
   Result: any;
   listName: string;
@@ -362,7 +361,7 @@ class Taskprofile extends React.Component<ITaskprofileProps, ITaskprofileState> 
     }
 
     if (taskDetails?.Project != undefined) {
-      project = this.masterTaskData.filter((items: any) => items?.Id == taskDetails?.Project?.Id)
+      taskDetails.Project = this.masterTaskData.find((items: any) => items?.Id == taskDetails?.Project?.Id)
     }
     let feedBackData: any = JSON.parse(taskDetails["FeedBack"]);
     console.log(this.masterTaskData)
@@ -372,7 +371,7 @@ class Taskprofile extends React.Component<ITaskprofileProps, ITaskprofileState> 
       Comments: comments != null && comments != undefined ? comments : "",
       Id: taskDetails["ID"],
       ID: taskDetails["ID"],
-      Approvee: taskDetails?.Approvee != undefined ?  this.taskUsers.find((userData:any)=>userData?.AssingedToUser?.Id==taskDetails?.Approvee?.Id): "",
+      Approvee: taskDetails?.Approvee != undefined ?  this.taskUsers.find((userData:any)=>userData?.AssingedToUser?.Id==taskDetails?.Approvee?.Id): undefined,
       TaskCategories:taskDetails["TaskCategories"],
       Project: taskDetails["Project"],
       IsTodaysTask: taskDetails["IsTodaysTask"],
@@ -382,7 +381,6 @@ class Taskprofile extends React.Component<ITaskprofileProps, ITaskprofileState> 
       ApproverHistory: taskDetails["ApproverHistory"] != null ? JSON.parse(taskDetails["ApproverHistory"]) : "",
       OffshoreComments: OffshoreComments.length > 0 ? OffshoreComments.reverse() : null,
       OffshoreImageUrl: taskDetails["OffshoreImageUrl"] != null && JSON.parse(taskDetails["OffshoreImageUrl"]),
-
       ClientCategory: taskDetails["ClientCategory"],
       siteType: taskDetails["siteType"],
       listName: taskDetails["listName"],
@@ -553,7 +551,7 @@ class Taskprofile extends React.Component<ITaskprofileProps, ITaskprofileState> 
 
     // }
     // return ImagesInfo;
-    if(BasicImageInfo.length>0){
+    if(BasicImageInfo?.length>0){
       BasicImageInfo?.forEach(function (item: any) {
         if (item?.ImageUrl != undefined && item?.ImageUrl != "") {
           item.ImageUrl = item?.ImageUrl?.replace(
@@ -1831,18 +1829,19 @@ class Taskprofile extends React.Component<ITaskprofileProps, ITaskprofileState> 
         }
         this?.updateProjectComponentServices(dataUpdate)
       } else {
-        this.setState((prevState) => ({
-          Result: {
-            ...prevState.Result,
-            Project: DataItem[0],
-
-          }
-        }));
+       
         if (DataItem[0]?.Item_x0020_Type == "Project" || DataItem[0]?.Item_x0020_Type == "Sprint") {
           dataUpdate = {
             ProjectId: DataItem[0]?.Id
           }
+          this.setState((prevState) => ({
+            Result: {
+              ...prevState.Result,
+              Project: DataItem[0],
+            }
+          }))
           this?.updateProjectComponentServices(dataUpdate)
+         
         }
       }
 
@@ -1923,20 +1922,19 @@ class Taskprofile extends React.Component<ITaskprofileProps, ITaskprofileState> 
                       {this.state.Result["Portfolio"] != null && this.state.breadCrumData.length > 0 &&
                         <li >
                           {this.state.Result["Portfolio"] != null &&
-                            <a target="_blank" data-interception="off" href={`${this.state.Result["siteUrl"]}/SitePages/Team-Portfolio.aspx`}>Team Portfolio</a>
+                            <a  className="fw-bold"  style={{color:this.state.Result["Portfolio"]?.PortfolioType?.Color}}  target="_blank" data-interception="off" href={`${this.state.Result["siteUrl"]}/SitePages/Team-Portfolio.aspx`}>Team Portfolio</a>
                           }
 
                         </li>
                       }
                       {this.state.breadCrumData?.map((breadcrumbitem: any, index: any) => {
                         return <>
-                          {breadcrumbitem?.siteType == undefined && <li>
-
-                            <a target="_blank" data-interception="off" href={`${this.state.Result["siteUrl"]}/SitePages/Portfolio-Profile.aspx?taskId=${breadcrumbitem?.Id}`}>{breadcrumbitem?.Title}</a>
+                          {breadcrumbitem?.siteType == "Master Tasks" && <li>
+                          <a   style={{color:breadcrumbitem?.PortfolioType?.Color}} className="fw-bold" target="_blank" data-interception="off" href={`${this.state.Result["siteUrl"]}/SitePages/Portfolio-Profile.aspx?taskId=${breadcrumbitem?.Id}`}>{breadcrumbitem?.Title}</a>
                           </li>}
-                          {breadcrumbitem?.siteType != undefined && <li>
+                          {breadcrumbitem?.siteType != "Master Tasks" && <li>
 
-                            <a target="_blank" data-interception="off" href={`${this.state.Result["siteUrl"]}/SitePages/Task-Profile.aspx?taskId=${breadcrumbitem?.Id}&Site=${breadcrumbitem?.siteType} `}>{breadcrumbitem?.Title}</a>
+                            <a   target="_blank" data-interception="off" href={`${this.state.Result["siteUrl"]}/SitePages/Task-Profile.aspx?taskId=${breadcrumbitem?.Id}&Site=${breadcrumbitem?.siteType} `}>{breadcrumbitem?.Title}</a>
                           </li>}
                           {this.state.breadCrumData.length == index &&
                             <li>
@@ -2211,7 +2209,7 @@ class Taskprofile extends React.Component<ITaskprofileProps, ITaskprofileState> 
                         <dt className='bg-Fa'>Project</dt>
                         <dd className='bg-Ff full-width'>
                           <div>
-                    {this.state.Result["Project"] != undefined ? <a className="hreflink" target="_blank" data-interception="off" href={`${this.state.Result["siteUrl"]}/SitePages/Project-Management.aspx?ProjectId=${this.state.Result["Project"]?.Id}`}><span className='d-flex'><ReactPopperTooltipSingleLevel ShareWebId={`${project[0]?.PortfolioStructureID} - ${project[0]?.Title}`} row={project[0]} singleLevel={true} masterTaskData={this.masterTaskData} AllSitesTaskData={this.allDataOfTask} AllListId={AllListId} /></span></a> : null}
+                    {this.state.Result["Project"] != undefined ? <a className="hreflink" target="_blank" data-interception="off" href={`${this.state.Result["siteUrl"]}/SitePages/Project-Management.aspx?ProjectId=${this.state.Result["Project"]?.Id}`}><span className='d-flex'><ReactPopperTooltipSingleLevel ShareWebId={`${this?.state?.Result["Project"]?.PortfolioStructureID} - ${this?.state?.Result["Project"]?.Title}`} row={this?.state?.Result["Project"]} singleLevel={true} masterTaskData={this.masterTaskData} AllSitesTaskData={this.allDataOfTask} AllListId={AllListId} /></span></a> : null}
                     <span className="pull-right svg__icon--editBox svg__iconbox" onClick={() => this?.openPortfolioPopupFunction("Project")}></span> 
                           </div>
                         </dd>
@@ -2297,7 +2295,7 @@ class Taskprofile extends React.Component<ITaskprofileProps, ITaskprofileState> 
                                 }
                               </div>
                             </div>
-                            <div className="boldClable border border-top-0 ps-2 py-1">
+                            <div className="spxdropdown-menu ps-2 py-1">
                               <span>Total Estimated Time : </span><span className="mx-1">{this.state.Result?.TotalEstimatedTime > 1 ? this.state.Result?.TotalEstimatedTime + " hours" : this.state.Result?.TotalEstimatedTime + " hour"} </span>
                             </div>
                           </div>
@@ -2422,7 +2420,7 @@ class Taskprofile extends React.Component<ITaskprofileProps, ITaskprofileState> 
                                             </div>
                                             <div className='m-0'>
                                               <span className="d-block">
-                                                <a style={{ cursor: 'pointer' }} onClick={(e) => this.showhideCommentBox(i)}>Add Comment</a>
+                                                <a  className="siteColor"style={{ cursor: 'pointer' }} onClick={(e) => this.showhideCommentBox(i)}>Add Comment</a>
                                               </span>
                                             </div>
                                           </div>
@@ -2586,7 +2584,7 @@ class Taskprofile extends React.Component<ITaskprofileProps, ITaskprofileState> 
                                               </div>
                                               <div className='m-0'>
                                                 <a className="d-block text-end">
-                                                  <a style={{ cursor: 'pointer' }}
+                                                  <a className='siteColor' style={{ cursor: 'pointer' }}
                                                     onClick={(e) => this.showhideCommentBoxOfSubText(j, i)}
                                                   >Add Comment</a>
                                                 </a>

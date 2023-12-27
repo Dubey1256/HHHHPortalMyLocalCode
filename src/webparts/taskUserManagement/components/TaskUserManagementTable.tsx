@@ -1,0 +1,995 @@
+import * as React from 'react'
+import { Web } from "sp-pnp-js";
+import { useEffect, useState } from 'react';
+import { ColumnDef } from '@tanstack/react-table';
+import { PeoplePicker, PrincipalType } from "@pnp/spfx-controls-react/lib/PeoplePicker";
+import GlobalCommanTable from '../../../globalComponents/GroupByReactTableComponents/GlobalCommanTable';
+import { Panel, PanelType } from '@fluentui/react/lib/Panel';
+import { ContextualMenu, IContextualMenuItem, Icon } from '@fluentui/react';
+import ImagesC from "../../EditPopupFiles/ImageInformation";
+import { DefaultButton, PrimaryButton } from '@fluentui/react/lib/Button';
+import VersionHistoryPopup from "../../../globalComponents/VersionHistroy/VersionHistory";
+import "bootstrap/js/dist/tab";
+import Modal from "react-bootstrap/Modal";
+import Button from "react-bootstrap/Button";
+import moment from 'moment';
+import Tooltip from '../../../globalComponents/Tooltip';
+import zIndex from '@material-ui/core/styles/zIndex';
+
+const TaskUserManagementTable = ({ TaskUsersListData, TaskGroupsListData, baseUrl, TaskUserListId, context, fetchAPIData, smartMetaDataItems }: any) => {
+    const [data, setData] = React.useState([]);
+    const [groupData, setGroupData] = useState([]);
+    const [title, setTitle] = useState("");
+    const [suffix, setSuffix] = useState("");
+    const [selectedApprovalType, setSelectedApprovalType] = useState('');
+    const [selectedCompany, setSelectedCompany] = useState('');
+    const [selectedRoles, setSelectedRoles] = useState<any>([]);
+    const [userGroup, setUserGroup] = useState("");
+    const [userCategory, setUserCategory] = useState("");
+    const [imageUrl, setImageUrl] = useState<any>({});
+    const [EditData, setEditData] = React.useState<any>({});
+    const [isActive, setIsActive] = useState(false);
+    const [isTaskNotifications, setIsTaskNotifications] = useState(false);
+    const [assignedToUser, setAssignedToUser] = useState<any>([]);
+    const [approver, setApprover] = useState([]);
+    let [sortOrder, setSortOrder] = useState(null);
+    const [openPopup, setOpenPopup] = useState(false);
+    const [openGroupPopup, setOpenGroupPopup] = useState(false);
+    const [openUpdateGroupPopup, setOpenUpdateGroupPopup] = useState(false);
+    const [openUpdateMemberPopup, setOpenUpdateMemberPopup] = useState(false);
+    const [showConfirmationModal, setShowConfirmationModal] = useState(false);
+    const [itemToDelete, setItemToDelete] = useState(null);
+    const [itemToUpdate, setItemToUpdate] = useState(null);
+    const [memberToUpdate, setMemberToUpdate] = useState(null);
+    const [autoSuggestData, setAutoSuggestData] = useState(null);
+    const [selectedCategories, setSelectedCategories] = useState([]);
+    const [isUserNameValid, setIsUserNameValid] = useState(false);
+    // const [searchedProjectKey, setSearchedProjectKey] = React.useState("");
+
+    const Categories: any = (smartMetaDataItems.filter((items: any) => items.TaxType === "TimesheetCategories"))
+    const uniqueCategories = Categories.filter(
+        (ele: any, i: any, item: any) => item.findIndex((elem: any) => (elem.Title === ele.Title)) === i
+    );
+    console.log(Categories)
+    console.log(uniqueCategories)
+
+    const TaxTypeCategories: any = (smartMetaDataItems.filter((items: any) => items.TaxType === "Categories"))
+
+    // When the member to update is set, initialize the Member states
+    useEffect(() => {
+        if (memberToUpdate) {
+            setSelectedApprovalType(memberToUpdate.IsApprovalMail);
+            setSelectedCompany(memberToUpdate.Company);
+            // setSelectedRoles(memberToUpdate.Role || []);
+            setSelectedRoles(Array.isArray(memberToUpdate.Role) ? memberToUpdate.Role : []);
+            setIsActive(memberToUpdate.IsActive);
+            setIsTaskNotifications(memberToUpdate.IsTaskNotifications);
+            setUserCategory(memberToUpdate.TimeCategory)
+            setSelectedCategories(JSON.parse(memberToUpdate.CategoriesItemsJson))
+            setAssignedToUser(memberToUpdate.AssingedToUser?.Id)
+            setApprover([memberToUpdate.Approver?.[0]?.Id])
+        }
+    }, [memberToUpdate]);
+
+    const handleApprovalTypeChange = (e: any) => {
+        setSelectedApprovalType(e.target.value);
+    };
+
+    // Function to handle company selection
+    const handleCompanyChange = (e: any) => {
+        setSelectedCompany(e.target.value);
+    };
+
+    // Function to handle roles selection
+    const handleRoleChange = (role: any) => {
+        setSelectedRoles((prevSelectedRoles: any) =>
+            prevSelectedRoles.includes(role)
+                ? prevSelectedRoles.filter((r: any) => r !== role)
+                : [...prevSelectedRoles, role]
+        );
+    };
+
+    console.log(context)
+
+    useEffect(() => {
+        setData(TaskUsersListData);
+        setGroupData(TaskGroupsListData);
+    }, [TaskUsersListData, TaskGroupsListData]);
+
+    const handleDeleteClick = (item: any) => {
+        setItemToDelete(item);
+        setShowConfirmationModal(true);
+    };
+
+    const handleUpdateMemberClick = (item: any) => {
+        setMemberToUpdate(item);
+        setOpenUpdateMemberPopup(true);
+        if (item.AssingedToUser) {
+            setIsUserNameValid(true)
+        }
+    };
+
+    const handleUpdateClick = (item: any) => {
+        setItemToUpdate(item);
+        setOpenUpdateGroupPopup(true);
+    };
+
+    const addTeamMember = async () => {
+        let web = new Web(baseUrl);
+        await web.lists.getById(TaskUserListId).items.add({
+            Title: title,
+            ItemType: "User",
+            Company: "Smalsus",
+            IsActive: false,
+            IsTaskNotifications: false,
+        }).then((res: any) => {
+            console.log(res);
+            const newItem = res.data;
+            setData(prevData => [...prevData, newItem]);
+            setTitle("");
+            fetchAPIData()
+            setOpenPopup(false);
+        })
+    }
+
+    const addNewGroup = async () => {
+        let web = new Web(baseUrl);
+        await web.lists.getById(TaskUserListId).items.add({
+            Title: title,
+            Suffix: suffix,
+            SortOrder: sortOrder,
+            ItemType: "Group"
+        }).then((res: any) => {
+            console.log(res);
+            const newItem = res.data;
+            setGroupData(prevData => [...prevData, newItem]);
+            setTitle("");
+            setSuffix("");
+            setSortOrder("");
+            fetchAPIData()
+            setOpenGroupPopup(false);
+        })
+    }
+
+    const deleteTeamMember = async () => {
+        let web = new Web(baseUrl);
+        if (itemToDelete) {
+            await web.lists.getById(TaskUserListId).items.getById(itemToDelete.Id).recycle()
+                .then(i => {
+                    console.log(i);
+                    setData(prevData => prevData.filter(item => item.Id !== itemToDelete.Id));
+                    setGroupData(prevData => prevData.filter(item => item.Id !== itemToDelete.Id));
+                    setItemToDelete(null);
+                    fetchAPIData()
+                    setOpenUpdateMemberPopup(false)
+                    setShowConfirmationModal(false);
+                });
+        }
+    }
+
+    const updateUser = async () => {
+        let sortOrderValue = sortOrder !== undefined ? (sortOrder == "" ? sortOrder = null : sortOrder) : memberToUpdate.SortOrder
+        // let sortOrderValue = sortOrder !== undefined ? sortOrder : memberToUpdate.SortOrder
+        let web = new Web(baseUrl);
+        if (memberToUpdate) {
+            const updatedData = {
+                Title: title ? title : memberToUpdate.Title,
+                Suffix: suffix ? suffix : memberToUpdate.Suffix,
+                SortOrder: sortOrderValue,
+                IsActive: isActive,
+                Company: selectedCompany,
+                TimeCategory: userCategory ? userCategory : memberToUpdate.userCategory,
+                IsApprovalMail: selectedApprovalType ? selectedApprovalType : memberToUpdate.IsApprovalMail,
+                // SortOrder: (sortOrder !== undefined && sortOrder !== null) ? sortOrder : memberToUpdate.SortOrder,
+                Role: { "results": selectedRoles },
+                IsTaskNotifications: isTaskNotifications,
+                AssingedToUserId: typeof assignedToUser === 'number' ? assignedToUser : (assignedToUser?.length > 0 ? assignedToUser[0]?.AssingedToUser?.Id : null),
+                ApproverId: Array.isArray(approver) && approver.every(item => typeof item === 'number' && item != null)
+                    ? { "results": approver } : (approver.length > 0 && approver[0] != null && approver[0].AssingedToUser?.Id != null) ? { "results": [approver[0].AssingedToUser.Id] } : { "results": [] },
+                UserGroupId: userGroup ? parseInt(userGroup) : memberToUpdate?.UserGroup?.Id,
+                Item_x0020_Cover: { "__metadata": { type: "SP.FieldUrlValue" }, Description: "Description", Url: imageUrl?.Item_x002d_Image != undefined ? imageUrl?.Item_x002d_Image?.Url : (imageUrl?.Item_x0020_Cover != undefined ? imageUrl?.Item_x0020_Cover?.Url : null) },
+                CategoriesItemsJson: JSON.stringify(selectedCategories),
+            };
+
+            await web.lists.getById(TaskUserListId).items.getById(memberToUpdate.Id).update(updatedData).then((res: any) => {
+                console.log('Updated Data:', updatedData);
+
+                // Update the data and groupData states
+                const updatedMemberData = data.map(item => {
+                    if (item.Id === memberToUpdate.Id) {
+                        return { ...item, ...updatedData };
+                    }
+                    return item;
+                });
+
+                setData(updatedMemberData);
+                // Update memberToUpdate state if necessary
+                setMemberToUpdate((prevState: any) => ({ ...prevState, ...updatedData }));
+
+                setOpenUpdateMemberPopup(false);
+                fetchAPIData()
+            }).catch(error => {
+                console.error("Error updating item: ", error);
+            });
+        }
+    };
+
+    const updateGroup = async () => {
+        let web = new Web(baseUrl);
+        if (itemToUpdate) {
+            await web.lists.getById(TaskUserListId).items.getById(itemToUpdate.Id).update({
+                Title: title ? title : itemToUpdate.Title,
+                Suffix: suffix ? suffix : itemToUpdate.Suffix,
+                SortOrder: sortOrder ? sortOrder : itemToUpdate.SortOrder,
+            }).then((res: any) => {
+                console.log(res);
+                setGroupData(prevData => prevData.map(item => {
+                    if (item.Id === itemToUpdate.Id) {
+                        return {
+                            ...item,
+                            Title: title ? title : item.Title,
+                            Suffix: suffix ? suffix : item.Suffix,
+                            SortOrder: sortOrder ? sortOrder : item.SortOrder,
+                            // AssingedToUserId: assignedToGroup.length > 0 ? assignedToGroup[0]?.Id : null,
+                        };
+                    }
+                    return item;
+                }));
+                fetchAPIData()
+                setOpenUpdateGroupPopup(false);
+            }).catch(error => {
+                console.error("Error updating item: ", error);
+            });
+        }
+    }
+
+    // Table for User code
+
+    const columns = React.useMemo<ColumnDef<any, unknown>[]>(
+        () => [{
+            accessorFn: '',
+            canSort: false,
+            placeholder: '',
+            header: '',
+            id: 'row.original',
+            size: 10,
+        },
+        {
+            accessorKey: 'Title',
+            header: "",
+            placeholder: "Search Name",
+            id: "Title",
+            cell: ({ row }: any) => (
+                <div style={{ display: 'flex', alignItems: 'center' }}>
+                    <img
+                        className='workmember'
+                        src={row.original.Item_x0020_Cover?.Url || 'https://hhhhteams.sharepoint.com/sites/HHHH/GmBH/SiteCollectionImages/ICONS/32/icon_user.jpg'}
+                        alt="User"
+                        style={{ marginRight: '10px', width: '32px', height: '32px' }}
+                    />
+                    <span>{row.original.Title}</span>
+                </div>
+            ),
+            sortDescFirst: false
+        },
+        {
+            accessorKey: "UserGroup.Title",
+            header: "",
+            id: "Group",
+            placeholder: "Search Group"
+        },
+        {
+            accessorKey: "TimeCategory",
+            header: "",
+            id: "Category",
+            placeholder: "Search Category",
+            size: 80,
+        },
+        {
+            accessorKey: "SortOrder",
+            header: "",
+            id: "SortOrder",
+            placeholder: "SortOrder",
+            size: 42,
+        },
+        {
+            accessorKey: "Role",
+            header: "",
+            id: "Role",
+            placeholder: "Roles",
+        },
+        {
+            accessorKey: "Company",
+            header: "",
+            id: "Company",
+            placeholder: "Company",
+            size: 70,
+        },
+        {
+            accessorFn: (row) => row.Approver?.[0]?.Title || '',
+            header: "",
+            id: 'Approver',
+            placeholder: "Approver"
+        },
+        {
+            accessorKey: "technicalGroup",
+            header: "",
+            id: 'technicalGroup',
+            placeholder: "Team",
+            size: 75,
+        },
+        {
+            id: "TaskId",
+            accessorKey: "TaskId",
+            header: null,
+            size: 50,
+            cell: (info) => (<div className='pull-right alignCenter'>
+                <span onClick={() => handleUpdateMemberClick(info.row.original)} className='svg__iconbox svg__icon--edit' title='Edit'></span>
+                <span onClick={() => handleDeleteClick(info.row.original)} className='svg__iconbox svg__icon--trash' title='Trash'></span>
+            </div>),
+            enableColumnFilter: false,
+            enableSorting: false,
+        }
+        ],
+        [data]
+    )
+
+    // Table for Group code
+
+    const columns2 = React.useMemo<ColumnDef<any, unknown>[]>(
+        () => [
+            {
+                accessorKey: 'Title',
+                id: "Title",
+                header: "",
+                placeholder: "Title",
+                sortDescFirst: false
+            },
+            {
+                accessorKey: "SortOrder",
+                header: "",
+                placeholder: "Sort Order"
+            },
+            {
+                accessorKey: "TaskId",
+                header: null,
+                cell: (info) => (<div className='pull-right alignCenter'>
+                    <span onClick={() => handleUpdateClick(info.row.original)} className='svg__iconbox svg__icon--edit' title='Edit'></span>
+                    <span onClick={() => handleDeleteClick(info.row.original)} className='svg__iconbox svg__icon--trash' title='Trash'></span>
+                </div>),
+                enableColumnFilter: false,
+                enableSorting: false,
+                Size: 60
+            }
+        ],
+        [groupData]
+    )
+
+    const userIdentifier = memberToUpdate?.AssingedToUser?.Name;
+    const email = userIdentifier ? userIdentifier.split('|').pop() : '';
+
+    const userIdentifier2 = memberToUpdate?.Approver?.[0]?.Name;
+    const email2 = userIdentifier2 ? userIdentifier2.split('|').pop() : '';
+
+    const callBackData = React.useCallback((elem: any, ShowingData: any) => {
+
+    }, []);
+
+    const imageTabCallBack = React.useCallback((data: any) => {
+        setEditData(data);
+        console.log(EditData);
+        console.log(data);
+    }, []);
+
+    const AssignedToUser = (item: any) => {
+        if (item.length > 0) {
+            const email = item.length > 0 ? item[0].loginName.split('|').pop() : null;
+            const member = data.filter((elem: any) => elem.Email === email)
+            setAssignedToUser(member)
+            setIsUserNameValid(true);
+        }
+        else {
+            setAssignedToUser([])
+            setIsUserNameValid(false);
+        }
+    }
+
+    const ApproverFunction = (item: any) => {
+        if (item.length > 0) {
+            const email = item.length > 0 ? item[0].loginName.split('|').pop() : null;
+            const member = data.filter((elem: any) => elem.Email === email)
+            setApprover(member)
+        }
+        else {
+            setApprover([])
+        }
+    }
+
+    // Autosuggestion code
+
+    const autoSuggestionsForTitle = (e: any) => {
+        let SearchedKeyWord: any = e.target.value;
+        let TempArray: any = [];
+        if (SearchedKeyWord.length > 0) {
+            if (data != undefined && data?.length > 0) {
+                data.map((AllDataItem: any) => {
+                    if (
+                        AllDataItem?.Title?.toLowerCase()?.includes(
+                            SearchedKeyWord.toLowerCase()
+                        )
+                    ) {
+                        TempArray.push(AllDataItem);
+                    }
+                });
+            }
+            if (TempArray != undefined && TempArray.length > 0) {
+                setAutoSuggestData(TempArray);
+                // setSearchedProjectKey(SearchedKeyWord);
+            }
+        } else {
+            setAutoSuggestData([]);
+        }
+    };
+
+    // Approval type column - Approve Selected code starts here
+
+    const buildHierarchy = (categories: any) => {
+        const rootCategories = categories.filter((c: any) => c.ParentID === 0);
+        const findChildren = (parent: any) => {
+            const children = categories.filter((c: any) => c.ParentID === parent.ID);
+            if (children.length > 0) {
+                parent.children = children.map((child: any) => findChildren(child));
+            }
+            return parent;
+        };
+        return rootCategories.map((rootCategory: any) => findChildren(rootCategory));
+    };
+
+    const createMenuProps = (categories: any) => {
+        const buildNestedItems = (category: any) => {
+            return {
+                key: category.Id,
+                text: category.Title,
+                subMenuProps: category.children && {
+                    items: category.children.map(buildNestedItems), // recursively build children
+                },
+                onClick: () => handleCategoryClick(category),
+            };
+        };
+
+        return {
+            items: categories.map(buildNestedItems),
+        };
+    };
+
+    const handleCategoryClick = (category: any) => {
+        // const isCategorySelected = selectedCategories?.some(c => c.Id === category.Id);
+        const isCategorySelected = (selectedCategories || []).some(c => c.Id === category.Id);
+
+        if (isCategorySelected) {
+            const removeCategoryAndChildren = (cat: any) => {
+                let newSelectedCategories = selectedCategories?.filter(c => c.Id !== cat.Id);
+                if (cat.children) {
+                    cat.children.forEach((child: any) => {
+                        newSelectedCategories = removeCategoryAndChildren(child);
+                    });
+                }
+                return newSelectedCategories;
+            };
+
+            setSelectedCategories(prevCategories => removeCategoryAndChildren(category));
+        } else {
+            setSelectedCategories(prevCategories => {
+                // const newSelection = [...prevCategories, { Title: category?.Title, Id: category?.Id }];
+                const newSelection = [...(prevCategories || []), { Title: category?.Title, Id: category?.Id }];
+                return newSelection?.filter(c => !category?.children?.some((child: any) => child.Id === c.Id));
+            });
+        }
+    };
+
+    const handleCategoryRemoval = (categoryToRemove: any) => {
+        setSelectedCategories(prevCategories => {
+            const removeCategoryAndChildren = (cat: any) => {
+                // let newSelectedCategories = prevCategories.filter(c => c.Id !== cat.Id);
+                let newSelectedCategories = (prevCategories || []).filter(c => c.Id !== cat.Id);
+                if (cat.children) {
+                    cat.children.forEach((child: any) => {
+                        newSelectedCategories = removeCategoryAndChildren(child);
+                    });
+                }
+                return newSelectedCategories;
+            };
+
+            return removeCategoryAndChildren(categoryToRemove);
+        });
+    };
+
+
+    const TaxTypeCategoriesHierarchy = buildHierarchy(TaxTypeCategories);
+    const menuItems: IContextualMenuItem[] = createMenuProps(TaxTypeCategoriesHierarchy).items;
+
+    // Headers for Panel customisation code
+
+    const onRenderCustomHeaderUpdateUser = () => {
+        return (
+            <>
+                <div className='siteColor subheading'> Task-User Management - {memberToUpdate.Title} </div>
+                <Tooltip ComponentId='1767' />
+            </>
+        );
+    };
+
+    const onRenderCustomHeaderUpdateGroup = () => {
+        return (
+            <>
+                <div className='siteColor subheading'> Update Group </div>
+                <Tooltip ComponentId='1768' />
+            </>
+        );
+    };
+
+    const onRenderCustomHeaderAddGroup = () => {
+        return (
+            <>
+                <div className='siteColor subheading'> Add Group </div>
+                <Tooltip ComponentId='1757' />
+            </>
+        );
+    };
+
+    const onRenderCustomHeaderAddUser = () => {
+        return (
+            <>
+                <div className='siteColor subheading'> Add User </div>
+                <Tooltip ComponentId='1757' />
+            </>
+        );
+    };
+
+    // JSX Code starts here
+
+    return (
+        <>
+            <Modal
+                show={showConfirmationModal}
+                onHide={() => setShowConfirmationModal(false)}
+                backdrop="static"
+                keyboard={false} style={{ zIndex: "9999999" }}
+            >
+                <Modal.Header closeButton>
+                    <Modal.Title className='subheading'>Warning</Modal.Title>
+                </Modal.Header>
+                <Modal.Body className='text-center p-2'>Are you sure you want to delete this row?</Modal.Body>
+                <Modal.Footer>
+                    <button type='button' onClick={() => setShowConfirmationModal(false)} className='btn me-2 btn-primary'>
+                        Cancel
+                    </button>
+                    <button type='button' onClick={deleteTeamMember} className='btn btn-default'>
+                        Delete
+                    </button>
+                </Modal.Footer>
+            </Modal>
+            <ul className="nav nav-tabs" role="tablist">
+                <li className="nav-item">
+                    <a className="nav-link active" id="team-members-tab" data-bs-toggle="tab" href="#team-members" role="tab" aria-controls="team-members" aria-selected="true">TEAM MEMBERS</a>
+                </li>
+                <li className="nav-item">
+                    <a className="nav-link" id="team-groups-tab" data-bs-toggle="tab" href="#team-groups" role="tab" aria-controls="team-groups" aria-selected="false">TEAM GROUPS</a>
+                </li>
+            </ul>
+
+            <div className="tab-content">
+                <div className="tab-pane fade show active" id="team-members" role="tabpanel" aria-labelledby="team-members-tab">
+
+                    <div className='Alltable'>
+                        <div className='tbl-button'>
+                            <button type='button' className='btn btn-primary position-relative' style={{ zIndex: "99" }} onClick={() => setOpenPopup(true)}>Add Team Member</button>
+                        </div>
+                        <GlobalCommanTable columns={columns} data={data} callBackData={callBackData} showHeader={true} />
+                    </div>
+                </div>
+                <div className="tab-pane fade" id="team-groups" role="tabpanel" aria-labelledby="team-groups-tab">
+
+                    <div className='Alltable'>
+                        <div className='tbl-button'>
+                            <button type='button' className='btn btn-primary position-relative' style={{ zIndex: "99" }} onClick={() => setOpenGroupPopup(true)}>Add Team Group</button>
+                        </div>
+                        <GlobalCommanTable columns={columns2} data={groupData} callBackData={callBackData} showHeader={true} />
+                    </div>
+                </div>
+            </div>
+
+            <Panel
+                onRenderHeader={onRenderCustomHeaderAddUser}
+                isOpen={openPopup}
+                onDismiss={() => setOpenPopup(false)}
+                isFooterAtBottom={true}
+                isBlocking={!openPopup}
+            >
+                <div className="add-datapanel">
+                    <label className='form-label mb-0 mt-2 w-100'>User Name: </label>
+
+
+                    <span>
+                        <input className='form-control' type="text" placeholder='Enter Title' value={title} onChange={(e: any) => { setTitle(e.target.value); autoSuggestionsForTitle(e) }} />
+                        {autoSuggestData?.length > 0 ? (
+                            <div>
+                                <ul className="list-group">
+                                    {autoSuggestData?.map((Item: any) => {
+                                        return (
+                                            <li
+                                                className="hreflink list-group-item rounded-0 list-group-item-action"
+                                                key={Item.id}
+                                            // onClick={() => window.open(`${Item?.siteUrl}/SitePages/Project-Management.aspx?ProjectId=${Item?.Id}`, '_blank')}
+                                            >
+                                                <a>{Item.Title}</a>
+                                            </li>
+                                        );
+                                    })}
+                                </ul>
+                            </div>
+                        ) : null}
+                    </span>
+
+
+                    {/* <input className='form-control' type="text" value={title} onChange={(e: any) => setTitle(e.target.value)} /> */}
+                    <DefaultButton className="btn btn-primary mt-3 p-3 shadow"
+                        onClick={() => addTeamMember()}>Save</DefaultButton>
+                    <DefaultButton className="btn btn-primary mt-3 p-3 shadow"
+                        onClick={() => setOpenPopup(false)}>Cancel</DefaultButton>
+                </div>
+            </Panel>
+            <Panel
+                onRenderHeader={onRenderCustomHeaderAddGroup}
+                isOpen={openGroupPopup}
+                onDismiss={() => setOpenGroupPopup(false)}
+                isFooterAtBottom={true}
+                isBlocking={!openGroupPopup}
+            >
+                <div className="add-datapanel">
+                    <label className='form-label mb-0 mt-2 w-100'>User Name: </label>
+                    <input className='form-control' type="text" value={title} onChange={(e: any) => setTitle(e.target.value)} />
+                    <label className='form-label mb-0 mt-2 w-100'>Suffix: </label>
+                    <input className='form-control' type="text" value={suffix} onChange={(e: any) => setSuffix(e.target.value)} />
+                    <label className='form-label mb-0 mt-2 w-100'>Sort Order: </label>
+                    <input className='form-control' type="text" value={sortOrder} onChange={(e: any) => setSortOrder(e.target.value)} />
+                    <DefaultButton className="btn btn-primary mt-3 p-3 shadow"
+                        onClick={() => addNewGroup()}>Save</DefaultButton>
+                    <DefaultButton className="btn btn-primary mt-3 p-3 shadow"
+                        onClick={() => setOpenGroupPopup(false)}>Cancel</DefaultButton>
+                </div>
+            </Panel>
+            <Panel
+                onRenderHeader={onRenderCustomHeaderUpdateGroup}
+                isOpen={openUpdateGroupPopup}
+                onDismiss={() => setOpenUpdateGroupPopup(false)}
+                isFooterAtBottom={true}
+                isBlocking={!openUpdateGroupPopup}
+            >
+                <div className='modal-body'>
+                    <div className="add-datapanel">
+                        <div className='input-group'>
+                            <label className='form-label full-width'>Title: </label>
+                            <input className='form-control' type="text" defaultValue={itemToUpdate?.Title} onChange={(e: any) => setTitle(e.target.value)} />
+                        </div>
+                        <div className='input-group'>
+                            <label className='form-label full-width'>Suffix: </label>
+                            <input className='form-control' type="text" defaultValue={itemToUpdate?.Suffix} onChange={(e: any) => setSuffix(e.target.value)} />
+                        </div>
+                        <div className='input-group'>
+                            <label className='form-label full-width'>Sort Order: </label>
+                            <input className='form-control' type="text" defaultValue={itemToUpdate?.SortOrder} onChange={(e: any) => setSortOrder(e.target.value)} />
+                        </div>
+                    </div>
+                </div>
+                <footer className='modal-footer mt-2'>
+                    {/* <DefaultButton className="btn btn-primary mt-3 p-3 shadow"
+                        onClick={() => updateGroup()}>Update</DefaultButton>
+                    <DefaultButton className="btn btn-primary mt-3 p-3 shadow"
+                        onClick={() => setOpenUpdateGroupPopup(false)}>Cancel</DefaultButton> */}
+                    <button type='button' onClick={() => updateGroup()} className='btn me-2 btn-primary'>Update</button>
+                    <button type='button' onClick={() => setOpenUpdateGroupPopup(false)} className='btn btn-default'>Cancel</button>
+                </footer>
+            </Panel>
+            <Panel
+                onRenderHeader={onRenderCustomHeaderUpdateUser}
+                type={PanelType.large}
+                isOpen={openUpdateMemberPopup}
+                onDismiss={() => setOpenUpdateMemberPopup(false)}
+                isFooterAtBottom={true}
+                isBlocking={!openUpdateMemberPopup}
+            >
+                <div className='modal-body mb-5'>
+                    <ul className="nav nav-tabs" id="myTab" role="tablist">
+                        <li className="nav-item" role="presentation">
+                            <button className="nav-link active" id="basic-info-tab" data-bs-toggle="tab" data-bs-target="#basicInfo" type="button" role="tab" aria-controls="basicInfo" aria-selected="true">
+                                Basic Information
+                            </button>
+                        </li>
+                        <li className="nav-item" role="presentation">
+                            <button className="nav-link" id="image-info-tab" data-bs-toggle="tab" data-bs-target="#imageInfo" type="button" role="tab" aria-controls="imageInfo" aria-selected="false">
+                                Image Information
+                            </button>
+                        </li>
+                    </ul>
+
+                    <div className="tab-content p-3" id="myTabContent">
+                        {/* Basic Information Tab */}
+                        <div
+                            className="tab-pane fade show active"
+                            id="basicInfo"
+                            role="tabpanel"
+                            aria-labelledby="basic-info-tab"
+                        >
+                            <div className="row">
+                                <div className='col-md-4'>
+                                    <div className='input-group'>
+                                        <label className='form-label full-width'>Title: </label>
+                                        <input className='form-control' type="text" defaultValue={memberToUpdate?.Title} onChange={(e: any) => setTitle(e.target.value)} />
+                                    </div>
+                                </div>
+
+                                <div className='col-md-2'>
+                                    <div className='input-group'>
+                                        <label className='form-label full-width'>Suffix: </label>
+                                        <input className='form-control' type="text" defaultValue={memberToUpdate?.Suffix} onChange={(e: any) => setSuffix(e.target.value)} />
+                                    </div></div>
+                                <div className='col-md-3'>
+                                    <div className='input-group'>
+                                        <label className='form-label full-width'>User Name:</label>
+                                        <PeoplePicker context={context} titleText="" personSelectionLimit={1} showHiddenInUI={false}
+                                            principalTypes={[PrincipalType.User]} resolveDelay={1000} onChange={(items) => AssignedToUser(items)}
+                                            defaultSelectedUsers={email ? [email] : []} />
+                                    </div></div>
+                                <div className='col-md-3'>
+                                    <div className='input-group'>
+                                        <label className='form-label full-width'>Group: </label>
+                                        <select className='form-control' id="sites" defaultValue={memberToUpdate?.UserGroup?.Id} onChange={(e: any) => setUserGroup(e.target.value)}>
+                                            <option>Select</option>
+                                            {TaskGroupsListData.map((elem: any) => <option value={elem?.Id}>{elem?.Title}</option>)}
+                                        </select>
+                                    </div>
+                                </div>
+                            </div>
+                            <div className="row my-2">
+                                <div className='col-md-3'>
+                                    <div className='input-group'>
+                                        <label className='form-label full-width'>Sort Order: </label>
+                                        <input className='form-control' type="text" defaultValue={memberToUpdate?.SortOrder} onChange={(e: any) => setSortOrder(e.target.value)} />
+                                    </div></div>
+                                <div className='col-md-3'>
+                                    <div className='input-group'>
+                                        <label className='form-label full-width'>Manage Categories: </label>
+                                        <select id="sites" defaultValue={memberToUpdate?.TimeCategory} onChange={(e: any) => setUserCategory(e.target.value)}>
+                                            <option>Select</option>
+                                            {uniqueCategories.map((elem: any) => <option value={elem.Title}>{elem.Title}</option>)}
+                                        </select>
+                                    </div></div>
+                                <div className='col-md-3'>
+                                    <div className='input-group'>
+                                        <label className='form-label full-width'>Approver:</label>
+                                        <PeoplePicker context={context} titleText="" personSelectionLimit={1} showHiddenInUI={false} principalTypes=
+                                            {[PrincipalType.User]} resolveDelay={1000} onChange={(items) => ApproverFunction(items)}
+                                            defaultSelectedUsers={email2 ? [email2] : []} />
+                                    </div></div>
+                                <div className='col-md-3'>
+                                    <div className='input-group'>
+                                        <label className='form-label full-width'>Company: </label>
+                                        <div>
+                                            <div>
+                                                <label className='SpfxCheckRadio'>
+                                                    <input className='radio' type="radio" id="HHHH" name="company" value="HHHH" checked={selectedCompany === 'HHHH'} onChange={handleCompanyChange} />
+                                                    HHHH Team</label>
+                                            </div>
+                                            <div>
+                                                <label className='SpfxCheckRadio'>
+                                                    <input className='radio' type="radio" id="Smalsus" name="company" value="Smalsus" checked={selectedCompany === 'Smalsus'} onChange={handleCompanyChange} />
+                                                    Smalsus Team</label>
+                                            </div>
+                                        </div>
+                                    </div></div>
+                            </div>
+                            <div className="row">
+                                <div className='col-md-3'>
+                                    <div className='input-group'>
+                                        <label className='form-label full-width'>Approval Type: </label>
+                                        <div>
+                                            <div>
+                                                <label className='SpfxCheckRadio' htmlFor="approveAll">
+                                                    <input type="radio" id="Approve All" className='radio' name="approvalType" value="Approve All" checked={selectedApprovalType === 'Approve All'} onChange={handleApprovalTypeChange} />
+                                                    Approve All</label>
+                                            </div>
+                                            <div>
+                                                <label className='SpfxCheckRadio' htmlFor="approveSelected">
+                                                    <input type="radio" id="Approve Selected" className='radio' name="approvalType" value="Approve Selected" checked={selectedApprovalType === 'Approve Selected'} onChange={handleApprovalTypeChange} />
+                                                    Approve Selected</label>
+                                            </div>
+                                            <div>
+                                                <label className='SpfxCheckRadio' htmlFor="caseByCase">
+                                                    <input type="radio" id="Decide Case By Case" className='radio' name="approvalType" value="Decide Case By Case" checked={selectedApprovalType === 'Decide Case By Case'} onChange={handleApprovalTypeChange} />
+                                                    Case by Case</label>
+                                                {selectedApprovalType === "Approve Selected" ?
+                                                    <>
+                                                        <PrimaryButton text="Select Category" menuProps={{ items: menuItems }} styles={{ root: { display: 'block', width: '100%' } }} />
+                                                        {(selectedCategories || []).map((category: any) => (
+                                                            <div key={category.Id} className='alignCenter block'>
+                                                                <span className='wid90'>{category.Title}</span>
+                                                                {/* <Icon
+                                                                    iconName="Cancel"
+                                                                    onClick={() => handleCategoryRemoval(category)}
+                                                                    styles={{ root: { marginLeft: '5px', cursor: 'pointer' } }}
+                                                                /> */}
+                                                                <span className='svg__iconbox svg__icon--cross light hreflink'></span>
+                                                            </div>
+                                                        ))}
+                                                    </>
+                                                    : ""}
+                                            </div>
+                                        </div>
+                                    </div></div>
+
+                                <div className='col-md-3'>
+                                    <div className='input-group'>
+                                        <label className='form-label full-width'>Roles: </label>
+                                        <div>
+                                            {['Component Teams', 'Service Teams'].map((role: any) => (
+                                                <React.Fragment key={role}>
+                                                    <label className='SpfxCheckRadio' htmlFor={`role-${role}`}>
+                                                        <input type="checkbox" className='form-check-input me-1' id={`role-${role}`} name="roles" value={role} checked={selectedRoles?.includes(role)}
+                                                            onChange={() => handleRoleChange(role)}
+                                                        />
+                                                        {role}</label>
+                                                </React.Fragment>
+                                            ))}
+                                        </div>
+                                    </div>
+                                </div>
+                                <div className='col-md-3'>
+                                    <div className='input-group'>
+                                        <div>
+                                            <div>
+                                                <label className='SpfxCheckRadio'>
+                                                    <input type="checkbox" className='form-check-input me-1' id="IsActive" checked={isActive} onChange={(e) => setIsActive(e.target.checked)} />
+                                                    Active User</label>
+                                            </div>
+                                            <div>
+                                                <label className='SpfxCheckRadio'>
+                                                    <input type="checkbox" className='form-check-input me-1' id="IsTaskNotifications" checked={isTaskNotifications} onChange={(e) => setIsTaskNotifications(e.target.checked)} />
+                                                    Task Notificattions</label>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+
+                        {/* Image Information Tab */}
+                        <div
+                            className="tab-pane fade"
+                            id="imageInfo"
+                            role="tabpanel"
+                            aria-labelledby="image-info-tab"
+                        >
+                            <div>
+                                <ImagesC
+                                    EditdocumentsData={imageUrl}
+                                    setData={setImageUrl}
+                                    AllListId={TaskUserListId}
+                                    Context={context}
+                                    callBack={imageTabCallBack}
+                                />
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <footer
+                    className="bg-f4 fixed-bottom"
+                    style={{ position: "absolute" }}>
+                    <div className="align-items-center d-flex justify-content-between px-4 py-2">
+                        <div>
+                            <div className="text-left">
+                                Created{" "}
+                                <span ng-bind="memberToUpdate?.Created | date:'MM-DD-YYYY'">
+                                    {" "}
+                                    {memberToUpdate?.Created ? moment(memberToUpdate?.Created).format("DD/MM/YYYY") : ""}
+                                </span>{" "}
+                                by
+                                <span className="panel-title ps-1">
+                                    {memberToUpdate?.Author?.Title != undefined
+                                        ? memberToUpdate?.Author?.Title
+                                        : ""}
+                                </span>
+                            </div>
+                            <div className="text-left">
+                                Last modified{" "}
+                                <span>
+                                    {memberToUpdate?.Modified ? moment(memberToUpdate?.Modified).format("DD/MM/YYYY") : ''}
+                                </span>{" "}
+                                by{" "}
+                                <span className="panel-title">
+                                    {memberToUpdate?.Editor?.Title != undefined
+                                        ? memberToUpdate?.Editor.Title
+                                        : ""}
+                                </span>
+                            </div>
+                            <div className="text-left">
+                                <a onClick={() => handleDeleteClick(memberToUpdate)}>
+                                    <svg
+                                        xmlns="http://www.w3.org/2000/svg"
+                                        width="20"
+                                        viewBox="0 0 48 48"
+                                        fill="none"
+                                    >
+                                        <path
+                                            fill-rule="evenodd"
+                                            clip-rule="evenodd"
+                                            d="M19.3584 5.28375C18.4262 5.83254 18.1984 6.45859 18.1891 8.49582L18.1837 9.66172H13.5918H9V10.8591V12.0565H10.1612H11.3225L11.3551 26.3309L11.3878 40.6052L11.6525 41.1094C11.9859 41.7441 12.5764 42.3203 13.2857 42.7028L13.8367 43H23.9388C33.9989 43 34.0431 42.9989 34.6068 42.7306C35.478 42.316 36.1367 41.6314 36.4233 40.8428C36.6697 40.1649 36.6735 39.944 36.6735 26.1055V12.0565H37.8367H39V10.8591V9.66172H34.4082H29.8163L29.8134 8.49582C29.8118 7.85452 29.7618 7.11427 29.7024 6.85084C29.5542 6.19302 29.1114 5.56596 28.5773 5.2569C28.1503 5.00999 27.9409 4.99826 23.9833 5.00015C19.9184 5.0023 19.8273 5.00784 19.3584 5.28375ZM27.4898 8.46431V9.66172H24H20.5102V8.46431V7.26691H24H27.4898V8.46431ZM34.4409 25.9527C34.4055 40.9816 34.4409 40.2167 33.7662 40.5332C33.3348 40.7355 14.6335 40.7206 14.2007 40.5176C13.4996 40.1889 13.5306 40.8675 13.5306 25.8645V12.0565H24.0021H34.4736L34.4409 25.9527ZM18.1837 26.3624V35.8786H19.3469H20.5102V26.3624V16.8461H19.3469H18.1837V26.3624ZM22.8367 26.3624V35.8786H24H25.1633V26.3624V16.8461H24H22.8367V26.3624ZM27.4898 26.3624V35.8786H28.6531H29.8163V26.3624V16.8461H28.6531H27.4898V26.3624Z"
+                                            fill="#333333"
+                                        />
+                                    </svg>{" "}
+                                    Delete This Item
+                                </a>
+                                <span>
+                                    {" "}
+                                    {memberToUpdate?.ID ? (
+                                        <VersionHistoryPopup
+                                            taskId={memberToUpdate?.ID}
+                                            listId={TaskUserListId}
+                                            siteUrls={baseUrl}
+                                        />
+                                    ) : (
+                                        ""
+                                    )}
+                                </span>
+                            </div>
+                        </div>
+                        <div>
+                            <div className="footer-right">
+                                <a
+                                    className="p-1"
+                                    href={`${baseUrl}/Lists/Task%20Users/DispForm.aspx?ID=${memberToUpdate?.Id}`}
+                                    target="_blank"
+                                    data-interception="off"
+                                >
+                                    Open Out-of-The-Box Form
+                                </a>
+                                <button
+                                    type="button"
+                                    className="btn btn-primary ms-2 px-4"
+                                    onClick={() => updateUser()}
+                                    disabled={!isUserNameValid}
+                                >
+                                    Save
+                                </button>
+                                <button
+                                    type="button"
+                                    className="btn btn-default btn-default ms-1"
+                                    onClick={() => setOpenUpdateMemberPopup(false)}
+                                >
+                                    Cancel
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+                </footer>
+            </Panel >
+        </>
+    )
+}
+
+export default TaskUserManagementTable;
+
+
+
+// private onRenderCustomHeaderCreateNewUser = () => {
+//     return (
+//         <>
+
+//             <div className='siteColor subheading'>
+//                 Create New User
+//             </div>
+//             <Tooltip ComponentId='1757' />
+//         </>
+//     );
+// };
+

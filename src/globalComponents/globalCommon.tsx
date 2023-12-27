@@ -1829,6 +1829,7 @@ export const GetServiceAndComponentAllData = async (Props: any) => {
             result["siteType"] = "Master Tasks";
             result.AllTeamName = "";
             result.listId = Props.MasterTaskListID;
+            result.TaskID =  result?.PortfolioStructureID;
             result.portfolioItemsSearch = result.Item_x0020_Type;
             result.isSelected = Props?.selectedItems?.find((obj: any) => obj.Id === result.ID);
             result.TeamLeaderUser = []
@@ -2237,22 +2238,51 @@ function removeHtmlAndNewline(text: any) {
     }
 }
 
-export const calculateSmartPriority = (result: any, projectData: any) => {
+
+//// make sure task object most have bilow properies//////
+//// requrired result?.PriorityRank ////
+//// requrired result?.Project?.PriorityRank ////
+//// next Project array it is a lookup columns where project//////
+///// next result?.TaskCategories ////
+export const calculateSmartPriority = (result: any) => {
     let smartPriority = result.SmartPriority;
-    if (projectData?.length > 0) {
-        projectData?.forEach((elem: any) => {
-            const priorityRank = elem?.PriorityRank ?? 1;
-            if (priorityRank >= 1 && result?.PriorityRank && result?.Project?.Id === elem.Id) {
+    if (result?.Project) {
+        const priorityRank = result?.Project?.PriorityRank ?? 1;
+        if (priorityRank >= 1 && result?.PriorityRank) {
+            const hasImmediateCategory = result?.TaskCategories?.some((cat: any) => cat.Title === 'Immediate');
+            const hasEmailNotificationCategory = result?.TaskCategories?.some((cat: any) => cat.Title === 'Email Notification');
+            if (hasImmediateCategory) {
+                smartPriority = ((result?.PriorityRank) + (priorityRank * 4)) / 5 * 2;
+                result.showFormulaOnHover = `((TaskPriority : ${result?.PriorityRank}) + (ProjectPriority : ${priorityRank} * 4)) / 5 * 2`
+            } else if (hasEmailNotificationCategory) {
+                smartPriority = ((result?.PriorityRank * 2) + (priorityRank * 4)) / 5;
+                result.showFormulaOnHover = `((TaskPriority : ${result?.PriorityRank} * 2) + (ProjectPriority : ${priorityRank} * 4)) / 5`
+            } else {
                 smartPriority = ((result?.PriorityRank) + (priorityRank * 4)) / 5;
-                result.projectPriorityOnHover = priorityRank
-                smartPriority = parseFloat(smartPriority);
+                result.showFormulaOnHover = `((TaskPriority : ${result?.PriorityRank}) + (ProjectPriority : ${priorityRank} * 4)) / 5`
             }
-        });
+            result.projectPriorityOnHover = priorityRank;
+            smartPriority = parseFloat(smartPriority);
+        }
     } else {
         const priorityRank = 1;
+        result.projectPriorityOnHover = priorityRank;
         if (result?.PriorityRank) {
-            smartPriority = ((result?.PriorityRank) + (priorityRank * 4)) / 5;
-            smartPriority = parseFloat(smartPriority);
+            const hasImmediateCategory = result?.TaskCategories?.some((cat: any) => cat.Title === 'Immediate');
+            const hasEmailNotificationCategory = result?.TaskCategories?.some((cat: any) => cat.Title === 'Email Notification');
+            if (hasImmediateCategory) {
+                smartPriority = ((result?.PriorityRank) + (priorityRank * 4)) / 5 * 2;
+                smartPriority = parseFloat(smartPriority);
+                result.showFormulaOnHover = `((TaskPriority : ${result?.PriorityRank}) + (ProjectPriority : ${priorityRank} * 4)) / 5 * 2`
+            } else if (hasEmailNotificationCategory) {
+                smartPriority = ((result?.PriorityRank * 2) + (priorityRank * 4)) / 5;
+                smartPriority = parseFloat(smartPriority);
+                result.showFormulaOnHover = `((TaskPriority : ${result?.PriorityRank} * 2) + (ProjectPriority : ${priorityRank} * 4)) / 5`
+            } else {
+                smartPriority = ((result?.PriorityRank) + (priorityRank * 4)) / 5;
+                smartPriority = parseFloat(smartPriority);
+                result.showFormulaOnHover = `((TaskPriority : ${result?.PriorityRank}) + (ProjectPriority : ${priorityRank} * 4)) / 5`
+            }
         }
     }
     return smartPriority;
