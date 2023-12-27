@@ -46,6 +46,14 @@ const TopNavigation = (dynamicData: any) => {
   const [isVisible, setisVisible] = React.useState(false);
   const [isNoShow, setisNoShow] = React.useState(false);
   const [owner, setOwner] = React.useState(false);
+  try {
+    $("#spPageCanvasContent").removeClass();
+    $("#spPageCanvasContent").addClass("hundred");
+    $("#workbenchPageContent").removeClass();
+    $("#workbenchPageContent").addClass("hundred");
+  } catch (e) {
+    console.log(e);
+  }
 
   const [editableOrder, setEditableOrder] = React.useState(null);
 
