@@ -21,6 +21,7 @@ import {
 } from "@tanstack/react-table";
 import GlobalCommanTable from '../../../globalComponents/GroupByReactTableComponents/GlobalCommanTable';
 import { useEffect, useState } from 'react';
+import HtmlEditorCard from '../../helloSpfx/components/FloraCommentBox';
 let portfiloData: any[] = [];
 const HRweb = new Web('https://hhhhteams.sharepoint.com/sites/HHHH/HR');
 
@@ -81,27 +82,33 @@ const LandingPage = (props: any) => {
         });
     };
     const delPosition = (itm: any) => {
-        HRweb.lists
-            .getById('E79DFD6D-18AA-40E2-8D6E-930A37FE54E4')
-            .items.getById(itm.Id).recycle().then(() => {
-                let indexToRemove = -1;
-                for (let i = 0; i < portfiloData.length; i++) {
-                    if (portfiloData[i].Id === itm.Id) {
-                        indexToRemove = i;
-                        break;
+        const confirmDelete = window.confirm("Are you sure you want to delete this item?");
+        if (confirmDelete) {
+            HRweb.lists
+                .getById('E79DFD6D-18AA-40E2-8D6E-930A37FE54E4')
+                .items.getById(itm.Id).recycle().then(() => {
+                    let indexToRemove = -1;
+                    for (let i = 0; i < portfiloData.length; i++) {
+                        if (portfiloData[i].Id === itm.Id) {
+                            indexToRemove = i;
+                            break;
+                        }
                     }
-                }
-
-                if (indexToRemove !== -1) {
-                    portfiloData.splice(indexToRemove, 1);
-                    console.log("Item with specified Id removed from the array");
-                } else {
-                    console.log("Item with specified Id not found in the array");
-                }
-            }).catch((error: any) => {
-                console.log(error)
-            })
+                    if (indexToRemove !== -1) {
+                        portfiloData.splice(indexToRemove, 1);
+                        console.log("Item with specified Id removed from the array");
+                    } else {
+                        console.log("Item with specified Id not found in the array");
+                    }
+                }).catch((error: any) => {
+                    console.log(error)
+                })
+        }
     }
+    const stripHtmlTags = (html: string) => {
+        const doc = new DOMParser().parseFromString(html, 'text/html');
+        return doc.body.textContent || "";
+    };
     const columns = React.useMemo<ColumnDef<any, unknown>[]>(
         () => [
             {
@@ -130,7 +137,7 @@ const LandingPage = (props: any) => {
                 placeholder: "Title",
                 resetColumnFilters: false,
                 header: "",
-                size: 155
+                size: 157
             },
 
             {
@@ -152,10 +159,28 @@ const LandingPage = (props: any) => {
                 placeholder: "Skills",
                 resetColumnFilters: false,
                 header: "",
-                size: 400,
+                size: 500,
             },
+            {
+                accessorFn: (row) => row?.PositionDescription,
+                cell: ({ row, getValue }) => (
+                    <span className="columnFixedTitle">
+                        <span
+                            className="text-content"
+                            title={stripHtmlTags(row.original.PositionDescription)}
+                        >
+                            <div dangerouslySetInnerHTML={{ __html: row.original.PositionDescription ? stripHtmlTags(row.original.PositionDescription) : '' }} />
+                        </span>
+                    </span>
 
-            { accessorKey: "PositionDescription", placeholder: "Position Description", header: "", },
+                ),
+                id: "PositionDescription",
+                placeholder: "PositionDescription",
+                resetColumnFilters: false,
+                header: "",
+                size: 500
+            },
+            //{ accessorKey: "PositionDescription", placeholder: "Position Description", header: "", },
             {
                 cell: ({ row }) => (
                     <div className='alignCenter'>
@@ -392,10 +417,20 @@ const LandingPage = (props: any) => {
             </>
         );
     };
+    const HtmlEditorCallBackAdd = React.useCallback((EditorData: any) => {
+        if (EditorData.length > 8) {
+            setjobDescription(EditorData);
+        }
+    }, [])
+    const HtmlEditorCallBackEdit = React.useCallback((EditorDataEdit: any) => {
+        if (EditorDataEdit.length > 8) {
+            setEdittableItem({ ...edittableItem, PositionDescription: EditorDataEdit });
+        }
+    }, [edittableItem]);
 
     return (
         <>
-        <h2 className='heading'>Recruitment-Landing-Page</h2>
+            <h2 className='heading'>Recruitment-LandingPage</h2>
             <div className="container">
                 <div className="mb-5 clearfix">
                     <div className="text-right">
@@ -430,12 +465,16 @@ const LandingPage = (props: any) => {
                     </div>
                     <div className="input-group my-3">
                         <div className="full-width">Job Description</div>
-                        <textarea
+                        <HtmlEditorCard
+                            editorValue={jobDescription !== undefined && jobDescription !== null ? jobDescription : ''}
+                            HtmlEditorStateChange={HtmlEditorCallBackAdd}
+                        />
+                        {/* <textarea
                             className="form-control"
                             value={jobDescription}
                             onChange={handleDescriptionChange}
                             rows={3} // Set the number of rows as needed
-                        />
+                        /> */}
                     </div>
                     <div className="input-group mb-3">
                         <label className="full_width">Skills Required</label>
@@ -535,12 +574,12 @@ const LandingPage = (props: any) => {
                         </div>
                         <div className="input-group my-3">
                             <div className="full-width">Job Description</div>
-                            <textarea
-                                className="form-control"
-                                value={edittableItem ? edittableItem.PositionDescription : ''}
-                                onChange={(e) => setEdittableItem({ ...edittableItem, PositionDescription: e.target.value })}
-                                rows={3} // Set the number of rows as needed
-                            />
+                            {edittableItem && (
+                                <HtmlEditorCard
+                                    editorValue={edittableItem.PositionDescription || ''}
+                                    HtmlEditorStateChange={HtmlEditorCallBackEdit}
+                                />
+                            )}
                         </div>
                         <div className="input-group">
                             <label className="full_width">Skills Required</label>

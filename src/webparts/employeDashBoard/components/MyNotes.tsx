@@ -3,10 +3,10 @@ import { useEffect, useState } from 'react';
 import { myContextValue } from '../../../globalComponents/globalCommon'
 import Tooltip from '../../../globalComponents/Tooltip';
 import { Web } from 'sp-pnp-js';
-import { Modal, Panel, PanelType } from 'office-ui-fabric-react';
+import { Panel, PanelType } from 'office-ui-fabric-react';
 import { AiFillLeftCircle, AiFillRightCircle, AiOutlineLeft, AiOutlineRight } from 'react-icons/ai';
 import moment from 'moment';
-const MyNotes = () => {
+const MyNotes = (MyNotes: any) => {
   const ContextData: any = React.useContext(myContextValue);
   const [myNoteData, setMyNoteData] = React.useState<any>([]);
   const [isAddNoteModalOpen, setIsAddNoteModalOpen] = React.useState<any>(false);
@@ -21,19 +21,12 @@ const MyNotes = () => {
   const GetMyNotesData = async () => {
     if (ContextData?.currentUserData != undefined) {
       const web = new Web(ContextData?.siteUrl);
-      await web.lists
-        .getById('2163fbd9-b6f0-48b8-bc1b-bb48e43f188d')
-        .items.select("Id,Title,FeedBack,Created,Modified,Author/Title,Author/Id ,Editor/Title,Editor/Id")
-        .expand("Author,Editor")
-        .filter(`Author/Id eq ${ContextData?.currentUserData?.AssingedToUser?.Id}`)
-        .orderBy("Modified desc")
-        .getAll().then(async (data: any) => {
-          if (data.length > 0) {
-            setMyNoteData(data)
-          }
-        }).catch((error: any) => {
-          console.log(error)
-        })
+      await web.lists.getById(ContextData?.propsValue?.MyNotesId).items.select("Id,Title,FeedBack,Created,Modified,Author/Title,Author/Id ,Editor/Title,Editor/Id").expand("Author,Editor").filter(`Author/Id eq ${ContextData?.currentUserData?.AssingedToUser?.Id}`).orderBy("Modified desc").getAll().then(async (data: any) => {
+        if (data.length > 0)
+          setMyNoteData(data)
+      }).catch((error: any) => {
+        console.log(error)
+      })
     }
   }
   const CloseNotepopup = () => {
@@ -56,55 +49,41 @@ const MyNotes = () => {
     let web = new Web(ContextData?.siteUrl);
     if (isAddNoteModalOpen) {
       console.log(noteComment)
-      await web.lists
-        .getById('2163fbd9-b6f0-48b8-bc1b-bb48e43f188d').items
-        .add({
-          Title: noteTitle,
-          FeedBack: noteComment,
-        }).then((data: any) => {
-          console.log(data)
-          CloseNotepopup();
-          GetMyNotesData()
-        })
-        .catch((error: any) => {
-          console.log(error)
-        })
-    } else {
-      await web.lists
-        .getById('2163fbd9-b6f0-48b8-bc1b-bb48e43f188d').items.getById(editData.Id)
-        .update({
-          Title: noteTitle,
-          FeedBack: noteComment,
-        }).then((data: any) => {
-          console.log(data)
-          CloseNotepopup();
-          GetMyNotesData();
-        })
-        .catch((error: any) => {
-          console.log(error)
-        })
+      await web.lists.getById(ContextData?.propsValue?.MyNotesId).items.add({
+        Title: noteTitle, FeedBack: noteComment,
+      }).then((data: any) => {
+        console.log(data)
+        CloseNotepopup();
+        GetMyNotesData()
+      }).catch((error: any) => {
+        console.log(error)
+      })
     }
-
-
+    else {
+      await web.lists.getById(ContextData?.propsValue?.MyNotesId).items.getById(editData.Id).update({
+        Title: noteTitle, FeedBack: noteComment,
+      }).then((data: any) => {
+        console.log(data)
+        CloseNotepopup();
+        GetMyNotesData();
+      }).catch((error: any) => {
+        console.log(error)
+      })
+    }
   }
   const deleteMyNote = (id: any) => {
     const confirmDeletion = window.confirm("Are you sure you want to delete this note?");
     if (confirmDeletion) {
       let web = new Web(ContextData?.siteUrl);
-      web.lists
-        .getById('2163fbd9-b6f0-48b8-bc1b-bb48e43f188d').items.getById(id).recycle()
-        .then((data: any) => {
-          console.log(data);
-          CloseNotepopup();
-          GetMyNotesData();
-        })
-        .catch((error: any) => {
-          console.log(error);
-        });
-    } else {
+      web.lists.getById(ContextData?.propsValue?.MyNotesId).items.getById(id).recycle().then((data: any) => {
+        console.log(data);
+        CloseNotepopup();
+        GetMyNotesData();
+      }).catch((error: any) => {
+        console.log(error);
+      });
     }
   }
-
   const changesIndex = (button: any) => {
     if (button == "right") {
       if (selectedNoteIndex + 1 < myNoteData?.length)
@@ -134,7 +113,7 @@ const MyNotes = () => {
     <>
       <div>
         <div className='alignCenter justify-content-between p-1'>
-          <span className='fw-bold'>My Notes({myNoteData.length > 0 ? myNoteData.length : 0})</span>
+          {MyNotes?.WebpartTitle != undefined && <span className='fw-bold'>{MyNotes?.WebpartTitle}({myNoteData.length > 0 ? myNoteData.length : 0})</span>}
           {myNoteData.length == 0 &&
             <span onClick={() => setIsAddNoteModalOpen(true)} className='mx-1' title='Add Notes'>
               <svg xmlns="http://www.w3.org/2000/svg" width="17" height="18" viewBox="0 0 17 18" fill="none">
@@ -150,7 +129,6 @@ const MyNotes = () => {
               return (
                 <>
                   <div className='alignCenter justify-content-between p-1'>
-                    {/* <div className='boldClable'>{items.Title} </div> */}
                     <div className='ml-auto alignCenter'>
                       <span onClick={() => setIsAddNoteModalOpen(true)} className='mx-1' title='Add Notes'>
                         <svg xmlns="http://www.w3.org/2000/svg" width="17" height="18" viewBox="0 0 17 18" fill="none">
@@ -170,20 +148,16 @@ const MyNotes = () => {
               )
             }
           })}
-          <div className='text-end nextBeforeSec'>
+          {myNoteData?.length > 0 && <div className='text-end nextBeforeSec'>
             <span className='mx-1'>{selectedNoteIndex + 1}</span>/<span className='mx-1'>{myNoteData.length}</span>
             <span title='Tap to Previous Notes' onClick={() => changesIndex("left")} className={selectedNoteIndex > 0 ? "active" : ""}><AiFillLeftCircle /></span>
             <span title='Tap to Next Notes' onClick={() => changesIndex("right")} className={selectedNoteIndex + 1 < myNoteData?.length ? "active" : ""}><AiFillRightCircle /></span>
-          </div>
-
+          </div>}
+          {myNoteData?.length == 0 && <div className="d-flex justify-content-center">No data available</div>}
         </div>
       </div>
       <Panel onRenderHeader={onRenderCustomHeaderDocuments}
-        isOpen={isAddNoteModalOpen ? isAddNoteModalOpen : isEditNoteModalOpen}
-        onDismiss={CloseNotepopup}
-        type={PanelType.medium}
-        isBlocking={isAddNoteModalOpen ? !isAddNoteModalOpen : !isEditNoteModalOpen}>
-
+        isOpen={isAddNoteModalOpen ? isAddNoteModalOpen : isEditNoteModalOpen} onDismiss={CloseNotepopup} type={PanelType.medium} isBlocking={isAddNoteModalOpen ? !isAddNoteModalOpen : !isEditNoteModalOpen}>
         <div className="modal-body">
           <div className='input-group my-3'>
             <label className='full-width'>Add New Notes</label>

@@ -86,7 +86,7 @@ const Profilcandidate = (props: any) => {
     const EditPopupClose = () => {
         setIsEditPopupOpen(false);
     };
-    const callbackEdit = (Id:any) => {
+    const callbackEdit = (Id: any) => {
         EmployeeDetails(Id)
     }
     return (
@@ -129,11 +129,34 @@ const Profilcandidate = (props: any) => {
                             <div className='profileHead'>
                                 <div className="bg-Fa profileLeftSec col-md-3">Platform</div>
                                 <div className='bg-Ff profileRightSec col-md-9'>
-                                    {EmployeeData?.Platform && EmployeeData?.Platform.length > 0
-                                        ? EmployeeData.Platform.join(', ')
-                                        : 'No Platform specified'}
+                                    {EmployeeData?.SelectedPlatforms ? (
+                                        (() => {
+                                            try {
+                                                const platformsArray = JSON.parse(EmployeeData.SelectedPlatforms);
+
+                                                if (Array.isArray(platformsArray) && platformsArray.length > 0) {
+                                                    return platformsArray
+                                                        .filter(platform => platform.selected)
+                                                        .map((platform, index) => (
+                                                            <React.Fragment key={platform.name}>
+                                                                {index > 0 && ', '}
+                                                                {platform.name}
+                                                            </React.Fragment>
+                                                        ));
+                                                }
+                                            } catch (error) {
+                                                console.error('Error parsing SelectedPlatforms:', error);
+                                            }
+
+                                            return 'Invalid SelectedPlatforms format';
+                                        })()
+                                    ) : (
+                                        'No Platform specified'
+                                    )}
                                 </div>
                             </div>
+
+
                         </div>
 
                     </div>
