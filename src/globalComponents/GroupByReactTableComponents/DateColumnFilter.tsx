@@ -118,6 +118,7 @@ const DateColumnFilter = (item: any) => {
     return (
         <>
             <Panel
+                className='PresetDate'
                 type={PanelType.custom}
                 customWidth="450px"
                 isOpen={item?.isOpen}
