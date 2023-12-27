@@ -4,7 +4,7 @@ import {
     ColumnDef,
 } from "@tanstack/react-table";
 import PageLoader from '../../../globalComponents/pageLoader';
-import Sitecomposition from "../../../globalComponents/SiteComposition";
+import CentralizedSiteComposition from '../../../globalComponents/SiteCompositionComponents/CentralizedSiteComposition';
 import ShowClintCatogory from '../../../globalComponents/ShowClintCatogory';
 import { Web } from "sp-pnp-js";
 import * as Moment from 'moment';
@@ -16,7 +16,6 @@ import EditTaskPopup from '../../../globalComponents/EditTaskPopup/EditTaskPopup
 import GlobalCommanTable from "../../../globalComponents/GroupByReactTableComponents/GlobalCommanTable";
 import InfoIconsToolTip from '../../../globalComponents/InfoIconsToolTip/InfoIconsToolTip';
 import ReactPopperTooltipSingleLevel from '../../../globalComponents/Hierarchy-Popper-tooltipSilgleLevel/Hierarchy-Popper-tooltipSingleLevel';
-import EditSiteComposition from '../../../globalComponents/EditTaskPopup/EditSiteComposition';
 import TeamSmartFilter from '../../../globalComponents/SmartFilterGolobalBomponents/TeamSmartFilter';
 import Loader from "react-loader";
 var siteConfig: any = []
@@ -143,7 +142,7 @@ const HalfClientCategory = (props: any) => {
                     .items.select("Id", "IsVisible", "ParentID", "Color_x0020_Tag", "Title", "SmartSuggestions", "TaxType", "Description1", "Item_x005F_x0020_Cover", "listId", "siteName", "siteUrl", "SortOrder", "SmartFilters", "Selectable", "Parent/Id", "Parent/Title")
                     .top(5000)
                     .expand("Parent")
-                    .get();
+                    .getAll();
                 if (smartmeta.length > 0) {
                     smartmeta?.map((site: any) => {
                         if (site?.Title != "Master Tasks" && site?.Title != "SDC Sites" && site?.TaxType == 'Sites') {
@@ -265,7 +264,7 @@ const HalfClientCategory = (props: any) => {
                     smartmeta = await web.lists
                         .getById(config.listId)
                         .items
-                        .select("ID", "Title", "ClientCategory/Id", "Portfolio/PortfolioStructureID", "TaskID", "ParentTask/TaskID", "ParentTask/Title", "ParentTask/Id", "ClientCategory/Title", "EstimatedTimeDescription", 'ClientCategory', "Comments", "DueDate", "ClientActivityJson", "EstimatedTime", "Approver/Id", "Approver/Title", "ParentTask/Id", "ParentTask/Title", "FeedBack", "workingThisWeek", "IsTodaysTask", "AssignedTo/Id", "TaskLevel", "TaskLevel", "OffshoreComments", "AssignedTo/Title", "OffshoreImageUrl", "TaskCategories/Id", "TaskCategories/Title", "Status", "StartDate", "CompletedDate", "TeamMembers/Title", "TeamMembers/Id", "ItemRank", "PercentComplete", "Priority", "Body", "PriorityRank", "Created", "Author/Title", "Author/Id", "BasicImageInfo", "ComponentLink", "FeedBack", "ResponsibleTeam/Title", "ResponsibleTeam/Id", "TaskType/Title", "ClientTime", "Portfolio/Id", "Portfolio/Title", "Modified")
+                        .select("ID", "Title", "ClientCategory/Id", "Portfolio/PortfolioStructureID", "Sitestagging","TaskID", "ParentTask/TaskID", "ParentTask/Title", "ParentTask/Id", "ClientCategory/Title", "EstimatedTimeDescription", 'ClientCategory', "Comments", "DueDate", "ClientActivityJson", "EstimatedTime", "Approver/Id", "Approver/Title", "ParentTask/Id", "ParentTask/Title", "FeedBack", "workingThisWeek", "IsTodaysTask", "AssignedTo/Id", "TaskLevel", "TaskLevel", "OffshoreComments", "AssignedTo/Title", "OffshoreImageUrl", "TaskCategories/Id", "TaskCategories/Title", "Status", "StartDate", "CompletedDate", "TeamMembers/Title", "TeamMembers/Id", "ItemRank", "PercentComplete", "Priority", "Body", "PriorityRank", "Created", "Author/Title", "Author/Id", "BasicImageInfo", "ComponentLink", "FeedBack", "ResponsibleTeam/Title", "ResponsibleTeam/Id", "TaskType/Title", "ClientTime", "Portfolio/Id", "Portfolio/Title", "Modified")
                         .expand("TeamMembers", "Approver", "ParentTask", "ClientCategory", "AssignedTo", "TaskCategories", "Author", "ResponsibleTeam", "ParentTask", "TaskType", "Portfolio")
                         .top(4999)
                         .get();
@@ -399,9 +398,9 @@ const HalfClientCategory = (props: any) => {
                                     items.isProtectedValue = '';
                                     items.isProtectedItem = false;
                                 }
-                                if (items?.ClientTime != undefined) {
-                                    let result = siteCompositionDetails(items?.ClientTime);
-                                    items.ClientTime = JSON.parse(items?.ClientTime);
+                                if (items?.Sitestagging != undefined) {
+                                    let result = siteCompositionDetails(items?.Sitestagging);
+                                    items.Sitestagging = JSON.parse(items?.Sitestagging);
                                     items.siteCompositionSearch = result?.result;
                                     items.siteCompositionTotal = result?.total;
                                 } else {
@@ -1294,9 +1293,9 @@ const HalfClientCategory = (props: any) => {
                     {" "}
                 </EditInstituton>
             )}
-            {EditSiteCompositionStatus ? <EditSiteComposition EditData={selectedItem} context={props?.props?.Context} AllListId={AllListId} Call={TaskSiteComp} /> : ''}
+            {EditSiteCompositionStatus ? <CentralizedSiteComposition ItemDetails={selectedItem}  usedFor={'AWT'} RequiredListIds={AllListId} closePopupCallBack={TaskSiteComp} /> : ''}
             {EditSiteCompositionMaster ?
-                <Sitecomposition props={selectedItem} isDirectPopup={EditSiteCompositionMaster} callback={MasterSiteComp} sitedata={AllListId} />
+                <CentralizedSiteComposition ItemDetails={selectedItem} usedFor={'CSF'} closePopupCallBack={MasterSiteComp} RequiredListIds={AllListId} />
                 : null
             }
             {/* {pageLoaderActive ? <PageLoader /> : ''} */}

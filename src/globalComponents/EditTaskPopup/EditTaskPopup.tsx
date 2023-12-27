@@ -3322,6 +3322,7 @@ const EditTaskPopup = (Items: any) => {
             if (ApprovedStatusCount == 0) {
                 let teamMember=[];
                 let AssignedTo=[];
+            if(EditDataBackup.Categories.includes("Approval")){
                 setTaskAssignedTo([])
                 setTaskTeamMembers([])
                 teamMember.push(EditDataBackup?.TeamMembers[0])
@@ -3339,15 +3340,20 @@ const EditTaskPopup = (Items: any) => {
                     setTaskTeamMembers(teamMember);
 
                 }
+            }
                 setApprovalTaskStatus(false);
 
-            } else {
+            }
+             else {
                 let teamMember=[];
                 let AssignedTo=[];
-                teamMember.push(currentUserBackupArray?.[0]?.AssingedToUser) 
-                AssignedTo.push(currentUserBackupArray?.[0]?.AssingedToUser)
-                setTaskAssignedTo(AssignedTo)
-                setTaskTeamMembers(teamMember);
+                if(EditDataBackup.Categories.includes("Approval")){
+                    teamMember.push(currentUserBackupArray?.[0]?.AssingedToUser) 
+                    AssignedTo.push(currentUserBackupArray?.[0]?.AssingedToUser)
+                    setTaskAssignedTo(AssignedTo)
+                    setTaskTeamMembers(teamMember);
+                }
+              
                 setApprovalTaskStatus(true);
 
             }
