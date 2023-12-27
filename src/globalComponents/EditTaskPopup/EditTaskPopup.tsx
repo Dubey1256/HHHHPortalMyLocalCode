@@ -3347,7 +3347,7 @@ const EditTaskPopup = (Items: any) => {
              else {
                 let teamMember=[];
                 let AssignedTo=[];
-                if(EditDataBackup.Categories.includes("Approval")){
+                if(EditDataBackup?.Categories?.includes("Approval")){
                     teamMember.push(currentUserBackupArray?.[0]?.AssingedToUser) 
                     AssignedTo.push(currentUserBackupArray?.[0]?.AssingedToUser)
                     setTaskAssignedTo(AssignedTo)
@@ -7314,7 +7314,7 @@ const EditTaskPopup = (Items: any) => {
                                                         </div>
                                                     </div>
                                                     <div className="mx-0 row mt-2 taskservices">
-                                                        <div className="col ps-0">
+                                                        <div className="col-md-6 ps-0">
                                                             <div className="input-group mb-2">
                                                                 <label className="form-label full-width">
                                                                     Portfolio Item
