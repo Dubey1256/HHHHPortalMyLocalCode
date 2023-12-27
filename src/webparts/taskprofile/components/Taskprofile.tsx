@@ -60,7 +60,6 @@ var buttonId: any;
 let truncatedTitle: any
 let comments: any = []
 let AllClientCategories:any;
-let project: any = []
 export interface ITaskprofileState {
   Result: any;
   listName: string;
@@ -362,7 +361,7 @@ class Taskprofile extends React.Component<ITaskprofileProps, ITaskprofileState> 
     }
 
     if (taskDetails?.Project != undefined) {
-      project = this.masterTaskData.filter((items: any) => items?.Id == taskDetails?.Project?.Id)
+      taskDetails.Project = this.masterTaskData.find((items: any) => items?.Id == taskDetails?.Project?.Id)
     }
     let feedBackData: any = JSON.parse(taskDetails["FeedBack"]);
     console.log(this.masterTaskData)
@@ -382,7 +381,6 @@ class Taskprofile extends React.Component<ITaskprofileProps, ITaskprofileState> 
       ApproverHistory: taskDetails["ApproverHistory"] != null ? JSON.parse(taskDetails["ApproverHistory"]) : "",
       OffshoreComments: OffshoreComments.length > 0 ? OffshoreComments.reverse() : null,
       OffshoreImageUrl: taskDetails["OffshoreImageUrl"] != null && JSON.parse(taskDetails["OffshoreImageUrl"]),
-
       ClientCategory: taskDetails["ClientCategory"],
       siteType: taskDetails["siteType"],
       listName: taskDetails["listName"],
@@ -1831,18 +1829,19 @@ class Taskprofile extends React.Component<ITaskprofileProps, ITaskprofileState> 
         }
         this?.updateProjectComponentServices(dataUpdate)
       } else {
-        this.setState((prevState) => ({
-          Result: {
-            ...prevState.Result,
-            Project: DataItem[0],
-
-          }
-        }));
+       
         if (DataItem[0]?.Item_x0020_Type == "Project" || DataItem[0]?.Item_x0020_Type == "Sprint") {
           dataUpdate = {
             ProjectId: DataItem[0]?.Id
           }
+          this.setState((prevState) => ({
+            Result: {
+              ...prevState.Result,
+              Project: DataItem[0],
+            }
+          }))
           this?.updateProjectComponentServices(dataUpdate)
+         
         }
       }
 
@@ -2210,7 +2209,7 @@ class Taskprofile extends React.Component<ITaskprofileProps, ITaskprofileState> 
                         <dt className='bg-Fa'>Project</dt>
                         <dd className='bg-Ff full-width'>
                           <div>
-                    {this.state.Result["Project"] != undefined ? <a className="hreflink" target="_blank" data-interception="off" href={`${this.state.Result["siteUrl"]}/SitePages/Project-Management.aspx?ProjectId=${this.state.Result["Project"]?.Id}`}><span className='d-flex'><ReactPopperTooltipSingleLevel ShareWebId={`${project[0]?.PortfolioStructureID} - ${project[0]?.Title}`} row={project[0]} singleLevel={true} masterTaskData={this.masterTaskData} AllSitesTaskData={this.allDataOfTask} AllListId={AllListId} /></span></a> : null}
+                    {this.state.Result["Project"] != undefined ? <a className="hreflink" target="_blank" data-interception="off" href={`${this.state.Result["siteUrl"]}/SitePages/Project-Management.aspx?ProjectId=${this.state.Result["Project"]?.Id}`}><span className='d-flex'><ReactPopperTooltipSingleLevel ShareWebId={`${this?.state?.Result["Project"]?.PortfolioStructureID} - ${this?.state?.Result["Project"]?.Title}`} row={this?.state?.Result["Project"]} singleLevel={true} masterTaskData={this.masterTaskData} AllSitesTaskData={this.allDataOfTask} AllListId={AllListId} /></span></a> : null}
                     <span className="pull-right svg__icon--editBox svg__iconbox" onClick={() => this?.openPortfolioPopupFunction("Project")}></span> 
                           </div>
                         </dd>
