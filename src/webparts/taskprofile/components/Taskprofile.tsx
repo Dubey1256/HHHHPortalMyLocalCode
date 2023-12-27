@@ -372,7 +372,7 @@ class Taskprofile extends React.Component<ITaskprofileProps, ITaskprofileState> 
       Comments: comments != null && comments != undefined ? comments : "",
       Id: taskDetails["ID"],
       ID: taskDetails["ID"],
-      Approvee: taskDetails?.Approvee != undefined ?  this.taskUsers.find((userData:any)=>userData?.AssingedToUser?.Id==taskDetails?.Approvee?.Id): "",
+      Approvee: taskDetails?.Approvee != undefined ?  this.taskUsers.find((userData:any)=>userData?.AssingedToUser?.Id==taskDetails?.Approvee?.Id): undefined,
       TaskCategories:taskDetails["TaskCategories"],
       Project: taskDetails["Project"],
       IsTodaysTask: taskDetails["IsTodaysTask"],
@@ -553,7 +553,7 @@ class Taskprofile extends React.Component<ITaskprofileProps, ITaskprofileState> 
 
     // }
     // return ImagesInfo;
-    if(BasicImageInfo.length>0){
+    if(BasicImageInfo?.length>0){
       BasicImageInfo?.forEach(function (item: any) {
         if (item?.ImageUrl != undefined && item?.ImageUrl != "") {
           item.ImageUrl = item?.ImageUrl?.replace(
@@ -1923,20 +1923,19 @@ class Taskprofile extends React.Component<ITaskprofileProps, ITaskprofileState> 
                       {this.state.Result["Portfolio"] != null && this.state.breadCrumData.length > 0 &&
                         <li >
                           {this.state.Result["Portfolio"] != null &&
-                            <a target="_blank" data-interception="off" href={`${this.state.Result["siteUrl"]}/SitePages/Team-Portfolio.aspx`}>Team Portfolio</a>
+                            <a  className="fw-bold"  style={{color:this.state.Result["Portfolio"]?.PortfolioType?.Color}}  target="_blank" data-interception="off" href={`${this.state.Result["siteUrl"]}/SitePages/Team-Portfolio.aspx`}>Team Portfolio</a>
                           }
 
                         </li>
                       }
                       {this.state.breadCrumData?.map((breadcrumbitem: any, index: any) => {
                         return <>
-                          {breadcrumbitem?.siteType == undefined && <li>
-
-                            <a target="_blank" data-interception="off" href={`${this.state.Result["siteUrl"]}/SitePages/Portfolio-Profile.aspx?taskId=${breadcrumbitem?.Id}`}>{breadcrumbitem?.Title}</a>
+                          {breadcrumbitem?.siteType == "Master Tasks" && <li>
+                          <a   style={{color:breadcrumbitem?.PortfolioType?.Color}} className="fw-bold" target="_blank" data-interception="off" href={`${this.state.Result["siteUrl"]}/SitePages/Portfolio-Profile.aspx?taskId=${breadcrumbitem?.Id}`}>{breadcrumbitem?.Title}</a>
                           </li>}
-                          {breadcrumbitem?.siteType != undefined && <li>
+                          {breadcrumbitem?.siteType != "Master Tasks" && <li>
 
-                            <a target="_blank" data-interception="off" href={`${this.state.Result["siteUrl"]}/SitePages/Task-Profile.aspx?taskId=${breadcrumbitem?.Id}&Site=${breadcrumbitem?.siteType} `}>{breadcrumbitem?.Title}</a>
+                            <a   target="_blank" data-interception="off" href={`${this.state.Result["siteUrl"]}/SitePages/Task-Profile.aspx?taskId=${breadcrumbitem?.Id}&Site=${breadcrumbitem?.siteType} `}>{breadcrumbitem?.Title}</a>
                           </li>}
                           {this.state.breadCrumData.length == index &&
                             <li>
@@ -2297,7 +2296,7 @@ class Taskprofile extends React.Component<ITaskprofileProps, ITaskprofileState> 
                                 }
                               </div>
                             </div>
-                            <div className="boldClable border border-top-0 ps-2 py-1">
+                            <div className="spxdropdown-menu ps-2 py-1">
                               <span>Total Estimated Time : </span><span className="mx-1">{this.state.Result?.TotalEstimatedTime > 1 ? this.state.Result?.TotalEstimatedTime + " hours" : this.state.Result?.TotalEstimatedTime + " hour"} </span>
                             </div>
                           </div>
@@ -2422,7 +2421,7 @@ class Taskprofile extends React.Component<ITaskprofileProps, ITaskprofileState> 
                                             </div>
                                             <div className='m-0'>
                                               <span className="d-block">
-                                                <a style={{ cursor: 'pointer' }} onClick={(e) => this.showhideCommentBox(i)}>Add Comment</a>
+                                                <a  className="siteColor"style={{ cursor: 'pointer' }} onClick={(e) => this.showhideCommentBox(i)}>Add Comment</a>
                                               </span>
                                             </div>
                                           </div>
@@ -2586,7 +2585,7 @@ class Taskprofile extends React.Component<ITaskprofileProps, ITaskprofileState> 
                                               </div>
                                               <div className='m-0'>
                                                 <a className="d-block text-end">
-                                                  <a style={{ cursor: 'pointer' }}
+                                                  <a className='siteColor' style={{ cursor: 'pointer' }}
                                                     onClick={(e) => this.showhideCommentBoxOfSubText(j, i)}
                                                   >Add Comment</a>
                                                 </a>

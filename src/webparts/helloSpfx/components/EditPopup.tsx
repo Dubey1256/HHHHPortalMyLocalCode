@@ -41,6 +41,8 @@ const EditPopup = (props: any) => {
         { name: 'Agentur für Arbeit', selected: false },
         { name: 'Jobcenter', selected: false },
         { name: 'GesinesJobtipps', selected: false },
+        { name: 'Linkedin', selected: false },
+        { name: 'Naukri', selected: false },
         { name: 'Others', selected: false }
     ]);
     const handlePlatformClick = (e: any, platform: any) => {
@@ -251,10 +253,8 @@ const EditPopup = (props: any) => {
     };
     const removeDocuments = async (libraryTitle: string, documentId: number) => {
         try {
-            // Get the document library by title
-            const list = HRweb.lists.getByTitle('Documents');
-            await list.items.getById(documentId).delete();
-            console.log(`Document with ID ${documentId} removed successfully from ${libraryTitle}.`);
+            await HRweb.lists.getByTitle('Documents').items.getById(documentId).delete();
+            console.log(`Document with ID ${documentId} removed successfully.`);
         } catch (error) {
             console.error('Error removing document:', error);
         }

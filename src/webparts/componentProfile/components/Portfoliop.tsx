@@ -502,6 +502,8 @@ function Portfolio({ SelectedProp, TaskUser }: any) {
         if (TempArray?.length > 0) {
           AllClientCategoryDataBackup = TempArray;
           parentFunctionCall();
+        }else{
+          parentFunctionCall();
         }
       }
 
