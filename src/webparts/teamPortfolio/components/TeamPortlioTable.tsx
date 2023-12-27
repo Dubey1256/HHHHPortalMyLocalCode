@@ -492,11 +492,8 @@ function TeamPortlioTable(SelectedProp: any) {
                                 if (result?.projectStructerId && title || formattedDueDate) {
                                     result.joinedData.push(`Project ${result?.projectStructerId} - ${title}  ${formattedDueDate == "Invalid date" ? '' : formattedDueDate}`)
                                 }
-                                result.SmartPriority = globalCommon.calculateSmartPriority(result, ProjectData);
-                            } else {
-                                result.projectPriorityOnHover = 1;
-                                result.SmartPriority = globalCommon.calculateSmartPriority(result, '');
                             }
+                            result.SmartPriority = globalCommon.calculateSmartPriority(result);
                             result["Item_x0020_Type"] = "Task";
                             TasksItem.push(result);
                             AllSiteTasksDataBackGroundLoad.push(result)
@@ -731,11 +728,9 @@ function TeamPortlioTable(SelectedProp: any) {
                                 if (result?.projectStructerId && title || formattedDueDate) {
                                     result.joinedData.push(`Project ${result?.projectStructerId} - ${title}  ${formattedDueDate == "Invalid date" ? '' : formattedDueDate}`)
                                 }
-                                result.SmartPriority = globalCommon.calculateSmartPriority(result, ProjectData);
-                            } else {
-                                result.projectPriorityOnHover = 1;
-                                result.SmartPriority = globalCommon.calculateSmartPriority(result, '');
+                                
                             }
+                            result.SmartPriority = globalCommon.calculateSmartPriority(result);
                             result["Item_x0020_Type"] = "Task";
                             TasksItem.push(result);
                             AllTasksData.push(result);
