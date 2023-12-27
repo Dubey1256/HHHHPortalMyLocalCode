@@ -3322,7 +3322,7 @@ const EditTaskPopup = (Items: any) => {
             if (ApprovedStatusCount == 0) {
                 let teamMember=[];
                 let AssignedTo=[];
-            if(EditDataBackup.Categories.includes("Approval")){
+            if(EditDataBackup?.Categories?.includes("Approval")){
                 setTaskAssignedTo([])
                 setTaskTeamMembers([])
                 teamMember.push(EditDataBackup?.TeamMembers[0])
