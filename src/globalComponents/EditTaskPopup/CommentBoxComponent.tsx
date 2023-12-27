@@ -346,6 +346,7 @@ const CommentBoxComponent = (commentData: any) => {
                                             CancelCallback={postBtnHandleCallBackCancel}
                                             Context={Context}
                                             ApprovalStatus={ApprovalStatus}
+                                            SmartLightStatus={obj?.isShowLight}
                                             isCurrentUserApprover={isCurrentUserApprover}
                                         />
                                     </div>
