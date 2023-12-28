@@ -24,7 +24,14 @@ const TopNavigation = (dynamicData: any) => {
   const [sorting, setSorting] = React.useState(false);
   const [changeroot, setChangeroot] = React.useState(false);
   const [versionHistoryPopup, setVersionHistoryPopup] = React.useState(false);
-
+  try {
+    $("#spPageCanvasContent").removeClass();
+    $("#spPageCanvasContent").addClass("hundred");
+    $("#workbenchPageContent").removeClass();
+    $("#workbenchPageContent").addClass("hundred");
+  } catch (e) {
+    console.log(e);
+  }
   const [postData, setPostData] = React.useState<any>({
     Title: "",
     Url: "",
