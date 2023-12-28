@@ -1829,6 +1829,7 @@ export const GetServiceAndComponentAllData = async (Props: any) => {
             result["siteType"] = "Master Tasks";
             result.AllTeamName = "";
             result.listId = Props.MasterTaskListID;
+            result.TaskID =  result?.PortfolioStructureID;
             result.portfolioItemsSearch = result.Item_x0020_Type;
             result.isSelected = Props?.selectedItems?.find((obj: any) => obj.Id === result.ID);
             result.TeamLeaderUser = []
@@ -1967,7 +1968,25 @@ export const GetServiceAndComponentAllData = async (Props: any) => {
                 const groupedResult = componentGrouping(result, AllMasterTaskData)
                 AllPathGeneratedProjectdata = [...AllPathGeneratedProjectdata, ...groupedResult?.PathArray];
             }
-
+            let checkIsSCProtected: any = false;
+            if (result?.SiteCompositionSettings != undefined) {
+                let TempSCSettingsData: any = JSON.parse(result?.SiteCompositionSettings);
+                if (TempSCSettingsData?.length > 0) {
+                    checkIsSCProtected = TempSCSettingsData[0].Protected;
+                }
+                result.compositionType = siteCompositionType(result?.SiteCompositionSettings);
+            } else {
+                result.compositionType = '';
+            }
+            if (Props?.usedFor !== undefined && Props?.usedFor == "Site-Composition") {
+                if (checkIsSCProtected) {
+                    result.IsSCProtected = true;
+                    result.IsSCProtectedStatus = "Protected";
+                } else {
+                    result.IsSCProtected = false;
+                    result.IsSCProtectedStatus = "";
+                }
+            }
         });
         ProjectData = AllMasterTaskData?.filter(
             (projectItem: any) => projectItem.Item_x0020_Type === "Project"
@@ -2144,7 +2163,7 @@ export const loadAllTimeEntry = async (timesheetListConfig: any) => {
     }
 }
 export const loadAllSiteTasks = async (allListId: any, filter: any) => {
-    let query = "Id,Title,FeedBack,PriorityRank,Remark,Project/PriorityRank,ParentTask/Id,ParentTask/Title,ParentTask/TaskID,TaskID,SmartInformation/Id,SmartInformation/Title,Project/Id,Project/Title,workingThisWeek,EstimatedTime,TaskLevel,TaskLevel,OffshoreImageUrl,OffshoreComments,ClientTime,Sitestagging,Priority,Status,ItemRank,IsTodaysTask,Body,Portfolio/Id,Portfolio/Title,Portfolio/PortfolioStructureID,PercentComplete,Categories,StartDate,PriorityRank,DueDate,TaskType/Id,TaskType/Title,Created,Modified,Author/Id,Author/Title,TaskCategories/Id,TaskCategories/Title,AssignedTo/Id,AssignedTo/Title,TeamMembers/Id,TeamMembers/Title,ResponsibleTeam/Id,ResponsibleTeam/Title,ClientCategory/Id,ClientCategory/Title&$expand=AssignedTo,Project,ParentTask,SmartInformation,Author,Portfolio,TaskType,TeamMembers,ResponsibleTeam,TaskCategories,ClientCategory"
+    let query = "Id,Title,FeedBack,PriorityRank,Remark,Project/PriorityRank,ParentTask/Id,ParentTask/Title,ParentTask/TaskID,TaskID,SmartInformation/Id,SmartInformation/Title,Project/Id,Project/Title,workingThisWeek,EstimatedTime,TaskLevel,TaskLevel,OffshoreImageUrl,OffshoreComments,SiteCompositionSettings,Sitestagging,Priority,Status,ItemRank,IsTodaysTask,Body,Portfolio/Id,Portfolio/Title,Portfolio/PortfolioStructureID,PercentComplete,Categories,StartDate,PriorityRank,DueDate,TaskType/Id,TaskType/Title,Created,Modified,Author/Id,Author/Title,TaskCategories/Id,TaskCategories/Title,AssignedTo/Id,AssignedTo/Title,TeamMembers/Id,TeamMembers/Title,ResponsibleTeam/Id,ResponsibleTeam/Title,ClientCategory/Id,ClientCategory/Title&$expand=AssignedTo,Project,ParentTask,SmartInformation,Author,Portfolio,TaskType,TeamMembers,ResponsibleTeam,TaskCategories,ClientCategory"
     if (filter != undefined) {
         query += `&$filter=${filter}`
     }
@@ -2160,12 +2179,33 @@ export const loadAllSiteTasks = async (allListId: any, filter: any) => {
                     task.siteType = site.Title;
                     task.listId = site.listId;
                     task.siteUrl = site.siteUrl.Url;
+                    if (task.PercentComplete != undefined) {
+                        task.PercentComplete = (task.PercentComplete * 100).toFixed(0);
+                    }
                     if (task?.Portfolio?.Id != undefined) {
                         task.portfolio = task?.Portfolio;
                         task.PortfolioTitle = task?.Portfolio?.Title;
-                        // task["Portfoliotype"] = "Component";
+                    }
+                    let checkIsSCProtected: any = false;
+                    task.DisplayCreateDate = moment(task.Created).format("DD/MM/YYYY");
+                    if (task?.SiteCompositionSettings != undefined) {
+                        let TempSCSettingsData: any = JSON.parse(task?.SiteCompositionSettings);
+                        if (TempSCSettingsData?.length > 0) {
+                            checkIsSCProtected = TempSCSettingsData[0].Protected;
+                        }
+                        task.compositionType = siteCompositionType(task?.SiteCompositionSettings);
+                    } else {
+                        task.compositionType = '';
+                    }
+                    if (checkIsSCProtected) {
+                        task.IsSCProtected = true;
+                        task.IsSCProtectedStatus = "Protected";
+                    } else {
+                        task.IsSCProtected = false;
+                        task.IsSCProtectedStatus = "";
                     }
                     task["SiteIcon"] = site?.Item_x005F_x0020_Cover?.Url;
+                    task.portfolioItemsSearch = site.Title;
                     task.TaskID = GetTaskId(task);
                 })
                 AllSiteTasks = [...AllSiteTasks, ...data];
@@ -2285,4 +2325,20 @@ export const calculateSmartPriority = (result: any) => {
         }
     }
     return smartPriority;
+}
+
+function siteCompositionType(jsonStr: any) {
+    var data = JSON.parse(jsonStr);
+    try {
+        data = data[0];
+        for (var key in data) {
+            if (data?.hasOwnProperty(key) && data[key] === true) {
+                return key;
+            }
+        }
+        return '';
+    } catch (error) {
+        console.log(error)
+        return '';
+    }
 }
