@@ -400,6 +400,7 @@ export default function subCommentComponent(SubTextItemsArray: any) {
                                             CancelCallback={postBtnHandleCallBackCancel}
                                             Context={Context}
                                             ApprovalStatus={ApprovalStatus}
+                                            SmartLightStatus={obj?.isShowLight}
                                             isCurrentUserApprover={isCurrentUserApprover}
                                         />
                                     </div>

@@ -351,8 +351,8 @@ export default function SiteStructureTool(Props: any) {
                 <div className='alignCenter'>
                     <h2 className="heading">Site-Structure Management
                     </h2>
-                    <a className='ml-auto fw-semibold' data-interception="off"
-                        target="_blank">Old Site-Structure Management</a>
+                    {/* <a className='ml-auto fw-semibold' data-interception="off"
+                        target="_blank">Old Site-Structure Management</a> */}
                 </div>
             </section >
             {/* <button
