@@ -5,7 +5,7 @@ import { Button, Tabs, Tab } from 'react-bootstrap';
 import moment from 'moment';
 import { Web } from 'sp-pnp-js';
 import HtmlEditorCard from '../../../globalComponents/HtmlEditor/HtmlEditor';
-import ImagesC from '../../EditPopupFiles/Image';
+import ImagesC from '../../taskprofile/components/ImageTabComponent';
 import ServiceComponentPortfolioPopup from '../../../globalComponents/EditTaskPopup/ServiceComponentPortfolioPopup';
 var portfolioItemColor: any = "";
 //import Mycontext from './RelevantDocuments'
