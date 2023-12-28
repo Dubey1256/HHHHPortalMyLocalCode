@@ -17,6 +17,7 @@ import InfoIconsToolTip from "../InfoIconsToolTip/InfoIconsToolTip";
 import ClientCategoryPopup from "./SCClientCategoryPopup";
 import SmartTotalTime from '../EditTaskPopup/SmartTimeTotal';
 import { SlArrowDown, SlArrowRight } from "react-icons/sl";
+import moment from "moment";
 let AllSiteDataBackup: any = [];
 let AllClientCategoryDataBackup: any = [];
 let ComponentChildData: any = [];
@@ -281,7 +282,7 @@ const CentralizedSiteComposition = (Props: any) => {
     const loadAllSitesData = async (usedForLoad: any) => {
         setLoaded(false);
         if (usedForLoad == "Individual-Site") {
-            GlobalAllSiteData = await GetIdividualSiteAllData();
+            GlobalAllSiteData = await GetIndividualSiteAllData();
 
         }
         if (usedForLoad == "All-Sites") {
@@ -338,7 +339,7 @@ const CentralizedSiteComposition = (Props: any) => {
         }
     }
 
-    const GetIdividualSiteAllData = async () => {
+    const GetIndividualSiteAllData = async () => {
         let query: any = "Id,Title,FeedBack,PriorityRank,Remark,Project/PriorityRank,ParentTask/Id,ParentTask/Title,ParentTask/TaskID,TaskID,SmartInformation/Id,SmartInformation/Title,Project/Id,Project/Title,workingThisWeek,EstimatedTime,TaskLevel,TaskLevel,OffshoreImageUrl,OffshoreComments,ClientTime,Priority,Status,ItemRank,IsTodaysTask,Body,Portfolio/Id,Portfolio/Title,Portfolio/PortfolioStructureID,PercentComplete,Categories,StartDate,PriorityRank,DueDate,TaskType/Id,TaskType/Title,Created,Modified,Author/Id,Author/Title,TaskCategories/Id,TaskCategories/Title,AssignedTo/Id,AssignedTo/Title,TeamMembers/Id,TeamMembers/Title,ResponsibleTeam/Id,ResponsibleTeam/Title,ClientCategory/Id,ClientCategory/Title&$expand=AssignedTo,Project,ParentTask,SmartInformation,Author,Portfolio,TaskType,TeamMembers,ResponsibleTeam,TaskCategories,ClientCategory"
         try {
             const data = await web.lists.getById(ItemDetails?.listId).items.select(query).getAll();
@@ -350,6 +351,24 @@ const CentralizedSiteComposition = (Props: any) => {
                 if (task?.Portfolio?.Id != undefined) {
                     task.portfolio = task?.Portfolio;
                     task.PortfolioTitle = task?.Portfolio?.Title;
+                }
+                let checkIsSCProtected: any = false;
+                task.DisplayCreateDate = moment(task.Created).format("DD/MM/YYYY");
+                if (task?.SiteCompositionSettings != undefined) {
+                    let TempSCSettingsData: any = JSON.parse(task?.SiteCompositionSettings);
+                    if (TempSCSettingsData?.length > 0) {
+                        checkIsSCProtected = TempSCSettingsData[0].Protected;
+                    }
+                    task.compositionType = siteCompositionType(task?.SiteCompositionSettings);
+                } else {
+                    task.compositionType = '';
+                }
+                if (checkIsSCProtected) {
+                    task.IsSCProtected = true;
+                    task.IsSCProtectedStatus = "Protected";
+                } else {
+                    task.IsSCProtected = false;
+                    task.IsSCProtectedStatus = "";
                 }
             })
             return data;
@@ -692,8 +711,8 @@ const CentralizedSiteComposition = (Props: any) => {
                 <div className="subheading siteColor">
                     Update Site Composition For - [ {SelectedItemName} ]
                 </div>
-                <div className="alignCenter">
-                    <div className="alignCenter me-2">
+                <div className="alignCenter mb-3 me-1">
+                    <div className="alignCenter">
                         <label className="switch me-2 siteColor" htmlFor="checkbox-Protected">
                             <input
                                 checked={IsMakeSCProtected}
