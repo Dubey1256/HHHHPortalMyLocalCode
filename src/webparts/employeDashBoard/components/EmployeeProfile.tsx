@@ -147,7 +147,7 @@ const EmployeProfile = (props: any) => {
     let isExists = false;
     for (let index = 0; index < array.length; index++) {
       let item = array[index];
-      if (item.Id == items.Id && item?.siteType.toLowerCase() == items?.siteType.toLowerCase()) {
+      if (item.Id == items.Id && items?.siteType != undefined && items?.siteType != '' && item?.siteType != undefined && item?.siteType != '' && item?.siteType.toLowerCase() == items?.siteType.toLowerCase()) {
         isExists = true;
         break;
       }
@@ -224,20 +224,22 @@ const EmployeProfile = (props: any) => {
             });
           }
         })
+
         if (count == dataLength.length) {
           var today = new Date();
           var time = today.getHours() + ":" + today.getMinutes();
           var dateTime = time;
           setCurrentTime(dateTime)
-          const seen = new Set();
-          const array: any = allData.filter((item: any) => {
-            const keyValue: any = item['Id'];
-            if (!seen.has(keyValue)) {
-              seen.add(keyValue);
-              return true;
-            }
-            return false;
-          });
+          const array: any=allData
+         // const seen = new Set();
+          // const array: any = allData.filter((item: any) => {
+          //   const keyValue: any = item['Id'];
+          //   if (!seen.has(keyValue)) {
+          //     seen.add(keyValue);
+          //     return true;
+          //   }
+          //   return false;
+          // });
           let DraftArray: any[] = [];
           let TodaysTask: any = [];
           let BottleneckTask: any = [];
