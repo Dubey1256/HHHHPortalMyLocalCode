@@ -4,6 +4,7 @@
 /* eslint-disable @typescript-eslint/no-unused-vars */
 import { Panel, PrimaryButton, TextField, Dropdown, PanelType, IconButton } from 'office-ui-fabric-react';
 import * as React from 'react';
+import Moment from "moment";
 import Tooltip from '../../../globalComponents/Tooltip';
 import { Item, sp, Web } from 'sp-pnp-js';
 import {
@@ -62,7 +63,13 @@ const LandingPage = (props: any) => {
         console.log(elem)
     }, []);
     const getListData = () => {
-        HRweb.lists.getById('e79dfd6d-18aa-40e2-8d6e-930a37fe54e4').items.getAll().then((response: any) => {
+        HRweb.lists
+            .getById('e79dfd6d-18aa-40e2-8d6e-930a37fe54e4')
+            .items
+            .select('Id', 'Title', 'PositionTitle', 'PositionDescription', 'JobSkills', 'Created', 'Modified', 'Author/Id', 'Author/Title', 'Editor/Id', 'Editor/Title')
+            .expand('Author', 'Editor')
+            .getAll()
+            .then((response: any) => { 
             const updatedData = response.map((itm: { JobSkills: string | undefined; ImpSkills?: { itemParentId: any; }[]; Id: any; }) => {
                 if (itm.JobSkills !== undefined && itm.JobSkills !== '') {
                     const impSkills = JSON.parse(itm.JobSkills).map((skill: { itemParentId: any; }) => ({
@@ -393,7 +400,7 @@ const LandingPage = (props: any) => {
                 <div className='subheading'>
                     Add New Position
                 </div>
-                <Tooltip ComponentId='4430' />
+                <Tooltip ComponentId='7927' />
             </>
         );
     };
@@ -403,7 +410,7 @@ const LandingPage = (props: any) => {
                 <div className='subheading'>
                     Add New Skills
                 </div>
-                <Tooltip ComponentId='4430' />
+                <Tooltip ComponentId='7928' />
             </>
         );
     };
@@ -411,9 +418,9 @@ const LandingPage = (props: any) => {
         return (
             <>
                 <div className='subheading'>
-                    Edit Position {edittableItem ? edittableItem.Title : ''}
+                    Edit Position - {edittableItem ? edittableItem.Title : ''}
                 </div>
-
+                <Tooltip ComponentId='7929' />
             </>
         );
     };
@@ -605,14 +612,53 @@ const LandingPage = (props: any) => {
                             </div>
                         </div>
                     </div>
-                </div>
-
-                <footer className="py-2 clearfix">
-                    <div className="float-end text-end">
-                        <button onClick={updatePosition} type='button' className='btn btn-primary'>Save</button>
-                        <button onClick={editPositionClose} type='button' className='btn btn-default ms-1'>Cancel</button>
+                    <footer className="bg-f4 fixed-bottom position-absolute px-4 py-2">
+                        <div className="align-items-center d-flex justify-content-between me-3">
+                            <div>
+                                <div className="">
+                                    Created{" "}
+                                    <span className="font-weight-normal siteColor">
+                                        {" "}
+                                        {edittableItem?.Created
+                                            ? Moment(edittableItem?.Created).format("DD/MM/YYYY")
+                                            : ""}{" "}
+                                    </span>{" "}
+                                    By{" "}
+                                    <span className="font-weight-normal siteColor">
+                                        {edittableItem?.Author?.Title ? edittableItem?.Author?.Title : ""}
+                                    </span>
+                                </div>
+                                <div>
+                                    Last modified{" "}
+                                    <span className="font-weight-normal siteColor">
+                                        {" "}
+                                        {edittableItem?.Modified
+                                            ? Moment(edittableItem?.Modified).format("DD/MM/YYYY")
+                                            : ""}
+                                    </span>{" "}
+                                    By{" "}
+                                    <span className="font-weight-normal siteColor">
+                                        {edittableItem?.Editor?.Title ? edittableItem?.Editor.Title : ""}
+                                    </span>
+                                </div>
+                                <div>
+                                    <a className="hreflink siteColor">
+                                        <span className="alignIcon svg__iconbox hreflink mini svg__icon--trash"></span>
+                                        <span
+                                            onClick={() => delPosition(edittableItem?.ID)}
+                                        >
+                                            Delete This Item
+                                        </span>
+                                    </a>
+                                </div>
+                            </div>
+                            <div className="float-end text-end">
+                                <button onClick={updatePosition} type='button' className='btn btn-primary'>Save</button>
+                                <button onClick={editPositionClose} type='button' className='btn btn-default ms-1'>Cancel</button>
+                            </div>
+                        </div>
+                    </footer>
                     </div>
-                </footer>
             </Panel>
         </>
     );
