@@ -6,10 +6,11 @@ import { Panel, PrimaryButton, TextField, Dropdown, PanelType } from 'office-ui-
 import * as React from 'react';
 import { Item, sp, Web } from 'sp-pnp-js';
 import Moment from "moment";
-//import styles from './HelloSpfx.module.scss';
+import styles from './HelloSpfx.module.scss';
 import HtmlEditorCard from './FloraCommentBox';
 import { useEffect, useState } from 'react';
 import StarRating from './StarRating';
+
 import Tooltip from '../../../globalComponents/Tooltip';
 import './Recruitment.css'
 import CreateContactComponent from '../../contactSearch/components/contact-search/popup-components/CreateContact';
@@ -17,9 +18,7 @@ import moment from 'moment-timezone';
 const skillArray: any[] = [];
 let EmployeeData: any;
 const HRweb = new Web('https://hhhhteams.sharepoint.com/sites/HHHH/HR');
-let count = 0
 const EditPopup = (props: any) => {
-    count++
     const [CandidateTitle, setCandidateTitle] = useState(props.item.CandidateName);
     const [Email, setEmail] = useState(props.item.Email);
     const [PhoneNumber, setPhoneNumber] = useState(props.item.PhoneNumber);
@@ -28,14 +27,10 @@ const EditPopup = (props: any) => {
     const [selectedStatus, setSelectedStatus] = useState(props.item.Status0);
     const [Motivation, setMotivation] = useState(props.item.Motivation)
     const [CreateContactStatus, setCreateContactStatus] = useState(false)
+    const [experienceYears, setExperienceYears] = useState<number>();
+    const [experienceMonths, setExperienceMonths] = useState<number>();
     const star = props.item.IsFavorite ? '⭐' : '';
     const Status = ['New Candidate', 'Under Consideration', 'Interview', 'Negotiation', 'Hired', 'Rejected'];
-    const [Plats, setPlats] = useState<any[]>([]);
-    const [localRatings, setLocalRatings] = useState(props.item?.ratings || []);
-    const [TaggedDocuments, setTaggedDocuments] = useState<any[]>([]);
-    const [showTextInput, setShowTextInput] = useState(false);
-    const [otherChoice, setOtherChoice] = useState('');
-    const [listData, setListData] = useState([]);
     const [platformChoices, setPlatformChoices] = useState([
         { name: 'Indeed', selected: false },
         { name: 'Agentur für Arbeit', selected: false },
@@ -45,39 +40,39 @@ const EditPopup = (props: any) => {
         { name: 'Naukri', selected: false },
         { name: 'Others', selected: false }
     ]);
-    const handlePlatformClick = (e: any, platform: any) => {
-        const updatedChoices = platformChoices.map((item) =>
-            item.name === platform.name ? { ...item, selected: e.target.checked } : item
+    const [Plats, setPlats] = useState<any[]>([]);
+    const [localRatings, setLocalRatings] = useState(props.item?.ratings || []);
+    const [TaggedDocuments, setTaggedDocuments] = useState<any[]>([]);
+    const [showTextInput, setShowTextInput] = useState(false);
+    const [otherChoice, setOtherChoice] = useState('');
+    const [listData, setListData] = useState([]);
+
+    const handlePlatformClick = (e: React.ChangeEvent<HTMLInputElement>, PlatformName: string) => {
+        const clickedPlatform = e.target.value; // Assuming the value of the checkbox is the platform name
+
+        setPlatformChoices((prevChoices) =>
+            prevChoices.map((choice) => {
+                if (choice.name === PlatformName) {
+                    const updatedChoice = { ...choice, selected: !choice.selected };
+                    if (updatedChoice.name === 'Others') {
+                        setShowTextInput(updatedChoice.selected); // Toggle showTextInput when "Others" is selected
+                    }
+                    return updatedChoice;
+                }
+                return choice;
+            })
         );
-        setPlatformChoices(updatedChoices);
     };
 
-    // const handlePlatformClick = (item: any) => {
-    //      console.log(item)
-    //     setPlatformChoices((prevChoices) =>
-    //         prevChoices.map((platform) =>
-    //             platform.name === item.name ? { ...platform, selected: !platform.selected } : platform
-    //         )
-    //     );
-    //     setShowTextInput(item.selected);
-    // };
-
-    // eslint-disable-next-line @typescript-eslint/explicit-function-return-type
     const handleOtherChoiceChange = (event: { target: { value: React.SetStateAction<string>; }; }) => {
         setOtherChoice(event.target.value);
     };
-    if (count == 1 && props.item.Platform != undefined && props.item.Platform != null && props.item.Platform.length != undefined && props.item.Platform.length > 0) {
-        platformChoices.forEach((item) => {
-            item.selected = props.item.Platform.some((i: any) => item.name === i);
-        });
-        setPlatformChoices(platformChoices)
-    }
     // eslint-disable-next-line eqeqeq
-    if (props.item.SelectedPlatforms !== '' && props.item.SelectedPlatforms !== '[]') {
+    if (props.item.SelectedPlatforms !== '') {
         const selectedPlatforms = JSON.parse(props.item.SelectedPlatforms);
 
         useEffect(() => {
-            let Array: any = ['Indeed', 'Agentur für Arbeit', 'Jobcenter', 'GesinesJobtipps']
+            let Array: any = ['Indeed', 'Agentur für Arbeit', 'Jobcenter', 'GesinesJobtipps', 'Linkedin', 'Naukri']
             // Check if any selected platform meets the specified conditions
             const shouldUpdateOthers = selectedPlatforms?.some((item: { selected: any; name: any }) => {
 
@@ -86,8 +81,6 @@ const EditPopup = (props: any) => {
                     !Array.includes(item.name)
                 );
             });
-
-            // If conditions are met, update Others and other unmatched values
             if (shouldUpdateOthers) {
                 const updatedChoices = platformChoices.map((choice) => {
                     if (choice.name === 'Others') {
@@ -122,24 +115,36 @@ const EditPopup = (props: any) => {
             }
         }, []);
     }
+    useEffect(() => {
+
+        const years = Math.floor(props.item.Experience);
+        const months = Math.round((props.item.Experience % 1) * 12);
 
 
-
-
+        // Update state variables
+        setExperienceYears(years);
+        setExperienceMonths(months);
+    }, [props.item.Experience]);
     //eslint-disable-next-line eqeqeq
     if (props.item.SkillRatings != '') {
         const SkillRatingsdata = JSON.parse(props.item.SkillRatings);
     }
 
     const onClose = () => {
-        count = 0
         props.EditPopupClose();
     }
     const handleEditSave = async () => {
         let updateData
+        if (platformChoices && platformChoices.length > 0) {
+            platformChoices.forEach(itm => {
+                if (itm.selected && itm.name === 'Others') {
+                    itm.name = otherChoice;
+                }
+            });
+        }
         try {
             const skillRatingsJson = JSON.stringify(localRatings);
-            const selectedPlatforms = platformChoices.filter((item) => item.selected).map((item) => item.name);
+            const platformChoicesString = JSON.stringify(platformChoices);
             updateData = {
 
                 Title: CandidateTitle,
@@ -150,8 +155,8 @@ const EditPopup = (props: any) => {
                 Remarks: overAllRemark,
                 Status0: selectedStatus,
                 Motivation: Motivation,
-                Platform: { results: selectedPlatforms },
-                SkillRatings: skillRatingsJson
+                SkillRatings: skillRatingsJson,
+                SelectedPlatforms: platformChoicesString,
 
             }
             const list = HRweb.lists.getById(props.ListID);
@@ -166,10 +171,9 @@ const EditPopup = (props: any) => {
             // Handle errors here
         } finally {
             if (selectedStatus == "Hired") {
-                count = 0
-                props.EditPopupClose()
+
+
             } else {
-                count = 0
                 props.EditPopupClose(); // Close the edit popup after saving or if there's an error
             }
 
@@ -243,7 +247,6 @@ const EditPopup = (props: any) => {
     const HtmlEditorCallBack = React.useCallback((EditorData: any) => {
         if (EditorData.length > 8) {
             props.item.Motivation = EditorData;
-            setMotivation(props.item.Motivation)
         }
     }, [])
     const setRatings = (index: number, selectedRating: number) => {
@@ -252,20 +255,14 @@ const EditPopup = (props: any) => {
         setLocalRatings(updatedRatings);
     };
     const removeDocuments = async (libraryTitle: string, documentId: number) => {
-        const confirmDelete = window.confirm("Are you sure you want to delete this document?");
-        if (confirmDelete) {
-            try {
-                await HRweb.lists.getByTitle('Documents').items.getById(documentId).recycle()
-                console.log(`Document with ID ${documentId} removed successfully.`);
-                const UpdateTaggedDocument = TaggedDocuments.filter((item: any) => item.Id != documentId)
-                setTaggedDocuments(UpdateTaggedDocument);
-            } catch (error) {
-                console.error('Error removing document:', error);
-            }
-        } else {
-            alert("Deletion canceled.");
+        try {
+            // Get the document library by title
+            const list = HRweb.lists.getByTitle('Documents');
+            await list.items.getById(documentId).delete();
+            console.log(`Document with ID ${documentId} removed successfully from ${libraryTitle}.`);
+        } catch (error) {
+            console.error('Error removing document:', error);
         }
-
     };
     const delItem = (itm: any) => {
         const confirmDelete = window.confirm("Are you sure you want to delete this item?");
@@ -337,8 +334,30 @@ const EditPopup = (props: any) => {
                         <div className='col-sm-6 mb-2'>
                             <div className='input-group'>
                                 <label className='form-label full-width'>Experience</label>
-                                <input className='form-control' type='number' placeholder="Experience" defaultValue={props.item.Experience} onChange={(newValue: any) => setExperience(newValue.target.value)} />
-                            </div></div>
+                                <div className='d-flex'>
+                                    <div className='input-group'>
+                                        <span className='input-group-text'>Years</span>
+                                        <input
+                                            className='form-control'
+                                            type='text'
+                                            placeholder='Enter years'
+                                            value={experienceYears}
+                                            onChange={(e) => setExperienceYears(parseInt(e.target.value) || 0)}
+                                        />
+                                    </div>
+                                    <div className='input-group'>
+                                        <span className='input-group-text'>Months</span>
+                                        <input
+                                            className='form-control'
+                                            type='text'
+                                            placeholder='Enter months'
+                                            value={experienceMonths}
+                                            onChange={(e) => setExperienceMonths(parseInt(e.target.value) || 0)}
+                                        />
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
                     </div>
                     <div className="col-sm-12">
                         <div className='input-group'>
@@ -350,7 +369,7 @@ const EditPopup = (props: any) => {
                                             type="checkbox"
                                             className="cursor-pointer form-check-input me-1"
                                             defaultChecked={item.selected}
-                                            onChange={(e) => handlePlatformClick(e, item)}
+                                            onChange={(e) => handlePlatformClick(e, item.name)}
                                         />
                                         {item.name}
                                     </label>
@@ -519,6 +538,7 @@ const EditPopup = (props: any) => {
                             </a>
                         </div>
                     </div>
+
                     <div className="float-end text-end">
                         <button onClick={handleEditSave} type='button' className='btn btn-primary'>Save</button>
                         <button onClick={onClose} type='button' className='btn btn-default ms-1'>Cancel</button>
