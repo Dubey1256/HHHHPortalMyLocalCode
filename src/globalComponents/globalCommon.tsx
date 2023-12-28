@@ -2179,6 +2179,12 @@ export const loadAllSiteTasks = async (allListId: any, filter: any) => {
                     task.siteType = site.Title;
                     task.listId = site.listId;
                     task.siteUrl = site.siteUrl.Url;
+                    task.SmartPriority;
+                    task.TaskTypeValue = '';
+                    task.projectPriorityOnHover = '';
+                    task.taskPriorityOnHover = task?.PriorityRank;
+                    task.showFormulaOnHover;
+                 
                     if (task.PercentComplete != undefined) {
                         task.PercentComplete = (task.PercentComplete * 100).toFixed(0);
                     }

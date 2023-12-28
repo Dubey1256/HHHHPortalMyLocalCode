@@ -111,7 +111,28 @@ export default class HhhhQuickWebPart extends BaseClientSideWebPart<IHhhhQuickWe
               groupFields: [
                 PropertyPaneTextField('description', {
                   label: strings.DescriptionFieldLabel
-                })
+                }),
+                PropertyPaneTextField('MasterTaskListID', {
+                  label: "MasterTaskListID"
+                }),
+                PropertyPaneTextField('TaskUsertListID', {
+                  label: "TaskUsertListID"
+                }),
+                PropertyPaneTextField('SmartMetadataListID', {
+                  label: "SmartMetadataListID"
+                }),
+                PropertyPaneTextField('SmartInformationListID', {
+                  label: 'SmartInformationListID'
+                }),
+                PropertyPaneTextField('DocumentsListID', {
+                  label: "DocumentsListID"
+                }),
+                PropertyPaneTextField('TaskTimeSheetListID', {
+                  label: "TaskTimeSheetListID"
+                }),
+                PropertyPaneTextField('TaskTypeID', {
+                  label: "TaskTypeID"
+                }),
               ]
             }
           ]
