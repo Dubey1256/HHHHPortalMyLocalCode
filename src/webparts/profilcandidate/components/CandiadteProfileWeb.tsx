@@ -89,6 +89,20 @@ const Profilcandidate = (props: any) => {
     const callbackEdit = (Id: any) => {
         EmployeeDetails(Id)
     }
+    const formatExperience = (experience: number) => {
+        const years = Math.floor(experience);
+        const months = Math.round((experience % 1) * 12);
+
+        if (years > 0 && months > 0) {
+            return `${years} year${years > 1 ? 's' : ''} ${months} month${months > 1 ? 's' : ''}`;
+        } else if (years > 0) {
+            return `${years} year${years > 1 ? 's' : ''}`;
+        } else if (months > 0) {
+            return `${months} month${months > 1 ? 's' : ''}`;
+        } else {
+            return 'No experience';
+        }
+    };
     return (
         <myContextValue.Provider value={{ ...myContextValue, allSite: allSite, allListId: allListId, loggedInUserName: props.props?.userDisplayName }}>
             {isEditPopupOpen ? <EditPopup EditPopupClose={EditPopupClose} callbackEdit={callbackEdit} item={selectedItem} ListID={'298bc01c-710d-400e-bf48-8604d297c3c6'} /> : ''}
@@ -110,10 +124,10 @@ const Profilcandidate = (props: any) => {
                                 <div className="bg-Fa profileLeftSec col-md-3">Position</div>
                                 <div className='bg-Ff profileRightSec col-md-9'>{EmployeeData?.Positions?.Title} </div>
                             </div>
-                            <div className='profileHead'>
-                                <div className="bg-Fa profileLeftSec col-md-3">Experience</div>
-                                <div className='bg-Ff profileRightSec col-md-9'>{EmployeeData?.Experience} </div>
-                            </div>
+                                <div className='profileHead'>
+                                    <div className="bg-Fa profileLeftSec col-md-3">Experience</div>
+                                    <div className='bg-Ff profileRightSec col-md-9'>{formatExperience(EmployeeData?.Experience)} </div>
+                                </div>    
                             <div className='profileHead'>
                                 <div className="bg-Fa profileLeftSec col-md-3">Application Date</div>
                                 <div className='bg-Ff profileRightSec col-md-9'>{EmployeeData?.Date != undefined ? moment(EmployeeData?.Date)?.format('DD-MM-YYYY') : ""} </div>
@@ -148,7 +162,7 @@ const Profilcandidate = (props: any) => {
                                                 console.error('Error parsing SelectedPlatforms:', error);
                                             }
 
-                                            return 'Invalid SelectedPlatforms format';
+                                            return '';
                                         })()
                                     ) : (
                                         'No Platform specified'
@@ -168,13 +182,13 @@ const Profilcandidate = (props: any) => {
                 <div className='col-sm-12 px-2 mt-3 row'>
                     <div className='siteBdrBottom siteColor sectionHead ps-0 mb-2'>Contact Information</div>
                     <div className="col-sm-6 ps-0 alignCenter mb-3">
-                        <span className="f-20" title='Phone Number'>
+                        <span className="f-20">
                             <FaSquarePhone />
                         </span>
                         <span className="full_widivh ms-2 mt-1">{EmployeeData?.PhoneNumber}</span>
                     </div>
                     <div className="col-sm-6 pe-0 alignCenter mb-3">
-                        <span className="f-20" title='E-mail'>
+                        <span className="f-20">
                             <IoMdMail />
                         </span>
                         <span className="full_widivh ms-2 mt-1">
@@ -204,7 +218,7 @@ const Profilcandidate = (props: any) => {
                                         <span className="svg__iconbox svg__icon--document"></span>
                                     </span>
                                     <span style={{ display: document.File_x0020_Type !== 'aspx' ? 'inline' : 'none' }}>
-                                        <a href={`${document.EncodedAbsUrl}?web=1`} target="_blank">
+                                        <a href={`${document.EncodedAbsUrl}?web=1`} target="_blank" rel="noopener noreferrer">
                                             <span>
                                                 <span style={{ display: document.FileLeafRef !== 'undefined' ? 'inline' : 'none' }}>
                                                     {document.FileLeafRef}
