@@ -182,13 +182,13 @@ const Profilcandidate = (props: any) => {
                 <div className='col-sm-12 px-2 mt-3 row'>
                     <div className='siteBdrBottom siteColor sectionHead ps-0 mb-2'>Contact Information</div>
                     <div className="col-sm-6 ps-0 alignCenter mb-3">
-                        <span className="f-20">
+                        <span className="f-20" title='Phone Number'>
                             <FaSquarePhone />
                         </span>
                         <span className="full_widivh ms-2 mt-1">{EmployeeData?.PhoneNumber}</span>
                     </div>
                     <div className="col-sm-6 pe-0 alignCenter mb-3">
-                        <span className="f-20">
+                        <span className="f-20" title='E-mail'>
                             <IoMdMail />
                         </span>
                         <span className="full_widivh ms-2 mt-1">

@@ -11,6 +11,13 @@ import EditComponent from '../../EditPopupFiles/EditComponent'
 import DocumentPopup from '../../documentSearch/components/DocumentPopup';
 import ReactPopperTooltipSingleLevel from "../../../globalComponents/Hierarchy-Popper-tooltipSilgleLevel/Hierarchy-Popper-tooltipSingleLevel";
 import TimeEntryPopup from "../../../globalComponents/TimeEntry/TimeEntryComponent";
+import EditInstitutionPopup from '../../contactSearch/components/contact-search/popup-components/EditInstitutionPopup';
+import { myContextValue } from '../../../globalComponents/globalCommon'
+let allSite: any = {
+  GMBHSite: false,
+  HrSite: false,
+  MainSite: true,
+}
 let masterTaskData: any;
 let ActualSites: any = []
 export const Modified = (props: any) => {
@@ -30,6 +37,7 @@ export const Modified = (props: any) => {
   const [editValue, setEditValue] = useState<any>([]);
   const [editTasksLists, setEditTasksLists] = useState<any>();
   const [editComponentLists, setEditComponentLists] = useState<any>();
+  const [editContactLists, setEditContactLists] = useState<any>();
   const [Portfoliotyped, setPortfoliotyped] = useState<any>();
   const [editDocLists, setEditDocLists] = useState<any>();
   const [loader, setLoader] = useState<any>(false);
@@ -38,6 +46,7 @@ export const Modified = (props: any) => {
   const [isButtonDisabled, setIsButtonDisabled] = useState(true);
   const [currentTimeEntry, setCurrentTimeEntry] = useState<any>([]);
   const [istimeEntryOpen, setIsTimeEntryOpen] = useState(false);
+  const[editInstitutionPopUp,setEditInstitutionPopUp]=useState(false);
   const childRef = React.useRef<any>();
   let context = props?.props?.context
   let allDataFinal: any = [];
@@ -53,7 +62,13 @@ export const Modified = (props: any) => {
   const getAllUsers = async () => {
 
     Users = await globalCommon.loadTaskUsers();
-    setAllUsers(Users)
+    setAllUsers(Users) 
+    if (baseUrl.toLowerCase().includes("gmbh")) {
+      allSite = {
+          GMBHSite: true,
+          MainSite: false,
+      }
+  }
     const editListsTasks = {
       TaskUsertListID: props?.props?.TaskUsertListID,
       SmartMetadataListID: props?.props?.SmartMetadataListID,
@@ -89,6 +104,19 @@ export const Modified = (props: any) => {
       MasterTaskListId: props?.props.MasterTaskListID
     }
     setEditDocLists(editDocLists)
+    const contactList={
+      Context: props?.props.context,
+      HHHHContactListId: props?.props?.HHHHContactListId,
+      HHHHInstitutionListId: props?.props?.HHHHInstitutionListId,
+      MAIN_SMARTMETADATA_LISTID: props?.props?.MAIN_SMARTMETADATA_LISTID,
+      MAIN_HR_LISTID: props?.props?.MAIN_HR_LISTID,
+      ContractListID:props?.props?.ContractListID,
+      GMBH_CONTACT_SEARCH_LISTID: props?.props?.GMBH_CONTACT_SEARCH_LISTID,
+      HR_EMPLOYEE_DETAILS_LIST_ID: props?.props?.HR_EMPLOYEE_DETAILS_LIST_ID,
+      siteUrl:baseUrl,
+      jointSiteUrl: "https://hhhhteams.sharepoint.com/sites/HHHH"
+    }
+    setEditContactLists(contactList)
   }
   const getSites = async function () {
     var web: any = new Web(baseUrl);
@@ -173,19 +201,9 @@ export const Modified = (props: any) => {
     }
     // 
     if (allSite.noRepeat != true) {
-      // var selectQuerry: string = allSite.TabName == 'DOCUMENTS' ? 'Id,Title,FileLeafRef,Item_x0020_Cover,File_x0020_Type,Modified,Created,EncodedAbsUrl,Author/Id,Author/Title,Editor/Id,Editor/Title&$filter=FSObjType eq 0'
-      //   : allSite.TabName == 'FOLDERS' ? 'Id,Title,FileLeafRef,FileDirRef,File_x0020_Type,Modified,Created,EncodedAbsUrl,Author/Id,Author/Title,Editor/Id,Editor/Title&$filter=FSObjType eq 1'
-      //     : allSite.TabName == 'COMPONENTS' ? "Id,Title,PercentComplete,ItemType,DueDate,Created,Modified,TeamMembers/Id,ResponsibleTeam/Id,ResponsibleTeam/Title,Author/Id,Author/Title,AssignedTo/Id,AssignedTo/Title,Editor/Id,Priority,PriorityRank,PortfolioStructureID,ComponentCategory/Id,ComponentCategory/Title,PortfolioType/Id,PortfolioType/Title&$filter=PortfolioType/Title eq 'Component'"
-      //       : allSite.TabName == 'SERVICES' ? "Id,Title,PercentComplete,ItemType,DueDate,Created,Modified,TeamMembers/Id,ResponsibleTeam/Id,ResponsibleTeam/Title,Author/Id,Author/Title,AssignedTo/Id,AssignedTo/Title,Editor/Id,Priority,PriorityRank,PortfolioStructureID,Services/Title,Services/Id,ComponentCategory/Id,ComponentCategory/Title,PortfolioType/Id,PortfolioType/Title&$filter=PortfolioType/Title eq 'Service'"
-      //         : 'Id,Title,PercentComplete,DueDate,Created,Modified,TeamMembers/Id,ResponsibleTeam/Id,ResponsibleTeam/Title,TaskType/Id,TaskType/Title,Author/Id,Author/Title,AssignedTo/Id,AssignedTo/Title,Editor/Id,Priority,PriorityRank,Portfolio/Id,Portfolio/Title,ParentTask/Title,ParentTask/Id,TaskID';
-      // var expandQuerey: string = allSite.TabName == 'DOCUMENTS' ? 'Author,Editor'
-      //   : allSite.TabName == 'FOLDERS' ? 'Author,Editor'
-      //     : allSite.TabName == 'COMPONENTS' ? 'PortfolioType,TeamMembers,ResponsibleTeam,Author,AssignedTo,Editor,ComponentCategory'
-      //       : allSite.TabName == 'SERVICES' ? 'PortfolioType,TeamMembers,ResponsibleTeam,Author,AssignedTo,Editor,ComponentCategory,Services' :
-      //         'TeamMembers,ResponsibleTeam,TaskType,Author,AssignedTo,Editor,Portfolio,ParentTask';
       var data: any = [];
       try {
-        data = await web.lists.getById(allSite.ListId).items.select(allSite.Columns).orderBy('Modified desc').getAll();
+        data = await web.lists.getById(allSite.ListId).items.select(allSite.Columns).orderBy('Modified', false).getAll();
       }
       catch (error) {
         console.error(error)
@@ -193,7 +211,9 @@ export const Modified = (props: any) => {
       if (allSite.TabName == 'DOCUMENTS' || allSite.TabName == 'FOLDERS' || allSite.TabName == 'COMPONENTS' || allSite.TabName == 'SERVICES'||allSite.TabName=='TEAM-PORTFOLIO'||allSite.TabName=="WEB PAGES") {
         data?.map((item: any) => {
           item.siteType = allSite?.TabName;
-          item.listId = allSite.ListId;          
+          item.listId = allSite.ListId;
+          item.siteUrl = baseUrl;
+          item.GmBHSiteCheck=item.siteUrl.includes("/GmBH");          
           if (allSite.TabName == 'SERVICES') {
             item.fontColorTask = '#228b22'
           } else {
@@ -718,6 +738,10 @@ export const Modified = (props: any) => {
     setEditValue(editDoc);
     seteditDocPopUpOpen(true);
   }
+  const editContactOpen=(editConatact:any)=>{
+    setEditValue(editConatact);
+    setEditInstitutionPopUp(true)
+  }
   const editTaskCallBack = (data: any) => {
     setEditTaskPopUpOpen(false);
     var dummyValueSite: any = [];
@@ -738,7 +762,9 @@ export const Modified = (props: any) => {
       getCurrentData(dummyValueSite);
     }
   }
-
+  const CloseConatactPopup=()=>{
+    setEditInstitutionPopUp(false)
+  }
   const closeEditComponent = (item: any) => {
     setEditComponentPopUps(false)
     // Portfolio_x0020_Type
@@ -1187,7 +1213,7 @@ export const Modified = (props: any) => {
         id: 'updateContact',
         cell: ({ row }) =>
           <>
-            <a onClick={() => editComponentPopUp(row.original)}><span className="alignIcon svg__iconbox svg__icon--edit"></span></a>
+            <a onClick={() => editContactOpen(row.original)}><span className="alignIcon svg__iconbox svg__icon--edit"></span></a>
           </>
 
       },
@@ -1768,6 +1794,9 @@ export const Modified = (props: any) => {
       {editTaskPopUpOpen ? <EditTaskPopup Items={editValue} context={context} AllListId={editTasksLists} pageName={"TaskFooterTable"} Call={(Type: any) => { editTaskCallBack(Type) }} /> : ''}
       {editComponentPopUps ? <EditComponent item={editValue} SelectD={editComponentLists} Calls={closeEditComponent} portfolioTypeData={Portfoliotyped} /> : ''}
       {editDocPopUpOpen ? <DocumentPopup closeEditPopup={closeDocEditPopUp} pagecontext={editDocLists} Item={editValue} editData={editValue} /> : ''}
+      <myContextValue.Provider value={{ ...myContextValue, allSite:allSite,allListId:editContactLists ,loggedInUserName:props.props?.userDisplayName}}>
+      {editInstitutionPopUp?<EditInstitutionPopup props={editValue} callBack={CloseConatactPopup}/>:null}
+      </myContextValue.Provider>
       {istimeEntryOpen && (<TimeEntryPopup props={currentTimeEntry} CallBackTimeEntry={TimeEntryCallBack} Context={editTasksLists.Context}></TimeEntryPopup>)}
     </>
   )
