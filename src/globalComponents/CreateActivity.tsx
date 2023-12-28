@@ -1837,7 +1837,7 @@ const CreateActivity = (props: any) => {
                               style={{ color: "#fff !important" }}
                               target="_blank"
                               data-interception="off"
-                              href={`${AllListId.siteUrl.siteUrl}/SitePages/Portfolio-Profile.aspx?${selectedItem?.Id}`}
+                           
                             >
                               {type.Title}
                             </a>

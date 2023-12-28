@@ -55,7 +55,6 @@ export default function ReactPopperTooltipSingleLevel({ ShareWebId, row, masterT
     const [hoverOverInfo, setHoverOverInfo] = React.useState("");
     const [openActivity, setOpenActivity] = React.useState(false);
     const [openWS, setOpenWS] = React.useState(false);
-  
     const {
         getArrowProps,
         getTooltipProps,
@@ -73,14 +72,17 @@ export default function ReactPopperTooltipSingleLevel({ ShareWebId, row, masterT
 
      const handlAction = (newAction: any) => {
         if(onclickPopup!=false&& newAction === "hover"){
+            setAction(newAction);
+            setControlledVisible(true);
             if ( newAction === "hover") return;
-            setAction(newAction);
-            setControlledVisible(true);
+           
         }else{
-            if (newAction === "click" && newAction === "hover") return;
             setAction(newAction);
             setControlledVisible(true);
+            if (newAction === "click" && newAction === "hover") return;
         }
+           
+         
     };
 
     const handleMouseLeave = () => {
