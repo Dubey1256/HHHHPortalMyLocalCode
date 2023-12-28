@@ -168,7 +168,7 @@ const EmployeProfile = (props: any) => {
   const getAllData = async (ConfigItem: any) => {
     const web = new Web(ConfigItem.siteUrl);
     await web.lists.getById(ConfigItem.listId).items.select("Title", "PercentComplete", "TaskID", "Categories", "FeedBack", "Portfolio/Id", "Portfolio/ItemType", "Body", "Portfolio/PortfolioStructureID", "Portfolio/Title", "TaskType/Id", "TaskType/Title", "TaskType/Level", "workingThisWeek", 'TaskID', "IsTodaysTask", "Priority", "PriorityRank", "DueDate", "Created", "Modified", "Team_x0020_Members/Id", "Team_x0020_Members/Title", "ID", "Responsible_x0020_Team/Id", "Responsible_x0020_Team/Title", "Editor/Title", "Editor/Id", "Author/Title", "Author/Id", "AssignedTo/Id", "AssignedTo/Title", "TaskCategories/Id", "TaskCategories/Title", "ParentTask/Id", "ParentTask/Title", "ParentTask/TaskID")
-      .expand("Team_x0020_Members", "Portfolio", "TaskType", "Author", "Editor", "Responsible_x0020_Team", "AssignedTo", "TaskCategories", "ParentTask").top(5000).getAll().then((data: any) => {
+      .expand("Team_x0020_Members", "Portfolio", "TaskType", "Author", "Editor", "Responsible_x0020_Team", "AssignedTo", "TaskCategories", "ParentTask").getAll().then((data: any) => {
         count++;
         data?.map((items: any) => {
           items.descriptionsSearch = '';
