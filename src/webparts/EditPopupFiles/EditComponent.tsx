@@ -3980,18 +3980,7 @@ function EditInstitution({ item, SelectD, Calls, usedFor, portfolioTypeData, fil
                                                     <label className="toggler full_width">
                                                         <div className="alignCenter">Help Information {`(${EditData?.Help_x0020_Information?.length != undefined ? EditData?.Help_x0020_Information?.length : 0})`}
                                                             <span className="alignCenter ml-auto">
-                                                                <input
-                                                                    className="form-check-input me-1 mt-0 rounded-0"
-                                                                    type="checkbox"
-                                                                    defaultChecked={
-                                                                        EditData?.HelpInformationVerified ===
-                                                                        true
-                                                                    }
-                                                                    onChange={(e) =>
-                                                                    (EditData.HelpInformationVerified =
-                                                                        e.target.value)
-                                                                    }
-                                                                ></input>
+                                                              
                                                                  <input
                                                             type="checkbox"
                                                             className="form-check-input me-1 rounded-0"

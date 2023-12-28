@@ -7,7 +7,7 @@ import * as React from 'react';
 import Moment from "moment";
 import Tooltip from '../../../globalComponents/Tooltip';
 import { Item, sp, Web } from 'sp-pnp-js';
-import ReactHtmlParser from 'react-html-parser';
+// import ReactHtmlParser from 'react-html-parser';
 import {
     Column,
     Table,
