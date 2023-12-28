@@ -642,8 +642,8 @@ const CentralizedSiteComposition = (Props: any) => {
                 // setSiteCompositionJSON(SiteCompositionTemp);
                 SelectedItemDetails.SiteCompositionJSONBackup = SiteCompositionTemp;
                 SiteCompositionTemp = SiteCompositionTemp;
-                setTaggedSiteCompositionCount(SelectedItemDetails.Sitestagging?.length)
-                GlobalCount = SelectedItemDetails.Sitestagging?.length
+                setTaggedSiteCompositionCount(SiteCompositionTemp?.length)
+                GlobalCount = SiteCompositionTemp?.length
             } else {
                 let SCDummyJSON: any = {
                     ClienTimeDescription: "100",
@@ -1725,7 +1725,7 @@ const CentralizedSiteComposition = (Props: any) => {
                                                     </span>
                                                 </div>
                                                 <span className="border" style={{ padding: '5px 20px' }}>
-                                                    {IsSCManual ? `${TotalPercent}` : "100"}
+                                                    {IsSCManual ? `${TotalPercent} %` : "100 %"}
                                                 </span>
                                             </div> :
                                             <>
