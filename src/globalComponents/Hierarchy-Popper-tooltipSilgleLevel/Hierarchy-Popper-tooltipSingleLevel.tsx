@@ -56,14 +56,7 @@ export default function ReactPopperTooltipSingleLevel({ ShareWebId, row, masterT
     const [openActivity, setOpenActivity] = React.useState(false);
     const [openWS, setOpenWS] = React.useState(false);
 
-    React.useEffect(() => {
-        if (
-          row?.TaskID == undefined &&
-          (row?.TaskId !== null || row?.TaskId !== undefined)
-        ) {
-          row.TaskID = row?.TaskId;
-        }
-      }, [row]);
+   
   
     const {
         getArrowProps,
@@ -86,7 +79,7 @@ export default function ReactPopperTooltipSingleLevel({ ShareWebId, row, masterT
             setControlledVisible(true);
             if ( newAction === "click") return;
         }else if(onclickPopup==false && newAction === "click"){
-          setControlledVisible(false)
+        
         }else if(onclickPopup==false && newAction === "hover"){
             setAction(newAction);
             setControlledVisible(true)

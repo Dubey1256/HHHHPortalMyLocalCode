@@ -69,24 +69,24 @@ const LandingPage = (props: any) => {
             .select('Id', 'Title', 'PositionTitle', 'PositionDescription', 'JobSkills', 'Created', 'Modified', 'Author/Id', 'Author/Title', 'Editor/Id', 'Editor/Title')
             .expand('Author', 'Editor')
             .getAll()
-            .then((response: any) => { 
-            const updatedData = response.map((itm: { JobSkills: string | undefined; ImpSkills?: { itemParentId: any; }[]; Id: any; }) => {
-                if (itm.JobSkills !== undefined && itm.JobSkills !== '') {
-                    const impSkills = JSON.parse(itm.JobSkills).map((skill: { itemParentId: any; }) => ({
-                        ...skill,
-                        itemParentId: itm.Id,
-                    }));
-                    return {
-                        ...itm,
-                        ImpSkills: impSkills,
-                    };
-                }
-                return itm;
+            .then((response: any) => {
+                const updatedData = response.map((itm: { JobSkills: string | undefined; ImpSkills?: { itemParentId: any; }[]; Id: any; }) => {
+                    if (itm.JobSkills !== undefined && itm.JobSkills !== '') {
+                        const impSkills = JSON.parse(itm.JobSkills).map((skill: { itemParentId: any; }) => ({
+                            ...skill,
+                            itemParentId: itm.Id,
+                        }));
+                        return {
+                            ...itm,
+                            ImpSkills: impSkills,
+                        };
+                    }
+                    return itm;
+                });
+                setportfiloData(updatedData);
+            }).catch((error: unknown) => {
+                console.error(error);
             });
-            setportfiloData(updatedData);
-        }).catch((error: unknown) => {
-            console.error(error);
-        });
     };
     const delPosition = (itm: any) => {
         const confirmDelete = window.confirm("Are you sure you want to delete this item?");
@@ -171,14 +171,9 @@ const LandingPage = (props: any) => {
             {
                 accessorFn: (row) => row?.PositionDescription,
                 cell: ({ row, getValue }) => (
-                    <span className="columnFixedTitle">
-                        <span
-                            className="text-content"
-                            title={stripHtmlTags(row.original.PositionDescription)}
-                        >
-                            <div dangerouslySetInnerHTML={{ __html: row.original.PositionDescription ? stripHtmlTags(row.original.PositionDescription) : '' }} />
-                        </span>
-                    </span>
+                    <div className="columnFixedTitle">
+                        <div className="text-content" title={stripHtmlTags(row.original.PositionDescription)} dangerouslySetInnerHTML={{ __html: row.original.PositionDescription ? stripHtmlTags(row.original.PositionDescription) : '' }} />
+                    </div>
 
                 ),
                 id: "PositionDescription",
@@ -451,7 +446,7 @@ const LandingPage = (props: any) => {
                     </div>
                     {portfiloData && (
                         <div className="Alltable">
-                            <GlobalCommanTable columns={columns} data={portfiloData} showHeader={true} callBackData={callBackData} />
+                            <GlobalCommanTable columns={columns} fixedWidth={true} data={portfiloData} showHeader={true} callBackData={callBackData} />
                         </div>
                     )}
                 </div>
@@ -658,7 +653,7 @@ const LandingPage = (props: any) => {
                             </div>
                         </div>
                     </footer>
-                    </div>
+                </div>
             </Panel>
         </>
     );
