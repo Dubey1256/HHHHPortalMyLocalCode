@@ -148,7 +148,7 @@ const Profilcandidate = (props: any) => {
                                                 console.error('Error parsing SelectedPlatforms:', error);
                                             }
 
-                                            return 'Invalid SelectedPlatforms format';
+                                            return '';
                                         })()
                                     ) : (
                                         'No Platform specified'
@@ -204,7 +204,7 @@ const Profilcandidate = (props: any) => {
                                         <span className="svg__iconbox svg__icon--document"></span>
                                     </span>
                                     <span style={{ display: document.File_x0020_Type !== 'aspx' ? 'inline' : 'none' }}>
-                                        <a href={`${document.EncodedAbsUrl}?web=1`} target="_blank">
+                                    <a href={`${document.EncodedAbsUrl}?web=1`} target="_blank" rel="noopener noreferrer">
                                             <span>
                                                 <span style={{ display: document.FileLeafRef !== 'undefined' ? 'inline' : 'none' }}>
                                                     {document.FileLeafRef}

@@ -27,7 +27,6 @@ const EditDocumentpanel = (props: any) => {
 
       if (props?.editData?.Portfolio != undefined) {
         setallSetValue({ ...allValue, componentservicesetdataTag: props?.editData?.Portfolio })
-
       }
 
       if (props?.editData != undefined) {
@@ -38,6 +37,7 @@ const EditDocumentpanel = (props: any) => {
         const panelMain: any = document.querySelector('.ms-Panel-main');
         if (panelMain && props?.ColorCode) {
           $('.ms-Panel-main').css('--SiteBlue', props?.ColorCode); // Set the desired color value here
+          $('.nav-link .active').attr('style', 'border-radius: 0'); 
         }
       }, 1000)
     }

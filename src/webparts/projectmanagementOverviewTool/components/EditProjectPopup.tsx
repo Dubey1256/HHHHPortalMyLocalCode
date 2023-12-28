@@ -2370,7 +2370,7 @@ function EditProjectPopup(item: any) {
                     </button>
                     <button
                       type="button"
-                      className="btn btn-default btn-default mx-1 me-4"
+                      className="btn btn-default btn-default mx-1"
                       onClick={setModalIsOpenToFalse}
                     >
                       Cancel
