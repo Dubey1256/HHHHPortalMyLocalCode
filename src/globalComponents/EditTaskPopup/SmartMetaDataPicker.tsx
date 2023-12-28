@@ -297,10 +297,10 @@ const Picker = (item: any) => {
                 <div id="SmartTaxonomyPopup" className={(item?.props?.Portfolio_x0020_Type != undefined && item?.props?.Portfolio_x0020_Type == "Service") ? "serviepannelgreena" : ""}>
                     <div className={isServiceTask ? "modal-body serviepannelgreena" : "modal-body"}>
 
-                        <div className="mb-3">
-                            <div className="mb-2 col-sm-12 p-0">
+                        <div className="mb-2">
+                            <div className="mb-2 col-sm-5 p-0">
                                 <div>
-                                    <input type="checkbox" defaultChecked={isSearchWithDesciptions} onChange={() => setIsSearchWithDesciptions(isSearchWithDesciptions ? false : true)} className="form-check-input me-1 rounded-0" /> <label>Include description (info-icons) in search</label>
+                                    <input type="checkbox" defaultChecked={isSearchWithDesciptions} onChange={() => setIsSearchWithDesciptions(isSearchWithDesciptions ? false : true)} className="form-check-input me-1 rounded-0" style={{ width: "15px", height: "15px" }} /> <label>Include description (info-icons) in search</label>
                                     <input type="text" className="form-control  searchbox_height" value={value} onChange={onChange} placeholder="Search Category" />
                                     {searchedData?.length > 0 ? (
                                         <div className="SearchTableCategoryComponent">
@@ -356,10 +356,10 @@ const Picker = (item: any) => {
                                                                                 {child1.Item_x005F_x0020_Cover ? <img className="flag_icon"
                                                                                     style={{ height: "12px", width: "18px;" }}
                                                                                     src={child1.Item_x005F_x0020_Cover.Url} /> :
-                                                                                    null}
+                                                                                    <span className="me-4"></span>}
                                                                                 {child1.Title}
                                                                                 {child1.Description1 ? <div className='popover__wrapper ms-1' data-bs-toggle="tooltip" data-bs-placement="auto">
-                                                                                    <span className="svg__iconbox svg__icon--info"></span>
+                                                                                    <span className="alignIcon  svg__iconbox svg__icon--info"></span>
                                                                                     <div className="popover__content">
                                                                                         <span>{child1.Description1}</span>
                                                                                     </div>
@@ -381,7 +381,7 @@ const Picker = (item: any) => {
                                                                                                         null}
                                                                                                     {subChilds.Title}
                                                                                                     {subChilds.Description1 ? <div className='popover__wrapper ms-1' data-bs-toggle="tooltip" data-bs-placement="auto">
-                                                                                                        <span className="svg__iconbox svg__icon--info"></span>
+                                                                                                        <span className="alignIcon   svg__iconbox svg__icon--info"></span>
                                                                                                         <div className="popover__content">
                                                                                                             <span ng-bind-html="child1.Description1 | trustedHTML">{subChilds.Description1}</span>
                                                                                                         </div>
