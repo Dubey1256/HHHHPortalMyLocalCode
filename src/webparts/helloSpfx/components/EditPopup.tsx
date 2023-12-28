@@ -72,7 +72,7 @@ const EditPopup = (props: any) => {
         const selectedPlatforms = JSON.parse(props.item.SelectedPlatforms);
 
         useEffect(() => {
-            let Array: any = ['Indeed', 'Agentur für Arbeit', 'Jobcenter', 'GesinesJobtipps', 'Linkedin', 'Naukri']
+            let Array: any = ['Indeed', 'Agentur für Arbeit', 'Jobcenter', 'GesinesJobtipps','Linkedin','Naukri']
             // Check if any selected platform meets the specified conditions
             const shouldUpdateOthers = selectedPlatforms?.some((item: { selected: any; name: any }) => {
 
@@ -335,26 +335,20 @@ const EditPopup = (props: any) => {
                             <div className='input-group'>
                                 <label className='form-label full-width'>Experience</label>
                                 <div className='d-flex'>
-                                    <div className='input-group'>
-                                        <span className='input-group-text'>Years</span>
-                                        <input
-                                            className='form-control'
-                                            type='text'
-                                            placeholder='Enter years'
-                                            value={experienceYears}
-                                            onChange={(e) => setExperienceYears(parseInt(e.target.value) || 0)}
-                                        />
-                                    </div>
-                                    <div className='input-group'>
-                                        <span className='input-group-text'>Months</span>
-                                        <input
-                                            className='form-control'
-                                            type='text'
-                                            placeholder='Enter months'
-                                            value={experienceMonths}
-                                            onChange={(e) => setExperienceMonths(parseInt(e.target.value) || 0)}
-                                        />
-                                    </div>
+                                    <input
+                                        className='form-control me-2'
+                                        type='text'
+                                        placeholder='Years'
+                                        value={experienceYears}
+                                        onChange={(e) => setExperienceYears(parseInt(e.target.value) || 0)}
+                                    />
+                                    <input
+                                        className='form-control'
+                                        type='text'
+                                        placeholder='Months'
+                                        value={experienceMonths}
+                                        onChange={(e) => setExperienceMonths(parseInt(e.target.value) || 0)}
+                                    />
                                 </div>
                             </div>
                         </div>
