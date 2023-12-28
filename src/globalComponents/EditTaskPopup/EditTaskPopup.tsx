@@ -1429,71 +1429,60 @@ const EditTaskPopup = (Items: any) => {
                 setopenLinkedPortfolioPopup(false);
             } else {
                 if (DataItem != undefined && DataItem.length > 0) {
-                    if (DataItem[0].ClientCategory?.length > 0) {
-                        let tempTaggedCCData: any = [];
-                        AllClientCategoryDataBackup?.map((AllCCItem: any) => {
-                            DataItem[0]?.ClientCategory?.map((TaggedCCItem: any) => {
-                                if (AllCCItem.Title == TaggedCCItem.Title) {
-                                    tempTaggedCCData.push(AllCCItem);
-                                }
+                    if (DataItem[0]?.Item_x0020_Type !== "Project" || DataItem[0]?.Item_x0020_Type !== "Sprint") {
+                        if (DataItem[0].ClientCategory?.length > 0) {
+                            let tempTaggedCCData: any = [];
+                            AllClientCategoryDataBackup?.map((AllCCItem: any) => {
+                                DataItem[0]?.ClientCategory?.map((TaggedCCItem: any) => {
+                                    if (AllCCItem.Title == TaggedCCItem.Title) {
+                                        tempTaggedCCData.push(AllCCItem);
+                                    }
+                                });
                             });
-                        });
-                        if (Items?.Items?.siteType == "Shareweb") {
-                            setSelectedClientCategory([...tempTaggedCCData]);
-                        }
+                            if (Items?.Items?.siteType == "Shareweb") {
+                                setSelectedClientCategory([...tempTaggedCCData]);
+                            }
 
-                        if (
-                            Items?.Items?.siteType == "EI" ||
-                            Items?.Items?.siteType == "EPS" ||
-                            Items?.Items?.siteType == "Education" ||
-                            Items?.Items?.siteType == "Migration"
-                        ) {
-                            let tempArray: any = [];
-                            tempTaggedCCData?.map((FinalCCItem: any) => {
-                                if (FinalCCItem.siteName == Items?.Items?.siteType) {
-                                    tempArray.push(FinalCCItem);
-                                }
-                            });
-                            setSelectedClientCategory([...tempArray]);
-                        }
-                    }
-                    if (
-                        DataItem[0].Sitestagging != null ||
-                        DataItem[0].Sitestagging != undefined
-                    ) {
-                        let ClientData = JSON.parse(
-                            DataItem[0].Sitestagging ? DataItem[0].Sitestagging : [{}]
-                        );
-                        let TempSiteCompositionArray: any = [];
-                        if (ClientData != undefined && ClientData.length > 0) {
-                            ClientData.map((SiteData: any) => {
-                                let TempObject: any = {
-                                    SiteName: SiteData.Title,
-                                    ClienTimeDescription: SiteData.ClienTimeDescription,
-                                    localSiteComposition: true,
-                                };
-                                TempSiteCompositionArray.push(TempObject);
-                            });
                             if (
-                                TempSiteCompositionArray != undefined &&
-                                TempSiteCompositionArray.length > 0
+                                Items?.Items?.siteType == "EI" ||
+                                Items?.Items?.siteType == "EPS" ||
+                                Items?.Items?.siteType == "Education" ||
+                                Items?.Items?.siteType == "Migration"
                             ) {
+                                let tempArray: any = [];
+                                tempTaggedCCData?.map((FinalCCItem: any) => {
+                                    if (FinalCCItem.siteName == Items?.Items?.siteType) {
+                                        tempArray.push(FinalCCItem);
+                                    }
+                                });
+                                setSelectedClientCategory([...tempArray]);
+                            }
+                        }
+                        if (
+                            DataItem[0].Sitestagging != null ||
+                            DataItem[0].Sitestagging != undefined
+                        ) {
+                            let ClientData = JSON.parse(
+                                DataItem[0].Sitestagging ? DataItem[0].Sitestagging : [{}]
+                            );
+                           
+                            if (ClientData != undefined && ClientData.length > 0) {
                                 if (Items?.Items?.siteType == "Shareweb") {
-                                    setClientTimeData(TempSiteCompositionArray);
+                                    setClientTimeData(ClientData);
                                 } else {
                                     let TempObject: any = {
-                                        SiteName: Items?.Items?.siteType,
+                                        Title: Items?.Items?.siteType,
                                         ClienTimeDescription: 100,
                                         localSiteComposition: true,
-                                        siteIcons: Items.Items.SiteIcon,
+                                        SiteImages: Items.Items.SiteIcon,
                                     };
                                     setClientTimeData([TempObject]);
                                 }
                             }
                         }
-                    }
-                    if (DataItem[0].SiteCompositionSettings) {
-                        setSiteCompositionSetting(DataItem[0].SiteCompositionSettings);
+                        if (DataItem[0].SiteCompositionSettings) {
+                            setSiteCompositionSetting(DataItem[0].SiteCompositionSettings);
+                        }
                     }
                     if (Type == "Multi") {
                         if (LinkedPortfolioDataBackup?.length > 0) {

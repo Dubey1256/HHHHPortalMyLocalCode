@@ -556,6 +556,9 @@ const GlobalCommanTable = (items: any, ref: any) => {
         if (usedFor == "SiteComposition" || items?.multiSelect === true) {
             let finalData: any = table?.getSelectedRowModel()?.flatRows;
             callBackData(finalData);
+            if (table?.getSelectedRowModel()?.flatRows.length > 0) {
+                restructureFunct(true)
+            };
         } else {
             if (table?.getSelectedRowModel()?.flatRows.length > 0) {
                 restructureFunct(true)
