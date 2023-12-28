@@ -352,6 +352,9 @@ const CentralizedSiteComposition = (Props: any) => {
                     task.portfolio = task?.Portfolio;
                     task.PortfolioTitle = task?.Portfolio?.Title;
                 }
+                if (task.PercentComplete != undefined) {
+                    task.PercentComplete = (task.PercentComplete * 100).toFixed(0);
+                }
                 let checkIsSCProtected: any = false;
                 task.DisplayCreateDate = moment(task.Created).format("DD/MM/YYYY");
                 if (task?.SiteCompositionSettings != undefined) {
@@ -1336,32 +1339,47 @@ const CentralizedSiteComposition = (Props: any) => {
             }
         })
         setAllSiteData([...AllSiteDataBackup])
-        console.log("Change Client Time Description Manually ====", AllSiteDataBackup);
     }
 
 
     // These functions are used for Updating the Data on Backend Side 
 
     const PrepareTheDataForUpdatingOnBackendSide = () => {
-        let AllDataForUpdate: any = [SelectedItemDetailsFormCall].concat(SelectedChildItems);
-        let DataUpdated: any = false;
-        AllDataForUpdate?.map(async (FinalData: any) => {
-            if (FinalData?.Item_x0020_Type == "SubComponent" || FinalData?.Item_x0020_Type == "Feature" || FinalData?.Item_x0020_Type == "Component") {
-                if (FinalData?.IsSCProtected == undefined || FinalData?.IsSCProtected == false) {
-                    DataUpdated = UpdateOnBackendSide(FinalData, "CSF");
-                }
-            }
-            if (FinalData.TaskType?.Title == "Task" || FinalData.TaskType?.Title == "Activities" || FinalData.TaskType?.Title == "Workstream") {
-                UpdateOnBackendSide(FinalData, "AWT");
-                if (FinalData?.IsSCProtected == undefined || FinalData?.IsSCProtected == false) {
-                    DataUpdated = UpdateOnBackendSide(FinalData, "CSF");
-                }
-            }
-        })
-        if (DataUpdated) {
-            ClosePanelFunction("Save");
-            GlobalCount = 0;
+        let TaskShouldBeUpdate: any = true;
+        if (TotalPercent > 101) {
+            TaskShouldBeUpdate = false;
+            alert("site composition allocation should not be more than 100%");
         }
+        if (TotalPercent.toFixed(0) < 99 && TotalPercent > 0) {
+            let conformationSTatus = confirm("Site composition allocation should not be less than 100% if you still want to do it click on OK")
+            if (conformationSTatus) {
+                TaskShouldBeUpdate = true;
+            } else {
+                TaskShouldBeUpdate = false;
+            }
+        }
+        if (TaskShouldBeUpdate) {
+            let AllDataForUpdate: any = [SelectedItemDetailsFormCall].concat(SelectedChildItems);
+            let DataUpdated: any = false;
+            AllDataForUpdate?.map(async (FinalData: any) => {
+                if (FinalData?.Item_x0020_Type == "SubComponent" || FinalData?.Item_x0020_Type == "Feature" || FinalData?.Item_x0020_Type == "Component") {
+                    if (FinalData?.IsSCProtected == undefined || FinalData?.IsSCProtected == false) {
+                        DataUpdated = UpdateOnBackendSide(FinalData, "CSF");
+                    }
+                }
+                if (FinalData.TaskType?.Title == "Task" || FinalData.TaskType?.Title == "Activities" || FinalData.TaskType?.Title == "Workstream") {
+                    UpdateOnBackendSide(FinalData, "AWT");
+                    if (FinalData?.IsSCProtected == undefined || FinalData?.IsSCProtected == false) {
+                        DataUpdated = UpdateOnBackendSide(FinalData, "CSF");
+                    }
+                }
+            })
+            if (DataUpdated) {
+                ClosePanelFunction("Save");
+                GlobalCount = 0;
+            }
+        }
+
     }
 
     const UpdateOnBackendSide = async (DataForUpdate: any, ItemType: string) => {
