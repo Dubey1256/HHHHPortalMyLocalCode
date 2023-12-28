@@ -642,8 +642,8 @@ const CentralizedSiteComposition = (Props: any) => {
                 // setSiteCompositionJSON(SiteCompositionTemp);
                 SelectedItemDetails.SiteCompositionJSONBackup = SiteCompositionTemp;
                 SiteCompositionTemp = SiteCompositionTemp;
-                setTaggedSiteCompositionCount(SelectedItemDetails.SiteCompositionTemp?.length)
-                GlobalCount = SelectedItemDetails.SiteCompositionTemp?.length
+                setTaggedSiteCompositionCount(SiteCompositionTemp?.length)
+                GlobalCount = SiteCompositionTemp?.length
             } else {
                 let SCDummyJSON: any = {
                     ClienTimeDescription: "100",
