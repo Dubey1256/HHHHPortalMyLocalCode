@@ -160,11 +160,10 @@ const EditDocumentpanel = (props: any) => {
 
     return (
       <>
-
         <div className='ps-4 siteColor subheading'>
           {true ? `Edit Document Metadata - ${EditdocumentsData?.FileLeafRef}` : null}
         </div>
-        <Tooltip ComponentId={'359'} />
+        <Tooltip ComponentId={'942'} />
       </>
     );
   };
@@ -275,7 +274,7 @@ const EditDocumentpanel = (props: any) => {
 
                   {allValue?.componentservicesetdataTag != undefined &&
                     <div className="d-flex justify-content-between block px-2 py-1" style={{ width: '85%' }}>
-                      <a target="_blank" data-interception="off" href="HHHH/SitePages/Portfolio-Profile.aspx?taskId=undefined">{allValue?.componentservicesetdataTag.Title}</a>
+                      <a target="_blank" data-interception="off"  href={`${props?.AllListId?.siteUrl}/SitePages/Portfolio-Profile.aspx?taskId=${allValue?.componentservicesetdataTag?.Id}`}>{allValue?.componentservicesetdataTag?.Title}</a>
                       <a>
                         <span className="bg-light svg__icon--cross svg__iconbox"></span>
                       </a></div>}

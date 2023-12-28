@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from 'react'
 import { Web } from 'sp-pnp-js';
-import GlobalCommanTable from "./GlobalCommanTable";
+import GlobalCommanTable from '../../../globalComponents/GroupByReactTableComponents/GlobalCommanTable';
 import { ColumnDef } from '@tanstack/react-table';
 import moment from 'moment';
 import { Panel, PanelType } from "office-ui-fabric-react";
@@ -73,6 +73,12 @@ export default function SiteStructureTool(Props: any) {
                     response.forEach((Doc: any) => {
                         Doc.CreatedDate = moment(Doc?.Created).format('DD/MM/YYYY');
                         Doc.ModifiedDate = moment(Doc?.Modified).format('DD/MM/YYYY')
+                        if (Doc.ownersonly == true) {
+                            Doc.image = `${PageContext?.SPSitesListUrl}/SiteCollectionImages/ICONS/24/Facilitators-do-not-disturb.png`;
+                        }
+                        if (Doc.IsVisible == false) {
+                            Doc.image = `${PageContext?.SPSitesListUrl}/SitecollectionImages/ICONS/24/do-not-disturb-rounded.png`;
+                        }
                     });
                     if (ParentTopNavigation.length > 0)
                         ParentTopNavigation = [];
@@ -159,12 +165,12 @@ export default function SiteStructureTool(Props: any) {
         setEditPopup(false);
         setPostData(undefined);
     };
-    // const AddNewItem = (item: any) => {
-    //     var Data: any = [];
-    //     Data.push(item);
-    //     setPopupData(Data);
-    //     setAddPopup(true);
-    // };
+    const AddNewItem = (item: any) => {
+        var Data: any = [];
+        Data.push(item);
+        setPopupData(Data);
+        setAddPopup(true);
+    };
     const Additem = async () => {
         if (popupData[0] == "New") {
             popupData[0] = { ID: 0 };
@@ -284,6 +290,18 @@ export default function SiteStructureTool(Props: any) {
             id: 'Id',
         },
         {
+            accessorKey: "ImageIcon",
+            placeholder: "ImageIcon",
+            size: 8,
+            id: 'ImageIcon',
+            cell: ({ row }) => (
+                <div className='alignCenter columnFixedTitle'>
+                    {row?.original?.image !== undefined && <span><img src={row?.original?.image} className="workmember" />
+                    </span>}
+                </div>
+            ),
+        },
+        {
             accessorKey: "Title", placeholder: "Title", header: "", id: "Title",
             cell: ({ row }) => (
                 <div className='alignCenter columnFixedTitle'>
@@ -330,8 +348,8 @@ export default function SiteStructureTool(Props: any) {
         {
             cell: ({ row }) => (
                 <div className='alignCenter'>
-                    <a title="Edit"><span onClick={() => editPopup(row.original)} title="Edit Task" className="svg__iconbox svg__icon--edit hreflink me-1"></span></a>
-                    <a title="Delete"><span onClick={() => deleteDataFunction(row.original)} title="Remove Task" className="svg__iconbox svg__icon--cross dark hreflink"></span></a>
+                    <a title="Edit"><span onClick={() => editPopup(row.original)} title="Edit" className="svg__iconbox svg__icon--edit hreflink me-1"></span></a>
+                    <a title="Delete"><span onClick={() => deleteDataFunction(row.original)} title="Remove" className="svg__iconbox svg__icon--cross dark hreflink"></span></a>
                 </div>
             ),
             accessorKey: '',
@@ -351,17 +369,11 @@ export default function SiteStructureTool(Props: any) {
                 <div className='alignCenter'>
                     <h2 className="heading">Site-Structure Management
                     </h2>
-                    <a className='ml-auto fw-semibold' data-interception="off"
-                        target="_blank">Old Site-Structure Management</a>
                 </div>
             </section >
-            {/* <button
-                type="button"
-                className="btn btn-primary ms-2"
-                onClick={() => AddNewItem("New")}
-            >
+            <button type="button" className="btn btn-primary ms-2" onClick={() => AddNewItem("New")} >
                 Add Item
-            </button> */}
+            </button>
             {
                 SiteStructure && <div>
                     <div className="TableSection">

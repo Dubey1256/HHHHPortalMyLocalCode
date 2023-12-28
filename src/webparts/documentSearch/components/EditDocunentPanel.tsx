@@ -5,7 +5,7 @@ import { Button, Tabs, Tab } from 'react-bootstrap';
 import moment from 'moment';
 import { Web } from 'sp-pnp-js';
 import HtmlEditorCard from '../../../globalComponents/HtmlEditor/HtmlEditor';
-import ImagesC from '../../EditPopupFiles/Image';
+import ImagesC from '../../taskprofile/components/ImageTabComponent';
 import ServiceComponentPortfolioPopup from '../../../globalComponents/EditTaskPopup/ServiceComponentPortfolioPopup';
 var portfolioItemColor: any = "";
 //import Mycontext from './RelevantDocuments'
@@ -140,14 +140,11 @@ const EditDocumentpanel = (props: any) => {
         } else {
           props.callbackeditpopup();
         }
-
         // GetResult();
       }).catch((err: any) => {
         console.log(err)
       })
-
     // })
-
   }
   const imageTabCallBack = React.useCallback((data: any) => {
     console.log(EditdocumentsData);
@@ -164,7 +161,7 @@ const EditDocumentpanel = (props: any) => {
         <div className='ps-4 siteColor subheading'>
           {true ? `Edit Document Metadata - ${EditdocumentsData?.FileLeafRef}` : null}
         </div>
-        <Tooltip ComponentId={'359'} />
+        <Tooltip ComponentId={'942'} />
       </>
     );
   };
