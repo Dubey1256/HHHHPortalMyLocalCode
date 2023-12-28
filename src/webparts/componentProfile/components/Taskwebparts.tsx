@@ -350,6 +350,7 @@ function PortfolioTable(SelectedProp: any) {
             "Project/PortfolioStructureID",
             "Project/DueDate",
             "Project/Title",
+            "Project/PriorityRank",
             "AssignedTo/Title",
             "AssignedTo/Id"
           )
@@ -1349,13 +1350,12 @@ const switchGroupbyData = () => {
       {
         accessorFn: (row) => row?.Created,
         cell: ({ row }) => (
-          <span>
+          <div className="alignCenter">
             {row?.original?.Created == null ? (
               ""
             ) : (
               <>
-                <span className='ms-1'>{row?.original?.DisplayCreateDate} </span>
-
+                <div style={{ width: "75px" }} className="me-1">{row?.original?.DisplayCreateDate}</div>
                 {row?.original?.Author != undefined ? (
                   <>
                     <a
@@ -1371,7 +1371,7 @@ const switchGroupbyData = () => {
                 )}
               </>
             )}
-          </span>
+          </div>
         ),
         id: 'Created',
         resetColumnFilters: false,
@@ -1385,7 +1385,7 @@ const switchGroupbyData = () => {
           }
         },
         header: "",
-        size: 149
+        size: 130
       },
       {
         accessorKey: "descriptionsSearch",
