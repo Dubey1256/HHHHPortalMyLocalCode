@@ -58,14 +58,7 @@ export default function ReactPopperTooltipSingleLevel({ ShareWebId, row, masterT
 <<<<<<< HEAD
 =======
 
-    React.useEffect(() => {
-        if (
-          row?.TaskID == undefined &&
-          (row?.TaskId !== null || row?.TaskId !== undefined)
-        ) {
-          row.TaskID = row?.TaskId;
-        }
-      }, [row]);
+   
   
 >>>>>>> 104140a43f95326581708bbf13b87c0d9039e51c
     const {
@@ -97,7 +90,7 @@ export default function ReactPopperTooltipSingleLevel({ ShareWebId, row, masterT
             setControlledVisible(true);
             if ( newAction === "click") return;
         }else if(onclickPopup==false && newAction === "click"){
-          setControlledVisible(false)
+        
         }else if(onclickPopup==false && newAction === "hover"){
             setAction(newAction);
             setControlledVisible(true)

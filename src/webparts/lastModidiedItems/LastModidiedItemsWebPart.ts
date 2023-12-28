@@ -24,6 +24,13 @@ export interface ILastModidiedItemsWebPartProps {
   TaskTypeID: String;
   SmartHelptListID: String,
   PortFolioTypeID: String,
+  ContractListID:String,
+  HHHHContactListId:String,
+  HHHHInstitutionListId:String,
+  MAIN_SMARTMETADATA_LISTID:String,
+  MAIN_HR_LISTID:String,
+  GMBH_CONTACT_SEARCH_LISTID:String,
+  HR_EMPLOYEE_DETAILS_LIST_ID:String,
   TimeEntry: any;
   SiteCompostion: any;
   context: any
@@ -53,6 +60,13 @@ export default class LastModidiedItemsWebPart extends BaseClientSideWebPart<ILas
         TaskTypeID: this.properties.TaskTypeID,
         SmartHelptListID: this.properties.SmartHelptListID,
         PortFolioTypeID: this.properties.PortFolioTypeID,
+        ContractListID:this.properties.ContractListID,
+        HHHHContactListId:this.properties.HHHHContactListId,
+        HHHHInstitutionListId:this.properties.HHHHInstitutionListId,
+        MAIN_SMARTMETADATA_LISTID:this.properties.MAIN_SMARTMETADATA_LISTID,
+        MAIN_HR_LISTID:this.properties.MAIN_HR_LISTID,
+        GMBH_CONTACT_SEARCH_LISTID:this.properties.GMBH_CONTACT_SEARCH_LISTID,
+        HR_EMPLOYEE_DETAILS_LIST_ID:this.properties.HR_EMPLOYEE_DETAILS_LIST_ID,
         TimeEntry: this.properties.TimeEntry,
         SiteCompostion: this.properties.SiteCompostion,
         context: this.context,
@@ -162,6 +176,27 @@ export default class LastModidiedItemsWebPart extends BaseClientSideWebPart<ILas
               }),
               PropertyPaneTextField('PortFolioTypeID', {
                 label: 'PortFolioTypeID'
+              }),
+              PropertyPaneTextField('HHHHContactListId', {
+                label: "HHHH Contact ListId"
+              }),
+              PropertyPaneTextField('HHHHInstitutionListId', {
+                label: "HHHH Institution ListId"
+              }),
+              PropertyPaneTextField('MAIN_SMARTMETADATA_LISTID', {
+                label: "Main SmartMetadata ListId"
+              }),
+              PropertyPaneTextField('MAIN_HR_LISTID', {
+                label: "Main Hr ListId"
+              }),
+              PropertyPaneTextField('GMBH_CONTACT_SEARCH_LISTID', {
+                label: "Gmbh Contact Search ListId"
+              }),
+              PropertyPaneTextField('HR_EMPLOYEE_DETAILS_LIST_ID', {
+                label: "Hr Employee Details ListId"
+              }),
+              PropertyPaneTextField('ContractListID', {
+                label: "ContractListID"
               }),
               PropertyPaneTextField('TimeEntry', {
                 label: 'TimeEntry'
