@@ -55,6 +55,15 @@ export default function ReactPopperTooltipSingleLevel({ ShareWebId, row, masterT
     const [hoverOverInfo, setHoverOverInfo] = React.useState("");
     const [openActivity, setOpenActivity] = React.useState(false);
     const [openWS, setOpenWS] = React.useState(false);
+
+    React.useEffect(() => {
+        if (
+          row?.TaskID == undefined &&
+          (row?.TaskId !== null || row?.TaskId !== undefined)
+        ) {
+          row.TaskID = row?.TaskId;
+        }
+      }, [row]);
   
     const {
         getArrowProps,
@@ -71,15 +80,21 @@ export default function ReactPopperTooltipSingleLevel({ ShareWebId, row, masterT
         onVisibleChange: setControlledVisible,
     });
 
-     const handlAction = (newAction: any) => {
-        if(onclickPopup!=false&& newAction === "hover"){
+    const handlAction = (newAction: any) => {
+        if(onclickPopup!=false && newAction === "click"){
+            setAction(newAction);
+            setControlledVisible(true);
+            if ( newAction === "click") return;
+        }else if(onclickPopup==false && newAction === "click"){
+          setControlledVisible(false)
+        }else if(onclickPopup==false && newAction === "hover"){
+            setAction(newAction);
+            setControlledVisible(true)
             if ( newAction === "hover") return;
-            setAction(newAction);
-            setControlledVisible(true);
         }else{
-            if (newAction === "click" && newAction === "hover") return;
             setAction(newAction);
             setControlledVisible(true);
+            if (newAction === "click" && newAction === "hover") return;
         }
     };
 
