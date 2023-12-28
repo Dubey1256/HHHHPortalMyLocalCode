@@ -350,6 +350,7 @@ function PortfolioTable(SelectedProp: any) {
             "Project/PortfolioStructureID",
             "Project/DueDate",
             "Project/Title",
+            "Project/PriorityRank",
             "AssignedTo/Title",
             "AssignedTo/Id"
           )
@@ -385,18 +386,11 @@ function PortfolioTable(SelectedProp: any) {
                   item.siteUrl = ContextValue.siteUrl;
                   item["SiteIcon"] = config?.Item_x005F_x0020_Cover?.Url;
                   item.fontColorTask = "#000";
-                  // if (item.TaskCategories.results != undefined) {
-                  //     if (item.TaskCategories.results.length > 0) {
-                  //         $.each(
-                  //             item.TaskCategories.results,
-                  //             function (ind: any, value: any) {
-                  //                 if (value.Title.toLowerCase() == "draft") {
-                  //                     item.isDrafted = true;
-                  //                 }
-                  //             }
-                  //         );
-                  //     }
-                  // }
+                  item.SmartPriority;
+                  item.TaskTypeValue = '';
+                  item.projectPriorityOnHover = '';
+                  item.taskPriorityOnHover = item?.PriorityRank;
+                  item.showFormulaOnHover;
                 });
               }
               AllTasks = AllTasks.concat(AllTasksMatches);
@@ -414,6 +408,7 @@ function PortfolioTable(SelectedProp: any) {
                   result.commentsSearch = "";
                   result.TaskTypeValue = '';
                   result.portfolioItemsSearch = '';
+                  result.SmartPriority = globalCommon.calculateSmartPriority(result);
                   if (result?.DueDate != null && result?.DueDate != undefined) {
                     result.serverDueDate = new Date(result?.DueDate).setHours(0, 0, 0, 0)
                 }
@@ -611,6 +606,9 @@ function PortfolioTable(SelectedProp: any) {
     if (results?.AllData?.length > 0) {
         componentDetails = results?.AllData;
         ProjectData=results?.ProjectData;
+        componentDetails?.map((items: any) => {
+          items.SmartPriority;
+      });
     }
     flatviewmastertask = JSON.parse(JSON.stringify(componentDetails));
     setAllMasterTasks(componentDetails);
@@ -1076,19 +1074,7 @@ const switchGroupbyData = () => {
         // isColumnDefultSortingAsc:true,
         size: 190,
       },
-      {
-        accessorFn: (row) => row?.TaskTypeValue,
-        cell: ({ row, column, getValue }) => (
-            <>
-                <span className="columnportfoliotaskCate"><span title={row?.original?.TaskTypeValue} className="text-content"><HighlightableCell value={getValue()} searchTerm={column.getFilterValue() != undefined ? column.getFilterValue() : childRef?.current?.globalFilter} /></span></span>
-            </>
-        ),
-        placeholder: "Task Type",
-        header: "",
-        resetColumnFilters: false,
-        size: 90,
-        id: "TaskTypeValue",
-    },
+    
   
       {
         accessorFn: (row) => row?.Title,
@@ -1241,6 +1227,19 @@ const switchGroupbyData = () => {
         size: 70
       },
       {
+        accessorFn: (row) => row?.TaskTypeValue,
+        cell: ({ row, column, getValue }) => (
+            <>
+                <span className="columnportfoliotaskCate"><span title={row?.original?.TaskTypeValue} className="text-content"><HighlightableCell value={getValue()} searchTerm={column.getFilterValue() != undefined ? column.getFilterValue() : childRef?.current?.globalFilter} /></span></span>
+            </>
+        ),
+        placeholder: "Task Type",
+        header: "",
+        resetColumnFilters: false,
+        size: 90,
+        id: "TaskTypeValue",
+    },
+      {
         accessorFn: (row) => row?.ClientCategorySearch,
         cell: ({ row }) => (
           <>
@@ -1298,6 +1297,17 @@ const switchGroupbyData = () => {
         size: 42,
         id: "ItemRank"
       },
+      {
+        accessorFn: (row) => row?.SmartPriority,
+        cell: ({ row }) => (
+          <div className="boldClable" title={row?.original?.showFormulaOnHover}>{row?.original?.SmartPriority}</div>
+        ),
+        id: "SmartPriority",
+        placeholder: "SmartPriority",
+        resetColumnFilters: false,
+        header: "",
+        size: 42,
+      },
       // {
       //   accessorKey: "DueDate",
       //   placeholder: "Due Date",
@@ -1329,13 +1339,12 @@ const switchGroupbyData = () => {
       {
         accessorFn: (row) => row?.Created,
         cell: ({ row }) => (
-          <span>
+          <div className="alignCenter">
             {row?.original?.Created == null ? (
               ""
             ) : (
               <>
-                <span className='ms-1'>{row?.original?.DisplayCreateDate} </span>
-
+                <div style={{ width: "70px" }} className="me-1">{row?.original?.DisplayCreateDate}</div>
                 {row?.original?.Author != undefined ? (
                   <>
                     <a
@@ -1351,7 +1360,7 @@ const switchGroupbyData = () => {
                 )}
               </>
             )}
-          </span>
+          </div>
         ),
         id: 'Created',
         resetColumnFilters: false,
@@ -1365,7 +1374,7 @@ const switchGroupbyData = () => {
           }
         },
         header: "",
-        size: 149
+        size: 125
       },
       {
         accessorKey: "descriptionsSearch",

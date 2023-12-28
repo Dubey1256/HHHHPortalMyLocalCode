@@ -11,7 +11,7 @@ function ShowTaskTeamMembers(item: any) {
   let CompleteTeamMembers: any = [];
   React.useEffect(() => {
     if (item?.props != undefined) {
-      let taskDetails = item?.props;
+      let taskDetails = JSON.parse(JSON.stringify(item?.props));
       let LeadCount =0;
       if(taskDetails["ResponsibleTeam"] != undefined&&taskDetails["ResponsibleTeam"].length > 0){
         taskDetails["ResponsibleTeam"]=GetUserObjectFromCollection(taskDetails["ResponsibleTeam"]);

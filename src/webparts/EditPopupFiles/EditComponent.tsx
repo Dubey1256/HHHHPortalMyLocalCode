@@ -139,6 +139,8 @@ function EditInstitution({ item, SelectD, Calls, usedFor, portfolioTypeData, fil
     const [ValueAddedVerifieds, setValueAddedVerifieds] = React.useState(false);
     const [DeliverablesVerifieds, setDeliverablesVerifieds] = React.useState(false);
     const [TechnicalExplanationsVerifieds, setTechnicalExplanationsVerifieds] = React.useState(false);
+    const [HelpInformationVerifieds, setHelpInformationVerifieds] = React.useState(false);
+    
     const [SiteCompositionShow, setSiteCompositionShow] = React.useState(false);
     const [composition, setComposition] = React.useState(true);
 
@@ -169,7 +171,10 @@ function EditInstitution({ item, SelectD, Calls, usedFor, portfolioTypeData, fil
     const handleCheckboxTechnicalExplanations = () => {
         setTechnicalExplanationsVerifieds((prevChecked: any) => !prevChecked);
     };
-
+    const handleCheckboxHelpInformation = () => {
+      setHelpInformationVerifieds((prevChecked: any) => !prevChecked);
+  };
+    
     function imageta() {
         setImagetab(true);
     }
@@ -543,6 +548,17 @@ function EditInstitution({ item, SelectD, Calls, usedFor, portfolioTypeData, fil
             }
             DeliverablesVerifieds
             setDeliverablesVerifieds(item?.DeliverablesVerified)
+            if (item?.TechnicalExplanations) {
+                item.TechnicalExplanations = getPlainTextFromHTML(item?.TechnicalExplanations)
+                setTechnicalExplanationsVerifieds(item?.TechnicalExplanations)
+            }
+            TechnicalExplanationsVerifieds
+            if (item?.Help_x0020_Information) {
+              item.Help_x0020_Information = getPlainTextFromHTML(item?.Help_x0020_Information)
+              setHelpInformationVerifieds(item?.Help_x0020_Information)
+          }
+          HelpInformationVerifieds
+          setHelpInformationVerifieds(item?.HelpInformationVerified)
             setTechnicalExplanationsVerifieds(item?.TechnicalExplanationsVerified)
             PortfolioTypeColor = item?.PortfolioType?.Color
             item.DateTaskDueDate = new Date(item.DueDate);
@@ -1423,6 +1439,16 @@ function EditInstitution({ item, SelectD, Calls, usedFor, portfolioTypeData, fil
                             PostShort_x0020_Description_x0020_On != ""
                             ? PostShort_x0020_Description_x0020_On
                             : EditData?.Short_x0020_Description_x0020_On,
+                    Help_x0020_Information:
+                            PostHelp_x0020_Information != undefined &&
+                            PostHelp_x0020_Information != ""
+                                ? PostHelp_x0020_Information
+                                : EditData?.Help_x0020_Information,
+                    HelpInformation:
+                            PostHelp_x0020_Information != undefined &&
+                            PostHelp_x0020_Information != ""
+                                ? PostHelp_x0020_Information
+                                : EditData?.HelpInformation,        
                     Body:
                         PostBody != undefined && PostBody != "" ? PostBody : EditData?.Body,
                     AssignedToId: {
@@ -3954,18 +3980,13 @@ function EditInstitution({ item, SelectD, Calls, usedFor, portfolioTypeData, fil
                                                     <label className="toggler full_width">
                                                         <div className="alignCenter">Help Information {`(${EditData?.Help_x0020_Information?.length != undefined ? EditData?.Help_x0020_Information?.length : 0})`}
                                                             <span className="alignCenter ml-auto">
-                                                                <input
-                                                                    className="form-check-input me-1 mt-0 rounded-0"
-                                                                    type="checkbox"
-                                                                    defaultChecked={
-                                                                        EditData?.HelpInformationVerified ===
-                                                                        true
-                                                                    }
-                                                                    onChange={(e) =>
-                                                                    (EditData.HelpInformationVerified =
-                                                                        e.target.value)
-                                                                    }
-                                                                ></input>
+                                                              
+                                                                 <input
+                                                            type="checkbox"
+                                                            className="form-check-input me-1 rounded-0"
+                                                            checked={HelpInformationVerifieds}
+                                                            onChange={handleCheckboxHelpInformation}
+                                                        />
                                                                 <span className="ps-1">Verified</span>
                                                             </span></div>
                                                     </label>

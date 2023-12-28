@@ -29,8 +29,10 @@ const TaskUserManagementApp = (props: any) => {
 
     return (
         <>
-            <div className='heading'>TaskUser Management</div>
-            <TaskUserManagementTable TaskUsersListData={taskUsersListData} TaskGroupsListData={taskGroupsListData} baseUrl={baseUrl} TaskUserListId={props.props.TaskUserListId} context={context} fetchAPIData={fetchAPIData} smartMetaDataItems={smartMetaDataItems}/>
+            <h2 className='heading'>TaskUser Management
+            <a className='f-15 fw-semibold hreflink pull-right' href='https://hhhhteams.sharepoint.com/sites/HHHH/SP/SitePages/TaskUser-Management.aspx' target="_blank">Old TaskUser Management</a>     
+            </h2>
+        <TaskUserManagementTable TaskUsersListData={taskUsersListData} TaskGroupsListData={taskGroupsListData} baseUrl={baseUrl} TaskUserListId={props.props.TaskUserListId} context={context} fetchAPIData={fetchAPIData} smartMetaDataItems={smartMetaDataItems}/>
         </>
     )
 }
