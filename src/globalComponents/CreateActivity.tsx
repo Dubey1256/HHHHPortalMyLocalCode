@@ -1837,9 +1837,8 @@ const CreateActivity = (props: any) => {
                               style={{ color: "#fff !important" }}
                               target="_blank"
                               data-interception="off"
-                           
-                            >
-                              {type.Title}
+                              >
+                              {type?.Title}
                             </a>
                             <span
                               className="bg-light svg__iconbox svg__icon--cross"
