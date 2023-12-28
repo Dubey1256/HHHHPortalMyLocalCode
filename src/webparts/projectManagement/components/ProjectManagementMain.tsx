@@ -220,6 +220,7 @@ const ProjectManagementMain = (props: any) => {
             fetchedProject.siteUrl = props?.siteUrl;
             fetchedProject.listId = AllListId?.MasterTaskListID;
             fetchedProject.TaskID = fetchedProject.PortfolioStructureID;
+            fetchedProject.SmartPriority;
             if ((fetchedProject.PercentComplete != undefined)) {
               fetchedProject.PercentComplete = (fetchedProject?.PercentComplete * 100).toFixed(0)
             } if (fetchedProject?.DueDate != undefined) {
@@ -504,6 +505,7 @@ const ProjectManagementMain = (props: any) => {
       }
 
       AllProjectTasks.map((items: any) => {
+        items.SmartPriority = globalCommon.calculateSmartPriority(items);
         if (items?.SmartInformation?.length > 0) {
           allSmartInfo?.map((smart: any) => {
             if (smart?.Id == items?.SmartInformation[0]?.Id) {
@@ -1018,6 +1020,20 @@ const ProjectManagementMain = (props: any) => {
         resetSorting: false,
         size: 75
       },
+      {
+        accessorFn: (row) => row?.SmartPriority,
+        cell: ({ row }) => (
+            <div className="text-center boldClable" title={row?.original?.showFormulaOnHover}>{row?.original?.SmartPriority}</div>
+        ),
+        id: "SmartPriority",
+        placeholder: "SmartPriority",
+        resetColumnFilters: false,
+        filterFn: (row: any, columnId: any, filterValue: any) => {
+          return row?.original?.SmartPriority == filterValue
+        },
+        header: "",
+        size: 42,
+    },
       {
         accessorFn: (row) => row?.DueDate,
         cell: ({ row }) => (

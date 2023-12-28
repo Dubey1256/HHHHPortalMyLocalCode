@@ -185,14 +185,19 @@ export default function ProjectOverview(props: any) {
                         let smartmeta = [];
                         await web.lists
                             .getById(config.listId)
-                            .items.select("ID", "Title", "ClientCategory/Id", "ClientCategory/Title", 'ClientCategory', "Comments", "DueDate", "ClientActivityJson", "EstimatedTime", "Approver/Id", "Approver/Title", "ParentTask/Id", "ParentTask/Title", "workingThisWeek", "IsTodaysTask", "AssignedTo/Id", "TaskLevel", "TaskLevel", "OffshoreComments", "AssignedTo/Title", "OffshoreImageUrl", "TaskCategories/Id", "TaskCategories/Title", "Status", "StartDate", "CompletedDate", "TeamMembers/Title", "TeamMembers/Id", "ItemRank", "PercentComplete", "Priority", "Body", "PriorityRank", "Created", "Author/Title", "Author/Id", "BasicImageInfo", "ComponentLink", "FeedBack", "ResponsibleTeam/Title", "ResponsibleTeam/Id", "TaskType/Title", "ClientTime", "Portfolio/Id", "Portfolio/Title", "Modified")
-                            .expand("TeamMembers", "Approver", "ParentTask", "ClientCategory", "AssignedTo", "TaskCategories", "Author", "ResponsibleTeam", "TaskType", "Portfolio")
+                            .items.select("ID", "Title", "ClientCategory/Id", "ClientCategory/Title", 'ClientCategory',"Project/Title","Project/PriorityRank", "Comments", "DueDate", "ClientActivityJson", "EstimatedTime", "Approver/Id", "Approver/Title", "ParentTask/Id", "ParentTask/Title", "workingThisWeek", "IsTodaysTask", "AssignedTo/Id", "TaskLevel", "TaskLevel", "OffshoreComments", "AssignedTo/Title", "OffshoreImageUrl", "TaskCategories/Id", "TaskCategories/Title", "Status", "StartDate", "CompletedDate", "TeamMembers/Title", "TeamMembers/Id", "ItemRank", "PercentComplete", "Priority", "Body", "PriorityRank", "Created", "Author/Title", "Author/Id", "BasicImageInfo", "ComponentLink", "FeedBack", "ResponsibleTeam/Title", "ResponsibleTeam/Id", "TaskType/Title", "ClientTime", "Portfolio/Id", "Portfolio/Title", "Modified")
+                            .expand("TeamMembers", "Approver", "ParentTask", "ClientCategory","Project", "AssignedTo", "TaskCategories", "Author", "ResponsibleTeam", "TaskType", "Portfolio")
                             .getAll().then((data: any) => {
                                 smartmeta = data;
                                 smartmeta.map((task: any) => {
                                     task.AllTeamMember = [];
                                     task.HierarchyData = [];
                                     task.siteType = config.Title;
+                                    task.SmartPriority;
+                                    task.TaskTypeValue = '';
+                                    task.projectPriorityOnHover = '';
+                                    task.taskPriorityOnHover = task?.PriorityRank;
+                                    task.showFormulaOnHover;
                                     task.bodys = task.Body != null && task.Body.split('<p><br></p>').join('');
                                     task.listId = config.listId;
                                     task.siteUrl = config.siteUrl.Url;
@@ -207,7 +212,7 @@ export default function ProjectOverview(props: any) {
                                         task.PortfolioTitle = task?.Portfolio?.Title;
                                         //task["Portfoliotype"] = "Component";
                                     }
-
+                                    task.SmartPriority = globalCommon.calculateSmartPriority(task);
                                     task["SiteIcon"] = config?.Item_x005F_x0020_Cover?.Url;
                                     task.TeamMembersSearch = "";
                                     task.TaskID = globalCommon.getTaskId(task);
@@ -1244,6 +1249,20 @@ export default function ProjectOverview(props: any) {
                 size: 100,
             },
             {
+                accessorFn: (row) => row?.SmartPriority,
+                cell: ({ row }) => (
+                    <div className="text-center boldClable" title={row?.original?.showFormulaOnHover}>{row?.original?.SmartPriority}</div>
+                ),
+                id: "SmartPriority",
+                placeholder: "SmartPriority",
+                resetColumnFilters: false,
+                filterFn: (row: any, columnId: any, filterValue: any) => {
+                    return row?.original?.SmartPriority == filterValue
+                },
+                header: "",
+                size: 42,
+            },
+            {
                 accessorFn: (row) => row?.TeamMembersSearch,
                 cell: ({ row }) => (
                     <span>
@@ -1635,7 +1654,8 @@ export default function ProjectOverview(props: any) {
 
             Alltask.map((items: any) => {
                 items.descriptionsSearch = '';
-                items.ShowTeamsIcon = false
+                items.ShowTeamsIcon = false;
+                items.SmartPriority;
                 items.PercentComplete = (items.PercentComplete * 100).toFixed(0);
                 items.siteUrl = AllListId?.siteUrl;
                 items.listId = AllListId?.MasterTaskListID;
@@ -1770,6 +1790,11 @@ export default function ProjectOverview(props: any) {
                         items.AllTeamMember = [];
                         items.siteType = config.Title;
                         items.siteUrl = config.siteUrl.Url;
+                        items.SmartPriority;
+                        items.TaskTypeValue = '';
+                        items.projectPriorityOnHover = '';
+                        items.taskPriorityOnHover = items?.PriorityRank;
+                        items.showFormulaOnHover;
                         items.EstimatedTime = 0
                         let estimatedDescription = ''
                         if (EstimatedDesc?.length > 0) {
@@ -1810,8 +1835,6 @@ export default function ProjectOverview(props: any) {
                             items["ProjectPriority"] = 0;
                         }
 
-
-
                         items.TeamMembersSearch = "";
                         items.AssignedToIds = [];
                         if (items.AssignedTo != undefined) {
@@ -1848,6 +1871,7 @@ export default function ProjectOverview(props: any) {
                                 });
                             }
                         });
+                        items.SmartPriority = globalCommon.calculateSmartPriority(items);
                         AllTask.push(items);
                     });
                     let setCount = siteConfig?.length
