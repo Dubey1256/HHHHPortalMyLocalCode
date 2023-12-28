@@ -1465,7 +1465,7 @@ const EditTaskPopup = (Items: any) => {
                             let ClientData = JSON.parse(
                                 DataItem[0].Sitestagging ? DataItem[0].Sitestagging : [{}]
                             );
-                            let TempSiteCompositionArray: any = [];
+                           
                             if (ClientData != undefined && ClientData.length > 0) {
                                 if (Items?.Items?.siteType == "Shareweb") {
                                     setClientTimeData(ClientData);
