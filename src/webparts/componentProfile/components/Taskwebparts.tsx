@@ -391,18 +391,6 @@ function PortfolioTable(SelectedProp: any) {
                   item.projectPriorityOnHover = '';
                   item.taskPriorityOnHover = item?.PriorityRank;
                   item.showFormulaOnHover;
-                  // if (item.TaskCategories.results != undefined) {
-                  //     if (item.TaskCategories.results.length > 0) {
-                  //         $.each(
-                  //             item.TaskCategories.results,
-                  //             function (ind: any, value: any) {
-                  //                 if (value.Title.toLowerCase() == "draft") {
-                  //                     item.isDrafted = true;
-                  //                 }
-                  //             }
-                  //         );
-                  //     }
-                  // }
                 });
               }
               AllTasks = AllTasks.concat(AllTasksMatches);
@@ -1086,19 +1074,7 @@ const switchGroupbyData = () => {
         // isColumnDefultSortingAsc:true,
         size: 190,
       },
-      {
-        accessorFn: (row) => row?.TaskTypeValue,
-        cell: ({ row, column, getValue }) => (
-            <>
-                <span className="columnportfoliotaskCate"><span title={row?.original?.TaskTypeValue} className="text-content"><HighlightableCell value={getValue()} searchTerm={column.getFilterValue() != undefined ? column.getFilterValue() : childRef?.current?.globalFilter} /></span></span>
-            </>
-        ),
-        placeholder: "Task Type",
-        header: "",
-        resetColumnFilters: false,
-        size: 90,
-        id: "TaskTypeValue",
-    },
+    
   
       {
         accessorFn: (row) => row?.Title,
@@ -1251,6 +1227,19 @@ const switchGroupbyData = () => {
         size: 70
       },
       {
+        accessorFn: (row) => row?.TaskTypeValue,
+        cell: ({ row, column, getValue }) => (
+            <>
+                <span className="columnportfoliotaskCate"><span title={row?.original?.TaskTypeValue} className="text-content"><HighlightableCell value={getValue()} searchTerm={column.getFilterValue() != undefined ? column.getFilterValue() : childRef?.current?.globalFilter} /></span></span>
+            </>
+        ),
+        placeholder: "Task Type",
+        header: "",
+        resetColumnFilters: false,
+        size: 90,
+        id: "TaskTypeValue",
+    },
+      {
         accessorFn: (row) => row?.ClientCategorySearch,
         cell: ({ row }) => (
           <>
@@ -1355,7 +1344,7 @@ const switchGroupbyData = () => {
               ""
             ) : (
               <>
-                <div style={{ width: "75px" }} className="me-1">{row?.original?.DisplayCreateDate}</div>
+                <div style={{ width: "70px" }} className="me-1">{row?.original?.DisplayCreateDate}</div>
                 {row?.original?.Author != undefined ? (
                   <>
                     <a
@@ -1385,7 +1374,7 @@ const switchGroupbyData = () => {
           }
         },
         header: "",
-        size: 130
+        size: 125
       },
       {
         accessorKey: "descriptionsSearch",
