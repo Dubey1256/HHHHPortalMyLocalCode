@@ -5,7 +5,7 @@ import "react-datepicker/dist/react-datepicker.css";
 import "react-datepicker/dist/react-datepicker-cssmodules.css";
 import { FaFilter } from "react-icons/fa";
 const BulkEditingConfrigation = (item: any) => {
-    const [checkboxValues, setCheckboxValues] = React.useState({ priority: false, status: false, dueDate: false, itemRank: false, categories: false, clientCategories: false, Project:false });
+    const [checkboxValues, setCheckboxValues] = React.useState({ priority: false, status: false, dueDate: false, itemRank: false, categories: false, clientCategories: false, Project: false });
 
     const handleCheckboxChange = (checkboxName: any) => {
         setCheckboxValues((prevValues: any) => ({
@@ -43,21 +43,25 @@ const BulkEditingConfrigation = (item: any) => {
                         <div className="">
                             <div>
                                 <label>
-                                    <input type="checkbox" className="cursor-pointer form-check-input rounded-0" checked={checkboxValues.priority} onChange={() => handleCheckboxChange('priority')} />
+                                    <input type="checkbox" className="cursor-pointer form-check-input rounded-0 me-1" checked={checkboxValues.priority} onChange={() => handleCheckboxChange('priority')} />
                                     Priority
                                 </label>
                                 <br />
                                 <label>
-                                    <input type="checkbox" className="cursor-pointer form-check-input rounded-0" checked={checkboxValues.status} onChange={() => handleCheckboxChange('status')} />
+                                    <input type="checkbox" className="cursor-pointer form-check-input rounded-0 me-1" checked={checkboxValues.status} onChange={() => handleCheckboxChange('status')} />
                                     Status
                                 </label>
                                 <br />
                                 <label>
-                                    <input type="checkbox" className="cursor-pointer form-check-input rounded-0" checked={checkboxValues.dueDate} onChange={() => handleCheckboxChange('dueDate')} />
+                                    <input type="checkbox" className="cursor-pointer form-check-input rounded-0 me-1" checked={checkboxValues.dueDate} onChange={() => handleCheckboxChange('dueDate')} />
                                     Due Date
                                 </label>
                                 <br />
                                 <label>
+                                    <input type="checkbox" className="cursor-pointer form-check-input rounded-0 me-1" checked={checkboxValues.Project} onChange={() => handleCheckboxChange('Project')} />
+                                    Project
+                                </label>
+                                {/* <label>
                                     <input type="checkbox" className="cursor-pointer form-check-input rounded-0" checked={checkboxValues.itemRank} onChange={() => handleCheckboxChange('itemRank')} />
                                     Item Rank
                                 </label>
@@ -71,11 +75,7 @@ const BulkEditingConfrigation = (item: any) => {
                                     <input type="checkbox" className="cursor-pointer form-check-input rounded-0" checked={checkboxValues.clientCategories} onChange={() => handleCheckboxChange('clientCategories')} />
                                     Client Categories
                                 </label>
-                                <br />
-                                <label>
-                                    <input type="checkbox" className="cursor-pointer form-check-input rounded-0" checked={checkboxValues.Project} onChange={() => handleCheckboxChange('Project')} />
-                                    Project
-                                </label>
+                                <br /> */}
                             </div>
                         </div>
                     </div>
