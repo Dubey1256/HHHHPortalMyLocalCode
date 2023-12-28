@@ -16,6 +16,7 @@ import { FaCompressArrowsAlt } from "react-icons/fa";
 import InfoIconsToolTip from "../InfoIconsToolTip/InfoIconsToolTip";
 import ClientCategoryPopup from "./SCClientCategoryPopup";
 import SmartTotalTime from '../EditTaskPopup/SmartTimeTotal';
+import { SlArrowDown, SlArrowRight } from "react-icons/sl";
 let AllSiteDataBackup: any = [];
 let AllClientCategoryDataBackup: any = [];
 let ComponentChildData: any = [];
@@ -25,6 +26,7 @@ let GlobalCount: any = 0;
 let GlobalAllTaskUsersData: any = [];
 let FlatViewTableData: any = [];
 let GroupByTableData: any = [];
+let taskTypeData: any = [];
 const CentralizedSiteComposition = (Props: any) => {
     const PropsData: any = Props;
     const usedFor: string = PropsData?.usedFor;
@@ -34,14 +36,14 @@ const CentralizedSiteComposition = (Props: any) => {
     const RequiredListIds: any = PropsData.RequiredListIds;
     const siteUrl: string = ItemDetails?.siteUrl;
     const closePopupCallBack: any = PropsData?.closePopupCallBack;
-    const AllClientCategoryBucket: any = [];
+    let AllClientCategoryBucket: any = [];
 
     let TotalPercent: any = 0;
     let CCTableCount: any = 0;
     let web = new Web(siteUrl);
     const [IsModelOpen, setIsModelOpen] = useState(true);
     const [IsMakeSCProtected, setIsMakeSCProtected] = useState(false);
-    const [flatView, setFlatView] = React.useState(true);
+    const [flatView, setFlatView] = React.useState(false);
     let [AllSiteData, setAllSiteData] = useState<any>([]);
     const [AllClientCategories, setAllClientCategories] = useState<any>([]);
     const [TaggedSiteCompositionCount, setTaggedSiteCompositionCount] = useState<any>(0);
@@ -51,6 +53,9 @@ const CentralizedSiteComposition = (Props: any) => {
     const [IsSCManual, setIsSCManual] = useState(false);
     const [SiteCompositionSettings, setSiteCompositionSettings] = useState<any>([]);
     const [TaskTotalTime, setTaskTotalTime] = useState(Props.SmartTotalTimeData);
+    const [SummarizationTool, setSummarizationTool] = useState(true);
+    const [SiteCompositionTool, setSiteCompositionTool] = useState(true);
+
 
     // This is used for CLient Category Related States 
     const [SelectedSiteName, setSelectedSiteName] = useState<any>("");
@@ -126,9 +131,24 @@ const CentralizedSiteComposition = (Props: any) => {
     useEffect(() => {
         setIsModelOpen(true);
         getSmartMetaDataListAllItems();
+        getTaskType();
         loadAllTaskUsers();
-
     }, [])
+
+    const getTaskType = async () => {
+        let taskTypeData1: any = [];
+        let typeData: any = [];
+        taskTypeData1 = await web.lists
+            .getById(RequiredListIds?.TaskTypeID)
+            .items.select(
+                'Id',
+                'Level',
+                'Title',
+                'SortOrder',
+            )
+            .get();
+        taskTypeData = taskTypeData.concat(taskTypeData1)
+    };
 
     const getSmartMetaDataListAllItems = async () => {
         let AllSmartDataListData: any = [];
@@ -242,6 +262,7 @@ const CentralizedSiteComposition = (Props: any) => {
             MasterTaskListID: RequiredListIds?.MasterTaskListID,
             siteUrl: RequiredListIds?.siteUrl,
             TaskUserListId: RequiredListIds?.TaskUsertListID,
+            usedFor: "Site-Composition"
         }
         let componentDetails: any = [];
         let groupedComponentData: any = [];
@@ -256,76 +277,22 @@ const CentralizedSiteComposition = (Props: any) => {
         console.log("Get loadAllMasterListData Call");
     }
 
-    let TaggedData: any = [];
-    const loadAllSitesData = async () => {
+
+    const loadAllSitesData = async (usedForLoad: any) => {
         setLoaded(false);
-        if (usedFor == "CSF") {
-            GlobalAllSiteData = await globalCommon?.loadAllSiteTasks(RequiredListIds, 'Portfolio/Id ne null')
-            // loadAllMasterListData();
-        } else {
-            GlobalAllSiteData = await globalCommon?.loadAllSiteTasks(RequiredListIds, undefined);
-        }
-        if (GlobalAllSiteData?.length > 0) {
-            // setLoaded(true);
-            ComponentChildData?.map((MasterData: any) => {
-                GlobalAllSiteData?.map((AllSiteDataItem: any) => {
-                    if (AllSiteDataItem?.siteType !== "Offshore Tasks") {
-                        AllSiteDataItem.DisplayCreateDate = Moment(AllSiteDataItem?.Created).format("DD/MM/YYYY");
-                        if (AllSiteDataItem?.PercentComplete < 1) {
-                            AllSiteDataItem.PercentComplete = AllSiteDataItem?.PercentComplete * 100;
-                        }
-                        if (AllSiteDataItem?.Portfolio?.Id == MasterData?.Id) {
-                            TaggedData.push(AllSiteDataItem);
-                        }
-                        MasterData?.subRows?.map((FirstChild: any) => {
-                            if (AllSiteDataItem?.Portfolio?.Id == FirstChild?.Id) {
-                                TaggedData.push(AllSiteDataItem);
-                            }
-                            FirstChild?.subRows?.map((SecondChild: any) => {
-                                if (AllSiteDataItem?.Portfolio?.Id == SecondChild?.Id) {
-                                    TaggedData.push(AllSiteDataItem);
-                                }
-                            })
-                        })
-                    }
-                })
-            })
-            GlobalAllSiteData?.map((AllSIteItem: any) => {
-                if (usedFor == "CSF") {
-                    AllSIteItem.DisplayCreateDate = Moment(AllSIteItem?.Created).format("DD/MM/YYYY");
-                    if (AllSIteItem?.TaskType) {
-                        AllSIteItem.portfolioItemsSearch = AllSIteItem.siteType;
-                    }
-                    if (AllSIteItem?.PercentComplete < 1) {
-                        AllSIteItem.PercentComplete = AllSIteItem?.PercentComplete * 100;
-                    }
-                    if (AllSIteItem?.Portfolio?.Id == ItemDetails?.Id && AllSIteItem?.siteType !== "Offshore Tasks") {
-                        TaggedData.push(AllSIteItem);
-                    }
-                }
+        if (usedForLoad == "Individual-Site") {
+            GlobalAllSiteData = await GetIdividualSiteAllData();
 
-                if (usedFor == "AWT" && SiteType?.toLocaleLowerCase() == AllSIteItem.siteType?.toLocaleLowerCase()) {
-                    AllSIteItem.DisplayCreateDate = Moment(AllSIteItem?.Created).format("DD/MM/YYYY");
-                    if (AllSIteItem?.TaskType) {
-                        AllSIteItem.portfolioItemsSearch = AllSIteItem.siteType;
-                    }
-                    if (AllSIteItem?.PercentComplete < 1) {
-                        AllSIteItem.PercentComplete = AllSIteItem?.PercentComplete * 100;
-                    }
-                    if (AllSIteItem?.ParentTask?.Id == ItemDetails?.Id) {
-                        TaggedData.push(AllSIteItem);
-                    }
-                    TaggedData?.map((TaggedItem: any) => {
-                        if (TaggedItem.Id == AllSIteItem?.ParentTask?.Id) {
-                            TaggedData.push(AllSIteItem);
-                        }
-                    })
-                }
-            })
         }
-        console.log("all Site Data ==========", TaggedData);
-        console.log("Get loadAllSitesData Call");
+        if (usedForLoad == "All-Sites") {
+            if (usedFor == "CSF") {
+                GlobalAllSiteData = await globalCommon?.loadAllSiteTasks(RequiredListIds, 'Portfolio/Id ne null')
+                // loadAllMasterListData();
+            } else {
+                GlobalAllSiteData = await globalCommon?.loadAllSiteTasks(RequiredListIds, undefined);
+            }
 
+        }
         let AllTaggedComponent: any = [];
         ComponentChildData?.map((TaggedCSF: any) => {
             AllTaggedComponent.push(TaggedCSF);
@@ -335,74 +302,27 @@ const CentralizedSiteComposition = (Props: any) => {
                 })
             }
         })
-        let FlatViewData: any = AllTaggedComponent.concat(TaggedData);
+        let FlatViewData: any = AllTaggedComponent.concat(GlobalAllSiteData);
         let FlatViewDataParsedData: any[] = [];
         if (FlatViewData?.length > 0) {
             FlatViewDataParsedData = JSON.parse(JSON.stringify(FlatViewData))
         }
-        FlatViewDataParsedData?.map((FindCCItems: any) => {
-            let SCSettingsData: any = FindCCItems["SiteCompositionSettings"];
-            let checkIsSCProtected: any = false;
-            FindCCItems.subRows = [];
-            if (SCSettingsData?.length > 0) {
-                let TempSCSettingsData: any = JSON.parse(SCSettingsData);
-                if (TempSCSettingsData?.length > 0) {
-                    checkIsSCProtected = TempSCSettingsData[0].Protected;
-                }
-            }
-            if (checkIsSCProtected) {
-                FindCCItems.IsSCProtected = true;
-                FindCCItems.IsSCProtectedStatus = "Protected";
-
-            } else {
-                FindCCItems.IsSCProtected = false;
-                FindCCItems.IsSCProtectedStatus = "";
-            }
-            if (FindCCItems?.SiteCompositionSettings != undefined) {
-                FindCCItems.compositionType = siteCompositionType(FindCCItems?.SiteCompositionSettings);
-
-            } else {
-                FindCCItems.compositionType = '';
-
-            }
-            if (FindCCItems.ClientCategory?.length > 0) {
-                FindCCItems.ClientCategory?.map((TaggedItem: any) => {
-                    AllClientCategoryDataBackup?.map((AllCCData: any) => {
-                        if (AllCCData.Id == TaggedItem.Id) {
-                            AllClientCategoryBucket.push(AllCCData);
-                        }
-                    })
-                })
-            }
-        })
-        // setFlatViewTableData(FlatViewDataParsedData);
         FlatViewTableData = FlatViewDataParsedData;
-        setData(FlatViewDataParsedData);
-        // AllClientCategoryBucket
-        let uniqueIds: any = {};
-        const UniqueCCItems: any = AllClientCategoryBucket?.filter((obj: any) => {
-            if (!uniqueIds[obj.Id]) {
-                uniqueIds[obj.Id] = true;
-                return true;
-            }
-            return false;
-        });
-
-        if (AllSiteDataBackup?.length > 0) {
-            AllSiteDataBackup?.map((ItemData: any) => {
-                ItemData.ClientCategories = UniqueCCItems?.filter((selectedCC: any) => selectedCC?.siteName == ItemData?.Title);
-                if (ItemData.ClientCategories?.length > 0) {
-                    ItemData.ClientCategories[0].checked = true;
-                }
-            })
+        if (usedFor == "CSF") {
+            componentGrouping();
         }
-        setAllSiteData([...AllSiteDataBackup])
-        prepareGroupByDataFunction(ComponentChildData, TaggedData)
+        if (usedFor == "AWT") {
+            let AllGroupingData: any = await AWTGrouping(ItemDetails);
+            if (AllGroupingData?.length > 0) {
+                GroupByTableData = AllGroupingData;
+                setData(AllGroupingData);
+            }
+            setLoaded(true);
+        }
+
     }
 
     function siteCompositionType(jsonStr: any) {
-        console.log("Get siteCompositionType Call");
-
         var data = JSON.parse(jsonStr);
         try {
             data = data[0];
@@ -418,11 +338,67 @@ const CentralizedSiteComposition = (Props: any) => {
         }
     }
 
-    const prepareGroupByDataFunction = (MasterTaskData: any, AllSiteData: any) => {
-        // const GroupByTaskData: any = GroupByDataForAWT(AllSiteData);
-        console.log("Get prepareGroupByDataFunction   Call");
-
-        const GroupByTaskData: any = AllSiteData;
+    const GetIdividualSiteAllData = async () => {
+        let query: any = "Id,Title,FeedBack,PriorityRank,Remark,Project/PriorityRank,ParentTask/Id,ParentTask/Title,ParentTask/TaskID,TaskID,SmartInformation/Id,SmartInformation/Title,Project/Id,Project/Title,workingThisWeek,EstimatedTime,TaskLevel,TaskLevel,OffshoreImageUrl,OffshoreComments,ClientTime,Priority,Status,ItemRank,IsTodaysTask,Body,Portfolio/Id,Portfolio/Title,Portfolio/PortfolioStructureID,PercentComplete,Categories,StartDate,PriorityRank,DueDate,TaskType/Id,TaskType/Title,Created,Modified,Author/Id,Author/Title,TaskCategories/Id,TaskCategories/Title,AssignedTo/Id,AssignedTo/Title,TeamMembers/Id,TeamMembers/Title,ResponsibleTeam/Id,ResponsibleTeam/Title,ClientCategory/Id,ClientCategory/Title&$expand=AssignedTo,Project,ParentTask,SmartInformation,Author,Portfolio,TaskType,TeamMembers,ResponsibleTeam,TaskCategories,ClientCategory"
+        try {
+            const data = await web.lists.getById(ItemDetails?.listId).items.select(query).getAll();
+            data?.map((task: any) => {
+                task.siteType = ItemDetails?.siteType;
+                task.listId = ItemDetails?.listId;
+                task.siteUrl = ItemDetails?.siteUrl;
+                task.SiteIcon = ItemDetails?.SiteIcon;
+                if (task?.Portfolio?.Id != undefined) {
+                    task.portfolio = task?.Portfolio;
+                    task.PortfolioTitle = task?.Portfolio?.Title;
+                }
+            })
+            return data;
+        } catch (error) {
+            console.log("Get Idividual Site All Data Function", error.message);
+        }
+    }
+    const componentGrouping = () => {
+        let FinalComponent: any = []
+        let AllProtFolioData = FlatViewTableData?.filter(
+            (comp: any) =>
+                comp?.Parent?.Id === ItemDetails?.Id && comp.TaskType === undefined
+        );
+        AllProtFolioData?.map((masterTask: any) => {
+            masterTask.subRows = [];
+            if (masterTask?.ClientCategory?.length > 0) {
+                AllClientCategoryBucket = AllClientCategoryBucket.concat(masterTask?.ClientCategory);
+            }
+            componentActivity(masterTask);
+            let subComFeat = AllProtFolioData?.filter((comp: any) => comp?.Parent?.Id === masterTask?.Id)
+            masterTask.subRows = masterTask?.subRows?.concat(subComFeat);
+            subComFeat?.forEach((subComp: any) => {
+                subComp.subRows = [];
+                if (subComp?.ClientCategory?.length > 0) {
+                    AllClientCategoryBucket = AllClientCategoryBucket.concat(subComp?.ClientCategory);
+                }
+                componentActivity(subComp);
+                let allFeatureData = AllProtFolioData?.filter((elem: any) => elem?.Parent?.Id === subComp?.Id);
+                subComp.subRows = subComp?.subRows?.concat(allFeatureData);
+                allFeatureData?.forEach((subFeat: any) => {
+                    if (subFeat?.ClientCategory?.length > 0) {
+                        AllClientCategoryBucket = AllClientCategoryBucket.concat(subFeat?.ClientCategory);
+                    }
+                    subFeat.subRows = [];
+                    componentActivity(subFeat);
+                })
+            })
+            FinalComponent.push(masterTask);
+        })
+        let FinalGroupingData: any = [];
+        let directChildAW = FlatViewTableData?.filter((elem: any) => elem.Portfolio?.Id === ItemDetails?.Id);
+        let directChildT = FlatViewTableData?.filter((elem: any) => elem.Portfolio?.Id === ItemDetails?.Id && elem?.TaskType?.Title == "Task");
+        if (directChildAW?.length > 0) {
+            directChildAW?.map((OtherItem: any) => {
+                componentActivity(OtherItem);
+            })
+        }
+        let FindAllDirectAWT: any = directChildAW?.filter((elem: any) => (elem?.ParentTask?.Title == undefined || elem?.ParentTask?.Title == null) && elem?.TaskType?.Title !== "Task")
+        FinalGroupingData = FinalComponent?.concat(FindAllDirectAWT)
         let OtherTaskJSON: any = {
             Title: "Others",
             TaskID: "",
@@ -441,95 +417,104 @@ const CentralizedSiteComposition = (Props: any) => {
             Status: "",
             Author: ""
         }
-        let MasterTaskAllData: any = [];
-        if (MasterTaskData?.length > 0) {
-            MasterTaskAllData = JSON.parse(JSON.stringify(MasterTaskData));
-            MasterTaskAllData?.map((MasterItem: any) => (
-                GroupByTaskData?.map((TaskItem: any) => {
-                    let TaskGroupData: any = CreateTaskGrouping(TaskItem, GroupByTaskData)
-                    if (MasterItem.Id == TaskItem?.Portfolio?.Id && (TaskItem?.ParentTask?.Id == undefined || TaskItem?.ParentTask?.Id == null)) {
-                        if (MasterItem.subRows?.length > 0) {
-                            MasterItem.subRows.push(TaskGroupData);
-                        } else {
-                            MasterItem.subRows = [TaskGroupData];
-                        }
-                    } else {
-                        if (TaskItem.TaskType?.Title == "Activities" && ItemDetails?.Id == TaskItem?.Portfolio?.Id && (TaskItem?.ParentTask?.Title == undefined || TaskItem?.ParentTask?.Title == null)) {
-                            MasterTaskAllData.push(TaskGroupData);
-                        } else if (ItemDetails?.Id == TaskItem?.Portfolio?.Id && TaskItem.TaskType?.Title !== "Activities" && (TaskItem?.ParentTask?.Title == undefined || TaskItem?.ParentTask?.Title == null)) {
-                            OtherTaskJSON?.subRows?.push(TaskGroupData);
-                        }
-                        MasterItem.subRows?.map((ChildData: any) => {
-                            if (ChildData?.TaskType?.Title == undefined) {
-                                if (ChildData.Id == TaskItem?.Portfolio?.Id && (TaskItem?.ParentTask?.Id == undefined || TaskItem?.ParentTask?.Id == null)) {
-                                    if (ChildData.subRows?.length > 0) {
-                                        ChildData.subRows.push(TaskGroupData);
-                                    } else {
-                                        ChildData.subRows = [TaskGroupData];
-                                    }
-                                }
-                            }
-                        })
-                    }
-                })
-            ))
-        } else {
-            GroupByTaskData?.map((TaskItem: any) => {
-                let TaskGroupData: any = CreateTaskGrouping(TaskItem, GroupByTaskData)
-                if (TaskItem?.ParentTask?.Id == undefined || TaskItem?.ParentTask?.Id == null) {
-                    MasterTaskAllData.push(TaskGroupData);
+
+        if (directChildT?.length > 0) {
+            OtherTaskJSON.subRows = directChildT;
+        }
+
+        if (OtherTaskJSON?.subRows?.length > 0) {
+            FinalGroupingData.push(OtherTaskJSON);
+        }
+        setData(FinalGroupingData);
+        GroupByTableData = FinalGroupingData;
+
+        let uniqueIds: any = {};
+        let uniqueCCIds: any = {};
+        let FinalAllTaggedCCData: any = [];
+        const UniqueCCItems: any = AllClientCategoryBucket?.filter((obj: any) => {
+            if (!uniqueIds[obj.Id]) {
+                uniqueIds[obj.Id] = true;
+                return true;
+            }
+            return false;
+        });
+
+        UniqueCCItems?.map((PrevSelectedCC: any) => {
+            AllClientCategoryDataBackup?.map((AllCCItem: any) => {
+                if (AllCCItem.Id == PrevSelectedCC.Id) {
+                    FinalAllTaggedCCData.push(AllCCItem)
+                }
+            })
+        })
+
+        const UniqueCCItemsForCC: any = FinalAllTaggedCCData?.filter((obj: any) => {
+            if (!uniqueCCIds[obj.Id]) {
+                uniqueCCIds[obj.Id] = true;
+                return true;
+            }
+            return false;
+        });
+
+        if (AllSiteDataBackup?.length > 0) {
+            AllSiteDataBackup?.map((ItemData: any) => {
+                ItemData.ClientCategories = UniqueCCItemsForCC?.filter((selectedCC: any) => selectedCC?.siteName == ItemData?.Title);
+                if (ItemData.ClientCategories?.length > 0) {
+                    ItemData.ClientCategories[0].checked = true;
                 }
             })
         }
-
-        if (OtherTaskJSON.subRows?.length > 0) {
-            let uniqueIds: any = {};
-            const UniqueCCItems: any = OtherTaskJSON.subRows?.filter((obj: any) => {
-                if (!uniqueIds[obj.Id]) {
-                    uniqueIds[obj.Id] = true;
-                    return true;
-                }
-                return false;
-            });
-            OtherTaskJSON.subRows = UniqueCCItems;
-            MasterTaskAllData.push(OtherTaskJSON);
-        }
-        if (MasterTaskAllData?.length > 0) {
-            let uniqueIds: any = {};
-            let result: any = MasterTaskAllData?.filter((obj: any) => {
-                if (!uniqueIds[obj.Id]) {
-                    uniqueIds[obj.Id] = true;
-                    return true;
-                }
-                return false;
-            });
-            // setGroupByTableData(result);
-            GroupByTableData = result;
-        }
+        setAllSiteData([...AllSiteDataBackup])
         setLoaded(true);
     }
-
-    const CreateTaskGrouping = (findGrouping: any, AllTask: any) => {
-        console.log("Get CreateTaskGrouping   Call");
-
-        const findGroupingData: any = JSON.parse(JSON.stringify(findGrouping));
-        const AllTaskData: any = JSON.parse(JSON.stringify(AllTask));
-        if (findGroupingData?.TaskType?.Title == "Activities") {
-            findGroupingData.subRows = AllTaskData?.filter((ws: any) => ws.TaskType?.Title == "Workstream" && ws?.ParentTask?.Id == findGrouping?.Id)
-            findGroupingData?.subRows?.map((ws: any) => {
-                ws.subRows = AllTaskData?.filter((task: any) => task.TaskType?.Title == "Task" && task?.ParentTask?.Id == ws?.Id)
+    const componentActivity = (items: any) => {
+        console.log("Create Activity function call")
+        let findActivity = FlatViewTableData?.filter((elem: any) => elem?.Portfolio?.Id === items?.Id);
+        findActivity?.forEach((act: any) => {
+            act.subRows = [];
+            if (act?.ClientCategory?.length > 0) {
+                AllClientCategoryBucket = AllClientCategoryBucket.concat(act?.ClientCategory);
+            }
+            let workStreamAndTask = FlatViewTableData?.filter((taskData: any) => taskData?.ParentTask?.Id === act?.Id && taskData?.siteType === act?.siteType)
+            if (workStreamAndTask.length > 0) {
+                act.subRows = act?.subRows?.concat(workStreamAndTask);
+            }
+            workStreamAndTask?.forEach((wrkst: any) => {
+                if (wrkst?.ClientCategory?.length > 0) {
+                    AllClientCategoryBucket = AllClientCategoryBucket.concat(wrkst?.ClientCategory);
+                }
+                wrkst.subRows = wrkst.subRows === undefined ? [] : wrkst.subRows;
+                let allTasksData = FlatViewTableData?.filter((elem: any) => elem?.ParentTask?.Id === wrkst?.Id && elem?.siteType === wrkst?.siteType);
+                if (allTasksData.length > 0) {
+                    let TempAllCC = FlatViewTableData?.filter((elem: any) => { if (elem.ClientCategory?.length > 0) return elem.ClientCategory });
+                    AllClientCategoryBucket = AllClientCategoryBucket.concat(TempAllCC);
+                    wrkst.subRows = wrkst?.subRows?.concat(allTasksData);
+                }
             })
-            let directTask = AllTask?.filter((task: any) => task.TaskType?.Title == "Task" && task?.ParentTask?.Id == findGrouping?.Id)
-            findGrouping.subRows = findGrouping?.subRows?.concat(directTask)
-        }
-        if (findGroupingData?.TaskType?.Title == "Workstream") {
-            findGroupingData.subRows = AllTaskData?.filter((task: any) => task.TaskType?.Title == "Task" && task?.ParentTask?.Id == findGrouping?.Id)
-        }
-        return findGroupingData;
+        })
+        items.subRows = items?.subRows?.concat(findActivity)
     }
+
+    const AWTGrouping = (items: any) => {
+        let FinalAWTData: any = [];
+        let findActivity = FlatViewTableData?.filter((elem: any) => elem?.ParentTask?.Id === items?.Id && elem?.TaskType?.Id == 3);
+        let findDirectTask = FlatViewTableData?.filter((elem: any) => elem?.ParentTask?.Id === items?.Id && elem?.TaskType?.Id == 2);
+        findActivity?.forEach((act: any) => {
+            act.subRows = [];
+            if (act?.ClientCategory?.length > 0) {
+                AllClientCategoryBucket = AllClientCategoryBucket.concat(act?.ClientCategory);
+            }
+            let workStreamAndTask = FlatViewTableData?.filter((taskData: any) => taskData?.ParentTask?.Id === act?.Id && taskData?.siteType === act?.siteType)
+            if (workStreamAndTask.length > 0) {
+                act.subRows = act?.subRows?.concat(workStreamAndTask);
+            }
+        })
+        items.subRows = items?.subRows?.concat(findActivity);
+        FinalAWTData = findActivity?.concat(findDirectTask);
+        return FinalAWTData;
+    }
+
     const findSelectedComponentChildInMasterList = (groupByData: any, itemId: any) => {
         console.log("Get findSelectedComponentChildInMasterList   Call");
-
         const findChild = (items: any) => {
             for (const item of items) {
                 if (item.Id === itemId && item.subRows?.length > 0) {
@@ -547,8 +532,8 @@ const CentralizedSiteComposition = (Props: any) => {
     const loadAllTaskUsers = async () => {
         GlobalAllTaskUsersData = await globalCommon.loadAllTaskUsers(RequiredListIds);
         console.log("Get loadAllTaskUsers   Call");
-
     }
+
     // Common Function for filtering the Data According to Tax Type
     const getSmartMetadataItemsByTaxType = function (
         metadataItems: any,
@@ -595,7 +580,6 @@ const CentralizedSiteComposition = (Props: any) => {
                 SiteSettingTemp = JSON.parse(SelectedItemDetails.SiteCompositionSettings);
                 let SelectedSiteSetting: any = siteCompositionType(SelectedItemDetails.SiteCompositionSettings);
                 let TempData: any = [];
-
                 SiteSettingJSON?.map((SSItemData: any) => {
                     if (SSItemData.Name == SelectedSiteSetting) {
                         SSItemData.IsSelected = true;
@@ -630,7 +614,6 @@ const CentralizedSiteComposition = (Props: any) => {
                 setSiteCompositionSettings(tempSiteSetting);
                 setIsSCManual(true);
                 setSiteSettingJSON([...SiteSettingJSON])
-
             }
             if (SelectedItemDetails.Sitestagging?.length > 0) {
                 SiteCompositionTemp = JSON.parse(SelectedItemDetails.Sitestagging);
@@ -644,7 +627,7 @@ const CentralizedSiteComposition = (Props: any) => {
                     ClienTimeDescription: "100",
                     Title: ItemDetails?.siteType,
                     localSiteComposition: true,
-                    SiteImages: ItemDetails?.siteIcon,
+                    SiteImages: ItemDetails?.SiteIcon,
                     Date: Moment(new Date()).tz("Europe/Berlin").format("DD/MM/YYYY")
                 }
                 SiteCompositionTemp = [SCDummyJSON];
@@ -680,25 +663,26 @@ const CentralizedSiteComposition = (Props: any) => {
             SelectedItemDetails.Id = ItemDetails?.Id;
             SelectedItemDetails.listId = ItemDetails?.listId;
             SelectedItemDetails.siteType = ItemDetails?.siteType;
-            SelectedItemDetails.siteIcon = ItemDetails?.siteIcon;
+            SelectedItemDetails.SiteIcon = ItemDetails?.SiteIcon;
             if (usedFor == "CSF") {
-                loadAllSitesData();
+                loadAllSitesData("All-Sites");
                 if (SelectedItemDetails?.Item_x0020_Type !== "Feature") {
                     loadAllMasterListData();
                 }
             }
             if (SelectedItemDetails?.TaskType?.Title !== "Task" && usedFor == "AWT") {
-                loadAllSitesData();
-            }else{
-                setLoaded(true);
+                loadAllSitesData("Individual-Site");
+            } else {
+                if (SelectedItemDetails?.TaskType?.Title == "Task") {
+                    setLoaded(true);
+                }
             }
             setSelectedItemDetailsFormCall(SelectedItemDetails);
-            console.log("Get getSletec task detils   Call");
+
         } catch (error) {
             console.log("Error :", error.message);
         }
     }
-
 
     // This is the custom header for main panel 
 
@@ -749,7 +733,9 @@ const CentralizedSiteComposition = (Props: any) => {
                 </a>
                 <button className="btn ms-1 btn-primary px-4"
                     onClick={PrepareTheDataForUpdatingOnBackendSide}
-                >Save</button>
+                >
+                    Save
+                </button>
                 <button className="btn btn-default ms-1 px-3" onClick={() => ClosePanelFunction("Close")}>Cancel</button>
             </footer>
         )
@@ -981,12 +967,30 @@ const CentralizedSiteComposition = (Props: any) => {
     const switchFlatViewData = (Type: any) => {
         if (Type == false) {
             setData(FlatViewTableData)
+            let groupedDataItems = JSON.parse(JSON.stringify(data));
+            const flattenedData = flattenData(groupedDataItems);
+            setData(flattenedData);
             setFlatView(true);
         } else {
-            setData(GroupByTableData)
+            setData(GroupByTableData);
             setFlatView(false);
         }
     }
+    function flattenData(groupedDataItems: any) {
+        const flattenedData: any = [];
+        function flatten(item: any) {
+            if (item.Title != "Others") {
+                flattenedData.push(item);
+            }
+            if (item?.subRows) {
+                item?.subRows.forEach((subItem: any) => flatten(subItem));
+                item.subRows = []
+            }
+        }
+        groupedDataItems?.forEach((item: any) => { flatten(item) });
+        return flattenedData;
+    }
+
 
 
     // Global Common Table Call Back Function // Selected Item Data for Table
@@ -1545,6 +1549,15 @@ const CentralizedSiteComposition = (Props: any) => {
                                 </div>
                             </div>
                             <div className="siteColor border p-1 mt-1 alignCenter">
+                                <span className="me-2" onClick={() =>
+                                    setSiteCompositionTool(SiteCompositionTool ? false : true)
+                                }>
+                                    {SiteCompositionTool ? (
+                                        <SlArrowDown />
+                                    ) : (
+                                        <SlArrowRight />
+                                    )}
+                                </span>
                                 Site Composition Distributions
                                 <span className="hover-text alignIcon">
                                     <span className="svg__iconbox svg__icon--info dark"></span>
@@ -1553,247 +1566,261 @@ const CentralizedSiteComposition = (Props: any) => {
                                     </span>
                                 </span>
                             </div>
-                            <table
-                                className="table table-bordered mb-1"
-                            >
-                                {AllSiteData != undefined && AllSiteData.length > 0 ?
-                                    <tbody>
-                                        {AllSiteData?.map((siteData: any, index: any) => {
-                                            if (siteData.Title !== "Health" && siteData.Title !== "Offshore Tasks" && siteData.Title !== "Gender" && siteData.Title !== "Small Projects" && siteData.Title !== "SDC Sites" && siteData.Title !== "DRR" && siteData.Title !== "SP Online") {
-                                                if (siteData.ClienTimeDescription != undefined || siteData.ClienTimeDescription != null) {
-                                                    let num: any = Number(siteData.ClienTimeDescription).toFixed(0);
-                                                    TotalPercent = TotalPercent + Number(num);
-                                                }
-                                                return (
-                                                    <tr
-                                                        // className={siteData?.StartEndDateValidation ? "Disabled-Link border-1 bg-th" : 'hreflink border-1'}
-                                                        className={'border-1 hreflink'}
-                                                    >
-                                                        <td
-                                                            scope="row"
-                                                            className={IsSCProtected == true ? "Disabled-Link m-0 p-1 align-middle opacity-75" : "m-0 p-1 align-middle"}
-                                                            style={{ width: "10%" }}
-                                                        >
-                                                            <input
-                                                                className="form-check-input rounded-0 hreflink" type="checkbox"
-                                                                defaultChecked={siteData.BtnStatus}
-                                                                checked={siteData.BtnStatus ? true : false}
-                                                                onClick={(e) => AddSiteCompositionFunction(siteData.Title)}
-                                                            />
-                                                        </td>
-                                                        <td className="m-0 p-0 align-middle" style={{ width: "55%" }}>
-                                                            <div className="alignCenter">
-                                                                <img src={siteData.Item_x005F_x0020_Cover ? siteData.Item_x005F_x0020_Cover.Url : ""} className="mx-2 workmember" />
-                                                                {siteData.Title}
-                                                                <span></span>
-                                                            </div>
-                                                        </td>
-                                                        <td className="p-1"
-                                                            style={{ width: "20%" }}
-                                                        >
-                                                            <div className="input-group alignCenter">
-                                                                {siteData.BtnStatus ?
-                                                                    <>
-                                                                        {IsSCProportional ?
-                                                                            <input type="number" min="1"
-                                                                                style={{ cursor: "not-allowed", width: "100%" }}
-                                                                                defaultValue={siteData.BtnStatus ? (100 / TaggedSiteCompositionCount).toFixed(1) : ""}
-                                                                                value={siteData.BtnStatus ? (100 / TaggedSiteCompositionCount).toFixed(1) : ""}
-                                                                                className="form-control p-1" readOnly={true}
-                                                                            />
-                                                                            : ''
-                                                                        }
-                                                                        {IsSCProtected == true ?
-                                                                            <input
-                                                                                type="number" min="1" max="100"
-                                                                                className="form-control p-1"
-                                                                                readOnly={IsSCProtected}
-                                                                                style={IsSCProtected ? { cursor: "not-allowed", width: '100%' } : {}}
-                                                                                value={siteData.ClienTimeDescription ? Number(siteData.ClienTimeDescription).toFixed(1) : null}
-                                                                                onChange={(e) => ChangeClientTimeDescriptionManually(e, siteData.Title)}
-                                                                            />
-                                                                            : ''
-                                                                        }
-                                                                        {IsSCManual == true ?
-                                                                            <input
-                                                                                type="number" min="1" max="100"
-                                                                                // value={siteData.ClienTimeDescription ? Number(siteData.ClienTimeDescription).toFixed(1) : null}
-                                                                                className="form-control p-1"
-                                                                                defaultValue={siteData.ClienTimeDescription ? Number(siteData.ClienTimeDescription).toFixed(1) : null}
-                                                                                onChange={(e) => ChangeClientTimeDescriptionManually(e, siteData.Title)}
-                                                                            />
-                                                                            : ''
-                                                                        }
-                                                                    </> :
-                                                                    <input
-                                                                        type="number"
-                                                                        className="form-control"
-                                                                        value={''}
-                                                                        readOnly={true}
-                                                                        style={{ cursor: "not-allowed", width: "100%" }}
-                                                                    />
-                                                                }
-                                                            </div>
-                                                        </td>
-                                                        <td className="m-0 align-middle" style={{ width: "5%" }}>
-                                                            <span>{siteData.BtnStatus ? "%" : ''}</span>
-                                                        </td>
-                                                        {usedFor == "AWT" ?
-                                                            <td className="m-0 align-middle" style={{ width: "10%" }}>
-                                                                {IsSCProportional && !IsSCManual && !IsSCProtected ?
-                                                                    <span>
-                                                                        {siteData.BtnStatus && TaskTotalTime ? (TaskTotalTime / TaggedSiteCompositionCount).toFixed(2) + " h" : siteData.BtnStatus ? "0 h" : null}
-                                                                    </span>
-                                                                    :
-                                                                    <span>
-                                                                        {siteData.BtnStatus && TaskTotalTime ? (siteData.ClienTimeDescription ? (siteData.ClienTimeDescription * TaskTotalTime / 100).toFixed(2) + " h" : "0 h") : siteData.BtnStatus ? "0 h" : null}
-                                                                    </span>
-                                                                }
-                                                            </td>
-                                                            :
-                                                            null
+                            {SiteCompositionTool ?
+                                <>
+                                    <table
+                                        className="table table-bordered mb-1"
+                                    >
+                                        {AllSiteData != undefined && AllSiteData.length > 0 ?
+                                            <tbody>
+                                                {AllSiteData?.map((siteData: any, index: any) => {
+                                                    if (siteData.Title !== "Health" && siteData.Title !== "Offshore Tasks" && siteData.Title !== "Gender" && siteData.Title !== "Small Projects" && siteData.Title !== "SDC Sites" && siteData.Title !== "DRR" && siteData.Title !== "SP Online") {
+                                                        if (siteData.ClienTimeDescription != undefined || siteData.ClienTimeDescription != null) {
+                                                            let num: any = Number(siteData.ClienTimeDescription).toFixed(0);
+                                                            TotalPercent = TotalPercent + Number(num);
                                                         }
-                                                    </tr>
-                                                )
-                                            }
-                                        })}
-                                    </tbody>
-                                    : null}
-                            </table>
-                            <div className="alignCenter justify-content-end border mt-1 pe-1 py-1 siteColor">
-                                {usedFor == "CSF" ?
-                                    <div className="alignCenter">
-                                        <div className="alignCenter border px-3">
-                                            <span>SCD</span>
-                                            <span className="hover-text alignIcon">
-                                                <span className="svg__iconbox svg__icon--info dark"></span>
-                                                <span className="tooltip-text pop-right">
-                                                    {"Site composition distribution percentage"}
-                                                </span>
-                                            </span>
-                                        </div>
-                                        <span className="border" style={{ padding: '5px 20px' }}>
-                                            {/* {IsSCManual ? `${TotalPercent}` : "100"} */}
-                                            100 %
-                                        </span>
-                                    </div> :
-                                    <>
-                                        <div className="alignCenter">
-                                            <div className="alignCenter border px-3">
-                                                <span>SCD</span>
-                                                <span className="hover-text alignIcon">
-                                                    <span className="svg__iconbox svg__icon--info dark"></span>
-                                                    <span className="tooltip-text pop-right">
-                                                        {"Site composition distribution percentage"}
+                                                        return (
+                                                            <tr
+                                                                // className={siteData?.StartEndDateValidation ? "Disabled-Link border-1 bg-th" : 'hreflink border-1'}
+                                                                className={'border-1 hreflink'}
+                                                            >
+                                                                <td
+                                                                    scope="row"
+                                                                    className={IsSCProtected == true ? "Disabled-Link m-0 p-1 align-middle opacity-75" : "m-0 p-1 align-middle"}
+                                                                    style={{ width: "10%" }}
+                                                                >
+                                                                    <input
+                                                                        className="form-check-input rounded-0 hreflink" type="checkbox"
+                                                                        defaultChecked={siteData.BtnStatus}
+                                                                        checked={siteData.BtnStatus ? true : false}
+                                                                        onClick={(e) => AddSiteCompositionFunction(siteData.Title)}
+                                                                    />
+                                                                </td>
+                                                                <td className="m-0 p-0 align-middle" style={{ width: "55%" }}>
+                                                                    <div className="alignCenter">
+                                                                        <img src={siteData.Item_x005F_x0020_Cover ? siteData.Item_x005F_x0020_Cover.Url : ""} className="mx-2 workmember" />
+                                                                        {siteData.Title}
+                                                                        <span></span>
+                                                                    </div>
+                                                                </td>
+                                                                <td className="p-1"
+                                                                    style={{ width: "20%" }}
+                                                                >
+                                                                    <div className="input-group alignCenter">
+                                                                        {siteData.BtnStatus ?
+                                                                            <>
+                                                                                {IsSCProportional ?
+                                                                                    <input type="number" min="1"
+                                                                                        style={{ cursor: "not-allowed", width: "100%" }}
+                                                                                        defaultValue={siteData.BtnStatus ? (100 / TaggedSiteCompositionCount).toFixed(1) : ""}
+                                                                                        value={siteData.BtnStatus ? (100 / TaggedSiteCompositionCount).toFixed(1) : ""}
+                                                                                        className="form-control p-1" readOnly={true}
+                                                                                    />
+                                                                                    : ''
+                                                                                }
+                                                                                {IsSCProtected == true ?
+                                                                                    <input
+                                                                                        type="number" min="1" max="100"
+                                                                                        className="form-control p-1"
+                                                                                        readOnly={IsSCProtected}
+                                                                                        style={IsSCProtected ? { cursor: "not-allowed", width: '100%' } : {}}
+                                                                                        value={siteData.ClienTimeDescription ? Number(siteData.ClienTimeDescription).toFixed(1) : null}
+                                                                                        onChange={(e) => ChangeClientTimeDescriptionManually(e, siteData.Title)}
+                                                                                    />
+                                                                                    : ''
+                                                                                }
+                                                                                {IsSCManual == true ?
+                                                                                    <input
+                                                                                        type="number" min="1" max="100"
+                                                                                        // value={siteData.ClienTimeDescription ? Number(siteData.ClienTimeDescription).toFixed(1) : null}
+                                                                                        className="form-control p-1"
+                                                                                        defaultValue={siteData.ClienTimeDescription ? Number(siteData.ClienTimeDescription).toFixed(1) : null}
+                                                                                        onChange={(e) => ChangeClientTimeDescriptionManually(e, siteData.Title)}
+                                                                                    />
+                                                                                    : ''
+                                                                                }
+                                                                            </> :
+                                                                            <input
+                                                                                type="number"
+                                                                                className="form-control"
+                                                                                value={''}
+                                                                                readOnly={true}
+                                                                                style={{ cursor: "not-allowed", width: "100%" }}
+                                                                            />
+                                                                        }
+                                                                    </div>
+                                                                </td>
+                                                                <td className="m-0 align-middle" style={{ width: "5%" }}>
+                                                                    <span>{siteData.BtnStatus ? "%" : ''}</span>
+                                                                </td>
+                                                                {usedFor == "AWT" ?
+                                                                    <td className="m-0 align-middle" style={{ width: "10%" }}>
+                                                                        {IsSCProportional && !IsSCManual && !IsSCProtected ?
+                                                                            <span>
+                                                                                {siteData.BtnStatus && TaskTotalTime ? (TaskTotalTime / TaggedSiteCompositionCount).toFixed(2) + " h" : siteData.BtnStatus ? "0 h" : null}
+                                                                            </span>
+                                                                            :
+                                                                            <span>
+                                                                                {siteData.BtnStatus && TaskTotalTime ? (siteData.ClienTimeDescription ? (siteData.ClienTimeDescription * TaskTotalTime / 100).toFixed(2) + " h" : "0 h") : siteData.BtnStatus ? "0 h" : null}
+                                                                            </span>
+                                                                        }
+                                                                    </td>
+                                                                    :
+                                                                    null
+                                                                }
+                                                            </tr>
+                                                        )
+                                                    }
+                                                })}
+                                            </tbody>
+                                            : null}
+                                    </table>
+                                    <div className="alignCenter justify-content-end border mt-1 pe-1 py-1 siteColor">
+                                        {usedFor == "CSF" ?
+                                            <div className="alignCenter">
+                                                <div className="alignCenter border px-3">
+                                                    <span>SCD</span>
+                                                    <span className="hover-text alignIcon">
+                                                        <span className="svg__iconbox svg__icon--info dark"></span>
+                                                        <span className="tooltip-text pop-right">
+                                                            {"Site composition distribution percentage"}
+                                                        </span>
                                                     </span>
+                                                </div>
+                                                <span className="border" style={{ padding: '5px 20px' }}>
+                                                    {IsSCManual ? `${TotalPercent}` : "100"}
                                                 </span>
-                                            </div>
-                                            <span className="border" style={{ padding: '5px 20px' }}>
-                                                {IsSCManual ? `${TotalPercent} %` : "100%"}
-                                            </span>
-                                        </div>
-                                        <div className="alignCenter">
-                                            <div className="alignCenter border px-3">
-                                                <span>ST</span>
-                                                <span className="hover-text alignIcon">
-                                                    <span className="svg__iconbox svg__icon--clock dark"></span>
-                                                    <span className="tooltip-text pop-right">
-                                                        {"Total time spent on this task"}
+                                            </div> :
+                                            <>
+                                                <div className="alignCenter">
+                                                    <div className="alignCenter border px-3">
+                                                        <span>SCD</span>
+                                                        <span className="hover-text alignIcon">
+                                                            <span className="svg__iconbox svg__icon--info dark"></span>
+                                                            <span className="tooltip-text pop-right">
+                                                                {"Site composition distribution percentage"}
+                                                            </span>
+                                                        </span>
+                                                    </div>
+                                                    <span className="border" style={{ padding: '5px 20px' }}>
+                                                        {IsSCManual ? `${TotalPercent} %` : "100%"}
                                                     </span>
-                                                </span>
-                                            </div>
-                                            <span className="border" style={{ padding: '5px 20px' }}>
-                                                {TaskTotalTime} h
-                                            </span>
-                                        </div>
-                                    </>
-                                }
-                            </div>
+                                                </div>
+                                                <div className="alignCenter">
+                                                    <div className="alignCenter border px-3">
+                                                        <span>ST</span>
+                                                        <span className="hover-text alignIcon">
+                                                            <span className="svg__iconbox svg__icon--clock dark"></span>
+                                                            <span className="tooltip-text pop-right">
+                                                                {"Total time spent on this task"}
+                                                            </span>
+                                                        </span>
+                                                    </div>
+                                                    <span className="border" style={{ padding: '5px 20px' }}>
+                                                        {TaskTotalTime} h
+                                                    </span>
+                                                </div>
+                                            </>
+                                        }
+                                    </div>
+                                </>
+                                : null}
                         </div>
                         <div className="summarize-cc full-width ps-1">
                             <div className="summarize-cc edit-site-composition-on-task-profile">
                                 <div className="border p-1 siteColor alignCenter">
+                                    <span className="me-2" onClick={() =>
+                                        setSummarizationTool(SummarizationTool ? false : true)
+                                    }>
+                                        {SummarizationTool ? (
+                                            <SlArrowDown />
+                                        ) : (
+                                            <SlArrowRight />
+                                        )}
+                                    </span>
                                     Client Category Summarization Tool
                                     <span className="hover-text alignIcon">
                                         <span className="svg__iconbox svg__icon--info dark"></span>
                                         <span className="tooltip-text pop-right">
                                             <b>Client Category Summarization Tool:</b><br />
-
                                             This tool efficiently consolidates client categories associated with selected items and their corresponding child Items (All Tagged CC in Selected Item CSF and AWT). The tool offers a streamlined view of client categories, filtering them based on their respective sites. The selected client categories seamlessly Inherited to the designated parent item and also inherited into selected items (CSF/AWT) from the Tagged Child Item Table.
                                         </span>
                                     </span>
                                 </div>
-                                <div>
-                                    <table className="table">
-                                        <thead>
-                                            <tr className="border-1">
-                                                <th scope="col">Sr.No.</th>
-                                                <th scope="col">Site Name</th>
-                                                <th scope="col">Client Categories</th>
-                                            </tr>
-                                        </thead>
-                                        <tbody>
-                                            {AllSiteData?.map((CCDetails: any) => {
-                                                if (CCDetails.Title == "EPS" || CCDetails.Title == "EI" || CCDetails.Title == "Migration" || CCDetails.Title == "Education" || CCDetails?.ClientCategories?.length > 0) {
-                                                    CCTableCount++;
-                                                    return (
-                                                        <tr className="border-1">
-                                                            <th className="m-0 p-1 ps-3 align-middle">{CCTableCount}</th>
-                                                            <td className="m-0 p-1 align-middle">{CCDetails.Title}</td>
-                                                            <td className="m-0 p-1 align-middle">
-                                                                <div className="input-group">
-                                                                    <input type="text"
-                                                                        className="border-end-0 form-control"
-                                                                        placeholder="Search Client Category Here"
-                                                                        value={CCDetails.Title == SelectedSiteName ? searchedKey : ""}
-                                                                        onChange={(e: any) => CCAutoSuggestionsMain(e, CCDetails.Title)}
-                                                                        defaultValue={CCDetails.Title == SelectedSiteName ? searchedKey : ""}
-                                                                    />
-                                                                    <span className="bg-white hreflink border"
-                                                                        onClick={() => openClientCategoryModel(CCDetails.Title, CCDetails.ClientCategories)}
-                                                                    >
-                                                                        <span title="Edit Client Category" className="svg__iconbox svg__icon--editBox hreflink">
+                                {SummarizationTool ?
+                                    <div>
+                                        <table className="table">
+                                            <thead>
+                                                <tr className="border-1">
+                                                    <th scope="col">Sr.No.</th>
+                                                    <th scope="col">Site Name</th>
+                                                    <th scope="col">Client Categories</th>
+                                                </tr>
+                                            </thead>
+                                            <tbody>
+                                                {AllSiteData?.map((CCDetails: any) => {
+                                                    if (CCDetails.Title == "EPS" || CCDetails.Title == "EI" || CCDetails.Title == "Migration" || CCDetails.Title == "Education" || CCDetails?.ClientCategories?.length > 0) {
+                                                        CCTableCount++;
+                                                        return (
+                                                            <tr className="border-1">
+                                                                <th className="m-0 p-1 ps-3 align-middle">{CCTableCount}</th>
+                                                                <td className="m-0 p-1 align-middle">{CCDetails.Title}</td>
+                                                                <td className="m-0 p-1 align-middle">
+                                                                    <div className="input-group">
+                                                                        <input type="text"
+                                                                            className="border-end-0 form-control"
+                                                                            placeholder="Search Client Category Here"
+                                                                            value={CCDetails.Title == SelectedSiteName ? searchedKey : ""}
+                                                                            onChange={(e: any) => CCAutoSuggestionsMain(e, CCDetails.Title)}
+                                                                            defaultValue={CCDetails.Title == SelectedSiteName ? searchedKey : ""}
+                                                                        />
+                                                                        <span className="bg-white hreflink border"
+                                                                            onClick={() => openClientCategoryModel(CCDetails.Title, CCDetails.ClientCategories)}
+                                                                        >
+                                                                            <span title="Edit Client Category" className="svg__iconbox svg__icon--editBox hreflink">
+                                                                            </span>
                                                                         </span>
-                                                                    </span>
-                                                                </div>
-                                                                {SearchedClientCategoryData?.length > 0 && CCDetails.Title == SelectedSiteName ? (
-                                                                    <div className="SearchTableCategoryComponent">
-                                                                        <ul className="list-group">
-                                                                            {SearchedClientCategoryData.map((item: any) => {
-                                                                                return (
-                                                                                    <li className="list-group-item rounded-0 list-group-item-action" key={item.id} onClick={() => SelectCCFromAutoSuggestion(item, CCDetails.Title)} >
-                                                                                        <a>{item.newLabel}</a>
-                                                                                    </li>
-                                                                                )
-                                                                            }
-                                                                            )}
-                                                                        </ul>
-                                                                    </div>) : null}
-                                                                <ul className="border list-group px-1 rounded-0 my-1">
-                                                                    {CCDetails.ClientCategories?.map((CCItem: any, ChildIndex: any) => {
-                                                                        return (
-                                                                            <li className="alignCenter SpfxCheckRadio border-0 list-group-item px-1 p-1">
-                                                                                <input
-                                                                                    className="radio"
-                                                                                    type="radio"
-                                                                                    name={`Client-Category-${CCTableCount}`}
-                                                                                    defaultChecked={CCItem.checked == true ? true : false}
-                                                                                    checked={CCItem.checked == true ? true : false}
-                                                                                    onClick={() => selectedParentClientCategory(ChildIndex, CCDetails.Title)}
-                                                                                    id="firstRadio" />
-                                                                                <label className="form-check-label ms-2">{CCItem.Title}</label>
-                                                                            </li>
-                                                                        )
-                                                                    })}
-                                                                </ul>
-                                                            </td>
-                                                        </tr>
-                                                    )
-                                                }
-                                            })}
-                                        </tbody>
-                                    </table>
-                                </div>
+                                                                    </div>
+                                                                    {SearchedClientCategoryData?.length > 0 && CCDetails.Title == SelectedSiteName ? (
+                                                                        <div className="SearchTableCategoryComponent">
+                                                                            <ul className="list-group">
+                                                                                {SearchedClientCategoryData.map((item: any) => {
+                                                                                    return (
+                                                                                        <li className="list-group-item rounded-0 list-group-item-action" key={item.id} onClick={() => SelectCCFromAutoSuggestion(item, CCDetails.Title)} >
+                                                                                            <a>{item.newLabel}</a>
+                                                                                        </li>
+                                                                                    )
+                                                                                }
+                                                                                )}
+                                                                            </ul>
+                                                                        </div>) : null}
+                                                                    <ul className="border list-group px-1 rounded-0 my-1">
+                                                                        {CCDetails.ClientCategories?.map((CCItem: any, ChildIndex: any) => {
+                                                                            return (
+                                                                                <li className="alignCenter SpfxCheckRadio border-0 list-group-item px-1 p-1">
+                                                                                    <input
+                                                                                        className="radio"
+                                                                                        type="radio"
+                                                                                        name={`Client-Category-${CCTableCount}`}
+                                                                                        defaultChecked={CCItem.checked == true ? true : false}
+                                                                                        checked={CCItem.checked == true ? true : false}
+                                                                                        onClick={() => selectedParentClientCategory(ChildIndex, CCDetails.Title)}
+                                                                                        id="firstRadio" />
+                                                                                    <label className="form-check-label ms-2">{CCItem.Title}</label>
+                                                                                </li>
+                                                                            )
+                                                                        })}
+                                                                    </ul>
+                                                                </td>
+                                                            </tr>
+                                                        )
+                                                    }
+                                                })}
+                                            </tbody>
+                                        </table>
+                                    </div> :
+                                    null
+                                }
                             </div>
                         </div>
                     </div>
