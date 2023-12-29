@@ -1316,8 +1316,8 @@ const EditTaskPopup = (Items: any) => {
                     setTotalEstimatedTime(tempTimeData);
                 }
                 item.ClientCategory = selectedClientCategoryData;
-                item. Approvee= item. Approvee!=undefined? taskUsers.find((userData:any)=>userData?.AssingedToUser?.Id==item?.Approvee?.Id): undefined
-                 setEditData(item);
+                item.Approvee = item.Approvee != undefined ? taskUsers.find((userData: any) => userData?.AssingedToUser?.Id == item?.Approvee?.Id) : undefined
+                setEditData(item);
                 setBasicImageData(saveImage);
                 EditDataBackup = item;
                 setPriorityStatus(item.Priority);
@@ -1434,7 +1434,7 @@ const EditTaskPopup = (Items: any) => {
                             let tempTaggedCCData: any = [];
                             AllClientCategoryDataBackup?.map((AllCCItem: any) => {
                                 DataItem[0]?.ClientCategory?.map((TaggedCCItem: any) => {
-                                    if (AllCCItem.Title == TaggedCCItem.Title) {
+                                    if (AllCCItem.Id == TaggedCCItem.Id) {
                                         tempTaggedCCData.push(AllCCItem);
                                     }
                                 });
@@ -1465,7 +1465,7 @@ const EditTaskPopup = (Items: any) => {
                             let ClientData = JSON.parse(
                                 DataItem[0].Sitestagging ? DataItem[0].Sitestagging : [{}]
                             );
-                           
+
                             if (ClientData != undefined && ClientData.length > 0) {
                                 if (Items?.Items?.siteType == "Shareweb") {
                                     setClientTimeData(ClientData);
@@ -2910,16 +2910,15 @@ const EditTaskPopup = (Items: any) => {
             });
         }
 
-    
-
-       
         if (ClientTimeData?.length > 0) {
-            ClientTimeData?.map((ClientData: any) => {
+            ClientTimeData?.map((SCItems: any) => {
                 SiteCompositionPrecentageValue =
                     SiteCompositionPrecentageValue +
-                    Number(ClientData.ClienTimeDescription);
+                    Number(SCItems.ClienTimeDescription);
+                delete SCItems?.ClientCategory;
             });
         }
+
         let UpdateDataObject: any = {
             IsTodaysTask: EditData.IsTodaysTask ? EditData.IsTodaysTask : null,
             workingThisWeek: EditData.workingThisWeek
@@ -3000,7 +2999,7 @@ const EditTaskPopup = (Items: any) => {
                 results:
                     ApproverIds != undefined && ApproverIds.length > 0 ? ApproverIds : [],
             },
-            Sitestagging: JSON.stringify(ClientTimeData),
+            Sitestagging: ClientTimeData?.length > 0 ? JSON.stringify(ClientTimeData) : null,
             ClientCategoryId: {
                 results:
                     ClientCategoryIDs != undefined && ClientCategoryIDs.length > 0
@@ -3064,51 +3063,51 @@ const EditTaskPopup = (Items: any) => {
             console.log(timesheetDatass);
         } else {
             // if (ChangeTaskUserStatus) {
-                if (teamConfigData?.AssignedTo?.length > 0) {
-                    let tempArray: any = [];
-                    teamConfigData.AssignedTo?.map((arrayData: any) => {
-                        if (arrayData.AssingedToUser != null) {
-                            tempArray.push(arrayData.AssingedToUser);
-                        } else {
-                            tempArray.push(arrayData);
-                        }
-                    });
-                    setTaskAssignedTo(tempArray);
-                    EditData.AssignedTo = tempArray;
-                } else {
-                    setTaskAssignedTo([]);
-                    EditData.AssignedTo = [];
-                }
-                if (teamConfigData?.TeamMemberUsers?.length > 0) {
-                    let tempArray: any = [];
-                    teamConfigData.TeamMemberUsers?.map((arrayData: any) => {
-                        if (arrayData.AssingedToUser != null) {
-                            tempArray.push(arrayData.AssingedToUser);
-                        } else {
-                            tempArray.push(arrayData);
-                        }
-                    });
-                    setTaskTeamMembers(tempArray);
-                    EditData.TeamMembers = tempArray;
-                } else {
-                    setTaskTeamMembers([]);
-                    EditData.TeamMembers = [];
-                }
-                if (teamConfigData?.ResponsibleTeam?.length > 0) {
-                    let tempArray: any = [];
-                    teamConfigData.ResponsibleTeam?.map((arrayData: any) => {
-                        if (arrayData.AssingedToUser != null) {
-                            tempArray.push(arrayData.AssingedToUser);
-                        } else {
-                            tempArray.push(arrayData);
-                        }
-                    });
-                    setTaskResponsibleTeam(tempArray);
-                    EditData.ResponsibleTeam = tempArray;
-                } else {
-                    setTaskResponsibleTeam([]);
-                    EditData.ResponsibleTeam = [];
-                }
+            if (teamConfigData?.AssignedTo?.length > 0) {
+                let tempArray: any = [];
+                teamConfigData.AssignedTo?.map((arrayData: any) => {
+                    if (arrayData.AssingedToUser != null) {
+                        tempArray.push(arrayData.AssingedToUser);
+                    } else {
+                        tempArray.push(arrayData);
+                    }
+                });
+                setTaskAssignedTo(tempArray);
+                EditData.AssignedTo = tempArray;
+            } else {
+                setTaskAssignedTo([]);
+                EditData.AssignedTo = [];
+            }
+            if (teamConfigData?.TeamMemberUsers?.length > 0) {
+                let tempArray: any = [];
+                teamConfigData.TeamMemberUsers?.map((arrayData: any) => {
+                    if (arrayData.AssingedToUser != null) {
+                        tempArray.push(arrayData.AssingedToUser);
+                    } else {
+                        tempArray.push(arrayData);
+                    }
+                });
+                setTaskTeamMembers(tempArray);
+                EditData.TeamMembers = tempArray;
+            } else {
+                setTaskTeamMembers([]);
+                EditData.TeamMembers = [];
+            }
+            if (teamConfigData?.ResponsibleTeam?.length > 0) {
+                let tempArray: any = [];
+                teamConfigData.ResponsibleTeam?.map((arrayData: any) => {
+                    if (arrayData.AssingedToUser != null) {
+                        tempArray.push(arrayData.AssingedToUser);
+                    } else {
+                        tempArray.push(arrayData);
+                    }
+                });
+                setTaskResponsibleTeam(tempArray);
+                EditData.ResponsibleTeam = tempArray;
+            } else {
+                setTaskResponsibleTeam([]);
+                EditData.ResponsibleTeam = [];
+            }
             // }
         }
     }, []);
@@ -3316,41 +3315,41 @@ const EditTaskPopup = (Items: any) => {
                 }
             });
             if (ApprovedStatusCount == 0) {
-                let teamMember=[];
-                let AssignedTo=[];
-            if(EditDataBackup?.Categories?.includes("Approval")){
-                Items.sendRejectedMail = true
-                setTaskAssignedTo([])
-                setTaskTeamMembers([])
-                teamMember.push(EditDataBackup?.TeamMembers[0])
-                if(EditDataBackup?.Approvee!=undefined){
-                    teamMember.push(EditDataBackup?.Approvee?.AssingedToUser)
-                    AssignedTo.push(EditDataBackup?.Approvee?.AssingedToUser)
-                    setTaskAssignedTo(AssignedTo)
-                    setTaskTeamMembers(teamMember);
+                let teamMember = [];
+                let AssignedTo = [];
+                if (EditDataBackup?.Categories?.includes("Approval")) {
+                    Items.sendRejectedMail = true
+                    setTaskAssignedTo([])
+                    setTaskTeamMembers([])
+                    teamMember.push(EditDataBackup?.TeamMembers[0])
+                    if (EditDataBackup?.Approvee != undefined) {
+                        teamMember.push(EditDataBackup?.Approvee?.AssingedToUser)
+                        AssignedTo.push(EditDataBackup?.Approvee?.AssingedToUser)
+                        setTaskAssignedTo(AssignedTo)
+                        setTaskTeamMembers(teamMember);
 
-                }else{
-                   
-                   teamMember.push(EditDataBackup?.Author) 
-                    AssignedTo.push(EditDataBackup?.Author)
-                    setTaskAssignedTo(AssignedTo)
-                    setTaskTeamMembers(teamMember);
+                    } else {
 
+                        teamMember.push(EditDataBackup?.Author)
+                        AssignedTo.push(EditDataBackup?.Author)
+                        setTaskAssignedTo(AssignedTo)
+                        setTaskTeamMembers(teamMember);
+
+                    }
                 }
-            }
                 setApprovalTaskStatus(false);
 
             }
-             else {
-                let teamMember=[];
-                let AssignedTo=[];
-                if(EditDataBackup?.Categories?.includes("Approval")){
-                    teamMember.push(currentUserBackupArray?.[0]?.AssingedToUser) 
+            else {
+                let teamMember = [];
+                let AssignedTo = [];
+                if (EditDataBackup?.Categories?.includes("Approval")) {
+                    teamMember.push(currentUserBackupArray?.[0]?.AssingedToUser)
                     AssignedTo.push(currentUserBackupArray?.[0]?.AssingedToUser)
                     setTaskAssignedTo(AssignedTo)
                     setTaskTeamMembers(teamMember);
                 }
-              
+
                 setApprovalTaskStatus(true);
 
             }
