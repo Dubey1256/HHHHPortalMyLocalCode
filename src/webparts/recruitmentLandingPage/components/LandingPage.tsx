@@ -106,7 +106,7 @@ const LandingPage = (props: any) => {
                         title={row?.original?.Title}
                         data-interception="off"
                         target="_blank"
-                        href={`https://hhhhteams.sharepoint.com/sites/HHHH/HR/SitePages/RecruitmentTool.aspx?PositionId=${row?.original?.Id}`}
+                        href={`${props?.props.Context.pageContext.web.absoluteUrl}/SitePages/RecruitmentTool.aspx?PositionId=${row?.original?.Id}`}
                     >
                         {row?.original?.Title}
                     </a>
