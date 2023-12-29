@@ -2,44 +2,18 @@
 /* eslint-disable @typescript-eslint/explicit-function-return-type */
 /* eslint-disable @typescript-eslint/no-explicit-any */
 /* eslint-disable @typescript-eslint/no-unused-vars */
-import { Panel, PrimaryButton, TextField, Dropdown, PanelType, IconButton } from 'office-ui-fabric-react';
+import { Panel, PanelType } from 'office-ui-fabric-react';
 import * as React from 'react';
+import Moment from "moment";
 import Tooltip from '../../../globalComponents/Tooltip';
-import { Item, sp, Web } from 'sp-pnp-js';
-import {
-    Column,
-    Table,
-    ExpandedState,
-    useReactTable,
-    getCoreRowModel,
-    getFilteredRowModel,
-    getExpandedRowModel,
-    ColumnDef,
-    flexRender,
-    getSortedRowModel,
-    SortingState, ColumnFiltersState, Row,
-} from "@tanstack/react-table";
+import { Web } from 'sp-pnp-js';
+import {ColumnDef, Row} from "@tanstack/react-table";
 import GlobalCommanTable from '../../../globalComponents/GroupByReactTableComponents/GlobalCommanTable';
 import { useEffect, useState } from 'react';
 import HtmlEditorCard from '../../helloSpfx/components/FloraCommentBox';
-let portfiloData: any[] = [];
-const HRweb = new Web('https://hhhhteams.sharepoint.com/sites/HHHH/HR');
 
 
-const LandingPage = (props: any) => {
-    useEffect(() => {
-        getListData();
-    }, []);
-    interface EdittableItem {
-        [x: string]: any;
-        Id: number;
-        Title: string;
-        PositionDescription: string;
-        ImpSkills: ImpSkills[];
-    }
-    interface ImpSkills {
-        SkillTitle: string;
-    }
+const LandingPage = (props: any) => { 
     const [positionTitle, setpositionTitle] = useState('');
     const [jobDescription, setjobDescription] = useState('');
     const [isAddPositionPopup, setisAddPositionPopup] = useState(false);
@@ -55,14 +29,13 @@ const LandingPage = (props: any) => {
     const [SkillToUpdate, setSkillToUpdate]: any = useState([]);
     const [updatePositionId, setupdatePositionId]: any = useState();
     const [edittableItem, setEdittableItem]: any = useState(null)
-    const AddEditPositionClose = () => {
-        props.AddEditPositionCLose();
-    }
-    const callBackData = React.useCallback((elem: any, getSelectedRowModel: any, ShowingData: any) => {
-        console.log(elem)
-    }, []);
+    const HRweb = new Web(props?.props.Context.pageContext.web.absoluteUrl);
+    useEffect(() => {
+        getListData();
+    }, []);   
     const getListData = () => {
-        HRweb.lists.getById('e79dfd6d-18aa-40e2-8d6e-930a37fe54e4').items.getAll().then((response: any) => {
+        HRweb.lists.getById(props?.props.InterviewFeedbackFormListId).items.select('Id', 'Title', 'PositionTitle', 'PositionDescription', 'JobSkills', 'Created', 'Modified', 'Author/Id', 'Author/Title', 'Editor/Id', 'Editor/Title')
+            .expand('Author', 'Editor').getAll().then((response: any) => { 
             const updatedData = response.map((itm: { JobSkills: string | undefined; ImpSkills?: { itemParentId: any; }[]; Id: any; }) => {
                 if (itm.JobSkills !== undefined && itm.JobSkills !== '') {
                     const impSkills = JSON.parse(itm.JobSkills).map((skill: { itemParentId: any; }) => ({
@@ -84,8 +57,7 @@ const LandingPage = (props: any) => {
     const delPosition = (itm: any) => {
         const confirmDelete = window.confirm("Are you sure you want to delete this item?");
         if (confirmDelete) {
-            HRweb.lists
-                .getById('E79DFD6D-18AA-40E2-8D6E-930A37FE54E4')
+            HRweb.lists.getById(props?.props.InterviewFeedbackFormListId)
                 .items.getById(itm.Id).recycle().then(() => {
                     let indexToRemove = -1;
                     for (let i = 0; i < portfiloData.length; i++) {
@@ -105,6 +77,12 @@ const LandingPage = (props: any) => {
                 })
         }
     }
+    const AddEditPositionClose = () => {
+        props.AddEditPositionCLose();
+    }
+    const callBackData = React.useCallback((elem: any, getSelectedRowModel: any, ShowingData: any) => {
+        console.log(elem)
+    }, []);
     const stripHtmlTags = (html: string) => {
         const doc = new DOMParser().parseFromString(html, 'text/html');
         return doc.body.textContent || "";
@@ -128,7 +106,7 @@ const LandingPage = (props: any) => {
                         title={row?.original?.Title}
                         data-interception="off"
                         target="_blank"
-                        href={`https://hhhhteams.sharepoint.com/sites/HHHH/HR/SitePages/RecruitmentTool.aspx?PositionId=${row?.original?.Id}`}
+                        href={`${props?.props.Context.pageContext.web.absoluteUrl}/SitePages/RecruitmentTool.aspx?PositionId=${row?.original?.Id}`}
                     >
                         {row?.original?.Title}
                     </a>
@@ -180,7 +158,6 @@ const LandingPage = (props: any) => {
                 header: "",
                 size: 500
             },
-            //{ accessorKey: "PositionDescription", placeholder: "Position Description", header: "", },
             {
                 cell: ({ row }) => (
                     <div className='alignCenter'>
@@ -225,9 +202,6 @@ const LandingPage = (props: any) => {
     };
     const handleTitleChange = (e: any) => {
         setpositionTitle(e.target.value);
-    };
-    const handleDescriptionChange = (e: any) => {
-        setjobDescription(e.target.value);
     };
     const handleSkillChange = (event: { target: { value: React.SetStateAction<string>; }; }) => {
 
@@ -317,7 +291,7 @@ const LandingPage = (props: any) => {
             }
         }
         try {
-            await HRweb.lists.getById('E79DFD6D-18AA-40E2-8D6E-930A37FE54E4').items.add({
+            await HRweb.lists.getById(props?.props.InterviewFeedbackFormListId).items.add({
                 Title: positionTitle,
                 PositionDescription: jobDescription,
                 JobSkills: JSON.stringify(skillsCopy),
@@ -351,7 +325,7 @@ const LandingPage = (props: any) => {
             "JobSkills": JSON.stringify(SkillToUpdate)
         }
         try {
-            await HRweb.lists.getById('E79DFD6D-18AA-40E2-8D6E-930A37FE54E4').items.getById(updatePositionId).update(postData);
+            await HRweb.lists.getById(props?.props.InterviewFeedbackFormListId).items.getById(updatePositionId).update(postData);
         } catch (error) {
             console.error(error);
         } finally {
@@ -367,7 +341,7 @@ const LandingPage = (props: any) => {
             "PositionDescription": edittableItem.PositionDescription,
         }
         try {
-            await HRweb.lists.getById('E79DFD6D-18AA-40E2-8D6E-930A37FE54E4').items.getById(edittableItem.Id).update(postData);
+            await HRweb.lists.getById(props?.props.InterviewFeedbackFormListId).items.getById(edittableItem.Id).update(postData);
         } catch (error) {
             console.error(error);
         } finally {
@@ -377,23 +351,13 @@ const LandingPage = (props: any) => {
         }
 
     };
-    const onRenderCustomHeaderMain1 = () => {
-        return (
-            <>
-                <div className='subheading'>
-                    Add/Edit Positions
-                </div>
-                <Tooltip ComponentId='5642' />
-            </>
-        );
-    };
     const onRenderCustomHeaderMain2 = () => {
         return (
             <>
                 <div className='subheading'>
                     Add New Position
                 </div>
-                <Tooltip ComponentId='4430' />
+                <Tooltip ComponentId='7927' />
             </>
         );
     };
@@ -403,7 +367,7 @@ const LandingPage = (props: any) => {
                 <div className='subheading'>
                     Add New Skills
                 </div>
-                <Tooltip ComponentId='4430' />
+                <Tooltip ComponentId='7928' />
             </>
         );
     };
@@ -411,9 +375,9 @@ const LandingPage = (props: any) => {
         return (
             <>
                 <div className='subheading'>
-                    Edit Position {edittableItem ? edittableItem.Title : ''}
+                    Edit Position - {edittableItem ? edittableItem.Title : ''}
                 </div>
-
+                <Tooltip ComponentId='7929' />
             </>
         );
     };
@@ -469,12 +433,6 @@ const LandingPage = (props: any) => {
                             editorValue={jobDescription !== undefined && jobDescription !== null ? jobDescription : ''}
                             HtmlEditorStateChange={HtmlEditorCallBackAdd}
                         />
-                        {/* <textarea
-                            className="form-control"
-                            value={jobDescription}
-                            onChange={handleDescriptionChange}
-                            rows={3} // Set the number of rows as needed
-                        /> */}
                     </div>
                     <div className="input-group mb-3">
                         <label className="full_width">Skills Required</label>
@@ -605,14 +563,53 @@ const LandingPage = (props: any) => {
                             </div>
                         </div>
                     </div>
-                </div>
-
-                <footer className="py-2 clearfix">
-                    <div className="float-end text-end">
-                        <button onClick={updatePosition} type='button' className='btn btn-primary'>Save</button>
-                        <button onClick={editPositionClose} type='button' className='btn btn-default ms-1'>Cancel</button>
+                    <footer className="bg-f4 fixed-bottom position-absolute px-4 py-2">
+                        <div className="align-items-center d-flex justify-content-between me-3">
+                            <div>
+                                <div className="">
+                                    Created{" "}
+                                    <span className="font-weight-normal siteColor">
+                                        {" "}
+                                        {edittableItem?.Created
+                                            ? Moment(edittableItem?.Created).format("DD/MM/YYYY")
+                                            : ""}{" "}
+                                    </span>{" "}
+                                    By{" "}
+                                    <span className="font-weight-normal siteColor">
+                                        {edittableItem?.Author?.Title ? edittableItem?.Author?.Title : ""}
+                                    </span>
+                                </div>
+                                <div>
+                                    Last modified{" "}
+                                    <span className="font-weight-normal siteColor">
+                                        {" "}
+                                        {edittableItem?.Modified
+                                            ? Moment(edittableItem?.Modified).format("DD/MM/YYYY")
+                                            : ""}
+                                    </span>{" "}
+                                    By{" "}
+                                    <span className="font-weight-normal siteColor">
+                                        {edittableItem?.Editor?.Title ? edittableItem?.Editor.Title : ""}
+                                    </span>
+                                </div>
+                                <div>
+                                    <a className="hreflink siteColor">
+                                        <span className="alignIcon svg__iconbox hreflink mini svg__icon--trash"></span>
+                                        <span
+                                            onClick={() => delPosition(edittableItem?.ID)}
+                                        >
+                                            Delete This Item
+                                        </span>
+                                    </a>
+                                </div>
+                            </div>
+                            <div className="float-end text-end">
+                                <button onClick={updatePosition} type='button' className='btn btn-primary'>Save</button>
+                                <button onClick={editPositionClose} type='button' className='btn btn-default ms-1'>Cancel</button>
+                            </div>
+                        </div>
+                    </footer>
                     </div>
-                </footer>
             </Panel>
         </>
     );

@@ -280,6 +280,7 @@ const GlobalCommanTable = (items: any, ref: any) => {
 
     const [dragedTask, setDragedTask] = React.useState({ task: {}, taskId: '' });
     const [bulkEditingCongration, setBulkEditingCongration] = React.useState<any>({});
+    const [projectTiles, setProjectTiles] = React.useState<any>([]);
 
     React.useEffect(() => {
 
@@ -381,6 +382,9 @@ const GlobalCommanTable = (items: any, ref: any) => {
 
     const bulkEditingSetting = React.useCallback((eventSetting: any) => {
         if (eventSetting != 'close') {
+            if (eventSetting?.Project === false) {
+                setProjectTiles([]);
+            }
             setBulkEditingCongration(eventSetting);
             setBulkEditingSettingPopup(false);
         } else {
@@ -552,6 +556,9 @@ const GlobalCommanTable = (items: any, ref: any) => {
         if (usedFor == "SiteComposition" || items?.multiSelect === true) {
             let finalData: any = table?.getSelectedRowModel()?.flatRows;
             callBackData(finalData);
+            if (table?.getSelectedRowModel()?.flatRows.length > 0) {
+                restructureFunct(true)
+            };
         } else {
             if (table?.getSelectedRowModel()?.flatRows.length > 0) {
                 restructureFunct(true)
@@ -853,13 +860,18 @@ const GlobalCommanTable = (items: any, ref: any) => {
             console.log(task, origin);
         }
     }
+
+    React.useEffect(() => {
+        if (bulkEditingCongration?.Project === true && table?.getSelectedRowModel()?.flatRows?.length > 0 && projectTiles?.length === 0) {
+            setProjectTiles(table?.getSelectedRowModel()?.flatRows)
+        }
+    }, [bulkEditingSettingPopup]);
+
     /**************************************** Drag And Drop Functionality End ***************************************/
-
-
     return (
         <>
             {items?.bulkEditIcon === true && bulkEditingCongration && <span className="toolbox">
-                <BulkEditingFeature ContextValue={items?.AllListId} priorityRank={items?.priorityRank} dragedTask={dragedTask} precentComplete={items?.precentComplete} bulkEditingCongration={bulkEditingCongration} selectedData={table?.getSelectedRowModel()?.flatRows} />
+                <BulkEditingFeature ContextValue={items?.AllListId} priorityRank={items?.priorityRank} dragedTask={dragedTask} precentComplete={items?.precentComplete} bulkEditingCongration={bulkEditingCongration} selectedData={table?.getSelectedRowModel()?.flatRows} projectTiles={projectTiles} />
             </span>}
             {showHeader === true && <div className='tbl-headings justify-content-between fixed-Header top-0' style={{ background: '#e9e9e9' }}>
                 <span className='leftsec'>
@@ -1162,5 +1174,4 @@ const GlobalCommanTable = (items: any, ref: any) => {
         </>
     )
 }
-export default React.forwardRef(GlobalCommanTable);
-
+export default React.forwardRef(GlobalCommanTable);    
