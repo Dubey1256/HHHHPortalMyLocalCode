@@ -2999,7 +2999,7 @@ const EditTaskPopup = (Items: any) => {
                 results:
                     ApproverIds != undefined && ApproverIds.length > 0 ? ApproverIds : [],
             },
-            Sitestagging: JSON.stringify(ClientTimeData),
+            Sitestagging: ClientTimeData?.length > 0 ? JSON.stringify(ClientTimeData) : null,
             ClientCategoryId: {
                 results:
                     ClientCategoryIDs != undefined && ClientCategoryIDs.length > 0

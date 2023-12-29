@@ -171,10 +171,10 @@ let allSite: any = {
 
             },
             {
-                id: 'activeStatus',
+                id: 'ContractStatus',
                 header: '',
-                accessorFn: (row) => row?.activeStatus,
-                placeholder: "Contract Type",
+                accessorFn: (row) => row?.contractStatus,
+                placeholder: "ContractStatus",
                 size: 50,
 
 
