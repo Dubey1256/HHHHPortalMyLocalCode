@@ -12,16 +12,19 @@ let allSitesTask: any[] = []
 let Selecteditems: any[] = [];
 let allCalls: any[] = []
 var childItems: any = [];
+var ChangedTopCategories: any = [];
 let CurrentSiteUrl: any;
 export default function SmartMetadataEditPopup(props: any) {
     const [activeTab, setActiveTab] = useState('BasicInfo');
     const [AllSitesTask, setAllSitesTask]: any = useState([]);
     const [dropdownArray, setDropdownArray]: any = useState([]);
+   // const [dropdownArraySmartfilter, setDropdownArraySmartfilter]: any = useState([]);
     const [openChangeParentPopup, setOpenChangeParentPopup] = useState(false);
     const [selectedOptionTop, setSelectedOptionTop] = useState('');
     const [selectedOptionSecond, setSelectedOptionSecond] = useState('');
+    const [selectedChangedCategories, setSelectedChangedCategories] = useState('');
     const [metadatPopupBreadcrum, setMetadatPopupBreadcrum]: any = useState([]);
-    const [SmartTaxonomyItem, setSmartTaxonomyItem] = useState({
+    const [SmartTaxonomyItem, setSmartTaxonomyItem]: any = useState({
         Id: 0,
         Title: '',
         LongTitle: '',
@@ -31,6 +34,7 @@ export default function SmartMetadataEditPopup(props: any) {
         AlternativeTitle: '',
         SortOrder: '',
         Status: '',
+        // SmartFilters: '',
         ItemRank: '',
         Description1: '',
         ParentID: "",
@@ -69,6 +73,20 @@ export default function SmartMetadataEditPopup(props: any) {
             console.error('Error loading dropdown:', error);
         }
     };
+    // const loadSmartfilters = async () => {
+    //     try {
+    //         const web = new Web(props?.AllList?.SPSitesListUrl);
+    //         const fieldsData = await web.lists.getById(props.AllList.SPSmartMetadataListID).fields.filter("EntityPropertyName eq 'SmartFilters'").select('Choices').get();
+    //         if (fieldsData && fieldsData[0].Choices) {
+    //             setDropdownArraySmartfilter(fieldsData[0].Choices);
+    //             console.log('DropdownArray', dropdownArraySmartfilter);
+    //         } else {
+    //             console.error('No Choices found');
+    //         }
+    //     } catch (error) {
+    //         console.error('Error loading dropdown:', error);
+    //     }
+    // };
     const getChilds = (item: any, items: any) => {
         item.childs = [];
         items.forEach((childItem: any) => {
@@ -181,6 +199,7 @@ export default function SmartMetadataEditPopup(props: any) {
     };
     const closeParentPopup = () => {
         childItems = [];
+        ChangedTopCategories = [];
         setOpenChangeParentPopup(false)
     }
     const changeParentMetadata = () => {
@@ -200,6 +219,14 @@ export default function SmartMetadataEditPopup(props: any) {
             closeParentPopup()
         }
     }
+    const handleChangeCategories = (ChangeCategoryItem: any) => {
+        setSelectedChangedCategories(ChangeCategoryItem.target.value);
+        if (ChangeCategoryItem.target.value) {
+            ChangedTopCategories = props?.MetadataItems?.filter((meta: any) => meta?.Title === ChangeCategoryItem.target.value)
+                .map((meta: any) => meta?.subRows);
+        }
+        console.log(ChangedTopCategories);
+    }
     const handleTopOptionChange = (TopItem: any) => {
         setSelectedOptionTop(TopItem.target.value);
         if (TopItem.target.value) {
@@ -213,6 +240,7 @@ export default function SmartMetadataEditPopup(props: any) {
 
     useEffect(() => {
         loaddropdown();
+        //loadSmartfilters();
         const getDataOfSmartMetaData = async () => {
             try {
                 const web = new Web(props?.AllList?.SPSitesListUrl);
@@ -375,6 +403,7 @@ export default function SmartMetadataEditPopup(props: any) {
                 Selectable: SmartTaxonomyItem.Selectable,
                 ItemRank: SmartTaxonomyItem.ItemRank,
                 Status: SmartTaxonomyItem.Status,
+                //SmartFilters: SmartTaxonomyItem.SmartFilters,
                 siteName: SmartTaxonomyItem.siteName,
 
                 Item_x005F_x0020_Cover: {
@@ -469,6 +498,27 @@ export default function SmartMetadataEditPopup(props: any) {
                         >
                             <div className="modal-body">
                                 <div className="col-sm-12 tab-content bdrbox pad10">
+                                    {props?.TabSelected === "Categories" && <div className="form-group">
+                                        <div className="col-xs-3">
+                                            Change Categories:<b className="span-error">*</b>
+                                        </div>
+                                        <div className="col-xs-9">
+                                            <select
+                                                className="form-control"
+                                                value={selectedChangedCategories}
+                                                onChange={handleChangeCategories}
+                                            >
+                                                <option value="">Root</option>
+                                                {props?.ParentMetaDataItems?.map((item: any) => (
+                                                    <option key={item.Id} value={item.Title}>
+                                                        {item.Title}
+                                                    </option>
+                                                ))}
+                                            </select>
+                                        </div>
+                                        <div className="clearfix"></div>
+                                    </div>
+                                    }
                                     <div className="form-group">
                                         <div className="col-xs-3">Top Level:</div>
                                         <div className="col-xs-9">
@@ -478,11 +528,17 @@ export default function SmartMetadataEditPopup(props: any) {
                                                 onChange={handleTopOptionChange}
                                             >
                                                 <option value="">Root</option>
-                                                {props?.AllMetadata?.map((item: any) => (
-                                                    <option key={item.Id} value={item.Title}>
-                                                        {item.Title}
-                                                    </option>
-                                                ))}
+                                                {props?.TabSelected === 'Categories' ?
+                                                    ChangedTopCategories[0]?.map((item: any) => (
+                                                        <option key={item.Id} value={item.Title}>
+                                                            {item.Title}
+                                                        </option>
+                                                    )) :
+                                                    props?.AllMetadata?.map((item: any) => (
+                                                        <option key={item.Id} value={item.Title}>
+                                                            {item.Title}
+                                                        </option>
+                                                    ))}
                                             </select>
                                         </div>
                                         <div className="clearfix"></div>
@@ -507,7 +563,6 @@ export default function SmartMetadataEditPopup(props: any) {
                                         </div>
                                         <div className="clearfix"></div>
                                     </div>
-
                                 </div>
                             </div>
                             <div className="mt-2 text-end">
@@ -601,6 +656,18 @@ export default function SmartMetadataEditPopup(props: any) {
                                                             </select>
                                                         </div>
                                                     </div>
+                                                    {/* <div className="col">
+                                                        <div className=' input-group'>
+                                                            <label className='full-width'>SmartFilters</label>
+                                                            <select className="form-control no-padding" value={SmartTaxonomyItem.SmartFilters} onChange={(e) => setSmartTaxonomyItem({ ...SmartTaxonomyItem, SmartFilters: e.target.value })}>
+                                                                {dropdownArraySmartfilter.map((item: any, index: any) => (
+                                                                    <option key={index} value={item}>
+                                                                        {item}
+                                                                    </option>
+                                                                ))}
+                                                            </select>
+                                                        </div>
+                                                    </div> */}
                                                     <div className="col">
                                                         <div className=' input-group'>
                                                             <label className='full-width'>Item Rank</label>

@@ -5237,7 +5237,7 @@ const EditTaskPopup = (Items: any) => {
                                             </div>
                                         </div>
                                         <div className="mx-0 row mt-2 taskservices">
-                                            <div className="col ps-0">
+                                            <div className="col-md-6  ps-0">
                                                 <div className="input-group mb-2">
                                                     <label className="form-label full-width">
                                                         Portfolio Item
