@@ -142,14 +142,9 @@ const LandingPage = (props: any) => {
             {
                 accessorFn: (row) => row?.PositionDescription,
                 cell: ({ row, getValue }) => (
-                    <span className="columnFixedTitle">
-                        <span
-                            className="text-content"
-                            title={stripHtmlTags(row.original.PositionDescription)}
-                        >
-                            <div dangerouslySetInnerHTML={{ __html: row.original.PositionDescription ? stripHtmlTags(row.original.PositionDescription) : '' }} />
-                        </span>
-                    </span>
+                    <div className="columnFixedTitle">
+                        <div className="text-content" title={stripHtmlTags(row.original.PositionDescription)} dangerouslySetInnerHTML={{ __html: row.original.PositionDescription ? stripHtmlTags(row.original.PositionDescription) : '' }} />
+                    </div>
 
                 ),
                 id: "PositionDescription",
@@ -408,7 +403,7 @@ const LandingPage = (props: any) => {
                     </div>
                     {portfiloData && (
                         <div className="Alltable">
-                            <GlobalCommanTable columns={columns} data={portfiloData} showHeader={true} callBackData={callBackData} />
+                            <GlobalCommanTable columns={columns} fixedWidth={true} data={portfiloData} showHeader={true} callBackData={callBackData} />
                         </div>
                     )}
                 </div>
