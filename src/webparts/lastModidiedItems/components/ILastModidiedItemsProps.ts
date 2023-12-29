@@ -14,6 +14,13 @@ export interface ILastModidiedItemsProps {
   TaskTypeID:String;
   SmartHelptListID:String,
   PortFolioTypeID:String,
+  ContractListID:String,
+  HHHHContactListId:String,
+  HHHHInstitutionListId:String,
+  MAIN_SMARTMETADATA_LISTID:String,
+  MAIN_HR_LISTID:String,
+  GMBH_CONTACT_SEARCH_LISTID:String,
+  HR_EMPLOYEE_DETAILS_LIST_ID:String,
   TimeEntry:any;
   SiteCompostion:any;
   context:any ; 
