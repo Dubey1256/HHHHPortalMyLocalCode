@@ -1434,7 +1434,7 @@ const EditTaskPopup = (Items: any) => {
                             let tempTaggedCCData: any = [];
                             AllClientCategoryDataBackup?.map((AllCCItem: any) => {
                                 DataItem[0]?.ClientCategory?.map((TaggedCCItem: any) => {
-                                    if (AllCCItem.Title == TaggedCCItem.Title) {
+                                    if (AllCCItem.Id == TaggedCCItem.Id) {
                                         tempTaggedCCData.push(AllCCItem);
                                     }
                                 });
