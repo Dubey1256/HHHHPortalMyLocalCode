@@ -2624,6 +2624,13 @@ const EditTaskPopup = (Items: any) => {
                                     setSendEmailComponentStatus(false);
                                 }
                             }
+                            if (Items.sendRejectedMail != undefined) {
+                                if (Items.sendRejectedMail) {
+                                    setSendEmailComponentStatus(true);
+                                } else {
+                                    setSendEmailComponentStatus(false);
+                                }
+                            }
                             if (
                                 (CalculateStatusPercentage == 5 ||
                                     CalculateStatusPercentage == 10 ||
@@ -3312,6 +3319,7 @@ const EditTaskPopup = (Items: any) => {
                 let teamMember=[];
                 let AssignedTo=[];
             if(EditDataBackup?.Categories?.includes("Approval")){
+                Items.sendRejectedMail = true
                 setTaskAssignedTo([])
                 setTaskTeamMembers([])
                 teamMember.push(EditDataBackup?.TeamMembers[0])
