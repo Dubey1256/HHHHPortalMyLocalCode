@@ -139,3 +139,7 @@ ul.status-lists>li:hover span.svg__iconbox.svg__icon--trash {
 .ms-TextField.TextField-Input {
     margin-bottom: 5px;
 }
+.ms-TooltipHost div#people .ms-BasePicker-text::after {
+    border: none;
+}
+.ms-TooltipHost div#people .ms-BasePicker-text {background-color: var(--bs-body-bg);border: var(--bs-border-width) solid var(--bs-border-color) !important;height:29px}
