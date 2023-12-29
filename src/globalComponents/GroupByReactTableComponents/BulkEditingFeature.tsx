@@ -41,17 +41,28 @@ export function DueDateTaskUpdate(taskValue: any) {
 
         }
         if (dueDate) {
-            UpdateTaskStatus(taskValue, dueDate)
+            UpdateBulkTaskUpdate(taskValue, dueDate)
         }
     }
     //Update Task After Drop
-    const UpdateTaskStatus = async (task: any, dueDate: any) => {
-        let web = new Web(task?.taskValue?.siteUrl);
-        await web.lists.getById(task?.taskValue?.listId).items.getById(task?.taskValue?.Id).update({
-            DueDate: dueDate,
-        }).then((res: any) => {
-            console.log("Drop Updated", res);
-        })
+    const UpdateBulkTaskUpdate = async (task: any, dueDate: any) => {
+        if (taskValue?.selectedData?.length > 0) {
+            taskValue?.selectedData?.map(async (elem: any) => {
+                let web = new Web(elem?.original?.siteUrl);
+                await web.lists.getById(elem?.original?.listId).items.getById(elem?.original?.Id).update({
+                    DueDate: dueDate,
+                }).then((res: any) => {
+                    console.log("Drop Updated!", res);
+                })
+            })
+        } else {
+            let web = new Web(task?.taskValue?.siteUrl);
+            await web.lists.getById(task?.taskValue?.listId).items.getById(task?.taskValue?.Id).update({
+                DueDate: dueDate,
+            }).then((res: any) => {
+                console.log("Drop Updated!", res);
+            })
+        }
 
     }
 
@@ -83,20 +94,30 @@ export function PrecentCompleteUpdate(taskValue: any) {
                     TaskStatus = parseInt(match[1]) / 100;
                     TaskApproval = match[2].trim();
                 }
-                UpdateTaskStatus(taskValue, TaskStatus, TaskApproval)
+                UpdateBulkTaskUpdate(taskValue, TaskStatus, TaskApproval)
             }
         }
 
     }
     //Update Task After Drop
-    const UpdateTaskStatus = async (task: any, TaskStatus: any, TaskApproval: any) => {
-        let web = new Web(task?.taskValue?.siteUrl);
-        await web.lists.getById(task?.taskValue?.listId).items.getById(task?.taskValue?.Id).update({
-            PercentComplete: TaskStatus,
-
-        }).then((res: any) => {
-            console.log("Drop Updated", res);
-        })
+    const UpdateBulkTaskUpdate = async (task: any, TaskStatus: any, TaskApproval: any) => {
+        if (taskValue?.selectedData?.length > 0) {
+            taskValue?.selectedData?.map(async (elem: any) => {
+                let web = new Web(elem?.original?.siteUrl);
+                await web.lists.getById(elem?.original?.listId).items.getById(elem?.original?.Id).update({
+                    PercentComplete: TaskStatus,
+                }).then((res: any) => {
+                    console.log("Drop Updated!", res);
+                })
+            })
+        } else {
+            let web = new Web(task?.taskValue?.siteUrl);
+            await web.lists.getById(task?.taskValue?.listId).items.getById(task?.taskValue?.Id).update({
+                PercentComplete: TaskStatus,
+            }).then((res: any) => {
+                console.log("Drop Updated!", res);
+            })
+        }
 
     }
 
@@ -218,19 +239,31 @@ const BulkEditingFeature = (props: any) => {
                     priority = "(3) Low";
                 }
             }
-            UpdateTaskStatus(props?.dragedTask, priority, priorityRank);
+            UpdateBulkTaskUpdate(props?.dragedTask, priority, priorityRank);
         }
 
     }
     //Update Task After Drop
-    const UpdateTaskStatus = async (task: any, priority: any, priorityRank: any) => {
-        let web = new Web(task?.task?.siteUrl);
-        await web.lists.getById(task?.task?.listId).items.getById(task?.task?.Id).update({
-            Priority: priority,
-            PriorityRank: priorityRank,
-        }).then((res: any) => {
-            console.log("Drop Updated", res);
-        })
+    const UpdateBulkTaskUpdate = async (task: any, priority: any, priorityRank: any) => {
+        if (props?.selectedData?.length > 0) {
+            props?.selectedData?.map(async (elem: any) => {
+                let web = new Web(elem?.original?.siteUrl);
+                await web.lists.getById(elem?.original?.listId).items.getById(elem?.original?.Id).update({
+                    Priority: priority,
+                    PriorityRank: priorityRank,
+                }).then((res: any) => {
+                    console.log("Drop Updated!", res);
+                })
+            })
+        } else {
+            let web = new Web(task?.task?.siteUrl);
+            await web.lists.getById(task?.task?.listId).items.getById(task?.task?.Id).update({
+                Priority: priority,
+                PriorityRank: priorityRank,
+            }).then((res: any) => {
+                console.log("Drop Updated", res);
+            })
+        }
 
     }
     //ends
@@ -250,10 +283,10 @@ const BulkEditingFeature = (props: any) => {
             </div>}
 
             {props?.bulkEditingCongration?.dueDate && <div>
-                <DueDateTaskUpdate taskValue={props?.dragedTask?.task} />
+                <DueDateTaskUpdate taskValue={props?.dragedTask?.task} selectedData={props?.selectedData} />
             </div>}
             {props?.bulkEditingCongration?.status && <div>
-                <PrecentCompleteUpdate taskValue={props?.dragedTask?.task} precentComplete={props?.precentComplete} />
+                <PrecentCompleteUpdate taskValue={props?.dragedTask?.task} precentComplete={props?.precentComplete} selectedData={props?.selectedData} />
             </div>}
 
             {props?.bulkEditingCongration?.Project && <div>
