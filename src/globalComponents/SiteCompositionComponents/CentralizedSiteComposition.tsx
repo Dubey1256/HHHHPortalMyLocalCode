@@ -313,7 +313,7 @@ const CentralizedSiteComposition = (Props: any) => {
             componentGrouping();
         }
         if (usedFor == "AWT") {
-            let AllGroupingData: any = await AWTGrouping(ItemDetails);
+            let AllGroupingData: any = await AWTGrouping(ItemDetails, "AWT");
             if (AllGroupingData?.length > 0) {
                 GroupByTableData = AllGroupingData;
                 setData(AllGroupingData);
@@ -380,6 +380,7 @@ const CentralizedSiteComposition = (Props: any) => {
         }
     }
     const componentGrouping = () => {
+        console.log("this is the componentGrouping function")
         let FinalComponent: any = []
         let AllProtFolioData = FlatViewTableData?.filter(
             (comp: any) =>
@@ -416,7 +417,7 @@ const CentralizedSiteComposition = (Props: any) => {
         let directChildT = FlatViewTableData?.filter((elem: any) => elem.Portfolio?.Id === ItemDetails?.Id && elem?.TaskType?.Title == "Task");
         if (directChildAW?.length > 0) {
             directChildAW?.map((OtherItem: any) => {
-                componentActivity(OtherItem);
+                AWTGrouping(OtherItem, "CSF");
             })
         }
         let FindAllDirectAWT: any = directChildAW?.filter((elem: any) => (elem?.ParentTask?.Title == undefined || elem?.ParentTask?.Title == null) && elem?.TaskType?.Title !== "Task")
@@ -439,17 +440,14 @@ const CentralizedSiteComposition = (Props: any) => {
             Status: "",
             Author: ""
         }
-
         if (directChildT?.length > 0) {
             OtherTaskJSON.subRows = directChildT;
         }
-
         if (OtherTaskJSON?.subRows?.length > 0) {
             FinalGroupingData.push(OtherTaskJSON);
         }
         setData(FinalGroupingData);
         GroupByTableData = FinalGroupingData;
-
         let uniqueIds: any = {};
         let uniqueCCIds: any = {};
         let FinalAllTaggedCCData: any = [];
@@ -516,7 +514,8 @@ const CentralizedSiteComposition = (Props: any) => {
         items.subRows = items?.subRows?.concat(findActivity)
     }
 
-    const AWTGrouping = (items: any) => {
+    const AWTGrouping = (items: any, FnUsedFor: any) => {
+        console.log("this is the AWTGrouping function")
         let FinalAWTData: any = [];
         let findActivity = FlatViewTableData?.filter((elem: any) => elem?.ParentTask?.Id === items?.Id && elem?.TaskType?.Id == 3);
         let findDirectTask = FlatViewTableData?.filter((elem: any) => elem?.ParentTask?.Id === items?.Id && elem?.TaskType?.Id == 2);
@@ -532,7 +531,9 @@ const CentralizedSiteComposition = (Props: any) => {
         })
         items.subRows = items?.subRows?.concat(findActivity);
         FinalAWTData = findActivity?.concat(findDirectTask);
-        return FinalAWTData;
+        if (FnUsedFor == "AWT") {
+            return FinalAWTData;
+        }
     }
 
     const findSelectedComponentChildInMasterList = (groupByData: any, itemId: any) => {
@@ -553,7 +554,6 @@ const CentralizedSiteComposition = (Props: any) => {
 
     const loadAllTaskUsers = async () => {
         GlobalAllTaskUsersData = await globalCommon.loadAllTaskUsers(RequiredListIds);
-        console.log("Get loadAllTaskUsers   Call");
     }
 
     // Common Function for filtering the Data According to Tax Type
@@ -978,10 +978,7 @@ const CentralizedSiteComposition = (Props: any) => {
                 },
                 header: "",
                 size: 125
-
             },
-
-
         ],
         [data]
     );
@@ -998,6 +995,9 @@ const CentralizedSiteComposition = (Props: any) => {
             setFlatView(false);
         }
     }
+
+    // this function is used for converting the Group by data into flat view 
+
     function flattenData(groupedDataItems: any) {
         const flattenedData: any = [];
         function flatten(item: any) {
@@ -1874,7 +1874,7 @@ const CentralizedSiteComposition = (Props: any) => {
                             </div>
                             <div className="alignCenter">
                                 <label className="switch me-2 siteColor" htmlFor="checkbox-Flat">
-                                    <input checked={flatView} onChange={() => switchFlatViewData(flatView)} type="checkbox" id="checkbox-Flat" name="Flat-view" />
+                                    <input checked={flatView} onClick={() => switchFlatViewData(flatView)} type="checkbox" id="checkbox-Flat" name="Flat-view" />
                                     {flatView === true ? <div style={{ backgroundColor: '#000066' }} className="slider round" title='Switch to GroupBy View'></div> : <div title='Switch to Flat-View' className="slider round"></div>}
                                 </label>
                                 <span className='me-1 siteColor'>Flat View</span>
@@ -1909,8 +1909,6 @@ const CentralizedSiteComposition = (Props: any) => {
                                 loadedClassName="loadedContent"
                             />
                             <GlobalCommonTable
-                                expendedTrue={false}
-                                ref={childRef}
                                 setLoaded={setLoaded}
                                 AllListId={RequiredListIds}
                                 columns={columns}
@@ -1919,9 +1917,6 @@ const CentralizedSiteComposition = (Props: any) => {
                                 callBackData={GlobalTableCallBackData}
                                 showHeader={false}
                                 fixedWidth={true}
-                                protfolioProfileButton={true}
-                                showingAllPortFolioCount={true}
-                                showCreationAllButton={true}
                             />
                         </div>
                     </div>
