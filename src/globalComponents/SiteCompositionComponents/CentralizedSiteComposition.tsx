@@ -1291,17 +1291,15 @@ const CentralizedSiteComposition = (Props: any) => {
         }
         if (UsedFor == "Manual") {
             AllSiteDataBackup?.map((SiteData: any) => {
-                if (SelectedItemDetailsFormCall?.SiteCompositionJSONBackup?.length > 0) {
-                    SelectedItemDetailsFormCall?.SiteCompositionJSONBackup?.map((STItems: any) => {
-                        if (SiteData.Title == STItems.Title || (SiteData.Title ==
-                            "DA E+E" && STItems.Title == "ALAKDigital")) {
-                            SiteData.ClienTimeDescription = STItems.ClienTimeDescription;
-                            SiteData.BtnStatus = true;
-                            SiteData.Date = STItems.Date;
-                        }
-                    })
-                    TempSiteComposition.push(SiteData)
-                }
+                SelectedItemDetailsFormCall?.SiteCompositionJSONBackup?.map((STItems: any) => {
+                    if (SiteData.Title == STItems.Title || (SiteData.Title ==
+                        "DA E+E" && STItems.Title == "ALAKDigital")) {
+                        SiteData.ClienTimeDescription = STItems.ClienTimeDescription;
+                        SiteData.BtnStatus = true;
+                        SiteData.Date = STItems.Date;
+                    }
+                })
+                TempSiteComposition.push(SiteData)
             })
             setTaggedSiteCompositionCount(SelectedItemDetailsFormCall?.SiteCompositionJSONBackup?.length)
             GlobalCount = SelectedItemDetailsFormCall?.SiteCompositionJSONBackup?.length;
