@@ -1927,7 +1927,7 @@ const CreateActivity = (props: any) => {
           onDismiss={() => closePopup("item")}
           isBlocking={false}
           hasCloseButton={true}
-          className={props?.portfolioTypeData?.Color}
+          className={`${props?.portfolioTypeData?.Color} widthPanel`}
         >
           <div>
             <>{onRenderMainHtml}</>
