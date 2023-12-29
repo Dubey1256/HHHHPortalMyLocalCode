@@ -2,45 +2,18 @@
 /* eslint-disable @typescript-eslint/explicit-function-return-type */
 /* eslint-disable @typescript-eslint/no-explicit-any */
 /* eslint-disable @typescript-eslint/no-unused-vars */
-import { Panel, PrimaryButton, TextField, Dropdown, PanelType, IconButton } from 'office-ui-fabric-react';
+import { Panel, PanelType } from 'office-ui-fabric-react';
 import * as React from 'react';
 import Moment from "moment";
 import Tooltip from '../../../globalComponents/Tooltip';
-import { Item, sp, Web } from 'sp-pnp-js';
-import {
-    Column,
-    Table,
-    ExpandedState,
-    useReactTable,
-    getCoreRowModel,
-    getFilteredRowModel,
-    getExpandedRowModel,
-    ColumnDef,
-    flexRender,
-    getSortedRowModel,
-    SortingState, ColumnFiltersState, Row,
-} from "@tanstack/react-table";
+import { Web } from 'sp-pnp-js';
+import {ColumnDef, Row} from "@tanstack/react-table";
 import GlobalCommanTable from '../../../globalComponents/GroupByReactTableComponents/GlobalCommanTable';
 import { useEffect, useState } from 'react';
 import HtmlEditorCard from '../../helloSpfx/components/FloraCommentBox';
-let portfiloData: any[] = [];
-const HRweb = new Web('https://hhhhteams.sharepoint.com/sites/HHHH/HR');
 
 
-const LandingPage = (props: any) => {
-    useEffect(() => {
-        getListData();
-    }, []);
-    interface EdittableItem {
-        [x: string]: any;
-        Id: number;
-        Title: string;
-        PositionDescription: string;
-        ImpSkills: ImpSkills[];
-    }
-    interface ImpSkills {
-        SkillTitle: string;
-    }
+const LandingPage = (props: any) => { 
     const [positionTitle, setpositionTitle] = useState('');
     const [jobDescription, setjobDescription] = useState('');
     const [isAddPositionPopup, setisAddPositionPopup] = useState(false);
@@ -56,43 +29,35 @@ const LandingPage = (props: any) => {
     const [SkillToUpdate, setSkillToUpdate]: any = useState([]);
     const [updatePositionId, setupdatePositionId]: any = useState();
     const [edittableItem, setEdittableItem]: any = useState(null)
-    const AddEditPositionClose = () => {
-        props.AddEditPositionCLose();
-    }
-    const callBackData = React.useCallback((elem: any, getSelectedRowModel: any, ShowingData: any) => {
-        console.log(elem)
-    }, []);
+    const HRweb = new Web(props?.props.Context.pageContext.web.absoluteUrl);
+    useEffect(() => {
+        getListData();
+    }, []);   
     const getListData = () => {
-        HRweb.lists
-            .getById('e79dfd6d-18aa-40e2-8d6e-930a37fe54e4')
-            .items
-            .select('Id', 'Title', 'PositionTitle', 'PositionDescription', 'JobSkills', 'Created', 'Modified', 'Author/Id', 'Author/Title', 'Editor/Id', 'Editor/Title')
-            .expand('Author', 'Editor')
-            .getAll()
-            .then((response: any) => {
-                const updatedData = response.map((itm: { JobSkills: string | undefined; ImpSkills?: { itemParentId: any; }[]; Id: any; }) => {
-                    if (itm.JobSkills !== undefined && itm.JobSkills !== '') {
-                        const impSkills = JSON.parse(itm.JobSkills).map((skill: { itemParentId: any; }) => ({
-                            ...skill,
-                            itemParentId: itm.Id,
-                        }));
-                        return {
-                            ...itm,
-                            ImpSkills: impSkills,
-                        };
-                    }
-                    return itm;
-                });
-                setportfiloData(updatedData);
-            }).catch((error: unknown) => {
-                console.error(error);
+        HRweb.lists.getById(props?.props.InterviewFeedbackFormListId).items.select('Id', 'Title', 'PositionTitle', 'PositionDescription', 'JobSkills', 'Created', 'Modified', 'Author/Id', 'Author/Title', 'Editor/Id', 'Editor/Title')
+            .expand('Author', 'Editor').getAll().then((response: any) => { 
+            const updatedData = response.map((itm: { JobSkills: string | undefined; ImpSkills?: { itemParentId: any; }[]; Id: any; }) => {
+                if (itm.JobSkills !== undefined && itm.JobSkills !== '') {
+                    const impSkills = JSON.parse(itm.JobSkills).map((skill: { itemParentId: any; }) => ({
+                        ...skill,
+                        itemParentId: itm.Id,
+                    }));
+                    return {
+                        ...itm,
+                        ImpSkills: impSkills,
+                    };
+                }
+                return itm;
             });
+            setportfiloData(updatedData);
+        }).catch((error: unknown) => {
+            console.error(error);
+        });
     };
     const delPosition = (itm: any) => {
         const confirmDelete = window.confirm("Are you sure you want to delete this item?");
         if (confirmDelete) {
-            HRweb.lists
-                .getById('E79DFD6D-18AA-40E2-8D6E-930A37FE54E4')
+            HRweb.lists.getById(props?.props.InterviewFeedbackFormListId)
                 .items.getById(itm.Id).recycle().then(() => {
                     let indexToRemove = -1;
                     for (let i = 0; i < portfiloData.length; i++) {
@@ -112,6 +77,12 @@ const LandingPage = (props: any) => {
                 })
         }
     }
+    const AddEditPositionClose = () => {
+        props.AddEditPositionCLose();
+    }
+    const callBackData = React.useCallback((elem: any, getSelectedRowModel: any, ShowingData: any) => {
+        console.log(elem)
+    }, []);
     const stripHtmlTags = (html: string) => {
         const doc = new DOMParser().parseFromString(html, 'text/html');
         return doc.body.textContent || "";
@@ -171,9 +142,14 @@ const LandingPage = (props: any) => {
             {
                 accessorFn: (row) => row?.PositionDescription,
                 cell: ({ row, getValue }) => (
-                    <div className="columnFixedTitle">
-                        <div className="text-content" title={stripHtmlTags(row.original.PositionDescription)} dangerouslySetInnerHTML={{ __html: row.original.PositionDescription ? stripHtmlTags(row.original.PositionDescription) : '' }} />
-                    </div>
+                    <span className="columnFixedTitle">
+                        <span
+                            className="text-content"
+                            title={stripHtmlTags(row.original.PositionDescription)}
+                        >
+                            <div dangerouslySetInnerHTML={{ __html: row.original.PositionDescription ? stripHtmlTags(row.original.PositionDescription) : '' }} />
+                        </span>
+                    </span>
 
                 ),
                 id: "PositionDescription",
@@ -182,7 +158,6 @@ const LandingPage = (props: any) => {
                 header: "",
                 size: 500
             },
-            //{ accessorKey: "PositionDescription", placeholder: "Position Description", header: "", },
             {
                 cell: ({ row }) => (
                     <div className='alignCenter'>
@@ -227,9 +202,6 @@ const LandingPage = (props: any) => {
     };
     const handleTitleChange = (e: any) => {
         setpositionTitle(e.target.value);
-    };
-    const handleDescriptionChange = (e: any) => {
-        setjobDescription(e.target.value);
     };
     const handleSkillChange = (event: { target: { value: React.SetStateAction<string>; }; }) => {
 
@@ -319,7 +291,7 @@ const LandingPage = (props: any) => {
             }
         }
         try {
-            await HRweb.lists.getById('E79DFD6D-18AA-40E2-8D6E-930A37FE54E4').items.add({
+            await HRweb.lists.getById(props?.props.InterviewFeedbackFormListId).items.add({
                 Title: positionTitle,
                 PositionDescription: jobDescription,
                 JobSkills: JSON.stringify(skillsCopy),
@@ -353,7 +325,7 @@ const LandingPage = (props: any) => {
             "JobSkills": JSON.stringify(SkillToUpdate)
         }
         try {
-            await HRweb.lists.getById('E79DFD6D-18AA-40E2-8D6E-930A37FE54E4').items.getById(updatePositionId).update(postData);
+            await HRweb.lists.getById(props?.props.InterviewFeedbackFormListId).items.getById(updatePositionId).update(postData);
         } catch (error) {
             console.error(error);
         } finally {
@@ -369,7 +341,7 @@ const LandingPage = (props: any) => {
             "PositionDescription": edittableItem.PositionDescription,
         }
         try {
-            await HRweb.lists.getById('E79DFD6D-18AA-40E2-8D6E-930A37FE54E4').items.getById(edittableItem.Id).update(postData);
+            await HRweb.lists.getById(props?.props.InterviewFeedbackFormListId).items.getById(edittableItem.Id).update(postData);
         } catch (error) {
             console.error(error);
         } finally {
@@ -378,16 +350,6 @@ const LandingPage = (props: any) => {
             getListData();
         }
 
-    };
-    const onRenderCustomHeaderMain1 = () => {
-        return (
-            <>
-                <div className='subheading'>
-                    Add/Edit Positions
-                </div>
-                <Tooltip ComponentId='5642' />
-            </>
-        );
     };
     const onRenderCustomHeaderMain2 = () => {
         return (
@@ -446,7 +408,7 @@ const LandingPage = (props: any) => {
                     </div>
                     {portfiloData && (
                         <div className="Alltable">
-                            <GlobalCommanTable columns={columns} fixedWidth={true} data={portfiloData} showHeader={true} callBackData={callBackData} />
+                            <GlobalCommanTable columns={columns} data={portfiloData} showHeader={true} callBackData={callBackData} />
                         </div>
                     )}
                 </div>
@@ -471,12 +433,6 @@ const LandingPage = (props: any) => {
                             editorValue={jobDescription !== undefined && jobDescription !== null ? jobDescription : ''}
                             HtmlEditorStateChange={HtmlEditorCallBackAdd}
                         />
-                        {/* <textarea
-                            className="form-control"
-                            value={jobDescription}
-                            onChange={handleDescriptionChange}
-                            rows={3} // Set the number of rows as needed
-                        /> */}
                     </div>
                     <div className="input-group mb-3">
                         <label className="full_width">Skills Required</label>
@@ -653,7 +609,7 @@ const LandingPage = (props: any) => {
                             </div>
                         </div>
                     </footer>
-                </div>
+                    </div>
             </Panel>
         </>
     );
