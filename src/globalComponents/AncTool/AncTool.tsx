@@ -1385,7 +1385,7 @@ const AncTool = (props: any) => {
                                                                                     <td><input type="checkbox" className='form-check-input hreflink' checked={AllReadytagged?.some((doc: any) => file.Id == doc.Id)} onClick={() => { tagSelectedDoc(file) }} /></td>
                                                                                     <td><span className={`alignIcon  svg__iconbox svg__icon--${file?.docType}`} title={file?.File_x0020_Type}></span></td>
                                                                                     <td><a style={{wordBreak:"break-all"}} href={file?.EncodedAbsUrl} target="_blank" data-interception="off" className='hreflink'>{file?.Title}</a></td>
-                                                                                    <td style={{ textAlign: 'center' }}>{file?.ItemRank}</td>
+                                                                                    <td>{file?.ItemRank}</td>
                                                                                 </tr>
                                                                             )
                                                                         }

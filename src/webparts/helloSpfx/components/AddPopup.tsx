@@ -6,6 +6,7 @@
 /* eslint-disable @typescript-eslint/no-unused-vars */
 import { Panel, Dropdown, PanelType, IDropdownOption } from 'office-ui-fabric-react';
 import * as React from 'react';
+import { PeoplePicker, PrincipalType } from '@pnp/spfx-controls-react/lib/PeoplePicker';
 import { useCallback, useState } from 'react';
 import { Item, sp, Web } from 'sp-pnp-js';
 import Tooltip from '../../../globalComponents/Tooltip';
@@ -14,7 +15,6 @@ import { Card, CardBody, CardFooter, CardHeader, CardTitle, Col, Pagination, Pag
 import HtmlEditorCard from './FloraCommentBox';
 import MsgReader from "@kenjiuno/msgreader"
 import { useEffect } from 'react';
-import { SiteUser } from 'sp-pnp-js/lib/sharepoint/siteusers';
 let showTextInput: boolean = false;
 let PositionChoices: any[] = [];
 let siteName: any = '';
@@ -31,11 +31,11 @@ const AddPopup = (props: any) => {
     useEffect(() => {
         const fetchData = async () => {
             try {
-                await Promise.all([getPeople(), getchoicecolumns()]);
+                await Promise.all([getchoicecolumns()]);
             } catch (error) {
                 console.error(error);
             } finally {
-               // Set loading state to false regardless of success or error
+                // Set loading state to false regardless of success or error
             }
         };
         fetchData();
@@ -50,7 +50,7 @@ const AddPopup = (props: any) => {
     const [exp, setExp] = useState({ years: '', months: '' });
     const [email, setEmail] = useState('');
     const [phone, setPhone] = useState('');
-    const [selectedInterviwer, setSelectedInterviwer] = useState('');
+    const [selectedInterviwer, setSelectedInterviwer] = React.useState<any[]>([]);
     const [selectedRecAction, setSelectedRecAction] = useState('');
     const [selectedPosition, setSelectedPosition] = useState('');
     const [selectedDate, setselectedDate] = useState('');
@@ -60,7 +60,7 @@ const AddPopup = (props: any) => {
     const Status = ['New Candidate', 'Under Consideration', 'Interview', 'Negotiation', 'Hired', 'Rejected'];
 
     const [inputText, setInputText] = useState('');
-  
+
     const [selectedPath, setSelectedPath] = useState({
         displayPath: '',
         completePath: '',
@@ -136,34 +136,6 @@ const AddPopup = (props: any) => {
         }
     };
 
-    const getPeople = async () => {
-        try {
-            const titles = ["Prashant Kumar", "Robert Ungethuem", "Stefan Hochhuth (Admin)", "Harshit Chauhan", "Stefan Hochhuth"];
-            const getData = await sp.web.siteUsers.select("ID,Title,LoginName").get();
-
-            setSiteUsers(getData);
-            SiteUsers.forEach((emp: any) => {
-                emp.Email = '';
-                if (emp.LoginName !== undefined && emp.LoginName !== '') {
-                    try {
-                        emp.Email = emp.LoginName.split("/").join().split("|")[2].split("#")[0];
-                    } catch (err) {
-                        console.log(err);
-                    }
-                }
-            });
-
-            const users = SiteUsers.filter(function (user:any) {
-                return titles.indexOf(user.Title) !== -1;
-            });
-            setSiteUsers(users)
-            console.log(SiteUsers);
-          
-        } catch (error) {
-            console.error(error);
-   
-        }
-    };
     const getCurrentDate = (): string => {
         const currentDate: any = new Date();
         const year: any = currentDate.getFullYear();
@@ -257,13 +229,7 @@ const AddPopup = (props: any) => {
     const handleDateChange = (e: any) => {
         setselectedDate(e.target.value);
     };
-    const handleDropdownInterviewer = (event: React.FormEvent<HTMLDivElement>, item?: IDropdownOption): void => {
-        if (item) {
-            setSelectedInterviwer(item.key as string);
-        } else {
-            setSelectedInterviwer('');
-        }
-    };
+
     const handleOtherChoiceInputChange = (event: React.ChangeEvent<HTMLInputElement>) => {
         setOtherChoiceText(event.target.value);
     };
@@ -390,6 +356,9 @@ const AddPopup = (props: any) => {
             </>
         );
     };
+    const onPeoplePickerChange = (items: any[]) => {
+        setSelectedInterviwer(items[0]?.text);
+    };
     return (
         <Panel
             onRenderHeader={onRenderCustomHeaderMains}
@@ -428,7 +397,7 @@ const AddPopup = (props: any) => {
                     <div className="col-sm-3 mb-2">
                         <div className='input-group'>
                             <label className="form-label full-width">Total Years of Professional Exp</label>
-                            <div className="d-flex">
+                            <div className="d-flex gap-2">
                                 <div className="input-group mb-2">
                                     <input
                                         className="form-control"
@@ -453,14 +422,19 @@ const AddPopup = (props: any) => {
                     <div className="col-sm-3 mb-2">
                         <div className='input-group'>
                             <label className="form-label full-width">Responsible Staff Member</label>
-                            <Dropdown
-                                id="staff" className='w-100 '
-                                placeholder='Select Member'
-                                selectedKey={selectedInterviwer}
-                                onChange={handleDropdownInterviewer}
-                                options={SiteUsers.map((itm:any) => ({ key: itm.Title, text: itm.Title }))}
-                                styles={{ dropdown: { width: '100%' } }}
-                            />
+                            <div className="full-width">
+                            <PeoplePicker
+                                context={props.context}                 
+                                personSelectionLimit={1}
+                                groupName={''} // Leave this blank to search all users
+                                showtooltip={true}
+                                required={false}
+                                disabled={false}
+                                ensureUser={true}
+                                onChange={onPeoplePickerChange} // Use onChange instead of selectedItems
+                                principalTypes={[PrincipalType.User]}
+                                resolveDelay={1000}
+                            /></div>
                         </div>
                     </div>
                     <div className="col-sm-3 mb-2">
@@ -526,7 +500,7 @@ const AddPopup = (props: any) => {
                                     </label>
                                 ))}
                                 {showTextInput && (
-                                    <label className="input-group">
+                                    <div className='col-sm-2'><label className="input-group">
                                         <input
                                             className="form-control"
                                             type="text"
@@ -535,6 +509,7 @@ const AddPopup = (props: any) => {
                                             placeholder="Enter any other platform"
                                         />
                                     </label>
+                                    </div>
                                 )}
                             </div>
                         </div>
