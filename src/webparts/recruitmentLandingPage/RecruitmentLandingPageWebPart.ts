@@ -10,7 +10,8 @@ import { IRecruitmentLandingPageProps } from './components/IRecruitmentLandingPa
 
 export interface IRecruitmentLandingPageWebPartProps {
   description: string;
-  SkillsPortfolioListID:any
+  SkillsPortfolioListID:any;
+  InterviewFeedbackFormListId:any;
 }
 
 export default class RecruitmentLandingPageWebPart extends BaseClientSideWebPart<IRecruitmentLandingPageWebPartProps> {
@@ -26,6 +27,7 @@ export default class RecruitmentLandingPageWebPart extends BaseClientSideWebPart
         isDarkTheme: this._isDarkTheme,
         environmentMessage: this._environmentMessage,
         hasTeamsContext: !!this.context.sdks.microsoftTeams,
+        InterviewFeedbackFormListId:this.properties.InterviewFeedbackFormListId,
         userDisplayName: this.context.pageContext.user.displayName,
         Context: this.context,
         SkillsPortfolioListID:"e79dfd6d-18aa-40e2-8d6e-930a37fe54e4"
