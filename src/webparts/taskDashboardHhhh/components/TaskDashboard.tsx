@@ -413,10 +413,10 @@ const TaskDashboard = (props: any) => {
                         let smartmeta = [];
                         await web.lists
                             .getById(config.listId)
-                            .items.select("ID", "Title", "ClientCategory/Id", "Portfolio/PortfolioStructureID", "TaskID", "ParentTask/TaskID", "ParentTask/Title", "ParentTask/Id", "ClientCategory/Title", "EstimatedTimeDescription", 'ClientCategory', "Comments", "DueDate", "ClientActivityJson", "EstimatedTime", "Approver/Id", "Approver/Title", "ParentTask/Id", "ParentTask/Title", "FeedBack", "workingThisWeek", "IsTodaysTask", "AssignedTo/Id", "TaskLevel", "TaskLevel", "OffshoreComments", "AssignedTo/Title", "OffshoreImageUrl", "TaskCategories/Id", "TaskCategories/Title", "Status", "StartDate", "CompletedDate", "TeamMembers/Title", "TeamMembers/Id", "ItemRank", "PercentComplete", "Priority", "Body", "PriorityRank", "Created", "Author/Title", "Author/Id", "BasicImageInfo", "ComponentLink", "FeedBack", "ResponsibleTeam/Title", "ResponsibleTeam/Id", "TaskType/Title", "ClientTime", "Portfolio/Id", "Portfolio/Title", "Modified")
-                            .expand("TeamMembers", "Approver", "ParentTask", "ClientCategory", "AssignedTo", "TaskCategories", "Author", "ResponsibleTeam", "ParentTask", "TaskType", "Portfolio")
+                            .items.select("ID", "Title", "ClientCategory/Id", "Portfolio/PortfolioStructureID", "TaskID", "ParentTask/TaskID", "ParentTask/Title","Project/Id","Project/Title","Project/PriorityRank", "ParentTask/Id", "ClientCategory/Title", "EstimatedTimeDescription", 'ClientCategory', "Comments", "DueDate", "ClientActivityJson", "EstimatedTime", "Approver/Id", "Approver/Title", "ParentTask/Id", "ParentTask/Title", "FeedBack", "workingThisWeek", "IsTodaysTask", "AssignedTo/Id", "TaskLevel", "TaskLevel", "OffshoreComments", "AssignedTo/Title", "OffshoreImageUrl", "TaskCategories/Id", "TaskCategories/Title", "Status", "StartDate", "CompletedDate", "TeamMembers/Title", "TeamMembers/Id", "ItemRank", "PercentComplete", "Priority", "Body", "PriorityRank", "Created", "Author/Title", "Author/Id", "BasicImageInfo", "ComponentLink", "FeedBack", "ResponsibleTeam/Title", "ResponsibleTeam/Id", "TaskType/Title", "ClientTime", "Portfolio/Id", "Portfolio/Title", "Modified")
+                            .expand("TeamMembers", "Approver", "ParentTask", "ClientCategory", "AssignedTo", "TaskCategories", "Author", "ResponsibleTeam", "Project", "TaskType", "Portfolio")
                             .getAll().then((data: any) => {
-                                smartmeta = data;
+                                smartmeta = data;  // PriorityRank
                                 smartmeta?.map((task: any) => {
                                     try {
 
@@ -426,7 +426,15 @@ const TaskDashboard = (props: any) => {
                                             EstimatedDesc = JSON.parse(task?.EstimatedTimeDescription)
                                         }
                                         task.HierarchyData = [];
-                                        task.EstimatedTime = 0
+                                        task.EstimatedTime = 0;
+                                        task.SmartPriority;
+                                        task.TaskTypeValue = '';
+                                        task.projectPriorityOnHover = '';
+                                        task.taskPriorityOnHover = task?.PriorityRank;
+                                        task.showFormulaOnHover;
+
+                                        task.SmartPriority = globalCommon.calculateSmartPriority(task);
+
                                         let estimatedDescription = ''
                                         if (EstimatedDesc?.length > 0) {
                                             EstimatedDesc?.map((time: any) => {
@@ -592,6 +600,7 @@ const TaskDashboard = (props: any) => {
             .top(4999)
             .get().then((data) => {
                 data?.forEach((val: any) => {
+                    val.SmartPriority;
                     MyAllData.push(val)
                 })
             }).catch((error) => {
@@ -789,7 +798,22 @@ const TaskDashboard = (props: any) => {
 
                 ),
             },
-
+            {
+                internalHeader: "SmartPriority",
+                showSortIcon: true,
+                accessor: "SmartPriority",
+                style: { width: '80px' },
+                Cell: ({ row }: any) => (
+                    <span className="hover-text m-0 ">
+                        <span className="boldClable hreflink">
+                        {row?.original?.SmartPriority != undefined ? row?.original?.SmartPriority : ''}
+                        </span>
+                       <span className="tooltip-text pop-right">
+                       {row?.original?.showFormulaOnHover}
+                       </span>
+                    </span>
+                ),
+            },
             {
                 internalHeader: "Due Date",
                 showSortIcon: true,
