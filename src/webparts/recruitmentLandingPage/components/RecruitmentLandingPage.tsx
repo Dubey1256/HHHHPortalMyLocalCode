@@ -6,9 +6,9 @@ import LandingPage from './LandingPage';
 
 export default class RecruitmentLandingPage extends React.Component<IRecruitmentLandingPageProps, {}> {
   public render(): React.ReactElement<IRecruitmentLandingPageProps> {
-    const {   
-      InterviewFeedbackFormListId
-    } = this.props;
+    // const {   
+    //   InterviewFeedbackFormListId
+    // } = this.props;
 
     return (
       <LandingPage props={this.props}></LandingPage>
