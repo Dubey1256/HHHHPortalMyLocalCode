@@ -248,8 +248,8 @@ class Taskprofile extends React.Component<ITaskprofileProps, ITaskprofileState> 
   private async GetResult() {
     await this.getsmartmetadataIcon();
     try {
-      isShowTimeEntry = this.props.TimeEntry != "" ? JSON.parse(this.props.TimeEntry) : "";
-      isShowSiteCompostion = this.props.SiteCompostion != "" ? JSON.parse(this.props.SiteCompostion) : ""
+      isShowTimeEntry = this.props?.TimeEntry != "" ? JSON.parse(this.props?.TimeEntry) : "";
+      isShowSiteCompostion = this.props?.SiteCompostion != "" ? JSON.parse(this.props?.SiteCompostion) : ""
     } catch (error: any) {
       console.log(error)
     }
@@ -264,7 +264,7 @@ class Taskprofile extends React.Component<ITaskprofileProps, ITaskprofileState> 
       .getByTitle(this.state?.listName)
       .items
       .getById(this.state?.itemID)
-      .select("ID", "Title", "Comments", "ApproverHistory", "Approvee/Id", "Approvee/Title", "EstimatedTime", "SiteCompositionSettings", "TaskID", "Portfolio/Id", "Portfolio/Title", "Portfolio/PortfolioStructureID", "DueDate", "IsTodaysTask", 'EstimatedTimeDescription', "Approver/Id", "PriorityRank", "Approver/Title", "ParentTask/Id", "ParentTask/TaskID", "Project/Id", "Project/Title", "Project/PortfolioStructureID", "ParentTask/Title", "SmartInformation/Id", "AssignedTo/Id", "TaskLevel", "TaskLevel", "OffshoreComments", "AssignedTo/Title", "OffshoreImageUrl", "TaskCategories/Id", "TaskCategories/Title", "ClientCategory/Id", "ClientCategory/Title", "Status", "StartDate", "CompletedDate", "TeamMembers/Title", "TeamMembers/Id", "ItemRank", "PercentComplete", "Priority", "Created", "Author/Title", "Author/EMail", "BasicImageInfo", "ComponentLink", "FeedBack", "ResponsibleTeam/Title", "ResponsibleTeam/Id", "TaskType/Title", "ClientTime", "Editor/Title", "Modified", "Attachments", "AttachmentFiles")
+      .select("ID", "Title", "Comments","Sitestagging", "ApproverHistory", "Approvee/Id", "Approvee/Title", "EstimatedTime", "SiteCompositionSettings", "TaskID", "Portfolio/Id", "Portfolio/Title", "Portfolio/PortfolioStructureID", "DueDate", "IsTodaysTask", 'EstimatedTimeDescription', "Approver/Id", "PriorityRank", "Approver/Title", "ParentTask/Id", "ParentTask/TaskID", "Project/Id", "Project/Title","Project/PriorityRank", "Project/PortfolioStructureID", "ParentTask/Title", "SmartInformation/Id", "AssignedTo/Id", "TaskLevel", "TaskLevel", "OffshoreComments", "AssignedTo/Title", "OffshoreImageUrl", "TaskCategories/Id", "TaskCategories/Title", "ClientCategory/Id", "ClientCategory/Title", "Status", "StartDate", "CompletedDate", "TeamMembers/Title", "TeamMembers/Id", "ItemRank", "PercentComplete", "Priority", "Created", "Author/Title", "Author/EMail", "BasicImageInfo", "ComponentLink", "FeedBack", "ResponsibleTeam/Title", "ResponsibleTeam/Id", "TaskType/Title", "ClientTime", "Editor/Title", "Modified", "Attachments", "AttachmentFiles")
       .expand("TeamMembers", "Project", "Approver", "Approvee", "ParentTask", "Portfolio", "SmartInformation", "AssignedTo", "TaskCategories", "Author", "ClientCategory", "ResponsibleTeam", "TaskType", "Editor", "AttachmentFiles")
       .get()
     AllListId = {
@@ -323,7 +323,7 @@ class Taskprofile extends React.Component<ITaskprofileProps, ITaskprofileState> 
     taskDetails["Categories"] = category;
     this.taskResult = taskDetails;
     await this.GetTaskUsers(taskDetails);
-    await this.GetSmartMetaData(taskDetails?.ClientCategory, taskDetails?.ClientTime);
+    await this.GetSmartMetaData(taskDetails?.ClientCategory, taskDetails?.Sitestagging);
 
     this.currentUser = this.GetUserObject(this.props?.userDisplayName);
     if (taskDetails["Comments"] != null && taskDetails["Comments"] != undefined) {
@@ -372,12 +372,20 @@ class Taskprofile extends React.Component<ITaskprofileProps, ITaskprofileState> 
       Comments: comments != null && comments != undefined ? comments : "",
       Id: taskDetails["ID"],
       ID: taskDetails["ID"],
+
+      SmartPriority:globalCommon.calculateSmartPriority(taskDetails),
+      TaskTypeValue: '',
+      projectPriorityOnHover:'',
+      taskPriorityOnHover:taskDetails?.PriorityRank!=undefined?taskDetails?.PriorityRank:undefined,
+      showFormulaOnHover:taskDetails?.showFormulaOnHover!=undefined?taskDetails?.showFormulaOnHover:undefined,
+
       Approvee: taskDetails?.Approvee != undefined ? this.taskUsers.find((userData: any) => userData?.AssingedToUser?.Id == taskDetails?.Approvee?.Id) : undefined,
       TaskCategories: taskDetails["TaskCategories"],
       Project: taskDetails["Project"],
       IsTodaysTask: taskDetails["IsTodaysTask"],
       PriorityRank: taskDetails["PriorityRank"],
       EstimatedTime: taskDetails["EstimatedTime"],
+      Sitestagging: taskDetails["Sitestagging"] != null && JSON.parse(taskDetails["Sitestagging"]),
       ClientTime: taskDetails["ClientTime"] != null && JSON.parse(taskDetails["ClientTime"]),
       ApproverHistory: taskDetails["ApproverHistory"] != null ? JSON.parse(taskDetails["ApproverHistory"]) : "",
       OffshoreComments: OffshoreComments.length > 0 ? OffshoreComments.reverse() : null,
@@ -597,10 +605,10 @@ class Taskprofile extends React.Component<ITaskprofileProps, ITaskprofileState> 
 
   }
 
-  private async GetSmartMetaData(ClientCategory: any, ClientTime: any) {
+  private async GetSmartMetaData(ClientCategory: any, Sitestagging: any) {
     let array2: any = [];
     ClientTimeArray = []
-    if (((ClientTime == null) && ClientTimeArray?.length == 0)) {
+    if (((Sitestagging == null) && ClientTimeArray?.length == 0)) {
       var siteComp: any = {};
       siteComp.SiteName = this.state?.listName,
         siteComp.ClienTimeDescription = 100,
@@ -608,8 +616,8 @@ class Taskprofile extends React.Component<ITaskprofileProps, ITaskprofileState> 
       ClientTimeArray.push(siteComp);
     }
 
-    else if (ClientTime != null) {
-      ClientTimeArray = JSON.parse(ClientTime);
+    else if (Sitestagging != null) {
+      ClientTimeArray = JSON.parse(Sitestagging);
 
     }
     let web = new Web(this.props?.siteUrl);
@@ -637,7 +645,7 @@ class Taskprofile extends React.Component<ITaskprofileProps, ITaskprofileState> 
       console.log(ClientCategory);
     }
 
-    if (ClientTimeArray != undefined && ClientTimeArray.length > 0) {
+    if (ClientTimeArray != undefined && ClientTimeArray.length > 0 && array2?.length>0) {
       ClientTimeArray?.map((item: any) => {
         array2?.map((items: any) => {
           if ((item?.SiteName == items?.SiteName) || (item?.Title == items?.SiteName)) {
@@ -658,57 +666,57 @@ class Taskprofile extends React.Component<ITaskprofileProps, ITaskprofileState> 
     console.log(this.state.Result)
     if (listName != undefined) {
       let siteicon = '';
-      if (listName?.toLowerCase() == 'migration') {
-        siteicon = `${this.props.Context?._pageContext?._site?.absoluteUrl}/SiteCollectionImages/ICONS/Shareweb/site_migration.png`;
-      }
-      if (listName?.toLowerCase() == 'health') {
-        siteicon = `${this.props.Context?._pageContext?._site?.absoluteUrl}/SiteCollectionImages/ICONS/Shareweb/site_health.png`;
-      }
-      if (listName?.toLowerCase() == 'eps') {
-        siteicon = `${this.props.Context?._pageContext?._site?.absoluteUrl}/SiteCollectionImages/ICONS/Shareweb/site_eps.png`;
-      }
-      if (listName?.toLowerCase() == 'ei') {
-        siteicon = `${this.props.Context?._pageContext?._site?.absoluteUrl}/SiteCollectionImages/ICONS/Shareweb/site_ei.png`;
-      }
-      if (listName?.toLowerCase() == 'qa') {
-        siteicon = `${this.props.Context?._pageContext?._site?.absoluteUrl}/SiteCollectionImages/ICONS/Shareweb/site_qa.png`;
-      }
-      if (listName?.toLowerCase() == 'gender') {
-        siteicon = `${this.props.Context?._pageContext?._site?.absoluteUrl}/SiteCollectionImages/ICONS/Shareweb/site_gender.png`;
-      }
-      if (listName?.toLowerCase() == 'education') {
-        siteicon = `${this.props.Context?._pageContext?._site?.absoluteUrl}/SiteCollectionImages/ICONS/Shareweb/site_education.png`;
-      }
-      if (listName?.toLowerCase() == 'development-effectiveness' || listName?.toLowerCase() == 'de') {
-        siteicon = `${this.props.Context?._pageContext?._site?.absoluteUrl}/SiteCollectionImages/ICONS/Shareweb/site_de.png`;
-      }
-      if (listName?.toLowerCase() == 'cep') {
-        siteicon = `${this.props.Context?._pageContext?._site?.absoluteUrl}/SiteCollectionImages/ICONS/Shareweb/icon_cep.png`;
-      }
-      if (listName?.toLowerCase() == 'alakdigital' || listName?.toLowerCase() == 'da e+e') {
-        siteicon = `${this.props.Context?._pageContext?._site?.absoluteUrl}/SiteCollectionImages/ICONS/Shareweb/site_da.png`;
-      }
-      if (listName?.toLowerCase() == 'hhhh')
-        siteicon = `${this.props.Context?._pageContext?._site?.absoluteUrl}/SiteCollectionImages/ICONS/Foundation/icon_hhhh.png`;
+      // if (listName?.toLowerCase() == 'migration') {
+      //   siteicon = `${this.props.Context?._pageContext?._site?.absoluteUrl}/SiteCollectionImages/ICONS/Shareweb/site_migration.png`;
+      // }
+      // if (listName?.toLowerCase() == 'health') {
+      //   siteicon = `${this.props.Context?._pageContext?._site?.absoluteUrl}/SiteCollectionImages/ICONS/Shareweb/site_health.png`;
+      // }
+      // if (listName?.toLowerCase() == 'eps') {
+      //   siteicon = `${this.props.Context?._pageContext?._site?.absoluteUrl}/SiteCollectionImages/ICONS/Shareweb/site_eps.png`;
+      // }
+      // if (listName?.toLowerCase() == 'ei') {
+      //   siteicon = `${this.props.Context?._pageContext?._site?.absoluteUrl}/SiteCollectionImages/ICONS/Shareweb/site_ei.png`;
+      // }
+      // if (listName?.toLowerCase() == 'qa') {
+      //   siteicon = `${this.props.Context?._pageContext?._site?.absoluteUrl}/SiteCollectionImages/ICONS/Shareweb/site_qa.png`;
+      // }
+      // if (listName?.toLowerCase() == 'gender') {
+      //   siteicon = `${this.props.Context?._pageContext?._site?.absoluteUrl}/SiteCollectionImages/ICONS/Shareweb/site_gender.png`;
+      // }
+      // if (listName?.toLowerCase() == 'education') {
+      //   siteicon = `${this.props.Context?._pageContext?._site?.absoluteUrl}/SiteCollectionImages/ICONS/Shareweb/site_education.png`;
+      // }
+      // if (listName?.toLowerCase() == 'development-effectiveness' || listName?.toLowerCase() == 'de') {
+      //   siteicon = `${this.props.Context?._pageContext?._site?.absoluteUrl}/SiteCollectionImages/ICONS/Shareweb/site_de.png`;
+      // }
+      // if (listName?.toLowerCase() == 'cep') {
+      //   siteicon = `${this.props.Context?._pageContext?._site?.absoluteUrl}/SiteCollectionImages/ICONS/Shareweb/icon_cep.png`;
+      // }
+      // if (listName?.toLowerCase() == 'alakdigital' || listName?.toLowerCase() == 'da e+e') {
+      //   siteicon = `${this.props.Context?._pageContext?._site?.absoluteUrl}/SiteCollectionImages/ICONS/Shareweb/site_da.png`;
+      // }
+      // if (listName?.toLowerCase() == 'hhhh')
+      //   siteicon = `${this.props.Context?._pageContext?._site?.absoluteUrl}/SiteCollectionImages/ICONS/Foundation/icon_hhhh.png`;
 
-      if (listName?.toLowerCase() == 'gruene')
-        siteicon = `${this.props.Context?._pageContext?._site?.absoluteUrl}/SiteCollectionImages/ICONS/Foundation/logo-gruene.png`;
+      // if (listName?.toLowerCase() == 'gruene')
+      //   siteicon = `${this.props.Context?._pageContext?._site?.absoluteUrl}/SiteCollectionImages/ICONS/Foundation/logo-gruene.png`;
 
-      if (listName?.toLowerCase() == 'shareweb')
-        siteicon = `${this.props.Context?._pageContext?._site?.absoluteUrl}/SiteCollectionImages/ICONS/Shareweb/site_shareweb.png`;
+      // if (listName?.toLowerCase() == 'shareweb')
+      //   siteicon = `${this.props.Context?._pageContext?._site?.absoluteUrl}/SiteCollectionImages/ICONS/Shareweb/site_shareweb.png`;
 
-      if (listName?.toLowerCase() == 'small projects')
-        siteicon = `${this.props.Context?._pageContext?._site?.absoluteUrl}/SiteCollectionImages/ICONS/Shareweb/small_project.png`;
+      // if (listName?.toLowerCase() == 'small projects')
+      //   siteicon = `${this.props.Context?._pageContext?._site?.absoluteUrl}/SiteCollectionImages/ICONS/Shareweb/small_project.png`;
 
-      if (listName?.toLowerCase() == 'offshore tasks')
-        siteicon = `${this.props.Context?._pageContext?._site?.absoluteUrl}/SiteCollectionImages/ICONS/Shareweb/offshore_Tasks.png`;
+      // if (listName?.toLowerCase() == 'offshore tasks')
+      //   siteicon = `${this.props.Context?._pageContext?._site?.absoluteUrl}/SiteCollectionImages/ICONS/Shareweb/offshore_Tasks.png`;
 
-      if (listName?.toLowerCase() == 'kathabeck')
-        siteicon = `${this.props.Context?._pageContext?._site?.absoluteUrl}/SiteCollectionImages/ICONS/Foundation/Icon_Kathabeck.png`;
-      if (listName?.toLowerCase() == 'tasks' && this.props.Context?._pageContext?._web.title == "SH") {
-        siteicon = `${this.props.Context?._pageContext?._site?.absoluteUrl}/SH/SiteCollectionImages/ICONS/Foundation/SH_icon.png`;
-      }
-      else {
+      // if (listName?.toLowerCase() == 'kathabeck')
+      //   siteicon = `${this.props.Context?._pageContext?._site?.absoluteUrl}/SiteCollectionImages/ICONS/Foundation/Icon_Kathabeck.png`;
+      // if (listName?.toLowerCase() == 'tasks' && this.props.Context?._pageContext?._web.title == "SH") {
+      //   siteicon = `${this.props.Context?._pageContext?._site?.absoluteUrl}/SH/SiteCollectionImages/ICONS/Foundation/SH_icon.png`;
+      // }
+      // else {
         this.smartMetaDataIcon?.map((icondata: any) => {
           if (icondata.Title != undefined) {
             if (icondata.Title.toLowerCase() == listName?.toLowerCase() && icondata.Item_x0020_Cover != undefined) {
@@ -719,7 +727,7 @@ class Taskprofile extends React.Component<ITaskprofileProps, ITaskprofileState> 
             }
           }
         })
-      }
+      
       return siteicon;
     }
 
@@ -2095,10 +2103,10 @@ class Taskprofile extends React.Component<ITaskprofileProps, ITaskprofileState> 
 
                       <dl>
                         <dt className='bg-Fa'>% Complete</dt>
-                        <dd className='bg-Ff'>
+                         
                           <dd className='bg-Ff'>{this.state.Result["PercentComplete"] != undefined ? this.state.Result["PercentComplete"]?.toFixed(0) : 0}</dd>
 
-                        </dd>
+                    
                       </dl>
                       <dl>
                         <dt className='bg-Fa'>Priority</dt>
@@ -2156,6 +2164,17 @@ class Taskprofile extends React.Component<ITaskprofileProps, ITaskprofileState> 
                             web={AllListId?.siteUrl}
                           />
                           {/* {this.state.Result["Priority"]} */}
+                        </dd>
+                      </dl>
+
+                      <dl>
+                        <dt className='bg-Fa'>SmartPriority</dt>
+                       
+                          <dd className='bg-Ff'>
+                          <div className="boldClable" title={this?.state?.Result?.showFormulaOnHover}>
+                            {this.state.Result["SmartPriority"] != undefined ? this.state.Result["SmartPriority"]:0}
+                            </div>
+                            
                         </dd>
                       </dl>
 
@@ -2228,7 +2247,7 @@ class Taskprofile extends React.Component<ITaskprofileProps, ITaskprofileState> 
                                 {ClientTimeArray?.map((cltime: any, i: any) => {
                                   return <li className="Sitelist">
                                     <span>
-                                      <img style={{ width: "22px" }} title={cltime?.SiteName} src={this.GetSiteIcon(cltime?.SiteName) ? this.GetSiteIcon(cltime?.SiteName) : this.GetSiteIcon(cltime?.Title)} />
+                                      <img style={{ width: "22px" }} title={cltime?.SiteName} src={cltime?.SiteImages} />
                                     </span>
                                     {cltime?.ClienTimeDescription != undefined &&
                                       <span>
@@ -2291,7 +2310,7 @@ class Taskprofile extends React.Component<ITaskprofileProps, ITaskprofileState> 
                                 }
                               </div>
                             </div>
-                            <div className="spxdropdown-menu ps-2 py-1" style={{zIndex:"0 !important"}}>
+                            <div className="spxdropdown-menu ps-2 py-1">
                               <span>Total Estimated Time : </span><span className="mx-1">{this.state.Result?.TotalEstimatedTime > 1 ? this.state.Result?.TotalEstimatedTime + " hours" : this.state.Result?.TotalEstimatedTime + " hour"} </span>
                             </div>
                           </div>
