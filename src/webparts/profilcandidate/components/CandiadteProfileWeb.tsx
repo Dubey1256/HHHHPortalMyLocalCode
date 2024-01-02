@@ -27,24 +27,24 @@ const Profilcandidate = (props: any) => {
     const [isEditPopupOpen, setIsEditPopupOpen] = useState(false);
     const [selectedItem, setSelectedItem]: any = useState(null);
     const [TaggedDocuments, setTaggedDocuments] = useState<any[]>([]);
-    const web = new Web('https://hhhhteams.sharepoint.com/sites/HHHH/HR/');
+    allListId = {
+        // Context: props?.props.Context,
+        // HHHHContactListId: props?.props?.HHHHContactListId,
+        InterviewFeedbackFormListId: props?.InterviewFeedbackFormListId,
+        siteUrl: props?.siteUrl,
+
+        // jointSiteUrl: "https://hhhhteams.sharepoint.com/sites/HHHH"
+    }
     useEffect(() => {
         const params = new URLSearchParams(window.location.search);
-        // allListId = {
-        //     Context: props?.props.Context,
-        //     HHHHContactListId: props?.props?.HHHHContactListId,
-        //     InterviewCandidateListId: '298bc01c-710d-400e-bf48-8604d297c3c6',
-        //     siteUrl: props?.props.Context.pageContext.web.absoluteUrl,
 
-        //     jointSiteUrl: "https://hhhhteams.sharepoint.com/sites/HHHH"
-        // }
         EmployeeDetails(params.get('CandidateId'));
         loadDocumentsByCandidate(params.get('CandidateId'));
-
     }, [])
+const web = new Web(allListId?.siteUrl);
     const EmployeeDetails = async (Id: any) => {
         try {
-            await web.lists.getById('298bc01c-710d-400e-bf48-8604d297c3c6')
+            await web.lists.getById(allListId?.InterviewFeedbackFormListId)
                 .items.getById(Id).select('Id', 'Title', 'Remarks', 'Motivation', 'Created', 'Modified', 'AuthorId', 'Author/Title', 'Editor/Id', 'Editor/Title', 'SelectedPlatforms', 'Result', 'CandidateStaffID', 'ActiveInterv', 'Status0', 'IsFavorite', 'CandidateName', 'SkillRatings', 'Positions/Id', 'Positions/Title', 'Platform', 'IsFavorite', 'PhoneNumber', 'Email', 'Experience', 'Current_x0020_Company', 'Date', 'CurrentCTC', 'ExpectedCTC', 'NoticePeriod', 'CurrentLocation', 'DateOfJoining', 'HRNAME')
                 .expand('Positions', 'Editor', 'Author').get().then((data: any) => {
                     if (data.SkillRatings !== null || data.SkillRatings !== undefined) {
@@ -102,6 +102,10 @@ const Profilcandidate = (props: any) => {
         } else {
             return 'No experience';
         }
+    };
+
+    const openDocInNewTab = (url: string | URL | undefined) => {
+        window.open(url, '_blank');
     };
     return (
         <myContextValue.Provider value={{ ...myContextValue, allSite: allSite, allListId: allListId, loggedInUserName: props.props?.userDisplayName }}>
@@ -218,7 +222,7 @@ const Profilcandidate = (props: any) => {
                                         <span className="svg__iconbox svg__icon--document"></span>
                                     </span>
                                     <span style={{ display: document.File_x0020_Type !== 'aspx' ? 'inline' : 'none' }}>
-                                        <a href={`${document.EncodedAbsUrl}?web=1`} target="_blank" rel="noopener noreferrer">
+                                        <a onClick={() => openDocInNewTab(document.EncodedAbsUrl)}>
                                             <span>
                                                 <span style={{ display: document.FileLeafRef !== 'undefined' ? 'inline' : 'none' }}>
                                                     {document.FileLeafRef}

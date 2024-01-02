@@ -10,8 +10,10 @@ export interface IHelloSpfxProps {
    MAIN_HR_LISTID:any,
    GMBH_CONTACT_SEARCH_LISTID:any,
    HR_EMPLOYEE_DETAILS_LIST_ID:any,
+   SkillsPortfolioListID: any,
    environmentMessage: string;
    hasTeamsContext: boolean;
    userDisplayName: string; 
+   siteUrl: any 
  }
  
