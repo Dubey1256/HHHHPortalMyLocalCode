@@ -1691,7 +1691,6 @@ function EditProjectPopup(item: any) {
                                     }
                                   ></input>
 
-                                  {" "}
                                   In Preparation
                                 </label>
                               </li>
@@ -1712,7 +1711,6 @@ function EditProjectPopup(item: any) {
                                     }
                                   ></input>
 
-                                  {" "}
                                   In Development{" "}
                                 </label>
                               </li>
@@ -2340,7 +2338,6 @@ function EditProjectPopup(item: any) {
                         Go to Profile page
                       </a>
                       ||
-                      <span className="hreflink mx-2 siteColor f-mailicons"><span title="Edit Task" className="svg__iconbox svg__icon--mail"></span>Share This Task</span>
                       <a
                         target="_blank"
                         data-interception="off"
