@@ -1129,7 +1129,7 @@ const CreateActivity = (props: any) => {
                 clientTime = JSON.stringify(selectedItem?.Sitestagging);
               } else {
                 var siteComp: any = {};
-                siteComp.Title = save?.siteType,
+                siteComp.Title = site?.siteType,
                 siteComp.localSiteComposition = true;
                 siteComp.SiteImages = site?.Item_x005F_x0020_Cover?.Url;
                 siteComp.ClienTimeDescription = 100,
@@ -1144,7 +1144,7 @@ const CreateActivity = (props: any) => {
                 clientTime = JSON.stringify(sitetag);
               } else {
                 var siteComp: any = {};
-                siteComp.Title = save?.siteType,
+                siteComp.Title = site?.siteType,
                 siteComp.localSiteComposition = true;
                 siteComp.SiteImages = site?.Item_x005F_x0020_Cover?.Url;
                 siteComp.ClienTimeDescription = 100,
