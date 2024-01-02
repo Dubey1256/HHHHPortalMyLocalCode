@@ -4,6 +4,7 @@ import GlobalCommonTable from '../../../globalComponents/GroupByReactTableCompon
 import {GlobalConstants} from "../../../globalComponents/LocalCommon";
 import * as globalcommon from '../../../globalComponents/globalCommon';
 import ShowConfirmation from  './ShowConfirmation';
+import Tooltip from '../../../globalComponents/Tooltip';
 import { ColumnDef } from '@tanstack/react-table';
 import { Panel, PanelType, PrimaryButton } from 'office-ui-fabric-react';
 import { Col, ModalBody, ModalFooter } from 'react-bootstrap';
@@ -81,24 +82,36 @@ const AlertManagementTable = (props:any)=>{
                 createitem = false
             }
         })
-        if(createitem){
-            let postData = {               
-                Title: AddData.Title,
-                SortOrder: AddData.SortOrder,
-                Description: AddData.Description,
-                InternalName: AddData.InternalName,
-                ItemType: AddData.ItemType,
-                ButtonTitle: AddData.ButtonTitle
-            }
-            web.lists.getById(GlobalConstants.COLUMNS_LISTID).items.add(postData)
-            .then(() => {                    
+        if (createitem) {
+            let postData = {
+              Title: AddData.Title,
+              SortOrder: AddData.SortOrder,
+              Description: AddData.Description,
+              InternalName: AddData.InternalName,
+              ItemType: AddData.ItemType,
+              ButtonTitle: AddData.ButtonTitle,
+            };
+          
+            web.lists.getById('FB4B4AE0-FB2D-4623-BFFD-A7172E12CD09').items.add(postData)
+              .then((response: any) => {
+            //     if (response.ok) {
+            //       return response.json(); // Parse JSON response
+            //     } else {
+            //       return response.text().then((errorText: string) => {
+            //         console.error("Error adding item:", errorText);
+            //         throw new Error("Error adding item");
+            //       });
+            //     }
+            //   })
+            //   .then((data: any) => {
+            //     // Process the parsed JSON data
+                console.log("Item added successfully:", response.data);
                 Loadcolumns();
                 setisaddpopup(false);
-                console.log("Item added successfully");
-            })
-            .catch((err:any) => {
-                console.log(err);
-            })
+              })
+              .catch((err: any) => {
+                console.error(err);
+              });
         }
         
     }
@@ -229,12 +242,13 @@ const AlertManagementTable = (props:any)=>{
         const onRenderCustomHeaderMain = () => {
             return (
                 <div className="d-flex full-width pb-1">
-                   {editalertopen? <div className='subheading'>
+                   {editalertopen? <div className='subheading mb-0'>
                     <span className="siteColor">  Edit - {editalertmessage.Title}</span>
                     </div>:''} 
-                    {isaddpopup? <div className='subheading'>
+                    {isaddpopup? <div className='subheading mb-0'>
                     <span className="siteColor">  Add Messages</span>
-                    </div>:''}                   
+                    </div>:''}    
+                    <Tooltip />               
                 </div>
             );
         };  
@@ -249,94 +263,88 @@ const AlertManagementTable = (props:any)=>{
 
     return(
         <>
+            <div className="p-0  d-flex justify-content-between align-items-center " style={{ verticalAlign: "top" }}>
+                <h2 className="heading ">
+                    <span>Alert Management</span>
+                </h2>       
+            </div>
             <div className="mb-1 text-end">
               {itemtype === 'Confirmation' ? <button type="button" className="btn btn-primary me-2" onClick={AddColumn}>Add Confirmation Message</button> : <button type="button" className="btn btn-primary me-2" onClick={AddColumn}>Add Alert Message</button>}
             </div>
             <div>
                 <GlobalCommonTable columns={columns} data={alertcolumns} showHeader={true} callBackData={callBackData}></GlobalCommonTable>
             </div>
-            <Panel type={PanelType.medium} isOpen={isaddpopup} onRenderHeader={onRenderCustomHeaderMain} isBlocking={false}>
+            <Panel type={PanelType.medium} isOpen={isaddpopup} onRenderHeader={onRenderCustomHeaderMain} onDismiss={cancelform} isBlocking={false}>
                 <div>
-                <ModalBody>
+                    <ModalBody>
                         <Row className="mb-1">
                             <Col md={12} className="mb-1">
-                            <div className="input-group">
-                                <label className="form-label full-width" htmlFor="">Alert Title</label>                          
-                                <input className="form-control" type="text" defaultValue={AddData.Title} onChange={(e) => setAddData({ ...AddData, Title: e.target.value })} />
-                            </div>
+                                <div className="input-group">
+                                    <label className="form-label full-width" htmlFor="">Alert Title</label>                          
+                                    <input className="form-control" type="text" defaultValue={AddData.Title} onChange={(e) => setAddData({ ...AddData, Title: e.target.value })} />
+                                </div>
                             </Col>
                             <Col>
-                            <div className="input-group">
-                                <label className="form-label full-width" htmlFor="">Sort Order</label>
-                                <input className="form-control" type="text" defaultValue={AddData.SortOrder} onChange={(e) => setAddData({ ...AddData, SortOrder: e.target.value })}/>
-                            </div>
+                                <div className="input-group">
+                                    <label className="form-label full-width" htmlFor="">Sort Order</label>
+                                    <input className="form-control" type="text" defaultValue={AddData.SortOrder} onChange={(e) => setAddData({ ...AddData, SortOrder: e.target.value })}/>
+                                </div>
                             </Col>
                             <Col>
-                            <div className="input-group">
-                                <label className="form-label full-width" htmlFor="">InternalName</label>
-                                <input className="form-control" type="text" defaultValue={AddData.InternalName} onChange={(e) => setAddData({ ...AddData, InternalName: e.target.value })}/>
-                            </div>
+                                <div className="input-group">
+                                    <label className="form-label full-width" htmlFor="">InternalName</label>
+                                    <input className="form-control" type="text" defaultValue={AddData.InternalName} onChange={(e) => setAddData({ ...AddData, InternalName: e.target.value })}/>
+                                </div>
                             </Col>
-                            </Row>
-                           
-                           <Row className="mb-1">
+                        </Row>                            
+                        <Row className="mb-1">
                             <Col>
-                            <div className="input-group">
-                                <label className="form-label full-width" htmlFor="">ItemType</label>                           
-                                <select className="form-select" defaultValue={AddData.ItemType} onChange={(e) => setAddData({ ...AddData, ItemType: e.target.value })}>
-                                    {DropdownArrayitemtype.map(function (h: any, i: any) {
-                                        return (
-                                            <option key={i} value={h} >{h}</option>
-                                        )
-                                    })}
-                                </select>
-                            </div>
+                                <div className="input-group">
+                                    <label className="form-label full-width" htmlFor="">ItemType</label>                           
+                                    <select className="form-select" defaultValue={AddData.ItemType} onChange={(e) => setAddData({ ...AddData, ItemType: e.target.value })}>
+                                        {DropdownArrayitemtype.map(function (h: any, i: any) {
+                                            return (
+                                                <option key={i} value={h} >{h}</option>
+                                            )
+                                        })}
+                                    </select>
+                                </div>
                             </Col>
                             <Col>
-                            <div className="input-group">
-                                <label className="form-label full-width" htmlFor="">ButtonTitle</label>                          
-                                <input  className="form-control" type="text" defaultValue={AddData.ButtonTitle} onChange={(e) => setAddData({ ...AddData, ButtonTitle: e.target.value })} />
-                            </div>
+                                <div className="input-group">
+                                    <label className="form-label full-width" htmlFor="">ButtonTitle</label>                          
+                                    <input  className="form-control" type="text" defaultValue={AddData.ButtonTitle} onChange={(e) => setAddData({ ...AddData, ButtonTitle: e.target.value })} />
+                                </div>
                             </Col>
                         </Row>                                        
                         <Row>
                             <div className="input-group">
-                            <label className="form-label full-width" htmlFor="">Description Help</label>
-                            <textarea className="form-control" rows={4} cols={50} value={AddData.Description} defaultValue={AddData.Description} onChange={(e) => setAddData({ ...AddData, Description: e.target.value })} ></textarea>
+                                <label className="form-label full-width" htmlFor="">Description Help</label>
+                                <textarea className="form-control" rows={4} cols={50} value={AddData.Description} defaultValue={AddData.Description} onChange={(e) => setAddData({ ...AddData, Description: e.target.value })} ></textarea>
                             </div>
                         </Row>
-                </ModalBody>
-              
+                    </ModalBody>              
                 </div>
                 <footer className="text-end  mt-2">
                     <button  onClick={savecolumn} type="button" className="btn btn-primary ms-2 px-4">Save</button>
                     <button onClick={cancelform} type="button" className="btn btn-default btn-default ms-1">Cancel</button>
-                    </footer>
-                {/* <footer className='bg-f4' style={{position: 'absolute', bottom: '0px', width:'100%', zIndex:'9'}}>
-                        <div className="align-items-center d-flex justify-content-between me-3 px-4 py-2">                                                       
-                            <div className="footer-right">                                                                  
-                                <button type="button" className="btn btn-primary me-2" onClick={savecolumn}>Save</button>
-                                <button type="button" className="btn btn-default btn-default mx-1 me-4" onClick={cancelform}>Cancel</button>
-                            </div>                            
-                        </div>
-                    </footer> */}
+                </footer>                
             </Panel> 
-            <Panel type={PanelType.medium} isOpen={editalertopen} onRenderHeader={onRenderCustomHeaderMain} isBlocking={false}>
+            <Panel type={PanelType.medium} isOpen={editalertopen} onRenderHeader={onRenderCustomHeaderMain} onDismiss={cancelItemUpdate} isBlocking={false}>
                 <div>
-                <ModalBody>
+                    <ModalBody>
                         <Row className="mb-1">
-                            {/* <Col md={6}></Col> */}
                             <Col>
-                            <div className="input-group ">
-                                <label className="form-label full-width" htmlFor="">Alert Title</label>                          
-                                <input className="form-control" type="text" defaultValue={EditData.Title} onChange={(e) => setEditData({ ...EditData, Title: e.target.value })} />
-                            </div>
+                                <div className="input-group ">
+                                    <label className="form-label full-width" htmlFor="">Alert Title</label>                          
+                                    <input className="form-control" type="text" defaultValue={EditData.Title} onChange={(e) => setEditData({ ...EditData, Title: e.target.value })} />
+                                </div>
                             </Col>
                             <Col>
-                            <div className="input-group ">
-                                <label className="form-label full-width" htmlFor="">Sort Order</label>
-                                <input className="form-control" type="text" defaultValue={EditData.SortOrder} onChange={(e) => setEditData({ ...EditData, SortOrder: e.target.value })}/>
-                            </div>
+                                <div className="input-group ">
+                                    <label className="form-label full-width" htmlFor="">Sort Order</label>
+                                    <input className="form-control" type="text" defaultValue={EditData.SortOrder} onChange={(e) => setEditData({ ...EditData, SortOrder: e.target.value })}/>
+                                </div>
                             </Col>
                             {/* <Col>
                             <div className="input-group ">
@@ -344,36 +352,34 @@ const AlertManagementTable = (props:any)=>{
                                 <input className="form-control" type="text" defaultValue={EditData.InternalName} onChange={(e) => setEditData({ ...EditData, InternalName: e.target.value })}/>
                             </div>
                             </Col> */}
-                            </Row>
-                            <Row className="mb-1">                      
+                        </Row>
+                        <Row className="mb-1">
                             <Col>
-                            <div className="input-group ">
-                                <label className="form-label full-width" htmlFor="">Item Type</label>                           
-                                <select className="form-select" defaultValue={EditData.ItemType} onChange={(e) => setEditData({ ...EditData, ItemType: e.target.value })} disabled>
-                                    {DropdownArrayitemtype.map(function (h: any, i: any) {
-                                        return (
-                                            <option key={i} selected={EditData.ItemType == h} value={h} >{h}</option>
-                                        )
-                                    })}
-                                </select>
-                            </div>
+                                <div className="input-group ">
+                                    <label className="form-label full-width" htmlFor="">Item Type</label>                           
+                                    <select className="form-select" defaultValue={EditData.ItemType} onChange={(e) => setEditData({ ...EditData, ItemType: e.target.value })} disabled>
+                                        {DropdownArrayitemtype.map(function (h: any, i: any) {
+                                            return (
+                                                <option key={i} selected={EditData.ItemType == h} value={h} >{h}</option>
+                                            )
+                                        })}
+                                    </select>
+                                </div>
                             </Col>
                             <Col>
-                            <div className="input-group ">
-                                <label className="form-label full-width" htmlFor="">Button Title</label>                          
-                                <input className="form-control" type="text" defaultValue={EditData.ButtonTitle} onChange={(e) => setEditData({ ...EditData, ButtonTitle: e.target.value })} />
-                            </div>
+                                <div className="input-group ">
+                                    <label className="form-label full-width" htmlFor="">Button Title</label>                          
+                                    <input className="form-control" type="text" defaultValue={EditData.ButtonTitle} onChange={(e) => setEditData({ ...EditData, ButtonTitle: e.target.value })} />
+                                </div>
                             </Col>  
-                            </Row>
-                                                               
+                        </Row>
                         <Row>
-                        <div className="input-group ">
-                            <label className="form-label full-width" htmlFor="">Description Help</label>
-                            <textarea  className="form-control" rows={4} cols={50} value={EditData.Description} defaultValue={editalertmessage.Description} onChange={(e) => setEditData({ ...EditData, Description: e.target.value })} ></textarea>
+                            <div className="input-group ">
+                                <label className="form-label full-width" htmlFor="">Description Help</label>
+                                <textarea  className="form-control" rows={4} cols={50} value={EditData.Description} defaultValue={editalertmessage.Description} onChange={(e) => setEditData({ ...EditData, Description: e.target.value })} ></textarea>
                             </div>
                         </Row>
-                </ModalBody>
-             
+                    </ModalBody>
                 </div>
                 <footer className='bg-f4' style={{position: 'absolute', bottom: '0px', width:'100%', zIndex:'9'}}>
                         <div className="align-items-center d-flex justify-content-between me-3 px-4 py-2">
@@ -395,7 +401,7 @@ const AlertManagementTable = (props:any)=>{
                                 </div>
                             </div>
                         </div>
-                    </footer>
+                </footer>
             </Panel>            
             {AlertInternalName === 'DeleteItem' && isdeletepopup?<div>
               <ShowConfirmation confirmation={AlertInternalName} Item = {deleteitem} ItemTypeItem={deleteItemType} Context={propitm}  callBack = {callBack}/>
