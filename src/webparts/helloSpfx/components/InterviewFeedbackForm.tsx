@@ -141,9 +141,10 @@ export default function GetData(props: any) {
             size: 5,
             id: 'Id',
         }, {
-            accessorKey: "CandidateName",
+            accessorKey: "Title",
             placeholder: "Title",
             header: "",
+            id: 'Title',
             cell: ({ row, getValue }) => (
                 <><a
                     className="text-content hreflink"
@@ -162,9 +163,9 @@ export default function GetData(props: any) {
                 </>
             ),
         },
-        { accessorKey: "Email", placeholder: "Email", header: "" },
-        { accessorKey: "Position", placeholder: "Positions", header: "" },
-        { accessorKey: "Status0", placeholder: "Status", header: "" }, {
+        { accessorKey: "Email", placeholder: "Email", header: "", id: 'Email' },
+        { accessorKey: "Position", placeholder: "Positions", header: "", id: 'Position' },
+        { accessorKey: "Status0", placeholder: "Status", header: "", id: 'Status0' }, {
             cell: ({ row }) => (
                 <div className='alignCenter'>
                     <span onClick={() => EditPopupOpen(row.original)} title="Edit" className="svg__iconbox hreflink svg__icon--edit"></span>
@@ -235,6 +236,7 @@ export default function GetData(props: any) {
                 return {
                     ...item,
                     Position: item.Positions ? item.Positions.Title : null,
+                    Title: item.CandidateName,
                 };
             });
             const categorizedItems = response.reduce((accumulator: { newCandidates: any[]; inProcessCand: any[]; archiveCandidates: any[]; }, currentItem: {
