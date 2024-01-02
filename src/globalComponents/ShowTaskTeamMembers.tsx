@@ -11,7 +11,6 @@ function ShowTaskTeamMembers(item: any) {
   let CompleteTeamMembers: any = [];
   React.useEffect(() => {
     if (item?.props != undefined) {
-      // let taskDetails = item?.props;
       let itemDetails={
         ...item?.props
       }
@@ -48,13 +47,13 @@ function ShowTaskTeamMembers(item: any) {
           if (taskDetails?.TeamMembers != undefined) {
             for (let i = 0; i < taskDetails?.TeamMembers?.length; i++) {
               if (item.Id == taskDetails?.TeamMembers[i]?.Id) {
-                
+                item.workingMember = true;
                 taskDetails?.TeamMembers?.splice(i, true);
                 i--;
               }
             }
           }
-          item.workingMember = true;
+          item.workingMember = true;          
           CompleteTeamMembers.push(item);
         });
       }
