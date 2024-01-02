@@ -6,6 +6,7 @@ import { Web } from 'sp-pnp-js';
 import GlobalCommanTable from './GlobalCommanTableSmartmetadata';
 import Tooltip from '../../../globalComponents/Tooltip';
 import ImageTabComponenet from './ImageTabComponent'
+import VersionHistory from '../../../globalComponents/VersionHistroy/VersionHistory';
 let modaltype: any;
 let SitesConfig: any[] = []
 let allSitesTask: any[] = []
@@ -18,7 +19,8 @@ export default function SmartMetadataEditPopup(props: any) {
     const [activeTab, setActiveTab] = useState('BasicInfo');
     const [AllSitesTask, setAllSitesTask]: any = useState([]);
     const [dropdownArray, setDropdownArray]: any = useState([]);
-   // const [dropdownArraySmartfilter, setDropdownArraySmartfilter]: any = useState([]);
+    // const [dropdownArraySmartfilter, setDropdownArraySmartfilter]: any = useState([]);
+    const [, setVersionHistoryPopup] = React.useState(false);
     const [openChangeParentPopup, setOpenChangeParentPopup] = useState(false);
     const [selectedOptionTop, setSelectedOptionTop] = useState('');
     const [selectedOptionSecond, setSelectedOptionSecond] = useState('');
@@ -104,6 +106,20 @@ export default function SmartMetadataEditPopup(props: any) {
         });
         return Items;
     }
+    const deleteDataFunction = async (item: any) => {
+        var deleteConfirmation = confirm("Are you sure, you want to delete this?");
+        if (deleteConfirmation) {
+            let web = new Web(props?.AllList?.SPSitesListUrl);
+            await web.lists
+                .getById(props?.AllList?.SPSmartMetadataListID)
+                .items.getById(item.Id)
+                .delete()
+                .then((i) => {
+                    console.log(i);
+                    // LoadTopNavigation();
+                });
+        }
+    };
     const LoadAllMetaData = async () => {
         try {
             SitesConfig = [];
@@ -763,10 +779,81 @@ export default function SmartMetadataEditPopup(props: any) {
                         )}
                         </div>
                     </div>
-                    <div className='mt-2 text-end'>
+                    <footer
+                        className="bg-f4"
+                        style={{
+                            position: "absolute",
+                            width: "100%",
+                            bottom: "0px",
+                            zIndex: "9",
+                            left: "0px",
+                        }}
+                    >
+                        <div className="align-items-center d-flex justify-content-between me-3 px-4 py-2">
+                            <div className="col">
+                                <div className="text-left">
+                                    Created
+                                    <> {SmartTaxonomyItem?.CreatedDate} </>
+                                    by{" "}
+                                    <span className="siteColor">
+                                        {" "}
+                                        {SmartTaxonomyItem?.Author?.Title}{" "}
+                                    </span>
+                                </div>
+                                <div className="text-left">
+                                    Last modified
+                                    <span>{SmartTaxonomyItem?.ModifiedDate}</span>
+                                    by{" "}
+                                    <span className="siteColor">
+                                        {" "}
+                                        {SmartTaxonomyItem?.Editor?.Title}{" "}
+                                    </span>
+                                </div>
+                                <div className="text-left">
+                                    Delete this item
+                                    <span
+                                        className="alignIcon  svg__iconbox svg__icon--trash"
+                                        onClick={() => deleteDataFunction(SmartTaxonomyItem)}
+                                    ></span>
+                                </div>
+                                <div className="text-left" onClick={() => setVersionHistoryPopup(false)}>
+                                    {SmartTaxonomyItem?.Id && <VersionHistory
+                                        taskId={SmartTaxonomyItem?.Id}
+                                        siteUrls={props?.AllList?.SPSitesListUrl}
+                                        listId={props?.AllList?.SPSitesListUrl}
+                                    />}
+                                </div>
+                            </div>
+                            <div className="col  text-end">
+                                <a
+                                    data-interception="off"
+                                    target="_blank"
+                                    href={`${props?.AllList?.SPSitesListUrl}/Lists/SmartMetadata/AllItems.aspx`}
+                                >
+                                    Open out-of-the-box form
+                                </a>
+                                <button
+                                    type="button"
+                                    className="btn btn-primary ms-2"
+                                    onClick={() => UpdateItem()}
+                                >
+                                    Save
+                                </button>
+                                <button
+                                    type="button"
+                                    className="btn btn-default ms-2"
+                                    onClick={() => CloseEditSmartMetaPopup()}
+                                >
+                                    Cancel
+                                </button>
+                            </div>
+                        </div>
+                    </footer>
+                    {/* <div className='mt-2 text-end'>
                         <button onClick={UpdateItem} className='btn btn-primary'>Save</button>
                         <button onClick={CloseEditSmartMetaPopup} className='btn btn-default ms-1'>Cancel</button>
-                    </div>
+                    </div> */}
+
                 </Panel>
             </div>
         </>

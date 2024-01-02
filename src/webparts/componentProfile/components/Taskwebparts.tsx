@@ -248,7 +248,7 @@ function PortfolioTable(SelectedProp: any) {
       )
     );
     smartmetaDetails?.map((newtest: any) => {
-      if (newtest.Title == "SDC Sites" || newtest.Title == "DRR" || newtest.Title == "Offshore Tasks" || newtest.Title == "DE" || newtest.Title == "Gender" || newtest.Title == "Small Projects" || newtest.Title == "Shareweb Old" || newtest.Title == "Master Tasks")
+      if (newtest.Title == "SDC Sites" || newtest.Title == "DRR" || newtest.Title == "Offshore Tasks"  || newtest.Title == "Gender" || newtest.Title == "Small Projects" || newtest.Title == "Shareweb Old" || newtest.Title == "Master Tasks")
       newtest.DataLoadNew = false;
       else if (newtest.TaxType == "Sites") siteConfigSites.push(newtest);
       if (newtest?.TaxType == 'timesheetListConfigrations') {

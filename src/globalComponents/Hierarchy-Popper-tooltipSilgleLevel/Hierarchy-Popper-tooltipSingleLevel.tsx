@@ -75,12 +75,26 @@ export default function ReactPopperTooltipSingleLevel({ ShareWebId, row, masterT
         if(onclickPopup!=false && newAction === "click"){
             setAction(newAction);
             setControlledVisible(true);
+            let targetDiv: any = document?.querySelector('.ms-Panel-main');
+            setTimeout(() => {
+                if (targetDiv) {
+                    // Change the --SiteBlue variable for elements under the targetDiv
+                    targetDiv?.style?.setProperty('--SiteBlue', row?.PortfolioType?.Color); // Change the color to your desired value
+                }
+            }, 1000)
             if ( newAction === "click") return;
         }else if(onclickPopup==false && newAction === "click"){
         
         }else if(onclickPopup==false && newAction === "hover"){
             setAction(newAction);
             setControlledVisible(true);
+            let targetDiv: any = document?.querySelector('.ms-Panel-main');
+            setTimeout(() => {
+                if (targetDiv) {
+                    // Change the --SiteBlue variable for elements under the targetDiv
+                    targetDiv?.style?.setProperty('--SiteBlue', row?.PortfolioType?.Color); // Change the color to your desired value
+                }
+            }, 1000)
             if ( newAction === "hover") return;
         }else{
             setAction(newAction);
@@ -251,7 +265,7 @@ export default function ReactPopperTooltipSingleLevel({ ShareWebId, row, masterT
             {action === "click" && visible && (
                 <div ref={setTooltipRef} {...getTooltipProps({ className: "tooltip-container p-0 m-0" })}>
                     <div>
-                        <div className="tootltip-title">{row?.Title}</div>
+                        <div className="tootltip-title"     style={{backgroundColor: `${row?.PortfolioType?.Color}`}}>{row?.Title}</div>
                         <button className="toolTipCross" onClick={handleCloseClick}><div className="popHoverCross">×</div></button>
                     </div>
 

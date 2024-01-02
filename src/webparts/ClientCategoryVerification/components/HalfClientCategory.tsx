@@ -65,6 +65,9 @@ const HalfClientCategory = (props: any) => {
     const [taskTypeDataItem, setTaskTypeDataItem] = React.useState([]);
     const [AllMasterTasksData, setAllMasterTasksData]: any = React.useState([]);
     const [portfolioTypeConfrigration, setPortfolioTypeConfrigration] = React.useState<any>([{ Title: 'Component', Suffix: 'C', Level: 1 }, { Title: 'SubComponent', Suffix: 'S', Level: 2 }, { Title: 'Feature', Suffix: 'F', Level: 3 }]);
+    const [IsSmartfavoriteId, setIsSmartfavoriteId] = React.useState("");
+    const [IsSmartfavorite, setIsSmartfavorite] = React.useState("");
+    const [IsUpdated, setIsUpdated] = React.useState("");
     React.useEffect(() => {
         try {
             $("#spPageCanvasContent").removeClass();
@@ -628,6 +631,17 @@ const HalfClientCategory = (props: any) => {
         setEditSiteCompositionMaster(false);
         setSelectedItem(null)
     }
+    React.useEffect(() => {
+        const params = new URLSearchParams(window.location.search);
+        let smartFavoriteIdParam = params.get("SmartfavoriteId");
+        if (smartFavoriteIdParam) {
+            setIsSmartfavoriteId(smartFavoriteIdParam);
+        }
+        let smartFavoriteParam = params.get("smartfavorite");
+        if (smartFavoriteParam) {
+            setIsSmartfavorite(smartFavoriteParam);
+        }
+    }, [])
     ////////////////////////////////////////// Smart filter Part//////////////////////
     React.useEffect(() => {
         if (AllSiteTasks.length > 0 && AllMasterTasks.length > 0) {
@@ -642,6 +656,7 @@ const HalfClientCategory = (props: any) => {
             let filterDataBackup = JSON.parse(JSON.stringify(filterData));
             setAllSmartFilterData(filterDataBackup);
             setSmartTimeTotalFunction(() => smartTimeTotal);
+           
         } else if (filterData.length === 0) {
             setAllSiteTasks([]);
             setAllMasterTasks([]);
@@ -1240,7 +1255,7 @@ const HalfClientCategory = (props: any) => {
                     </h2>
                 </div>
                 <div className="togglecontent ">
-                    {filterCounters == true ? <TeamSmartFilter ProjectData={ProjectData} setLoaded={setLoaded} AllSiteTasksData={AllSiteTasksData} AllMasterTasksData={AllMasterTasksData} ContextValue={AllListId} smartFiltercallBackData={smartFiltercallBackData} portfolioColor={portfolioColor} /> : ''}
+                    {filterCounters == true ? <TeamSmartFilter ProjectData={ProjectData}  IsSmartfavorite={IsSmartfavorite} IsSmartfavoriteId={IsSmartfavoriteId} setLoaded={setLoaded} AllSiteTasksData={AllSiteTasksData} AllMasterTasksData={AllMasterTasksData} ContextValue={AllListId} smartFiltercallBackData={smartFiltercallBackData} portfolioColor={portfolioColor} /> : ''}
                 </div>
             </section>
             <div className='ProjectOverViewRadioFlat SpfxCheckRadio  justify-content-between mb-2'>
