@@ -4063,11 +4063,7 @@ const EditTaskPopup = (Items: any) => {
             .get();
         await SaveImageDataOnLoop(response, NewList, NewItem);
     };
-    const SaveImageDataOnLoop = async (
-        response: any,
-        NewList: any,
-        NewItem: any
-    ) => {
+    const SaveImageDataOnLoop = async (response: any, NewList: any, NewItem: any) => {
         let tempArrayJsonData: any = [];
         var count = 0;
         let currentUserDataObject: any;
@@ -4084,64 +4080,77 @@ const EditTaskPopup = (Items: any) => {
                         headers: {
                             Accept: "application/json;odata=nometadata",
                         },
-                    });
+                    }).then(async (response) => {
+                        if (response.ok) {
+                            count++;
+                            const binaryData = await response.arrayBuffer();
+                            console.log("Binary Data:", binaryData);
+                            var uint8Array = new Uint8Array(binaryData);
+                            console.log(uint8Array);
 
-                    if (response.ok) {
-                        count++;
-                        const binaryData = await response.arrayBuffer();
-                        console.log("Binary Data:", binaryData);
-                        var uint8Array = new Uint8Array(binaryData);
-                        console.log(uint8Array);
+                            console.log(uint8Array);
+                            let fileName: any = "";
+                            let date = new Date();
+                            let timeStamp = date.getTime();
+                            let imageIndex = index + 1;
+                            var file =
+                                "T" +
+                                NewItem.Id +
+                                "-Image" +
+                                imageIndex +
+                                "-" +
+                                NewItem.Title?.replace(/["/':?]/g, "")?.slice(0, 40) +
+                                " " +
+                                timeStamp +
+                                ".jpg";
 
-                        console.log(uint8Array);
-                        let fileName: any = "";
-                        let date = new Date();
-                        let timeStamp = date.getTime();
-                        let imageIndex = index + 1;
-                        var file =
-                            "T" +
-                            NewItem.Id +
-                            "-Image" +
-                            imageIndex +
-                            "-" +
-                            NewItem.Title?.replace(/["/':?]/g, "")?.slice(0, 40) +
-                            " " +
-                            timeStamp +
-                            ".jpg";
+                            // Your existing code for creating ImgArray
+                            let ImgArray = {
+                                ImageName: file,
+                                UploadeDate: Moment(new Date()).format("DD/MM/YYYY"),
+                                ImageUrl:
+                                    siteUrls +
+                                    "/Lists/" +
+                                    NewList +
+                                    "/Attachments/" +
+                                    NewItem?.Id +
+                                    "/" +
+                                    file,
+                                UserImage:
+                                    currentUserDataObject != undefined &&
+                                        currentUserDataObject.Item_x0020_Cover?.Url?.length > 0
+                                        ? currentUserDataObject.Item_x0020_Cover?.Url
+                                        : "https://hhhhteams.sharepoint.com/sites/HHHH/SiteCollectionImages/ICONS/32/icon_user.jpg",
+                                UserName:
+                                    currentUserDataObject != undefined &&
+                                        currentUserDataObject.Title?.length > 0
+                                        ? currentUserDataObject.Title
+                                        : Items.context.pageContext._user.displayName,
+                                Description: "",
+                            };
+                            tempArrayJsonData.push(ImgArray);
 
-                        // Your existing code for creating ImgArray
-                        let ImgArray = {
-                            ImageName: file,
-                            UploadeDate: Moment(new Date()).format("DD/MM/YYYY"),
-                            ImageUrl:
-                                siteUrls +
-                                "/Lists/" +
-                                NewList +
-                                "/Attachments/" +
-                                NewItem?.Id +
-                                "/" +
-                                file,
-                            UserImage:
-                                currentUserDataObject != undefined &&
-                                    currentUserDataObject.Item_x0020_Cover?.Url?.length > 0
-                                    ? currentUserDataObject.Item_x0020_Cover?.Url
-                                    : "https://hhhhteams.sharepoint.com/sites/HHHH/SiteCollectionImages/ICONS/32/icon_user.jpg",
-                            UserName:
-                                currentUserDataObject != undefined &&
-                                    currentUserDataObject.Title?.length > 0
-                                    ? currentUserDataObject.Title
-                                    : Items.context.pageContext._user.displayName,
-                            Description: "",
-                        };
-                        tempArrayJsonData.push(ImgArray);
 
-                        await sp.web.lists
-                            .getByTitle(NewList)
-                            .items.getById(NewItem.Id)
-                            .attachmentFiles.add(file, uint8Array);
-                    } else {
-                        console.error("Error:", response.statusText);
-                    }
+                            
+// -----------------------Add Attachments-----------------------------------------------------------------------
+                            // await sp.web.lists.getByTitle(NewList).items.getById(NewItem.Id).attachmentFiles.add(file, uint8Array).then((res)=>{
+                            //     count++;
+                            //     console.log(res)
+                            // });
+
+                            const item = await sp.web.lists.getByTitle(NewList).items.getById(NewItem?.Id).get();
+
+                            
+                            const currentETag:any = item ? item['@odata.etag'] : null;
+                            await sp.web.lists.getByTitle(NewList).items.getById(NewItem?.Id).attachmentFiles.add(file, uint8Array),
+                            currentETag, { headers: { "If-Match": currentETag }}
+    
+                        } else {
+                            console.error("Error:", response.statusText);
+                        }
+                    })
+
+
                 } catch (error) {
                     console.log(error, "HHHH Time");
                 }
@@ -4150,10 +4159,12 @@ const EditTaskPopup = (Items: any) => {
 
         // Wait for all promises to resolve
         try {
-            await Promise.all(fetchPromises);
 
+            await Promise.all(fetchPromises);
             // Call another function after all promises are resolved
             await SaveJSONData(NewList, NewItem, tempArrayJsonData);
+
+
         } catch (error) {
             console.error("Error updating client category:", error);
         }

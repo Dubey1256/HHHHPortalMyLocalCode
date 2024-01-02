@@ -86,7 +86,7 @@ let allSite: any = {
                   val.contractStatus = "";
                 }
                 else {
-                  val.contractStatus = " non active";
+                  val.contractStatus = "Inactive";
                 }
               };
         })
