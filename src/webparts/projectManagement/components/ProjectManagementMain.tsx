@@ -6,6 +6,7 @@ import ReactPopperTooltipSingleLevel from '../../../globalComponents/Hierarchy-P
 import { Web } from "sp-pnp-js";
 import EditProjectPopup from "../../projectmanagementOverviewTool/components/EditProjectPopup";
 import * as Moment from "moment";
+import { myContextValue } from '../../../globalComponents/globalCommon'
 import {
   ColumnDef,
 } from "@tanstack/react-table";
@@ -136,6 +137,7 @@ const ProjectManagementMain = (props: any) => {
       AdminConfigrationListID: props?.props?.AdminConfigrationListID,
       isShowTimeEntry: isShowTimeEntry,
       isShowSiteCompostion: isShowSiteCompostion,
+      PortFolioTypeID:props?.props?.PortFolioTypeID,
       TaskTypeID: props?.props?.TaskTypeID
     }
     if (props?.props?.SmartInformationListID != undefined) {
@@ -453,7 +455,7 @@ const ProjectManagementMain = (props: any) => {
   const tagAndCreateCallBack = React.useCallback(() => {
     setIsTaggedCompTask(false)
     setCreateTaskId({ portfolioData: null, portfolioType: null })
-    LoadAllSiteTasks();
+
   }, []);
   const CreateTask = React.useCallback(() => {
     setisOpenCreateTask(false)
@@ -474,6 +476,7 @@ const ProjectManagementMain = (props: any) => {
   const LoadAllSiteTasks = async function () {
     setPageLoader(true);
     let taskComponent: any = TaggedPortfoliosToProject;
+    taskTaggedComponents=[];
     let localtimeEntryIndex: any;
     try {
       localtimeEntryIndex = localStorage.getItem('timeEntryIndex')
@@ -1231,6 +1234,8 @@ const ProjectManagementMain = (props: any) => {
 
   }, []);
   return (
+    <myContextValue.Provider value={{ ...myContextValue,  ProjectLandingPageDetails:Masterdata,closeCompTaskPopup:tagAndCreateCallBack ,projectCallBackTask:LoadAllSiteTasks,portfolioCreationCallBack:ComponentServicePopupCallBack}}>
+    
     <div>
       {QueryId != "" ? (
         <>
@@ -1594,6 +1599,8 @@ const ProjectManagementMain = (props: any) => {
         </>) : (<div>Project not found</div>)}
 
     </div>
+    </myContextValue.Provider>
   );
 };
 export default ProjectManagementMain; 
+export {myContextValue}
