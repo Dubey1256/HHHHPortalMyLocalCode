@@ -10,7 +10,7 @@ const AddMorePosition = (props: any) => {
     const [skill, setSkill] = React.useState('');
     const [skills, setSkills]: any = React.useState([]);
     const [portfiloData, setportfiloData]: any = React.useState([]);
-    const HRweb = new Web('https://hhhhteams.sharepoint.com/sites/HHHH/HR');
+    const HRweb = new Web(props?.siteUrl);
 
     const handleTitleChange = (e: any) => {
         setpositionTitle(e.target.value);

@@ -17,7 +17,6 @@ import CreateContactComponent from '../../contactSearch/components/contact-searc
 import moment from 'moment-timezone';
 const skillArray: any[] = [];
 let EmployeeData: any;
-const HRweb = new Web('https://hhhhteams.sharepoint.com/sites/HHHH/HR');
 const EditPopup = (props: any) => {
     const [CandidateTitle, setCandidateTitle] = useState(props.item.CandidateName);
     const [Email, setEmail] = useState(props.item.Email);
@@ -46,6 +45,7 @@ const EditPopup = (props: any) => {
     const [showTextInput, setShowTextInput] = useState(false);
     const [otherChoice, setOtherChoice] = useState('');
     const [listData, setListData] = useState([]);
+    const HRweb = new Web(props?.props?.siteUrl);
 
     const handlePlatformClick = (e: React.ChangeEvent<HTMLInputElement>, PlatformName: string) => {
         const clickedPlatform = e.target.value; // Assuming the value of the checkbox is the platform name
@@ -183,8 +183,8 @@ const EditPopup = (props: any) => {
     const getListData = () => {
         const skillMap: any = {};
         let initialratings: any = {};
-        const web = new Web('https://hhhhteams.sharepoint.com/sites/HHHH/HR/');
-        web.lists.getById('e79dfd6d-18aa-40e2-8d6e-930a37fe54e4').items.getAll().then((response: any) => {
+        const web = new Web(props?.props?.siteUrl);
+        web.lists.getById(props?.props?.SkillsPortfolioListID).items.getAll().then((response: any) => {
             setListData(response);
             const filteredData = response.filter((item: any) => {
                 return item.Id === props.item.Positions.Id;
@@ -268,7 +268,7 @@ const EditPopup = (props: any) => {
         const confirmDelete = window.confirm("Are you sure you want to delete this item?");
 
         if (confirmDelete) {
-            const web = new Web('https://hhhhteams.sharepoint.com/sites/HHHH/HR/');
+            const web = new Web(props?.props?.siteUrl);
 
             web.lists
                 .getById(props?.ListID)

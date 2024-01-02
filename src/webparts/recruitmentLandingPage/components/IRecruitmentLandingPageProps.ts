@@ -4,6 +4,6 @@ export interface IRecruitmentLandingPageProps {
   environmentMessage: string;
   hasTeamsContext: boolean;
   userDisplayName: string;
-  InterviewFeedbackFormListId:any,
+  SkillsPortfolioListID:any,
   Context: any
 }

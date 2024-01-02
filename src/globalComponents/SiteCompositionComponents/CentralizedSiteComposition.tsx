@@ -550,7 +550,7 @@ const CentralizedSiteComposition = (Props: any) => {
         })
         let FinalGroupingData: any = [];
         let directChildAW = FlatViewTableData?.filter((elem: any) => elem.Portfolio?.Id === ItemDetails?.Id);
-        let directChildT = FlatViewTableData?.filter((elem: any) => elem.Portfolio?.Id === ItemDetails?.Id && elem?.TaskType?.Title == "Task");
+        let directChildT = FlatViewTableData?.filter((elem: any) => elem.Portfolio?.Id === ItemDetails?.Id && elem?.TaskType?.Title == "Task" && (elem?.ParentTask?.Title == undefined || elem?.ParentTask?.Title == null));
         if (directChildAW?.length > 0) {
             directChildAW?.map((OtherItem: any) => {
                 AWTGrouping(OtherItem, "CSF");
@@ -626,6 +626,7 @@ const CentralizedSiteComposition = (Props: any) => {
             })
         }
         setAllSiteData([...AllSiteDataBackup])
+        setLoaded(true);
     }
 
     const componentActivity = (items: any) => {
@@ -1895,7 +1896,7 @@ const CentralizedSiteComposition = (Props: any) => {
                                     </span>
                                 </div>
                             </div>
-                            <div className="tagged-child-items-table">
+                            <div className="tagged-child-items-table border">
                                 <Loader
                                     loaded={loaded}
                                     lines={13}
