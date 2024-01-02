@@ -2168,7 +2168,7 @@ export const loadAllSiteTasks = async (allListId: any, filter: any) => {
         query += `&$filter=${filter}`
     }
     let siteConfig: any = await loadSmartMetadata(allListId, "Sites")
-    let filteredSiteConfig = siteConfig.filter((site: any) => site?.Title != "Master Tasks" && site?.Title != "SDC Sites")
+    let filteredSiteConfig = siteConfig.filter((site: any) => site?.Title != "Master Tasks" && site?.Title != "SDC Sites" && site?.Title != "Offshore Tasks")
     let AllSiteTasks: any = []
     if (filteredSiteConfig?.length > 0) {
         const fetchPromises = filteredSiteConfig.map(async (site: any) => {
