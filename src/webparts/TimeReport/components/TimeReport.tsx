@@ -1519,8 +1519,7 @@ var ReportDate = new Date(a1)
              {
                 data?.length >0?
                 <>
-                 <div className='pull-right mail-info' onClick={()=>sendEmail()}><MdEmail/></div>
-               <GlobalCommanTable columns={column} data={data} callBackData={callBackData} showHeader={true} expandIcon={true}/> </>:
+               <GlobalCommanTable columns={column} data={data} callBackData={callBackData} showHeader={true} expandIcon={true} mailSend={sendEmail} showEmailIcon={true}/> </>:
                 <div className="bg-f5f5 mb-2 mt-2">Oops! Time Entries not available (Might be Weekend or Holiday or No data available In this Selected Date).</div>
              }
             
