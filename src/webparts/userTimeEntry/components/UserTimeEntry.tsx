@@ -21,7 +21,7 @@ import * as globalCommon from "../../../globalComponents/globalCommon";
 import PreSetDatePikerPannel from "../../../globalComponents/SmartFilterGolobalBomponents/PreSetDatePiker"
 import TimeEntryPopup from "../../../globalComponents/TimeEntry/TimeEntryComponent";
 import ShowClintCatogory from "../../../globalComponents/ShowClintCatogory";
-import Sitecomposition from "../../../globalComponents/SiteComposition";
+import CentralizedSiteComposition from '../../../globalComponents/SiteCompositionComponents/CentralizedSiteComposition';
 import FileSaver from 'file-saver';
 import * as XLSX from "xlsx";
 var AllListId: any;
@@ -2754,7 +2754,12 @@ export default class UserTimeEntry extends React.Component<IUserTimeEntryProps, 
         }
         {
           this.state?.IsMasterTask &&
-          (<Sitecomposition props={this.state?.IsMasterTask} isDirectPopup={this.state?.isDirectPopup} callback={() => { this.Call('Master Task') }} sitedata={AllListId} ></Sitecomposition>
+          (<CentralizedSiteComposition
+            ItemDetails={this.state?.IsMasterTask}
+            RequiredListIds={AllListId}
+            closePopupCallBack={() => { this.Call('Master Task') }}
+            usedFor={"CSF"}
+          />
           )
         }
         {/* { this.state?.IsMasterTask && 
