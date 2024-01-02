@@ -61,7 +61,8 @@ const AddEditPostion = (props: any) => {
     }, []);
 
     let allListID = {
-        SkillsPortfolioListID: props?.props?.SkillsPortfolioListID
+        SkillsPortfolioListID: props?.props?.SkillsPortfolioListID,
+        siteUrl: props?.props?.siteUrl
     }
     const getListData = () => {
         HRweb.lists
