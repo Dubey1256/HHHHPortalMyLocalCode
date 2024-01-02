@@ -779,6 +779,8 @@ const GlobalCommanTable = (items: any, ref: any) => {
             items?.switchFlatViewData(data);
         } else if (eventValue === "Groupby-View") {
             items?.switchGroupbyData();
+        } else if (eventValue === "sendEmail") {
+            items?.mailSend();
         }
     }
 
@@ -996,6 +998,10 @@ const GlobalCommanTable = (items: any, ref: any) => {
                     {items?.hideTeamIcon != true ? <>
                         {table?.getSelectedRowModel()?.flatRows?.length > 0 ? <a className="teamIcon" onClick={() => ShowTeamFunc()}><span title="Create Teams Group" style={{ color: `${portfolioColor}`, backgroundColor: `${portfolioColor}` }} className="svg__iconbox svg__icon--team"></span></a>
                             : <a className="teamIcon"><span title="Create Teams Group" style={{ backgroundColor: "gray" }} className="svg__iconbox svg__icon--team"></span></a>}
+                    </> : ''}
+
+                    {items?.showEmailIcon === true ? <>
+                        <a className="teamIcon" onClick={() => openCreationAllStructure("sendEmail")}><span title="send email" style={{ color: `${portfolioColor}`, backgroundColor: `${portfolioColor}` }} className="svg__iconbox svg__icon--mail"></span></a>
                     </> : ''}
 
                     {items?.hideOpenNewTableIcon != true ? <>
