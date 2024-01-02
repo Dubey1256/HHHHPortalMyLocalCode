@@ -18,7 +18,7 @@ const EditPosition = (props: any) => {
         }
     }, [])
 
-    const HRweb = new Web('https://hhhhteams.sharepoint.com/sites/HHHH/HR');
+    const HRweb = new Web(props?.siteUrl);
     
 
     const handleSkillChangeEdit = (event: { target: { value: React.SetStateAction<string>; }; }) => {
