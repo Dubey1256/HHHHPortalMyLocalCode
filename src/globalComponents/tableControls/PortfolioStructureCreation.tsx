@@ -5,6 +5,7 @@ import TeamConfigurationCard from '../../webparts/EditPopupFiles/TeamConfigurati
 import { arraysEqual, Panel, PanelType } from 'office-ui-fabric-react';
 import { GlobalConstants } from '../LocalCommon';
 import * as globalCommon from '../globalCommon';
+import {myContextValue} from '../globalCommon';
 import ListGroup from 'react-bootstrap/ListGroup';
 import moment from 'moment';
 export interface IStructureCreationProps {
@@ -42,6 +43,7 @@ export interface IStructureCreationState {
 
 const dragItem: any = {}
 export class PortfolioStructureCreationCard extends React.Component<IStructureCreationProps, IStructureCreationState> {
+    static contextType = myContextValue;
     constructor(props: IStructureCreationProps) {
         super(props);
         this.state = {
