@@ -18,7 +18,7 @@ import {
     PanelType,
     resetControlledWarnings,
 } from "office-ui-fabric-react";
-import { Modal } from "@fluentui/react";
+import { Label, Modal } from "@fluentui/react";
 import { FaExpandAlt } from "react-icons/fa";
 import { RiDeleteBin6Line, RiH6 } from "react-icons/ri";
 import { SlArrowDown, SlArrowRight } from "react-icons/sl";
@@ -707,7 +707,7 @@ const EditTaskPopup = (Items: any) => {
                 extraLookupColumnData = await web.lists
                     .getById(Items.Items.listId)
                     .items.select(
-                        "Project/Id, Project/Title,SmartInformation/Id, AttachmentFiles, Approver/Id, Approver/Title,ApproverHistory"
+                        "Project/Id, Project/Title,Project/PriorityRank,SmartInformation/Id, AttachmentFiles, Approver/Id, Approver/Title,ApproverHistory"
                     )
                     .top(5000)
                     .filter(`Id eq ${Items.Items.Id}`)
@@ -1005,6 +1005,15 @@ const EditTaskPopup = (Items: any) => {
                 item.siteType = Items.Items.siteType;
                 let AssignedUsers: any = [];
                 item.listId = Items.Items.listId;
+                if (selectedProject?.length > 0) {
+                    item.Project = selectedProject[0];
+                }
+                item.SmartPriority;
+                item.TaskTypeValue = '';
+                item.projectPriorityOnHover = '';
+                item.taskPriorityOnHover = item?.PriorityRank;
+                item.showFormulaOnHover;
+                item.SmartPriority = globalCommon.calculateSmartPriority(item);
                 // let ApproverDataTemp: any = [];
                 let TeamMemberTemp: any = [];
                 let TaskCreatorData: any = [];
@@ -5698,83 +5707,100 @@ const EditTaskPopup = (Items: any) => {
                                                     ) : null}
                                                 </div>
                                             </div>
-                                            <div className="col-6 ps-0 pe-0 pt-4">
-                                                <div className="time-status">
-                                                    <div className="input-group">
-                                                        <input
-                                                            type="text"
-                                                            className="form-control"
-                                                            placeholder="Enter Priority"
-                                                            value={
-                                                                EditData.PriorityRank
-                                                                    ? EditData.PriorityRank
-                                                                    : ""
-                                                            }
-                                                            onChange={(e) => ChangePriorityStatusFunction(e)}
-                                                        />
+                                            <div className="col-6 ps-0 pe-0">
+                                                <div className="row">
+                                                    <div className="time-status col-md-6">
+                                                        <div className="input-group">
+                                                            <label className="form-label full-width">Priority</label>
+                                                            <input
+                                                                type="text"
+                                                                className="form-control"
+                                                                placeholder="Enter Priority"
+                                                                value={
+                                                                    EditData.PriorityRank
+                                                                        ? EditData.PriorityRank
+                                                                        : ""
+                                                                }
+                                                                onChange={(e) => ChangePriorityStatusFunction(e)}
+                                                            />
+                                                        </div>
+                                                        <ul className="p-0 my-1">
+                                                            <li className="form-check ">
+                                                                <label className="SpfxCheckRadio">
+                                                                    <input
+                                                                        className="radio"
+                                                                        name="radioPriority"
+                                                                        type="radio"
+                                                                        checked={
+                                                                            EditData.PriorityRank <= 10 &&
+                                                                            EditData.PriorityRank >= 8
+                                                                        }
+                                                                        onChange={() =>
+                                                                            setEditData({
+                                                                                ...EditData,
+                                                                                PriorityRank: 8,
+                                                                            })
+                                                                        }
+                                                                    />
+                                                                    High{" "}
+                                                                </label>
+                                                            </li>
+                                                            <li className="form-check ">
+                                                                <label className="SpfxCheckRadio">
+                                                                    <input
+                                                                        className="radio"
+                                                                        name="radioPriority"
+                                                                        type="radio"
+                                                                        checked={
+                                                                            EditData.PriorityRank <= 7 &&
+                                                                            EditData.PriorityRank >= 4
+                                                                        }
+                                                                        onChange={() =>
+                                                                            setEditData({
+                                                                                ...EditData,
+                                                                                PriorityRank: 4,
+                                                                            })
+                                                                        }
+                                                                    />
+                                                                    Normal{" "}
+                                                                </label>
+                                                            </li>
+                                                            <li className="form-check ">
+                                                                <label className="SpfxCheckRadio">
+                                                                    <input
+                                                                        className="radio"
+                                                                        name="radioPriority"
+                                                                        type="radio"
+                                                                        checked={
+                                                                            EditData.PriorityRank <= 3 &&
+                                                                            EditData.PriorityRank > 0
+                                                                        }
+                                                                        onChange={() =>
+                                                                            setEditData({
+                                                                                ...EditData,
+                                                                                PriorityRank: 1,
+                                                                            })
+                                                                        }
+                                                                    />
+                                                                    Low{" "}
+                                                                </label>
+                                                            </li>
+                                                        </ul>
                                                     </div>
-                                                    <ul className="p-0 mt-1">
-                                                        <li className="form-check ">
-                                                            <label className="SpfxCheckRadio">
-                                                                <input
-                                                                    className="radio"
-                                                                    name="radioPriority"
-                                                                    type="radio"
-                                                                    checked={
-                                                                        EditData.PriorityRank <= 10 &&
-                                                                        EditData.PriorityRank >= 8
-                                                                    }
-                                                                    onChange={() =>
-                                                                        setEditData({
-                                                                            ...EditData,
-                                                                            PriorityRank: 8,
-                                                                        })
-                                                                    }
-                                                                />
-                                                                High{" "}
-                                                            </label>
-                                                        </li>
-                                                        <li className="form-check ">
-                                                            <label className="SpfxCheckRadio">
-                                                                <input
-                                                                    className="radio"
-                                                                    name="radioPriority"
-                                                                    type="radio"
-                                                                    checked={
-                                                                        EditData.PriorityRank <= 7 &&
-                                                                        EditData.PriorityRank >= 4
-                                                                    }
-                                                                    onChange={() =>
-                                                                        setEditData({
-                                                                            ...EditData,
-                                                                            PriorityRank: 4,
-                                                                        })
-                                                                    }
-                                                                />
-                                                                Normal{" "}
-                                                            </label>
-                                                        </li>
-                                                        <li className="form-check ">
-                                                            <label className="SpfxCheckRadio">
-                                                                <input
-                                                                    className="radio"
-                                                                    name="radioPriority"
-                                                                    type="radio"
-                                                                    checked={
-                                                                        EditData.PriorityRank <= 3 &&
-                                                                        EditData.PriorityRank > 0
-                                                                    }
-                                                                    onChange={() =>
-                                                                        setEditData({
-                                                                            ...EditData,
-                                                                            PriorityRank: 1,
-                                                                        })
-                                                                    }
-                                                                />
-                                                                Low{" "}
-                                                            </label>
-                                                        </li>
-                                                    </ul>
+                                                    <div className="col-md-6">
+                                                        <div className="input-group">
+                                                            <label className="form-label full-width">SmartPriority</label>
+                                                            <div className="bg-e9 w-100 py-1 px-2">
+                                                                <span className="hover-text hreflink m-0 siteColor">
+                                                                    <>{EditData?.SmartPriority != undefined ? EditData?.SmartPriority : 0}</>
+                                                                    <span className="tooltip-text pop-right">
+                                                                        {EditData?.showFormulaOnHover != undefined ? EditData?.showFormulaOnHover : ""}
+                                                                    </span>
+                                                                </span>
+                                                            </div>
+                                                        </div>
+
+                                                    </div>
                                                 </div>
                                                 <div className="col-12 mb-2">
                                                     <div className="input-group ">

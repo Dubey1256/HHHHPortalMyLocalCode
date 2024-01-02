@@ -1832,7 +1832,8 @@ export const GetServiceAndComponentAllData = async (Props: any) => {
             result.TaskID =  result?.PortfolioStructureID;
             result.portfolioItemsSearch = result.Item_x0020_Type;
             result.isSelected = Props?.selectedItems?.find((obj: any) => obj.Id === result.ID);
-            result.TeamLeaderUser = []
+            result.TeamLeaderUser = [];
+            result.SmartPriority;
             result.DisplayDueDate = moment(result.DueDate).format("DD/MM/YYYY");
             result.DisplayCreateDate = moment(result.Created).format("DD/MM/YYYY");
             result.DueDate = moment(result.DueDate).format('DD/MM/YYYY')

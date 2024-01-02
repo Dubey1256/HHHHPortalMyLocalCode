@@ -61,8 +61,7 @@ const AddEditPostion = (props: any) => {
     }, []);
 
     let allListID = {
-        SkillsPortfolioListID: props?.props?.SkillsPortfolioListID,
-        siteUrl: props?.props?.siteUrl
+        SkillsPortfolioListID: props?.props?.SkillsPortfolioListID
     }
     const getListData = () => {
         HRweb.lists
@@ -346,8 +345,8 @@ const AddEditPostion = (props: any) => {
                 </footer>
 
             </Panel>
-            {isAddPositionPopup && <AddMorePosition siteUrl={allListID?.siteUrl} skillsList={allListID?.SkillsPortfolioListID} openPopup={isAddPositionPopup} closePopup={AddMorePositionClose}/>}
-            {isEditPopup && <EditPosition siteUrl={allListID?.siteUrl} skillsList={allListID?.SkillsPortfolioListID} edittableItem={edittableItem} openPopup={isEditPopup} closePopup={editPositionClose}/>}
+            {isAddPositionPopup && <AddMorePosition skillsList={allListID?.SkillsPortfolioListID} openPopup={isAddPositionPopup} closePopup={AddMorePositionClose}/>}
+            {isEditPopup && <EditPosition skillsList={allListID?.SkillsPortfolioListID} edittableItem={edittableItem} openPopup={isEditPopup} closePopup={editPositionClose}/>}
         </>
     );
 };
