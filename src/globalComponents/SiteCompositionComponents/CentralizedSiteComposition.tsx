@@ -67,11 +67,13 @@ const CentralizedSiteComposition = (Props: any) => {
 
 
     // These are used for Global Common Table Component 
+
     // const [GroupByTableData, setGroupByTableData] = useState<any>([]);
     const [data, setData] = React.useState([])
     // const [FlatViewTableData, setFlatViewTableData] = useState<any>([]);
     const [loaded, setLoaded] = React.useState(false);
-    const [AllTaskUserData, setAllTaskUserData] = React.useState(false);
+    const [AllTaskUserData, setAllTaskUserData] = useState(false);
+    const [IsShowTableContent, setIsShowTableContent] = useState(true);
     const childRef = React.useRef<any>();
 
     let [SiteSettingJSON, setSiteSettingJSON] = useState([
@@ -380,6 +382,8 @@ const CentralizedSiteComposition = (Props: any) => {
             } else {
                 if (SelectedItemDetails?.TaskType?.Title == "Task") {
                     setLoaded(true);
+                    setIsShowTableContent(false);
+                    FilterAllClientCategories();
                 }
             }
             setSelectedItemDetailsFormCall(SelectedItemDetails);
@@ -755,7 +759,7 @@ const CentralizedSiteComposition = (Props: any) => {
 
     const CustomFooter = () => {
         return (
-            <footer className="bg-f4 alignCenter justify-content-end p-3 me-4">
+            <footer className="bg-f4 alignCenter fixed-bottom justify-content-end p-3 me-4">
                 <a className="me-2 siteColor" target="_blank" data-interception="off"
                     href={usedFor == "CSF" ? `${siteUrl}/Lists/Master%20Tasks/EditForm.aspx?ID=${ItemDetails?.Id}&?#Sitestagging` : `${siteUrl}/Lists/${ItemDetails?.siteType}/EditForm.aspx?ID=${ItemDetails?.Id}&?#Sitestagging`}
                 >
@@ -1865,65 +1869,67 @@ const CentralizedSiteComposition = (Props: any) => {
                             </div>
                         </div>
                     </div>
-                    <div className="tagged-child-items-container">
-                        <div className="tagged-child-items-header alignCenter justify-content-between border p-2">
-                            <div className="siteColor alignCenter">
-                                Tagged Child Items
-                                <span className="hover-text alignIcon">
-                                    <span className="svg__iconbox svg__icon--info dark"></span>
-                                    <span className="tooltip-text pop-right">
-                                        {"These entries within the table are identified as child items associated with the selected CSF/AWT"}
+                    {IsShowTableContent ?
+                        <div className="tagged-child-items-container">
+                            <div className="tagged-child-items-header alignCenter justify-content-between border p-2">
+                                <div className="siteColor alignCenter">
+                                    Tagged Child Items
+                                    <span className="hover-text alignIcon">
+                                        <span className="svg__iconbox svg__icon--info dark"></span>
+                                        <span className="tooltip-text pop-right">
+                                            {"These entries within the table are identified as child items associated with the selected CSF/AWT"}
+                                        </span>
                                     </span>
-                                </span>
-                            </div>
-                            <div className="alignCenter">
-                                <label className="switch me-2 siteColor" htmlFor="checkbox-Flat">
-                                    <input checked={flatView} onClick={() => switchFlatViewData(flatView)} type="checkbox" id="checkbox-Flat" name="Flat-view" />
-                                    {flatView === true ? <div style={{ backgroundColor: '#000066' }} className="slider round" title='Switch to GroupBy View'></div> : <div title='Switch to Flat-View' className="slider round"></div>}
-                                </label>
-                                <span className='me-1 siteColor'>Flat View</span>
-                                <span className="hover-text alignIcon">
-                                    <span className="svg__iconbox svg__icon--info dark"></span>
-                                    <span className="tooltip-text pop-left">
-                                        {"This button enables you to toggle between GroupBy and Flat views for data visualization."}
+                                </div>
+                                <div className="alignCenter">
+                                    <label className="switch me-2 siteColor" htmlFor="checkbox-Flat">
+                                        <input checked={flatView} onClick={() => switchFlatViewData(flatView)} type="checkbox" id="checkbox-Flat" name="Flat-view" />
+                                        {flatView === true ? <div style={{ backgroundColor: '#000066' }} className="slider round" title='Switch to GroupBy View'></div> : <div title='Switch to Flat-View' className="slider round"></div>}
+                                    </label>
+                                    <span className='me-1 siteColor'>Flat View</span>
+                                    <span className="hover-text alignIcon">
+                                        <span className="svg__iconbox svg__icon--info dark"></span>
+                                        <span className="tooltip-text pop-left">
+                                            {"This button enables you to toggle between GroupBy and Flat views for data visualization."}
+                                        </span>
                                     </span>
-                                </span>
+                                </div>
                             </div>
-                        </div>
-                        <div className="tagged-child-items-table">
-                            <Loader
-                                loaded={loaded}
-                                lines={13}
-                                length={20}
-                                width={10}
-                                radius={30}
-                                corners={1}
-                                rotate={0}
-                                direction={1}
-                                color={"#000069"}
-                                speed={2}
-                                trail={60}
-                                shadow={false}
-                                hwaccel={false}
-                                className="spinner"
-                                zIndex={2e9}
-                                top="28%"
-                                left="50%"
-                                scale={1.0}
-                                loadedClassName="loadedContent"
-                            />
-                            <GlobalCommonTable
-                                setLoaded={setLoaded}
-                                AllListId={RequiredListIds}
-                                columns={columns}
-                                data={data}
-                                multiSelect={true}
-                                callBackData={GlobalTableCallBackData}
-                                showHeader={false}
-                                fixedWidth={true}
-                            />
-                        </div>
-                    </div>
+                            <div className="tagged-child-items-table">
+                                <Loader
+                                    loaded={loaded}
+                                    lines={13}
+                                    length={20}
+                                    width={10}
+                                    radius={30}
+                                    corners={1}
+                                    rotate={0}
+                                    direction={1}
+                                    color={"#000069"}
+                                    speed={2}
+                                    trail={60}
+                                    shadow={false}
+                                    hwaccel={false}
+                                    className="spinner"
+                                    zIndex={2e9}
+                                    top="28%"
+                                    left="50%"
+                                    scale={1.0}
+                                    loadedClassName="loadedContent"
+                                />
+                                <GlobalCommonTable
+                                    setLoaded={setLoaded}
+                                    AllListId={RequiredListIds}
+                                    columns={columns}
+                                    data={data}
+                                    multiSelect={true}
+                                    callBackData={GlobalTableCallBackData}
+                                    showHeader={false}
+                                    fixedWidth={true}
+                                />
+                            </div>
+                        </div> : null
+                    }
                     <div className="client-category-panel">
                         {IsClientCategoryPopupOpen ?
                             <ClientCategoryPopup
