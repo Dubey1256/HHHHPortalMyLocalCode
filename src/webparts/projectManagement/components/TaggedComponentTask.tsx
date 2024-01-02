@@ -14,6 +14,7 @@ import ReactPopperTooltip from "../../../globalComponents/Hierarchy-Popper-toolt
 import Loader from "react-loader";
 import { BsTag, BsTagFill } from "react-icons/bs";
 import CreateTaskFromProject from "./CreateTaskFromProject";
+import ComponentTable from "../../componentProfile/components/Taskwebparts";
 let headerOptions: any = { openTab: true, teamsIcon: true }
 var siteConfig: any = [];
 var allSmartInfo: any = [];
@@ -29,7 +30,7 @@ const TaggedComponentTask = (props: any) => {
             <div className="d-flex full-width pb-1">
                 <div className="subheading">
                     <span className="siteColor">
-                        Portfolio Task Tagging - {props?.SelectedItem?.Title}
+                        Portfolio Task Tagging - {`${props?.SelectedItem?.Title} (${props?.SelectedItem?.PortfolioStructureID})`}
                     </span>
                 </div>
             </div>
@@ -272,126 +273,7 @@ const TaggedComponentTask = (props: any) => {
     const callBack = () => {
         props?.callBack()
     }
-    const LoadAllSiteAllTasks = async function () {
-        let AllSiteTasks: any = [];
-        let Counter = 0;
-        let web = new Web(props?.AllListId?.siteUrl);
-        let arraycount = 0;
-        try {
-            if (siteConfig?.length > 0) {
-                siteConfig.map(async (config: any) => {
-                    if (config.Title != "SDC Sites") {
-                        let smartmeta = [];
-                        await web.lists
-                            .getById(config.listId)
-                            .items.select("Id,Title,FeedBack,PriorityRank,Remark,Project/PriorityRank,ParentTask/Id,ParentTask/Title,ParentTask/TaskID,TaskID,SmartInformation/Id,SmartInformation/Title,Project/Id,Project/Title,Project/PortfolioStructureID,workingThisWeek,EstimatedTime,TaskLevel,TaskLevel,OffshoreImageUrl,OffshoreComments,ClientTime,Priority,Status,ItemRank,IsTodaysTask,Body,Portfolio/Id,Portfolio/Title,Portfolio/PortfolioStructureID,PercentComplete,Categories,StartDate,PriorityRank,DueDate,TaskType/Id,TaskType/Title,Created,Modified,Author/Id,Author/Title,TaskCategories/Id,TaskCategories/Title,AssignedTo/Id,AssignedTo/Title,TeamMembers/Id,TeamMembers/Title,ResponsibleTeam/Id,ResponsibleTeam/Title,ClientCategory/Id,ClientCategory/Title")
-                            .expand('AssignedTo,Project,ParentTask,SmartInformation,Author,Portfolio,TaskType,TeamMembers,ResponsibleTeam,TaskCategories,ClientCategory').filter("Status ne 'Completed' and Portfolio/Id eq '" + props?.SelectedItem?.Id + "'&$orderby=Created desc")
-                            .getAll().then((data: any) => {
-                                smartmeta = data;
-                                smartmeta.map((items: any) => {
-                                    if (items?.SmartInformation?.length > 0) {
-                                        allSmartInfo?.map((smart: any) => {
-                                            if (smart?.Id == items?.SmartInformation[0]?.Id) {
-                                                // var smartdata=[]
-                                                // smartdata.push(smart)
-                                                items.SmartInformation = [smart]
-                                            }
-
-                                        })
-                                    }
-                                    if (items?.TaskCategories?.length > 0) {
-                                        items.TaskTypeValue = items?.TaskCategories?.map((val: any) => val.Title).join(",")
-                                    }
-                                    items.AllTeamMember = [];
-                                    items.fontColorTask = "#000"
-                                    items.HierarchyData = [];
-                                    items.descriptionsSearch = '';
-                                    items.siteType = config.Title;
-                                    items.bodys = items.Body != null && items.Body.split('<p><br></p>').join('');
-                                    if (items?.Body != undefined && items?.Body != null) {
-                                        items.descriptionsSearch = items?.Body.replace(/(<([^>]+)>)/gi, "").replace(/\n/g, '');
-                                    }
-                                    items.commentsSearch = items?.Comments != null && items?.Comments != undefined ? items.Comments.replace(/(<([^>]+)>)/gi, "").replace(/\n/g, '') : '';
-                                    items.listId = config.listId;
-                                    items.siteUrl = config.siteUrl.Url;
-                                    items.PercentComplete = (items.PercentComplete * 100).toFixed(0);
-                                    items.DisplayDueDate =
-                                        items.DueDate != null
-                                            ? Moment(items.DueDate).format("DD/MM/YYYY")
-                                            : "";
-                                    items.DisplayCreateDate =
-                                        items.Created != null
-                                            ? Moment(items.Created).format("DD/MM/YYYY")
-                                            : "";
-                                    items.portfolio = {};
-                                    if (items?.Portfolio?.Id != undefined) {
-                                        items.portfolio = items?.Portfolio;
-                                        items.PortfolioTitle = items?.Portfolio?.Title;
-                                    }
-                                    items["SiteIcon"] = config?.Item_x005F_x0020_Cover?.Url;
-
-                                    items.TeamMembersSearch = "";
-                                    if (items.AssignedTo != undefined) {
-                                        items?.AssignedTo?.map((taskUser: any) => {
-                                            props?.AllUser.map((user: any) => {
-                                                if (user.AssingedToUserId == taskUser.Id) {
-                                                    if (user?.Title != undefined) {
-                                                        items.TeamMembersSearch =
-                                                            items.TeamMembersSearch + " " + user?.Title;
-                                                    }
-                                                }
-                                            });
-                                        });
-                                    }
-                                    items.TaskID = globalCommon.GetTaskId(items);
-                                    if (items.Project) {
-                                        items.ProjectTitle = items?.Project?.Title;
-                                        items.ProjectId = items?.Project?.Id;
-                                        items.projectStructerId = items?.Project?.PortfolioStructureID
-                                        const title = items?.Project?.Title || '';
-                                        const formattedDueDate = Moment(items?.DueDate, 'DD/MM/YYYY').format('YYYY-MM');
-                                        items.joinedData = [];
-                                        if (items?.projectStructerId && title || formattedDueDate) {
-                                            items.joinedData.push(`Project ${items?.projectStructerId} - ${title}  ${formattedDueDate == "Invalid date" ? '' : formattedDueDate}`)
-                                        }
-                                    }
-                                    props?.AllUser?.map((user: any) => {
-                                        if (user.AssingedToUserId == items.Author.Id) {
-                                            items.createdImg = user?.Item_x0020_Cover?.Url;
-                                        }
-                                        if (items.TeamMembers != undefined) {
-                                            items.TeamMembers.map((taskUser: any) => {
-                                                var newuserdata: any = {};
-                                                if (user.AssingedToUserId == taskUser.Id) {
-                                                    newuserdata["useimageurl"] = user?.Item_x0020_Cover?.Url;
-                                                    newuserdata["Suffix"] = user?.Suffix;
-                                                    newuserdata["Title"] = user?.Title;
-                                                    newuserdata["UserId"] = user?.AssingedToUserId;
-                                                    items["Usertitlename"] = user?.Title;
-                                                }
-                                                items.AllTeamMember.push(newuserdata);
-                                            });
-                                        }
-                                    });
-                                    if(items.siteType !== 'Offshore Tasks')                                    
-                                      AllSiteTasks.push(items);
-                                });
-                                arraycount++;
-                            });
-                        let currentCount = siteConfig?.length;
-                        if (arraycount === currentCount) {
-                            setLoaded(true)
-                            setAllSiteTasks(AllSiteTasks);
-                        }
-                    } else {
-                        arraycount++;
-                    }
-                });
-            }
-        } catch (e) {
-            console.log(e)
-        }
-    };
+   
     const GetMetaData = async () => {
         siteConfig = []
         if (props?.AllListId?.SmartMetadataListID != undefined) {
@@ -416,7 +298,6 @@ const TaggedComponentTask = (props: any) => {
                 } else {
                     siteConfig = smartmeta;
                 }
-                LoadAllSiteAllTasks()
             } catch (error) {
                 console.log(error)
             }
@@ -439,7 +320,6 @@ const TaggedComponentTask = (props: any) => {
                     ProjectId: parseInt(props?.projectItem.Id),
                 })
                 .then((e: any) => {
-                    LoadAllSiteAllTasks();
                     alert('Task has been tagged successfully')
                 })
                 .catch((err: { message: any }) => {
@@ -468,7 +348,7 @@ const TaggedComponentTask = (props: any) => {
                 onDismiss={() => callBack()}
                 isBlocking={true}>
 
-              
+
                 <CreateTaskFromProject
                     projectItem={props?.projectItem}
                     SelectedProp={props?.SelectedProp}
@@ -476,12 +356,11 @@ const TaggedComponentTask = (props: any) => {
                     projectId={props?.projectItem?.Id}
                     callBack={CreateTask}
                     createComponent={props?.createComponent}
-                />     
-                 <div className="Alltable">
-                {AllSiteTasks && <GlobalCommanTable AllListId={props?.AllListId} headerOptions={headerOptions} columns={column2} data={AllSiteTasks} callBackData={callBackData} TaskUsers={props?.AllUser} showHeader={true} />}
-                <Loader loaded={loaded} lines={13} length={20} width={10} radius={30} corners={1} rotate={0} direction={1} color={portfolioColor ? portfolioColor : "#000066"}
-                    speed={2} trail={60} shadow={false} hwaccel={false} className="spinner" zIndex={2e9} top="28%" left="50%" scale={1.0} loadedClassName="loadedContent" />
-                    </div>
+                />
+                <div className="Alltable">
+                    <ComponentTable props={props?.SelectedItem} UsedFrom={'ProjectManagement'} NextProp={props?.AllListId}/>
+                  
+                </div>
                 <div className="text-end mt-3">
                     <button className="btn btn-default mt-2" onClick={() => callBack()}>Cancel</button>
                 </div>
