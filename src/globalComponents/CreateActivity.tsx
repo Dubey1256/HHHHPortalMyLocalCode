@@ -17,6 +17,7 @@ import "froala-editor/css/froala_style.min.css";
 import "froala-editor/css/froala_editor.pkgd.min.css";
 import * as globalCommon from "./globalCommon";
 import FlorarImageUploadComponent from "../webparts/EditPopupFiles/FlorarImagetabportfolio";
+import {myContextValue} from './globalCommon';
 let SitesTypes: any = [];
 let AllListId: any = {};
 let IsapprovalTask = false;
@@ -82,7 +83,7 @@ const CreateActivity = (props: any) => {
     Component: [],
   });
   const [siteName, setSiteName] = React.useState(false);
-
+  const globalContextData: any = React.useContext<any>(myContextValue)
   React.useEffect(() => {
     AllListId = props?.AllListId;
     getTaskUsers();
@@ -632,6 +633,7 @@ const CreateActivity = (props: any) => {
     imageName: any,
     DataJson: any
   ) => {
+   try{
     let listId = postData.listId;
 
     let Id = postData.Id;
@@ -661,6 +663,9 @@ const CreateActivity = (props: any) => {
         })().catch(console.log);
       }
     }, 2500);
+   }catch(error){
+    console.log(error)
+   }
   };
 
   const UpdateBasicImageInfoJSON = async (
@@ -874,6 +879,10 @@ const CreateActivity = (props: any) => {
         } catch (error) {
           console.log(error, "CC Fetching ");
         }
+        let ProjectId=null;
+        if(globalContextData?.tagProjectFromTable==true){
+          ProjectId = globalContextData?.ProjectLandingPageDetails?.Id!=undefined?globalContextData?.ProjectLandingPageDetails?.Id:null;
+        }
         if (selectedItem?.NoteCall != "Task") {
           let web = new Web(AllListId?.siteUrl);
           let componentDetails: any = [];
@@ -904,7 +913,7 @@ const CreateActivity = (props: any) => {
             .items.add({
               Title: siteName ? `${TaskTitle} - ${site?.Title}`: TaskTitle,
               Categories: categoriesItem ? categoriesItem : null,
-
+              ProjectId:ProjectId,
               DueDate:
                 save.DueDate != undefined
                   ? new Date(save.DueDate).toISOString()
@@ -1156,6 +1165,7 @@ const CreateActivity = (props: any) => {
                 Description: TaskUrl?.length > 0 ? TaskUrl : null,
                 Url: TaskUrl?.length > 0 ? TaskUrl : null,
               },
+              ProjectId:ProjectId,
               Categories: categoriesItem ? categoriesItem : null,
               PriorityRank: priorityRank,
               Priority: priority,

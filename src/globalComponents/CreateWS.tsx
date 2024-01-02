@@ -13,6 +13,7 @@ import Tooltip from './Tooltip';
 import { data } from 'jquery';
 import moment from 'moment';
 import React from 'react';
+import { myContextValue } from './globalCommon';
 import EditTaskPopup from './EditTaskPopup/EditTaskPopup';
 let AllListId: any = {};
 const itemRanks: any = [
@@ -52,7 +53,7 @@ const CreateWS = (props: any) => {
         TeamMember: props?.selectedItem?.TeamMember?.length > 0 ? props?.selectedItem?.TeamMember : props?.selectedItem?.TeamMembers?.length > 0 ? props?.selectedItem?.TeamMembers : [],
         ResponsibleTeam: props?.selectedItem?.ResponsibleTeam?.length > 0 ? props?.selectedItem?.ResponsibleTeam : props?.selectedItem?.TeamLeader?.length > 0 ? props?.selectedItem?.TeamLeader : [],
     }]);
-
+    const globalContextData: any = React.useContext<any>(myContextValue)
 
     const AddchildItem = () => {
         const characters = 'ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789';
@@ -356,6 +357,10 @@ const CreateWS = (props: any) => {
 
     const createWandT = async (type: any) => {
         let WorstreamLatestId: any;
+        let ProjectId: any = null;
+        if (globalContextData?.tagProjectFromTable == true) {
+            ProjectId = globalContextData?.ProjectLandingPageDetails?.Id != undefined ? globalContextData?.ProjectLandingPageDetails?.Id : null;
+        }
         let web = new Web(AllListId?.siteUrl);
         if (selectedTaskType == 3) {
 
@@ -455,6 +460,7 @@ const CreateWS = (props: any) => {
                 PortfolioId: selectedItem?.Portfolio?.Id,
                 // PortfolioTypeId: portFolioTypeId == undefined ? null : portFolioTypeId[0]?.Id,
                 TaskTypeId: selectedTaskType,
+                ProjectId: ProjectId,
                 ParentTaskId: selectedItem.Id,
                 ItemRank: inputValue.ItemRank == '' ? null : inputValue.ItemRank,
                 DueDate: inputValue.DueDate != null && inputValue.DueDate != '' && inputValue.DueDate != undefined ? new Date(inputValue?.DueDate)?.toISOString() : null,

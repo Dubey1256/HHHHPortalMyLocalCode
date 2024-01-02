@@ -1690,7 +1690,6 @@ function EditProjectPopup(item: any) {
                                         : false
                                     }
                                   ></input>
-
                                   In Preparation
                                 </label>
                               </li>
@@ -1710,7 +1709,6 @@ function EditProjectPopup(item: any) {
                                         : false
                                     }
                                   ></input>
-
                                   In Development{" "}
                                 </label>
                               </li>
@@ -2338,6 +2336,7 @@ function EditProjectPopup(item: any) {
                         Go to Profile page
                       </a>
                       ||
+      
                       <a
                         target="_blank"
                         data-interception="off"
