@@ -373,7 +373,8 @@ const TaggedComponentTask = (props: any) => {
                                             });
                                         }
                                     });
-                                    AllSiteTasks.push(items);
+                                    if(items.siteType !== 'Offshore Tasks')                                    
+                                      AllSiteTasks.push(items);
                                 });
                                 arraycount++;
                             });

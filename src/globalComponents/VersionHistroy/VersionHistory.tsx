@@ -325,7 +325,7 @@ export default function VersionHistory(props: any) {
                                                                                                     return(
                                                                                                         <>                                                                                                            
                                                                                                             <span className='BasicimagesInfo_group'>
-                                                                                                                <a target='_blank' href={image.ImageUrl}><img src={image.ImageUrl} alt="" /></a>
+                                                                                                                <a  href={image.ImageUrl} target='_blank' data-interception="off"><img src={image.ImageUrl} alt="" /></a>
                                                                                                                 {image.ImageUrl !== undefined ? <span className='BasicimagesInfo_group-imgIndex'>{indx+1}</span> : ''}
                                                                                                             </span>
                                                                                                         </>

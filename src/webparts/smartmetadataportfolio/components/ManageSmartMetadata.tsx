@@ -127,7 +127,11 @@ export default function ManageSmartMetadata(selectedProps: any) {
         TabsFilter = [];
         ParentMetaDataItems.filter((item: any) => {
             if (item.TaxType && item.Title === tabData) {
-                TabsFilter.push(item);
+                if (item?.subRows.length > 0) {
+                    item?.subRows.filter((item2: any) => {
+                        TabsFilter.push(item2);
+                    });
+                }
                 getFilterMetadataItems(TabsFilter);
             }
         });
@@ -166,8 +170,11 @@ export default function ManageSmartMetadata(selectedProps: any) {
                             row?.original?.Title != null &&
                             row?.original?.Title != '' ? (
                             <a>
-                                {row?.original?.Title}{row?.original?.subRows?.length > 0 ? '(' + row?.original?.subRows?.length + ')' : ''}
-
+                                {row?.original?.Title}
+                                {(row?.original?.Description1 !== null && row?.original?.Description1 !== undefined) && <div className='hover-text'>
+                                    <span className="alignIcon svg__iconbox svg__icon--info"></span>
+                                    <span className='tooltip-text pop-right'>{row?.original?.Description1} </span>
+                                </div>}
                             </a>
                         ) : null}
                     </div>
@@ -395,7 +402,7 @@ export default function ManageSmartMetadata(selectedProps: any) {
                     </div>
                 </div>
             </section>
-            
+
             <ul className="nav nav-tabs" role="tablist">
                 {Tabs.map((item: any, index: any) => (
                     <button className={
@@ -458,7 +465,7 @@ export default function ManageSmartMetadata(selectedProps: any) {
                     </div>
                 </Panel>
             </div>)}
-            {SmartMetadataEditPopupOpen ? <SmartMetadataEditPopup AllList={selectedProps.AllList} CloseEditSmartMetaPopup={CloseEditSmartMetaPopup} EditItemCallBack={callBackSmartMetaData} AllMetadata={Smartmetadata} MetadataItems={SmartmetadataItems} modalInstance={SelectedSmartMetadataItem} /> : ''}
+            {SmartMetadataEditPopupOpen ? <SmartMetadataEditPopup AllList={selectedProps.AllList} CloseEditSmartMetaPopup={CloseEditSmartMetaPopup} EditItemCallBack={callBackSmartMetaData} AllMetadata={Smartmetadata} MetadataItems={SmartmetadataItems} modalInstance={SelectedSmartMetadataItem} TabSelected={TabSelected} ParentMetaDataItems={ParentMetaDataItems} /> : ''}
             {SmartMetadataDeletePopupOpen ? <DeleteSmartMetadata AllList={selectedProps.AllList} CloseDeleteSmartMetaPopup={CloseDeleteSmartMetaPopup} DeleteItemCallBack={callBackSmartMetaData} AllMetadata={Smartmetadata} modalInstance={SelectedSmartMetadataItem} /> : ''}
         </>
     );
