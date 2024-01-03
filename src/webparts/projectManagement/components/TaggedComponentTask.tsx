@@ -13,7 +13,6 @@ import ShowTaskTeamMembers from "../../../globalComponents/ShowTaskTeamMembers";
 import ReactPopperTooltip from "../../../globalComponents/Hierarchy-Popper-tooltip";
 import Loader from "react-loader";
 import { BsTag, BsTagFill } from "react-icons/bs";
-import CreateTaskFromProject from "./CreateTaskFromProject";
 import ComponentTable from "../../componentProfile/components/Taskwebparts";
 let headerOptions: any = { openTab: true, teamsIcon: true }
 var siteConfig: any = [];
@@ -349,14 +348,6 @@ const TaggedComponentTask = (props: any) => {
                 isBlocking={true}>
 
 
-                <CreateTaskFromProject
-                    projectItem={props?.projectItem}
-                    SelectedProp={props?.SelectedProp}
-                    pageContext={props?.context?._pageContext}
-                    projectId={props?.projectItem?.Id}
-                    callBack={CreateTask}
-                    createComponent={props?.createComponent}
-                />
                 <div className="Alltable">
                     <ComponentTable props={props?.SelectedItem} UsedFrom={'ProjectManagement'} NextProp={props?.AllListId}/>
                   
