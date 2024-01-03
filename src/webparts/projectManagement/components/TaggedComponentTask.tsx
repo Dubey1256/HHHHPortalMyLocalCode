@@ -24,6 +24,7 @@ const TaggedComponentTask = (props: any) => {
     const [AllSiteTasks, setAllSiteTasks] = React.useState([]);
     const [loaded, setLoaded] = React.useState(false);
     const [isOpenCreateTask, setisOpenCreateTask] = React.useState(false);
+    
     const onRenderCustomHeaderMain = () => {
         return (
             <div className="d-flex full-width pb-1">
@@ -346,6 +347,7 @@ const TaggedComponentTask = (props: any) => {
                 isOpen={true}
                 onDismiss={() => callBack()}
                 isBlocking={true}>
+
 
 
                 <div className="Alltable">
