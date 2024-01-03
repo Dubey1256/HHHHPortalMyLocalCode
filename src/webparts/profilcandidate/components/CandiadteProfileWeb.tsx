@@ -14,7 +14,6 @@ import GlobalCommanTable from '../../../globalComponents/GroupByReactTableCompon
 import CandidateRating from './CandidateRating';
 import EditPopup from '../../helloSpfx/components/EditPopup';
 
-let allListId: any = {};
 let allSite: any = {
     GMBHSite: false,
     HrSite: false,
@@ -27,10 +26,11 @@ const Profilcandidate = ({props}: any) => {
     const [isEditPopupOpen, setIsEditPopupOpen] = useState(false);
     const [selectedItem, setSelectedItem]: any = useState(null);
     const [TaggedDocuments, setTaggedDocuments] = useState<any[]>([]);
-    allListId = {
+    let allListId = {
         // Context: props?.props.Context,
         // HHHHContactListId: props?.props?.HHHHContactListId,
-        InterviewFeedbackFormListId: props?.InterviewFeedbackFormListId
+        InterviewFeedbackFormListId: props?.props?.InterviewFeedbackFormListId,
+        SkillsPortfolioListID: props?.props?.SkillsPortfolioListID
 
         // jointSiteUrl: "https://hhhhteams.sharepoint.com/sites/HHHH"
     }
@@ -108,7 +108,7 @@ const Profilcandidate = ({props}: any) => {
     };
     return (
         <myContextValue.Provider value={{ ...myContextValue, allSite: allSite, allListId: allListId, loggedInUserName: props.props?.userDisplayName }}>
-            {isEditPopupOpen ? <EditPopup EditPopupClose={EditPopupClose} callbackEdit={callbackEdit} item={selectedItem} ListID={'298bc01c-710d-400e-bf48-8604d297c3c6'} /> : ''}
+            {isEditPopupOpen ? <EditPopup EditPopupClose={EditPopupClose} callbackEdit={callbackEdit} item={selectedItem} ListID={allListId?.InterviewFeedbackFormListId} skillsList={allListId?.SkillsPortfolioListID}/> : ''}
             <div className='alignCenter border-bottom pb-2'>
                 <div>
                     <img className='user-dp' src={EmployeeData?.Item_x0020_Cover?.Url != undefined ? EmployeeData?.Item_x0020_Cover?.Url : "https://hhhhteams.sharepoint.com/sites/HHHH/GmBH/SiteCollectionImages/ICONS/32/icon_user.jpg"} />
