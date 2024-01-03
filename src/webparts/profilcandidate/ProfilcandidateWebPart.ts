@@ -120,6 +120,10 @@ export default class ProfilcandidateWebPart extends BaseClientSideWebPart<IProfi
                 PropertyPaneTextField('InterviewFeedbackFormListId', {
                   label: "Interview Feedback Form"
                 }),
+                PropertyPaneTextField('SkillsPortfolioListID', {
+                  label: "SkillsPortfolioListID"
+                })
+
               ]
             }
           ]
