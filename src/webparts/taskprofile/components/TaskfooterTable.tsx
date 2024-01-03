@@ -1130,8 +1130,8 @@ function TasksTable(props: any) {
           }
         })
       })
-      setcheckData(checkData);
-      array.push(checkData);
+      setcheckData(checkData[0]?.original);
+      array.push(checkData[0]?.original);
 
     } else {
       setcheckData({});

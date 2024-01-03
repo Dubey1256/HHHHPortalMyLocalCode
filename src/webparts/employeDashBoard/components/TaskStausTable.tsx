@@ -295,7 +295,7 @@ const TaskStatusTbl = (Tile: any) => {
                 </div>
                 <div className="Alltable maXh-300" style={{ height: "300px" }}>
                   {config?.Tasks != undefined && (
-                    <GlobalCommanTable wrapperHeight="100%" showHeader={true} TaskUsers={AllTaskUser} portfolioColor={'#000066'} columns={config.column} data={config?.Tasks} callBackData={callBackData} />
+                    <GlobalCommanTable wrapperHeight="87%" showHeader={true} TaskUsers={AllTaskUser} portfolioColor={'#000066'} columns={config.column} data={config?.Tasks} callBackData={callBackData} />
                   )}
                   {config?.WebpartTitle == 'Waiting for Approval' && <span>
                     {sendMail && emailStatus != "" && approveItem && <EmailComponenet approvalcallback={approvalcallback} Context={ContextData.Context} emailStatus={"Approved"} items={approveItem} />}

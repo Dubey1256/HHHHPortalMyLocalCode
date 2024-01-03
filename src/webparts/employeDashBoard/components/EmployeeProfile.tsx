@@ -212,8 +212,8 @@ const EmployeProfile = (props: any) => {
               allData.push(items);
           });
           if (items?.TaskCategories != undefined && items?.TaskCategories.length > 0) {
+            items.Categories = '';
             items?.TaskCategories.forEach((category: any, index: any) => {
-              items.Categories = '';
               if (index == 0)
                 items.Categories += category.Title;
               else
@@ -230,8 +230,8 @@ const EmployeProfile = (props: any) => {
           var time = today.getHours() + ":" + today.getMinutes();
           var dateTime = time;
           setCurrentTime(dateTime)
-          const array: any=allData
-         // const seen = new Set();
+          const array: any = allData
+          // const seen = new Set();
           // const array: any = allData.filter((item: any) => {
           //   const keyValue: any = item['Id'];
           //   if (!seen.has(keyValue)) {

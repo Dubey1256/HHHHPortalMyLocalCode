@@ -241,7 +241,7 @@ const [editData,setEditData]=useState(props.EditdocumentsData)
                                                 </div>
                                                 <div className='mt-3'>
                                                     <DragDrop callBack={florarImageUploadCallBackFunction}></DragDrop>
-                                                    <div className='text-lg-end mt-2'><Button className='btn btn-primary ms-1 mx-2 btnCol' onClick={() => uploadImage()}>Upload</Button></div>
+                                                    <div className='text-lg-end mt-2'><Button className='btnCol btn btn-primary' onClick={() => uploadImage()}>Upload</Button></div>
                                                 </div>
                                             </div>
                                         </Tab>
@@ -249,7 +249,7 @@ const [editData,setEditData]=useState(props.EditdocumentsData)
                                             <div className='border border-top-0  p-2'>
                                                 <div className='mt-3 ' style={{ height: "500px" }}>
                                                     <input type="file" accept="image/*" className='full-width' onChange={(e) => UploadImageValue(e, "upload")} />
-                                                    <div className='text-lg-end mt-2'><Button className='btn btn-primary ms-1  mx-2' onClick={() => uploadImage()}>Upload</Button></div>
+                                                    <div className='text-lg-end mt-2'><Button className='btnCol btn btn-primary ms-1' onClick={() => uploadImage()}>Upload</Button></div>
                                                 </div>
 
                                             </div>
@@ -280,7 +280,7 @@ const [editData,setEditData]=useState(props.EditdocumentsData)
                                                 </div>
                                                 <div className='mt-3'>
                                                     <DragDrop callBack={florarImageUploadCallBackFunction}></DragDrop>
-                                                    <div className='text-lg-end mt-2'><Button className='btn btn-primary ms-1  mx-2' onClick={() => uploadImage()}>Upload</Button></div>
+                                                    <div className='text-lg-end mt-2'><Button className='btnCol btn btn-primary ms-1' onClick={() => uploadImage()}>Upload</Button></div>
                                                 </div>
                                             </div>
                                         </Tab>
@@ -288,7 +288,7 @@ const [editData,setEditData]=useState(props.EditdocumentsData)
                                             <div className='border border-top-0  p-2'>
                                                 <div className='mt-3' style={{ height: "500px" }}>
                                                     <input type="file" multiple accept='image/*' className='full-width' onChange={(e) => UploadImageValue(e, "upload")} />
-                                                    <div className='text-lg-end mt-2'><Button className='btn btn-primary ms-1  mx-2 btn btn-primary' onClick={() => uploadImage()}>Upload</Button></div>
+                                                    <div className='text-lg-end mt-2'><Button className='btnCol btn btn-primary ms-1' onClick={() => uploadImage()}>Upload</Button></div>
                                                 </div>
                                             </div>
                                         </Tab>
@@ -319,7 +319,7 @@ const [editData,setEditData]=useState(props.EditdocumentsData)
                                                 </div>
                                                 <div className='mt-3'>
                                                     <DragDrop callBack={florarImageUploadCallBackFunction}></DragDrop>
-                                                    <div className='text-lg-end mt-2'><Button className='btn btn-primary ms-1  mx-2 btn btn-primary'>Upload</Button></div> 
+                                                    <div className='text-lg-end mt-2'><Button className='btnCol btn btn-primary ms-1'>Upload</Button></div> 
                                                 </div>
                                             </div>
                                         </Tab>
@@ -327,7 +327,7 @@ const [editData,setEditData]=useState(props.EditdocumentsData)
                                             <div className='border border-top-0 p-2'>
                                                 <div className='mt-3' style={{ height: "500px" }}>
                                                     <input type="file" multiple accept='image/*' className='full-width' onChange={(e) => UploadImageValue(e, "upload")} />
-                                                    <div className='text-lg-end mt-2'><Button className='btn btn-primary ms-1  mx-2 btn btn-primary' onClick={() => uploadImage()}>Upload</Button></div>
+                                                    <div className='text-lg-end mt-2'><Button className='btnCol btn btn-primary ms-1' onClick={() => uploadImage()}>Upload</Button></div>
                                                 </div>
                                             </div>
                                         </Tab>

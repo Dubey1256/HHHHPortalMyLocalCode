@@ -10,7 +10,8 @@ import { IRecruitmentLandingPageProps } from './components/IRecruitmentLandingPa
 
 export interface IRecruitmentLandingPageWebPartProps {
   description: string;
-  InterviewFeedbackFormListId:any
+  SkillsPortfolioListID:any;
+  siteUrl: any
 }
 
 export default class RecruitmentLandingPageWebPart extends BaseClientSideWebPart<IRecruitmentLandingPageWebPartProps> {
@@ -28,7 +29,8 @@ export default class RecruitmentLandingPageWebPart extends BaseClientSideWebPart
         hasTeamsContext: !!this.context.sdks.microsoftTeams,
         userDisplayName: this.context.pageContext.user.displayName,
         Context: this.context,
-        InterviewFeedbackFormListId:"e79dfd6d-18aa-40e2-8d6e-930a37fe54e4"
+        SkillsPortfolioListID:"e79dfd6d-18aa-40e2-8d6e-930a37fe54e4",
+        siteUrl: this.context.pageContext.web.absoluteUrl
       }
     );
 
@@ -106,8 +108,8 @@ export default class RecruitmentLandingPageWebPart extends BaseClientSideWebPart
             {
               groupName: strings.BasicGroupName,
               groupFields: [
-                PropertyPaneTextField('InterviewFeedbackFormListId', {
-                  label: "Interview Feedback Form ListId"
+                PropertyPaneTextField('SkillsPortfolioListID', {
+                  label: "SkillsPortfolioListID"
                 })
               ]
             }

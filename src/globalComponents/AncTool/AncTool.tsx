@@ -1324,7 +1324,7 @@ const AncTool = (props: any) => {
                                     <Row>
                                         <Col xs={6}>
 
-                                            <div> <label className='form-label full-width fw-semibold'>Select Upload Folder</label>  {temptasktype !== undefined && temptasktype?.length > 2 && <span className='alignIcon svg__iconbox svg__icon--setting' onClick={() => openTaskTypesPopup()}></span>}</div>
+                                            <div> <label className='form-label full-width fw-semibold'>Select Upload Folder  {temptasktype !== undefined && temptasktype?.length > 2 && <label className='alignIcon svg__iconbox svg__icon--setting' onClick={() => openTaskTypesPopup()}></label>}</label></div>
                                             {/* {selectPathFromPopup?.length > 0 ?
                                                     <h3 className='pageTitle'> Selected Folder  {temptasktype !== undefined && temptasktype?.length > 2 && <span className='alignIcon svg__iconbox svg__icon--setting' onClick={() => openTaskTypesPopup()}></span>} <hr></hr> </h3>
                                                     : <h3 className='pageTitle'> Default Folder   {temptasktype !== undefined && temptasktype?.length > 2 && <span className='alignIcon svg__iconbox svg__icon--setting' onClick={() => openTaskTypesPopup()}></span>}<hr></hr> </h3>
@@ -1612,7 +1612,7 @@ const AncTool = (props: any) => {
                                                                     <th className='p-1'>Type</th>
                                                                     <th className='p-1'>Title</th>
                                                                     <th style={{width:"150px"}}>Item Rank</th>
-                                                                    <th style={{width:"10px"}}>&nbsp;</th>
+                                                                    <th style={{width:"15x"}}>&nbsp;</th>
 
                                                                 </tr>
 
@@ -1624,11 +1624,12 @@ const AncTool = (props: any) => {
                                                                             <td><span className={`alignIcon  svg__iconbox svg__icon--${file?.docType}`} title={file?.docType}></span></td>
                                                                             <td><a href={file?.EncodedAbsUrl} target="_blank" data-interception="off" className='hreflink'>{file?.Title}</a></td>
                                                                             <td>{file?.ItemRank}</td>
-                                                                            <td> <label style={{ marginLeft: '6px' }}
+                                                                            <td> <span
+                                                                                style={{ marginLeft: '6px' }}
                                                                                 title='Untag Document'
                                                                                 onClick={() => { tagSelectedDoc(file) }}
                                                                                 className='alignIcon  svg__iconbox svg__icon--cross dark hreflink'
-                                                                            ></label></td>
+                                                                            ></span></td>
                                                                         </tr>
                                                                     )
                                                                 })}
