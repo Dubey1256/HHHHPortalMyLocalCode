@@ -20,14 +20,16 @@ const LandingPage = (props: any) => {
     const [SkillToUpdate, setSkillToUpdate]: any = useState([]);
     const [updatePositionId, setupdatePositionId]: any = useState();
     const [edittableItem, setEdittableItem]: any = useState(null)
-    const HRweb = new Web(props?.props?.siteUrl)
     
     useEffect(() => {
         getListData();
     }, []);   
     let allListID = {
-        SkillsPortfolioListID: props?.props?.SkillsPortfolioListID
+        SkillsPortfolioListID: props?.props?.SkillsPortfolioListID,
+        siteUrl: props?.props?.siteUrl
     }   
+
+    const HRweb = new Web(allListID?.siteUrl)
     const getListData = () => {
         HRweb.lists.getById(allListID?.SkillsPortfolioListID).items.select('Id', 'Title', 'PositionTitle', 'PositionDescription', 'JobSkills', 'Created', 'Modified', 'Author/Id', 'Author/Title', 'Editor/Id', 'Editor/Title')
             .expand('Author', 'Editor').getAll().then((response: any) => { 
@@ -318,8 +320,8 @@ const LandingPage = (props: any) => {
                 </footer>
 
             </Panel>
-            {isAddPositionPopup && <AddMorePosition siteUrl={props?.props?.siteUrl} skillsList={allListID?.SkillsPortfolioListID} openPopup={isAddPositionPopup} closePopup={AddMorePositionClose}/>}
-            {isEditPopup && <EditPosition siteUrl={props?.props?.siteUrl} skillsList={allListID?.SkillsPortfolioListID} edittableItem={edittableItem} openPopup={isEditPopup} closePopup={editPositionClose}/>}
+            {isAddPositionPopup && <AddMorePosition siteUrl={allListID?.siteUrl} skillsList={allListID?.SkillsPortfolioListID} openPopup={isAddPositionPopup} closePopup={AddMorePositionClose}/>}
+            {isEditPopup && <EditPosition siteUrl={allListID?.siteUrl} skillsList={allListID?.SkillsPortfolioListID} edittableItem={edittableItem} openPopup={isEditPopup} closePopup={editPositionClose}/>}
         </>
     );
 };
