@@ -933,7 +933,7 @@ const CentralizedSiteComposition = (Props: any) => {
                 accessorFn: (row) => row?.Sitestagging + "." + row?.Sitestagging,
                 cell: ({ row, column, getValue }) => (
                     <>
-                        <ShowSiteComposition SitesTaggingData={row?.original?.Sitestagging} AllSitesData={AllSiteDataBackup}/>
+                        <ShowSiteComposition SitesTaggingData={row?.original?.Sitestagging} AllSitesData={AllSiteDataBackup} />
                     </>
                 ),
                 id: 'Sitestagging',
@@ -1802,6 +1802,9 @@ const CentralizedSiteComposition = (Props: any) => {
                                         <span className="tooltip-text pop-right">
                                             <b>Client Category Summarization Tool:</b><br />
                                             This tool efficiently consolidates client categories associated with selected items and their corresponding child Items (All Tagged CC in Selected Item CSF and AWT). The tool offers a streamlined view of client categories, filtering them based on their respective sites. The selected client categories seamlessly Inherited to the designated parent item and also inherited into selected items (CSF/AWT) from the Tagged Child Item Table.
+                                            <p className="mb-1"><b>Validation Cases:</b> </p>
+                                            <b>1. </b>If the selected item have tagged CCs, that CCs will be automatically set as the default selection<br />
+                                            <b>2. </b>If no tagged CC is present in the selected item, only display the relevant child items CCs (all tagged CCs in the selected items CSF and AWT).
                                         </span>
                                     </span>
                                 </div>
