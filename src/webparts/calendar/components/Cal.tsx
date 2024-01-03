@@ -179,6 +179,7 @@ const App = (props: any) => {
   // People picker function start
   const [selectedUsers, setSelectedUsers] = React.useState([]);
 
+
   const handlePeoplePickerChange = (items: any[]): void => {
     setSelectedUsers(items);
   };
@@ -421,6 +422,7 @@ const App = (props: any) => {
     { key: "Restricted Holiday", text: "Restricted Holiday" },
     { key: "LWP", text: "LWP" },
     { key: "Work From Home", text: "Work From Home" }
+ 
 
   ];
   const Designation = [
@@ -680,9 +682,11 @@ const App = (props: any) => {
             start: startDate,
             end: endDate,
             reason: inputValueReason,
-            type: type,
+            type: HalfDaye==true ? "Half Day" : HalfDayT==true ? "Half Day" : type,
             loc: location,
-            Designation: dType
+            Designation: dType,
+            
+            
           };
           setDetails(newEvent);
           let mytitle =
@@ -1190,6 +1194,9 @@ const App = (props: any) => {
           ? editEvent.RecurrenceID
           : undefined
       };
+      // if (!HalfDaye && !HalfDayT) {
+      //   editEventItem.Event_x002d_Type = editEvent.Event_x002d_Type;
+      // }
       results = await web.lists
         .getById(props.props.SmalsusLeaveCalendar)
         .items.getById(eventPass.iD)
@@ -1221,6 +1228,7 @@ const App = (props: any) => {
       end: endDate,
       reason: inputValueReason,
       type: type,
+      // isChecked ? type : HalfDaye ? "HalfDay" : HalfDayT ? "HalfDay" :
       Designation: dType,
       loc: location,
       halfdayevent: isFirstHalfDChecked,
@@ -1255,7 +1263,16 @@ const App = (props: any) => {
       "Work From Home",
       newEvent.type
     );
-
+    newEvent.title = newEvent.title.replace(
+      "Half Day",
+      newEvent.type
+    );
+   
+  
+    newEvent.title = newEvent.title.replace(
+      "fulldayevent",
+      newEvent.type
+    );
     newEvent.title = newEvent.title.replace("LWP", newEvent.type);
 
     let mycolors = (newEvent.halfdayevent === true || newEvent.halfdayeventT === true) ? "#6d36c5" : newEvent.type === "Work From Home" ? "#e0a209" : "";
@@ -1525,6 +1542,7 @@ const App = (props: any) => {
       maxD = date;
     }
   };
+
 
   // const people = (people:any) => {
   //   console.log("people")
