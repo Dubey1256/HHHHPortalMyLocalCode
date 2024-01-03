@@ -56,11 +56,14 @@ export default function ProjectOverview(props: any) {
     const [data, setData] = React.useState([]);
     const [flatData, setFlatData] = React.useState([]);
     const [AllTasks, setAllTasks]: any = React.useState([]);
+    const [topCompoIcon, setTopCompoIcon]: any = React.useState(false);
     const [passdata, setpassdata] = React.useState("");
     const [selectedView, setSelectedView] = React.useState("Projects");
     const [AllSiteTasks, setAllSiteTasks]: any = React.useState([]);
     const [pageLoaderActive, setPageLoader] = React.useState(false)
     const [taskTimeDetails, setTaskTimeDetails] = React.useState([]);
+    const childRef = React.useRef<any>();
+
     React.useEffect(() => {
         try {
             $("#spPageCanvasContent").removeClass();
@@ -185,19 +188,14 @@ export default function ProjectOverview(props: any) {
                         let smartmeta = [];
                         await web.lists
                             .getById(config.listId)
-                            .items.select("ID", "Title", "ClientCategory/Id", "ClientCategory/Title", 'ClientCategory',"Project/Title","Project/PriorityRank", "Comments", "DueDate", "ClientActivityJson", "EstimatedTime", "Approver/Id", "Approver/Title", "ParentTask/Id", "ParentTask/Title", "workingThisWeek", "IsTodaysTask", "AssignedTo/Id", "TaskLevel", "TaskLevel", "OffshoreComments", "AssignedTo/Title", "OffshoreImageUrl", "TaskCategories/Id", "TaskCategories/Title", "Status", "StartDate", "CompletedDate", "TeamMembers/Title", "TeamMembers/Id", "ItemRank", "PercentComplete", "Priority", "Body", "PriorityRank", "Created", "Author/Title", "Author/Id", "BasicImageInfo", "ComponentLink", "FeedBack", "ResponsibleTeam/Title", "ResponsibleTeam/Id", "TaskType/Title", "ClientTime", "Portfolio/Id", "Portfolio/Title", "Modified")
-                            .expand("TeamMembers", "Approver", "ParentTask", "ClientCategory","Project", "AssignedTo", "TaskCategories", "Author", "ResponsibleTeam", "TaskType", "Portfolio")
+                            .items.select("ID", "Title", "ClientCategory/Id", "ClientCategory/Title", 'ClientCategory', "Comments", "DueDate", "ClientActivityJson", "EstimatedTime", "Approver/Id", "Approver/Title", "ParentTask/Id", "ParentTask/Title", "workingThisWeek", "IsTodaysTask", "AssignedTo/Id", "TaskLevel", "TaskLevel", "OffshoreComments", "AssignedTo/Title", "OffshoreImageUrl", "TaskCategories/Id", "TaskCategories/Title", "Status", "StartDate", "CompletedDate", "TeamMembers/Title", "TeamMembers/Id", "ItemRank", "PercentComplete", "Priority", "Body", "PriorityRank", "Created", "Author/Title", "Author/Id", "BasicImageInfo", "ComponentLink", "FeedBack", "ResponsibleTeam/Title", "ResponsibleTeam/Id", "TaskType/Title", "ClientTime", "Portfolio/Id", "Portfolio/Title", "Modified")
+                            .expand("TeamMembers", "Approver", "ParentTask", "ClientCategory", "AssignedTo", "TaskCategories", "Author", "ResponsibleTeam", "TaskType", "Portfolio")
                             .getAll().then((data: any) => {
                                 smartmeta = data;
                                 smartmeta.map((task: any) => {
                                     task.AllTeamMember = [];
                                     task.HierarchyData = [];
                                     task.siteType = config.Title;
-                                    task.SmartPriority;
-                                    task.TaskTypeValue = '';
-                                    task.projectPriorityOnHover = '';
-                                    task.taskPriorityOnHover = task?.PriorityRank;
-                                    task.showFormulaOnHover;
                                     task.bodys = task.Body != null && task.Body.split('<p><br></p>').join('');
                                     task.listId = config.listId;
                                     task.siteUrl = config.siteUrl.Url;
@@ -212,7 +210,7 @@ export default function ProjectOverview(props: any) {
                                         task.PortfolioTitle = task?.Portfolio?.Title;
                                         //task["Portfoliotype"] = "Component";
                                     }
-                                    task.SmartPriority = globalCommon.calculateSmartPriority(task);
+
                                     task["SiteIcon"] = config?.Item_x005F_x0020_Cover?.Url;
                                     task.TeamMembersSearch = "";
                                     task.TaskID = globalCommon.getTaskId(task);
@@ -283,6 +281,22 @@ export default function ProjectOverview(props: any) {
         }
         return user ? Image : null;
     };
+
+
+
+    const callChildFunction = (items: any) => {
+        if (childRef.current) {
+            childRef.current.callChildFunction(items);
+        }
+    };
+
+
+    const projectTopIcon = (items: any) => {
+        if (childRef.current) {
+            childRef.current.projectTopIcon(items);
+        }
+    };
+
     const columns = React.useMemo<ColumnDef<any, unknown>[]>(
         () => [
             {
@@ -530,6 +544,7 @@ export default function ProjectOverview(props: any) {
                 size: 100,
                 id: "commentsSearch",
             },
+          
             {
 
                 cell: ({ row }) => (
@@ -1074,6 +1089,32 @@ export default function ProjectOverview(props: any) {
                 size: 125
             },
             {
+                header: ({ table }: any) => (
+                    <>{
+                        topCompoIcon ?
+                            <span style={{ backgroundColor: `${''}` }} title="Restructure" className="Dyicons mb-1 mx-1 p-1" onClick={() => projectTopIcon(true)}>
+                                <span className="svg__iconbox svg__icon--re-structure"></span>
+                            </span>
+                            : ''
+                    }
+                    </>
+                ),
+                cell: ({ row, getValue }) => (
+                    <>
+                        {row?.original?.isRestructureActive && row?.original?.Title != "Others" && (
+                            <span className="Dyicons p-1" title="Restructure" style={{ backgroundColor: `${row?.original?.PortfolioType?.Color}` }} onClick={() => callChildFunction(row?.original)}>
+                                <span className="svg__iconbox svg__icon--re-structure"> </span>
+                            </span>
+                        )}
+                        {getValue()}
+                    </>
+                ),
+                id: "row?.original.Id",
+                canSort: false,
+                placeholder: "",
+                size: 1,
+            },
+            {
 
                 cell: ({ row }) => (
                     <>
@@ -1247,20 +1288,6 @@ export default function ProjectOverview(props: any) {
                 sortDescFirst: true,
                 header: "",
                 size: 100,
-            },
-            {
-                accessorFn: (row) => row?.SmartPriority,
-                cell: ({ row }) => (
-                    <div className="text-center boldClable" title={row?.original?.showFormulaOnHover}>{row?.original?.SmartPriority}</div>
-                ),
-                id: "SmartPriority",
-                placeholder: "SmartPriority",
-                resetColumnFilters: false,
-                filterFn: (row: any, columnId: any, filterValue: any) => {
-                    return row?.original?.SmartPriority == filterValue
-                },
-                header: "",
-                size: 42,
             },
             {
                 accessorFn: (row) => row?.TeamMembersSearch,
@@ -1654,8 +1681,7 @@ export default function ProjectOverview(props: any) {
 
             Alltask.map((items: any) => {
                 items.descriptionsSearch = '';
-                items.ShowTeamsIcon = false;
-                items.SmartPriority;
+                items.ShowTeamsIcon = false
                 items.PercentComplete = (items.PercentComplete * 100).toFixed(0);
                 items.siteUrl = AllListId?.siteUrl;
                 items.listId = AllListId?.MasterTaskListID;
@@ -1757,7 +1783,14 @@ export default function ProjectOverview(props: any) {
 
     }, []);
 
+    const callBackData1 = React.useCallback((getData: any, topCompoIcon: any,callback:any) => {
+        setTopCompoIcon(topCompoIcon);
+       setData(getData);
+       if(callback == true){
+        GetMasterData();
+       }
 
+    }, []);
 
     const CallBack = React.useCallback(() => {
         GetMasterData()
@@ -1790,11 +1823,6 @@ export default function ProjectOverview(props: any) {
                         items.AllTeamMember = [];
                         items.siteType = config.Title;
                         items.siteUrl = config.siteUrl.Url;
-                        items.SmartPriority;
-                        items.TaskTypeValue = '';
-                        items.projectPriorityOnHover = '';
-                        items.taskPriorityOnHover = items?.PriorityRank;
-                        items.showFormulaOnHover;
                         items.EstimatedTime = 0
                         let estimatedDescription = ''
                         if (EstimatedDesc?.length > 0) {
@@ -1835,6 +1863,8 @@ export default function ProjectOverview(props: any) {
                             items["ProjectPriority"] = 0;
                         }
 
+
+
                         items.TeamMembersSearch = "";
                         items.AssignedToIds = [];
                         if (items.AssignedTo != undefined) {
@@ -1871,7 +1901,6 @@ export default function ProjectOverview(props: any) {
                                 });
                             }
                         });
-                        items.SmartPriority = globalCommon.calculateSmartPriority(items);
                         AllTask.push(items);
                     });
                     let setCount = siteConfig?.length
@@ -1997,10 +2026,10 @@ export default function ProjectOverview(props: any) {
                                 </div>
                                 <div className="TableSection"><div className="Alltable">
                                     <div className='wrapper'>
-                                        {selectedView == 'grouped' ? <GlobalCommanTable expandIcon={true} headerOptions={headerOptions} AllListId={AllListId} columns={columns} multiSelect={true} data={data} paginatedTable={false} callBackData={callBackData} pageName={"ProjectOverviewGrouped"} TaskUsers={AllTaskUser} showHeader={true} /> : ''}
-                                        {selectedView == 'flat' ? <GlobalCommanTable expandIcon={true} headerOptions={headerOptions} AllListId={AllListId} columns={flatView} paginatedTable={true} data={AllSiteTasks} callBackData={callBackData} pageName={"ProjectOverview"} TaskUsers={AllTaskUser} showHeader={true} /> : ''}
-                                        {selectedView == 'teamWise' ? <GlobalCommanTable expandIcon={true} headerOptions={headerOptions} AllListId={AllListId} columns={groupedUsers} paginatedTable={true} data={categoryGroup} callBackData={callBackData} pageName={"ProjectOverviewGrouped"} TaskUsers={AllTaskUser} showHeader={true} /> : ''}
-                                        {selectedView == 'Projects' ? <GlobalCommanTable expandIcon={true} AllListId={AllListId} headerOptions={headerOptions} paginatedTable={false} multiSelect={true} columns={column2} data={flatData} callBackData={callBackData} pageName={"ProjectOverview"} TaskUsers={AllTaskUser} showHeader={true} /> : ''}
+                                        {selectedView == 'grouped' ? <GlobalCommanTable expandIcon={true}   headerOptions={headerOptions} AllListId={AllListId} columns={columns} multiSelect={true} data={data} paginatedTable={false} callBackData={callBackData} pageName={"ProjectOverviewGrouped"} TaskUsers={AllTaskUser} showHeader={true} /> : ''}
+                                        {selectedView == 'flat' ? <GlobalCommanTable expandIcon={true}   headerOptions={headerOptions} AllListId={AllListId} columns={flatView} paginatedTable={true} data={AllSiteTasks} callBackData={callBackData} pageName={"ProjectOverview"} TaskUsers={AllTaskUser} showHeader={true} /> : ''}
+                                        {selectedView == 'teamWise' ? <GlobalCommanTable expandIcon={true}   headerOptions={headerOptions} AllListId={AllListId} columns={groupedUsers} paginatedTable={true} data={categoryGroup} callBackData={callBackData} pageName={"ProjectOverviewGrouped"} TaskUsers={AllTaskUser} showHeader={true} /> : ''}
+                                        {selectedView == 'Projects' ? <GlobalCommanTable expandIcon={true}  ref={childRef} callChildFunction={callChildFunction} restructurebtn={true} restructureCallBack={callBackData1}  AllListId={AllListId} headerOptions={headerOptions} paginatedTable={false} multiSelect={true} columns={column2} data={flatData} callBackData={callBackData} pageName={"ProjectOverview"} TaskUsers={AllTaskUser} showHeader={true} /> : ''}
                                     </div>
                                 </div>
                                 </div>
