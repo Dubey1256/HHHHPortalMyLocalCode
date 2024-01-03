@@ -119,9 +119,9 @@ const AddProject = (props: any) => {
                             
                             if (props?.PageName == "ProjectOverview") {
                                 window.open(`${props?.AllListId?.siteUrl}/SitePages/Project-Management.aspx?ProjectId=${newProjectId}`, "_blank");
-                                props?.CallBack()
+                                props?.CallBack(result,"Save")
                             }else{
-                                props?.CallBack(result)
+                                props?.CallBack(result,"Save")
                             }
                             closePopup()
                         })
@@ -153,7 +153,7 @@ const AddProject = (props: any) => {
                         }).then((res: any) => {
                             const newProjectId = res.data.Id;
                             closePopup()
-                            props?.CallBack()
+                            props?.CallBack(res.data,"Save")
                             window.open(`${props?.AllListId?.siteUrl}/SitePages/Project-Management.aspx?ProjectId=${newProjectId}`, "_blank");
                         })
                     })
@@ -197,8 +197,6 @@ const AddProject = (props: any) => {
             if (TempArray != undefined && TempArray.length > 0) {
                 setProjectData(TempArray);
                 setSearchedProjectKey(SearchedKeyWord);
-            }else{
-                setProjectData([]);
             }
         } else {
             setProjectData([]);
@@ -216,6 +214,7 @@ const AddProject = (props: any) => {
         setSmartComponentData([])
         setProjectData([])
         setLgShow(false)
+        props?.CallBack(undefined,"Save")
 
     }
     const ComponentServicePopupCallBack = React.useCallback((DataItem: any, Type: any, functionType: any) => {
@@ -275,12 +274,10 @@ const AddProject = (props: any) => {
 
     return (
         <>
-            <button type="button" disabled={props?.items?.length > 1 || (props?.items?.length > 0 && props?.items[0]?.Item_x0020_Type != "Project")} className='btn btn-primary btnCol' onClick={() => OpenCreateTaskPopup()}>Add Structure</button>
-
             <Panel
                 onRenderHeader={onRenderCustomHeader}
                 type={PanelType.medium}
-                isOpen={lgShow}
+                isOpen={true}
                 onDismiss={() => closePopup()}
                 isBlocking={false}>
 

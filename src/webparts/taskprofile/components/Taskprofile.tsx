@@ -612,7 +612,8 @@ class Taskprofile extends React.Component<ITaskprofileProps, ITaskprofileState> 
       var siteComp: any = {};
       siteComp.SiteName = this.state?.listName,
         siteComp.ClienTimeDescription = 100,
-        siteComp.SiteIcon = this.state?.listName
+        // siteComp.SiteIcon = this.state?.listName 
+        siteComp.SiteImages= this.GetSiteIcon(this.state?.listName),
       ClientTimeArray.push(siteComp);
     }
 

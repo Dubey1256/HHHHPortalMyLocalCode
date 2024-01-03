@@ -6,5 +6,5 @@ export interface IRecruitmentLandingPageProps {
   userDisplayName: string;
   SkillsPortfolioListID:any,
   Context: any,
-  InterviewFeedbackFormListId:any;
+  siteUrl: any
 }
