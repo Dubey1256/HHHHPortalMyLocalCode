@@ -2382,7 +2382,7 @@ function TeamPortlioTable(SelectedProp: any) {
             <Panel
                 onRenderHeader={onRenderCustomHeaderMain}
                 type={PanelType.custom}
-                customWidth="600px"
+                customWidth="620px"
                 isOpen={ActivityPopup}
                 onDismiss={closeActivity}
                 isBlocking={false}
