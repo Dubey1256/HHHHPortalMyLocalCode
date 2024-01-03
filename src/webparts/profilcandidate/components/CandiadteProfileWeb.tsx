@@ -13,6 +13,7 @@ import HHHHEditComponent from '../../contactSearch/components/contact-search/pop
 import GlobalCommanTable from '../../../globalComponents/GroupByReactTableComponents/GlobalCommanTable';
 import CandidateRating from './CandidateRating';
 import EditPopup from '../../helloSpfx/components/EditPopup';
+import { IProfilcandidateProps } from './IProfilcandidateProps';
 
 let allSite: any = {
     GMBHSite: false,
@@ -20,7 +21,7 @@ let allSite: any = {
     MainSite: true,
 }
 let OldEmployeeProfile: any
-const Profilcandidate = ({props}: any) => {
+const Profilcandidate = (props: IProfilcandidateProps) => {
     const [EmployeeData, setEmployeeData]: any = useState()
     const [localRatings, setLocalRatings] = useState([]);
     const [isEditPopupOpen, setIsEditPopupOpen] = useState(false);
@@ -29,8 +30,9 @@ const Profilcandidate = ({props}: any) => {
     let allListId = {
         // Context: props?.props.Context,
         // HHHHContactListId: props?.props?.HHHHContactListId,
-        InterviewFeedbackFormListId: props?.props?.InterviewFeedbackFormListId,
-        SkillsPortfolioListID: props?.props?.SkillsPortfolioListID
+        InterviewFeedbackFormListId: props?.InterviewFeedbackFormListId,
+        SkillsPortfolioListID: props?.SkillsPortfolioListID,
+        siteUrl: props?.siteUrl
 
         // jointSiteUrl: "https://hhhhteams.sharepoint.com/sites/HHHH"
     }
@@ -40,7 +42,7 @@ const Profilcandidate = ({props}: any) => {
         EmployeeDetails(params.get('CandidateId'));
         loadDocumentsByCandidate(params.get('CandidateId'));
     }, [])
-    const web = new Web('https://hhhhteams.sharepoint.com/sites/HHHH/HR');
+    const web = new Web(allListId?.siteUrl);
     const EmployeeDetails = async (Id: any) => {
         try {
             await web.lists.getById(allListId?.InterviewFeedbackFormListId)
@@ -107,7 +109,7 @@ const Profilcandidate = ({props}: any) => {
         window.open(url, '_blank');
     };
     return (
-        <myContextValue.Provider value={{ ...myContextValue, allSite: allSite, allListId: allListId, loggedInUserName: props.props?.userDisplayName }}>
+        <myContextValue.Provider value={{ ...myContextValue, allSite: allSite, allListId: allListId, loggedInUserName: props?.userDisplayName }}>
             {isEditPopupOpen ? <EditPopup EditPopupClose={EditPopupClose} callbackEdit={callbackEdit} item={selectedItem} ListID={allListId?.InterviewFeedbackFormListId} skillsList={allListId?.SkillsPortfolioListID}/> : ''}
             <div className='alignCenter border-bottom pb-2'>
                 <div>
