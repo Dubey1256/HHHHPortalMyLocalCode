@@ -873,7 +873,7 @@ const GlobalCommanTable = (items: any, ref: any) => {
     return (
         <>
             {items?.bulkEditIcon === true && bulkEditingCongration && <span className="toolbox">
-                <BulkEditingFeature ContextValue={items?.AllListId} priorityRank={items?.priorityRank} dragedTask={dragedTask} precentComplete={items?.precentComplete} bulkEditingCongration={bulkEditingCongration} selectedData={table?.getSelectedRowModel()?.flatRows} projectTiles={projectTiles} />
+                <BulkEditingFeature data={data} setData={items?.setData} updatedSmartFilterFlatView={items?.updatedSmartFilterFlatView} clickFlatView={items?.clickFlatView} ContextValue={items?.AllListId} priorityRank={items?.priorityRank} dragedTask={dragedTask} precentComplete={items?.precentComplete} bulkEditingCongration={bulkEditingCongration} selectedData={table?.getSelectedRowModel()?.flatRows} projectTiles={projectTiles} />
             </span>}
             {showHeader === true && <div className='tbl-headings justify-content-between fixed-Header top-0' style={{ background: '#e9e9e9' }}>
                 <span className='leftsec'>
@@ -1016,8 +1016,6 @@ const GlobalCommanTable = (items: any, ref: any) => {
 
                     {items?.showCatIcon != true ? <a className='excal' title='Export to Excel' onClick={() => exportToExcel()}><RiFileExcel2Fill style={{ color: `${portfolioColor}` }} /></a> :
                         <a className='excal' title='Export to Excel' onClick={items?.exportToExcelCategoryReport}><RiFileExcel2Fill style={{ color: `${portfolioColor}` }} /></a>}
-
-                    {/* <a className='excal' title='Export To Excel' onClick={() => exportToExcel()}><RiFileExcel2Fill style={{ color: `${portfolioColor}` }} /></a> */}
 
                     {items?.SmartTimeIconShow === true && items?.AllListId?.isShowTimeEntry === true && <a className='smartTotalTime' title="Load SmartTime of AWT" onClick={() => openCreationAllStructure("Smart-Time")} > <BsClockHistory style={{ color: `${portfolioColor}` }} /></a>}
 

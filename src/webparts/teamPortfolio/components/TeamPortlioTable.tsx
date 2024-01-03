@@ -547,7 +547,7 @@ function TeamPortlioTable(SelectedProp: any) {
                     .items.select("ParentTask/Title", "ParentTask/Id", "ItemRank", "TaskLevel", "OffshoreComments", "TeamMembers/Id", "ClientCategory/Id", "ClientCategory/Title",
                         "TaskID", "ResponsibleTeam/Id", "ResponsibleTeam/Title", "ParentTask/TaskID", "TaskType/Level", "PriorityRank", "TeamMembers/Title", "FeedBack", "Title", "Id", "ID", "DueDate", "Comments", "Categories", "Status", "Body",
                         "PercentComplete", "ClientCategory", "Priority", "TaskType/Id", "TaskType/Title", "Portfolio/Id", "Portfolio/ItemType", "Portfolio/PortfolioStructureID", "Portfolio/Title",
-                        "TaskCategories/Id", "TaskCategories/Title", "TeamMembers/Name", "Project/Id", "Project/PortfolioStructureID", "Project/Title", "AssignedTo/Id", "AssignedTo/Title", "AssignedToId", "Author/Id", "Author/Title", "Editor/Id", "Editor/Title",
+                        "TaskCategories/Id", "TaskCategories/Title", "TeamMembers/Name", "Project/Id", "Project/PortfolioStructureID", "Project/Title","Project/PriorityRank", "AssignedTo/Id", "AssignedTo/Title", "AssignedToId", "Author/Id", "Author/Title", "Editor/Id", "Editor/Title",
                         "Created", "Modified", "IsTodaysTask", "workingThisWeek"
                     )
                     .expand(
@@ -728,7 +728,6 @@ function TeamPortlioTable(SelectedProp: any) {
                                 if (result?.projectStructerId && title || formattedDueDate) {
                                     result.joinedData.push(`Project ${result?.projectStructerId} - ${title}  ${formattedDueDate == "Invalid date" ? '' : formattedDueDate}`)
                                 }
-                                
                             }
                             result.SmartPriority = globalCommon.calculateSmartPriority(result);
                             result["Item_x0020_Type"] = "Task";
@@ -744,7 +743,6 @@ function TeamPortlioTable(SelectedProp: any) {
             });
             // GetComponents();
         }
-
     };
     const GetComponents = async () => {
         if (portfolioTypeData.length > 0) {
@@ -1976,14 +1974,19 @@ function TeamPortlioTable(SelectedProp: any) {
     };
     const onRenderCustomHeaderMain1 = () => {
         return (
-            <>
-                <div className="subheading alignCenter">
-                    <>
-                    {checkedList != null && checkedList!= undefined && checkedList?.SiteIconTitle != undefined && checkedList?.SiteIconTitle != null ? <span className="Dyicons me-2" >{checkedList?.SiteIconTitle}</span> : '' } {`${checkedList != null && checkedList!= undefined && checkedList?.Title != undefined && checkedList?.Title != null ? checkedList?.Title
-                        + '- Create Child Component' : 'Create Component'}`}</>
+            <div className="d-flex full-width pb-1">
+                <div
+                    style={{
+                        marginRight: "auto",
+                        fontSize: "20px",
+                        fontWeight: "600",
+                        marginLeft: "20px",
+                    }}
+                >
+                    <span>{`Create Component `}</span>
                 </div>
                 <Tooltip ComponentId={checkedList?.Id} />
-            </>
+            </div>
         );
     };
 
@@ -2237,12 +2240,19 @@ function TeamPortlioTable(SelectedProp: any) {
     }
     const onRenderCustomHeaderMain = () => {
         return (
-            <>
-                <div className="alignCenter subheading">
-                    {`Create Item`}
+            <div className="d-flex full-width pb-1">
+                <div
+                    style={{
+                        marginRight: "auto",
+                        fontSize: "20px",
+                        fontWeight: "600",
+                        marginLeft: "20px",
+                    }}
+                >
+                    <span>{`Create Item`}</span>
                 </div>
                 <Tooltip ComponentId={1746} />
-            </>
+            </div>
         );
     };
 
@@ -2368,8 +2378,8 @@ function TeamPortlioTable(SelectedProp: any) {
                         <div id="portfolio" className="section-event pt-0">
                             {checkedList != undefined &&
                                 checkedList?.TaskType?.Title == "Workstream" ? (
-                                <div className="mt-2 clearfix">
-                                    <label className="titleBorder full-width f-14"> Type</label>
+                                <div className="mt-4 clearfix">
+                                    <h4 className="titleBorder "> Type</h4>
                                     <div className="col p-0 taskcatgoryPannel">
                                         <a id="subcategorytasks936" onClick={(e) => CreateActivityPopup("Task")} className="bg-siteColor subcategoryTask text-center">
                                             <span className="tasks-label">Bug</span>
@@ -2389,8 +2399,8 @@ function TeamPortlioTable(SelectedProp: any) {
                                     </div>
                                 </div>
                             ) : (
-                                <div className="mt-2 clearfix">
-                                    <label className="titleBorder f-14 full-width">Type</label>
+                                <div className="mt-4 clearfix">
+                                    <h4 className="titleBorder "> Type</h4>
                                     <div className="col p-0 taskcatgoryPannel">
                                         <a id="subcategorytasks936" onClick={(e) => CreateActivityPopup("Implementation")} className="bg-siteColor subcategoryTask text-center">
                                             <span className="tasks-label">Implmentation</span>
@@ -2409,16 +2419,14 @@ function TeamPortlioTable(SelectedProp: any) {
                             )}
                         </div>
                     </div>
-                </div>
-                <footer className="modal-footer mt-2">
-                <button
+                    <button
                         type="button"
                         className="btn btn-default btn-default ms-1 pull-right"
                         onClick={closeActivity}
                     >
                         Cancel
                     </button>
-                </footer>
+                </div>
             </Panel>
             {isOpenActivity && (
                 <CreateActivity
