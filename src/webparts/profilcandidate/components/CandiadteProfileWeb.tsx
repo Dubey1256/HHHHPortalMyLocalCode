@@ -21,7 +21,7 @@ let allSite: any = {
     MainSite: true,
 }
 let OldEmployeeProfile: any
-const Profilcandidate = (props: any) => {
+const Profilcandidate = ({props}: any) => {
     const [EmployeeData, setEmployeeData]: any = useState()
     const [localRatings, setLocalRatings] = useState([]);
     const [isEditPopupOpen, setIsEditPopupOpen] = useState(false);
@@ -30,8 +30,7 @@ const Profilcandidate = (props: any) => {
     allListId = {
         // Context: props?.props.Context,
         // HHHHContactListId: props?.props?.HHHHContactListId,
-        InterviewFeedbackFormListId: props?.InterviewFeedbackFormListId,
-        siteUrl: props?.siteUrl,
+        InterviewFeedbackFormListId: props?.InterviewFeedbackFormListId
 
         // jointSiteUrl: "https://hhhhteams.sharepoint.com/sites/HHHH"
     }
@@ -41,7 +40,7 @@ const Profilcandidate = (props: any) => {
         EmployeeDetails(params.get('CandidateId'));
         loadDocumentsByCandidate(params.get('CandidateId'));
     }, [])
-const web = new Web(allListId?.siteUrl);
+    const web = new Web('https://hhhhteams.sharepoint.com/sites/HHHH/HR');
     const EmployeeDetails = async (Id: any) => {
         try {
             await web.lists.getById(allListId?.InterviewFeedbackFormListId)
@@ -128,10 +127,10 @@ const web = new Web(allListId?.siteUrl);
                                 <div className="bg-Fa profileLeftSec col-md-3">Position</div>
                                 <div className='bg-Ff profileRightSec col-md-9'>{EmployeeData?.Positions?.Title} </div>
                             </div>
-                                <div className='profileHead'>
-                                    <div className="bg-Fa profileLeftSec col-md-3">Experience</div>
-                                    <div className='bg-Ff profileRightSec col-md-9'>{formatExperience(EmployeeData?.Experience)} </div>
-                                </div>    
+                            <div className='profileHead'>
+                                <div className="bg-Fa profileLeftSec col-md-3">Experience</div>
+                                <div className='bg-Ff profileRightSec col-md-9'>{formatExperience(EmployeeData?.Experience)} </div>
+                            </div>
                             <div className='profileHead'>
                                 <div className="bg-Fa profileLeftSec col-md-3">Application Date</div>
                                 <div className='bg-Ff profileRightSec col-md-9'>{EmployeeData?.Date != undefined ? moment(EmployeeData?.Date)?.format('DD-MM-YYYY') : ""} </div>
