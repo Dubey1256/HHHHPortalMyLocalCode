@@ -140,7 +140,7 @@ function EditInstitution({ item, SelectD, Calls, usedFor, portfolioTypeData, fil
     const [DeliverablesVerifieds, setDeliverablesVerifieds] = React.useState(false);
     const [TechnicalExplanationsVerifieds, setTechnicalExplanationsVerifieds] = React.useState(false);
     const [HelpInformationVerifieds, setHelpInformationVerifieds] = React.useState(false);
-    
+
     const [SiteCompositionShow, setSiteCompositionShow] = React.useState(false);
     const [composition, setComposition] = React.useState(true);
 
@@ -172,9 +172,9 @@ function EditInstitution({ item, SelectD, Calls, usedFor, portfolioTypeData, fil
         setTechnicalExplanationsVerifieds((prevChecked: any) => !prevChecked);
     };
     const handleCheckboxHelpInformation = () => {
-      setHelpInformationVerifieds((prevChecked: any) => !prevChecked);
-  };
-    
+        setHelpInformationVerifieds((prevChecked: any) => !prevChecked);
+    };
+
     function imageta() {
         setImagetab(true);
     }
@@ -554,11 +554,11 @@ function EditInstitution({ item, SelectD, Calls, usedFor, portfolioTypeData, fil
             }
             TechnicalExplanationsVerifieds
             if (item?.Help_x0020_Information) {
-              item.Help_x0020_Information = getPlainTextFromHTML(item?.Help_x0020_Information)
-              setHelpInformationVerifieds(item?.Help_x0020_Information)
-          }
-          HelpInformationVerifieds
-          setHelpInformationVerifieds(item?.HelpInformationVerified)
+                item.Help_x0020_Information = getPlainTextFromHTML(item?.Help_x0020_Information)
+                setHelpInformationVerifieds(item?.Help_x0020_Information)
+            }
+            HelpInformationVerifieds
+            setHelpInformationVerifieds(item?.HelpInformationVerified)
             setTechnicalExplanationsVerifieds(item?.TechnicalExplanationsVerified)
             PortfolioTypeColor = item?.PortfolioType?.Color
             item.DateTaskDueDate = new Date(item.DueDate);
@@ -1440,15 +1440,15 @@ function EditInstitution({ item, SelectD, Calls, usedFor, portfolioTypeData, fil
                             ? PostShort_x0020_Description_x0020_On
                             : EditData?.Short_x0020_Description_x0020_On,
                     Help_x0020_Information:
-                            PostHelp_x0020_Information != undefined &&
+                        PostHelp_x0020_Information != undefined &&
                             PostHelp_x0020_Information != ""
-                                ? PostHelp_x0020_Information
-                                : EditData?.Help_x0020_Information,
+                            ? PostHelp_x0020_Information
+                            : EditData?.Help_x0020_Information,
                     HelpInformation:
-                            PostHelp_x0020_Information != undefined &&
+                        PostHelp_x0020_Information != undefined &&
                             PostHelp_x0020_Information != ""
-                                ? PostHelp_x0020_Information
-                                : EditData?.HelpInformation,        
+                            ? PostHelp_x0020_Information
+                            : EditData?.HelpInformation,
                     Body:
                         PostBody != undefined && PostBody != "" ? PostBody : EditData?.Body,
                     AssignedToId: {
@@ -3272,82 +3272,7 @@ function EditInstitution({ item, SelectD, Calls, usedFor, portfolioTypeData, fil
                                             </div>
                                         </div>
                                         <div className="col-sm-2 ">
-                                            <div className="mb-3 mt-1">
-                                                {RequireData?.isShowSiteCompostion ? (
-                                                    <div className="Sitecomposition mb-2">
-                                                        <div className="dropdown">
-                                                            <a className="sitebutton bg-fxdark alignCenter justify-content-between">
-                                                                <div
-                                                                    style={{ cursor: "pointer" }}
-                                                                    onClick={() =>
-                                                                        setComposition(composition ? false : true)
-                                                                    }
-                                                                >
-                                                                    <span>
-                                                                        {composition ? (
-                                                                            <SlArrowDown />
-                                                                        ) : (
-                                                                            <SlArrowRight />
-                                                                        )}
-                                                                    </span>
-                                                                    <span className="mx-2">Site Composition</span>
-                                                                </div>
-                                                                <span
-                                                                    className="svg__iconbox svg__icon--editBox hreflink"
-                                                                    title="Edit Site Composition"
-                                                                    onClick={() => setSiteCompositionShow(true)}
-                                                                ></span>
-                                                            </a>
-                                                            {composition && EditData?.siteCompositionData?.length > 0 &&
-                                                                EditData?.siteCompositionData?.length > 0 ? (
-                                                                <div className="spxdropdown-menu">
-                                                                    <ul>
-                                                                        {EditData?.siteCompositionData != undefined &&
-                                                                            EditData?.siteCompositionData?.length > 0 ? (
-                                                                            <>
-                                                                                {EditData?.siteCompositionData?.map(
-                                                                                    (SiteDtls: any, i: any) => {
-                                                                                        return (
-                                                                                            <li className="Sitelist">
-                                                                                                <span className="ms-2" title={SiteDtls.Title}>
-                                                                                                    <img
-                                                                                                        style={{ width: "22px" }}
-                                                                                                        src={SiteDtls.SiteImages}
-                                                                                                    />
-                                                                                                </span>
 
-                                                                                                {SiteDtls.ClienTimeDescription !=
-                                                                                                    undefined && (
-                                                                                                        <span className="mx-2">
-                                                                                                            {Number(
-                                                                                                                SiteDtls.ClienTimeDescription
-                                                                                                            ).toFixed(2)}
-                                                                                                            %
-                                                                                                        </span>
-                                                                                                    )}
-
-                                                                                                <span className="d-inline">
-                                                                                                    {SiteDtls.ClientCategory != undefined && SiteDtls.ClientCategory.length > 0 ? SiteDtls.ClientCategory?.map((clientcat: any, Index: any) => {
-                                                                                                        return (
-                                                                                                            <div className={Index == SiteDtls.ClientCategory?.length - 1 ? "mb-0" : "mb-0 border-bottom"}>{clientcat.Title}</div>
-                                                                                                        )
-                                                                                                    }) : null}
-                                                                                                </span>
-
-                                                                                            </li>
-                                                                                        );
-                                                                                    }
-                                                                                )}
-                                                                            </>
-                                                                        ) : null}
-                                                                    </ul>
-                                                                </div>
-                                                            ) : null}
-
-                                                        </div>
-                                                    </div>
-                                                ) : null}
-                                            </div>
                                             <div className="col" title="Priority">
                                                 <div className="input-group mb-2">
                                                     <label className="form-label  full-width">
@@ -3633,6 +3558,82 @@ function EditInstitution({ item, SelectD, Calls, usedFor, portfolioTypeData, fil
 
                                         </div>
                                         <div className="col-sm-4  ">
+                                            <div className="mb-3 mt-1">
+                                                {RequireData?.isShowSiteCompostion ? (
+                                                    <div className="Sitecomposition mb-2">
+                                                        <div className="dropdown">
+                                                            <a className="sitebutton bg-fxdark alignCenter justify-content-between">
+                                                                <div
+                                                                    style={{ cursor: "pointer" }}
+                                                                    onClick={() =>
+                                                                        setComposition(composition ? false : true)
+                                                                    }
+                                                                >
+                                                                    <span>
+                                                                        {composition ? (
+                                                                            <SlArrowDown />
+                                                                        ) : (
+                                                                            <SlArrowRight />
+                                                                        )}
+                                                                    </span>
+                                                                    <span className="mx-2">Site Composition</span>
+                                                                </div>
+                                                                <span
+                                                                    className="svg__iconbox svg__icon--editBox hreflink"
+                                                                    title="Edit Site Composition"
+                                                                    onClick={() => setSiteCompositionShow(true)}
+                                                                ></span>
+                                                            </a>
+                                                            {composition && EditData?.siteCompositionData?.length > 0 &&
+                                                                EditData?.siteCompositionData?.length > 0 ? (
+                                                                <div className="spxdropdown-menu">
+                                                                    <ul>
+                                                                        {EditData?.siteCompositionData != undefined &&
+                                                                            EditData?.siteCompositionData?.length > 0 ? (
+                                                                            <>
+                                                                                {EditData?.siteCompositionData?.map(
+                                                                                    (SiteDtls: any, i: any) => {
+                                                                                        return (
+                                                                                            <li className="Sitelist">
+                                                                                                <span className="ms-2" title={SiteDtls.Title}>
+                                                                                                    <img
+                                                                                                        style={{ width: "22px" }}
+                                                                                                        src={SiteDtls.SiteImages}
+                                                                                                    />
+                                                                                                </span>
+
+                                                                                                {SiteDtls.ClienTimeDescription !=
+                                                                                                    undefined && (
+                                                                                                        <span className="mx-2">
+                                                                                                            {Number(
+                                                                                                                SiteDtls.ClienTimeDescription
+                                                                                                            ).toFixed(2)}
+                                                                                                            %
+                                                                                                        </span>
+                                                                                                    )}
+
+                                                                                                <span className="d-inline">
+                                                                                                    {SiteDtls.ClientCategory != undefined && SiteDtls.ClientCategory.length > 0 ? SiteDtls.ClientCategory?.map((clientcat: any, Index: any) => {
+                                                                                                        return (
+                                                                                                            <div className={Index == SiteDtls.ClientCategory?.length - 1 ? "mb-0" : "mb-0 border-bottom"}>{clientcat.Title}</div>
+                                                                                                        )
+                                                                                                    }) : null}
+                                                                                                </span>
+
+                                                                                            </li>
+                                                                                        );
+                                                                                    }
+                                                                                )}
+                                                                            </>
+                                                                        ) : null}
+                                                                    </ul>
+                                                                </div>
+                                                            ) : null}
+
+                                                        </div>
+                                                    </div>
+                                                ) : null}
+                                            </div>
                                             <CommentCard
                                                 siteUrl={EditData?.siteUrl}
                                                 userDisplayName={EditData?.userDisplayName}
@@ -3980,13 +3981,13 @@ function EditInstitution({ item, SelectD, Calls, usedFor, portfolioTypeData, fil
                                                     <label className="toggler full_width">
                                                         <div className="alignCenter">Help Information {`(${EditData?.Help_x0020_Information?.length != undefined ? EditData?.Help_x0020_Information?.length : 0})`}
                                                             <span className="alignCenter ml-auto">
-                                                              
-                                                                 <input
-                                                            type="checkbox"
-                                                            className="form-check-input me-1 rounded-0"
-                                                            checked={HelpInformationVerifieds}
-                                                            onChange={handleCheckboxHelpInformation}
-                                                        />
+
+                                                                <input
+                                                                    type="checkbox"
+                                                                    className="form-check-input me-1 rounded-0"
+                                                                    checked={HelpInformationVerifieds}
+                                                                    onChange={handleCheckboxHelpInformation}
+                                                                />
                                                                 <span className="ps-1">Verified</span>
                                                             </span></div>
                                                     </label>
@@ -4750,13 +4751,13 @@ function EditInstitution({ item, SelectD, Calls, usedFor, portfolioTypeData, fil
                 </footer>
             </Panel>
             {(SiteCompositionShow && EditData?.Title) && (
-        <CentralizedSiteComposition
-          ItemDetails={EditData}
-          RequiredListIds={RequireData}
-          closePopupCallBack={ClosePopupCallBack}
-          usedFor={"CSF"}
-        />
-      )}
+                <CentralizedSiteComposition
+                    ItemDetails={EditData}
+                    RequiredListIds={RequireData}
+                    closePopupCallBack={ClosePopupCallBack}
+                    usedFor={"CSF"}
+                />
+            )}
 
         </>
     );

@@ -23,7 +23,6 @@ import { HtmlEditorCard } from './FloraCommentBox';
 import AddMorePosition from './AddMorePosition';
 import EditPosition from './EditPosition';
 let portfiloData: any[] = [];
-const HRweb = new Web('https://hhhhteams.sharepoint.com/sites/HHHH/HR');
 
 
 const AddEditPostion = (props: any) => {
@@ -52,6 +51,7 @@ const AddEditPostion = (props: any) => {
     const [SkillToUpdate, setSkillToUpdate]: any = useState([]);
     const [updatePositionId, setupdatePositionId]: any = useState();
     const [edittableItem, setEdittableItem]: any = useState(null)
+    
     // const headerTextEdit = `Edit Position - ${edittableItem ? edittableItem.Title : ''}`;
     const AddEditPositionClose = () => {
         props.AddEditPositionCLose();
@@ -64,6 +64,8 @@ const AddEditPostion = (props: any) => {
         SkillsPortfolioListID: props?.props?.SkillsPortfolioListID,
         siteUrl: props?.props?.siteUrl
     }
+
+    const HRweb = new Web(allListID?.siteUrl);
     const getListData = () => {
         HRweb.lists
             .getById(allListID?.SkillsPortfolioListID)

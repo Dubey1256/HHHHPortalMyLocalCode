@@ -1,20 +1,17 @@
-/* eslint-disable @typescript-eslint/no-floating-promises */
-/* eslint-disable @typescript-eslint/no-empty-function */
-/* eslint-disable @typescript-eslint/no-use-before-define */
-/* eslint-disable @typescript-eslint/explicit-function-return-type */
-/* eslint-disable @typescript-eslint/no-explicit-any */
-/* eslint-disable @typescript-eslint/no-unused-vars */
 import { Panel, Dropdown, PanelType, IDropdownOption } from 'office-ui-fabric-react';
 import * as React from 'react';
 import { PeoplePicker, PrincipalType } from '@pnp/spfx-controls-react/lib/PeoplePicker';
 import { useCallback, useState } from 'react';
 import { Item, sp, Web } from 'sp-pnp-js';
 import Tooltip from '../../../globalComponents/Tooltip';
-import styles from './HelloSpfx.module.scss';
+// import styles from './HelloSpfx.module.scss';
 import { Card, CardBody, CardFooter, CardHeader, CardTitle, Col, Pagination, PaginationItem, PaginationLink, Progress, Row, Table } from "reactstrap";
 import HtmlEditorCard from './FloraCommentBox';
 import MsgReader from "@kenjiuno/msgreader"
 import { useEffect } from 'react';
+import { SiteUser } from 'sp-pnp-js/lib/sharepoint/siteusers';
+import AddMorePosition from './AddMorePosition';
+import { FaPlus } from 'react-icons/fa';
 let showTextInput: boolean = false;
 let PositionChoices: any[] = [];
 let siteName: any = '';
@@ -25,7 +22,7 @@ let rootSiteName = '';
 let TaskTypes: any = [];
 let generatedLocalPath = '';
 let backupExistingFiles: any = [];
-const HRweb = new Web('https://hhhhteams.sharepoint.com/sites/HHHH/HR');
+
 
 const AddPopup = (props: any) => {
     useEffect(() => {
@@ -35,7 +32,7 @@ const AddPopup = (props: any) => {
             } catch (error) {
                 console.error(error);
             } finally {
-                // Set loading state to false regardless of success or error
+               // Set loading state to false regardless of success or error
             }
         };
         fetchData();
@@ -57,10 +54,11 @@ const AddPopup = (props: any) => {
     const [motivationText, setMotivationText] = useState('');
     const [OtherChoiceText, setOtherChoiceText] = useState('');
     const [content, setContent] = React.useState<string>('');
+    const [isAddPosititionOpen, setisAddPositionOpen] = React.useState(false);
     const Status = ['New Candidate', 'Under Consideration', 'Interview', 'Negotiation', 'Hired', 'Rejected'];
 
     const [inputText, setInputText] = useState('');
-
+  
     const [selectedPath, setSelectedPath] = useState({
         displayPath: '',
         completePath: '',
@@ -97,6 +95,19 @@ const AddPopup = (props: any) => {
     const onClose = () => {
         props.AddPopupClose();
     }
+    const openAddPositionPopup = () => {
+        setisAddPositionOpen(true)
+    }
+    const AddMorePositionClose = () => {
+        setisAddPositionOpen(false)
+    };
+    let allListID = {
+        InterviewFeedbackFormListId: props?.ListID,
+        SkillsPortfolioListID: props?.skillsList,
+        siteUrl: props?.siteUrl
+    }
+
+    const HRweb = new Web(allListID?.siteUrl)
     const addCandidate = async () => {
         let formattedExp = '0.0';
         if (updatedPlatformChoices && updatedPlatformChoices.length > 0) {
@@ -111,7 +122,7 @@ const AddPopup = (props: any) => {
         }
         const selectedPlatforms = JSON.stringify(updatedPlatformChoices);
         try {
-            const candidateItem = await HRweb.lists.getById('298bc01c-710d-400e-bf48-8604d297c3c6').items.add({
+            const candidateItem = await HRweb.lists.getById(allListID?.InterviewFeedbackFormListId).items.add({
                 CandidateName: name,
                 Email: email,
                 PhoneNumber: phone,
@@ -136,7 +147,7 @@ const AddPopup = (props: any) => {
         }
     };
 
-    const getCurrentDate = (): string => {
+        const getCurrentDate = (): string => {
         const currentDate: any = new Date();
         const year: any = currentDate.getFullYear();
         const month: any = (currentDate.getMonth() + 1)?.padStart(2, '0'); // Month is zero-based
@@ -145,7 +156,7 @@ const AddPopup = (props: any) => {
     };
     const getchoicecolumns = () => {
         const select = `Id,Title,PositionTitle,PositionDescription,JobSkills`;
-        HRweb.lists.getById('E79DFD6D-18AA-40E2-8D6E-930A37FE54E4').items.select(select).get()
+        HRweb.lists.getById(allListID?.SkillsPortfolioListID).items.select(select).get()
             .then(response => {
                 PositionChoices = response;
             })
@@ -229,7 +240,7 @@ const AddPopup = (props: any) => {
     const handleDateChange = (e: any) => {
         setselectedDate(e.target.value);
     };
-
+    
     const handleOtherChoiceInputChange = (event: React.ChangeEvent<HTMLInputElement>) => {
         setOtherChoiceText(event.target.value);
     };
@@ -356,10 +367,11 @@ const AddPopup = (props: any) => {
             </>
         );
     };
-    const onPeoplePickerChange = (items: any[]) => {
+const onPeoplePickerChange = (items: any[]) => {
         setSelectedInterviwer(items[0]?.text);
     };
     return (
+        <>
         <Panel
             onRenderHeader={onRenderCustomHeaderMains}
             isOpen={true}
@@ -444,7 +456,10 @@ const AddPopup = (props: any) => {
                         </div></div>
                     <div className="col-sm-3 mb-2">
                         <div className='input-group'>
-                            <label className="form-label full-width">Position</label>
+                            <label className="form-label full-width">Position 
+                                <span onClick={openAddPositionPopup} className="svg__iconbox hreflink svg__icon--Plus mini ml-60 f-14 fw-bold"></span><span className='hreflink ml-9 f-14 fw-bold' onClick={openAddPositionPopup}>Add More</span>
+                            </label>
+                            
                             <Dropdown
                                 id="status" className='w-100 '
                                 placeholder='Select Position'
@@ -509,7 +524,7 @@ const AddPopup = (props: any) => {
                                             placeholder="Enter any other platform"
                                         />
                                     </label>
-                                    </div>
+</div>
                                 )}
                             </div>
                         </div>
@@ -588,6 +603,8 @@ const AddPopup = (props: any) => {
             </footer>
 
         </Panel>
+        {isAddPosititionOpen && <AddMorePosition siteUrl={allListID?.siteUrl} skillsList={allListID?.SkillsPortfolioListID} openPopup={isAddPosititionOpen} closePopup={AddMorePositionClose}/>}
+        </>
     );
 };
 export default AddPopup;

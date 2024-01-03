@@ -18,7 +18,7 @@ import {
     PanelType,
     resetControlledWarnings,
 } from "office-ui-fabric-react";
-import { Modal } from "@fluentui/react";
+import { Label, Modal } from "@fluentui/react";
 import { FaExpandAlt } from "react-icons/fa";
 import { RiDeleteBin6Line, RiH6 } from "react-icons/ri";
 import { SlArrowDown, SlArrowRight } from "react-icons/sl";
@@ -707,7 +707,7 @@ const EditTaskPopup = (Items: any) => {
                 extraLookupColumnData = await web.lists
                     .getById(Items.Items.listId)
                     .items.select(
-                        "Project/Id, Project/Title,SmartInformation/Id, AttachmentFiles, Approver/Id, Approver/Title,ApproverHistory"
+                        "Project/Id, Project/Title,Project/PriorityRank,SmartInformation/Id, AttachmentFiles, Approver/Id, Approver/Title,ApproverHistory"
                     )
                     .top(5000)
                     .filter(`Id eq ${Items.Items.Id}`)
@@ -1005,6 +1005,15 @@ const EditTaskPopup = (Items: any) => {
                 item.siteType = Items.Items.siteType;
                 let AssignedUsers: any = [];
                 item.listId = Items.Items.listId;
+                if (selectedProject?.length > 0) {
+                    item.Project = selectedProject[0];
+                }
+                item.SmartPriority;
+                item.TaskTypeValue = '';
+                item.projectPriorityOnHover = '';
+                item.taskPriorityOnHover = item?.PriorityRank;
+                item.showFormulaOnHover;
+                item.SmartPriority = globalCommon.calculateSmartPriority(item);
                 // let ApproverDataTemp: any = [];
                 let TeamMemberTemp: any = [];
                 let TaskCreatorData: any = [];
@@ -4054,11 +4063,7 @@ const EditTaskPopup = (Items: any) => {
             .get();
         await SaveImageDataOnLoop(response, NewList, NewItem);
     };
-    const SaveImageDataOnLoop = async (
-        response: any,
-        NewList: any,
-        NewItem: any
-    ) => {
+    const SaveImageDataOnLoop = async (response: any, NewList: any, NewItem: any) => {
         let tempArrayJsonData: any = [];
         var count = 0;
         let currentUserDataObject: any;
@@ -4075,64 +4080,77 @@ const EditTaskPopup = (Items: any) => {
                         headers: {
                             Accept: "application/json;odata=nometadata",
                         },
-                    });
+                    }).then(async (response) => {
+                        if (response.ok) {
+                            count++;
+                            const binaryData = await response.arrayBuffer();
+                            console.log("Binary Data:", binaryData);
+                            var uint8Array = new Uint8Array(binaryData);
+                            console.log(uint8Array);
 
-                    if (response.ok) {
-                        count++;
-                        const binaryData = await response.arrayBuffer();
-                        console.log("Binary Data:", binaryData);
-                        var uint8Array = new Uint8Array(binaryData);
-                        console.log(uint8Array);
+                            console.log(uint8Array);
+                            let fileName: any = "";
+                            let date = new Date();
+                            let timeStamp = date.getTime();
+                            let imageIndex = index + 1;
+                            var file =
+                                "T" +
+                                NewItem.Id +
+                                "-Image" +
+                                imageIndex +
+                                "-" +
+                                NewItem.Title?.replace(/["/':?]/g, "")?.slice(0, 40) +
+                                " " +
+                                timeStamp +
+                                ".jpg";
 
-                        console.log(uint8Array);
-                        let fileName: any = "";
-                        let date = new Date();
-                        let timeStamp = date.getTime();
-                        let imageIndex = index + 1;
-                        var file =
-                            "T" +
-                            NewItem.Id +
-                            "-Image" +
-                            imageIndex +
-                            "-" +
-                            NewItem.Title?.replace(/["/':?]/g, "")?.slice(0, 40) +
-                            " " +
-                            timeStamp +
-                            ".jpg";
+                            // Your existing code for creating ImgArray
+                            let ImgArray = {
+                                ImageName: file,
+                                UploadeDate: Moment(new Date()).format("DD/MM/YYYY"),
+                                ImageUrl:
+                                    siteUrls +
+                                    "/Lists/" +
+                                    NewList +
+                                    "/Attachments/" +
+                                    NewItem?.Id +
+                                    "/" +
+                                    file,
+                                UserImage:
+                                    currentUserDataObject != undefined &&
+                                        currentUserDataObject.Item_x0020_Cover?.Url?.length > 0
+                                        ? currentUserDataObject.Item_x0020_Cover?.Url
+                                        : "https://hhhhteams.sharepoint.com/sites/HHHH/SiteCollectionImages/ICONS/32/icon_user.jpg",
+                                UserName:
+                                    currentUserDataObject != undefined &&
+                                        currentUserDataObject.Title?.length > 0
+                                        ? currentUserDataObject.Title
+                                        : Items.context.pageContext._user.displayName,
+                                Description: "",
+                            };
+                            tempArrayJsonData.push(ImgArray);
 
-                        // Your existing code for creating ImgArray
-                        let ImgArray = {
-                            ImageName: file,
-                            UploadeDate: Moment(new Date()).format("DD/MM/YYYY"),
-                            ImageUrl:
-                                siteUrls +
-                                "/Lists/" +
-                                NewList +
-                                "/Attachments/" +
-                                NewItem?.Id +
-                                "/" +
-                                file,
-                            UserImage:
-                                currentUserDataObject != undefined &&
-                                    currentUserDataObject.Item_x0020_Cover?.Url?.length > 0
-                                    ? currentUserDataObject.Item_x0020_Cover?.Url
-                                    : "https://hhhhteams.sharepoint.com/sites/HHHH/SiteCollectionImages/ICONS/32/icon_user.jpg",
-                            UserName:
-                                currentUserDataObject != undefined &&
-                                    currentUserDataObject.Title?.length > 0
-                                    ? currentUserDataObject.Title
-                                    : Items.context.pageContext._user.displayName,
-                            Description: "",
-                        };
-                        tempArrayJsonData.push(ImgArray);
 
-                        await sp.web.lists
-                            .getByTitle(NewList)
-                            .items.getById(NewItem.Id)
-                            .attachmentFiles.add(file, uint8Array);
-                    } else {
-                        console.error("Error:", response.statusText);
-                    }
+                            
+// -----------------------Add Attachments-----------------------------------------------------------------------
+                            // await sp.web.lists.getByTitle(NewList).items.getById(NewItem.Id).attachmentFiles.add(file, uint8Array).then((res)=>{
+                            //     count++;
+                            //     console.log(res)
+                            // });
+
+                            const item = await sp.web.lists.getByTitle(NewList).items.getById(NewItem?.Id).get();
+
+                            
+                            const currentETag:any = item ? item['@odata.etag'] : null;
+                            await sp.web.lists.getByTitle(NewList).items.getById(NewItem?.Id).attachmentFiles.add(file, uint8Array),
+                            currentETag, { headers: { "If-Match": currentETag }}
+    
+                        } else {
+                            console.error("Error:", response.statusText);
+                        }
+                    })
+
+
                 } catch (error) {
                     console.log(error, "HHHH Time");
                 }
@@ -4141,10 +4159,12 @@ const EditTaskPopup = (Items: any) => {
 
         // Wait for all promises to resolve
         try {
-            await Promise.all(fetchPromises);
 
+            await Promise.all(fetchPromises);
             // Call another function after all promises are resolved
             await SaveJSONData(NewList, NewItem, tempArrayJsonData);
+
+
         } catch (error) {
             console.error("Error updating client category:", error);
         }
@@ -5698,83 +5718,100 @@ const EditTaskPopup = (Items: any) => {
                                                     ) : null}
                                                 </div>
                                             </div>
-                                            <div className="col-6 ps-0 pe-0 pt-4">
-                                                <div className="time-status">
-                                                    <div className="input-group">
-                                                        <input
-                                                            type="text"
-                                                            className="form-control"
-                                                            placeholder="Enter Priority"
-                                                            value={
-                                                                EditData.PriorityRank
-                                                                    ? EditData.PriorityRank
-                                                                    : ""
-                                                            }
-                                                            onChange={(e) => ChangePriorityStatusFunction(e)}
-                                                        />
+                                            <div className="col-6 ps-0 pe-0">
+                                                <div className="row">
+                                                    <div className="time-status col-md-6">
+                                                        <div className="input-group">
+                                                            <label className="form-label full-width">Priority</label>
+                                                            <input
+                                                                type="text"
+                                                                className="form-control"
+                                                                placeholder="Enter Priority"
+                                                                value={
+                                                                    EditData.PriorityRank
+                                                                        ? EditData.PriorityRank
+                                                                        : ""
+                                                                }
+                                                                onChange={(e) => ChangePriorityStatusFunction(e)}
+                                                            />
+                                                        </div>
+                                                        <ul className="p-0 my-1">
+                                                            <li className="form-check ">
+                                                                <label className="SpfxCheckRadio">
+                                                                    <input
+                                                                        className="radio"
+                                                                        name="radioPriority"
+                                                                        type="radio"
+                                                                        checked={
+                                                                            EditData.PriorityRank <= 10 &&
+                                                                            EditData.PriorityRank >= 8
+                                                                        }
+                                                                        onChange={() =>
+                                                                            setEditData({
+                                                                                ...EditData,
+                                                                                PriorityRank: 8,
+                                                                            })
+                                                                        }
+                                                                    />
+                                                                    High{" "}
+                                                                </label>
+                                                            </li>
+                                                            <li className="form-check ">
+                                                                <label className="SpfxCheckRadio">
+                                                                    <input
+                                                                        className="radio"
+                                                                        name="radioPriority"
+                                                                        type="radio"
+                                                                        checked={
+                                                                            EditData.PriorityRank <= 7 &&
+                                                                            EditData.PriorityRank >= 4
+                                                                        }
+                                                                        onChange={() =>
+                                                                            setEditData({
+                                                                                ...EditData,
+                                                                                PriorityRank: 4,
+                                                                            })
+                                                                        }
+                                                                    />
+                                                                    Normal{" "}
+                                                                </label>
+                                                            </li>
+                                                            <li className="form-check ">
+                                                                <label className="SpfxCheckRadio">
+                                                                    <input
+                                                                        className="radio"
+                                                                        name="radioPriority"
+                                                                        type="radio"
+                                                                        checked={
+                                                                            EditData.PriorityRank <= 3 &&
+                                                                            EditData.PriorityRank > 0
+                                                                        }
+                                                                        onChange={() =>
+                                                                            setEditData({
+                                                                                ...EditData,
+                                                                                PriorityRank: 1,
+                                                                            })
+                                                                        }
+                                                                    />
+                                                                    Low{" "}
+                                                                </label>
+                                                            </li>
+                                                        </ul>
                                                     </div>
-                                                    <ul className="p-0 mt-1">
-                                                        <li className="form-check ">
-                                                            <label className="SpfxCheckRadio">
-                                                                <input
-                                                                    className="radio"
-                                                                    name="radioPriority"
-                                                                    type="radio"
-                                                                    checked={
-                                                                        EditData.PriorityRank <= 10 &&
-                                                                        EditData.PriorityRank >= 8
-                                                                    }
-                                                                    onChange={() =>
-                                                                        setEditData({
-                                                                            ...EditData,
-                                                                            PriorityRank: 8,
-                                                                        })
-                                                                    }
-                                                                />
-                                                                High{" "}
-                                                            </label>
-                                                        </li>
-                                                        <li className="form-check ">
-                                                            <label className="SpfxCheckRadio">
-                                                                <input
-                                                                    className="radio"
-                                                                    name="radioPriority"
-                                                                    type="radio"
-                                                                    checked={
-                                                                        EditData.PriorityRank <= 7 &&
-                                                                        EditData.PriorityRank >= 4
-                                                                    }
-                                                                    onChange={() =>
-                                                                        setEditData({
-                                                                            ...EditData,
-                                                                            PriorityRank: 4,
-                                                                        })
-                                                                    }
-                                                                />
-                                                                Normal{" "}
-                                                            </label>
-                                                        </li>
-                                                        <li className="form-check ">
-                                                            <label className="SpfxCheckRadio">
-                                                                <input
-                                                                    className="radio"
-                                                                    name="radioPriority"
-                                                                    type="radio"
-                                                                    checked={
-                                                                        EditData.PriorityRank <= 3 &&
-                                                                        EditData.PriorityRank > 0
-                                                                    }
-                                                                    onChange={() =>
-                                                                        setEditData({
-                                                                            ...EditData,
-                                                                            PriorityRank: 1,
-                                                                        })
-                                                                    }
-                                                                />
-                                                                Low{" "}
-                                                            </label>
-                                                        </li>
-                                                    </ul>
+                                                    <div className="col-md-6">
+                                                        <div className="input-group">
+                                                            <label className="form-label full-width">SmartPriority</label>
+                                                            <div className="bg-e9 w-100 py-1 px-2">
+                                                                <span className="hover-text hreflink m-0 siteColor">
+                                                                    <>{EditData?.SmartPriority != undefined ? EditData?.SmartPriority : 0}</>
+                                                                    <span className="tooltip-text pop-right">
+                                                                        {EditData?.showFormulaOnHover != undefined ? EditData?.showFormulaOnHover : ""}
+                                                                    </span>
+                                                                </span>
+                                                            </div>
+                                                        </div>
+
+                                                    </div>
                                                 </div>
                                                 <div className="col-12 mb-2">
                                                     <div className="input-group ">

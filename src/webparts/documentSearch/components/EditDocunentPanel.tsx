@@ -158,7 +158,7 @@ const EditDocumentpanel = (props: any) => {
     return (
       <>
 
-        <div className='ps-4 siteColor subheading'>
+        <div className='subheading'>
           {true ? `Edit Document Metadata - ${EditdocumentsData?.FileLeafRef}` : null}
         </div>
         <Tooltip ComponentId={'942'} />
@@ -214,12 +214,13 @@ const EditDocumentpanel = (props: any) => {
     <>
       <Panel onRenderHeader={onRenderCustomHeaderDocuments}
         isOpen={true}
-        type={PanelType.custom}
-        customWidth="1091px"
+        type={PanelType.large}
+        // customWidth="1091px"
         onDismiss={handleClosedoc}
         isBlocking={false}
         className={servicespopup == true ? "serviepannelgreena" : "siteColor"}
       >
+        <div className='modal-body mb-5'>
         <Tabs
           defaultActiveKey="BASICINFORMATION"
           transition={false}
@@ -249,7 +250,7 @@ const EditDocumentpanel = (props: any) => {
                 </div>
 
                 <div className="input-group">
-                  <label className="full-width">Item Rank</label>
+                  <label className="full-width form-label">Item Rank</label>
                   <select className="form-select" defaultValue={EditdocumentsData?.ItemRank} onChange={(e) => setEditdocumentsData({ ...EditdocumentsData, ItemRank: e.target.value })}>
                     {ItemRank.map(function (h: any, i: any) {
                       return (
@@ -262,23 +263,24 @@ const EditDocumentpanel = (props: any) => {
                 </div>
               </div>
               <div className='d-flex mt-3'>
-                <div className="input-group"><label className="full-width ">Title </label>
+                <div className="input-group">
+                  <label className="full-width form-label">Title </label>
                   <input type="text" className="form-control" value={EditdocumentsData?.Title}
                     onChange={(e => setallSetValue({ ...allValue, Title: e.target.value }))}
                   />
                 </div>
 
-                <div className={`input-group mx-4 ${portfolioItemColor === 'Service' ? 'serviepannelgreena' : ''}`}>
+                <div className={`input-group ms-4 ${portfolioItemColor === 'Service' ? 'serviepannelgreena' : ''}`}>
                   <label className="form-label full-width">
                     Portfolio Item
                   </label>
                   {allValue?.componentservicesetdataTag != undefined &&
-                    <div className="d-flex justify-content-between block px-2 py-1" style={{ width: '85%' }}>
-                      <a target="_blank" data-interception="off" href={`${props?.AllListId?.siteUrl}/SitePages/Portfolio-Profile.aspx?taskId=${allValue?.componentservicesetdataTag?.Id}`}>{allValue?.componentservicesetdataTag?.Title}</a>
-                      <a>
-                        <span title="Remove Component" onClick={() => unTaggedPortfolioItem()} className="bg-light svg__icon--cross svg__iconbox">
+                    <div className="block" style={{ width: '95%' }}>
+                      <a target="_blank" className='wid90' data-interception="off" href={`${props?.AllListId?.siteUrl}/SitePages/Portfolio-Profile.aspx?taskId=${allValue?.componentservicesetdataTag?.Id}`}>{allValue?.componentservicesetdataTag?.Title}</a>
+                      
+                        <span title="Remove Component" onClick={() => unTaggedPortfolioItem()} className="bg-light ml-auto svg__icon--cross svg__iconbox">
                         </span>
-                      </a>
+                      
                     </div>}
                   {allValue?.componentservicesetdataTag == undefined && <input type="text" className="form-control" readOnly />}
                   <span className="input-group-text" title="Linked Component Task Popup">
@@ -292,28 +294,23 @@ const EditDocumentpanel = (props: any) => {
           </Tab>
           <Tab eventKey="IMAGEINFORMATION" title="IMAGE INFORMATION" className='p-0' >
             <div className='border border-top-0 p-2'>
-
               {isOpenImageTab && <ImageTabComponent EditdocumentsData={EditdocumentsData} AllListId={props.AllListId} Context={props.Context} callBack={imageTabCallBack} />}
             </div>
           </Tab>
         </Tabs>
-        <footer className='text-end mt-2'>
-          <div className='col-sm-12 row m-0'>
-            <div className="col-sm-6 text-lg-start">
+        </div>
+        <footer className='bg-f4 fixed-bottom'>
+          <div className='align-items-center d-flex justify-content-between px-4 py-2'>
               <div>
                 {console.log("footerdiv")}
                 <div><span className='pe-2'>Created</span><span className='pe-2'>{EditdocumentsData?.Created !== null ? moment(EditdocumentsData?.Created).format("DD/MM/YYYY HH:mm") : ""}&nbsp;By</span><span><a>{EditdocumentsData?.Author?.Title}</a></span></div>
                 <div><span className='pe-2'>Last modified</span><span className='pe-2'>{EditdocumentsData?.Modified !== null ? moment(EditdocumentsData?.Modified).format("DD/MM/YYYY HH:mm") : ""}&nbsp;By</span><span><a>{EditdocumentsData?.Editor?.Title}</a></span></div>
                 <div><span onClick={() => deleteDocumentsData(EditdocumentsData?.Id)} className="alignIcon hreflink svg__icon--trash svg__iconbox"></span>Delete this item</div>
               </div>
-            </div>
 
-            <div className='col-sm-6 mt-2 p-0'>
+            <div>
               <span className='pe-2'><a target="_blank" data-interception="off" href={`${props?.Context?._pageContext?._web?.absoluteUrl}/Documents/Forms/EditForm.aspx?ID=${EditdocumentsData?.Id != null ? EditdocumentsData?.Id : null}`}>Open out-of-the-box form</a></span>
-
-              <Button className='btn btn-primary ms-1  mx-2'
-                onClick={updateDocumentsData}
-              >
+              <Button className='btn btn-primary mx-2' onClick={updateDocumentsData}>
                 Save
               </Button>
               <Button className='btn btn-default' onClick={() => handleClosedoc()}>

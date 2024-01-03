@@ -17,7 +17,7 @@ import { ColumnDef } from "@tanstack/react-table";
 import "bootstrap/dist/css/bootstrap.min.css";
 import HighlightableCell from "../../../globalComponents/GroupByReactTableComponents/highlight";
 import Loader from "react-loader";
-
+import { myContextValue } from '../../../globalComponents/globalCommon'
 import ShowClintCatogory from "../../../globalComponents/ShowClintCatogory";
 import ReactPopperTooltip from "../../../globalComponents/Hierarchy-Popper-tooltip";
 import GlobalCommanTable, {
@@ -53,27 +53,14 @@ let hasExpanded: any = true;
 let isColumnDefultSortingAsc: any = false;
 let hasCustomExpanded: any = true;
 let isHeaderNotAvlable: any = false
-
+let TagProjectToStructure=false;
 let allgroupdata:any = [];
 function PortfolioTable(SelectedProp: any) {
   const childRef = React.useRef<any>();
   if (childRef != null) {
     childRefdata = { ...childRef };
   }
-  try {
-    if (SelectedProp?.NextProp != undefined) {
-      SelectedProp.NextProp.isShowTimeEntry = JSON.parse(
-        SelectedProp?.NextProp?.TimeEntry
-      );
 
-      SelectedProp.NextProp.isShowSiteCompostion = JSON.parse(
-        SelectedProp?.NextProp?.SiteCompostion
-      );
-    }
-  } catch (e) {
-    console.log(e);
-  }
-  ContextValue = SelectedProp?.NextProp;
 
   const refreshData = () => setData(() => renderData);
   const [loaded, setLoaded] = React.useState(false);
@@ -115,6 +102,7 @@ function PortfolioTable(SelectedProp: any) {
     const [flatViewDataAll, setFlatViewDataAll] = React.useState([]);
     const [portfolioTypeDataItemBackup, setPortFolioTypeIconBackup] = React.useState([]);
     const [taskTypeDataItemBackup, setTaskTypeDataItemBackup] = React.useState([]);
+    const globalContextData: any = React.useContext<any>(myContextValue)
   let ComponetsData: any = {};
   let Response: any = [];
   let props = undefined;
@@ -124,6 +112,30 @@ function PortfolioTable(SelectedProp: any) {
   let TaskUsers: any = [];
   let TasksItem: any = [];
 
+  React.useEffect(() => {
+    try {
+      if (SelectedProp?.NextProp != undefined && SelectedProp?.UsedFrom!='ProjectManagement') {
+        SelectedProp.NextProp.isShowTimeEntry = JSON.parse(
+          SelectedProp?.NextProp?.TimeEntry
+        );
+  
+        SelectedProp.NextProp.isShowSiteCompostion = JSON.parse(
+          SelectedProp?.NextProp?.SiteCompostion
+        );
+        ContextValue = SelectedProp?.NextProp;
+      }else{
+        ContextValue = SelectedProp?.NextProp;
+      }
+      TagProjectToStructure = SelectedProp?.UsedFrom=='ProjectManagement';
+    } catch (e) {
+      console.log(e);
+    }
+    getTaskType();
+    findPortFolioIconsAndPortfolio();
+    GetSmartmetadata();
+    getTaskUsers();
+    getPortFolioType();
+  }, []);
 
   // Load all time entry for smart time 
 
@@ -236,7 +248,7 @@ function PortfolioTable(SelectedProp: any) {
       )
     );
     smartmetaDetails?.map((newtest: any) => {
-      if (newtest.Title == "SDC Sites" || newtest.Title == "DRR" || newtest.Title == "Offshore Tasks" || newtest.Title == "DE" || newtest.Title == "Gender" || newtest.Title == "Small Projects" || newtest.Title == "Shareweb Old" || newtest.Title == "Master Tasks")
+      if (newtest.Title == "SDC Sites" || newtest.Title == "DRR" || newtest.Title == "Offshore Tasks"  || newtest.Title == "Gender" || newtest.Title == "Small Projects" || newtest.Title == "Shareweb Old" || newtest.Title == "Master Tasks")
       newtest.DataLoadNew = false;
       else if (newtest.TaxType == "Sites") siteConfigSites.push(newtest);
       if (newtest?.TaxType == 'timesheetListConfigrations') {
@@ -640,13 +652,6 @@ function PortfolioTable(SelectedProp: any) {
     portfolioColor = SelectedProp?.props?.PortfolioType?.Color;
   }, [AllSiteTasksData]);
 
-  React.useEffect(() => {
-    getTaskType();
-    findPortFolioIconsAndPortfolio();
-    GetSmartmetadata();
-    getTaskUsers();
-    getPortFolioType();
-  }, []);
 // Flatview 
 
 
@@ -1739,8 +1744,16 @@ const switchGroupbyData = () => {
 const addedCreatedDataFromAWT = (arr: any, dataToPush: any) => {
   if(dataToPush?.PortfolioId === SelectedProp.props.Id && dataToPush?.ParentTask?.Id === undefined){
     arr.push(dataToPush)
+    if(SelectedProp?.UsedFrom=='ProjectManagement'){
+      globalContextData?.LoadAllSiteTasks()
+      globalContextData?.closeCompTaskPopup()
+    }
     return true;
   }else if(dataToPush?.PortfolioId === SelectedProp?.props?.Id && dataToPush?.TaskTypeId ==2 && dataToPush?.ParentTaskId === null){
+    if(SelectedProp?.UsedFrom=='ProjectManagement'){
+      globalContextData?.LoadAllSiteTasks()
+      globalContextData?.closeCompTaskPopup()
+    }
     const checkother = arr.filter((item: any) => item.Title === "Others");
     if (checkother?.length === 0) {
       let temp: any = {};
@@ -1796,6 +1809,10 @@ const updatedDataDataFromPortfolios = (copyDtaArray: any, dataToUpdate: any) => 
           if (updatedDataDataFromPortfolios(copyDtaArray[i].subRows, dataToUpdate)) {
               return true;
           }
+      }
+      if(SelectedProp?.UsedFrom=='ProjectManagement'){
+        globalContextData?.portfolioCreationCallBack([dataToUpdate])
+        globalContextData?.closeCompTaskPopup()
       }
   }
   return false;
@@ -1929,6 +1946,8 @@ const updatedDataDataFromPortfolios = (copyDtaArray: any, dataToUpdate: any) => 
   };
   //-------------------------------------------------------------End---------------------------------------------------------------------------------
   return (
+    <myContextValue.Provider value={{ ...globalContextData,  tagProjectFromTable:TagProjectToStructure}}>
+   
     <div id="ExandTableIds" style={{}}>
       <section className="ContentSection">
         <div className="col-sm-12 clearfix">
@@ -2093,6 +2112,7 @@ const updatedDataDataFromPortfolios = (copyDtaArray: any, dataToUpdate: any) => 
                         portfolioTypeConfrigration={portfolioTypeConfrigration}
                         showingAllPortFolioCount={true}
                         showCreationAllButton={true}
+                        hideRestructureBtn={SelectedProp?.UsedFrom=='ProjectManagement'}
                         OpenAddStructureModal={OpenAddStructureModal}
                         addActivity={addActivity}
                       />
@@ -2281,7 +2301,8 @@ const updatedDataDataFromPortfolios = (copyDtaArray: any, dataToUpdate: any) => 
         ></TimeEntryPopup>
       )}
     </div>
+    </myContextValue.Provider>
   );
 }
 export default PortfolioTable;
-
+export {myContextValue}
