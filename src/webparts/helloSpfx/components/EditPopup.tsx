@@ -1,7 +1,3 @@
-/* eslint-disable @typescript-eslint/no-use-before-define */
-/* eslint-disable @typescript-eslint/explicit-function-return-type */
-/* eslint-disable @typescript-eslint/no-explicit-any */
-/* eslint-disable @typescript-eslint/no-unused-vars */
 import { Panel, PrimaryButton, TextField, Dropdown, PanelType } from 'office-ui-fabric-react';
 import * as React from 'react';
 import { Item, sp, Web } from 'sp-pnp-js';
@@ -45,7 +41,14 @@ const EditPopup = (props: any) => {
     const [showTextInput, setShowTextInput] = useState(false);
     const [otherChoice, setOtherChoice] = useState('');
     const [listData, setListData] = useState([]);
-    const HRweb = new Web(props?.props?.siteUrl);
+
+    let allListID= {
+        InterviewFeedbackFormListId: props?.ListID,
+        SkillsPortfolioListID: props?.skillsList,
+        siteUrl: props?.siteUrl
+    }
+
+    const HRweb = new Web(allListID?.siteUrl)
 
     const handlePlatformClick = (e: React.ChangeEvent<HTMLInputElement>, PlatformName: string) => {
         const clickedPlatform = e.target.value; // Assuming the value of the checkbox is the platform name
@@ -159,7 +162,7 @@ const EditPopup = (props: any) => {
                 SelectedPlatforms: platformChoicesString,
 
             }
-            const list = HRweb.lists.getById(props.ListID);
+            const list = HRweb.lists.getById(allListID?.InterviewFeedbackFormListId);
             await list.items.getById(props.item.Id).update(updateData);
             EmployeeData = updateData
             console.log("Item updated successfully");
@@ -183,8 +186,7 @@ const EditPopup = (props: any) => {
     const getListData = () => {
         const skillMap: any = {};
         let initialratings: any = {};
-        const web = new Web(props?.props?.siteUrl);
-        web.lists.getById(props?.props?.SkillsPortfolioListID).items.getAll().then((response: any) => {
+        HRweb.lists.getById(allListID?.SkillsPortfolioListID).items.getAll().then((response: any) => {
             setListData(response);
             const filteredData = response.filter((item: any) => {
                 return item.Id === props.item.Positions.Id;
@@ -268,10 +270,9 @@ const EditPopup = (props: any) => {
         const confirmDelete = window.confirm("Are you sure you want to delete this item?");
 
         if (confirmDelete) {
-            const web = new Web(props?.props?.siteUrl);
 
-            web.lists
-                .getById(props?.ListID)
+            HRweb.lists
+                .getById(allListID?.InterviewFeedbackFormListId)
                 .items.getById(itm)
                 .recycle()
                 .then(() => {
@@ -301,6 +302,9 @@ const EditPopup = (props: any) => {
         props.EditPopupClose()
 
     }, []);
+    const openDocInNewTab = (url: string | URL | undefined) => {
+        window.open(url, '_blank');
+    };
     return (
         <Panel
             onRenderHeader={onRenderCustomHeaderMain}
@@ -463,7 +467,7 @@ const EditPopup = (props: any) => {
                                         <span className="svg__iconbox svg__icon--document"></span>
                                     </span>
                                     <span style={{ display: document.File_x0020_Type !== 'aspx' ? 'inline' : 'none' }}>
-                                        <a href={`${document.EncodedAbsUrl}?web=1`} target="_blank">
+                                    <a onClick={() => openDocInNewTab(document.EncodedAbsUrl)}>
                                             <span>
                                                 <span style={{ display: document.FileLeafRef !== 'undefined' ? 'inline' : 'none' }}>
                                                     {document.FileLeafRef}
@@ -476,7 +480,6 @@ const EditPopup = (props: any) => {
                                     </span>
                                     <span onClick={() => removeDocuments('', document.Id)} className="svg__iconbox svg__icon--trash mx-auto"></span>
                                 </div>
-
                             ))}
                         </div>
                     </div>
