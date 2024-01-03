@@ -1612,7 +1612,7 @@ const AncTool = (props: any) => {
                                                                     <th className='p-1'>Type</th>
                                                                     <th className='p-1'>Title</th>
                                                                     <th style={{width:"150px"}}>Item Rank</th>
-                                                                    <th style={{width:"15px"}}>&nbsp;</th>
+                                                                    <th style={{width:"15x"}}>&nbsp;</th>
 
                                                                 </tr>
 
@@ -1624,12 +1624,12 @@ const AncTool = (props: any) => {
                                                                             <td><span className={`alignIcon  svg__iconbox svg__icon--${file?.docType}`} title={file?.docType}></span></td>
                                                                             <td><a href={file?.EncodedAbsUrl} target="_blank" data-interception="off" className='hreflink'>{file?.Title}</a></td>
                                                                             <td>{file?.ItemRank}</td>
-                                                                            <td> <label
+                                                                            <td> <span
                                                                                 style={{ marginLeft: '6px' }}
                                                                                 title='Untag Document'
                                                                                 onClick={() => { tagSelectedDoc(file) }}
-                                                                                className='svg__iconbox ml-auto svg__icon--cross dark hreflink'
-                                                                            ></label></td>
+                                                                                className='alignIcon  svg__iconbox svg__icon--cross dark hreflink'
+                                                                            ></span></td>
                                                                         </tr>
                                                                     )
                                                                 })}

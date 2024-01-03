@@ -467,7 +467,7 @@ export default function GetData(props: any) {
                         {ArchiveCandidates && <div className='Alltable'><GlobalCommanTable columns={columns} data={ArchiveCandidates} multiSelect={true} showHeader={true} callBackData={callBackData} /></div>}
                     </div>
                 </div>
-                {isEditPopupOpen ? <EditPopup props={props?.props} EditPopupClose={EditPopupClose} callbackEdit={callbackEdit} item={selectedItem} ListID={props?.props?.InterviewFeedbackFormListId} /> : ''}
+                {isEditPopupOpen ? <EditPopup EditPopupClose={EditPopupClose} callbackEdit={callbackEdit} item={selectedItem} ListID={props?.props?.InterviewFeedbackFormListId} skillsList={props?.props?.SkillsPortfolioListID} /> : ''}
                 {isAddPopupOpen ? <AddPopup props={props?.props} context={props?.props?.Context} AddPopupClose={AddPopupClose} callbackAdd={callbackAdd} ListID={props?.props?.InterviewFeedbackFormListId} /> : ''}
                 {isAddEditPositionOpen ? <AddEditPostion AddEditPositionCLose={AddEditPositionCLose} props={props?.props}/> : ''}
             </div>
