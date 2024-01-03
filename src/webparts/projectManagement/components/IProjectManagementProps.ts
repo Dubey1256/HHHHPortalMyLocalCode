@@ -12,6 +12,7 @@ export interface IProjectManagementProps {
   SmartInformationListID: any;
   DocumentsListID: any;
   TaskTimeSheetListID: any;
+  PortFolioTypeID: any;
   TaskTypeID:any;
   TimeEntry: any;
   SiteCompostion: any;
