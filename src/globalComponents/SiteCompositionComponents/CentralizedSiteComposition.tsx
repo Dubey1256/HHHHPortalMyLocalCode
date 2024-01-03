@@ -17,6 +17,7 @@ import InfoIconsToolTip from "../InfoIconsToolTip/InfoIconsToolTip";
 import ClientCategoryPopup from "./SCClientCategoryPopup";
 import SmartTotalTime from '../EditTaskPopup/SmartTimeTotal';
 import { SlArrowDown, SlArrowRight } from "react-icons/sl";
+import ShowSiteComposition from "./ShowSiteComposition";
 import moment from "moment";
 let AllSiteDataBackup: any = [];
 let AllClientCategoryDataBackup: any = [];
@@ -361,6 +362,7 @@ const CentralizedSiteComposition = (Props: any) => {
                     SelectedItemDetails.ClientCategory?.map((SelectedCCItem: any) => {
                         if (SelectedCCItem?.Id == AllCCItem?.Id) {
                             TempCCItems.push(AllCCItem);
+                            AllCCItem.checked = true;
                             AllClientCategoryBucket.push(AllCCItem);
                         }
                     })
@@ -621,7 +623,7 @@ const CentralizedSiteComposition = (Props: any) => {
             AllSiteDataBackup?.map((ItemData: any) => {
                 ItemData.ClientCategories = UniqueCCItemsForCC?.filter((selectedCC: any) => selectedCC?.siteName == ItemData?.Title);
                 if (ItemData.ClientCategories?.length > 0) {
-                    ItemData.ClientCategories[0].checked = true;
+                    // ItemData.ClientCategories[0].checked = true;
                 }
             })
         }
@@ -928,20 +930,17 @@ const CentralizedSiteComposition = (Props: any) => {
                 size: 95,
             },
             {
-                accessorFn: (row) => row?.projectStructerId + "." + row?.ProjectTitle,
+                accessorFn: (row) => row?.Sitestagging + "." + row?.Sitestagging,
                 cell: ({ row, column, getValue }) => (
                     <>
-                        {row?.original?.ProjectTitle != (null || undefined) ?
-                            <span ><a style={row?.original?.fontColorTask != undefined ? { color: `${row?.original?.fontColorTask}` } : { color: `${row?.original?.PortfolioType?.Color}` }} data-interception="off" target="_blank" className="hreflink serviceColor_Active" href={`${siteUrl}/SitePages/Project-Management.aspx?ProjectId=${row?.original?.ProjectId}`} >
-                                <ReactPopperTooltip ShareWebId={row?.original?.projectStructerId} projectToolShow={true} row={row} AllListId={RequiredListIds} /></a></span>
-                            : ""}
+                        <ShowSiteComposition SitesTaggingData={row?.original?.Sitestagging} AllSitesData={AllSiteDataBackup}/>
                     </>
                 ),
-                id: 'ProjectTitle',
-                placeholder: "Project",
+                id: 'Sitestagging',
+                placeholder: "Site Composition",
                 resetColumnFilters: false,
                 header: "",
-                size: 70,
+                size: 95,
             },
             {
                 accessorKey: "PercentComplete",
@@ -1314,7 +1313,6 @@ const CentralizedSiteComposition = (Props: any) => {
             })
             setTaggedSiteCompositionCount(SelectedItemDetailsFormCall?.SiteCompositionJSONBackup?.length)
             GlobalCount = SelectedItemDetailsFormCall?.SiteCompositionJSONBackup?.length;
-
         }
         setAllSiteData([...TempSiteComposition]);
     }
@@ -1355,6 +1353,19 @@ const CentralizedSiteComposition = (Props: any) => {
 
     const PrepareTheDataForUpdatingOnBackendSide = () => {
         let TaskShouldBeUpdate: any = true;
+        let checkIsCCSelected: any = false;
+        const PreparedUpdatedDataForValidation: any = filterUpdatedSiteCompositions();
+        const selectedCC: any[] = PreparedUpdatedDataForValidation.ClientCategories;
+        if (selectedCC?.length > 0) {
+            checkIsCCSelected = true;
+        } else {
+            let conformationCCStatus = confirm("You don't have selected any Client Category if you still want to do it click on OK")
+            if (conformationCCStatus) {
+                checkIsCCSelected = true;
+            } else {
+                checkIsCCSelected = false;
+            }
+        }
         if (TotalPercent > 101) {
             TaskShouldBeUpdate = false;
             alert("site composition allocation should not be more than 100%");
@@ -1367,7 +1378,7 @@ const CentralizedSiteComposition = (Props: any) => {
                 TaskShouldBeUpdate = false;
             }
         }
-        if (TaskShouldBeUpdate) {
+        if (TaskShouldBeUpdate && checkIsCCSelected) {
             let AllDataForUpdate: any = [SelectedItemDetailsFormCall].concat(SelectedChildItems);
             let DataUpdated: any = false;
             AllDataForUpdate?.map(async (FinalData: any) => {
@@ -1433,6 +1444,7 @@ const CentralizedSiteComposition = (Props: any) => {
                 }
             }
         }
+
 
         let FinalSitestagging: any[] = commonFunctionForRemoveDataRedundancy(SiteCompositionJSON);
         let MakeUpdateJSONDataObject: object = {
