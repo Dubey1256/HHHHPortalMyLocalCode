@@ -8,6 +8,7 @@ import DeleteSmartMetadata from "./DeleteSmartMetadata";
 let SmartmetadataItems: any = [];
 let TabSelected: string;
 let compareSeletected: any = [];
+let childRefdata: any;
 let ParentMetaDataItems: any = [];
 export default function ManageSmartMetadata(selectedProps: any) {
     const [setName]: any = useState('');
@@ -23,7 +24,10 @@ export default function ManageSmartMetadata(selectedProps: any) {
     const [smartMetadataCount, setSmartMetadataCount] = useState<any>()
     const [Tabs, setTabs] = useState([]);
     var [TabsFilter]: any = useState([]);
-    const childRef: any = useRef<any>();
+    const childRef = useRef<any>();
+    if (childRef != null) {
+        childRefdata = { ...childRef };
+    }
     //...........................................................Start Filter SmartMetadata Items counts....................................................
 
     const getFilterMetadataItems = (Metadata: any) => {
@@ -297,12 +301,15 @@ export default function ManageSmartMetadata(selectedProps: any) {
 
     const CloseEditSmartMetaPopup = () => {
         setSmartMetadataEditPopupOpen(false);
+        childRef?.current?.setRowSelection({});
     };
     const CloseDeleteSmartMetaPopup = () => {
         setSmartMetadataDeletePopupOpen(false);
+        childRef?.current?.setRowSelection({});
     };
     //-------------------------------------------------- RESTRUCTURING FUNCTION start---------------------------------------------------------------
-    const callBackData = useCallback((checkData: any) => {
+
+    const callBackSmartMetaData = useCallback((Array: any, topCompoIcon: any, Taxtype: any, checkData: any) => {
         let array: any = [];
         if (checkData != undefined) {
             compareSeletected.push(checkData);
@@ -311,12 +318,9 @@ export default function ManageSmartMetadata(selectedProps: any) {
         } else {
             setSelectedItem({});
             array = [];
-
             compareSeletected = [];
         }
         setSelectedItem(array);
-    }, []);
-    const callBackSmartMetaData = useCallback((Array: any, topCompoIcon: any, Taxtype: any) => {
         if (Array) {
             let MetaData: any = [...Array]
             console.log(MetaData)
@@ -324,6 +328,7 @@ export default function ManageSmartMetadata(selectedProps: any) {
         }
         if (Taxtype) {
             SmartmetadataItems = [];
+            setSelectedItem({});
             LoadSmartMetadata();
         }
     }, []);
@@ -434,7 +439,7 @@ export default function ManageSmartMetadata(selectedProps: any) {
                 <div className="tab-pane Alltable mx-height show active" id="URLTasks" role="tabpanel" aria-labelledby="URLTasks">
                     {
                         Smartmetadata &&
-                        <GlobalCommanTable smartMetadataCount={smartMetadataCount} Tabs={Tabs} compareSeletected={compareSeletected} CloseEditSmartMetaPopup={CloseEditSmartMetaPopup} SelectedItem={SelectedItem} setName={setName} ParentItem={Smartmetadata} AllList={selectedProps.AllList} data={Smartmetadata} TabSelected={TabSelected} ref={childRef} callChildFunction={callChildFunction} callBackSmartMetaData={callBackSmartMetaData} columns={columns} showHeader={true} expandIcon={true} showPagination={true} callBackData={callBackData} />
+                        <GlobalCommanTable smartMetadataCount={smartMetadataCount} Tabs={Tabs} compareSeletected={compareSeletected} CloseEditSmartMetaPopup={CloseEditSmartMetaPopup} SelectedItem={SelectedItem} setName={setName} ParentItem={Smartmetadata} AllList={selectedProps.AllList} data={Smartmetadata} TabSelected={TabSelected} ref={childRefdata} callChildFunction={callChildFunction} callBackSmartMetaData={callBackSmartMetaData} columns={columns} showHeader={true} expandIcon={true} showPagination={true} callBackData={callBackSmartMetaData} />
                     }
                 </div>
             </div>
