@@ -47,8 +47,7 @@ export default function ProjectOverview(props: any) {
     const [checkData, setcheckData] = React.useState([])
     const [showTeamMemberOnCheck, setShowTeamMemberOnCheck] = React.useState(false)
     const [isOpenEditPopup, setisOpenEditPopup] = React.useState(false);
-    const [listIsVisible, setListIsVisible] = React.useState(false);
-    const [GroupedDisplayTable, setDisplayGroupedTable] = React.useState(false);
+    const [isAddStructureOpen, setIsAddStructureOpen] = React.useState(false);
     const [IsComponent, setIsComponent] = React.useState(false);
     const [AllTaskUser, setAllTaskUser] = React.useState([]);
     const [SharewebComponent, setSharewebComponent] = React.useState('');
@@ -1783,7 +1782,7 @@ export default function ProjectOverview(props: any) {
 
     }, []);
 
-    const callBackData1 = React.useCallback((getData: any, topCompoIcon: any,callback:any) => {
+    const restructureCallback = React.useCallback((getData: any, topCompoIcon: any,callback:any) => {
         setTopCompoIcon(topCompoIcon);
        setData(getData);
        if(callback == true){
@@ -1792,8 +1791,11 @@ export default function ProjectOverview(props: any) {
 
     }, []);
 
-    const CallBack = React.useCallback(() => {
-        GetMasterData()
+    const CallBack = React.useCallback((item:any, type:any) => {
+        setIsAddStructureOpen(false)
+        if(type=='Save'){
+            GetMasterData()
+        }
     }, [])
 
 
@@ -1984,6 +1986,9 @@ export default function ProjectOverview(props: any) {
             console.log(peopleOnLeave);
         }
     }
+    const OpenAddStructureModal = () => {
+        setIsAddStructureOpen(true);
+      }
     //End
 
 
@@ -2017,7 +2022,7 @@ export default function ProjectOverview(props: any) {
 
                                     </dl>
                                     <div className="m-0 text-end">
-                                        <AddProject CallBack={CallBack} items={CheckBoxData} PageName={"ProjectOverview"} AllListId={AllListId} data={data}/>
+                                     
                                         {currentUserData?.Title == "Deepak Trivedi" || currentUserData?.Title == "Ranu Trivedi" || currentUserData?.Title == "Abhishek Tiwari" || currentUserData?.Title == "Prashant Kumar" ?
                                             <>
                                                 <a className="hreflink  ms-1" onClick={() => { sendAllWorkingTodayTasks() }}>Share Working Todays's Task</a></>
@@ -2029,7 +2034,8 @@ export default function ProjectOverview(props: any) {
                                         {selectedView == 'grouped' ? <GlobalCommanTable expandIcon={true}   headerOptions={headerOptions} AllListId={AllListId} columns={columns} multiSelect={true} data={data} paginatedTable={false} callBackData={callBackData} pageName={"ProjectOverviewGrouped"} TaskUsers={AllTaskUser} showHeader={true} /> : ''}
                                         {selectedView == 'flat' ? <GlobalCommanTable expandIcon={true}   headerOptions={headerOptions} AllListId={AllListId} columns={flatView} paginatedTable={true} data={AllSiteTasks} callBackData={callBackData} pageName={"ProjectOverview"} TaskUsers={AllTaskUser} showHeader={true} /> : ''}
                                         {selectedView == 'teamWise' ? <GlobalCommanTable expandIcon={true}   headerOptions={headerOptions} AllListId={AllListId} columns={groupedUsers} paginatedTable={true} data={categoryGroup} callBackData={callBackData} pageName={"ProjectOverviewGrouped"} TaskUsers={AllTaskUser} showHeader={true} /> : ''}
-                                        {selectedView == 'Projects' ? <GlobalCommanTable expandIcon={true}  ref={childRef} callChildFunction={callChildFunction} restructurebtn={true} restructureCallBack={callBackData1}  AllListId={AllListId} headerOptions={headerOptions} paginatedTable={false} multiSelect={true} columns={column2} data={flatData} callBackData={callBackData} pageName={"ProjectOverview"} TaskUsers={AllTaskUser} showHeader={true} /> : ''}
+                                        {selectedView == 'Projects' ? <GlobalCommanTable expandIcon={true} hideAddActivityBtn={true} ref={childRef} callChildFunction={callChildFunction} restructurebtn={true} restructureCallBack={restructureCallback}  AllListId={AllListId} headerOptions={headerOptions} paginatedTable={false}  showCreationAllButton={true}
+                                  OpenAddStructureModal={OpenAddStructureModal} multiSelect={true} columns={column2} data={flatData} callBackData={callBackData} pageName={"ProjectOverview"} TaskUsers={AllTaskUser} showHeader={true} /> : ''}
                                     </div>
                                 </div>
                                 </div>
@@ -2046,7 +2052,7 @@ export default function ProjectOverview(props: any) {
                 {IsComponent && <EditProjectPopup props={SharewebComponent} AllListId={AllListId} Call={Call} showProgressBar={showProgressBar}> </EditProjectPopup>}
                 {ShowTeamPopup === true ? <ShowTeamMembers props={checkData} callBack={showTaskTeamCAllBack} TaskUsers={AllTaskUser} /> : ''}
                 {openTimeEntryPopup && <TimeEntryPopup props={taskTimeDetails} CallBackTimeEntry={TimeEntryCallBack} Context={props?.props?.Context} />}
-
+                {isAddStructureOpen && <AddProject CallBack={CallBack} items={CheckBoxData} PageName={"ProjectOverview"} AllListId={AllListId} data={data}/>}
             </div>
             {pageLoaderActive ? <PageLoader /> : ''}
         </>
