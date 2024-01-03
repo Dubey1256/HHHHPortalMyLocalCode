@@ -50,7 +50,7 @@ export default function CreateMetadataItem(props: any) {
                     console.error(error);
                 } finally {
                     closeCreateSmartMetadataPopup();
-                    addItemCallBack(array, false, SelectedItem[0]?.TaxType);
+                    addItemCallBack(array, false, SelectedItem[0]?.TaxType, undefined, '');
                 }
             } else {
                 try {
@@ -66,8 +66,9 @@ export default function CreateMetadataItem(props: any) {
                     console.error(error);
                 } finally {
                     closeCreateSmartMetadataPopup();
-                    addItemCallBack(array, false, SelectedItem[0]?.TaxType);
+                    addItemCallBack(array, false, SelectedItem[0]?.TaxType, '');
                 }
+
             }
             closeCreateSmartMetadataPopup();
             setSmartMetadataEditPopupOpen(true);
@@ -87,7 +88,7 @@ export default function CreateMetadataItem(props: any) {
                     console.error(error);
                 } finally {
                     closeCreateSmartMetadataPopup();
-                    addItemCallBack(array, false, SelectedItem[0]?.TaxType);
+                    addItemCallBack(array, false, SelectedItem[0]?.TaxType, '');
                 }
             } else {
                 try {
@@ -102,7 +103,7 @@ export default function CreateMetadataItem(props: any) {
                     console.error(error);
                 } finally {
                     closeCreateSmartMetadataPopup();
-                    addItemCallBack(array, false, SelectedItem[0]?.TaxType);
+                    addItemCallBack(array, false, SelectedItem[0]?.TaxType, '');
                 }
             }
         }
@@ -123,11 +124,11 @@ export default function CreateMetadataItem(props: any) {
             }
         } catch (error) {
             closeCreateSmartMetadataPopup();
-            addItemCallBack(array, false, SelectedItem[0]?.TaxType);
+            addItemCallBack(array, false, SelectedItem[0]?.TaxType, '');
             console.error(error);
         } finally {
             closeCreateSmartMetadataPopup();
-            addItemCallBack(array, false, SelectedItem[0]?.TaxType);
+            addItemCallBack(array, false, SelectedItem[0]?.TaxType, '');
         }
     }
     const handleTitleChange = (index: any, updatedTitle: string) => {
@@ -170,6 +171,8 @@ export default function CreateMetadataItem(props: any) {
         setChildItemTitle([{ Title: '', Child: [{ Description: '' }], Id: 0 },])
     };
     const closeCreateSmartMetadataPopup = () => {
+        setSmartDescription('');
+        setSmartMetaDataTitle('');
         setIsCreatePopupOpen(false);
     }
     const onRenderDeleteSmartMetadata = () => {

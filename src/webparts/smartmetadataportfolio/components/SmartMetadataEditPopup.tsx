@@ -7,6 +7,7 @@ import GlobalCommanTable from './GlobalCommanTableSmartmetadata';
 import Tooltip from '../../../globalComponents/Tooltip';
 import ImageTabComponenet from './ImageTabComponent'
 import VersionHistory from '../../../globalComponents/VersionHistroy/VersionHistory';
+import moment from 'moment';
 let modaltype: any;
 let SitesConfig: any[] = []
 let allSitesTask: any[] = []
@@ -219,21 +220,31 @@ export default function SmartMetadataEditPopup(props: any) {
         setOpenChangeParentPopup(false)
     }
     const changeParentMetadata = () => {
-        var subRowsChilds: any = []
-        if (selectedOptionTop) {
-            props?.AllMetadata?.filter((meta: any) => {
-                if (meta?.Title === selectedOptionTop) {
+        if (selectedChangedCategories) {
+            props?.MetadataItems?.filter((meta: any) => {
+                if (meta?.Title === selectedChangedCategories) {
                     SmartTaxonomyItem.ParentID = meta?.Id
-                    subRowsChilds = meta?.subRows;
                 }
             })
-            if (subRowsChilds !== undefined) {
-                subRowsChilds?.filter((item: any) => {
+            if (selectedOptionSecond) {
+                props?.MetadataItems?.filter((item: any) => {
                     item?.Title === selectedOptionSecond ? SmartTaxonomyItem.ParentID = item?.Id : null;
                 })
             }
-            closeParentPopup()
         }
+        if (selectedOptionTop) {
+            props?.MetadataItems?.filter((meta: any) => {
+                if (meta?.Title === selectedOptionTop) {
+                    SmartTaxonomyItem.ParentID = meta?.Id
+                }
+            })
+            if (selectedOptionSecond) {
+                props?.MetadataItems?.filter((item: any) => {
+                    item?.Title === selectedOptionSecond ? SmartTaxonomyItem.ParentID = item?.Id : null;
+                })
+            }
+        }
+        closeParentPopup();
     }
     const handleChangeCategories = (ChangeCategoryItem: any) => {
         setSelectedChangedCategories(ChangeCategoryItem.target.value);
@@ -436,14 +447,14 @@ export default function SmartMetadataEditPopup(props: any) {
             if (modaltype == "Add") {
                 const web = new Web(props?.AllList?.SPSitesListUrl);
                 await web.lists.getById(props.AllList.SPSmartMetadataListID).items.add(item);
-                props.EditItemCallBack('', '', SmartTaxonomyItem?.TaxType)
+                props.EditItemCallBack('', '', SmartTaxonomyItem?.TaxType, '')
                 CloseEditSmartMetaPopup()
             }
 
             if (modaltype == "Update") {
                 const web = new Web(props?.AllList?.SPSitesListUrl);
                 await web.lists.getById(props.AllList.SPSmartMetadataListID).items.getById(SmartTaxonomyItem.Id).update(item);
-                props.EditItemCallBack('', '', SmartTaxonomyItem?.TaxType)
+                props.EditItemCallBack('', '', SmartTaxonomyItem?.TaxType, '')
                 CloseEditSmartMetaPopup()
             }
 
@@ -535,7 +546,7 @@ export default function SmartMetadataEditPopup(props: any) {
                                         <div className="clearfix"></div>
                                     </div>
                                     }
-                                    <div className="form-group">
+                                    {props?.TabSelected !== 'Categories' && <div className="form-group">
                                         <div className="col-xs-3">Top Level:</div>
                                         <div className="col-xs-9">
                                             <select
@@ -544,21 +555,15 @@ export default function SmartMetadataEditPopup(props: any) {
                                                 onChange={handleTopOptionChange}
                                             >
                                                 <option value="">Root</option>
-                                                {props?.TabSelected === 'Categories' ?
-                                                    ChangedTopCategories[0]?.map((item: any) => (
-                                                        <option key={item.Id} value={item.Title}>
-                                                            {item.Title}
-                                                        </option>
-                                                    )) :
-                                                    props?.AllMetadata?.map((item: any) => (
-                                                        <option key={item.Id} value={item.Title}>
-                                                            {item.Title}
-                                                        </option>
-                                                    ))}
+                                                {props?.AllMetadata?.map((item: any) => (
+                                                    <option key={item.Id} value={item.Title}>
+                                                        {item.Title}
+                                                    </option>
+                                                ))}
                                             </select>
                                         </div>
                                         <div className="clearfix"></div>
-                                    </div>
+                                    </div>}
                                     <div className="form-group">
                                         <div className="col-xs-3">
                                             Second Level:<b className="span-error">*</b>
@@ -570,11 +575,17 @@ export default function SmartMetadataEditPopup(props: any) {
                                                 onChange={handleSecondOptionChange}
                                             >
                                                 <option value="">Select</option>
-                                                {childItems[0]?.map((item: any) => (
-                                                    <option key={item.Id} value={item.Title}>
-                                                        {item.Title}
-                                                    </option>
-                                                ))}
+                                                {props?.TabSelected === 'Categories' ?
+                                                    ChangedTopCategories[0]?.map((item: any) => (
+                                                        <option key={item.Id} value={item.Title}>
+                                                            {item.Title}
+                                                        </option>
+                                                    )) :
+                                                    childItems[0]?.map((item: any) => (
+                                                        <option key={item.Id} value={item.Title}>
+                                                            {item.Title}
+                                                        </option>
+                                                    ))}
                                             </select>
                                         </div>
                                         <div className="clearfix"></div>
@@ -790,41 +801,56 @@ export default function SmartMetadataEditPopup(props: any) {
                         }}
                     >
                         <div className="align-items-center d-flex justify-content-between me-3 px-4 py-2">
-                            <div className="col">
-                                <div className="text-left">
-                                    Created
-                                    <> {SmartTaxonomyItem?.CreatedDate} </>
-                                    by{" "}
-                                    <span className="siteColor">
+                            <div>
+                                <div className="">
+                                    Created{" "}
+                                    <span className="font-weight-normal siteColor">
                                         {" "}
-                                        {SmartTaxonomyItem?.Author?.Title}{" "}
+                                        {SmartTaxonomyItem.Created
+                                            ? moment(SmartTaxonomyItem.Created).format("DD/MM/YYYY")
+                                            : ""}{" "}
+                                    </span>{" "}
+                                    By{" "}
+                                    <span className="font-weight-normal siteColor">
+                                        {SmartTaxonomyItem.Author?.Title ? SmartTaxonomyItem.Author?.Title : ""}
                                     </span>
                                 </div>
-                                <div className="text-left">
-                                    Last modified
-                                    <span>{SmartTaxonomyItem?.ModifiedDate}</span>
-                                    by{" "}
-                                    <span className="siteColor">
+                                <div>
+                                    Last modified{" "}
+                                    <span className="font-weight-normal siteColor">
                                         {" "}
-                                        {SmartTaxonomyItem?.Editor?.Title}{" "}
+                                        {SmartTaxonomyItem.Modified
+                                            ? moment(SmartTaxonomyItem.Modified).format("DD/MM/YYYY")
+                                            : ""}
+                                    </span>{" "}
+                                    By{" "}
+                                    <span className="font-weight-normal siteColor">
+                                        {SmartTaxonomyItem.Editor?.Title ? SmartTaxonomyItem.Editor.Title : ""}
                                     </span>
                                 </div>
-                                <div className="text-left">
-                                    Delete this item
-                                    <span
-                                        className="alignIcon  svg__iconbox svg__icon--trash"
-                                        onClick={() => deleteDataFunction(SmartTaxonomyItem)}
-                                    ></span>
-                                </div>
-                                <div className="text-left" onClick={() => setVersionHistoryPopup(false)}>
-                                    {SmartTaxonomyItem?.Id && <VersionHistory
-                                        taskId={SmartTaxonomyItem?.Id}
-                                        siteUrls={props?.AllList?.SPSitesListUrl}
-                                        listId={props?.AllList?.SPSitesListUrl}
-                                    />}
+                                <div>
+                                    <a className="hreflink siteColor">
+                                        <span className="alignIcon svg__iconbox hreflink mini svg__icon--trash"></span>
+                                        <span
+                                            onClick={() => deleteDataFunction(SmartTaxonomyItem)}
+                                        >
+                                            Delete This Item
+                                        </span>
+                                    </a>
+
+                                    |
+                                    <span>
+                                        <div className="text-left" onClick={() => setVersionHistoryPopup(false)}>
+                                            {SmartTaxonomyItem?.Id && <VersionHistory
+                                                taskId={SmartTaxonomyItem?.Id}
+                                                siteUrls={props?.AllList?.SPSitesListUrl}
+                                                listId={props?.AllList?.SPSmartMetadataListID}
+                                            />}
+                                        </div>
+                                    </span>
                                 </div>
                             </div>
-                            <div className="col  text-end">
+                            <div className="footer-right">
                                 <a
                                     data-interception="off"
                                     target="_blank"
@@ -849,13 +875,8 @@ export default function SmartMetadataEditPopup(props: any) {
                             </div>
                         </div>
                     </footer>
-                    {/* <div className='mt-2 text-end'>
-                        <button onClick={UpdateItem} className='btn btn-primary'>Save</button>
-                        <button onClick={CloseEditSmartMetaPopup} className='btn btn-default ms-1'>Cancel</button>
-                    </div> */}
-
                 </Panel>
-            </div>
+            </div >
         </>
     );
 }

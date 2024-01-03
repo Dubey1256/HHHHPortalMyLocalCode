@@ -535,7 +535,7 @@ const GlobalCommanTable = (items: any, ref: any) => {
         let parentDataCopy: any;
         if (usedFor == "SiteComposition" || items?.multiSelect === true) {
             let finalData: any = table?.getSelectedRowModel()?.flatRows;
-            callBackData(finalData);
+            callBackData('', '', '', finalData)
         } else {
             if (table?.getSelectedRowModel()?.flatRows.length > 0) {
                 restructureFunct(true)
@@ -585,12 +585,12 @@ const GlobalCommanTable = (items: any, ref: any) => {
                     elem.original.Id = elem.original.ID
                     item = elem.original;
                 });
-                callBackData(item)
+                callBackData('', '', '', item)
             }
             else {
                 compareFunct(false);
                 SmartrestructureFunct(false);
-                callBackData(item)
+                callBackData('', '', '', item)
             }
             console.log("itrm", item)
         }
