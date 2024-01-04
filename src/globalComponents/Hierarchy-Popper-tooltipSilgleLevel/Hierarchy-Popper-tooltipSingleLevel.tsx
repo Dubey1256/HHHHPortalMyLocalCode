@@ -211,7 +211,7 @@ export default function ReactPopperTooltipSingleLevel({ ShareWebId, row, masterT
                                         <span className="d-flex">
                                             {row?.original?.Title}
                                         </span>
-                                    </a> : row?.original?.Item_x0020_Type == "Sprint" && row?.original?.Item_x0020_Type == "Project" ?
+                                    </a> : row?.original?.Item_x0020_Type == "Sprint" || row?.original?.Item_x0020_Type == "Project" ?
                                         <a className="hreflink" data-interception="off" target="blank"
                                             href={`${AllListId?.siteUrl}/SitePages/Project-Management.aspx?ProjectId=${row?.original?.Id}`}>
                                             <span className="d-flex">
