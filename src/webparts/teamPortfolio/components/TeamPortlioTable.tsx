@@ -2201,19 +2201,15 @@ function TeamPortlioTable(SelectedProp: any) {
     const CreateActivityPopup = (type: any) => {
         setActiveTile(type)
         if (checkedList?.TaskType === undefined) {
-          SelectedProp.props.NoteCall = type;
           checkedList.NoteCall = type;
-          // setIsOpenActivity(true);
+        
         }
         if (checkedList?.TaskType?.Id == 1) {
           checkedList.NoteCall = type;
-          //setIsOpenWorkstream(true);
-        }
+           }
         if (checkedList?.TaskType?.Id == 3) {
-          SelectedProp.props.NoteCall = type;
           checkedList.NoteCall = type;
-          //setIsOpenActivity(true);
-        }
+          }
         if (checkedList?.TaskType?.Id == 2) {
           alert("You can not create ny item inside Task");
         }
