@@ -29,8 +29,8 @@ const Profilcandidate = ({props}: any) => {
     let allListId = {
         // Context: props?.props.Context,
         // HHHHContactListId: props?.props?.HHHHContactListId,
-        InterviewFeedbackFormListId: props?.props?.InterviewFeedbackFormListId,
-        SkillsPortfolioListID: props?.props?.SkillsPortfolioListID
+        InterviewFeedbackFormListId: '298bc01c-710d-400e-bf48-8604d297c3c',
+        SkillsPortfolioListID: 'e79dfd6d-18aa-40e2-8d6e-930a37fe54e4'
 
         // jointSiteUrl: "https://hhhhteams.sharepoint.com/sites/HHHH"
     }

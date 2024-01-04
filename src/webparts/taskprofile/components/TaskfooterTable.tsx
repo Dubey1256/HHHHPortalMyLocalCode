@@ -1019,16 +1019,16 @@ function TasksTable(props: any) {
           MeetingItems[MeetingItems?.length - 1].ClientTime = MeetingItems[MeetingItems?.length - 1]?.ClientTime
         }
 
-        setMeetingPopup(true)
-        // setWSPopup(true)
+        // setMeetingPopup(true)
+        setWSPopup(true)
       }
     }
     else {
       if (props?.props?.TaskType?.Title == 'Workstream') {
         props.props['NoteCall'] = 'Task'
         MeetingItems.push(props.props)
-        setMeetingPopup(true)
-        // setWSPopup(true)
+        // setMeetingPopup(true)
+        setWSPopup(true)
       }
       if (props?.props?.TaskType?.Title == 'Activities') {
         let parentcat: any = [];
