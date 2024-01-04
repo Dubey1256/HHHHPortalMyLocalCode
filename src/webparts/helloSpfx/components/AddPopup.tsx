@@ -36,6 +36,7 @@ const AddPopup = (props: any) => {
             }
         };
         fetchData();
+        setDefaultDate(getCurrentDate())
     }, []);
     type FileSection = {
         id: number;
@@ -44,8 +45,10 @@ const AddPopup = (props: any) => {
     };
     const [fileSections, setFileSections]: any = useState([{ id: 1, selectedFiles: [], renamedFileName: '' }]);
     const [name, setName] = useState('');
+    const [isSaveDisabled, setIsSaveDisabled] = useState(true);
     const [exp, setExp] = useState({ years: '', months: '' });
     const [email, setEmail] = useState('');
+    const [emailValidation, setEmailValidation] = useState({ isValid: true, errorMessage: '' });
     const [phone, setPhone] = useState('');
     const [selectedInterviwer, setSelectedInterviwer] = React.useState<any[]>([]);
     const [selectedRecAction, setSelectedRecAction] = useState('');
@@ -56,28 +59,15 @@ const AddPopup = (props: any) => {
     const [content, setContent] = React.useState<string>('');
     const [isAddPosititionOpen, setisAddPositionOpen] = React.useState(false);
     const Status = ['New Candidate', 'Under Consideration', 'Interview', 'Negotiation', 'Hired', 'Rejected'];
-
     const [inputText, setInputText] = useState('');
-  
-    const [selectedPath, setSelectedPath] = useState({
-        displayPath: '',
-        completePath: '',
-    }); const [selectedFiles, setSelectedFiles] = useState([]);
+    const [selectedFiles, setSelectedFiles] = useState([]);
     const [SiteUsers, setSiteUsers] = useState([])
     const [defaultDate, setDefaultDate] = useState<string>('');
     const [folderFiles, setfolderFiles]: any = useState([]);
     const [uploadedFile, setuploadedFile]: any = useState({});
-    const [renamedFileName, setRenamedFileName]: any = React.useState('');
-    const [ShowConfirmation, setShowConfirmation]: any = useState(false);
-    const [UploadedDocDetails, setUploadedDocDetails] = useState(null);
-    const [ExistingFiles, setExistingFiles]: any = useState([]);
-    const [AllReadytagged, setAllReadytagged]: any = useState([]);
-    const [createNewDocType, setCreateNewDocType]: any = useState('');
-    const [folderExist, setFolderExist] = useState(false);
     const [showTextInput, setshowTextInput] = useState(false);
     const ActionChoices = ['Invite to Interview', 'Decline', 'Hire'];
     const [updatedPlatformChoices, setupdatedPlatformChoices] = useState<{ name: string; selected: boolean; }[]>([]);
-    const [itemRank, setItemRank] = useState(5);
     const [platformChoices, setPlatformChoices] = useState([
         { name: 'Indeed', selected: false },
         { name: 'Agentur für Arbeit', selected: false },
@@ -216,12 +206,22 @@ const AddPopup = (props: any) => {
     };
 
     const handleNameChange = (e: any) => {
-        setName(e.target.value);
+        const nameValue = e.target.value;
+        setName(nameValue);
+        setIsSaveDisabled(nameValue.trim() === '');
     };
     const handleEmailChange = (e: any) => {
-        setEmail(e.target.value);
-    };
+        const emailValue = e.target.value;
+        const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+        const isValidEmail = emailValue === '' || emailRegex.test(emailValue);
 
+        setEmailValidation({
+            isValid: isValidEmail,
+            errorMessage: isValidEmail ? '' : 'Enter a valid email address',
+        });
+
+        setEmail(emailValue);
+    };
     const handlePhoneChange = (e: any) => {
         setPhone(e.target.value);
     };
@@ -240,7 +240,7 @@ const AddPopup = (props: any) => {
     const handleDateChange = (e: any) => {
         setselectedDate(e.target.value);
     };
-    
+
     const handleOtherChoiceInputChange = (event: React.ChangeEvent<HTMLInputElement>) => {
         setOtherChoiceText(event.target.value);
     };
@@ -367,7 +367,7 @@ const AddPopup = (props: any) => {
             </>
         );
     };
-const onPeoplePickerChange = (items: any[]) => {
+    const onPeoplePickerChange = (items: any[]) => {
         setSelectedInterviwer(items[0]?.text);
     };
     return (
@@ -386,7 +386,7 @@ const onPeoplePickerChange = (items: any[]) => {
                 <div className="row">
                     <div className="col-sm-3 mb-2">
                         <div className='input-group'>
-                            <label className="form-label full-width">Candidate Name</label>
+                            <label className="form-label full-width">Candidate Name <span className="text-danger">*</span></label>
                             <input
                                 className="form-control"
                                 value={name}
@@ -435,18 +435,20 @@ const onPeoplePickerChange = (items: any[]) => {
                         <div className='input-group'>
                             <label className="form-label full-width">Responsible Staff Member</label>
                             <div className="full-width">
-                            <PeoplePicker
-                                context={props.context}                 
-                                personSelectionLimit={1}
-                                groupName={''} // Leave this blank to search all users
-                                showtooltip={true}
-                                required={false}
-                                disabled={false}
-                                ensureUser={true}
-                                onChange={onPeoplePickerChange} // Use onChange instead of selectedItems
-                                principalTypes={[PrincipalType.User]}
-                                resolveDelay={1000}
-                            /></div>
+                                <PeoplePicker
+                                    context={props.context}
+                                    personSelectionLimit={1}
+                                    groupName={''}
+                                    showtooltip={true}
+                                    required={false}
+                                    disabled={false}
+                                    ensureUser={true}
+                                    onChange={onPeoplePickerChange}
+                                    principalTypes={[PrincipalType.User]}
+                                    resolveDelay={1000}
+                                    defaultSelectedUsers={selectedInterviwer}
+                                />
+                            </div>
                         </div>
                     </div>
                     <div className="col-sm-3 mb-2">
@@ -480,8 +482,16 @@ const onPeoplePickerChange = (items: any[]) => {
                     <div className="col-sm-3 mb-2">
                         <div className='input-group'>
                             <label className="form-label full-width">Email</label>
-                            <input className="form-control" value={email}
-                                onChange={handleEmailChange} type="email" placeholder="Enter Email" />
+                            <input
+                                className={`form-control ${emailValidation.isValid ? '' : 'is-invalid'}`}
+                                value={email}
+                                onChange={handleEmailChange}
+                                type="email"
+                                placeholder="Enter Email"
+                            />
+                            {!emailValidation.isValid && (
+                                <div className="invalid-feedback">{emailValidation.errorMessage}</div>
+                            )}
                         </div>
                     </div>
                     <div className="col-sm-3 mb-2">
@@ -524,7 +534,7 @@ const onPeoplePickerChange = (items: any[]) => {
                                             placeholder="Enter any other platform"
                                         />
                                     </label>
-</div>
+                                    </div>
                                 )}
                             </div>
                         </div>
@@ -553,20 +563,8 @@ const onPeoplePickerChange = (items: any[]) => {
                                                 {index > 0 && (
                                                     <span className='svg__iconbox ms-2 svg__icon--trash hreflink' onClick={() => removeFileSection(section.id)}></span>
                                                 )}
-                                                {index === 0 && (
-                                                    <span className='svg__iconbox ms-2 svg__icon--Plus hreflink' onClick={addFileSection}></span>
-                                                )}
                                             </span>
                                         </Col>
-                                        {section.selectedFiles.length > 0 && (
-                                            <Col className='mb-2'>
-                                                <ul>
-                                                    {section.selectedFiles.map((file: any, fileIndex: any) => (
-                                                        <li key={fileIndex}>{file.name}</li>
-                                                    ))}
-                                                </ul>
-                                            </Col>
-                                        )}
                                         <Col className='mb-2'>
                                             <input
                                                 type="text"
@@ -597,7 +595,7 @@ const onPeoplePickerChange = (items: any[]) => {
             </div>
             <footer className="bg-f4 fixed-bottom px-4 py-2">
                 <div className="float-end text-end">
-                    <button onClick={addCandidate} type='button' className='btn btn-primary'>Save</button>
+                    <button disabled={isSaveDisabled} onClick={addCandidate} type='button' className='btn btn-primary'>Save</button>
                     <button onClick={onClose} type='button' className='btn btn-default ms-1'>Cancel</button>
                 </div>
             </footer>
@@ -608,4 +606,3 @@ const onPeoplePickerChange = (items: any[]) => {
     );
 };
 export default AddPopup;
-

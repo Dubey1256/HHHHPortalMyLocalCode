@@ -13,7 +13,6 @@ import HHHHEditComponent from '../../contactSearch/components/contact-search/pop
 import GlobalCommanTable from '../../../globalComponents/GroupByReactTableComponents/GlobalCommanTable';
 import CandidateRating from './CandidateRating';
 import EditPopup from '../../helloSpfx/components/EditPopup';
-import { IProfilcandidateProps } from './IProfilcandidateProps';
 
 let allSite: any = {
     GMBHSite: false,
@@ -21,7 +20,7 @@ let allSite: any = {
     MainSite: true,
 }
 let OldEmployeeProfile: any
-const Profilcandidate = (props: IProfilcandidateProps) => {
+const Profilcandidate = ({props}: any) => {
     const [EmployeeData, setEmployeeData]: any = useState()
     const [localRatings, setLocalRatings] = useState([]);
     const [isEditPopupOpen, setIsEditPopupOpen] = useState(false);
@@ -30,9 +29,8 @@ const Profilcandidate = (props: IProfilcandidateProps) => {
     let allListId = {
         // Context: props?.props.Context,
         // HHHHContactListId: props?.props?.HHHHContactListId,
-        InterviewFeedbackFormListId: props?.InterviewFeedbackFormListId,
-        SkillsPortfolioListID: props?.SkillsPortfolioListID,
-        siteUrl: props?.siteUrl
+        InterviewFeedbackFormListId: props?.props?.InterviewFeedbackFormListId,
+        SkillsPortfolioListID: props?.props?.SkillsPortfolioListID
 
         // jointSiteUrl: "https://hhhhteams.sharepoint.com/sites/HHHH"
     }
@@ -42,7 +40,7 @@ const Profilcandidate = (props: IProfilcandidateProps) => {
         EmployeeDetails(params.get('CandidateId'));
         loadDocumentsByCandidate(params.get('CandidateId'));
     }, [])
-    const web = new Web(allListId?.siteUrl);
+    const web = new Web('https://hhhhteams.sharepoint.com/sites/HHHH/HR/');
     const EmployeeDetails = async (Id: any) => {
         try {
             await web.lists.getById(allListId?.InterviewFeedbackFormListId)
@@ -110,7 +108,7 @@ const Profilcandidate = (props: IProfilcandidateProps) => {
     };
     return (
         <myContextValue.Provider value={{ ...myContextValue, allSite: allSite, allListId: allListId, loggedInUserName: props?.userDisplayName }}>
-            {isEditPopupOpen ? <EditPopup EditPopupClose={EditPopupClose} callbackEdit={callbackEdit} item={selectedItem} ListID={allListId?.InterviewFeedbackFormListId} skillsList={allListId?.SkillsPortfolioListID}/> : ''}
+            {isEditPopupOpen ? <EditPopup siteUrl={'https://hhhhteams.sharepoint.com/sites/HHHH/HR/'} EditPopupClose={EditPopupClose} callbackEdit={callbackEdit} item={selectedItem} ListID={allListId?.InterviewFeedbackFormListId} skillsList={allListId?.SkillsPortfolioListID}/> : ''}
             <div className='alignCenter border-bottom pb-2'>
                 <div>
                     <img className='user-dp' src={EmployeeData?.Item_x0020_Cover?.Url != undefined ? EmployeeData?.Item_x0020_Cover?.Url : "https://hhhhteams.sharepoint.com/sites/HHHH/GmBH/SiteCollectionImages/ICONS/32/icon_user.jpg"} />

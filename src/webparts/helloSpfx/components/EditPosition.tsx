@@ -120,7 +120,7 @@ const EditPosition = (props: any) => {
         } finally {
             setskillsOnlyAr([]);
             props?.closePopup()
-            getListData();
+            props?.callbackEdit()
         }
 
     };
