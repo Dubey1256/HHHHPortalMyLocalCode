@@ -11,6 +11,7 @@ import MsgReader from "@kenjiuno/msgreader"
 import { useEffect } from 'react';
 import { SiteUser } from 'sp-pnp-js/lib/sharepoint/siteusers';
 import AddMorePosition from './AddMorePosition';
+import { FaPlus } from 'react-icons/fa';
 let showTextInput: boolean = false;
 let PositionChoices: any[] = [];
 let siteName: any = '';
@@ -27,9 +28,7 @@ const AddPopup = (props: any) => {
     useEffect(() => {
         const fetchData = async () => {
             try {
-                const currentUser = await sp.web.currentUser.get();
-                const defaultUser = [{ text: currentUser.Title, key: currentUser.LoginName }];
-                await Promise.all([getchoicecolumns(), onPeoplePickerChange(defaultUser)]);
+                await Promise.all([getchoicecolumns()]);
             } catch (error) {
                 console.error(error);
             } finally {
@@ -37,7 +36,7 @@ const AddPopup = (props: any) => {
             }
         };
         fetchData();
-        setDefaultDate(getCurrentDate());
+        // setDefaultDate(getCurrentDate())
     }, []);
     type FileSection = {
         id: number;
@@ -46,8 +45,10 @@ const AddPopup = (props: any) => {
     };
     const [fileSections, setFileSections]: any = useState([{ id: 1, selectedFiles: [], renamedFileName: '' }]);
     const [name, setName] = useState('');
+    const [isSaveDisabled, setIsSaveDisabled] = useState(true);
     const [exp, setExp] = useState({ years: '', months: '' });
     const [email, setEmail] = useState('');
+    const [emailValidation, setEmailValidation] = useState({ isValid: true, errorMessage: '' });
     const [phone, setPhone] = useState('');
     const [selectedInterviwer, setSelectedInterviwer] = React.useState<any[]>([]);
     const [selectedRecAction, setSelectedRecAction] = useState('');
@@ -58,7 +59,6 @@ const AddPopup = (props: any) => {
     const [content, setContent] = React.useState<string>('');
     const [isAddPosititionOpen, setisAddPositionOpen] = React.useState(false);
     const Status = ['New Candidate', 'Under Consideration', 'Interview', 'Negotiation', 'Hired', 'Rejected'];
-
     const [inputText, setInputText] = useState('');
     const [selectedFiles, setSelectedFiles] = useState([]);
     const [SiteUsers, setSiteUsers] = useState([])
@@ -137,15 +137,13 @@ const AddPopup = (props: any) => {
         }
     };
 
-    const getCurrentDate = (): string => {
-        const currentDate: any = new Date();
-        const year: any = currentDate.getFullYear();
-        const month: any = String(currentDate.getMonth() + 1).padStart(2, '0'); // Month is zero-based
-        const day: any = String(currentDate.getDate()).padStart(2, '0');
-        return `${year}-${month}-${day}`;
-    };
-
-
+    //     const getCurrentDate = (): string => {
+    //     const currentDate: any = new Date();
+    //     const year: any = currentDate.getFullYear();
+    //     const month: any = (currentDate.getMonth() + 1)?.padStart(2, '0'); // Month is zero-based
+    //     const day: any = (currentDate.getDate())?.padStart(2, '0');
+    //     return `${year}-${month}-${day}`;
+    // };
     const getchoicecolumns = () => {
         const select = `Id,Title,PositionTitle,PositionDescription,JobSkills`;
         HRweb.lists.getById(allListID?.SkillsPortfolioListID).items.select(select).get()
@@ -208,12 +206,22 @@ const AddPopup = (props: any) => {
     };
 
     const handleNameChange = (e: any) => {
-        setName(e.target.value);
+        const nameValue = e.target.value;
+        setName(nameValue);
+        setIsSaveDisabled(nameValue.trim() === '');
     };
     const handleEmailChange = (e: any) => {
-        setEmail(e.target.value);
-    };
+        const emailValue = e.target.value;
+        const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+        const isValidEmail = emailValue === '' || emailRegex.test(emailValue);
 
+        setEmailValidation({
+            isValid: isValidEmail,
+            errorMessage: isValidEmail ? '' : 'Enter a valid email address',
+        });
+
+        setEmail(emailValue);
+    };
     const handlePhoneChange = (e: any) => {
         setPhone(e.target.value);
     };
@@ -378,7 +386,7 @@ const AddPopup = (props: any) => {
                 <div className="row">
                     <div className="col-sm-3 mb-2">
                         <div className='input-group'>
-                            <label className="form-label full-width">Candidate Name</label>
+                            <label className="form-label full-width">Candidate Name <span className="text-danger">*</span></label>
                             <input
                                 className="form-control"
                                 value={name}
@@ -440,7 +448,7 @@ const AddPopup = (props: any) => {
                                     resolveDelay={1000}
                                     defaultSelectedUsers={selectedInterviwer}
                                 />
-                                </div>
+                            </div>
                         </div>
                     </div>
                     <div className="col-sm-3 mb-2">
@@ -474,8 +482,16 @@ const AddPopup = (props: any) => {
                     <div className="col-sm-3 mb-2">
                         <div className='input-group'>
                             <label className="form-label full-width">Email</label>
-                            <input className="form-control" value={email}
-                                onChange={handleEmailChange} type="email" placeholder="Enter Email" />
+                            <input
+                                className={`form-control ${emailValidation.isValid ? '' : 'is-invalid'}`}
+                                value={email}
+                                onChange={handleEmailChange}
+                                type="email"
+                                placeholder="Enter Email"
+                            />
+                            {!emailValidation.isValid && (
+                                <div className="invalid-feedback">{emailValidation.errorMessage}</div>
+                            )}
                         </div>
                     </div>
                     <div className="col-sm-3 mb-2">
@@ -518,7 +534,7 @@ const AddPopup = (props: any) => {
                                             placeholder="Enter any other platform"
                                         />
                                     </label>
-</div>
+                                    </div>
                                 )}
                             </div>
                         </div>
@@ -579,7 +595,7 @@ const AddPopup = (props: any) => {
             </div>
             <footer className="bg-f4 fixed-bottom px-4 py-2">
                 <div className="float-end text-end">
-                    <button onClick={addCandidate} type='button' className='btn btn-primary'>Save</button>
+                    <button disabled={isSaveDisabled} onClick={addCandidate} type='button' className='btn btn-primary'>Save</button>
                     <button onClick={onClose} type='button' className='btn btn-default ms-1'>Cancel</button>
                 </div>
             </footer>
@@ -590,4 +606,3 @@ const AddPopup = (props: any) => {
     );
 };
 export default AddPopup;
-

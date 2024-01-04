@@ -5,7 +5,6 @@ import Profilcandidate from './CandiadteProfileWeb';
 export default class ProfileCandidatePage extends React.Component<IProfilcandidateProps, {}> {
   public render(): React.ReactElement<IProfilcandidateProps> {
     const {   
-      SkillsPortfolioListID,
       InterviewFeedbackFormListId,
       siteUrl
     } = this.props;
