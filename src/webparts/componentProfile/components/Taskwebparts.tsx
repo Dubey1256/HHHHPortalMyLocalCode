@@ -104,6 +104,8 @@ function PortfolioTable(SelectedProp: any) {
     const [portfolioTypeDataItemBackup, setPortFolioTypeIconBackup] = React.useState([]);
     const [taskTypeDataItemBackup, setTaskTypeDataItemBackup] = React.useState([]);
     const globalContextData: any = React.useContext<any>(myContextValue)
+    const [priorityRank, setpriorityRank] = React.useState([])
+    const [precentComplete, setPrecentComplete] = React.useState([])
   let ComponetsData: any = {};
   let Response: any = [];
   let props = undefined;
@@ -216,6 +218,8 @@ function PortfolioTable(SelectedProp: any) {
 
   const GetSmartmetadata = async () => {
     let siteConfigSites: any = [];
+    let Priority: any = []
+    let PrecentComplete: any = [];
     let web = new Web(ContextValue.siteUrl);
     let smartmetaDetails: any = [];
     smartmetaDetails = await web.lists
@@ -255,10 +259,24 @@ function PortfolioTable(SelectedProp: any) {
       if (newtest?.TaxType == 'timesheetListConfigrations') {
         timeSheetConfig = newtest;
       }
+      if (newtest?.TaxType == 'Priority Rank') {
+        Priority?.push(newtest)
+    }
+    if (newtest?.TaxType === 'Percent Complete' && newtest?.Title != 'In Preparation (0-9)' && newtest?.Title != 'Ongoing (10-89)' && newtest?.Title != 'Completed (90-100)') {
+        PrecentComplete.push(newtest);
+    }
     });
     if (siteConfigSites?.length > 0) {
       setSiteConfig(siteConfigSites);
     }
+    Priority?.sort((a: any, b: any) => {
+      return a.SortOrder - b.SortOrder;
+  });
+  PrecentComplete?.sort((a: any, b: any) => {
+      return a.SortOrder - b.SortOrder;
+  });
+  setpriorityRank(Priority)
+  setPrecentComplete(PrecentComplete)
     setMetadata(smartmetaDetails);
   };
 
@@ -1937,8 +1955,8 @@ const updatedDataDataFromPortfolios = (copyDtaArray: any, dataToUpdate: any) => 
     }
     if (checkedList?.TaskTypeId === 3 || checkedList?.TaskType?.Id === 3) {
       checkedList.NoteCall = "Task";
-      setIsOpenActivity(true);
-        //setIsOpenWorkstream(true);
+      // setIsOpenActivity(true);
+        setIsOpenWorkstream(true);
           
       if (SelectedProp?.props?.PortfolioType?.Color != undefined) {
         setTimeout(() => {
@@ -2108,7 +2126,7 @@ const updatedDataDataFromPortfolios = (copyDtaArray: any, dataToUpdate: any) => 
                         scale={1.0}
                         loadedClassName="loadedContent"
                       />
-                      <GlobalCommanTable
+                      <GlobalCommanTable bulkEditIcon={true} priorityRank={priorityRank} precentComplete={precentComplete}
                         smartTimeTotalFunction={smartTimeTotal} SmartTimeIconShow={true}
                         portfolioTypeDataItemBackup={portfolioTypeDataItemBackup} taskTypeDataItemBackup={taskTypeDataItemBackup} flatViewDataAll={flatViewDataAll} setData={setData}
                         ref={childRef}
