@@ -9,7 +9,7 @@ import { BaseClientSideWebPart } from '@microsoft/sp-webpart-base';
 import { IReadonlyTheme } from '@microsoft/sp-component-base';
 
 import * as strings from 'ProfilcandidateWebPartStrings';
-import Profilcandidate from './components/CandiadteProfileWeb';
+import CandidateProfilePage from './components/CandidateProfilePage';
 import { IProfilcandidateProps } from './components/IProfilcandidateProps';
 
 export interface IProfilcandidateWebPartProps {
@@ -26,7 +26,7 @@ export default class ProfilcandidateWebPart extends BaseClientSideWebPart<IProfi
 
   public render(): void {
     const element: React.ReactElement<IProfilcandidateProps> = React.createElement(
-      Profilcandidate,
+      CandidateProfilePage,
       {
         description: this.properties.description,
         isDarkTheme: this._isDarkTheme,

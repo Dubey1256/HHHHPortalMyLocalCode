@@ -11,11 +11,15 @@ import Tooltip from '../../../globalComponents/Tooltip';
 import './Recruitment.css'
 import CreateContactComponent from '../../contactSearch/components/contact-search/popup-components/CreateContact';
 import moment from 'moment-timezone';
+import { Row } from 'react-bootstrap';
+import { Col } from 'reactstrap';
 const skillArray: any[] = [];
 let EmployeeData: any;
 const EditPopup = (props: any) => {
+    const [fileSections, setFileSections]: any = useState([{ id: 1, selectedFiles: [], renamedFileName: '' }]);
     const [CandidateTitle, setCandidateTitle] = useState(props.item.CandidateName);
     const [Email, setEmail] = useState(props.item.Email);
+    const [folderFiles, setfolderFiles]: any = useState([]);
     const [PhoneNumber, setPhoneNumber] = useState(props.item.PhoneNumber);
     const [Experience, setExperience] = useState(props.item.Experience);
     const [overAllRemark, setoverAllRemark] = useState(props.item.Remarks);
@@ -24,6 +28,7 @@ const EditPopup = (props: any) => {
     const [CreateContactStatus, setCreateContactStatus] = useState(false)
     const [experienceYears, setExperienceYears] = useState<number>();
     const [experienceMonths, setExperienceMonths] = useState<number>();
+    const [showAddDocumentPanel, setShowAddDocumentPanel] = useState(false);
     const star = props.item.IsFavorite ? '⭐' : '';
     const Status = ['New Candidate', 'Under Consideration', 'Interview', 'Negotiation', 'Hired', 'Rejected'];
     const [platformChoices, setPlatformChoices] = useState([
@@ -35,9 +40,15 @@ const EditPopup = (props: any) => {
         { name: 'Naukri', selected: false },
         { name: 'Others', selected: false }
     ]);
+    type FileSection = {
+        id: number;
+        selectedFiles: File[];
+        renamedFileName: string;
+    };
     const [Plats, setPlats] = useState<any[]>([]);
     const [localRatings, setLocalRatings] = useState(props.item?.ratings || []);
     const [TaggedDocuments, setTaggedDocuments] = useState<any[]>([]);
+    const [uploadedFile, setuploadedFile]: any = useState({});
     const [showTextInput, setShowTextInput] = useState(false);
     const [otherChoice, setOtherChoice] = useState('');
     const [listData, setListData] = useState([]);
@@ -75,7 +86,7 @@ const EditPopup = (props: any) => {
         const selectedPlatforms = JSON.parse(props.item.SelectedPlatforms);
 
         useEffect(() => {
-            let Array: any = ['Indeed', 'Agentur für Arbeit', 'Jobcenter', 'GesinesJobtipps','Linkedin','Naukri']
+            let Array: any = ['Indeed', 'Agentur für Arbeit', 'Jobcenter', 'GesinesJobtipps', 'Linkedin', 'Naukri']
             // Check if any selected platform meets the specified conditions
             const shouldUpdateOthers = selectedPlatforms?.some((item: { selected: any; name: any }) => {
 
@@ -136,6 +147,10 @@ const EditPopup = (props: any) => {
     const onClose = () => {
         props.EditPopupClose();
     }
+    const onCloseDoc = () => {
+        setShowAddDocumentPanel(false);
+        setFileSections([{ id: 1, selectedFiles: [], renamedFileName: '' }]);
+    }
     const handleEditSave = async () => {
         let updateData
         if (platformChoices && platformChoices.length > 0) {
@@ -165,6 +180,7 @@ const EditPopup = (props: any) => {
             const list = HRweb.lists.getById(allListID?.InterviewFeedbackFormListId);
             await list.items.getById(props.item.Id).update(updateData);
             EmployeeData = updateData
+            handleUpload(props.item.Id)
             console.log("Item updated successfully");
             setCreateContactStatus(true)
             props.callbackEdit(props.item.Id);
@@ -240,11 +256,75 @@ const EditPopup = (props: any) => {
             return [];
         }
     };
+    const handleUpload = async (candidateItemId: any) => {
+        const uploadTasks: any[] = [];
+        for (const section of fileSections) {
+            for (const file of section.selectedFiles) {
+                try {
+                    const fileName = section.renamedFileName?.length > 0 ? section.renamedFileName : file.name;
+                    const reader = new FileReader();
+                    const fileContent = await new Promise<ArrayBuffer>((resolve) => {
+                        reader.onloadend = () => resolve(reader.result as ArrayBuffer);
+                        reader.readAsArrayBuffer(file);
+                    });
+
+                    const uploadedFile = await HRweb.lists.getByTitle("Documents")
+                        .rootFolder.folders.getByName("InterviewDocuments")
+                        .files.add(fileName, fileContent, true);
+
+                    setuploadedFile(uploadedFile);
+                    setTimeout(async () => {
+                        const folderFiles: any = await loadDocumentsFromFolder();
+                        const matchedFile = folderFiles.find((folderFile: { FileLeafRef: any; }) => folderFile.FileLeafRef === uploadedFile.data.Name);
+                        if (matchedFile) {
+                            updateLookupColumn(matchedFile.ID, candidateItemId);
+                        }
+                    }, 2000);
+
+                } catch (error) {
+                    console.error('Error uploading file:', error);
+                }
+            }
+        }
+
+        console.log("All files uploaded successfully");
+    };
+    async function loadDocumentsFromFolder() {
+        const selectQuery =
+            'Id,Title,Url,FileSystemObjectType,ItemRank,Author/Id,Author/Title,Editor/Id,Editor/Title,File_x0020_Type,FileDirRef,FileLeafRef,File_x0020_Type,Year,EncodedAbsUrl,Created,Modified&$expand=Author,Editor';
+        try {
+            const libraryTitle = 'Documents';
+            const folderName = 'InterviewDocuments';
+            const folderFiles = await HRweb.lists.getByTitle(libraryTitle).items.select(selectQuery).getAll();
+            setfolderFiles(folderFiles);
+            return folderFiles;
+        } catch (error) {
+            console.error('Error loading documents:', error);
+            return [];
+        }
+    }
     const addEllipsis = (text: string, maxLength: number) => {
         if (text.length > maxLength) {
             return text.substring(0, maxLength) + '...';
         }
         return text;
+    };
+    const updateLookupColumn = async (documentId: number, candidateItemId: number) => {
+        try {
+            const list = HRweb.lists.getByTitle('Documents');
+            const columnName = 'InterviewCandidates';
+            const documentItem = await list.items.getById(documentId).get();
+            // Ensure to replace 'InterviewCandidates' with the actual internal name of your lookup column
+            const postData = {
+                [columnName + 'Id']: {
+                    results: [candidateItemId],
+                },
+            };
+            await list.items.getById(documentId).update(postData);
+            console.log(`Lookup column ${columnName} updated successfully for document with ID ${documentId}.`);
+        } catch (error) {
+            console.error('Error updating lookup column:', error);
+        }
     };
     const HtmlEditorCallBack = React.useCallback((EditorData: any) => {
         if (EditorData.length > 8) {
@@ -256,16 +336,23 @@ const EditPopup = (props: any) => {
         updatedRatings[index].current = selectedRating;
         setLocalRatings(updatedRatings);
     };
-    const removeDocuments = async (libraryTitle: string, documentId: number) => {
+    const removeDocuments = async (libraryTitle: string, documentId: number | undefined, docName: string) => {
         try {
-            // Get the document library by title
             const list = HRweb.lists.getByTitle('Documents');
-            await list.items.getById(documentId).delete();
-            console.log(`Document with ID ${documentId} removed successfully from ${libraryTitle}.`);
+            
+            if (documentId) {
+                await list.items.getById(documentId).delete();
+                setTaggedDocuments(prevDocuments => prevDocuments.filter(doc => doc.Id !== documentId));
+                console.log(`Document with ID ${documentId} removed successfully from ${libraryTitle}.`);
+            } else {            
+                setTaggedDocuments(prevDocuments => prevDocuments.filter(doc => doc.FileLeafRef !== docName));
+                console.log(`Document with FileLeafRef ${docName} removed successfully from ${libraryTitle}.`);
+            }
         } catch (error) {
             console.error('Error removing document:', error);
         }
     };
+
     const delItem = (itm: any) => {
         const confirmDelete = window.confirm("Are you sure you want to delete this item?");
 
@@ -296,14 +383,71 @@ const EditPopup = (props: any) => {
             </>
         );
     };
+    const onRenderCustomHeaderMainDoc = () => {
+        return (
+            <>
+                <div className='subheading'>
+                    Add More Documents
+                </div>
+                <Tooltip ComponentId='4442' />
+            </>
+        );
+    };
     const ClosePopup = React.useCallback(() => {
 
         setCreateContactStatus(false);
         props.EditPopupClose()
 
     }, []);
+    const addFileSection = () => {
+        const newId = fileSections.length + 1;
+        const newFileSection: FileSection = { id: newId, selectedFiles: [], renamedFileName: '' };
+        setFileSections([...fileSections, newFileSection]);
+    };
+
+    const removeFileSection = (sectionIdToRemove: number) => {
+        const updatedFileSections = fileSections.filter((section: { id: number; }) => section.id !== sectionIdToRemove);
+        setFileSections(updatedFileSections);
+    };
+    const handleRenamedFileNameChange = (e: React.ChangeEvent<HTMLInputElement>, sectionId: number) => {
+        const updatedFileSections = fileSections.map((section: any) =>
+            section.id === sectionId ? { ...section, renamedFileName: e.target.value } : section
+        );
+        setFileSections(updatedFileSections);
+    };
+    var handleFileInputChange = function (e: React.ChangeEvent<HTMLInputElement>, sectionId: number) {
+        var files = e.target.files;
+        var updatedFileSections = fileSections.map(function (section: any) {
+            if (section.id === sectionId) {
+                return {
+                    id: section.id,
+                    selectedFiles: Array.prototype.slice.call(files || []),
+                    renamedFileName: section.renamedFileName
+                };
+            } else {
+                return section;
+            }
+        });
+        setFileSections(updatedFileSections);
+    };
     const openDocInNewTab = (url: string | URL | undefined) => {
         window.open(url, '_blank');
+    };
+    var handleDocuments = function () {
+        if (fileSections.length > 0) {
+            fileSections.forEach(function (section: any) {
+                if (section.selectedFiles.length > 0) {
+                    section.selectedFiles.forEach(function (itm: any) {
+                        let obj = {
+                            FileLeafRef: itm.name,
+                            File_x0020_Type: itm.name.split('.')[1]
+                        };
+                        setTaggedDocuments(prevDocuments => [...prevDocuments, obj]);
+                    });
+                }
+            });
+        }
+        onCloseDoc();
     };
     return (
         <Panel
@@ -312,7 +456,7 @@ const EditPopup = (props: any) => {
             onDismiss={onClose}
             type={PanelType.custom}
             isBlocking={false}
-            customWidth={"750px"}
+            customWidth={"850px"}
             closeButtonAriaLabel="Close"
         >
             <div className='modal-body mb-5'>
@@ -448,7 +592,11 @@ const EditPopup = (props: any) => {
                 <div className="row">
                     <div className="col-sm-6">
                         <div className='input-group'>
-                            <div className="sectionHead siteBdrBottom mb-1 w-100">Documents</div>
+                            <div className="sectionHead siteBdrBottom mb-1 w-100">Documents
+                                <span className="pull-right text-end">
+                                    <a onClick={() => setShowAddDocumentPanel(true)} className="f-13 hreflink">+Add More</a>
+                                </span>
+                            </div>
                             {TaggedDocuments.map(document => (
                                 <div className="documenttype-list alignCenter" key={document.Id}>
                                     <span className="mr-10" style={{ display: document.File_x0020_Type === 'pdf' ? 'inline' : 'none' }}>
@@ -467,7 +615,7 @@ const EditPopup = (props: any) => {
                                         <span className="svg__iconbox svg__icon--document"></span>
                                     </span>
                                     <span style={{ display: document.File_x0020_Type !== 'aspx' ? 'inline' : 'none' }}>
-                                    <a onClick={() => openDocInNewTab(document.EncodedAbsUrl)}>
+                                        <a onClick={() => openDocInNewTab(document.EncodedAbsUrl)}>
                                             <span>
                                                 <span style={{ display: document.FileLeafRef !== 'undefined' ? 'inline' : 'none' }}>
                                                     {document.FileLeafRef}
@@ -478,13 +626,13 @@ const EditPopup = (props: any) => {
                                             </span>
                                         </a>
                                     </span>
-                                    <span onClick={() => removeDocuments('', document.Id)} className="svg__iconbox svg__icon--trash mx-auto"></span>
+                                    <span onClick={() => removeDocuments('', document.Id,document.FileLeafRef)} className="svg__iconbox svg__icon--trash mx-auto"></span>
                                 </div>
                             ))}
                         </div>
                     </div>
                     <div className="col-sm-6 nextStep">
-                        <div className="fsectionHead siteBdrBottom mb-1">Status</div>
+                        <div className="sectionHead siteBdrBottom mb-1 w-100">Status</div>
                         <Dropdown
                             id="status"
                             options={Status.map((itm) => ({ key: itm, text: itm }))}
@@ -543,6 +691,55 @@ const EditPopup = (props: any) => {
                 </div>
             </footer>
             {CreateContactStatus ? <CreateContactComponent callBack={ClosePopup} data={EmployeeData} pageName={"Recruiting-Tool"} /> : null}
+            {showAddDocumentPanel && (
+                <Panel
+                    isOpen={true}
+                    onRenderHeader={onRenderCustomHeaderMainDoc}
+                    onDismiss={onCloseDoc}
+                    type={PanelType.custom}
+                    isBlocking={false}
+                    customWidth={"750px"}
+                    closeButtonAriaLabel="Close"
+                // ... (customize the panel as needed)
+                >
+                    <div>
+                        <Col>
+                            {fileSections.map((section: any, index: number) => (
+                                <div key={section.id}>
+                                    <Col className='mb-2'>
+                                        <span className='valign-middle'>
+                                            <input type="file" onChange={(e) => handleFileInputChange(e, section.id)} multiple className='form-control full-width' />
+                                            {index > 0 && (
+                                                <span className='svg__iconbox ms-2 svg__icon--trash hreflink' onClick={() => removeFileSection(section.id)}></span>
+                                            )}
+                                        </span>
+                                    </Col>
+                                    <Col className='mb-2'>
+                                        <input
+                                            type="text"
+                                            onChange={(e) => handleRenamedFileNameChange(e, section.id)}
+                                            value={section.renamedFileName}
+                                            placeholder='Rename the document'
+                                            className='form-control full-width'
+                                        />
+                                    </Col>
+                                </div>
+                            ))}
+                            <Row className='mb-2 px-2'>
+                                <a onClick={addFileSection} className="float-end hreflink my-1 px-1 text-end">
+                                    Add More Documents
+                                </a>
+                            </Row>
+                        </Col>
+                    </div>
+                    <footer className="bg-f4 fixed-bottom px-4 py-2">
+                        <div className="float-end text-end">
+                            <button onClick={handleDocuments} type='button' className='btn btn-primary'>OK</button>
+                            <button onClick={onCloseDoc} type='button' className='btn btn-default ms-1'>Cancel</button>
+                        </div>
+                    </footer>
+                </Panel>
+            )}
         </Panel>
     );
 };

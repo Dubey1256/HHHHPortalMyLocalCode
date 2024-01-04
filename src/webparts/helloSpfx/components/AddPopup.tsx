@@ -11,7 +11,6 @@ import MsgReader from "@kenjiuno/msgreader"
 import { useEffect } from 'react';
 import { SiteUser } from 'sp-pnp-js/lib/sharepoint/siteusers';
 import AddMorePosition from './AddMorePosition';
-import { FaPlus } from 'react-icons/fa';
 let showTextInput: boolean = false;
 let PositionChoices: any[] = [];
 let siteName: any = '';
@@ -28,7 +27,9 @@ const AddPopup = (props: any) => {
     useEffect(() => {
         const fetchData = async () => {
             try {
-                await Promise.all([getchoicecolumns()]);
+                const currentUser = await sp.web.currentUser.get();
+                const defaultUser = [{ text: currentUser.Title, key: currentUser.LoginName }];
+                await Promise.all([getchoicecolumns(), onPeoplePickerChange(defaultUser)]);
             } catch (error) {
                 console.error(error);
             } finally {
@@ -36,6 +37,7 @@ const AddPopup = (props: any) => {
             }
         };
         fetchData();
+        setDefaultDate(getCurrentDate());
     }, []);
     type FileSection = {
         id: number;
@@ -58,26 +60,14 @@ const AddPopup = (props: any) => {
     const Status = ['New Candidate', 'Under Consideration', 'Interview', 'Negotiation', 'Hired', 'Rejected'];
 
     const [inputText, setInputText] = useState('');
-  
-    const [selectedPath, setSelectedPath] = useState({
-        displayPath: '',
-        completePath: '',
-    }); const [selectedFiles, setSelectedFiles] = useState([]);
+    const [selectedFiles, setSelectedFiles] = useState([]);
     const [SiteUsers, setSiteUsers] = useState([])
     const [defaultDate, setDefaultDate] = useState<string>('');
     const [folderFiles, setfolderFiles]: any = useState([]);
     const [uploadedFile, setuploadedFile]: any = useState({});
-    const [renamedFileName, setRenamedFileName]: any = React.useState('');
-    const [ShowConfirmation, setShowConfirmation]: any = useState(false);
-    const [UploadedDocDetails, setUploadedDocDetails] = useState(null);
-    const [ExistingFiles, setExistingFiles]: any = useState([]);
-    const [AllReadytagged, setAllReadytagged]: any = useState([]);
-    const [createNewDocType, setCreateNewDocType]: any = useState('');
-    const [folderExist, setFolderExist] = useState(false);
     const [showTextInput, setshowTextInput] = useState(false);
     const ActionChoices = ['Invite to Interview', 'Decline', 'Hire'];
     const [updatedPlatformChoices, setupdatedPlatformChoices] = useState<{ name: string; selected: boolean; }[]>([]);
-    const [itemRank, setItemRank] = useState(5);
     const [platformChoices, setPlatformChoices] = useState([
         { name: 'Indeed', selected: false },
         { name: 'Agentur für Arbeit', selected: false },
@@ -147,13 +137,15 @@ const AddPopup = (props: any) => {
         }
     };
 
-        const getCurrentDate = (): string => {
+    const getCurrentDate = (): string => {
         const currentDate: any = new Date();
         const year: any = currentDate.getFullYear();
-        const month: any = (currentDate.getMonth() + 1)?.padStart(2, '0'); // Month is zero-based
-        const day: any = (currentDate.getDate())?.padStart(2, '0');
+        const month: any = String(currentDate.getMonth() + 1).padStart(2, '0'); // Month is zero-based
+        const day: any = String(currentDate.getDate()).padStart(2, '0');
         return `${year}-${month}-${day}`;
     };
+
+
     const getchoicecolumns = () => {
         const select = `Id,Title,PositionTitle,PositionDescription,JobSkills`;
         HRweb.lists.getById(allListID?.SkillsPortfolioListID).items.select(select).get()
@@ -240,7 +232,7 @@ const AddPopup = (props: any) => {
     const handleDateChange = (e: any) => {
         setselectedDate(e.target.value);
     };
-    
+
     const handleOtherChoiceInputChange = (event: React.ChangeEvent<HTMLInputElement>) => {
         setOtherChoiceText(event.target.value);
     };
@@ -367,7 +359,7 @@ const AddPopup = (props: any) => {
             </>
         );
     };
-const onPeoplePickerChange = (items: any[]) => {
+    const onPeoplePickerChange = (items: any[]) => {
         setSelectedInterviwer(items[0]?.text);
     };
     return (
@@ -435,18 +427,20 @@ const onPeoplePickerChange = (items: any[]) => {
                         <div className='input-group'>
                             <label className="form-label full-width">Responsible Staff Member</label>
                             <div className="full-width">
-                            <PeoplePicker
-                                context={props.context}                 
-                                personSelectionLimit={1}
-                                groupName={''} // Leave this blank to search all users
-                                showtooltip={true}
-                                required={false}
-                                disabled={false}
-                                ensureUser={true}
-                                onChange={onPeoplePickerChange} // Use onChange instead of selectedItems
-                                principalTypes={[PrincipalType.User]}
-                                resolveDelay={1000}
-                            /></div>
+                                <PeoplePicker
+                                    context={props.context}
+                                    personSelectionLimit={1}
+                                    groupName={''}
+                                    showtooltip={true}
+                                    required={false}
+                                    disabled={false}
+                                    ensureUser={true}
+                                    onChange={onPeoplePickerChange}
+                                    principalTypes={[PrincipalType.User]}
+                                    resolveDelay={1000}
+                                    defaultSelectedUsers={selectedInterviwer}
+                                />
+                                </div>
                         </div>
                     </div>
                     <div className="col-sm-3 mb-2">
@@ -553,20 +547,8 @@ const onPeoplePickerChange = (items: any[]) => {
                                                 {index > 0 && (
                                                     <span className='svg__iconbox ms-2 svg__icon--trash hreflink' onClick={() => removeFileSection(section.id)}></span>
                                                 )}
-                                                {index === 0 && (
-                                                    <span className='svg__iconbox ms-2 svg__icon--Plus hreflink' onClick={addFileSection}></span>
-                                                )}
                                             </span>
                                         </Col>
-                                        {section.selectedFiles.length > 0 && (
-                                            <Col className='mb-2'>
-                                                <ul>
-                                                    {section.selectedFiles.map((file: any, fileIndex: any) => (
-                                                        <li key={fileIndex}>{file.name}</li>
-                                                    ))}
-                                                </ul>
-                                            </Col>
-                                        )}
                                         <Col className='mb-2'>
                                             <input
                                                 type="text"
