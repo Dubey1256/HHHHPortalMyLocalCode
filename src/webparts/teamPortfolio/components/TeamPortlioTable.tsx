@@ -2252,7 +2252,8 @@ function TeamPortlioTable(SelectedProp: any) {
         }
         if (checkedList?.TaskTypeId === 3 || checkedList?.TaskType?.Id === 3) {
             checkedList.NoteCall = 'Task'
-            setIsOpenActivity(true);
+            // setIsOpenActivity(true);
+            setIsOpenWorkstream(true);
         }
         if (checkedList?.TaskType?.Id == 1 || checkedList?.TaskTypeId == 1) {
             checkedList.NoteCall = 'Workstream'

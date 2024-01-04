@@ -1955,8 +1955,8 @@ const updatedDataDataFromPortfolios = (copyDtaArray: any, dataToUpdate: any) => 
     }
     if (checkedList?.TaskTypeId === 3 || checkedList?.TaskType?.Id === 3) {
       checkedList.NoteCall = "Task";
-      setIsOpenActivity(true);
-        //setIsOpenWorkstream(true);
+      // setIsOpenActivity(true);
+        setIsOpenWorkstream(true);
           
       if (SelectedProp?.props?.PortfolioType?.Color != undefined) {
         setTimeout(() => {
