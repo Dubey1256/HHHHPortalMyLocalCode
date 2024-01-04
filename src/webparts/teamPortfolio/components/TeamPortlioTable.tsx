@@ -315,7 +315,7 @@ function TeamPortlioTable(SelectedProp: any) {
                     .items.select("ParentTask/Title", "ParentTask/Id", "ItemRank", "TaskLevel", "OffshoreComments", "TeamMembers/Id", "ClientCategory/Id", "ClientCategory/Title",
                         "TaskID", "ResponsibleTeam/Id", "ResponsibleTeam/Title", "ParentTask/TaskID", "TaskType/Level", "PriorityRank", "TeamMembers/Title", "FeedBack", "Title", "Id", "ID", "DueDate", "Comments", "Categories", "Status", "Body",
                         "PercentComplete", "ClientCategory", "Priority", "TaskType/Id", "TaskType/Title", "Portfolio/Id", "Portfolio/ItemType", "Portfolio/PortfolioStructureID", "Portfolio/Title",
-                        "TaskCategories/Id", "TaskCategories/Title", "TeamMembers/Name", "Project/Id", "Project/PortfolioStructureID", "Project/Title", "AssignedTo/Id", "AssignedTo/Title", "AssignedToId", "Author/Id", "Author/Title", "Editor/Id", "Editor/Title",
+                        "TaskCategories/Id", "TaskCategories/Title", "TeamMembers/Name", "Project/Id", "Project/PortfolioStructureID", "Project/Title","Project/PriorityRank", "AssignedTo/Id", "AssignedTo/Title", "AssignedToId", "Author/Id", "Author/Title", "Editor/Id", "Editor/Title",
                         "Created", "Modified", "IsTodaysTask", "workingThisWeek"
                     )
                     .expand(
@@ -348,7 +348,7 @@ function TeamPortlioTable(SelectedProp: any) {
                             result.descriptionsSearch = '';
                             result.commentsSearch = '';
                             result.timeSheetsDescriptionSearch = '';
-                            result.SmartPriority;
+                            result.SmartPriority = 0;
                             result.TaskTypeValue = '';
                             result.projectPriorityOnHover = '';
                             result.taskPriorityOnHover = result?.PriorityRank;
@@ -583,7 +583,7 @@ function TeamPortlioTable(SelectedProp: any) {
                             result.descriptionsSearch = '';
                             result.commentsSearch = '';
                             result.timeSheetsDescriptionSearch = '';
-                            result.SmartPriority;
+                            result.SmartPriority = 0;
                             result.TaskTypeValue = '';
                             result.projectPriorityOnHover = '';
                             result.taskPriorityOnHover = result?.PriorityRank;
@@ -778,7 +778,7 @@ function TeamPortlioTable(SelectedProp: any) {
             result["siteType"] = "Master Tasks";
             result.AllTeamName = "";
             result.descriptionsSearch = '';
-            result.SmartPriority;
+            result.SmartPriority = 0;
             result.commentsSearch = '';
             result.TaskTypeValue = '';
             result.timeSheetsDescriptionSearch = '';
