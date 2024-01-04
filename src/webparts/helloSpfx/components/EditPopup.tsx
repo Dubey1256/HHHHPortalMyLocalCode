@@ -149,7 +149,7 @@ const EditPopup = (props: any) => {
     }
     const onCloseDoc = () => {
         setShowAddDocumentPanel(false);
-        setFileSections([{ id: 1, selectedFiles: [], renamedFileName: '' }]);
+        // setFileSections([{ id: 1, selectedFiles: [], renamedFileName: '' }]);
     }
     const handleEditSave = async () => {
         let updateData
@@ -329,8 +329,10 @@ const EditPopup = (props: any) => {
     const HtmlEditorCallBack = React.useCallback((EditorData: any) => {
         if (EditorData.length > 8) {
             props.item.Motivation = EditorData;
+            setMotivation(EditorData)
         }
     }, [])
+    
     const setRatings = (index: number, selectedRating: number) => {
         const updatedRatings = [...localRatings];
         updatedRatings[index].current = selectedRating;
@@ -430,8 +432,14 @@ const EditPopup = (props: any) => {
         });
         setFileSections(updatedFileSections);
     };
+    let clickCount = 0;
     const openDocInNewTab = (url: string | URL | undefined) => {
-        window.open(url, '_blank');
+        clickCount++;
+        if (clickCount === 1) {
+            window.open(url, '_blank');
+        } else {       
+            window.open(url + '?download=1');
+        }
     };
     var handleDocuments = function () {
         if (fileSections.length > 0) {
@@ -530,8 +538,13 @@ const EditPopup = (props: any) => {
                         </div>
                     </div>
                 </div>
-
-
+                <div className="col-sm-12 mb-3">
+                    <div className="sectionHead siteBdrBottom mb-1">Cover Letter/Motivation</div>
+                    <HtmlEditorCard
+                        editorValue={props.item.Motivation !== undefined && props.item.Motivation !== null ? props.item.Motivation : ''}
+                        HtmlEditorStateChange={HtmlEditorCallBack}
+                    />
+                </div>
                 <div className="col-sm-12 my-4">
                     <details>
                         <summary className="alignCenter">
@@ -571,13 +584,6 @@ const EditPopup = (props: any) => {
                             </div>
                         </div>
                     </details>
-                </div>
-                <div className="col-sm-12 mb-3">
-                    <div className="sectionHead siteBdrBottom mb-1">Cover Letter/Motivation</div>
-                    <HtmlEditorCard
-                        editorValue={props.item.Motivation !== undefined && props.item.Motivation !== null ? props.item.Motivation : ''}
-                        HtmlEditorStateChange={HtmlEditorCallBack}
-                    />
                 </div>
 
                 <div className="col-sm-12 mb-3">

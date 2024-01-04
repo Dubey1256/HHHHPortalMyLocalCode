@@ -29,7 +29,8 @@ const Profilcandidate = ({props}: any) => {
     let allListId = {
         // Context: props?.props.Context,
         // HHHHContactListId: props?.props?.HHHHContactListId,
-        InterviewFeedbackFormListId: '298bc01c-710d-400e-bf48-8604d297c3c'
+        InterviewFeedbackFormListId: '298bc01c-710d-400e-bf48-8604d297c3c',
+        SkillsPortfolioListID: 'e79dfd6d-18aa-40e2-8d6e-930a37fe54e4'
 
         // jointSiteUrl: "https://hhhhteams.sharepoint.com/sites/HHHH"
     }
@@ -107,7 +108,7 @@ const Profilcandidate = ({props}: any) => {
     };
     return (
         <myContextValue.Provider value={{ ...myContextValue, allSite: allSite, allListId: allListId, loggedInUserName: props?.userDisplayName }}>
-            {isEditPopupOpen ? <EditPopup siteUrl={'https://hhhhteams.sharepoint.com/sites/HHHH/HR/'} EditPopupClose={EditPopupClose} callbackEdit={callbackEdit} item={selectedItem} ListID={allListId?.InterviewFeedbackFormListId}/> : ''}
+            {isEditPopupOpen ? <EditPopup siteUrl={'https://hhhhteams.sharepoint.com/sites/HHHH/HR/'} EditPopupClose={EditPopupClose} callbackEdit={callbackEdit} item={selectedItem} ListID={allListId?.InterviewFeedbackFormListId} skillsList={allListId?.SkillsPortfolioListID}/> : ''}
             <div className='alignCenter border-bottom pb-2'>
                 <div>
                     <img className='user-dp' src={EmployeeData?.Item_x0020_Cover?.Url != undefined ? EmployeeData?.Item_x0020_Cover?.Url : "https://hhhhteams.sharepoint.com/sites/HHHH/GmBH/SiteCollectionImages/ICONS/32/icon_user.jpg"} />
