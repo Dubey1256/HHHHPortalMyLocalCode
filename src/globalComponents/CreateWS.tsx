@@ -639,10 +639,14 @@ const CreateWS = (props: any) => {
                                     </div>}
                                     <div className='row'>
                                         <div className="col-md-8">
-                                            <input className="full-width searchbox_height" type="text"
+                                            <div className='input-group'>
+                                                <label className='form-label full-width'>Task Name</label>
+                                            <input className="form-control" type="text"
                                                 placeholder="Enter Child Item Title"
                                                 onChange={(e) => chanageTitle(e.target.value, WTindex)}
                                             />
+                                                </div>
+                                            
                                         </div>
 
                                     </div>
@@ -650,8 +654,8 @@ const CreateWS = (props: any) => {
                                     <div className='row mt-2'>
                                         <div className='col-sm-4'>
                                             <div className="input-group">
-                                                <label className='form-label full-width ps-0'>Item Rank</label>
-                                                <select value={multipleWSTask?.itemRank} onChange={(e: any) => { handleRankChange(e.target.value, WTindex) }} className='form-select'>
+                                                <label className='form-label full-width'>Item Rank</label>
+                                                <select  value={multipleWSTask?.itemRank} onChange={(e: any) => { handleRankChange(e.target.value, WTindex) }} className="form-control">
                                                     {itemRanks?.map((rank: any) => (
                                                         <option key={rank?.rank} value={rank?.rank}>{rank?.rankTitle}</option>
                                                     ))}
