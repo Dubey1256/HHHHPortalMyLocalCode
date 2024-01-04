@@ -795,6 +795,9 @@ const ProjectManagementMain = (props: any) => {
   const OpenAddStructureModal = () => {
     setIsAddStructureOpen(true);
   }
+  const restructureCallback =()=>{
+    
+  }
   const addActivity = (type: any) => {
 
     if (checkedList?.TaskTypeId === 3 || checkedList?.TaskType?.Id === 3) {
@@ -1591,6 +1594,7 @@ const ProjectManagementMain = (props: any) => {
                                   smartTimeTotalFunction={smartTimeTotal} SmartTimeIconShow={true}
                                   TaskUsers={AllUser} showHeader={true} expendedTrue={false}
                                   showCreationAllButton={true}
+                                  restructureCallBack={restructureCallback}
                                   OpenAddStructureModal={OpenAddStructureModal}
                                   addActivity={addActivity} />}
                               </div>
