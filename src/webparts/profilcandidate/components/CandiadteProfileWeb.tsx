@@ -29,8 +29,7 @@ const Profilcandidate = ({props}: any) => {
     let allListId = {
         // Context: props?.props.Context,
         // HHHHContactListId: props?.props?.HHHHContactListId,
-        InterviewFeedbackFormListId: props?.props?.InterviewFeedbackFormListId,
-        SkillsPortfolioListID: props?.props?.SkillsPortfolioListID
+        InterviewFeedbackFormListId: props?.InterviewFeedbackFormListId
 
         // jointSiteUrl: "https://hhhhteams.sharepoint.com/sites/HHHH"
     }
@@ -108,7 +107,7 @@ const Profilcandidate = ({props}: any) => {
     };
     return (
         <myContextValue.Provider value={{ ...myContextValue, allSite: allSite, allListId: allListId, loggedInUserName: props?.userDisplayName }}>
-            {isEditPopupOpen ? <EditPopup siteUrl={'https://hhhhteams.sharepoint.com/sites/HHHH/HR/'} EditPopupClose={EditPopupClose} callbackEdit={callbackEdit} item={selectedItem} ListID={allListId?.InterviewFeedbackFormListId} skillsList={allListId?.SkillsPortfolioListID}/> : ''}
+            {isEditPopupOpen ? <EditPopup siteUrl={'https://hhhhteams.sharepoint.com/sites/HHHH/HR/'} EditPopupClose={EditPopupClose} callbackEdit={callbackEdit} item={selectedItem} ListID={allListId?.InterviewFeedbackFormListId}/> : ''}
             <div className='alignCenter border-bottom pb-2'>
                 <div>
                     <img className='user-dp' src={EmployeeData?.Item_x0020_Cover?.Url != undefined ? EmployeeData?.Item_x0020_Cover?.Url : "https://hhhhteams.sharepoint.com/sites/HHHH/GmBH/SiteCollectionImages/ICONS/32/icon_user.jpg"} />

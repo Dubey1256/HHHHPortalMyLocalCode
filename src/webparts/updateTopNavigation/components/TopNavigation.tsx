@@ -1236,7 +1236,7 @@ const TopNavigation = (dynamicData: any) => {
         <div className="Alltable">
           <DragDropContext onDragEnd={handleDragEnd}>
             <Droppable droppableId="sortableTable">
-              {(provided) => (
+              {(provided:any) => (
                 <table
                   {...provided.droppableProps}
                   ref={provided.innerRef}
@@ -1331,7 +1331,7 @@ const TopNavigation = (dynamicData: any) => {
                                 draggableId={item.Id.toString()}
                                 index={index}
                               >
-                                {(provided) => (
+                                {(provided:any) => (
                                   <tr
                                     ref={provided.innerRef}
                                     {...provided.draggableProps}
