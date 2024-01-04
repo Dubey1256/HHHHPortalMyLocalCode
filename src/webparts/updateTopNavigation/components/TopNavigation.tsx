@@ -541,7 +541,7 @@ const TopNavigation = (dynamicData: any) => {
     <>
       <div className="row">
         <h2 className="d-flex justify-content-between align-items-center siteColor  serviceColor_Active p-0">
-          <div className="siteColor">Update TopNavigation</div>
+          <div className="siteColor headign ">Update TopNavigation</div>
           <div className="text-end fs-6">
           <span className="hyperlink me-3" onClick={() => sortItem(root)} >Change Sort Order</span>
               <a
@@ -598,7 +598,7 @@ const TopNavigation = (dynamicData: any) => {
                         <>
                           <li className="pre">
                             {child.image != undefined ? (
-                              <span className="ps-1">
+                              <span className="pe-1">
                                 <img
                                   src={child?.image}
                                   className="workmember"
@@ -636,7 +636,7 @@ const TopNavigation = (dynamicData: any) => {
                                   <>
                                     <li className="pre">
                                       {subchild.image != undefined ? (
-                                        <span className="ps-1">
+                                        <span className="pe-1">
                                           <img
                                             src={subchild?.image}
                                             className="workmember"
@@ -686,7 +686,7 @@ const TopNavigation = (dynamicData: any) => {
                                                 <li className="pre">
                                                   {subchildLast.image !=
                                                   undefined ? (
-                                                    <span className="ps-1">
+                                                    <span className="pe-1">
                                                       <img
                                                         src={
                                                           subchildLast?.image

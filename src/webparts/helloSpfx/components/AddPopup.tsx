@@ -140,11 +140,10 @@ const AddPopup = (props: any) => {
     const getCurrentDate = (): string => {
         const currentDate: any = new Date();
         const year: any = currentDate.getFullYear();
-        const month: any = String(currentDate.getMonth() + 1).padStart(2, '0'); // Month is zero-based
-        const day: any = String(currentDate.getDate()).padStart(2, '0');
+        const month: any = (currentDate.getMonth() + 1).toString().padStart(2, '0');
+        const day: any = currentDate.getDate().toString().padStart(2, '0');
         return `${year}-${month}-${day}`;
     };
-
 
     const getchoicecolumns = () => {
         const select = `Id,Title,PositionTitle,PositionDescription,JobSkills`;
