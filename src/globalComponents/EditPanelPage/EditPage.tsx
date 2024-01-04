@@ -42,7 +42,7 @@ var valueAfterLastSlash = match ? match[1] : null;
         (taskUsers[0].ItemRank == 5  ? '(5) Relevant Item' :(taskUsers[0].ItemRank == 4 ? '(4) Unsure' : (taskUsers[0].ItemRank ==  2  ? '(2) to be verified' : (taskUsers[0].ItemRank == 1  ? '(1) Archive' 
         : (taskUsers[0].ItemRank == 0 ? '(0) No Show' : null )) ))))),
         setData(...taskUsers);
-        props.changeHeader(taskUsers[0]?.Title)
+        props.changeHeader(taskUsers[0]?.Page_x002d_Title)
         setUpdateId(taskUsers[0]?.ID)
       }).catch((err:any)=>{
         console.log(err);
