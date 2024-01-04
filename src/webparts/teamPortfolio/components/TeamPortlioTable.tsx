@@ -77,7 +77,7 @@ function TeamPortlioTable(SelectedProp: any) {
     const [dataAllGruping, seDataAllGruping] = React.useState([]);
     const [data, setData] = React.useState([]);
     copyDtaArray = data;
-    const [activeTile ,setActiveTile]=React.useState("")
+    const [activeTile, setActiveTile] = React.useState("")
     const [AllUsers, setTaskUser] = React.useState([]);
     const [AllMetadata, setMetadata] = React.useState([])
     const [AllClientCategory, setAllClientCategory] = React.useState([])
@@ -315,7 +315,7 @@ function TeamPortlioTable(SelectedProp: any) {
                     .items.select("ParentTask/Title", "ParentTask/Id", "ItemRank", "TaskLevel", "OffshoreComments", "TeamMembers/Id", "ClientCategory/Id", "ClientCategory/Title",
                         "TaskID", "ResponsibleTeam/Id", "ResponsibleTeam/Title", "ParentTask/TaskID", "TaskType/Level", "PriorityRank", "TeamMembers/Title", "FeedBack", "Title", "Id", "ID", "DueDate", "Comments", "Categories", "Status", "Body",
                         "PercentComplete", "ClientCategory", "Priority", "TaskType/Id", "TaskType/Title", "Portfolio/Id", "Portfolio/ItemType", "Portfolio/PortfolioStructureID", "Portfolio/Title",
-                        "TaskCategories/Id", "TaskCategories/Title", "TeamMembers/Name", "Project/Id", "Project/PortfolioStructureID", "Project/Title","Project/PriorityRank", "AssignedTo/Id", "AssignedTo/Title", "AssignedToId", "Author/Id", "Author/Title", "Editor/Id", "Editor/Title",
+                        "TaskCategories/Id", "TaskCategories/Title", "TeamMembers/Name", "Project/Id", "Project/PortfolioStructureID", "Project/Title", "Project/PriorityRank", "AssignedTo/Id", "AssignedTo/Title", "AssignedToId", "Author/Id", "Author/Title", "Editor/Id", "Editor/Title",
                         "Created", "Modified", "IsTodaysTask", "workingThisWeek"
                     )
                     .expand(
@@ -548,7 +548,7 @@ function TeamPortlioTable(SelectedProp: any) {
                     .items.select("ParentTask/Title", "ParentTask/Id", "ItemRank", "TaskLevel", "OffshoreComments", "TeamMembers/Id", "ClientCategory/Id", "ClientCategory/Title",
                         "TaskID", "ResponsibleTeam/Id", "ResponsibleTeam/Title", "ParentTask/TaskID", "TaskType/Level", "PriorityRank", "TeamMembers/Title", "FeedBack", "Title", "Id", "ID", "DueDate", "Comments", "Categories", "Status", "Body",
                         "PercentComplete", "ClientCategory", "Priority", "TaskType/Id", "TaskType/Title", "Portfolio/Id", "Portfolio/ItemType", "Portfolio/PortfolioStructureID", "Portfolio/Title",
-                        "TaskCategories/Id", "TaskCategories/Title", "TeamMembers/Name", "Project/Id", "Project/PortfolioStructureID", "Project/Title","Project/PriorityRank", "AssignedTo/Id", "AssignedTo/Title", "AssignedToId", "Author/Id", "Author/Title", "Editor/Id", "Editor/Title",
+                        "TaskCategories/Id", "TaskCategories/Title", "TeamMembers/Name", "Project/Id", "Project/PortfolioStructureID", "Project/Title", "Project/PriorityRank", "AssignedTo/Id", "AssignedTo/Title", "AssignedToId", "Author/Id", "Author/Title", "Editor/Id", "Editor/Title",
                         "Created", "Modified", "IsTodaysTask", "workingThisWeek"
                     )
                     .expand(
@@ -1736,8 +1736,15 @@ function TeamPortlioTable(SelectedProp: any) {
             {
                 accessorFn: (row) => row?.SmartPriority,
                 cell: ({ row }) => (
-                    <div className="text-center boldClable" title={row?.original?.showFormulaOnHover}>{row?.original?.SmartPriority}</div>
+                    <div className="text-center boldClable" title={row?.original?.showFormulaOnHover}>{row?.original?.SmartPriority != 0 ? row?.original?.SmartPriority : null}</div>
                 ),
+                filterFn: (row: any, columnName: any, filterValue: any) => {
+                    if (row?.original?.SmartPriority == filterValue) {
+                        return true
+                    } else {
+                        return false
+                    }
+                },
                 id: "SmartPriority",
                 placeholder: "SmartPriority",
                 resetColumnFilters: false,
@@ -2201,43 +2208,39 @@ function TeamPortlioTable(SelectedProp: any) {
     const CreateActivityPopup = (type: any) => {
         setActiveTile(type)
         if (checkedList?.TaskType === undefined) {
-          SelectedProp.props.NoteCall = type;
-          checkedList.NoteCall = type;
-          // setIsOpenActivity(true);
+            checkedList.NoteCall = type;
+
         }
         if (checkedList?.TaskType?.Id == 1) {
-          checkedList.NoteCall = type;
-          //setIsOpenWorkstream(true);
+            checkedList.NoteCall = type;
         }
         if (checkedList?.TaskType?.Id == 3) {
-          SelectedProp.props.NoteCall = type;
-          checkedList.NoteCall = type;
-          //setIsOpenActivity(true);
+            checkedList.NoteCall = type;
         }
         if (checkedList?.TaskType?.Id == 2) {
-          alert("You can not create ny item inside Task");
+            alert("You can not create ny item inside Task");
         }
-      };
-    
-      const Createbutton = () => {
+    };
+
+    const Createbutton = () => {
         if (checkedList?.TaskType === undefined) {
-          // SelectedProp.props.NoteCall = type;
-          // checkedList.NoteCall = type;
-         setIsOpenActivity(true);
+            // SelectedProp.props.NoteCall = type;
+            // checkedList.NoteCall = type;
+            setIsOpenActivity(true);
         }
         if (checkedList?.TaskType?.Id == 1) {
-          // checkedList.NoteCall = type;
-          setIsOpenWorkstream(true);
+            // checkedList.NoteCall = type;
+            setIsOpenWorkstream(true);
         }
         if (checkedList?.TaskType?.Id == 3) {
-          // SelectedProp.props.NoteCall = type;
-          // checkedList.NoteCall = type;
-        setIsOpenActivity(true);
+            // SelectedProp.props.NoteCall = type;
+            // checkedList.NoteCall = type;
+            setIsOpenActivity(true);
         }
         if (checkedList?.TaskType?.Id == 2) {
-          alert("You can not create ny item inside Task");
+            alert("You can not create ny item inside Task");
         }
-      };
+    };
     const closeActivity = () => {
         setActivityPopup(false)
         childRef?.current?.setRowSelection({});
@@ -2249,7 +2252,8 @@ function TeamPortlioTable(SelectedProp: any) {
         }
         if (checkedList?.TaskTypeId === 3 || checkedList?.TaskType?.Id === 3) {
             checkedList.NoteCall = 'Task'
-            setIsOpenActivity(true);
+            // setIsOpenActivity(true);
+            setIsOpenWorkstream(true);
         }
         if (checkedList?.TaskType?.Id == 1 || checkedList?.TaskTypeId == 1) {
             checkedList.NoteCall = 'Workstream'
@@ -2403,19 +2407,19 @@ function TeamPortlioTable(SelectedProp: any) {
                                 <div className="mt-4 clearfix">
                                     <h4 className="titleBorder "> Type</h4>
                                     <div className="col p-0 taskcatgoryPannel">
-                                    <a id="subcategorytasks936" onClick={(e) => CreateActivityPopup("Bug")}  className={activeTile=="Bug"?"active bg-siteColor subcategoryTask text-center":"bg-siteColor subcategoryTask text-center"}>
+                                        <a id="subcategorytasks936" onClick={(e) => CreateActivityPopup("Bug")} className={activeTile == "Bug" ? "active bg-siteColor subcategoryTask text-center" : "bg-siteColor subcategoryTask text-center"}>
                                             <span className="tasks-label">Bug</span>
                                         </a>
-                                        <a id="subcategorytasks936" onClick={(e) => CreateActivityPopup("Feedback")}  className={activeTile=="Feedback"?"active bg-siteColor subcategoryTask text-center":"bg-siteColor subcategoryTask text-center"}>
+                                        <a id="subcategorytasks936" onClick={(e) => CreateActivityPopup("Feedback")} className={activeTile == "Feedback" ? "active bg-siteColor subcategoryTask text-center" : "bg-siteColor subcategoryTask text-center"}>
                                             <span className="tasks-label">Feedback</span>
                                         </a>
-                                        <a id="subcategorytasks936" onClick={() => CreateActivityPopup("Improvement")} className={activeTile=="Improvement"?"active bg-siteColor subcategoryTask text-center":"bg-siteColor subcategoryTask text-center"}>
+                                        <a id="subcategorytasks936" onClick={() => CreateActivityPopup("Improvement")} className={activeTile == "Improvement" ? "active bg-siteColor subcategoryTask text-center" : "bg-siteColor subcategoryTask text-center"}>
                                             <span className="tasks-label">Improvement</span>
                                         </a>
-                                        <a id="subcategorytasks936" onClick={(e) => CreateActivityPopup("Design")}  className={activeTile=="Design"?"active bg-siteColor subcategoryTask text-center":"bg-siteColor subcategoryTask text-center"}>
+                                        <a id="subcategorytasks936" onClick={(e) => CreateActivityPopup("Design")} className={activeTile == "Design" ? "active bg-siteColor subcategoryTask text-center" : "bg-siteColor subcategoryTask text-center"}>
                                             <span className="tasks-label">Design</span>
                                         </a>
-                                        <a id="subcategorytasks936" onClick={(e) => CreateActivityPopup("Task")}  className={activeTile=="Task"?"active bg-siteColor subcategoryTask text-center":"bg-siteColor subcategoryTask text-center"}>
+                                        <a id="subcategorytasks936" onClick={(e) => CreateActivityPopup("Task")} className={activeTile == "Task" ? "active bg-siteColor subcategoryTask text-center" : "bg-siteColor subcategoryTask text-center"}>
                                             <span className="tasks-label">Task</span>
                                         </a>
                                     </div>
@@ -2424,22 +2428,22 @@ function TeamPortlioTable(SelectedProp: any) {
                                 <div className="mt-4 clearfix">
                                     <h4 className="titleBorder "> Type</h4>
                                     <div className="col p-0 taskcatgoryPannel">
-                                    <a id="subcategorytasks936" onClick={(e) => CreateActivityPopup("Feedback")} className={activeTile=="Feedback"?"active bg-siteColor subcategoryTask text-center":"bg-siteColor subcategoryTask text-center"}>
+                                        <a id="subcategorytasks936" onClick={(e) => CreateActivityPopup("Feedback")} className={activeTile == "Feedback" ? "active bg-siteColor subcategoryTask text-center" : "bg-siteColor subcategoryTask text-center"}>
                                             <span className="tasks-label">Feedback</span>
                                         </a>
-                                    <a id="subcategorytasks936" onClick={() => CreateActivityPopup("Improvement")} className={activeTile=="Improvement"?"active bg-siteColor subcategoryTask text-center":"bg-siteColor subcategoryTask text-center"}>
+                                        <a id="subcategorytasks936" onClick={() => CreateActivityPopup("Improvement")} className={activeTile == "Improvement" ? "active bg-siteColor subcategoryTask text-center" : "bg-siteColor subcategoryTask text-center"}>
                                             <span className="tasks-label">Improvement</span>
                                         </a>
-                                        <a id="subcategorytasks936" onClick={(e) => CreateActivityPopup("Implementation")} className={activeTile=="Implementation"?"active bg-siteColor subcategoryTask text-center":"bg-siteColor subcategoryTask text-center"}>
+                                        <a id="subcategorytasks936" onClick={(e) => CreateActivityPopup("Implementation")} className={activeTile == "Implementation" ? "active bg-siteColor subcategoryTask text-center" : "bg-siteColor subcategoryTask text-center"}>
                                             <span className="tasks-label">Implementation</span>
                                         </a>
-                                        <a id="subcategorytasks936" onClick={() => CreateActivityPopup("Development")} className={activeTile=="Development"?"active bg-siteColor subcategoryTask text-center":"bg-siteColor subcategoryTask text-center"}>
+                                        <a id="subcategorytasks936" onClick={() => CreateActivityPopup("Development")} className={activeTile == "Development" ? "active bg-siteColor subcategoryTask text-center" : "bg-siteColor subcategoryTask text-center"}>
                                             <span className="tasks-label">Development</span>
                                         </a>
-                                        <a id="subcategorytasks936" onClick={() => CreateActivityPopup("Activities")} className={activeTile=="Activities"?"active bg-siteColor subcategoryTask text-center":"bg-siteColor subcategoryTask text-center"}>
+                                        <a id="subcategorytasks936" onClick={() => CreateActivityPopup("Activities")} className={activeTile == "Activities" ? "active bg-siteColor subcategoryTask text-center" : "bg-siteColor subcategoryTask text-center"}>
                                             <span className="tasks-label">Activity</span>
                                         </a>
-                                        <a id="subcategorytasks936" onClick={() => CreateActivityPopup("Task")}className={activeTile=="Task"?"active bg-siteColor subcategoryTask text-center":"bg-siteColor subcategoryTask text-center"}>
+                                        <a id="subcategorytasks936" onClick={() => CreateActivityPopup("Task")} className={activeTile == "Task" ? "active bg-siteColor subcategoryTask text-center" : "bg-siteColor subcategoryTask text-center"}>
                                             <span className="tasks-label">Task</span>
                                         </a>
                                     </div>
@@ -2449,21 +2453,21 @@ function TeamPortlioTable(SelectedProp: any) {
                     </div>
                 </div>
                 <footer className="pull-right mt-3">
-          <button
-          type="button"
-          className="btn btn-primary mx-2"
-          onClick={() =>Createbutton()}
-        >
-          Create
-        </button>
-          <button
-            type="button"
-            className="btn btn-default btn-default ms-1 pull-right"
-            onClick={closeActivity}
-          >
-            Cancel
-          </button>
-          </footer>
+                    <button
+                        type="button"
+                        className="btn btn-primary mx-2"
+                        onClick={() => Createbutton()}
+                    >
+                        Create
+                    </button>
+                    <button
+                        type="button"
+                        className="btn btn-default btn-default ms-1 pull-right"
+                        onClick={closeActivity}
+                    >
+                        Cancel
+                    </button>
+                </footer>
             </Panel>
             {isOpenActivity && (
                 <CreateActivity

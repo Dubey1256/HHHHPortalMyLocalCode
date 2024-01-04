@@ -35,9 +35,11 @@ const ShowSiteComposition = (Props: any) => {
                     {SiteTaggingData?.map((SCData: any) => {
                         return (
                             <span className="hover-text m-0" >
-                                <span className="ClientCategory-Usericon" style={{ backgroundColor: `${SCData?.ColorTag}` }}>{SCData?.ClienTimeDescription?.toFixed(0)}</span>
+                                <span className="ClientCategory-Usericon" style={{ backgroundColor: `${SCData?.ColorTag}` }}>
+                                    {SCData?.ClienTimeDescription != undefined ? Number(SCData?.ClienTimeDescription)?.toFixed(0) : 0}
+                                </span>
                                 <span className="tooltip-text pop-right">
-                                    {SCData?.Title} : {SCData?.ClienTimeDescription?.toFixed(0)} %
+                                    {SCData?.Title} : {SCData?.ClienTimeDescription != undefined ? Number(SCData?.ClienTimeDescription)?.toFixed(0) : 0} %
                                 </span>
                             </span>
                         )

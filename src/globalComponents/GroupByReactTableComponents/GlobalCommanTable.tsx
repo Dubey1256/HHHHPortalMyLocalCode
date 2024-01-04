@@ -958,7 +958,7 @@ const GlobalCommanTable = (items: any, ref: any) => {
                     </span>
                 </span>
                 <span className="toolbox">
-                    {items.taskProfile != true && items?.showCreationAllButton === true && <>
+                    {items.taskProfile != true && items?.showCreationAllButton === true && items?.pageProjectOverview != true && <>
                         {items?.PortfolioFeature === "Feature" && items?.hideRestructureBtn != true ? (
                             <button type="button" disabled className="btn btn-primary" style={{ backgroundColor: `${portfolioColor}`, borderColor: `${portfolioColor}`, color: "#fff" }} title=" Add Structure"> {" "} Add Structure{" "}</button>
                         ) : (table?.getSelectedRowModel()?.flatRows?.length === 1 && table?.getSelectedRowModel()?.flatRows[0]?.original?.Item_x0020_Type != "Feature" && table?.getSelectedRowModel()?.flatRows[0]?.original
@@ -990,7 +990,7 @@ const GlobalCommanTable = (items: any, ref: any) => {
                     }
 
                     {items.taskProfile === true && items?.showCreationAllButton === true && items?.hideRestructureBtn != true && <>
-                        {table?.getSelectedRowModel()?.flatRows.length < 2 ? <button type="button" className="btn btn-primary" title='Add Activity' style={{ backgroundColor: `${portfolioColor}`, borderColor: `${portfolioColor}`, color: '#fff' }} onClick={() => openCreationAllStructure("Add Workstream-Task")}>Add Workstream-Task</button> :
+                        {table?.getSelectedRowModel()?.flatRows.length < 2 ? <button type="button" className="btn btn-primary" title='Add Activity' style={{ backgroundColor: `${portfolioColor}`, borderColor: `${portfolioColor}`, color: '#fff' }} onClick={() => openCreationAllStructure("Add Workstream-Task")}>{table?.getSelectedRowModel()?.flatRows.length>0 &&table?.getSelectedRowModel()?.flatRows[0]?.original?.TaskType.Title=="Workstream"?"Add Task" :"Add Workstream-Task"}</button> :
                             <button type="button" className="btn btn-primary" style={{ backgroundColor: `${portfolioColor}`, borderColor: `${portfolioColor}`, color: '#fff' }} disabled={true} > Add Workstream-Task</button>}
 
                         {
