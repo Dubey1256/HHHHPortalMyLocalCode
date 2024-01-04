@@ -221,28 +221,28 @@ export default function SmartMetadataEditPopup(props: any) {
     }
     const changeParentMetadata = () => {
         if (selectedChangedCategories) {
-            props?.MetadataItems?.filter((meta: any) => {
+            props?.ParentMetaDataItems?.filter((meta: any) => {
                 if (meta?.Title === selectedChangedCategories) {
                     SmartTaxonomyItem.ParentID = meta?.Id
+                    if (selectedOptionSecond && meta?.subRows.length > 0) {
+                        meta.subRows.filter((row: any) => {
+                            row?.Title === selectedOptionSecond ? SmartTaxonomyItem.ParentID = row?.Id : null;
+                        })
+                    }
                 }
             })
-            if (selectedOptionSecond) {
-                props?.MetadataItems?.filter((item: any) => {
-                    item?.Title === selectedOptionSecond ? SmartTaxonomyItem.ParentID = item?.Id : null;
-                })
-            }
         }
         if (selectedOptionTop) {
-            props?.MetadataItems?.filter((meta: any) => {
+            props?.ParentMetaDataItems?.filter((meta: any) => {
                 if (meta?.Title === selectedOptionTop) {
                     SmartTaxonomyItem.ParentID = meta?.Id
+                    if (selectedOptionSecond && meta?.subRows.length > 0) {
+                        meta.subRows.filter((row: any) => {
+                            row?.Title === selectedOptionSecond ? SmartTaxonomyItem.ParentID = row?.Id : null;
+                        })
+                    }
                 }
             })
-            if (selectedOptionSecond) {
-                props?.MetadataItems?.filter((item: any) => {
-                    item?.Title === selectedOptionSecond ? SmartTaxonomyItem.ParentID = item?.Id : null;
-                })
-            }
         }
         closeParentPopup();
     }

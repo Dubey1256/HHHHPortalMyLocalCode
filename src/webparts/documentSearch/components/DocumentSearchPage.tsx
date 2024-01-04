@@ -200,7 +200,7 @@ export default function DocumentSearchPage(Props: any) {
             </div>
             {AllDocs && <div>
                 <div className="TableContentSection">
-                    <div className='Alltable mt-2'>
+                    <div className='Alltable mt-2 mb-2'>
                         <div className='col-md-12 p-0 '>
                             <GlobalCommanTable columns={columns} data={AllDocs} showHeader={true} callBackData={callBackData} expandIcon={true} hideTeamIcon={true} hideOpenNewTableIcon={true} />
                         </div>

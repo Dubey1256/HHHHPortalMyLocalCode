@@ -13,6 +13,7 @@ export default function CompareSmartMetaData(Props: any) {
     var [state, setState]: any = React.useState({});
     const closeComparepopup = () => {
         setIsShowCompare(false);
+        Props?.childRefdata?.current?.setRowSelection({});
     }
     const openComparePopup = () => {
         if (Props?.compareSeletected.length === 2) {

@@ -301,11 +301,11 @@ export default function ManageSmartMetadata(selectedProps: any) {
 
     const CloseEditSmartMetaPopup = () => {
         setSmartMetadataEditPopupOpen(false);
-        childRef?.current?.setRowSelection({});
+        childRefdata?.current?.setRowSelection({});
     };
     const CloseDeleteSmartMetaPopup = () => {
         setSmartMetadataDeletePopupOpen(false);
-        childRef?.current?.setRowSelection({});
+        childRefdata?.current?.setRowSelection({});
     };
     //-------------------------------------------------- RESTRUCTURING FUNCTION start---------------------------------------------------------------
 
@@ -333,13 +333,13 @@ export default function ManageSmartMetadata(selectedProps: any) {
         }
     }, []);
     const callChildFunction = (items: any) => {
-        if (childRef.current) {
-            childRef.current.callChildFunction(items);
+        if (childRefdata.current) {
+            childRefdata.current.callChildFunction(items);
         }
     };
     const trueTopIcon = (items: any) => {
-        if (childRef.current) {
-            childRef.current.trueTopIcon(items);
+        if (childRefdata.current) {
+            childRefdata.current.trueTopIcon(items);
         }
     };
     //-------------------------------------------------- RESTRUCTURING FUNCTION end---------------------------------------------------------------
@@ -439,7 +439,7 @@ export default function ManageSmartMetadata(selectedProps: any) {
                 <div className="tab-pane Alltable mx-height show active" id="URLTasks" role="tabpanel" aria-labelledby="URLTasks">
                     {
                         Smartmetadata &&
-                        <GlobalCommanTable smartMetadataCount={smartMetadataCount} Tabs={Tabs} compareSeletected={compareSeletected} CloseEditSmartMetaPopup={CloseEditSmartMetaPopup} SelectedItem={SelectedItem} setName={setName} ParentItem={Smartmetadata} AllList={selectedProps.AllList} data={Smartmetadata} TabSelected={TabSelected} ref={childRefdata} callChildFunction={callChildFunction} callBackSmartMetaData={callBackSmartMetaData} columns={columns} showHeader={true} expandIcon={true} showPagination={true} callBackData={callBackSmartMetaData} />
+                        <GlobalCommanTable smartMetadataCount={smartMetadataCount} Tabs={Tabs} compareSeletected={compareSeletected} CloseEditSmartMetaPopup={CloseEditSmartMetaPopup} SelectedItem={SelectedItem} setName={setName} ParentItem={Smartmetadata} AllList={selectedProps.AllList} data={Smartmetadata} TabSelected={TabSelected} ref={childRefdata} childRefdata={childRefdata} callChildFunction={callChildFunction} callBackSmartMetaData={callBackSmartMetaData} columns={columns} showHeader={true} expandIcon={true} showPagination={true} callBackData={callBackSmartMetaData} />
                     }
                 </div>
             </div>
@@ -470,8 +470,8 @@ export default function ManageSmartMetadata(selectedProps: any) {
                     </div>
                 </Panel>
             </div>)}
-            {SmartMetadataEditPopupOpen ? <SmartMetadataEditPopup AllList={selectedProps.AllList} CloseEditSmartMetaPopup={CloseEditSmartMetaPopup} EditItemCallBack={callBackSmartMetaData} AllMetadata={Smartmetadata} MetadataItems={SmartmetadataItems} modalInstance={SelectedSmartMetadataItem} TabSelected={TabSelected} ParentMetaDataItems={ParentMetaDataItems} /> : ''}
-            {SmartMetadataDeletePopupOpen ? <DeleteSmartMetadata AllList={selectedProps.AllList} CloseDeleteSmartMetaPopup={CloseDeleteSmartMetaPopup} DeleteItemCallBack={callBackSmartMetaData} AllMetadata={Smartmetadata} modalInstance={SelectedSmartMetadataItem} /> : ''}
+            {SmartMetadataEditPopupOpen ? <SmartMetadataEditPopup AllList={selectedProps.AllList} CloseEditSmartMetaPopup={CloseEditSmartMetaPopup} EditItemCallBack={callBackSmartMetaData} AllMetadata={Smartmetadata} MetadataItems={SmartmetadataItems} modalInstance={SelectedSmartMetadataItem} TabSelected={TabSelected} ParentMetaDataItems={ParentMetaDataItems} childRefdata={childRefdata} /> : ''}
+            {SmartMetadataDeletePopupOpen ? <DeleteSmartMetadata AllList={selectedProps.AllList} CloseDeleteSmartMetaPopup={CloseDeleteSmartMetaPopup} DeleteItemCallBack={callBackSmartMetaData} AllMetadata={Smartmetadata} modalInstance={SelectedSmartMetadataItem} childRefdata={childRefdata} /> : ''}
         </>
     );
 }
