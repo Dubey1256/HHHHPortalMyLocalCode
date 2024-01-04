@@ -272,7 +272,7 @@ const TaskUserManagementTable = ({ TaskUsersListData, TaskGroupsListData, baseUr
                         alt="User"
                         style={{ marginRight: '10px', width: '32px', height: '32px' }}
                     />
-                    <span>{row.original.Title}</span>
+                    <span>{`${row.original.Title} (${row.original.Suffix})`}</span>
                 </div>
             ),
             sortDescFirst: false
@@ -295,6 +295,9 @@ const TaskUserManagementTable = ({ TaskUsersListData, TaskGroupsListData, baseUr
             header: "",
             id: "SortOrder",
             placeholder: "SortOrder",
+            filterFn: (row: any, columnId: any, filterValue: any) => {
+                return row?.original?.SortOrder == filterValue
+            },
             size: 42,
         },
         {
@@ -354,6 +357,9 @@ const TaskUserManagementTable = ({ TaskUsersListData, TaskGroupsListData, baseUr
                 accessorKey: "SortOrder",
                 header: "",
                 placeholder: "SortOrder",
+                filterFn: (row: any, columnId: any, filterValue: any) => {
+                    return row?.original?.SortOrder == filterValue
+                },
             },
             {
                 accessorKey: "TaskId",

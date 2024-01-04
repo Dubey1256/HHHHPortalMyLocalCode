@@ -35,7 +35,7 @@ var valueAfterLastSlash = match ? match[1] : null;
       .items.select("ID", "Page_x0020_Content", "FileLeafRef", "Page_x002d_Title", "Title","ItemRank","Author/ID","Author/Title","Editor/Title","Editor/ID",'Created','Modified', "IsStatic").expand("Editor","Author")
       .getAll().then((taskUsers2)=>{
         // const matchingObjects = arrayOfObjects.filter(obj => obj.title.includes(searchString));
-        const foundObject = taskUsers2.filter((obj:any) => obj.FileLeafRef.toUpperCase().includes("Permission-Management-spfx.aspx".toUpperCase()));
+        const foundObject = taskUsers2.filter((obj:any) => obj.FileLeafRef.toUpperCase().includes(valueAfterLastSlash.toUpperCase()));
         let taskUsers:any = foundObject;
 
         taskUsers[0].ItemRank2 = taskUsers[0].ItemRank ==   8 ? '(8) Top Highlights'  : (taskUsers[0].ItemRank == 7  ? '(7) Featured Item' : (taskUsers[0].ItemRank ==   6 ?  '(6) Key Item' : 

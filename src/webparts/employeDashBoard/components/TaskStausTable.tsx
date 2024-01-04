@@ -143,7 +143,7 @@ const TaskStatusTbl = (Tile: any) => {
     {
       cell: ({ row, getValue }: any) => (
           <span title="Edit Task" className="alignIcon svg__iconbox svg__icon--edit hreflink ms-1" onClick={() => editPopFunc(row.original)} ></span>
-       
+          
       ),
       id: 'Id',
       canSort: false,
