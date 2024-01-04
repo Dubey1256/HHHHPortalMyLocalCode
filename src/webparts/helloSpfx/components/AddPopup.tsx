@@ -36,7 +36,7 @@ const AddPopup = (props: any) => {
             }
         };
         fetchData();
-        setDefaultDate(getCurrentDate())
+        // setDefaultDate(getCurrentDate())
     }, []);
     type FileSection = {
         id: number;
@@ -137,13 +137,13 @@ const AddPopup = (props: any) => {
         }
     };
 
-        const getCurrentDate = (): string => {
-        const currentDate: any = new Date();
-        const year: any = currentDate.getFullYear();
-        const month: any = (currentDate.getMonth() + 1)?.padStart(2, '0'); // Month is zero-based
-        const day: any = (currentDate.getDate())?.padStart(2, '0');
-        return `${year}-${month}-${day}`;
-    };
+    //     const getCurrentDate = (): string => {
+    //     const currentDate: any = new Date();
+    //     const year: any = currentDate.getFullYear();
+    //     const month: any = (currentDate.getMonth() + 1)?.padStart(2, '0'); // Month is zero-based
+    //     const day: any = (currentDate.getDate())?.padStart(2, '0');
+    //     return `${year}-${month}-${day}`;
+    // };
     const getchoicecolumns = () => {
         const select = `Id,Title,PositionTitle,PositionDescription,JobSkills`;
         HRweb.lists.getById(allListID?.SkillsPortfolioListID).items.select(select).get()
