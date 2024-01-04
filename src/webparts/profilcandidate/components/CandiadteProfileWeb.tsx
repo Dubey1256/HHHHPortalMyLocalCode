@@ -29,7 +29,7 @@ const Profilcandidate = ({props}: any) => {
     let allListId = {
         // Context: props?.props.Context,
         // HHHHContactListId: props?.props?.HHHHContactListId,
-        InterviewFeedbackFormListId: props?.InterviewFeedbackFormListId
+        InterviewFeedbackFormListId: '298bc01c-710d-400e-bf48-8604d297c3c'
 
         // jointSiteUrl: "https://hhhhteams.sharepoint.com/sites/HHHH"
     }
