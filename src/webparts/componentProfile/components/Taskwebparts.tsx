@@ -67,6 +67,7 @@ function PortfolioTable(SelectedProp: any) {
   const [siteConfig, setSiteConfig] = React.useState([]);
   const [data, setData] = React.useState([]);
   copyDtaArray = data;
+  const [activeTile ,setActiveTile]=React.useState("")
   const [AllUsers, setTaskUser] = React.useState([]);
   const [AllMetadata, setMetadata] = React.useState([]);
   const [AllClientCategory, setAllClientCategory] = React.useState([]);
@@ -103,6 +104,8 @@ function PortfolioTable(SelectedProp: any) {
     const [portfolioTypeDataItemBackup, setPortFolioTypeIconBackup] = React.useState([]);
     const [taskTypeDataItemBackup, setTaskTypeDataItemBackup] = React.useState([]);
     const globalContextData: any = React.useContext<any>(myContextValue)
+    const [priorityRank, setpriorityRank] = React.useState([])
+    const [precentComplete, setPrecentComplete] = React.useState([])
   let ComponetsData: any = {};
   let Response: any = [];
   let props = undefined;
@@ -215,6 +218,8 @@ function PortfolioTable(SelectedProp: any) {
 
   const GetSmartmetadata = async () => {
     let siteConfigSites: any = [];
+    let Priority: any = []
+    let PrecentComplete: any = [];
     let web = new Web(ContextValue.siteUrl);
     let smartmetaDetails: any = [];
     smartmetaDetails = await web.lists
@@ -254,10 +259,24 @@ function PortfolioTable(SelectedProp: any) {
       if (newtest?.TaxType == 'timesheetListConfigrations') {
         timeSheetConfig = newtest;
       }
+      if (newtest?.TaxType == 'Priority Rank') {
+        Priority?.push(newtest)
+    }
+    if (newtest?.TaxType === 'Percent Complete' && newtest?.Title != 'In Preparation (0-9)' && newtest?.Title != 'Ongoing (10-89)' && newtest?.Title != 'Completed (90-100)') {
+        PrecentComplete.push(newtest);
+    }
     });
     if (siteConfigSites?.length > 0) {
       setSiteConfig(siteConfigSites);
     }
+    Priority?.sort((a: any, b: any) => {
+      return a.SortOrder - b.SortOrder;
+  });
+  PrecentComplete?.sort((a: any, b: any) => {
+      return a.SortOrder - b.SortOrder;
+  });
+  setpriorityRank(Priority)
+  setPrecentComplete(PrecentComplete)
     setMetadata(smartmetaDetails);
   };
 
@@ -1874,19 +1893,40 @@ const updatedDataDataFromPortfolios = (copyDtaArray: any, dataToUpdate: any) => 
 
   // new change////
   const CreateActivityPopup = (type: any) => {
+    setActiveTile(type)
     if (checkedList?.TaskType === undefined) {
       SelectedProp.props.NoteCall = type;
       checkedList.NoteCall = type;
-      setIsOpenActivity(true);
+      // setIsOpenActivity(true);
     }
     if (checkedList?.TaskType?.Id == 1) {
       checkedList.NoteCall = type;
-      setIsOpenWorkstream(true);
+      //setIsOpenWorkstream(true);
     }
     if (checkedList?.TaskType?.Id == 3) {
       SelectedProp.props.NoteCall = type;
       checkedList.NoteCall = type;
-      setIsOpenActivity(true);
+      //setIsOpenActivity(true);
+    }
+    if (checkedList?.TaskType?.Id == 2) {
+      alert("You can not create ny item inside Task");
+    }
+  };
+
+  const Createbutton = () => {
+    if (checkedList?.TaskType === undefined) {
+      // SelectedProp.props.NoteCall = type;
+      // checkedList.NoteCall = type;
+     setIsOpenActivity(true);
+    }
+    if (checkedList?.TaskType?.Id == 1) {
+      // checkedList.NoteCall = type;
+      setIsOpenWorkstream(true);
+    }
+    if (checkedList?.TaskType?.Id == 3) {
+      // SelectedProp.props.NoteCall = type;
+      // checkedList.NoteCall = type;
+    setIsOpenActivity(true);
     }
     if (checkedList?.TaskType?.Id == 2) {
       alert("You can not create ny item inside Task");
@@ -1915,7 +1955,9 @@ const updatedDataDataFromPortfolios = (copyDtaArray: any, dataToUpdate: any) => 
     }
     if (checkedList?.TaskTypeId === 3 || checkedList?.TaskType?.Id === 3) {
       checkedList.NoteCall = "Task";
-      setIsOpenActivity(true);
+      // setIsOpenActivity(true);
+        setIsOpenWorkstream(true);
+          
       if (SelectedProp?.props?.PortfolioType?.Color != undefined) {
         setTimeout(() => {
           let targetDiv: any = document?.querySelector('.ms-Panel-main');
@@ -2084,7 +2126,7 @@ const updatedDataDataFromPortfolios = (copyDtaArray: any, dataToUpdate: any) => 
                         scale={1.0}
                         loadedClassName="loadedContent"
                       />
-                      <GlobalCommanTable
+                      <GlobalCommanTable bulkEditIcon={true} priorityRank={priorityRank} precentComplete={precentComplete}
                         smartTimeTotalFunction={smartTimeTotal} SmartTimeIconShow={true}
                         portfolioTypeDataItemBackup={portfolioTypeDataItemBackup} taskTypeDataItemBackup={taskTypeDataItemBackup} flatViewDataAll={flatViewDataAll} setData={setData}
                         ref={childRef}
@@ -2146,104 +2188,72 @@ const updatedDataDataFromPortfolios = (copyDtaArray: any, dataToUpdate: any) => 
       <Panel
         onRenderHeader={onRenderCustomHeaderMain}
         type={PanelType.custom}
-        customWidth="600px"
+        customWidth="620px"
         isOpen={ActivityPopup}
         onDismiss={closeActivity}
         isBlocking={false}
       >
-        <div className="modal-body bg-f5f5 clearfix">
-          <div
-            className= "app component clearfix"
-          >
-            <div id="portfolio" className="section-event pt-0">
-              {checkedList != undefined &&
-                checkedList?.TaskType?.Title == "Workstream" ? (
-                <ul className="quick-actions">
-                  <li>
-                    <div onClick={(e) => CreateActivityPopup("Task")}>
-                      <span className="icon-sites">
-                        <img
-                          className="icon-sites"
-                          src="https://hhhhteams.sharepoint.com/sites/HHHH/SiteCollectionImages/ICONS/Shareweb/bug.png"
-                        />
-                      </span>
-                      Bug
-                    </div>
-                  </li>
-                  <li>
-                    <div onClick={() => CreateActivityPopup("Task")}>
-                      <span className="icon-sites">
-                        <img
-                          className="icon-sites"
-                          src="https://hhhhteams.sharepoint.com/sites/HHHH/SiteCollectionImages/ICONS/Shareweb/feedbck.png"
-                        />
-                      </span>
-                      Feedback
-                    </div>
-                  </li>
-                  <li>
-                    <div onClick={() => CreateActivityPopup("Task")}>
-                      <span className="icon-sites">
-                        <img src="	https://hhhhteams.sharepoint.com/sites/HHHH/SiteCollectionImages/ICONS/Shareweb/Impovement.png" />
-                      </span>
-                      Improvement
-                    </div>
-                  </li>
-                  <li>
-                    <div onClick={() => CreateActivityPopup("Task")}>
-                      <span className="icon-sites">
-                        <img src="https://hhhhteams.sharepoint.com/sites/HHHH/SiteCollectionImages/ICONS/Shareweb/design.png" />
-                      </span>
-                      Design
-                    </div>
-                  </li>
-                  <li>
-                    <div onClick={() => CreateActivityPopup("Task")}>
-                      <span className="icon-sites"></span>
-                      Task
-                    </div>
-                  </li>
-                </ul>
-              ) : (
-                <ul className="quick-actions">
-                  <li>
-                    <div onClick={(e) => CreateActivityPopup("Implementation")}>
-                      <span className="icon-sites">
-                        <img
-                          className="icon-sites"
-                          src="https://hhhhteams.sharepoint.com/sites/HHHH/SiteCollectionImages/ICONS/Shareweb/Implementation.png"
-                        />
-                      </span>
-                      Implmentation
-                    </div>
-                  </li>
-                  <li>
-                    <div onClick={() => CreateActivityPopup("Development")}>
-                      <span className="icon-sites">
-                        <img
-                          className="icon-sites"
-                          src="https://hhhhteams.sharepoint.com/sites/HHHH/SiteCollectionImages/ICONS/Shareweb/development.png"
-                        />
-                      </span>
-                      Development
-                    </div>
-                  </li>
-                  <li>
-                    <div onClick={() => CreateActivityPopup("Activities")}>
-                      <span className="icon-sites"></span>
-                      Activity
-                    </div>
-                  </li>
-                  <li className="mx-1 p-2 position-relative bg-siteColor text-center">
-                    <div onClick={() => CreateActivityPopup("Task")}>
-                      <span className="icon-sites"></span>
-                      Task
-                    </div>
-                  </li>
-                </ul>
-              )}
-            </div>
+        <div className="modal-body clearfix">
+          <div className= "app component clearfix">
+           <div id="portfolio" className="section-event pt-0">
+                            {checkedList != undefined &&
+                                checkedList?.TaskType?.Title == "Workstream" ? (
+                                <div className="mt-2 clearfix">
+                                    <label className="titleBorder full-width f-14"> Type</label>
+                                    <div className="col p-0 taskcatgoryPannel">
+                                        <a id="subcategorytasks936" onClick={(e) => CreateActivityPopup("Bug")}  className={activeTile=="Bug"?"active bg-siteColor subcategoryTask text-center":"bg-siteColor subcategoryTask text-center"}>
+                                            <span className="tasks-label">Bug</span>
+                                        </a>
+                                        <a id="subcategorytasks936" onClick={(e) => CreateActivityPopup("Feedback")}  className={activeTile=="Feedback"?"active bg-siteColor subcategoryTask text-center":"bg-siteColor subcategoryTask text-center"}>
+                                            <span className="tasks-label">Feedback</span>
+                                        </a>
+                                        <a id="subcategorytasks936" onClick={() => CreateActivityPopup("Improvement")} className={activeTile=="Improvement"?"active bg-siteColor subcategoryTask text-center":"bg-siteColor subcategoryTask text-center"}>
+                                            <span className="tasks-label">Improvement</span>
+                                        </a>
+                                        <a id="subcategorytasks936" onClick={(e) => CreateActivityPopup("Design")}  className={activeTile=="Design"?"active bg-siteColor subcategoryTask text-center":"bg-siteColor subcategoryTask text-center"}>
+                                            <span className="tasks-label">Design</span>
+                                        </a>
+                                        <a id="subcategorytasks936" onClick={(e) => CreateActivityPopup("Task")}  className={activeTile=="Task"?"active bg-siteColor subcategoryTask text-center":"bg-siteColor subcategoryTask text-center"}>
+                                            <span className="tasks-label">Task</span>
+                                        </a>
+                                    </div>
+                                </div>
+                            ) : (
+                                <div className="mt-2 clearfix">
+                                    <label className="titleBorder f-14 full-width">Type</label>
+                                    <div className="col p-0 taskcatgoryPannel">
+                                    <a id="subcategorytasks936" onClick={(e) => CreateActivityPopup("Feedback")} className={activeTile=="Feedback"?"active bg-siteColor subcategoryTask text-center":"bg-siteColor subcategoryTask text-center"}>
+                                            <span className="tasks-label">Feedback</span>
+                                        </a>
+                                    <a id="subcategorytasks936" onClick={() => CreateActivityPopup("Improvement")} className={activeTile=="Improvement"?"active bg-siteColor subcategoryTask text-center":"bg-siteColor subcategoryTask text-center"}>
+                                            <span className="tasks-label">Improvement</span>
+                                        </a>
+                                        <a id="subcategorytasks936" onClick={(e) => CreateActivityPopup("Implementation")} className={activeTile=="Implementation"?"active bg-siteColor subcategoryTask text-center":"bg-siteColor subcategoryTask text-center"}>
+                                            <span className="tasks-label">Implementation</span>
+                                        </a>
+                                        <a id="subcategorytasks936" onClick={() => CreateActivityPopup("Development")} className={activeTile=="Development"?"active bg-siteColor subcategoryTask text-center":"bg-siteColor subcategoryTask text-center"}>
+                                            <span className="tasks-label">Development</span>
+                                        </a>
+                                        <a id="subcategorytasks936" onClick={() => CreateActivityPopup("Activities")} className={activeTile=="Activities"?"active bg-siteColor subcategoryTask text-center":"bg-siteColor subcategoryTask text-center"}>
+                                            <span className="tasks-label">Activity</span>
+                                        </a>
+                                        <a id="subcategorytasks936" onClick={() => CreateActivityPopup("Task")}className={activeTile=="Task"?"active bg-siteColor subcategoryTask text-center":"bg-siteColor subcategoryTask text-center"}>
+                                            <span className="tasks-label">Task</span>
+                                        </a>
+                                    </div>
+                                </div>
+                            )}
+                        </div>
           </div>
+          </div>
+          <footer className="pull-right mt-3">
+          <button
+          type="button"
+          className="btn btn-primary mx-2"
+          onClick={() =>Createbutton()}
+        >
+          Create
+        </button>
           <button
             type="button"
             className="btn btn-default btn-default ms-1 pull-right"
@@ -2251,7 +2261,7 @@ const updatedDataDataFromPortfolios = (copyDtaArray: any, dataToUpdate: any) => 
           >
             Cancel
           </button>
-        </div>
+          </footer>
       </Panel>
       {isOpenActivity && (
       <CreateActivity

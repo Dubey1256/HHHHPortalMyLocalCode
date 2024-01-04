@@ -46,7 +46,7 @@ const CreateWS = (props: any) => {
         Title: '',
         ItemRank: '',
         UniqueRank:'XYZabc',
-        Priority: '4',
+        Priority: props?.selectedItem?.NoteCall=="Task"?"":'4',
         DueDate: '',
         Description: [],
         AssignedTo: props?.selectedItem?.AssignedTo?.length > 0 ? props?.selectedItem?.AssignedTo : [],
@@ -67,7 +67,7 @@ const CreateWS = (props: any) => {
         setInputFields([...inputFields, {
             Title: '',
             ItemRank: '',
-            Priority: '4',
+            Priority: props?.selectedItem?.NoteCall=="Task"?"":'4',
             DueDate: '',
             UniqueRank:result,
             Description: [],
@@ -93,7 +93,10 @@ const CreateWS = (props: any) => {
     //---- close popup end -------
     React.useEffect(() => {
         AllListId = props?.AllListId;
-
+        if(props?.selectedItem?.NoteCall=="Task"){
+            setSelectedTaskType(2)
+        }
+        
         if (props?.selectedItem?.ClientCategory?.length > 0) {
             if (ClientCategoriesData?.length == 0) {
                 setClientCategoriesData(props?.selectedItem?.ClientCategory)
@@ -192,7 +195,7 @@ const CreateWS = (props: any) => {
           <>
                 <div className='subheading'>
                    
-                        {`Create Item`}
+                        {props?.selectedItem?.NoteCall=="Task"?"Create Quick Option - Task":`Create Item`}
                    
                 </div>
                 <Tooltip ComponentId='1710' />
@@ -611,7 +614,7 @@ const CreateWS = (props: any) => {
 
                         }
                     </div>
-                    <div className='row'>
+                    {props?.selectedItem?.NoteCall!="Task"?<div className='row'>
                         <span className="col-sm-3 rediobutton ">
                             <span className='SpfxCheckRadio'>
                                 <input type="radio"
@@ -624,7 +627,7 @@ const CreateWS = (props: any) => {
                                     className="radio" />Task
                             </span>
                         </span>
-                    </div>
+                    </div>:null}
                     <div className={refreshData ? "oiujhgj0gu" : "gugggug"}>
                         {inputFields?.map((multipleWSTask: any, WTindex: any) => {
                             return (
@@ -636,10 +639,14 @@ const CreateWS = (props: any) => {
                                     </div>}
                                     <div className='row'>
                                         <div className="col-md-8">
-                                            <input className="full-width searchbox_height" type="text"
+                                            <div className='input-group'>
+                                                <label className='form-label full-width'>Task Name</label>
+                                            <input className="form-control" type="text"
                                                 placeholder="Enter Child Item Title"
                                                 onChange={(e) => chanageTitle(e.target.value, WTindex)}
                                             />
+                                                </div>
+                                            
                                         </div>
 
                                     </div>
@@ -647,8 +654,8 @@ const CreateWS = (props: any) => {
                                     <div className='row mt-2'>
                                         <div className='col-sm-4'>
                                             <div className="input-group">
-                                                <label className='form-label full-width ps-0'>Item Rank</label>
-                                                <select value={multipleWSTask?.itemRank} onChange={(e: any) => { handleRankChange(e.target.value, WTindex) }} className='form-select'>
+                                                <label className='form-label full-width'>Item Rank</label>
+                                                <select  value={multipleWSTask?.itemRank} onChange={(e: any) => { handleRankChange(e.target.value, WTindex) }} className="form-control">
                                                     {itemRanks?.map((rank: any) => (
                                                         <option key={rank?.rank} value={rank?.rank}>{rank?.rankTitle}</option>
                                                     ))}

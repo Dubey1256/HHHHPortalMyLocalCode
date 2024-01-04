@@ -19,7 +19,7 @@ export default function DeleteSmartMetadataOpenPopup(props: any) {
             web.lists.getById(props.AllList.SPSmartMetadataListID).items.getById(item.Id).recycle().then((response: any) => {
                 console.log("delete successful")
                 if (response) {
-                    DeleteItemCallBack(props.AllMetadata, '', smartMetadataItem.TaxType);
+                    DeleteItemCallBack(props.AllMetadata, '', smartMetadataItem.TaxType, '');
                     closeDeleteSmartMetaPopup();
                 }
             }).catch((error: any) => {

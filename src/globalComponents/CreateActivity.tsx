@@ -306,6 +306,16 @@ const CreateActivity = (props: any) => {
         }
       });
     }
+    if ( props?.selectedItem?.NoteCall != "Task" && props?.selectedItem?.NoteCall != "Activity") {
+      subCategories?.map((item: any) => {
+        if (item?.Title == props?.selectedItem?.NoteCall  && !item.ActiveTile) {
+          selectSubTaskCategory(item?.Title, item?.Id, item);
+          props.selectedItem.NoteCall = "Task"
+        }
+      });
+    }
+    props?.selectedItem?.NoteCall
+
 
     if (AllMetadata?.length > 0 && ClientCategoriesData?.length > 0) {
       let a: any = [];
@@ -851,7 +861,7 @@ const CreateActivity = (props: any) => {
               } else {
                 
                   var siteComp: any = {};
-                  siteComp.Title = site?.siteType,
+                  siteComp.Title = site?.Title,
                   siteComp.localSiteComposition = true;
                   siteComp.SiteImages = site?.Item_x005F_x0020_Cover?.Url;
                   siteComp.ClienTimeDescription = 100,
@@ -866,7 +876,7 @@ const CreateActivity = (props: any) => {
                 Sitestagging = JSON.stringify(sitetag);
               } else {
                 var siteComp: any = {};
-                  siteComp.Title = site?.siteType,
+                  siteComp.Title = site?.Title,
                   siteComp.localSiteComposition = true;
                   siteComp.SiteImages = site?.Item_x005F_x0020_Cover?.Url;
                   siteComp.ClienTimeDescription = 100,
@@ -1129,7 +1139,7 @@ const CreateActivity = (props: any) => {
                 clientTime = JSON.stringify(selectedItem?.Sitestagging);
               } else {
                 var siteComp: any = {};
-                siteComp.Title = site?.siteType,
+                siteComp.Title = site?.Title,
                 siteComp.localSiteComposition = true;
                 siteComp.SiteImages = site?.Item_x005F_x0020_Cover?.Url;
                 siteComp.ClienTimeDescription = 100,
@@ -1144,7 +1154,7 @@ const CreateActivity = (props: any) => {
                 clientTime = JSON.stringify(sitetag);
               } else {
                 var siteComp: any = {};
-                siteComp.Title = site?.siteType,
+                siteComp.Title = site?.Title,
                 siteComp.localSiteComposition = true;
                 siteComp.SiteImages = site?.Item_x005F_x0020_Cover?.Url;
                 siteComp.ClienTimeDescription = 100,

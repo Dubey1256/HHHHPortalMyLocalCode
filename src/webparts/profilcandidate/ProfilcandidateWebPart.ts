@@ -9,7 +9,7 @@ import { BaseClientSideWebPart } from '@microsoft/sp-webpart-base';
 import { IReadonlyTheme } from '@microsoft/sp-component-base';
 
 import * as strings from 'ProfilcandidateWebPartStrings';
-import Profilcandidate from './components/CandiadteProfileWeb';
+import CandidateProfilePage from './components/CandidateProfilePage';
 import { IProfilcandidateProps } from './components/IProfilcandidateProps';
 
 export interface IProfilcandidateWebPartProps {
@@ -25,7 +25,7 @@ export default class ProfilcandidateWebPart extends BaseClientSideWebPart<IProfi
 
   public render(): void {
     const element: React.ReactElement<IProfilcandidateProps> = React.createElement(
-      Profilcandidate,
+      CandidateProfilePage,
       {
         description: this.properties.description,
         isDarkTheme: this._isDarkTheme,
@@ -33,7 +33,7 @@ export default class ProfilcandidateWebPart extends BaseClientSideWebPart<IProfi
         hasTeamsContext: !!this.context.sdks.microsoftTeams,
         userDisplayName: this.context.pageContext.user.displayName,
         siteUrl: this.context.pageContext.web.absoluteUrl,
-        InterviewFeedbackFormListId: this.properties.InterviewFeedbackFormListId,
+        InterviewFeedbackFormListId: this.properties.InterviewFeedbackFormListId
       }
     );
 
@@ -117,7 +117,8 @@ export default class ProfilcandidateWebPart extends BaseClientSideWebPart<IProfi
                 // }),
                 PropertyPaneTextField('InterviewFeedbackFormListId', {
                   label: "Interview Feedback Form"
-                }),
+                })
+
               ]
             }
           ]

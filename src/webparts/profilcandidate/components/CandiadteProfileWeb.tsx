@@ -14,24 +14,23 @@ import GlobalCommanTable from '../../../globalComponents/GroupByReactTableCompon
 import CandidateRating from './CandidateRating';
 import EditPopup from '../../helloSpfx/components/EditPopup';
 
-let allListId: any = {};
 let allSite: any = {
     GMBHSite: false,
     HrSite: false,
     MainSite: true,
 }
 let OldEmployeeProfile: any
-const Profilcandidate = (props: any) => {
+const Profilcandidate = ({props}: any) => {
     const [EmployeeData, setEmployeeData]: any = useState()
     const [localRatings, setLocalRatings] = useState([]);
     const [isEditPopupOpen, setIsEditPopupOpen] = useState(false);
     const [selectedItem, setSelectedItem]: any = useState(null);
     const [TaggedDocuments, setTaggedDocuments] = useState<any[]>([]);
-    allListId = {
+    let allListId = {
         // Context: props?.props.Context,
         // HHHHContactListId: props?.props?.HHHHContactListId,
-        InterviewFeedbackFormListId: props?.InterviewFeedbackFormListId,
-        siteUrl: props?.siteUrl,
+        InterviewFeedbackFormListId: '298bc01c-710d-400e-bf48-8604d297c3c',
+        SkillsPortfolioListID: 'e79dfd6d-18aa-40e2-8d6e-930a37fe54e4'
 
         // jointSiteUrl: "https://hhhhteams.sharepoint.com/sites/HHHH"
     }
@@ -41,7 +40,7 @@ const Profilcandidate = (props: any) => {
         EmployeeDetails(params.get('CandidateId'));
         loadDocumentsByCandidate(params.get('CandidateId'));
     }, [])
-const web = new Web(allListId?.siteUrl);
+    const web = new Web('https://hhhhteams.sharepoint.com/sites/HHHH/HR/');
     const EmployeeDetails = async (Id: any) => {
         try {
             await web.lists.getById(allListId?.InterviewFeedbackFormListId)
@@ -108,8 +107,8 @@ const web = new Web(allListId?.siteUrl);
         window.open(url, '_blank');
     };
     return (
-        <myContextValue.Provider value={{ ...myContextValue, allSite: allSite, allListId: allListId, loggedInUserName: props.props?.userDisplayName }}>
-            {isEditPopupOpen ? <EditPopup EditPopupClose={EditPopupClose} callbackEdit={callbackEdit} item={selectedItem} ListID={'298bc01c-710d-400e-bf48-8604d297c3c6'} /> : ''}
+        <myContextValue.Provider value={{ ...myContextValue, allSite: allSite, allListId: allListId, loggedInUserName: props?.userDisplayName }}>
+            {isEditPopupOpen ? <EditPopup siteUrl={'https://hhhhteams.sharepoint.com/sites/HHHH/HR/'} EditPopupClose={EditPopupClose} callbackEdit={callbackEdit} item={selectedItem} ListID={allListId?.InterviewFeedbackFormListId} skillsList={allListId?.SkillsPortfolioListID}/> : ''}
             <div className='alignCenter border-bottom pb-2'>
                 <div>
                     <img className='user-dp' src={EmployeeData?.Item_x0020_Cover?.Url != undefined ? EmployeeData?.Item_x0020_Cover?.Url : "https://hhhhteams.sharepoint.com/sites/HHHH/GmBH/SiteCollectionImages/ICONS/32/icon_user.jpg"} />
@@ -128,10 +127,10 @@ const web = new Web(allListId?.siteUrl);
                                 <div className="bg-Fa profileLeftSec col-md-3">Position</div>
                                 <div className='bg-Ff profileRightSec col-md-9'>{EmployeeData?.Positions?.Title} </div>
                             </div>
-                                <div className='profileHead'>
-                                    <div className="bg-Fa profileLeftSec col-md-3">Experience</div>
-                                    <div className='bg-Ff profileRightSec col-md-9'>{formatExperience(EmployeeData?.Experience)} </div>
-                                </div>    
+                            <div className='profileHead'>
+                                <div className="bg-Fa profileLeftSec col-md-3">Experience</div>
+                                <div className='bg-Ff profileRightSec col-md-9'>{formatExperience(EmployeeData?.Experience)} </div>
+                            </div>
                             <div className='profileHead'>
                                 <div className="bg-Fa profileLeftSec col-md-3">Application Date</div>
                                 <div className='bg-Ff profileRightSec col-md-9'>{EmployeeData?.Date != undefined ? moment(EmployeeData?.Date)?.format('DD-MM-YYYY') : ""} </div>
