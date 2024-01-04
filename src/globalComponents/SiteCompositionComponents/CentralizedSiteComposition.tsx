@@ -1673,7 +1673,7 @@ const CentralizedSiteComposition = (Props: any) => {
                 type={PanelType.custom}
                 customWidth="1500px"
             >
-                <section className="main-container">
+                <section className="main-container mb-5">
                     <div className="Site-composition-and-client-category d-flex full-width my-2">
                         <div className="site-settings-and-site-composition-distributions full-width">
                             <div className="site-settings">
