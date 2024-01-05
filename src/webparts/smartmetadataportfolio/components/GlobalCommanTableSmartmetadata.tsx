@@ -925,18 +925,18 @@ const GlobalCommanTable = (items: any, ref: any) => {
                     {items.AllList && <>
                         {
                             SmartmetadataAdd === true ?
-                                <CreateMetadataItem AllList={items.AllList} addItemCallBack={items.callBackSmartMetaData} CloseEditSmartMetaPopup={items.CloseEditSmartMetaPopup} SelectedItem={items.SelectedItem} setName={items.setName} ParentItem={items.ParentItem} TabSelected={items.TabSelected}></CreateMetadataItem>
+                                <CreateMetadataItem childRefdata={items.childRefdata} AllList={items.AllList} addItemCallBack={items.callBackSmartMetaData} CloseEditSmartMetaPopup={items.CloseEditSmartMetaPopup} SelectedItem={items.SelectedItem} setName={items.setName} ParentItem={items.ParentItem} TabSelected={items.TabSelected}></CreateMetadataItem>
                                 : ''
                         }
                         {
                             SmartmetadataCompare === true ?
-                                <CompareSmartMetaData AllList={items.AllList} compareSeletected={items?.compareSeletected} ref={childRef} compareFunct={compareFunct} SelectedItem={items.SelectedItem} setName={items.setName} ParentItem={items.ParentItem} TabSelected={items.TabSelected}></CompareSmartMetaData>
+                                <CompareSmartMetaData childRefdata={items.childRefdata} AllList={items.AllList} compareSeletected={items?.compareSeletected} ref={childRef} compareFunct={compareFunct} SelectedItem={items.SelectedItem} setName={items.setName} ParentItem={items.ParentItem} TabSelected={items.TabSelected}></CompareSmartMetaData>
                                 : <button type="button" title="Compare" disabled={true} className="btnCol btn btn-primary ">Compare</button>
                         }
                         {
                             SmartmetadataRestructure === true ?
                                 <RestructureSmartMetaData
-                                    AllList={items.AllList} SmartrestructureFunct={SmartrestructureFunct} ref={childRef} AllMetaData={items.ParentItem} restructureItemCallBack={items.callBackSmartMetaData} restructureItem={table?.getSelectedRowModel()?.flatRows.length > 0 ? [table?.getSelectedRowModel()?.flatRows[0].original] : []} />
+                                    childRefdata={items.childRefdata} AllList={items.AllList} SmartrestructureFunct={SmartrestructureFunct} ref={childRef} AllMetaData={items.ParentItem} restructureItemCallBack={items.callBackSmartMetaData} restructureItem={table?.getSelectedRowModel()?.flatRows.length > 0 ? [table?.getSelectedRowModel()?.flatRows[0].original] : []} />
                                 : <button type="button" title="Restructure" disabled={true} className="btnCol btn btn-primary">Restructure</button>
                         }
                     </>}

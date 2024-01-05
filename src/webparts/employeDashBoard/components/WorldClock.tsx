@@ -5,11 +5,11 @@ const WorldClock = () => {
   let timeoutId: number;
   const [countryDetails, setCountryDetails] = useState<any>([{
     country: "India",
-    Image: "https://flagcdn.com/in.svg", currentCuntry: false, Time: ""
+    Image: "https://hhhhteams.sharepoint.com/sites/HHHH/PublishingImages/Logos/India.png", currentCuntry: false, Time: ""
   }, {
-    country: "Germany", Image: "https://flagcdn.com/de.svg", currentCuntry: false, Time: ""
+    country: "Germany", Image: "https://hhhhteams.sharepoint.com/sites/HHHH/PublishingImages/Logos/Germany.png", currentCuntry: false, Time: ""
   }, {
-    country: "Switzerland", Image: "https://flagcdn.com/ch.svg", currentCuntry: false, Time: ""
+    country: "Switzerland", Image: "https://hhhhteams.sharepoint.com/sites/HHHH/PublishingImages/Logos/switerland.png", currentCuntry: false, Time: ""
   }]);
   useEffect(() => {
     fetchUserCountry()
@@ -93,10 +93,13 @@ const WorldClock = () => {
                 <div className='alignCenter border-bottom'>
                   <div><img className='workmember' src={items.Image} /></div>
                   <div className='mx-2'>{items?.country}</div>
-                  <div className="rounded" style={{ backgroundColor: items.currentCuntry ? "green" : "yellow", height: "10px", width: "10px" }}></div>
+                  <div className="rounded me-2" style={{ backgroundColor: items.currentCuntry ? "green" : "yellow", height: "10px", width: "10px" }}></div>
                   <div className='alignCenter ml-auto'>
-                    <div className="svg__iconbox svg__icon--clock dark mx-1"></div>
-                    <div>{items?.Time}</div>
+                    {/* <div className="svg__iconbox svg__icon--clock dark mx-1"></div> */}
+                    <svg xmlns="http://www.w3.org/2000/svg" width="14" height="15.5" viewBox="0 0 15 17" fill="none">
+                      <path d="M7.45662 5.6875V9.625H10.1797M5.82277 0.625H9.09046M7.45662 2.875C3.84722 2.875 0.921234 5.89708 0.921234 9.625C0.921234 13.3529 3.84722 16.375 7.45662 16.375C11.066 16.375 13.992 13.3529 13.992 9.625C13.992 5.89708 11.066 2.875 7.45662 2.875Z" stroke="#242424" stroke-width="1.1" />
+                    </svg>
+                    <div className='ms-1'>{items?.Time}</div>
                   </div>
                 </div>
               </>
