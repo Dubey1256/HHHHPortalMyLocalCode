@@ -18,7 +18,7 @@ import {
     PanelType,
     resetControlledWarnings,
 } from "office-ui-fabric-react";
-import { Modal } from "@fluentui/react";
+import { Label, Modal } from "@fluentui/react";
 import { FaExpandAlt } from "react-icons/fa";
 import { RiDeleteBin6Line, RiH6 } from "react-icons/ri";
 import { SlArrowDown, SlArrowRight } from "react-icons/sl";
@@ -707,7 +707,7 @@ const EditTaskPopup = (Items: any) => {
                 extraLookupColumnData = await web.lists
                     .getById(Items.Items.listId)
                     .items.select(
-                        "Project/Id, Project/Title,SmartInformation/Id, AttachmentFiles, Approver/Id, Approver/Title,ApproverHistory"
+                        "Project/Id, Project/Title,Project/PriorityRank,SmartInformation/Id, AttachmentFiles, Approver/Id, Approver/Title,ApproverHistory"
                     )
                     .top(5000)
                     .filter(`Id eq ${Items.Items.Id}`)
@@ -1005,6 +1005,15 @@ const EditTaskPopup = (Items: any) => {
                 item.siteType = Items.Items.siteType;
                 let AssignedUsers: any = [];
                 item.listId = Items.Items.listId;
+                if (selectedProject?.length > 0) {
+                    item.Project = selectedProject[0];
+                }
+                item.SmartPriority;
+                item.TaskTypeValue = '';
+                item.projectPriorityOnHover = '';
+                item.taskPriorityOnHover = item?.PriorityRank;
+                item.showFormulaOnHover;
+                item.SmartPriority = globalCommon.calculateSmartPriority(item);
                 // let ApproverDataTemp: any = [];
                 let TeamMemberTemp: any = [];
                 let TaskCreatorData: any = [];
@@ -1316,8 +1325,8 @@ const EditTaskPopup = (Items: any) => {
                     setTotalEstimatedTime(tempTimeData);
                 }
                 item.ClientCategory = selectedClientCategoryData;
-                item. Approvee= item. Approvee!=undefined? taskUsers.find((userData:any)=>userData?.AssingedToUser?.Id==item?.Approvee?.Id): undefined
-                 setEditData(item);
+                item.Approvee = item.Approvee != undefined ? taskUsers.find((userData: any) => userData?.AssingedToUser?.Id == item?.Approvee?.Id) : undefined
+                setEditData(item);
                 setBasicImageData(saveImage);
                 EditDataBackup = item;
                 setPriorityStatus(item.Priority);
@@ -1434,7 +1443,7 @@ const EditTaskPopup = (Items: any) => {
                             let tempTaggedCCData: any = [];
                             AllClientCategoryDataBackup?.map((AllCCItem: any) => {
                                 DataItem[0]?.ClientCategory?.map((TaggedCCItem: any) => {
-                                    if (AllCCItem.Title == TaggedCCItem.Title) {
+                                    if (AllCCItem.Id == TaggedCCItem.Id) {
                                         tempTaggedCCData.push(AllCCItem);
                                     }
                                 });
@@ -1465,7 +1474,7 @@ const EditTaskPopup = (Items: any) => {
                             let ClientData = JSON.parse(
                                 DataItem[0].Sitestagging ? DataItem[0].Sitestagging : [{}]
                             );
-                           
+
                             if (ClientData != undefined && ClientData.length > 0) {
                                 if (Items?.Items?.siteType == "Shareweb") {
                                     setClientTimeData(ClientData);
@@ -2624,6 +2633,13 @@ const EditTaskPopup = (Items: any) => {
                                     setSendEmailComponentStatus(false);
                                 }
                             }
+                            if (Items.sendRejectedMail != undefined) {
+                                if (Items.sendRejectedMail) {
+                                    setSendEmailComponentStatus(true);
+                                } else {
+                                    setSendEmailComponentStatus(false);
+                                }
+                            }
                             if (
                                 (CalculateStatusPercentage == 5 ||
                                     CalculateStatusPercentage == 10 ||
@@ -2903,16 +2919,15 @@ const EditTaskPopup = (Items: any) => {
             });
         }
 
-    
-
-       
         if (ClientTimeData?.length > 0) {
-            ClientTimeData?.map((ClientData: any) => {
+            ClientTimeData?.map((SCItems: any) => {
                 SiteCompositionPrecentageValue =
                     SiteCompositionPrecentageValue +
-                    Number(ClientData.ClienTimeDescription);
+                    Number(SCItems.ClienTimeDescription);
+                delete SCItems?.ClientCategory;
             });
         }
+
         let UpdateDataObject: any = {
             IsTodaysTask: EditData.IsTodaysTask ? EditData.IsTodaysTask : null,
             workingThisWeek: EditData.workingThisWeek
@@ -2993,7 +3008,7 @@ const EditTaskPopup = (Items: any) => {
                 results:
                     ApproverIds != undefined && ApproverIds.length > 0 ? ApproverIds : [],
             },
-            Sitestagging: JSON.stringify(ClientTimeData),
+            Sitestagging: ClientTimeData?.length > 0 ? JSON.stringify(ClientTimeData) : null,
             ClientCategoryId: {
                 results:
                     ClientCategoryIDs != undefined && ClientCategoryIDs.length > 0
@@ -3057,51 +3072,51 @@ const EditTaskPopup = (Items: any) => {
             console.log(timesheetDatass);
         } else {
             // if (ChangeTaskUserStatus) {
-                if (teamConfigData?.AssignedTo?.length > 0) {
-                    let tempArray: any = [];
-                    teamConfigData.AssignedTo?.map((arrayData: any) => {
-                        if (arrayData.AssingedToUser != null) {
-                            tempArray.push(arrayData.AssingedToUser);
-                        } else {
-                            tempArray.push(arrayData);
-                        }
-                    });
-                    setTaskAssignedTo(tempArray);
-                    EditData.AssignedTo = tempArray;
-                } else {
-                    setTaskAssignedTo([]);
-                    EditData.AssignedTo = [];
-                }
-                if (teamConfigData?.TeamMemberUsers?.length > 0) {
-                    let tempArray: any = [];
-                    teamConfigData.TeamMemberUsers?.map((arrayData: any) => {
-                        if (arrayData.AssingedToUser != null) {
-                            tempArray.push(arrayData.AssingedToUser);
-                        } else {
-                            tempArray.push(arrayData);
-                        }
-                    });
-                    setTaskTeamMembers(tempArray);
-                    EditData.TeamMembers = tempArray;
-                } else {
-                    setTaskTeamMembers([]);
-                    EditData.TeamMembers = [];
-                }
-                if (teamConfigData?.ResponsibleTeam?.length > 0) {
-                    let tempArray: any = [];
-                    teamConfigData.ResponsibleTeam?.map((arrayData: any) => {
-                        if (arrayData.AssingedToUser != null) {
-                            tempArray.push(arrayData.AssingedToUser);
-                        } else {
-                            tempArray.push(arrayData);
-                        }
-                    });
-                    setTaskResponsibleTeam(tempArray);
-                    EditData.ResponsibleTeam = tempArray;
-                } else {
-                    setTaskResponsibleTeam([]);
-                    EditData.ResponsibleTeam = [];
-                }
+            if (teamConfigData?.AssignedTo?.length > 0) {
+                let tempArray: any = [];
+                teamConfigData.AssignedTo?.map((arrayData: any) => {
+                    if (arrayData.AssingedToUser != null) {
+                        tempArray.push(arrayData.AssingedToUser);
+                    } else {
+                        tempArray.push(arrayData);
+                    }
+                });
+                setTaskAssignedTo(tempArray);
+                EditData.AssignedTo = tempArray;
+            } else {
+                setTaskAssignedTo([]);
+                EditData.AssignedTo = [];
+            }
+            if (teamConfigData?.TeamMemberUsers?.length > 0) {
+                let tempArray: any = [];
+                teamConfigData.TeamMemberUsers?.map((arrayData: any) => {
+                    if (arrayData.AssingedToUser != null) {
+                        tempArray.push(arrayData.AssingedToUser);
+                    } else {
+                        tempArray.push(arrayData);
+                    }
+                });
+                setTaskTeamMembers(tempArray);
+                EditData.TeamMembers = tempArray;
+            } else {
+                setTaskTeamMembers([]);
+                EditData.TeamMembers = [];
+            }
+            if (teamConfigData?.ResponsibleTeam?.length > 0) {
+                let tempArray: any = [];
+                teamConfigData.ResponsibleTeam?.map((arrayData: any) => {
+                    if (arrayData.AssingedToUser != null) {
+                        tempArray.push(arrayData.AssingedToUser);
+                    } else {
+                        tempArray.push(arrayData);
+                    }
+                });
+                setTaskResponsibleTeam(tempArray);
+                EditData.ResponsibleTeam = tempArray;
+            } else {
+                setTaskResponsibleTeam([]);
+                EditData.ResponsibleTeam = [];
+            }
             // }
         }
     }, []);
@@ -3309,40 +3324,41 @@ const EditTaskPopup = (Items: any) => {
                 }
             });
             if (ApprovedStatusCount == 0) {
-                let teamMember=[];
-                let AssignedTo=[];
-            if(EditDataBackup?.Categories?.includes("Approval")){
-                setTaskAssignedTo([])
-                setTaskTeamMembers([])
-                teamMember.push(EditDataBackup?.TeamMembers[0])
-                if(EditDataBackup?.Approvee!=undefined){
-                    teamMember.push(EditDataBackup?.Approvee?.AssingedToUser)
-                    AssignedTo.push(EditDataBackup?.Approvee?.AssingedToUser)
-                    setTaskAssignedTo(AssignedTo)
-                    setTaskTeamMembers(teamMember);
+                let teamMember = [];
+                let AssignedTo = [];
+                if (EditDataBackup?.Categories?.includes("Approval")) {
+                    Items.sendRejectedMail = true
+                    setTaskAssignedTo([])
+                    setTaskTeamMembers([])
+                    teamMember.push(EditDataBackup?.TeamMembers[0])
+                    if (EditDataBackup?.Approvee != undefined) {
+                        teamMember.push(EditDataBackup?.Approvee?.AssingedToUser)
+                        AssignedTo.push(EditDataBackup?.Approvee?.AssingedToUser)
+                        setTaskAssignedTo(AssignedTo)
+                        setTaskTeamMembers(teamMember);
 
-                }else{
-                   
-                   teamMember.push(EditDataBackup?.Author) 
-                    AssignedTo.push(EditDataBackup?.Author)
-                    setTaskAssignedTo(AssignedTo)
-                    setTaskTeamMembers(teamMember);
+                    } else {
 
+                        teamMember.push(EditDataBackup?.Author)
+                        AssignedTo.push(EditDataBackup?.Author)
+                        setTaskAssignedTo(AssignedTo)
+                        setTaskTeamMembers(teamMember);
+
+                    }
                 }
-            }
                 setApprovalTaskStatus(false);
 
             }
-             else {
-                let teamMember=[];
-                let AssignedTo=[];
-                if(EditDataBackup?.Categories?.includes("Approval")){
-                    teamMember.push(currentUserBackupArray?.[0]?.AssingedToUser) 
+            else {
+                let teamMember = [];
+                let AssignedTo = [];
+                if (EditDataBackup?.Categories?.includes("Approval")) {
+                    teamMember.push(currentUserBackupArray?.[0]?.AssingedToUser)
                     AssignedTo.push(currentUserBackupArray?.[0]?.AssingedToUser)
                     setTaskAssignedTo(AssignedTo)
                     setTaskTeamMembers(teamMember);
                 }
-              
+
                 setApprovalTaskStatus(true);
 
             }
@@ -4047,11 +4063,7 @@ const EditTaskPopup = (Items: any) => {
             .get();
         await SaveImageDataOnLoop(response, NewList, NewItem);
     };
-    const SaveImageDataOnLoop = async (
-        response: any,
-        NewList: any,
-        NewItem: any
-    ) => {
+    const SaveImageDataOnLoop = async (response: any, NewList: any, NewItem: any) => {
         let tempArrayJsonData: any = [];
         var count = 0;
         let currentUserDataObject: any;
@@ -4068,64 +4080,77 @@ const EditTaskPopup = (Items: any) => {
                         headers: {
                             Accept: "application/json;odata=nometadata",
                         },
-                    });
+                    }).then(async (response) => {
+                        if (response.ok) {
+                            count++;
+                            const binaryData = await response.arrayBuffer();
+                            console.log("Binary Data:", binaryData);
+                            var uint8Array = new Uint8Array(binaryData);
+                            console.log(uint8Array);
 
-                    if (response.ok) {
-                        count++;
-                        const binaryData = await response.arrayBuffer();
-                        console.log("Binary Data:", binaryData);
-                        var uint8Array = new Uint8Array(binaryData);
-                        console.log(uint8Array);
+                            console.log(uint8Array);
+                            let fileName: any = "";
+                            let date = new Date();
+                            let timeStamp = date.getTime();
+                            let imageIndex = index + 1;
+                            var file =
+                                "T" +
+                                NewItem.Id +
+                                "-Image" +
+                                imageIndex +
+                                "-" +
+                                NewItem.Title?.replace(/["/':?]/g, "")?.slice(0, 40) +
+                                " " +
+                                timeStamp +
+                                ".jpg";
 
-                        console.log(uint8Array);
-                        let fileName: any = "";
-                        let date = new Date();
-                        let timeStamp = date.getTime();
-                        let imageIndex = index + 1;
-                        var file =
-                            "T" +
-                            NewItem.Id +
-                            "-Image" +
-                            imageIndex +
-                            "-" +
-                            NewItem.Title?.replace(/["/':?]/g, "")?.slice(0, 40) +
-                            " " +
-                            timeStamp +
-                            ".jpg";
+                            // Your existing code for creating ImgArray
+                            let ImgArray = {
+                                ImageName: file,
+                                UploadeDate: Moment(new Date()).format("DD/MM/YYYY"),
+                                ImageUrl:
+                                    siteUrls +
+                                    "/Lists/" +
+                                    NewList +
+                                    "/Attachments/" +
+                                    NewItem?.Id +
+                                    "/" +
+                                    file,
+                                UserImage:
+                                    currentUserDataObject != undefined &&
+                                        currentUserDataObject.Item_x0020_Cover?.Url?.length > 0
+                                        ? currentUserDataObject.Item_x0020_Cover?.Url
+                                        : "https://hhhhteams.sharepoint.com/sites/HHHH/SiteCollectionImages/ICONS/32/icon_user.jpg",
+                                UserName:
+                                    currentUserDataObject != undefined &&
+                                        currentUserDataObject.Title?.length > 0
+                                        ? currentUserDataObject.Title
+                                        : Items.context.pageContext._user.displayName,
+                                Description: "",
+                            };
+                            tempArrayJsonData.push(ImgArray);
 
-                        // Your existing code for creating ImgArray
-                        let ImgArray = {
-                            ImageName: file,
-                            UploadeDate: Moment(new Date()).format("DD/MM/YYYY"),
-                            ImageUrl:
-                                siteUrls +
-                                "/Lists/" +
-                                NewList +
-                                "/Attachments/" +
-                                NewItem?.Id +
-                                "/" +
-                                file,
-                            UserImage:
-                                currentUserDataObject != undefined &&
-                                    currentUserDataObject.Item_x0020_Cover?.Url?.length > 0
-                                    ? currentUserDataObject.Item_x0020_Cover?.Url
-                                    : "https://hhhhteams.sharepoint.com/sites/HHHH/SiteCollectionImages/ICONS/32/icon_user.jpg",
-                            UserName:
-                                currentUserDataObject != undefined &&
-                                    currentUserDataObject.Title?.length > 0
-                                    ? currentUserDataObject.Title
-                                    : Items.context.pageContext._user.displayName,
-                            Description: "",
-                        };
-                        tempArrayJsonData.push(ImgArray);
 
-                        await sp.web.lists
-                            .getByTitle(NewList)
-                            .items.getById(NewItem.Id)
-                            .attachmentFiles.add(file, uint8Array);
-                    } else {
-                        console.error("Error:", response.statusText);
-                    }
+                            
+// -----------------------Add Attachments-----------------------------------------------------------------------
+                            // await sp.web.lists.getByTitle(NewList).items.getById(NewItem.Id).attachmentFiles.add(file, uint8Array).then((res)=>{
+                            //     count++;
+                            //     console.log(res)
+                            // });
+
+                            const item = await sp.web.lists.getByTitle(NewList).items.getById(NewItem?.Id).get();
+
+                            
+                            const currentETag:any = item ? item['@odata.etag'] : null;
+                            await sp.web.lists.getByTitle(NewList).items.getById(NewItem?.Id).attachmentFiles.add(file, uint8Array),
+                            currentETag, { headers: { "If-Match": currentETag }}
+    
+                        } else {
+                            console.error("Error:", response.statusText);
+                        }
+                    })
+
+
                 } catch (error) {
                     console.log(error, "HHHH Time");
                 }
@@ -4134,10 +4159,12 @@ const EditTaskPopup = (Items: any) => {
 
         // Wait for all promises to resolve
         try {
-            await Promise.all(fetchPromises);
 
+            await Promise.all(fetchPromises);
             // Call another function after all promises are resolved
             await SaveJSONData(NewList, NewItem, tempArrayJsonData);
+
+
         } catch (error) {
             console.error("Error updating client category:", error);
         }
@@ -5229,7 +5256,7 @@ const EditTaskPopup = (Items: any) => {
                                             </div>
                                         </div>
                                         <div className="mx-0 row mt-2 taskservices">
-                                            <div className="col ps-0">
+                                            <div className="col-md-6  ps-0">
                                                 <div className="input-group mb-2">
                                                     <label className="form-label full-width">
                                                         Portfolio Item
@@ -5691,83 +5718,100 @@ const EditTaskPopup = (Items: any) => {
                                                     ) : null}
                                                 </div>
                                             </div>
-                                            <div className="col-6 ps-0 pe-0 pt-4">
-                                                <div className="time-status">
-                                                    <div className="input-group">
-                                                        <input
-                                                            type="text"
-                                                            className="form-control"
-                                                            placeholder="Enter Priority"
-                                                            value={
-                                                                EditData.PriorityRank
-                                                                    ? EditData.PriorityRank
-                                                                    : ""
-                                                            }
-                                                            onChange={(e) => ChangePriorityStatusFunction(e)}
-                                                        />
+                                            <div className="col-6 ps-0 pe-0">
+                                                <div className="row">
+                                                    <div className="time-status col-md-6">
+                                                        <div className="input-group">
+                                                            <label className="form-label full-width">Priority</label>
+                                                            <input
+                                                                type="text"
+                                                                className="form-control"
+                                                                placeholder="Enter Priority"
+                                                                value={
+                                                                    EditData.PriorityRank
+                                                                        ? EditData.PriorityRank
+                                                                        : ""
+                                                                }
+                                                                onChange={(e) => ChangePriorityStatusFunction(e)}
+                                                            />
+                                                        </div>
+                                                        <ul className="p-0 my-1">
+                                                            <li className="form-check ">
+                                                                <label className="SpfxCheckRadio">
+                                                                    <input
+                                                                        className="radio"
+                                                                        name="radioPriority"
+                                                                        type="radio"
+                                                                        checked={
+                                                                            EditData.PriorityRank <= 10 &&
+                                                                            EditData.PriorityRank >= 8
+                                                                        }
+                                                                        onChange={() =>
+                                                                            setEditData({
+                                                                                ...EditData,
+                                                                                PriorityRank: 8,
+                                                                            })
+                                                                        }
+                                                                    />
+                                                                    High{" "}
+                                                                </label>
+                                                            </li>
+                                                            <li className="form-check ">
+                                                                <label className="SpfxCheckRadio">
+                                                                    <input
+                                                                        className="radio"
+                                                                        name="radioPriority"
+                                                                        type="radio"
+                                                                        checked={
+                                                                            EditData.PriorityRank <= 7 &&
+                                                                            EditData.PriorityRank >= 4
+                                                                        }
+                                                                        onChange={() =>
+                                                                            setEditData({
+                                                                                ...EditData,
+                                                                                PriorityRank: 4,
+                                                                            })
+                                                                        }
+                                                                    />
+                                                                    Normal{" "}
+                                                                </label>
+                                                            </li>
+                                                            <li className="form-check ">
+                                                                <label className="SpfxCheckRadio">
+                                                                    <input
+                                                                        className="radio"
+                                                                        name="radioPriority"
+                                                                        type="radio"
+                                                                        checked={
+                                                                            EditData.PriorityRank <= 3 &&
+                                                                            EditData.PriorityRank > 0
+                                                                        }
+                                                                        onChange={() =>
+                                                                            setEditData({
+                                                                                ...EditData,
+                                                                                PriorityRank: 1,
+                                                                            })
+                                                                        }
+                                                                    />
+                                                                    Low{" "}
+                                                                </label>
+                                                            </li>
+                                                        </ul>
                                                     </div>
-                                                    <ul className="p-0 mt-1">
-                                                        <li className="form-check ">
-                                                            <label className="SpfxCheckRadio">
-                                                                <input
-                                                                    className="radio"
-                                                                    name="radioPriority"
-                                                                    type="radio"
-                                                                    checked={
-                                                                        EditData.PriorityRank <= 10 &&
-                                                                        EditData.PriorityRank >= 8
-                                                                    }
-                                                                    onChange={() =>
-                                                                        setEditData({
-                                                                            ...EditData,
-                                                                            PriorityRank: 8,
-                                                                        })
-                                                                    }
-                                                                />
-                                                                High{" "}
-                                                            </label>
-                                                        </li>
-                                                        <li className="form-check ">
-                                                            <label className="SpfxCheckRadio">
-                                                                <input
-                                                                    className="radio"
-                                                                    name="radioPriority"
-                                                                    type="radio"
-                                                                    checked={
-                                                                        EditData.PriorityRank <= 7 &&
-                                                                        EditData.PriorityRank >= 4
-                                                                    }
-                                                                    onChange={() =>
-                                                                        setEditData({
-                                                                            ...EditData,
-                                                                            PriorityRank: 4,
-                                                                        })
-                                                                    }
-                                                                />
-                                                                Normal{" "}
-                                                            </label>
-                                                        </li>
-                                                        <li className="form-check ">
-                                                            <label className="SpfxCheckRadio">
-                                                                <input
-                                                                    className="radio"
-                                                                    name="radioPriority"
-                                                                    type="radio"
-                                                                    checked={
-                                                                        EditData.PriorityRank <= 3 &&
-                                                                        EditData.PriorityRank > 0
-                                                                    }
-                                                                    onChange={() =>
-                                                                        setEditData({
-                                                                            ...EditData,
-                                                                            PriorityRank: 1,
-                                                                        })
-                                                                    }
-                                                                />
-                                                                Low{" "}
-                                                            </label>
-                                                        </li>
-                                                    </ul>
+                                                    <div className="col-md-6">
+                                                        <div className="input-group">
+                                                            <label className="form-label full-width">SmartPriority</label>
+                                                            <div className="bg-e9 w-100 py-1 px-2">
+                                                                <span className="hover-text hreflink m-0 siteColor">
+                                                                    <>{EditData?.SmartPriority != undefined ? EditData?.SmartPriority : 0}</>
+                                                                    <span className="tooltip-text pop-right">
+                                                                        {EditData?.showFormulaOnHover != undefined ? EditData?.showFormulaOnHover : ""}
+                                                                    </span>
+                                                                </span>
+                                                            </div>
+                                                        </div>
+
+                                                    </div>
                                                 </div>
                                                 <div className="col-12 mb-2">
                                                     <div className="input-group ">

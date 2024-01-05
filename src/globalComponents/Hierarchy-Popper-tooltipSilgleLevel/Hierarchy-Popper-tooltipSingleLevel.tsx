@@ -47,7 +47,7 @@ export const getTooltiphierarchyWithoutGroupByTable = (row: any, completeTitle: 
 let scrollToolitem: any = false
 let pageName: any = 'hierarchyPopperToolTip'
 
-export default function ReactPopperTooltipSingleLevel({ ShareWebId, row, masterTaskData, AllSitesTaskData, AllListId , onclickPopup }: any) {
+export default function ReactPopperTooltipSingleLevel({ ShareWebId, row, masterTaskData, AllSitesTaskData, AllListId, onclickPopup }: any) {
     AllMatsterAndTaskData = [...masterTaskData];
     AllMatsterAndTaskData = AllMatsterAndTaskData?.concat(AllSitesTaskData);
     const [controlledVisible, setControlledVisible] = React.useState(false);
@@ -56,15 +56,6 @@ export default function ReactPopperTooltipSingleLevel({ ShareWebId, row, masterT
     const [openActivity, setOpenActivity] = React.useState(false);
     const [openWS, setOpenWS] = React.useState(false);
 
-    React.useEffect(() => {
-        if (
-          row?.TaskID == undefined &&
-          (row?.TaskId !== null || row?.TaskId !== undefined)
-        ) {
-          row.TaskID = row?.TaskId;
-        }
-      }, [row]);
-  
     const {
         getArrowProps,
         getTooltipProps,
@@ -81,17 +72,31 @@ export default function ReactPopperTooltipSingleLevel({ ShareWebId, row, masterT
     });
 
     const handlAction = (newAction: any) => {
-        if(onclickPopup!=false && newAction === "click"){
+        if (onclickPopup != false && newAction === "click") {
             setAction(newAction);
             setControlledVisible(true);
-            if ( newAction === "click") return;
-        }else if(onclickPopup==false && newAction === "click"){
-          setControlledVisible(false)
-        }else if(onclickPopup==false && newAction === "hover"){
+            let targetDiv: any = document?.querySelector('.ms-Panel-main');
+            setTimeout(() => {
+                if (targetDiv) {
+                    // Change the --SiteBlue variable for elements under the targetDiv
+                    targetDiv?.style?.setProperty('--SiteBlue', row?.PortfolioType?.Color); // Change the color to your desired value
+                }
+            }, 1000)
+            if (newAction === "click") return;
+        } else if (onclickPopup == false && newAction === "click") {
+
+        } else if (onclickPopup == false && newAction === "hover") {
             setAction(newAction);
-            setControlledVisible(true)
-            if ( newAction === "hover") return;
-        }else{
+            setControlledVisible(true);
+            let targetDiv: any = document?.querySelector('.ms-Panel-main');
+            setTimeout(() => {
+                if (targetDiv) {
+                    // Change the --SiteBlue variable for elements under the targetDiv
+                    targetDiv?.style?.setProperty('--SiteBlue', row?.PortfolioType?.Color); // Change the color to your desired value
+                }
+            }, 1000)
+            if (newAction === "hover") return;
+        } else {
             setAction(newAction);
             setControlledVisible(true);
             if (newAction === "click" && newAction === "hover") return;
@@ -142,7 +147,7 @@ export default function ReactPopperTooltipSingleLevel({ ShareWebId, row, masterT
         if (row?.subRows?.length > 0) {
             rowOrg = { ...row };
             rowOrg.subRows = [];
-        }else{
+        } else {
             rowOrg = { ...row };
         }
         let completeTitle = '';
@@ -200,16 +205,19 @@ export default function ReactPopperTooltipSingleLevel({ ShareWebId, row, masterT
                                     target="_blank"
                                 >
                                     {row?.original?.Title}
-                                </a> : <>{row?.original?.Title != "Others" ? <a
-                                    className="hreflink"
-                                    data-interception="off"
-                                    target="blank"
-                                    href={`${AllListId?.siteUrl}/SitePages/Portfolio-Profile.aspx?taskId=${row?.original?.Id}`}
-                                >
-                                    <span className="d-flex">
-                                        {row?.original?.Title}
-                                    </span>
-                                </a> : ""}</>}
+                                </a> : <>{row?.original?.Title != "Others" && row?.original?.Item_x0020_Type != "Sprint" && row?.original?.Item_x0020_Type != "Project" ?
+                                    <a className="hreflink" data-interception="off" target="blank"
+                                        href={`${AllListId?.siteUrl}/SitePages/Portfolio-Profile.aspx?taskId=${row?.original?.Id}`}>
+                                        <span className="d-flex">
+                                            {row?.original?.Title}
+                                        </span>
+                                    </a> : row?.original?.Item_x0020_Type == "Sprint" || row?.original?.Item_x0020_Type == "Project" ?
+                                        <a className="hreflink" data-interception="off" target="blank"
+                                            href={`${AllListId?.siteUrl}/SitePages/Project-Management.aspx?ProjectId=${row?.original?.Id}`}>
+                                            <span className="d-flex">
+                                                {row?.original?.Title}
+                                            </span>
+                                        </a> : ""}</>}
                         </div>
                     </>
                 ),
@@ -227,7 +235,7 @@ export default function ReactPopperTooltipSingleLevel({ ShareWebId, row, masterT
                 id: 'plushIcon',
                 cell: ({ row }) => (
                     <div>
-                        {row?.original?.TaskType?.Title != 'Task' && row?.original?.Item_x0020_Type != "Sprint"  && row?.original?.Item_x0020_Type != "Project"  ?
+                        {row?.original?.TaskType?.Title != 'Task' && row?.original?.Item_x0020_Type != "Sprint" && row?.original?.Item_x0020_Type != "Project" ?
                             <span onClick={() => openActivityPopup(row.original)} className="hreflink"><FaPlus style={{ fontSize: '10px' }} /></span>
                             : ''}
                     </div>
@@ -260,7 +268,7 @@ export default function ReactPopperTooltipSingleLevel({ ShareWebId, row, masterT
             {action === "click" && visible && (
                 <div ref={setTooltipRef} {...getTooltipProps({ className: "tooltip-container p-0 m-0" })}>
                     <div>
-                        <div className="tootltip-title">{row?.Title}</div>
+                        <div className="tootltip-title" style={{ backgroundColor: `${row?.PortfolioType?.Color}` }}>{row?.Title}</div>
                         <button className="toolTipCross" onClick={handleCloseClick}><div className="popHoverCross">×</div></button>
                     </div>
 

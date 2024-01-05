@@ -23,6 +23,8 @@ export interface IHelloSpfxWebPartProps {
   MAIN_HR_LISTID:'6DD8038B-40D2-4412-B28D-1C86528C7842',
   GMBH_CONTACT_SEARCH_LISTID:'6CE99A82-F577-4467-9CDA-613FADA2296F',
   HR_EMPLOYEE_DETAILS_LIST_ID:'a7b80424-e5e1-47c6-80a1-0ee44a70f92c',
+  SkillsPortfolioListID: "e79dfd6d-18aa-40e2-8d6e-930a37fe54e4",
+  siteUrl: any
 }
 
 export default class HelloSpfxWebPart extends BaseClientSideWebPart<IHelloSpfxWebPartProps> {
@@ -37,7 +39,7 @@ export default class HelloSpfxWebPart extends BaseClientSideWebPart<IHelloSpfxWe
         description: this.properties.description,
         isDarkTheme: this._isDarkTheme,
         Context: this.context,
-         ContractListID:'c0106d10-a71c-4153-b204-7cf7b45a68b8',
+        ContractListID:'c0106d10-a71c-4153-b204-7cf7b45a68b8',
         HHHHContactListId:'edc879b9-50d2-4144-8950-5110cacc267a',
         HHHHInstitutionListId:'9f13fd36-456a-42bc-a5e0-cd954d97fc5f',
         MAIN_SMARTMETADATA_LISTID:'D1C6D7C3-F36E-4F95-8715-8DA9F33622E7',
@@ -48,6 +50,8 @@ export default class HelloSpfxWebPart extends BaseClientSideWebPart<IHelloSpfxWe
         hasTeamsContext: !!this.context.sdks.microsoftTeams,
         userDisplayName: this.context.pageContext.user.loginName,
         InterviewFeedbackFormListId: this.properties.InterviewFeedbackFormListId,
+        SkillsPortfolioListID: this.properties.SkillsPortfolioListID,
+        siteUrl: this.context.pageContext.web.absoluteUrl
       }
     );
 
@@ -167,6 +171,9 @@ export default class HelloSpfxWebPart extends BaseClientSideWebPart<IHelloSpfxWe
                 }),
                 PropertyPaneTextField('ContractListID', {
                   label: "ContractListID"
+}),
+                PropertyPaneTextField('SkillsPortfolioListID', {
+                  label: "SkillsPortfolioListID"
                 })
               ]
             }

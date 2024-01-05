@@ -21,7 +21,7 @@ let allSite: any = {
     HrSite: false,
     MainSite: true,
 }
-const HRweb = new Web('https://hhhhteams.sharepoint.com/sites/HHHH/HR');
+
 let updatedStatusData: any[] = [];
 // eslint-disable-next-line prefer-const
 let statusKeyID: number;
@@ -39,7 +39,7 @@ interface RowData {
     IsFavorite: boolean;
 }
 // eslint-disable-next-line @typescript-eslint/explicit-function-return-type
-export default function GetData(props: any) {
+export default function InterviewFeedbackForm(props: any) {
     const [listData, setListData]: any = useState([]);
     const [activeTab, setactiveTab] = useState('All Candidates');
     const [NewCandidates, setNewCandidates] = useState([]);
@@ -58,6 +58,7 @@ export default function GetData(props: any) {
     const [selectedStatus, setSelectedStatus] = useState('');
     const [isStatButtonDisabled, setisStatButtonDisabled] = useState(true);
 
+    const HRweb = new Web(props?.props?.siteUrl);
     const EditPopupOpen = (item: any) => {
         setSelectedItem(item);
         setIsEditPopupOpen(true);
@@ -141,9 +142,10 @@ export default function GetData(props: any) {
             size: 5,
             id: 'Id',
         }, {
-            accessorKey: "CandidateName",
+            accessorKey: "Title",
             placeholder: "Title",
             header: "",
+            id: 'Title',
             cell: ({ row, getValue }) => (
                 <><a
                     className="text-content hreflink"
@@ -162,9 +164,9 @@ export default function GetData(props: any) {
                 </>
             ),
         },
-        { accessorKey: "Email", placeholder: "Email", header: "" },
-        { accessorKey: "Position", placeholder: "Positions", header: "" },
-        { accessorKey: "Status0", placeholder: "Status", header: "" }, {
+        { accessorKey: "Email", placeholder: "Email", header: "", id: 'Email' },
+        { accessorKey: "Position", placeholder: "Positions", header: "", id: 'Position' },
+        { accessorKey: "Status0", placeholder: "Status", header: "", id: 'Status0' }, {
             cell: ({ row }) => (
                 <div className='alignCenter'>
                     <span onClick={() => EditPopupOpen(row.original)} title="Edit" className="svg__iconbox hreflink svg__icon--edit"></span>
@@ -350,9 +352,10 @@ export default function GetData(props: any) {
             MAIN_HR_LISTID: props?.props?.MAIN_HR_LISTID,
             GMBH_CONTACT_SEARCH_LISTID: props?.props?.GMBH_CONTACT_SEARCH_LISTID,
             HR_EMPLOYEE_DETAILS_LIST_ID: props?.props?.HR_EMPLOYEE_DETAILS_LIST_ID,
-            siteUrl: props?.props.Context.pageContext.web.absoluteUrl,
+            siteUrl: props?.props?.siteUrl,
             jointSiteUrl: "https://hhhhteams.sharepoint.com/sites/HHHH",
-            ContractListID: props?.props?.ContractListID
+            ContractListID: props?.props?.ContractListID,
+            SkillsPortfolioListID: props?.props?.SkillsPortfolioListID
         }
         getListData();
         loadAdminConfigurations();
@@ -420,9 +423,13 @@ export default function GetData(props: any) {
     
     return (
         <myContextValue.Provider value={{ ...myContextValue, allSite: allSite, allListId: allListId, loggedInUserName: props.props?.userDisplayName, }}>
-            <span className="text-end fs-6"> <a target='_blank' data-interception="off" href={'https://hhhhteams.sharepoint.com/sites/HHHH/HR/SitePages/Recruiting-Tool.aspx'} style={{ cursor: "pointer", fontSize: "14px" }}>Old Recruting Tool</a></span>
+          
             <div>
+                <div className='alignCenter'>
                 <h2 className='heading'>Recruiting-Tool</h2>
+                <a target='_blank' className='hreflink ml-auto f-14 fw-semibold' data-interception="off" href={'https://hhhhteams.sharepoint.com/sites/HHHH/HR/SitePages/Recruiting-Tool.aspx'}>Old Recruting Tool</a>
+                </div>
+                
                 <ul className="nav nav-tabs" id="myTab" role="tablist">
                     <li className="nav-item" role="presentation">
                         <button onClick={() => handleTabChange('All Candidates')} className={`nav-link ${activeTab === 'All Candidates'
@@ -450,24 +457,24 @@ export default function GetData(props: any) {
                 <div className="tab-content border border-top-0 clearfix " id="nav-tabContent">
                     <div className={`tab-pane fade px-1 ${activeTab === 'All Candidates' ? 'show active' : ''}`} id="AllCandidates"
                         role="tabpanel" aria-labelledby="home-tab">
-                        {listData && <div className='Alltable'><GlobalCommanTable columns={columns} data={listData} multiSelect={true} showHeader={true} callBackData={callBackData} /></div>}
+                        {listData && <div className='Alltable'><GlobalCommanTable columns={columns} data={listData} multiSelect={true} showHeader={true} callBackData={callBackData} showEmailIcon={true}/></div>}
                     </div>
                     <div className={`tab-pane fade px-1 ${activeTab === 'New Candidates' ? 'show active' : ''}`} id="NewCandidates"
                         role="tabpanel" aria-labelledby="profile-tab">
-                        {NewCandidates && <div className='Alltable'><GlobalCommanTable columns={columns} data={NewCandidates} multiSelect={true} showHeader={true} callBackData={callBackData} /></div>}
+                        {NewCandidates && <div className='Alltable'><GlobalCommanTable columns={columns} data={NewCandidates} multiSelect={true} showHeader={true} callBackData={callBackData} showEmailIcon={true}/></div>}
                     </div>
                     <div className={`tab-pane fade px-1 ${activeTab === 'In Process' ? 'show active' : ''}`} id="inProcessCand"
                         role="tabpanel" aria-labelledby="profile-tab">
-                        {inProcessCand && <div className='Alltable'><GlobalCommanTable columns={columns} data={inProcessCand} multiSelect={true} showHeader={true} callBackData={callBackData} /></div>}
+                        {inProcessCand && <div className='Alltable'><GlobalCommanTable columns={columns} data={inProcessCand} multiSelect={true} showHeader={true} callBackData={callBackData} showEmailIcon={true}/></div>}
                     </div>
                     <div className={`tab-pane fade px-1 ${activeTab === 'Archive' ? 'show active' : ''}`} id="ArchiveCandidates"
                         role="tabpanel" aria-labelledby="profile-tab">
-                        {ArchiveCandidates && <div className='Alltable'><GlobalCommanTable columns={columns} data={ArchiveCandidates} multiSelect={true} showHeader={true} callBackData={callBackData} /></div>}
+                        {ArchiveCandidates && <div className='Alltable'><GlobalCommanTable columns={columns} data={ArchiveCandidates} multiSelect={true} showHeader={true} callBackData={callBackData} showEmailIcon={true}/></div>}
                     </div>
                 </div>
-                {isEditPopupOpen ? <EditPopup EditPopupClose={EditPopupClose} callbackEdit={callbackEdit} item={selectedItem} ListID={props?.props?.InterviewFeedbackFormListId} /> : ''}
-                {isAddPopupOpen ? <AddPopup AddPopupClose={AddPopupClose} callbackAdd={callbackAdd} ListID={props?.props?.InterviewFeedbackFormListId} /> : ''}
-                {isAddEditPositionOpen ? <AddEditPostion AddEditPositionCLose={AddEditPositionCLose} /> : ''}
+                {isEditPopupOpen ? <EditPopup siteUrl={props?.props?.siteUrl} EditPopupClose={EditPopupClose} callbackEdit={callbackEdit} item={selectedItem} ListID={props?.props?.InterviewFeedbackFormListId} skillsList={props?.props?.SkillsPortfolioListID}/> : ''}
+                {isAddPopupOpen ? <AddPopup siteUrl={props?.props?.siteUrl} context={props?.props?.Context} AddPopupClose={AddPopupClose} callbackAdd={callbackAdd} ListID={props?.props?.InterviewFeedbackFormListId} skillsList={props?.props?.SkillsPortfolioListID}/> : ''}
+                {isAddEditPositionOpen ? <AddEditPostion AddEditPositionCLose={AddEditPositionCLose} props={props?.props}/> : ''}
             </div>
 
             {/* ********************* this is Add/Edit Status Task panel ****************** */}

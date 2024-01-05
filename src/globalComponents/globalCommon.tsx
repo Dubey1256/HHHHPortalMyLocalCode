@@ -1832,7 +1832,8 @@ export const GetServiceAndComponentAllData = async (Props: any) => {
             result.TaskID =  result?.PortfolioStructureID;
             result.portfolioItemsSearch = result.Item_x0020_Type;
             result.isSelected = Props?.selectedItems?.find((obj: any) => obj.Id === result.ID);
-            result.TeamLeaderUser = []
+            result.TeamLeaderUser = [];
+            result.SmartPriority;
             result.DisplayDueDate = moment(result.DueDate).format("DD/MM/YYYY");
             result.DisplayCreateDate = moment(result.Created).format("DD/MM/YYYY");
             result.DueDate = moment(result.DueDate).format('DD/MM/YYYY')
@@ -2168,7 +2169,7 @@ export const loadAllSiteTasks = async (allListId: any, filter: any) => {
         query += `&$filter=${filter}`
     }
     let siteConfig: any = await loadSmartMetadata(allListId, "Sites")
-    let filteredSiteConfig = siteConfig.filter((site: any) => site?.Title != "Master Tasks" && site?.Title != "SDC Sites")
+    let filteredSiteConfig = siteConfig.filter((site: any) => site?.Title != "Master Tasks" && site?.Title != "SDC Sites" && site?.Title != "Offshore Tasks")
     let AllSiteTasks: any = []
     if (filteredSiteConfig?.length > 0) {
         const fetchPromises = filteredSiteConfig.map(async (site: any) => {
@@ -2179,6 +2180,12 @@ export const loadAllSiteTasks = async (allListId: any, filter: any) => {
                     task.siteType = site.Title;
                     task.listId = site.listId;
                     task.siteUrl = site.siteUrl.Url;
+                    task.SmartPriority;
+                    task.TaskTypeValue = '';
+                    task.projectPriorityOnHover = '';
+                    task.taskPriorityOnHover = task?.PriorityRank;
+                    task.showFormulaOnHover;
+                 
                     if (task.PercentComplete != undefined) {
                         task.PercentComplete = (task.PercentComplete * 100).toFixed(0);
                     }

@@ -1,7 +1,7 @@
 import * as React from 'react';
 import ReactApexChart from 'react-apexcharts';
 import { myContextValue } from '../../../globalComponents/globalCommon'
-import {  Web } from 'sp-pnp-js';
+import { Web } from 'sp-pnp-js';
 import { Panel, PanelType } from 'office-ui-fabric-react';
 const barChartColors = ['#008FFB', '#008FFB', '#008FFB', '#008FFB', '#008FFB', '#008FFB', '#008FFB', '#008FFB'];
 const barChartColorsXYaxis = ['#000', '#000', '#000', '#000', '#000', '#000', '#000', '#000'];
@@ -10,15 +10,16 @@ const EmployeePieChart = (SelectedProps: any) => {
   var barChartData: any
   var weekDate: any = []
   const contextdata: any = React.useContext(myContextValue)
-  const [allTaskTimeEntries, setAllTaskTimeEntries] = React.useState([])
   const [data, setData] = React.useState<any>([])
   const [sumBarTime, setSumBarTime] = React.useState<any>([])
+  const [IsShowPieChart, setIsShowPieChart] = React.useState<any>(false)
   if (contextdata.timesheetListConfig != undefined)
     timesheetListConfig = contextdata.timesheetListConfig
   React.useEffect(() => {
     GetDate()
   }, [timesheetListConfig])
   const GetDate = () => {
+    weekDate = [];
     const today: any = new Date();
     const startOfWeek: any = new Date(today);
     startOfWeek.setDate(today.getDate() - today.getDay());
@@ -26,8 +27,7 @@ const EmployeePieChart = (SelectedProps: any) => {
     for (let i: any = new Date(startOfWeek); i <= today; i.setDate(i.getDate() + 1)) {
       dateArray.push(new Date(i));
     }
-    const dateStrings = dateArray.map(date => date.toLocaleDateString());
-    console.log(dateStrings);
+    const dateStrings = dateArray.map(date => date.toLocaleDateString());   
     weekDate = weekDate.concat(dateStrings);
     loadAllTimeEntry();
   }
@@ -50,11 +50,10 @@ const EmployeePieChart = (SelectedProps: any) => {
               AllTaskTimeEntries.push(item);
             });
           } catch (error) {
-            console.log(error, 'HHHH Time');
+            console.log(error);
           }
         });
         await Promise.all(fetchPromises)
-        setAllTaskTimeEntries(AllTaskTimeEntries)
         weekDate?.map((date: any, index: any) => {
           let totalTime = 0;
           let [month, day, year] = date.split('/')
@@ -78,6 +77,8 @@ const EmployeePieChart = (SelectedProps: any) => {
         })
         setSumBarTime(sum)
         weeklyData.push(weeklyData.shift())
+        const hasNonZeroValues = weeklyData.some((value: number) => value > 0);
+        setIsShowPieChart(hasNonZeroValues)
         setData(weeklyData)
       }
     }
@@ -153,26 +154,22 @@ const EmployeePieChart = (SelectedProps: any) => {
   const onRenderCustomHeaderMain = () => {
     return (
       <>
-        <div className="subheading alignCenter">
-          <span className="siteColor">
+        <div className="subheading">
             This Week's TimeSheet ({sumBarTime})
-          </span>
         </div>
       </>
     );
   };
   const onRenderCustomFooterMain = () => {
     return (
-      <footer className="bg-f4 fixed-bottom">
+      <footer className="modal-footer mt-2">
         <div className="text-end me-2">
           <div>
-            <div className="footer-right">
-              <span >
-                <button type="button" className="btn btn-default px-3" onClick={setModalIsOpenToFalse}>
-                  Cancel
-                </button>
-              </span>
-            </div>
+            <span>
+              <button type="button" className="btn btn-default px-3" onClick={setModalIsOpenToFalse}>
+                Cancel
+              </button>
+            </span>
           </div>
         </div>
       </footer>
@@ -181,14 +178,18 @@ const EmployeePieChart = (SelectedProps: any) => {
   return (
     <>
       <Panel type={PanelType.medium} isOpen={SelectedProps?.IsOpenTimeSheetPopup} onDismiss={setModalIsOpenToFalse} onRenderHeader={onRenderCustomHeaderMain} isBlocking={false} onRenderFooter={onRenderCustomFooterMain}>
-        <div id="bar-chart border">
-          {console.log(contextdata)}
+        <div id="bar-chart border">         
           <div className='alignCenter'>
             <span className='fw-bold'>
             </span>
-            <span title='Refresh TimeSheet ' className="ml-auto svg__iconbox svg__icon--refresh dark me-2" onClick={() => GetDate()}></span>
+            {IsShowPieChart && <span title='Refresh TimeSheet ' className="ml-auto svg__iconbox svg__icon--refresh dark me-2" onClick={() => GetDate()}></span>}
           </div>
-          <ReactApexChart options={barChartData?.options} series={barChartData?.series} type="bar" height={350} />
+          {IsShowPieChart ? (
+            <ReactApexChart options={barChartData?.options} series={barChartData?.series} type="bar" height={350} />
+          ) : (
+            <div className="d-flex justify-content-center">No data available</div>
+          )}
+
         </div>
       </Panel>
     </>

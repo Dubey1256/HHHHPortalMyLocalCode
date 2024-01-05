@@ -17,6 +17,7 @@ import "froala-editor/css/froala_style.min.css";
 import "froala-editor/css/froala_editor.pkgd.min.css";
 import * as globalCommon from "./globalCommon";
 import FlorarImageUploadComponent from "../webparts/EditPopupFiles/FlorarImagetabportfolio";
+import {myContextValue} from './globalCommon';
 let SitesTypes: any = [];
 let AllListId: any = {};
 let IsapprovalTask = false;
@@ -82,7 +83,7 @@ const CreateActivity = (props: any) => {
     Component: [],
   });
   const [siteName, setSiteName] = React.useState(false);
-
+  const globalContextData: any = React.useContext<any>(myContextValue)
   React.useEffect(() => {
     AllListId = props?.AllListId;
     getTaskUsers();
@@ -305,6 +306,21 @@ const CreateActivity = (props: any) => {
         }
       });
     }
+    if ( props?.selectedItem?.NoteCall != "Task" && props?.selectedItem?.NoteCall != "Activity") {
+      subCategories?.map((item: any) => {
+        if (item?.Title == props?.selectedItem?.NoteCall  && !item.ActiveTile) {
+          selectSubTaskCategory(item?.Title, item?.Id, item);
+          if( props?.selectedItem?.NoteCall == "Development"){
+            props.selectedItem.NoteCall = "Activity"
+          }else{
+            props.selectedItem.NoteCall = "Task"
+          }
+      
+        }
+      });
+    }
+    props?.selectedItem?.NoteCall
+
 
     if (AllMetadata?.length > 0 && ClientCategoriesData?.length > 0) {
       let a: any = [];
@@ -632,6 +648,7 @@ const CreateActivity = (props: any) => {
     imageName: any,
     DataJson: any
   ) => {
+   try{
     let listId = postData.listId;
 
     let Id = postData.Id;
@@ -661,6 +678,9 @@ const CreateActivity = (props: any) => {
         })().catch(console.log);
       }
     }, 2500);
+   }catch(error){
+    console.log(error)
+   }
   };
 
   const UpdateBasicImageInfoJSON = async (
@@ -846,7 +866,7 @@ const CreateActivity = (props: any) => {
               } else {
                 
                   var siteComp: any = {};
-                  siteComp.Title = save?.siteType,
+                  siteComp.Title = site?.Title,
                   siteComp.localSiteComposition = true;
                   siteComp.SiteImages = site?.Item_x005F_x0020_Cover?.Url;
                   siteComp.ClienTimeDescription = 100,
@@ -861,7 +881,7 @@ const CreateActivity = (props: any) => {
                 Sitestagging = JSON.stringify(sitetag);
               } else {
                 var siteComp: any = {};
-                  siteComp.Title = save?.siteType,
+                  siteComp.Title = site?.Title,
                   siteComp.localSiteComposition = true;
                   siteComp.SiteImages = site?.Item_x005F_x0020_Cover?.Url;
                   siteComp.ClienTimeDescription = 100,
@@ -873,6 +893,10 @@ const CreateActivity = (props: any) => {
           }
         } catch (error) {
           console.log(error, "CC Fetching ");
+        }
+        let ProjectId=null;
+        if(globalContextData?.tagProjectFromTable==true){
+          ProjectId = globalContextData?.ProjectLandingPageDetails?.Id!=undefined?globalContextData?.ProjectLandingPageDetails?.Id:null;
         }
         if (selectedItem?.NoteCall != "Task") {
           let web = new Web(AllListId?.siteUrl);
@@ -904,7 +928,7 @@ const CreateActivity = (props: any) => {
             .items.add({
               Title: siteName ? `${TaskTitle} - ${site?.Title}`: TaskTitle,
               Categories: categoriesItem ? categoriesItem : null,
-
+              ProjectId:ProjectId,
               DueDate:
                 save.DueDate != undefined
                   ? new Date(save.DueDate).toISOString()
@@ -1120,7 +1144,7 @@ const CreateActivity = (props: any) => {
                 clientTime = JSON.stringify(selectedItem?.Sitestagging);
               } else {
                 var siteComp: any = {};
-                siteComp.Title = save?.siteType,
+                siteComp.Title = site?.Title,
                 siteComp.localSiteComposition = true;
                 siteComp.SiteImages = site?.Item_x005F_x0020_Cover?.Url;
                 siteComp.ClienTimeDescription = 100,
@@ -1135,7 +1159,7 @@ const CreateActivity = (props: any) => {
                 clientTime = JSON.stringify(sitetag);
               } else {
                 var siteComp: any = {};
-                siteComp.Title = save?.siteType,
+                siteComp.Title = site?.Title,
                 siteComp.localSiteComposition = true;
                 siteComp.SiteImages = site?.Item_x005F_x0020_Cover?.Url;
                 siteComp.ClienTimeDescription = 100,
@@ -1156,6 +1180,7 @@ const CreateActivity = (props: any) => {
                 Description: TaskUrl?.length > 0 ? TaskUrl : null,
                 Url: TaskUrl?.length > 0 ? TaskUrl : null,
               },
+              ProjectId:ProjectId,
               Categories: categoriesItem ? categoriesItem : null,
               PriorityRank: priorityRank,
               Priority: priority,
@@ -1927,7 +1952,7 @@ const CreateActivity = (props: any) => {
           onDismiss={() => closePopup("item")}
           isBlocking={false}
           hasCloseButton={true}
-          className={props?.portfolioTypeData?.Color}
+          className={`${props?.portfolioTypeData?.Color} widthPanel`}
         >
           <div>
             <>{onRenderMainHtml}</>

@@ -4,6 +4,8 @@ import { Panel, PanelType } from 'office-ui-fabric-react';
 import "bootstrap/dist/css/bootstrap.min.css";
 import { ImPriceTags } from 'react-icons/im';
 import Tooltip from '../Tooltip';
+import { SlArrowRight } from "react-icons/sl";
+import { BsSearch } from 'react-icons/bs';
 
 
 var NewArray: any = []
@@ -24,6 +26,10 @@ const Picker = (item: any) => {
     const [selectedCategory, setSelectedCategory] = React.useState([]);
     const [searchedData, setSearchedData] = React.useState([]);
     const [isSearchWithDesciptions, setIsSearchWithDesciptions] = React.useState(true);
+    const [isHovered, setIsHovered] = React.useState(false)
+    const [FirstHoveredItemId, setFirstHoveredItemId] = React.useState(null)
+    const [SecondHoveredItemId, setSecondHoveredItemId] = React.useState(null)
+    const [ThirdHoveredItemId, setThirdHoveredItemId] = React.useState(null)
     const openPopupSmartTaxanomy = () => {
         setPopupSmartTaxanomy(true)
     }
@@ -281,8 +287,24 @@ const Picker = (item: any) => {
             </div>
         )
     }
-
-
+    const HoverFirstLevel = (itemId: any) => {
+        setFirstHoveredItemId(itemId);
+    };
+    const HoverOutFirstLevel = (event: any) => {
+        setFirstHoveredItemId(null);
+    };
+    const HoverSecondLevel = (itemId: any) => {
+        setSecondHoveredItemId(itemId);
+    };
+    const HoverOutSecondLevel = (event: any) => {
+        setSecondHoveredItemId(null);
+    };
+    const HoverThirdLevel = (itemId: any) => {
+        setThirdHoveredItemId(itemId);
+    };
+    const HoverOutThirdLevel = (event: any) => {
+        setThirdHoveredItemId(null);
+    };
     return (
         <>
             <Panel
@@ -299,9 +321,10 @@ const Picker = (item: any) => {
 
                         <div className="mb-2">
                             <div className="mb-2 col-sm-5 p-0">
-                                <div>
+                                <div className="position-relative">
                                     <input type="checkbox" defaultChecked={isSearchWithDesciptions} onChange={() => setIsSearchWithDesciptions(isSearchWithDesciptions ? false : true)} className="form-check-input me-1 rounded-0" style={{ width: "15px", height: "15px" }} /> <label>Include description (info-icons) in search</label>
-                                    <input type="text" className="form-control  searchbox_height" value={value} onChange={onChange} placeholder="Search Category" />
+                                    <input type="text" className="form-control  searchbox_height mt-20 mb-3" value={value} onChange={onChange} placeholder="Search Category" />
+                                    <span style={{ position: 'absolute', top: '44px', right: '5px' }}><BsSearch /></span>
                                     {searchedData?.length > 0 ? (
                                         <div className="SearchTableCategoryComponent">
                                             <ul className="list-group">
@@ -319,7 +342,7 @@ const Picker = (item: any) => {
                                 </div>
                             </div>
                             {select?.length > 0 ?
-                                <div className="border full-width ActivityBox">
+                                <div className="full-width">
                                     {select.map((val: any) => {
                                         return (
                                             <span className="block me-1">
@@ -330,19 +353,22 @@ const Picker = (item: any) => {
                                     })}
                                 </div> : null}
                         </div>
-                        <div className='col-sm-12 categScroll'>
+                        <div className='col-sm-12 mt-16'>
                             <ul className="categories-menu p-0">
                                 {AllCategories.map(function (item: any) {
                                     return (
                                         <>
-                                            <li>
+                                            <li onMouseEnter={() => HoverFirstLevel(item.Id)} onMouseLeave={HoverOutFirstLevel} key={item.Id}>
                                                 {item.Item_x005F_x0020_Cover != null &&
                                                     <p onClick={() => selectPickerData(item)} className='mb-0 hreflink' >
-                                                        <a>
-                                                            <img className="flag_icon"
-                                                                style={{ height: "12px", width: "18px" }} src={item.Item_x005F_x0020_Cover.Url} />
-                                                            {item.Title}
-                                                        </a>
+                                                        <span className={`${FirstHoveredItemId == item?.Id ? 'boldOnHover' : ''}`}>
+                                                            <a>
+                                                                <img className="flag_icon"
+                                                                    style={{ height: "12px", width: "18px" }} src={item.Item_x005F_x0020_Cover.Url} />
+                                                                {item.Title}
+                                                            </a>
+                                                        </span>
+                                                        {item?.childs?.length > 0 && <span className="pull-right"><SlArrowRight /></span>}
                                                     </p>
                                                 }
                                                 <ul className="sub-menu clr mar0">
@@ -350,44 +376,48 @@ const Picker = (item: any) => {
                                                         return (
                                                             <>
                                                                 {child1.Title != null ?
-                                                                    <li>
+                                                                    <li onMouseEnter={() => HoverSecondLevel(child1.Id)} onMouseLeave={HoverOutSecondLevel}>
                                                                         <p onClick={() => selectPickerData(child1)} className='mb-0 hreflink'>
-                                                                            <a>
-                                                                                {child1.Item_x005F_x0020_Cover ? <img className="flag_icon"
-                                                                                    style={{ height: "12px", width: "18px;" }}
-                                                                                    src={child1.Item_x005F_x0020_Cover.Url} /> :
-                                                                                    <span className="me-4"></span>}
-                                                                                {child1.Title}
-                                                                                {child1.Description1 ? <div className='popover__wrapper ms-1' data-bs-toggle="tooltip" data-bs-placement="auto">
-                                                                                    <span className="alignIcon  svg__iconbox svg__icon--info"></span>
-                                                                                    <div className="popover__content">
-                                                                                        <span>{child1.Description1}</span>
-                                                                                    </div>
-                                                                                </div> : null}
-
-                                                                            </a>
+                                                                            <span className={`${SecondHoveredItemId == child1?.Id ? 'boldOnHover' : ''}`}>
+                                                                                <a>
+                                                                                    {child1.Item_x005F_x0020_Cover ? <img className="flag_icon"
+                                                                                        style={{ height: "12px", width: "18px;" }}
+                                                                                        src={child1.Item_x005F_x0020_Cover.Url} /> :
+                                                                                        <span className="me-4"></span>}
+                                                                                    {child1.Title}
+                                                                                    {child1.Description1 ? <div className='popover__wrapper ms-1' data-bs-toggle="tooltip" data-bs-placement="auto">
+                                                                                        <span className="alignIcon  svg__iconbox svg__icon--info"></span>
+                                                                                        <div className="popover__content">
+                                                                                            <span>{child1.Description1}</span>
+                                                                                        </div>
+                                                                                    </div> : null}
+                                                                                    {child1?.childs?.length > 0 && <span className="pull-right"><SlArrowRight /></span>}
+                                                                                </a>
+                                                                            </span>
                                                                         </p>
 
                                                                         <ul className="sub-menu clr mar0">
                                                                             {
                                                                                 child1.childs?.map((subChilds: any) => {
                                                                                     return (
-                                                                                        <li>
+                                                                                        <li onMouseEnter={() => HoverThirdLevel(subChilds.Id)} onMouseLeave={HoverOutThirdLevel}>
                                                                                             <p onClick={() => selectPickerData(subChilds)} className='mb-0 hreflink'>
-                                                                                                <a>
-                                                                                                    {subChilds.Item_x005F_x0020_Cover ? <img className="flag_icon"
-                                                                                                        style={{ height: "12px", width: "18px;" }}
-                                                                                                        src={subChilds.Item_x005F_x0020_Cover.Url} /> :
-                                                                                                        null}
-                                                                                                    {subChilds.Title}
-                                                                                                    {subChilds.Description1 ? <div className='popover__wrapper ms-1' data-bs-toggle="tooltip" data-bs-placement="auto">
-                                                                                                        <span className="alignIcon   svg__iconbox svg__icon--info"></span>
-                                                                                                        <div className="popover__content">
-                                                                                                            <span ng-bind-html="child1.Description1 | trustedHTML">{subChilds.Description1}</span>
-                                                                                                        </div>
-                                                                                                    </div> : null}
+                                                                                                <span className={`${ThirdHoveredItemId == subChilds?.Id ? 'boldOnHover' : ''}`}>
+                                                                                                    <a>
+                                                                                                        {subChilds.Item_x005F_x0020_Cover ? <img className="flag_icon"
+                                                                                                            style={{ height: "12px", width: "18px;" }}
+                                                                                                            src={subChilds.Item_x005F_x0020_Cover.Url} /> :
+                                                                                                            null}
+                                                                                                        {subChilds.Title}
+                                                                                                        {subChilds.Description1 ? <div className='popover__wrapper ms-1' data-bs-toggle="tooltip" data-bs-placement="auto">
+                                                                                                            <span className="alignIcon   svg__iconbox svg__icon--info"></span>
+                                                                                                            <div className="popover__content">
+                                                                                                                <span ng-bind-html="child1.Description1 | trustedHTML">{subChilds.Description1}</span>
+                                                                                                            </div>
+                                                                                                        </div> : null}
 
-                                                                                                </a>
+                                                                                                    </a>
+                                                                                                </span>
                                                                                             </p>
                                                                                         </li>
                                                                                     )
@@ -429,11 +459,14 @@ const Picker = (item: any) => {
                                 <button type="button" className="btn btn-primary px-3 mx-1" onClick={saveCategories} >
                                     Save
                                 </button>
+                                <button type="button" className="btn btn-default mx-1" onClick={closePopupSmartTaxanomy} >
+                                    Cancel
+                                </button>
                             </div>
                         </div>
                     </footer>
                 </div>
-            </Panel>
+            </Panel >
         </>
     )
 }

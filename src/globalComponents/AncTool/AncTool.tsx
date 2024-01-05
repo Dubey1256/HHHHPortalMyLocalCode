@@ -16,7 +16,7 @@ import * as GlobalFunction from '../globalCommon';
 import SmartInformation from '../../webparts/taskprofile/components/SmartInformation';
 import ExcelJS from 'exceljs';
 import { IFileAddResult } from "@pnp/sp/files";
-import { Panel, PanelType } from 'office-ui-fabric-react';
+import { Dropdown, Panel, PanelType } from 'office-ui-fabric-react';
 import ConnectExistingDoc from './ConnectExistingDoc';
 import MsgReader from "@kenjiuno/msgreader"
 import { Items } from '@pnp/sp/items';
@@ -52,9 +52,11 @@ const AncTool = (props: any) => {
     const [ServicesTaskCheck, setServicesTaskCheck] = React.useState(false);
     const [uploadEmailModal, setUploadEmailModal] = React.useState(false);
     const [TaskTypesPopup, setTaskTypesPopup] = React.useState(false);
+    const [OpenDefaultContent, setOpenDefaultContent] = React.useState(false);
     const [SelectedItem, setSelectedItem] = React.useState<string>()
     // const [smartInfoModalIsOpen, setSmartInfoModalIsOpen] = React.useState(false);
     const [remark, setRemark] = React.useState(false)
+    const [ShowExistingDoc, setShowExistingDoc] = React.useState(false)
     const [editSmartInfo, setEditSmartInfo] = React.useState(false)
     const [folderExist, setFolderExist] = React.useState(false);
     const [Item, setItem]: any = React.useState({});
@@ -343,6 +345,10 @@ const AncTool = (props: any) => {
 
     }
     const searchExistingFile = (value: any) => {
+        if (value != undefined && value != '' && value?.length > 0)
+            setShowExistingDoc(true)
+        else
+            setShowExistingDoc(false)
         if (value?.length > 0) {
             setExistingFiles((prevFile: any) => {
                 return backupExistingFiles.filter((file: any) => {
@@ -415,12 +421,12 @@ const AncTool = (props: any) => {
         setSelectedFile(file);
     };
     const handleRankChange = (event: any, from: any) => {
-        const rank = parseInt(event.target.value);
+        // const rank =parseInt(event.target.value);  
         if (from == 'Upload') {
-            setItemRank(rank);
+            setItemRank(event);
         }
         if (from == 'linkDoc') {
-            setLinkDocitemRank(rank);
+            setLinkDocitemRank(event);
         }
     };
     function base64ToArrayBuffer(base64String: string) {
@@ -924,7 +930,7 @@ const AncTool = (props: any) => {
 
         return (
             <li style={{ listStyle: 'none' }}>
-                <span className='d-flex ancsvgicos' onClick={toggleExpand}>
+                <span className='d-flex' onClick={toggleExpand}>
                     <span className='me-1'>
                         {hasChildren ? (
                             folder.isExpanded ? <SlArrowDown /> : <SlArrowRight />
@@ -1228,7 +1234,33 @@ const AncTool = (props: any) => {
             }
         } cancelNewCreateFile
     }
-
+    const OpenDefaultContentFolder = () => {
+        setOpenDefaultContent(true)
+    }
+    const CancelDefaultContentFolder = () => {
+        setOpenDefaultContent(false)
+    }
+    const ChooseDefaultContentFolderHeader = () => {
+        return (
+            <>
+                <div className='subheading mb-0'>
+                    <span className="siteColor">
+                        Default Folder Content
+                    </span>
+                </div>
+            </>
+        );
+    };
+    const onRenderDefualtContentFooter = () => {
+        return (<>
+            <div className="p-2 pb-0 px-4">
+            </div>
+            <footer className='text-end p-2'>
+                <button className="btn btn-primary me-1" onClick={() => { CancelDefaultContentFolder() }}>OK</button>
+            </footer>
+        </>
+        );
+    };
     return (
         <>
             <div className={ServicesTaskCheck ? "serviepannelgreena mb-3 card commentsection" : "mb-3 card commentsection"}>
@@ -1285,78 +1317,18 @@ const AncTool = (props: any) => {
                         </ul>
                         <div className="border border-top-0 clearfix p-3 tab-content Anctoolpopup " id="myTabContent">
                             <div className="tab-pane  show active" id="Documents" role="tabpanel" aria-labelledby="Documents">
-                                <Row>
-                                    <Col xs={6}>
-                                        {selectedPath?.displayPath?.length > 0 ?
-                                            // <DefaultFolderContent Context={props.Context} AllListId={props?.AllListId} item={Item} folderPath={selectedPath?.displayPath} /> 
-                                            <div className='panel  mb-2'>
-                                                <h3 className='pageTitle'>1. Default Folder Content  <hr></hr></h3>
-                                                <div>
-                                                    <input id="searchinput" type="search" onChange={(e) => { searchCurrentFolder(e.target.value) }} placeholder="Search..." className="form-control" />
-                                                    <div className="Alltable mt-2">
-                                                        <div className="col">
-                                                            {currentFolderFiles?.length > 0 ?
-                                                                <div>
-                                                                    <Table className='mb-0' hover responsive>
-                                                                        <thead className='fixed-Header top-0'>
-                                                                            <tr>
-                                                                                <th className='p-1'>Type</th>
-                                                                                <th className='p-1'>Title</th>
+                                <div>
+                                    <h3 className="pageTitle full-width siteColor pb-1 siteBdrBottom">
+                                        1. Upload a Document
+                                    </h3>
+                                    <Row>
+                                        <Col xs={6}>
 
-                                                                            </tr>
-
-                                                                        </thead>
-                                                                        <tbody>
-                                                                            {currentFolderFiles?.map((file: any) => {
-                                                                                return (
-                                                                                    <tr>
-                                                                                        <td><span className={`alignIcon  svg__iconbox svg__icon--${file?.docType}`} title={file?.docType}></span></td>
-
-                                                                                        <td><a href={file?.docType == 'pdf' ? file?.ServerRelativeUrl : file?.LinkingUri} target="_blank" data-interception="off" className='hreflink'> {file?.Title} </a></td>
-                                                                                    </tr>
-                                                                                )
-                                                                            })}
-
-
-                                                                        </tbody>
-                                                                    </Table>
-                                                                    {/* <table>
-                                                                        <tr>
-                                                                            <th>DocType</th>
-                                                                            <th>Title</th>
-                                                                        </tr>
-                                                                        {currentFolderFiles?.map((file: any) => {
-                                                                            return (
-                                                                                <tr>
-                                                                                    <td><span className={`svg__iconbox svg__icon--${file?.docType}`} title={file?.docType}></span></td>
-
-                                                                                    <td><a href={file?.docType == 'pdf' ? file?.ServerRelativeUrl : file?.LinkingUri} target="_blank" data-interception="off" className='hreflink'>{file?.Title}</a></td>
-                                                                                </tr>
-                                                                            )
-                                                                        })}
-                                                                    </table> */}
-                                                                </div>
-                                                                :
-                                                                <div className="No_Documents">
-                                                                    No Documents Available
-                                                                </div>
-                                                            }
-
-                                                        </div>
-                                                    </div>
-                                                </div>
-                                            </div>
-                                            : ''
-                                        }
-                                    </Col>
-                                    <Col xs={6}>
-                                        <div className='panel  mb-2'>
+                                            <div> <label className='form-label full-width fw-semibold'>Select Upload Folder  {temptasktype !== undefined && temptasktype?.length > 2 && <label className='alignIcon svg__iconbox svg__icon--setting' onClick={() => openTaskTypesPopup()}></label>}</label></div>
                                             {/* {selectPathFromPopup?.length > 0 ?
-                                                <h3 className='pageTitle'> Selected Folder  {temptasktype !== undefined && temptasktype?.length > 2 && <span className='alignIcon svg__iconbox svg__icon--setting' onClick={() => openTaskTypesPopup()}></span>} <hr></hr> </h3>
-                                                : <h3 className='pageTitle'> Default Folder   {temptasktype !== undefined && temptasktype?.length > 2 && <span className='alignIcon svg__iconbox svg__icon--setting' onClick={() => openTaskTypesPopup()}></span>}<hr></hr> </h3>
-                                            } */}
-                                            <h3 className='pageTitle'> Select Upload Folder  {temptasktype !== undefined && temptasktype?.length > 2 && <span className='alignIcon svg__iconbox svg__icon--setting' onClick={() => openTaskTypesPopup()}></span>} <hr></hr> </h3>
-
+                                                    <h3 className='pageTitle'> Selected Folder  {temptasktype !== undefined && temptasktype?.length > 2 && <span className='alignIcon svg__iconbox svg__icon--setting' onClick={() => openTaskTypesPopup()}></span>} <hr></hr> </h3>
+                                                    : <h3 className='pageTitle'> Default Folder   {temptasktype !== undefined && temptasktype?.length > 2 && <span className='alignIcon svg__iconbox svg__icon--setting' onClick={() => openTaskTypesPopup()}></span>}<hr></hr> </h3>
+                                                } */}
                                             <div className='alignCenter'>
                                                 <span>{folderExist == true ? <span>{selectedPath?.displayPath}</span> : <>{(tasktypecopy != undefined && tasktypecopy != '') ? <span>{selectedPath?.displayPath?.split(tasktypecopy)}
                                                     <span className='highlighted'>{tasktypecopy}
@@ -1373,25 +1345,168 @@ const AncTool = (props: any) => {
                                                     :
                                                     <span>{selectedPath?.displayPath?.split(siteName)}<span className=''>{siteName}
                                                         {/* <div className="popover__wrapper me-1" data-bs-toggle="tooltip" data-bs-placement="auto">
-                                                            <span className="alignIcon svg__iconbox svg__icon--info " ></span>
-                                                            <div className="popover__content">
-                                                                <span>
-                                                                    Highlighted folder does not exist. It will be created at the time of document upload.
-                                                                </span>
-                                                            </div>
-                                                        </div> */}
+                                                                <span className="alignIcon svg__iconbox svg__icon--info " ></span>
+                                                                <div className="popover__content">
+                                                                    <span>
+                                                                        Highlighted folder does not exist. It will be created at the time of document upload.
+                                                                    </span>
+                                                                </div>
+                                                            </div> */}
                                                     </span></span>}</>}</span>
                                                 <span><a title="Click for Associated Folder" className='hreflink ms-2' onClick={() => setChoosePathPopup(true)} > Change Path </a></span>
                                             </div>
-                                        </div>
+                                            <div className='my-2'><label className='form-label fw-semibold'>All files in default folder:</label><span><a title="Default Folder Content" className='hreflink ms-2' onClick={() => OpenDefaultContentFolder()} > View </a></span></div>
+
+                                            <div>
+                                                <div className='input-group'>
+                                                    <label className='form-label full-width fw-semibold'>Serach Existing Document</label>
+                                                    <input id="searchinputCED" type="search" onChange={(e) => { searchExistingFile(e.target.value) }} placeholder="Search..." className="form-control" />
+                                                </div>
+                                                {ShowExistingDoc == true && <div className="Alltable mt-2">
+                                                    <div>
+                                                        {/* <GlobalCommanTable headerOptions={headerOptions} paginatedTable={true} columns={columns} data={ExistingFiles} callBackData={callBackData} showHeader={true} /> */}
+                                                        {ExistingFiles?.length > 0 ?
+                                                            <Table hover responsive className='mb-0'>
+                                                                <thead className='fixed-Header top-0'>
+                                                                    <tr>
+                                                                        <th></th>
+                                                                        <th className='p-1'>Type</th>
+                                                                        <th className='p-1' style={{width:"300px"}}>Title</th>
+                                                                        <th style={{ width: '100px' }} className='p-1'>Rank</th>
+
+                                                                    </tr>
+
+                                                                </thead>
+                                                                <tbody className='Scrolling'>
+                                                                    {ExistingFiles?.map((file: any) => {
+                                                                        if (!AllReadytagged?.some((doc: any) => file?.Id == doc?.Id)) {
+                                                                            return (
+                                                                                <tr>
+                                                                                    <td><input type="checkbox" className='form-check-input hreflink' checked={AllReadytagged?.some((doc: any) => file.Id == doc.Id)} onClick={() => { tagSelectedDoc(file) }} /></td>
+                                                                                    <td><span className={`alignIcon  svg__iconbox svg__icon--${file?.docType}`} title={file?.File_x0020_Type}></span></td>
+                                                                                    <td><a style={{wordBreak:"break-all"}} href={file?.EncodedAbsUrl} target="_blank" data-interception="off" className='hreflink'>{file?.Title}</a></td>
+                                                                                    <td>{file?.ItemRank}</td>
+                                                                                </tr>
+                                                                            )
+                                                                        }
+
+                                                                    })}
 
 
-                                    </Col>
+                                                                </tbody>
+                                                            </Table>
+                                                            :
+                                                            <div className="No_Documents">
+                                                                No Documents Available
+                                                            </div>
+                                                        }
+                                                    </div>
+                                                </div>}
+                                            </div>
+                                        </Col>
+                                        <Col xs={6}>
+                                            <div>
+                                                <ul className="fixed-Header nav nav-tabs" id="myTab" role="tablist">
+                                                    <button className="nav-link active" id="UPLOAD-Tab" data-bs-toggle="tab" data-bs-target="#UPLOAD" type="button" role="tab" aria-controls="UPLOAD" aria-selected="true">
+                                                        UPLOAD
+                                                    </button>
+                                                    <button className="nav-link" id="DRAGDROP-Tab" data-bs-toggle="tab" data-bs-target="#DRAGDROP" type="button" role="tab" aria-controls="DRAGDROP" aria-selected="true">
+                                                        DRAG & DROP
+                                                    </button>
+                                                    <button className="nav-link" id="LINKTO-Tab" data-bs-toggle="tab" data-bs-target="#LINKTO" type="button" role="tab" aria-controls="LINKTO" aria-selected="true">
+                                                        LINK TO
+                                                    </button>
+                                                </ul>
+                                                <div className="border border-top-0 clearfix p-3 tab-content Anctoolpopup " id="myTabContent">
+                                                    <div className="tab-pane show active" id="UPLOAD" role="tabpanel" aria-labelledby="UPLOAD">
+                                                        <label className='form-label full-width fw-semibold'>Item Rank
+                                                            <span className='hover-text'>
+                                                                <span className='alignIcon svg__iconbox svg__icon--info dark'></span>
+                                                                <span className='tooltip-text pop-right fw-normal'>
+                                                                    Select Importance and where it should show: 8 =Top highlight(Shows under highlight item list), 7=featured (shows on featured item list on homepage), 6=key item (shows on right list on homepage and as key item on featured profile pages,5=relevant (shows on profile pages), 4= background item (....), 2= to be verified (...)  1= Archive (...) ,  0= no show (does not show in any list but in search results)
+                                                                </span></span>
+                                                        </label>
+                                                        <Dropdown className='full-width'
+                                                            id="ItemRankUpload"
+                                                            options={itemRanks.map((rank) => ({ key: rank?.rank, text: rank?.rankTitle }))}
+                                                            selectedKey={itemRank}
+                                                            onChange={(e, option) => handleRankChange(option?.key, 'Upload')}
+                                                            styles={{ dropdown: { width: '100%' } }}
+                                                        />
+                                                        <div className='my-2 input-group'>
+                                                            <input type="file" onChange={handleFileInputChange} className='form-control' />
+                                                        </div>
+                                                        <div className='mb-2 input-group'>
+                                                            <label className='form-label full-width fw-semibold'>Rename The Document</label>
+                                                            <input type="text" onChange={(e) => { setRenamedFileName(e.target.value) }} value={renamedFileName} placeholder='Rename The Document' className='form-control' />
+                                                        </div>
+                                                        <button onClick={handleUpload} disabled={selectedFile?.name?.length > 0 ? false : true} className="btn btn-primary my-1  float-end">Upload</button>
+                                                    </div>
+                                                    <div className="tab-pane show" id="DRAGDROP" role="tabpanel" aria-labelledby="DRAGDROP">
+                                                        <div className='input-group'>
+                                                            <label className='form-label full-width fw-semibold'>Item Rank
+                                                            <span className='hover-text'>
+                                                                <span className='alignIcon svg__iconbox svg__icon--info dark'></span>
+                                                                <span className='tooltip-text pop-right fw-normal'>
+                                                                    Select Importance and where it should show: 8 =Top highlight(Shows under highlight item list), 7=featured (shows on featured item list on homepage), 6=key item (shows on right list on homepage and as key item on featured profile pages,5=relevant (shows on profile pages), 4= background item (....), 2= to be verified (...)  1= Archive (...) ,  0= no show (does not show in any list but in search results)
+                                                                </span></span>
+                                                            </label>
+                                                            <Dropdown className='full-width'
+                                                                id="ItemRankLinkDoc"
+                                                                options={itemRanks.map((rank) => ({ key: rank?.rank, text: rank?.rankTitle }))}
+                                                                selectedKey={LinkDocitemRank}
+                                                                onChange={(e, option) => handleRankChange(option?.key, 'linkDoc')}
+                                                                styles={{ dropdown: { width: '100%' } }}
+                                                            />
+                                                        </div>
+                                                        <div className='dragDropbox mt-2' onDragOver={(event) => event.preventDefault()} onDrop={handleFileDrop}>
+                                                            {selectedFile ? <p>Selected file: {selectedFile.name}</p> : <p>Drag and drop file here </p>}
+                                                        </div>
+                                                    </div>
+                                                    <div className="tab-pane show" id="LINKTO" role="tabpanel" aria-labelledby="LINKTO">
+                                                        <Col>
+                                                            <Col className='pe-0'>
+                                                                <div className='input-group'>
+                                                                    <label className='form-label full-width fw-semibold'>Item Rank
+                                                                    <span className='hover-text'>
+                                                                        <span className='alignIcon svg__iconbox svg__icon--info dark'></span>
+                                                                        <span className='tooltip-text pop-right fw-normal'>
+                                                                            Select Importance and where it should show: 8 =Top highlight(Shows under highlight item list), 7=featured (shows on featured item list on homepage), 6=key item (shows on right list on homepage and as key item on featured profile pages,5=relevant (shows on profile pages), 4= background item (....), 2= to be verified (...)  1= Archive (...) ,  0= no show (does not show in any list but in search results)
+                                                                        </span></span>
+                                                                    </label>
+                                                                    <Dropdown className='full-width'
+                                                                        id="ItemRankLinkDoc"
+                                                                        options={itemRanks.map((rank) => ({ key: rank?.rank, text: rank?.rankTitle }))}
+                                                                        selectedKey={LinkDocitemRank}
+                                                                        onChange={(e, option) => handleRankChange(option?.key, 'linkDoc')}
+                                                                        styles={{ dropdown: { width: '100%' } }}
+                                                                    /></div>
+                                                            </Col>
+                                                            <Col className='col mb-2'>
+                                                                <div className='input-group'>
+                                                                    <label className='form-label full-width fw-semibold'>Name</label>
+                                                                    <input type="text" placeholder='Name' onChange={(e) => { setLinkToDocTitle(e.target.value) }} value={LinkToDocTitle} className='form-control' />
+                                                                </div>
+                                                            </Col>
+                                                            <Col className='clearfix col mb-2'>
+                                                                <div className='input-group'>
+                                                                    <label className='form-label full-width fw-semibold'>URL</label>
+                                                                    <input type="text" onChange={(e) => { setLinkToDocUrl(e.target.value) }} value={LinkToDocUrl} placeholder='Url' className='form-control' />
+                                                                </div>
+                                                            </Col>
 
-                                </Row>
-                                <Row className='mt-2'>
+                                                            <Col>
+                                                                <button disabled={(LinkToDocUrl?.length > 0 && LinkToDocTitle?.length > 0) ? false : true} className="btn btn-primary mt-2 my-1  float-end px-3" onClick={() => { CreateLinkAndTag() }}>Create</button>
+                                                            </Col>
+                                                        </Col>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                        </Col>
+                                    </Row>
+                                </div>
+                                {/* <Row className='mt-2'>
                                     <Col xs={6}>
-                                        {/* <ConnectExistingDoc Context={props.Context} AllListId={props?.AllListId} item={Item} folderPath={selectedPath?.completePath} /> */}
                                         <div className="panel">
                                             <h3 className="pageTitle">
                                                 2. Connect Existing Documents
@@ -1400,9 +1515,9 @@ const AncTool = (props: any) => {
 
                                             <div>
                                                 <input id="searchinputCED" type="search" onChange={(e) => { searchExistingFile(e.target.value) }} placeholder="Search..." className="form-control" />
-                                                <div className="Alltable mt-2">
+                                                {ShowExistingDoc == true && <div className="Alltable mt-2">
                                                     <div>
-                                                        {/* <GlobalCommanTable headerOptions={headerOptions} paginatedTable={true} columns={columns} data={ExistingFiles} callBackData={callBackData} showHeader={true} /> */}
+                                    
                                                         {ExistingFiles?.length > 0 ?
                                                             <Table hover responsive className='mb-0'>
                                                                 <thead className='fixed-Header top-0'>
@@ -1439,7 +1554,7 @@ const AncTool = (props: any) => {
                                                             </div>
                                                         }
                                                     </div>
-                                                </div>
+                                                </div>}
                                             </div>
                                         </div>
                                     </Col>
@@ -1451,13 +1566,15 @@ const AncTool = (props: any) => {
                                             </h3>
 
                                             <Col>
-                                                <Row className='mb-2 px-2'>
-                                                    <label className='form-label full-width ps-0'>Item Rank</label>
-                                                    <select value={itemRank} onChange={(e: any) => { handleRankChange(e, 'Upload') }} className='form-select'>
-                                                        {itemRanks.map((rank) => (
-                                                            <option key={rank?.rank} value={rank?.rank}>{rank?.rankTitle}</option>
-                                                        ))}
-                                                    </select>
+                                                <Row className='pe-0'>
+                                                    <label className='full-width form-label'>Item Rank</label>
+                                                    <Dropdown
+                                                        id="ItemRankUpload"
+                                                        options={itemRanks.map((rank) => ({ key: rank?.rank, text: rank?.rankTitle }))}
+                                                        selectedKey={itemRank}
+                                                        onChange={(e, option) => handleRankChange(option?.key, 'Upload')}
+                                                        styles={{ dropdown: { width: '100%' } }}
+                                                    />
                                                 </Row>
                                                 <div className='dragDropbox ' onDragOver={(event) => event.preventDefault()} onDrop={handleFileDrop}>
                                                     {selectedFile ? <p>Selected file: {selectedFile.name}</p> : <p>Drag and drop file here </p>}
@@ -1475,14 +1592,13 @@ const AncTool = (props: any) => {
 
                                         </div>
                                     </Col>
-                                </Row>
+                                </Row> */}
                                 <Row className='mt-2'>
-                                    <Col xs={6}>
+                                    <Col xs={12}>
                                         {/* <ConnectExistingDoc Context={props.Context} AllListId={props?.AllListId} item={Item} folderPath={selectedPath?.completePath} /> */}
                                         <div className="panel">
-                                            <h3 className="pageTitle">
-                                                4. Already Tagged Documents
-                                                <hr></hr>
+                                            <h3 className="pageTitle pb-1 siteColor siteBdrBottom">
+                                                2. Already Tagged Documents
                                             </h3>
 
                                             <div className='Alltable'>
@@ -1495,8 +1611,8 @@ const AncTool = (props: any) => {
 
                                                                     <th className='p-1'>Type</th>
                                                                     <th className='p-1'>Title</th>
-                                                                    <th>Item Rank</th>
-                                                                    <th>&nbsp;</th>
+                                                                    <th style={{width:"150px"}}>Item Rank</th>
+                                                                    <th style={{width:"15x"}}>&nbsp;</th>
 
                                                                 </tr>
 
@@ -1531,7 +1647,7 @@ const AncTool = (props: any) => {
                                             </div>
                                         </div>
                                     </Col>
-                                    <Col xs={6}>
+                                    {/* <Col xs={6}>
                                         <div className="panel">
 
                                             <h3 className="pageTitle">
@@ -1550,26 +1666,28 @@ const AncTool = (props: any) => {
                                                     <input type="text" onChange={(e) => { setLinkToDocUrl(e.target.value) }} value={LinkToDocUrl} placeholder='Url' className='full-width' />
                                                 </Col>
                                                 <Col className='pe-0'>
-                                                    <label>Item Rank</label>
-                                                    <select value={LinkDocitemRank} onChange={(e: any) => { handleRankChange(e, 'linkDoc') }} className='full-width form-select '>
-                                                        {itemRanks.map((rank) => (
-                                                            <option key={rank?.rank} value={rank?.rank}>{rank?.rankTitle}</option>
-                                                        ))}
-                                                    </select>
+                                                    <div className="fsectionHead siteBdrBottom mb-1">Item Rank</div>
+                                                    <Dropdown
+                                                        id="ItemRankLinkDoc"
+                                                        options={itemRanks.map((rank) => ({ key: rank?.rank, text: rank?.rankTitle }))}
+                                                        selectedKey={LinkDocitemRank}
+                                                        onChange={(e, option) => handleRankChange(option?.key, 'linkDoc')}
+                                                        styles={{ dropdown: { width: '100%' } }}
+                                                    />
                                                 </Col>
                                                 <Col>
                                                     <button disabled={(LinkToDocUrl?.length > 0 && LinkToDocTitle?.length > 0) ? false : true} className="btn btn-primary mt-2 my-1  float-end px-3" onClick={() => { CreateLinkAndTag() }}>Create</button>
                                                 </Col>
                                             </Col>
                                         </div>
-                                    </Col>
+                                    </Col> */}
 
                                 </Row>
                             </div>
                         </div>
                     </ModalBody>
-                </div>
-            </Panel>
+                </div >
+            </Panel >
             <Panel
                 type={PanelType.medium}
                 isOpen={choosePathPopup}
@@ -1625,108 +1743,110 @@ const AncTool = (props: any) => {
 
 
             </Panel>
-
-
-            {FileNamePopup ?
-                <div className="modal Anc-Confirmation-modal" >
-                    <div className="modal-dialog modal-mg rounded-0 " style={{ maxWidth: "400px" }}>
-                        <div className="modal-content rounded-0">
-                            <div className="modal-header">
-                                <div className='subheading'>
-                                    {/* <img className="imgWid29 pe-1 mb-1 " src={Item?.SiteIcon} /> */}
-                                    <span className="siteColor">
-                                        Create New Online File {createNewDocType?.length > 0 ? ` - ${createNewDocType}` : ''}
-                                    </span>
-                                </div>
-                                <Tooltip ComponentId="7642" />
-                                <span onClick={() => cancelNewCreateFile()}><i className="svg__iconbox svg__icon--cross crossBtn me-1"></i></span>
-                            </div>
-                            <div className="modal-body p-2 row">
-                                <div className="AnC-CreateDoc-Icon">
-                                    <div className={createNewDocType == 'docx' ? 'selected' : ''}>
-                                        <span onClick={() => createBlankWordDocx()} className='svg__iconbox svg__icon--docx hreflink' title='Word'></span>
+            {
+                FileNamePopup ?
+                    <div className="modal Anc-Confirmation-modal" >
+                        <div className="modal-dialog modal-mg rounded-0 " style={{ maxWidth: "400px" }}>
+                            <div className="modal-content rounded-0">
+                                <div className="modal-header">
+                                    <div className='subheading'>
+                                        {/* <img className="imgWid29 pe-1 mb-1 " src={Item?.SiteIcon} /> */}
+                                        <span className="siteColor">
+                                            Create New Online File {createNewDocType?.length > 0 ? ` - ${createNewDocType}` : ''}
+                                        </span>
                                     </div>
-                                    <div className={createNewDocType == 'xlsx' ? 'selected' : ''}>
-                                        <span onClick={() => createBlankExcelXlsx()} className='svg__iconbox svg__icon--xlsx hreflink' title='Excel'></span>
-                                    </div>
-                                    <div className={createNewDocType == 'pptx' ? 'selected' : ''}>
-                                        <span onClick={() => createBlankPowerPointPptx()} className='svg__iconbox svg__icon--ppt hreflink' title='Presentation'></span>
-                                    </div>
+                                    <Tooltip ComponentId="7642" />
+                                    <span onClick={() => cancelNewCreateFile()}><i className="svg__iconbox svg__icon--cross crossBtn me-1"></i></span>
                                 </div>
-                                <div className="col-sm-12 mt-2">
-                                    <input type="text" onChange={(e) => { setRenamedFileName(e.target.value) }} value={renamedFileName} placeholder='Enter File Name' className='full-width' />
-                                </div>
-                            </div>
-                            <footer className='text-end p-2'>
-
-
-                                <button className="btn btn-primary" disabled={renamedFileName?.length > 0 ? false : true} onClick={() => { CreateNewAndTag() }}>Create</button>
-                                <button className='btn btn-default ms-1' onClick={() => cancelNewCreateFile()}>Cancel</button>
-                            </footer>
-                        </div>
-                    </div>
-                </div> : ''
-            }
-            {ShowConfirmation ?
-                <div className="modal Anc-Confirmation-modal" >
-                    <div className="modal-dialog modal-mg rounded-0 " style={{ maxWidth: "700px" }}>
-                        <div className="modal-content rounded-0">
-                            <div className="modal-header">
-                                <h5 className="modal-title">Upload Documents - Confirmation</h5>
-                                <span onClick={() => cancelConfirmationPopup()}><i className="svg__iconbox svg__icon--cross crossBtn"></i></span>
-                            </div>
-                            <div className="modal-body p-2">
-                                <Col className='p-1'>
-                                    <Col><span><strong>Folder :</strong> </span><a href={`${rootSiteName}${selectedPath?.displayPath}`} target="_blank" data-interception="off" className='hreflink'> {selectedPath?.displayPath} <span className="svg__iconbox svg__icon--folder ms-1 alignIcon "></span></a></Col>
-                                    <Col className='mb-2'><strong>Metadata-Tag :</strong> <span>{props?.item?.Title}</span></Col>
-
-                                    <Col className='Alltable mt-2'>
-                                        <div>
-                                            <Table className='table table-hover'>
-                                                <thead className='fixed-Header top-0'>
-                                                    <tr>
-                                                        <th className='pe-1' style={{ width: "5%" }}>&nbsp;</th>
-                                                        <th className='pe-1' style={{ width: "60%" }}>File Name</th>
-                                                        <th className='pe-1' style={{ width: "10%" }}>Uploaded</th>
-                                                        <th className='pe-1' style={{ width: "8%" }}>Tagged</th>
-                                                        <th className='pe-1' style={{ width: "12%" }}>Share Link</th>
-                                                    </tr>
-                                                </thead>
-                                                <tbody>
-                                                    <tr>
-                                                        <td><span className={`svg__iconbox svg__icon--${UploadedDocDetails?.docType}`}></span></td>
-                                                        <td><a href={UploadedDocDetails?.link} target="_blank" data-interception="off" className='hreflink'>{UploadedDocDetails?.fileName}</a>{`(${UploadedDocDetails?.size})`}</td>
-                                                        <td>{UploadedDocDetails?.uploaded == true ? <span className='alignIcon  svg__iconbox svg__icon--Completed' style={{ width: "15px" }}></span> : <span className='alignIcon  svg__iconbox svg__icon--cross' ></span>}</td>
-                                                        <td>{UploadedDocDetails?.tagged == true ? <span className='alignIcon  svg__iconbox svg__icon--Completed' style={{ width: "15px" }}></span> : <span className='alignIcon  svg__iconbox svg__icon--cross'></span>}</td>
-                                                        <td>{UploadedDocDetails?.uploaded == true ? <>
-                                                            <span className='me-3 alignIcon  svg__iconbox svg__icon--link hreflink' title='Copy Link' data-bs-toggle="popover" data-bs-content="Link Copied" onClick={() => { navigator.clipboard.writeText(UploadedDocDetails?.link); }}></span>
-                                                            <span className='alignIcon  svg__iconbox svg__icon--mail hreflink' title='Share In Mail' onClick={() => { window.open(`mailto:?&subject=${props?.item?.Title}&body=${UploadedDocDetails?.link}`) }}></span>
-                                                        </> : <></>}</td>
-                                                    </tr>
-                                                </tbody>
-                                            </Table>
+                                <div className="modal-body p-2 row">
+                                    <div className="AnC-CreateDoc-Icon">
+                                        <div className={createNewDocType == 'docx' ? 'selected' : ''}>
+                                            <span onClick={() => createBlankWordDocx()} className='svg__iconbox svg__icon--docx hreflink' title='Word'></span>
                                         </div>
+                                        <div className={createNewDocType == 'xlsx' ? 'selected' : ''}>
+                                            <span onClick={() => createBlankExcelXlsx()} className='svg__iconbox svg__icon--xlsx hreflink' title='Excel'></span>
+                                        </div>
+                                        <div className={createNewDocType == 'pptx' ? 'selected' : ''}>
+                                            <span onClick={() => createBlankPowerPointPptx()} className='svg__iconbox svg__icon--ppt hreflink' title='Presentation'></span>
+                                        </div>
+                                    </div>
+                                    <div className="col-sm-12 mt-2">
+                                        <input type="text" onChange={(e) => { setRenamedFileName(e.target.value) }} value={renamedFileName} placeholder='Enter File Name' className='full-width' />
+                                    </div>
+                                </div>
+                                <footer className='text-end p-2'>
 
-                                    </Col>
-                                </Col>
+
+                                    <button className="btn btn-primary" disabled={renamedFileName?.length > 0 ? false : true} onClick={() => { CreateNewAndTag() }}>Create</button>
+                                    <button className='btn btn-default ms-1' onClick={() => cancelNewCreateFile()}>Cancel</button>
+                                </footer>
                             </div>
-                            <footer className='text-end p-2'>
-                                <button className="btn btn-primary" onClick={() => cancelConfirmationPopup()}>OK</button>
-                            </footer>
                         </div>
-                    </div>
-                </div> : ''
+                    </div> : ''
             }
-            {remark && <SmartInformation Id={props?.item?.Id}
-                AllListId={props.AllListId}
-                Context={props?.Context}
-                taskTitle={props?.item?.Title}
-                listName={props?.item?.siteType != undefined ? props?.item?.siteType : 'Master Tasks'}
-                showHide={"projectManagement"}
-                setRemark={setRemark}
-                editSmartInfo={editSmartInfo}
-                callback={smartnotecall}
-            />}
+            {
+                ShowConfirmation ?
+                    <div className="modal Anc-Confirmation-modal" >
+                        <div className="modal-dialog modal-mg rounded-0 " style={{ maxWidth: "700px" }}>
+                            <div className="modal-content rounded-0">
+                                <div className="modal-header">
+                                    <h5 className="modal-title">Upload Documents - Confirmation</h5>
+                                    <span onClick={() => cancelConfirmationPopup()}><i className="svg__iconbox svg__icon--cross crossBtn"></i></span>
+                                </div>
+                                <div className="modal-body p-2">
+                                    <Col className='p-1'>
+                                        <Col><span><strong>Folder :</strong> </span><a href={`${rootSiteName}${selectedPath?.displayPath}`} target="_blank" data-interception="off" className='hreflink'> {selectedPath?.displayPath} <span className="svg__iconbox svg__icon--folder ms-1 alignIcon "></span></a></Col>
+                                        <Col className='mb-2'><strong>Metadata-Tag :</strong> <span>{props?.item?.Title}</span></Col>
+
+                                        <Col className='Alltable mt-2'>
+                                            <div>
+                                                <Table className='table table-hover'>
+                                                    <thead className='fixed-Header top-0'>
+                                                        <tr>
+                                                            <th className='pe-1' style={{ width: "5%" }}>&nbsp;</th>
+                                                            <th className='pe-1' style={{ width: "60%" }}>File Name</th>
+                                                            <th className='pe-1' style={{ width: "10%" }}>Uploaded</th>
+                                                            <th className='pe-1' style={{ width: "8%" }}>Tagged</th>
+                                                            <th className='pe-1' style={{ width: "12%" }}>Share Link</th>
+                                                        </tr>
+                                                    </thead>
+                                                    <tbody>
+                                                        <tr>
+                                                            <td><span className={`svg__iconbox svg__icon--${UploadedDocDetails?.docType}`}></span></td>
+                                                            <td><a href={UploadedDocDetails?.link} target="_blank" data-interception="off" className='hreflink'>{UploadedDocDetails?.fileName}</a>{`(${UploadedDocDetails?.size})`}</td>
+                                                            <td>{UploadedDocDetails?.uploaded == true ? <span className='alignIcon  svg__iconbox svg__icon--Completed' style={{ width: "15px" }}></span> : <span className='alignIcon  svg__iconbox svg__icon--cross' ></span>}</td>
+                                                            <td>{UploadedDocDetails?.tagged == true ? <span className='alignIcon  svg__iconbox svg__icon--Completed' style={{ width: "15px" }}></span> : <span className='alignIcon  svg__iconbox svg__icon--cross'></span>}</td>
+                                                            <td>{UploadedDocDetails?.uploaded == true ? <>
+                                                                <span className='me-3 alignIcon  svg__iconbox svg__icon--link hreflink' title='Copy Link' data-bs-toggle="popover" data-bs-content="Link Copied" onClick={() => { navigator.clipboard.writeText(UploadedDocDetails?.link); }}></span>
+                                                                <span className='alignIcon  svg__iconbox svg__icon--mail hreflink' title='Share In Mail' onClick={() => { window.open(`mailto:?&subject=${props?.item?.Title}&body=${UploadedDocDetails?.link}`) }}></span>
+                                                            </> : <></>}</td>
+                                                        </tr>
+                                                    </tbody>
+                                                </Table>
+                                            </div>
+
+                                        </Col>
+                                    </Col>
+                                </div>
+                                <footer className='text-end p-2'>
+                                    <button className="btn btn-primary" onClick={() => cancelConfirmationPopup()}>OK</button>
+                                </footer>
+                            </div>
+                        </div>
+                    </div> : ''
+            }
+            {
+                remark && <SmartInformation Id={props?.item?.Id}
+                    AllListId={props.AllListId}
+                    Context={props?.Context}
+                    taskTitle={props?.item?.Title}
+                    listName={props?.item?.siteType != undefined ? props?.item?.siteType : 'Master Tasks'}
+                    showHide={"projectManagement"}
+                    setRemark={setRemark}
+                    editSmartInfo={editSmartInfo}
+                    callback={smartnotecall}
+                />
+            }
             <Panel type={PanelType.medium}
                 isOpen={TaskTypesPopup}
                 onDismiss={cancelPathFolder}
@@ -1738,13 +1858,67 @@ const AncTool = (props: any) => {
                         return (
                             <>
                                 <label className='label--checkbox d-flex m-1'>
-                                    <input type='checkbox' className='checkbox me-1' defaultChecked={SelectedItem == itm} checked={SelectedItem == itm} onChange={(e) => changeTaskTypeValue(e.target.checked, itm)} /> {itm}
+                                    <input type='checkbox' className='form-check-input me-1' defaultChecked={SelectedItem == itm} checked={SelectedItem == itm} onChange={(e) => changeTaskTypeValue(e.target.checked, itm)} /> {itm}
                                 </label>
                             </>
                         )
                     })}
                 </div>
 
+            </Panel>
+            <Panel type={PanelType.medium}
+                isOpen={OpenDefaultContent}
+                onDismiss={CancelDefaultContentFolder}
+                onRenderHeader={ChooseDefaultContentFolderHeader}
+                onRenderFooter={onRenderDefualtContentFooter}
+                isBlocking={false}>
+                <div>
+                    {selectedPath?.displayPath?.length > 0 ?
+                        // <DefaultFolderContent Context={props.Context} AllListId={props?.AllListId} item={Item} folderPath={selectedPath?.displayPath} />
+                        <div className='panel  mb-2'>
+                            {/* <h3 className='pageTitle'>1. Default Folder Content  <hr></hr></h3> */}
+                            <div>
+                                <input id="searchinput" type="search" onChange={(e) => { searchCurrentFolder(e.target.value) }} placeholder="Search..." className="form-control" />
+                                <div className="Alltable mt-2">
+                                    <div className="col">
+                                        {currentFolderFiles?.length > 0 ?
+                                            <div>
+                                                <Table className='mb-0' hover responsive>
+                                                    <thead className='fixed-Header top-0'>
+                                                        <tr>
+                                                            <th className='p-1'>Type</th>
+                                                            <th className='p-1'>Title</th>
+
+                                                        </tr>
+
+                                                    </thead>
+                                                    <tbody>
+                                                        {currentFolderFiles?.map((file: any) => {
+                                                            return (
+                                                                <tr>
+                                                                    <td><span className={`alignIcon  svg__iconbox svg__icon--${file?.docType}`} title={file?.docType}></span></td>
+
+                                                                    <td><a href={file?.docType == 'pdf' ? file?.ServerRelativeUrl : file?.LinkingUri} target="_blank" data-interception="off" className='hreflink'> {file?.Title} </a></td>
+                                                                </tr>
+                                                            )
+                                                        })}
+
+
+                                                    </tbody>
+                                                </Table>
+                                            </div>
+                                            :
+                                            <div className="No_Documents">
+                                                No Documents Available
+                                            </div>
+                                        }
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        : ''
+                    }
+                </div>
             </Panel>
         </>
     )

@@ -142,7 +142,8 @@ const TopNavigation = (dynamicData: any) => {
       }
     });
     console.log(Nodes);
-    setRoot(Nodes);
+    var AllData = Nodes.sort((a:any, b:any) => a.SortOrder - b.SortOrder);
+    setRoot(AllData);
   };
   const getChilds = (item: any, items: any) => {
     item.childs = [];
@@ -540,13 +541,10 @@ const TopNavigation = (dynamicData: any) => {
   return (
     <>
       <div className="row">
-        <div className="col-sm-3 text-primary">
-          <h3 className="heading">Update TopNavigation</h3>
-        </div>
-        <div className="col-sm-9 text-primary">
-          <h6 className="pull-right">
-            <b>
-            <span className="hyperlink me-3" onClick={() => sortItem(root)} >Change Sort Order</span>
+        <h2 className="d-flex justify-content-between align-items-center siteColor  serviceColor_Active p-0">
+          <div className="siteColor headign">Update TopNavigation</div>
+          <div className="text-end fs-6">
+          <span className="hyperlink me-3" onClick={() => sortItem(root)} >Change Sort Order</span>
               <a
                 data-interception="off"
                 target="_blank"
@@ -554,12 +552,13 @@ const TopNavigation = (dynamicData: any) => {
               >
                 Old Update TopNavigation
               </a>
-            </b>
-          </h6>
-        </div>
+          </div>
+          
+          </h2>
+   
       </div>
-      <div className="container mt-2 newupdatenav p-0"  id="TopNavRound">
-        <ul className="top-navigate mt-4 p-0">
+      <div className="container  newupdatenav p-0"  id="TopNavRound">
+        <ul className="top-navigate  p-0">
        
           {root.map((item) => {
             return (
@@ -600,7 +599,7 @@ const TopNavigation = (dynamicData: any) => {
                         <>
                           <li className="pre">
                             {child.image != undefined ? (
-                              <span>
+                              <span className="pe-1">
                                 <img
                                   src={child?.image}
                                   className="workmember"
@@ -638,7 +637,7 @@ const TopNavigation = (dynamicData: any) => {
                                   <>
                                     <li className="pre">
                                       {subchild.image != undefined ? (
-                                        <span>
+                                        <span className="pe-1">
                                           <img
                                             src={subchild?.image}
                                             className="workmember"
@@ -688,7 +687,7 @@ const TopNavigation = (dynamicData: any) => {
                                                 <li className="pre">
                                                   {subchildLast.image !=
                                                   undefined ? (
-                                                    <span>
+                                                    <span className="pe-1">
                                                       <img
                                                         src={
                                                           subchildLast?.image
@@ -705,12 +704,7 @@ const TopNavigation = (dynamicData: any) => {
                                                       />
                                                     </span>
                                                   )}
-                                                  <span>
-                                                    <img
-                                                      src={subchildLast?.image}
-                                                      className="workmember"
-                                                    />
-                                                  </span>
+                                                  
                                                   <span>
                                                     <a data-interception="off" target="_blank"
                                                       href={
@@ -1243,7 +1237,7 @@ const TopNavigation = (dynamicData: any) => {
         <div className="Alltable">
           <DragDropContext onDragEnd={handleDragEnd}>
             <Droppable droppableId="sortableTable">
-              {(provided) => (
+              {(provided:any) => (
                 <table
                   {...provided.droppableProps}
                   ref={provided.innerRef}
@@ -1338,7 +1332,7 @@ const TopNavigation = (dynamicData: any) => {
                                 draggableId={item.Id.toString()}
                                 index={index}
                               >
-                                {(provided) => (
+                                {(provided:any) => (
                                   <tr
                                     ref={provided.innerRef}
                                     {...provided.draggableProps}

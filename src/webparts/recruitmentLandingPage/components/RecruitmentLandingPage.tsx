@@ -1,5 +1,5 @@
 import * as React from 'react';
-// import styles from './RecruitmentLandingPage.module.scss';
+import styles from './RecruitmentLandingPage.module.scss';
 import { IRecruitmentLandingPageProps } from './IRecruitmentLandingPageProps';
 import { escape } from '@microsoft/sp-lodash-subset';
 import LandingPage from './LandingPage';
@@ -7,6 +7,8 @@ import LandingPage from './LandingPage';
 export default class RecruitmentLandingPage extends React.Component<IRecruitmentLandingPageProps, {}> {
   public render(): React.ReactElement<IRecruitmentLandingPageProps> {
     const {   
+      SkillsPortfolioListID,
+      siteUrl
     } = this.props;
 
     return (

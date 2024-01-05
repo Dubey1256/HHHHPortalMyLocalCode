@@ -91,6 +91,7 @@ export default function DocumentSearchPage(Props: any) {
     const EditItem = (itemId: any) => {
         setisEditModalOpen(true)
         setSelectedItem(itemId)
+        
     }
     const deleteData = (dlData: any) => {
         var flag: any = confirm('Do you want to delete this item')

@@ -14,34 +14,33 @@ import GlobalCommanTable from '../../../globalComponents/GroupByReactTableCompon
 import CandidateRating from './CandidateRating';
 import EditPopup from '../../helloSpfx/components/EditPopup';
 
-let allListId: any = {};
 let allSite: any = {
     GMBHSite: false,
     HrSite: false,
     MainSite: true,
 }
 let OldEmployeeProfile: any
-const Profilcandidate = (props: any) => {
+const Profilcandidate = ({props}: any) => {
     const [EmployeeData, setEmployeeData]: any = useState()
     const [localRatings, setLocalRatings] = useState([]);
     const [isEditPopupOpen, setIsEditPopupOpen] = useState(false);
     const [selectedItem, setSelectedItem]: any = useState(null);
     const [TaggedDocuments, setTaggedDocuments] = useState<any[]>([]);
-    const web = new Web('https://hhhhteams.sharepoint.com/sites/HHHH/HR/');
+    let allListId = {
+        // Context: props?.props.Context,
+        // HHHHContactListId: props?.props?.HHHHContactListId,
+        InterviewFeedbackFormListId: '298bc01c-710d-400e-bf48-8604d297c3c6',
+        SkillsPortfolioListID: 'e79dfd6d-18aa-40e2-8d6e-930a37fe54e4'
+
+        // jointSiteUrl: "https://hhhhteams.sharepoint.com/sites/HHHH"
+    }
     useEffect(() => {
         const params = new URLSearchParams(window.location.search);
-        // allListId = {
-        //     Context: props?.props.Context,
-        //     HHHHContactListId: props?.props?.HHHHContactListId,
-        //     InterviewCandidateListId: '298bc01c-710d-400e-bf48-8604d297c3c6',
-        //     siteUrl: props?.props.Context.pageContext.web.absoluteUrl,
 
-        //     jointSiteUrl: "https://hhhhteams.sharepoint.com/sites/HHHH"
-        // }
         EmployeeDetails(params.get('CandidateId'));
         loadDocumentsByCandidate(params.get('CandidateId'));
-
     }, [])
+    const web = new Web('https://hhhhteams.sharepoint.com/sites/HHHH/HR/');
     const EmployeeDetails = async (Id: any) => {
         try {
             await web.lists.getById('298bc01c-710d-400e-bf48-8604d297c3c6')
@@ -103,9 +102,13 @@ const Profilcandidate = (props: any) => {
             return 'No experience';
         }
     };
+
+    const openDocInNewTab = (url: string | URL | undefined) => {
+        window.open(url, '_blank');
+    };
     return (
-        <myContextValue.Provider value={{ ...myContextValue, allSite: allSite, allListId: allListId, loggedInUserName: props.props?.userDisplayName }}>
-            {isEditPopupOpen ? <EditPopup EditPopupClose={EditPopupClose} callbackEdit={callbackEdit} item={selectedItem} ListID={'298bc01c-710d-400e-bf48-8604d297c3c6'} /> : ''}
+        <myContextValue.Provider value={{ ...myContextValue, allSite: allSite, allListId: allListId, loggedInUserName: props?.userDisplayName }}>
+            {isEditPopupOpen ? <EditPopup siteUrl={'https://hhhhteams.sharepoint.com/sites/HHHH/HR/'} EditPopupClose={EditPopupClose} callbackEdit={callbackEdit} item={selectedItem} ListID={'298bc01c-710d-400e-bf48-8604d297c3c6'} skillsList={'e79dfd6d-18aa-40e2-8d6e-930a37fe54e4'}/> : ''}
             <div className='alignCenter border-bottom pb-2'>
                 <div>
                     <img className='user-dp' src={EmployeeData?.Item_x0020_Cover?.Url != undefined ? EmployeeData?.Item_x0020_Cover?.Url : "https://hhhhteams.sharepoint.com/sites/HHHH/GmBH/SiteCollectionImages/ICONS/32/icon_user.jpg"} />
@@ -124,10 +127,10 @@ const Profilcandidate = (props: any) => {
                                 <div className="bg-Fa profileLeftSec col-md-3">Position</div>
                                 <div className='bg-Ff profileRightSec col-md-9'>{EmployeeData?.Positions?.Title} </div>
                             </div>
-                                <div className='profileHead'>
-                                    <div className="bg-Fa profileLeftSec col-md-3">Experience</div>
-                                    <div className='bg-Ff profileRightSec col-md-9'>{formatExperience(EmployeeData?.Experience)} </div>
-                                </div>    
+                            <div className='profileHead'>
+                                <div className="bg-Fa profileLeftSec col-md-3">Experience</div>
+                                <div className='bg-Ff profileRightSec col-md-9'>{formatExperience(EmployeeData?.Experience)} </div>
+                            </div>
                             <div className='profileHead'>
                                 <div className="bg-Fa profileLeftSec col-md-3">Application Date</div>
                                 <div className='bg-Ff profileRightSec col-md-9'>{EmployeeData?.Date != undefined ? moment(EmployeeData?.Date)?.format('DD-MM-YYYY') : ""} </div>
@@ -182,13 +185,13 @@ const Profilcandidate = (props: any) => {
                 <div className='col-sm-12 px-2 mt-3 row'>
                     <div className='siteBdrBottom siteColor sectionHead ps-0 mb-2'>Contact Information</div>
                     <div className="col-sm-6 ps-0 alignCenter mb-3">
-                        <span className="f-20">
+                        <span className="f-20" title='Phone Number'>
                             <FaSquarePhone />
                         </span>
                         <span className="full_widivh ms-2 mt-1">{EmployeeData?.PhoneNumber}</span>
                     </div>
                     <div className="col-sm-6 pe-0 alignCenter mb-3">
-                        <span className="f-20">
+                        <span className="f-20" title='E-mail'>
                             <IoMdMail />
                         </span>
                         <span className="full_widivh ms-2 mt-1">
@@ -218,7 +221,7 @@ const Profilcandidate = (props: any) => {
                                         <span className="svg__iconbox svg__icon--document"></span>
                                     </span>
                                     <span style={{ display: document.File_x0020_Type !== 'aspx' ? 'inline' : 'none' }}>
-                                        <a href={`${document.EncodedAbsUrl}?web=1`} target="_blank" rel="noopener noreferrer">
+                                        <a onClick={() => openDocInNewTab(document.EncodedAbsUrl)}>
                                             <span>
                                                 <span style={{ display: document.FileLeafRef !== 'undefined' ? 'inline' : 'none' }}>
                                                     {document.FileLeafRef}

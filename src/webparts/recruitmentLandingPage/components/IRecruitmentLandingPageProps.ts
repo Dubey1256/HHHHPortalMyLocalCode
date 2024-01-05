@@ -4,4 +4,7 @@ export interface IRecruitmentLandingPageProps {
   environmentMessage: string;
   hasTeamsContext: boolean;
   userDisplayName: string;
+  SkillsPortfolioListID:any,
+  Context: any,
+  siteUrl: any
 }

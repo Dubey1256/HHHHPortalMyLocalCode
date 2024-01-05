@@ -20,6 +20,7 @@ export interface IProjectManagementWebPartProps {
   SmartInformationListID: any;
   DocumentsListID: any;
   TaskTimeSheetListID: any;
+  PortFolioTypeID: any;
   TaskTypeID: any;
   TimeEntry: any;
   SiteCompostion: any;
@@ -49,6 +50,7 @@ export default class ProjectManagementWebPart extends BaseClientSideWebPart<IPro
         DocumentsListID: this.properties.DocumentsListID,
         TaskTimeSheetListID: this.properties.TaskTimeSheetListID,
         TaskTypeID: this.properties.TaskTypeID,
+        PortFolioTypeID:this.properties.PortFolioTypeID,
         TimeEntry: this.properties.TimeEntry,
         SiteCompostion: this.properties.SiteCompostion
       }
@@ -129,7 +131,9 @@ export default class ProjectManagementWebPart extends BaseClientSideWebPart<IPro
                 }),
                 PropertyPaneTextField('TaskTypeID', {
                   label: "TaskTypeID"
-                }), ,
+                }),   PropertyPaneTextField('PortFolioTypeID', {
+                  label: "PortFolioTypeID"
+                }),
                 PropertyPaneTextField('TimeEntry', {
                   label: "TimeEntry"
                 }),

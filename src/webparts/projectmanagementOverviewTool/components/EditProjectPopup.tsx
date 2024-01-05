@@ -1690,8 +1690,6 @@ function EditProjectPopup(item: any) {
                                         : false
                                     }
                                   ></input>
-
-                                  {" "}
                                   In Preparation
                                 </label>
                               </li>
@@ -1711,8 +1709,6 @@ function EditProjectPopup(item: any) {
                                         : false
                                     }
                                   ></input>
-
-                                  {" "}
                                   In Development{" "}
                                 </label>
                               </li>
@@ -2340,7 +2336,7 @@ function EditProjectPopup(item: any) {
                         Go to Profile page
                       </a>
                       ||
-                      <span className="hreflink mx-2 siteColor f-mailicons"><span title="Edit Task" className="svg__iconbox svg__icon--mail"></span>Share This Task</span>
+      
                       <a
                         target="_blank"
                         data-interception="off"
@@ -2370,7 +2366,7 @@ function EditProjectPopup(item: any) {
                     </button>
                     <button
                       type="button"
-                      className="btn btn-default btn-default mx-1 me-4"
+                      className="btn btn-default btn-default mx-1"
                       onClick={setModalIsOpenToFalse}
                     >
                       Cancel

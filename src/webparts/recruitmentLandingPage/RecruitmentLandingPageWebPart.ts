@@ -1,19 +1,17 @@
 import * as React from 'react';
 import * as ReactDom from 'react-dom';
 import { Version } from '@microsoft/sp-core-library';
-import {
-  IPropertyPaneConfiguration,
-  PropertyPaneTextField
-} from '@microsoft/sp-property-pane';
+import {IPropertyPaneConfiguration,PropertyPaneTextField} from '@microsoft/sp-property-pane';
 import { BaseClientSideWebPart } from '@microsoft/sp-webpart-base';
 import { IReadonlyTheme } from '@microsoft/sp-component-base';
-
 import * as strings from 'RecruitmentLandingPageWebPartStrings';
 import RecruitmentLandingPage from './components/RecruitmentLandingPage';
 import { IRecruitmentLandingPageProps } from './components/IRecruitmentLandingPageProps';
 
 export interface IRecruitmentLandingPageWebPartProps {
   description: string;
+  SkillsPortfolioListID:any;
+  siteUrl: any
 }
 
 export default class RecruitmentLandingPageWebPart extends BaseClientSideWebPart<IRecruitmentLandingPageWebPartProps> {
@@ -29,7 +27,10 @@ export default class RecruitmentLandingPageWebPart extends BaseClientSideWebPart
         isDarkTheme: this._isDarkTheme,
         environmentMessage: this._environmentMessage,
         hasTeamsContext: !!this.context.sdks.microsoftTeams,
-        userDisplayName: this.context.pageContext.user.displayName
+        userDisplayName: this.context.pageContext.user.displayName,
+        Context: this.context,
+        SkillsPortfolioListID:"e79dfd6d-18aa-40e2-8d6e-930a37fe54e4",
+        siteUrl: this.context.pageContext.web.absoluteUrl
       }
     );
 
@@ -107,8 +108,8 @@ export default class RecruitmentLandingPageWebPart extends BaseClientSideWebPart
             {
               groupName: strings.BasicGroupName,
               groupFields: [
-                PropertyPaneTextField('InterviewFeedbackFormListId', {
-                  label: "Interview Feedback Form"
+                PropertyPaneTextField('SkillsPortfolioListID', {
+                  label: "SkillsPortfolioListID"
                 })
               ]
             }

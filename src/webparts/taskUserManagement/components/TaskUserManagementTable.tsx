@@ -20,6 +20,7 @@ const TaskUserManagementTable = ({ TaskUsersListData, TaskGroupsListData, baseUr
     const [data, setData] = React.useState([]);
     const [groupData, setGroupData] = useState([]);
     const [title, setTitle] = useState("");
+    const [addTitle, setAddTitle] = useState("");
     const [suffix, setSuffix] = useState("");
     const [selectedApprovalType, setSelectedApprovalType] = useState('');
     const [selectedCompany, setSelectedCompany] = useState('');
@@ -117,7 +118,7 @@ const TaskUserManagementTable = ({ TaskUsersListData, TaskGroupsListData, baseUr
     const addTeamMember = async () => {
         let web = new Web(baseUrl);
         await web.lists.getById(TaskUserListId).items.add({
-            Title: title,
+            Title: addTitle,
             ItemType: "User",
             Company: "Smalsus",
             IsActive: false,
@@ -127,7 +128,9 @@ const TaskUserManagementTable = ({ TaskUsersListData, TaskGroupsListData, baseUr
             const newItem = res.data;
             setData(prevData => [...prevData, newItem]);
             setTitle("");
+            setAddTitle("");
             fetchAPIData()
+            setAutoSuggestData(null)
             setOpenPopup(false);
         })
     }
@@ -135,7 +138,7 @@ const TaskUserManagementTable = ({ TaskUsersListData, TaskGroupsListData, baseUr
     const addNewGroup = async () => {
         let web = new Web(baseUrl);
         await web.lists.getById(TaskUserListId).items.add({
-            Title: title,
+            Title: addTitle,
             Suffix: suffix,
             SortOrder: sortOrder,
             ItemType: "Group"
@@ -143,7 +146,7 @@ const TaskUserManagementTable = ({ TaskUsersListData, TaskGroupsListData, baseUr
             console.log(res);
             const newItem = res.data;
             setGroupData(prevData => [...prevData, newItem]);
-            setTitle("");
+            setAddTitle("");
             setSuffix("");
             setSortOrder("");
             fetchAPIData()
@@ -187,7 +190,9 @@ const TaskUserManagementTable = ({ TaskUsersListData, TaskGroupsListData, baseUr
                 ApproverId: Array.isArray(approver) && approver.every(item => typeof item === 'number' && item != null)
                     ? { "results": approver } : (approver.length > 0 && approver[0] != null && approver[0].AssingedToUser?.Id != null) ? { "results": [approver[0].AssingedToUser.Id] } : { "results": [] },
                 UserGroupId: userGroup ? parseInt(userGroup) : memberToUpdate?.UserGroup?.Id,
-                Item_x0020_Cover: { "__metadata": { type: "SP.FieldUrlValue" }, Description: "Description", Url: imageUrl?.Item_x002d_Image != undefined ? imageUrl?.Item_x002d_Image?.Url : (imageUrl?.Item_x0020_Cover != undefined ? imageUrl?.Item_x0020_Cover?.Url : null) },
+                // Item_x0020_Cover: { "__metadata": { type: "SP.FieldUrlValue" }, Description: "Description", Url: imageUrl?.Item_x002d_Image != undefined ? imageUrl?.Item_x002d_Image?.Url : (imageUrl?.Item_x0020_Cover != undefined ? imageUrl?.Item_x0020_Cover?.Url : null) },
+                // Item_x0020_Cover: { "__metadata": { type: "SP.FieldUrlValue" }, Description: "Description", Url: imageUrl?.Item_x0020_Cover != undefined ? imageUrl?.Item_x0020_Cover?.Url : memberToUpdate.Item_x0020_Cover.Url},
+                Item_x0020_Cover: { "__metadata": { type: "SP.FieldUrlValue" }, Description: "Description", Url: imageUrl?.Item_x002d_Image?.Url || imageUrl?.Item_x0020_Cover?.Url || (memberToUpdate?.Item_x0020_Cover?.Url || null)},
                 CategoriesItemsJson: JSON.stringify(selectedCategories),
             };
 
@@ -267,7 +272,7 @@ const TaskUserManagementTable = ({ TaskUsersListData, TaskGroupsListData, baseUr
                         alt="User"
                         style={{ marginRight: '10px', width: '32px', height: '32px' }}
                     />
-                    <span>{row.original.Title}</span>
+                    <span>{`${row.original.Title} (${row.original.Suffix})`}</span>
                 </div>
             ),
             sortDescFirst: false
@@ -290,6 +295,9 @@ const TaskUserManagementTable = ({ TaskUsersListData, TaskGroupsListData, baseUr
             header: "",
             id: "SortOrder",
             placeholder: "SortOrder",
+            filterFn: (row: any, columnId: any, filterValue: any) => {
+                return row?.original?.SortOrder == filterValue
+            },
             size: 42,
         },
         {
@@ -348,7 +356,10 @@ const TaskUserManagementTable = ({ TaskUsersListData, TaskGroupsListData, baseUr
             {
                 accessorKey: "SortOrder",
                 header: "",
-                placeholder: "Sort Order"
+                placeholder: "SortOrder",
+                filterFn: (row: any, columnId: any, filterValue: any) => {
+                    return row?.original?.SortOrder == filterValue
+                },
             },
             {
                 accessorKey: "TaskId",
@@ -546,6 +557,12 @@ const TaskUserManagementTable = ({ TaskUsersListData, TaskGroupsListData, baseUr
         );
     };
 
+    const cancelAdd = () => {
+        setAddTitle("")
+        setAutoSuggestData(null)
+        setOpenPopup(false)
+    }
+
     // JSX Code starts here
 
     return (
@@ -594,15 +611,16 @@ const TaskUserManagementTable = ({ TaskUsersListData, TaskGroupsListData, baseUr
             <Panel
                 onRenderHeader={onRenderCustomHeaderAddUser}
                 isOpen={openPopup}
-                onDismiss={() => setOpenPopup(false)}
+                onDismiss={cancelAdd}
                 isFooterAtBottom={true}
                 isBlocking={!openPopup}
             >
                 <div className="modal-body">
                     <div className='input-group'>
                         <label className='form-label full-width'>User Name: </label>
-                        <input className='form-control' type="text" placeholder='Enter Title' value={title} onChange={(e: any) => { setTitle(e.target.value); autoSuggestionsForTitle(e) }} />
-                        {autoSuggestData?.length > 0 ? (
+                        <input className='form-control' type="text" placeholder='Enter Title' value={addTitle} onChange={(e: any) => { setAddTitle(e.target.value); autoSuggestionsForTitle(e) }} />
+                    </div>
+                    {autoSuggestData?.length > 0 ? (
                             <div>
                                 <ul className="list-group">
                                     {autoSuggestData?.map((Item: any) => {
@@ -619,13 +637,12 @@ const TaskUserManagementTable = ({ TaskUsersListData, TaskGroupsListData, baseUr
                                 </ul>
                             </div>
                         ) : null}
-                    </div>
                 </div>
 
                 {/* <input className='form-control' type="text" value={title} onChange={(e: any) => setTitle(e.target.value)} /> */}
                 <footer className='modal-footer mt-2'>
                     <button type='button' className='btn me-2 btn-primary' onClick={() => addTeamMember()}>Save</button>
-                    <button type='button' className='btn btn-default' onClick={() => setOpenPopup(false)}>Cancel</button>
+                    <button type='button' className='btn btn-default' onClick={cancelAdd}>Cancel</button>
                 </footer>
 
             </Panel>
@@ -978,7 +995,7 @@ const TaskUserManagementTable = ({ TaskUsersListData, TaskGroupsListData, baseUr
                 <Modal.Header closeButton>
                     <Modal.Title className='subheading'>Warning</Modal.Title>
                 </Modal.Header>
-                <Modal.Body className='text-center p-2'>Are you sure you want to delete this row?</Modal.Body>
+                <Modal.Body className='text-center p-2'>Are you sure you want to delete this?</Modal.Body>
                 <Modal.Footer>
                     <button type='button' onClick={() => setShowConfirmationModal(false)} className='btn me-2 btn-primary'>
                         Cancel

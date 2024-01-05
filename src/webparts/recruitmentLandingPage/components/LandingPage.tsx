@@ -1,68 +1,38 @@
-/* eslint-disable @typescript-eslint/no-use-before-define */
-/* eslint-disable @typescript-eslint/explicit-function-return-type */
-/* eslint-disable @typescript-eslint/no-explicit-any */
-/* eslint-disable @typescript-eslint/no-unused-vars */
-import { Panel, PrimaryButton, TextField, Dropdown, PanelType, IconButton } from 'office-ui-fabric-react';
+import { Panel, PanelType } from 'office-ui-fabric-react';
 import * as React from 'react';
+import Moment from "moment";
 import Tooltip from '../../../globalComponents/Tooltip';
-import { Item, sp, Web } from 'sp-pnp-js';
-import {
-    Column,
-    Table,
-    ExpandedState,
-    useReactTable,
-    getCoreRowModel,
-    getFilteredRowModel,
-    getExpandedRowModel,
-    ColumnDef,
-    flexRender,
-    getSortedRowModel,
-    SortingState, ColumnFiltersState, Row,
-} from "@tanstack/react-table";
+import { Web } from 'sp-pnp-js';
+import {ColumnDef, Row} from "@tanstack/react-table";
 import GlobalCommanTable from '../../../globalComponents/GroupByReactTableComponents/GlobalCommanTable';
 import { useEffect, useState } from 'react';
-import HtmlEditorCard from '../../helloSpfx/components/FloraCommentBox';
-let portfiloData: any[] = [];
-const HRweb = new Web('https://hhhhteams.sharepoint.com/sites/HHHH/HR');
+import AddMorePosition from '../../helloSpfx/components/AddMorePosition';
+import EditPosition from '../../helloSpfx/components/EditPosition';
 
 
-const LandingPage = (props: any) => {
-    useEffect(() => {
-        getListData();
-    }, []);
-    interface EdittableItem {
-        [x: string]: any;
-        Id: number;
-        Title: string;
-        PositionDescription: string;
-        ImpSkills: ImpSkills[];
-    }
-    interface ImpSkills {
-        SkillTitle: string;
-    }
-    const [positionTitle, setpositionTitle] = useState('');
-    const [jobDescription, setjobDescription] = useState('');
+const LandingPage = (props: any) => { 
     const [isAddPositionPopup, setisAddPositionPopup] = useState(false);
     const [isaddOnlySkill, setisaddOnlySkill] = useState(false);
     const [isEditPopup, setisEditPopup] = useState(false);
-    const [skill, setSkill] = useState('');
     const [SkillOn, setSkillOn] = useState('');
-    const [SkillOnEdit, setSkillOnEdit] = useState('');
-    const [skills, setSkills]: any = useState([]);
     const [portfiloData, setportfiloData]: any = useState([]);
     const [skillsOnly, setskillsOnly]: any = useState([]);
-    const [skillsOnlyAr, setskillsOnlyAr]: any = useState([]);
     const [SkillToUpdate, setSkillToUpdate]: any = useState([]);
     const [updatePositionId, setupdatePositionId]: any = useState();
     const [edittableItem, setEdittableItem]: any = useState(null)
-    const AddEditPositionClose = () => {
-        props.AddEditPositionCLose();
-    }
-    const callBackData = React.useCallback((elem: any, getSelectedRowModel: any, ShowingData: any) => {
-        console.log(elem)
-    }, []);
+    
+    useEffect(() => {
+        getListData();
+    }, []);   
+    let allListID = {
+        SkillsPortfolioListID: props?.props?.SkillsPortfolioListID,
+        siteUrl: props?.props?.siteUrl
+    }   
+
+    const HRweb = new Web(allListID?.siteUrl)
     const getListData = () => {
-        HRweb.lists.getById('e79dfd6d-18aa-40e2-8d6e-930a37fe54e4').items.getAll().then((response: any) => {
+        HRweb.lists.getById(allListID?.SkillsPortfolioListID).items.select('Id', 'Title', 'PositionTitle', 'PositionDescription', 'JobSkills', 'Created', 'Modified', 'Author/Id', 'Author/Title', 'Editor/Id', 'Editor/Title')
+            .expand('Author', 'Editor').getAll().then((response: any) => { 
             const updatedData = response.map((itm: { JobSkills: string | undefined; ImpSkills?: { itemParentId: any; }[]; Id: any; }) => {
                 if (itm.JobSkills !== undefined && itm.JobSkills !== '') {
                     const impSkills = JSON.parse(itm.JobSkills).map((skill: { itemParentId: any; }) => ({
@@ -84,8 +54,8 @@ const LandingPage = (props: any) => {
     const delPosition = (itm: any) => {
         const confirmDelete = window.confirm("Are you sure you want to delete this item?");
         if (confirmDelete) {
-            HRweb.lists
-                .getById('E79DFD6D-18AA-40E2-8D6E-930A37FE54E4')
+            
+            HRweb.lists.getById(allListID?.SkillsPortfolioListID)
                 .items.getById(itm.Id).recycle().then(() => {
                     let indexToRemove = -1;
                     for (let i = 0; i < portfiloData.length; i++) {
@@ -105,6 +75,12 @@ const LandingPage = (props: any) => {
                 })
         }
     }
+    const AddEditPositionClose = () => {
+        props.AddEditPositionCLose();
+    }
+    const callBackData = React.useCallback((elem: any, getSelectedRowModel: any, ShowingData: any) => {
+        console.log(elem)
+    }, []);
     const stripHtmlTags = (html: string) => {
         const doc = new DOMParser().parseFromString(html, 'text/html');
         return doc.body.textContent || "";
@@ -128,7 +104,7 @@ const LandingPage = (props: any) => {
                         title={row?.original?.Title}
                         data-interception="off"
                         target="_blank"
-                        href={`https://hhhhteams.sharepoint.com/sites/HHHH/HR/SitePages/RecruitmentTool.aspx?PositionId=${row?.original?.Id}`}
+                        href={`${props?.props?.Context?.pageContext?.web?.absoluteUrl}/SitePages/RecruitmentTool.aspx?PositionId=${row?.original?.Id}`}
                     >
                         {row?.original?.Title}
                     </a>
@@ -164,14 +140,9 @@ const LandingPage = (props: any) => {
             {
                 accessorFn: (row) => row?.PositionDescription,
                 cell: ({ row, getValue }) => (
-                    <span className="columnFixedTitle">
-                        <span
-                            className="text-content"
-                            title={stripHtmlTags(row.original.PositionDescription)}
-                        >
-                            <div dangerouslySetInnerHTML={{ __html: row.original.PositionDescription ? stripHtmlTags(row.original.PositionDescription) : '' }} />
-                        </span>
-                    </span>
+                    <div className="columnFixedTitle">
+                        <div className="text-content" title={stripHtmlTags(row.original.PositionDescription)} dangerouslySetInnerHTML={{ __html: row.original.PositionDescription ? stripHtmlTags(row.original.PositionDescription) : '' }} />
+                    </div>
 
                 ),
                 id: "PositionDescription",
@@ -180,7 +151,6 @@ const LandingPage = (props: any) => {
                 header: "",
                 size: 500
             },
-            //{ accessorKey: "PositionDescription", placeholder: "Position Description", header: "", },
             {
                 cell: ({ row }) => (
                     <div className='alignCenter'>
@@ -223,113 +193,25 @@ const LandingPage = (props: any) => {
     const editPositionClose = () => {
         setisEditPopup(false)
     };
-    const handleTitleChange = (e: any) => {
-        setpositionTitle(e.target.value);
-    };
-    const handleDescriptionChange = (e: any) => {
-        setjobDescription(e.target.value);
-    };
-    const handleSkillChange = (event: { target: { value: React.SetStateAction<string>; }; }) => {
-
-        setSkill(event.target.value);
-    };
-    const handleSkillChangeOnly = (event: { target: { value: React.SetStateAction<string>; }; }) => {
+        const handleSkillChangeOnly = (event: { target: { value: React.SetStateAction<string>; }; }) => {
         setSkillOn(event.target.value);
     };
-    const handleSkillChangeEdit = (event: { target: { value: React.SetStateAction<string>; }; }) => {
-        setSkillOnEdit(event.target.value);
-    };
-
-    const addSkill = () => {
-        if (skill && skill.trim() !== '') {
-            setSkills([...skills, skill]);
-            setSkill('');
-        }
-    };
+    
     const addSkillsOnly = () => {
         if (SkillOn && SkillOn.trim() !== '') {
             setskillsOnly([...skillsOnly, SkillOn]);
             setSkillOn('');
         }
     };
-    const addSkillsOnlyEdit = () => {
-        if (SkillOnEdit) {
-            const obj = {
-                SkillTitle: SkillOnEdit,
-                current: 0,
-                max: 10,
-                Comment: '',
-                PositionDescription: '',
-            };
-            edittableItem.ImpSkills.push(obj);
-        }
-        setSkillOnEdit('');
-        setEdittableItem(edittableItem);
-    };
-
-    const removeSkill = (index: number) => {
-        const updatedSkills = [...skills];
-        updatedSkills.splice(index, 1);
-        setSkills(updatedSkills);
-    };
+    
     const removeSmartSkillEdit = (skill: any) => {
         setskillsOnly((prevSkillsOnly: any[]) => prevSkillsOnly.filter(item => item !== skill));
     };
-    const removeSmartSkillEditPop = (skilledit: { SkillTitle: any }) => {
-        setEdittableItem((prevEdittableItem: { ImpSkills: any[]; }) => {
-            const updatedImpSkills = prevEdittableItem.ImpSkills.filter(
-                (item: { SkillTitle: any }) => item.SkillTitle !== skilledit.SkillTitle
-            );
-            const updatedEdittableItem = {
-                ...prevEdittableItem,
-                ImpSkills: updatedImpSkills,
-            };
-
-            return updatedEdittableItem;
-        });
-    };
-
-    const AddSkill = (itm: Row<any>) => {
-        setisaddOnlySkill(true)
-        setSkillToUpdate(itm.original.ImpSkills)
-        setupdatePositionId(itm.original.ID)
-    };
+    
     const addOnlySkillClose = () => {
         setisaddOnlySkill(false)
     };
 
-
-    const updateChoiceField = async () => {
-        const skillsCopy = [];
-        if (skills && skills.length > 0) {
-            for (const skill of skills) {
-                if (skill && skill !== '') {
-                    const obj = {
-                        SkillTitle: skill,
-                        current: 0,
-                        max: 10,
-                        Comment: '',
-                        PositionDescription: jobDescription,
-                    };
-
-                    skillsCopy.push(obj);
-                }
-            }
-        }
-        try {
-            await HRweb.lists.getById('E79DFD6D-18AA-40E2-8D6E-930A37FE54E4').items.add({
-                Title: positionTitle,
-                PositionDescription: jobDescription,
-                JobSkills: JSON.stringify(skillsCopy),
-            });
-            alert("Position added successfully")
-            setisAddPositionPopup(false);
-            getListData();
-        } catch (error) {
-            console.error(error);
-            setisAddPositionPopup(false)
-        }
-    };
     const updateSkillField = async () => {
         if (skillsOnly && skillsOnly.length > 0) {
             skillsOnly.forEach((itm: string) => {
@@ -351,7 +233,8 @@ const LandingPage = (props: any) => {
             "JobSkills": JSON.stringify(SkillToUpdate)
         }
         try {
-            await HRweb.lists.getById('E79DFD6D-18AA-40E2-8D6E-930A37FE54E4').items.getById(updatePositionId).update(postData);
+            
+            await HRweb.lists.getById(allListID?.SkillsPortfolioListID).items.getById(updatePositionId).update(postData);
         } catch (error) {
             console.error(error);
         } finally {
@@ -359,75 +242,18 @@ const LandingPage = (props: any) => {
             setisaddOnlySkill(false);
         }
 
-    };
-    const updatePosition = async () => {
-        const postData = {
-            "JobSkills": JSON.stringify(edittableItem.ImpSkills),
-            "Title": edittableItem.Title,
-            "PositionDescription": edittableItem.PositionDescription,
-        }
-        try {
-            await HRweb.lists.getById('E79DFD6D-18AA-40E2-8D6E-930A37FE54E4').items.getById(edittableItem.Id).update(postData);
-        } catch (error) {
-            console.error(error);
-        } finally {
-            setskillsOnlyAr([]);
-            setisEditPopup(false);
-            getListData();
-        }
-
-    };
-    const onRenderCustomHeaderMain1 = () => {
-        return (
-            <>
-                <div className='subheading'>
-                    Add/Edit Positions
-                </div>
-                <Tooltip ComponentId='5642' />
-            </>
-        );
-    };
-    const onRenderCustomHeaderMain2 = () => {
-        return (
-            <>
-                <div className='subheading'>
-                    Add New Position
-                </div>
-                <Tooltip ComponentId='4430' />
-            </>
-        );
-    };
+        };
     const onRenderCustomHeaderMain5 = () => {
         return (
             <>
                 <div className='subheading'>
                     Add New Skills
                 </div>
-                <Tooltip ComponentId='4430' />
+                <Tooltip ComponentId='7928' />
             </>
         );
     };
-    const onRenderCustomHeaderMain6 = () => {
-        return (
-            <>
-                <div className='subheading'>
-                    Edit Position {edittableItem ? edittableItem.Title : ''}
-                </div>
-
-            </>
-        );
-    };
-    const HtmlEditorCallBackAdd = React.useCallback((EditorData: any) => {
-        if (EditorData.length > 8) {
-            setjobDescription(EditorData);
-        }
-    }, [])
-    const HtmlEditorCallBackEdit = React.useCallback((EditorDataEdit: any) => {
-        if (EditorDataEdit.length > 8) {
-            setEdittableItem({ ...edittableItem, PositionDescription: EditorDataEdit });
-        }
-    }, [edittableItem]);
-
+    
     return (
         <>
             <h2 className='heading'>Recruitment-LandingPage</h2>
@@ -444,75 +270,12 @@ const LandingPage = (props: any) => {
                     </div>
                     {portfiloData && (
                         <div className="Alltable">
-                            <GlobalCommanTable columns={columns} data={portfiloData} showHeader={true} callBackData={callBackData} />
+                            <GlobalCommanTable columns={columns} fixedWidth={true} data={portfiloData} showHeader={true} callBackData={callBackData} />
                         </div>
                     )}
                 </div>
             </div>
-            <Panel
-                onRenderHeader={onRenderCustomHeaderMain2}
-                isOpen={isAddPositionPopup}
-                onDismiss={AddMorePositionClose}
-                isBlocking={false}
-                type={PanelType.medium}
-                closeButtonAriaLabel="Close"
-            >
-                <div className="modal-body">
-                    <div className="input-group">
-                        <div className="full-width">Position Title</div>
-                        <input className="form-control" value={positionTitle}
-                            onChange={handleTitleChange} type="text" placeholder="New Position Title" />
-                    </div>
-                    <div className="input-group my-3">
-                        <div className="full-width">Job Description</div>
-                        <HtmlEditorCard
-                            editorValue={jobDescription !== undefined && jobDescription !== null ? jobDescription : ''}
-                            HtmlEditorStateChange={HtmlEditorCallBackAdd}
-                        />
-                        {/* <textarea
-                            className="form-control"
-                            value={jobDescription}
-                            onChange={handleDescriptionChange}
-                            rows={3} // Set the number of rows as needed
-                        /> */}
-                    </div>
-                    <div className="input-group mb-3">
-                        <label className="full_width">Skills Required</label>
-                        <input
-                            className="form-control"
-                            placeholder="Skill"
-                            type="text"
-                            value={skill}
-                            onChange={handleSkillChange}
-                        />
-                        <div className='col-12 mt-1'>
-                            <span
-                                id="plusskill"
-                                style={{ display: skill === undefined || skill === '' ? 'none' : 'inline-block' }}
-                                className="svg__iconbox hreflink svg__icon--Plus"
-                                onClick={addSkill}
-                            >
-                            </span></div>
-                        <div className="col-md-12 pad0">
-                            {skills.length > 0 &&
-                                skills.map((item: any, index: number) => (
-                                    <span key={index} onClick={() => removeSkill(index)} className="block me-1">
-                                        {item}
-                                        <span className="mx-auto ms-2 svg__iconbox svg__icon--cross light" />
-                                    </span>
-                                ))}
-                        </div>
-                    </div>
-                </div>
-
-                <footer className="py-2 clearfix">
-                    <div className="float-end text-end">
-                        <button onClick={updateChoiceField} type='button' className='btn btn-primary'>Save</button>
-                        <button onClick={AddMorePositionClose} type='button' className='btn btn-default ms-1'>Cancel</button>
-                    </div>
-                </footer>
-            </Panel>
-            <Panel
+                        <Panel
                 onRenderHeader={onRenderCustomHeaderMain5}
                 isOpen={isaddOnlySkill}
                 onDismiss={addOnlySkillClose}
@@ -557,63 +320,8 @@ const LandingPage = (props: any) => {
                 </footer>
 
             </Panel>
-            <Panel
-                onRenderHeader={onRenderCustomHeaderMain6}
-                isOpen={isEditPopup}
-                onDismiss={editPositionClose}
-                isBlocking={false}
-                type={PanelType.medium}
-                closeButtonAriaLabel="Close"
-            >
-                <div className="panel panel-default">
-                    <div className="modal-body">
-                        <div className="input-group">
-                            <div className="full-width">Position Title</div>
-                            <input className="form-control" value={edittableItem ? edittableItem.Title : ''} onChange={(e) => setEdittableItem({ ...edittableItem, Title: e.target.value })}
-                                type="text" placeholder="New Position Title" />
-                        </div>
-                        <div className="input-group my-3">
-                            <div className="full-width">Job Description</div>
-                            {edittableItem && (
-                                <HtmlEditorCard
-                                    editorValue={edittableItem.PositionDescription || ''}
-                                    HtmlEditorStateChange={HtmlEditorCallBackEdit}
-                                />
-                            )}
-                        </div>
-                        <div className="input-group">
-                            <label className="full_width">Skills Required</label>
-                            <input
-                                className="form-control"
-                                placeholder="Add Skill"
-                                type="text"
-                                value={SkillOnEdit}
-                                onChange={handleSkillChangeEdit}
-                            />
-                            <div id="plusskill" className='mt-1 ms-1'>
-                                <span
-                                    onClick={addSkillsOnlyEdit} className='svg__iconbox svg__icon--Plus'></span>
-                            </div>
-                            <div className="col-md-12 pad0">
-                                {edittableItem?.ImpSkills.map.length > 0 &&
-                                    edittableItem?.ImpSkills.map((skillI: any, index: any) => (
-                                        <span key={index} onClick={() => removeSmartSkillEditPop(skillI)} className="block me-1">
-                                            {skillI.SkillTitle}
-                                            <span className="mx-auto ms-2 svg__iconbox svg__icon--cross light" />
-                                        </span>
-                                    ))}
-                            </div>
-                        </div>
-                    </div>
-                </div>
-
-                <footer className="py-2 clearfix">
-                    <div className="float-end text-end">
-                        <button onClick={updatePosition} type='button' className='btn btn-primary'>Save</button>
-                        <button onClick={editPositionClose} type='button' className='btn btn-default ms-1'>Cancel</button>
-                    </div>
-                </footer>
-            </Panel>
+            {isAddPositionPopup && <AddMorePosition siteUrl={allListID?.siteUrl} skillsList={allListID?.SkillsPortfolioListID} openPopup={isAddPositionPopup} closePopup={AddMorePositionClose} callbackAdd={getListData}/>}
+            {isEditPopup && <EditPosition siteUrl={allListID?.siteUrl} skillsList={allListID?.SkillsPortfolioListID} edittableItem={edittableItem} openPopup={isEditPopup} closePopup={editPositionClose} callbackEdit={getListData}/>}
         </>
     );
 };

@@ -147,7 +147,7 @@ const EmployeProfile = (props: any) => {
     let isExists = false;
     for (let index = 0; index < array.length; index++) {
       let item = array[index];
-      if (item.Id == items.Id && item?.siteType.toLowerCase() == items?.siteType.toLowerCase()) {
+      if (item.Id == items.Id && items?.siteType != undefined && items?.siteType != '' && item?.siteType != undefined && item?.siteType != '' && item?.siteType.toLowerCase() == items?.siteType.toLowerCase()) {
         isExists = true;
         break;
       }
@@ -168,7 +168,7 @@ const EmployeProfile = (props: any) => {
   const getAllData = async (ConfigItem: any) => {
     const web = new Web(ConfigItem.siteUrl);
     await web.lists.getById(ConfigItem.listId).items.select("Title", "PercentComplete", "TaskID", "Categories", "FeedBack", "Portfolio/Id", "Portfolio/ItemType", "Body", "Portfolio/PortfolioStructureID", "Portfolio/Title", "TaskType/Id", "TaskType/Title", "TaskType/Level", "workingThisWeek", 'TaskID', "IsTodaysTask", "Priority", "PriorityRank", "DueDate", "Created", "Modified", "Team_x0020_Members/Id", "Team_x0020_Members/Title", "ID", "Responsible_x0020_Team/Id", "Responsible_x0020_Team/Title", "Editor/Title", "Editor/Id", "Author/Title", "Author/Id", "AssignedTo/Id", "AssignedTo/Title", "TaskCategories/Id", "TaskCategories/Title", "ParentTask/Id", "ParentTask/Title", "ParentTask/TaskID")
-      .expand("Team_x0020_Members", "Portfolio", "TaskType", "Author", "Editor", "Responsible_x0020_Team", "AssignedTo", "TaskCategories", "ParentTask").top(5000).getAll().then((data: any) => {
+      .expand("Team_x0020_Members", "Portfolio", "TaskType", "Author", "Editor", "Responsible_x0020_Team", "AssignedTo", "TaskCategories", "ParentTask").getAll().then((data: any) => {
         count++;
         data?.map((items: any) => {
           items.descriptionsSearch = '';
@@ -212,8 +212,8 @@ const EmployeProfile = (props: any) => {
               allData.push(items);
           });
           if (items?.TaskCategories != undefined && items?.TaskCategories.length > 0) {
+            items.Categories = '';
             items?.TaskCategories.forEach((category: any, index: any) => {
-              items.Categories = '';
               if (index == 0)
                 items.Categories += category.Title;
               else
@@ -224,20 +224,22 @@ const EmployeProfile = (props: any) => {
             });
           }
         })
+
         if (count == dataLength.length) {
           var today = new Date();
           var time = today.getHours() + ":" + today.getMinutes();
           var dateTime = time;
           setCurrentTime(dateTime)
-          const seen = new Set();
-          const array: any = allData.filter((item: any) => {
-            const keyValue: any = item['Id'];
-            if (!seen.has(keyValue)) {
-              seen.add(keyValue);
-              return true;
-            }
-            return false;
-          });
+          const array: any = allData
+          // const seen = new Set();
+          // const array: any = allData.filter((item: any) => {
+          //   const keyValue: any = item['Id'];
+          //   if (!seen.has(keyValue)) {
+          //     seen.add(keyValue);
+          //     return true;
+          //   }
+          //   return false;
+          // });
           let DraftArray: any[] = [];
           let TodaysTask: any = [];
           let BottleneckTask: any = [];

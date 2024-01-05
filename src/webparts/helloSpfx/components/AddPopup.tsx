@@ -1,20 +1,17 @@
-/* eslint-disable @typescript-eslint/no-floating-promises */
-/* eslint-disable @typescript-eslint/no-empty-function */
-/* eslint-disable @typescript-eslint/no-use-before-define */
-/* eslint-disable @typescript-eslint/explicit-function-return-type */
-/* eslint-disable @typescript-eslint/no-explicit-any */
-/* eslint-disable @typescript-eslint/no-unused-vars */
 import { Panel, Dropdown, PanelType, IDropdownOption } from 'office-ui-fabric-react';
 import * as React from 'react';
+import { PeoplePicker, PrincipalType } from '@pnp/spfx-controls-react/lib/PeoplePicker';
 import { useCallback, useState } from 'react';
 import { Item, sp, Web } from 'sp-pnp-js';
 import Tooltip from '../../../globalComponents/Tooltip';
-import styles from './HelloSpfx.module.scss';
+// import styles from './HelloSpfx.module.scss';
 import { Card, CardBody, CardFooter, CardHeader, CardTitle, Col, Pagination, PaginationItem, PaginationLink, Progress, Row, Table } from "reactstrap";
 import HtmlEditorCard from './FloraCommentBox';
 import MsgReader from "@kenjiuno/msgreader"
 import { useEffect } from 'react';
 import { SiteUser } from 'sp-pnp-js/lib/sharepoint/siteusers';
+import AddMorePosition from './AddMorePosition';
+import { FaPlus } from 'react-icons/fa';
 let showTextInput: boolean = false;
 let PositionChoices: any[] = [];
 let siteName: any = '';
@@ -25,13 +22,13 @@ let rootSiteName = '';
 let TaskTypes: any = [];
 let generatedLocalPath = '';
 let backupExistingFiles: any = [];
-const HRweb = new Web('https://hhhhteams.sharepoint.com/sites/HHHH/HR');
+
 
 const AddPopup = (props: any) => {
     useEffect(() => {
         const fetchData = async () => {
             try {
-                await Promise.all([getPeople(), getchoicecolumns()]);
+                await Promise.all([getchoicecolumns()]);
             } catch (error) {
                 console.error(error);
             } finally {
@@ -39,6 +36,7 @@ const AddPopup = (props: any) => {
             }
         };
         fetchData();
+        // setDefaultDate(getCurrentDate())
     }, []);
     type FileSection = {
         id: number;
@@ -47,39 +45,29 @@ const AddPopup = (props: any) => {
     };
     const [fileSections, setFileSections]: any = useState([{ id: 1, selectedFiles: [], renamedFileName: '' }]);
     const [name, setName] = useState('');
+    const [isSaveDisabled, setIsSaveDisabled] = useState(true);
     const [exp, setExp] = useState({ years: '', months: '' });
     const [email, setEmail] = useState('');
+    const [emailValidation, setEmailValidation] = useState({ isValid: true, errorMessage: '' });
     const [phone, setPhone] = useState('');
-    const [selectedInterviwer, setSelectedInterviwer] = useState('');
+    const [selectedInterviwer, setSelectedInterviwer] = React.useState<any[]>([]);
     const [selectedRecAction, setSelectedRecAction] = useState('');
     const [selectedPosition, setSelectedPosition] = useState('');
     const [selectedDate, setselectedDate] = useState('');
     const [motivationText, setMotivationText] = useState('');
     const [OtherChoiceText, setOtherChoiceText] = useState('');
     const [content, setContent] = React.useState<string>('');
+    const [isAddPosititionOpen, setisAddPositionOpen] = React.useState(false);
     const Status = ['New Candidate', 'Under Consideration', 'Interview', 'Negotiation', 'Hired', 'Rejected'];
-
     const [inputText, setInputText] = useState('');
-  
-    const [selectedPath, setSelectedPath] = useState({
-        displayPath: '',
-        completePath: '',
-    }); const [selectedFiles, setSelectedFiles] = useState([]);
+    const [selectedFiles, setSelectedFiles] = useState([]);
     const [SiteUsers, setSiteUsers] = useState([])
     const [defaultDate, setDefaultDate] = useState<string>('');
     const [folderFiles, setfolderFiles]: any = useState([]);
     const [uploadedFile, setuploadedFile]: any = useState({});
-    const [renamedFileName, setRenamedFileName]: any = React.useState('');
-    const [ShowConfirmation, setShowConfirmation]: any = useState(false);
-    const [UploadedDocDetails, setUploadedDocDetails] = useState(null);
-    const [ExistingFiles, setExistingFiles]: any = useState([]);
-    const [AllReadytagged, setAllReadytagged]: any = useState([]);
-    const [createNewDocType, setCreateNewDocType]: any = useState('');
-    const [folderExist, setFolderExist] = useState(false);
     const [showTextInput, setshowTextInput] = useState(false);
     const ActionChoices = ['Invite to Interview', 'Decline', 'Hire'];
     const [updatedPlatformChoices, setupdatedPlatformChoices] = useState<{ name: string; selected: boolean; }[]>([]);
-    const [itemRank, setItemRank] = useState(5);
     const [platformChoices, setPlatformChoices] = useState([
         { name: 'Indeed', selected: false },
         { name: 'Agentur für Arbeit', selected: false },
@@ -97,6 +85,19 @@ const AddPopup = (props: any) => {
     const onClose = () => {
         props.AddPopupClose();
     }
+    const openAddPositionPopup = () => {
+        setisAddPositionOpen(true)
+    }
+    const AddMorePositionClose = () => {
+        setisAddPositionOpen(false)
+    };
+    let allListID = {
+        InterviewFeedbackFormListId: props?.ListID,
+        SkillsPortfolioListID: props?.skillsList,
+        siteUrl: props?.siteUrl
+    }
+
+    const HRweb = new Web(allListID?.siteUrl)
     const addCandidate = async () => {
         let formattedExp = '0.0';
         if (updatedPlatformChoices && updatedPlatformChoices.length > 0) {
@@ -111,7 +112,7 @@ const AddPopup = (props: any) => {
         }
         const selectedPlatforms = JSON.stringify(updatedPlatformChoices);
         try {
-            const candidateItem = await HRweb.lists.getById('298bc01c-710d-400e-bf48-8604d297c3c6').items.add({
+            const candidateItem = await HRweb.lists.getById(allListID?.InterviewFeedbackFormListId).items.add({
                 CandidateName: name,
                 Email: email,
                 PhoneNumber: phone,
@@ -136,44 +137,16 @@ const AddPopup = (props: any) => {
         }
     };
 
-    const getPeople = async () => {
-        try {
-            const titles = ["Prashant Kumar", "Robert Ungethuem", "Stefan Hochhuth (Admin)", "Harshit Chauhan", "Stefan Hochhuth"];
-            const getData = await sp.web.siteUsers.select("ID,Title,LoginName").get();
-
-            setSiteUsers(getData);
-            SiteUsers.forEach((emp: any) => {
-                emp.Email = '';
-                if (emp.LoginName !== undefined && emp.LoginName !== '') {
-                    try {
-                        emp.Email = emp.LoginName.split("/").join().split("|")[2].split("#")[0];
-                    } catch (err) {
-                        console.log(err);
-                    }
-                }
-            });
-
-            const users = SiteUsers.filter(function (user:any) {
-                return titles.indexOf(user.Title) !== -1;
-            });
-            setSiteUsers(users)
-            console.log(SiteUsers);
-          
-        } catch (error) {
-            console.error(error);
-   
-        }
-    };
-    const getCurrentDate = (): string => {
-        const currentDate: any = new Date();
-        const year: any = currentDate.getFullYear();
-        const month: any = (currentDate.getMonth() + 1)?.padStart(2, '0'); // Month is zero-based
-        const day: any = (currentDate.getDate())?.padStart(2, '0');
-        return `${year}-${month}-${day}`;
-    };
+    //     const getCurrentDate = (): string => {
+    //     const currentDate: any = new Date();
+    //     const year: any = currentDate.getFullYear();
+    //     const month: any = (currentDate.getMonth() + 1)?.padStart(2, '0'); // Month is zero-based
+    //     const day: any = (currentDate.getDate())?.padStart(2, '0');
+    //     return `${year}-${month}-${day}`;
+    // };
     const getchoicecolumns = () => {
         const select = `Id,Title,PositionTitle,PositionDescription,JobSkills`;
-        HRweb.lists.getById('E79DFD6D-18AA-40E2-8D6E-930A37FE54E4').items.select(select).get()
+        HRweb.lists.getById(allListID?.SkillsPortfolioListID).items.select(select).get()
             .then(response => {
                 PositionChoices = response;
             })
@@ -233,12 +206,22 @@ const AddPopup = (props: any) => {
     };
 
     const handleNameChange = (e: any) => {
-        setName(e.target.value);
+        const nameValue = e.target.value;
+        setName(nameValue);
+        setIsSaveDisabled(nameValue.trim() === '');
     };
     const handleEmailChange = (e: any) => {
-        setEmail(e.target.value);
-    };
+        const emailValue = e.target.value;
+        const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+        const isValidEmail = emailValue === '' || emailRegex.test(emailValue);
 
+        setEmailValidation({
+            isValid: isValidEmail,
+            errorMessage: isValidEmail ? '' : 'Enter a valid email address',
+        });
+
+        setEmail(emailValue);
+    };
     const handlePhoneChange = (e: any) => {
         setPhone(e.target.value);
     };
@@ -257,13 +240,7 @@ const AddPopup = (props: any) => {
     const handleDateChange = (e: any) => {
         setselectedDate(e.target.value);
     };
-    const handleDropdownInterviewer = (event: React.FormEvent<HTMLDivElement>, item?: IDropdownOption): void => {
-        if (item) {
-            setSelectedInterviwer(item.key as string);
-        } else {
-            setSelectedInterviwer('');
-        }
-    };
+
     const handleOtherChoiceInputChange = (event: React.ChangeEvent<HTMLInputElement>) => {
         setOtherChoiceText(event.target.value);
     };
@@ -390,7 +367,11 @@ const AddPopup = (props: any) => {
             </>
         );
     };
+    const onPeoplePickerChange = (items: any[]) => {
+        setSelectedInterviwer(items[0]?.text);
+    };
     return (
+        <>
         <Panel
             onRenderHeader={onRenderCustomHeaderMains}
             isOpen={true}
@@ -405,7 +386,7 @@ const AddPopup = (props: any) => {
                 <div className="row">
                     <div className="col-sm-3 mb-2">
                         <div className='input-group'>
-                            <label className="form-label full-width">Candidate Name</label>
+                            <label className="form-label full-width">Candidate Name <span className="text-danger">*</span></label>
                             <input
                                 className="form-control"
                                 value={name}
@@ -428,7 +409,7 @@ const AddPopup = (props: any) => {
                     <div className="col-sm-3 mb-2">
                         <div className='input-group'>
                             <label className="form-label full-width">Total Years of Professional Exp</label>
-                            <div className="d-flex">
+                            <div className="d-flex gap-2">
                                 <div className="input-group mb-2">
                                     <input
                                         className="form-control"
@@ -453,14 +434,21 @@ const AddPopup = (props: any) => {
                     <div className="col-sm-3 mb-2">
                         <div className='input-group'>
                             <label className="form-label full-width">Responsible Staff Member</label>
-                            <Dropdown
-                                id="staff" className='w-100 '
-                                placeholder='Select Member'
-                                selectedKey={selectedInterviwer}
-                                onChange={handleDropdownInterviewer}
-                                options={SiteUsers.map((itm:any) => ({ key: itm.Title, text: itm.Title }))}
-                                styles={{ dropdown: { width: '100%' } }}
-                            />
+                            <div className="full-width">
+                                <PeoplePicker
+                                    context={props.context}
+                                    personSelectionLimit={1}
+                                    groupName={''}
+                                    showtooltip={true}
+                                    required={false}
+                                    disabled={false}
+                                    ensureUser={true}
+                                    onChange={onPeoplePickerChange}
+                                    principalTypes={[PrincipalType.User]}
+                                    resolveDelay={1000}
+                                    defaultSelectedUsers={selectedInterviwer}
+                                />
+                            </div>
                         </div>
                     </div>
                     <div className="col-sm-3 mb-2">
@@ -470,7 +458,10 @@ const AddPopup = (props: any) => {
                         </div></div>
                     <div className="col-sm-3 mb-2">
                         <div className='input-group'>
-                            <label className="form-label full-width">Position</label>
+                            <label className="form-label full-width">Position 
+                                <span onClick={openAddPositionPopup} className="svg__iconbox hreflink svg__icon--Plus mini ml-60 f-14 fw-bold"></span><span className='hreflink ml-9 f-14 fw-bold' onClick={openAddPositionPopup}>Add More</span>
+                            </label>
+                            
                             <Dropdown
                                 id="status" className='w-100 '
                                 placeholder='Select Position'
@@ -491,8 +482,16 @@ const AddPopup = (props: any) => {
                     <div className="col-sm-3 mb-2">
                         <div className='input-group'>
                             <label className="form-label full-width">Email</label>
-                            <input className="form-control" value={email}
-                                onChange={handleEmailChange} type="email" placeholder="Enter Email" />
+                            <input
+                                className={`form-control ${emailValidation.isValid ? '' : 'is-invalid'}`}
+                                value={email}
+                                onChange={handleEmailChange}
+                                type="email"
+                                placeholder="Enter Email"
+                            />
+                            {!emailValidation.isValid && (
+                                <div className="invalid-feedback">{emailValidation.errorMessage}</div>
+                            )}
                         </div>
                     </div>
                     <div className="col-sm-3 mb-2">
@@ -526,7 +525,7 @@ const AddPopup = (props: any) => {
                                     </label>
                                 ))}
                                 {showTextInput && (
-                                    <label className="input-group">
+                                    <div className='col-sm-2'><label className="input-group">
                                         <input
                                             className="form-control"
                                             type="text"
@@ -535,6 +534,7 @@ const AddPopup = (props: any) => {
                                             placeholder="Enter any other platform"
                                         />
                                     </label>
+                                    </div>
                                 )}
                             </div>
                         </div>
@@ -563,20 +563,8 @@ const AddPopup = (props: any) => {
                                                 {index > 0 && (
                                                     <span className='svg__iconbox ms-2 svg__icon--trash hreflink' onClick={() => removeFileSection(section.id)}></span>
                                                 )}
-                                                {index === 0 && (
-                                                    <span className='svg__iconbox ms-2 svg__icon--Plus hreflink' onClick={addFileSection}></span>
-                                                )}
                                             </span>
                                         </Col>
-                                        {section.selectedFiles.length > 0 && (
-                                            <Col className='mb-2'>
-                                                <ul>
-                                                    {section.selectedFiles.map((file: any, fileIndex: any) => (
-                                                        <li key={fileIndex}>{file.name}</li>
-                                                    ))}
-                                                </ul>
-                                            </Col>
-                                        )}
                                         <Col className='mb-2'>
                                             <input
                                                 type="text"
@@ -607,13 +595,14 @@ const AddPopup = (props: any) => {
             </div>
             <footer className="bg-f4 fixed-bottom px-4 py-2">
                 <div className="float-end text-end">
-                    <button onClick={addCandidate} type='button' className='btn btn-primary'>Save</button>
+                    <button disabled={isSaveDisabled} onClick={addCandidate} type='button' className='btn btn-primary'>Save</button>
                     <button onClick={onClose} type='button' className='btn btn-default ms-1'>Cancel</button>
                 </div>
             </footer>
 
         </Panel>
+        {isAddPosititionOpen && <AddMorePosition siteUrl={allListID?.siteUrl} skillsList={allListID?.SkillsPortfolioListID} openPopup={isAddPosititionOpen} closePopup={AddMorePositionClose}/>}
+        </>
     );
 };
 export default AddPopup;
-

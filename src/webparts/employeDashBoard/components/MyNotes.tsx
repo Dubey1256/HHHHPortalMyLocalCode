@@ -164,25 +164,23 @@ const MyNotes = (MyNotes: any) => {
             <textarea id="txtUpdateComment" rows={6} className="full-width" value={noteComment} onChange={(e) => handleUpdateComment(e)}  >{noteComment}</textarea>
           </div>
         </div>
-        <footer className='bg-f4 fixed-bottom'>
-          <div className="align-items-center d-flex justify-content-between px-4 py-2">
-            {isEditNoteModalOpen && (<div>
-              <div>
-                Created <span className="font-weight-normal siteColor">  {editData?.Created ? moment(editData?.Created).format("DD/MM/YYYY") : ""}  </span> By <span className="font-weight-normal siteColor">
-                  {editData?.Author?.Title ? editData?.Author?.Title : ''}
-                </span>
-              </div>
-              <div>
-                Last modified <span className="font-weight-normal siteColor"> {editData?.Modified ? moment(editData?.Modified).format("DD/MM/YYYY") : ''}
-                </span> By <span className="font-weight-normal siteColor">
-                  {editData?.Editor?.Title ? editData?.Editor?.Title : ''}
-                </span>
-              </div>
-            </div>)}
-            <div className='footer-right'>
-              <button className="btn btn-primary ms-1" onClick={(e) => AddNoteComment()}>Save</button>
-              <button className='btn btn-default ms-1' onClick={() => CloseNotepopup()}>Cancel</button></div>
-          </div>
+        <footer className='modal-footer mt-2'>
+          {isEditNoteModalOpen && (<div>
+            <div>
+              Created <span className="font-weight-normal siteColor">  {editData?.Created ? moment(editData?.Created).format("DD/MM/YYYY") : ""}  </span> By <span className="font-weight-normal siteColor">
+                {editData?.Author?.Title ? editData?.Author?.Title : ''}
+              </span>
+            </div>
+            <div>
+              Last modified <span className="font-weight-normal siteColor"> {editData?.Modified ? moment(editData?.Modified).format("DD/MM/YYYY") : ''}
+              </span> By <span className="font-weight-normal siteColor">
+                {editData?.Editor?.Title ? editData?.Editor?.Title : ''}
+              </span>
+            </div>
+          </div>)}
+          <div className='footer-right'>
+            <button className="btn btn-primary ms-1" onClick={(e) => AddNoteComment()}>Save</button>
+            <button className='btn btn-default ms-1' onClick={() => CloseNotepopup()}>Cancel</button></div>
         </footer>
       </Panel>
     </>
