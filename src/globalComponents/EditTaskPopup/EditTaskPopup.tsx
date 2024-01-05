@@ -1002,7 +1002,8 @@ const EditTaskPopup = (Items: any) => {
                 }
                 item.TaskId = globalCommon.GetTaskId(item);
                 item.siteUrl = siteUrls;
-                item.siteType = Items.Items.siteType;
+                item.siteType = Items?.Items?.siteType;
+                item.SiteIcon = Items?.Items?.SiteIcon;
                 let AssignedUsers: any = [];
                 item.listId = Items.Items.listId;
                 if (selectedProject?.length > 0) {
