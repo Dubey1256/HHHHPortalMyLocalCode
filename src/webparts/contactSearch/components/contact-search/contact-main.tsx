@@ -81,7 +81,7 @@ const ContactMainPage = (props: any) => {
                 .select("Id, Title, FirstName, FullName, Department,DOJ,DOE, Company, WorkCity, Suffix, WorkPhone, HomePhone, Comments, WorkAddress, WorkFax, WorkZip, Site, ItemType, JobTitle, Item_x0020_Cover, WebPage, Site, CellPhone, Email, LinkedIn, Created, SocialMediaUrls, SmartCountries/Title, SmartCountries/Id, Author/Title, Modified, Editor/Title, Division/Title, Division/Id, EmployeeID/Title, StaffID, EmployeeID/Id, Institution/Id, Institution/FullName, IM")
                 .expand("EmployeeID, Division, Author, Editor, SmartCountries, Institution")
                 .orderBy("Created", true)
-                .get();
+                .getAll();
             data.map((Item: any) => {
                 Item.SitesTagged = ''
                 if (Item.Site != null) {
@@ -110,7 +110,7 @@ const ContactMainPage = (props: any) => {
                . select("Id","Title","FirstName","Description","Parent/Id","FullName","Company","JobTitle","About","InstitutionType","SocialMediaUrls","ItemType","WorkCity","ItemImage","WorkCountry","WorkAddress","WebPage","CellPhone","HomePhone","Email","SharewebSites","Created","Author/Id","Author/Title","Modified","Editor/Id","Editor/Title")
                 .expand("Author", "Editor","Parent")
                 .orderBy("Created", true)
-                .get().then((data: any) => {
+                .getAll().then((data: any) => {
                     let instData = data.filter((instItem: any) => instItem.ItemType == "Institution")
                     let instDivision = data.filter((instItem: any) => instItem.ItemType == "Division")
                     if (instData?.length > 0) {
@@ -157,7 +157,7 @@ const ContactMainPage = (props: any) => {
                 .select("Id", "Title", "FirstName","FullName","DOJ","DOE", "Company", "WorkCity", "Suffix", "WorkPhone", "HomePhone", "Comments", "WorkAddress", "WorkFax", "WorkZip", "ItemType", "JobTitle", "Item_x0020_Cover", "WebPage", "CellPhone", "Email", "LinkedIn", "Created", "SocialMediaUrls", "Author/Title", "Modified", "Editor/Title", "Division/Title", "Division/Id", "EmployeeID/Title", "StaffID", "EmployeeID/Id", "Institution/Id", "Institution/FullName", "IM")
                 .expand("EmployeeID", "Division", "Author", "Editor", "Institution")
                 .orderBy("Created", true)
-                .get().then((data: any) => {
+                .getAll().then((data: any) => {
                     data.map((Item: any) => {
                         Item.SitesTagged = ''
                         if (Item.Site != null) {
@@ -297,7 +297,7 @@ const ContactMainPage = (props: any) => {
                 canSort: false,
                 placeholder: 'Name',
                 header: '',
-                id: 'FullName',
+                id: 'Title',
                 size: 150,
             },
             { accessorKey: "Email", placeholder: "Email Address", header: "", size: 80, },
