@@ -104,6 +104,8 @@ function PortfolioTable(SelectedProp: any) {
     const [portfolioTypeDataItemBackup, setPortFolioTypeIconBackup] = React.useState([]);
     const [taskTypeDataItemBackup, setTaskTypeDataItemBackup] = React.useState([]);
     const globalContextData: any = React.useContext<any>(myContextValue)
+    const [priorityRank, setpriorityRank] = React.useState([])
+    const [precentComplete, setPrecentComplete] = React.useState([])
   let ComponetsData: any = {};
   let Response: any = [];
   let props = undefined;
@@ -131,6 +133,7 @@ function PortfolioTable(SelectedProp: any) {
     } catch (e) {
       console.log(e);
     }
+    componentData=[]
     getTaskType();
     findPortFolioIconsAndPortfolio();
     GetSmartmetadata();
@@ -216,6 +219,8 @@ function PortfolioTable(SelectedProp: any) {
 
   const GetSmartmetadata = async () => {
     let siteConfigSites: any = [];
+    let Priority: any = []
+    let PrecentComplete: any = [];
     let web = new Web(ContextValue.siteUrl);
     let smartmetaDetails: any = [];
     smartmetaDetails = await web.lists
@@ -255,10 +260,24 @@ function PortfolioTable(SelectedProp: any) {
       if (newtest?.TaxType == 'timesheetListConfigrations') {
         timeSheetConfig = newtest;
       }
+      if (newtest?.TaxType == 'Priority Rank') {
+        Priority?.push(newtest)
+    }
+    if (newtest?.TaxType === 'Percent Complete' && newtest?.Title != 'In Preparation (0-9)' && newtest?.Title != 'Ongoing (10-89)' && newtest?.Title != 'Completed (90-100)') {
+        PrecentComplete.push(newtest);
+    }
     });
     if (siteConfigSites?.length > 0) {
       setSiteConfig(siteConfigSites);
     }
+    Priority?.sort((a: any, b: any) => {
+      return a.SortOrder - b.SortOrder;
+  });
+  PrecentComplete?.sort((a: any, b: any) => {
+      return a.SortOrder - b.SortOrder;
+  });
+  setpriorityRank(Priority)
+  setPrecentComplete(PrecentComplete)
     setMetadata(smartmetaDetails);
   };
 
@@ -1746,14 +1765,22 @@ const addedCreatedDataFromAWT = (arr: any, dataToPush: any) => {
   if(dataToPush?.PortfolioId === SelectedProp.props.Id && dataToPush?.ParentTask?.Id === undefined){
     arr.push(dataToPush)
     if(SelectedProp?.UsedFrom=='ProjectManagement'){
-      globalContextData?.LoadAllSiteTasks()
-      globalContextData?.closeCompTaskPopup()
+      try{
+        globalContextData?.projectCallBackTask()
+        globalContextData?.closeCompTaskPopup()
+       }catch(e){
+        console.error(e)
+       }
     }
     return true;
   }else if(dataToPush?.PortfolioId === SelectedProp?.props?.Id && dataToPush?.TaskTypeId ==2 && dataToPush?.ParentTaskId === null){
     if(SelectedProp?.UsedFrom=='ProjectManagement'){
-      globalContextData?.LoadAllSiteTasks()
-      globalContextData?.closeCompTaskPopup()
+      try{
+        globalContextData?.projectCallBackTask()
+        globalContextData?.closeCompTaskPopup()
+       }catch(e){
+        console.error(e)
+       }
     }
     const checkother = arr.filter((item: any) => item.Title === "Others");
     if (checkother?.length === 0) {
@@ -1812,8 +1839,12 @@ const updatedDataDataFromPortfolios = (copyDtaArray: any, dataToUpdate: any) => 
           }
       }
       if(SelectedProp?.UsedFrom=='ProjectManagement'){
-        globalContextData?.portfolioCreationCallBack([dataToUpdate])
-        globalContextData?.closeCompTaskPopup()
+        try{
+          globalContextData?.portfolioCreationCallBack([dataToUpdate])
+          globalContextData?.closeCompTaskPopup()
+         }catch(e){
+          console.error(e)
+         }
       }
   }
   return false;
@@ -1900,15 +1931,18 @@ const updatedDataDataFromPortfolios = (copyDtaArray: any, dataToUpdate: any) => 
       // SelectedProp.props.NoteCall = type;
       // checkedList.NoteCall = type;
      setIsOpenActivity(true);
+     setActiveTile("")
     }
     if (checkedList?.TaskType?.Id == 1) {
       // checkedList.NoteCall = type;
       setIsOpenWorkstream(true);
+      setActiveTile("")
     }
     if (checkedList?.TaskType?.Id == 3) {
       // SelectedProp.props.NoteCall = type;
       // checkedList.NoteCall = type;
     setIsOpenActivity(true);
+    setActiveTile("")
     }
     if (checkedList?.TaskType?.Id == 2) {
       alert("You can not create ny item inside Task");
@@ -1937,8 +1971,8 @@ const updatedDataDataFromPortfolios = (copyDtaArray: any, dataToUpdate: any) => 
     }
     if (checkedList?.TaskTypeId === 3 || checkedList?.TaskType?.Id === 3) {
       checkedList.NoteCall = "Task";
-      setIsOpenActivity(true);
-        //setIsOpenWorkstream(true);
+      // setIsOpenActivity(true);
+        setIsOpenWorkstream(true);
           
       if (SelectedProp?.props?.PortfolioType?.Color != undefined) {
         setTimeout(() => {
@@ -2108,7 +2142,7 @@ const updatedDataDataFromPortfolios = (copyDtaArray: any, dataToUpdate: any) => 
                         scale={1.0}
                         loadedClassName="loadedContent"
                       />
-                      <GlobalCommanTable
+                      <GlobalCommanTable bulkEditIcon={true} priorityRank={priorityRank} precentComplete={precentComplete}
                         smartTimeTotalFunction={smartTimeTotal} SmartTimeIconShow={true}
                         portfolioTypeDataItemBackup={portfolioTypeDataItemBackup} taskTypeDataItemBackup={taskTypeDataItemBackup} flatViewDataAll={flatViewDataAll} setData={setData}
                         ref={childRef}

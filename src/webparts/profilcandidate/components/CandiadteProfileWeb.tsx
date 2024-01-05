@@ -13,7 +13,6 @@ import HHHHEditComponent from '../../contactSearch/components/contact-search/pop
 import GlobalCommanTable from '../../../globalComponents/GroupByReactTableComponents/GlobalCommanTable';
 import CandidateRating from './CandidateRating';
 import EditPopup from '../../helloSpfx/components/EditPopup';
-import { IProfilcandidateProps } from './IProfilcandidateProps';
 
 let allSite: any = {
     GMBHSite: false,
@@ -21,7 +20,7 @@ let allSite: any = {
     MainSite: true,
 }
 let OldEmployeeProfile: any
-const Profilcandidate = (props: IProfilcandidateProps) => {
+const Profilcandidate = ({props}: any) => {
     const [EmployeeData, setEmployeeData]: any = useState()
     const [localRatings, setLocalRatings] = useState([]);
     const [isEditPopupOpen, setIsEditPopupOpen] = useState(false);
@@ -30,9 +29,8 @@ const Profilcandidate = (props: IProfilcandidateProps) => {
     let allListId = {
         // Context: props?.props.Context,
         // HHHHContactListId: props?.props?.HHHHContactListId,
-        InterviewFeedbackFormListId: props?.InterviewFeedbackFormListId,
-        SkillsPortfolioListID: props?.SkillsPortfolioListID,
-        siteUrl: props?.siteUrl
+        InterviewFeedbackFormListId: '298bc01c-710d-400e-bf48-8604d297c3c6',
+        SkillsPortfolioListID: 'e79dfd6d-18aa-40e2-8d6e-930a37fe54e4'
 
         // jointSiteUrl: "https://hhhhteams.sharepoint.com/sites/HHHH"
     }
@@ -42,10 +40,10 @@ const Profilcandidate = (props: IProfilcandidateProps) => {
         EmployeeDetails(params.get('CandidateId'));
         loadDocumentsByCandidate(params.get('CandidateId'));
     }, [])
-    const web = new Web(allListId?.siteUrl);
+    const web = new Web('https://hhhhteams.sharepoint.com/sites/HHHH/HR/');
     const EmployeeDetails = async (Id: any) => {
         try {
-            await web.lists.getById(allListId?.InterviewFeedbackFormListId)
+            await web.lists.getById('298bc01c-710d-400e-bf48-8604d297c3c6')
                 .items.getById(Id).select('Id', 'Title', 'Remarks', 'Motivation', 'Created', 'Modified', 'AuthorId', 'Author/Title', 'Editor/Id', 'Editor/Title', 'SelectedPlatforms', 'Result', 'CandidateStaffID', 'ActiveInterv', 'Status0', 'IsFavorite', 'CandidateName', 'SkillRatings', 'Positions/Id', 'Positions/Title', 'Platform', 'IsFavorite', 'PhoneNumber', 'Email', 'Experience', 'Current_x0020_Company', 'Date', 'CurrentCTC', 'ExpectedCTC', 'NoticePeriod', 'CurrentLocation', 'DateOfJoining', 'HRNAME')
                 .expand('Positions', 'Editor', 'Author').get().then((data: any) => {
                     if (data.SkillRatings !== null || data.SkillRatings !== undefined) {
@@ -110,7 +108,7 @@ const Profilcandidate = (props: IProfilcandidateProps) => {
     };
     return (
         <myContextValue.Provider value={{ ...myContextValue, allSite: allSite, allListId: allListId, loggedInUserName: props?.userDisplayName }}>
-            {isEditPopupOpen ? <EditPopup EditPopupClose={EditPopupClose} callbackEdit={callbackEdit} item={selectedItem} ListID={allListId?.InterviewFeedbackFormListId} skillsList={allListId?.SkillsPortfolioListID}/> : ''}
+            {isEditPopupOpen ? <EditPopup siteUrl={'https://hhhhteams.sharepoint.com/sites/HHHH/HR/'} EditPopupClose={EditPopupClose} callbackEdit={callbackEdit} item={selectedItem} ListID={'298bc01c-710d-400e-bf48-8604d297c3c6'} skillsList={'e79dfd6d-18aa-40e2-8d6e-930a37fe54e4'}/> : ''}
             <div className='alignCenter border-bottom pb-2'>
                 <div>
                     <img className='user-dp' src={EmployeeData?.Item_x0020_Cover?.Url != undefined ? EmployeeData?.Item_x0020_Cover?.Url : "https://hhhhteams.sharepoint.com/sites/HHHH/GmBH/SiteCollectionImages/ICONS/32/icon_user.jpg"} />

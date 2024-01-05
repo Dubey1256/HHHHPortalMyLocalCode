@@ -9,14 +9,13 @@ import { BaseClientSideWebPart } from '@microsoft/sp-webpart-base';
 import { IReadonlyTheme } from '@microsoft/sp-component-base';
 
 import * as strings from 'ProfilcandidateWebPartStrings';
-import Profilcandidate from './components/CandiadteProfileWeb';
+import CandidateProfilePage from './components/CandidateProfilePage';
 import { IProfilcandidateProps } from './components/IProfilcandidateProps';
 
 export interface IProfilcandidateWebPartProps {
   description: string;
   siteUrl: any;
   InterviewFeedbackFormListId: '298bc01c-710d-400e-bf48-8604d297c3c6'
-  SkillsPortfolioListID: 'e79dfd6d-18aa-40e2-8d6e-930a37fe54e4'
 }
 
 export default class ProfilcandidateWebPart extends BaseClientSideWebPart<IProfilcandidateWebPartProps> {
@@ -26,7 +25,7 @@ export default class ProfilcandidateWebPart extends BaseClientSideWebPart<IProfi
 
   public render(): void {
     const element: React.ReactElement<IProfilcandidateProps> = React.createElement(
-      Profilcandidate,
+      CandidateProfilePage,
       {
         description: this.properties.description,
         isDarkTheme: this._isDarkTheme,
@@ -34,8 +33,7 @@ export default class ProfilcandidateWebPart extends BaseClientSideWebPart<IProfi
         hasTeamsContext: !!this.context.sdks.microsoftTeams,
         userDisplayName: this.context.pageContext.user.displayName,
         siteUrl: this.context.pageContext.web.absoluteUrl,
-        InterviewFeedbackFormListId: this.properties.InterviewFeedbackFormListId,
-        SkillsPortfolioListID: this.properties.SkillsPortfolioListID
+        InterviewFeedbackFormListId: this.properties.InterviewFeedbackFormListId
       }
     );
 
@@ -119,9 +117,6 @@ export default class ProfilcandidateWebPart extends BaseClientSideWebPart<IProfi
                 // }),
                 PropertyPaneTextField('InterviewFeedbackFormListId', {
                   label: "Interview Feedback Form"
-                }),
-                PropertyPaneTextField('SkillsPortfolioListID', {
-                  label: "SkillsPortfolioListID"
                 })
 
               ]
