@@ -306,7 +306,7 @@ const CreateActivity = (props: any) => {
         }
       });
     }
-    if ( props?.selectedItem?.NoteCall != "Task" && props?.selectedItem?.NoteCall != "Activity") {
+     if ( props?.selectedItem?.NoteCall != "Task" && props?.selectedItem?.NoteCall != "Activity") {
       subCategories?.map((item: any) => {
         if (item?.Title == props?.selectedItem?.NoteCall  && !item.ActiveTile) {
           selectSubTaskCategory(item?.Title, item?.Id, item);

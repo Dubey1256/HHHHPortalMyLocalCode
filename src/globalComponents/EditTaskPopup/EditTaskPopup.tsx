@@ -100,7 +100,7 @@ var AllSitesData: any = [];
 var TaskApproverBackupArray: any = [];
 let categoryTitle: any = "";
 let onHoldCategory: any = [];
-
+let globalSelectedProject: any = { PriorityRank: 1 };
 const EditTaskPopup = (Items: any) => {
     const Context = Items?.context;
     const AllListIdData = Items?.AllListId;
@@ -735,6 +735,7 @@ const EditTaskPopup = (Items: any) => {
                             }
                         });
                         setSelectedProject([Data]);
+                        globalSelectedProject = Data;
                         SetAllProjectData(TempArray);
                     }
                     if (ApproverHistoryData != undefined || ApproverHistoryData != null) {
@@ -1006,8 +1007,8 @@ const EditTaskPopup = (Items: any) => {
                 item.SiteIcon = Items?.Items?.SiteIcon;
                 let AssignedUsers: any = [];
                 item.listId = Items.Items.listId;
-                if (selectedProject?.length > 0) {
-                    item.Project = selectedProject[0];
+                if (globalSelectedProject?.Id != undefined) {
+                    item.Project = globalSelectedProject;
                 }
                 item.SmartPriority;
                 item.TaskTypeValue = '';
@@ -1511,8 +1512,20 @@ const EditTaskPopup = (Items: any) => {
                     }
                     if (Type == "Single") {
                         if (DataItem[0]?.Item_x0020_Type == "Project" || DataItem[0]?.Item_x0020_Type == "Sprint") {
+
                             setSelectedProject(DataItem);
-                            setProjectManagementPopup(false)
+                            // globalSelectedProject = DataItem[0];
+                            // let updatedItem = {
+                            //     ...EditData,
+                            //     Project: DataItem[0],
+                            // };
+                            // let SmartPriority = globalCommon.calculateSmartPriority(updatedItem)
+                            // updatedItem = {
+                            //     ...updatedItem,
+                            //     SmartPriority: SmartPriority
+                            // }
+                            // setEditData(updatedItem);
+
                         } else {
                             setTaggedPortfolioData(DataItem);
                             let ComponentType: any = DataItem[0].PortfolioType.Title;
@@ -1525,11 +1538,13 @@ const EditTaskPopup = (Items: any) => {
                             );
                         }
                     }
+
                     setOpenTeamPortfolioPopup(false);
                     setopenLinkedPortfolioPopup(false);
                     console.log("Popup component smartComponent ", DataItem);
                 }
             }
+            setProjectManagementPopup(false)
         },
         []
     );
@@ -1579,6 +1594,16 @@ const EditTaskPopup = (Items: any) => {
             return false;
         });
         tempShareWebTypeData = result;
+        let updatedItem = {
+            ...EditData,
+            TaskCategories: tempShareWebTypeData,
+        };
+        let SmartPriority = globalCommon.calculateSmartPriority(updatedItem)
+        updatedItem = {
+            ...updatedItem,
+            SmartPriority: SmartPriority
+        }
+        setEditData(updatedItem);
         setPhoneStatus(result?.some((category: any) => category.Title === "Phone"));
         setEmailStatus(result?.some((category: any) => category.Title === "Email Notification"));
         setImmediateStatus(result?.some((category: any) => category.Title === "Immediate"));
@@ -1728,6 +1753,7 @@ const EditTaskPopup = (Items: any) => {
                             if (CheckTaagedCategory) {
                                 ShareWebTypeData.push(dataItem);
                                 tempShareWebTypeData.push(dataItem);
+                               
                             }
                         }
                     });
@@ -1793,6 +1819,16 @@ const EditTaskPopup = (Items: any) => {
             }
             // }
         }
+        let updatedItem = {
+            ...EditData,
+            TaskCategories: tempShareWebTypeData,
+        };
+        let SmartPriority = globalCommon.calculateSmartPriority(updatedItem)
+        updatedItem = {
+            ...updatedItem,
+            SmartPriority: SmartPriority
+        }
+        setEditData(updatedItem);
     };
 
     // $$$$$$$$$$$$$$$$$$$$$$$$$ End Smart Category Section Functions $$$$$$$$$$$$$$$$
@@ -3033,7 +3069,17 @@ const EditTaskPopup = (Items: any) => {
     const ChangePriorityStatusFunction = (e: any) => {
         let value = e.target.value;
         if (Number(value) <= 10) {
-            setEditData({ ...EditData, PriorityRank: e.target.value });
+            let updatedItem = {
+                ...EditData,
+                PriorityRank: Number(value),
+            };
+            let SmartPriority = globalCommon.calculateSmartPriority(updatedItem)
+            updatedItem = {
+                ...updatedItem,
+                SmartPriority: SmartPriority
+            }
+            setEditData(updatedItem);
+            // setEditData({ ...EditData, PriorityRank: e.target.value });
         } else {
             alert("Priority Status not should be greater than 10");
             setEditData({ ...EditData, PriorityRank: 0 });
@@ -3324,7 +3370,7 @@ const EditTaskPopup = (Items: any) => {
                     PhoneCount = PhoneCount + 1;
                 }
             });
-            if (ApprovedStatusCount == 0) {
+            if (ApprovedStatusCount == 0 && EditDataBackup?.PercentComplete != 0) {
                 let teamMember = [];
                 let AssignedTo = [];
                 if (EditDataBackup?.Categories?.includes("Approval")) {
@@ -3353,14 +3399,15 @@ const EditTaskPopup = (Items: any) => {
             else {
                 let teamMember = [];
                 let AssignedTo = [];
-                if (EditDataBackup?.Categories?.includes("Approval")) {
+                if (EditDataBackup?.Categories?.includes("Approval") && EditDataBackup?.PercentComplete != 0) {
                     teamMember.push(currentUserBackupArray?.[0]?.AssingedToUser)
                     AssignedTo.push(currentUserBackupArray?.[0]?.AssingedToUser)
                     setTaskAssignedTo(AssignedTo)
                     setTaskTeamMembers(teamMember);
+                    setApprovalTaskStatus(true);
                 }
 
-                setApprovalTaskStatus(true);
+
 
             }
         }
@@ -4132,8 +4179,8 @@ const EditTaskPopup = (Items: any) => {
                             tempArrayJsonData.push(ImgArray);
 
 
-                            
-// -----------------------Add Attachments-----------------------------------------------------------------------
+
+                            // -----------------------Add Attachments-----------------------------------------------------------------------
                             // await sp.web.lists.getByTitle(NewList).items.getById(NewItem.Id).attachmentFiles.add(file, uint8Array).then((res)=>{
                             //     count++;
                             //     console.log(res)
@@ -4141,11 +4188,11 @@ const EditTaskPopup = (Items: any) => {
 
                             const item = await sp.web.lists.getByTitle(NewList).items.getById(NewItem?.Id).get();
 
-                            
-                            const currentETag:any = item ? item['@odata.etag'] : null;
+
+                            const currentETag: any = item ? item['@odata.etag'] : null;
                             await sp.web.lists.getByTitle(NewList).items.getById(NewItem?.Id).attachmentFiles.add(file, uint8Array),
-                            currentETag, { headers: { "If-Match": currentETag }}
-    
+                                currentETag, { headers: { "If-Match": currentETag } }
+
                         } else {
                             console.error("Error:", response.statusText);
                         }
@@ -4250,6 +4297,10 @@ const EditTaskPopup = (Items: any) => {
         setProjectSearchKey("");
         setSearchedProjectData([]);
         setSelectedProject(data);
+        let item = EditData;
+        item.Project = globalSelectedProject = data;
+        item.SmartPriority = globalCommon.calculateSmartPriority(item)
+        setEditData((prev: any) => item)
     };
 
     // ************ this is for Approver Popup Function And Approver Related All Functions section **************
@@ -5748,9 +5799,10 @@ const EditTaskPopup = (Items: any) => {
                                                                             EditData.PriorityRank >= 8
                                                                         }
                                                                         onChange={() =>
-                                                                            setEditData({
-                                                                                ...EditData,
-                                                                                PriorityRank: 8,
+                                                                            ChangePriorityStatusFunction({
+                                                                                target: {
+                                                                                    value: 8
+                                                                                }
                                                                             })
                                                                         }
                                                                     />
@@ -5768,9 +5820,10 @@ const EditTaskPopup = (Items: any) => {
                                                                             EditData.PriorityRank >= 4
                                                                         }
                                                                         onChange={() =>
-                                                                            setEditData({
-                                                                                ...EditData,
-                                                                                PriorityRank: 4,
+                                                                            ChangePriorityStatusFunction({
+                                                                                target: {
+                                                                                    value: 4
+                                                                                }
                                                                             })
                                                                         }
                                                                     />
@@ -5788,9 +5841,10 @@ const EditTaskPopup = (Items: any) => {
                                                                             EditData.PriorityRank > 0
                                                                         }
                                                                         onChange={() =>
-                                                                            setEditData({
-                                                                                ...EditData,
-                                                                                PriorityRank: 1,
+                                                                            ChangePriorityStatusFunction({
+                                                                                target: {
+                                                                                    value: 1
+                                                                                }
                                                                             })
                                                                         }
                                                                     />
@@ -5803,7 +5857,7 @@ const EditTaskPopup = (Items: any) => {
                                                         <div className="input-group">
                                                             <label className="form-label full-width">SmartPriority</label>
                                                             <div className="bg-e9 w-100 py-1 px-2">
-                                                                <span className="hover-text hreflink m-0 siteColor">
+                                                                <span className={EditData?.SmartPriority != undefined ? "hover-text hreflink m-0 siteColor sxsvc" : "hover-text hreflink m-0 siteColor cssc"}>
                                                                     <>{EditData?.SmartPriority != undefined ? EditData?.SmartPriority : 0}</>
                                                                     <span className="tooltip-text pop-right">
                                                                         {EditData?.showFormulaOnHover != undefined ? EditData?.showFormulaOnHover : ""}
