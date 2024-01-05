@@ -500,43 +500,63 @@ const HHHHEditComponent = (props: any) => {
                 if (myContextData2?.allSite?.MainSite) {
                     let web = new Web(myContextData2?.allListId?.jointSiteUrl);
                     await web.lists.getById(myContextData2?.allListId?.HHHHContactListId).items.getById(myContextData2?.allSite?.GMBHSite || myContextData2?.allSite?.HrSite ? JointData?.Id : updateData?.Id).recycle().then(async (data: any) => {
-                        if (myContextData2?.allSite?.GMBHSite || myContextData2?.allSite?.HrSite) {
-                            let web = new Web(myContextData2?.allListId?.siteUrl);
-                            await web.lists.getById(myContextData2?.allSite?.GMBHSite ? myContextData2?.allListId?.GMBH_CONTACT_SEARCH_LISTID : myContextData2?.allListId?.HR_EMPLOYEE_DETAILS_LIST_ID).items.getById(updateData.Id).recycle();
-                        }
+                       console.log("joint data delete")
+                       if(updateData?.Site?.toString().search("HR")>=0){
+                      let  web = new Web("https://hhhhteams.sharepoint.com/sites/HHHH/HR");
+                        await web.lists.getById(myContextData2?.allListId?.HR_EMPLOYEE_DETAILS_LIST_ID).items.select("Id","SmartContactId").filter(`SmartContactId eq ${updateData?.Id}`).get().then(async (data: any) => { 
+                            if(data?.length>0){
+                                data?.map(async(deleteData:any)=>{
+                                  let   web = new Web("https://hhhhteams.sharepoint.com/sites/HHHH/HR");
+                                    await web.lists.getById(myContextData2?.allListId?.HR_EMPLOYEE_DETAILS_LIST_ID).items.getById(deleteData.Id).recycle().then((data:any)=>{
+                                     console.log("Hr site data delete")
+                                    })
+                                }) 
+                                let web = new Web(myContextData2?.allListId?.jointSiteUrl); 
+                                await web.lists.getById(myContextData2?.allListId?.MAIN_HR_LISTID).items.select("Id","SmartContactId").filter(`SmartContactId eq ${updateData?.Id}`).get()
+                                .then( (data: any) => { 
+                                    console.log(data)
+                                    if(data?.length>0){
+                                        data?.map(async(deleteData:any)=>{
+                                            await web.lists.getById(myContextData2?.allListId?.MAIN_HR_LISTID).items.getById(deleteData.Id).recycle().then((data:any)=>{
+                                             console.log("Hr joint data delete")
+                                            })
+                                        })
+                                    } 
+
+                                     
+                                }).catch((error:any)=>{
+                                    console.error(error,"errr")
+                                })
+                            }
+        
+                            console.log(data)
+                         
+                        })
+                        callBack();
+                       }
+                       else if(updateData?.Site?.toString().search("GMBH")>=0){
+                        let web = new Web("https://hhhhteams.sharepoint.com/sites/HHHH/GMBH"); 
+                        await web.lists.getById(myContextData2?.allListId?.GMBH_CONTACT_SEARCH_LISTID).items.select("Id","SmartContactId").filter(`SmartContactId eq ${updateData?.Id}`).get()
+                        .then( (data: any) => { 
+                            console.log(data)
+                            if(data?.length>0){
+                                data?.map(async(deleteData:any)=>{
+                                    await web.lists.getById(myContextData2?.allListId?.GMBH_CONTACT_SEARCH_LISTID).items.getById(deleteData.Id).recycle().then((data:any)=>{
+                                     console.log("GMBH  data delete")
+                                    })
+                                })
+                            } 
+                         }).catch((error:any)=>{
+                            console.error(error,"errr")
+                        })
+                       }
+                      
                     }).catch(async (error: any) => {
                         console.log(error)
 
                     });
                 }
-
-                if (myContextData2?.allSite?.GMBHSite || myContextData2?.allSite?.HrSite) {
-                    let web = new Web(myContextData2?.allListId?.siteUrl);
-                    await web.lists.getById(myContextData2?.allSite?.GMBHSite ? myContextData2?.allListId?.GMBH_CONTACT_SEARCH_LISTID : myContextData2?.allListId?.HR_EMPLOYEE_DETAILS_LIST_ID).items.getById(updateData.Id).recycle()
-                    .then(async(data:any)=>{
-                //        let  updateSiteTag={
-                //             SharewebSites: {
-                //                 results: myContextData2?.allSite?.GMBHSite?["GMBH"]:["HR"]
-                //             },
-                //             Site: {
-                //                 results: myContextData2?.allSite?.GMBHSite?["GMBH"]:["HR"]
-                //             }
-                //         } 
-                //         let web = new Web(myContextData2?.allListId?.jointSiteUrl);
-                // await web.lists.getById(myContextData2?.allListId?.HHHHContactListId)
-                // .items.getById(JointData?.Id).update( updateSiteTag ).then((dataUpdate:any) => {
-                //   console.log("joint data site tag update sucessfully update")
-                // }).catch((error:any)=>{
-                //     console.log(error,"joint data update error")
-                // })
-                    }).catch((error:any)=>{
-                        console.log(error)
-                    });
-                }
-
-
-                //  props.userUpdateFunction();
-                callBack();
+                  
             }
         } catch (error) {
             console.log("Error:", error.message);
@@ -1529,7 +1549,7 @@ const HHHHEditComponent = (props: any) => {
                             {console.log("footerdiv")}
                             <div><span className='pe-2'>Created</span><span className='pe-2'> {updateData?.Created ? Moment(updateData?.Created).format("DD/MM/YYYY") : ''}&nbsp;By</span><span><a>{updateData?.Author ? updateData?.Author?.Title : ''}</a></span></div>
                             <div><span className='pe-2'>Last modified</span><span className='pe-2'> {updateData?.Modified ? Moment(updateData?.Modified).format("DD/MM/YYYY") : ''}&nbsp;By</span><span><a>{updateData?.Editor ? updateData?.Editor.Title : ''}</a></span></div>
-                            <div className='alignCenter'><span onClick={deleteUserDtl} className="svg__iconbox svg__icon--trash hreflink"></span>Delete this item</div>
+                            {myContextData2.allSite?.MainSite &&<div className='alignCenter'><span onClick={deleteUserDtl} className="svg__iconbox svg__icon--trash hreflink"></span>Delete this item</div>}
                         </div>
 
                         <div>
