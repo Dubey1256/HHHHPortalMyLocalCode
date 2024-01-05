@@ -104,6 +104,14 @@ const inlineEditingcolumns = (props: any) => {
     { value: 100, status: "100% Closed", taskStatusComment: "Closed" }
   ];
   React.useEffect(() => {
+    try{
+      setpriorityRank(JSON.parse(localStorage.getItem("Priority"))) ;
+      setImpTaskCategoryType(JSON.parse(
+        localStorage.getItem("impTaskCategoryType")
+      ));
+    }catch(e){
+    console.error("Priority and impTaskCategoryType")
+    }
     try {
       if (props?.columnName == 'Priority') {
         comments = JSON.parse(props?.item?.Comments)

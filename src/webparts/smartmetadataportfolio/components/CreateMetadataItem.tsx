@@ -174,6 +174,7 @@ export default function CreateMetadataItem(props: any) {
         setSmartDescription('');
         setSmartMetaDataTitle('');
         setIsCreatePopupOpen(false);
+        props?.childRefdata?.current?.setRowSelection({});
     }
     const onRenderDeleteSmartMetadata = () => {
         return (
