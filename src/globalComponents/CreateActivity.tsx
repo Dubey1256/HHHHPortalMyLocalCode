@@ -310,12 +310,12 @@ const CreateActivity = (props: any) => {
       subCategories?.map((item: any) => {
         if (item?.Title == props?.selectedItem?.NoteCall  && !item.ActiveTile) {
           selectSubTaskCategory(item?.Title, item?.Id, item);
-     
-          if(props.selectedItem.NoteCall=="Development"){
-                      props.selectedItem.NoteCall = "Activity"
-                    }else{
-                      props.selectedItem.NoteCall = "Task"
-                    }
+          if( props?.selectedItem?.NoteCall == "Development"){
+            props.selectedItem.NoteCall = "Activity"
+          }else{
+            props.selectedItem.NoteCall = "Task"
+          }
+      
         }
       });
     }
