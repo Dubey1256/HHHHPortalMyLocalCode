@@ -11,7 +11,7 @@ import "bootstrap/dist/css/bootstrap.min.css";
 import HighlightableCell from "../GroupByReactTableComponents/highlight";
 import Loader from "react-loader";
 import ShowClintCategory from "../ShowClintCatogory";
-import ReactPopperTooltip from "../Hierarchy-Popper-tooltip";
+import ReactPopperTooltip from "../Hierarchy-Popper-tooltipSilgleLevel/Hierarchy-Popper-tooltipSingleLevel";
 import { FaCompressArrowsAlt } from "react-icons/fa";
 import InfoIconsToolTip from "../InfoIconsToolTip/InfoIconsToolTip";
 import ClientCategoryPopup from "./SCClientCategoryPopup";
@@ -23,6 +23,7 @@ let AllSiteDataBackup: any = [];
 let AllClientCategoryDataBackup: any = [];
 let ComponentChildData: any = [];
 let GlobalAllSiteData: any = [];
+let GlobalAllMasterListData: any = [];
 let SelectedChildItems: any = [];
 let GlobalCount: any = 0;
 let GlobalAllTaskUsersData: any = [];
@@ -408,6 +409,7 @@ const CentralizedSiteComposition = (Props: any) => {
         let results = await globalCommon.GetServiceAndComponentAllData(PropsObject)
         if (results?.AllData?.length > 0) {
             componentDetails = results?.AllData;
+            GlobalAllMasterListData = results?.AllData;
             groupedComponentData = results?.GroupByData;
             ComponentChildData = findSelectedComponentChildInMasterList(groupedComponentData, ItemDetails?.Id)
             // setLoaded(true);
@@ -778,6 +780,89 @@ const CentralizedSiteComposition = (Props: any) => {
         )
     }
 
+
+    // this is used for un protect and  Protect the Items Into The table 
+
+    // const UnProtectSelectedItem = (SelectedItem: any) => {
+    //     if (flatView) {
+    //         let FlatViewDataItems = JSON.parse(JSON.stringify(data));
+    //         // const flattenedData = flattenData(groupedDataItems);
+    //         FlatViewDataItems?.map((AllItem: any) => {
+    //             if (AllItem.Title == SelectedItem.Title && AllItem.Id == SelectedItem.Id) {
+    //                 if (AllItem.IsSCProtected == true) {
+    //                     AllItem.IsSCProtected = false;
+    //                 } else {
+    //                     AllItem.IsSCProtected = true;
+    //                 }
+    //             }
+    //         })
+    //         setData(FlatViewDataItems);
+    //     } else {
+    //         let GroupByViewDataItems = JSON.parse(JSON.stringify(data));
+    //         GroupByViewDataItems?.map((AllItemData: any) => {
+    //             if (AllItemData.Title == SelectedItem.Title && AllItemData.Id == SelectedItem.Id) {
+    //                 if (AllItemData.IsSCProtected == true) {
+    //                     AllItemData.IsSCProtected = false;
+    //                 } else {
+    //                     AllItemData.IsSCProtected = true;
+    //                 }
+    //             }
+    //             if (AllItemData?.subRows?.length > 0) {
+    //                 AllItemData?.subRows?.map((firstChildItem: any) => {
+    //                     if (firstChildItem.Title == SelectedItem.Title && firstChildItem.Id == SelectedItem.Id) {
+    //                         if (firstChildItem.IsSCProtected == true) {
+    //                             firstChildItem.IsSCProtected = false;
+    //                         } else {
+    //                             firstChildItem.IsSCProtected = true;
+    //                         }
+    //                     }
+    //                     if (firstChildItem?.subRows?.length > 0) {
+    //                         firstChildItem?.subRows?.map((SecondChildItem: any) => {
+    //                             if (SecondChildItem.Title == SelectedItem.Title && SecondChildItem.Id == SelectedItem.Id) {
+    //                                 if (SecondChildItem.IsSCProtected == true) {
+    //                                     SecondChildItem.IsSCProtected = false;
+    //                                 } else {
+    //                                     SecondChildItem.IsSCProtected = true;
+    //                                 }
+    //                             }
+    //                         })
+    //                     }
+    //                 })
+    //             }
+    //         })
+    //         setData(GroupByViewDataItems);
+    //     }
+    // }
+
+    const toggleProtectionRecursively = (item: any, selectedItem: any) => {
+        if (item.Title === selectedItem.Title && item.Id === selectedItem.Id) {
+            item.IsSCProtected = !item.IsSCProtected;
+        }
+
+        if (item.subRows && item.subRows.length > 0) {
+            item.subRows.forEach((subItem: any) => {
+                toggleProtectionRecursively(subItem, selectedItem);
+            });
+        }
+    };
+
+    const UnProtectSelectedItemRecursive = (SelectedItem: any) => {
+        if (flatView) {
+            let FlatViewDataItems = JSON.parse(JSON.stringify(data));
+            FlatViewDataItems?.forEach((AllItem: any) => {
+                toggleProtectionRecursively(AllItem, SelectedItem);
+            });
+            setData(FlatViewDataItems);
+        } else {
+            let GroupByViewDataItems = JSON.parse(JSON.stringify(data));
+            GroupByViewDataItems?.forEach((AllItemData: any) => {
+                toggleProtectionRecursively(AllItemData, SelectedItem);
+            });
+            setData(GroupByViewDataItems);
+        }
+    };
+
+
     // this is panel close function 
 
     const ClosePanelFunction = (usedFor: any) => {
@@ -851,7 +936,15 @@ const CentralizedSiteComposition = (Props: any) => {
                 accessorFn: (row) => row?.TaskID,
                 cell: ({ row, getValue }) => (
                     <div>
-                        <ReactPopperTooltip ShareWebId={getValue()} row={row} />
+                        {/* <ReactPopperTooltip ShareWebId={getValue()} row={row} /> */}
+                        <ReactPopperTooltip
+                            ShareWebId={row?.original?.TaskID}
+                            row={row?.original}
+                            singleLevel={true}
+                            masterTaskData={GlobalAllMasterListData}
+                            AllSitesTaskData={GlobalAllSiteData}
+                            AllListId={RequiredListIds}
+                        />
                     </div>
                 ),
                 id: "TaskID",
@@ -900,7 +993,20 @@ const CentralizedSiteComposition = (Props: any) => {
                 size: 500,
             },
             {
-                accessorKey: "IsSCProtectedStatus",
+                accessorFn: (row) => row?.IsSCProtectedStatus,
+                cell: ({ row, getValue }) => (
+                    <div className="alignCenter" onClick={() => UnProtectSelectedItemRecursive(row.original)}>
+                        <label className="switch me-2 siteColor" htmlFor="checkbox-Protected-Table">
+                            <input
+                                checked={row?.original?.IsSCProtected}
+                                type="checkbox"
+                                id="checkbox-Protected-Table"
+                                name="Protected-view"
+                            />
+                            {row?.original?.IsSCProtected === true ? <div style={{ backgroundColor: '#000066' }} className="slider round" title='Switch to Un-Protect this item'></div> : <div title='Switch to Protect this item' className="slider round"></div>}
+                        </label>
+                    </div>
+                ),
                 placeholder: "Protected",
                 header: "",
                 resetColumnFilters: false,
@@ -1037,41 +1143,41 @@ const CentralizedSiteComposition = (Props: any) => {
                 if (OriginalData.TaskType?.Title == "Task" || OriginalData.TaskType?.Title == "Activities" || OriginalData.TaskType?.Title == "Workstream") {
                     AllSiteDataBackup?.map((AllSiteItem: any) => {
                         if (OriginalData.siteType == AllSiteItem.Title) {
-                            if (AllSiteItem?.ClientCategories?.length > 0) {
-                                AllSiteItem?.ClientCategories?.map((ExistingCCItem: any) => {
-                                    if (ExistingCCItem.checked == true) {
-                                        OriginalData.ClientCategory = [ExistingCCItem];
-                                    }
-                                })
-                            }
+                            // if (AllSiteItem?.ClientCategories?.length > 0) {
+                            //     AllSiteItem?.ClientCategories?.map((ExistingCCItem: any) => {
+                            //         if (ExistingCCItem.checked == true) {
+                            //             OriginalData.ClientCategory = [ExistingCCItem];
+                            //         }
+                            //     })
+                            // }
                         }
                         if (OriginalData.siteType == "Shareweb") {
                             let TempCCForSharewebTask: any = [];
-                            AllSiteDataBackup?.map((AllSiteItem: any) => {
-                                if (AllSiteItem?.ClientCategories?.length > 0) {
-                                    AllSiteItem?.ClientCategories?.map((ExistingCCItem: any) => {
-                                        if (ExistingCCItem.checked == true) {
-                                            TempCCForSharewebTask.push(ExistingCCItem);
-                                        }
-                                    })
-                                }
-                            })
-                            OriginalData.ClientCategory = TempCCForSharewebTask;
+                            // AllSiteDataBackup?.map((AllSiteItem: any) => {
+                            //     if (AllSiteItem?.ClientCategories?.length > 0) {
+                            //         AllSiteItem?.ClientCategories?.map((ExistingCCItem: any) => {
+                            //             if (ExistingCCItem.checked == true) {
+                            //                 TempCCForSharewebTask.push(ExistingCCItem);
+                            //             }
+                            //         })
+                            //     }
+                            // })
+                            // OriginalData.ClientCategory = TempCCForSharewebTask;
                         }
                     })
                 }
                 if (OriginalData?.Item_x0020_Type == "SubComponent" || OriginalData?.Item_x0020_Type == "Feature" || OriginalData?.Item_x0020_Type == "Component") {
-                    let TempCCForCSF: any = [];
-                    AllSiteDataBackup?.map((AllSiteItem: any) => {
-                        if (AllSiteItem?.ClientCategories?.length > 0) {
-                            AllSiteItem?.ClientCategories?.map((ExistingCCItem: any) => {
-                                if (ExistingCCItem.checked == true) {
-                                    TempCCForCSF.push(ExistingCCItem);
-                                }
-                            })
-                        }
-                    })
-                    OriginalData.ClientCategory = TempCCForCSF;
+                    // let TempCCForCSF: any = [];
+                    // AllSiteDataBackup?.map((AllSiteItem: any) => {
+                    //     if (AllSiteItem?.ClientCategories?.length > 0) {
+                    //         AllSiteItem?.ClientCategories?.map((ExistingCCItem: any) => {
+                    //             if (ExistingCCItem.checked == true) {
+                    //                 TempCCForCSF.push(ExistingCCItem);
+                    //             }
+                    //         })
+                    //     }
+                    // })
+                    // OriginalData.ClientCategory = TempCCForCSF;
                 }
                 TempArray.push(OriginalData);
 
@@ -1079,7 +1185,6 @@ const CentralizedSiteComposition = (Props: any) => {
         }
         console.log("Modified Data for Table Items ======", TempArray)
         SelectedChildItems = TempArray;
-
     }, []);
 
 
@@ -1568,7 +1673,7 @@ const CentralizedSiteComposition = (Props: any) => {
                 type={PanelType.custom}
                 customWidth="1500px"
             >
-                <section className="main-container">
+                <section className="main-container mb-5">
                     <div className="Site-composition-and-client-category d-flex full-width my-2">
                         <div className="site-settings-and-site-composition-distributions full-width">
                             <div className="site-settings">

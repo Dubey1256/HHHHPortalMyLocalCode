@@ -154,10 +154,8 @@ const EmployeePieChart = (SelectedProps: any) => {
   const onRenderCustomHeaderMain = () => {
     return (
       <>
-        <div className="subheading alignCenter">
-          <span className="siteColor">
+        <div className="subheading">
             This Week's TimeSheet ({sumBarTime})
-          </span>
         </div>
       </>
     );
