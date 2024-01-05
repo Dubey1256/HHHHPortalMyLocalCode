@@ -133,6 +133,7 @@ function PortfolioTable(SelectedProp: any) {
     } catch (e) {
       console.log(e);
     }
+    componentData=[]
     getTaskType();
     findPortFolioIconsAndPortfolio();
     GetSmartmetadata();
@@ -1764,14 +1765,22 @@ const addedCreatedDataFromAWT = (arr: any, dataToPush: any) => {
   if(dataToPush?.PortfolioId === SelectedProp.props.Id && dataToPush?.ParentTask?.Id === undefined){
     arr.push(dataToPush)
     if(SelectedProp?.UsedFrom=='ProjectManagement'){
-      globalContextData?.LoadAllSiteTasks()
-      globalContextData?.closeCompTaskPopup()
+      try{
+        globalContextData?.projectCallBackTask()
+        globalContextData?.closeCompTaskPopup()
+       }catch(e){
+        console.error(e)
+       }
     }
     return true;
   }else if(dataToPush?.PortfolioId === SelectedProp?.props?.Id && dataToPush?.TaskTypeId ==2 && dataToPush?.ParentTaskId === null){
     if(SelectedProp?.UsedFrom=='ProjectManagement'){
-      globalContextData?.LoadAllSiteTasks()
-      globalContextData?.closeCompTaskPopup()
+      try{
+        globalContextData?.projectCallBackTask()
+        globalContextData?.closeCompTaskPopup()
+       }catch(e){
+        console.error(e)
+       }
     }
     const checkother = arr.filter((item: any) => item.Title === "Others");
     if (checkother?.length === 0) {
@@ -1830,8 +1839,12 @@ const updatedDataDataFromPortfolios = (copyDtaArray: any, dataToUpdate: any) => 
           }
       }
       if(SelectedProp?.UsedFrom=='ProjectManagement'){
-        globalContextData?.portfolioCreationCallBack([dataToUpdate])
-        globalContextData?.closeCompTaskPopup()
+        try{
+          globalContextData?.portfolioCreationCallBack([dataToUpdate])
+          globalContextData?.closeCompTaskPopup()
+         }catch(e){
+          console.error(e)
+         }
       }
   }
   return false;
@@ -1918,15 +1931,18 @@ const updatedDataDataFromPortfolios = (copyDtaArray: any, dataToUpdate: any) => 
       // SelectedProp.props.NoteCall = type;
       // checkedList.NoteCall = type;
      setIsOpenActivity(true);
+     setActiveTile("")
     }
     if (checkedList?.TaskType?.Id == 1) {
       // checkedList.NoteCall = type;
       setIsOpenWorkstream(true);
+      setActiveTile("")
     }
     if (checkedList?.TaskType?.Id == 3) {
       // SelectedProp.props.NoteCall = type;
       // checkedList.NoteCall = type;
     setIsOpenActivity(true);
+    setActiveTile("")
     }
     if (checkedList?.TaskType?.Id == 2) {
       alert("You can not create ny item inside Task");
