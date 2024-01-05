@@ -4,7 +4,6 @@ import Tooltip from '../../../globalComponents/Tooltip';
 import { Button, Tabs, Tab, Col, Nav, Row } from 'react-bootstrap';
 import moment from 'moment';
 import { Web } from 'sp-pnp-js';
-
 import HtmlEditorCard from '../../../globalComponents/./HtmlEditor/HtmlEditor'
 import ImageTabComponenet from './ImageTabComponent'
 import ServiceComponentPortfolioPopup from '../../../globalComponents/EditTaskPopup/ServiceComponentPortfolioPopup';
@@ -24,14 +23,17 @@ const EditDocumentpanel = (props: any) => {
 
   React.useEffect(() => {
     if (props?.editData != undefined) {
-
       if (props?.editData?.Portfolio != undefined) {
         setallSetValue({ ...allValue, componentservicesetdataTag: props?.editData?.Portfolio })
-
+        if (props?.editData != undefined) {
+          props.editData.docTitle = props?.editData.Title.split('.')[0]
+        }
       }
-
-      if (props?.editData != undefined) {
-        props.editData.docTitle = props?.editData.Title.split(props?.editData.File_x0020_Type)[0]
+      if (props?.editData?.Portfolios != undefined) {
+        setallSetValue({ ...allValue, componentservicesetdataTag: props?.editData?.Portfolios[0] })
+        if (props?.editData != undefined) {
+          props.editData.docTitle = props?.editData.Title.split('.')[0]
+        }
       }
       setEditdocumentsData(props?.editData);
       setTimeout(() => {
@@ -41,7 +43,6 @@ const EditDocumentpanel = (props: any) => {
         }
       }, 1000)
     }
-
   }, [])
 
   const handleClosedoc = () => {
@@ -160,11 +161,10 @@ const EditDocumentpanel = (props: any) => {
 
     return (
       <>
-
         <div className='ps-4 siteColor subheading'>
           {true ? `Edit Document Metadata - ${EditdocumentsData?.FileLeafRef}` : null}
         </div>
-        <Tooltip ComponentId={'359'} />
+        <Tooltip ComponentId={'942'} />
       </>
     );
   };
@@ -269,13 +269,12 @@ const EditDocumentpanel = (props: any) => {
                 </div>
                 <div className="input-group mx-4">
                   <label className="form-label full-width">
-                    Portfolio
-
+                    Portfolios
                   </label>
 
                   {allValue?.componentservicesetdataTag != undefined &&
                     <div className="d-flex justify-content-between block px-2 py-1" style={{ width: '85%' }}>
-                      <a target="_blank" data-interception="off" href="HHHH/SitePages/Portfolio-Profile.aspx?taskId=undefined">{allValue?.componentservicesetdataTag.Title}</a>
+                      <a target="_blank" data-interception="off" href={`${props?.AllListId?.siteUrl}/SitePages/Portfolio-Profile.aspx?taskId=${allValue?.componentservicesetdataTag?.Id}`}>{allValue?.componentservicesetdataTag?.Title}</a>
                       <a>
                         <span className="bg-light svg__icon--cross svg__iconbox"></span>
                       </a></div>}
