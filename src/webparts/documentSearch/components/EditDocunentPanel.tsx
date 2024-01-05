@@ -1,33 +1,33 @@
 import * as React from 'react';
 import { Panel, PanelType } from 'office-ui-fabric-react';
 import Tooltip from '../../../globalComponents/Tooltip';
-import { Button, Tabs, Tab } from 'react-bootstrap';
+import { Button, Tabs, Tab, Col, Nav, Row } from 'react-bootstrap';
 import moment from 'moment';
 import { Web } from 'sp-pnp-js';
-import HtmlEditorCard from '../../../globalComponents/HtmlEditor/HtmlEditor';
-import ImagesC from '../../taskprofile/components/ImageTabComponent';
+
+import HtmlEditorCard from '../../../globalComponents/./HtmlEditor/HtmlEditor'
+import ImageTabComponenet from './ImageTabComponent'
 import ServiceComponentPortfolioPopup from '../../../globalComponents/EditTaskPopup/ServiceComponentPortfolioPopup';
-var portfolioItemColor: any = "";
-//import Mycontext from './RelevantDocuments'
+import Mycontext from './RelevantDocuments'
 const EditDocumentpanel = (props: any) => {
   // const contextdata: any = React.useContext<any>(Mycontext)
-  const [, setEditdocpanel] = React.useState(false);
-  const [EditdocumentsData, setEditdocumentsData]: any = React.useState(null);
-  const [servicespopup] = React.useState(false);
-  // const [portfolioItemColor, setPortfolioItemColor]: any = React.useState('');
+  const [Editdocpanel, setEditdocpanel] = React.useState(false);
+  const [EditdocumentsData, setEditdocumentsData] = React.useState(null);
+  const [servicespopup, setservicespopup] = React.useState(false);
+
   const [isOpenImageTab, setisOpenImageTab] = React.useState(false);
   const [isopencomonentservicepopup, setisopencomonentservicepopup] = React.useState(false);
-  //const [editvalue, seteditvalue] = React.useState(null);
-  const [allValue, setallSetValue]: any = React.useState({
+  const [editvalue, seteditvalue] = React.useState(null);
+  const [allValue, setallSetValue] = React.useState({
     Title: "", URL: "", Acronym: "", Description: "", InfoType: "SmartNotes", SelectedFolder: "Public", fileupload: "", LinkTitle: "", LinkUrl: "", taskTitle: "", Dragdropdoc: "", emailDragdrop: "", ItemRank: "", componentservicesetdata: { smartComponent: undefined, linkedComponent: undefined }, componentservicesetdataTag: undefined, EditTaskpopupstatus: false, DocumentType: "", masterTaskdetails: [],
   })
 
   React.useEffect(() => {
     if (props?.editData != undefined) {
 
-      if (props?.editData?.Portfolios != undefined) {
-        setallSetValue({ ...allValue, componentservicesetdataTag: props?.editData?.Portfolios[0] })
-        console.log(allValue);
+      if (props?.editData?.Portfolio != undefined) {
+        setallSetValue({ ...allValue, componentservicesetdataTag: props?.editData?.Portfolio })
+
       }
 
       if (props?.editData != undefined) {
@@ -102,7 +102,7 @@ const EditDocumentpanel = (props: any) => {
     if (allValue.componentservicesetdata.linkedComponent != undefined) {
       componetServicetagData = allValue.componentservicesetdata.linkedComponent.Id;
     }
-    console.log(componetServicetagData);
+
     const web = new Web(props?.AllListId?.siteUrl);
     await web.lists.getById(props?.AllListId?.DocumentsListID)
       .items.getById(EditdocumentsData.Id).update({
@@ -140,11 +140,14 @@ const EditDocumentpanel = (props: any) => {
         } else {
           props.callbackeditpopup();
         }
+
         // GetResult();
       }).catch((err: any) => {
         console.log(err)
       })
+
     // })
+
   }
   const imageTabCallBack = React.useCallback((data: any) => {
     console.log(EditdocumentsData);
@@ -161,7 +164,7 @@ const EditDocumentpanel = (props: any) => {
         <div className='ps-4 siteColor subheading'>
           {true ? `Edit Document Metadata - ${EditdocumentsData?.FileLeafRef}` : null}
         </div>
-        <Tooltip ComponentId={'942'} />
+        <Tooltip ComponentId={'359'} />
       </>
     );
   };
@@ -175,14 +178,12 @@ const EditDocumentpanel = (props: any) => {
     console.log(Type)
     console.log(functionType)
     if (functionType == "Save") {
-      if (DataItem[0]?.PortfolioType?.Title == "Component") {
-        setallSetValue({ ...allValue, componentservicesetdataTag: DataItem[0] })
-        portfolioItemColor = DataItem[0]?.PortfolioType?.Title;
-      }
-      if (DataItem[0]?.PortfolioType?.Title == "Service") {
-        setallSetValue({ ...allValue, componentservicesetdataTag: DataItem[0] })
-        portfolioItemColor = DataItem[0]?.PortfolioType?.Title;
-      }
+      // if (Type == "Component") {
+      setallSetValue({ ...allValue, componentservicesetdataTag: DataItem[0] })
+      // }
+      // if (Type == "Service") {
+      //   setallSetValue({ ...allValue, componentservicesetdataTag: DataItem[0] })
+      // }
       setisopencomonentservicepopup(false);
     }
     else {
@@ -193,10 +194,6 @@ const EditDocumentpanel = (props: any) => {
     setisopencomonentservicepopup(true)
 
 
-  }
-  const unTaggedPortfolioItem = () => {
-    setallSetValue({ ...allValue, componentservicesetdataTag: undefined })
-    //allValue?.componentservicesetdataTag?.Title
   }
   /////////folara editor function start//////////
   const HtmlEditorCallBack = (items: any) => {
@@ -220,13 +217,16 @@ const EditDocumentpanel = (props: any) => {
         isBlocking={false}
         className={servicespopup == true ? "serviepannelgreena" : "siteColor"}
       >
+
+
         <Tabs
           defaultActiveKey="BASICINFORMATION"
           transition={false}
           id="noanim-tab-example"
-          className=""
+          className="rounded-0"
           onSelect={imageta}
         >
+
           <Tab eventKey="BASICINFORMATION" title="BASIC INFORMATION" className='p-0'>
 
             <div className='border border-top-0 p-2'>
@@ -267,22 +267,22 @@ const EditDocumentpanel = (props: any) => {
                     onChange={(e => setallSetValue({ ...allValue, Title: e.target.value }))}
                   />
                 </div>
-
-                <div className={`input-group mx-4 ${portfolioItemColor === 'Service' ? 'serviepannelgreena' : ''}`}>
+                <div className="input-group mx-4">
                   <label className="form-label full-width">
-                    Portfolio Item
+                    Portfolio
+
                   </label>
+
                   {allValue?.componentservicesetdataTag != undefined &&
                     <div className="d-flex justify-content-between block px-2 py-1" style={{ width: '85%' }}>
                       <a target="_blank" data-interception="off" href={`${props?.AllListId?.siteUrl}/SitePages/Portfolio-Profile.aspx?taskId=${allValue?.componentservicesetdataTag?.Id}`}>{allValue?.componentservicesetdataTag?.Title}</a>
                       <a>
-                        <span title="Remove Component" onClick={() => unTaggedPortfolioItem()} className="bg-light svg__icon--cross svg__iconbox">
-                        </span>
-                      </a>
-                    </div>}
+                        <span className="bg-light svg__icon--cross svg__iconbox"></span>
+                      </a></div>}
+
                   {allValue?.componentservicesetdataTag == undefined && <input type="text" className="form-control" readOnly />}
                   <span className="input-group-text" title="Linked Component Task Popup">
-                    <span className="svg__iconbox svg__icon--editBox" onClick={() => opencomonentservicepopup()}></span>
+                    <span className="svg__iconbox svg__icon--editBox" onClick={(e) => opencomonentservicepopup()}></span>
                   </span>
                 </div>
 
@@ -293,12 +293,14 @@ const EditDocumentpanel = (props: any) => {
           <Tab eventKey="IMAGEINFORMATION" title="IMAGE INFORMATION" className='p-0' >
             <div className='border border-top-0 p-2'>
 
-              {isOpenImageTab && <ImagesC EditdocumentsData={EditdocumentsData} AllListId={props.AllListId} Context={props.Context} callBack={imageTabCallBack} />}
+              {isOpenImageTab && <ImageTabComponenet EditdocumentsData={EditdocumentsData} AllListId={props.AllListId} Context={props.Context} callBack={imageTabCallBack} />}
             </div>
           </Tab>
         </Tabs>
         <footer className='text-end mt-2'>
           <div className='col-sm-12 row m-0'>
+
+
             <div className="col-sm-6 text-lg-start">
               <div>
                 {console.log("footerdiv")}
@@ -322,7 +324,7 @@ const EditDocumentpanel = (props: any) => {
             </div>
           </div>
         </footer>
-      </Panel >
+      </Panel>
       {isopencomonentservicepopup &&
         <ServiceComponentPortfolioPopup
 

@@ -4,8 +4,10 @@
 /* eslint-disable @typescript-eslint/no-unused-vars */
 import { Panel, PrimaryButton, TextField, Dropdown, PanelType, IconButton } from 'office-ui-fabric-react';
 import * as React from 'react';
+import Moment from "moment";
 import Tooltip from '../../../globalComponents/Tooltip';
 import { Item, sp, Web } from 'sp-pnp-js';
+// import ReactHtmlParser from 'react-html-parser';
 import {
     Column,
     Table,
@@ -21,6 +23,7 @@ import {
 } from "@tanstack/react-table";
 import GlobalCommanTable from '../../../globalComponents/GroupByReactTableComponents/GlobalCommanTable';
 import { useEffect, useState } from 'react';
+import { HtmlEditorCard } from './FloraCommentBox';
 let portfiloData: any[] = [];
 const HRweb = new Web('https://hhhhteams.sharepoint.com/sites/HHHH/HR');
 
@@ -64,68 +67,73 @@ const AddEditPostion = (props: any) => {
         console.log(elem)
     }, []);
     const getListData = () => {
-        HRweb.lists.getById('e79dfd6d-18aa-40e2-8d6e-930a37fe54e4').items.getAll().then((response: any) => {
-            const updatedData = response.map((itm: { JobSkills: string | undefined; ImpSkills?: { itemParentId: any; }[]; Id: any; }) => {
-                if (itm.JobSkills !== undefined && itm.JobSkills !== '') {
-                    const impSkills = JSON.parse(itm.JobSkills).map((skill: { itemParentId: any; }) => ({
-                        ...skill,
-                        itemParentId: itm.Id,
-                    }));
-                    return {
-                        ...itm,
-                        ImpSkills: impSkills,
-                    };
-                }
-                return itm;
+        HRweb.lists
+            .getById('e79dfd6d-18aa-40e2-8d6e-930a37fe54e4')
+            .items
+            .select('Id', 'Title', 'PositionTitle', 'PositionDescription', 'JobSkills', 'Created', 'Modified', 'Author/Id', 'Author/Title', 'Editor/Id', 'Editor/Title')
+            .expand('Author', 'Editor')
+            .getAll()
+            .then((response: any) => {
+                const updatedData = response.map((itm: { JobSkills: string | undefined; ImpSkills?: { itemParentId: any; }[]; Id: any; Created: any; Modified: any; Author: { Id: any; Title: any; }; Editor: { Id: any; Title: any; }; }) => {
+                    if (itm.JobSkills !== undefined && itm.JobSkills !== '') {
+                        const impSkills = JSON.parse(itm.JobSkills).map((skill: { itemParentId: any; }) => ({
+                            ...skill,
+                            itemParentId: itm.Id,
+                        }));
+                        return {
+                            ...itm,
+                            ImpSkills: impSkills,
+                        };
+                    }
+                    return itm;
+                });
+                setportfiloData(updatedData);
+            })
+            .catch((error: unknown) => {
+                console.error(error);
             });
-            setportfiloData(updatedData);
-        }).catch((error: unknown) => {
-            console.error(error);
-        });
+    };
+
+    const stripHtmlTags = (html: string) => {
+        const doc = new DOMParser().parseFromString(html, 'text/html');
+        return doc.body.textContent || "";
     };
     const delPosition = (itm: any) => {
-        HRweb.lists
-            .getById('E79DFD6D-18AA-40E2-8D6E-930A37FE54E4')
-            .items.getById(itm.Id).recycle().then(() => {
-                let indexToRemove = -1;
-                for (let i = 0; i < portfiloData.length; i++) {
-                    if (portfiloData[i].Id === itm.Id) {
-                        indexToRemove = i;
-                        break;
-                    }
-                }
+        const isConfirmed = window.confirm(`Are you sure you want to delete the position titled "${itm.Title}"?`);
+        if (isConfirmed) {
+            HRweb.lists
+                .getById('E79DFD6D-18AA-40E2-8D6E-930A37FE54E4')
+                .items.getById(itm.Id)
+                .recycle()
+                .then(() => {
+                    const filteredItems = portfiloData.filter((data: { Id: any; }) => data.Id !== itm.Id);
+                    setportfiloData(filteredItems)
+                })
+                .catch((error: any) => {
+                    console.log(error);
+                });
+        }
+    };
 
-                if (indexToRemove !== -1) {
-                    portfiloData.splice(indexToRemove, 1);
-                    console.log("Item with specified Id removed from the array");
-                } else {
-                    console.log("Item with specified Id not found in the array");
-                }
-            }).catch((error: any) => {
-                console.log(error)
-            })
-    }
     const columns = React.useMemo<ColumnDef<any, unknown>[]>(
         () => [
             {
                 accessorKey: "Title",
                 placeholder: "Title",
-                header: "", size: 155,
+                header: "",
+                size: 155,
             },
             {
                 accessorFn: (row) => row?.ImpSkills,
                 cell: ({ row }) => (
                     <>
                         {row?.original?.ImpSkills !== (null || undefined) ?
-                            row?.original?.ImpSkills?.map((items: any) => {
-                                return (
-                                    // eslint-disable-next-line react/jsx-key
-                                    <div className='block w-100'>
-                                        <span className='width-90'>{items?.SkillTitle}</span>
-                                        <span className='ml-auto wid30 svg__iconbox svg__icon--cross light' />
-                                    </div>
-                                )
-                            })
+                            row?.original?.ImpSkills?.map((items: any) => (
+                                <div className='block w-100' key={items?.SkillTitle}>
+                                    <span className='width-90'>{items?.SkillTitle}</span>
+                                    <span className='ml-auto wid30 svg__iconbox svg__icon--cross light' />
+                                </div>
+                            ))
                             : ""}
                         <span id="plusskill">
                             <span className='svg__iconbox svg__icon--Plus' onClick={() => AddSkill(row)} title="Add Skill"></span>
@@ -138,7 +146,15 @@ const AddEditPostion = (props: any) => {
                 header: "",
                 size: 400,
             },
-            { accessorKey: "PositionDescription", placeholder: "Position Description", header: "", },
+            {
+                accessorKey: "PositionDescription",
+                placeholder: "Position Description",
+                header: "",
+                // Custom cell rendering to remove HTML tags
+                cell: ({ row }) => (
+                    <div dangerouslySetInnerHTML={{ __html: row.original.PositionDescription ? stripHtmlTags(row.original.PositionDescription) : '' }} />
+                ),
+            },
             {
                 cell: ({ row }) => (
                     <div className='alignCenter'>
@@ -168,8 +184,6 @@ const AddEditPostion = (props: any) => {
         ],
         [portfiloData]
     );
-    // eslint-disable-next-line @typescript-eslint/no-empty-function
-
     const addMorePosition = () => {
         setisAddPositionPopup(true)
     };
@@ -379,6 +393,16 @@ const AddEditPostion = (props: any) => {
             </>
         );
     };
+    const HtmlEditorCallBackAdd = React.useCallback((EditorData: any) => {
+        if (EditorData.length > 8) {
+            setjobDescription(EditorData);
+        }
+    }, [])
+    const HtmlEditorCallBackEdit = React.useCallback((EditorDataEdit: any) => {
+        if (EditorDataEdit.length > 8) {
+            setEdittableItem({ ...edittableItem, PositionDescription: EditorDataEdit });
+        }
+    }, [edittableItem]);
 
     return (
         <>
@@ -424,12 +448,16 @@ const AddEditPostion = (props: any) => {
                     </div>
                     <div className="input-group my-3">
                         <div className="full-width">Job Description</div>
-                        <textarea
+                        <HtmlEditorCard
+                            editorValue={jobDescription !== undefined && jobDescription !== null ? jobDescription : ''}
+                            HtmlEditorStateChange={HtmlEditorCallBackAdd}
+                        />
+                        {/* <textarea
                             className="form-control"
                             value={jobDescription}
                             onChange={handleDescriptionChange}
                             rows={3} // Set the number of rows as needed
-                        />
+                        /> */}
                     </div>
                     <div className="input-group mb-3">
                         <label className="full_width">Skills Required</label>
@@ -521,62 +549,99 @@ const AddEditPostion = (props: any) => {
                 type={PanelType.medium}
                 closeButtonAriaLabel="Close"
             >
-                <div className="panel panel-default">
-                    <div className="modal-body">
-                        <div className="input-group">
-                            <div className="full-width">Position Title</div>
-                            <input className="form-control" value={edittableItem ? edittableItem.Title : ''} onChange={(e) => setEdittableItem({ ...edittableItem, Title: e.target.value })}
-                                type="text" placeholder="New Position Title" />
-                        </div>
-                        <div className="input-group my-3">
-                            <div className="full-width">Job Description</div>
-                            <textarea
-                                className="form-control"
-                                value={edittableItem ? edittableItem.PositionDescription : ''}
-                                onChange={(e) => setEdittableItem({ ...edittableItem, PositionDescription: e.target.value })}
-                                rows={3} // Set the number of rows as needed
+                <div className="modal- mb-5">
+                    <div className="input-group">
+                        <div className="full-width">Position Title</div>
+                        <input className="form-control" value={edittableItem ? edittableItem.Title : ''} onChange={(e) => setEdittableItem({ ...edittableItem, Title: e.target.value })}
+                            type="text" placeholder="New Position Title" />
+                    </div>
+                    <div className="input-group my-3">
+                        <div className="full-width">Job Description</div>
+                        {edittableItem && (
+                            <HtmlEditorCard
+                                editorValue={edittableItem.PositionDescription || ''}
+                                HtmlEditorStateChange={HtmlEditorCallBackEdit}
                             />
+                        )}
+                    </div>
+                    <div className="input-group">
+                        <label className="full_width">Skills Required</label>
+                        <input
+                            className="form-control"
+                            placeholder="Add Skill"
+                            type="text"
+                            value={SkillOnEdit}
+                            onChange={handleSkillChangeEdit}
+                        />
+                        <div id="plusskill" className='mt-1 ms-1'>
+                            <span
+                                // value={SkillOnEdit}
+                                // iconProps={{ iconName: 'Add' }}
+                                onClick={addSkillsOnlyEdit} className='svg__iconbox svg__icon--Plus'></span>
                         </div>
-                        <div className="input-group">
-                            <label className="full_width">Skills Required</label>
-                            <input
-                                className="form-control"
-                                placeholder="Add Skill"
-                                type="text"
-                                value={SkillOnEdit}
-                                onChange={handleSkillChangeEdit}
-                            />
-                            <div id="plusskill" className='mt-1 ms-1'>
-                                <span
-                                    // value={SkillOnEdit}
-                                    // iconProps={{ iconName: 'Add' }}
-                                    onClick={addSkillsOnlyEdit} className='svg__iconbox svg__icon--Plus'></span>
-                            </div>
-                            {/* <IconButton
+                        {/* <IconButton
                                     id="plusskill"
                                     className="input-addon-tag-icon"
                                     value={SkillOnEdit}
                                     iconProps={{ iconName: 'Add' }}
                                     onClick={addSkillsOnlyEdit}
                                 /> */}
-                            {/* Display the list of skills */}
-                            <div className="col-md-12 pad0">
-                                {edittableItem?.ImpSkills.map.length > 0 &&
-                                    edittableItem?.ImpSkills.map((skillI: any, index: any) => (
-                                        <span key={index} onClick={() => removeSmartSkillEditPop(skillI)} className="block me-1">
-                                            {skillI.SkillTitle}
-                                            <span className="mx-auto ms-2 svg__iconbox svg__icon--cross light" />
-                                        </span>
-                                    ))}
-                            </div>
+                        {/* Display the list of skills */}
+                        <div className="col-md-12 pad0">
+                            {edittableItem?.ImpSkills?.map.length > 0 &&
+                                edittableItem?.ImpSkills?.map((skillI: any, index: any) => (
+                                    <span key={index} onClick={() => removeSmartSkillEditPop(skillI)} className="block me-1">
+                                        {skillI.SkillTitle}
+                                        <span className="mx-auto ms-2 svg__iconbox svg__icon--cross light" />
+                                    </span>
+                                ))}
                         </div>
                     </div>
                 </div>
-
-                <footer className="py-2 clearfix">
-                    <div className="float-end text-end">
-                        <button onClick={updatePosition} type='button' className='btn btn-primary'>Save</button>
-                        <button onClick={editPositionClose} type='button' className='btn btn-default ms-1'>Cancel</button>
+                <footer className="bg-f4 fixed-bottom position-absolute px-4 py-2">
+                    <div className="align-items-center d-flex justify-content-between me-3">
+                        <div>
+                            <div className="">
+                                Created{" "}
+                                <span className="font-weight-normal siteColor">
+                                    {" "}
+                                    {edittableItem?.Created
+                                        ? Moment(edittableItem?.Created).format("DD/MM/YYYY")
+                                        : ""}{" "}
+                                </span>{" "}
+                                By{" "}
+                                <span className="font-weight-normal siteColor">
+                                    {edittableItem?.Author?.Title ? edittableItem?.Author?.Title : ""}
+                                </span>
+                            </div>
+                            <div>
+                                Last modified{" "}
+                                <span className="font-weight-normal siteColor">
+                                    {" "}
+                                    {edittableItem?.Modified
+                                        ? Moment(edittableItem?.Modified).format("DD/MM/YYYY")
+                                        : ""}
+                                </span>{" "}
+                                By{" "}
+                                <span className="font-weight-normal siteColor">
+                                    {edittableItem?.Editor?.Title ? edittableItem?.Editor.Title : ""}
+                                </span>
+                            </div>
+                            <div>
+                                <a className="hreflink siteColor">
+                                    <span className="alignIcon svg__iconbox hreflink mini svg__icon--trash"></span>
+                                    <span
+                                        onClick={() => delPosition(edittableItem?.ID)}
+                                    >
+                                        Delete This Item
+                                    </span>
+                                </a>
+                            </div>
+                        </div>
+                        <div className="float-end text-end">
+                            <button onClick={updatePosition} type='button' className='btn btn-primary'>Save</button>
+                            <button onClick={editPositionClose} type='button' className='btn btn-default ms-1'>Cancel</button>
+                        </div>
                     </div>
                 </footer>
             </Panel>

@@ -86,9 +86,23 @@ const Profilcandidate = (props: any) => {
     const EditPopupClose = () => {
         setIsEditPopupOpen(false);
     };
-    const callbackEdit = (Id:any) => {
+    const callbackEdit = (Id: any) => {
         EmployeeDetails(Id)
     }
+    const formatExperience = (experience: number) => {
+        const years = Math.floor(experience);
+        const months = Math.round((experience % 1) * 12);
+
+        if (years > 0 && months > 0) {
+            return `${years} year${years > 1 ? 's' : ''} ${months} month${months > 1 ? 's' : ''}`;
+        } else if (years > 0) {
+            return `${years} year${years > 1 ? 's' : ''}`;
+        } else if (months > 0) {
+            return `${months} month${months > 1 ? 's' : ''}`;
+        } else {
+            return 'No experience';
+        }
+    };
     return (
         <myContextValue.Provider value={{ ...myContextValue, allSite: allSite, allListId: allListId, loggedInUserName: props.props?.userDisplayName }}>
             {isEditPopupOpen ? <EditPopup EditPopupClose={EditPopupClose} callbackEdit={callbackEdit} item={selectedItem} ListID={'298bc01c-710d-400e-bf48-8604d297c3c6'} /> : ''}
@@ -110,10 +124,10 @@ const Profilcandidate = (props: any) => {
                                 <div className="bg-Fa profileLeftSec col-md-3">Position</div>
                                 <div className='bg-Ff profileRightSec col-md-9'>{EmployeeData?.Positions?.Title} </div>
                             </div>
-                            <div className='profileHead'>
-                                <div className="bg-Fa profileLeftSec col-md-3">Experience</div>
-                                <div className='bg-Ff profileRightSec col-md-9'>{EmployeeData?.Experience} </div>
-                            </div>
+                                <div className='profileHead'>
+                                    <div className="bg-Fa profileLeftSec col-md-3">Experience</div>
+                                    <div className='bg-Ff profileRightSec col-md-9'>{formatExperience(EmployeeData?.Experience)} </div>
+                                </div>    
                             <div className='profileHead'>
                                 <div className="bg-Fa profileLeftSec col-md-3">Application Date</div>
                                 <div className='bg-Ff profileRightSec col-md-9'>{EmployeeData?.Date != undefined ? moment(EmployeeData?.Date)?.format('DD-MM-YYYY') : ""} </div>
@@ -129,11 +143,34 @@ const Profilcandidate = (props: any) => {
                             <div className='profileHead'>
                                 <div className="bg-Fa profileLeftSec col-md-3">Platform</div>
                                 <div className='bg-Ff profileRightSec col-md-9'>
-                                    {EmployeeData?.Platform && EmployeeData?.Platform.length > 0
-                                        ? EmployeeData.Platform.join(', ')
-                                        : 'No Platform specified'}
+                                    {EmployeeData?.SelectedPlatforms ? (
+                                        (() => {
+                                            try {
+                                                const platformsArray = JSON.parse(EmployeeData.SelectedPlatforms);
+
+                                                if (Array.isArray(platformsArray) && platformsArray.length > 0) {
+                                                    return platformsArray
+                                                        .filter(platform => platform.selected)
+                                                        .map((platform, index) => (
+                                                            <React.Fragment key={platform.name}>
+                                                                {index > 0 && ', '}
+                                                                {platform.name}
+                                                            </React.Fragment>
+                                                        ));
+                                                }
+                                            } catch (error) {
+                                                console.error('Error parsing SelectedPlatforms:', error);
+                                            }
+
+                                            return '';
+                                        })()
+                                    ) : (
+                                        'No Platform specified'
+                                    )}
                                 </div>
                             </div>
+
+
                         </div>
 
                     </div>
@@ -181,7 +218,7 @@ const Profilcandidate = (props: any) => {
                                         <span className="svg__iconbox svg__icon--document"></span>
                                     </span>
                                     <span style={{ display: document.File_x0020_Type !== 'aspx' ? 'inline' : 'none' }}>
-                                        <a href={`${document.EncodedAbsUrl}?web=1`} target="_blank">
+                                        <a href={`${document.EncodedAbsUrl}?web=1`} target="_blank" rel="noopener noreferrer">
                                             <span>
                                                 <span style={{ display: document.FileLeafRef !== 'undefined' ? 'inline' : 'none' }}>
                                                     {document.FileLeafRef}

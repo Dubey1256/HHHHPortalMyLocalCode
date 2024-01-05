@@ -529,7 +529,7 @@ export default function FroalaCommnetBoxes(textItems: any) {
                                             Context={Context}
                                             ApprovalStatus={ApprovalStatus}
                                             isCurrentUserApprover={isCurrentUserApprover}
-                                            SmartLightStatus={obj.isShowLight}
+                                            SmartLightStatus={obj?.isShowLight}
                                         />
                                     </div>
                                     <div>
@@ -541,7 +541,7 @@ export default function FroalaCommnetBoxes(textItems: any) {
                                             callBack={subTextCallBack}
                                             allUsers={textItems.allUsers}
                                             ApprovalStatus={ApprovalStatus}
-                                            SmartLightStatus={SmartLightStatus}
+                                            SmartLightStatus={obj?.isShowLight}
                                             SmartLightPercentStatus={SmartLightPercentStatus}
                                             isCurrentUserApprover={isCurrentUserApprover}
                                             Context={Context}

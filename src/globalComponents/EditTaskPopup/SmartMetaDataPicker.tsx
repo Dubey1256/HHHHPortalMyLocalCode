@@ -4,7 +4,7 @@ import { Panel, PanelType } from 'office-ui-fabric-react';
 import "bootstrap/dist/css/bootstrap.min.css";
 import { ImPriceTags } from 'react-icons/im';
 import Tooltip from '../Tooltip';
-import { SlArrowRight } from "react-icons/sl";
+
 
 var NewArray: any = []
 var AutoCompleteItems: any = [];
@@ -319,7 +319,7 @@ const Picker = (item: any) => {
                                 </div>
                             </div>
                             {select?.length > 0 ?
-                                <div className="full-width">
+                                <div className="border full-width ActivityBox">
                                     {select.map((val: any) => {
                                         return (
                                             <span className="block me-1">
@@ -343,7 +343,6 @@ const Picker = (item: any) => {
                                                                 style={{ height: "12px", width: "18px" }} src={item.Item_x005F_x0020_Cover.Url} />
                                                             {item.Title}
                                                         </a>
-                                                        {item?.childs?.length > 0 && <span className="pull-right"><SlArrowRight /></span>}
                                                     </p>
                                                 }
                                                 <ul className="sub-menu clr mar0">
@@ -357,7 +356,7 @@ const Picker = (item: any) => {
                                                                                 {child1.Item_x005F_x0020_Cover ? <img className="flag_icon"
                                                                                     style={{ height: "12px", width: "18px;" }}
                                                                                     src={child1.Item_x005F_x0020_Cover.Url} /> :
-                                                                                 <span className="me-4"></span>}
+                                                                                    <span className="me-4"></span>}
                                                                                 {child1.Title}
                                                                                 {child1.Description1 ? <div className='popover__wrapper ms-1' data-bs-toggle="tooltip" data-bs-placement="auto">
                                                                                     <span className="alignIcon  svg__iconbox svg__icon--info"></span>
@@ -365,11 +364,10 @@ const Picker = (item: any) => {
                                                                                         <span>{child1.Description1}</span>
                                                                                     </div>
                                                                                 </div> : null}
-                                                                                 {child1?.childs?.length > 0 && <span  className="pull-right"><SlArrowRight /></span>}
+
                                                                             </a>
-                                                                      
                                                                         </p>
-                                                                       
+
                                                                         <ul className="sub-menu clr mar0">
                                                                             {
                                                                                 child1.childs?.map((subChilds: any) => {
@@ -383,7 +381,7 @@ const Picker = (item: any) => {
                                                                                                         null}
                                                                                                     {subChilds.Title}
                                                                                                     {subChilds.Description1 ? <div className='popover__wrapper ms-1' data-bs-toggle="tooltip" data-bs-placement="auto">
-                                                                                                        <span className="alignIcon  svg__iconbox svg__icon--info"></span>
+                                                                                                        <span className="alignIcon   svg__iconbox svg__icon--info"></span>
                                                                                                         <div className="popover__content">
                                                                                                             <span ng-bind-html="child1.Description1 | trustedHTML">{subChilds.Description1}</span>
                                                                                                         </div>
@@ -402,7 +400,6 @@ const Picker = (item: any) => {
                                                         )
                                                     })}
                                                 </ul>
-                                              
                                             </li>
                                         </>
                                     )

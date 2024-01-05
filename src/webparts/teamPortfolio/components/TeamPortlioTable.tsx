@@ -492,11 +492,8 @@ function TeamPortlioTable(SelectedProp: any) {
                                 if (result?.projectStructerId && title || formattedDueDate) {
                                     result.joinedData.push(`Project ${result?.projectStructerId} - ${title}  ${formattedDueDate == "Invalid date" ? '' : formattedDueDate}`)
                                 }
-                                result.SmartPriority = globalCommon.calculateSmartPriority(result, ProjectData);
-                            } else {
-                                result.projectPriorityOnHover = 1;
-                                result.SmartPriority = globalCommon.calculateSmartPriority(result, '');
                             }
+                            result.SmartPriority = globalCommon.calculateSmartPriority(result);
                             result["Item_x0020_Type"] = "Task";
                             TasksItem.push(result);
                             AllSiteTasksDataBackGroundLoad.push(result)
@@ -731,11 +728,9 @@ function TeamPortlioTable(SelectedProp: any) {
                                 if (result?.projectStructerId && title || formattedDueDate) {
                                     result.joinedData.push(`Project ${result?.projectStructerId} - ${title}  ${formattedDueDate == "Invalid date" ? '' : formattedDueDate}`)
                                 }
-                                result.SmartPriority = globalCommon.calculateSmartPriority(result, ProjectData);
-                            } else {
-                                result.projectPriorityOnHover = 1;
-                                result.SmartPriority = globalCommon.calculateSmartPriority(result, '');
+                                
                             }
+                            result.SmartPriority = globalCommon.calculateSmartPriority(result);
                             result["Item_x0020_Type"] = "Task";
                             TasksItem.push(result);
                             AllTasksData.push(result);
@@ -1981,19 +1976,14 @@ function TeamPortlioTable(SelectedProp: any) {
     };
     const onRenderCustomHeaderMain1 = () => {
         return (
-            <div className="d-flex full-width pb-1">
-                <div
-                    style={{
-                        marginRight: "auto",
-                        fontSize: "20px",
-                        fontWeight: "600",
-                        marginLeft: "20px",
-                    }}
-                >
-                    <span>{`Create Component `}</span>
+            <>
+                <div className="subheading alignCenter">
+                    <>
+                    {checkedList != null && checkedList!= undefined && checkedList?.SiteIconTitle != undefined && checkedList?.SiteIconTitle != null ? <span className="Dyicons me-2" >{checkedList?.SiteIconTitle}</span> : '' } {`${checkedList != null && checkedList!= undefined && checkedList?.Title != undefined && checkedList?.Title != null ? checkedList?.Title
+                        + '- Create Child Component' : 'Create Component'}`}</>
                 </div>
                 <Tooltip ComponentId={checkedList?.Id} />
-            </div>
+            </>
         );
     };
 
@@ -2247,19 +2237,12 @@ function TeamPortlioTable(SelectedProp: any) {
     }
     const onRenderCustomHeaderMain = () => {
         return (
-            <div className="d-flex full-width pb-1">
-                <div
-                    style={{
-                        marginRight: "auto",
-                        fontSize: "20px",
-                        fontWeight: "600",
-                        marginLeft: "20px",
-                    }}
-                >
-                    <span>{`Create Item`}</span>
+            <>
+                <div className="alignCenter subheading">
+                    {`Create Item`}
                 </div>
                 <Tooltip ComponentId={1746} />
-            </div>
+            </>
         );
     };
 
@@ -2385,8 +2368,8 @@ function TeamPortlioTable(SelectedProp: any) {
                         <div id="portfolio" className="section-event pt-0">
                             {checkedList != undefined &&
                                 checkedList?.TaskType?.Title == "Workstream" ? (
-                                <div className="mt-4 clearfix">
-                                    <h4 className="titleBorder "> Type</h4>
+                                <div className="mt-2 clearfix">
+                                    <label className="titleBorder full-width f-14"> Type</label>
                                     <div className="col p-0 taskcatgoryPannel">
                                         <a id="subcategorytasks936" onClick={(e) => CreateActivityPopup("Task")} className="bg-siteColor subcategoryTask text-center">
                                             <span className="tasks-label">Bug</span>
@@ -2406,8 +2389,8 @@ function TeamPortlioTable(SelectedProp: any) {
                                     </div>
                                 </div>
                             ) : (
-                                <div className="mt-4 clearfix">
-                                    <h4 className="titleBorder "> Type</h4>
+                                <div className="mt-2 clearfix">
+                                    <label className="titleBorder f-14 full-width">Type</label>
                                     <div className="col p-0 taskcatgoryPannel">
                                         <a id="subcategorytasks936" onClick={(e) => CreateActivityPopup("Implementation")} className="bg-siteColor subcategoryTask text-center">
                                             <span className="tasks-label">Implmentation</span>
@@ -2426,14 +2409,16 @@ function TeamPortlioTable(SelectedProp: any) {
                             )}
                         </div>
                     </div>
-                    <button
+                </div>
+                <footer className="modal-footer mt-2">
+                <button
                         type="button"
                         className="btn btn-default btn-default ms-1 pull-right"
                         onClick={closeActivity}
                     >
                         Cancel
                     </button>
-                </div>
+                </footer>
             </Panel>
             {isOpenActivity && (
                 <CreateActivity

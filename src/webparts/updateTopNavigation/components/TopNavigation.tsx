@@ -24,7 +24,14 @@ const TopNavigation = (dynamicData: any) => {
   const [sorting, setSorting] = React.useState(false);
   const [changeroot, setChangeroot] = React.useState(false);
   const [versionHistoryPopup, setVersionHistoryPopup] = React.useState(false);
-
+  try {
+    $("#spPageCanvasContent").removeClass();
+    $("#spPageCanvasContent").addClass("hundred");
+    $("#workbenchPageContent").removeClass();
+    $("#workbenchPageContent").addClass("hundred");
+  } catch (e) {
+    console.log(e);
+  }
   const [postData, setPostData] = React.useState<any>({
     Title: "",
     Url: "",
@@ -46,6 +53,14 @@ const TopNavigation = (dynamicData: any) => {
   const [isVisible, setisVisible] = React.useState(false);
   const [isNoShow, setisNoShow] = React.useState(false);
   const [owner, setOwner] = React.useState(false);
+  try {
+    $("#spPageCanvasContent").removeClass();
+    $("#spPageCanvasContent").addClass("hundred");
+    $("#workbenchPageContent").removeClass();
+    $("#workbenchPageContent").addClass("hundred");
+  } catch (e) {
+    console.log(e);
+  }
 
   const [editableOrder, setEditableOrder] = React.useState(null);
 
@@ -531,6 +546,7 @@ const TopNavigation = (dynamicData: any) => {
         <div className="col-sm-9 text-primary">
           <h6 className="pull-right">
             <b>
+            <span className="hyperlink me-3" onClick={() => sortItem(root)} >Change Sort Order</span>
               <a
                 data-interception="off"
                 target="_blank"
@@ -542,11 +558,9 @@ const TopNavigation = (dynamicData: any) => {
           </h6>
         </div>
       </div>
-      <div className="container mt-2" id="TopNavRound">
-        <ul className="top-navigate mt-4">
-          <li className="parent" onClick={() => AddNewItem("New")}>
-            <span className="alignIcon  svg__iconbox svg__icon--Plus"></span> Add New{" "}
-          </li>
+      <div className="container mt-2 newupdatenav p-0"  id="TopNavRound">
+        <ul className="top-navigate mt-4 p-0">
+       
           {root.map((item) => {
             return (
               <>
@@ -563,21 +577,18 @@ const TopNavigation = (dynamicData: any) => {
 
                   <span>
                     {" "}
-                    <a href={item.href?.Url}>{item.Title}</a>
+                    <a data-interception="off" target="_blank" href={item.href?.Url}>{item.Title}</a>
                   </span>
-                  <span className="float-end">
+                  <span className="float-end ms-2">
                     <span
                       className="svg__iconbox svg__icon--editBox"
                       onClick={() => editPopup(item)}
                     ></span>
-                    <span
-                      className="svg__iconbox svg__icon--Switcher"
-                      onClick={() => sortItem(root)}
-                    ></span>
-                    <span
+                   
+                    {/* <span
                       className="svg__iconbox svg__icon--trash"
                       onClick={() => deleteDataFunction(item)}
-                    ></span>
+                    ></span> */}
                   </span>
                   <ul className="sub-menu">
                     <li onClick={() => AddNewItem(item)}>
@@ -601,7 +612,7 @@ const TopNavigation = (dynamicData: any) => {
                               </span>
                             )}
                             <span>
-                              <a href={child.href?.Url}>{child.Title}</a>
+                              <a data-interception="off" target="_blank" href={child.href?.Url}>{child.Title}</a>
                             </span>
                             <span className="float-end">
                               <span
@@ -638,14 +649,9 @@ const TopNavigation = (dynamicData: any) => {
                                           <img src={subchild?.image} />
                                         </span>
                                       )}
+                                     
                                       <span>
-                                        <img
-                                          src={subchild?.image}
-                                          className="workmember"
-                                        />
-                                      </span>
-                                      <span>
-                                        <a href={subchild.href?.Url}>
+                                        <a data-interception="off" target="_blank" href={subchild.href?.Url}>
                                           {subchild.Title}
                                         </a>
                                       </span>
@@ -706,7 +712,7 @@ const TopNavigation = (dynamicData: any) => {
                                                     />
                                                   </span>
                                                   <span>
-                                                    <a
+                                                    <a data-interception="off" target="_blank"
                                                       href={
                                                         subchildLast.href?.Url
                                                       }
@@ -758,6 +764,9 @@ const TopNavigation = (dynamicData: any) => {
               </>
             );
           })}
+             <li className="parent" onClick={() => AddNewItem("New")}>
+            <span className="alignIcon  svg__iconbox svg__icon--Plus bg-white"></span> Add New{" "}
+          </li>
         </ul>
       </div>
       <Panel

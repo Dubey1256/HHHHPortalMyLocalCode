@@ -1402,8 +1402,8 @@ function EditProjectPopup(item: any) {
       >
         {EditData != undefined && EditData.Title != undefined && (
           <div id="EditGrueneContactSearch">
-            <div className="modal-body">
-              <ul className="nav nav-tabs" id="myTab" role="tablist">
+            <div className="modal-body mb-5">
+              <ul className="fixed-Header nav nav-tabs" id="myTab" role="tablist">
                 <li className="nav-item" role="presentation">
                   <button
                     className="nav-link active"
@@ -2277,7 +2277,7 @@ function EditProjectPopup(item: any) {
               </div>
             </div>
 
-            <footer className="bg-f4" style={{ position: "absolute", bottom: "0", width: "100%", zIndex: "9" }}>
+            <footer className="bg-f4" style={{ position: "absolute", bottom: "0", width: "100%", zIndex: "9", left:"0px" }}>
               <div className="align-items-center d-flex justify-content-between me-3 px-4 py-2">
                 <div>
                   <div>
