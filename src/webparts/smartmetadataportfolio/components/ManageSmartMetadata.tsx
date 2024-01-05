@@ -126,6 +126,7 @@ export default function ManageSmartMetadata(selectedProps: any) {
             ShowingCategoriesTabsData(TabsFilter[0]?.Title)
         } else
             setSmartmetadata(TabsFilter);
+        childRefdata?.current?.setRowSelection({});
     };
     const ShowingCategoriesTabsData = (tabData: any) => {
         TabsFilter = [];
@@ -140,6 +141,7 @@ export default function ManageSmartMetadata(selectedProps: any) {
             }
         });
         setSmartmetadata(TabsFilter);
+        childRefdata?.current?.setRowSelection({});
     }
     const EditSmartMetadataPopup = (item: any) => {
         setSelectedSmartMetadataItem(item);

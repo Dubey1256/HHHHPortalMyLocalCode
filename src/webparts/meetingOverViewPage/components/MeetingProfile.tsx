@@ -21,7 +21,7 @@ import moment from 'moment';
 import SmartInformation from '../../taskprofile/components/SmartInformation';
 import RelevantDocuments from '../../taskprofile/components/RelevantDocuments';
 import MeetingPopupComponent from '../../../globalComponents/MeetingPopup/MeetingPopup';
-import TagTaskToProjectPopup from '../../projectManagement/components/TagTaskToProjectPopup';
+// import TagTaskToProjectPopup from '../../projectManagement/components/TagTaskToProjectPopup';
 import MettingTable from './MeetingFooterTable';
 import { map } from 'jquery';
 var count = 0;
@@ -288,10 +288,13 @@ const MeetingProfile = (props: any) => {
 
             });
           }
-          let siteTaggJson: any = taskDetails.Sitestagging != undefined ? JSON.parse(taskDetails.Sitestagging) : null
+          let siteTaggJson: any = taskDetails?.Sitestagging != undefined ? JSON.parse(taskDetails?.Sitestagging) : null
           let siteTagg2: any = []
           allData.map((item: any) => {
-            siteTagg2 = siteTagg2.concat(siteTaggJson.filter((data: any) => data.Id == item.Id && data.siteType == item.siteType))
+            if(siteTaggJson?.length>0){
+             siteTagg2 = siteTagg2.concat(siteTaggJson?.filter((data: any) => data.Id == item.Id && data.siteType == item.siteType))
+            }
+            
           })
 
           var array2: any = taskDetails["AssignedTo"] != undefined ? taskDetails["AssignedTo"] : []
@@ -878,36 +881,35 @@ const MeetingProfile = (props: any) => {
   return (
     <>
       <mycontextValue.Provider value={{ ...mycontextValue, AllListId: AllListId, Context: props?.props?.Context, currentUser: currentUser, taskUsers: taskUsers }}>
-        <div>
-          {console.log("resultData", resultData)}
-          <section className='row'>
-            <h2 className="heading d-flex ps-0 justify-content-between align-items-center">
-              <span>
-                {/* {resultData["SiteIcon"] != "" && <img className="imgWid29 pe-1 " title={resultData?.siteType} src={resultData["SiteIcon"]} />}
-                            {resultData["SiteIcon"] === "" && <img className="imgWid29 pe-1 " src="" />} */}
-                <span className='popover__wrapper ms-1' data-bs-toggle="tooltip" data-bs-placement="auto">
-                  <span >
-                    {resultData['MeetingId']} - {resultData['Title']}</span>
-                  {/* <span className="f-13 popover__content" >
-                                    {resultData['Title']}
-                                </span> */}
-                </span>
-                <a className="hreflink" title='Edit'
+       <section>  <ul className="spfxbreadcrumb mb-2  mt-16 p-0">
+                <li>
+                  <a href={`${props?.props?.siteUrl}/SitePages/Meeting-Overview.aspx`}>
+                    Meeting Overview
+                  </a>
+                </li>
+                  
+                <li>
+                  {" "}
+                  <a>{resultData?.Title}</a>{" "}
+                </li>
+              </ul>
+              </section>
+      
+         
+          <section>
+            <h2 className=" d-flex ps-0 justify-content-between align-items-center">
+                <span className='heading popover__wrapper' data-bs-toggle="tooltip" data-bs-placement="auto">
+                    {resultData['MeetingId']} - {resultData['Title']}
+                    <a className="hreflink ms-1" title='Edit'
                   onClick={() => setshowMeetingPopup(true)}
-                > <span className='svg__iconbox svg__icon--edit'></span></a>
+                > <span className='alignIcon svg__iconbox svg__icon--edit'></span></a>
+                </span>
+         
 
-              </span>
-              {resultData.Id != null && <span>< TagTaskToProjectPopup projectItem={resultData}
-                className="ms-2"
-                meetingPages={true}
-                projectId={resultData.ID}
-                AllListId={AllListId}
-                callBack={tagAndCreateCallBack}
-                projectTitle={resultData.Title} /> </span>}
             </h2>
           </section>
 
-        </div>
+      
 
         <div className='row'>
           <section className='col-9 ps-0'>
