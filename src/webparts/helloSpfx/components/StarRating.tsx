@@ -24,9 +24,9 @@ const StarRating: React.FC<{ rating: Rating; onRatingSelected: (rating: Rating) 
     useEffect(() => {
         const updateStars = () => {
             const newStars = [];
-            for (let i = 0; i < rating.max; i++) {
+            for (let i = 0; i < rating.max/2; i++) {
                 newStars.push({
-                    filled: i < rating.current,
+                    filled: i < Math.floor(rating.current / 2),
                 });
             }
             setStars(newStars);
@@ -38,8 +38,9 @@ const StarRating: React.FC<{ rating: Rating; onRatingSelected: (rating: Rating) 
     const toggle = (index: number) => {
         const updatedRating: Rating = {
             ...rating,
-            current: index + 1,
+            current: (index + 1) * 2,
         };
+    
         onRatingSelected(updatedRating);
     };
 
