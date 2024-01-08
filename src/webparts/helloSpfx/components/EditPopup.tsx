@@ -9,7 +9,6 @@ import StarRating from './StarRating';
 
 import Tooltip from '../../../globalComponents/Tooltip';
 import './Recruitment.css'
-import CreateContactComponent from '../../contactSearch/components/contact-search/popup-components/CreateContact';
 import moment from 'moment-timezone';
 import { Row } from 'react-bootstrap';
 import { Col } from 'reactstrap';
@@ -25,7 +24,6 @@ const EditPopup = (props: any) => {
     const [overAllRemark, setoverAllRemark] = useState(props.item.Remarks);
     const [selectedStatus, setSelectedStatus] = useState(props.item.Status0);
     const [Motivation, setMotivation] = useState(props.item.Motivation)
-    const [CreateContactStatus, setCreateContactStatus] = useState(false)
     const [experienceYears, setExperienceYears] = useState<number>();
     const [experienceMonths, setExperienceMonths] = useState<number>();
     const [showAddDocumentPanel, setShowAddDocumentPanel] = useState(false);
@@ -182,7 +180,6 @@ const EditPopup = (props: any) => {
             EmployeeData = updateData
             handleUpload(props.item.Id)
             console.log("Item updated successfully");
-            setCreateContactStatus(true)
             props.callbackEdit(props.item.Id);
 
         } catch (error) {
@@ -396,8 +393,6 @@ const EditPopup = (props: any) => {
         );
     };
     const ClosePopup = React.useCallback(() => {
-
-        setCreateContactStatus(false);
         props.EditPopupClose()
 
     }, []);
@@ -696,7 +691,6 @@ const EditPopup = (props: any) => {
                     </div>
                 </div>
             </footer>
-            {CreateContactStatus ? <CreateContactComponent callBack={ClosePopup} data={EmployeeData} pageName={"Recruiting-Tool"} /> : null}
             {showAddDocumentPanel && (
                 <Panel
                     isOpen={true}
