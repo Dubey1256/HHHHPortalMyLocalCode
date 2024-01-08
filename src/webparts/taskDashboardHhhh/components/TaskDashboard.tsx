@@ -732,15 +732,18 @@ const TaskDashboard = (props: any) => {
                 accessor: "Title",
                 showSortIcon: true,
                 Cell: ({ row }: any) => (
-                    <span>
-                        <a className='hreflink'
+                    <span className="alignCenter">
+         
+                    <span className='columnFixedTitle' >
+                        <a className='hreflink text-content'
                             href={`${AllListId?.siteUrl}/SitePages/Task-Profile.aspx?taskId=${row?.original?.Id}&Site=${row?.original?.siteType}`}
                             data-interception="off"
                             target="_blank"
                         >
                             {row?.values?.Title}
-                        </a>
-                        {row?.original?.descriptionsSearch?.length > 0 && <span className='alignIcon  mt--5 '><InfoIconsToolTip Discription={row?.original?.descriptionsSearch} row={row?.original} /></span>}
+                        </a> </span>
+                        {row?.original?.descriptionsSearch?.length > 0 && <InfoIconsToolTip Discription={row?.original?.descriptionsSearch} row={row?.original} />}
+                   
                     </span>
                 ),
             },
@@ -927,14 +930,16 @@ const TaskDashboard = (props: any) => {
                 accessor: "Title",
                 showSortIcon: true,
                 Cell: ({ row }: any) => (
-                    <span className="d-flex">
-                        <a className='hreflink'
+                    <span className="alignCenter">
+                        <span className='columnFixedTitle'>
+                        <a className='hreflink text-content'
                             href={`${AllListId?.siteUrl}/SitePages/Task-Profile.aspx?taskId=${row?.original?.Id}&Site=${row?.original?.siteType}`}
                             data-interception="off"
                             target="_blank"
                         >
                             {row?.values?.Title}
                         </a>
+                        </span>
                         {row?.original?.Body !== null && <InfoIconsToolTip Discription={row?.original?.bodys} row={row?.original} />
                         }
 
@@ -1057,7 +1062,7 @@ const TaskDashboard = (props: any) => {
                             title="Click To Edit Timesheet"
                         >
                             <span
-                                className="svg__iconbox svg__icon--clock"
+                                className="alignIcon svg__iconbox svg__icon--clock"
                                 data-bs-toggle="tooltip"
                                 data-bs-placement="bottom"
                                 title="Click To Edit Timesheet"
@@ -1066,7 +1071,7 @@ const TaskDashboard = (props: any) => {
                         <span
                             title="Edit Task"
                             onClick={() => EditPopup(row?.original)}
-                            className="svg__iconbox svg__icon--edit hreflink"
+                            className="alignIcon svg__iconbox svg__icon--edit hreflink"
                         ></span>
                     </>
 

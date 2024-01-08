@@ -759,7 +759,7 @@ const TopNavigation = (dynamicData: any) => {
             );
           })}
              <li className="parent" onClick={() => AddNewItem("New")}>
-            <span className="alignIcon  svg__iconbox svg__icon--Plus bg-white"></span> Add New{" "}
+            <span className="alignIcon  svg__iconbox svg__icon--Plus bg-white"></span> Add Level{" "}
           </li>
         </ul>
       </div>
