@@ -557,7 +557,8 @@ const CentralizedSiteComposition = (Props: any) => {
         let directChildT = FlatViewTableData?.filter((elem: any) => elem.Portfolio?.Id === ItemDetails?.Id && elem?.TaskType?.Title == "Task" && (elem?.ParentTask?.Title == undefined || elem?.ParentTask?.Title == null));
         if (directChildAW?.length > 0) {
             directChildAW?.map((OtherItem: any) => {
-                AWTGrouping(OtherItem, "CSF");
+                OtherItem.subRows = []
+                AWTGroupingForCSF(OtherItem, directChildAW);
             })
         }
         let FindAllDirectAWT: any = directChildAW?.filter((elem: any) => (elem?.ParentTask?.Title == undefined || elem?.ParentTask?.Title == null) && elem?.TaskType?.Title !== "Task")
@@ -660,6 +661,25 @@ const CentralizedSiteComposition = (Props: any) => {
         })
         items.subRows = items?.subRows?.concat(findActivity)
     }
+
+    const AWTGroupingForCSF = (items: any, AllAWT: any) => {
+        let findActivityCSF = AllAWT?.filter((elem: any) => elem?.ParentTask?.Id === items?.Id && elem?.TaskType?.Id == 3);
+        let findDirectTaskAWT = AllAWT?.filter((elem: any) => elem?.ParentTask?.Id === items?.Id && elem?.TaskType?.Id == 2);
+        findActivityCSF?.forEach((act: any) => {
+            act.subRows = [];
+            if (act?.ClientCategory?.length > 0) {
+                AllClientCategoryBucket = AllClientCategoryBucket.concat(act?.ClientCategory);
+            }
+            let workStreamAndTask = AllAWT?.filter((taskData: any) => taskData?.ParentTask?.Id === act?.Id && taskData?.siteType === act?.siteType)
+            if (workStreamAndTask.length > 0) {
+                act.subRows = act?.subRows?.concat(workStreamAndTask);
+            }
+        })
+        items.subRows = items?.subRows?.concat(findActivityCSF);
+        items.subRows = items?.subRows?.concat(findDirectTaskAWT);
+        return items;
+    }
+
 
     const AWTGrouping = (items: any, FnUsedFor: any) => {
         console.log("this is the AWTGrouping function")
