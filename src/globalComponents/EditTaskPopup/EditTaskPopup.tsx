@@ -246,7 +246,7 @@ const EditTaskPopup = (Items: any) => {
     ]);
 
     const [counter, setCounter] = useState(1);
-    const [loaded, setLoaded] = React.useState(true);
+    
 
     const handlePostComment = () => {
         setCounter(counter + 1);
