@@ -51,7 +51,7 @@ import BackgroundCommentComponent from "./BackgroundCommentComponent";
 import EmailNotificationMail from "./EmailNotificationMail";
 import OnHoldCommentCard from '../Comments/OnHoldCommentCard';
 import CentralizedSiteComposition from "../SiteCompositionComponents/CentralizedSiteComposition";
-const [loaded, setLoaded] = React.useState(true);
+
 let PortfolioItemColor: any = "";
 var AllMetaData: any = [];
 var taskUsers: any = [];
@@ -111,6 +111,7 @@ const EditTaskPopup = (Items: any) => {
     Items.Items.Id =
         Items.Items.Id != undefined ? Items.Items.Id : Items.Items.ID;
     let ShareWebConfigData: any = [];
+    const [loaded, setLoaded] = React.useState(true);
     const [TaskImages, setTaskImages] = useState([]);
     const [SmartMetaDataAllItems, setSmartMetaDataAllItems] = useState<any>([]);
     const [IsComponentPicker, setIsComponentPicker] = useState(false);
