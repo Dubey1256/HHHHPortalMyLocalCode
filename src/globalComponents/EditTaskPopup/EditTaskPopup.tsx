@@ -51,7 +51,7 @@ import BackgroundCommentComponent from "./BackgroundCommentComponent";
 import EmailNotificationMail from "./EmailNotificationMail";
 import OnHoldCommentCard from '../Comments/OnHoldCommentCard';
 import CentralizedSiteComposition from "../SiteCompositionComponents/CentralizedSiteComposition";
-const [loaded, setLoaded] = React.useState(true);
+
 let PortfolioItemColor: any = "";
 var AllMetaData: any = [];
 var taskUsers: any = [];
@@ -245,6 +245,7 @@ const EditTaskPopup = (Items: any) => {
     ]);
 
     const [counter, setCounter] = useState(1);
+    const [loaded, setLoaded] = React.useState(true);
 
     const handlePostComment = () => {
         setCounter(counter + 1);

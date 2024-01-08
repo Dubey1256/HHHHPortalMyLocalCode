@@ -630,7 +630,7 @@ const TopNavigation = (dynamicData: any) => {
                             <ul className="sub-menu">
                               <li onClick={() => AddNewItem(child)}>
                                 <span className="alignIcon  svg__iconbox svg__icon--Plus"></span>{" "}
-                                Add New{" "}
+                                Add Level{" "}
                               </li>
                               {child.childs?.map((subchild: any) => {
                                 return (
@@ -678,7 +678,7 @@ const TopNavigation = (dynamicData: any) => {
                                           <span
                                             className=" alignIcon  svg__iconbox svg__icon--Plus"
                                           ></span>{" "}
-                                          Add New{" "}
+                                          Add Level{" "}
                                         </li>
                                         {subchild.childs?.map(
                                           (subchildLast: any) => {
