@@ -1,13 +1,12 @@
 import * as React from 'react';
-import Tooltip from '../../../globalComponents/Tooltip';
-import { Web } from "sp-pnp-js";
+
 import moment from 'moment';
 import EditDocument from './EditDocunentPanel'
 import { useState, useEffect, forwardRef, useImperativeHandle, createContext ,useMemo,useCallback} from 'react';
 import { myContextValue } from '../../../globalComponents/globalCommon'
 import GlobalCommanTable from '../../../globalComponents/GroupByReactTableComponents/GlobalCommanTable';
 import { ColumnDef } from '@tanstack/react-table';
-import { stringify } from 'uuid';
+
 
 var MyContextdata:any
 const RelevantDocuments = (props: any, ref: any) => {
@@ -17,13 +16,9 @@ const RelevantDocuments = (props: any, ref: any) => {
     const [Fileurl, setFileurl] = useState("");
     const [editdocpanel, setEditdocpanel] = useState(false);
     const [EditdocData, setEditdocData] = useState({});
-    // const [showMore, setShowMore] = useState(3);
 
-
-   
-    React.useMemo(() => {
-    //   let copydocData:any =  MyContextdata?.keyDoc.filter((docData:any)=>MyContextdata?.user?.find((user:any)=>user?.AssingedToUser?.Id==docData?.Author?.Id))
-         if( MyContextdata?.keyDoc?.length>0){
+         React.useEffect(() => {
+             if( MyContextdata?.keyDoc?.length>0){
             MyContextdata?.keyDoc.map((doc:any)=>{
                 MyContextdata?.user?.map((user:any)=>{
                     if(user?.AssingedToUser!=undefined &&user?. AssingedToUser?.Id!=undefined){
@@ -33,25 +28,16 @@ const RelevantDocuments = (props: any, ref: any) => {
                     }
                 })
             }) 
-         }
-        // loadAllSitesDocuments();
-        // if (MyContextdata?.keyDoc?.length > 0) {
             let keydata: any =JSON.parse(JSON.stringify(MyContextdata.keyDoc))
             setKeyDocument( MyContextdata.keyDoc )
           if( keydata?.length >3){
             setCopyKeyDocument(keydata?.splice(1,3))
          
           }
+          setFileurl(MyContextdata.FileDirRef)
+           
+         }
          
-        
-           
-
-        // }
-        // if (MyContextdata?.FileDirRef != "") {
-            setFileurl(MyContextdata.FileDirRef)
-           
-
-        // }
     }, [MyContextdata?.keyDoc?.length])
 
     const columns = useMemo<ColumnDef<unknown, unknown>[]>(() =>
@@ -140,7 +126,7 @@ const RelevantDocuments = (props: any, ref: any) => {
                 setCopyKeyDocument(keyDocument)
               }
           console.log("keydocdata",keyDocument)
-            // setShowMore (copykeyDocument);
+           
           };
 
             
@@ -161,9 +147,7 @@ const RelevantDocuments = (props: any, ref: any) => {
                 MyContextdata.FunctionCall(updatedData,Fileurl,true)
             }
         }
-        // else if(EditdocumentsData=='delete'){
-        //     MyContextdata.FunctionCall(null,null,true) 
-        // }
+      
        
 },[])
 
@@ -212,9 +196,9 @@ const callBackData = useCallback((elem: any, getSelectedRowModel: any) => {
                         // .slice(0, showMore ? keyDocument.length : 3
                         )
                          ?                                              
-                        ( <GlobalCommanTable  columns={columns} data={copykeyDocument} callBackData={callBackData}/>):""}
+                        ( <GlobalCommanTable  columns={columns} data={copykeyDocument?.length>0 ? copykeyDocument:keyDocument} callBackData={callBackData}/>):""}
                         
-                           { copykeyDocument?.length<keyDocument?.length && (
+                           { copykeyDocument?.length<keyDocument?.length && copykeyDocument?.length>0 &&  (
                             <button onClick={ShowData}>
                              Show More
                              </button>
