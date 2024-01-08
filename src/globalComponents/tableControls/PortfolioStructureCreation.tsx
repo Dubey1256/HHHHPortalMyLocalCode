@@ -39,6 +39,7 @@ export interface IStructureCreationState {
     PortfolioTypeArray: any,
     PortfolioTypeId: any,
     defaultPortfolioType: any,
+    disablebutton:boolean
 }
 
 const dragItem: any = {}
@@ -48,6 +49,7 @@ export class PortfolioStructureCreationCard extends React.Component<IStructureCr
         super(props);
         this.state = {
             isModalOpen: false,
+            disablebutton: false,
             AllFilteredAvailableComoponent: [],
             Portfolio_x0020_Type: 'Component',
             textTitle: '',
@@ -470,6 +472,9 @@ export class PortfolioStructureCreationCard extends React.Component<IStructureCr
 
     private createChildItems = async (Type: any) => {
         let isloadEssentialDeatils = false
+        this.setState((prevState) => ({
+            disablebutton: !prevState.disablebutton,
+          }));
         //$('#CreateChildpoup1').hide();
         //SharewebCommonFactoryService.showProgressBar();
 
@@ -644,6 +649,7 @@ export class PortfolioStructureCreationCard extends React.Component<IStructureCr
         this.setState({
             TeamConfig: dt
         }, () => console.log(this.state.TeamConfig))
+        
     }
 
     addNewTextField = () => {
@@ -707,6 +713,7 @@ export class PortfolioStructureCreationCard extends React.Component<IStructureCr
     };
 
     public render(): React.ReactElement<IStructureCreationProps> {
+        
         return (
             <>
                 <div id="ExandTableIds" className={this.state.defaultPortfolioType == 'Events' ? 'eventpannelorange' : ((this.state.defaultPortfolioType == 'Service' || this.state.defaultPortfolioType == 'Service Portfolio') ? 'serviepannelgreena' : 'component Portfolio clearfix')}>
@@ -906,7 +913,7 @@ export class PortfolioStructureCreationCard extends React.Component<IStructureCr
                                         </button>
                                     }
 
-                                    <button type="button" className="btn btn-default" onClick={() => this.createChildItems('Create')} >
+                                    <button type="button" className="btn btn-default" disabled={this.state.disablebutton} onClick={() => this.createChildItems('Create')} >
                                         Create
                                     </button>
 

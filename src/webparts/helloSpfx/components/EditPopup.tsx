@@ -12,6 +12,7 @@ import './Recruitment.css'
 import moment from 'moment-timezone';
 import { Row } from 'react-bootstrap';
 import { Col } from 'reactstrap';
+import { BsChevronDown, BsChevronRight } from 'react-icons/bs';
 const skillArray: any[] = [];
 let EmployeeData: any;
 const EditPopup = (props: any) => {
@@ -24,8 +25,8 @@ const EditPopup = (props: any) => {
     const [overAllRemark, setoverAllRemark] = useState(props.item.Remarks);
     const [selectedStatus, setSelectedStatus] = useState(props.item.Status0);
     const [Motivation, setMotivation] = useState(props.item.Motivation)
-    const [experienceYears, setExperienceYears] = useState<number>();
-    const [experienceMonths, setExperienceMonths] = useState<number>();
+    const [experienceYears, setExperienceYears]: any = useState<any>();
+    const [experienceMonths, setExperienceMonths]: any = useState<any>();
     const [showAddDocumentPanel, setShowAddDocumentPanel] = useState(false);
     const star = props.item.IsFavorite ? '⭐' : '';
     const Status = ['New Candidate', 'Under Consideration', 'Interview', 'Negotiation', 'Hired', 'Rejected'];
@@ -50,8 +51,9 @@ const EditPopup = (props: any) => {
     const [showTextInput, setShowTextInput] = useState(false);
     const [otherChoice, setOtherChoice] = useState('');
     const [listData, setListData] = useState([]);
-
-    let allListID= {
+    const [openFeedback, setOpenFeedback] = useState(true)
+    
+    let allListID={
         InterviewFeedbackFormListId: props?.ListID,
         SkillsPortfolioListID: props?.skillsList,
         siteUrl: props?.siteUrl
@@ -128,16 +130,23 @@ const EditPopup = (props: any) => {
         }, []);
     }
     useEffect(() => {
-
-        const years = Math.floor(props.item.Experience);
-        const months = Math.round((props.item.Experience % 1) * 12);
-
-
-        // Update state variables
-        setExperienceYears(years);
-        setExperienceMonths(months);
+        const yearsString: string = props.item?.Experience?.toString();
+        const experience = yearsString.split('.');
+        const years = experience[0]
+        const months = experience[1]
+        let experienceYears = years;
+        let experienceMonths = months;
+        if (months === '12') {
+            let year = parseInt(experienceYears, 10)
+            year++;
+            experienceYears = year.toString();
+            experienceMonths = 0..toString();
+        }
+        let experienceYearsInt = parseInt(experienceYears)
+        let experienceMonthsInt = parseInt(experienceMonths)
+        setExperienceYears(experienceYearsInt);
+        setExperienceMonths(experienceMonthsInt);
     }, [props.item.Experience]);
-    //eslint-disable-next-line eqeqeq
     if (props.item.SkillRatings != '') {
         const SkillRatingsdata = JSON.parse(props.item.SkillRatings);
     }
@@ -150,7 +159,7 @@ const EditPopup = (props: any) => {
         // setFileSections([{ id: 1, selectedFiles: [], renamedFileName: '' }]);
     }
     const handleEditSave = async () => {
-        let updateData
+        let updateData;
         if (platformChoices && platformChoices.length > 0) {
             platformChoices.forEach(itm => {
                 if (itm.selected && itm.name === 'Others') {
@@ -161,24 +170,31 @@ const EditPopup = (props: any) => {
         try {
             const skillRatingsJson = JSON.stringify(localRatings);
             const platformChoicesString = JSON.stringify(platformChoices);
-            updateData = {
+            let experienceValue = experienceYears || '';
+            if (experienceMonths) {
+                experienceValue += '.' + experienceMonths;
+            }
 
+            updateData = {
                 Title: CandidateTitle,
                 CandidateName: CandidateTitle,
                 Email: Email,
                 PhoneNumber: PhoneNumber,
-                Experience: Experience,
+                Experience: experienceValue,
                 Remarks: overAllRemark,
                 Status0: selectedStatus,
                 Motivation: Motivation,
                 SkillRatings: skillRatingsJson,
                 SelectedPlatforms: platformChoicesString,
-
-            }
+            };
             const list = HRweb.lists.getById(allListID?.InterviewFeedbackFormListId);
             await list.items.getById(props.item.Id).update(updateData);
-            EmployeeData = updateData
-            handleUpload(props.item.Id)
+            EmployeeData = updateData;
+            if (fileSections && fileSections.some((section: { selectedFiles: string | any[]; }) => section.selectedFiles.length > 0)) {
+                await handleUpload(props.item.Id);
+            } else {
+                props.callbackEdit(props.item.Id);
+            }
             console.log("Item updated successfully");
             props.callbackEdit(props.item.Id);
 
@@ -186,15 +202,10 @@ const EditPopup = (props: any) => {
             console.error(error);
             // Handle errors here
         } finally {
-            if (selectedStatus == "Hired") {
-
-
-            } else {
-                props.EditPopupClose(); // Close the edit popup after saving or if there's an error
-            }
-
+            onClose();
         }
     };
+    
 
     const getListData = () => {
         const skillMap: any = {};
@@ -227,13 +238,13 @@ const EditPopup = (props: any) => {
             });
             props.item.ratings.push(...unavailableSkills);
             setLocalRatings(props.item.ratings)
+            loadDocumentsByCandidate(props.item.Id)
         }).catch((error: unknown) => {
             console.error(error);
         });
     };
     useEffect(() => {
         getListData();
-        loadDocumentsByCandidate(props.item.Id)
     }, []);
     const loadDocumentsByCandidate = async (candidateId: number) => {
         try {
@@ -277,7 +288,6 @@ const EditPopup = (props: any) => {
                             updateLookupColumn(matchedFile.ID, candidateItemId);
                         }
                     }, 2000);
-
                 } catch (error) {
                     console.error('Error uploading file:', error);
                 }
@@ -319,6 +329,7 @@ const EditPopup = (props: any) => {
             };
             await list.items.getById(documentId).update(postData);
             console.log(`Lookup column ${columnName} updated successfully for document with ID ${documentId}.`);
+            props.callbackEdit(props.item.Id);
         } catch (error) {
             console.error('Error updating lookup column:', error);
         }
@@ -329,7 +340,6 @@ const EditPopup = (props: any) => {
             setMotivation(EditorData)
         }
     }, [])
-    
     const setRatings = (index: number, selectedRating: number) => {
         const updatedRatings = [...localRatings];
         updatedRatings[index].current = selectedRating;
@@ -432,7 +442,7 @@ const EditPopup = (props: any) => {
         clickCount++;
         if (clickCount === 1) {
             window.open(url, '_blank');
-        } else {       
+        } else {
             window.open(url + '?download=1');
         }
     };
@@ -488,17 +498,31 @@ const EditPopup = (props: any) => {
                                 <div className='d-flex'>
                                     <input
                                         className='form-control me-2'
-                                        type='text'
+                                        type='number'
                                         placeholder='Years'
                                         value={experienceYears}
-                                        onChange={(e) => setExperienceYears(parseInt(e.target.value) || 0)}
+                                        onChange={(e) => {
+                                            let newYears = parseInt(e.target.value);
+                                            if (isNaN(newYears) || newYears < 0) {
+                                                newYears = 0;
+                                            }
+                                            setExperienceYears(newYears);
+                                        }}
                                     />
                                     <input
                                         className='form-control'
-                                        type='text'
+                                        type='number'
                                         placeholder='Months'
                                         value={experienceMonths}
-                                        onChange={(e) => setExperienceMonths(parseInt(e.target.value) || 0)}
+                                        onChange={(e) => {
+                                            let newMonths = parseInt(e.target.value);
+                                            if (isNaN(newMonths) || newMonths < 0) {
+                                                newMonths = 0;
+                                            } else if (newMonths > 12) {
+                                                newMonths = 12;
+                                            }
+                                            setExperienceMonths(newMonths);
+                                        }}
                                     />
                                 </div>
                             </div>
@@ -541,13 +565,10 @@ const EditPopup = (props: any) => {
                     />
                 </div>
                 <div className="col-sm-12 my-4">
-                    <details>
-                        <summary className="alignCenter">
-                            <label className="toggler full_width">
-                                <div className="alignCenter">Feedback</div>
+                            <label className="full_width">
+                                <div className="alignCenter"><span onClick={() => {setOpenFeedback(!openFeedback)}}>{openFeedback ? <BsChevronDown/> : <BsChevronRight/>}</span>Feedback</div>
                             </label>
-                        </summary>
-                        <div className="border border-top-0 p-2">
+                        {openFeedback ? (<div className="border border-top-0 p-2">
                             <div className="star-block">
                                 {localRatings.map((rating: any, index: number) => (
                                     <div key={index} className="skillBlock">
@@ -560,25 +581,10 @@ const EditPopup = (props: any) => {
                                                 setLocalRatings(updatedRatings);
                                             }}
                                         />
-                                        {/* <div className="comment-block">
-                                            <textarea
-                                                value={rating.Comment}
-                                                onChange={(e) => {
-                                                    const updatedRating: any = { ...rating, Comment: e.target.value };
-                                                    const updatedRatings = [...localRatings];
-                                                    updatedRatings[index] = updatedRating;
-                                                    setLocalRatings(updatedRatings);
-                                                }}
-                                                name="remarks"
-                                                className="full_width"
-                                                auto-resize
-                                            />
-                                        </div> */}
                                     </div>
                                 ))}
                             </div>
-                        </div>
-                    </details>
+                        </div>): null}
                 </div>
 
                 <div className="col-sm-12 mb-3">
@@ -627,7 +633,7 @@ const EditPopup = (props: any) => {
                                             </span>
                                         </a>
                                     </span>
-                                    <span onClick={() => removeDocuments('', document.Id,document.FileLeafRef)} className="svg__iconbox svg__icon--trash mx-auto"></span>
+                                    <span onClick={() => removeDocuments('', document.Id, document.FileLeafRef)} className="svg__iconbox svg__icon--trash mx-auto"></span>
                                 </div>
                             ))}
                         </div>
