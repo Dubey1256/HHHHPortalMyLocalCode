@@ -51,7 +51,6 @@ import BackgroundCommentComponent from "./BackgroundCommentComponent";
 import EmailNotificationMail from "./EmailNotificationMail";
 import OnHoldCommentCard from '../Comments/OnHoldCommentCard';
 import CentralizedSiteComposition from "../SiteCompositionComponents/CentralizedSiteComposition";
-const [loaded, setLoaded] = React.useState(true);
 let PortfolioItemColor: any = "";
 var AllMetaData: any = [];
 var taskUsers: any = [];
@@ -220,6 +219,7 @@ const EditTaskPopup = (Items: any) => {
     const [SendCategoryName, setSendCategoryName] = useState("");
     const [OpenEODReportPopup, setOpenEODReportPopup] = useState(false);
     const [CurrentImageIndex, setCurrentImageIndex] = useState("");
+    const [loaded, setLoaded] = React.useState(true);
     let [StatusOptions, setStatusOptions] = useState([
         { value: 0, status: "0% Not Started", taskStatusComment: "Not Started" },
         { value: 1, status: "1% For Approval", taskStatusComment: "For Approval" },
