@@ -2183,6 +2183,7 @@ export const loadAllSiteTasks = async (allListId: any, filter: any) => {
                     task.SmartPriority;
                     task.TaskTypeValue = '';
                     task.projectPriorityOnHover = '';
+                    task["SiteIcon"] = site?.Item_x005F_x0020_Cover?.Url;
                     task.taskPriorityOnHover = task?.PriorityRank;
                     task.showFormulaOnHover;
                  
