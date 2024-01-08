@@ -28,7 +28,9 @@ const AddPopup = (props: any) => {
     useEffect(() => {
         const fetchData = async () => {
             try {
-                await Promise.all([getchoicecolumns()]);
+                const currentUser = await sp.web.currentUser.get();
+                const defaultUser = [{ text: currentUser.Title, key: currentUser.LoginName }];
+                await Promise.all([getchoicecolumns(), onPeoplePickerChange(defaultUser)]);
             } catch (error) {
                 console.error(error);
             } finally {
@@ -36,7 +38,7 @@ const AddPopup = (props: any) => {
             }
         };
         fetchData();
-        // setDefaultDate(getCurrentDate())
+        setDefaultDate(getCurrentDate());
     }, []);
     type FileSection = {
         id: number;
@@ -46,7 +48,7 @@ const AddPopup = (props: any) => {
     const [fileSections, setFileSections]: any = useState([{ id: 1, selectedFiles: [], renamedFileName: '' }]);
     const [name, setName] = useState('');
     const [isSaveDisabled, setIsSaveDisabled] = useState(true);
-    const [exp, setExp] = useState({ years: '', months: '' });
+    const [exp, setExp]:any = useState({ years: '', months: '' });
     const [email, setEmail] = useState('');
     const [emailValidation, setEmailValidation] = useState({ isValid: true, errorMessage: '' });
     const [phone, setPhone] = useState('');
@@ -137,13 +139,15 @@ const AddPopup = (props: any) => {
         }
     };
 
-    //     const getCurrentDate = (): string => {
-    //     const currentDate: any = new Date();
-    //     const year: any = currentDate.getFullYear();
-    //     const month: any = (currentDate.getMonth() + 1)?.padStart(2, '0'); // Month is zero-based
-    //     const day: any = (currentDate.getDate())?.padStart(2, '0');
-    //     return `${year}-${month}-${day}`;
-    // };
+    const getCurrentDate = (): string => {
+        const currentDate: any = new Date();
+        const year: any = currentDate.getFullYear();
+        const month: any = (currentDate.getMonth() + 1).toString().padStart(2, '0');
+        const day: any = currentDate.getDate().toString().padStart(2, '0');
+        return `${year}-${month}-${day}`;
+    };
+
+
     const getchoicecolumns = () => {
         const select = `Id,Title,PositionTitle,PositionDescription,JobSkills`;
         HRweb.lists.getById(allListID?.SkillsPortfolioListID).items.select(select).get()
@@ -225,17 +229,26 @@ const AddPopup = (props: any) => {
     const handlePhoneChange = (e: any) => {
         setPhone(e.target.value);
     };
-    // const handleExpChange = (e: any) => {
-    //     setExp(e.target.value);
-    // };
-    const handleExpYearsChange = (event: any) => {
-        const years = event.target.value;
-        setExp((prevExp) => ({ ...prevExp, years: years }));
+  
+    const handleExpYearsChange = (event: React.ChangeEvent<HTMLInputElement>) => {
+        let newYears = parseInt(event.target.value, 10);
+        if (isNaN(newYears) || newYears < 0) {
+            newYears = 0;
+        }
+        setExp((prevExp: any) => ({ ...prevExp, years: newYears.toString() }));
     };
 
-    const handleExpMonthsChange = (event: any) => {
-        const months = event.target.value;
-        setExp((prevExp) => ({ ...prevExp, months: months }));
+    const handleExpMonthsChange = (event: React.ChangeEvent<HTMLInputElement>) => {
+        let newValue = parseInt(event.target.value, 10);
+    
+        // Ensure the value is between 0 and 12
+        if (isNaN(newValue) || newValue < 0) {
+            newValue = 0;
+        } else if (newValue > 12) {
+            newValue = 12;
+        }
+    
+        setExp((prevExp: any) => ({ ...prevExp, months: newValue }));
     };
     const handleDateChange = (e: any) => {
         setselectedDate(e.target.value);
@@ -370,6 +383,7 @@ const AddPopup = (props: any) => {
     const onPeoplePickerChange = (items: any[]) => {
         setSelectedInterviwer(items[0]?.text);
     };
+
     return (
         <>
         <Panel
@@ -413,7 +427,7 @@ const AddPopup = (props: any) => {
                                 <div className="input-group mb-2">
                                     <input
                                         className="form-control"
-                                        type="text"
+                                        type="number"
                                         value={exp.years}
                                         onChange={handleExpYearsChange}
                                         placeholder="Years"
@@ -422,7 +436,7 @@ const AddPopup = (props: any) => {
                                 <div className="input-group mb-2">
                                     <input
                                         className="form-control"
-                                        type="text"
+                                        type="number"
                                         value={exp.months}
                                         onChange={handleExpMonthsChange}
                                         placeholder="Months"
@@ -606,3 +620,4 @@ const AddPopup = (props: any) => {
     );
 };
 export default AddPopup;
+
