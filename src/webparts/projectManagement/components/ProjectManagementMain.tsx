@@ -80,8 +80,10 @@ const ProjectManagementMain = (props: any) => {
   const [isSmartInfoAvailable, setIsSmartInfoAvailable]: any = React.useState(false);
   // const[allSmartInfo,setAllSmartInfo]=React.useState([])
   const [remark, setRemark] = React.useState(false)
-  const [remarkData, setRemarkData] = React.useState(null)
+  const [remarkData, setRemarkData] = React.useState(null);
+  const [topCompoIcon, setTopCompoIcon]: any = React.useState(false);
   const [editSmartInfo, setEditSmartInfo] = React.useState(false)
+  const childRef = React.useRef<any>();
   const StatusArray = [
     { value: 1, status: "01% For Approval", taskStatusComment: "For Approval" },
     { value: 2, status: "02% Follow Up", taskStatusComment: "Follow Up" },
@@ -795,9 +797,6 @@ const ProjectManagementMain = (props: any) => {
   const OpenAddStructureModal = () => {
     setIsAddStructureOpen(true);
   }
-  const restructureCallback =()=>{
-    
-  }
   const addActivity = (type: any) => {
 
     if (checkedList?.TaskTypeId === 3 || checkedList?.TaskType?.Id === 3) {
@@ -897,6 +896,31 @@ const ProjectManagementMain = (props: any) => {
     setIsPortfolio(false);
 
   }, [])
+
+
+  const callChildFunction = (items: any) => {
+    if (childRef.current) {
+        childRef.current.callChildFunction(items);
+    }
+};
+
+
+const projectTopIcon = (items: any) => {
+  if (childRef.current) {
+      childRef.current.projectTopIcon(items);
+  }
+};
+
+const callBackData1 = React.useCallback((getData: any, topCompoIcon: any,callback:any) => {
+  
+  setTopCompoIcon(topCompoIcon);
+  renderData = [];
+  renderData = renderData.concat(getData);
+  refreshData();
+  if(callback == true){
+    LoadAllSiteTasks();
+   }
+}, []);
 
   const column2 = React.useMemo<ColumnDef<any, unknown>[]>(
     () => [
@@ -1224,6 +1248,32 @@ const ProjectManagementMain = (props: any) => {
         resetColumnFilters: false,
         size: 49,
       },
+      {
+        header: ({ table }: any) => (
+            <>{
+                topCompoIcon ?
+                    <span style={{ backgroundColor: `${''}` }} title="Restructure" className="Dyicons mb-1 mx-1 p-1" onClick={() => projectTopIcon(true)}>
+                        <span className="svg__iconbox svg__icon--re-structure"></span>
+                    </span>
+                    : ''
+            }
+            </>
+        ),
+        cell: ({ row, getValue }) => (
+            <>
+                {row?.original?.isRestructureActive && row?.original?.Title != "Others" && (
+                    <span className="Dyicons p-1" title="Restructure" style={{ backgroundColor: `${row?.original?.PortfolioType?.Color}` }} onClick={() => callChildFunction(row?.original)}>
+                        <span className="svg__iconbox svg__icon--re-structure"> </span>
+                    </span>
+                )}
+                {getValue()}
+            </>
+        ),
+        id: "row?.original.Id",
+        canSort: false,
+        placeholder: "",
+        size: 1,
+    },
       {
         cell: ({ row }) => (
           <span className="text-end">
@@ -1590,11 +1640,14 @@ const ProjectManagementMain = (props: any) => {
                             <div className="section-event ps-0">
                               <div className="wrapper project-management-Table">
                                 {(data?.length == 0 || data?.length > 0) && <GlobalCommanTable AllListId={AllListId} headerOptions={headerOptions}
+                                  projectmngmnt={"projectmngmnt"}
+                                  MasterdataItem = {Masterdata}
                                   columns={column2} data={data} callBackData={callBackData}
                                   smartTimeTotalFunction={smartTimeTotal} SmartTimeIconShow={true}
                                   TaskUsers={AllUser} showHeader={true} expendedTrue={false}
                                   showCreationAllButton={true}
-                                  restructureCallBack={restructureCallback}
+                                  restructureCallBack={callBackData1}
+                                  ref={childRef} callChildFunction={callChildFunction}
                                   OpenAddStructureModal={OpenAddStructureModal}
                                   addActivity={addActivity} />}
                               </div>

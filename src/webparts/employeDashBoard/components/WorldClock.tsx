@@ -41,13 +41,24 @@ const WorldClock = () => {
     const isDaylightSavingTime = isDST(I);
     const offset = isDaylightSavingTime ? 2 : 1;
     const germany = utc2 + (3600000 * offset);
-    const germanyTimeNow = new Date(germany).toLocaleString('en-US', { hour12: true });
+    const copygermany = new Date(germany);
+    const options1: Intl.DateTimeFormatOptions = { hour: '2-digit', minute: '2-digit', hour12: true };
+    const germanyTimeNow = new Intl.DateTimeFormat('en-US', options1).format(copygermany).toLowerCase();
+    console.log(germanyTimeNow);
+    // const germanyTimeNow = new Date(germany).toLocaleString('en-US', { hour12: true });
+
+
     // for Switzerland
     const isDaylightSavingTime1 = isDST(I);
     const offset1 = isDaylightSavingTime1 ? 2 : 1;
     const switzerland = utc2 + (3600000 * offset1);
-    const switzerlandTimeNow = new Date(switzerland).toLocaleString('en-US', { hour12: true });
+    const copyswitzerland = new Date(switzerland);
+    const options2: Intl.DateTimeFormatOptions = { hour: '2-digit', minute: '2-digit', hour12: true };
+    const switzerlandTimeNow = new Intl.DateTimeFormat('en-US', options2).format(copyswitzerland).toLowerCase();
+    console.log(germanyTimeNow);
+    //const switzerlandTimeNow = new Date(switzerland).toLocaleString('en-US', { hour12: true });
     //  console.log("Current time in Switzerland:", switzerlandTimeNow);
+
     const indianTimeFormatter = new Intl.DateTimeFormat('en-IN', {
       timeZone: 'Asia/Kolkata', // Use 'Asia
       hour12: true,
@@ -57,15 +68,15 @@ const WorldClock = () => {
       // day: 'numeric', 
       hour: '2-digit',
       minute: '2-digit',
-      second: '2-digit',
+      // second: '2-digit',
     });
     // Format the current date and time in IST
     const currentTimeInIndia = indianTimeFormatter.format(I);
     data?.map((item: any) => {
       if (item.country == "Germany")
-        item.Time = germanyTimeNow.split(',')[1]
+        item.Time = germanyTimeNow
       if (item.country == "Switzerland")
-        item.Time = switzerlandTimeNow.split(',')[1]
+        item.Time = switzerlandTimeNow
       if (item.country == "India")
         item.Time = currentTimeInIndia
     })

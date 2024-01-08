@@ -409,8 +409,10 @@ export default function VersionHistory(props: any) {
     const renderObject = (obj: any, visited: Set<object> = new Set()) => {
         if(obj != null && obj != undefined){
             //const entries = Object?.entries(obj);
-
-            return  <div>{obj.LookupValue}</div>
+            if(obj?.Url != undefined && obj?.Url != null){
+                return <a href={obj?.Url} target='_blank' data-interception="off"> {obj?.Url} </a>
+            }
+            return  <div>{obj?.LookupValue}</div>
             // entries.map(([key, value]: [string, any], index: number) => {
             //     const isCircular = visited.has(value);
             
@@ -565,7 +567,7 @@ export default function VersionHistory(props: any) {
                                                                                                         </>
                                                                                                     )
                                                                                                 })}
-                                                                                              </div> : key === 'Sitestagging'? rendersiteComposition(item) : key === 'OffshoreComments' ? showbackgroundcomment(item) : key === 'SiteCompositionSettings' ? showSiteCompositionSettings(item) : key==='ComponentLink'? <a href={item[key]?.Url} target='_blank' data-interception="off"> {item[key]?.Url} </a> : key === 'ApproverHistory' ? showApproverHistory(item): item[key]}	
+                                                                                              </div> : key === 'Sitestagging'? rendersiteComposition(item) : key === 'OffshoreComments' ? showbackgroundcomment(item) : key === 'SiteCompositionSettings' ? showSiteCompositionSettings(item) : key === 'ApproverHistory' ? showApproverHistory(item): item[key]}	
                                                                                     </span>
 
                                                                                 </li>}
