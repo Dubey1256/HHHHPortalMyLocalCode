@@ -2,7 +2,7 @@ import React, { useEffect, useState } from 'react'
 import { Web } from 'sp-pnp-js';
 import GlobalCommanTable from '../../../globalComponents/GroupByReactTableComponents/GlobalCommanTable';
 import { ColumnDef } from '@tanstack/react-table';
-import EditDocument from './EditDocunentPanel'
+import EditDocument from '../../taskprofile/components/EditDocunentPanel';
 import moment from 'moment';
 var TaskUser: any = []
 export default function DocumentSearchPage(Props: any) {
@@ -91,7 +91,6 @@ export default function DocumentSearchPage(Props: any) {
     const EditItem = (itemId: any) => {
         setisEditModalOpen(true)
         setSelectedItem(itemId)
-        
     }
     const deleteData = (dlData: any) => {
         var flag: any = confirm('Do you want to delete this item')
@@ -200,7 +199,7 @@ export default function DocumentSearchPage(Props: any) {
             </div>
             {AllDocs && <div>
                 <div className="TableContentSection">
-                    <div className='Alltable mt-2'>
+                    <div className='Alltable mt-2 mb-2'>
                         <div className='col-md-12 p-0 '>
                             <GlobalCommanTable columns={columns} data={AllDocs} showHeader={true} callBackData={callBackData} expandIcon={true} hideTeamIcon={true} hideOpenNewTableIcon={true} />
                         </div>

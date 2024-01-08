@@ -1,12 +1,16 @@
 import * as React from 'react'
 import { Panel, PanelType } from 'office-ui-fabric-react';
-import { Web, sp } from 'sp-pnp-js';
+import { sp } from 'sp-pnp-js';
 import "bootstrap/dist/css/bootstrap.min.css";  
 import Tooltip from '../Tooltip';
 import * as moment from 'moment';
 import InfoIconsToolTip from '../InfoIconsToolTip/InfoIconsToolTip';
 import { SlArrowDown, SlArrowRight } from 'react-icons/sl';
-var keys: any = []
+var keys: any = [];
+// var showComposition:boolean = true;
+var taskUsers: any = [];
+var AllTaskUser: any = [];
+var currentUserBackupArray: any = [];
 export default function VersionHistory(props: any) {
     const [propdata, setpropData] = React.useState(props);
     const [show, setShow] = React.useState(false);
@@ -14,7 +18,10 @@ export default function VersionHistory(props: any) {
     const [ShowEstimatedTimeDescription,setShowEstimatedTimeDescription] = React.useState(false);
     const [AllCommentModal,setAllCommentModal] = React.useState(false);
     const [AllComment,setAllComment] = React.useState([]);
-   
+    const [showComposition,setshowComposition] = React.useState(true)
+    const [currentUserData, setCurrentUserData] = React.useState([]);
+    const [IsUserFromHHHHTeam, setIsUserFromHHHHTeam] = React.useState(false);
+
     const handleClose = () => setShow(false);
     const handleShow = () => {       
         setShow(true)
@@ -25,20 +32,24 @@ export default function VersionHistory(props: any) {
     //------------------------jquery call--------------------------------
     const GetItemsVersionHistory = async () => {
         var versionData: any = []
-        let webs = new Web(props.siteUrls);
         var siteTypeUrl = props.siteUrls;
         let listId = props.listId
         var itemId = props.taskId;
         let tempEstimatedArrayData: any;        
-        webs.lists.getById(props?.listId).items.getById(props?.taskId).versions.get().then(versions => {
+        sp.web.lists.getById(props?.listId).items.getById(props?.taskId).versions.get().then(versions => {
             console.log('Version History:', versions);
+            versions.map((vitm:any)=>{
+                vitm.CompletedDate != null ? vitm.CompletedDate = moment(vitm?.CompletedDate).format("DD/MM/YYYY"):'';
+                vitm.StartDate != null ? vitm.StartDate = moment(vitm?.StartDate).format("DD/MM/YYYY"):'';
+                vitm.DueDate != null ? vitm.DueDate = moment(vitm?.DueDate).format("DD/MM/YYYY"):'';
+            })
             versionData = versions;
 
             const result = findDifferentColumnValues(versionData)
 
             const employeesWithoutLastName = result.map(employee => {                                                 
                 employee.childs = []
-                const  { VersionId,IsCurrentVersion, VersionLabel,UniqueId,ParentUniqueId,ScopeId,SMLastModifiedDate,GUID,FileRef,FileDirRef,OData__x005f_Moderation,WorkflowVersion, OData__x005f_IsCurrentVersion, OData__x005f_UIVersion, OData__x005f_UIVersionString, odata, ...rest } = employee;
+                const  { VersionId,IsCurrentVersion,ClientTime,PreviouslyAssignedTo,Portfolio_x005f_x0020_x005f_Type,Project_x005f_x003a_x005f_ID, VersionLabel,UniqueId,ParentUniqueId,ScopeId,SMLastModifiedDate,GUID,FileRef,FileDirRef,OData__x005f_Moderation,WorkflowVersion, OData__x005f_IsCurrentVersion, OData__x005f_UIVersion, OData__x005f_UIVersionString, odata, ...rest } = employee;
                 return rest;
             });
             console.log(employeesWithoutLastName)
@@ -51,14 +62,7 @@ export default function VersionHistory(props: any) {
                              feedback.Title = $.parseHTML(feedback?.Title)[0].textContent;
                         }) 
                     }                  
-                }          
-                if(val?.BasicImageInfo!=undefined){
-                    try{
-                        val.BasicImageInfoArray = JSON.parse(val?.BasicImageInfo)
-                    }catch(e){
-
-                    }
-                }                         
+                }                                   
                 if(val.EstimatedTimeDescription !== undefined && val.EstimatedTimeDescription !== null && val.EstimatedTimeDescription !== '[]'){
                     tempEstimatedArrayData = JSON.parse(val?.EstimatedTimeDescription) ;
                     let TotalEstimatedTimecopy:any = 0;                                             
@@ -75,14 +79,14 @@ export default function VersionHistory(props: any) {
                 }  
 
                 val.No = val.owshiddenversion;
-                val.ModifiedDate = moment(val?.Modified).format("DD/MM/YYYY h:mmA");
+                val.ModifiedDate = moment(val?.Modified).format("DD/MM/YYYY h:mmA");                
                 val.ModifiedBy = val?.Editor?.LookupValue;                
                 val.childs.push(val)
             })
 
-            employeesWithoutLastName?.forEach((val:any)=>{                
+            employeesWithoutLastName?.forEach((val:any)=>{
                 val.childs?.forEach((ele:any)=>{
-                    const  { VersionId,IsCurrentVersion,VersionLabel,UniqueId,ParentUniqueId,ScopeId,SMLastModifiedDate,GUID,FileRef,FileDirRef,OData__x005f_Moderation,WorkflowVersion, OData__x005f_IsCurrentVersion, OData__x005f_UIVersion, OData__x005f_UIVersionString, odata,Editor, ...rest } = ele;
+                    const  { VersionId,IsCurrentVersion,ClientTime,PreviouslyAssignedTo,Portfolio_x005f_x0020_x005f_Type,VersionLabel,Project_x005f_x003a_x005f_ID,UniqueId,ParentUniqueId,ScopeId,SMLastModifiedDate,GUID,FileRef,FileDirRef,OData__x005f_Moderation,WorkflowVersion, OData__x005f_IsCurrentVersion, OData__x005f_UIVersion, OData__x005f_UIVersionString, odata,Editor, ...rest } = ele;
                     return rest;
                 })
             })
@@ -92,8 +96,53 @@ export default function VersionHistory(props: any) {
         }).catch(error => {
             console.error('Error fetching version history:', error);
         });
-
     }
+    const loadTaskUsers = async () => {
+        var AllTaskUsers: any = [];
+        let currentUserId = props.context.pageContext._legacyPageContext.userId;
+        const web = sp.web;
+        taskUsers = await web.lists
+            .getById('b318ba84-e21d-4876-8851-88b94b9dc300')
+            .items.select(
+                "Id,UserGroupId,TimeCategory,CategoriesItemsJson,IsActive,Suffix,Title,Email,SortOrder,Role,IsShowTeamLeader,Company,ParentID1,Status,Item_x0020_Cover,AssingedToUserId,isDeleted,AssingedToUser/Title,AssingedToUser/Id,AssingedToUser/EMail,ItemType,Approver/Id,Approver/Title,Approver/Name"
+            )
+            .filter("IsActive eq 1")
+            .expand("AssingedToUser,Approver")
+            .orderBy("SortOrder", true)
+            .orderBy("Title", true)
+            .getAll();
+        // getAllEmployeeData();
+        taskUsers?.map((user: any, index: any) => {
+            var ApproverUserItem = "";
+            var UserApproverMail: any = [];
+            if (user.Title != undefined && user.IsShowTeamLeader === true) {
+                if (user.Approver != undefined) {
+                    $.each(user.Approver.results, function (ApproverUser: any, index) {
+                        ApproverUserItem +=
+                            ApproverUser.Title +
+                            (index === user.Approver.results?.length - 1 ? "" : ",");
+                        UserApproverMail.push(ApproverUser.Name.split("|")[2]);
+                    });
+                    user["UserManagerName"] = ApproverUserItem;
+                    user["UserManagerMail"] = UserApproverMail;
+                }
+                AllTaskUsers.push(user);
+            }
+            AllTaskUser = taskUsers;
+            if (user.AssingedToUserId == currentUserId) {
+                let temp: any = [];
+                temp.push(user);
+                setCurrentUserData(temp);
+                currentUserBackupArray.push(user);
+                if (user.UserGroupId == 7) {
+                    setIsUserFromHHHHTeam(true);
+                }
+            }
+        });
+        // if (AllMetaData != undefined && AllMetaData?.length > 0) {
+        //     GetSelectedTaskDetails();
+        // }
+      };
     const openCommentPopup =(comntitem:any)=>{
         setAllComment(comntitem)
         setAllCommentModal(true);
@@ -152,7 +201,7 @@ export default function VersionHistory(props: any) {
                     if(currentObj.PercentComplete != undefined && currentObj.PercentComplete != null && currentObj.PercentComplete !== 'NaN')
                      differingPairs['PercentComplete']= currentObj.PercentComplete;                                              
                     if ((currentObj[key] !== undefined && currentObj[key] !== null && currentObj[key] !== '' && currentObj.hasOwnProperty(key)) && (key !== 'Checkmark' && key !== 'odata.type'  && key !== 'ItemChildCount' && key !== 'SMTotalFileStreamSize'  && key !== 'ContentVersion' && key !== 'FolderChildCount'  && key !== 'NoExecute'  && key !== 'FSObjType'  && key !== 'FileLeafRef' && key !== 'Order' && key !== 'Created_x005f_x0020_x005f_Date' && key !== 'Last_x005f_x0020_x005f_Modified')) {
-                        if(currentObj[key]?.length>0){
+                        if(currentObj[key]?.length>0 && key != 'Project_x005f_x003a_x005f_ID'){
                             differingPairs[key] = currentObj[key];
                             differingPairs['Editor'] = currentObj.Editor;
                         }                        
@@ -206,7 +255,8 @@ export default function VersionHistory(props: any) {
     }
     //---------------------------------------------------------------------
     React.useEffect(() => {
-        GetItemsVersionHistory()
+        GetItemsVersionHistory();
+        loadTaskUsers();
     }, [show]);
 
     const onRenderCustomHeader = () => {
@@ -234,16 +284,127 @@ export default function VersionHistory(props: any) {
           <div key={index}>{typeof item === 'object' ? item?.LookupValue : item}</div>
         ));
     };   
+    const showhideComposition = ()=>{
+        if (showComposition) {          
+            setshowComposition(false)        
+        } else {         
+            setshowComposition(true)
+        }    
+    }    
+    const rendersiteComposition = (itm:any) =>{
+        return(
+            <>
+                {(itm?.Sitestagging != undefined && itm?.Sitestagging != null && itm?.Sitestagging != '[]') && <dl className="Sitecomposition w-50">                                                                                         
+                    <div className='dropdown'>
+                        <a className="sitebutton bg-fxdark d-flex">
+                        <span className="arrowicons" onClick={() => showhideComposition()}>{showComposition ? <SlArrowDown /> : <SlArrowRight />}</span>
+                        <div className="d-flex justify-content-between full-width">
+                            <p className="pb-0 mb-0">Site Composition</p>                            
+                        </div>
+                        </a>
+                        <div className="spxdropdown-menu" style={{ display: showComposition ? 'block' : 'none' }}>
+                        <ul>                                   
+                            {JSON.parse(itm?.Sitestagging).map((site:any,indx:any)=>{
+                            return <li className="Sitelist">
+                                <span>
+                                    <img style={{ width: "22px" }} title={site?.Title} src={site?.SiteImages} />
+                                </span>
+                                {site?.ClienTimeDescription != undefined &&
+                                <span>
+                                    {Number(site?.ClienTimeDescription).toFixed(2)}%
+                                </span>
+                                }
+                                {site?.ClientCategory != undefined && site?.ClientCategory.length > 0 ? site?.ClientCategory?.map((clientcat: any) => {
+                                return (
+                                    <span>{clientcat.Title}</span>
+                                )
+                                }) : null}
+                            </li>
+                            })}
+                        </ul>
+                        </div>
+                    </div>                                                                                         
+                </dl>}           
+            </>
+        )
+    }
+    const showbackgroundcomment = (itm:any) =>{
+        return(
+            <>
+               {IsUserFromHHHHTeam ? null : <>{itm.OffshoreComments != null && itm.OffshoreComments.length > 0 && JSON.parse(itm?.OffshoreComments).map((item: any, index: any) => {
+                    return <div>
+                    <span className='round px-1'>
+                        {item.AuthorImage != null &&
+                        <img className='align-self-start' title={item?.AuthorName} src={item?.AuthorImage} />
+                        }
+                    </span>
+                    <span className="pe-1">{item.AuthorName}</span>
+                    <span className="pe-1" >{moment(item?.Created).format("DD/MM/YY")}</span>
+                    <div style={{ paddingLeft: "30px" }} className=" mb-4 text-break"><span dangerouslySetInnerHTML={{ __html: item?.Body }}></span>
+                    </div>
+                    </div>
+                })}</>}
+            </>
+        )
+    }
+    const showApproverHistory = (itm:any) =>{
+        var ApproverHistoryData :any;
+        if(itm?.ApproverHistory != undefined && itm?.ApproverHistory != null && itm?.ApproverHistory != '[]')
+         ApproverHistoryData = JSON.parse(itm?.ApproverHistory)
+        return(
+            <>
+                <div className="Approval-History-section w-50">
+                    {ApproverHistoryData != undefined && ApproverHistoryData?.length > 1 ? (
+                        <div className="border ps-1">
+                            {ApproverHistoryData.map((HistoryData: any, index: any) => {
+                                if (index < ApproverHistoryData.length - 1) {
+                                    return (
+                                        <div
+                                            className={
+                                                index + 1 == ApproverHistoryData?.length - 1
+                                                    ? "alignCenter full-width"
+                                                    : "alignCenter border-bottom full-width"
+                                            }>
+                                            <div className="alignCenter">
+                                                Prev-Approver | <img title={HistoryData.ApproverName} className="workmember ms-1" src={HistoryData?.ApproverImage?.length > 0 ? HistoryData?.ApproverImage : ""}/>
+                                            </div>
+                                            <div>
+                                                <span className='ps-1'>
+                                                    {HistoryData.ApprovedDate}
+                                                </span>
+                                            </div>
+                                        </div>
+                                    );
+                                }
+                            })}
+                        </div>
+                    ) : null}
+                </div>
+            </>
+        )
+    }
       
-      // Helper function to render objects
-    //   const renderObject = (obj: object) => {
-    //     return Object.entries(obj).map(([key, value]:any, index:any) => (
-    //       <div key={index}>
-    //         <strong>{key}:</strong>{' '}
-    //         {typeof value === 'object' ? renderObject(value) : value}
-    //       </div>
-    //     ));
-    //   };
+    const showSiteCompositionSettings = (itm:any)=>{       
+        var compositionvalue:any = '';         
+        JSON.parse(itm?.SiteCompositionSettings).map((compoitem:any)=>{
+            if(compoitem.Deluxe)
+             compositionvalue = 'Deluxe';
+            else if(compoitem.Manual)
+             compositionvalue = 'Manual';
+            else if(compoitem.Proportional)
+             compositionvalue = 'Proportional';
+            else if(compoitem.Protected)
+             compositionvalue = 'Protected';
+            else if(compoitem.Standard)
+             compositionvalue = 'Standard';
+        })    
+                      
+        return(
+            <>
+               {compositionvalue != undefined && compositionvalue != '' && <div>{compositionvalue}</div>}
+            </>
+        )
+    }
 
     const renderObject = (obj: any, visited: Set<object> = new Set()) => {
         if(obj != null && obj != undefined){
@@ -321,18 +482,18 @@ export default function VersionHistory(props: any) {
                                                                                                 {(item?.FeedBackDescription != undefined && item?.FeedBackDescription != '' && item?.FeedBackDescription?.length > 0) ? <span className='d-flex'><p className='text-ellips mb-0'>{`${item?.FeedBackDescription[0]?.Title}`}</p> <InfoIconsToolTip Discription='' row={item} versionHistory={true} /></span> :''}                                                                                          
                                                                                             </div> : key === 'PercentComplete' ? (item?.PercentComplete)*100 : key === 'BasicImageInfo' 
                                                                                             ? <div className='BasicimagesInfo_groupImages'>
-                                                                                                {item?.BasicImageInfoArray != undefined && item?.BasicImageInfoArray?.map((image:any,indx:any)=>{
+                                                                                                {item?.BasicImageInfo != undefined && JSON.parse(item?.BasicImageInfo).map((image:any,indx:any)=>{
                                                                                                     return(
                                                                                                         <>                                                                                                            
                                                                                                             <span className='BasicimagesInfo_group'>
-                                                                                                                <a  href={image.ImageUrl} target='_blank' data-interception="off"><img src={image.ImageUrl} alt="" /></a>
+                                                                                                                <a href={image.ImageUrl} target='_blank' data-interception="off"><img src={image.ImageUrl} alt="" /></a>
                                                                                                                 {image.ImageUrl !== undefined ? <span className='BasicimagesInfo_group-imgIndex'>{indx+1}</span> : ''}
                                                                                                             </span>
                                                                                                         </>
                                                                                                     )
                                                                                                 })}
                                                                                               </div>: typeof(item[key]) === 'boolean' ? String(item[key]): key === 'EstimatedTimeDescription'
-                                                                                            ?<dl className="Sitecomposition my-2">
+                                                                                            ?<dl className="Sitecomposition my-2 w-50">
                                                                                                   <div className='dropdown' key={index} >
                                                                                                     <a className="sitebutton bg-fxdark d-flex">
                                                                                                       <span className="arrowicons"  onClick={() => showhideEstimatedTime()}>{ShowEstimatedTimeDescription ? <SlArrowDown /> : <SlArrowRight />}</span>
@@ -393,7 +554,18 @@ export default function VersionHistory(props: any) {
                                                                                                     </span>
                                                                                                    
                                                                                                 </div>                                                                                                                                                                                                                                                                          
-                                                                                            </div>}</> : item[key]}
+                                                                                            </div>}</> : key === 'OffshoreImageUrl'? <div className='BasicimagesInfo_groupImages'>
+                                                                                                {item?.OffshoreImageUrl != undefined && JSON.parse(item?.OffshoreImageUrl).map((image:any,indx:any)=>{
+                                                                                                    return(
+                                                                                                        <>                                                                                                            
+                                                                                                            <span className='BasicimagesInfo_group'>
+                                                                                                                <a href={image.Url} target='_blank' data-interception="off"><img src={image.Url} alt="" /></a>
+                                                                                                                {image.Url !== undefined ? <span className='BasicimagesInfo_group-imgIndex'>{indx+1}</span> : ''}
+                                                                                                            </span>
+                                                                                                        </>
+                                                                                                    )
+                                                                                                })}
+                                                                                              </div> : key === 'Sitestagging'? rendersiteComposition(item) : key === 'OffshoreComments' ? showbackgroundcomment(item) : key === 'SiteCompositionSettings' ? showSiteCompositionSettings(item) : key==='ComponentLink'? <a href={item[key]?.Url} target='_blank' data-interception="off"> {item[key]?.Url} </a> : key === 'ApproverHistory' ? showApproverHistory(item): item[key]}	
                                                                                     </span>
 
                                                                                 </li>}

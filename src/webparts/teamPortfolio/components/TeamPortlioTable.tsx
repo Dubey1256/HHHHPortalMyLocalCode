@@ -2227,15 +2227,18 @@ function TeamPortlioTable(SelectedProp: any) {
             // SelectedProp.props.NoteCall = type;
             // checkedList.NoteCall = type;
             setIsOpenActivity(true);
+            setActiveTile("")
         }
         if (checkedList?.TaskType?.Id == 1) {
             // checkedList.NoteCall = type;
             setIsOpenWorkstream(true);
+            setActiveTile("")
         }
         if (checkedList?.TaskType?.Id == 3) {
             // SelectedProp.props.NoteCall = type;
             // checkedList.NoteCall = type;
             setIsOpenActivity(true);
+            setActiveTile("")
         }
         if (checkedList?.TaskType?.Id == 2) {
             alert("You can not create ny item inside Task");
