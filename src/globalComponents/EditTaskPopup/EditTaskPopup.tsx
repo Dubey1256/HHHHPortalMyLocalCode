@@ -220,6 +220,7 @@ const EditTaskPopup = (Items: any) => {
     const [SendCategoryName, setSendCategoryName] = useState("");
     const [OpenEODReportPopup, setOpenEODReportPopup] = useState(false);
     const [CurrentImageIndex, setCurrentImageIndex] = useState("");
+    const [loaded, setLoaded] = React.useState(true);
    
     let [StatusOptions, setStatusOptions] = useState([
         { value: 0, status: "0% Not Started", taskStatusComment: "Not Started" },
@@ -246,7 +247,7 @@ const EditTaskPopup = (Items: any) => {
     ]);
 
     const [counter, setCounter] = useState(1);
-    const [loaded, setLoaded] = React.useState(true);
+    
 
     const handlePostComment = () => {
         setCounter(counter + 1);
