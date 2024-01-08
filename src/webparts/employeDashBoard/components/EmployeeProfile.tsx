@@ -279,7 +279,7 @@ const EmployeProfile = (props: any) => {
                   }
                   if (!isTaskItemExists(AssignedTask, items))
                     AssignedTask.push(items);
-                  if (config.TileName == 'assignedTask')
+                  if (config.TileName == 'assignedTask' && !isTaskItemExists(config?.Tasks, items))
                     config?.Tasks.push(items);
                 }
               })

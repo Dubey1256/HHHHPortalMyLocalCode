@@ -192,7 +192,7 @@ const TaskUserManagementTable = ({ TaskUsersListData, TaskGroupsListData, baseUr
                 UserGroupId: userGroup ? parseInt(userGroup) : memberToUpdate?.UserGroup?.Id,
                 // Item_x0020_Cover: { "__metadata": { type: "SP.FieldUrlValue" }, Description: "Description", Url: imageUrl?.Item_x002d_Image != undefined ? imageUrl?.Item_x002d_Image?.Url : (imageUrl?.Item_x0020_Cover != undefined ? imageUrl?.Item_x0020_Cover?.Url : null) },
                 // Item_x0020_Cover: { "__metadata": { type: "SP.FieldUrlValue" }, Description: "Description", Url: imageUrl?.Item_x0020_Cover != undefined ? imageUrl?.Item_x0020_Cover?.Url : memberToUpdate.Item_x0020_Cover.Url},
-                Item_x0020_Cover: { "__metadata": { type: "SP.FieldUrlValue" }, Description: "Description", Url: imageUrl?.Item_x002d_Image?.Url || imageUrl?.Item_x0020_Cover?.Url || (memberToUpdate?.Item_x0020_Cover?.Url || null)},
+                Item_x0020_Cover: { "__metadata": { type: "SP.FieldUrlValue" }, Description: "Description", Url: imageUrl?.Item_x002d_Image?.Url || imageUrl?.Item_x0020_Cover?.Url || (memberToUpdate?.Item_x0020_Cover?.Url || null) },
                 CategoriesItemsJson: JSON.stringify(selectedCategories),
             };
 
@@ -267,10 +267,10 @@ const TaskUserManagementTable = ({ TaskUsersListData, TaskGroupsListData, baseUr
             cell: ({ row }: any) => (
                 <div style={{ display: 'flex', alignItems: 'center' }}>
                     <img
-                        className='workmember'
+                        className='me-1 workmember'
                         src={row.original.Item_x0020_Cover?.Url || 'https://hhhhteams.sharepoint.com/sites/HHHH/GmBH/SiteCollectionImages/ICONS/32/icon_user.jpg'}
                         alt="User"
-                        style={{ marginRight: '10px', width: '32px', height: '32px' }}
+                    // style={{ marginRight: '10px', width: '32px', height: '32px' }}
                     />
                     <span>{`${row.original.Title} (${row.original.Suffix})`}</span>
                 </div>
@@ -319,13 +319,13 @@ const TaskUserManagementTable = ({ TaskUsersListData, TaskGroupsListData, baseUr
             id: 'Approver',
             placeholder: "Approver"
         },
-        {
-            accessorKey: "technicalGroup",
-            header: "",
-            id: 'technicalGroup',
-            placeholder: "Team",
-            size: 75,
-        },
+        // {
+        //     accessorKey: "technicalGroup",
+        //     header: "",
+        //     id: 'technicalGroup',
+        //     placeholder: "Team",
+        //     size: 75,
+        // },
         {
             id: "TaskId",
             accessorKey: "TaskId",
@@ -563,6 +563,20 @@ const TaskUserManagementTable = ({ TaskUsersListData, TaskGroupsListData, baseUr
         setOpenPopup(false)
     }
 
+    const cancelUpdate = () => {
+        setSelectedApprovalType(memberToUpdate.IsApprovalMail);
+        setSelectedCompany(memberToUpdate.Company);
+        // setSelectedRoles(memberToUpdate.Role || []);
+        setSelectedRoles(Array.isArray(memberToUpdate.Role) ? memberToUpdate.Role : []);
+        setIsActive(memberToUpdate.IsActive);
+        setIsTaskNotifications(memberToUpdate.IsTaskNotifications);
+        setUserCategory(memberToUpdate.TimeCategory)
+        setSelectedCategories(JSON.parse(memberToUpdate.CategoriesItemsJson))
+        setAssignedToUser(memberToUpdate.AssingedToUser?.Id)
+        setApprover([memberToUpdate.Approver?.[0]?.Id])
+        setOpenUpdateMemberPopup(false)
+    }
+
     // JSX Code starts here
 
     return (
@@ -586,7 +600,7 @@ const TaskUserManagementTable = ({ TaskUsersListData, TaskGroupsListData, baseUr
                 </button>
             </ul >
 
-            <div className="border border-top-0 clearfix p-3 tab-content" id="myTabContent">
+            <div className="border border-top-0 clearfix p-1 tab-content" id="myTabContent">
                 {/* <div className="tab-pane fade show active" id="team-members" role="tabpanel" aria-labelledby="teammemberstab"> */}
                 <div className="tab-pane show active" id="TEAMMEMBERS" role="tabpanel" aria-labelledby="TEAMMEMBERS">
                     <div className='Alltable'>
@@ -621,22 +635,22 @@ const TaskUserManagementTable = ({ TaskUsersListData, TaskGroupsListData, baseUr
                         <input className='form-control' type="text" placeholder='Enter Title' value={addTitle} onChange={(e: any) => { setAddTitle(e.target.value); autoSuggestionsForTitle(e) }} />
                     </div>
                     {autoSuggestData?.length > 0 ? (
-                            <div>
-                                <ul className="list-group">
-                                    {autoSuggestData?.map((Item: any) => {
-                                        return (
-                                            <li
-                                                className="hreflink list-group-item rounded-0 list-group-item-action"
-                                                key={Item.id}
-                                            // onClick={() => window.open(`${Item?.siteUrl}/SitePages/Project-Management.aspx?ProjectId=${Item?.Id}`, '_blank')}
-                                            >
-                                                <a>{Item.Title}</a>
-                                            </li>
-                                        );
-                                    })}
-                                </ul>
-                            </div>
-                        ) : null}
+                        <div>
+                            <ul className="list-group">
+                                {autoSuggestData?.map((Item: any) => {
+                                    return (
+                                        <li
+                                            className="hreflink list-group-item rounded-0 list-group-item-action"
+                                            key={Item.id}
+                                        // onClick={() => window.open(`${Item?.siteUrl}/SitePages/Project-Management.aspx?ProjectId=${Item?.Id}`, '_blank')}
+                                        >
+                                            <a>{Item.Title}</a>
+                                        </li>
+                                    );
+                                })}
+                            </ul>
+                        </div>
+                    ) : null}
                 </div>
 
                 {/* <input className='form-control' type="text" value={title} onChange={(e: any) => setTitle(e.target.value)} /> */}
@@ -977,7 +991,8 @@ const TaskUserManagementTable = ({ TaskUsersListData, TaskGroupsListData, baseUr
                                 <button
                                     type="button"
                                     className="btn btn-default btn-default ms-1"
-                                    onClick={() => setOpenUpdateMemberPopup(false)}
+                                    onClick={cancelUpdate}
+                                // onClick={() => setOpenUpdateMemberPopup(false)}
                                 >
                                     Cancel
                                 </button>
