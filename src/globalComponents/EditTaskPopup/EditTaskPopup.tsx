@@ -111,7 +111,6 @@ const EditTaskPopup = (Items: any) => {
     Items.Items.Id =
         Items.Items.Id != undefined ? Items.Items.Id : Items.Items.ID;
     let ShareWebConfigData: any = [];
-    const [loaded, setLoaded] = React.useState(true);
     const [TaskImages, setTaskImages] = useState([]);
     const [SmartMetaDataAllItems, setSmartMetaDataAllItems] = useState<any>([]);
     const [IsComponentPicker, setIsComponentPicker] = useState(false);
@@ -221,6 +220,7 @@ const EditTaskPopup = (Items: any) => {
     const [SendCategoryName, setSendCategoryName] = useState("");
     const [OpenEODReportPopup, setOpenEODReportPopup] = useState(false);
     const [CurrentImageIndex, setCurrentImageIndex] = useState("");
+   
     let [StatusOptions, setStatusOptions] = useState([
         { value: 0, status: "0% Not Started", taskStatusComment: "Not Started" },
         { value: 1, status: "1% For Approval", taskStatusComment: "For Approval" },
