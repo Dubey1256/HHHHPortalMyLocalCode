@@ -51,6 +51,7 @@ import BackgroundCommentComponent from "./BackgroundCommentComponent";
 import EmailNotificationMail from "./EmailNotificationMail";
 import OnHoldCommentCard from '../Comments/OnHoldCommentCard';
 import CentralizedSiteComposition from "../SiteCompositionComponents/CentralizedSiteComposition";
+
 let PortfolioItemColor: any = "";
 var AllMetaData: any = [];
 var taskUsers: any = [];
@@ -110,6 +111,7 @@ const EditTaskPopup = (Items: any) => {
     Items.Items.Id =
         Items.Items.Id != undefined ? Items.Items.Id : Items.Items.ID;
     let ShareWebConfigData: any = [];
+    const [loaded, setLoaded] = React.useState(true);
     const [TaskImages, setTaskImages] = useState([]);
     const [SmartMetaDataAllItems, setSmartMetaDataAllItems] = useState<any>([]);
     const [IsComponentPicker, setIsComponentPicker] = useState(false);
@@ -1005,8 +1007,7 @@ const EditTaskPopup = (Items: any) => {
                 }
                 item.TaskId = globalCommon.GetTaskId(item);
                 item.siteUrl = siteUrls;
-                item.siteType = Items?.Items?.siteType;
-                item.SiteIcon = Items?.Items?.SiteIcon;
+                item.siteType = Items.Items.siteType;
                 let AssignedUsers: any = [];
                 item.listId = Items.Items.listId;
                 if (globalSelectedProject?.Id != undefined) {
@@ -1516,17 +1517,18 @@ const EditTaskPopup = (Items: any) => {
                         if (DataItem[0]?.Item_x0020_Type == "Project" || DataItem[0]?.Item_x0020_Type == "Sprint") {
 
                             setSelectedProject(DataItem);
-                            // globalSelectedProject = DataItem[0];
-                            // let updatedItem = {
-                            //     ...EditData,
-                            //     Project: DataItem[0],
-                            // };
-                            // let SmartPriority = globalCommon.calculateSmartPriority(updatedItem)
-                            // updatedItem = {
-                            //     ...updatedItem,
-                            //     SmartPriority: SmartPriority
-                            // }
-                            // setEditData(updatedItem);
+                            let updatedItem = {
+                                ...EditDataBackup,
+                                Project: DataItem[0],
+                            };
+                            let SmartPriority = globalCommon.calculateSmartPriority(updatedItem)
+                            updatedItem = {
+                                ...updatedItem,
+                                SmartPriority: SmartPriority
+                            }
+                            EditDataBackup=updatedItem;
+                            setEditData(updatedItem);
+                             globalSelectedProject = DataItem[0];
 
                         } else {
                             setTaggedPortfolioData(DataItem);
@@ -1597,7 +1599,7 @@ const EditTaskPopup = (Items: any) => {
         });
         tempShareWebTypeData = result;
         let updatedItem = {
-            ...EditData,
+            ...EditDataBackup,
             TaskCategories: tempShareWebTypeData,
         };
         let SmartPriority = globalCommon.calculateSmartPriority(updatedItem)
@@ -1606,6 +1608,7 @@ const EditTaskPopup = (Items: any) => {
             SmartPriority: SmartPriority
         }
         setEditData(updatedItem);
+        EditDataBackup=updatedItem;
         setPhoneStatus(result?.some((category: any) => category.Title === "Phone"));
         setEmailStatus(result?.some((category: any) => category.Title === "Email Notification"));
         setImmediateStatus(result?.some((category: any) => category.Title === "Immediate"));
@@ -1822,7 +1825,7 @@ const EditTaskPopup = (Items: any) => {
             // }
         }
         let updatedItem = {
-            ...EditData,
+            ...EditDataBackup,
             TaskCategories: tempShareWebTypeData,
         };
         let SmartPriority = globalCommon.calculateSmartPriority(updatedItem)
@@ -1830,6 +1833,7 @@ const EditTaskPopup = (Items: any) => {
             ...updatedItem,
             SmartPriority: SmartPriority
         }
+        EditDataBackup=updatedItem;
         setEditData(updatedItem);
     };
 
@@ -3072,7 +3076,7 @@ const EditTaskPopup = (Items: any) => {
         let value = e.target.value;
         if (Number(value) <= 10) {
             let updatedItem = {
-                ...EditData,
+                ...EditDataBackup,
                 PriorityRank: Number(value),
             };
             let SmartPriority = globalCommon.calculateSmartPriority(updatedItem)
@@ -3080,6 +3084,7 @@ const EditTaskPopup = (Items: any) => {
                 ...updatedItem,
                 SmartPriority: SmartPriority
             }
+            EditDataBackup=updatedItem;
             setEditData(updatedItem);
             // setEditData({ ...EditData, PriorityRank: e.target.value });
         } else {
@@ -4278,10 +4283,19 @@ const EditTaskPopup = (Items: any) => {
         setProjectSearchKey("");
         setSearchedProjectData([]);
         setSelectedProject(data);
-        let item = EditData;
-        item.Project = globalSelectedProject = data;
-        item.SmartPriority = globalCommon.calculateSmartPriority(item)
-        setEditData((prev: any) => item)
+        let updatedItem = {
+            ...EditDataBackup,
+            Project: data,
+        };
+        let SmartPriority = globalCommon.calculateSmartPriority(updatedItem)
+        updatedItem = {
+            ...updatedItem,
+            SmartPriority: SmartPriority
+        }
+        EditDataBackup=updatedItem;
+        setEditData(updatedItem);
+         globalSelectedProject = data;
+       
     };
 
     // ************ this is for Approver Popup Function And Approver Related All Functions section **************

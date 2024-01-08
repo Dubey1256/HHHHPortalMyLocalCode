@@ -62,7 +62,22 @@ export default function VersionHistory(props: any) {
                              feedback.Title = $.parseHTML(feedback?.Title)[0].textContent;
                         }) 
                     }                  
-                }                                   
+                }   
+                if(val?.BasicImageInfo!=undefined){
+                    try{
+                        val.BasicImageInfoArray = JSON.parse(val?.BasicImageInfo)
+                    }catch(e){
+
+                    }
+                }   
+                if(val?.OffshoreImageUrl!=undefined){
+                    try{
+                        val.OffshoreImageUrlArray = JSON.parse(val?.OffshoreImageUrl)
+                    }catch(e){
+
+                    }
+                }  
+
                 if(val.EstimatedTimeDescription !== undefined && val.EstimatedTimeDescription !== null && val.EstimatedTimeDescription !== '[]'){
                     tempEstimatedArrayData = JSON.parse(val?.EstimatedTimeDescription) ;
                     let TotalEstimatedTimecopy:any = 0;                                             
@@ -292,9 +307,18 @@ export default function VersionHistory(props: any) {
         }    
     }    
     const rendersiteComposition = (itm:any) =>{
+        var SitestaggingArray:any = [];
+        if(itm?.Sitestagging!=undefined){
+            try{
+                SitestaggingArray = JSON.parse(itm?.Sitestagging)
+            }catch(e){
+
+            }
+        }  
+
         return(
             <>
-                {(itm?.Sitestagging != undefined && itm?.Sitestagging != null && itm?.Sitestagging != '[]') && <dl className="Sitecomposition w-50">                                                                                         
+                {(SitestaggingArray != undefined && SitestaggingArray != null) && <dl className="Sitecomposition w-50">                                                                                         
                     <div className='dropdown'>
                         <a className="sitebutton bg-fxdark d-flex">
                         <span className="arrowicons" onClick={() => showhideComposition()}>{showComposition ? <SlArrowDown /> : <SlArrowRight />}</span>
@@ -304,7 +328,7 @@ export default function VersionHistory(props: any) {
                         </a>
                         <div className="spxdropdown-menu" style={{ display: showComposition ? 'block' : 'none' }}>
                         <ul>                                   
-                            {JSON.parse(itm?.Sitestagging).map((site:any,indx:any)=>{
+                            {SitestaggingArray.map((site:any,indx:any)=>{
                             return <li className="Sitelist">
                                 <span>
                                     <img style={{ width: "22px" }} title={site?.Title} src={site?.SiteImages} />
@@ -329,9 +353,17 @@ export default function VersionHistory(props: any) {
         )
     }
     const showbackgroundcomment = (itm:any) =>{
+        var OffshoreCommentsArray :any = [];
+        if(itm?.OffshoreComments!=undefined){
+            try{
+                OffshoreCommentsArray = JSON.parse(itm?.OffshoreComments)
+            }catch(e){
+
+            }
+        }  
         return(
             <>
-               {IsUserFromHHHHTeam ? null : <>{itm.OffshoreComments != null && itm.OffshoreComments.length > 0 && JSON.parse(itm?.OffshoreComments).map((item: any, index: any) => {
+               {IsUserFromHHHHTeam ? null : <>{OffshoreCommentsArray != undefined && OffshoreCommentsArray.length > 0 && OffshoreCommentsArray.map((item: any, index: any) => {
                     return <div>
                     <span className='round px-1'>
                         {item.AuthorImage != null &&
@@ -385,20 +417,26 @@ export default function VersionHistory(props: any) {
     }
       
     const showSiteCompositionSettings = (itm:any)=>{       
-        var compositionvalue:any = '';         
-        JSON.parse(itm?.SiteCompositionSettings).map((compoitem:any)=>{
-            if(compoitem.Deluxe)
-             compositionvalue = 'Deluxe';
-            else if(compoitem.Manual)
-             compositionvalue = 'Manual';
-            else if(compoitem.Proportional)
-             compositionvalue = 'Proportional';
-            else if(compoitem.Protected)
-             compositionvalue = 'Protected';
-            else if(compoitem.Standard)
-             compositionvalue = 'Standard';
-        })    
-                      
+        var compositionvalue:any = '';      
+        if(itm?.SiteCompositionSettings != undefined)  {
+            try{
+                JSON.parse(itm?.SiteCompositionSettings).map((compoitem:any)=>{
+                    if(compoitem.Deluxe)
+                     compositionvalue = 'Deluxe';
+                    else if(compoitem.Manual)
+                     compositionvalue = 'Manual';
+                    else if(compoitem.Proportional)
+                     compositionvalue = 'Proportional';
+                    else if(compoitem.Protected)
+                     compositionvalue = 'Protected';
+                    else if(compoitem.Standard)
+                     compositionvalue = 'Standard';
+                })   
+            }catch(e){
+
+            }
+        } 
+                               
         return(
             <>
                {compositionvalue != undefined && compositionvalue != '' && <div>{compositionvalue}</div>}
@@ -470,108 +508,108 @@ export default function VersionHistory(props: any) {
                                                             <ul className='p-0 mb-0'>
                                                                 {keys.map((key: any, index: any) => {
                                                                     return (
-                                                                        <>
+                                                                    <>
                                                                         {(key != 'odata.editLink' && key != 'odata.id' && key != 'owshiddenversion' && key != 'Editor' && key != 'childs' && 
-                                                                        key != 'Modified' && key != 'ModifiedDate' && key != 'No' && key != 'CommentsDescription' && key != 'Created'  && key != 'ModifiedBy' && key !== 'version' && key !== 'TaskTitle' && key !== 'TaskID' && key !== 'FeedBackDescription' && key !== 'ID' && key !=='EstimatedTimeDescriptionArray' &&  key !=='TotalEstimatedTime') &&
-                                                                                <li key={index}>
-                                                                                    <span className='vh-textLabel'>{key}</span>
-                                                                                    <span className='vh-textData'>{Array.isArray(item[key])
-                                                                                        ? renderArray(item[key])
-                                                                                        : typeof item[key] === 'object'
-                                                                                            ? renderObject(item[key])
-                                                                                            : key === 'FeedBack' 
-                                                                                            ? <div className='feedbackItm-text'>
-                                                                                                {(item?.FeedBackDescription != undefined && item?.FeedBackDescription != '' && item?.FeedBackDescription?.length > 0) ? <span className='d-flex'><p className='text-ellips mb-0'>{`${item?.FeedBackDescription[0]?.Title}`}</p> <InfoIconsToolTip Discription='' row={item} versionHistory={true} /></span> :''}                                                                                          
-                                                                                            </div> : key === 'PercentComplete' ? (item?.PercentComplete)*100 : key === 'BasicImageInfo' 
-                                                                                            ? <div className='BasicimagesInfo_groupImages'>
-                                                                                                {item?.BasicImageInfo != undefined && JSON.parse(item?.BasicImageInfo).map((image:any,indx:any)=>{
-                                                                                                    return(
-                                                                                                        <>                                                                                                            
-                                                                                                            <span className='BasicimagesInfo_group'>
-                                                                                                                <a href={image.ImageUrl} target='_blank' data-interception="off"><img src={image.ImageUrl} alt="" /></a>
-                                                                                                                {image.ImageUrl !== undefined ? <span className='BasicimagesInfo_group-imgIndex'>{indx+1}</span> : ''}
-                                                                                                            </span>
-                                                                                                        </>
-                                                                                                    )
-                                                                                                })}
-                                                                                              </div>: typeof(item[key]) === 'boolean' ? String(item[key]): key === 'EstimatedTimeDescription'
-                                                                                            ?<dl className="Sitecomposition my-2 w-50">
-                                                                                                  <div className='dropdown' key={index} >
-                                                                                                    <a className="sitebutton bg-fxdark d-flex">
-                                                                                                      <span className="arrowicons"  onClick={() => showhideEstimatedTime()}>{ShowEstimatedTimeDescription ? <SlArrowDown /> : <SlArrowRight />}</span>
-                                                                                                      <div className="d-flex justify-content-between full-width">
-                                                                                                        <p className="pb-0 mb-0 ">Estimated Task Time Details</p>
-                                                                                                      </div>
-                                                                                                    </a>
-                                                                                                    <div className="spxdropdown-menu" style={{ display: ShowEstimatedTimeDescription ? 'block' : 'none' }}>
-                                                                                                      <div className="col-12" style={{ fontSize: "14px" }}>
-                                                                                                        {item?.EstimatedTimeDescriptionArray != null && item?.EstimatedTimeDescriptionArray?.length > 0 ?
-                                                                                                          <div>
-                                                                                                            {item?.EstimatedTimeDescriptionArray?.map((EstimatedTimeData: any, Index: any) => {
-                                                                                                              return (
-                                                                                                                <div className={item?.EstimatedTimeDescriptionArray?.length == Index + 1 ? "align-content-center alignCenter justify-content-between p-1 px-2" : "align-content-center justify-content-between border-bottom alignCenter p-1 px-2"}>
-                                                                                                                  <div className='alignCenter'>
-                                                                                                                    <span className='me-2'>{EstimatedTimeData?.Team != undefined ? EstimatedTimeData?.Team : EstimatedTimeData?.Category != undefined ? EstimatedTimeData?.Category : null}</span> |
-                                                                                                                    <span className='mx-2'>{EstimatedTimeData?.EstimatedTime ? (EstimatedTimeData?.EstimatedTime > 1 ? EstimatedTimeData?.EstimatedTime + " hours" : EstimatedTimeData?.EstimatedTime + " hour") : "0 hour"}</span>
-                                                                                                                    <img className="ProirityAssignedUserPhoto m-0 mx-2" title={EstimatedTimeData?.UserName} src={EstimatedTimeData?.UserImage != undefined && EstimatedTimeData?.UserImage?.length > 0 ? EstimatedTimeData?.UserImage : ''} />
-                                                                                                                  </div>
-                                                                                                                  {EstimatedTimeData?.EstimatedTimeDescription?.length > 0 && <div className='alignCenter hover-text'>
-                                                                                                                    <span className="svg__iconbox svg__icon--info"></span>
-                                                                                                                    <span className='tooltip-text pop-right'>{EstimatedTimeData?.EstimatedTimeDescription} </span>
-                                                                                                                  </div>}
-                                                                                                                </div>
-                                                                                                              )
-                                                                                                            })}
-                                                                                                          </div>
-                                                                                                          : null
-                                                                                                        }
-                                                                                                      </div>
-                                                                                                    </div>
-                                                                                                    <div className="boldClable border border-top-0 ps-2 py-1">
-                                                                                                      <span>Total Estimated Time : </span><span className="mx-1">{item?.TotalEstimatedTime > 1 ? item?.TotalEstimatedTime + " hours" : item?.TotalEstimatedTime + " hour"} </span>
-                                                                                                    </div>
-                                                                                                  </div>
-                                                                                                </dl>                                                                                              
-                                                                                            : key === 'Comments'
-                                                                                            ?<>{item?.CommentsDescription != undefined && <div className='feedbackItm-text'>
-                                                                                            
-                                                                                                <div>
-                                                                                                    <span className='comment-date'>
-                                                                                                        <span className='round  pe-1'> <img className='align-self-start me-1' title={item?.CommentsDescription[0]?.AuthorName}
-                                                                                                        src={item?.CommentsDescription[0]?.AuthorImage != undefined && item?.CommentsDescription[0]?.AuthorImage != '' ?
-                                                                                                         item?.CommentsDescription[0].AuthorImage :
-                                                                                                            "https://hhhhteams.sharepoint.com/sites/HHHH/SiteCollectionImages/ICONS/32/icon_user.jpg"}
-                                                                                                        />
-                                                                                                        {item?.CommentsDescription[0]?.Created}
-
+                                                                        key != 'Modified' && key != 'ModifiedDate' && key != 'BasicImageInfoArray' && key != 'OffshoreImageUrlArray' && key != 'No' && key != 'CommentsDescription' && key != 'Created'  && key != 'ModifiedBy' && key !== 'version' && key !== 'TaskTitle' && key !== 'TaskID' && key !== 'FeedBackDescription' && key !== 'ID' && key !=='EstimatedTimeDescriptionArray' &&  key !=='TotalEstimatedTime') &&
+                                                                            <li key={index}>
+                                                                                <span className='vh-textLabel'>{key}</span>
+                                                                                <span className='vh-textData'>{Array.isArray(item[key])
+                                                                                    ? renderArray(item[key])
+                                                                                    : typeof item[key] === 'object'
+                                                                                        ? renderObject(item[key])
+                                                                                        : key === 'FeedBack' 
+                                                                                        ? <div className='feedbackItm-text'>
+                                                                                            {(item?.FeedBackDescription != undefined && item?.FeedBackDescription != '' && item?.FeedBackDescription?.length > 0) ? <span className='d-flex'><p className='text-ellips mb-0'>{`${item?.FeedBackDescription[0]?.Title}`}</p> <InfoIconsToolTip Discription='' row={item} versionHistory={true} /></span> :''}                                                                                          
+                                                                                        </div> : key === 'PercentComplete' ? (item?.PercentComplete)*100 : key === 'BasicImageInfo' 
+                                                                                        ? <div className='BasicimagesInfo_groupImages'>
+                                                                                            {item?.BasicImageInfoArray != undefined && item?.BasicImageInfoArray.map((image:any,indx:any)=>{
+                                                                                                return(
+                                                                                                    <>                                                                                                            
+                                                                                                        <span className='BasicimagesInfo_group'>
+                                                                                                            <a href={image.ImageUrl} target='_blank' data-interception="off"><img src={image.ImageUrl} alt="" /></a>
+                                                                                                            {image.ImageUrl !== undefined ? <span className='BasicimagesInfo_group-imgIndex'>{indx+1}</span> : ''}
                                                                                                         </span>
-                                                                                                    </span>                                
+                                                                                                    </>
+                                                                                                )
+                                                                                            })}
+                                                                                            </div>: typeof(item[key]) === 'boolean' ? String(item[key]): key === 'EstimatedTimeDescription'
+                                                                                        ?<dl className="Sitecomposition my-2 w-50">
+                                                                                                <div className='dropdown' key={index} >
+                                                                                                <a className="sitebutton bg-fxdark d-flex">
+                                                                                                    <span className="arrowicons"  onClick={() => showhideEstimatedTime()}>{ShowEstimatedTimeDescription ? <SlArrowDown /> : <SlArrowRight />}</span>
+                                                                                                    <div className="d-flex justify-content-between full-width">
+                                                                                                    <p className="pb-0 mb-0 ">Estimated Task Time Details</p>
+                                                                                                    </div>
+                                                                                                </a>
+                                                                                                <div className="spxdropdown-menu" style={{ display: ShowEstimatedTimeDescription ? 'block' : 'none' }}>
+                                                                                                    <div className="col-12" style={{ fontSize: "14px" }}>
+                                                                                                    {item?.EstimatedTimeDescriptionArray != null && item?.EstimatedTimeDescriptionArray?.length > 0 ?
+                                                                                                        <div>
+                                                                                                        {item?.EstimatedTimeDescriptionArray?.map((EstimatedTimeData: any, Index: any) => {
+                                                                                                            return (
+                                                                                                            <div className={item?.EstimatedTimeDescriptionArray?.length == Index + 1 ? "align-content-center alignCenter justify-content-between p-1 px-2" : "align-content-center justify-content-between border-bottom alignCenter p-1 px-2"}>
+                                                                                                                <div className='alignCenter'>
+                                                                                                                <span className='me-2'>{EstimatedTimeData?.Team != undefined ? EstimatedTimeData?.Team : EstimatedTimeData?.Category != undefined ? EstimatedTimeData?.Category : null}</span> |
+                                                                                                                <span className='mx-2'>{EstimatedTimeData?.EstimatedTime ? (EstimatedTimeData?.EstimatedTime > 1 ? EstimatedTimeData?.EstimatedTime + " hours" : EstimatedTimeData?.EstimatedTime + " hour") : "0 hour"}</span>
+                                                                                                                <img className="ProirityAssignedUserPhoto m-0 mx-2" title={EstimatedTimeData?.UserName} src={EstimatedTimeData?.UserImage != undefined && EstimatedTimeData?.UserImage?.length > 0 ? EstimatedTimeData?.UserImage : ''} />
+                                                                                                                </div>
+                                                                                                                {EstimatedTimeData?.EstimatedTimeDescription?.length > 0 && <div className='alignCenter hover-text'>
+                                                                                                                <span className="svg__iconbox svg__icon--info"></span>
+                                                                                                                <span className='tooltip-text pop-right'>{EstimatedTimeData?.EstimatedTimeDescription} </span>
+                                                                                                                </div>}
+                                                                                                            </div>
+                                                                                                            )
+                                                                                                        })}
+                                                                                                        </div>
+                                                                                                        : null
+                                                                                                    }
+                                                                                                    </div>
                                                                                                 </div>
+                                                                                                <div className="boldClable border border-top-0 ps-2 py-1">
+                                                                                                    <span>Total Estimated Time : </span><span className="mx-1">{item?.TotalEstimatedTime > 1 ? item?.TotalEstimatedTime + " hours" : item?.TotalEstimatedTime + " hour"} </span>
+                                                                                                </div>
+                                                                                                </div>
+                                                                                            </dl>                                                                                              
+                                                                                        : key === 'Comments'
+                                                                                        ?<>{item?.CommentsDescription != undefined && <div className='feedbackItm-text'>
+                                                                                        
+                                                                                            <div>
+                                                                                                <span className='comment-date'>
+                                                                                                    <span className='round  pe-1'> <img className='align-self-start me-1' title={item?.CommentsDescription[0]?.AuthorName}
+                                                                                                    src={item?.CommentsDescription[0]?.AuthorImage != undefined && item?.CommentsDescription[0]?.AuthorImage != '' ?
+                                                                                                        item?.CommentsDescription[0].AuthorImage :
+                                                                                                        "https://hhhhteams.sharepoint.com/sites/HHHH/SiteCollectionImages/ICONS/32/icon_user.jpg"}
+                                                                                                    />
+                                                                                                    {item?.CommentsDescription[0]?.Created}
 
-                                                                                                <div className="media-text">
-                                                                                                    <label className='userid m-0'>  {item?.CommentsDescription[0]?.Header != '' && <b>{item?.CommentsDescription[0]?.Header}</b>}</label>
-                                                                                                    <span className='d-flex' id="pageContent">
-                                                                                                        <span className='text-ellips' dangerouslySetInnerHTML={{ __html: item?.CommentsDescription[0]?.Description }}></span>
-                                                                                                        <span className='text-end w-25'><a className="hreflink" onClick={()=>openCommentPopup(item?.CommentsDescription)}>See More</a></span>
                                                                                                     </span>
-                                                                                                   
-                                                                                                </div>                                                                                                                                                                                                                                                                          
-                                                                                            </div>}</> : key === 'OffshoreImageUrl'? <div className='BasicimagesInfo_groupImages'>
-                                                                                                {item?.OffshoreImageUrl != undefined && JSON.parse(item?.OffshoreImageUrl).map((image:any,indx:any)=>{
-                                                                                                    return(
-                                                                                                        <>                                                                                                            
-                                                                                                            <span className='BasicimagesInfo_group'>
-                                                                                                                <a href={image.Url} target='_blank' data-interception="off"><img src={image.Url} alt="" /></a>
-                                                                                                                {image.Url !== undefined ? <span className='BasicimagesInfo_group-imgIndex'>{indx+1}</span> : ''}
-                                                                                                            </span>
-                                                                                                        </>
-                                                                                                    )
-                                                                                                })}
-                                                                                              </div> : key === 'Sitestagging'? rendersiteComposition(item) : key === 'OffshoreComments' ? showbackgroundcomment(item) : key === 'SiteCompositionSettings' ? showSiteCompositionSettings(item) : key === 'ApproverHistory' ? showApproverHistory(item): item[key]}	
-                                                                                    </span>
+                                                                                                </span>                                
+                                                                                            </div>
 
-                                                                                </li>}
-                                                                     </> )
+                                                                                            <div className="media-text">
+                                                                                                <label className='userid m-0'>  {item?.CommentsDescription[0]?.Header != '' && <b>{item?.CommentsDescription[0]?.Header}</b>}</label>
+                                                                                                <span className='d-flex' id="pageContent">
+                                                                                                    <span className='text-ellips' dangerouslySetInnerHTML={{ __html: item?.CommentsDescription[0]?.Description }}></span>
+                                                                                                    <span className='text-end w-25'><a className="hreflink" onClick={()=>openCommentPopup(item?.CommentsDescription)}>See More</a></span>
+                                                                                                </span>
+                                                                                                
+                                                                                            </div>                                                                                                                                                                                                                                                                          
+                                                                                        </div>}</> : key === 'OffshoreImageUrl'? <div className='BasicimagesInfo_groupImages'>
+                                                                                            {item?.OffshoreImageUrlArray != undefined && item?.OffshoreImageUrlArray.map((image:any,indx:any)=>{
+                                                                                                return(
+                                                                                                    <>                                                                                                            
+                                                                                                        <span className='BasicimagesInfo_group'>
+                                                                                                            <a href={image.Url} target='_blank' data-interception="off"><img src={image.Url} alt="" /></a>
+                                                                                                            {image.Url !== undefined ? <span className='BasicimagesInfo_group-imgIndex'>{indx+1}</span> : ''}
+                                                                                                        </span>
+                                                                                                    </>
+                                                                                                )
+                                                                                            })}
+                                                                                            </div> : key === 'Sitestagging'? rendersiteComposition(item) : key === 'OffshoreComments' ? showbackgroundcomment(item) : key === 'SiteCompositionSettings' ? showSiteCompositionSettings(item) : key === 'ApproverHistory' ? showApproverHistory(item): item[key]}	
+                                                                                </span>
+
+                                                                            </li>}
+                                                                    </>)
                                                                     })}
                                                             </ul>
                                                         )
