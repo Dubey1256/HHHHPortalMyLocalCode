@@ -113,7 +113,7 @@ const EditDocumentpanel = (props: any) => {
         ItemType: EditdocumentsData.ItemType,
 
         PortfoliosId: { "results": allValue.componentservicesetdataTag != undefined ? [allValue.componentservicesetdataTag.Id] : [] },
-        Body: allValue?.Description != "" ? allValue?.Description : "",
+        Body: allValue?.Description?.blocks[0]?.text != "" ? allValue?.Description?.blocks[0]?.text : "",
         Item_x0020_Cover: {
           "__metadata": { type: 'SP.FieldUrlValue' },
           'Description': EditdocumentsData?.Item_x0020_Cover?.Url != "" ? EditdocumentsData?.UrItem_x0020_Coverl?.Url : "",
@@ -286,7 +286,7 @@ const EditDocumentpanel = (props: any) => {
                 </div>
 
               </div>
-              <div className='mt-3'> <HtmlEditorCard editorValue={EditdocumentsData?.Description != null ? EditdocumentsData?.Description : ""} HtmlEditorStateChange={HtmlEditorCallBack}> </HtmlEditorCard></div>
+              <div className='mt-3'> <HtmlEditorCard editorValue={EditdocumentsData?.Body != null ? EditdocumentsData?.Body : ""} HtmlEditorStateChange={HtmlEditorCallBack}> </HtmlEditorCard></div>
             </div>
           </Tab>
           <Tab eventKey="IMAGEINFORMATION" title="IMAGE INFORMATION" className='p-0' >

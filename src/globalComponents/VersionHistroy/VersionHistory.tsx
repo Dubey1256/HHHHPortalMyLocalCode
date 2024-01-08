@@ -114,7 +114,7 @@ export default function VersionHistory(props: any) {
     }
     const loadTaskUsers = async () => {
         var AllTaskUsers: any = [];
-        let currentUserId = props.context.pageContext._legacyPageContext.userId;
+        let currentUserId = props?.context?.pageContext._legacyPageContext.userId;
         const web = sp.web;
         taskUsers = await web.lists
             .getById('b318ba84-e21d-4876-8851-88b94b9dc300')

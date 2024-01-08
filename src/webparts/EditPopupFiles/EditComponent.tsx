@@ -4694,11 +4694,11 @@ function EditInstitution({ item, SelectD, Calls, usedFor, portfolioTypeData, fil
                                 className="radio"
                                 type="radio"
                                 name="selectedTitle"
-                                value={value.Title}
-                                checked={selectPortfolioType.Title === value.Title}
+                                value={value?.Title}
+                                checked={selectPortfolioType?.Title === value?.Title}
                                 onChange={() => setSelectPortfolioType(value)}
                             />
-                            {value.Title}</div>
+                            {value?.Title}</div>
                     ))}
                 </div>
                 <footer className="footer-right">
