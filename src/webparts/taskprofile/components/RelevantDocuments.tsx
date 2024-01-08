@@ -156,7 +156,7 @@ const RelevantDocuments = (props: any, ref: any) => {
                   {/* <li>
                                    <a  href={item?.FileDirRef} target="_blank" data-interception="off" > <span className='svg__iconbox svg__icon--folder'></span></a>
                                 </li> */}
-                  <li>
+                  <li className="text-break">
                     <a href={item.EncodedAbsUrl}>
                       {item?.File_x0020_Type == "pdf" && <span className='svg__iconbox svg__icon--pdf' title="pdf"></span>}
                       {item?.File_x0020_Type == "docx" && <span className='svg__iconbox svg__icon--docx' title="docx"></span>}

@@ -49,12 +49,17 @@ let TimesheetData: any = [];
 let count = 1;
 let flatviewmastertask:any =[];
 let flatviewTasklist:any =[];
+let PortfolioTypeBackup:any=[]
 let hasExpanded: any = true;
 let isColumnDefultSortingAsc: any = false;
 let hasCustomExpanded: any = true;
 let isHeaderNotAvlable: any = false
 let TagProjectToStructure=false;
 let allgroupdata:any = [];
+let isAllTaskSelected:any = false;
+let loadAllTaskType:any=false;
+let AllTasks: any = [];
+let portfolioTypeData:any=[]
 function PortfolioTable(SelectedProp: any) {
   const childRef = React.useRef<any>();
   if (childRef != null) {
@@ -75,7 +80,7 @@ function PortfolioTable(SelectedProp: any) {
   const [checkedList, setCheckedList] = React.useState<any>({});
   // const [AllSiteTasksData, setAllSiteTasksData] = React.useState([]);
   const [AllMasterTasksData, setAllMasterTasks] = React.useState([]);
-  const [portfolioTypeData, setPortfolioTypeData] = React.useState([]);
+  //const [portfolioTypeData, setPortfolioTypeData] = React.useState([]);
   const [taskTypeData, setTaskTypeData] = React.useState([]);
   const [portfolioTypeDataItem, setPortFolioTypeIcon] = React.useState([]);
   const [taskTypeDataItem, setTaskTypeDataItem] = React.useState([]);
@@ -103,18 +108,17 @@ function PortfolioTable(SelectedProp: any) {
     const [flatViewDataAll, setFlatViewDataAll] = React.useState([]);
     const [portfolioTypeDataItemBackup, setPortFolioTypeIconBackup] = React.useState([]);
     const [taskTypeDataItemBackup, setTaskTypeDataItemBackup] = React.useState([]);
-    const globalContextData: any = React.useContext<any>(myContextValue)
     const [priorityRank, setpriorityRank] = React.useState([])
     const [precentComplete, setPrecentComplete] = React.useState([])
+    const globalContextData: any = React.useContext<any>(myContextValue)
   let ComponetsData: any = {};
   let Response: any = [];
   let props = undefined;
-  let AllTasks: any = [];
   let AllComponetsData: any = [];
 
   let TaskUsers: any = [];
   let TasksItem: any = [];
-
+  ContextValue = SelectedProp?.NextProp;
   React.useEffect(() => {
     try {
       if (SelectedProp?.NextProp != undefined && SelectedProp?.UsedFrom!='ProjectManagement') {
@@ -179,13 +183,15 @@ function PortfolioTable(SelectedProp: any) {
   };
 
   const getPortFolioType = async () => {
+    portfolioTypeData=[]
     let web = new Web(ContextValue.siteUrl);
     let PortFolioType = [];
     PortFolioType = await web.lists
       .getById(ContextValue.PortFolioTypeID)
       .items.select("Id", "Title", "Color", "IdRange")
       .get();
-    setPortfolioTypeData(PortFolioType);
+      portfolioTypeData = PortFolioType;
+     PortfolioTypeBackup = PortFolioType
   };
   const getTaskType = async () => {
     let web = new Web(ContextValue.siteUrl);
@@ -322,88 +328,41 @@ function PortfolioTable(SelectedProp: any) {
       console.error("Error fetching portfolio icons:", error);
     }
   };
-
-  const LoadAllSiteTasks = async function () {
+  const FilterAllTask = ()=>{
+    loadAllTaskType=true;
+    LoadAllSiteTasks('CompletedTask')
+   
+  }
+    
     let AllTasksData: any = [];
-    let Counter = 0;
-    if (siteConfig != undefined && siteConfig.length > 0) {
-      const batch = sp.createBatch();
-      for (let i = 0; i < siteConfig.length; i++) {
-        const config = siteConfig[i];
-        const web = new Web(ContextValue.siteUrl);
-        const list = web.lists.getById(config.listId);
-        list.items
-          .inBatch(batch)
-          .select(
-            "ParentTask/Title",
-            "ParentTask/Id",
-            "ItemRank",
-            "TaskLevel",
-            "OffshoreComments",
-            "TeamMembers/Id",
-            "ClientCategory/Id",
-            "ClientCategory/Title",
-            "TaskID",
-            "Created",
-            "ResponsibleTeam/Id",
-            "ResponsibleTeam/Title",
-            "ParentTask/TaskID",
-            "TaskType/Level",
-            "PriorityRank",
-            "TeamMembers/Title",
-            "FeedBack",
-            "Title",
-            "Id",
-            "ID",
-            "Sitestagging",
-            "ClientTime",
-            "DueDate",
-            "Comments",
-            "Categories",
-            "Status",
-            "Body",
-            "SiteCompositionSettings",
-            "PercentComplete",
-            "ClientCategory",
-            "Priority",
-            "TaskType/Id",
-            "TaskType/Title",
-            "Portfolio/Id",
-            "Portfolio/ItemType",
-            "Portfolio/PortfolioStructureID",
-            "Portfolio/Title",
-            "TaskCategories/Id",
-            "TaskCategories/Title",
-            "TeamMembers/Name",
-            "Author/Id",
-            "Author/Title",
-            "Project/Id",
-            "Project/PortfolioStructureID",
-            "Project/DueDate",
-            "Project/Title",
-            "Project/PriorityRank",
-            "AssignedTo/Title",
-            "AssignedTo/Id"
-          )
-          .expand(
-            "AssignedTo",
-            "ParentTask",
-            "Portfolio",
-            "Author",
-            "TaskType",
-            "ClientCategory",
-            "TeamMembers",
-            "ResponsibleTeam",
-            "TaskCategories",
-            "Project"
-          )
-          .filter("Status ne 'Completed'")
-          .orderBy("orderby", false)
-          .getAll(4000)
+    let AllTasksMatches: any = [];
 
-          .then((AllTasksMatches) => {
-            console.log(AllTasksMatches);
-            Counter++;
+  const LoadAllSiteTasks = async function (type:any) { 
+    if(loadAllTaskType == true && type == 'CompletedTask'){
+      getPortFolioType();
+      setLoaded(false)
+      var Alldataa = []
+      let filter = "PercentComplete gt '0.89'";
+      AllTasksMatches = await globalCommon?.loadAllSiteTasks(ContextValue, filter)
+      countsrun = 0;
+      isAllTaskSelected = true;
+      countAllComposubData=[]
+      componentData=[]
+      countAllTasksData=[]
+      
+    }
+    else{
+      if(loadAllTaskType == false){
+        AllTasks = []
+        countAllComposubData=[]
+        countAllTasksData=[]
+        componentData=[]
+        countsrun = 0;
+        let filter = "PercentComplete lt '0.90'";
+        AllTasksMatches  = await globalCommon?.loadAllSiteTasks(ContextValue, filter)
+      }
+     
+     }
             console.log(AllTasksMatches.length);
             if (AllTasksMatches != undefined) {
               if (AllTasksMatches?.length > 0) {
@@ -411,11 +370,10 @@ function PortfolioTable(SelectedProp: any) {
                   item.isDrafted = false;
                   item.flag = true;
                   item.TitleNew = item.Title;
-                  item.siteType = config.Title;
+      
                   item.childs = [];
-                  item.listId = config.listId;
+                 
                   item.siteUrl = ContextValue.siteUrl;
-                  item["SiteIcon"] = config?.Item_x005F_x0020_Cover?.Url;
                   item.fontColorTask = "#000";
                   item.SmartPriority;
                   item.TaskTypeValue = '';
@@ -428,7 +386,7 @@ function PortfolioTable(SelectedProp: any) {
               AllTasks = $.grep(AllTasks, function (type: any) {
                 return type.isDrafted == false;
               });
-              if (Counter == siteConfig.length) {
+            
                 map(AllTasks, (result: any) => {
                   result.Id = result.Id != undefined ? result.Id : result.ID;
                   result.TeamLeaderUser = [];
@@ -457,10 +415,8 @@ function PortfolioTable(SelectedProp: any) {
                       ""
                     );
                   }
-                  result.DisplayCreateDate = Moment(result.Created).format("DD/MM/YYYY");
-                  result.PercentComplete = (
-                    result.PercentComplete * 100
-                  ).toFixed(0);
+                  //result.DisplayCreateDate = Moment(result.Created).format("DD/MM/YYYY");
+                  //result.PercentComplete = (result.PercentComplete * 100).toFixed(0);
                   result.chekbox = false;
                   
                   if (result?.FeedBack != undefined) {
@@ -567,14 +523,16 @@ function PortfolioTable(SelectedProp: any) {
                 flatviewTasklist = JSON.parse(JSON.stringify(AllTasksData))
                 AllSiteTasksData = AllTasksData;
                 // GetComponents();
-                if (AllSiteTasksData?.length > 0) {
-                  GetComponents();
-                }
-              }
-            }
-          });
-      }
-    }
+                
+                  if (AllSiteTasksData?.length > 0) {
+                    GetComponents();
+                  }
+                
+                
+              
+           
+             }
+          
   };
   const timeEntryIndex: any = {};
   const smartTimeTotal = async () => {
@@ -622,7 +580,7 @@ function PortfolioTable(SelectedProp: any) {
     console.log("timeEntryIndex", timeEntryIndex)
     if (AllSiteTasksData?.length > 0) {
       setData([]);
-     let portfoliodata =  portfolioTypeData.filter((port)=>port.Title === SelectedProp?.props?.Item_x0020_Type)
+     let portfoliodata =  portfolioTypeData.filter((port:any)=>port.Title === SelectedProp?.props?.Item_x0020_Type)
       
         componentGrouping(portfoliodata[0]?.Id, portfoliodata[0]?.Id);
         countsrun++;
@@ -632,6 +590,7 @@ function PortfolioTable(SelectedProp: any) {
   };
 
   const GetComponents = async () => {
+    componentData=[]
     let componentDetails: any = [];
     let results = await globalCommon.GetServiceAndComponentAllData(SelectedProp?.NextProp)
     if (results?.AllData?.length > 0) {
@@ -646,7 +605,7 @@ function PortfolioTable(SelectedProp: any) {
     AllComponetsData = componentDetails;
     ComponetsData["allComponets"] = componentDetails;
     if (AllSiteTasksData?.length > 0 && AllComponetsData?.length > 0) {
-      portfolioTypeData.forEach((port, index) => {
+      portfolioTypeData.forEach((port:any, index:any) => {
         componentGrouping(port?.Id, index);
         countsrun++;
       });
@@ -723,7 +682,7 @@ const switchGroupbyData = () => {
 
   React.useEffect(() => {
     if (AllMetadata.length > 0 && portfolioTypeData.length > 0) {
-      LoadAllSiteTasks();
+      LoadAllSiteTasks('AllTask');
     }
   }, [AllMetadata.length > 0 && portfolioTypeData.length > 0]);
 
@@ -736,6 +695,7 @@ const switchGroupbyData = () => {
     });
   };
   const componentGrouping = (portId: any, index: any) => {
+    let isItems = false;
     let FinalComponent: any = [];
 
     let AllProtFolioData = AllComponetsData?.filter(
@@ -843,6 +803,9 @@ const switchGroupbyData = () => {
           elem1?.Portfolio?.Id === SelectedProp?.props?.Id
       );
       countAllTasksData = countAllTasksData.concat(temp.subRows);
+      if(temp.subRows != undefined && temp.subRows.length > 0){
+        isItems = true;
+      }
       temp.subRows.forEach((task: any) => {
         if (task.TaskID === undefined || task.TaskID === "")
           task.TaskID = "T" + task.Id;
@@ -854,11 +817,25 @@ const switchGroupbyData = () => {
       }
     }
 
-    setLoaded(true);
-    setData(componentData);
-    console.log(countAllTasksData);
+    
+   
+   let newArray:any = []
+    if(componentData != undefined && isAllTaskSelected == true){
+      if(componentData[0]?.Title == 'Others'){
+        componentData.splice(0,1)
+      }
+    }
+    if(isAllTaskSelected == true && componentData.length > 0){
+      setData(componentData);
+      setLoaded(true);
+    }
+    if(isAllTaskSelected == false){
+      setLoaded(true);
+      setData(componentData);
+      console.log(countAllTasksData);
+    }
+    
   };
-
   // ComponentWS
 
   const componentWsT = (levelType: any, items: any) => {
@@ -945,8 +922,11 @@ const switchGroupbyData = () => {
       portfolioTypeDataItem?.map((type: any) => {
         countTaskAWTLevel?.map((result: any) => {
           if (result?.Item_x0020_Type === type?.Title) {
-            type[type.Title + "filterNumber"] += 1;
-            type[type.Title + "number"] += 1;
+            if(isAllTaskSelected != true){
+              type[type.Title + "filterNumber"] += 1;
+              type[type.Title + "number"] += 1;
+            }
+           
           }
         });
       });
@@ -954,7 +934,6 @@ const switchGroupbyData = () => {
         setPortFolioTypeIconBackup(portfolioLabelCountBackup);
     }
   };
-
   function executeOnce() {
     if (countAllTasksData?.length > 0) {
       let countAllTasksData1 = countAllTasksData?.filter(
@@ -1764,14 +1743,22 @@ const addedCreatedDataFromAWT = (arr: any, dataToPush: any) => {
   if(dataToPush?.PortfolioId === SelectedProp.props.Id && dataToPush?.ParentTask?.Id === undefined){
     arr.push(dataToPush)
     if(SelectedProp?.UsedFrom=='ProjectManagement'){
-      globalContextData?.LoadAllSiteTasks()
-      globalContextData?.closeCompTaskPopup()
+      try{
+        globalContextData?.projectCallBackTask()
+        globalContextData?.closeCompTaskPopup()
+       }catch(e){
+        console.error(e)
+       }
     }
     return true;
   }else if(dataToPush?.PortfolioId === SelectedProp?.props?.Id && dataToPush?.TaskTypeId ==2 && dataToPush?.ParentTaskId === null){
     if(SelectedProp?.UsedFrom=='ProjectManagement'){
-      globalContextData?.LoadAllSiteTasks()
-      globalContextData?.closeCompTaskPopup()
+      try{
+        globalContextData?.projectCallBackTask()
+        globalContextData?.closeCompTaskPopup()
+       }catch(e){
+        console.error(e)
+       }
     }
     const checkother = arr.filter((item: any) => item.Title === "Others");
     if (checkother?.length === 0) {
@@ -1830,8 +1817,12 @@ const updatedDataDataFromPortfolios = (copyDtaArray: any, dataToUpdate: any) => 
           }
       }
       if(SelectedProp?.UsedFrom=='ProjectManagement'){
-        globalContextData?.portfolioCreationCallBack([dataToUpdate])
-        globalContextData?.closeCompTaskPopup()
+        try{
+          globalContextData?.portfolioCreationCallBack([dataToUpdate])
+          globalContextData?.closeCompTaskPopup()
+         }catch(e){
+          console.error(e)
+         }
       }
   }
   return false;
@@ -1918,15 +1909,18 @@ const updatedDataDataFromPortfolios = (copyDtaArray: any, dataToUpdate: any) => 
       // SelectedProp.props.NoteCall = type;
       // checkedList.NoteCall = type;
      setIsOpenActivity(true);
+     setActiveTile("")
     }
     if (checkedList?.TaskType?.Id == 1) {
       // checkedList.NoteCall = type;
       setIsOpenWorkstream(true);
+      setActiveTile("")
     }
     if (checkedList?.TaskType?.Id == 3) {
       // SelectedProp.props.NoteCall = type;
       // checkedList.NoteCall = type;
     setIsOpenActivity(true);
+    setActiveTile("")
     }
     if (checkedList?.TaskType?.Id == 2) {
       alert("You can not create ny item inside Task");
@@ -2157,7 +2151,7 @@ const updatedDataDataFromPortfolios = (copyDtaArray: any, dataToUpdate: any) => 
                         hideRestructureBtn={SelectedProp?.UsedFrom=='ProjectManagement'}
                         OpenAddStructureModal={OpenAddStructureModal}
                         addActivity={addActivity}
-                      />
+                        showFilterIcon={true} loadFilterTask={FilterAllTask}/>
                     </div>
                   </div>
                 </div>

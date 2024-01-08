@@ -313,7 +313,7 @@ const Picker = (item: any) => {
                 type={PanelType.custom}
                 customWidth="850px"
                 onDismiss={closePopupSmartTaxanomy}
-                isBlocking={PopupSmartTaxanomy}
+                isBlocking={false}
 
             >
                 <div id="SmartTaxonomyPopup" className={(item?.props?.Portfolio_x0020_Type != undefined && item?.props?.Portfolio_x0020_Type == "Service") ? "serviepannelgreena" : ""}>

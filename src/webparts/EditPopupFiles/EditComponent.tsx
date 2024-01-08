@@ -528,13 +528,13 @@ function EditInstitution({ item, SelectD, Calls, usedFor, portfolioTypeData, fil
         let tempArray2: any = [];
         $.each(Tasks, function (index: any, item: any) {
             if (item?.Short_x0020_Description_x0020_On) {
-                item.Short_x0020_Description_x0020_On = getPlainTextFromHTML(item?.Short_x0020_Description_x0020_On)
+                item.Short_x0020_Description_x0020_Onlength = getPlainTextFromHTML(item?.Short_x0020_Description_x0020_On)
                 setShortDescriptionVerifieds(item?.Short_x0020_Description_x0020_On)
             }
             shortDescriptionVerifieds
             setShortDescriptionVerifieds(item?.ShortDescriptionVerified)
             if (item?.Body) {
-                item.Body = getPlainTextFromHTML(item?.Body)
+                item.Bodylength = getPlainTextFromHTML(item?.Body)
                 setdescriptionVerifieds(item?.Body)
             }
             descriptionVerifieds
@@ -543,18 +543,18 @@ function EditInstitution({ item, SelectD, Calls, usedFor, portfolioTypeData, fil
             setIdeaVerifieds(item?.IdeaVerified)
             setValueAddedVerifieds(item?.ValueAddedVerified)
             if (item?.Deliverables) {
-                item.Deliverables = getPlainTextFromHTML(item?.Deliverables)
+                item.Deliverableslength = getPlainTextFromHTML(item?.Deliverables)
                 setDeliverablesVerifieds(item?.Deliverables)
             }
             DeliverablesVerifieds
             setDeliverablesVerifieds(item?.DeliverablesVerified)
             if (item?.TechnicalExplanations) {
-                item.TechnicalExplanations = getPlainTextFromHTML(item?.TechnicalExplanations)
+                item.TechnicalExplanationslength = getPlainTextFromHTML(item?.TechnicalExplanations)
                 setTechnicalExplanationsVerifieds(item?.TechnicalExplanations)
             }
             TechnicalExplanationsVerifieds
             if (item?.Help_x0020_Information) {
-                item.Help_x0020_Information = getPlainTextFromHTML(item?.Help_x0020_Information)
+                item.Help_x0020_Informationlength = getPlainTextFromHTML(item?.Help_x0020_Information)
                 setHelpInformationVerifieds(item?.Help_x0020_Information)
             }
             HelpInformationVerifieds
@@ -3723,7 +3723,7 @@ function EditInstitution({ item, SelectD, Calls, usedFor, portfolioTypeData, fil
                                                         <details>
                                                             <summary className="alignCenter">
                                                                 <label className="toggler full_width">
-                                                                    <div className="alignCenter">Description {`(${EditData?.Body?.length != undefined ? EditData?.Body?.length : 0})`} <span className="ml-auto">
+                                                                    <div className="alignCenter">Description {`(${EditData?.Bodylength?.length != undefined ? EditData?.Bodylength?.length : 0})`} <span className="ml-auto">
                                                                         <input
                                                                             type="checkbox"
                                                                             className="form-check-input me-1 rounded-0"
@@ -3757,7 +3757,7 @@ function EditInstitution({ item, SelectD, Calls, usedFor, portfolioTypeData, fil
                                                         <details>
                                                             <summary className="alignCenter">
                                                                 <label className="toggler full_width">
-                                                                    <div className="alignCenter">Short Description {`(${EditData?.Short_x0020_Description_x0020_On?.length != undefined ? EditData?.Short_x0020_Description_x0020_On?.length : 0})`}     <span className="ml-auto">
+                                                                    <div className="alignCenter">Short Description {`(${EditData?.Short_x0020_Description_x0020_Onlength?.length != undefined ? EditData?.Short_x0020_Description_x0020_Onlength?.length : 0})`}     <span className="ml-auto">
 
                                                                         <input
                                                                             type="checkbox"
@@ -3887,7 +3887,7 @@ function EditInstitution({ item, SelectD, Calls, usedFor, portfolioTypeData, fil
                                                         <details>
                                                             <summary>
                                                                 <label className="toggler full_width">
-                                                                    <div className="alignCenter"> Deliverables {`(${EditData?.Deliverables?.length != undefined ? EditData?.Deliverables?.length : 0})`}
+                                                                    <div className="alignCenter"> Deliverables {`(${EditData?.Deliverableslength?.length != undefined ? EditData?.Deliverableslength?.length : 0})`}
                                                                         <span className="alignCenter ml-auto">
                                                                             <input
                                                                                 type="checkbox"
@@ -3935,7 +3935,7 @@ function EditInstitution({ item, SelectD, Calls, usedFor, portfolioTypeData, fil
                                         <details>
                                             <summary className="alignCenter">
                                                 <label className="toggler full_width">
-                                                    <div className="alignCenter">Technical Concept {`(${EditData?.TechnicalExplanations?.length != undefined ? EditData?.TechnicalExplanations?.length : 0})`} <span className="ml-auto">
+                                                    <div className="alignCenter">Technical Concept {`(${EditData?.TechnicalExplanationslength?.length != undefined ? EditData?.TechnicalExplanationslength?.length : 0})`} <span className="ml-auto">
 
                                                         <input
                                                             type="checkbox"
@@ -3979,7 +3979,7 @@ function EditInstitution({ item, SelectD, Calls, usedFor, portfolioTypeData, fil
                                             <details>
                                                 <summary>
                                                     <label className="toggler full_width">
-                                                        <div className="alignCenter">Help Information {`(${EditData?.Help_x0020_Information?.length != undefined ? EditData?.Help_x0020_Information?.length : 0})`}
+                                                        <div className="alignCenter">Help Information {`(${EditData?.Help_x0020_Informationlength?.length != undefined ? EditData?.Help_x0020_Informationlength?.length : 0})`}
                                                             <span className="alignCenter ml-auto">
 
                                                                 <input
@@ -4230,6 +4230,7 @@ function EditInstitution({ item, SelectD, Calls, usedFor, portfolioTypeData, fil
                                         <span>
                                             <a className="me-1"
                                                 target="_blank"
+                                                data-interception="off"
                                                 href={`${RequireData.siteUrl}/SitePages/Portfolio-Profile.aspx?taskId=${EditData?.Id}`}
                                             >
                                                 {/* <img src="https://hhhhteams.sharepoint.com/sites/HHHH/_layouts/15/images/ichtm.gif?rev=23" />{" "} */}
