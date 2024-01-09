@@ -17,6 +17,7 @@ import ShowTaskTeamMembers from "../../../globalComponents/ShowTaskTeamMembers";
 import ReactDOM from "react-dom";
 import AncTool from "../../../globalComponents/AncTool/AncTool";
 import RelevantDocuments from "../../taskprofile/components/RelevantDocuments";
+import RelevantEmail from "../../taskprofile/components/ReleventEmails";
 import { myContextValue, GetServiceAndComponentAllData } from '../../../globalComponents/globalCommon'
 import { IsAny } from "@tanstack/react-table";
 import InlineEditingcolumns from "../../projectmanagementOverviewTool/components/inlineEditingcolumns";
@@ -2002,17 +2003,28 @@ function Portfolio({ SelectedProp, TaskUser }: any) {
                     ))}
                   </>
                   <>
-                    {data?.map((item: any) => (
-                      <RelevantDocuments ref={relevantDocRef}
+                    {data?.map((item: any) => {return(
+                    <>
+                     <RelevantDocuments ref={relevantDocRef}
                         AllListId={SelectedProp}
-                        Context={SelectedProp?.Context}
+                        Context={SelectedProp?.Context}                                                                          
                         siteUrl={SelectedProp?.siteUrl}
                         DocumentsListID={ContextValue?.DocumentsListID}
                         ID={item?.Id}
                         siteName={"Master Tasks"}
                         folderName={item?.Title}
                       ></RelevantDocuments>
-                    ))}
+                      <RelevantEmail ref={this?.relevantDocRef}
+                        AllListId={SelectedProp}
+                        Context={SelectedProp?.Context}
+                        siteUrl={SelectedProp?.siteUrl}
+                        DocumentsListID={ContextValue?.DocumentsListID}
+                        ID={item?.Id}
+                        siteName={"Master Tasks"}
+                        folderName={item?.Title} >
+                      </RelevantEmail>
+                    </>
+                    )})}
                   </>
                   <>
                     {data?.map((item: any) => (
