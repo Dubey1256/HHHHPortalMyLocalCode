@@ -504,11 +504,17 @@ const AncTool = (props: any) => {
                         const testMsgInfo = testMsg.getFileData()
                         console.log(testMsgInfo);
                         msgfile = testMsgInfo
+                        if(msgfile?.attachments?.length>0){
+                            msgfile?.attachments?.map((attach:any)=>{
+                                attach.extension=getFileType(attach?.fileName)
+                            })
+                        }
+                       
                         reader.readAsArrayBuffer(selectedFile != undefined ? selectedFile : uploadselectedFile);
                         emailDoc = emailDoc.concat(selectedFile != undefined ? selectedFile : uploadselectedFile);
                         emailDoc = emailDoc.concat(msgfile.attachments);
                         emailDoc?.map((AttachFile: any, index: any) => {
-                            if (AttachFile?.extension?.toLowerCase() != ".png" && AttachFile?.extension?.toLowerCase() != ".jpg" && AttachFile?.extension?.toLowerCase() != ".jpeg" && AttachFile?.extension?.toLowerCase() != ".svg") {
+                            if (AttachFile?.extension?.toLowerCase() != "png" && AttachFile?.extension?.toLowerCase() != "jpg" && AttachFile?.extension?.toLowerCase() != "jpeg" && AttachFile?.extension?.toLowerCase() != "svg") {
                                 attachmentFileIndex = index
 
                                 if (renamedFileName?.length > 0 && selectedFile.name?.length > 0 && getFileType(selectedFile != undefined ? selectedFile.name : uploadselectedFile.name) == "msg") {
