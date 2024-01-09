@@ -499,7 +499,7 @@ const HHHHEditComponent = (props: any) => {
             if (confirm("Are you sure, you want to delete this?")) {
                 if (myContextData2?.allSite?.MainSite) {
                     let web = new Web(myContextData2?.allListId?.jointSiteUrl);
-                    await web.lists.getById(myContextData2?.allListId?.HHHHContactListId).items.getById(myContextData2?.allSite?.GMBHSite || myContextData2?.allSite?.HrSite ? JointData?.Id : updateData?.Id).recycle().then(async (data: any) => {
+                    await web.lists.getById(myContextData2?.allListId?.HHHHContactListId).items.getById(updateData?.Id).recycle().then(async (data: any) => {
                        console.log("joint data delete")
                        if(updateData?.Site?.toString().search("HR")>=0){
                       let  web = new Web("https://hhhhteams.sharepoint.com/sites/HHHH/HR");
@@ -517,8 +517,24 @@ const HHHHEditComponent = (props: any) => {
                                     console.log(data)
                                     if(data?.length>0){
                                         data?.map(async(deleteData:any)=>{
-                                            await web.lists.getById(myContextData2?.allListId?.MAIN_HR_LISTID).items.getById(deleteData.Id).recycle().then((data:any)=>{
+                                            await web.lists.getById(myContextData2?.allListId?.MAIN_HR_LISTID).items.getById(deleteData.Id).recycle().then(async(data:any)=>{
                                              console.log("Hr joint data delete")
+                                             if(updateData?.Site?.toString().search("GMBH")>=0){
+                                                let web = new Web("https://hhhhteams.sharepoint.com/sites/HHHH/GMBH"); 
+                                                await web.lists.getById(myContextData2?.allListId?.GMBH_CONTACT_SEARCH_LISTID).items.select("Id","SmartContactId").filter(`SmartContactId eq ${updateData?.Id}`).get()
+                                                .then( (data: any) => { 
+                                                    console.log(data)
+                                                    if(data?.length>0){
+                                                        data?.map(async(deleteData:any)=>{
+                                                            await web.lists.getById(myContextData2?.allListId?.GMBH_CONTACT_SEARCH_LISTID).items.getById(deleteData.Id).recycle().then((data:any)=>{
+                                                             console.log("GMBH  data delete")
+                                                            })
+                                                        })
+                                                    } 
+                                                 }).catch((error:any)=>{
+                                                    console.error(error,"errr")
+                                                })
+                                               }
                                             })
                                         })
                                     } 
