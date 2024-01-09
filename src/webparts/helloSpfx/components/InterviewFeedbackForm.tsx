@@ -165,7 +165,7 @@ export default function InterviewFeedbackForm(props: any) {
             ),
         },
         { accessorKey: "Email", placeholder: "Email", header: "", id: 'Email' },
-        { accessorKey: "Position", placeholder: "Positions", header: "", id: 'Position' },
+        { accessorKey: "OverallRatings", placeholder: "Overall Rating", header: "", id: 'OverallRatings'},
         { accessorKey: "Status0", placeholder: "Status", header: "", id: 'Status0' }, {
             cell: ({ row }) => (
                 <div className='alignCenter'>
@@ -234,9 +234,15 @@ export default function InterviewFeedbackForm(props: any) {
         }
         query.get().then((response: any) => {
             const itemsWithPosition = response.map((item: any) => {
+                let skills = JSON.parse(item?.SkillRatings)
+                let currentRatings = skills ? skills.reduce((sum: any, skill: any) => sum + (skill?.current || 0), 0) : 0;
+                let maxRatings = skills ? skills.reduce((sum: any, skill: any) => sum + (skill?.max || 0), 0) : 0;
+                let overallRatings = currentRatings != 0 || maxRatings != 0 ?  parseFloat(((currentRatings / maxRatings) * 10).toFixed(2)) : 0;
                 return {
                     ...item,
                     Position: item.Positions ? item.Positions.Title : null,
+                    Title: item.CandidateName,
+                    OverallRatings: overallRatings
                 };
             });
             const categorizedItems = response.reduce((accumulator: { newCandidates: any[]; inProcessCand: any[]; archiveCandidates: any[]; }, currentItem: {
@@ -245,6 +251,7 @@ export default function InterviewFeedbackForm(props: any) {
                 const itemWithPosition = {
                     ...currentItem,
                     Position: currentItem.Positions ? currentItem.Positions.Title : null,
+                    
                 };
 
                 switch (currentItem.Status0) {
