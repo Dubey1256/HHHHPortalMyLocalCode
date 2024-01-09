@@ -347,7 +347,7 @@ const CentralizedSiteComposition = (Props: any) => {
             if (SiteCompositionTemp?.length > 0) {
                 AllSiteDataBackup?.map((SiteData: any) => {
                     SiteCompositionTemp?.map((SelectedSC: any) => {
-                        if (SiteData?.siteName == SelectedSC?.Title) {
+                        if (SiteData?.siteName!= null && SiteData?.siteName == SelectedSC?.Title) {
                             SiteData.BtnStatus = true;
                             SiteData.ClienTimeDescription = SelectedSC.ClienTimeDescription;
                             SiteData.Date = SelectedSC.Date;

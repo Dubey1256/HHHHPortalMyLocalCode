@@ -1,6 +1,6 @@
 import * as React from 'react'
 import { Panel, PanelType } from 'office-ui-fabric-react';
-import { sp } from 'sp-pnp-js';
+import { Web, sp } from 'sp-pnp-js';
 import "bootstrap/dist/css/bootstrap.min.css";  
 import Tooltip from '../Tooltip';
 import * as moment from 'moment';
@@ -33,10 +33,9 @@ export default function VersionHistory(props: any) {
     const GetItemsVersionHistory = async () => {
         var versionData: any = []
         var siteTypeUrl = props.siteUrls;
-        let listId = props.listId
-        var itemId = props.taskId;
-        let tempEstimatedArrayData: any;        
-        sp.web.lists.getById(props?.listId).items.getById(props?.taskId).versions.get().then(versions => {
+        let tempEstimatedArrayData: any;     
+        let web = new Web(props?.siteUrls);   
+       web.lists.getById(props?.listId).items.getById(props?.taskId).versions.get().then(versions => {
             console.log('Version History:', versions);
             versions.map((vitm:any)=>{
                 vitm.CompletedDate != null ? vitm.CompletedDate = moment(vitm?.CompletedDate).format("DD/MM/YYYY"):'';

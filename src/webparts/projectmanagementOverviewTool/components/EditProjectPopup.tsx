@@ -1515,8 +1515,8 @@ function EditProjectPopup(item: any) {
                                   <div className="input-group">
                                     <label className="form-label full-width">Status</label>
                                     <input type="text" maxLength={3} placeholder="% Complete" className="form-control px-2"
-                                      defaultValue={EditData?.PercentComplete != undefined ? Number(EditData.PercentComplete).toFixed(0) : null}
-                                      value={EditData?.PercentComplete != undefined ? Number(EditData.PercentComplete).toFixed(0) : null}
+                                      defaultValue={EditData?.PercentComplete != undefined ? Number(EditData?.PercentComplete).toFixed(0) : null}
+                                      value={EditData?.PercentComplete != undefined ? Number(EditData?.PercentComplete).toFixed(0) : null}
                                       onChange={(e) => StatusAutoSuggestion(e.target.value)} />
                                     <span className="input-group-text" title="Status Popup" onClick={() => setTaskStatusPopup(true)}>
                                       <span title="Edit Task" className="svg__iconbox svg__icon--editBox"></span>
@@ -1537,7 +1537,7 @@ function EditProjectPopup(item: any) {
                                     <label className="form-label full-width  mx-2">
                                       Working Member
                                     </label>
-                                    {EditData.AssignedUsers?.map(
+                                    {EditData?.AssignedUsers?.map(
                                       (userDtl: any, index: any) => {
                                         return (
                                           <div className="TaskUsers">
