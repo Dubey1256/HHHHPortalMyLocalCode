@@ -134,7 +134,7 @@ return (
   <>
 
     <div id='htmlMailBodyEmail' style={{ display: 'none' }}>
-      {props.statusUpdateMailSendStatus != undefined && props.statusUpdateMailSendStatus == false && props.ApprovalTaskStatus == true && props.CreatedApprovalTask == true ?
+      {props.statusUpdateMailSendStatus != undefined && props.statusUpdateMailSendStatus == false && props.ApprovalTaskStatus == true || props.CreatedApprovalTask == true ?
         <div style={{ marginTop: "2pt" }}>
           {props?.items?.Approvee != undefined && props?.items?.Approvee?.Title != props?.items.TaskCreatorData[0].Title ?
             <>
