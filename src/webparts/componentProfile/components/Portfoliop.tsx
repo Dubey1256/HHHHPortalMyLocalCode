@@ -2007,7 +2007,7 @@ function Portfolio({ SelectedProp, TaskUser }: any) {
                     <>
                      <RelevantDocuments ref={relevantDocRef}
                         AllListId={SelectedProp}
-                        Context={SelectedProp?.Context}                                                                          
+                        Context={SelectedProp?.Context}
                         siteUrl={SelectedProp?.siteUrl}
                         DocumentsListID={ContextValue?.DocumentsListID}
                         ID={item?.Id}
@@ -2023,6 +2023,7 @@ function Portfolio({ SelectedProp, TaskUser }: any) {
                         siteName={"Master Tasks"}
                         folderName={item?.Title} >
                       </RelevantEmail>
+                      
                     </>
                     )})}
                   </>
