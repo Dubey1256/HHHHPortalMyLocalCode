@@ -4122,6 +4122,7 @@ const EditTaskPopup = (Items: any) => {
     };
     const SaveImageDataOnLoop = async (response: any, NewList: any, NewItem: any) => {
         let tempArrayJsonData: any = [];
+        let arrangedArray:any=[]
         let currentUserDataObject: any;
     
         // ... (Your existing code)
@@ -4186,6 +4187,12 @@ const EditTaskPopup = (Items: any) => {
                                                     Description: "",
                                                 };
                                                 tempArrayJsonData.push(ImgArray);
+                                                
+                                             if (tempArrayJsonData.length > 9) {
+                                             arrangedArray = tempArrayJsonData.slice(tempArrayJsonData?.length - 9).concat(tempArrayJsonData.slice(0, tempArrayJsonData?.length - 9));
+                                           } else {
+                                             arrangedArray = tempArrayJsonData
+               }
                                                 const item = await sp.web.lists.getByTitle(NewList).items.getById(NewItem?.Id).get();
                     const currentETag = item?item['@odata.etag'] : null;
                     await sp.web.lists.getByTitle(NewList).items.getById(NewItem?.Id).attachmentFiles.add(file, uint8Array),
@@ -4201,7 +4208,7 @@ const EditTaskPopup = (Items: any) => {
         }
     
         // Call another function after all attachments are added
-        await SaveJSONData(NewList, NewItem, tempArrayJsonData);
+        await SaveJSONData(NewList, NewItem, arrangedArray);
     };
     const SaveJSONData = async (NewList: any, NewItem: any, tempArrayJsonData: any) => {
         let web = new Web(siteUrls);
