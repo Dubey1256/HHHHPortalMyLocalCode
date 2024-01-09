@@ -1388,6 +1388,7 @@ function EditInstitution({ item, SelectD, Calls, usedFor, portfolioTypeData, fil
                     // Categories:EditData?.smartCategories != undefined && EditData?.smartCategories != ''?EditData?.smartCategories[0].Title:EditData?.Categories,
                     Categories: categoriesItem ? categoriesItem : null,
                     SharewebCategoriesId: { results: CategoryID },
+                    TaskCategoriesId:{results: CategoryID},
                     // ClientCategoryId: { "results": RelevantPortfolioIds },
                     ServicePortfolioId:
                         RelevantPortfolioIds != "" ? RelevantPortfolioIds : null,
