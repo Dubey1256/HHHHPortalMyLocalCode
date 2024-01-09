@@ -26,6 +26,7 @@ const TaskUserManagementTable = ({ TaskUsersListData, TaskGroupsListData, baseUr
     const [selectedCompany, setSelectedCompany] = useState('');
     const [selectedRoles, setSelectedRoles] = useState<any>([]);
     const [userGroup, setUserGroup] = useState("");
+    const [userTeam, setUserTeam] = useState("");
     const [userCategory, setUserCategory] = useState("");
     const [imageUrl, setImageUrl] = useState<any>({});
     const [EditData, setEditData] = React.useState<any>({});
@@ -49,8 +50,13 @@ const TaskUserManagementTable = ({ TaskUsersListData, TaskGroupsListData, baseUr
 
     const Categories: any = (smartMetaDataItems.filter((items: any) => items.TaxType === "TimesheetCategories"))
     const uniqueCategories = Categories.filter(
-        (ele: any, i: any, item: any) => item.findIndex((elem: any) => (elem.Title === ele.Title)) === i
+        (ele: any, i: any, item: any) => item.findIndex((elem: any) => (elem.Title === ele.Title) && elem.Parent?.Title === "Components") === i
     );
+    // const categoriesToInclude:any = ["Design", "Development", "Investigation", "QA", "Support","Verification", "Coordination", "Implementation", "Conception", "Preparation"];
+    // const uniqueCategories = Categories.filter((val: any) =>
+    //     categoriesToInclude.includes(val.Title) && val.Parent?.Title === "Components"
+    // );
+
     console.log(Categories)
     console.log(uniqueCategories)
 
@@ -69,6 +75,7 @@ const TaskUserManagementTable = ({ TaskUsersListData, TaskGroupsListData, baseUr
             setSelectedCategories(JSON.parse(memberToUpdate.CategoriesItemsJson))
             setAssignedToUser(memberToUpdate.AssingedToUser?.Id)
             setApprover([memberToUpdate.Approver?.[0]?.Id])
+            setUserTeam(memberToUpdate.technicalGroup)
         }
     }, [memberToUpdate]);
 
@@ -190,6 +197,7 @@ const TaskUserManagementTable = ({ TaskUsersListData, TaskGroupsListData, baseUr
                 ApproverId: Array.isArray(approver) && approver.every(item => typeof item === 'number' && item != null)
                     ? { "results": approver } : (approver.length > 0 && approver[0] != null && approver[0].AssingedToUser?.Id != null) ? { "results": [approver[0].AssingedToUser.Id] } : { "results": [] },
                 UserGroupId: userGroup ? parseInt(userGroup) : memberToUpdate?.UserGroup?.Id,
+                technicalGroup: userTeam ? userTeam : memberToUpdate.technicalGroup,
                 // Item_x0020_Cover: { "__metadata": { type: "SP.FieldUrlValue" }, Description: "Description", Url: imageUrl?.Item_x002d_Image != undefined ? imageUrl?.Item_x002d_Image?.Url : (imageUrl?.Item_x0020_Cover != undefined ? imageUrl?.Item_x0020_Cover?.Url : null) },
                 // Item_x0020_Cover: { "__metadata": { type: "SP.FieldUrlValue" }, Description: "Description", Url: imageUrl?.Item_x0020_Cover != undefined ? imageUrl?.Item_x0020_Cover?.Url : memberToUpdate.Item_x0020_Cover.Url},
                 Item_x0020_Cover: { "__metadata": { type: "SP.FieldUrlValue" }, Description: "Description", Url: imageUrl?.Item_x002d_Image?.Url || imageUrl?.Item_x0020_Cover?.Url || (memberToUpdate?.Item_x0020_Cover?.Url || null) },
@@ -319,13 +327,13 @@ const TaskUserManagementTable = ({ TaskUsersListData, TaskGroupsListData, baseUr
             id: 'Approver',
             placeholder: "Approver"
         },
-        // {
-        //     accessorKey: "technicalGroup",
-        //     header: "",
-        //     id: 'technicalGroup',
-        //     placeholder: "Team",
-        //     size: 75,
-        // },
+        {
+            accessorKey: "technicalGroup",
+            header: "",
+            id: 'technicalGroup',
+            placeholder: "Team",
+            size: 75,
+        },
         {
             id: "TaskId",
             accessorKey: "TaskId",
@@ -572,8 +580,9 @@ const TaskUserManagementTable = ({ TaskUsersListData, TaskGroupsListData, baseUr
         setIsTaskNotifications(memberToUpdate.IsTaskNotifications);
         setUserCategory(memberToUpdate.TimeCategory)
         setSelectedCategories(JSON.parse(memberToUpdate.CategoriesItemsJson))
-        setAssignedToUser(memberToUpdate.AssingedToUser?.Id)
+        // setAssignedToUser(memberToUpdate.AssingedToUser?.Id)
         setApprover([memberToUpdate.Approver?.[0]?.Id])
+        setUserTeam(memberToUpdate.technicalGroup)
         setOpenUpdateMemberPopup(false)
     }
 
@@ -801,20 +810,19 @@ const TaskUserManagementTable = ({ TaskUsersListData, TaskGroupsListData, baseUr
                                     </div></div>
                                 <div className='col-md-3'>
                                     <div className='input-group'>
-                                        <label className='form-label full-width'>Company: </label>
-                                        <div>
-                                            <div>
-                                                <label className='SpfxCheckRadio'>
-                                                    <input className='radio' type="radio" id="HHHH" name="company" value="HHHH" checked={selectedCompany === 'HHHH'} onChange={handleCompanyChange} />
-                                                    HHHH Team</label>
-                                            </div>
-                                            <div>
-                                                <label className='SpfxCheckRadio'>
-                                                    <input className='radio' type="radio" id="Smalsus" name="company" value="Smalsus" checked={selectedCompany === 'Smalsus'} onChange={handleCompanyChange} />
-                                                    Smalsus Team</label>
-                                            </div>
-                                        </div>
-                                    </div></div>
+                                        <label className='form-label full-width'>Team: </label>
+                                        <select className='form-control' id="sites" defaultValue={memberToUpdate?.technicalGroup} onChange={(e: any) => setUserTeam(e.target.value)}
+                                        >
+                                            <option>Select</option>
+                                            <option value="SPFx">SPFx</option>
+                                            <option value="Project Database">Project Database</option>
+                                            <option value="Contact Database">Contact Database</option>
+                                            <option value="Portfolio Database">Portfolio Database</option>
+                                            <option value="QA">QA</option>
+                                            <option value="Design">Design</option>
+                                        </select>
+                                    </div>
+                                </div>
                             </div>
                             <div className="row">
                                 <div className='col-md-3'>
@@ -887,6 +895,22 @@ const TaskUserManagementTable = ({ TaskUsersListData, TaskGroupsListData, baseUr
                                         </div>
                                     </div>
                                 </div>
+                                <div className='col-md-3'>
+                                    <div className='input-group'>
+                                        <label className='form-label full-width'>Company: </label>
+                                        <div>
+                                            <div>
+                                                <label className='SpfxCheckRadio'>
+                                                    <input className='radio' type="radio" id="HHHH" name="company" value="HHHH" checked={selectedCompany === 'HHHH'} onChange={handleCompanyChange} />
+                                                    HHHH Team</label>
+                                            </div>
+                                            <div>
+                                                <label className='SpfxCheckRadio'>
+                                                    <input className='radio' type="radio" id="Smalsus" name="company" value="Smalsus" checked={selectedCompany === 'Smalsus'} onChange={handleCompanyChange} />
+                                                    Smalsus Team</label>
+                                            </div>
+                                        </div>
+                                    </div></div>
                             </div>
                         </div>
 

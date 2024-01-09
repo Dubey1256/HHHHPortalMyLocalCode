@@ -135,8 +135,8 @@ const Header = () => {
       <section className="tabSec">
         <div className="d-flex justify-content-center">
           <div
-            className={`${activeTile === 'WorkingToday' ? 'col alignCenter me-3 mb-3 hreflink  p-3 empBg shadow-sm active empBg' : 'col alignCenter me-3 p-3 bg-white mb-3 hreflink shadow-sm'}`}
-            onClick={() => handleTileClick('WorkingToday')}>
+            className={`${activeTile === 'WorkingTodayTask' ? 'col alignCenter me-3 mb-3 hreflink  p-3 empBg shadow-sm active empBg' : 'col alignCenter me-3 p-3 bg-white mb-3 hreflink shadow-sm'}`}
+            onClick={() => handleTileClick('WorkingTodayTask')}>
             <span className="iconSec" title='Working Today Task'>
               <svg xmlns="http://www.w3.org/2000/svg" width="23" height="23" fill="#057BD0" className="bi bi-calendar4-event" viewBox="0 0 16 16" >
                 <path d="M3.5 0a.5.5 0 0 1 .5.5V1h8V.5a.5.5 0 0 1 1 0V1h1a2 2 0 0 1 2 2v11a2 2 0 0 1-2 2H2a2 2 0 0 1-2-2V3a2 2 0 0 1 2-2h1V.5a.5.5 0 0 1 .5-.5zM2 2a1 1 0 0 0-1 1v1h14V3a1 1 0 0 0-1-1H2zm13 3H1v9a1 1 0 0 0 1 1h12a1 1 0 0 0 1-1V5z" />
@@ -166,8 +166,8 @@ const Header = () => {
             </span>
           </div>
           <div
-            className={`${activeTile === 'workingThisWeek' ? 'col alignCenter me-3 mb-3 hreflink  p-3 empBg shadow-sm active empBg' : 'col alignCenter me-3 p-3 bg-white hreflink  mb-3 shadow-sm'}`}
-            onClick={() => handleTileClick('workingThisWeek')}   >
+            className={`${activeTile === 'WorkingThisWeekTask' ? 'col alignCenter me-3 mb-3 hreflink  p-3 empBg shadow-sm active empBg' : 'col alignCenter me-3 p-3 bg-white hreflink  mb-3 shadow-sm'}`}
+            onClick={() => handleTileClick('WorkingThisWeekTask')}   >
             <span className="iconSec">
               <span title='Working This Week' className="svg__iconbox svg__icon--calendar"></span>
             </span>
@@ -177,8 +177,8 @@ const Header = () => {
             </span>
           </div>
           <div
-            className={`${activeTile === 'assignedTask' ? 'col alignCenter me-3 mb-3 hreflink  p-3 empBg shadow-sm active empBg' : 'col alignCenter me-3 p-3 bg-white hreflink  mb-3 shadow-sm'}`}
-            onClick={() => handleTileClick('assignedTask')} >
+            className={`${activeTile === 'AssignedTask' ? 'col alignCenter me-3 mb-3 hreflink  p-3 empBg shadow-sm active empBg' : 'col alignCenter me-3 p-3 bg-white hreflink  mb-3 shadow-sm'}`}
+            onClick={() => handleTileClick('AssignedTask')} >
             <span className="iconSec">
               <span title='Assigned Task' className="svg__iconbox svg__icon--calendar"></span>
             </span>
@@ -188,8 +188,8 @@ const Header = () => {
             </span>
           </div>
           <div
-            className={`${activeTile === 'draft' ? 'col alignCenter hreflink  mb-3 p-3 empBg shadow-sm active empBg' : 'col alignCenter p-3 hreflink  bg-white mb-3 shadow-sm'}`}
-            onClick={() => handleTileClick('draft')}>
+            className={`${activeTile === 'DraftTask' ? 'col alignCenter hreflink  mb-3 p-3 empBg shadow-sm active empBg' : 'col alignCenter p-3 hreflink  bg-white mb-3 shadow-sm'}`}
+            onClick={() => handleTileClick('DraftTask')}>
             <span className="iconSec">
               <span title='Draft Task' style={{ width: '24px', height: '24px' }} className=" svg__iconbox svg__icon--draftOther"></span>
             </span>
@@ -209,12 +209,12 @@ const Header = () => {
             </span>
           </div>
         </div>
-        {activeTile === 'WorkingToday' && <div><TaskStatusTbl activeTile={activeTile} /></div>}
-        {activeTile === 'workingThisWeek' && <div><TaskStatusTbl activeTile={activeTile} /></div>}
-        {activeTile === 'assignedTask' && <div><TaskStatusTbl activeTile={activeTile} /></div>}
-        {activeTile === 'bottleneck' && <div><TaskStatusTbl activeTile={activeTile} /></div>}
-        {activeTile === 'immediate' && <div><TaskStatusTbl activeTile={activeTile} /></div>}
-        {activeTile === 'draft' && <div><TaskStatusTbl activeTile={activeTile} /></div>}
+        {activeTile === 'WorkingTodayTask' && <div><TaskStatusTbl activeTile={activeTile} /></div>}
+        {activeTile === 'WorkingThisWeekTask' && <div><TaskStatusTbl activeTile={activeTile} /></div>}
+        {activeTile === 'AssignedTask' && <div><TaskStatusTbl activeTile={activeTile} /></div>}
+        {activeTile === 'BottleneckTask' && <div><TaskStatusTbl activeTile={activeTile} /></div>}
+        {activeTile === 'ImmediateTask' && <div><TaskStatusTbl activeTile={activeTile} /></div>}
+        {activeTile === 'DraftTask' && <div><TaskStatusTbl activeTile={activeTile} /></div>}
       </section>
       <span>
         {IsOpenTimeSheetPopup == true && <EmployeePieChart IsOpenTimeSheetPopup={IsOpenTimeSheetPopup} Call={() => { CallBack() }} />}
