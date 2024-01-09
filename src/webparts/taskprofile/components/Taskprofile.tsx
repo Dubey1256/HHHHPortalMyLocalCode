@@ -1599,13 +1599,32 @@ class Taskprofile extends React.Component<ITaskprofileProps, ITaskprofileState> 
       }
     }));
   };
+  private TaskProfilePriorityCallback=(priorityValue:any)=>{
+    console.log("TaskProfilePriorityCallback")
+    let resultData=this.state.Result;
+    resultData.PriorityRank=Number(priorityValue);
+    resultData. SmartPriority=""
+   
+    this.setState((prevState) => ({
+      Result: {
+        ...prevState.Result,
+        PriorityRank:Number(priorityValue),
+        ["SmartPriority"]:  globalCommon?.calculateSmartPriority(resultData),  
+      }
+    }));
+   
+  }
 
   private inlineCallBack = (item: any) => {
-
+    let resultData=this.state.Result;
+    resultData.Categories=item?.Categories;
+    resultData.SmartPriority=""
+    resultData.TaskCategories=item?.TaskCategories
     this.setState((prevState) => ({
       Result: {
         ...prevState.Result,
         Categories: item?.Categories,
+        ["SmartPriority"]:  globalCommon?.calculateSmartPriority(resultData),  
 
       }
     }));
@@ -1701,6 +1720,16 @@ class Taskprofile extends React.Component<ITaskprofileProps, ITaskprofileState> 
           dataUpdate = {
             ProjectId: DataItem[0]?.Id
           }
+          let resultData=this.state.Result;
+          resultData.Project=DataItem[0]
+          resultData.SmartPriority=""
+          this.setState((prevState) => ({
+            Result: {
+              ...prevState.Result,
+             ["SmartPriority"]: globalCommon?.calculateSmartPriority(resultData),  
+      
+            }
+          }));
           this?.updateProjectComponentServices(dataUpdate)
         }
       }
@@ -1861,6 +1890,7 @@ class Taskprofile extends React.Component<ITaskprofileProps, ITaskprofileState> 
                                 ? this?.state?.Result?.DueDate
                                 : ""
                             }
+                            TaskProfilePriorityCallback={null}
                             onChange={this.handleFieldChange("DueDate")}
                             type="Date"
                             web={AllListId?.siteUrl}
@@ -1907,6 +1937,7 @@ class Taskprofile extends React.Component<ITaskprofileProps, ITaskprofileState> 
                                 ? this?.state?.Result?.ItemRank
                                 : ""
                             }
+                            TaskProfilePriorityCallback={null}
                             onChange={this.handleFieldChange("ItemRank")}
                             type=""
                             web={AllListId?.siteUrl}
@@ -2013,6 +2044,7 @@ class Taskprofile extends React.Component<ITaskprofileProps, ITaskprofileState> 
                                 ? this.state.Result?.PriorityRank
                                 : ""
                             }
+                            TaskProfilePriorityCallback={(priorityValue: any) =>this.TaskProfilePriorityCallback(priorityValue)}
                             onChange={this.handleFieldChange("Priority")}
                             type=""
                             web={AllListId?.siteUrl}

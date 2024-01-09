@@ -32,8 +32,10 @@ interface EditableFieldProps {
   fieldName: string;
   value: any;
   onChange: (value: string) => void;
+  TaskProfilePriorityCallback:any
   type: string;
   web: string;
+
 }
 
 export const EditableField: React.FC<EditableFieldProps> = ({
@@ -42,8 +44,10 @@ export const EditableField: React.FC<EditableFieldProps> = ({
   fieldName,
   value,
   onChange,
+  TaskProfilePriorityCallback,
   type,
-  web
+  web,
+
 }) => {
   const [editing, setEditing] = React.useState(false);
   const [fieldValue, setFieldValue] = React.useState(value);
@@ -83,6 +87,7 @@ export const EditableField: React.FC<EditableFieldProps> = ({
           });
 
         setEditing(false);
+        TaskProfilePriorityCallback(priorityValue)
         setKey((prevKey) => prevKey + 1);
       } catch (error) {
         console.log(error);
@@ -1280,6 +1285,7 @@ function Portfolio({ SelectedProp, TaskUser }: any) {
                                       )
                                       : ""
                                   }
+                                  TaskProfilePriorityCallback={null}
                                   onChange={handleFieldChange("StartDate")}
                                   type="Date"
                                   web={ContextValue?.siteUrl}
@@ -1303,6 +1309,7 @@ function Portfolio({ SelectedProp, TaskUser }: any) {
                                     ? (item?.PercentComplete * 100).toFixed(0)
                                     : ""
                                 }
+                                TaskProfilePriorityCallback={null}
                                 onChange={handleFieldChange("PercentComplete")}
                                 type={item.Status}
                                 web={ContextValue?.siteUrl}
@@ -1421,6 +1428,7 @@ function Portfolio({ SelectedProp, TaskUser }: any) {
                                         )
                                         : ""
                                     }
+                                    TaskProfilePriorityCallback={null}
                                     onChange={handleFieldChange("DueDate")}
                                     type="Date"
                                     web={ContextValue?.siteUrl}
@@ -1444,6 +1452,7 @@ function Portfolio({ SelectedProp, TaskUser }: any) {
                                     ? item?.ItemRank
                                     : ""
                                 }
+                                TaskProfilePriorityCallback={null}
                                 onChange={handleFieldChange("ItemRank")}
                                 type=""
                                 web={ContextValue?.siteUrl}
@@ -1539,6 +1548,7 @@ function Portfolio({ SelectedProp, TaskUser }: any) {
                                 ? item?.PriorityRank
                                 : ""
                             }
+                            TaskProfilePriorityCallback={null}
                             onChange={handleFieldChange("Priority")}
                             type=""
                             web={ContextValue?.siteUrl}
@@ -1563,6 +1573,7 @@ function Portfolio({ SelectedProp, TaskUser }: any) {
                                   )
                                   : ""
                               }
+                              TaskProfilePriorityCallback={null}
                               onChange={handleFieldChange("CompletedDate")}
                               type="Date"
                               web={ContextValue?.siteUrl}
