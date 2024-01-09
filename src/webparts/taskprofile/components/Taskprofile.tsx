@@ -597,6 +597,11 @@ class Taskprofile extends React.Component<ITaskprofileProps, ITaskprofileState> 
 
         })
       })
+    }else{
+      ClientTimeArray?.map((item: any) => {
+        item.SiteImages= this?.GetSiteIcon(item?.SiteName!=undefined?item?.SiteName:item?.Title)
+      })
+
     }
   }
   private GetSiteIcon(listName: string) {
