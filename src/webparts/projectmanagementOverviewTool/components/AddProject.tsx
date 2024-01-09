@@ -185,11 +185,7 @@ const AddProject = (props: any) => {
         if (SearchedKeyWord.length > 0) {
             if (props?.data != undefined && props?.data?.length > 0) {
                 props?.data.map((AllDataItem: any) => {
-                    if (
-                        AllDataItem?.Title?.toLowerCase()?.includes(
-                            SearchedKeyWord.toLowerCase()
-                        )
-                    ) {
+                    if (AllDataItem?.Title?.toLowerCase()?.includes(SearchedKeyWord.toLowerCase())) {
                         TempArray.push(AllDataItem);
                     }
                 });
@@ -198,6 +194,10 @@ const AddProject = (props: any) => {
                 setProjectData(TempArray);
                 setSearchedProjectKey(SearchedKeyWord);
             }
+            else {
+                setProjectData([]);                
+            }
+
         } else {
             setProjectData([]);
             // setSearchedServiceCompnentKey("");
