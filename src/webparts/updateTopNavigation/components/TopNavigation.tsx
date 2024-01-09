@@ -128,6 +128,7 @@ const TopNavigation = (dynamicData: any) => {
       .get();
     console.log(TaskTypeItems);
     TaskTypeItems?.forEach((item: any) => {
+      item.Title = item?.Title.replace(/\b\w/g, (match:any) => match.toUpperCase());
       if (item.ownersonly == true) {
         item.image =`${dynamicData.dynamicData.siteUrl}/SiteCollectionImages/ICONS/24/Facilitators-do-not-disturb.png`;
       }
