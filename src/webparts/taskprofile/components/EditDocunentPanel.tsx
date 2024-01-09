@@ -17,7 +17,7 @@ const EditDocumentpanel = (props: any) => {
   const [isOpenImageTab, setisOpenImageTab] = React.useState(false);
   const [isopencomonentservicepopup, setisopencomonentservicepopup] = React.useState(false);
   const [editvalue, seteditvalue] = React.useState(null);
-  const [allValue, setallSetValue] = React.useState({
+  const [allValue, setallSetValue]:any = React.useState({
     Title: "", URL: "", Acronym: "", Description: "", InfoType: "SmartNotes", SelectedFolder: "Public", fileupload: "", LinkTitle: "", LinkUrl: "", taskTitle: "", Dragdropdoc: "", emailDragdrop: "", ItemRank: "", componentservicesetdata: { smartComponent: undefined, linkedComponent: undefined }, componentservicesetdataTag: undefined, EditTaskpopupstatus: false, DocumentType: "", masterTaskdetails: [],
   })
 
