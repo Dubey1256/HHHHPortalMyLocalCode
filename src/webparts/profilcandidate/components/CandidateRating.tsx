@@ -24,9 +24,9 @@ const CandidateRating: React.FC<{ rating: Rating; onRatingSelected: (rating: Rat
     useEffect(() => {
         const updateStars = () => {
             const newStars = [];
-            for (let i = 0; i < rating.max; i++) {
+            for (let i = 0; i < rating.max/2; i++) {
                 newStars.push({
-                    filled: i < rating.current,
+                    filled: i < Math.floor(rating.current/2),
                 });
             }
             setStars(newStars);

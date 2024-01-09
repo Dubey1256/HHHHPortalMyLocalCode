@@ -131,9 +131,9 @@ const EditPopup = (props: any) => {
     }
     useEffect(() => {
         const yearsString: string = props.item?.Experience?.toString();
-        const experience = yearsString.split('.');
-        const years = experience[0]
-        const months = experience[1]
+        const experience = yearsString?.split('.');
+        const years = experience?.[0]
+        const months = experience?.[1]
         let experienceYears = years;
         let experienceMonths = months;
         if (months === '12') {
@@ -453,7 +453,7 @@ const EditPopup = (props: any) => {
                     section.selectedFiles.forEach(function (itm: any) {
                         let obj = {
                             FileLeafRef: itm.name,
-                            File_x0020_Type: itm.name.split('.')[1]
+                            File_x0020_Type: itm.name?.split('.')[1]
                         };
                         setTaggedDocuments(prevDocuments => [...prevDocuments, obj]);
                     });
