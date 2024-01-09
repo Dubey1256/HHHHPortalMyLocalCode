@@ -26,13 +26,25 @@ const EditDocumentpanel = (props: any) => {
       if (props?.editData?.Portfolio != undefined) {
         setallSetValue({ ...allValue, componentservicesetdataTag: props?.editData?.Portfolio })
         if (props?.editData != undefined) {
-          props.editData.docTitle = props?.editData.Title.split('.')[0]
+          if (props?.editData?.Title.indexOf(props?.editData.File_x0020_Type)) {
+            props.editData['Title'] = props?.editData?.Title.split('.')[0]
+            props.editData['docTitle'] = props?.editData?.Title;
+          } else {
+            props.editData['docTitle'] = props?.editData?.Title;
+          }
+
         }
       }
       if (props?.editData?.Portfolios != undefined) {
         setallSetValue({ ...allValue, componentservicesetdataTag: props?.editData?.Portfolios[0] })
         if (props?.editData != undefined) {
-          props.editData.docTitle = props?.editData.Title.split('.')[0]
+          if (props?.editData?.Title.indexOf(props?.editData.File_x0020_Type)) {
+            props.editData['Title'] = props?.editData?.Title.split('.')[0]
+            props.editData['docTitle'] = props?.editData?.Title;
+          } else {
+            props.editData['docTitle'] = props?.editData?.Title;
+          }
+
         }
       }
       setEditdocumentsData(props?.editData);
@@ -274,7 +286,7 @@ const EditDocumentpanel = (props: any) => {
 
                   {allValue?.componentservicesetdataTag != undefined &&
                     <div className="d-flex justify-content-between block px-2 py-1" style={{ width: '85%' }}>
-                      <a target="_blank" data-interception="off"  href={`${props?.AllListId?.siteUrl}/SitePages/Portfolio-Profile.aspx?taskId=${allValue?.componentservicesetdataTag?.Id}`}>{allValue?.componentservicesetdataTag?.Title}</a>
+                      <a target="_blank" data-interception="off" href={`${props?.AllListId?.siteUrl}/SitePages/Portfolio-Profile.aspx?taskId=${allValue?.componentservicesetdataTag?.Id}`}>{allValue?.componentservicesetdataTag?.Title}</a>
                       <a>
                         <span className="bg-light svg__icon--cross svg__iconbox"></span>
                       </a></div>}
