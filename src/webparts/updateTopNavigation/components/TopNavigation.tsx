@@ -128,6 +128,7 @@ const TopNavigation = (dynamicData: any) => {
       .get();
     console.log(TaskTypeItems);
     TaskTypeItems?.forEach((item: any) => {
+      item.Title = item?.Title.replace(/\b\w/g, (match:any) => match.toUpperCase());
       if (item.ownersonly == true) {
         item.image =`${dynamicData.dynamicData.siteUrl}/SiteCollectionImages/ICONS/24/Facilitators-do-not-disturb.png`;
       }
@@ -591,8 +592,7 @@ const TopNavigation = (dynamicData: any) => {
                   </span>
                   <ul className="sub-menu">
                     <li onClick={() => AddNewItem(item)}>
-                      <span className="alignIcon  svg__iconbox svg__icon--Plus"></span> Add
-                      New{" "}
+                      <span className="alignIcon  svg__iconbox svg__icon--Plus"></span> Add Level{" "}
                     </li>
                     {item.childs?.map((child: any) => {
                       return (
