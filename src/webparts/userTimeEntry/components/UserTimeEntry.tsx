@@ -2285,16 +2285,16 @@ export default class UserTimeEntry extends React.Component<IUserTimeEntryProps, 
   }
   private ExampleCustomInputStrat = React.forwardRef(({ value, onClick }: any, ref: any) => (
     <div style={{ position: "relative" }} onClick={onClick} ref={ref}>
-      <input type="text" id="datepicker" data-input-type="StartDate" className="form-control date-picker" placeholder="DD/MM/YYYY" value={value} />
-      <span style={{ position: "absolute", top: "50%", right: "5px", transform: "translateY(-50%)", cursor: "pointer" }}>
+      <input type="text" id="datepicker" data-input-type="StartDate" className="form-control date-picker ps-2" placeholder="DD/MM/YYYY" value={value} />
+      <span style={{ position: "absolute", top: "50%", right: "7px", transform: "translateY(-50%)", cursor: "pointer" }}>
         <span className="svg__iconbox svg__icon--calendar"></span>
       </span>
     </div>
   ));
   private ExampleCustomInputEnd = React.forwardRef(({ value, onClick }: any, ref: any) => (
     <div style={{ position: "relative" }} onClick={onClick} ref={ref}>
-      <input type="text" id="datepicker" data-input-type="EndDate" className="form-control date-picker" placeholder="DD/MM/YYYY" value={value} />
-      <span style={{ position: "absolute", top: "50%", right: "5px", transform: "translateY(-50%)", cursor: "pointer" }}>
+      <input type="text" id="datepicker" data-input-type="EndDate" className="form-control date-picker ps-2" placeholder="DD/MM/YYYY" value={value} />
+      <span style={{ position: "absolute", top: "50%", right: "7px", transform: "translateY(-50%)", cursor: "pointer" }}>
         <span className="svg__iconbox svg__icon--calendar"></span>
       </span>
     </div>
@@ -2495,10 +2495,8 @@ export default class UserTimeEntry extends React.Component<IUserTimeEntryProps, 
                     <input type="checkbox" className="" onClick={(e) => this.SelectAllGroupMember(e)} />
                     <label>Select All </label>
                   </span>
-                  <summary className='hyperlink'>
-                    Team members
-                    <hr></hr>
-                  </summary>
+                  <summary className='hyperlink'>Team members</summary>
+                  <hr style={{width:"97%", marginLeft:"30px"}}></hr>  
                   <div style={{ display: "block" }}>
                     <div className="taskTeamBox ps-30 ">
                       {this.state.taskUsers != null && this.state.taskUsers.length > 0 && this.state.taskUsers.map((users: any, i: number) => {
@@ -2537,8 +2535,9 @@ export default class UserTimeEntry extends React.Component<IUserTimeEntryProps, 
                 <details className='m-0' open>
                   <summary className='hyperlink'>
                     Date
-                    <hr></hr>
+                    
                   </summary>
+                  <hr style={{width:"97%", marginLeft:"30px"}}></hr>
                   <Row className="ps-30">
                     <div>
                       <div className="col TimeReportDays">
@@ -2629,7 +2628,7 @@ export default class UserTimeEntry extends React.Component<IUserTimeEntryProps, 
                     <details open>
                       <summary className='hyperlink'>
                         SmartSearch – Filters
-                        <hr></hr>
+                        
                         <span>
                           {this.state.checkedAll && this.state.filterItems != null && this.state.filterItems.length > 0 &&
                             this.state.filterItems.map((obj: any) => {
@@ -2660,6 +2659,7 @@ export default class UserTimeEntry extends React.Component<IUserTimeEntryProps, 
                           }
                         </span>
                       </summary>
+                      <hr style={{width:"97%", marginLeft:"30px"}}></hr>  
                       <div className="togglecontent" style={{ display: "block", paddingLeft: "24px" }}>
                         <div className="smartSearch-Filter-Section">
                           <table width="100%" className="indicator_search">
@@ -2720,18 +2720,19 @@ export default class UserTimeEntry extends React.Component<IUserTimeEntryProps, 
                             </tbody>
                           </table>
                         </div>
-                        <div className="col text-end mb-2 ">
-                          <button type="button" className="btnCol btn btn-primary me-1" onClick={(e) => this.LoadAllTimeSheetaData()}>
-                            Update Filters
+                       
+                      </div>
+                    </details>
+                  </div>
+                </div>
+                <div className="col text-end mb-2 ">
+                         <button type="button" className="btnCol btn btn-primary me-1" onClick={(e) => this.LoadAllTimeSheetaData()}>
+                             Update Filters
                           </button>
                           <button type="button" className="btn btn-default me-1" onClick={() => this.ClearFilters()}>
                             Clear Filters
                           </button>
                         </div>
-                      </div>
-                    </details>
-                  </div>
-                </div>
               </Col>
             </Col>
           </details>
