@@ -2086,12 +2086,12 @@ const TeamSmartFilter = (item: any) => {
                                     </div>
                                     <div className='alignCenter col-sm-4'>
                                         <div className='ml-auto alignCenter'>
-                                            <div className="svg__iconbox svg__icon--setting  me-2" style={{ backgroundColor: `${portfolioColor}` }} ref={setTriggerRef} onClick={() => handlAction("click")} onMouseEnter={() => handlAction("hover")} onMouseLeave={() => handleMouseLeave()}>Type</div>
+                                            <div className="svg__iconbox svg__icon--setting hreflink me-2" style={{ backgroundColor: `${portfolioColor}` }} ref={setTriggerRef} onClick={() => handlAction("click")} onMouseEnter={() => handlAction("hover")} onMouseLeave={() => handleMouseLeave()}>Type</div>
                                             {action === "click" && visible && (
-                                                <div ref={setTooltipRef} {...getTooltipProps({ className: "tooltip-container m-0" })}>
-                                                    <button className="toolTipCross" onClick={handleCloseClick}><div className="popHoverCross">×</div></button>
+                                                <div ref={setTooltipRef} {...getTooltipProps({ className: "tooltip-container m-0 p-0" })}>
+                                                    {/* <button className="toolTipCross" onClick={handleCloseClick}><div className="popHoverCross">×</div></button> */}
 
-                                                    <div className='row'>
+                                                    <div className='d-flex settingTooltip'>
                                                         {filterGroupsData != null && filterGroupsData.length > 0 &&
                                                             filterGroupsData?.map((MainGroup: any, index: any) => {
                                                                 if (MainGroup?.Title == "Type") {
@@ -2099,9 +2099,9 @@ const TeamSmartFilter = (item: any) => {
                                                                         <>
                                                                             {MainGroup?.values?.map((Group: any) => {
                                                                                 return (
-                                                                                    <div className='col'>
-                                                                                        <div className="alignCenter" style={{ borderBottom: "1.5px solid #D9D9D9", color: portfolioColor }}>
-                                                                                            <input className={"form-check-input cursor-pointer"}
+                                                                                    <div className='dataSec'>
+                                                                                        <div className="alignCenter dataSecParentSec">
+                                                                                            <input className={"form-check-input cursor-pointer mt-0"}
                                                                                                 style={Group?.values?.length === MainGroup?.checked?.length ? { backgroundColor: portfolioColor, borderColor: portfolioColor } : Group?.selectAllChecked === true ? { backgroundColor: portfolioColor, borderColor: portfolioColor } : { backgroundColor: '', borderColor: '' }}
                                                                                                 type="checkbox"
                                                                                                 checked={MainGroup?.checked?.some((datachecked: any) => datachecked == Group?.Id && Group.selectAllChecked === true) || Group.children?.every((child: any) => MainGroup?.checked.includes(child.Id)) ? true : false}
@@ -2114,14 +2114,15 @@ const TeamSmartFilter = (item: any) => {
                                                                                                     }
                                                                                                 }}
                                                                                             />
-                                                                                            <div className="fw-semibold fw-medium mx-1 text-dark">{Group.Title}</div>
+                                                                                            <div className="fw-semibold ms-8 f-16 text-dark">{Group.Title}</div>
                                                                                         </div>
-                                                                                        <div>
+                                                                                        <div className='dataSecChild'>
                                                                                             {Group?.values?.map((insideCheckBox: any) => {
                                                                                                 return (
-                                                                                                    <label className='alignCenter'>
-                                                                                                        <input type="checkbox" className={"form-check-input cursor-pointer me-1"} checked={MainGroup?.checked?.some((datachecked: any) => datachecked == insideCheckBox?.Id)} onChange={() => selectChild(insideCheckBox)} />
-                                                                                                        {insideCheckBox?.Title}  </label>
+                                                                                                    <label className='alignCenter f-16 dataSecChildSec'>
+                                                                                                        <input type="checkbox" className={"form-check-input cursor-pointer mt-0"} checked={MainGroup?.checked?.some((datachecked: any) => datachecked == insideCheckBox?.Id)} onChange={() => selectChild(insideCheckBox)} />
+                                                                                                        <div className='ms-8'>{insideCheckBox?.Title}</div>
+                                                                                                    </label>
                                                                                                 )
                                                                                             })}
                                                                                         </div>
@@ -2133,6 +2134,7 @@ const TeamSmartFilter = (item: any) => {
                                                                 }
                                                             })
                                                         }
+                                                        <div className='crossSec text-end'><span onClick={handleCloseClick} className='svg__iconbox svg__icon--cross ml-auto hreflink dark'></span></div>
                                                     </div>
                                                     <div {...getArrowProps({ className: "tooltip-arrow" })} />
                                                 </div>
