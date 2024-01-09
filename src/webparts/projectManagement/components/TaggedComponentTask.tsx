@@ -59,7 +59,7 @@ const TaggedComponentTask = (props: any) => {
                 cell: ({ row, getValue }) => (
                     <>
                         <span className="d-flex">
-                            <ReactPopperTooltipSingleLevel ShareWebId={row?.original?.TaskID} row={row?.original} singleLevel={true} masterTaskData={props?.MasterListData} AllSitesTaskData={props?.AllSitesTaskData} />
+                            <ReactPopperTooltipSingleLevel  AllListId={props?.AllListId} ShareWebId={row?.original?.TaskID} row={row?.original} singleLevel={true} masterTaskData={props?.MasterListData} AllSitesTaskData={props?.AllSitesTaskData} />
                         </span>
                     </>
                 ),
