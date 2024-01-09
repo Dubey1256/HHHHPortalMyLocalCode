@@ -877,7 +877,7 @@ const TaskDashboard = (props: any) => {
                 },
                 style: { width: "125px" },
                 Cell: ({ row }: any) => (
-                    <span>
+                    <span className='d-flex'>
                         <span className="ms-1">{row?.original?.DisplayCreateDate}</span>
                         {row?.original?.createdImg != undefined ?
                             <>
@@ -1033,7 +1033,7 @@ const TaskDashboard = (props: any) => {
                 showSortIcon: true,
                 style: { width: "125px" },
                 Cell: ({ row }: any) => (
-                    <span>
+                    <span className='d-flex'>
                         <span className="ms-1">{row?.original?.DisplayCreateDate}</span>
                         {row?.original?.createdImg != undefined ?
                             <>
@@ -1055,6 +1055,7 @@ const TaskDashboard = (props: any) => {
                 showSortIcon: false,
                 Cell: ({ row }: any) => (
                     <>
+                    <span className='d-flex'>
                         <a
                             onClick={(e) => EditDataTimeEntry(e, row.original)}
                             data-bs-toggle="tooltip"
@@ -1073,6 +1074,7 @@ const TaskDashboard = (props: any) => {
                             onClick={() => EditPopup(row?.original)}
                             className="alignIcon svg__iconbox svg__icon--edit hreflink"
                         ></span>
+                        </span>
                     </>
 
                 ),

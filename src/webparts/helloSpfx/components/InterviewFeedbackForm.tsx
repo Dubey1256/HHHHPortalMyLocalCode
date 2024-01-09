@@ -165,7 +165,6 @@ export default function InterviewFeedbackForm(props: any) {
             ),
         },
         { accessorKey: "Email", placeholder: "Email", header: "", id: 'Email' },
-        { accessorKey: "Position", placeholder: "Positions", header: "", id: 'Position' },
         { accessorKey: "Status0", placeholder: "Status", header: "", id: 'Status0' }, {
             cell: ({ row }) => (
                 <div className='alignCenter'>

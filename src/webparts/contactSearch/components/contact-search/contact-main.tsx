@@ -281,7 +281,7 @@ const ContactMainPage = (props: any) => {
                 canSort: false,
                 placeholder: '',
                 header: '',
-                id: 'row.original',
+                id: 'ImageUrl',
                 size: 25,
             },
            
@@ -300,7 +300,7 @@ const ContactMainPage = (props: any) => {
                 id: 'Title',
                 size: 150,
             },
-            { accessorKey: "Email", placeholder: "Email Address", header: "", size: 80, },
+            { accessorKey: "Email", placeholder: "Email Address", header: "", size: 80,id:"Email" },
             {
                 accessorFn: (row: any) => row?.Institution?.FullName,
                 cell: ({ row }: any) => (
@@ -325,8 +325,8 @@ const ContactMainPage = (props: any) => {
                 id: 'Department',
                 size: 80,
             },
-            { accessorKey: "JobTitle", placeholder: "Position", header: "", size: 80, },
-            { accessorKey: "SitesTagged", placeholder: "Site", header: "", size: 80, },
+            { accessorKey: "JobTitle", placeholder: "Position", header: "", size: 80, id:"JobTitle"},
+            { accessorKey: "SitesTagged", placeholder: "Site", header: "", size: 80,id:"SitesTagged" },
             {
                 cell: ({ row }) => (
                     <>
@@ -380,10 +380,10 @@ const ContactMainPage = (props: any) => {
                 canSort: false,
                 placeholder: '',
                 header: '',
-                id: 'row.original',
+                id: 'Item_x0020_Cover',
                 size: 25,
             },
-            { accessorKey: "StaffID", placeholder: "StaffID", header: "", size: 100, },
+            { accessorKey: "StaffID", placeholder: "StaffID", header: "", size: 100,id:"StaffID" },
             {
                 accessorFn: (row: any) => row?.FullName,
                 cell: ({ row }: any) => (
@@ -399,7 +399,7 @@ const ContactMainPage = (props: any) => {
                 id: 'FullName',
                 size: 150,
             },
-            { accessorKey: "Email", placeholder: "Email Address", header: "", size: 80, },
+            { accessorKey: "Email", placeholder: "Email Address", header: "", size: 80,id:"Email" },
             {
                 accessorFn: (row: any) => row?.Institution?.FullName,
                 cell: ({ row }: any) => (
@@ -424,8 +424,8 @@ const ContactMainPage = (props: any) => {
             //     id: 'Department',
             //     size: 80,
             // },
-            { accessorKey: "JobTitle", placeholder: "Position", header: "", size: 80, },
-            { accessorKey: "WorkCity", placeholder: "city", header: "", size: 80, },
+            { accessorKey: "JobTitle", placeholder: "Position", header: "", size: 80, id:"JobTitle"},
+            { accessorKey: "WorkCity", placeholder: "city", header: "", size: 80,id:"WorkCity" },
             {
                 cell: ({ row }) => (
                     <>

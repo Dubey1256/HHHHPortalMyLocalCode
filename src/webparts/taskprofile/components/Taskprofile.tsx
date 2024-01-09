@@ -1679,7 +1679,7 @@ class Taskprofile extends React.Component<ITaskprofileProps, ITaskprofileState> 
         dataUpdate = {
           PortfolioId: DataItem[0]?.Id,
           ClientCategoryId: { results: selectedCC },
-          ClientTime: Sitestagging,
+          Sitestagging: Sitestagging,
         }
         this?.updateProjectComponentServices(dataUpdate)
       } else {
