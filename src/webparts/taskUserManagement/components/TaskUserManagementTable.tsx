@@ -26,6 +26,7 @@ const TaskUserManagementTable = ({ TaskUsersListData, TaskGroupsListData, baseUr
     const [selectedCompany, setSelectedCompany] = useState('');
     const [selectedRoles, setSelectedRoles] = useState<any>([]);
     const [userGroup, setUserGroup] = useState("");
+    const [userTeam, setUserTeam] = useState("");
     const [userCategory, setUserCategory] = useState("");
     const [imageUrl, setImageUrl] = useState<any>({});
     const [EditData, setEditData] = React.useState<any>({});
@@ -49,8 +50,13 @@ const TaskUserManagementTable = ({ TaskUsersListData, TaskGroupsListData, baseUr
 
     const Categories: any = (smartMetaDataItems.filter((items: any) => items.TaxType === "TimesheetCategories"))
     const uniqueCategories = Categories.filter(
-        (ele: any, i: any, item: any) => item.findIndex((elem: any) => (elem.Title === ele.Title)) === i
+        (ele: any, i: any, item: any) => item.findIndex((elem: any) => (elem.Title === ele.Title) && elem.Parent?.Title === "Components") === i
     );
+    // const categoriesToInclude:any = ["Design", "Development", "Investigation", "QA", "Support","Verification", "Coordination", "Implementation", "Conception", "Preparation"];
+    // const uniqueCategories = Categories.filter((val: any) =>
+    //     categoriesToInclude.includes(val.Title) && val.Parent?.Title === "Components"
+    // );
+
     console.log(Categories)
     console.log(uniqueCategories)
 
@@ -69,6 +75,7 @@ const TaskUserManagementTable = ({ TaskUsersListData, TaskGroupsListData, baseUr
             setSelectedCategories(JSON.parse(memberToUpdate.CategoriesItemsJson))
             setAssignedToUser(memberToUpdate.AssingedToUser?.Id)
             setApprover([memberToUpdate.Approver?.[0]?.Id])
+            setUserTeam(memberToUpdate.technicalGroup)
         }
     }, [memberToUpdate]);
 
@@ -190,9 +197,10 @@ const TaskUserManagementTable = ({ TaskUsersListData, TaskGroupsListData, baseUr
                 ApproverId: Array.isArray(approver) && approver.every(item => typeof item === 'number' && item != null)
                     ? { "results": approver } : (approver.length > 0 && approver[0] != null && approver[0].AssingedToUser?.Id != null) ? { "results": [approver[0].AssingedToUser.Id] } : { "results": [] },
                 UserGroupId: userGroup ? parseInt(userGroup) : memberToUpdate?.UserGroup?.Id,
+                technicalGroup: userTeam ? userTeam : memberToUpdate.technicalGroup,
                 // Item_x0020_Cover: { "__metadata": { type: "SP.FieldUrlValue" }, Description: "Description", Url: imageUrl?.Item_x002d_Image != undefined ? imageUrl?.Item_x002d_Image?.Url : (imageUrl?.Item_x0020_Cover != undefined ? imageUrl?.Item_x0020_Cover?.Url : null) },
                 // Item_x0020_Cover: { "__metadata": { type: "SP.FieldUrlValue" }, Description: "Description", Url: imageUrl?.Item_x0020_Cover != undefined ? imageUrl?.Item_x0020_Cover?.Url : memberToUpdate.Item_x0020_Cover.Url},
-                Item_x0020_Cover: { "__metadata": { type: "SP.FieldUrlValue" }, Description: "Description", Url: imageUrl?.Item_x002d_Image?.Url || imageUrl?.Item_x0020_Cover?.Url || (memberToUpdate?.Item_x0020_Cover?.Url || null)},
+                Item_x0020_Cover: { "__metadata": { type: "SP.FieldUrlValue" }, Description: "Description", Url: imageUrl?.Item_x002d_Image?.Url || imageUrl?.Item_x0020_Cover?.Url || (memberToUpdate?.Item_x0020_Cover?.Url || null) },
                 CategoriesItemsJson: JSON.stringify(selectedCategories),
             };
 
@@ -267,10 +275,10 @@ const TaskUserManagementTable = ({ TaskUsersListData, TaskGroupsListData, baseUr
             cell: ({ row }: any) => (
                 <div style={{ display: 'flex', alignItems: 'center' }}>
                     <img
-                        className='workmember'
+                        className='me-1 workmember'
                         src={row.original.Item_x0020_Cover?.Url || 'https://hhhhteams.sharepoint.com/sites/HHHH/GmBH/SiteCollectionImages/ICONS/32/icon_user.jpg'}
                         alt="User"
-                        style={{ marginRight: '10px', width: '32px', height: '32px' }}
+                    // style={{ marginRight: '10px', width: '32px', height: '32px' }}
                     />
                     <span>{`${row.original.Title} (${row.original.Suffix})`}</span>
                 </div>
@@ -563,6 +571,21 @@ const TaskUserManagementTable = ({ TaskUsersListData, TaskGroupsListData, baseUr
         setOpenPopup(false)
     }
 
+    const cancelUpdate = () => {
+        setSelectedApprovalType(memberToUpdate.IsApprovalMail);
+        setSelectedCompany(memberToUpdate.Company);
+        // setSelectedRoles(memberToUpdate.Role || []);
+        setSelectedRoles(Array.isArray(memberToUpdate.Role) ? memberToUpdate.Role : []);
+        setIsActive(memberToUpdate.IsActive);
+        setIsTaskNotifications(memberToUpdate.IsTaskNotifications);
+        setUserCategory(memberToUpdate.TimeCategory)
+        setSelectedCategories(JSON.parse(memberToUpdate.CategoriesItemsJson))
+        // setAssignedToUser(memberToUpdate.AssingedToUser?.Id)
+        setApprover([memberToUpdate.Approver?.[0]?.Id])
+        setUserTeam(memberToUpdate.technicalGroup)
+        setOpenUpdateMemberPopup(false)
+    }
+
     // JSX Code starts here
 
     return (
@@ -586,7 +609,7 @@ const TaskUserManagementTable = ({ TaskUsersListData, TaskGroupsListData, baseUr
                 </button>
             </ul >
 
-            <div className="border border-top-0 clearfix p-3 tab-content" id="myTabContent">
+            <div className="border border-top-0 clearfix p-1 tab-content" id="myTabContent">
                 {/* <div className="tab-pane fade show active" id="team-members" role="tabpanel" aria-labelledby="teammemberstab"> */}
                 <div className="tab-pane show active" id="TEAMMEMBERS" role="tabpanel" aria-labelledby="TEAMMEMBERS">
                     <div className='Alltable'>
@@ -621,22 +644,22 @@ const TaskUserManagementTable = ({ TaskUsersListData, TaskGroupsListData, baseUr
                         <input className='form-control' type="text" placeholder='Enter Title' value={addTitle} onChange={(e: any) => { setAddTitle(e.target.value); autoSuggestionsForTitle(e) }} />
                     </div>
                     {autoSuggestData?.length > 0 ? (
-                            <div>
-                                <ul className="list-group">
-                                    {autoSuggestData?.map((Item: any) => {
-                                        return (
-                                            <li
-                                                className="hreflink list-group-item rounded-0 list-group-item-action"
-                                                key={Item.id}
-                                            // onClick={() => window.open(`${Item?.siteUrl}/SitePages/Project-Management.aspx?ProjectId=${Item?.Id}`, '_blank')}
-                                            >
-                                                <a>{Item.Title}</a>
-                                            </li>
-                                        );
-                                    })}
-                                </ul>
-                            </div>
-                        ) : null}
+                        <div>
+                            <ul className="list-group">
+                                {autoSuggestData?.map((Item: any) => {
+                                    return (
+                                        <li
+                                            className="hreflink list-group-item rounded-0 list-group-item-action"
+                                            key={Item.id}
+                                        // onClick={() => window.open(`${Item?.siteUrl}/SitePages/Project-Management.aspx?ProjectId=${Item?.Id}`, '_blank')}
+                                        >
+                                            <a>{Item.Title}</a>
+                                        </li>
+                                    );
+                                })}
+                            </ul>
+                        </div>
+                    ) : null}
                 </div>
 
                 {/* <input className='form-control' type="text" value={title} onChange={(e: any) => setTitle(e.target.value)} /> */}
@@ -787,20 +810,19 @@ const TaskUserManagementTable = ({ TaskUsersListData, TaskGroupsListData, baseUr
                                     </div></div>
                                 <div className='col-md-3'>
                                     <div className='input-group'>
-                                        <label className='form-label full-width'>Company: </label>
-                                        <div>
-                                            <div>
-                                                <label className='SpfxCheckRadio'>
-                                                    <input className='radio' type="radio" id="HHHH" name="company" value="HHHH" checked={selectedCompany === 'HHHH'} onChange={handleCompanyChange} />
-                                                    HHHH Team</label>
-                                            </div>
-                                            <div>
-                                                <label className='SpfxCheckRadio'>
-                                                    <input className='radio' type="radio" id="Smalsus" name="company" value="Smalsus" checked={selectedCompany === 'Smalsus'} onChange={handleCompanyChange} />
-                                                    Smalsus Team</label>
-                                            </div>
-                                        </div>
-                                    </div></div>
+                                        <label className='form-label full-width'>Team: </label>
+                                        <select className='form-control' id="sites" defaultValue={memberToUpdate?.technicalGroup} onChange={(e: any) => setUserTeam(e.target.value)}
+                                        >
+                                            <option>Select</option>
+                                            <option value="SPFx">SPFx</option>
+                                            <option value="Project Database">Project Database</option>
+                                            <option value="Contact Database">Contact Database</option>
+                                            <option value="Portfolio Database">Portfolio Database</option>
+                                            <option value="QA">QA</option>
+                                            <option value="Design">Design</option>
+                                        </select>
+                                    </div>
+                                </div>
                             </div>
                             <div className="row">
                                 <div className='col-md-3'>
@@ -873,6 +895,22 @@ const TaskUserManagementTable = ({ TaskUsersListData, TaskGroupsListData, baseUr
                                         </div>
                                     </div>
                                 </div>
+                                <div className='col-md-3'>
+                                    <div className='input-group'>
+                                        <label className='form-label full-width'>Company: </label>
+                                        <div>
+                                            <div>
+                                                <label className='SpfxCheckRadio'>
+                                                    <input className='radio' type="radio" id="HHHH" name="company" value="HHHH" checked={selectedCompany === 'HHHH'} onChange={handleCompanyChange} />
+                                                    HHHH Team</label>
+                                            </div>
+                                            <div>
+                                                <label className='SpfxCheckRadio'>
+                                                    <input className='radio' type="radio" id="Smalsus" name="company" value="Smalsus" checked={selectedCompany === 'Smalsus'} onChange={handleCompanyChange} />
+                                                    Smalsus Team</label>
+                                            </div>
+                                        </div>
+                                    </div></div>
                             </div>
                         </div>
 
@@ -977,7 +1015,8 @@ const TaskUserManagementTable = ({ TaskUsersListData, TaskGroupsListData, baseUr
                                 <button
                                     type="button"
                                     className="btn btn-default btn-default ms-1"
-                                    onClick={() => setOpenUpdateMemberPopup(false)}
+                                    onClick={cancelUpdate}
+                                // onClick={() => setOpenUpdateMemberPopup(false)}
                                 >
                                     Cancel
                                 </button>
