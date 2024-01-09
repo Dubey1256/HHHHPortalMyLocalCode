@@ -24,6 +24,7 @@ import MeetingPopupComponent from '../../../globalComponents/MeetingPopup/Meetin
 // import TagTaskToProjectPopup from '../../projectManagement/components/TagTaskToProjectPopup';
 import MettingTable from './MeetingFooterTable';
 import { map } from 'jquery';
+import TagTaskToProjectPopup from '../../projectManagement/components/TagTaskToProjectPopup';
 var count = 0;
 var isShowTimeEntry: any;
 var isShowSiteCompostion: any;
@@ -904,7 +905,13 @@ const MeetingProfile = (props: any) => {
                   onClick={() => setshowMeetingPopup(true)}
                 > <span className='alignIcon svg__iconbox svg__icon--edit'></span></a>
                 </span>
-         
+                {resultData.Id != null && <span>< TagTaskToProjectPopup projectItem={resultData}
+                className="ms-2"
+                meetingPages={true}
+                projectId={resultData.ID}
+                AllListId={AllListId}
+                callBack={tagAndCreateCallBack}
+                projectTitle={resultData.Title} /> </span>}
 
             </h2>
           </section>
