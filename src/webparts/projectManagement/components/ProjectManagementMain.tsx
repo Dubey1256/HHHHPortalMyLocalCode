@@ -1684,6 +1684,7 @@ const ProjectManagementMain = (props: any) => {
                                   showCreationAllButton={true}
                                   restructureCallBack={callBackData1}
                                   ref={childRef} callChildFunction={callChildFunction}
+                                   masterTaskData={MasterListData} AllSitesTaskData={AllSitesAllTasks}
                                   OpenAddStructureModal={OpenAddStructureModal}
                                   addActivity={addActivity} />}
                               </div>
