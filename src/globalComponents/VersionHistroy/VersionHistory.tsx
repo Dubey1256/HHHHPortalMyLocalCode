@@ -21,7 +21,6 @@ export default function VersionHistory(props: any) {
     const ItemId = props?.taskId;
     const RequiredListIds: any = props?.RequiredListIds;
     let tempEstimatedArrayData: any;
-    const web = new Web(siteTypeUrl);
     const [show, setShow] = React.useState(false);
     const [data, setData]: any = React.useState([]);
     const [SCVersionHistoryData, setSCVersionHistoryData]: any = React.useState([]);
@@ -42,6 +41,7 @@ export default function VersionHistory(props: any) {
         }, 100);
     };
     React.useEffect(() => {
+       
         GetItemsVersionHistory();
         loadTaskUsers();
         LoadAllClientCategories();
@@ -50,6 +50,7 @@ export default function VersionHistory(props: any) {
     const GetItemsVersionHistory = async () => {
         var versionData: any = []
         try {
+           let web = new Web(siteTypeUrl)
             web.lists.getById(listId).items.getById(ItemId).versions.get().then(versions => {
                 console.log('Version History:', versions);
                 versions.map((ItemVersion: any) => {
@@ -142,6 +143,7 @@ export default function VersionHistory(props: any) {
         let TempCCData: any = [];
         let AllCCFromCall: any = [];
         try {
+            let web = new Web(siteTypeUrl)
             AllCCFromCall = await web.lists
                 .getById(RequiredListIds?.SmartMetadataListID)
                 .items.select(
