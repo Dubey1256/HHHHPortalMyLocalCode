@@ -3607,7 +3607,7 @@ function EditInstitution({ item, SelectD, Calls, usedFor, portfolioTypeData, fil
                                                                                                         <span className="mx-2">
                                                                                                             {Number(
                                                                                                                 SiteDtls.ClienTimeDescription
-                                                                                                            ).toFixed(2)}
+                                                                                                            ).toFixed(1)}
                                                                                                             %
                                                                                                         </span>
                                                                                                     )}
