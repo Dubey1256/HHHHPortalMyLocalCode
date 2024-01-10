@@ -802,7 +802,7 @@ const GlobalCommanTable = (items: any, ref: any) => {
     };
 
     React.useImperativeHandle(ref, () => ({
-        callChildFunction, trueTopIcon, setRowSelection, globalFilter, setColumnFilters, setGlobalFilter, coustomFilterColumns
+        callChildFunction, trueTopIcon, setRowSelection, globalFilter, setColumnFilters, setGlobalFilter, coustomFilterColumns, table
     }));
 
     const restructureFunct = (items: any) => {
@@ -875,7 +875,7 @@ const GlobalCommanTable = (items: any, ref: any) => {
     return (
         <>
             {items?.bulkEditIcon === true && bulkEditingCongration && <span className="toolbox">
-                <BulkEditingFeature data={data} setData={items?.setData} updatedSmartFilterFlatView={items?.updatedSmartFilterFlatView} clickFlatView={items?.clickFlatView} ContextValue={items?.AllListId} priorityRank={items?.priorityRank} dragedTask={dragedTask} precentComplete={items?.precentComplete} bulkEditingCongration={bulkEditingCongration} selectedData={table?.getSelectedRowModel()?.flatRows} projectTiles={projectTiles} />
+                <BulkEditingFeature masterTaskData={items?.masterTaskData} data={data} columns={items?.columns} setData={items?.setData} updatedSmartFilterFlatView={items?.updatedSmartFilterFlatView} clickFlatView={items?.clickFlatView} ContextValue={items?.AllListId} priorityRank={items?.priorityRank} dragedTask={dragedTask} precentComplete={items?.precentComplete} bulkEditingCongration={bulkEditingCongration} selectedData={table?.getSelectedRowModel()?.flatRows} projectTiles={projectTiles} />
             </span>}
             {showHeader === true && <div className='tbl-headings justify-content-between fixed-Header top-0' style={{ background: '#e9e9e9' }}>
                 <span className='leftsec'>
@@ -958,7 +958,7 @@ const GlobalCommanTable = (items: any, ref: any) => {
                     </span>
                 </span>
                 <span className="toolbox">
-                    {items.taskProfile != true && items?.showCreationAllButton === true  && <>
+                    {items.taskProfile != true && items?.showCreationAllButton === true && <>
                         {items?.PortfolioFeature === "Feature" && items?.hideRestructureBtn != true ? (
                             <button type="button" disabled className="btn btn-primary" style={{ backgroundColor: `${portfolioColor}`, borderColor: `${portfolioColor}`, color: "#fff" }} title=" Add Structure"> {" "} Add Structure{" "}</button>
                         ) : (table?.getSelectedRowModel()?.flatRows?.length === 1 && table?.getSelectedRowModel()?.flatRows[0]?.original?.Item_x0020_Type != "Feature" && table?.getSelectedRowModel()?.flatRows[0]?.original
@@ -973,12 +973,12 @@ const GlobalCommanTable = (items: any, ref: any) => {
                         {items?.protfolioProfileButton != true && items?.hideAddActivityBtn != true && <>{table?.getSelectedRowModel()?.flatRows.length === 1 && table?.getSelectedRowModel()?.flatRows[0]?.original?.TaskType?.Title != "Task" && table?.getSelectedRowModel()?.flatRows[0]?.original?.Item_x0020_Type != "Sprint" ? <button type="button" className="btn btn-primary" title='Add Activity' style={{ backgroundColor: `${portfolioColor}`, borderColor: `${portfolioColor}`, color: '#fff' }} onClick={() => openCreationAllStructure("Add Activity-Task")}>Add Activity-Task</button> :
                             <button type="button" className="btn btn-primary" style={{ backgroundColor: `${portfolioColor}`, borderColor: `${portfolioColor}`, color: '#fff' }} disabled={true} > Add Activity-Task</button>}</>}
 
-                        {items?.protfolioProfileButton === true && items?.hideAddActivityBtn != true && <>{items?.protfolioProfileButton === true && table?.getSelectedRowModel()?.flatRows[0]?.original?.TaskType?.Title != "Task" && table?.getSelectedRowModel()?.flatRows[0]?.original?.Item_x0020_Type != "Sprint"? <button type="button" className="btn btn-primary" title='Add Activity' style={{ backgroundColor: `${portfolioColor}`, borderColor: `${portfolioColor}`, color: '#fff' }} onClick={() => openCreationAllStructure("Add Activity-Task")}>Add Activity-Task</button> :
+                        {items?.protfolioProfileButton === true && items?.hideAddActivityBtn != true && <>{items?.protfolioProfileButton === true && table?.getSelectedRowModel()?.flatRows[0]?.original?.TaskType?.Title != "Task" && table?.getSelectedRowModel()?.flatRows[0]?.original?.Item_x0020_Type != "Sprint" ? <button type="button" className="btn btn-primary" title='Add Activity' style={{ backgroundColor: `${portfolioColor}`, borderColor: `${portfolioColor}`, color: '#fff' }} onClick={() => openCreationAllStructure("Add Activity-Task")}>Add Activity-Task</button> :
                             <button type="button" className="btn btn-primary" style={{ backgroundColor: `${portfolioColor}`, borderColor: `${portfolioColor}`, color: '#fff' }} disabled={true} > Add Activity-Task</button>}</>}
 
-                       {
+                        {
                             trueRestructuring == true ?
-                                <RestructuringCom projectmngmnt={items?.projectmngmnt} MasterdataItem = {items?.MasterdataItem} AllMasterTasksData={items.AllMasterTasksData} queryItems={items.queryItems} restructureFunct={restructureFunct} ref={childRef} taskTypeId={items.TaskUsers} contextValue={items.AllListId} allData={data} restructureCallBack={items.restructureCallBack} restructureItem={table?.getSelectedRowModel()?.flatRows} />
+                                <RestructuringCom projectmngmnt={items?.projectmngmnt} MasterdataItem={items?.MasterdataItem} AllMasterTasksData={items.AllMasterTasksData} queryItems={items.queryItems} restructureFunct={restructureFunct} ref={childRef} taskTypeId={items.TaskUsers} contextValue={items.AllListId} allData={data} restructureCallBack={items.restructureCallBack} restructureItem={table?.getSelectedRowModel()?.flatRows} />
                                 : <button type="button" title="Restructure" disabled={true} className="btn btn-primary">Restructure</button>
                         }
                     </>
@@ -989,9 +989,9 @@ const GlobalCommanTable = (items: any, ref: any) => {
                             : <button type="button" title="Restructure" disabled={true} className="btn btn-primary">Restructure</button>}</>
                     }
 
-                   {items.taskProfile === true && items?.showCreationAllButton === true && items?.hideRestructureBtn != true && <>
-                        {table?.getSelectedRowModel()?.flatRows.length < 2 ? <button type="button" className="btn btn-primary" title='Add Activity' onClick={() => openCreationAllStructure("Add Workstream-Task")}>{(table?.getSelectedRowModel()?.flatRows.length>0 &&table?.getSelectedRowModel()?.flatRows[0]?.original?.TaskType.Title=="Workstream")||(items?.queryItems?.TaskType?.Title=="Workstream")?"Add Task" :"Add Workstream-Task"}</button> :
-                            <button type="button" className="btn btn-primary"  disabled={true} > Add Workstream-Task</button>}
+                    {items.taskProfile === true && items?.showCreationAllButton === true && items?.hideRestructureBtn != true && <>
+                        {table?.getSelectedRowModel()?.flatRows.length < 2 ? <button type="button" className="btn btn-primary" title='Add Activity' onClick={() => openCreationAllStructure("Add Workstream-Task")}>{(table?.getSelectedRowModel()?.flatRows.length > 0 && table?.getSelectedRowModel()?.flatRows[0]?.original?.TaskType.Title == "Workstream") || (items?.queryItems?.TaskType?.Title == "Workstream") ? "Add Task" : "Add Workstream-Task"}</button> :
+                            <button type="button" className="btn btn-primary" disabled={true} > Add Workstream-Task</button>}
 
                         {
                             trueRestructuring == true ?
