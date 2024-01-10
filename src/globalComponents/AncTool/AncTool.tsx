@@ -1331,10 +1331,7 @@ const AncTool = (props: any) => {
                                         <Col xs={6}>
 
                                             <div> <label className='form-label full-width fw-semibold'>Select Upload Folder  {temptasktype !== undefined && temptasktype?.length > 2 && <label className='alignIcon svg__iconbox svg__icon--setting' onClick={() => openTaskTypesPopup()}></label>}</label></div>
-                                            {/* {selectPathFromPopup?.length > 0 ?
-                                                    <h3 className='pageTitle'> Selected Folder  {temptasktype !== undefined && temptasktype?.length > 2 && <span className='alignIcon svg__iconbox svg__icon--setting' onClick={() => openTaskTypesPopup()}></span>} <hr></hr> </h3>
-                                                    : <h3 className='pageTitle'> Default Folder   {temptasktype !== undefined && temptasktype?.length > 2 && <span className='alignIcon svg__iconbox svg__icon--setting' onClick={() => openTaskTypesPopup()}></span>}<hr></hr> </h3>
-                                                } */}
+                                            
                                             <div className='alignCenter'>
                                                 <span>{folderExist == true ? <span>{selectedPath?.displayPath}</span> : <>{(tasktypecopy != undefined && tasktypecopy != '') ? <span>{selectedPath?.displayPath?.split(tasktypecopy)}
                                                     <span className='highlighted'>{tasktypecopy}
@@ -1350,14 +1347,7 @@ const AncTool = (props: any) => {
                                                 </span>
                                                     :
                                                     <span>{selectedPath?.displayPath?.split(siteName)}<span className=''>{siteName}
-                                                        {/* <div className="popover__wrapper me-1" data-bs-toggle="tooltip" data-bs-placement="auto">
-                                                                <span className="alignIcon svg__iconbox svg__icon--info " ></span>
-                                                                <div className="popover__content">
-                                                                    <span>
-                                                                        Highlighted folder does not exist. It will be created at the time of document upload.
-                                                                    </span>
-                                                                </div>
-                                                            </div> */}
+                                                      
                                                     </span></span>}</>}</span>
                                                 <span><a title="Click for Associated Folder" className='hreflink ms-2' onClick={() => setChoosePathPopup(true)} > Change Path </a></span>
                                             </div>
@@ -1511,94 +1501,7 @@ const AncTool = (props: any) => {
                                         </Col>
                                     </Row>
                                 </div>
-                                {/* <Row className='mt-2'>
-                                    <Col xs={6}>
-                                        <div className="panel">
-                                            <h3 className="pageTitle">
-                                                2. Connect Existing Documents
-                                                <hr></hr>
-                                            </h3>
-
-                                            <div>
-                                                <input id="searchinputCED" type="search" onChange={(e) => { searchExistingFile(e.target.value) }} placeholder="Search..." className="form-control" />
-                                                {ShowExistingDoc == true && <div className="Alltable mt-2">
-                                                    <div>
-                                    
-                                                        {ExistingFiles?.length > 0 ?
-                                                            <Table hover responsive className='mb-0'>
-                                                                <thead className='fixed-Header top-0'>
-                                                                    <tr>
-                                                                        <th></th>
-                                                                        <th className='p-1'>Type</th>
-                                                                        <th className='p-1'>Title</th>
-                                                                        <th style={{ width: '100px' }} className='p-1'>Item Rank</th>
-
-                                                                    </tr>
-
-                                                                </thead>
-                                                                <tbody className='Scrolling'>
-                                                                    {ExistingFiles?.map((file: any) => {
-                                                                        if (!AllReadytagged?.some((doc: any) => file?.Id == doc?.Id)) {
-                                                                            return (
-                                                                                <tr>
-                                                                                    <td><input type="checkbox" className='form-check-input hreflink' checked={AllReadytagged?.some((doc: any) => file.Id == doc.Id)} onClick={() => { tagSelectedDoc(file) }} /></td>
-                                                                                    <td><span className={`alignIcon  svg__iconbox svg__icon--${file?.docType}`} title={file?.File_x0020_Type}></span></td>
-                                                                                    <td><a href={file?.EncodedAbsUrl} target="_blank" data-interception="off" className='hreflink'>{file?.Title}</a></td>
-                                                                                    <td style={{ textAlign: 'center' }}>{file?.ItemRank}</td>
-                                                                                </tr>
-                                                                            )
-                                                                        }
-
-                                                                    })}
-
-
-                                                                </tbody>
-                                                            </Table>
-                                                            :
-                                                            <div className="No_Documents">
-                                                                No Documents Available
-                                                            </div>
-                                                        }
-                                                    </div>
-                                                </div>}
-                                            </div>
-                                        </div>
-                                    </Col>
-                                    <Col xs={6}>
-                                        <div className="panel">
-                                            <h3 className="pageTitle">
-                                                3. Upload a New Document
-                                                <hr></hr>
-                                            </h3>
-
-                                            <Col>
-                                                <Row className='pe-0'>
-                                                    <label className='full-width form-label'>Item Rank</label>
-                                                    <Dropdown
-                                                        id="ItemRankUpload"
-                                                        options={itemRanks.map((rank) => ({ key: rank?.rank, text: rank?.rankTitle }))}
-                                                        selectedKey={itemRank}
-                                                        onChange={(e, option) => handleRankChange(option?.key, 'Upload')}
-                                                        styles={{ dropdown: { width: '100%' } }}
-                                                    />
-                                                </Row>
-                                                <div className='dragDropbox ' onDragOver={(event) => event.preventDefault()} onDrop={handleFileDrop}>
-                                                    {selectedFile ? <p>Selected file: {selectedFile.name}</p> : <p>Drag and drop file here </p>}
-                                                </div>
-
-                                                <Col className='text-center pb-2'>OR</Col>
-                                                <Row className='mb-2 px-2'>
-                                                    <input type="file" onChange={handleFileInputChange} className='full-width' />
-                                                </Row>
-                                                <Row className='mb-2 px-2'>
-                                                    <input type="text" onChange={(e) => { setRenamedFileName(e.target.value) }} value={renamedFileName} placeholder='Rename your document' className='full-width' />
-                                                </Row>
-                                                <button onClick={handleUpload} disabled={selectedFile?.name?.length > 0 ? false : true} className="btn btn-primary mt-2 my-1  float-end px-3">Upload</button>
-                                            </Col>
-
-                                        </div>
-                                    </Col>
-                                </Row> */}
+                               
                                 <Row className='mt-2'>
                                     <Col xs={12}>
                                         {/* <ConnectExistingDoc Context={props.Context} AllListId={props?.AllListId} item={Item} folderPath={selectedPath?.completePath} /> */}
@@ -1653,40 +1556,7 @@ const AncTool = (props: any) => {
                                             </div>
                                         </div>
                                     </Col>
-                                    {/* <Col xs={6}>
-                                        <div className="panel">
-
-                                            <h3 className="pageTitle">
-                                                5. Add a link to a document
-                                                <hr></hr>
-                                            </h3>
-
-
-                                            <Col>
-                                                <Col className='col mb-2'>
-                                                    <label>Name</label>
-                                                    <input type="text" placeholder='Name' onChange={(e) => { setLinkToDocTitle(e.target.value) }} value={LinkToDocTitle} className='full-width' />
-                                                </Col>
-                                                <Col className='clearfix col mb-2'>
-                                                    <label>URL</label>
-                                                    <input type="text" onChange={(e) => { setLinkToDocUrl(e.target.value) }} value={LinkToDocUrl} placeholder='Url' className='full-width' />
-                                                </Col>
-                                                <Col className='pe-0'>
-                                                    <div className="fsectionHead siteBdrBottom mb-1">Item Rank</div>
-                                                    <Dropdown
-                                                        id="ItemRankLinkDoc"
-                                                        options={itemRanks.map((rank) => ({ key: rank?.rank, text: rank?.rankTitle }))}
-                                                        selectedKey={LinkDocitemRank}
-                                                        onChange={(e, option) => handleRankChange(option?.key, 'linkDoc')}
-                                                        styles={{ dropdown: { width: '100%' } }}
-                                                    />
-                                                </Col>
-                                                <Col>
-                                                    <button disabled={(LinkToDocUrl?.length > 0 && LinkToDocTitle?.length > 0) ? false : true} className="btn btn-primary mt-2 my-1  float-end px-3" onClick={() => { CreateLinkAndTag() }}>Create</button>
-                                                </Col>
-                                            </Col>
-                                        </div>
-                                    </Col> */}
+                                  
 
                                 </Row>
                             </div>

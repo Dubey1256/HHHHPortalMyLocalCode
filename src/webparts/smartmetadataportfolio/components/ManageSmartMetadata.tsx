@@ -394,20 +394,17 @@ export default function ManageSmartMetadata(selectedProps: any) {
     }
     //-------------------------------------------------- GENERATE JSON FUNCTION end---------------------------------------------------------------
     return (
-        <>
+        <div className='TableContentSection'>
             {/* {<BraedCrum AllList={selectedProps.AllList} />} */}
-            <section className='ContentSection'>
-                <div className='row'>
-                    <div className='col-sm-3 text-primary'>
+            <section className='col-sm-12 clearfix'>
+                
+                    <div className='d-flex justify-content-between align-items-center siteColor  serviceColor_Active mb-2'>
                         <h3 className="heading">ManageSmartMetaData
                         </h3>
+                        <span><a data-interception="off" target="_blank" href="https://hhhhteams.sharepoint.com/sites/HHHH/SP/SitePages/managesmartmetadata-old.aspx">Old ManageSmartMetadata</a></span>
                     </div>
-                    <div className='col-sm-9 text-primary'>
-                        <h6 className='pull-right'><b><a data-interception="off"
-                            target="_blank" href="https://hhhhteams.sharepoint.com/sites/HHHH/SP/SitePages/managesmartmetadata-old.aspx">Old ManageSmartMetadata</a></b>
-                        </h6>
-                    </div>
-                </div>
+                    
+               
             </section>
 
             <ul className="nav nav-tabs" role="tablist">
@@ -474,7 +471,7 @@ export default function ManageSmartMetadata(selectedProps: any) {
             </div>)}
             {SmartMetadataEditPopupOpen ? <SmartMetadataEditPopup AllList={selectedProps.AllList} CloseEditSmartMetaPopup={CloseEditSmartMetaPopup} EditItemCallBack={callBackSmartMetaData} AllMetadata={Smartmetadata} MetadataItems={SmartmetadataItems} modalInstance={SelectedSmartMetadataItem} TabSelected={TabSelected} ParentMetaDataItems={ParentMetaDataItems} childRefdata={childRefdata} /> : ''}
             {SmartMetadataDeletePopupOpen ? <DeleteSmartMetadata AllList={selectedProps.AllList} CloseDeleteSmartMetaPopup={CloseDeleteSmartMetaPopup} DeleteItemCallBack={callBackSmartMetaData} AllMetadata={Smartmetadata} modalInstance={SelectedSmartMetadataItem} childRefdata={childRefdata} /> : ''}
-        </>
+        </div>
     );
 }
 

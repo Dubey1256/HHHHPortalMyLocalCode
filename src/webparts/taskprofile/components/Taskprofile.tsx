@@ -1973,9 +1973,6 @@ class Taskprofile extends React.Component<ITaskprofileProps, ITaskprofileState> 
 
                         </dd>
                       </dl>
-
-
-
                       <dl>
                         <dt className='bg-Fa'>Status</dt>
                         <dd className='bg-Ff'>{this.state.Result["Status"]}<br></br>
@@ -2008,13 +2005,13 @@ class Taskprofile extends React.Component<ITaskprofileProps, ITaskprofileState> 
                                 onMouseEnter={this.showOnHoldReason}
                                 onMouseLeave={this.hideOnHoldReason}
                               />
-                              <span className="tooltip-text pop-right">
+                              <span className="tooltip-text tooltipboxs  pop-right">
                                 {this.state.showOnHoldComment &&
                                   comments.map((item: any, index: any) =>
                                     item.CommentFor !== undefined &&
                                       item.CommentFor === "On-Hold" ? (
                                       <div key={index}>
-                                        <span className="siteColor p-1 border-bottom">
+                                        <span className="siteColor H-overTitle">
                                           Task On-Hold by{" "}
                                           <span>
                                             {
