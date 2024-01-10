@@ -762,7 +762,7 @@ const TaskDashboard = (props: any) => {
                 internalHeader: "Portfolio",
                 accessor: "PortfolioTitle",
                 showSortIcon: true,
-                style: { width: '110px' },
+                style: { width: '150px' },
                 Cell: ({ row }: any) => (
                     <span>
                         <a className='hreflink' data-interception="off"

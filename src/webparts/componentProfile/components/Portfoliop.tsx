@@ -1968,7 +1968,7 @@ function Portfolio({ SelectedProp, TaskUser }: any) {
                                                 <span className="mx-2">
                                                   {Number(
                                                     SiteDtls.ClienTimeDescription
-                                                  ).toFixed(2)}
+                                                  ).toFixed(1)}
                                                   %
                                                 </span>
                                               )}

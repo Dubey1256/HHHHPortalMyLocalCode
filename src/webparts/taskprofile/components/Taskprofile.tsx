@@ -2134,7 +2134,7 @@ class Taskprofile extends React.Component<ITaskprofileProps, ITaskprofileState> 
                                     </span>
                                     {cltime?.ClienTimeDescription != undefined &&
                                       <span>
-                                        {Number(cltime?.ClienTimeDescription).toFixed(2)}%
+                                        {Number(cltime?.ClienTimeDescription).toFixed(1)}%
                                       </span>
                                     }
                                     {cltime.ClientCategory != undefined && cltime.ClientCategory.length > 0 ? cltime.ClientCategory?.map((clientcat: any) => {
