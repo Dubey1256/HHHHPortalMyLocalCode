@@ -213,10 +213,8 @@ const ProjectManagementMain = (props: any) => {
         .get();
       CurrentUserData = taskUser?.find((user: any) => {
         if (AllListId?.Context?.pageContext?.legacyPageContext?.userId == user?.AssingedToUser?.Id) {
-          true
-        } else {
-          false
-        }
+         return true
+        } 
       })
     }
     catch (error) {
@@ -255,6 +253,12 @@ const ProjectManagementMain = (props: any) => {
             }
             if (fetchedProject?.Item_x0020_Type == "Project") {
               fetchedProject.subRows = AllFlatProject?.filter((data: any) => data?.Parent?.Id == fetchedProject?.Id && data?.Item_x0020_Type == "Sprint")
+              fetchedProject.subRows?.map((item:any)=>{
+                let itemAuthor = AllUser?.find((user: any) => { if(user?.AssingedToUser?.Id == item?.Author?.Id){
+                  return true
+                } })
+                item.createdImg = itemAuthor?.Item_x0020_Cover?.Url
+              })
             }
             if (fetchedProject?.ParentId != undefined && fetchedProject?.Item_x0020_Type == "Sprint") {
               fetchedProject.Parent = AllFlatProject?.find((data: any) => data?.Id == fetchedProject?.ParentId)
@@ -385,7 +389,6 @@ const ProjectManagementMain = (props: any) => {
 
   const CallBack = React.useCallback((item: any, type: any) => {
     setIsAddStructureOpen(false)
-
     if (type == 'Save') {
       if (item?.Item_x0020_Type == "Sprint") {
         // let allData = data;
@@ -397,7 +400,6 @@ const ProjectManagementMain = (props: any) => {
         renderData = [];
         renderData = renderData.concat(allBackupSprintAndTask)
         refreshData();
-
       }
       GetMasterData(false)
     }
@@ -1066,7 +1068,7 @@ const ProjectManagementMain = (props: any) => {
             href={`${props?.siteUrl}/SitePages/Portfolio-Profile.aspx?taskId=${row?.original?.portfolio?.Id}`}
           >
             <span className="d-flex">
-              <ReactPopperTooltipSingleLevel  onclickPopup={false} AllListId={AllListId} ShareWebId={row?.original?.portfolio?.Title} row={row?.original?.Portfolio} singleLevel={true} masterTaskData={MasterListData} AllSitesTaskData={AllSitesAllTasks} />
+              <ReactPopperTooltipSingleLevel AllListId={AllListId} onclickPopup={false} ShareWebId={row?.original?.portfolio?.Title} row={row?.original?.Portfolio} singleLevel={true} masterTaskData={MasterListData} AllSitesTaskData={AllSitesAllTasks} />
             </span>
           </a>
         ),
