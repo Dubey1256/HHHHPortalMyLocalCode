@@ -68,7 +68,7 @@ const AddPopup = (props: any) => {
     const [folderFiles, setfolderFiles]: any = useState([]);
     const [uploadedFile, setuploadedFile]: any = useState({});
     const [showTextInput, setshowTextInput] = useState(false);
-    const ActionChoices = ['Invite to Interview', 'Decline', 'Hire'];
+    const ActionChoices = ['Scheduled', 'Hold', 'Reject', 'Invite to Interview'];
     const [updatedPlatformChoices, setupdatedPlatformChoices] = useState<{ name: string; selected: boolean; }[]>([]);
     const [platformChoices, setPlatformChoices] = useState([
         { name: 'Indeed', selected: false },
@@ -422,7 +422,7 @@ const AddPopup = (props: any) => {
                     </div>
                     <div className="col-sm-3 mb-2">
                         <div className='input-group'>
-                            <label className="form-label full-width">Total Years of Professional Exp</label>
+                            <label className="form-label full-width">Total Years of Experience</label>
                             <div className="d-flex gap-2">
                                 <div className="input-group mb-2">
                                     <input
