@@ -978,14 +978,14 @@ const GlobalCommanTable = (items: any, ref: any) => {
 
                         {
                             trueRestructuring == true ?
-                                <RestructuringCom projectmngmnt={items?.projectmngmnt} MasterdataItem={items?.MasterdataItem} AllMasterTasksData={items.AllMasterTasksData} queryItems={items.queryItems} restructureFunct={restructureFunct} ref={childRef} taskTypeId={items.TaskUsers} contextValue={items.AllListId} allData={data} restructureCallBack={items.restructureCallBack} restructureItem={table?.getSelectedRowModel()?.flatRows} />
+                                <RestructuringCom AllSitesTaskData={items?.AllSitesTaskData} AllMasterTasksData={items?.masterTaskData} projectmngmnt={items?.projectmngmnt} MasterdataItem={items?.MasterdataItem} queryItems={items.queryItems} restructureFunct={restructureFunct} ref={childRef} taskTypeId={items.TaskUsers} contextValue={items.AllListId} allData={data} restructureCallBack={items.restructureCallBack} restructureItem={table?.getSelectedRowModel()?.flatRows} />
                                 : <button type="button" title="Restructure" disabled={true} className="btn btn-primary">Restructure</button>
                         }
                     </>
                     }
                     {
                         items?.pageProjectOverview === true &&
-                        <>{trueRestructuring === true ? <RestructuringCom AllMasterTasksData={items.AllMasterTasksData} queryItems={items.queryItems} restructureFunct={restructureFunct} ref={childRef} taskTypeId={items.TaskUsers} contextValue={items.AllListId} allData={data} restructureCallBack={items.restructureCallBack} restructureItem={table?.getSelectedRowModel()?.flatRows} />
+                        <>{trueRestructuring === true ? <RestructuringCom AllSitesTaskData={items?.AllSitesTaskData} AllMasterTasksData={items?.masterTaskData} queryItems={items.queryItems} restructureFunct={restructureFunct} ref={childRef} taskTypeId={items.TaskUsers} contextValue={items.AllListId} allData={data} restructureCallBack={items.restructureCallBack} restructureItem={table?.getSelectedRowModel()?.flatRows} />
                             : <button type="button" title="Restructure" disabled={true} className="btn btn-primary">Restructure</button>}</>
                     }
 
@@ -995,7 +995,7 @@ const GlobalCommanTable = (items: any, ref: any) => {
 
                         {
                             trueRestructuring == true ?
-                                <RestructuringCom AllMasterTasksData={items.AllMasterTasksData} queryItems={items.queryItems} restructureFunct={restructureFunct} ref={childRef} taskTypeId={items.TaskUsers} contextValue={items.AllListId} allData={data} restructureCallBack={items.restructureCallBack} restructureItem={table?.getSelectedRowModel()?.flatRows} />
+                                <RestructuringCom AllSitesTaskData={items?.AllSitesTaskData} AllMasterTasksData={items?.masterTaskData} queryItems={items.queryItems} restructureFunct={restructureFunct} ref={childRef} taskTypeId={items.TaskUsers} contextValue={items.AllListId} allData={data} restructureCallBack={items.restructureCallBack} restructureItem={table?.getSelectedRowModel()?.flatRows} />
                                 : <button type="button" title="Restructure" disabled={true} className="btn btn-primary"
                                 >Restructure</button>
                         }
