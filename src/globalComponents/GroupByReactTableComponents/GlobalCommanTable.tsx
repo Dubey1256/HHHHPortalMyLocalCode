@@ -801,14 +801,8 @@ const GlobalCommanTable = (items: any, ref: any) => {
         }
     };
 
-    const projectTopIcon = (items: any) => {
-        if (childRef.current) {
-            childRef.current.projectTopIcon(items);
-        }
-    };
-
     React.useImperativeHandle(ref, () => ({
-        callChildFunction, trueTopIcon, setRowSelection, globalFilter, setColumnFilters,projectTopIcon, setGlobalFilter, coustomFilterColumns
+        callChildFunction, trueTopIcon, setRowSelection, globalFilter, setColumnFilters, setGlobalFilter, coustomFilterColumns, table
     }));
 
     const restructureFunct = (items: any) => {
@@ -881,7 +875,7 @@ const GlobalCommanTable = (items: any, ref: any) => {
     return (
         <>
             {items?.bulkEditIcon === true && bulkEditingCongration && <span className="toolbox">
-                <BulkEditingFeature data={data} setData={items?.setData} updatedSmartFilterFlatView={items?.updatedSmartFilterFlatView} clickFlatView={items?.clickFlatView} ContextValue={items?.AllListId} priorityRank={items?.priorityRank} dragedTask={dragedTask} precentComplete={items?.precentComplete} bulkEditingCongration={bulkEditingCongration} selectedData={table?.getSelectedRowModel()?.flatRows} projectTiles={projectTiles} />
+                <BulkEditingFeature masterTaskData={items?.masterTaskData} data={data} columns={items?.columns} setData={items?.setData} updatedSmartFilterFlatView={items?.updatedSmartFilterFlatView} clickFlatView={items?.clickFlatView} ContextValue={items?.AllListId} priorityRank={items?.priorityRank} dragedTask={dragedTask} precentComplete={items?.precentComplete} bulkEditingCongration={bulkEditingCongration} selectedData={table?.getSelectedRowModel()?.flatRows} projectTiles={projectTiles} />
             </span>}
             {showHeader === true && <div className='tbl-headings justify-content-between fixed-Header top-0' style={{ background: '#e9e9e9' }}>
                 <span className='leftsec'>
@@ -979,30 +973,29 @@ const GlobalCommanTable = (items: any, ref: any) => {
                         {items?.protfolioProfileButton != true && items?.hideAddActivityBtn != true && <>{table?.getSelectedRowModel()?.flatRows.length === 1 && table?.getSelectedRowModel()?.flatRows[0]?.original?.TaskType?.Title != "Task" && table?.getSelectedRowModel()?.flatRows[0]?.original?.Item_x0020_Type != "Sprint" ? <button type="button" className="btn btn-primary" title='Add Activity' style={{ backgroundColor: `${portfolioColor}`, borderColor: `${portfolioColor}`, color: '#fff' }} onClick={() => openCreationAllStructure("Add Activity-Task")}>Add Activity-Task</button> :
                             <button type="button" className="btn btn-primary" style={{ backgroundColor: `${portfolioColor}`, borderColor: `${portfolioColor}`, color: '#fff' }} disabled={true} > Add Activity-Task</button>}</>}
 
-                        {items?.protfolioProfileButton === true && items?.hideAddActivityBtn != true && <>{items?.protfolioProfileButton === true && table?.getSelectedRowModel()?.flatRows[0]?.original?.TaskType?.Title != "Task" && table?.getSelectedRowModel()?.flatRows[0]?.original?.Item_x0020_Type != "Sprint"? <button type="button" className="btn btn-primary" title='Add Activity' style={{ backgroundColor: `${portfolioColor}`, borderColor: `${portfolioColor}`, color: '#fff' }} onClick={() => openCreationAllStructure("Add Activity-Task")}>Add Activity-Task</button> :
+                        {items?.protfolioProfileButton === true && items?.hideAddActivityBtn != true && <>{items?.protfolioProfileButton === true && table?.getSelectedRowModel()?.flatRows[0]?.original?.TaskType?.Title != "Task" && table?.getSelectedRowModel()?.flatRows[0]?.original?.Item_x0020_Type != "Sprint" ? <button type="button" className="btn btn-primary" title='Add Activity' style={{ backgroundColor: `${portfolioColor}`, borderColor: `${portfolioColor}`, color: '#fff' }} onClick={() => openCreationAllStructure("Add Activity-Task")}>Add Activity-Task</button> :
                             <button type="button" className="btn btn-primary" style={{ backgroundColor: `${portfolioColor}`, borderColor: `${portfolioColor}`, color: '#fff' }} disabled={true} > Add Activity-Task</button>}</>}
 
                         {
-                            items?.pageProjectOverview != true? 
-                           (trueRestructuring == true ? <RestructuringCom projectmngmnt={items?.projectmngmnt} MasterdataItem = {items?.MasterdataItem} AllMasterTasksData={items.AllMasterTasksData} queryItems={items.queryItems} restructureFunct={restructureFunct} ref={childRef} taskTypeId={items.TaskUsers} contextValue={items.AllListId} allData={data} restructureCallBack={items.restructureCallBack} restructureItem={table?.getSelectedRowModel()?.flatRows} />
-                                : <button type="button" title="Restructure" disabled={true} className="btn btn-primary">Restructure</button>)
-                       :''
+                            trueRestructuring == true ?
+                                <RestructuringCom AllSitesTaskData={items?.AllSitesTaskData} AllMasterTasksData={items?.masterTaskData} projectmngmnt={items?.projectmngmnt} MasterdataItem={items?.MasterdataItem} queryItems={items.queryItems} restructureFunct={restructureFunct} ref={childRef} taskTypeId={items.TaskUsers} contextValue={items.AllListId} allData={data} restructureCallBack={items.restructureCallBack} restructureItem={table?.getSelectedRowModel()?.flatRows} />
+                                : <button type="button" title="Restructure" disabled={true} className="btn btn-primary">Restructure</button>
                         }
                     </>
                     }
                     {
                         items?.pageProjectOverview === true &&
-                        <>{trueRestructuring === true ? <RestructuringCom AllMasterTasksData={items.AllMasterTasksData} queryItems={items.queryItems} restructureFunct={restructureFunct} ref={childRef} taskTypeId={items.TaskUsers} contextValue={items.AllListId} allData={data} restructureCallBack={items.restructureCallBack} restructureItem={table?.getSelectedRowModel()?.flatRows} />
+                        <>{trueRestructuring === true ? <RestructuringCom AllSitesTaskData={items?.AllSitesTaskData} AllMasterTasksData={items?.masterTaskData} queryItems={items.queryItems} restructureFunct={restructureFunct} ref={childRef} taskTypeId={items.TaskUsers} contextValue={items.AllListId} allData={data} restructureCallBack={items.restructureCallBack} restructureItem={table?.getSelectedRowModel()?.flatRows} />
                             : <button type="button" title="Restructure" disabled={true} className="btn btn-primary">Restructure</button>}</>
                     }
 
-                   {items.taskProfile === true && items?.showCreationAllButton === true && items?.hideRestructureBtn != true && <>
-                        {table?.getSelectedRowModel()?.flatRows.length < 2 ? <button type="button" className="btn btn-primary" title='Add Activity' onClick={() => openCreationAllStructure("Add Workstream-Task")}>{(table?.getSelectedRowModel()?.flatRows.length>0 &&table?.getSelectedRowModel()?.flatRows[0]?.original?.TaskType.Title=="Workstream")||(items?.queryItems?.TaskType?.Title=="Workstream")?"Add Task" :"Add Workstream-Task"}</button> :
-                            <button type="button" className="btn btn-primary"  disabled={true} > Add Workstream-Task</button>}
+                    {items.taskProfile === true && items?.showCreationAllButton === true && items?.hideRestructureBtn != true && <>
+                        {table?.getSelectedRowModel()?.flatRows.length < 2 ? <button type="button" className="btn btn-primary" title='Add Activity' onClick={() => openCreationAllStructure("Add Workstream-Task")}>{(table?.getSelectedRowModel()?.flatRows.length > 0 && table?.getSelectedRowModel()?.flatRows[0]?.original?.TaskType.Title == "Workstream") || (items?.queryItems?.TaskType?.Title == "Workstream") ? "Add Task" : "Add Workstream-Task"}</button> :
+                            <button type="button" className="btn btn-primary" disabled={true} > Add Workstream-Task</button>}
 
                         {
                             trueRestructuring == true ?
-                                <RestructuringCom AllMasterTasksData={items.AllMasterTasksData} queryItems={items.queryItems} restructureFunct={restructureFunct} ref={childRef} taskTypeId={items.TaskUsers} contextValue={items.AllListId} allData={data} restructureCallBack={items.restructureCallBack} restructureItem={table?.getSelectedRowModel()?.flatRows} />
+                                <RestructuringCom AllSitesTaskData={items?.AllSitesTaskData} AllMasterTasksData={items?.masterTaskData} queryItems={items.queryItems} restructureFunct={restructureFunct} ref={childRef} taskTypeId={items.TaskUsers} contextValue={items.AllListId} allData={data} restructureCallBack={items.restructureCallBack} restructureItem={table?.getSelectedRowModel()?.flatRows} />
                                 : <button type="button" title="Restructure" disabled={true} className="btn btn-primary"
                                 >Restructure</button>
                         }
