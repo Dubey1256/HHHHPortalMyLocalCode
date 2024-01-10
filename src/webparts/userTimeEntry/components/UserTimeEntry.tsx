@@ -2129,7 +2129,7 @@ export default class UserTimeEntry extends React.Component<IUserTimeEntryProps, 
         size: 90,
         cell: (info: any) => <>
           <span className="d-flex">
-            <ReactPopperTooltipSingleLevel ShareWebId={info?.row?.original?.DisplayTaskId} row={info?.row?.original} singleLevel={true} masterTaskData={AllPortfolios} AllSitesTaskData={AllSitesAllTasks} />
+            <ReactPopperTooltipSingleLevel  AllListId={AllListId} ShareWebId={info?.row?.original?.DisplayTaskId} row={info?.row?.original} singleLevel={true} masterTaskData={AllPortfolios} AllSitesTaskData={AllSitesAllTasks} />
           </span>
         </>
       },

@@ -52,6 +52,7 @@ var isShowTimeEntry: any;
 var isShowSiteCompostion: any;
 let renderData: any = []
 let projectData: any = {}
+let CurrentUserData: any = {};
 const ProjectManagementMain = (props: any) => {
   // const [item, setItem] = React.useState({});
   const [AllTaskUsers, setAllTaskUsers] = React.useState([]);
@@ -210,6 +211,11 @@ const ProjectManagementMain = (props: any) => {
         .items
         .select("Id,UserGroupId,Suffix,Title,Email,SortOrder,Role,IsShowTeamLeader,Company,ParentID1,Status,Item_x0020_Cover,AssingedToUserId,isDeleted,AssingedToUser/Title,AssingedToUser/Id,AssingedToUser/EMail,ItemType,Approver/Id,Approver/Title,Approver/Name&$expand=AssingedToUser,Approver")
         .get();
+      CurrentUserData = taskUser?.find((user: any) => {
+        if (AllListId?.Context?.pageContext?.legacyPageContext?.userId == user?.AssingedToUser?.Id) {
+         return true
+        } 
+      })
     }
     catch (error) {
       return Promise.reject(error);
@@ -247,6 +253,12 @@ const ProjectManagementMain = (props: any) => {
             }
             if (fetchedProject?.Item_x0020_Type == "Project") {
               fetchedProject.subRows = AllFlatProject?.filter((data: any) => data?.Parent?.Id == fetchedProject?.Id && data?.Item_x0020_Type == "Sprint")
+              fetchedProject.subRows?.map((item:any)=>{
+                let itemAuthor = AllUser?.find((user: any) => { if(user?.AssingedToUser?.Id == item?.Author?.Id){
+                  return true
+                } })
+                item.createdImg = itemAuthor?.Item_x0020_Cover?.Url
+              })
             }
             if (fetchedProject?.ParentId != undefined && fetchedProject?.Item_x0020_Type == "Sprint") {
               fetchedProject.Parent = AllFlatProject?.find((data: any) => data?.Id == fetchedProject?.ParentId)
@@ -302,10 +314,11 @@ const ProjectManagementMain = (props: any) => {
             if (fetchedProject?.taggedPortfolios != undefined) {
               smartPortfoliosData = fetchedProject.taggedPortfolios
             }
+            projectData = fetchedProject;
             if (loadtask == true) {
               LoadAllSiteTasks();
             }
-            projectData = fetchedProject;
+       
             setMasterdata((prev: any) => fetchedProject);
           })
 
@@ -366,25 +379,27 @@ const ProjectManagementMain = (props: any) => {
     }
   };
   const callBackData = React.useCallback((elem: any, ShowingData: any) => {
-   if(elem?.TaskType!=undefined){
-    setCheckedList(elem)
-   }else{
-    setCheckedList({})
-   }
+    if (elem?.TaskType != undefined) {
+      setCheckedList(elem)
+    } else {
+      setCheckedList({})
+    }
   }, []);
 
 
   const CallBack = React.useCallback((item: any, type: any) => {
     setIsAddStructureOpen(false)
-
     if (type == 'Save') {
       if (item?.Item_x0020_Type == "Sprint") {
         // let allData = data;
+        if (CurrentUserData?.Id != undefined) {
+          item.createdImg = CurrentUserData?.Item_x0020_Cover?.Url
+          item.Author = CurrentUserData
+        }
         allBackupSprintAndTask.unshift(item)
         renderData = [];
         renderData = renderData.concat(allBackupSprintAndTask)
         refreshData();
-
       }
       GetMasterData(false)
     }
@@ -512,14 +527,34 @@ const ProjectManagementMain = (props: any) => {
         AllProjectTasks = smartmeta = await globalCommon?.loadAllSiteTasks(AllListId, `Project/Id eq ${projectData?.Id}`)
         console.log(AllProjectTasks)
       } else {
-        smartmeta = await globalCommon?.loadAllSiteTasks(AllListId, `Project/Id ne null`)
-        console.log(smartmeta)
-        AllProjectTasks = smartmeta?.filter((task: any) => task?.Project?.Id == projectData?.Id)
-        if (projectData?.subRows?.length > 0) {
-          projectData?.subRows?.map((sprint: any) => {
-            const data = smartmeta?.filter((task: any) => task?.Project?.Id == sprint?.Id)
-            AllProjectTasks = [...AllProjectTasks, ...data]
-          })
+
+        if (projectData?.subRows == undefined || projectData?.subRows?.length == 0) {
+          AllProjectTasks = smartmeta = await globalCommon?.loadAllSiteTasks(AllListId, `Project/Id eq ${projectData?.Id}`)
+        } else if (projectData?.subRows?.length > 0 && projectData?.subRows?.length < 7) {
+          let filterQuery =''
+          try{
+            filterQuery = projectData?.subRows?.map((Sprint: any) => `Project/Id eq ${Sprint?.Id}`).join(' or ');
+            filterQuery += ` or Project/Id eq ${projectData?.Id}`
+          }catch(e){
+
+          }
+          smartmeta = await globalCommon?.loadAllSiteTasks(AllListId, filterQuery)
+          AllProjectTasks = smartmeta?.filter((task: any) => task?.Project?.Id == projectData?.Id)
+          if (projectData?.subRows?.length > 0 && projectData?.subRows?.length < 6) {
+            projectData?.subRows?.map((sprint: any) => {
+              const data = smartmeta?.filter((task: any) => task?.Project?.Id == sprint?.Id)
+              AllProjectTasks = [...AllProjectTasks, ...data]
+            })
+          }
+        } else {
+          smartmeta = await globalCommon?.loadAllSiteTasks(AllListId, `Project/Id ne null`)
+          AllProjectTasks = smartmeta?.filter((task: any) => task?.Project?.Id == projectData?.Id)
+          if (projectData?.subRows?.length > 0 && projectData?.subRows?.length < 6) {
+            projectData?.subRows?.map((sprint: any) => {
+              const data = smartmeta?.filter((task: any) => task?.Project?.Id == sprint?.Id)
+              AllProjectTasks = [...AllProjectTasks, ...data]
+            })
+          }
         }
       }
 
@@ -829,11 +864,11 @@ const ProjectManagementMain = (props: any) => {
       setIsOpenActivity(false)
       setIsOpenWorkstream(false)
     }
-    if (propsItems?.data && propsItems?.data?.ItmesDelete != true && (propsItems?.data?.TaskType?.Id==2 || propsItems?.data?.TaskType?.Id==3)  ) {
+    if (propsItems?.data && propsItems?.data?.ItmesDelete != true && (propsItems?.data?.TaskType?.Id == 2 || propsItems?.data?.TaskType?.Id == 3)) {
       setIsOpenActivity(false)
       setIsOpenWorkstream(false)
       LoadAllSiteTasks();
-  }
+    }
     setIsComponent(false);
   };
 
@@ -900,27 +935,27 @@ const ProjectManagementMain = (props: any) => {
 
   const callChildFunction = (items: any) => {
     if (childRef.current) {
-        childRef.current.callChildFunction(items);
+      childRef.current.callChildFunction(items);
     }
-};
+  };
 
 
-const projectTopIcon = (items: any) => {
-  if (childRef.current) {
+  const projectTopIcon = (items: any) => {
+    if (childRef.current) {
       childRef.current.projectTopIcon(items);
-  }
-};
+    }
+  };
 
-const callBackData1 = React.useCallback((getData: any, topCompoIcon: any,callback:any) => {
-  
-  setTopCompoIcon(topCompoIcon);
-  renderData = [];
-  renderData = renderData.concat(getData);
-  refreshData();
-  if(callback == true){
-    LoadAllSiteTasks();
-   }
-}, []);
+  const callBackData1 = React.useCallback((getData: any, topCompoIcon: any, callback: any) => {
+
+    setTopCompoIcon(topCompoIcon);
+    renderData = [];
+    renderData = renderData.concat(getData);
+    refreshData();
+    if (callback == true) {
+      LoadAllSiteTasks();
+    }
+  }, []);
 
   const column2 = React.useMemo<ColumnDef<any, unknown>[]>(
     () => [
@@ -963,7 +998,7 @@ const callBackData1 = React.useCallback((getData: any, topCompoIcon: any,callbac
         cell: ({ row, getValue }) => (
           <>
             <span className="d-flex">
-              <ReactPopperTooltipSingleLevel ShareWebId={row?.original?.TaskID} row={row?.original} singleLevel={true} masterTaskData={MasterListData} AllSitesTaskData={AllSitesAllTasks} />
+              <ReactPopperTooltipSingleLevel AllListId={AllListId} ShareWebId={row?.original?.TaskID} row={row?.original} singleLevel={true} masterTaskData={MasterListData} AllSitesTaskData={AllSitesAllTasks} />
             </span>
           </>
         ),
@@ -1033,7 +1068,7 @@ const callBackData1 = React.useCallback((getData: any, topCompoIcon: any,callbac
             href={`${props?.siteUrl}/SitePages/Portfolio-Profile.aspx?taskId=${row?.original?.portfolio?.Id}`}
           >
             <span className="d-flex">
-              <ReactPopperTooltipSingleLevel onclickPopup={false} ShareWebId={row?.original?.portfolio?.Title} row={row?.original?.Portfolio} singleLevel={true} masterTaskData={MasterListData} AllSitesTaskData={AllSitesAllTasks} />
+              <ReactPopperTooltipSingleLevel AllListId={AllListId} onclickPopup={false} ShareWebId={row?.original?.portfolio?.Title} row={row?.original?.Portfolio} singleLevel={true} masterTaskData={MasterListData} AllSitesTaskData={AllSitesAllTasks} />
             </span>
           </a>
         ),
@@ -1250,30 +1285,30 @@ const callBackData1 = React.useCallback((getData: any, topCompoIcon: any,callbac
       },
       {
         header: ({ table }: any) => (
-            <>{
-                topCompoIcon ?
-                    <span style={{ backgroundColor: `${''}` }} title="Restructure" className="Dyicons mb-1 mx-1 p-1" onClick={() => projectTopIcon(true)}>
-                        <span className="svg__iconbox svg__icon--re-structure"></span>
-                    </span>
-                    : ''
-            }
-            </>
+          <>{
+            topCompoIcon ?
+              <span style={{ backgroundColor: `${''}` }} title="Restructure" className="Dyicons mb-1 mx-1 p-1" onClick={() => projectTopIcon(true)}>
+                <span className="svg__iconbox svg__icon--re-structure"></span>
+              </span>
+              : ''
+          }
+          </>
         ),
         cell: ({ row, getValue }) => (
-            <>
-                {row?.original?.isRestructureActive && row?.original?.Title != "Others" && (
-                    <span className="Dyicons p-1" title="Restructure" style={{ backgroundColor: `${row?.original?.PortfolioType?.Color}` }} onClick={() => callChildFunction(row?.original)}>
-                        <span className="svg__iconbox svg__icon--re-structure"> </span>
-                    </span>
-                )}
-                {getValue()}
-            </>
+          <>
+            {row?.original?.isRestructureActive && row?.original?.Title != "Others" && (
+              <span className="Dyicons p-1" title="Restructure" style={{ backgroundColor: `${row?.original?.PortfolioType?.Color}` }} onClick={() => callChildFunction(row?.original)}>
+                <span className="svg__iconbox svg__icon--re-structure"> </span>
+              </span>
+            )}
+            {getValue()}
+          </>
         ),
         id: "row?.original.Id",
         canSort: false,
         placeholder: "",
         size: 1,
-    },
+      },
       {
         cell: ({ row }) => (
           <span className="text-end">
@@ -1641,7 +1676,7 @@ const callBackData1 = React.useCallback((getData: any, topCompoIcon: any,callbac
                               <div className="wrapper project-management-Table">
                                 {(data?.length == 0 || data?.length > 0) && <GlobalCommanTable AllListId={AllListId} headerOptions={headerOptions}
                                   projectmngmnt={"projectmngmnt"}
-                                  MasterdataItem = {Masterdata}
+                                  MasterdataItem={Masterdata}
                                   columns={column2} data={data} callBackData={callBackData}
                                   smartTimeTotalFunction={smartTimeTotal} SmartTimeIconShow={true}
                                   TaskUsers={AllUser} showHeader={true} expendedTrue={false}
