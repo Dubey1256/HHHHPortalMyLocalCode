@@ -1506,6 +1506,7 @@ const ProjectManagementMain = (props: any) => {
                                         AllListId={AllListId}
                                         callBack={tagAndCreateCallBack}
                                         projectTitle={projectTitle}
+                                        masterTaskData={MasterListData}
                                       />
                                     )}
                                   </div>

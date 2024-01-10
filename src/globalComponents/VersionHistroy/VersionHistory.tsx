@@ -32,6 +32,8 @@ export default function VersionHistory(props: any) {
     const [currentUserData, setCurrentUserData] = React.useState([]);
     const [IsUserFromHHHHTeam, setIsUserFromHHHHTeam] = React.useState(false);
     const usedFor: any = props?.usedFor;
+    const Context = props?.context;
+
     const handleClose = () => setShow(false);
     const handleShow = () => {
         setShow(true)
@@ -173,7 +175,7 @@ export default function VersionHistory(props: any) {
 
     const loadTaskUsers = async () => {
         var AllTaskUsers: any = [];
-        let currentUserId = props.context.pageContext._legacyPageContext.userId;
+        let currentUserId = Context?.pageContext._legacyPageContext.userId;
         try {
             taskUsers = await globalCommon.loadAllTaskUsers(RequiredListIds);
             taskUsers?.map((user: any, index: any) => {
@@ -368,20 +370,6 @@ export default function VersionHistory(props: any) {
             } catch (e) {
                 console.log("Error", e.message);
             }
-        } else {
-            try {
-                if (TaggedCCArray?.length > 0) {
-                    TaggedCCArray?.map((CCItem: any) => {
-                        let tempObject: any = {
-                            Title: "",
-                            ClientCategory: CCItem
-                        }
-                        SitesTaggingArray.push(tempObject);
-                    })
-                }
-            } catch (error) {
-                console.log("Error", error.message);
-            }
         }
 
         return (
@@ -400,11 +388,15 @@ export default function VersionHistory(props: any) {
                                                 {Number(site?.ClienTimeDescription).toFixed(2)}%
                                             </span>
                                         }
-                                        {site?.ClientCategory != undefined && site?.ClientCategory.length > 0 ? site?.ClientCategory?.map((clientcat: any) => {
-                                            return (
-                                                <span>{clientcat.Title}</span>
-                                            )
-                                        }) : null}
+
+                                        <span className="d-inline">
+                                            {site.ClientCategory != undefined && site.ClientCategory.length > 0 ? site.ClientCategory?.map((ClientCategory: any, Index: any) => {
+                                                return (
+                                                    <div className={Index == site.ClientCategory?.length - 1 ? "mb-0" : "mb-0 border-bottom"}>{ClientCategory.Title}</div>
+                                                )
+                                            }) : null}
+                                        </span>
+
                                     </li>
                                 })}
                             </ul>
@@ -414,7 +406,7 @@ export default function VersionHistory(props: any) {
             </>
         )
     }
-    const showbackgroundcomment = (itm: any) => {
+    const showBackgroundComments = (itm: any) => {
         var OffshoreCommentsArray: any = [];
         if (itm?.OffshoreComments != undefined) {
             try {
@@ -479,20 +471,20 @@ export default function VersionHistory(props: any) {
     }
 
     const showSiteCompositionSettings = (itm: any) => {
-        var compositionvalue: any = '';
+        var SiteSettingType: any = '';
         if (itm?.SiteCompositionSettings != undefined) {
             try {
-                JSON.parse(itm?.SiteCompositionSettings).map((compoitem: any) => {
-                    if (compoitem.Deluxe)
-                        compositionvalue = 'Deluxe';
-                    else if (compoitem.Manual)
-                        compositionvalue = 'Manual';
-                    else if (compoitem.Proportional)
-                        compositionvalue = 'Proportional';
-                    else if (compoitem.Protected)
-                        compositionvalue = 'Protected';
-                    else if (compoitem.Standard)
-                        compositionvalue = 'Standard';
+                JSON.parse(itm?.SiteCompositionSettings).map((SiteSettingItems: any) => {
+                    if (SiteSettingItems.Deluxe)
+                        SiteSettingType = 'Deluxe';
+                    else if (SiteSettingItems.Manual)
+                        SiteSettingType = 'Manual';
+                    else if (SiteSettingItems.Proportional)
+                        SiteSettingType = 'Proportional';
+                    else if (SiteSettingItems.Protected)
+                        SiteSettingType = 'Protected';
+                    else if (SiteSettingItems.Standard)
+                        SiteSettingType = 'Standard';
                 })
             } catch (e) {
 
@@ -501,7 +493,7 @@ export default function VersionHistory(props: any) {
 
         return (
             <>
-                {compositionvalue != undefined && compositionvalue != '' && <div>{compositionvalue}</div>}
+                {SiteSettingType != undefined && SiteSettingType != '' && <div>{SiteSettingType}</div>}
             </>
         )
     }
@@ -678,7 +670,7 @@ export default function VersionHistory(props: any) {
                                                                                                                         </>
                                                                                                                     )
                                                                                                                 })}
-                                                                                                            </div> : key === 'Sitestagging' ? renderSiteComposition(item) : key === 'OffshoreComments' ? showbackgroundcomment(item) : key === 'SiteCompositionSettings' ? showSiteCompositionSettings(item) : key === 'ApproverHistory' ? showApproverHistory(item) : item[key]}
+                                                                                                            </div> : key === 'Sitestagging' ? renderSiteComposition(item) : key === 'OffshoreComments' ? showBackgroundComments(item) : key === 'SiteCompositionSettings' ? showSiteCompositionSettings(item) : key === 'ApproverHistory' ? showApproverHistory(item) : item[key]}
                                                                                     </span>
 
                                                                                 </li>}
