@@ -4211,18 +4211,26 @@ const EditTaskPopup = (Items: any) => {
         await SaveJSONData(NewList, NewItem, arrangedArray);
     };
     const SaveJSONData = async (NewList: any, NewItem: any, tempArrayJsonData: any) => {
-        let web = new Web(siteUrls);
-        var Data = await web.lists
-            .getByTitle(NewList)
-            .items.getById(NewItem.Id)
-            .update({
-                BasicImageInfo:
-                    tempArrayJsonData != undefined && tempArrayJsonData.length > 0
-                        ? JSON.stringify(tempArrayJsonData)
-                        : JSON.stringify(tempArrayJsonData),
-            });
-        console.log(Data);
-    };
+        let arraydata = []
+        let c = 1
+         for (let i = 0; i < tempArrayJsonData.length; i++) {
+             tempArrayJsonData[i].ImageName = tempArrayJsonData[i].ImageName.replace(/Image(\d+)/, `Image${c}`);
+             c++
+             arraydata.push(tempArrayJsonData[i])
+           }
+          console.log(arraydata)
+         let web = new Web(siteUrls);
+         var Data = await web.lists
+             .getByTitle(NewList)
+             .items.getById(NewItem.Id)
+             .update({
+                 BasicImageInfo:
+                 arraydata != undefined && arraydata.length > 0
+                         ? JSON.stringify(arraydata)
+                         : JSON.stringify(arraydata),
+             });
+         console.log(Data);
+     };
 
     const moveTimeSheet = async (SelectedSite: any, newItem: any) => {
         newGeneratedId = newItem.Id;
@@ -9032,6 +9040,26 @@ const EditTaskPopup = (Items: any) => {
                                     <h6>Sites</h6>
                                 </div>
                                 <div className="card-body">
+                                <Loader
+                        loaded={loaded}
+                        lines={13}
+                        length={20}
+                        width={10}
+                        radius={30}
+                        corners={1}
+                        rotate={0}
+                        direction={1}
+                        speed={2}
+                        trail={60}
+                        shadow={false}
+                        hwaccel={false}
+                        className="spinner"
+                        zIndex={2e9}
+                        top="28%"
+                        left="50%"
+                        scale={1.0}
+                        loadedClassName="loadedContent"
+                      />
                                     <ul className="quick-actions">
                                         {SiteTypes?.map((siteData: any, index: number) => {
                                             if (siteData.Title !== "QA") {
