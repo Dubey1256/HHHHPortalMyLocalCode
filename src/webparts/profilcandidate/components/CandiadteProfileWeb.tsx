@@ -13,6 +13,7 @@ import HHHHEditComponent from '../../contactSearch/components/contact-search/pop
 import GlobalCommanTable from '../../../globalComponents/GroupByReactTableComponents/GlobalCommanTable';
 import CandidateRating from './CandidateRating';
 import EditPopup from '../../helloSpfx/components/EditPopup';
+import Loader from 'react-loader'
 
 let allSite: any = {
     GMBHSite: false,
@@ -20,12 +21,14 @@ let allSite: any = {
     MainSite: true,
 }
 let OldEmployeeProfile: any
-const Profilcandidate = ({props}: any) => {
+const Profilcandidate = ({ props }: any) => {
+    const params = new URLSearchParams(window.location.search);
     const [EmployeeData, setEmployeeData]: any = useState()
     const [localRatings, setLocalRatings] = useState([]);
     const [isEditPopupOpen, setIsEditPopupOpen] = useState(false);
     const [selectedItem, setSelectedItem]: any = useState(null);
     const [TaggedDocuments, setTaggedDocuments] = useState<any[]>([]);
+    const [loaded, setLoaded] = useState(false)
     let allListId = {
         // Context: props?.props.Context,
         // HHHHContactListId: props?.props?.HHHHContactListId,
@@ -35,10 +38,7 @@ const Profilcandidate = ({props}: any) => {
         // jointSiteUrl: "https://hhhhteams.sharepoint.com/sites/HHHH"
     }
     useEffect(() => {
-        const params = new URLSearchParams(window.location.search);
-
         EmployeeDetails(params.get('CandidateId'));
-        loadDocumentsByCandidate(params.get('CandidateId'));
     }, [])
     const web = new Web('https://hhhhteams.sharepoint.com/sites/HHHH/HR/');
     const EmployeeDetails = async (Id: any) => {
@@ -51,17 +51,15 @@ const Profilcandidate = ({props}: any) => {
                         setLocalRatings(ratings)
                     }
                     setEmployeeData(data);
-                }).catch((error: any) => {
-                    console.log(error)
+                    loadDocumentsByCandidate(data.Id)
                 })
         } catch (error) {
             console.log("Error:", error.message);
         }
-
-
-    }
+    };
     const loadDocumentsByCandidate = async (candidateId: any) => {
         try {
+            setLoaded(false)
             const libraryTitle = 'Documents';
             const columnName = 'InterviewCandidates';
             const documents = await web.lists.getByTitle(libraryTitle)
@@ -70,11 +68,16 @@ const Profilcandidate = ({props}: any) => {
                 .select('Id', 'Title', 'Item_x0020_Type', 'File_x0020_Type', 'FileDirRef', 'FileLeafRef', 'EncodedAbsUrl', 'InterviewCandidates/Id')
                 .expand('InterviewCandidates')
                 .getAll();
+    
             console.log('Documents loaded successfully:', documents);
-            setTaggedDocuments(documents)
+            setTaggedDocuments(documents);
+            setTimeout(() => {
+                setLoaded(true);
+              }, 3000);
             return documents;
         } catch (error) {
             console.error('Error loading documents by candidate:', error);
+            setLoaded(false)
             return [];
         }
     };
@@ -86,29 +89,47 @@ const Profilcandidate = ({props}: any) => {
         setIsEditPopupOpen(false);
     };
     const callbackEdit = (Id: any) => {
-        EmployeeDetails(Id)
+        loadDocumentsByCandidate(Id);
+        EmployeeDetails(Id) 
     }
-    const formatExperience = (experience: number) => {
-        const years = Math.floor(experience);
-        const months = Math.round((experience % 1) * 12);
-
-        if (years > 0 && months > 0) {
-            return `${years} year${years > 1 ? 's' : ''} ${months} month${months > 1 ? 's' : ''}`;
-        } else if (years > 0) {
-            return `${years} year${years > 1 ? 's' : ''}`;
-        } else if (months > 0) {
-            return `${months} month${months > 1 ? 's' : ''}`;
-        } else {
-            return 'No experience';
+    const formatExperience = (exp: any) => {
+        if (exp != undefined) {
+            const yearsString: string = exp?.toString();
+            const experience = yearsString.split('.');
+            const year = experience[0]
+            const month = experience[1]
+            let experienceYears = year;
+            let experienceMonths = month;
+            if (month === '12') {
+                let year = parseInt(experienceYears, 10)
+                year++;
+                experienceYears = year.toString();
+                experienceMonths = 0..toString();
+            }
+            const years = parseInt(experienceYears)
+            const months = parseInt(experienceMonths)
+            if (years > 0 && months > 0) {
+                return `${years} year${years > 1 ? 's' : ''} ${months} month${months > 1 ? 's' : ''}`;
+            } else if (years > 0) {
+                return `${years} year${years > 1 ? 's' : ''}`;
+            } else if (months > 0) {
+                return `${months} month${months > 1 ? 's' : ''}`;
+            } else {
+                return 'No experience';
+            }
         }
     };
 
     const openDocInNewTab = (url: string | URL | undefined) => {
-        window.open(url, '_blank');
+            window.open(url, '_blank');
     };
+    const downloadDoc = (url: string | URL | undefined) => {
+        window.open(url + '?download=1');
+    }
     return (
         <myContextValue.Provider value={{ ...myContextValue, allSite: allSite, allListId: allListId, loggedInUserName: props?.userDisplayName }}>
-            {isEditPopupOpen ? <EditPopup siteUrl={'https://hhhhteams.sharepoint.com/sites/HHHH/HR/'} EditPopupClose={EditPopupClose} callbackEdit={callbackEdit} item={selectedItem} ListID={'298bc01c-710d-400e-bf48-8604d297c3c6'} skillsList={'e79dfd6d-18aa-40e2-8d6e-930a37fe54e4'}/> : ''}
+            <Loader loaded={loaded} lines={13} length={20} width={10} radius={30} corners={1} rotate={0} direction={1} speed={2} trail={60} shadow={false} hwaccel={false} className="spinner" zIndex={2e9} top="28%" left="50%" scale={1.0} loadedClassName="loadedContent"/>
+            {isEditPopupOpen ? <EditPopup siteUrl={'https://hhhhteams.sharepoint.com/sites/HHHH/HR/'} EditPopupClose={EditPopupClose} callbackEdit={callbackEdit} item={selectedItem} ListID={'298bc01c-710d-400e-bf48-8604d297c3c6'} skillsList={'e79dfd6d-18aa-40e2-8d6e-930a37fe54e4'} /> : ''}
             <div className='alignCenter border-bottom pb-2'>
                 <div>
                     <img className='user-dp' src={EmployeeData?.Item_x0020_Cover?.Url != undefined ? EmployeeData?.Item_x0020_Cover?.Url : "https://hhhhteams.sharepoint.com/sites/HHHH/GmBH/SiteCollectionImages/ICONS/32/icon_user.jpg"} />
@@ -221,7 +242,7 @@ const Profilcandidate = ({props}: any) => {
                                         <span className="svg__iconbox svg__icon--document"></span>
                                     </span>
                                     <span style={{ display: document.File_x0020_Type !== 'aspx' ? 'inline' : 'none' }}>
-                                        <a onClick={() => openDocInNewTab(document.EncodedAbsUrl)}>
+                                        <a onClick={() => openDocInNewTab(document.EncodedAbsUrl)} onDoubleClick={() => {downloadDoc(document.EncodedAbsUrl)}}>
                                             <span>
                                                 <span style={{ display: document.FileLeafRef !== 'undefined' ? 'inline' : 'none' }}>
                                                     {document.FileLeafRef}

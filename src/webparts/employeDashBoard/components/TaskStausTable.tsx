@@ -14,7 +14,7 @@ let DashboardConfigCopy: any = [];
 let flagApproval: boolean = false;
 let approveItem: any;
 let emailStatus: any = "";
-const TaskStatusTbl = (Tile: any) => { 
+const TaskStatusTbl = (Tile: any) => {
   const ContextData: any = React.useContext(myContextValue);
   const AllTaskUser: any = ContextData?.AlltaskData?.AllTaskUser;
   const AllMasterTasks: any = ContextData?.AllMasterTasks;
@@ -47,7 +47,7 @@ const TaskStatusTbl = (Tile: any) => {
       hasCheckbox: true,
       hasCustomExpanded: item?.GroupByView,
       hasExpanded: item?.GroupByView,
-      size: 55,
+      size: 50,
       id: "Id"
     },
     {
@@ -60,13 +60,13 @@ const TaskStatusTbl = (Tile: any) => {
       id: "row?.original.Id",
       canSort: false,
       placeholder: "",
-      size: 95
+      size: 80
     },
     {
       accessorKey: "TaskID",
       placeholder: "ID",
       id: 'TaskID',
-      size: 195,
+      size: 180,
       cell: ({ row, getValue }: any) => (
         <span className="d-flex">
           <ReactPopperTooltipSingleLevel ShareWebId={row?.original?.TaskID} row={row?.original} singleLevel={true} masterTaskData={AllMasterTasks} AllSitesTaskData={item?.Tasks} AllListId={ContextData?.propsValue?.Context} />
@@ -89,22 +89,32 @@ const TaskStatusTbl = (Tile: any) => {
       placeholder: "Title",
       resetColumnFilters: false,
       header: "",
-      size: 480
+      size: 460
     },
     {
-      accessorKey: "PriorityRank",
-      placeholder: "Priority",
-      header: "",
+      accessorFn: (row: any) => row?.SmartPriority,
+      cell: ({ row }: any) => (
+        <div className="text-center boldClable" title={row?.original?.showFormulaOnHover}>{row?.original?.SmartPriority != 0 ? row?.original?.SmartPriority : null}</div>
+      ),
+      filterFn: (row: any, columnName: any, filterValue: any) => {
+        if (row?.original?.SmartPriority?.includes(filterValue)) {
+          return true
+        } else {
+          return false
+        }
+      },
+      id: "SmartPriority",
+      placeholder: "SmartPriority",
       resetColumnFilters: false,
-      size: 42,
-      id: "PriorityRank"
+      header: "",
+      size: 190,
     },
     {
       accessorKey: "percentage",
       placeholder: "% Complete",
       header: "",
       resetColumnFilters: false,
-      size: 42,
+      size: 140,
       id: "percentage"
     },
     {
@@ -138,12 +148,12 @@ const TaskStatusTbl = (Tile: any) => {
         }
       },
       header: "",
-      size: 125
+      size: 100
     },
     {
       cell: ({ row, getValue }: any) => (
-          <span title="Edit Task" className="alignIcon svg__iconbox svg__icon--edit hreflink ms-1" onClick={() => editPopFunc(row.original)} ></span>
-          
+        <span title="Edit Task" className="alignIcon svg__iconbox svg__icon--edit hreflink ms-1" onClick={() => editPopFunc(row.original)} ></span>
+
       ),
       id: 'Id',
       canSort: false,
@@ -151,7 +161,7 @@ const TaskStatusTbl = (Tile: any) => {
       header: "",
       resetColumnFilters: false,
       resetSorting: false,
-      size: 50,
+      size: 45,
     },]
   }
   if (Tile.activeTile != undefined && DashboardConfigCopy != undefined && DashboardConfigCopy?.length > 0)
@@ -331,7 +341,7 @@ const TaskStatusTbl = (Tile: any) => {
 
   return (
     <div>
-      {Tile.activeTile && generateDashboard()}     
+      {Tile.activeTile && generateDashboard()}
       <span>
         {editPopup && <EditTaskPopup Items={result} context={ContextData?.propsValue?.Context} AllListId={AllListId} Call={() => { CallBack() }} />}
       </span>

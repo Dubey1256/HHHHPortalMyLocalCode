@@ -1,13 +1,13 @@
 import * as React from 'react';
-import Tooltip from '../../../globalComponents/Tooltip';
-import { Web } from "sp-pnp-js";
+
 import moment from 'moment';
 import EditDocument from './EditDocunentPanel'
 import { useState, useEffect, forwardRef, useImperativeHandle, createContext ,useMemo,useCallback} from 'react';
 import { myContextValue } from '../../../globalComponents/globalCommon'
 import GlobalCommanTable from '../../../globalComponents/GroupByReactTableComponents/GlobalCommanTable';
 import { ColumnDef } from '@tanstack/react-table';
-import { stringify } from 'uuid';
+import Tooltip from '../../../globalComponents/Tooltip';
+
 
 var MyContextdata:any
 const RelevantDocuments = (props: any, ref: any) => {
@@ -17,41 +17,31 @@ const RelevantDocuments = (props: any, ref: any) => {
     const [Fileurl, setFileurl] = useState("");
     const [editdocpanel, setEditdocpanel] = useState(false);
     const [EditdocData, setEditdocData] = useState({});
-    // const [showMore, setShowMore] = useState(3);
 
-
-   
-    React.useMemo(() => {
-    //   let copydocData:any =  MyContextdata?.keyDoc.filter((docData:any)=>MyContextdata?.user?.find((user:any)=>user?.AssingedToUser?.Id==docData?.Author?.Id))
-         if( MyContextdata?.keyDoc?.length>0){
+         React.useEffect(() => {
+             if( MyContextdata?.keyDoc?.length>0){
             MyContextdata?.keyDoc.map((doc:any)=>{
                 MyContextdata?.user?.map((user:any)=>{
                     if(user?.AssingedToUser!=undefined &&user?. AssingedToUser?.Id!=undefined){
                         if(user?. AssingedToUser?.Id==doc?.Author?.Id){
                             doc.UserImage=user?.Item_x0020_Cover?.Url
                         }
+                        if(user?. AssingedToUser?.Id==doc?.Editor?.Id){
+                            doc.EditorImage=user?.Item_x0020_Cover?.Url
+                        }
                     }
                 })
             }) 
-         }
-        // loadAllSitesDocuments();
-        // if (MyContextdata?.keyDoc?.length > 0) {
             let keydata: any =JSON.parse(JSON.stringify(MyContextdata.keyDoc))
             setKeyDocument( MyContextdata.keyDoc )
           if( keydata?.length >3){
             setCopyKeyDocument(keydata?.splice(1,3))
          
           }
+          setFileurl(MyContextdata.FileDirRef)
+           
+         }
          
-        
-           
-
-        // }
-        // if (MyContextdata?.FileDirRef != "") {
-            setFileurl(MyContextdata.FileDirRef)
-           
-
-        // }
     }, [MyContextdata?.keyDoc?.length])
 
     const columns = useMemo<ColumnDef<unknown, unknown>[]>(() =>
@@ -62,7 +52,7 @@ const RelevantDocuments = (props: any, ref: any) => {
             id: 'Id',
         },
             {
-                accessorFn: (row: any) => row?.original?.Title,
+                accessorFn: (row: any) => row?.FileLeafRef,
                 cell: ({ row, column, getValue }: any) => (
                 <div className='alignCenter columnFixedTitle'>
                 {row?.original?.File_x0020_Type != 'msg' && row?.original?.File_x0020_Type != 'docx' && row?.original?.File_x0020_Type != 'doc' && row?.original?.File_x0020_Type != 'rar' && row?.original?.File_x0020_Type != 'jpeg' && row?.original?.File_x0020_Type != 'jpg' && row?.original?.File_x0020_Type != 'aspx'&&row?.original?.File_x0020_Type != 'jfif' && <span className={` svg__iconbox svg__icon--${row?.original?.File_x0020_Type}`}></span>}
@@ -74,8 +64,8 @@ const RelevantDocuments = (props: any, ref: any) => {
                 <a className='ms-1 wid90' target="_blank" href={`${row?.original?.EncodedAbsUrl}?web=1`}> {row?.original?.FileLeafRef} </a>
             </div>
                 ),
-                id: 'Title',
-                placeholder: 'Title',
+                id: 'FileLeafRef',
+                placeholder: 'File Name',
                 resetColumnFilters: false,
                 header: '',
                 size: 500,
@@ -83,7 +73,15 @@ const RelevantDocuments = (props: any, ref: any) => {
             {
                 accessorFn: (row: any) => row?.Modified,
                 cell: ({ row }: any) => (
-                    <div className="text-center"> {row?.original.Modified !== null ? moment(row?.original.Modified).format("DD/MM/YYYY") : ""}</div>       
+                    <div className="text-center"> {row?.original.Modified !== null ? moment(row?.original.Modified).format("DD/MM/YYYY") : ""}
+                     <>
+                                        <a href={`${myContextValue?.siteUrl}/SitePages/TaskDashboard.aspx?UserId=${row?.original?.Editor?.Id}&Name=${row?.original?.Editor?.Title}`}
+                                            target="_blank" data-interception="off">
+                                            <img title={row?.original?.Author?.Title} className="workmember ms-1" src ={(row?.original?.EditorImage)} />                         
+                                        </a>
+                                    
+                                    </>
+                    </div>       
                 ),
                 id: 'Modified',
                 placeholder: 'Modified',
@@ -140,7 +138,7 @@ const RelevantDocuments = (props: any, ref: any) => {
                 setCopyKeyDocument(keyDocument)
               }
           console.log("keydocdata",keyDocument)
-            // setShowMore (copykeyDocument);
+           
           };
 
             
@@ -161,9 +159,7 @@ const RelevantDocuments = (props: any, ref: any) => {
                 MyContextdata.FunctionCall(updatedData,Fileurl,true)
             }
         }
-        // else if(EditdocumentsData=='delete'){
-        //     MyContextdata.FunctionCall(null,null,true) 
-        // }
+      
        
 },[])
 
@@ -179,9 +175,9 @@ const callBackData = useCallback((elem: any, getSelectedRowModel: any) => {
                 
                 &&
                     <div className='mb-3 card commentsection'>
-                        {/* <div className='card-header'> */}
-                            {/* <div className="card-title h5 d-flex justify-content-between align-items-center  mb-0">Key Documents<span><Tooltip ComponentId={'359'} /></span></div> */}
-                        {/* </div> */}
+                         <div className='card-header'> 
+                             <div className="card-title h5 d-flex justify-content-between align-items-center  mb-0">Key Documents<span><Tooltip ComponentId={'359'} /></span></div> 
+                         </div>
                         {(keyDocument.map((item: any, index: any) => {
                             return (
                                 <div className='card-body p-1'>
@@ -209,22 +205,19 @@ const callBackData = useCallback((elem: any, getSelectedRowModel: any) => {
                                 </div>                          
                             )
                         })
-                        // .slice(0, showMore ? keyDocument.length : 3
+                        
                         )
                          ?                                              
-                        ( <GlobalCommanTable  columns={columns} data={copykeyDocument} callBackData={callBackData}/>):""}
+                         <div style={{ height: "214px", overflow: 'hidden' }}><GlobalCommanTable  columns={columns} wrapperHeight="100%" data={copykeyDocument?.length>0 ? copykeyDocument:keyDocument} callBackData={callBackData}/></div>:""}
                         
-                           { copykeyDocument?.length<keyDocument?.length && (
+                           { copykeyDocument?.length<keyDocument?.length && copykeyDocument?.length>0 &&  (
                             <button onClick={ShowData}>
                              Show More
                              </button>
                            )}
                     </div> 
                 }
-                {/* -------key documents code end */}
-
-
-                {editdocpanel && <EditDocument editData={EditdocData} ColorCode={MyContextdata?.ColorCode} AllListId={props.AllListId}Keydoc={true} Context={props.Context} editdocpanel={editdocpanel} callbackeditpopup={callbackeditpopup} />}
+                 {editdocpanel && <EditDocument editData={EditdocData} ColorCode={MyContextdata?.ColorCode} AllListId={props.AllListId}Keydoc={true} Context={props.Context} editdocpanel={editdocpanel} callbackeditpopup={callbackeditpopup} />}
           
         </>
 

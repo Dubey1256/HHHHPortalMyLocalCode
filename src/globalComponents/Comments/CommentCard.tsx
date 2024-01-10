@@ -116,7 +116,7 @@ export class CommentCard extends React.Component<ICommentCardProps, ICommentCard
           .getByTitle(this.state.listName)
           .items
           .getById(this.state.itemID)
-          .select("ID", "Title", "DueDate", "PortfolioType/Id", "PortfolioType/Title", "ClientCategory/Id", "ClientCategory/Title", "Categories", "Status", "StartDate", "CompletedDate", "TeamMembers/Title", "TeamMembers/Id", "ItemRank", "PercentComplete", "Priority", "Created", "Author/Title", "Author/EMail", "BasicImageInfo", "component_x0020_link", "FeedBack", "ResponsibleTeam/Title", "ResponsibleTeam/Id", "SharewebTaskType/Title","Sitestagging", "ClientTime", "Editor/Title", "Modified", "Comments")
+          .select("ID", "Title", "DueDate", "PortfolioType/Id", "PortfolioType/Title", "ClientCategory/Id", "ClientCategory/Title", "Categories", "Status", "StartDate", "CompletedDate", "TeamMembers/Title", "TeamMembers/Id", "ItemRank", "PercentComplete", "Priority", "Created", "Author/Title", "Author/EMail", "BasicImageInfo", "component_x0020_link", "FeedBack", "ResponsibleTeam/Title", "ResponsibleTeam/Id", "SharewebTaskType/Title", "Sitestagging", "ClientTime", "Editor/Title", "Modified", "Comments")
           .expand("TeamMembers", "Author", "ClientCategory", "ResponsibleTeam", "PortfolioType", "SharewebTaskType", "Editor")
           .get()
       } else {
@@ -124,13 +124,13 @@ export class CommentCard extends React.Component<ICommentCardProps, ICommentCard
           .getByTitle(this.state.listName)
           .items
           .getById(this.state.itemID)
-          .select("ID", "Title", "DueDate", "PortfolioType/Id", "PortfolioType/Title", "ClientCategory/Id", "ClientCategory/Title", "Categories", "Status", "StartDate", "CompletedDate", "TeamMembers/Title", "TeamMembers/Id", "ItemRank", "PercentComplete", "Priority", "Created", "Author/Title", "Author/EMail", "BasicImageInfo", "component_x0020_link", "FeedBack", "ResponsibleTeam/Title", "ResponsibleTeam/Id", "SharewebTaskType/Title","Sitestagging", "ClientTime", "Portfolio/Id", "Portfolio/Title", "Portfolio/PortfolioStructureID", "Editor/Title", "Modified", "Comments")
+          .select("ID", "Title", "DueDate", "PortfolioType/Id", "PortfolioType/Title", "ClientCategory/Id", "ClientCategory/Title", "Categories", "Status", "StartDate", "CompletedDate", "TeamMembers/Title", "TeamMembers/Id", "ItemRank", "PercentComplete", "Priority", "Created", "Author/Title", "Author/EMail", "BasicImageInfo", "component_x0020_link", "FeedBack", "ResponsibleTeam/Title", "ResponsibleTeam/Id", "SharewebTaskType/Title", "Sitestagging", "ClientTime", "Portfolio/Id", "Portfolio/Title", "Portfolio/PortfolioStructureID", "Editor/Title", "Modified", "Comments")
           .expand("TeamMembers", "Author", "ClientCategory", "ResponsibleTeam", "PortfolioType", "SharewebTaskType", "Portfolio", "Editor")
           .get()
 
       }
     } else {
-      taskDetails = await web.lists.getById(this.state.listId).items.getById(this.state.itemID).select("ID", "Title", "DueDate", "PortfolioType/Id", "PortfolioType/Title", "ClientCategory/Id", "ClientCategory/Title", "Categories", "Status", "StartDate", "CompletedDate", "TeamMembers/Title", "TeamMembers/Id", "ItemRank", "PercentComplete", "Priority", "Created", "Author/Title", "Author/EMail", "BasicImageInfo", "component_x0020_link", "Sitestagging","FeedBack", "ResponsibleTeam/Title", "ResponsibleTeam/Id", "SharewebTaskType/Title", "ClientTime", "Portfolio/Id", "Portfolio/Title", "Portfolio/PortfolioStructureID", "Editor/Title", "Modified", "Comments")
+      taskDetails = await web.lists.getById(this.state.listId).items.getById(this.state.itemID).select("ID", "Title", "DueDate", "PortfolioType/Id", "PortfolioType/Title", "ClientCategory/Id", "ClientCategory/Title", "Categories", "Status", "StartDate", "CompletedDate", "TeamMembers/Title", "TeamMembers/Id", "ItemRank", "PercentComplete", "Priority", "Created", "Author/Title", "Author/EMail", "BasicImageInfo", "component_x0020_link", "Sitestagging", "FeedBack", "ResponsibleTeam/Title", "ResponsibleTeam/Id", "SharewebTaskType/Title", "ClientTime", "Portfolio/Id", "Portfolio/Title", "Portfolio/PortfolioStructureID", "Editor/Title", "Modified", "Comments")
         .expand("TeamMembers", "Author", "ClientCategory", "ResponsibleTeam", "SharewebTaskType", "Portfolio", "PortfolioType", "Editor")
         .get()
     }
@@ -648,11 +648,11 @@ export class CommentCard extends React.Component<ICommentCardProps, ICommentCard
           if (this.state?.ChildLevel == true) {
             if (this.state?.ReplyParent?.MsTeamCreated == undefined)
               this.state.ReplyParent.MsTeamCreated = ''
-            TeamMsg = `<blockquote>${this.state?.ReplyParent?.AuthorName} ${this.state?.ReplyParent?.MsTeamCreated} </br> ${this.state?.ReplyParent?.Description.replace(/<\/?[^>]+(>|$)/g, '')} </br> <a href=${window.location.href}>${this.state?.Result?.TaskId}-${this.state?.Result?.Title}</a></blockquote>${txtComment}`;
+            TeamMsg = `<blockquote>${this.state?.ReplyParent?.AuthorName} ${this.state?.ReplyParent?.MsTeamCreated} </br> ${this.state?.ReplyParent?.Description.replace(/<\/?[^>]+(>|$)/g, '')} </br> <a href=${`${this.props.siteUrl}/SitePages/Task-Profile.aspx?taskId=${this.state.itemID}&Site=${this.state.listName}`}>${this.state?.Result?.TaskId}-${this.state?.Result?.Title}</a></blockquote>${txtComment}`;
 
           }
           else {
-            TeamMsg = txtComment + `</br> <a href=${window.location.href}>${this.state?.Result?.TaskId}-${this.state?.Result?.Title}</a>`
+            TeamMsg = txtComment + `</br> <a href=${`${this.props.siteUrl}/SitePages/Task-Profile.aspx?taskId=${this.state.itemID}&Site=${this.state.listName}`}>${this.state?.Result?.TaskId}-${this.state?.Result?.Title}</a>`
           }
           await globalCommon.SendTeamMessage(mention_To, TeamMsg, this.props.Context)
           this.SendEmail(emailprops);

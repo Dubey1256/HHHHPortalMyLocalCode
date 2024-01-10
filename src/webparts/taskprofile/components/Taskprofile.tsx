@@ -573,6 +573,7 @@ class Taskprofile extends React.Component<ITaskprofileProps, ITaskprofileState> 
       ClientTimeArray?.map((item: any) => {
         array2?.map((items: any) => {
           if ((item?.SiteName == items?.SiteName) || (item?.Title == items?.SiteName)) {
+            item.SiteImages= this?.GetSiteIcon(items?.SiteName)
             if (item.ClientCategory == undefined) {
               item.ClientCategory = [];
               item.ClientCategory.push(items);
@@ -584,6 +585,11 @@ class Taskprofile extends React.Component<ITaskprofileProps, ITaskprofileState> 
 
         })
       })
+    }else{
+      ClientTimeArray?.map((item: any) => {
+        item.SiteImages= this?.GetSiteIcon(item?.SiteName!=undefined?item?.SiteName:item?.Title)
+      })
+
     }
   }
   private GetSiteIcon(listName: string) {
@@ -1586,13 +1592,32 @@ class Taskprofile extends React.Component<ITaskprofileProps, ITaskprofileState> 
       }
     }));
   };
+  private TaskProfilePriorityCallback=(priorityValue:any)=>{
+    console.log("TaskProfilePriorityCallback")
+    let resultData=this.state.Result;
+    resultData.PriorityRank=Number(priorityValue);
+    resultData. SmartPriority=""
+   
+    this.setState((prevState) => ({
+      Result: {
+        ...prevState.Result,
+        PriorityRank:Number(priorityValue),
+        ["SmartPriority"]:  globalCommon?.calculateSmartPriority(resultData),  
+      }
+    }));
+   
+  }
 
   private inlineCallBack = (item: any) => {
-
+    let resultData=this.state.Result;
+    resultData.Categories=item?.Categories;
+    resultData.SmartPriority=""
+    resultData.TaskCategories=item?.TaskCategories
     this.setState((prevState) => ({
       Result: {
         ...prevState.Result,
         Categories: item?.Categories,
+        ["SmartPriority"]:  globalCommon?.calculateSmartPriority(resultData),  
 
       }
     }));
@@ -1679,7 +1704,7 @@ class Taskprofile extends React.Component<ITaskprofileProps, ITaskprofileState> 
         dataUpdate = {
           PortfolioId: DataItem[0]?.Id,
           ClientCategoryId: { results: selectedCC },
-          ClientTime: Sitestagging,
+          Sitestagging: Sitestagging,
         }
         this?.updateProjectComponentServices(dataUpdate)
       } else {
@@ -1688,6 +1713,16 @@ class Taskprofile extends React.Component<ITaskprofileProps, ITaskprofileState> 
           dataUpdate = {
             ProjectId: DataItem[0]?.Id
           }
+          let resultData=this.state.Result;
+          resultData.Project=DataItem[0]
+          resultData.SmartPriority=""
+          this.setState((prevState) => ({
+            Result: {
+              ...prevState.Result,
+             ["SmartPriority"]: globalCommon?.calculateSmartPriority(resultData),  
+      
+            }
+          }));
           this?.updateProjectComponentServices(dataUpdate)
         }
       }
@@ -1737,7 +1772,7 @@ class Taskprofile extends React.Component<ITaskprofileProps, ITaskprofileState> 
 
 
     return (
-      <myContextValue.Provider value={{ ...myContextValue, FunctionCall: this.contextCall, keyDoc: this.state.keydoc, FileDirRef: this.state.FileDirRef }}>
+      <myContextValue.Provider value={{ ...myContextValue, FunctionCall: this.contextCall, keyDoc: this.state.keydoc, FileDirRef: this.state.FileDirRef, user:this?.taskUsers }}>
         <div>
           <section className='ContentSection'> {this.state.breadCrumData != undefined &&
             <div className='row'>
@@ -1848,6 +1883,7 @@ class Taskprofile extends React.Component<ITaskprofileProps, ITaskprofileState> 
                                 ? this?.state?.Result?.DueDate
                                 : ""
                             }
+                            TaskProfilePriorityCallback={null}
                             onChange={this.handleFieldChange("DueDate")}
                             type="Date"
                             web={AllListId?.siteUrl}
@@ -1894,6 +1930,7 @@ class Taskprofile extends React.Component<ITaskprofileProps, ITaskprofileState> 
                                 ? this?.state?.Result?.ItemRank
                                 : ""
                             }
+                            TaskProfilePriorityCallback={null}
                             onChange={this.handleFieldChange("ItemRank")}
                             type=""
                             web={AllListId?.siteUrl}
@@ -1924,9 +1961,6 @@ class Taskprofile extends React.Component<ITaskprofileProps, ITaskprofileState> 
 
                         </dd>
                       </dl>
-
-
-
                       <dl>
                         <dt className='bg-Fa'>Status</dt>
                         <dd className='bg-Ff'>{this.state.Result["Status"]}<br></br>
@@ -1959,13 +1993,13 @@ class Taskprofile extends React.Component<ITaskprofileProps, ITaskprofileState> 
                                 onMouseEnter={this.showOnHoldReason}
                                 onMouseLeave={this.hideOnHoldReason}
                               />
-                              <span className="tooltip-text pop-right">
+                              <span className="tooltip-text tooltipboxs  pop-right">
                                 {this.state.showOnHoldComment &&
                                   comments.map((item: any, index: any) =>
                                     item.CommentFor !== undefined &&
                                       item.CommentFor === "On-Hold" ? (
                                       <div key={index}>
-                                        <span className="siteColor p-1 border-bottom">
+                                        <span className="siteColor H-overTitle">
                                           Task On-Hold by{" "}
                                           <span>
                                             {
@@ -2000,6 +2034,7 @@ class Taskprofile extends React.Component<ITaskprofileProps, ITaskprofileState> 
                                 ? this.state.Result?.PriorityRank
                                 : ""
                             }
+                            TaskProfilePriorityCallback={(priorityValue: any) =>this.TaskProfilePriorityCallback(priorityValue)}
                             onChange={this.handleFieldChange("Priority")}
                             type=""
                             web={AllListId?.siteUrl}
@@ -2087,7 +2122,7 @@ class Taskprofile extends React.Component<ITaskprofileProps, ITaskprofileState> 
                                     </span>
                                     {cltime?.ClienTimeDescription != undefined &&
                                       <span>
-                                        {Number(cltime?.ClienTimeDescription).toFixed(2)}%
+                                        {Number(cltime?.ClienTimeDescription).toFixed(1)}%
                                       </span>
                                     }
                                     {cltime.ClientCategory != undefined && cltime.ClientCategory.length > 0 ? cltime.ClientCategory?.map((clientcat: any) => {
@@ -2705,8 +2740,8 @@ class Taskprofile extends React.Component<ITaskprofileProps, ITaskprofileState> 
                   <div>Created <span >{(moment(this.state.Result['Creation']).format('DD MMM YYYY HH:mm '))}</span> by <span className="siteColor">{this.state.Result['Author'] != null && this.state.Result['Author'].length > 0 && this.state.Result['Author'][0].Title}</span>
                   </div>
                   <div>Last modified <span >{(moment(this.state.Result['Modified']).format('DD MMM YYYY HH:mm '))}</span> by <span className="siteColor">{this.state.Result['ModifiedBy'] != null && this.state.Result['ModifiedBy'].Title}</span><span className='mx-1'>|</span>
-                    {/* <div>Last modified <span >{this.ConvertLocalTOServerDate(this.state.Result['Modified'], 'DD MMM YYYY hh:mm')}</span> by <span className="siteColor">{this.state.Result['ModifiedBy'] != null && this.state.Result['ModifiedBy'].Title}</span> */}
-                    <span>{this.state.itemID ? <VersionHistoryPopup taskId={this.state.itemID} context={this.props.Context} listId={this.state.Result.listId} siteUrls={this.state.Result.siteUrl} isOpen={this.state.isopenversionHistory} /> : ''}</span>
+
+                    <span>{this.state.itemID ? <VersionHistoryPopup taskId={this.state.itemID} listId={this.state.Result.listId} siteUrls={this.state.Result.siteUrl} isOpen={this.state.isopenversionHistory} /> : ''}</span>
                   </div>
                 </div>
               }
