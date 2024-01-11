@@ -906,7 +906,7 @@ const CreateActivity = (props: any) => {
             .items.select("Id,Title,TaskType/Id,TaskType/Title,TaskLevel")
             .expand("TaskType")
             .orderBy("TaskLevel", false)
-            .filter("TaskType/Title eq 'Activities'")
+            .filter("TaskType/Id eq '1'")
             .top(1)
             .get();
           console.log(componentDetails);
