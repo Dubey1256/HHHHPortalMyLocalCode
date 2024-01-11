@@ -83,7 +83,7 @@ export default function ReactPopperTooltipSingleLevel({ ShareWebId, row, masterT
             setControlledVisible(true);
             let targetDiv: any = document?.querySelector('.ms-Panel-main');
             setTimeout(() => {
-                if (targetDiv) {
+                if (targetDiv && row?.PortfolioType?.Color!=undefined) {
                     // Change the --SiteBlue variable for elements under the targetDiv
                     targetDiv?.style?.setProperty('--SiteBlue', row?.PortfolioType?.Color); // Change the color to your desired value
                 }
