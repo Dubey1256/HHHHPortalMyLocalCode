@@ -180,7 +180,7 @@ const EditPopup = (props: any) => {
                 CandidateName: CandidateTitle,
                 Email: Email,
                 PhoneNumber: PhoneNumber,
-                Experience: experienceValue,
+                Experience: experienceValue == "" ? null : experienceValue,
                 Remarks: overAllRemark,
                 Status0: selectedStatus,
                 Motivation: Motivation,
