@@ -70,7 +70,7 @@ export default function VersionHistory(props: any) {
                 // setSCVersionHistoryData
                 let TempSCDataItems: any = [];
                 employeesWithoutLastName?.forEach((val: any) => {
-                    if (val?.Sitestagging?.length > 0) {
+                    if (val?.Sitestagging?.length > 5) {
                         TempSCDataItems.push(val);
                     }
                     if (val.FeedBack !== undefined && val.FeedBack !== null && val.FeedBack !== '[]') {
