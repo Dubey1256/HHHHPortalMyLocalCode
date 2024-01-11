@@ -512,6 +512,7 @@ const ProjectManagementMain = (props: any) => {
   }, []);
 
 
+
   const LoadAllSiteTasks = async function () {
     setPageLoader(true);
     let taskComponent: any = TaggedPortfoliosToProject;
@@ -532,18 +533,12 @@ const ProjectManagementMain = (props: any) => {
       let smartmeta: any = [];
       let AllProjectTasks: any = [];
       if (projectData?.Item_x0020_Type == "Sprint") {
-        AllProjectTasks = smartmeta = await globalCommon?.loadAllSiteTasks(AllListId, undefined)
-        AllProjectTasks = AllProjectTasks?.filter((tasks:any)=>{
-          tasks?.Project?.Id==projectData?.Id
-        })
+        AllProjectTasks = smartmeta = await globalCommon?.loadAllSiteTasks(AllListId, `Project/Id eq ${projectData?.Id}`)
         console.log(AllProjectTasks)
       } else {
 
         if (projectData?.subRows == undefined || projectData?.subRows?.length == 0) {
-          AllProjectTasks = smartmeta = await globalCommon?.loadAllSiteTasks(AllListId, undefined)
-          AllProjectTasks = AllProjectTasks?.filter((tasks:any)=>{
-            tasks?.Project?.Id==projectData?.Id
-          })
+          AllProjectTasks = smartmeta = await globalCommon?.loadAllSiteTasks(AllListId, `Project/Id eq ${projectData?.Id}`)
         } else if (projectData?.subRows?.length > 0 && projectData?.subRows?.length < 7) {
           let filterQuery =''
           try{
@@ -552,7 +547,7 @@ const ProjectManagementMain = (props: any) => {
           }catch(e){
 
           }
-          smartmeta = await globalCommon?.loadAllSiteTasks(AllListId, undefined)
+          smartmeta = await globalCommon?.loadAllSiteTasks(AllListId, filterQuery)
           AllProjectTasks = smartmeta?.filter((task: any) => task?.Project?.Id == projectData?.Id)
           if (projectData?.subRows?.length > 0 && projectData?.subRows?.length < 6) {
             projectData?.subRows?.map((sprint: any) => {
@@ -561,7 +556,7 @@ const ProjectManagementMain = (props: any) => {
             })
           }
         } else {
-          smartmeta = await globalCommon?.loadAllSiteTasks(AllListId, undefined)
+          smartmeta = await globalCommon?.loadAllSiteTasks(AllListId, `Project/Id ne null`)
           AllProjectTasks = smartmeta?.filter((task: any) => task?.Project?.Id == projectData?.Id)
           if (projectData?.subRows?.length > 0 && projectData?.subRows?.length < 6) {
             projectData?.subRows?.map((sprint: any) => {
