@@ -257,11 +257,11 @@ const HrGmbhInstitutionDeatails=async(Id:any)=>{
                 Description: updateData?.WebPage ? urlData : (updateData?.WebPage ? updateData?.WebPage?.Url :null),
                 Url: updateData?.WebPage ? urlData : (updateData?.WebPage ? updateData?.WebPage.Url :null)
             },
-            ItemImage:{
-                "__metadata": { type: "SP.FieldUrlValue" },
-                Description: updateData?.Item_x002d_Image!=undefined ? updateData?.Item_x002d_Image?.Url : (updateData?.Item_x0020_Cover!=undefined?updateData?.Item_x0020_Cover?.Url:""),
-                Url: updateData?.Item_x002d_Image!=undefined ? updateData?.Item_x002d_Image?.Url : (updateData?.Item_x0020_Cover!=undefined?updateData?.Item_x0020_Cover?.Url:"")
-            },
+            // ItemImage:{
+            //     "__metadata": { type: "SP.FieldUrlValue" },
+            //     Description: updateData?.Item_x002d_Image!=undefined ? updateData?.Item_x002d_Image?.Url : (updateData?.Item_x0020_Cover!=undefined?updateData?.Item_x0020_Cover?.Url:""),
+            //     Url: updateData?.Item_x002d_Image!=undefined ? updateData?.Item_x002d_Image?.Url : (updateData?.Item_x0020_Cover!=undefined?updateData?.Item_x0020_Cover?.Url:"")
+            // },
             WorkZip: (updateData?.WorkZip ),
            
             SocialMediaUrls: JSON.stringify(UrlData),
@@ -460,10 +460,7 @@ return(
                                 type="button"
                                 role="tab"
                                 aria-controls="Division "
-                                onClick={(e) => {
-                                    e.stopPropagation();
-                                    imageta()
-                                  }}
+                               
                                 aria-selected="true">Division 
                                 </button>
                            
