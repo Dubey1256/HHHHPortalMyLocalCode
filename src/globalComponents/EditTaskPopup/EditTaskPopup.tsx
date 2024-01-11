@@ -1579,6 +1579,20 @@ const EditTaskPopup = (Items: any) => {
                 } else {
                     TempArrya.push(selectedData);
                 }
+                if (selectedData?.IsSendAttentionEmail?.Id != undefined) {
+                    setIsSendAttentionMsgStatus(true);
+                    userSendAttentionEmails.push(selectedData?.IsSendAttentionEmail?.EMail);
+                    setSendCategoryName("Attention");
+                }
+                if (selectedData?.Title == "Bottleneck") {
+                    setIsSendAttentionMsgStatus(true);
+                    if (EditData?.TaskAssignedUsers?.length > 0) {
+                        EditData?.TaskAssignedUsers?.map((AssignedUser: any, Index: any) => {
+                            userSendAttentionEmails.push(AssignedUser.Email);
+                        });
+                    }
+                    setSendCategoryName(selectedData?.Title);
+                }
             })
             tempShareWebTypeData = TempArrya;
         } else {
