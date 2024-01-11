@@ -1,4 +1,3 @@
-
 import axios, { AxiosResponse } from 'axios';
 import * as React from 'react';
 //import '../components/TagTaskToProjectPopup.css';
@@ -7,12 +6,12 @@ import { Panel, PanelType } from "office-ui-fabric-react";
 import { useEffect, useState } from 'react';
 import { Web } from "sp-pnp-js";
 import * as moment from 'moment';
-import * as globalCommon from "../../../globalComponents/globalCommon"
-import GlobalCommanTable from '../../../globalComponents/GroupByReactTableComponents/GlobalCommanTable';
-import InlineEditingcolumns from '../../projectmanagementOverviewTool/components/inlineEditingcolumns';
+import * as globalCommon from "../../../../globalComponents/globalCommon"
+import GlobalCommanTable from '../../../../globalComponents/GroupByReactTableComponents/GlobalCommanTable';
+import InlineEditingcolumns from '../../../projectmanagementOverviewTool/components/inlineEditingcolumns';
 import { ColumnDef } from '@tanstack/react-table';
-import InfoIconsToolTip from '../../../globalComponents/InfoIconsToolTip/InfoIconsToolTip';
-import ReactPopperTooltipSingleLevel from '../../../globalComponents/Hierarchy-Popper-tooltipSilgleLevel/Hierarchy-Popper-tooltipSingleLevel';
+import InfoIconsToolTip from '../../../../globalComponents/InfoIconsToolTip/InfoIconsToolTip';
+import ReactPopperTooltipSingleLevel from '../../../../globalComponents/Hierarchy-Popper-tooltipSilgleLevel/Hierarchy-Popper-tooltipSingleLevel';
 var AllUser: any = []
 var siteConfig: any = []
 var DataSiteIcon: any = []

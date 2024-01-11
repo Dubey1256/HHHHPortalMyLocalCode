@@ -1,19 +1,19 @@
 import { Panel, PanelType } from "office-ui-fabric-react";
 import * as React from "react";
-import GlobalCommanTable from "../../../globalComponents/GroupByReactTableComponents/GlobalCommanTable";
+import GlobalCommanTable from "../../../../globalComponents/GroupByReactTableComponents/GlobalCommanTable";
 import { ColumnDef } from "@tanstack/react-table";
 import { data } from "jquery";
-import ReactPopperTooltipSingleLevel from "../../../globalComponents/Hierarchy-Popper-tooltipSilgleLevel/Hierarchy-Popper-tooltipSingleLevel";
-import InfoIconsToolTip from "../../../globalComponents/InfoIconsToolTip/InfoIconsToolTip";
-import EditTaskPopup from "../../../globalComponents/EditTaskPopup/EditTaskPopup";
+import ReactPopperTooltipSingleLevel from "../../../../globalComponents/Hierarchy-Popper-tooltipSilgleLevel/Hierarchy-Popper-tooltipSingleLevel";
+import InfoIconsToolTip from "../../../../globalComponents/InfoIconsToolTip/InfoIconsToolTip";
+import EditTaskPopup from "../../../../globalComponents/EditTaskPopup/EditTaskPopup";
 import { Web } from "sp-pnp-js";
-import * as globalCommon from "../../../globalComponents/globalCommon";
+import * as globalCommon from "../../../../globalComponents/globalCommon";
 import * as Moment from "moment";
-import ShowTaskTeamMembers from "../../../globalComponents/ShowTaskTeamMembers";
-import ReactPopperTooltip from "../../../globalComponents/Hierarchy-Popper-tooltip";
+import ShowTaskTeamMembers from "../../../../globalComponents/ShowTaskTeamMembers";
+import ReactPopperTooltip from "../../../../globalComponents/Hierarchy-Popper-tooltip";
 import Loader from "react-loader";
 import { BsTag, BsTagFill } from "react-icons/bs";
-import ComponentTable from "../../componentProfile/components/Taskwebparts";
+import ComponentTable from "../../../componentProfile/components/Taskwebparts";
 let headerOptions: any = { openTab: true, teamsIcon: true }
 var siteConfig: any = [];
 var allSmartInfo: any = [];

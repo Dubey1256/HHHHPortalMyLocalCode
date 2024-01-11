@@ -5,7 +5,7 @@ import Button from 'react-bootstrap/Button';
 import { Panel, PanelType } from "office-ui-fabric-react";
 import { useEffect, useState } from 'react';
 import { Web } from "sp-pnp-js";
-import EditTaskPopup from '../../../globalComponents/EditTaskPopup/EditTaskPopup';
+import EditTaskPopup from '../../../../globalComponents/EditTaskPopup/EditTaskPopup';
 // import CreateTaskComponent from '../../createTask/components/CreateTaskComponent';
 
 var siteConfig: any = []
