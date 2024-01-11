@@ -41,7 +41,6 @@ export default function VersionHistory(props: any) {
         }, 100);
     };
     React.useEffect(() => {
-       
         GetItemsVersionHistory();
         loadTaskUsers();
         LoadAllClientCategories();
@@ -50,7 +49,7 @@ export default function VersionHistory(props: any) {
     const GetItemsVersionHistory = async () => {
         var versionData: any = []
         try {
-           let web = new Web(siteTypeUrl)
+            let web = new Web(siteTypeUrl);
             web.lists.getById(listId).items.getById(ItemId).versions.get().then(versions => {
                 console.log('Version History:', versions);
                 versions.map((ItemVersion: any) => {
@@ -143,7 +142,7 @@ export default function VersionHistory(props: any) {
         let TempCCData: any = [];
         let AllCCFromCall: any = [];
         try {
-            let web = new Web(siteTypeUrl)
+            let web = new Web(siteTypeUrl);
             AllCCFromCall = await web.lists
                 .getById(RequiredListIds?.SmartMetadataListID)
                 .items.select(
@@ -376,7 +375,7 @@ export default function VersionHistory(props: any) {
 
         return (
             <>
-                {(SitesTaggingArray != undefined && SitesTaggingArray != null) && <dl className="Sitecomposition w-50">
+                {(SitesTaggingArray != undefined && SitesTaggingArray != null) && <dl className={usedFor == "Site-Composition" ? "Sitecomposition" : "Sitecomposition"}>
                     <div className='dropdown'>
                         <div className="spxdropdown-menu" style={{ display: showComposition ? 'block' : 'none' }}>
                             <ul>
@@ -520,7 +519,9 @@ export default function VersionHistory(props: any) {
                 isOpen={show}
                 onDismiss={handleClose}
                 isBlocking={false}
-                type={PanelType.large}>
+                type={PanelType.custom}
+                customWidth={usedFor == "Site-Composition" ? "900px" : "1200px"}
+            >
 
                 <table className="table VersionHistoryTable mt-2">
                     <thead>
