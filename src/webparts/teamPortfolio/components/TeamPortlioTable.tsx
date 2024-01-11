@@ -961,38 +961,6 @@ function TeamPortlioTable(SelectedProp: any) {
         }
     }, [AllSiteTasksData.length > 0 && AllMasterTasksData.length > 0])
 
-
-
-    // React.useEffect(() => {
-    //     if (AllSiteTasksData.length > 0 && AllMasterTasksData.length > 0 && allLoadeDataMasterTaskAndTask?.length > 0) {
-    //         countAllTasksData = [];
-    //         let count = 0;
-    //         if (IsUpdated === "") {
-    //             portfolioTypeData?.map((port: any, index: any) => {
-    //                 count = count + 1
-    //                 AllcomponentGrouping(port?.Id, index);
-    //             })
-    //         } else if (IsUpdated.length) {
-    //             portfolioTypeData?.map((port: any) => {
-    //                 if (IsUpdated.toLowerCase() === port?.Title?.toLowerCase()) {
-    //                     count = count + 1
-    //                     AllcomponentGrouping(port?.Id, '');
-    //                 }
-    //             })
-    //         }
-    //         countAllTasksData = countAllTasksData?.filter((ele: any, ind: any, arr: any) => {
-    //             const isDuplicate = arr.findIndex((elem: any) => {
-    //                 return (elem.ID === ele.ID || elem.Id === ele.Id) && elem.siteType === ele.siteType;
-    //             }) !== ind
-    //             return !isDuplicate;
-    //         })
-    //         countTaskAWTLevel(countAllTasksData, '');
-    //         setFilterCounters(true);
-    //     }
-    // }, [AllSiteTasksData.length > 0 && AllMasterTasksData.length > 0 && allLoadeDataMasterTaskAndTask?.length > 0])
-
-
-
     const firstTimeFullDataGrouping = () => {
         if (allLoadeDataMasterTaskAndTask?.length > 0) {
             countAllTasksData = [];
@@ -2364,7 +2332,7 @@ function TeamPortlioTable(SelectedProp: any) {
                                                 scale={1.0}
                                                 loadedClassName="loadedContent"
                                             />
-                                            <GlobalCommanTable bulkEditIcon={true} priorityRank={priorityRank} precentComplete={precentComplete} portfolioTypeDataItemBackup={portfolioTypeDataItemBackup} taskTypeDataItemBackup={taskTypeDataItemBackup} flatViewDataAll={flatViewDataAll} setData={setData} updatedSmartFilterFlatView={updatedSmartFilterFlatView} setLoaded={setLoaded} clickFlatView={clickFlatView} switchFlatViewData={switchFlatViewData} flatView={true} switchGroupbyData={switchGroupbyData} smartTimeTotalFunction={smartTimeTotalFunction} SmartTimeIconShow={true} AllMasterTasksData={AllMasterTasksData} ref={childRef} callChildFunction={callChildFunction} AllListId={ContextValue} columns={columns} restructureCallBack={callBackData1} data={data} callBackData={callBackData} TaskUsers={AllUsers} showHeader={true} portfolioColor={portfolioColor} portfolioTypeData={portfolioTypeDataItem} taskTypeDataItem={taskTypeDataItem} fixedWidth={true} portfolioTypeConfrigration={portfolioTypeConfrigration} showingAllPortFolioCount={true} showCreationAllButton={true} OpenAddStructureModal={OpenAddStructureModal} addActivity={addActivity} />
+                                            <GlobalCommanTable AllSitesTaskData={allTaskDataFlatLoadeViewBackup} masterTaskData={allMasterTaskDataFlatLoadeViewBackup} bulkEditIcon={true} priorityRank={priorityRank} precentComplete={precentComplete} portfolioTypeDataItemBackup={portfolioTypeDataItemBackup} taskTypeDataItemBackup={taskTypeDataItemBackup} flatViewDataAll={flatViewDataAll} setData={setData} updatedSmartFilterFlatView={updatedSmartFilterFlatView} setLoaded={setLoaded} clickFlatView={clickFlatView} switchFlatViewData={switchFlatViewData} flatView={true} switchGroupbyData={switchGroupbyData} smartTimeTotalFunction={smartTimeTotalFunction} SmartTimeIconShow={true} AllMasterTasksData={AllMasterTasksData} ref={childRef} callChildFunction={callChildFunction} AllListId={ContextValue} columns={columns} restructureCallBack={callBackData1} data={data} callBackData={callBackData} TaskUsers={AllUsers} showHeader={true} portfolioColor={portfolioColor} portfolioTypeData={portfolioTypeDataItem} taskTypeDataItem={taskTypeDataItem} fixedWidth={true} portfolioTypeConfrigration={portfolioTypeConfrigration} showingAllPortFolioCount={true} showCreationAllButton={true} OpenAddStructureModal={OpenAddStructureModal} addActivity={addActivity} />
                                         </div>
                                     </div>
                                 </div>
