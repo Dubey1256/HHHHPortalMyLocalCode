@@ -14,6 +14,7 @@ import ReactPopperTooltipSingleLevel from "../Hierarchy-Popper-tooltipSilgleLeve
 import ReactPopperTooltip from "../Hierarchy-Popper-tooltip";
 import InfoIconsToolTip from "../InfoIconsToolTip/InfoIconsToolTip";
 import { FaCompressArrowsAlt } from "react-icons/fa";
+import * as globalCommon from "../globalCommon";
 let childRefdata: any;
 const SelectedTaskUpdateOnPopup = (item: any) => {
     const childRef: any = React.useRef<any>();
@@ -330,7 +331,7 @@ const SelectedTaskUpdateOnPopup = (item: any) => {
             }
             let selectedDataPropsCopy: any = []
             try {
-                selectedDataPropsCopy = JSON.parse(JSON.stringify(item?.selectedData))
+                selectedDataPropsCopy = globalCommon.deepCopy(item?.selectedData);
             } catch (error) {
                 console.log(error)
             }

@@ -1059,7 +1059,7 @@ const ProjectManagementMain = (props: any) => {
       },
 
       {
-        accessorFn: (row) => row?.Portfolio,
+        accessorFn: (row) => row?.PortfolioTitle,
         cell: ({ row }) => (
           <a
             className="hreflink"
