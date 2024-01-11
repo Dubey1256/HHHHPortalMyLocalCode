@@ -363,7 +363,7 @@ export default function ReactPopperTooltipSingleLevel({ ShareWebId, row, masterT
                                     data-interception="off"
                                     target="_blank">
                                     {itemData?.Title}
-                                </a> </> : <>{itemData?.Title != "Others" && itemData?.Item_x0020_Type != "Sprint" && itemData?.Item_x0020_Type  != "Project" ? <>
+                                </a> </> : <>{itemData?.Title != "Others" && itemData?.Item_x0020_Type != "Sprint" && itemData?.Item_x0020_Type  != "Project" ? 
                                 
                                     <a className={lastChild == true ? "hreflink fw-normal text-white" : "hreflink fw-normal"}
                                         data-interception="off"
@@ -373,7 +373,7 @@ export default function ReactPopperTooltipSingleLevel({ ShareWebId, row, masterT
                                             {itemData?.Title}
                                         </span>
                                     </a>
-                                </>
+                             
                                  :itemData?.Item_x0020_Type == "Sprint" || itemData.Item_x0020_Type == "Project" ?
                                  <a className={lastChild == true ? "hreflink fw-normal text-white" : "hreflink fw-normal"} data-interception="off" target="blank"
                                      href={`${itemData?.siteUrl}/SitePages/Project-Management.aspx?ProjectId=${itemData?.Id}`}>
