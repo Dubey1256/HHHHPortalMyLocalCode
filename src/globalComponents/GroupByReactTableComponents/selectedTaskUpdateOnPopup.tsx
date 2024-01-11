@@ -123,7 +123,13 @@ const SelectedTaskUpdateOnPopup = (item: any) => {
         try {
             const results = await Promise.all(updatePromises);
             console.log("All projects updated successfully!", results);
-            let allData = JSON.parse(JSON.stringify(item?.data))
+            let allData: any = []
+            try {
+                allData = globalCommon.deepCopy(item?.data);
+            } catch (error) {
+                console.log(error)
+            }
+            // let allData = JSON.parse(JSON.stringify(item?.data))
             let checkBoolian: any = null;
             if (item?.updatedSmartFilterFlatView != true && item?.clickFlatView != true) {
                 if (slectedPopupData?.length > 0) {
@@ -274,12 +280,26 @@ const SelectedTaskUpdateOnPopup = (item: any) => {
             }
             let showUpdateData: any = {};
             if (filteredValues?.priority) {
+                let priority: any;
                 let priorityRank = 4;
-                if (filteredValues?.PriorityRank && filteredValues?.PriorityRank != null) {
-                    priorityRank = parseInt(filteredValues?.priority)
+                if (parseInt(filteredValues?.priority) <= 0 && filteredValues?.priority != undefined && filteredValues?.priority != null) {
+                    priorityRank = 4;
+                    priority = "(2) Normal";
+                } else {
+                    priorityRank = parseInt(filteredValues?.priority);
+                    if (priorityRank >= 8 && priorityRank <= 10) {
+                        priority = "(1) High";
+                    }
+                    if (priorityRank >= 4 && priorityRank <= 7) {
+                        priority = "(2) Normal";
+                    }
+                    if (priorityRank >= 1 && priorityRank <= 3) {
+                        priority = "(3) Low";
+                    }
                 }
-                if (priorityRank) {
-                    showUpdateData.PriorityRank = priorityRank
+                if (priority && priorityRank) {
+                    showUpdateData.Priority = priority,
+                        showUpdateData.PriorityRank = priorityRank
                 }
             }
             if (filteredValues?.DueDate && filteredValues?.DueDate != undefined) {
