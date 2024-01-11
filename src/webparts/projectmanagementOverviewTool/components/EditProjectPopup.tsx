@@ -1190,13 +1190,19 @@ function EditProjectPopup(item: any) {
           );
         }
         postData["TaskID"] = postData?.PortfolioStructureID;
-        postedData = {
+        postedData ={
           ...postData,
-          TaskCategories: CategoriesData,
-          AssignedTo: TaskAssignedTo,
-          ResponsibleTeam: TaskResponsibleTeam,
-          TeamMembers: TaskTeamMembers,
-          Item_x0020_Type: EditData?.Item_x0020_Type
+          TaskCategories:CategoriesData,
+          AssignedTo:TaskAssignedTo,
+          ResponsibleTeam:TaskResponsibleTeam,
+          TeamMembers:TaskTeamMembers,
+          Item_x0020_Type : EditData?.Item_x0020_Type,
+          ComponentLink: {
+            Url: Items?.ComponentLink!=undefined?Items?.ComponentLink:''
+          },
+          Body:EditData.Body,
+          taggedPortfolios: projectTaggedPortfolios
+
         }
         console.log(res);
         TaggedPortfolios = [];

@@ -1572,7 +1572,7 @@ const HHHHEditComponent = (props: any) => {
 
                             {(myContextData2.allSite?.MainSite || myContextData2?.allSite?.HrSite)  && <span>
                                 <a className="ForAll hreflink" target="_blank" data-interception="off"                        
-                                 href={myContextData2.allSite?.MainSite?`${myContextData2?.allListId?.jointSiteUrl}/SitePages/contact-Profile.aspx?contactId=${updateData.Id}}`:`${myContextData2?.allListId?.siteUrl}/SitePages/EmployeeInfo.aspx?employeeId=${updateData.Id}}`}>
+                                 href={myContextData2.allSite?.MainSite?`${myContextData2?.allListId?.jointSiteUrl}/SitePages/contact-Profile.aspx?contactId=${updateData.Id}`:`${myContextData2?.allListId?.siteUrl}/SitePages/EmployeeInfo.aspx?employeeId=${updateData.Id}`}>
                                     <img className="mb-3 icon_siz19" style={{ marginRight: '3px' }}
                                         src="/_layouts/15/images/ichtm.gif?rev=23" alt="icon" />Go to Profile page
                                 </a>
