@@ -666,7 +666,8 @@ const ProjectManagementMain = (props: any) => {
         AllTask.push(items);
       });
       try {
-        backupAllTasks = JSON.parse(JSON.stringify(AllTask));
+        
+        backupAllTasks = globalCommon?.deepCopy(AllTask);
         setAllTasks(backupAllTasks);
       } catch (error) {
 
@@ -986,7 +987,7 @@ const ProjectManagementMain = (props: any) => {
 
 
   const switchFlatViewData = (data: any) => {
-    let groupedDataItems = JSON.parse(JSON.stringify(data));
+    let groupedDataItems = globalCommon?.deepCopy(data);
     const flattenedData = flattenData(groupedDataItems);
     hasCustomExpanded = false
     hasExpanded = false
