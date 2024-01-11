@@ -246,7 +246,7 @@ export default function InterviewFeedbackForm(props: any) {
                     OverallRatings: overallRatings
                 };
             });
-            const categorizedItems = response.reduce((accumulator: { newCandidates: any[]; inProcessCand: any[]; archiveCandidates: any[]; }, currentItem: {
+            const categorizedItems = itemsWithPosition.reduce((accumulator: { newCandidates: any[]; inProcessCand: any[]; archiveCandidates: any[]; }, currentItem: {
                 Positions: any; Status0: any; CandidateName: any; OverallRatings: any
             }) => {
                 const itemWithPosition = {
