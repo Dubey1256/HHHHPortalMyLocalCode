@@ -14,6 +14,7 @@ import ReactPopperTooltipSingleLevel from "../Hierarchy-Popper-tooltipSilgleLeve
 import ReactPopperTooltip from "../Hierarchy-Popper-tooltip";
 import InfoIconsToolTip from "../InfoIconsToolTip/InfoIconsToolTip";
 import { FaCompressArrowsAlt } from "react-icons/fa";
+import * as globalCommon from "../globalCommon";
 let childRefdata: any;
 const SelectedTaskUpdateOnPopup = (item: any) => {
     const childRef: any = React.useRef<any>();
@@ -328,7 +329,12 @@ const SelectedTaskUpdateOnPopup = (item: any) => {
             if (filteredValues?.Project && filteredValues?.Project != undefined) {
                 showUpdateData.PortfolioStructureID = filteredValues?.Project?.PortfolioStructureID
             }
-            let selectedDataPropsCopy = JSON.parse(JSON.stringify(item?.selectedData))
+            let selectedDataPropsCopy: any = []
+            try {
+                selectedDataPropsCopy = globalCommon.deepCopy(item?.selectedData);
+            } catch (error) {
+                console.log(error)
+            }
             let selecteDataValue: any = []
             selectedDataPropsCopy?.map((elem: any) => {
                 if (elem.original.subRows?.length > 0) {
@@ -454,7 +460,7 @@ const SelectedTaskUpdateOnPopup = (item: any) => {
                         {row?.original?.ProjectTitle != (null || undefined) ?
                             <div className="alignCenter"><a style={row?.original?.fontColorTask != undefined ? { color: `${row?.original?.fontColorTask}` } : { color: `${row?.original?.PortfolioType?.Color}` }} data-interception="off" target="_blank" className="hreflink serviceColor_Active" href={`${item?.ContextValue?.siteUrl}/SitePages/Project-Management.aspx?ProjectId=${row?.original?.ProjectId}`} >
                                 <ReactPopperTooltip ShareWebId={row?.original?.projectStructerId} projectToolShow={true} row={row} AllListId={item?.ContextValue} /></a><div className="ms-2" style={{ background: 'yellow' }}>{row?.original?.updatedPortfolioStructureID}</div></div>
-                            : ""}
+                            : <div className="ms-2" style={{ background: 'yellow' }}>{row?.original?.updatedPortfolioStructureID}</div>}
                     </>
                 ),
                 id: 'ProjectTitle',

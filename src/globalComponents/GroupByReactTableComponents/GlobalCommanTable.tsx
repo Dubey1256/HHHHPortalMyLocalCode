@@ -874,7 +874,7 @@ const GlobalCommanTable = (items: any, ref: any) => {
     /**************************************** Drag And Drop Functionality End ***************************************/
     return (
         <>
-            {items?.bulkEditIcon === true && bulkEditingCongration && <span className="toolbox">
+            {items?.bulkEditIcon === true && (bulkEditingCongration?.priority === true || bulkEditingCongration?.dueDate === true || bulkEditingCongration?.status === true || bulkEditingCongration?.Project === true) && <span className="toolbox">
                 <BulkEditingFeature masterTaskData={items?.masterTaskData} data={data} columns={items?.columns} setData={items?.setData} updatedSmartFilterFlatView={items?.updatedSmartFilterFlatView} clickFlatView={items?.clickFlatView} ContextValue={items?.AllListId} priorityRank={items?.priorityRank} dragedTask={dragedTask} precentComplete={items?.precentComplete} bulkEditingCongration={bulkEditingCongration} selectedData={table?.getSelectedRowModel()?.flatRows} projectTiles={projectTiles} />
             </span>}
             {showHeader === true && <div className='tbl-headings justify-content-between fixed-Header top-0' style={{ background: '#e9e9e9' }}>
@@ -1192,4 +1192,4 @@ const GlobalCommanTable = (items: any, ref: any) => {
         </>
     )
 }
-export default React.forwardRef(GlobalCommanTable);    
+export default React.forwardRef(GlobalCommanTable);

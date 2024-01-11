@@ -17,7 +17,7 @@ const EditDocumentpanel = (props: any) => {
   const [isOpenImageTab, setisOpenImageTab] = React.useState(false);
   const [isopencomonentservicepopup, setisopencomonentservicepopup] = React.useState(false);
   const [editvalue, seteditvalue] = React.useState(null);
-  const [allValue, setallSetValue] = React.useState({
+  const [allValue, setallSetValue]:any = React.useState({
     Title: "", URL: "", Acronym: "", Description: "", InfoType: "SmartNotes", SelectedFolder: "Public", fileupload: "", LinkTitle: "", LinkUrl: "", taskTitle: "", Dragdropdoc: "", emailDragdrop: "", ItemRank: "", componentservicesetdata: { smartComponent: undefined, linkedComponent: undefined }, componentservicesetdataTag: undefined, EditTaskpopupstatus: false, DocumentType: "", masterTaskdetails: [],
   })
 
@@ -26,13 +26,25 @@ const EditDocumentpanel = (props: any) => {
       if (props?.editData?.Portfolio != undefined) {
         setallSetValue({ ...allValue, componentservicesetdataTag: props?.editData?.Portfolio })
         if (props?.editData != undefined) {
-          props.editData.docTitle = props?.editData.Title.split('.')[0]
+          if (props?.editData?.Title.indexOf(props?.editData.File_x0020_Type)) {
+            props.editData['Title'] = props?.editData?.Title.split('.')[0]
+            props.editData['docTitle'] = props?.editData?.Title;
+          } else {
+            props.editData['docTitle'] = props?.editData?.Title;
+          }
+
         }
       }
       if (props?.editData?.Portfolios != undefined) {
         setallSetValue({ ...allValue, componentservicesetdataTag: props?.editData?.Portfolios[0] })
         if (props?.editData != undefined) {
-          props.editData.docTitle = props?.editData.Title.split('.')[0]
+          if (props?.editData?.Title.indexOf(props?.editData.File_x0020_Type)) {
+            props.editData['Title'] = props?.editData?.Title.split('.')[0]
+            props.editData['docTitle'] = props?.editData?.Title;
+          } else {
+            props.editData['docTitle'] = props?.editData?.Title;
+          }
+
         }
       }
       setEditdocumentsData(props?.editData);
@@ -113,7 +125,7 @@ const EditDocumentpanel = (props: any) => {
         ItemType: EditdocumentsData.ItemType,
 
         PortfoliosId: { "results": allValue.componentservicesetdataTag != undefined ? [allValue.componentservicesetdataTag.Id] : [] },
-        Body: allValue?.Description != "" ? allValue?.Description : "",
+        Body: allValue?.Description?.blocks[0]?.text != "" ? allValue?.Description?.blocks[0]?.text : "",
         Item_x0020_Cover: {
           "__metadata": { type: 'SP.FieldUrlValue' },
           'Description': EditdocumentsData?.Item_x0020_Cover?.Url != "" ? EditdocumentsData?.UrItem_x0020_Coverl?.Url : "",
@@ -274,7 +286,7 @@ const EditDocumentpanel = (props: any) => {
 
                   {allValue?.componentservicesetdataTag != undefined &&
                     <div className="d-flex justify-content-between block px-2 py-1" style={{ width: '85%' }}>
-                      <a target="_blank" data-interception="off"  href={`${props?.AllListId?.siteUrl}/SitePages/Portfolio-Profile.aspx?taskId=${allValue?.componentservicesetdataTag?.Id}`}>{allValue?.componentservicesetdataTag?.Title}</a>
+                      <a target="_blank" data-interception="off" href={`${props?.AllListId?.siteUrl}/SitePages/Portfolio-Profile.aspx?taskId=${allValue?.componentservicesetdataTag?.Id}`}>{allValue?.componentservicesetdataTag?.Title}</a>
                       <a>
                         <span className="bg-light svg__icon--cross svg__iconbox"></span>
                       </a></div>}
@@ -286,7 +298,7 @@ const EditDocumentpanel = (props: any) => {
                 </div>
 
               </div>
-              <div className='mt-3'> <HtmlEditorCard editorValue={EditdocumentsData?.Description != null ? EditdocumentsData?.Description : ""} HtmlEditorStateChange={HtmlEditorCallBack}> </HtmlEditorCard></div>
+              <div className='mt-3'> <HtmlEditorCard editorValue={EditdocumentsData?.Body != null ? EditdocumentsData?.Body : ""} HtmlEditorStateChange={HtmlEditorCallBack}> </HtmlEditorCard></div>
             </div>
           </Tab>
           <Tab eventKey="IMAGEINFORMATION" title="IMAGE INFORMATION" className='p-0' >

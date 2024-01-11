@@ -21,7 +21,6 @@ export default function VersionHistory(props: any) {
     const ItemId = props?.taskId;
     const RequiredListIds: any = props?.RequiredListIds;
     let tempEstimatedArrayData: any;
-    const web = new Web(siteTypeUrl);
     const [show, setShow] = React.useState(false);
     const [data, setData]: any = React.useState([]);
     const [SCVersionHistoryData, setSCVersionHistoryData]: any = React.useState([]);
@@ -50,6 +49,7 @@ export default function VersionHistory(props: any) {
     const GetItemsVersionHistory = async () => {
         var versionData: any = []
         try {
+            let web = new Web(siteTypeUrl);
             web.lists.getById(listId).items.getById(ItemId).versions.get().then(versions => {
                 console.log('Version History:', versions);
                 versions.map((ItemVersion: any) => {
@@ -70,7 +70,7 @@ export default function VersionHistory(props: any) {
                 // setSCVersionHistoryData
                 let TempSCDataItems: any = [];
                 employeesWithoutLastName?.forEach((val: any) => {
-                    if (val?.Sitestagging?.length > 0) {
+                    if (val?.Sitestagging?.length > 5) {
                         TempSCDataItems.push(val);
                     }
                     if (val.FeedBack !== undefined && val.FeedBack !== null && val.FeedBack !== '[]') {
@@ -142,6 +142,7 @@ export default function VersionHistory(props: any) {
         let TempCCData: any = [];
         let AllCCFromCall: any = [];
         try {
+            let web = new Web(siteTypeUrl);
             AllCCFromCall = await web.lists
                 .getById(RequiredListIds?.SmartMetadataListID)
                 .items.select(
@@ -374,7 +375,7 @@ export default function VersionHistory(props: any) {
 
         return (
             <>
-                {(SitesTaggingArray != undefined && SitesTaggingArray != null) && <dl className="Sitecomposition w-50">
+                {(SitesTaggingArray != undefined && SitesTaggingArray != null) && <dl className={usedFor == "Site-Composition" ? "Sitecomposition" : "Sitecomposition"}>
                     <div className='dropdown'>
                         <div className="spxdropdown-menu" style={{ display: showComposition ? 'block' : 'none' }}>
                             <ul>
@@ -518,7 +519,9 @@ export default function VersionHistory(props: any) {
                 isOpen={show}
                 onDismiss={handleClose}
                 isBlocking={false}
-                type={PanelType.large}>
+                type={PanelType.custom}
+                customWidth={usedFor == "Site-Composition" ? "900px" : "1200px"}
+            >
 
                 <table className="table VersionHistoryTable mt-2">
                     <thead>
