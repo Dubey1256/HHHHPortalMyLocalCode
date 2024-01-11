@@ -1073,7 +1073,7 @@ const ProjectManagementMain = (props: any) => {
           </a>
         ),
         id: "Portfolio",
-        placeholder: "Portfolio",
+        placeholder: "Portfolio Item",
         resetColumnFilters: false,
         resetSorting: false,
         header: ""
@@ -1400,7 +1400,7 @@ const ProjectManagementMain = (props: any) => {
                           >
                             <span className="nav__icon nav__icon--home"></span>
                             <span className="nav__text">
-                              Portfolios Item{" "}
+                              Portfolio Items{" "}
                               <span
                                 className="float-end "
                                 style={{ cursor: "pointer" }}
@@ -1684,6 +1684,7 @@ const ProjectManagementMain = (props: any) => {
                                   showCreationAllButton={true}
                                   restructureCallBack={callBackData1}
                                   ref={childRef} callChildFunction={callChildFunction}
+                                   masterTaskData={MasterListData} AllSitesTaskData={AllSitesAllTasks}
                                   OpenAddStructureModal={OpenAddStructureModal}
                                   addActivity={addActivity} />}
                               </div>
