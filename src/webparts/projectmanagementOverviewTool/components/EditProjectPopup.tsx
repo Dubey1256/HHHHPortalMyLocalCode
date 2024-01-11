@@ -1843,8 +1843,7 @@ function EditProjectPopup(item: any) {
                                                     }}
                                                     target="_blank"
                                                     data-interception="off"
-                                                    href={`${item?.AllListId?.siteUrl}/SitePages/Portfolio-Profile.aspx?${EditData?.Id}`}
-                                                  >
+                                                   >
                                                     {type.Title}
                                                   </a>
                                                   <img
@@ -1932,7 +1931,7 @@ function EditProjectPopup(item: any) {
                           <div className="col mt-2">
                             <div className="input-group full-width">
                               <label className="form-label full-width">
-                                Portfolios
+                                Portfolio Items
                               </label>
                               <input
                                 type="text"

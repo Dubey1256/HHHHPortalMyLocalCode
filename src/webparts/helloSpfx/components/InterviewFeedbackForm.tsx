@@ -236,8 +236,8 @@ export default function InterviewFeedbackForm(props: any) {
         query.get().then((response: any) => {
             const itemsWithPosition = response.map((item: any) => {
                 let skills = JSON.parse(item?.SkillRatings)
-                let currentRatings = skills ? skills.reduce((sum: any, skill: any) => sum + (skill?.current || 0), 0) : 0;
-                let maxRatings = skills ? skills.reduce((sum: any, skill: any) => sum + (skill?.max || 0), 0) : 0;
+                let currentRatings = skills ? skills.reduce((sum: any, skill: any) => sum + (skill%2 != 0 ? Math.floor(skill?.current/2): skill?.current/2 || 0), 0) : 0;
+                let maxRatings = skills ? skills.reduce((sum: any, skill: any) => sum + (skill?.max/2 || 0), 0) : 0;
                 overallRatings = currentRatings != 0 || maxRatings != 0 ?  parseFloat(((currentRatings / maxRatings) * 5).toFixed(2)) : 0;
                 return {
                     ...item,
@@ -247,13 +247,13 @@ export default function InterviewFeedbackForm(props: any) {
                 };
             });
             const categorizedItems = response.reduce((accumulator: { newCandidates: any[]; inProcessCand: any[]; archiveCandidates: any[]; }, currentItem: {
-                Positions: any; Status0: any; CandidateName: any
+                Positions: any; Status0: any; CandidateName: any; OverallRatings: any
             }) => {
                 const itemWithPosition = {
                     ...currentItem,
                     Position: currentItem.Positions ? currentItem.Positions.Title : null,
                     Title: currentItem.CandidateName,
-                    OverallRatings: overallRatings
+                    OverallRatings: currentItem.OverallRatings
                 };
 
                 switch (currentItem.Status0) {
