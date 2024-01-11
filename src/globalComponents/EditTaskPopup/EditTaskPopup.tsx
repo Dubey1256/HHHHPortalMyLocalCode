@@ -1579,6 +1579,20 @@ const EditTaskPopup = (Items: any) => {
                 } else {
                     TempArrya.push(selectedData);
                 }
+                if (selectedData?.IsSendAttentionEmail?.Id != undefined) {
+                    setIsSendAttentionMsgStatus(true);
+                    userSendAttentionEmails.push(selectedData?.IsSendAttentionEmail?.EMail);
+                    setSendCategoryName("Attention");
+                }
+                if (selectedData?.Title == "Bottleneck") {
+                    setIsSendAttentionMsgStatus(true);
+                    if (EditData?.TaskAssignedUsers?.length > 0) {
+                        EditData?.TaskAssignedUsers?.map((AssignedUser: any, Index: any) => {
+                            userSendAttentionEmails.push(AssignedUser.Email);
+                        });
+                    }
+                    setSendCategoryName(selectedData?.Title);
+                }
             })
             tempShareWebTypeData = TempArrya;
         } else {
@@ -3989,14 +4003,38 @@ const EditTaskPopup = (Items: any) => {
         //   .filter(`${SiteId}/Id eq '${Items?.Items?.Id}'`)
         //  .get();
 
+        let SelectedSiteImage: any = '';
+
         let TaskDataJSON: any = await MakeUpdateDataJSON();
         if (SiteTypes != undefined && SiteTypes.length > 0) {
             SiteTypes.map((dataItem: any) => {
                 if (dataItem.isSelected == true) {
                     SelectedSite = dataItem.Title;
+                    SelectedSiteImage = dataItem?.Item_x005F_x0020_Cover?.Url
                 }
             });
         }
+
+        let TempSitesTaggingData: any = [];
+        let TempCCDataIds: any = [];
+        if (SelectedSite?.toLowerCase() !== "shareweb") {
+            let TempObject: any = {
+                Title: SelectedSite,
+                ClienTimeDescription: "100",
+                SiteImages: SelectedSiteImage,
+                Date: Moment(new Date()).format("DD/MM/YYYY")
+            }
+            TempSitesTaggingData.push(TempObject);
+        }
+
+        if (selectedClientCategoryData?.length > 0) {
+            selectedClientCategoryData?.map((selectedCC:any)=>{
+                if(selectedCC.siteName == SelectedSite){
+                    TempCCDataIds.push(selectedCC.Id)
+                }
+            })
+        }
+
         let UpdatedJSON = {
             Comments: EditData.Comments,
             SmartInformationId: {
@@ -4006,7 +4044,15 @@ const EditTaskPopup = (Items: any) => {
                         ? TempSmartInformationIds
                         : [],
             },
+            Sitestagging: TempSitesTaggingData?.length > 0 ? JSON.stringify(TempSitesTaggingData) : null,
+            ClientCategoryId: {
+                results:
+                TempCCDataIds?.length > 0
+                        ? TempCCDataIds
+                        : [],
+            },
         };
+
         TaskDataJSON = { ...TaskDataJSON, ...UpdatedJSON };
         try {
             if (SelectedSite.length > 0) {
@@ -4016,46 +4062,8 @@ const EditTaskPopup = (Items: any) => {
                     .items.add(TaskDataJSON)
                     .then(async (res: any) => {
                         newGeneratedId = res.data.Id;
-                        //    const attachmentss = await web.lists.getById(Items?.Items?.listId)
-                        //     .items.getById(Items.Items.Id)
-                        //     .attachmentFiles.get();
-
-                        // const imageData = await attachmentss.download();
-                        // for (const attachment of attachments) {
-                        //     await web.lists.getByTitle(SelectedSite)
-                        //       .items.getById(newGeneratedId)
-                        //       .attachmentFiles.add(attachment?.FileName, imageData);
-                        //   }
-
-                        // for (const attachmentName of attachmentss) {
-                        //     var attachmentEndpoint = web.lists.getById(Items?.Items?.listId)
-                        //       .items.getById(Items.Items.Id)
-                        //       .attachmentFiles.getByName(attachmentName.FileName).toUrl();
-
-                        //     const response = await fetch(attachmentEndpoint);
-                        //     const attachmentData = await response.arrayBuffer();
-
-                        //     var uint8Arrayw:any = new Uint8Array(attachmentData);
-                        //var uint8Arrayss = new Uint8Array(response.arrayBuffer());
-
-                        // var byteArray = new Uint8Array(atob(uint8Arrayw)?.split("")?.map(function (c) {
-                        //     return c.charCodeAt(0);
-                        // }));
-                        // const data: any = byteArray
-                        // var fileData = '';
-                        // for (var i = 0; i < byteArray.byteLength; i++) {
-                        //     fileData += String.fromCharCode(byteArray[i]);
-                        // }
-
-                        //    const MyImage = await web.lists.getByTitle(SelectedSite)
-                        //       .items.getById(newGeneratedId)
-                        //       .attachmentFiles.add(attachmentName?.FileName, uint8Arrayw);
-
-                        //       console.log(MyImage)
-                        //   }
                         await CopyImageData(SelectedSite, res.data);
                         CopydocumentData(SelectedSite, res.data);
-
                         if (FunctionsType == "Copy-Task") {
                             setLoaded(true)
                             newGeneratedId = res.data.Id;
@@ -4077,7 +4085,6 @@ const EditTaskPopup = (Items: any) => {
             console.log("Copy-Task Error :", error);
         }
         closeCopyAndMovePopup();
-        // Items.Call();
     };
 
     const CopydocumentData = async (NewList: any, NewItem: any) => {
@@ -4124,9 +4131,6 @@ const EditTaskPopup = (Items: any) => {
         let tempArrayJsonData: any = [];
         let arrangedArray: any = []
         let currentUserDataObject: any;
-
-        // ... (Your existing code)
-
         // Iterate over attachment files sequentially
         for (let index = 0; index < response?.AttachmentFiles?.length; index++) {
             const value = response.AttachmentFiles[index];
@@ -4213,24 +4217,24 @@ const EditTaskPopup = (Items: any) => {
     const SaveJSONData = async (NewList: any, NewItem: any, tempArrayJsonData: any) => {
         let arraydata = []
         let c = 1
-         for (let i = 0; i < tempArrayJsonData.length; i++) {
-             tempArrayJsonData[i].ImageName = tempArrayJsonData[i].ImageName.replace(/Image(\d+)/, `Image${c}`);
-             c++
-             arraydata.push(tempArrayJsonData[i])
-           }
-          console.log(arraydata)
-         let web = new Web(siteUrls);
-         var Data = await web.lists
-             .getByTitle(NewList)
-             .items.getById(NewItem.Id)
-             .update({
-                 BasicImageInfo:
-                 arraydata != undefined && arraydata.length > 0
-                         ? JSON.stringify(arraydata)
-                         : JSON.stringify(arraydata),
-             });
-         console.log(Data);
-     };
+        for (let i = 0; i < tempArrayJsonData.length; i++) {
+            tempArrayJsonData[i].ImageName = tempArrayJsonData[i].ImageName.replace(/Image(\d+)/, `Image${c}`);
+            c++
+            arraydata.push(tempArrayJsonData[i])
+        }
+        console.log(arraydata)
+        let web = new Web(siteUrls);
+        var Data = await web.lists
+            .getByTitle(NewList)
+            .items.getById(NewItem.Id)
+            .update({
+                BasicImageInfo:
+                    arraydata != undefined && arraydata.length > 0
+                        ? JSON.stringify(arraydata)
+                        : JSON.stringify(arraydata),
+            });
+        console.log(Data);
+    };
 
     const moveTimeSheet = async (SelectedSite: any, newItem: any) => {
         newGeneratedId = newItem.Id;
@@ -6186,7 +6190,7 @@ const EditTaskPopup = (Items: any) => {
                                                                                                 <span className="mx-2">
                                                                                                     {Number(
                                                                                                         SiteDtls.ClienTimeDescription
-                                                                                                    ).toFixed(2)}
+                                                                                                    ).toFixed(1)}
                                                                                                     %
                                                                                                 </span>
                                                                                             )}
@@ -9040,26 +9044,26 @@ const EditTaskPopup = (Items: any) => {
                                     <h6>Sites</h6>
                                 </div>
                                 <div className="card-body">
-                                <Loader
-                        loaded={loaded}
-                        lines={13}
-                        length={20}
-                        width={10}
-                        radius={30}
-                        corners={1}
-                        rotate={0}
-                        direction={1}
-                        speed={2}
-                        trail={60}
-                        shadow={false}
-                        hwaccel={false}
-                        className="spinner"
-                        zIndex={2e9}
-                        top="28%"
-                        left="50%"
-                        scale={1.0}
-                        loadedClassName="loadedContent"
-                      />
+                                    <Loader
+                                        loaded={loaded}
+                                        lines={13}
+                                        length={20}
+                                        width={10}
+                                        radius={30}
+                                        corners={1}
+                                        rotate={0}
+                                        direction={1}
+                                        speed={2}
+                                        trail={60}
+                                        shadow={false}
+                                        hwaccel={false}
+                                        className="spinner"
+                                        zIndex={2e9}
+                                        top="28%"
+                                        left="50%"
+                                        scale={1.0}
+                                        loadedClassName="loadedContent"
+                                    />
                                     <ul className="quick-actions">
                                         {SiteTypes?.map((siteData: any, index: number) => {
                                             if (siteData.Title !== "QA") {

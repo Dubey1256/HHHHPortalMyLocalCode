@@ -222,7 +222,6 @@ const TimeReport = (props:any) => {
                         "ParentTask", "Portfolio", "TaskType", "ClientCategory", "TeamMembers", "ResponsibleTeam", "AssignedTo", "Editor", "Author",
                         "TaskCategories", "Project",
                     )
-                    .filter("Status ne 'Completed'")
                     .orderBy("orderby", false)
                     .getAll(4000);
 

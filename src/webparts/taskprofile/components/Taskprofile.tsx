@@ -329,7 +329,19 @@ class Taskprofile extends React.Component<ITaskprofileProps, ITaskprofileState> 
         })
       }
     } else {
+
       tempEstimatedArrayData = [];
+    }
+    if(taskDetails?.Sitestagging!=undefined){
+      try{
+        let parsedSiteTagging = JSON.parse(taskDetails?.Sitestagging)
+        parsedSiteTagging?.map((site:any)=>{
+          site.SiteImages= this.GetSiteIcon(site?.Title)
+        })
+        taskDetails.Sitestagging = JSON.stringify(parsedSiteTagging)
+      }catch(e){
+
+      }
     }
     const maxTitleLength: number = 75;
 
@@ -2122,7 +2134,7 @@ class Taskprofile extends React.Component<ITaskprofileProps, ITaskprofileState> 
                                     </span>
                                     {cltime?.ClienTimeDescription != undefined &&
                                       <span>
-                                        {Number(cltime?.ClienTimeDescription).toFixed(2)}%
+                                        {Number(cltime?.ClienTimeDescription).toFixed(1)}%
                                       </span>
                                     }
                                     {cltime.ClientCategory != undefined && cltime.ClientCategory.length > 0 ? cltime.ClientCategory?.map((clientcat: any) => {
