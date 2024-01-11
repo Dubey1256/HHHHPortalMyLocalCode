@@ -75,7 +75,7 @@ const TaskUserManagementTable = ({ TaskUsersListData, TaskGroupsListData, baseUr
             setSelectedCategories(JSON.parse(memberToUpdate.CategoriesItemsJson))
             setAssignedToUser(memberToUpdate.AssingedToUser?.Id)
             setApprover([memberToUpdate.Approver?.[0]?.Id])
-            setUserTeam(memberToUpdate.technicalGroup)
+            setUserTeam(memberToUpdate.Team)
         }
     }, [memberToUpdate]);
 
@@ -197,7 +197,7 @@ const TaskUserManagementTable = ({ TaskUsersListData, TaskGroupsListData, baseUr
                 ApproverId: Array.isArray(approver) && approver.every(item => typeof item === 'number' && item != null)
                     ? { "results": approver } : (approver.length > 0 && approver[0] != null && approver[0].AssingedToUser?.Id != null) ? { "results": [approver[0].AssingedToUser.Id] } : { "results": [] },
                 UserGroupId: userGroup ? parseInt(userGroup) : memberToUpdate?.UserGroup?.Id,
-                technicalGroup: userTeam ? userTeam : memberToUpdate.technicalGroup,
+                Team: userTeam ? userTeam : memberToUpdate.Team,
                 // Item_x0020_Cover: { "__metadata": { type: "SP.FieldUrlValue" }, Description: "Description", Url: imageUrl?.Item_x002d_Image != undefined ? imageUrl?.Item_x002d_Image?.Url : (imageUrl?.Item_x0020_Cover != undefined ? imageUrl?.Item_x0020_Cover?.Url : null) },
                 // Item_x0020_Cover: { "__metadata": { type: "SP.FieldUrlValue" }, Description: "Description", Url: imageUrl?.Item_x0020_Cover != undefined ? imageUrl?.Item_x0020_Cover?.Url : memberToUpdate.Item_x0020_Cover.Url},
                 Item_x0020_Cover: { "__metadata": { type: "SP.FieldUrlValue" }, Description: "Description", Url: imageUrl?.Item_x002d_Image?.Url || imageUrl?.Item_x0020_Cover?.Url || (memberToUpdate?.Item_x0020_Cover?.Url || null) },
@@ -328,9 +328,9 @@ const TaskUserManagementTable = ({ TaskUsersListData, TaskGroupsListData, baseUr
             placeholder: "Approver"
         },
         {
-            accessorKey: "technicalGroup",
+            accessorKey: "Team",
             header: "",
-            id: 'technicalGroup',
+            id: 'Team',
             placeholder: "Team",
             size: 75,
         },
@@ -582,7 +582,7 @@ const TaskUserManagementTable = ({ TaskUsersListData, TaskGroupsListData, baseUr
         setSelectedCategories(JSON.parse(memberToUpdate.CategoriesItemsJson))
         // setAssignedToUser(memberToUpdate.AssingedToUser?.Id)
         setApprover([memberToUpdate.Approver?.[0]?.Id])
-        setUserTeam(memberToUpdate.technicalGroup)
+        setUserTeam(memberToUpdate.Team)
         setOpenUpdateMemberPopup(false)
     }
 
@@ -811,15 +811,15 @@ const TaskUserManagementTable = ({ TaskUsersListData, TaskGroupsListData, baseUr
                                 <div className='col-md-3'>
                                     <div className='input-group'>
                                         <label className='form-label full-width'>Team: </label>
-                                        <select className='form-control' id="sites" defaultValue={memberToUpdate?.technicalGroup} onChange={(e: any) => setUserTeam(e.target.value)}
+                                        <select className='form-control' id="sites" defaultValue={memberToUpdate?.Team} onChange={(e: any) => setUserTeam(e.target.value)}
                                         >
                                             <option>Select</option>
                                             <option value="SPFx">SPFx</option>
-                                            <option value="Project Database">Project Database</option>
-                                            <option value="Contact Database">Contact Database</option>
-                                            <option value="Portfolio Database">Portfolio Database</option>
-                                            <option value="QA">QA</option>
-                                            <option value="Design">Design</option>
+                                            <option value="Project Database">Contact</option>
+                                            <option value="Contact Database">AnC</option>
+                                            <option value="Portfolio Database">Project</option>
+                                            <option value="QA">Design</option>
+                                            <option value="Design">QA</option>
                                         </select>
                                     </div>
                                 </div>
