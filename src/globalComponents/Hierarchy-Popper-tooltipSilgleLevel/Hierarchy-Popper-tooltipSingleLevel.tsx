@@ -80,12 +80,15 @@ export default function ReactPopperTooltipSingleLevel({ ShareWebId, row, masterT
         onVisibleChange: setControlledVisible,
     });
 
-    // React.useEffect(() => {
-    //     if(AllListId!=undefined && action=='click'){
-    //         masterFunction() 
-    //     getAlldata(row)
-    // }
-    //   }, [action]);
+    React.useEffect(() => {
+        let targetDiv: any = document?.querySelector('.ms-Panel-main');
+            setTimeout(() => {
+                if (targetDiv && row?.PortfolioType?.Color!=undefined) {
+                    // Change the --SiteBlue variable for elements under the targetDiv
+                    targetDiv?.style?.setProperty('--SiteBlue', row?.PortfolioType?.Color); // Change the color to your desired value
+                }
+            }, 1000)
+      }, [action]);
 
     
 
