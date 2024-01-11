@@ -460,7 +460,7 @@ const SelectedTaskUpdateOnPopup = (item: any) => {
                         {row?.original?.ProjectTitle != (null || undefined) ?
                             <div className="alignCenter"><a style={row?.original?.fontColorTask != undefined ? { color: `${row?.original?.fontColorTask}` } : { color: `${row?.original?.PortfolioType?.Color}` }} data-interception="off" target="_blank" className="hreflink serviceColor_Active" href={`${item?.ContextValue?.siteUrl}/SitePages/Project-Management.aspx?ProjectId=${row?.original?.ProjectId}`} >
                                 <ReactPopperTooltip ShareWebId={row?.original?.projectStructerId} projectToolShow={true} row={row} AllListId={item?.ContextValue} /></a><div className="ms-2" style={{ background: 'yellow' }}>{row?.original?.updatedPortfolioStructureID}</div></div>
-                            : ""}
+                            : <div className="ms-2" style={{ background: 'yellow' }}>{row?.original?.updatedPortfolioStructureID}</div>}
                     </>
                 ),
                 id: 'ProjectTitle',
