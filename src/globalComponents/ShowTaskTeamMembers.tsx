@@ -18,7 +18,7 @@ function ShowTaskTeamMembers(item: any) {
     try{
      taskDetails = JSON.parse(JSON.stringify(itemDetails));
     }catch(e){
-      console.log('Team error',e)
+      // console.log('Team error',e)
     }
       let LeadCount =0;
       if(taskDetails["ResponsibleTeam"] != undefined&&taskDetails["ResponsibleTeam"].length > 0){

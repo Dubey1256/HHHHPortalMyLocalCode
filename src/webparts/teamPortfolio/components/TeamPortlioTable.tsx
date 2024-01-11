@@ -2254,16 +2254,16 @@ function TeamPortlioTable(SelectedProp: any) {
     };
 
 
-    React.useEffect(() => {
-        const checkbox: any = document.querySelector('input[type="checkbox"]');
-        checkbox.addEventListener('change', function () {
-            if (checkbox.indeterminate) {
-                checkbox.style.backgroundColor = '#ffcc00'; // Change this to your desired color
-            } else {
-                checkbox.style.backgroundColor = ''; // Reset the background color for checked/unchecked state
-            }
-        });
-    }, [])
+    // React.useEffect(() => {
+    //     const checkbox: any = document.querySelector('input[type="checkbox"]');
+    //     checkbox.addEventListener('change', function () {
+    //         if (checkbox.indeterminate) {
+    //             checkbox.style.backgroundColor = '#ffcc00'; // Change this to your desired color
+    //         } else {
+    //             checkbox.style.backgroundColor = ''; // Reset the background color for checked/unchecked state
+    //         }
+    //     });
+    // }, [])
     //-------------------------------------------------------------End---------------------------------------------------------------------------------
 
 
