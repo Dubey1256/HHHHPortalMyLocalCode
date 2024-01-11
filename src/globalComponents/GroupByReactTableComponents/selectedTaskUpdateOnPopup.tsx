@@ -328,7 +328,12 @@ const SelectedTaskUpdateOnPopup = (item: any) => {
             if (filteredValues?.Project && filteredValues?.Project != undefined) {
                 showUpdateData.PortfolioStructureID = filteredValues?.Project?.PortfolioStructureID
             }
-            let selectedDataPropsCopy = JSON.parse(JSON.stringify(item?.selectedData))
+            let selectedDataPropsCopy: any = []
+            try {
+                selectedDataPropsCopy = JSON.parse(JSON.stringify(item?.selectedData))
+            } catch (error) {
+                console.log(error)
+            }
             let selecteDataValue: any = []
             selectedDataPropsCopy?.map((elem: any) => {
                 if (elem.original.subRows?.length > 0) {

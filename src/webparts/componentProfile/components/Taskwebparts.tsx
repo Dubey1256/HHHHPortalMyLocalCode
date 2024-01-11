@@ -820,11 +820,12 @@ const switchGroupbyData = () => {
     
    
    let newArray:any = []
-    if(componentData != undefined && isAllTaskSelected == true){
-      if(componentData[0]?.Title == 'Others'){
-        componentData.splice(0,1)
-      }
+   if(componentData != undefined && componentData.length > 1 && isAllTaskSelected == true){
+    if(componentData[0]?.Title == 'Others' || componentData[1]?.Title == 'Others' && componentData[0]?.TaskType.Title == 'Activities'){
+
+      componentData[0]?.Title == 'Others'?componentData.splice(0,1):componentData.splice(0,2)
     }
+  }
     if(isAllTaskSelected == true && componentData.length > 0){
       setData(componentData);
       setLoaded(true);
@@ -2121,6 +2122,7 @@ const updatedDataDataFromPortfolios = (copyDtaArray: any, dataToUpdate: any) => 
                         loadedClassName="loadedContent"
                       />
                       <GlobalCommanTable bulkEditIcon={true} priorityRank={priorityRank} precentComplete={precentComplete}
+                      AllSitesTaskData={flatviewTasklist} masterTaskData={flatviewmastertask}
                         smartTimeTotalFunction={smartTimeTotal} SmartTimeIconShow={true}
                         portfolioTypeDataItemBackup={portfolioTypeDataItemBackup} taskTypeDataItemBackup={taskTypeDataItemBackup} flatViewDataAll={flatViewDataAll} setData={setData}
                         ref={childRef}
