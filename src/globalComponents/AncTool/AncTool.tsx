@@ -976,6 +976,35 @@ const AncTool = (props: any) => {
             <footer className='text-end p-2'>
 
                 {/* <label className='me-1'><input className='form-check-input' type='checkbox' /> Update Default Folder </label> */}
+                {selectPathFromPopup?.length > 0 && CreateFolderLocation != true ?
+                    <label className="text-end me-1">
+                        <a className='hreflink btn btn-primary' onClick={() => showCreateFolderLocation(true)}>
+                            Create Folder
+                        </a>
+                    </label> : ''}
+                <button className="btn btn-primary me-1" disabled={selectPathFromPopup?.length > 0 ? false : true} onClick={() => { selectFolderToUpload() }}>Select</button>
+                <button className='btn btn-default ' onClick={() => cancelPathFolder()}>Cancel</button>
+            </footer>
+        </>
+        );
+    };
+    const onRenderCustomFooterDefaultMain = () => {
+        return (<>
+
+            <div className="p-2 pb-0 px-4">
+                <div>
+                    <Row className='mb-1'><span className='highlighted'>{selectPathFromPopup?.length > 0 ? `${selectPathFromPopup}` : ''}</span></Row>
+                    {CreateFolderLocation ?
+                        <Row>
+                            <div className='col-md-9'><input type="text" className='form-control' placeholder='Folder Name' value={newSubFolderName} onChange={(e) => setNewSubFolderName(e.target.value)} /></div>
+                            <div className='col-md-3 pe-0'><button className="btn btn-primary pull-right" disabled={newSubFolderName?.length > 0 ? false : true} onClick={() => { CreateSubFolder() }}>Create Folder</button></div>
+                        </Row> : ''}
+                </div>
+
+            </div>
+            <footer className='text-end p-2'>
+
+                {/* <label className='me-1'><input className='form-check-input' type='checkbox' /> Update Default Folder </label> */}
                 {/* {selectPathFromPopup?.length > 0 && CreateFolderLocation != true ?
                     <label className="text-end me-1">
                         <a className='hreflink btn btn-primary' onClick={() => showCreateFolderLocation(true)}>
@@ -1380,7 +1409,7 @@ const AncTool = (props: any) => {
                                                                                 <tr>
                                                                                     <td><input type="checkbox" className='form-check-input hreflink' checked={AllReadytagged?.some((doc: any) => file.Id == doc.Id)} onClick={() => { tagSelectedDoc(file) }} /></td>
                                                                                     <td><span className={`alignIcon  svg__iconbox svg__icon--${file?.docType}`} title={file?.File_x0020_Type}></span></td>
-                                                                                    <td><a style={{wordBreak:"break-all"}} href={file?.EncodedAbsUrl} target="_blank" data-interception="off" className='hreflink'>{file?.Title}</a></td>
+                                                                                    <td><a style={{wordBreak:"break-all"}} href={`${file?.EncodedAbsUrl}?web=1`} target="_blank" data-interception="off" className='hreflink'>{file?.Title}</a></td>
                                                                                     <td>{file?.ItemRank}</td>
                                                                                 </tr>
                                                                             )
@@ -1487,9 +1516,9 @@ const AncTool = (props: any) => {
                                                             <Col className='clearfix col mb-2'>
                                                                 <div className='input-group'>
                                                                     <label className='form-label full-width fw-semibold'>URL</label>
-                                                                    <input type="text" onChange={(e) => { setLinkToDocUrl(e.target.value) }} value={LinkToDocUrl} placeholder='Url' className='form-control' />
+                                                                    <input type="text" onChange={(e) => { setLinkToDocUrl(encodeURIComponent(e.target.value)) }} value={LinkToDocUrl} placeholder='Url' className='form-control' />
                                                                 </div>
-                                                            </Col>
+                                                            </Col>      
 
                                                             <Col>
                                                                 <button disabled={(LinkToDocUrl?.length > 0 && LinkToDocTitle?.length > 0) ? false : true} className="btn btn-primary mt-2 my-1  float-end px-3" onClick={() => { CreateLinkAndTag() }}>Create</button>
@@ -1531,7 +1560,7 @@ const AncTool = (props: any) => {
                                                                     return (
                                                                         <tr>
                                                                             <td><span className={`alignIcon  svg__iconbox svg__icon--${file?.docType}`} title={file?.docType}></span></td>
-                                                                            <td><a href={file?.EncodedAbsUrl} target="_blank" data-interception="off" className='hreflink'>{file?.Title}</a></td>
+                                                                            <td><a href={`${file?.EncodedAbsUrl}?web=1`} target="_blank" data-interception="off" className='hreflink'>{file?.Title}</a></td>
                                                                             <td>{file?.ItemRank}</td>
                                                                             <td> <span
                                                                                 style={{ marginLeft: '6px' }}
@@ -1727,7 +1756,7 @@ const AncTool = (props: any) => {
                 isOpen={TaskTypesPopup}
                 onDismiss={cancelPathFolder}
                 onRenderHeader={ChooseTaskTypesCustomHeader}
-                onRenderFooter={onRenderCustomFooterMain}
+                onRenderFooter={onRenderCustomFooterDefaultMain}
                 isBlocking={false}>
                 <div>
                     {TaskTypesItem != undefined && TaskTypesItem.length > 0 && TaskTypesItem.map((itm: any) => {
@@ -1802,6 +1831,3 @@ const AncTool = (props: any) => {
 
 export default AncTool;
 
-function myReject(error: any) {
-    throw new Error('Function not implemented.');
-}
