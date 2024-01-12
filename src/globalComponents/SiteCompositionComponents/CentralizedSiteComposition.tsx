@@ -423,15 +423,11 @@ const CentralizedSiteComposition = (Props: any) => {
         setLoaded(false);
         if (usedForLoad == "Individual-Site") {
             GlobalAllSiteData = await GetIndividualSiteAllData();
-
         }
         if (usedForLoad == "All-Sites") {
-            if (usedFor == "CSF") {
-                GlobalAllSiteData = await globalCommon?.loadAllSiteTasks(RequiredListIds, 'Portfolio/Id ne null')
-                // loadAllMasterListData();
-            } else {
+           
                 GlobalAllSiteData = await globalCommon?.loadAllSiteTasks(RequiredListIds, undefined);
-            }
+            
 
         }
         let AllTaggedComponent: any = [];
@@ -481,7 +477,7 @@ const CentralizedSiteComposition = (Props: any) => {
     }
 
     const GetIndividualSiteAllData = async () => {
-        let query: any = "Id,Title,FeedBack,PriorityRank,Remark,Project/PriorityRank,ParentTask/Id,ParentTask/Title,ParentTask/TaskID,TaskID,SmartInformation/Id,SmartInformation/Title,Project/Id,Project/Title,workingThisWeek,EstimatedTime,TaskLevel,TaskLevel,OffshoreImageUrl,OffshoreComments,ClientTime,Priority,Status,ItemRank,IsTodaysTask,Body,Portfolio/Id,Portfolio/Title,Portfolio/PortfolioStructureID,PercentComplete,Categories,StartDate,PriorityRank,DueDate,TaskType/Id,TaskType/Title,Created,Modified,Author/Id,Author/Title,TaskCategories/Id,TaskCategories/Title,AssignedTo/Id,AssignedTo/Title,TeamMembers/Id,TeamMembers/Title,ResponsibleTeam/Id,ResponsibleTeam/Title,ClientCategory/Id,ClientCategory/Title&$expand=AssignedTo,Project,ParentTask,SmartInformation,Author,Portfolio,TaskType,TeamMembers,ResponsibleTeam,TaskCategories,ClientCategory"
+        let query: any = "Id,Title,FeedBack,PriorityRank,Remark,Project/PriorityRank,ParentTask/Id,ParentTask/Title,ParentTask/TaskID,TaskID,SmartInformation/Id,SmartInformation/Title,Project/Id,Project/Title,Project/PortfolioStructureID,workingThisWeek,EstimatedTime,TaskLevel,TaskLevel,OffshoreImageUrl,OffshoreComments,ClientTime,Priority,Status,ItemRank,IsTodaysTask,Body,Portfolio/Id,Portfolio/Title,Portfolio/PortfolioStructureID,PercentComplete,Categories,StartDate,PriorityRank,DueDate,TaskType/Id,TaskType/Title,Created,Modified,Author/Id,Author/Title,TaskCategories/Id,TaskCategories/Title,AssignedTo/Id,AssignedTo/Title,TeamMembers/Id,TeamMembers/Title,ResponsibleTeam/Id,ResponsibleTeam/Title,ClientCategory/Id,ClientCategory/Title&$expand=AssignedTo,Project,ParentTask,SmartInformation,Author,Portfolio,TaskType,TeamMembers,ResponsibleTeam,TaskCategories,ClientCategory"
         try {
             const data = await web.lists.getById(ItemDetails?.listId).items.select(query).getAll();
             data?.map((task: any) => {
@@ -497,8 +493,19 @@ const CentralizedSiteComposition = (Props: any) => {
                     task.PercentComplete = (task.PercentComplete * 100).toFixed(0);
                 }
                 let checkIsSCProtected: any = false;
+                if (task.Project) {
+                    task.ProjectTitle = task?.Project?.Title;
+                    task.ProjectId = task?.Project?.Id;
+                    task.projectStructerId =
+                        task?.Project?.PortfolioStructureID;
+                    const title = task?.Project?.Title || "";
+                    const dueDate = task?.DueDate;
+                    task.joinedData = [];
+                    if (title) task.joinedData.push(`Title: ${title}`);
+                    if (dueDate) task.joinedData.push(`Due Date: ${dueDate}`);
+                }
                 task.DisplayCreateDate = moment(task.Created).format("DD/MM/YYYY");
-                task.descriptionsSearch =globalCommon.descriptionSearchData(task);
+                task.descriptionsSearch = globalCommon.descriptionSearchData(task);
                 if (task?.SiteCompositionSettings != undefined) {
                     let TempSCSettingsData: any = JSON.parse(task?.SiteCompositionSettings);
                     if (TempSCSettingsData?.length > 0) {
@@ -974,7 +981,31 @@ const CentralizedSiteComposition = (Props: any) => {
                 placeholder: "Title",
                 resetColumnFilters: false,
                 header: "",
-                size: 470,
+                size: 400,
+            },
+            {
+                accessorFn: (row) => row?.projectStructerId + "." + row?.ProjectTitle,
+                cell: ({ row }) => (
+                    <>
+                        {row?.original?.ProjectTitle != (null || undefined) ?
+                            <span ><a style={row?.original?.fontColorTask != undefined ? { color: `${row?.original?.fontColorTask}` } : { color: `${row?.original?.PortfolioType?.Color}` }} data-interception="off" target="_blank" className="hreflink serviceColor_Active" href={`${siteUrl}/SitePages/Project-Management.aspx?ProjectId=${row?.original?.ProjectId}`} >
+                                <ReactPopperTooltip
+                                    ShareWebId={row?.original?.projectStructerId}
+                                    projectToolShow={true}
+                                    row={row?.original}
+                                    singleLevel={true}
+                                    masterTaskData={GlobalAllMasterListData}
+                                    AllSitesTaskData={GlobalAllSiteData}
+                                    AllListId={RequiredListIds}
+                                /></a></span>
+                            : ""}
+                    </>
+                ),
+                id: 'ProjectTitle',
+                placeholder: "Project",
+                resetColumnFilters: false,
+                header: "",
+                size: 70,
             },
             {
                 accessorFn: (row) => row?.IsSCProtectedStatus,

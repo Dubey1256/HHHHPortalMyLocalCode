@@ -362,7 +362,13 @@ const CreateWS = (props: any) => {
         let WorstreamLatestId: any;
         let ProjectId: any = null;
         if (globalContextData?.tagProjectFromTable == true) {
-            ProjectId = globalContextData?.ProjectLandingPageDetails?.Id != undefined ? globalContextData?.ProjectLandingPageDetails?.Id : null;
+            if(props?.UsedFrom=="ProjectManagement" && selectedItem?.Project?.Id!=undefined && selectedItem?.Project?.Item_x0020_Type=="Sprint"){
+                ProjectId = selectedItem?.Project?.Id;
+              }else{
+                ProjectId = globalContextData?.ProjectLandingPageDetails?.Id != undefined ? globalContextData?.ProjectLandingPageDetails?.Id : null;
+              }
+
+           
         }
         let web = new Web(AllListId?.siteUrl);
         if (selectedTaskType == 3) {
