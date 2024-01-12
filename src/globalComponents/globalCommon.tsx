@@ -2164,7 +2164,7 @@ export const loadAllTimeEntry = async (timesheetListConfig: any) => {
     }
 }
 export const loadAllSiteTasks = async (allListId: any, filter: any) => {
-    let query = "Id,Title,FeedBack,PriorityRank,Remark,Project/PriorityRank,Project/Item_x0020_Type,ParentTask/Id,ParentTask/Title,ParentTask/TaskID,TaskID,SmartInformation/Id,SmartInformation/Title,Project/Id,Project/Title,workingThisWeek,EstimatedTime,TaskLevel,TaskLevel,OffshoreImageUrl,OffshoreComments,SiteCompositionSettings,Sitestagging,Priority,Status,ItemRank,IsTodaysTask,Body,Portfolio/Id,Portfolio/Title,Portfolio/PortfolioStructureID,PercentComplete,Categories,StartDate,PriorityRank,DueDate,TaskType/Id,TaskType/Title,TaskType/Level,Created,Modified,Author/Id,Author/Title,TaskCategories/Id,TaskCategories/Title,AssignedTo/Id,AssignedTo/Title,TeamMembers/Id,TeamMembers/Title,ResponsibleTeam/Id,ResponsibleTeam/Title,ClientCategory/Id,ClientCategory/Title&$expand=AssignedTo,Project,ParentTask,SmartInformation,Author,Portfolio,TaskType,TeamMembers,ResponsibleTeam,TaskCategories,ClientCategory"
+    let query = "Id,Title,FeedBack,PriorityRank,Remark,Project/PriorityRank,Project/PortfolioStructureID,Project/Item_x0020_Type,ParentTask/Id,ParentTask/Title,ParentTask/TaskID,TaskID,SmartInformation/Id,SmartInformation/Title,Project/Id,Project/Title,workingThisWeek,EstimatedTime,TaskLevel,TaskLevel,OffshoreImageUrl,OffshoreComments,SiteCompositionSettings,Sitestagging,Priority,Status,ItemRank,IsTodaysTask,Body,Portfolio/Id,Portfolio/Title,Portfolio/PortfolioStructureID,PercentComplete,Categories,StartDate,PriorityRank,DueDate,TaskType/Id,TaskType/Title,TaskType/Level,Created,Modified,Author/Id,Author/Title,TaskCategories/Id,TaskCategories/Title,AssignedTo/Id,AssignedTo/Title,TeamMembers/Id,TeamMembers/Title,ResponsibleTeam/Id,ResponsibleTeam/Title,ClientCategory/Id,ClientCategory/Title&$expand=AssignedTo,Project,ParentTask,SmartInformation,Author,Portfolio,TaskType,TeamMembers,ResponsibleTeam,TaskCategories,ClientCategory"
     if (filter != undefined) {
         query += `&$filter=${filter}`
     }
@@ -2197,6 +2197,17 @@ export const loadAllSiteTasks = async (allListId: any, filter: any) => {
                     let checkIsSCProtected: any = false;
                     task.DisplayCreateDate = moment(task.Created).format("DD/MM/YYYY");
                     task.descriptionsSearch = descriptionSearchData(task);
+                    if (task.Project) {
+                        task.ProjectTitle = task?.Project?.Title;
+                        task.ProjectId = task?.Project?.Id;
+                        task.projectStructerId =
+                            task?.Project?.PortfolioStructureID;
+                        const title = task?.Project?.Title || "";
+                        const dueDate = task?.DueDate;
+                        task.joinedData = [];
+                        if (title) task.joinedData.push(`Title: ${title}`);
+                        if (dueDate) task.joinedData.push(`Due Date: ${dueDate}`);
+                    }
                     if (task?.SiteCompositionSettings != undefined) {
                         let TempSCSettingsData: any = JSON.parse(task?.SiteCompositionSettings);
                         if (TempSCSettingsData?.length > 0) {
