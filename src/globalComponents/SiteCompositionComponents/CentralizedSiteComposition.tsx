@@ -498,6 +498,7 @@ const CentralizedSiteComposition = (Props: any) => {
                 }
                 let checkIsSCProtected: any = false;
                 task.DisplayCreateDate = moment(task.Created).format("DD/MM/YYYY");
+                task.descriptionsSearch =globalCommon.descriptionSearchData(task);
                 if (task?.SiteCompositionSettings != undefined) {
                     let TempSCSettingsData: any = JSON.parse(task?.SiteCompositionSettings);
                     if (TempSCSettingsData?.length > 0) {
@@ -935,7 +936,7 @@ const CentralizedSiteComposition = (Props: any) => {
                 header: "",
                 resetColumnFilters: false,
                 // isColumnDefultSortingAsc:true,
-                size: 100
+                size: 130
             },
             {
                 accessorFn: (row) => row?.Title,
@@ -973,7 +974,7 @@ const CentralizedSiteComposition = (Props: any) => {
                 placeholder: "Title",
                 resetColumnFilters: false,
                 header: "",
-                size: 500,
+                size: 470,
             },
             {
                 accessorFn: (row) => row?.IsSCProtectedStatus,
@@ -1113,8 +1114,6 @@ const CentralizedSiteComposition = (Props: any) => {
         groupedDataItems?.forEach((item: any) => { flatten(item) });
         return flattenedData;
     }
-
-
 
     // Global Common Table Call Back Function // Selected Item Data for Table
 

@@ -2196,6 +2196,7 @@ export const loadAllSiteTasks = async (allListId: any, filter: any) => {
                     }
                     let checkIsSCProtected: any = false;
                     task.DisplayCreateDate = moment(task.Created).format("DD/MM/YYYY");
+                    task.descriptionsSearch = descriptionSearchData(task);
                     if (task?.SiteCompositionSettings != undefined) {
                         let TempSCSettingsData: any = JSON.parse(task?.SiteCompositionSettings);
                         if (TempSCSettingsData?.length > 0) {
