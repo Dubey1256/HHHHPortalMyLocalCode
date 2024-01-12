@@ -15,6 +15,10 @@ import Button from "react-bootstrap/Button";
 import moment from 'moment';
 import Tooltip from '../../../globalComponents/Tooltip';
 import zIndex from '@material-ui/core/styles/zIndex';
+import CheckboxTree from 'react-checkbox-tree';
+import 'react-checkbox-tree/lib/react-checkbox-tree.css';
+import { FaChevronDown, FaChevronRight, FaMinusSquare, FaPlusSquare, FaSquare, FaCheckSquare } from 'react-icons/fa';
+// import "./styles.css"
 
 const TaskUserManagementTable = ({ TaskUsersListData, TaskGroupsListData, baseUrl, TaskUserListId, context, fetchAPIData, smartMetaDataItems }: any) => {
     const [data, setData] = React.useState([]);
@@ -46,6 +50,8 @@ const TaskUserManagementTable = ({ TaskUsersListData, TaskGroupsListData, baseUr
     const [autoSuggestData, setAutoSuggestData] = useState(null);
     const [selectedCategories, setSelectedCategories] = useState([]);
     const [isUserNameValid, setIsUserNameValid] = useState(false);
+    const [checked, setChecked] = useState([]);
+    const [expanded, setExpanded] = useState([]);
     // const [searchedProjectKey, setSearchedProjectKey] = React.useState("");
 
     const Categories: any = (smartMetaDataItems.filter((items: any) => items.TaxType === "TimesheetCategories"))
@@ -61,7 +67,7 @@ const TaskUserManagementTable = ({ TaskUsersListData, TaskGroupsListData, baseUr
     console.log(uniqueCategories)
 
     const TaxTypeCategories: any = (smartMetaDataItems.filter((items: any) => items.TaxType === "Categories"))
-
+    const MyCategories = TaxTypeCategories.filter((items: any) => items.ParentID === 0)
     // When the member to update is set, initialize the Member states
     useEffect(() => {
         if (memberToUpdate) {
@@ -72,7 +78,14 @@ const TaskUserManagementTable = ({ TaskUsersListData, TaskGroupsListData, baseUr
             setIsActive(memberToUpdate.IsActive);
             setIsTaskNotifications(memberToUpdate.IsTaskNotifications);
             setUserCategory(memberToUpdate.TimeCategory)
-            setSelectedCategories(JSON.parse(memberToUpdate.CategoriesItemsJson))
+            // setSelectedCategories(JSON.parse(memberToUpdate.CategoriesItemsJson))
+
+            // Parse JSON and set selected categories
+            const categoriesJson = JSON.parse(memberToUpdate?.CategoriesItemsJson);
+            setSelectedCategories(categoriesJson);
+            // Extract IDs and set them as checked
+            const categoryIds = categoriesJson?.map((category: any) => category.Id.toString());
+            setChecked(categoryIds);
             setAssignedToUser(memberToUpdate.AssingedToUser?.Id)
             setApprover([memberToUpdate.Approver?.[0]?.Id])
             setUserTeam(memberToUpdate.Team)
@@ -464,68 +477,9 @@ const TaskUserManagementTable = ({ TaskUsersListData, TaskGroupsListData, baseUr
         return rootCategories.map((rootCategory: any) => findChildren(rootCategory));
     };
 
-    const createMenuProps = (categories: any) => {
-        const buildNestedItems = (category: any) => {
-            return {
-                key: category.Id,
-                text: category.Title,
-                subMenuProps: category.children && {
-                    items: category.children.map(buildNestedItems), // recursively build children
-                },
-                onClick: () => handleCategoryClick(category),
-            };
-        };
-
-        return {
-            items: categories.map(buildNestedItems),
-        };
-    };
-
-    const handleCategoryClick = (category: any) => {
-        // const isCategorySelected = selectedCategories?.some(c => c.Id === category.Id);
-        const isCategorySelected = (selectedCategories || []).some(c => c.Id === category.Id);
-
-        if (isCategorySelected) {
-            const removeCategoryAndChildren = (cat: any) => {
-                let newSelectedCategories = selectedCategories?.filter(c => c.Id !== cat.Id);
-                if (cat.children) {
-                    cat.children.forEach((child: any) => {
-                        newSelectedCategories = removeCategoryAndChildren(child);
-                    });
-                }
-                return newSelectedCategories;
-            };
-
-            setSelectedCategories(prevCategories => removeCategoryAndChildren(category));
-        } else {
-            setSelectedCategories(prevCategories => {
-                // const newSelection = [...prevCategories, { Title: category?.Title, Id: category?.Id }];
-                const newSelection = [...(prevCategories || []), { Title: category?.Title, Id: category?.Id }];
-                return newSelection?.filter(c => !category?.children?.some((child: any) => child.Id === c.Id));
-            });
-        }
-    };
-
-    const handleCategoryRemoval = (categoryToRemove: any) => {
-        setSelectedCategories(prevCategories => {
-            const removeCategoryAndChildren = (cat: any) => {
-                // let newSelectedCategories = prevCategories.filter(c => c.Id !== cat.Id);
-                let newSelectedCategories = (prevCategories || []).filter(c => c.Id !== cat.Id);
-                if (cat.children) {
-                    cat.children.forEach((child: any) => {
-                        newSelectedCategories = removeCategoryAndChildren(child);
-                    });
-                }
-                return newSelectedCategories;
-            };
-
-            return removeCategoryAndChildren(categoryToRemove);
-        });
-    };
-
-
-    const TaxTypeCategoriesHierarchy = buildHierarchy(TaxTypeCategories);
-    const menuItems: IContextualMenuItem[] = createMenuProps(TaxTypeCategoriesHierarchy).items;
+    useEffect(() => {
+        buildHierarchy(TaxTypeCategories);
+    }, [TaxTypeCategories])
 
     // Headers for Panel customisation code
 
@@ -585,6 +539,65 @@ const TaskUserManagementTable = ({ TaskUsersListData, TaskGroupsListData, baseUr
         setUserTeam(memberToUpdate.Team)
         setOpenUpdateMemberPopup(false)
     }
+    
+
+    const findCategoryById = (categories: any, id: any): any => {
+        let result = null;
+
+        for (const category of categories) {
+            if (category.Id.toString() === id) {
+                return category;
+            }
+            if (category.children) {
+                result = findCategoryById(category.children, id);
+                if (result) {
+                    return result;
+                }
+            }
+        }
+
+        return result;
+    };
+
+    const handleCheck = (checked: any) => {
+        setChecked(checked);
+
+        const selected = checked.map((id: any) => {
+            const category = findCategoryById(MyCategories, id);
+            // Transform the category object to only include Title and Id
+            if (category) {
+                return { Title: category.Title, Id: category.Id };
+            }
+            return null;
+        }).filter((cat: any) => cat !== null); // Filter out any null values
+
+        setSelectedCategories(selected);
+    };
+
+
+    const transformCategoriesToNodes = (categories: any) => {
+        return categories.map((category: any) => {
+            return {
+                value: category.Id.toString(),
+                label: category.Title,
+                children: category.children ? transformCategoriesToNodes(category.children) : []
+            };
+        });
+    };
+
+    // const nodes = transformCategoriesToNodes(MyCategories);
+
+    const icons: any = {
+        check: <FaCheckSquare />,
+        uncheck: <FaSquare />,
+        halfCheck: <FaMinusSquare />,
+        expandClose: <FaChevronRight />,
+        expandOpen: <FaChevronDown />,
+        parentClose: <FaChevronRight />,
+        parentOpen: <FaChevronDown />,
+        leaf: null, // you can set to null or any icon for leaf nodes
+    };
+
 
     // JSX Code starts here
 
@@ -731,7 +744,7 @@ const TaskUserManagementTable = ({ TaskUsersListData, TaskGroupsListData, baseUr
                 onRenderHeader={onRenderCustomHeaderUpdateUser}
                 type={PanelType.large}
                 isOpen={openUpdateMemberPopup}
-                onDismiss={() => setOpenUpdateMemberPopup(false)}
+                onDismiss={cancelUpdate}
                 isFooterAtBottom={true}
                 isBlocking={!openUpdateMemberPopup}
             >
@@ -815,11 +828,11 @@ const TaskUserManagementTable = ({ TaskUsersListData, TaskGroupsListData, baseUr
                                         >
                                             <option>Select</option>
                                             <option value="SPFx">SPFx</option>
-                                            <option value="Project Database">Contact</option>
-                                            <option value="Contact Database">AnC</option>
-                                            <option value="Portfolio Database">Project</option>
-                                            <option value="QA">Design</option>
-                                            <option value="Design">QA</option>
+                                            <option value="Project">Project</option>
+                                            <option value="AnC">AnC</option>
+                                            <option value="Contact">Contact</option>
+                                            <option value="QA">QA</option>
+                                            <option value="Design">Design</option>
                                         </select>
                                     </div>
                                 </div>
@@ -845,18 +858,59 @@ const TaskUserManagementTable = ({ TaskUsersListData, TaskGroupsListData, baseUr
                                                     Case by Case</label>
                                                 {selectedApprovalType === "Approve Selected" ?
                                                     <>
-                                                        <PrimaryButton text="Select Category" menuProps={{ items: menuItems }} styles={{ root: { display: 'block', width: '100%' } }} />
+
+                                                        <div className="categories-container">
+                                                            <CheckboxTree
+                                                                nodes={transformCategoriesToNodes(MyCategories)}
+                                                                checked={checked}
+                                                                expanded={expanded}
+                                                                onCheck={handleCheck}
+                                                                onExpand={setExpanded}
+                                                                icons={icons}
+                                                                showNodeIcon={false}
+                                                                showExpandAll={false}
+                                                            />
+                                                        </div>
+
+                                                        {/* <div className="categories-container">
+                                                            <CheckboxTree
+                                                                nodes={nodes}
+                                                                checked={checked}
+                                                                expanded={expanded}
+                                                                onCheck={setChecked}
+                                                                onExpand={setExpanded}
+                                                                showNodeIcon={false}
+                                                                iconsClass="fa5"
+                                                            />
+                                                        </div> */}
+
+                                                        {/* <div className="categories-container">
+                                                                {MyCategories?.map((parent: any) => (
+                                                                    <div key={parent?.Id} className="parent-category">
+                                                                        <div className="parent-title">{parent?.Title}</div>
+                                                                        <div className="child-categories">
+                                                                            {parent?.children?.map((child: any) => (
+                                                                                <>
+                                                                                    <div key={child?.Id} className="child-category">{child?.Title}</div>
+                                                                                    <div className="child-categories">
+                                                                                        {child?.children?.map((subChild: any) => (
+                                                                                            <div key={subChild?.Id} className="child-category">{subChild?.Title}</div>
+                                                                                        ))}
+                                                                                    </div>
+                                                                                </>
+                                                                            ))}
+                                                                        </div>
+                                                                    </div>
+                                                                ))}
+                                                            </div> */}
+
+                                                        {/* <PrimaryButton text="Select Category" menuProps={{ items: menuItems }} styles={{ root: { display: 'block', width: '100%' } }} />
                                                         {(selectedCategories || []).map((category: any) => (
                                                             <div key={category.Id} className='alignCenter block'>
                                                                 <span className='wid90'>{category.Title}</span>
-                                                                {/* <Icon
-                                                                    iconName="Cancel"
-                                                                    onClick={() => handleCategoryRemoval(category)}
-                                                                    styles={{ root: { marginLeft: '5px', cursor: 'pointer' } }}
-                                                                /> */}
                                                                 <span className='svg__iconbox svg__icon--cross light hreflink'></span>
                                                             </div>
-                                                        ))}
+                                                        ))} */}
                                                     </>
                                                     : ""}
                                             </div>
@@ -1064,3 +1118,17 @@ export default TaskUserManagementTable;
 //     );
 // };
 
+
+
+{/* <div className="categories-container">
+  {MyCategories.map((parent) => (
+    <div key={parent.Id} className="parent-category">
+      <div className="parent-title">{parent.Title}</div>
+      <div className="child-categories">
+        {parent.children.map((child) => (
+          <div key={child.Id} className="child-category">{child.Title}</div>
+        ))}
+      </div>
+    </div>
+  ))}
+</div> */}
