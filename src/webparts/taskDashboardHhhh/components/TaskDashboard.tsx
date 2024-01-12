@@ -896,7 +896,7 @@ const TaskDashboard = (props: any) => {
                 internalHeader: "",
                 id: "Id", // 'id' is required
                 isSorted: false,
-                style: { width: '35px' },
+                style: { width: '25px' },
                 showSortIcon: false,
                 Cell: ({ row }: any) => (
                     <span
@@ -1050,7 +1050,7 @@ const TaskDashboard = (props: any) => {
                 internalHeader: "",
                 id: "Id", // 'id' is required
                 isSorted: false,
-                style: { width: '65px' },
+                style: { width: '35px' },
                 showSortIcon: false,
                 Cell: ({ row }: any) => (
                     <div className='alignCenter'>
@@ -1060,8 +1060,7 @@ const TaskDashboard = (props: any) => {
                             data-bs-placement="auto"
                             title="Click To Edit Timesheet"
                         ></span>
-                        <span
-                            title="Edit Task"
+                        <span title="Edit Task" style={{marginTop:"1px",marginLeft:"4px"}}
                             onClick={() => EditPopup(row?.original)}
                             className="svg__iconbox svg__icon--edit hreflink"
                         ></span>

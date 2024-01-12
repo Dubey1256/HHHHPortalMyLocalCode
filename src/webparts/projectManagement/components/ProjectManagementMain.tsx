@@ -666,7 +666,8 @@ const ProjectManagementMain = (props: any) => {
         AllTask.push(items);
       });
       try {
-        backupAllTasks = JSON.parse(JSON.stringify(AllTask));
+        
+        backupAllTasks = globalCommon?.deepCopy(AllTask);
         setAllTasks(backupAllTasks);
       } catch (error) {
 
@@ -857,9 +858,26 @@ const ProjectManagementMain = (props: any) => {
     }
   };
   const Call = (propsItems: any, type: any) => {
+    if(propsItems?.Id!=undefined){
+      if (propsItems?.DueDate != undefined) {
+        propsItems.DisplayDueDate = propsItems.DueDate != null
+          ? Moment(propsItems.DueDate).format("DD/MM/YYYY")
+          : "";
+      } else {
+        propsItems.DisplayDueDate = '';
+      }
+      if (propsItems?.Created != undefined) {
+        propsItems.DisplayCreateDate = propsItems.Created != null
+          ? Moment(propsItems.Created).format("DD/MM/YYYY")
+          : "";
+      } else {
+        propsItems.DisplayCreateDate = '';
+      }
+    }
     if (propsItems?.Item_x0020_Type == "Project") {
       setMasterdata(propsItems)
     } else if (propsItems?.Item_x0020_Type == "Sprint") {
+      
       setData((prev: any) => {
         return prev?.map((object: any) => {
           if (object?.Id === propsItems?.Id) {
@@ -969,7 +987,7 @@ const ProjectManagementMain = (props: any) => {
 
 
   const switchFlatViewData = (data: any) => {
-    let groupedDataItems = JSON.parse(JSON.stringify(data));
+    let groupedDataItems = globalCommon?.deepCopy(data);
     const flattenedData = flattenData(groupedDataItems);
     hasCustomExpanded = false
     hasExpanded = false

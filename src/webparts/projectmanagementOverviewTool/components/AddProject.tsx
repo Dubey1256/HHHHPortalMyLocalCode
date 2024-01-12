@@ -7,8 +7,10 @@ import Button from 'react-bootstrap/Button';
 import LinkedComponent from '../../../globalComponents/EditTaskPopup/LinkedComponent';
 import PortfolioTagging from './PortfolioTagging';
 import ServiceComponentPortfolioPopup from '../../../globalComponents/EditTaskPopup/ServiceComponentPortfolioPopup';
+import * as globalCommon from "../../../globalComponents/globalCommon";
 let portfolioType = '';
 let AllListId: any = {};
+let AllFlatProject: any = [];
 const AddProject = (props: any) => {
     const [title, settitle] = React.useState('')
     const [lgShow, setLgShow] = useState(false);
@@ -28,6 +30,7 @@ const AddProject = (props: any) => {
         if (props?.items?.length == 1 && props?.items[0]?.Item_x0020_Type == "Project") {
             setSetSelectedItem(props?.items[0])
         }
+        GetMasterData();
     }, [props?.items?.length])
     const addFunction = async () => {
         if (title?.length > 0) {
@@ -178,13 +181,24 @@ const AddProject = (props: any) => {
 
         })
     }
+    const GetMasterData = async () => {
+        let PropsObject: any = {
+            MasterTaskListID: props?.AllListId.MasterTaskListID,
+            siteUrl: props?.AllListId.siteUrl,
+            TaskUserListId: props?.AllListId.TaskUsertListID,
+          }
+        let results = await globalCommon.GetServiceAndComponentAllData(PropsObject)
+        if (results?.AllData?.length > 0) {
+          AllFlatProject = results?.FlatProjectData
+        }
 
+    }
     const autoSuggestionsForProject = (e: any) => {
         let SearchedKeyWord: any = e.target.value;
         let TempArray: any = [];
         if (SearchedKeyWord.length > 0) {
-            if (props?.data != undefined && props?.data?.length > 0) {
-                props?.data.map((AllDataItem: any) => {
+            if (AllFlatProject != undefined && AllFlatProject?.length > 0) {
+                AllFlatProject.map((AllDataItem: any) => {
                     if (AllDataItem?.Title?.toLowerCase()?.includes(SearchedKeyWord.toLowerCase())) {
                         TempArray.push(AllDataItem);
                     }
