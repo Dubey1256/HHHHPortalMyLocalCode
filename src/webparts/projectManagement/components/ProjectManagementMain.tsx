@@ -512,6 +512,7 @@ const ProjectManagementMain = (props: any) => {
   }, []);
 
 
+
   const LoadAllSiteTasks = async function () {
     setPageLoader(true);
     let taskComponent: any = TaggedPortfoliosToProject;
@@ -532,18 +533,12 @@ const ProjectManagementMain = (props: any) => {
       let smartmeta: any = [];
       let AllProjectTasks: any = [];
       if (projectData?.Item_x0020_Type == "Sprint") {
-        AllProjectTasks = smartmeta = await globalCommon?.loadAllSiteTasks(AllListId, undefined)
-        AllProjectTasks = AllProjectTasks?.filter((tasks:any)=>{
-          tasks?.Project?.Id==projectData?.Id
-        })
+        AllProjectTasks = smartmeta = await globalCommon?.loadAllSiteTasks(AllListId, `Project/Id eq ${projectData?.Id}`)
         console.log(AllProjectTasks)
       } else {
 
         if (projectData?.subRows == undefined || projectData?.subRows?.length == 0) {
-          AllProjectTasks = smartmeta = await globalCommon?.loadAllSiteTasks(AllListId, undefined)
-          AllProjectTasks = AllProjectTasks?.filter((tasks:any)=>{
-            tasks?.Project?.Id==projectData?.Id
-          })
+          AllProjectTasks = smartmeta = await globalCommon?.loadAllSiteTasks(AllListId, `Project/Id eq ${projectData?.Id}`)
         } else if (projectData?.subRows?.length > 0 && projectData?.subRows?.length < 7) {
           let filterQuery =''
           try{
@@ -552,7 +547,7 @@ const ProjectManagementMain = (props: any) => {
           }catch(e){
 
           }
-          smartmeta = await globalCommon?.loadAllSiteTasks(AllListId, undefined)
+          smartmeta = await globalCommon?.loadAllSiteTasks(AllListId, filterQuery)
           AllProjectTasks = smartmeta?.filter((task: any) => task?.Project?.Id == projectData?.Id)
           if (projectData?.subRows?.length > 0 && projectData?.subRows?.length < 6) {
             projectData?.subRows?.map((sprint: any) => {
@@ -561,7 +556,7 @@ const ProjectManagementMain = (props: any) => {
             })
           }
         } else {
-          smartmeta = await globalCommon?.loadAllSiteTasks(AllListId, undefined)
+          smartmeta = await globalCommon?.loadAllSiteTasks(AllListId, `Project/Id ne null`)
           AllProjectTasks = smartmeta?.filter((task: any) => task?.Project?.Id == projectData?.Id)
           if (projectData?.subRows?.length > 0 && projectData?.subRows?.length < 6) {
             projectData?.subRows?.map((sprint: any) => {
@@ -671,7 +666,8 @@ const ProjectManagementMain = (props: any) => {
         AllTask.push(items);
       });
       try {
-        backupAllTasks = JSON.parse(JSON.stringify(AllTask));
+        
+        backupAllTasks = globalCommon?.deepCopy(AllTask);
         setAllTasks(backupAllTasks);
       } catch (error) {
 
@@ -862,9 +858,26 @@ const ProjectManagementMain = (props: any) => {
     }
   };
   const Call = (propsItems: any, type: any) => {
+    if(propsItems?.Id!=undefined){
+      if (propsItems?.DueDate != undefined) {
+        propsItems.DisplayDueDate = propsItems.DueDate != null
+          ? Moment(propsItems.DueDate).format("DD/MM/YYYY")
+          : "";
+      } else {
+        propsItems.DisplayDueDate = '';
+      }
+      if (propsItems?.Created != undefined) {
+        propsItems.DisplayCreateDate = propsItems.Created != null
+          ? Moment(propsItems.Created).format("DD/MM/YYYY")
+          : "";
+      } else {
+        propsItems.DisplayCreateDate = '';
+      }
+    }
     if (propsItems?.Item_x0020_Type == "Project") {
       setMasterdata(propsItems)
     } else if (propsItems?.Item_x0020_Type == "Sprint") {
+      
       setData((prev: any) => {
         return prev?.map((object: any) => {
           if (object?.Id === propsItems?.Id) {
@@ -974,7 +987,7 @@ const ProjectManagementMain = (props: any) => {
 
 
   const switchFlatViewData = (data: any) => {
-    let groupedDataItems = JSON.parse(JSON.stringify(data));
+    let groupedDataItems = globalCommon?.deepCopy(data);
     const flattenedData = flattenData(groupedDataItems);
     hasCustomExpanded = false
     hasExpanded = false
