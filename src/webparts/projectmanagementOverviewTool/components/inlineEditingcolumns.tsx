@@ -104,6 +104,10 @@ const inlineEditingcolumns = (props: any) => {
     { value: 100, status: "100% Closed", taskStatusComment: "Closed" }
   ];
   React.useEffect(() => {
+    updateItemValues();
+
+  }, [dueDate.editPopup ,TaskStatusPopup,remark,teamMembersPopup, UpdateEstimatedTime,TaskPriorityPopup,taskCategoriesPopup,props?.item?.TaskCategories?.results]);
+  const updateItemValues=()=>{
     try {
       setpriorityRank(JSON.parse(localStorage.getItem("Priority")));
       setImpTaskCategoryType(JSON.parse(
@@ -113,9 +117,7 @@ const inlineEditingcolumns = (props: any) => {
       console.error("Priority and impTaskCategoryType")
     }
     try {
-      if (props?.columnName == 'Priority') {
-        comments = JSON.parse(props?.item?.Comments)
-      }
+     
       if (props?.pageName === "portfolioprofile" || props?.pageName === 'ProjectManagmentMaster') {
         setShowEditPencil(true)
       }
@@ -175,9 +177,11 @@ const inlineEditingcolumns = (props: any) => {
         setTaskStatusInNumber(props.item.PercentComplete);
       }
       GetSmartMetadata();
+      if (props?.columnName == 'Priority') {
+        comments = JSON.parse(props?.item?.Comments)
+      }
     } catch (e) { console.log }
-
-  }, [props, props?.item?.TaskCategories?.results]);
+  }
   const getPercentCompleteTitle = (percent: any) => {
     let result = "";
     StatusArray?.map((status: any) => {
