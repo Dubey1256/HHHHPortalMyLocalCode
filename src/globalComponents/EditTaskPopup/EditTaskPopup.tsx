@@ -31,20 +31,7 @@ import Tooltip from "../Tooltip";
 import FlorarImageUploadComponent from "../FlorarComponents/FlorarImageUploadComponent";
 import "bootstrap/dist/css/bootstrap.min.css";
 import Loader from "react-loader";
-import { Table } from "reactstrap";
-import { FaSort, FaSortDown, FaSortUp } from "react-icons/fa";
-import {
-    useTable,
-    useSortBy,
-    useFilters,
-    useExpanded,
-    usePagination,
-    HeaderGroup,
-} from "react-table";
-import { Filter, DefaultColumnFilter } from "../ReactTableComponents/filters";
-import ShowTaskTeamMembers from "../ShowTaskTeamMembers";
 import EmailComponent from "../EmailComponents";
-import EditSiteComposition from "./EditSiteComposition";
 import SmartTotalTime from "./SmartTimeTotal";
 import "react-datepicker/dist/react-datepicker.css";
 import BackgroundCommentComponent from "./BackgroundCommentComponent";
@@ -6762,7 +6749,7 @@ const EditTaskPopup = (Items: any) => {
                                                                 />
                                                             </div>
                                                         ) : null}
-                                                        {TaskImages?.length == 0 ? (
+                                                        {TaskImages?.length == 0 && EditData?.Id != undefined ? (
                                                             <div>
                                                                 <FlorarImageUploadComponent
                                                                     callBack={FlorarImageUploadComponentCallBack}
