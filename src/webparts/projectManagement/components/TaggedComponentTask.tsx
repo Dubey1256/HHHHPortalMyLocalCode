@@ -26,7 +26,7 @@ const TaggedComponentTask = (props: any) => {
                 isOpen={true}
                 onDismiss={() => callBack()}
                 isBlocking={false}>
-                <div className="Alltable">
+                <div >
                     <ComponentTable props={props?.SelectedItem} UsedFrom={'ProjectManagement'} NextProp={props?.AllListId}/>
                   
                 </div>
