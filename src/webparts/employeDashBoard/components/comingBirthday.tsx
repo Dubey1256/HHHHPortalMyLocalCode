@@ -2,6 +2,7 @@ import * as React from 'react';
 import { useEffect, useState } from 'react';
 import { Web } from 'sp-pnp-js';
 import { myContextValue } from '../../../globalComponents/globalCommon';
+import ManageConfigPopup from '../../../globalComponents/ManageConfigPopup';
 let data: any;
 let endOfWeek: any;
 let today: any;
@@ -9,6 +10,8 @@ let Upcomingbirthday: any[] = []
 export default function ComingBirthday(UpcomingBday: any) {
     const ContextData: any = React.useContext(myContextValue);
     const [AllHrContactDetails, setAllHrContactDetails] = useState([])
+    const [IsManageConfigPopup, setIsManageConfigPopup] = React.useState(false);
+    const [SelectedItem, setSelectedItem]: any = React.useState({});
     const WebHR = new Web(`${ContextData?.propsValue?.Context?.pageContext?._site?.absoluteUrl}/${ContextData?.propsValue?.UpComingBdaySiteName}/`);
     useEffect(() => {
         loadHRDetails()
@@ -76,12 +79,22 @@ export default function ComingBirthday(UpcomingBday: any) {
         const year = date.getFullYear();
         return `${month}/${day}/${year}`;
     }
+    const OpenConfigPopup = (Config: any) => {
+        setIsManageConfigPopup(true);
+        setSelectedItem(Config)
+    }
+    const CloseOpenConfigPopup = () => {
+        setIsManageConfigPopup(false);
+        setSelectedItem('')
+    }
     return (
         <>
             <div className="">
                 <div className='alignCenter'>
-                    {UpcomingBday?.WebpartTitle != undefined && <div className=' text-body'>{UpcomingBday?.WebpartTitle}</div>}
-                    <div className='boldClable f-16 empCol' style={{ marginLeft: "auto" }}>{AllHrContactDetails.length} People</div>
+                    {UpcomingBday?.config?.WebpartTitle != undefined && <div className=' text-body'>{UpcomingBday?.config?.WebpartTitle}</div>}
+                    <div className='boldClable f-16 empCol' style={{ marginLeft: "auto" }}>
+                        {UpcomingBday?.IsShowConfigBtn && <span className="svg__iconbox svg__icon--setting hreflink" title="Manage Configuration" onClick={(e) => OpenConfigPopup(UpcomingBday?.config)}></span>}
+                        {AllHrContactDetails.length} People</div>
                 </div>
                 <div className='birthDaySec'>
                     {AllHrContactDetails?.length > 0 && AllHrContactDetails.map((Item: any) => {
@@ -110,6 +123,9 @@ export default function ComingBirthday(UpcomingBday: any) {
                     })}
                 </div>
             </div>
+            <span>
+                {IsManageConfigPopup && <ManageConfigPopup SelectedItem={SelectedItem} IsManageConfigPopup={IsManageConfigPopup} CloseOpenConfigPopup={CloseOpenConfigPopup} />}
+            </span>
         </>
     )
 }
