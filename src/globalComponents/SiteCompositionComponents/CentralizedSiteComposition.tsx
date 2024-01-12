@@ -425,9 +425,9 @@ const CentralizedSiteComposition = (Props: any) => {
             GlobalAllSiteData = await GetIndividualSiteAllData();
         }
         if (usedForLoad == "All-Sites") {
-           
-                GlobalAllSiteData = await globalCommon?.loadAllSiteTasks(RequiredListIds, undefined);
-            
+
+            GlobalAllSiteData = await globalCommon?.loadAllSiteTasks(RequiredListIds, undefined);
+
 
         }
         let AllTaggedComponent: any = [];
@@ -493,6 +493,7 @@ const CentralizedSiteComposition = (Props: any) => {
                     task.PercentComplete = (task.PercentComplete * 100).toFixed(0);
                 }
                 let checkIsSCProtected: any = false;
+                task.TaskID = globalCommon.GetTaskId(task);
                 if (task.Project) {
                     task.ProjectTitle = task?.Project?.Title;
                     task.ProjectId = task?.Project?.Id;
