@@ -630,6 +630,9 @@ const AncTool = (props: any) => {
                                                         ItemRank: itemRank,
                                                         Title: fileName
                                                     }
+                                                    if (props?.item?.Portfolio?.Id != undefined) {
+                                                        postData.PortfoliosId = { "results": [props?.item?.Portfolio?.Id] };
+                                                    }
                                                     let web = new Web(props?.AllListId?.siteUrl);
                                                     await web.lists.getByTitle('Documents').items.getById(file.Id)
                                                         .update(postData).then((updatedFile: any) => {
