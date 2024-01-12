@@ -108,6 +108,7 @@ const inlineEditingcolumns = (props: any) => {
 
   }, [dueDate.editPopup ,TaskStatusPopup,remark,teamMembersPopup, UpdateEstimatedTime,TaskPriorityPopup,taskCategoriesPopup,props?.item?.TaskCategories?.results]);
   const updateItemValues=()=>{
+    selectedCatTitleVal=[];
     try {
       setpriorityRank(JSON.parse(localStorage.getItem("Priority")));
       setImpTaskCategoryType(JSON.parse(
