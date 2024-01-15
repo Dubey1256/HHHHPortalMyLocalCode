@@ -33,10 +33,11 @@ import { BsClockHistory, BsList, BsSearch } from 'react-icons/bs';
 import Tooltip from "../../globalComponents/Tooltip";
 import { Alert } from 'react-bootstrap';
 import DateColumnFilter from './DateColumnFilter';
-import { AiOutlineMore } from 'react-icons/ai';
+import { AiFillSetting, AiOutlineMore } from 'react-icons/ai';
 import { BiDotsVertical } from 'react-icons/bi';
 import BulkEditingFeature from './BulkEditingFeature';
 import BulkEditingConfrigation from './BulkEditingConfrigation';
+import ColumnsSetting from './ColumnsSetting';
 // ReactTable Part/////
 declare module "@tanstack/table-core" {
     interface FilterFns {
@@ -235,7 +236,6 @@ const GlobalCommanTable = (items: any, ref: any) => {
     const childRef = React.useRef<any>();
     if (childRef != null) {
         childRefdata = { ...childRef };
-
     }
     let expendedTrue = items?.expendedTrue
     let data = items?.data;
@@ -280,6 +280,7 @@ const GlobalCommanTable = (items: any, ref: any) => {
 
     const [dragedTask, setDragedTask] = React.useState({ task: {}, taskId: '' });
     const [bulkEditingCongration, setBulkEditingCongration] = React.useState<any>({});
+    const [columnSettingPopup, setColumnSettingPopup] = React.useState<any>(false);
     const [projectTiles, setProjectTiles] = React.useState<any>([]);
 
     React.useEffect(() => {
@@ -391,7 +392,6 @@ const GlobalCommanTable = (items: any, ref: any) => {
             setBulkEditingSettingPopup(false);
         }
     }, []);
-
     const bulkEditingSettingPopupEvent = () => {
         setBulkEditingSettingPopup(true);
     }
@@ -785,9 +785,6 @@ const GlobalCommanTable = (items: any, ref: any) => {
             items?.loadFilterTask();
         }
     }
-
-
-
     ///////////////// code with neha /////////////////////
     const callChildFunction = (items: any) => {
         if (childRef.current) {
@@ -870,6 +867,52 @@ const GlobalCommanTable = (items: any, ref: any) => {
             setProjectTiles(table?.getSelectedRowModel()?.flatRows)
         }
     }, [bulkEditingSettingPopup]);
+    React.useEffect(() => {
+        if (items?.defultSelectedRows?.length > 0) {
+            let selectedRow: any = {}
+            table?.getRowModel()?.rows?.map((elem: any) => {
+                items?.defultSelectedRows?.map((selectedId: any) => {
+                    if (elem?.original?.Id == selectedId?.original?.Id) {
+                        selectedRow = { ...selectedRow, [elem.id]: true }
+                    }
+                })
+            })
+            setRowSelection(selectedRow);
+        }
+    }, [items?.defultSelectedRows?.length > 0])
+
+    const columnSettingCallBack = React.useCallback((eventSetting: any) => {
+        if (eventSetting != 'close') {
+            setColumnSettingPopup(false)
+            setColumnVisibility((prevCheckboxes: any) => ({ ...prevCheckboxes, ...eventSetting }));
+        } else {
+            setColumnSettingPopup(false)
+        }
+    }, []);
+    // const coustomColumnsSetting = (item: any, event: any) => {
+    //     const { name, checked } = event.target;
+    //     if (name != "toggleAll") {
+    //         setColumnVisibility((prevCheckboxes: any) => ({
+    //             ...prevCheckboxes,
+    //             [name]: checked
+    //         }));
+    //         columns?.forEach((element: any) => {
+    //             if (element.id === item.id) {
+    //                 return element.isColumnVisible = checked
+    //             }
+    //         });
+    //     } else {
+    //         columns?.forEach((element: any) => {
+    //             if (element.id != "Title" && element.id === "portfolioItemsSearch" && element.id === "TaskID" && element.id != "descriptionsSearch" && element.id != "commentsSearch" && element.id != "timeSheetsDescriptionSearch") {
+    //                 element.isColumnVisible = checked
+    //                 setColumnVisibility((prevCheckboxes: any) => ({
+    //                     ...prevCheckboxes,
+    //                     [element.id]: checked
+    //                 }));
+    //             }
+    //         });
+    //     }
+    // }
 
     /**************************************** Drag And Drop Functionality End ***************************************/
     return (
@@ -1045,7 +1088,7 @@ const GlobalCommanTable = (items: any, ref: any) => {
                     </a>}
 
                     {items?.showFilterIcon === true && <><a className='smartTotalTime' title='Filter all task' style={{ color: `${portfolioColor}` }} onClick={() => openCreationAllStructure("loadFilterTask")}><RiFilter3Fill /></a></>}
-
+                    {items?.columnSettingIcon === true && <><a className='smartTotalTime' title='Column setting' style={{ color: `${portfolioColor}` }} onClick={() => setColumnSettingPopup(true)}><AiFillSetting /></a></>}
                     <Tooltip ComponentId={5756} />
                 </span>
             </div>}
@@ -1189,6 +1232,7 @@ const GlobalCommanTable = (items: any, ref: any) => {
             {selectedFilterPanelIsOpen && <SelectFilterPanel isOpen={selectedFilterPanelIsOpen} selectedFilterCount={selectedFilterCount} setSelectedFilterCount={setSelectedFilterCount} selectedFilterCallBack={selectedFilterCallBack} setSelectedFilterPannelData={setSelectedFilterPannelData} selectedFilterPannelData={selectedFilterPannelData} portfolioColor={portfolioColor} />}
             {dateColumnFilter && <DateColumnFilter portfolioTypeDataItemBackup={items?.portfolioTypeDataItemBackup} taskTypeDataItemBackup={items?.taskTypeDataItemBackup} portfolioTypeData={portfolioTypeData} taskTypeDataItem={items?.taskTypeDataItem} dateColumnFilterData={dateColumnFilterData} flatViewDataAll={items?.flatViewDataAll} data={data} setData={items?.setData} setLoaded={items?.setLoaded} isOpen={dateColumnFilter} selectedDateColumnFilter={selectedDateColumnFilter} portfolioColor={portfolioColor} Lable='DueDate' />}
             {bulkEditingSettingPopup && <BulkEditingConfrigation isOpen={bulkEditingSettingPopup} bulkEditingSetting={bulkEditingSetting} />}
+            {columnSettingPopup && <ColumnsSetting isOpen={columnSettingPopup} columnSettingCallBack={columnSettingCallBack} columns={columns} />}
         </>
     )
 }
