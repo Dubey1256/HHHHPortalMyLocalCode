@@ -628,7 +628,10 @@ const ProjectManagementMain = (props: any) => {
           items.PortfolioTitle = items?.Portfolio?.Title;
           // items["Portfoliotype"] = "Component";
         }
-
+        if(items?.Project?.Id!=undefined){
+          items.Project = AllFlatProject?.find((Project: any) => Project?.Id == items?.Project?.Id)
+        }
+        
 
         items.TeamMembersSearch = "";
         if (items.AssignedTo != undefined) {
