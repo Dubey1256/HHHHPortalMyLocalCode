@@ -362,7 +362,13 @@ const CreateWS = (props: any) => {
         let WorstreamLatestId: any;
         let ProjectId: any = null;
         if (globalContextData?.tagProjectFromTable == true) {
-            ProjectId = globalContextData?.ProjectLandingPageDetails?.Id != undefined ? globalContextData?.ProjectLandingPageDetails?.Id : null;
+            if(props?.UsedFrom=="ProjectManagement" && selectedItem?.Project?.Id!=undefined && selectedItem?.Project?.Item_x0020_Type=="Sprint"){
+                ProjectId = selectedItem?.Project?.Id;
+              }else{
+                ProjectId = globalContextData?.ProjectLandingPageDetails?.Id != undefined ? globalContextData?.ProjectLandingPageDetails?.Id : null;
+              }
+
+           
         }
         let web = new Web(AllListId?.siteUrl);
         if (selectedTaskType == 3) {
@@ -373,7 +379,7 @@ const CreateWS = (props: any) => {
                 .items
                 .select("FolderID,AssignedTo/Title,AssignedTo/Name,AssignedTo/Id,TaskLevel,FileLeafRef,Title,Id,Priority_x0020_Rank,PercentComplete,Priority,Created,Modified,TaskType/Id,TaskType/Title,ParentTask/Id,ParentTask/Title,Author/Id,Author/Title,Editor/Id,Editor/Title")
                 .expand("TaskType,ParentTask,Author,Editor,AssignedTo")
-                .filter(("TaskType/Title eq 'Workstream'") && ("ParentTask/Id eq '" + selectedItem?.Id + "'"))
+                .filter(("TaskType/Id eq 3") && ("ParentTask/Id eq '" + selectedItem?.Id + "'"))
                 .orderBy("Created", false)
                 .top(499)
                 .get()

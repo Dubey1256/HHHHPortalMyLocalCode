@@ -267,7 +267,7 @@ export class TeamConfigurationCard extends React.Component<ITeamConfigurationPro
     private isItemExists = function (arr: any, Id: any) {
         var isExists = false;
         arr.forEach(function (item: any) {
-            if (item.Id == Id) {
+            if (item.ID == Id) {
                 isExists = true;
                 return false;
             }
