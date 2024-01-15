@@ -16,7 +16,8 @@ import { ITaskUserManagementProps } from './components/ITaskUserManagementProps'
 export interface ITaskUserManagementWebPartProps {
   description: string;
   TaskUserListId: "b318ba84-e21d-4876-8851-88b94b9dc300";
-  SmartMetaDataId: "01a34938-8c7e-4ea6-a003-cee649e8c67a"
+  SmartMetaDataId: "01a34938-8c7e-4ea6-a003-cee649e8c67a";
+  SitePagesList: "16839758-4688-49D5-A45F-CFCED9F80BA6"
 }
 
 export default class TaskUserManagementWebPart extends BaseClientSideWebPart<ITaskUserManagementWebPartProps> {
@@ -35,7 +36,8 @@ export default class TaskUserManagementWebPart extends BaseClientSideWebPart<ITa
         userDisplayName: this.context.pageContext.user.displayName,
         context: this.context,
         TaskUserListId:"b318ba84-e21d-4876-8851-88b94b9dc300",
-        SmartMetaDataId: "01a34938-8c7e-4ea6-a003-cee649e8c67a"
+        SmartMetaDataId: "01a34938-8c7e-4ea6-a003-cee649e8c67a",
+        SitePagesList: "16839758-4688-49D5-A45F-CFCED9F80BA6"
       }
     );
 
@@ -124,6 +126,9 @@ export default class TaskUserManagementWebPart extends BaseClientSideWebPart<ITa
                 }),
                 PropertyPaneTextField('SmartMetaDataId', {
                   label: "SmartMetaDataId"
+                }),
+                PropertyPaneTextField('SitePagesList', {
+                  label: "SitePagesList"
                 })
               ]
             }
