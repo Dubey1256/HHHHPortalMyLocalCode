@@ -30,7 +30,7 @@ import VersionHistory from "../VersionHistroy/VersionHistory";
 import Tooltip from "../Tooltip";
 import FlorarImageUploadComponent from "../FlorarComponents/FlorarImageUploadComponent";
 import "bootstrap/dist/css/bootstrap.min.css";
-import Loader from "react-loader";
+import PageLoader from "../pageLoader";
 import { Table } from "reactstrap";
 import { FaSort, FaSortDown, FaSortUp } from "react-icons/fa";
 import {
@@ -4962,26 +4962,7 @@ const EditTaskPopup = (Items: any) => {
                     : `${EditData.Id}`
             }
         >
-            <Loader
-                loaded={loaded}
-                lines={13}
-                length={20}
-                width={10}
-                radius={30}
-                corners={1}
-                rotate={0}
-                direction={1}
-                speed={2}
-                trail={60}
-                shadow={false}
-                hwaccel={false}
-                className="spinner"
-                zIndex={2e9}
-                top="28%"
-                left="50%"
-                scale={1.0}
-                loadedClassName="loadedContent"
-            />
+           
             {/* ***************** this is status panel *********** */}
             <Panel
                 onRenderHeader={onRenderStatusPanelHeader}
@@ -9044,26 +9025,7 @@ const EditTaskPopup = (Items: any) => {
                                     <h6>Sites</h6>
                                 </div>
                                 <div className="card-body">
-                                    <Loader
-                                        loaded={loaded}
-                                        lines={13}
-                                        length={20}
-                                        width={10}
-                                        radius={30}
-                                        corners={1}
-                                        rotate={0}
-                                        direction={1}
-                                        speed={2}
-                                        trail={60}
-                                        shadow={false}
-                                        hwaccel={false}
-                                        className="spinner"
-                                        zIndex={2e9}
-                                        top="28%"
-                                        left="50%"
-                                        scale={1.0}
-                                        loadedClassName="loadedContent"
-                                    />
+                                {!loaded?<PageLoader/>:''}
                                     <ul className="quick-actions">
                                         {SiteTypes?.map((siteData: any, index: number) => {
                                             if (siteData.Title !== "QA") {
