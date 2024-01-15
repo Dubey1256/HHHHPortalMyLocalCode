@@ -3,6 +3,7 @@ import { useState, useEffect } from 'react';
 import Tooltip from '../Tooltip';
 import { Panel, PanelType } from 'office-ui-fabric-react';
 import { Web } from "sp-pnp-js";
+import * as $ from "jquery";
 import * as Moment from 'moment';
 import * as globalCommon from "../globalCommon";
 import GlobalCommonTable from "../GroupByReactTableComponents/GlobalCommanTable";
@@ -32,6 +33,7 @@ let GlobalAllTaskUsersData: any = [];
 let FlatViewTableData: any = [];
 let GroupByTableData: any = [];
 let taskTypeData: any = [];
+let PortfolioItemColor: any = "";
 const CentralizedSiteComposition = (Props: any) => {
     const PropsData: any = Props;
     const usedFor: string = PropsData?.usedFor;
@@ -140,7 +142,17 @@ const CentralizedSiteComposition = (Props: any) => {
         getSmartMetaDataListAllItems();
         getTaskType();
         loadAllTaskUsers();
+        
     }, [])
+
+    useEffect(()=>{
+        setTimeout(() => {
+            const panelMain: any = document.querySelector(".ms-Panel-main");
+            if (panelMain && PortfolioItemColor != "") {
+                $(".ms-Panel-main").css("--SiteBlue", PortfolioItemColor); // Set the desired color value here
+            }
+        }, 1000);
+    },[IsClientCategoryPopupOpen])
 
     const getTaskType = async () => {
         let taskTypeData1: any = [];
@@ -283,17 +295,17 @@ const CentralizedSiteComposition = (Props: any) => {
                 SelectedItemDetails = await web.lists
                     .getById(ItemDetails?.listId)
                     .items.getById(ItemDetails?.Id).select(
-                        "SiteCompositionSettings,Sitestagging,ClientCategory/Id,ClientCategory/Title,Item_x0020_Type"
+                        "SiteCompositionSettings,Sitestagging,ClientCategory/Id,ClientCategory/Title,Item_x0020_Type,PortfolioType/Color"
                     )
-                    .expand("ClientCategory").get();
+                    .expand("ClientCategory,PortfolioType").get();
             }
             if (usedFor == "AWT") {
                 SelectedItemDetails = await web.lists
                     .getById(ItemDetails?.listId)
                     .items.getById(ItemDetails?.Id).select(
-                        "SiteCompositionSettings,Sitestagging,ClientCategory/Id,ClientCategory/Title,TaskType/Id,TaskType/Title"
+                        "SiteCompositionSettings,Sitestagging,ClientCategory/Id,ClientCategory/Title,TaskType/Id,TaskType/Title,Portfolio/Id,Portfolio/Title"
                     )
-                    .expand("ClientCategory,TaskType").get();
+                    .expand("ClientCategory,TaskType,Portfolio").get();
             }
             if (SelectedItemDetails.SiteCompositionSettings?.length > 0) {
                 SiteSettingTemp = JSON.parse(SelectedItemDetails.SiteCompositionSettings);
@@ -333,6 +345,19 @@ const CentralizedSiteComposition = (Props: any) => {
                 setSiteCompositionSettings(tempSiteSetting);
                 setIsSCManual(true);
                 setSiteSettingJSON([...SiteSettingJSON])
+            }
+            if (SelectedItemDetails.PortfolioType?.Color) {
+                PortfolioItemColor = SelectedItemDetails?.PortfolioType?.Color;
+                let targetDiv: any =
+                    document?.querySelector(".ms-Panel-main");
+                setTimeout(() => {
+                    if (targetDiv) {
+                        $(".ms-Panel-main").css(
+                            "--SiteBlue",
+                            SelectedItemDetails?.PortfolioType?.Color
+                        );
+                    }
+                }, 1000);
             }
             if (SelectedItemDetails.Sitestagging?.length > 0) {
                 SiteCompositionTemp = JSON.parse(SelectedItemDetails.Sitestagging);
@@ -781,7 +806,7 @@ const CentralizedSiteComposition = (Props: any) => {
                                 id="checkbox-Protected"
                                 name="Protected-view"
                             />
-                            {IsMakeSCProtected === true ? <div style={{ backgroundColor: '#000066' }} className="slider round" title='Switch to Un-Protected View'></div> : <div title='Switch to Protected-View' className="slider round"></div>}
+                            {IsMakeSCProtected === true ? <div style={{ backgroundColor: `${PortfolioItemColor}`, borderColor: `${PortfolioItemColor}`}} className="slider round" title='Switch to Un-Protected View'></div> : <div title='Switch to Protected-View' className="slider round"></div>}
                         </label>
                         <span className='ms-1 siteColor'>Protected</span>
                         <span className="hover-text alignIcon">
@@ -1028,7 +1053,7 @@ const CentralizedSiteComposition = (Props: any) => {
                                 id="checkbox-Protected-Table"
                                 name="Protected-view"
                             />
-                            {row?.original?.IsSCProtected === true ? <div style={{ backgroundColor: '#000066' }} className="slider round" title='Switch to Un-Protect this item'></div> : <div title='Switch to Protect this item' className="slider round"></div>}
+                            {row?.original?.IsSCProtected === true ? <div style={{ backgroundColor: `${PortfolioItemColor}`, borderColor: `${PortfolioItemColor}`}} className="slider round" title='Switch to Un-Protect this item'></div> : <div title='Switch to Protect this item' className="slider round"></div>}
                         </label>
                     </div>
                 ),
@@ -2028,7 +2053,7 @@ const CentralizedSiteComposition = (Props: any) => {
                                 <div className="alignCenter">
                                     <label className="switch me-2 siteColor" htmlFor="checkbox-Flat">
                                         <input checked={flatView} onClick={() => switchFlatViewData(flatView)} type="checkbox" id="checkbox-Flat" name="Flat-view" />
-                                        {flatView === true ? <div style={{ backgroundColor: '#000066' }} className="slider round" title='Switch to GroupBy View'></div> : <div title='Switch to Flat-View' className="slider round"></div>}
+                                        {flatView === true ? <div style={{ backgroundColor: `${PortfolioItemColor}`, borderColor: `${PortfolioItemColor}`}} className="slider round" title='Switch to GroupBy View'></div> : <div title='Switch to Flat-View' className="slider round"></div>}
                                     </label>
                                     <span className='me-1 siteColor'>Flat View</span>
                                     <span className="hover-text alignIcon">
