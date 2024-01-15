@@ -6,5 +6,6 @@ export interface ITaskUserManagementProps {
   userDisplayName: string;
   context: any;
   TaskUserListId: any;
-  SmartMetaDataId: any
+  SmartMetaDataId: any;
+  SitePagesList: any
 }

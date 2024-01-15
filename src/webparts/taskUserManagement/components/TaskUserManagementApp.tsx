@@ -2,11 +2,13 @@ import * as React from 'react'
 import { Web } from "sp-pnp-js";
 import { useState, useEffect } from "react";
 import TaskUserManagementTable from './TaskUserManagementTable';
+import EditPage from '../../../globalComponents/EditPanelPage/EditPage';
 
 const TaskUserManagementApp = (props: any) => {
     const [taskUsersListData, setTaskUsersListData] = useState([])
     const [taskGroupsListData, setTaskGroupsListData] = useState([])
     const [smartMetaDataItems, setSmartMetaDataItems] = useState([])
+    const [headerChange, setHeaderChange]: any = useState('');
     const baseUrl = props.props.context.pageContext._web.absoluteUrl
 
     const fetchAPIData = async () => {
@@ -25,12 +27,19 @@ const TaskUserManagementApp = (props: any) => {
 
     useEffect(() => { fetchAPIData() }, [])
 
+    const changeHeader=(items:any)=>{
+        setHeaderChange(items)
+      }
+
     let context = props.props.context
+    context.siteUrl = 'https://hhhhteams.sharepoint.com/sites/HHHH/SP';
+    context.SitePagesList = props.props.SitePagesList;
 
     return (
         <>
-            <h2 className='heading mb-3'>TaskUser Management
-                <a className='f-15 fw-semibold hreflink pull-right' href='https://hhhhteams.sharepoint.com/sites/HHHH/SP/SitePages/TaskUser-Management-Old.aspx' target="_blank">Old TaskUser Management</a>
+            <h2 className='heading mb-3'>{headerChange != undefined && headerChange != null && headerChange != '' ? headerChange : 'TaskUser Management'}
+            <EditPage context={context} changeHeader={changeHeader} />
+                <a className='f-15 fw-semibold hreflink pull-right' href='https://hhhhteams.sharepoint.com/sites/HHHH/SP/SitePages/TaskUser-Management.aspx' target="_blank">Old TaskUser Management</a>
             </h2>
             <TaskUserManagementTable TaskUsersListData={taskUsersListData} TaskGroupsListData={taskGroupsListData} baseUrl={baseUrl} TaskUserListId={props.props.TaskUserListId} context={context} fetchAPIData={fetchAPIData} smartMetaDataItems={smartMetaDataItems} />
         </>
