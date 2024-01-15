@@ -980,7 +980,7 @@ const ProjectManagementMain = (props: any) => {
     renderData = [];
     renderData = renderData.concat(getData);
     refreshData();
-    if (callback == true) {
+    if(callback){
       LoadAllSiteTasks();
     }
   }, []);
