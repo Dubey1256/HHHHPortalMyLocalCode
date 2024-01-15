@@ -44,7 +44,6 @@ import {
 import { Filter, DefaultColumnFilter } from "../ReactTableComponents/filters";
 import ShowTaskTeamMembers from "../ShowTaskTeamMembers";
 import EmailComponent from "../EmailComponents";
-import EditSiteComposition from "./EditSiteComposition";
 import SmartTotalTime from "./SmartTimeTotal";
 import "react-datepicker/dist/react-datepicker.css";
 import BackgroundCommentComponent from "./BackgroundCommentComponent";
@@ -1008,7 +1007,8 @@ const EditTaskPopup = (Items: any) => {
                 }
                 item.TaskId = globalCommon.GetTaskId(item);
                 item.siteUrl = siteUrls;
-                item.siteType = Items.Items.siteType;
+                item.siteType = Items?.Items?.siteType;
+                item.SiteIcon = Items?.Items?.SiteIcon;
                 let AssignedUsers: any = [];
                 item.listId = Items.Items.listId;
                 if (globalSelectedProject?.Id != undefined) {
@@ -4017,6 +4017,7 @@ const EditTaskPopup = (Items: any) => {
 
         let TempSitesTaggingData: any = [];
         let TempCCDataIds: any = [];
+
         if (SelectedSite?.toLowerCase() !== "shareweb") {
             let TempObject: any = {
                 Title: SelectedSite,
@@ -4025,16 +4026,22 @@ const EditTaskPopup = (Items: any) => {
                 Date: Moment(new Date()).format("DD/MM/YYYY")
             }
             TempSitesTaggingData.push(TempObject);
+        } else {
+            TempSitesTaggingData = ClientTimeData;
         }
 
         if (selectedClientCategoryData?.length > 0) {
-            selectedClientCategoryData?.map((selectedCC:any)=>{
-                if(selectedCC.siteName == SelectedSite){
-                    TempCCDataIds.push(selectedCC.Id)
+            selectedClientCategoryData?.map((selectedCC: any) => {
+                if (SelectedSite?.toLowerCase() !== "shareweb") {
+                    if (selectedCC.siteName == SelectedSite) {
+                        TempCCDataIds.push(selectedCC.Id)
+                    }
+                } else {
+                    TempCCDataIds.push(selectedCC.Id);
                 }
+
             })
         }
-
         let UpdatedJSON = {
             Comments: EditData.Comments,
             SmartInformationId: {
@@ -4047,7 +4054,7 @@ const EditTaskPopup = (Items: any) => {
             Sitestagging: TempSitesTaggingData?.length > 0 ? JSON.stringify(TempSitesTaggingData) : null,
             ClientCategoryId: {
                 results:
-                TempCCDataIds?.length > 0
+                    TempCCDataIds?.length > 0
                         ? TempCCDataIds
                         : [],
             },
@@ -6743,7 +6750,7 @@ const EditTaskPopup = (Items: any) => {
                                                                 />
                                                             </div>
                                                         ) : null}
-                                                        {TaskImages?.length == 0 ? (
+                                                        {TaskImages?.length == 0 && EditData?.Id != undefined ? (
                                                             <div>
                                                                 <FlorarImageUploadComponent
                                                                     callBack={FlorarImageUploadComponentCallBack}

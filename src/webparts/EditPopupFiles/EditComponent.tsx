@@ -1100,7 +1100,8 @@ function EditInstitution({ item, SelectD, Calls, usedFor, portfolioTypeData, fil
             res.PortfolioType = item.PortfolioType;
             res.SiteIcon = undefined;
             res.siteUrl = RequireData?.siteUrl;
-            Calls(res);
+            res.data = res;
+            Calls(res,"UpdatedData");
         }
     }
 
