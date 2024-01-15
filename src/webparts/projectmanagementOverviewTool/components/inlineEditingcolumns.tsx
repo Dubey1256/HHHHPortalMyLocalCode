@@ -35,8 +35,9 @@ const inlineEditingcolumns = (props: any) => {
   const [CategoriesData, setCategoriesData] = React.useState<any>([]);
   const [SearchedCategoryData, setSearchedCategoryData] = React.useState([]);
   const [TeamConfig, setTeamConfig] = React.useState();
-  const [onHoldComment ,setOnHoldComment]:any=React.useState(false)
+  const [onHoldComment, setOnHoldComment]: any = React.useState(false)
   const [teamMembersPopup, setTeamMembersPopup] = React.useState(false);
+  const [showEditPencil, setShowEditPencil] = React.useState(false);
   const [TaskStatusPopup, setTaskStatusPopup] = React.useState(false);
   const [taskCategoriesPopup, setTaskCategoriesPopup] = React.useState(false);
   const [SharewebCategory, setSharewebCategory] = React.useState("");
@@ -103,69 +104,85 @@ const inlineEditingcolumns = (props: any) => {
     { value: 100, status: "100% Closed", taskStatusComment: "Closed" }
   ];
   React.useEffect(() => {
-   try{
-    if (props?.columnName == 'Priority'){
-      comments = JSON.parse(props?.item?.Comments)
+    updateItemValues();
+
+  }, [dueDate.editPopup ,TaskStatusPopup,remark,teamMembersPopup, UpdateEstimatedTime,TaskPriorityPopup,taskCategoriesPopup,props?.item?.TaskCategories?.results]);
+  const updateItemValues=()=>{
+    selectedCatTitleVal=[];
+    try {
+      setpriorityRank(JSON.parse(localStorage.getItem("Priority")));
+      setImpTaskCategoryType(JSON.parse(
+        localStorage.getItem("impTaskCategoryType")
+      ));
+    } catch (e) {
+      console.error("Priority and impTaskCategoryType")
     }
-    if (props?.item?.metaDataListId != undefined) {
-      smartMetadataListId = props?.item?.metaDataListId;
-    } else {
-      smartMetadataListId = props?.AllListId?.SmartMetadataListID;
-    }
-    if (props?.item?.siteUrl != undefined) {
-      siteUrl = props?.item?.siteUrl;
-    } else {
-      siteUrl = props?.AllListId?.siteUrl;
-    }
-    if (props?.item?.TaskCategories?.length > 0) {
+    try {
+     
+      if (props?.pageName === "portfolioprofile" || props?.pageName === 'ProjectManagmentMaster') {
+        setShowEditPencil(true)
+      }
+      if (props?.item?.metaDataListId != undefined) {
+        smartMetadataListId = props?.item?.metaDataListId;
+      } else {
+        smartMetadataListId = props?.AllListId?.SmartMetadataListID;
+      }
+      if (props?.item?.siteUrl != undefined) {
+        siteUrl = props?.item?.siteUrl;
+      } else {
+        siteUrl = props?.AllListId?.siteUrl;
+      }
       if (props?.item?.TaskCategories?.length > 0) {
-        props?.item?.TaskCategories?.map((cat: any) => {
-          cat.ActiveTile = true;
-        });
+        if (props?.item?.TaskCategories?.length > 0) {
+          props?.item?.TaskCategories?.map((cat: any) => {
+            cat.ActiveTile = true;
+          });
+        }
+        setCategoriesData(props?.item?.TaskCategories);
+      } else if (props?.item?.TaskCategories?.results?.length > 0) {
+        if (props?.item?.TaskCategories?.results?.length > 0) {
+          props?.item?.TaskCategories?.results?.map((cat: any) => {
+            cat.ActiveTile = true;
+          });
+        }
+        setCategoriesData(props?.item?.TaskCategories?.results);
+      } else if ((props?.item?.TaskCategories?.length == 0 || props?.item?.TaskCategories?.results?.length == 0) && props?.item?.Categories?.length > 0) {
+        selectedCatTitleVal = [];
+        selectedCatTitleVal = props?.item?.Categories?.split(";")
+
       }
-      setCategoriesData(props?.item?.TaskCategories);
-    } else if (props?.item?.TaskCategories?.results?.length > 0) {
+      loadTaskUsers();
+      if (props?.item?.DueDate != undefined) {
+        setEditDate(props?.item?.DueDate);
+      }
+      let selectedCategoryId: any = [];
       if (props?.item?.TaskCategories?.results?.length > 0) {
-        props?.item?.TaskCategories?.results?.map((cat: any) => {
-          cat.ActiveTile = true;
+        props?.item?.TaskCategories?.results?.map((category: any) => {
+          selectedCategoryId.push(category.Id);
+        });
+      } else if (props?.item?.TaskCategories?.length > 0) {
+        props?.item?.TaskCategories?.map((category: any) => {
+          selectedCategoryId.push(category.Id);
         });
       }
-      setCategoriesData(props?.item?.TaskCategories?.results);
-    } else if ((props?.item?.TaskCategories?.length == 0 || props?.item?.TaskCategories?.results?.length == 0) && props?.item?.Categories?.length > 0) {
-      selectedCatTitleVal = [];
-      selectedCatTitleVal = props?.item?.Categories?.split(";")
 
-    }
-    loadTaskUsers();
-    if (props?.item?.DueDate != undefined) {
-      setEditDate(props?.item?.DueDate);
-    }
-    let selectedCategoryId: any = [];
-    if (props?.item?.TaskCategories?.results?.length > 0) {
-      props?.item?.TaskCategories?.results?.map((category: any) => {
-        selectedCategoryId.push(category.Id);
-      });
-    } else if (props?.item?.TaskCategories?.length > 0) {
-      props?.item?.TaskCategories?.map((category: any) => {
-        selectedCategoryId.push(category.Id);
-      });
-    }
-
-    setTaskAssignedTo(props?.item?.AssignedTo);
-    setTaskTeamMembers(props?.item?.TeamMembers);
-    setTaskResponsibleTeam(props?.item?.ResponsibleTeam);
-    setSelectedCatId(selectedCategoryId);
-    setTaskPriority(props?.item?.PriorityRank);
-    setFeedback(props?.item?.Remark);
-    setEstimatedTimeProps();
-    if (props?.item?.PercentComplete != undefined) {
-      props.item.PercentComplete = parseInt(props?.item?.PercentComplete);
-      setTaskStatusInNumber(props.item.PercentComplete);
-    }
-    GetSmartMetadata();
-   }catch(e){console.log}
-
-  }, [props, props?.item?.TaskCategories?.results]);
+      setTaskAssignedTo(props?.item?.AssignedTo);
+      setTaskTeamMembers(props?.item?.TeamMembers);
+      setTaskResponsibleTeam(props?.item?.ResponsibleTeam);
+      setSelectedCatId(selectedCategoryId);
+      setTaskPriority(props?.item?.PriorityRank);
+      setFeedback(props?.item?.Remark);
+      setEstimatedTimeProps();
+      if (props?.item?.PercentComplete != undefined) {
+        props.item.PercentComplete = parseInt(props?.item?.PercentComplete);
+        setTaskStatusInNumber(props.item.PercentComplete);
+      }
+      GetSmartMetadata();
+      if (props?.columnName == 'Priority') {
+        comments = JSON.parse(props?.item?.Comments)
+      }
+    } catch (e) { console.log }
+  }
   const getPercentCompleteTitle = (percent: any) => {
     let result = "";
     StatusArray?.map((status: any) => {
@@ -356,25 +373,26 @@ const inlineEditingcolumns = (props: any) => {
     }
   };
   const getChilds = (item: any, items: any) => {
-    try{
+    try {
 
-   
-    let parent = JSON.parse(JSON.stringify(item));
-    parent.Newlabel = `${parent?.Title}`;
-    AutoCompleteItemsArray.push(parent);
-    parent.childs = [];
-    items?.map((childItem: any) => {
-      if (
-        childItem?.Parent?.Id !== undefined &&
-        parseInt(childItem?.Parent?.Id) === parent.ID
-      ) {
-        let child = JSON.parse(JSON.stringify(childItem));
-        parent.childs.push(child);
-        child.Newlabel = `${parent?.Newlabel} > ${child?.Title}`;
-        AutoCompleteItemsArray.push(child);
-        getChilds(child, items);
-      }
-    }); }catch(e){console.log(e)}
+
+      let parent = JSON.parse(JSON.stringify(item));
+      parent.Newlabel = `${parent?.Title}`;
+      AutoCompleteItemsArray.push(parent);
+      parent.childs = [];
+      items?.map((childItem: any) => {
+        if (
+          childItem?.Parent?.Id !== undefined &&
+          parseInt(childItem?.Parent?.Id) === parent.ID
+        ) {
+          let child = JSON.parse(JSON.stringify(childItem));
+          parent.childs.push(child);
+          child.Newlabel = `${parent?.Newlabel} > ${child?.Title}`;
+          AutoCompleteItemsArray.push(child);
+          getChilds(child, items);
+        }
+      });
+    } catch (e) { console.log(e) }
   };
   var getSmartMetadataItemsByTaxType = function (
     metadataItems: any,
@@ -631,6 +649,9 @@ const inlineEditingcolumns = (props: any) => {
             task.siteType = props?.item?.siteType;
             task.listId = props?.item?.listId;
             task.siteUrl = props?.item?.siteUrl;
+            task.AssignedTo = TaskAssignedTo;
+            task.ResponsibleTeam = TaskResponsibleTeam;
+            task.TeamMembers = TaskTeamMembers;
             task.PercentComplete = (task.PercentComplete * 100).toFixed(0);
             task.DisplayDueDate =
               task.DueDate != null
@@ -642,40 +663,11 @@ const inlineEditingcolumns = (props: any) => {
             task?.Approver?.map((approverUser: any) => {
               task.ApproverIds.push(approverUser?.Id);
             });
-            task.AssignedToIds = [];
-            task.AssignedTo = [];
-            task?.AssignedToId?.map((assignedUser: any) => {
-              task.AssignedToIds.push(assignedUser);
-              AllTaskUser?.map((user: any) => {
-                if (user.AssingedToUserId == assignedUser.Id) {
-                  if (user?.Title != undefined) {
-                    task.TeamMembersSearch =
-                      task.TeamMembersSearch + " " + user?.Title;
-                  }
-                }
-              });
-            });
+
             task.TaskCategories = CategoriesData;
-            task.TeamMembersId = [];
+
             task.TaskID = props?.item?.TaskID;
-            task?.TeamMembersId?.map((taskUser: any) => {
-              task.TeamMembersId.push(taskUser);
-              var newuserdata: any = {};
-              AllTaskUser?.map((user: any) => {
-                if (user?.AssingedToUserId == taskUser?.Id) {
-                  if (user?.Title != undefined) {
-                    task.TeamMembersSearch =
-                      task.TeamMembersSearch + " " + user?.Title;
-                  }
-                  newuserdata["useimageurl"] = user?.Item_x0020_Cover?.Url;
-                  newuserdata["Suffix"] = user?.Suffix;
-                  newuserdata["Title"] = user?.Title;
-                  newuserdata["UserId"] = user?.AssingedToUserId;
-                  task["Usertitlename"] = user?.Title;
-                }
-                task.AllTeamMember.push(newuserdata);
-              });
-            });
+
             props.item = task;
             clearEstimations();
             setTaskCategoriesPopup(false);
@@ -1120,7 +1112,7 @@ const inlineEditingcolumns = (props: any) => {
         <div className="subheading ">
           {props?.item?.SiteIcon != null && <img className="imgWid29 pe-1 mt-1 " src={props?.item?.SiteIcon} />}
           <span className="siteColor">
-            {`Update ${columnName} - ${props?.item?.TaskID!=undefined ? props?.item?.TaskID : '' } ${props?.item?.Title}`}
+            {`Update ${columnName} - ${props?.item?.TaskID != undefined ? props?.item?.TaskID : ''} ${props?.item?.Title}`}
           </span>
         </div>
         <Tooltip ComponentId={7801} />
@@ -1135,32 +1127,32 @@ const inlineEditingcolumns = (props: any) => {
   const hideOnHoldComment = () => {
     setOnHoldComment(false);
   };
-  
 
-  
+
+
   return (
     <>
       {props?.columnName == "Team" ? (
         <>
           <span
-            style={{ display: "flex", width: "100%", height: "100%" }}
+            style={{ display: "block", width: "100%", height: "100%" }}
             onClick={() => setTeamMembersPopup(true)}
             className="hreflink"
           >
-           
-            <span>
+            {" "}
+            <span className="alignCenter">
               <ShowTaskTeamMembers
                 props={props?.item}
                 TaskUsers={props?.TaskUsers}
               />
+              {showEditPencil && (
+                <a className="pancil-icons">
+                  <span className="svg__iconbox svg__icon--editBox"></span>
+                </a>
+              )}
             </span>
-            &nbsp;
           </span>
-          {props?.pageName === "portfolioprofile" && (
-            <a className="pancil-icons">
-              <span className="svg__iconbox svg__icon--editBox"></span>
-            </a>
-          )}
+
         </>
       ) : (
         ""
@@ -1174,15 +1166,15 @@ const inlineEditingcolumns = (props: any) => {
                 : "hreflink"
             }
             style={{
-              display: "flex",
+              display: "block",
               width: "100%",
               height: "100%",
               gap: "1px"
             }}
             onClick={() => setTaskPriorityPopup(true)}
           >
-           
-            {props?.mypriority === true && props?.item?.PriorityRank!=null&&props?.item?.PriorityRank!=undefined  ? `(${props?.item?.PriorityRank}) ${props?.item?.Priority?.slice(3)}`:props?.item?.PriorityRank}
+
+            {props?.mypriority === true && props?.item?.PriorityRank != null && props?.item?.PriorityRank != undefined ? `(${props?.item?.PriorityRank}) ${props?.item?.Priority?.slice(3)}` : props?.item?.PriorityRank}
             {props?.item?.TaskCategories?.map((items: any) =>
               items?.Title === "On-Hold" ? (
                 <div className="hover-text">
@@ -1192,9 +1184,9 @@ const inlineEditingcolumns = (props: any) => {
                   />
                   <span className="tooltip-text pop-right">
                     {onHoldComment &&
-                      comments?.map((commentItem: any, index: any) => 
+                      comments?.map((commentItem: any, index: any) =>
                         commentItem?.CommentFor !== undefined &&
-                        commentItem?.CommentFor === "On-Hold" ? (
+                          commentItem?.CommentFor === "On-Hold" ? (
                           <div key={index}>
                             <span className="siteColor p-1 border-bottom">
                               Task On-Hold by{" "}
@@ -1202,12 +1194,12 @@ const inlineEditingcolumns = (props: any) => {
                               <span>{Moment(commentItem?.Created).format('DD/MM/YY')}</span>
                             </span>
                             {commentItem?.CommentFor !== undefined &&
-                            commentItem?.CommentFor === "On-Hold" ? (
+                              commentItem?.CommentFor === "On-Hold" ? (
                               <div key={index}>{commentItem?.Description}</div>
                             ) : null}
                           </div>
                         ) : null
-                        )}
+                      )}
                   </span>
                 </div>
               ) : null
@@ -1238,8 +1230,14 @@ const inlineEditingcolumns = (props: any) => {
                 );
               }
             })}
-             &nbsp;
+            &nbsp;
+            {showEditPencil && (
+              <a className="pancil-icons">
+                <span className="svg__iconbox svg__icon--editBox"></span>
+              </a>
+            )}
           </span>
+
         </>
       ) : (
         ""
@@ -1256,7 +1254,7 @@ const inlineEditingcolumns = (props: any) => {
             }
             onClick={() => setRemark(true)}
           >
-           {props?.item?.Remark} &nbsp;
+            {props?.item?.Remark}&nbsp;
           </span>
         </>
       ) : (
@@ -1274,7 +1272,7 @@ const inlineEditingcolumns = (props: any) => {
             }
             onClick={() => setUpdateEstimatedTime(true)}
           >
-            &nbsp;{props?.item?.EstimatedTime}
+            {props?.item?.EstimatedTime}&nbsp;
           </span>
         </>
       ) : (
@@ -1287,12 +1285,12 @@ const inlineEditingcolumns = (props: any) => {
             style={{ display: "block", width: "100%", height: "100%" }}
             className={
               ServicesTaskCheck
-                ? "serviepannelgreena align-content-center d-flex gap-1"
-                : "align-content-center d-flex gap-1"
+                ? "serviepannelgreena align-content-center d-flex gap-1 alignCenter"
+                : "align-content-center d-flex gap-1 hreflink"
             }
             onClick={() => openTaskStatusUpdatePopup()}
           >
-           
+
             {/* <span className="d-inline-block" data-bs-toggle="popover" data-bs-trigger="hover focus" data-bs-content="Disabled popover">
                                 {props.item.PercentComplete}
                             </span> */}
@@ -1332,8 +1330,14 @@ const inlineEditingcolumns = (props: any) => {
             ) : (
               ""
             )}
-             &nbsp;
+            &nbsp;
+            {showEditPencil && (
+              <a className="pancil-icons ml-auto">
+                <span className="svg__iconbox svg__icon--editBox"></span>
+              </a>
+            )}
           </span>
+
         </>
       ) : (
         ""
@@ -1354,7 +1358,12 @@ const inlineEditingcolumns = (props: any) => {
           }}
         >
           {" "}
-          &nbsp;{props?.item?.DisplayDueDate}{" "}
+          {props?.item?.DisplayDueDate}{" "}&nbsp;
+          {showEditPencil && (
+            <a className="pancil-icons">
+              <span className="svg__iconbox svg__icon--editBox"></span>
+            </a>
+          )}
         </span>
       ) : (
         ""
@@ -1365,7 +1374,8 @@ const inlineEditingcolumns = (props: any) => {
       <Panel
         onRenderHeader={() => onRenderCustomHeader("Due Date")}
         isOpen={dueDate.editPopup}
-        customWidth="500px"
+        type={PanelType.custom}
+        customWidth="400px"
         onDismiss={closeTaskDueDate}
         isBlocking={dueDate.editPopup}
       >
@@ -1730,8 +1740,8 @@ const inlineEditingcolumns = (props: any) => {
           style={{ display: "block", width: "100%", height: "100%" }}
         >
           {" "}
-          &nbsp;{props?.item?.Categories}{" "}
-          {props?.pageName === "portfolioprofile" && (
+          {props?.item?.Categories}{" "}  &nbsp;
+          {showEditPencil && (
             <a className="pancil-icons">
               <span className="svg__iconbox svg__icon--editBox"></span>
             </a>
@@ -1743,7 +1753,8 @@ const inlineEditingcolumns = (props: any) => {
       <Panel
         onRenderHeader={() => onRenderCustomHeader("Categories")}
         isOpen={taskCategoriesPopup}
-        customWidth="500px"
+        customWidth="400px"
+        type={PanelType?.custom}
         onDismiss={() => setTaskCategoriesPopup(false)}
         isBlocking={true}
       >

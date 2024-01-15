@@ -12,7 +12,7 @@ import GlobalCommanTable from '../../../globalComponents/GroupByReactTableCompon
 import InlineEditingcolumns from '../../projectmanagementOverviewTool/components/inlineEditingcolumns';
 import { ColumnDef } from '@tanstack/react-table';
 import InfoIconsToolTip from '../../../globalComponents/InfoIconsToolTip/InfoIconsToolTip';
-import ReactPopperTooltip from '../../../globalComponents/Hierarchy-Popper-tooltip';
+import ReactPopperTooltipSingleLevel from '../../../globalComponents/Hierarchy-Popper-tooltipSilgleLevel/Hierarchy-Popper-tooltipSingleLevel';
 var AllUser: any = []
 var siteConfig: any = []
 var DataSiteIcon: any = []
@@ -131,9 +131,9 @@ const TagTaskToProjectPopup = (props: any) => {
                     if (items?.TaskCategories?.length > 0) {
                         items.TaskTypeValue = items?.TaskCategories?.map((val: any) => val.Title).join(",")
                         items.Categories = items.TaskTypeValue;
-                    }else{
-                        items.TaskTypeValue ='';
-                        items.Categories ='';
+                    } else {
+                        items.TaskTypeValue = '';
+                        items.Categories = '';
                     }
                     if (items?.Portfolio?.Id != undefined) {
                         items.portfolio = items?.Portfolio;
@@ -357,8 +357,11 @@ const TagTaskToProjectPopup = (props: any) => {
                 size: 130,
                 cell: ({ row, getValue }) => (
                     <div>
-                        {row?.original?.TitleNew != "Tasks" ?
+                        {/* {row?.original?.TitleNew != "Tasks" ?
                             <ReactPopperTooltip ShareWebId={getValue()} row={row} AllListId={props?.AllListId} />
+                            : ''} */}
+                        {row?.original?.TitleNew != "Tasks" ?
+                            <ReactPopperTooltipSingleLevel ShareWebId={row?.original?.TaskID} row={row?.original} singleLevel={true} masterTaskData={props?.masterTaskData} AllSitesTaskData={AllTasks} />
                             : ''}
                     </div>
                 ),

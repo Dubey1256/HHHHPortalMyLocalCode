@@ -732,19 +732,17 @@ const TaskDashboard = (props: any) => {
                 accessor: "Title",
                 showSortIcon: true,
                 Cell: ({ row }: any) => (
-                    <span className="alignCenter">
-         
-                    <span className='columnFixedTitle' >
+                    <div>
                         <a className='hreflink text-content'
                             href={`${AllListId?.siteUrl}/SitePages/Task-Profile.aspx?taskId=${row?.original?.Id}&Site=${row?.original?.siteType}`}
                             data-interception="off"
-                            target="_blank"
-                        >
+                            target="_blank">
                             {row?.values?.Title}
-                        </a> </span>
+                        </a>
+                        <span className='alignIcon'>
                         {row?.original?.descriptionsSearch?.length > 0 && <InfoIconsToolTip Discription={row?.original?.descriptionsSearch} row={row?.original} />}
-                   
-                    </span>
+                        </span>
+                    </div>
                 ),
             },
             {
@@ -898,7 +896,7 @@ const TaskDashboard = (props: any) => {
                 internalHeader: "",
                 id: "Id", // 'id' is required
                 isSorted: false,
-                style: { width: '35px' },
+                style: { width: '25px' },
                 showSortIcon: false,
                 Cell: ({ row }: any) => (
                     <span
@@ -1052,7 +1050,7 @@ const TaskDashboard = (props: any) => {
                 internalHeader: "",
                 id: "Id", // 'id' is required
                 isSorted: false,
-                style: { width: '65px' },
+                style: { width: '35px' },
                 showSortIcon: false,
                 Cell: ({ row }: any) => (
                     <div className='alignCenter'>
@@ -1062,8 +1060,7 @@ const TaskDashboard = (props: any) => {
                             data-bs-placement="auto"
                             title="Click To Edit Timesheet"
                         ></span>
-                        <span
-                            title="Edit Task"
+                        <span title="Edit Task" style={{marginTop:"1px",marginLeft:"4px"}}
                             onClick={() => EditPopup(row?.original)}
                             className="svg__iconbox svg__icon--edit hreflink"
                         ></span>
@@ -2212,7 +2209,7 @@ const TaskDashboard = (props: any) => {
     return (
         <>
             <div className='header-section justify-content-between'>
-                <h2 style={{ color: "#000066", fontWeight: "600" }}>Task Dashboard</h2>
+                <h2 className='heading'>Task Dashboard</h2>
             </div>
             <div className="TaskDashboardPage Dashboardsecrtion" style={{ minHeight: '800px' }}>
                 <div className={updateContent ? "dashboard-colm" : "dashboard-colm"}>
@@ -2363,7 +2360,7 @@ const TaskDashboard = (props: any) => {
                                                 {currentUserId == 242 && <span className="align-autoplay d-flex float-end" onClick={() => sendEmail()}><span className="svg__iconbox svg__icon--mail mx-1" ></span>Send EOD Email</span>}
                                                 <span className="align-autoplay d-flex float-end" onClick={() => shareTaskInEmail('today working tasks')}><span className="svg__iconbox svg__icon--mail mx-1" ></span>Share Today Working Tasks</span>
                                             </>}</summary>
-                                    <div className='AccordionContent mx-height'>
+                                    <div className='AccordionContent'>
                                         {workingTodayTasks?.length > 0 ?
                                             <div className='Alltable border-0 dashboardTable'>
                                                 <Table className={updateContent ? "SortingTable mb-0" : "SortingTable mb-0"} hover  {...getTablePropsToday()}>
@@ -2435,7 +2432,7 @@ const TaskDashboard = (props: any) => {
                                 <details onDrop={(e: any) => handleDrop('thisWeek')}
                                     onDragOver={(e: any) => e.preventDefault()}>
                                     <summary> Working This Week Tasks {'(' + pageWeek?.length + ')'} </summary>
-                                    <div className='AccordionContent mx-height'  >
+                                    <div className='AccordionContent'  >
                                         {thisWeekTasks?.length > 0 ?
                                         <div className='Alltable border-0 dashboardTable'>
                                             <Table className={updateContent ? "SortingTable mb-0" : "SortingTable mb-0"} hover {...getTablePropsWeek()} >
@@ -2504,7 +2501,7 @@ const TaskDashboard = (props: any) => {
                                 </details>
                                 <details>
                                     <summary>  Immediate Tasks {'(' + pageImmediate?.length + ')'} </summary>
-                                    <div className='AccordionContent mx-height'  >
+                                    <div className='AccordionContent'>
                                         {UserImmediateTasks?.length > 0 ?
                                             <div className='Alltable border-0 dashboardTable'>
                                             <Table className={updateContent ? "SortingTable mb-0" : "SortingTable mb-0"} hover  {...getTablePropsImmediate()}>
@@ -2573,7 +2570,7 @@ const TaskDashboard = (props: any) => {
                                 </details>
                                 <details>
                                     <summary>  Bottleneck Tasks {'(' + pageBottleneck?.length + ')'} </summary>
-                                    <div className='AccordionContent mx-height'  >
+                                    <div className='AccordionContent'>
                                         {bottleneckTasks?.length > 0 ?
                                         <div className='Alltable border-0 dashboardTable'>
                                             <Table className={updateContent ? "SortingTable mb-0" : "SortingTable mb-0"} hover  {...getTablePropsBottleneck()}>
@@ -2645,10 +2642,10 @@ const TaskDashboard = (props: any) => {
                                     <summary>
                                         Assigned Tasks {'(' + backupTaskArray?.AllAssignedTasks?.length + ')'}
                                     </summary>
-                                    <div className='AccordionContent mx-height' >
+                                    <div className='AccordionContent' >
                                         {AllAssignedTasks?.length > 0 ?
                                             <>
-                                            <div className='Alltable border-0 dashboardTable'>
+                                            <div className='Alltable border-0 dashboardTable float-none'>
                                                 <Table className={updateContent ? "SortingTable mb-0" : "SortingTable mb-0"} hover {...getTablePropsAll()} >
                                                     <thead className="fixed-Header">
                                                         {headerGroupsAll?.map((headerGroup: any) => (
@@ -2710,7 +2707,7 @@ const TaskDashboard = (props: any) => {
                                                 </Table>
                                                 </div>
                                                 <nav>
-                                                    <Pagination>
+                                                    <Pagination className='my-1'>
                                                         <PaginationItem>
                                                             <PaginationLink onClick={() => previousPageAll()} disabled={!canPreviousPageAll}>
                                                                 <span aria-hidden={true}>
@@ -2796,7 +2793,7 @@ const TaskDashboard = (props: any) => {
                                                     </summary>
                                                 }
 
-                                                <div className='AccordionContent mx-height timeEntryReport'  >
+                                                <div className='AccordionContent timeEntryReport'  >
                                                     {weeklyTimeReport?.length > 0 ?
                                                     <div className='Alltable border-0 dashboardTable'>
                                                         <Table className={updateContent ? "SortingTable mb-0" : "SortingTable mb-0"} hover  {...getTablePropsApprover()}>
@@ -2856,7 +2853,7 @@ const TaskDashboard = (props: any) => {
                                                                         </td>
                                                                     </tr>
                                                                 </tbody>}
-                                                        </Table></div> : <div className='text-center full-width'>
+                                                        </Table></div> : <div className='text-center full-width border p-3'>
                                                             <span>No Time Entry Available</span>
                                                         </div>}
                                                 </div>
@@ -2871,16 +2868,15 @@ const TaskDashboard = (props: any) => {
                             : ''}
                         {currentView == 'allBottlenecks' ? <article className="row">
                             <div>
-                            <details open>
-                                    <summary> 
-                                    {`All Bottleneck Tasks - ${AllBottleNeck?.length}`}
+                                    <div> 
+                                    <label className='f-16 fw-semibold'>{`All Bottleneck Tasks - ${AllBottleNeck?.length}`}</label>
                                         
                                         <a className='align-autoplay fw-normal d-flex float-end hreflink' onClick={() => setCurrentView("Home")}>Return To Home</a>
-                                    </summary>
-                                    <div className='AccordionContent mx-height'>
+                                    </div>
+                                    <div className='AccordionContent'>
                                     {AllBottleNeck?.length > 0 ?
                                         <>
-                                        <div className='Alltable border-0 dashboardTable'>
+                                        <div className='Alltable dashboardTable float-none'>
                                             <Table className={updateContent ? "SortingTable mb-0" : "SortingTable mb-0"} hover {...getTablePropsAllBottle()} >
                                                 <thead className="fixed-Header">
                                                     {headerGroupsAllBottle?.map((headerGroup: any) => (
@@ -2940,7 +2936,7 @@ const TaskDashboard = (props: any) => {
                                             </Table>
                                             </div>
                                             <nav className="pull-right">
-                                                <Pagination>
+                                                <Pagination className='my-1'>
                                                     <PaginationItem>
                                                         <PaginationLink onClick={() => previousPageAllBottle()} disabled={!canPreviousPageAllBottle}>
                                                             <span aria-hidden={true}>
@@ -2967,11 +2963,10 @@ const TaskDashboard = (props: any) => {
                                                 </Pagination>
                                             </nav>
                                         </>
-                                        : <div className='text-center full-width'>
+                                        : <div className='text-center full-width border p-3'>
                                             <span>No Bottleneck Tasks Available</span>
                                         </div>}
                                     </div>
-                                </details>
                                     {/* <div className="col-md-12 clearfix">
                                         <h5 className="d-inline-block">
                                             {`All Bottleneck Tasks - ${AllBottleNeck?.length}`}
@@ -3074,16 +3069,15 @@ const TaskDashboard = (props: any) => {
                         </article> : ''}
                         {currentView == 'allTasksView' ? <article className="row">
                             <div>
-                            <details open>
-                                    <summary> 
-                                    {`All Site's Tasks - ${AllSitesTask?.length}`}
+                                    <div> 
+                                    <label className='f-16 fw-semibold'>{`All Site's Tasks - ${AllSitesTask?.length}`}</label>
                                         
                                         <a className='align-autoplay fw-normal d-flex float-end hreflink' onClick={() => setCurrentView("Home")}>Return To Home</a>
-                                    </summary>
-                                    <div className='AccordionContent mx-height'>
+                                    </div>
+                                    <div className='AccordionContent'>
                                     {AllSitesTask?.length > 0 ?
                                         <>
-                                        <div className='Alltable border-0 dashboardTable'>
+                                        <div className='Alltable dashboardTable float-none'>
                                             <Table className={updateContent ? "SortingTable mb-0" : "SortingTable mb-0"} hover {...getTablePropsAllSite()} >
                                                 <thead className="fixed-Header">
                                                     {headerGroupsAllSite?.map((headerGroup: any) => (
@@ -3143,7 +3137,7 @@ const TaskDashboard = (props: any) => {
                                             </Table>
                                         </div>
                                             <nav className="pull-right">
-                                                <Pagination>
+                                                <Pagination className='my-1'>
                                                     <PaginationItem>
                                                         <PaginationLink onClick={() => previousPageAllSite()} disabled={!canPreviousPageAllSite}>
                                                             <span aria-hidden={true}>
@@ -3170,11 +3164,10 @@ const TaskDashboard = (props: any) => {
                                                 </Pagination>
                                             </nav>
                                         </>
-                                        : <div className='text-center full-width'>
+                                        : <div className='text-center full-width border p-3'>
                                             <span>No All Sites Tasks Available</span>
                                         </div>}
                                         </div>
-                                </details>
                                     {/* <div className="col-md-12 clearfix">
                                         <h5 className="d-inline-block">
                                             {`All Site's Tasks - ${AllSitesTask?.length}`}
@@ -3277,15 +3270,14 @@ const TaskDashboard = (props: any) => {
                         </article> : ''}
                         {currentView == 'allApproverView' ? <article className="row">
                             <div>
-                            <details open>
-                                    <summary> 
-                                        {`Approver Tasks - ${pageApprover?.length}`}
+                                    <div> 
+                                    <label className='f-16 fw-semibold'>{`Approver Tasks - ${pageApprover?.length}`}</label>
                                         
                                         <a className='align-autoplay fw-normal d-flex float-end hreflink' onClick={() => setCurrentView("Home")}>Return To Home</a>
-                                    </summary>
-                                    <div className='AccordionContent mx-height'>
+                                    </div>
+                                    <div className='AccordionContent'>
                                     {assignedApproverTasks?.length > 0 ?
-                                        <> <div className='Alltable border-0 dashboardTable'><Table className={updateContent ? "SortingTable mb-0" : "SortingTable mb-0"} hover  {...getTablePropsApprover()}>
+                                        <> <div className='Alltable dashboardTable float-none'><Table className={updateContent ? "SortingTable mb-0" : "SortingTable mb-0"} hover  {...getTablePropsApprover()}>
                                             <thead className="fixed-Header">
                                                 {headerGroupsApprover?.map((headerGroup: any) => (
                                                     <tr {...headerGroup.getHeaderGroupProps()}>
@@ -3344,7 +3336,7 @@ const TaskDashboard = (props: any) => {
                                                 </tbody>}
                                         </Table></div>
                                             <nav className="pull-right">
-                                                <Pagination>
+                                                <Pagination className='my-1'>
                                                     <PaginationItem>
                                                         <PaginationLink onClick={() => previousPageApprover()} disabled={!canPreviousPageApprover}>
                                                             <span aria-hidden={true}>
@@ -3372,11 +3364,10 @@ const TaskDashboard = (props: any) => {
                                             </nav>
                                         </>
 
-                                        : <div className='text-center full-width'>
+                                        : <div className='text-center full-width border p-3'>
                                             <span>No Approver Tasks Available</span>
                                         </div>}
                                         </div>
-                                </details>
                                     {/* <div className="col-md-12 clearfix">
                                         <h5 className="d-inline-block">
                                             {`Approver Tasks - ${pageApprover?.length}`}
@@ -3478,15 +3469,14 @@ const TaskDashboard = (props: any) => {
                         </article> : ''}
                         {currentView == 'AllPriorityTasks' ? <article className="row">
                             <div>
-                            <details open>
-                                    <summary> 
-                                    {`Priority Tasks - ${AllPriorityTasks?.length}`}
+                                    <div> 
+                                    <label className='f-16 fw-semibold'>{`Priority Tasks - ${AllPriorityTasks?.length}`}</label>
                                         
                                         <a className='align-autoplay fw-normal d-flex float-end hreflink' onClick={() => setCurrentView("Home")}>Return To Home</a>
-                                    </summary>
-                                    <div className='AccordionContent mx-height'>
+                                    </div>
+                                    <div className='AccordionContent'>
                                     {AllPriorityTasks?.length > 0 ?
-                                        <> <div className='Alltable border-0 dashboardTable'><Table className={updateContent ? "SortingTable mb-0" : "SortingTable mb-0"} hover  {...getTablePropsAllPriority()}>
+                                        <> <div className='Alltable dashboardTable float-none'><Table className={updateContent ? "SortingTable mb-0" : "SortingTable mb-0"} hover  {...getTablePropsAllPriority()}>
                                             <thead className="fixed-Header">
                                                 {headerGroupsAllPriority?.map((headerGroup: any) => (
                                                     <tr {...headerGroup.getHeaderGroupProps()}>
@@ -3545,7 +3535,7 @@ const TaskDashboard = (props: any) => {
                                                 </tbody>}
                                         </Table></div>
                                             <nav className="pull-right">
-                                                <Pagination>
+                                                <Pagination className='my-1'>
                                                     <PaginationItem>
                                                         <PaginationLink onClick={() => previousPageAllPriority()} disabled={!canPreviousPageAllPriority}>
                                                             <span aria-hidden={true}>
@@ -3573,11 +3563,10 @@ const TaskDashboard = (props: any) => {
                                             </nav>
                                         </>
 
-                                        : <div className='text-center full-width'>
+                                        : <div className='text-center full-width border p-3'>
                                             <span>No Priority Tasks Available</span>
                                         </div>}
                                         </div>
-                                </details>
 
                                     {/* <div className="col-md-12 clearfix">
                                         <h5 className="d-inline-block">
@@ -3680,16 +3669,15 @@ const TaskDashboard = (props: any) => {
                         </article> : ''}
                         {currentView == 'sharewebTasks' ? <article className="row">
                             <div>
-                            <details open>
-                                    <summary> 
-                                        {`Shareweb Tasks - ${sharewebTasks?.length}`}
+                                    <div> 
+                                        <label className='f-16 fw-semibold'>{`Shareweb Tasks - ${sharewebTasks?.length}`}</label>
                                         
                                         <a className='align-autoplay fw-normal d-flex float-end hreflink' onClick={() => setCurrentView("Home")}>Return To Home</a>
-                                    </summary>
-                                    <div className='AccordionContent mx-height'>
+                                    </div>
+                                    <div className='AccordionContent'>
                                     {sharewebTasks?.length > 0 ?
                                         <>
-                                        <div className='Alltable border-0 dashboardTable'>
+                                        <div className='Alltable dashboardTable float-none'>
                                             <Table className={updateContent ? "SortingTable mb-0" : "SortingTable mb-0"} hover {...getTablePropsAllSite()} >
                                                 <thead className="fixed-Header">
                                                     {headerGroupsSharewebTask?.map((headerGroup: any) => (
@@ -3749,7 +3737,7 @@ const TaskDashboard = (props: any) => {
                                             </Table>
                                             </div>
                                             <nav className="pull-right">
-                                                <Pagination>
+                                                <Pagination className='my-1'>
                                                     <PaginationItem>
                                                         <PaginationLink onClick={() => previousPageSharewebTask()} disabled={!canPreviousPageSharewebTask}>
                                                             <span aria-hidden={true}>
@@ -3776,11 +3764,10 @@ const TaskDashboard = (props: any) => {
                                                 </Pagination>
                                             </nav>
                                         </>
-                                        : <div className='text-center full-width'>
+                                        : <div className='text-center full-width border p-3'>
                                             <span>No Shareweb Tasks Available</span>
                                         </div>} 
                                     </div>
-                            </details>
                                     {/* <div className="col-md-12 clearfix">
                                         <h5 className="d-inline-block">
                                             {`Shareweb Tasks - ${sharewebTasks?.length}`}
@@ -3883,18 +3870,14 @@ const TaskDashboard = (props: any) => {
                         </article> : ''}
                         {currentView == 'AllImmediateTasks' ? <article className="row">
                             <div>
-
-                            <details open onDrop={(e: any) => handleDrop('workingToday')}
-                                    onDragOver={(e: any) => e.preventDefault()}>
-                                    <summary> 
-                                            {`Immediate Tasks - ${AllImmediateTasks?.length}`}
-                                        
+                                    <div> 
+                                        <label className='f-16 fw-semibold'>{`Immediate Tasks - ${AllImmediateTasks?.length}`}</label>
                                         <a className='align-autoplay fw-normal d-flex float-end hreflink' onClick={() => setCurrentView("Home")}>Return To Home</a>
-                                    </summary>
-                                    <div className='AccordionContent mx-height'>
+                                    </div>
+                                    <div className='AccordionContent'>
                                         {AllImmediateTasks?.length > 0 ?
                                         <>
-                                        <div className='Alltable border-0 dashboardTable'>
+                                        <div className='Alltable dashboardTable float-none'>
                                             <Table className={updateContent ? "SortingTable mb-0" : "SortingTable mb-0"} hover {...getTablePropsAllImmediate()} >
                                                 <thead className="fixed-Header">
                                                     {headerGroupsAllImmediate?.map((headerGroup: any) => (
@@ -3953,7 +3936,7 @@ const TaskDashboard = (props: any) => {
 
                                             </Table></div>
                                             <nav className="pull-right">
-                                                <Pagination>
+                                                <Pagination className='my-2'>
                                                     <PaginationItem>
                                                         <PaginationLink onClick={() => previousPageAllImmediate()} disabled={!canPreviousPageAllImmediate}>
                                                             <span aria-hidden={true}>
@@ -3994,26 +3977,23 @@ const TaskDashboard = (props: any) => {
                                                 </Pagination>
                                             </nav>
                                         </>
-                                        : <div className='text-center full-width'>
+                                        : <div className='text-center full-width border p-3'>
                                             <span>No Immediate Tasks Available</span>
                                         </div>}
                                     </div>
-                            </details>
                             </div>
                         </article> : ''}
                         {currentView == 'AllEmailTasks' ? <article className="row">
                                 <div className='' >
-                                <details open onDrop={(e: any) => handleDrop('workingToday')}
-                                    onDragOver={(e: any) => e.preventDefault()}>
-                                    <summary> 
-                                        {`Email-Notification's Tasks - ${AllEmailTasks?.length}`}
+                                    <div> 
+                                        <label className='fw-semibold f-16'>{`Email-Notification's Tasks - ${AllEmailTasks?.length}`}</label>
                                         
                                         <a className='align-autoplay fw-normal d-flex float-end hreflink' onClick={() => setCurrentView("Home")}>Return To Home</a>
-                                    </summary>
-                                    <div className='AccordionContent mx-height'>
+                                    </div>
+                                    <div className='AccordionContent'>
                                     {AllEmailTasks?.length > 0 ?
                                         <>
-                                        <div className='Alltable border-0 dashboardTable'>
+                                        <div className='Alltable dashboardTable float-none'>
                                             <Table className={updateContent ? "SortingTable mb-0" : "SortingTable mb-0"} hover {...getTablePropsAllEmail()} >
                                                 <thead className="fixed-Header">
                                                     {headerGroupsAllEmail?.map((headerGroup: any) => (
@@ -4072,7 +4052,7 @@ const TaskDashboard = (props: any) => {
 
                                             </Table></div>
                                             <nav className="pull-right">
-                                                <Pagination>
+                                                <Pagination className='my-1'>
                                                     <PaginationItem>
                                                         <PaginationLink onClick={() => previousPageAllEmail()} disabled={!canPreviousPageAllEmail}>
                                                             <span aria-hidden={true}>
@@ -4099,11 +4079,10 @@ const TaskDashboard = (props: any) => {
                                                 </Pagination>
                                             </nav>
                                         </>
-                                        : <div className='text-center full-width'>
+                                        : <div className='text-center full-width border p-3'>
                                             <span>No E-Mail Tasks Available</span>
                                         </div>}
                                     </div>
-                                </details>
                                     {/* <div className="col-md-12 clearfix">
                                         <h5 className="d-inline-block">
                                             {`Email-Notification's Tasks - ${AllEmailTasks?.length}`}

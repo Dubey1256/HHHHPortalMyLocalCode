@@ -13,8 +13,6 @@ const BulkEditingConfrigation = (item: any) => {
             [checkboxName]: !prevValues[checkboxName],
         }));
     };
-
-
     const handleClosePopup = () => {
         item?.bulkEditingSetting('close')
     };

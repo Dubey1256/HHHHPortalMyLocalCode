@@ -121,8 +121,11 @@ const Profilcandidate = ({ props }: any) => {
     };
 
     const openDocInNewTab = (url: string | URL | undefined) => {
-        window.open(url, '_blank');
+            window.open(url, '_blank');
     };
+    const downloadDoc = (url: string | URL | undefined) => {
+        window.open(url + '?download=1');
+    }
     return (
         <myContextValue.Provider value={{ ...myContextValue, allSite: allSite, allListId: allListId, loggedInUserName: props?.userDisplayName }}>
             <Loader loaded={loaded} lines={13} length={20} width={10} radius={30} corners={1} rotate={0} direction={1} speed={2} trail={60} shadow={false} hwaccel={false} className="spinner" zIndex={2e9} top="28%" left="50%" scale={1.0} loadedClassName="loadedContent"/>
@@ -239,7 +242,7 @@ const Profilcandidate = ({ props }: any) => {
                                         <span className="svg__iconbox svg__icon--document"></span>
                                     </span>
                                     <span style={{ display: document.File_x0020_Type !== 'aspx' ? 'inline' : 'none' }}>
-                                        <a onClick={() => openDocInNewTab(document.EncodedAbsUrl)}>
+                                        <a onClick={() => openDocInNewTab(document.EncodedAbsUrl)} onDoubleClick={() => {downloadDoc(document.EncodedAbsUrl)}}>
                                             <span>
                                                 <span style={{ display: document.FileLeafRef !== 'undefined' ? 'inline' : 'none' }}>
                                                     {document.FileLeafRef}

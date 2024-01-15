@@ -80,12 +80,15 @@ export default function ReactPopperTooltipSingleLevel({ ShareWebId, row, masterT
         onVisibleChange: setControlledVisible,
     });
 
-    // React.useEffect(() => {
-    //     if(AllListId!=undefined && action=='click'){
-    //         masterFunction() 
-    //     getAlldata(row)
-    // }
-    //   }, [action]);
+    React.useEffect(() => {
+        let targetDiv: any = document?.querySelector('.ms-Panel-main');
+            setTimeout(() => {
+                if (targetDiv && row?.PortfolioType?.Color!=undefined) {
+                    // Change the --SiteBlue variable for elements under the targetDiv
+                    targetDiv?.style?.setProperty('--SiteBlue', row?.PortfolioType?.Color); // Change the color to your desired value
+                }
+            }, 1000)
+      }, [action]);
 
     
 
@@ -153,8 +156,15 @@ export default function ReactPopperTooltipSingleLevel({ ShareWebId, row, masterT
     };
 
     const handlClick = (newAction: any) => {
+        let rowOrg: any = {};
+        if (row?.subRows?.length > 0) {
+            rowOrg = { ...row };
+            rowOrg.subRows = [];
+        } else {
+            rowOrg = { ...row };
+        }
         if (newAction === "click" && newAction === "hover") return;
-            getTooltiphierarchyAllData(row).then((response:any)=>{
+            getTooltiphierarchyAllData(rowOrg).then((response:any)=>{
                setAction(newAction);
                setControlledVisible(true);
                setallValue(response);
@@ -200,106 +210,24 @@ export default function ReactPopperTooltipSingleLevel({ ShareWebId, row, masterT
     }
     /// end////
     const tooltiphierarchy = React.useMemo(() => {
+        let rowOrg: any = {};
         if (row?.subRows?.length > 0) {
-            row.subRows = []
+            rowOrg = { ...row };
+            rowOrg.subRows = [];
+        } else {
+            rowOrg = { ...row };
         }
         let completeTitle = '';
-
+     
         if (action === "hover") {
-            let result = getTooltiphierarchyWithoutGroupByTable(row, completeTitle);
-            let TaskId = row?.SiteIcon != undefined ? globalCommon.GetCompleteTaskId(row) : row?.PortfolioStructureID;
-            let completedID = `${TaskId} : ${result?.structureTitle}${row?.Title}`
+            let result = getTooltiphierarchyWithoutGroupByTable(rowOrg, completeTitle);
+            let TaskId = rowOrg?.SiteIcon != undefined ? globalCommon.GetCompleteTaskId(rowOrg) : rowOrg?.PortfolioStructureID;
+            let completedID = `${TaskId} : ${result?.structureTitle}${rowOrg?.Title}`
             setHoverOverInfo(completedID);
         }
         return [];
     }, [action]);
 
-    const columns = React.useMemo<ColumnDef<any, unknown>[]>(
-        () => [
-            {
-                accessorKey: "",
-                placeholder: "",
-                hasCustomExpanded: true,
-                hasExpanded: true,
-                isHeaderNotAvlable: true,
-                size: 30,
-                id: 'Id',
-            },
-            {
-                accessorKey: "",
-                size: 140,
-                canSort: false,
-                placeholder: "",
-                id: 'TaskID',
-                cell: ({ row, getValue }) => (
-                    <div>
-                        {row?.original?.SiteIcon != undefined ?
-                            <a className="hreflink" title="Show All Child" data-toggle="modal">
-                                <img className="icon-sites-img ml20 me-1" src={row?.original?.SiteIcon}></img>
-                                <span>{row?.original?.TaskID}</span>
-                            </a> : <>{row?.original?.Title != "Others" ? <div className=""><div className='Dyicons me-1'>{row?.original?.Item_x0020_Type?.toUpperCase()?.charAt(0)}
-                            </div><span>{row?.original?.PortfolioStructureID}</span></div> : ""}</>}
-                    </div>
-                ),
-            },
-            {
-                cell: ({ row }) => (
-                    <>
-                        <div>
-                            {row?.original?.SiteIcon != undefined ?
-                                <a
-                                    className="hreflink"
-                                    href={`${row?.original?.siteUrl}/SitePages/Task-Profile.aspx?taskId=${row?.original?.Id}&Site=${row?.original?.siteType}`}
-                                    data-interception="off"
-                                    target="_blank"
-                                >
-                                    {row?.original?.Title}
-                                </a> : <>{row?.original?.Title != "Others" ? <a
-                                    className="hreflink"
-                                    data-interception="off"
-                                    target="blank"
-                                    href={`${row?.original?.siteUrl}/SitePages/Portfolio-Profile.aspx?taskId=${row?.original?.Id}`}
-                                >
-                                    <span className="d-flex">
-                                        {row?.original?.Title}
-                                    </span>
-                                </a> : ""}</>}
-                        </div>
-                    </>
-                ),
-                id: "Title",
-                canSort: false,
-                placeholder: "",
-                header: "",
-            },
-            {
-                accessorKey: "",
-                size: 27,
-                canSort: false,
-                header: "",
-                placeholder: "",
-                id: 'plushIcon',
-                cell: ({ row }) => (
-                    <div>
-                        {row?.original?.TaskType?.Title != 'Task' ?
-                            <span onClick={() => openActivityPopup(row.original)} className="hreflink"><FaPlus style={{ fontSize: '10px' }} /></span>
-                            : ''}
-                    </div>
-                ),
-            },
-        ],
-        [tooltiphierarchy]
-    );
-    const callBackDataToolTip = React.useCallback((expanded: any) => {
-        if (expanded[0] === true) {
-            scrollToolitem = true;
-        } else {
-            scrollToolitem = false;
-        }
-    }, []);
-    const callBackData = React.useCallback((elem: any, ShowingData: any) => {
-
-    }, []);
 
     const onToggle = (data: any) => {
 
@@ -363,7 +291,7 @@ export default function ReactPopperTooltipSingleLevel({ ShareWebId, row, masterT
                                     data-interception="off"
                                     target="_blank">
                                     {itemData?.Title}
-                                </a> </> : <>{itemData?.Title != "Others" && itemData?.Item_x0020_Type != "Sprint" && itemData?.Item_x0020_Type  != "Project" ? 
+                                </a> </> : <>{itemData?.Title != "Others" && itemData?.Item_x0020_Type != "Sprint" && itemData?.Item_x0020_Type  != "Project" ? <>
                                 
                                     <a className={lastChild == true ? "hreflink fw-normal text-white" : "hreflink fw-normal"}
                                         data-interception="off"
@@ -373,7 +301,7 @@ export default function ReactPopperTooltipSingleLevel({ ShareWebId, row, masterT
                                             {itemData?.Title}
                                         </span>
                                     </a>
-                             
+                                </>
                                  :itemData?.Item_x0020_Type == "Sprint" || itemData.Item_x0020_Type == "Project" ?
                                  <a className={lastChild == true ? "hreflink fw-normal text-white" : "hreflink fw-normal"} data-interception="off" target="blank"
                                      href={`${itemData?.siteUrl}/SitePages/Project-Management.aspx?ProjectId=${itemData?.Id}`}>

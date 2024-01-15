@@ -836,7 +836,15 @@ function EditProjectPopup(item: any) {
   };
   function EditComponentCallback() {
     if (postedData?.Id == undefined && postedData?.ID == undefined) {
-      postedData = EditData
+      postedData ={
+        ...postedData,...EditData
+      }
+      postedData ={
+        ...postedData,
+        ComponentLink: {
+          Url: EditData?.ComponentLink!=undefined?EditData?.ComponentLink:''
+        },
+      }
     }
     item.Call(postedData, "EditPopup");
   }
@@ -1190,13 +1198,19 @@ function EditProjectPopup(item: any) {
           );
         }
         postData["TaskID"] = postData?.PortfolioStructureID;
-        postedData = {
+        postedData ={
           ...postData,
-          TaskCategories: CategoriesData,
-          AssignedTo: TaskAssignedTo,
-          ResponsibleTeam: TaskResponsibleTeam,
-          TeamMembers: TaskTeamMembers,
-          Item_x0020_Type: EditData?.Item_x0020_Type
+          TaskCategories:CategoriesData,
+          AssignedTo:TaskAssignedTo,
+          ResponsibleTeam:TaskResponsibleTeam,
+          TeamMembers:TaskTeamMembers,
+          Item_x0020_Type : EditData?.Item_x0020_Type,
+          ComponentLink: {
+            Url: Items?.ComponentLink!=undefined?Items?.ComponentLink:''
+          },
+          Body:EditData.Body,
+          taggedPortfolios: projectTaggedPortfolios
+
         }
         console.log(res);
         TaggedPortfolios = [];
@@ -1509,15 +1523,14 @@ function EditProjectPopup(item: any) {
                             </div>
                           </div>
 
-                          {EditData?.Item_x0020_Type == "Project" && (
                             <div className="col-sm-12 mt-2 p-0">
                               <div className="row">
                                 <div className="col-sm-6">
                                   <div className="input-group">
                                     <label className="form-label full-width">Status</label>
                                     <input type="text" maxLength={3} placeholder="% Complete" className="form-control px-2"
-                                      defaultValue={EditData?.PercentComplete != undefined ? Number(EditData.PercentComplete).toFixed(0) : null}
-                                      value={EditData?.PercentComplete != undefined ? Number(EditData.PercentComplete).toFixed(0) : null}
+                                      defaultValue={EditData?.PercentComplete != undefined ? Number(EditData?.PercentComplete).toFixed(0) : null}
+                                      value={EditData?.PercentComplete != undefined ? Number(EditData?.PercentComplete).toFixed(0) : null}
                                       onChange={(e) => StatusAutoSuggestion(e.target.value)} />
                                     <span className="input-group-text" title="Status Popup" onClick={() => setTaskStatusPopup(true)}>
                                       <span title="Edit Task" className="svg__iconbox svg__icon--editBox"></span>
@@ -1538,7 +1551,7 @@ function EditProjectPopup(item: any) {
                                     <label className="form-label full-width  mx-2">
                                       Working Member
                                     </label>
-                                    {EditData.AssignedUsers?.map(
+                                    {EditData?.AssignedUsers?.map(
                                       (userDtl: any, index: any) => {
                                         return (
                                           <div className="TaskUsers">
@@ -1559,7 +1572,7 @@ function EditProjectPopup(item: any) {
                                 </div>
                               </div>
                             </div>
-                          )}
+                          
                         </div>
                         <div className="mx-0 row mt-2">
                           <div className="col-sm-4 ps-0 ">
@@ -1640,7 +1653,7 @@ function EditProjectPopup(item: any) {
                           </div>
                         </div>
                         <div className="mx-0 row mt-2 ">
-                          <div className="col-sm-6 ps-0 time-status">
+                          {/* <div className="col-sm-6 ps-0 time-status">
                             <div className="input-group mb-2">
                               <label className="form-label  full-width">
                                 Status
@@ -1769,8 +1782,8 @@ function EditProjectPopup(item: any) {
                                 </label>
                                 </li>
                             </ul>
-                          </div>
-                          <div className="col-sm-6 pe-0">
+                          </div> */}
+                          <div className="col-sm-6 p-0">
                             <div className="input-group position-relative mb-2">
                               <label className="form-label  full-width">
                                 Categories{" "}
@@ -1844,8 +1857,7 @@ function EditProjectPopup(item: any) {
                                                     }}
                                                     target="_blank"
                                                     data-interception="off"
-                                                    href={`${item?.AllListId?.siteUrl}/SitePages/Portfolio-Profile.aspx?${EditData?.Id}`}
-                                                  >
+                                                   >
                                                     {type.Title}
                                                   </a>
                                                   <img
@@ -1933,7 +1945,7 @@ function EditProjectPopup(item: any) {
                           <div className="col mt-2">
                             <div className="input-group full-width">
                               <label className="form-label full-width">
-                                Portfolios
+                                Portfolio Items
                               </label>
                               <input
                                 type="text"

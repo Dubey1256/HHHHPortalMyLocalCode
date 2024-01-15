@@ -53,9 +53,16 @@ var isShowSiteCompostion: any;
 let renderData: any = []
 let projectData: any = {}
 let CurrentUserData: any = {};
+let hasCustomExpanded: any = true
+let hasExpanded: any = true
+let isHeaderNotAvlable: any = false
+let isColumnDefultSortingAsc: any = false;
 const ProjectManagementMain = (props: any) => {
   // const [item, setItem] = React.useState({});
   const [AllTaskUsers, setAllTaskUsers] = React.useState([]);
+  const [groupByButtonClickData, setGroupByButtonClickData] = React.useState([]);
+  const [clickFlatView, setclickFlatView] = React.useState(false);
+  const [flatViewDataAll, setFlatViewDataAll] = React.useState([]);
   const [IsPortfolio, setIsPortfolio] = React.useState(false);
   const [isAddStructureOpen, setIsAddStructureOpen] = React.useState(false);
   const [IsComponent, setIsComponent] = React.useState(false);
@@ -213,9 +220,7 @@ const ProjectManagementMain = (props: any) => {
         .get();
       CurrentUserData = taskUser?.find((user: any) => {
         if (AllListId?.Context?.pageContext?.legacyPageContext?.userId == user?.AssingedToUser?.Id) {
-          true
-        } else {
-          false
+          return true
         }
       })
     }
@@ -255,6 +260,14 @@ const ProjectManagementMain = (props: any) => {
             }
             if (fetchedProject?.Item_x0020_Type == "Project") {
               fetchedProject.subRows = AllFlatProject?.filter((data: any) => data?.Parent?.Id == fetchedProject?.Id && data?.Item_x0020_Type == "Sprint")
+              fetchedProject.subRows?.map((item: any) => {
+                let itemAuthor = AllUser?.find((user: any) => {
+                  if (user?.AssingedToUser?.Id == item?.Author?.Id) {
+                    return true
+                  }
+                })
+                item.createdImg = itemAuthor?.Item_x0020_Cover?.Url
+              })
             }
             if (fetchedProject?.ParentId != undefined && fetchedProject?.Item_x0020_Type == "Sprint") {
               fetchedProject.Parent = AllFlatProject?.find((data: any) => data?.Id == fetchedProject?.ParentId)
@@ -314,7 +327,7 @@ const ProjectManagementMain = (props: any) => {
             if (loadtask == true) {
               LoadAllSiteTasks();
             }
-       
+
             setMasterdata((prev: any) => fetchedProject);
           })
 
@@ -385,7 +398,6 @@ const ProjectManagementMain = (props: any) => {
 
   const CallBack = React.useCallback((item: any, type: any) => {
     setIsAddStructureOpen(false)
-
     if (type == 'Save') {
       if (item?.Item_x0020_Type == "Sprint") {
         // let allData = data;
@@ -397,7 +409,6 @@ const ProjectManagementMain = (props: any) => {
         renderData = [];
         renderData = renderData.concat(allBackupSprintAndTask)
         refreshData();
-
       }
       GetMasterData(false)
     }
@@ -655,7 +666,8 @@ const ProjectManagementMain = (props: any) => {
         AllTask.push(items);
       });
       try {
-        backupAllTasks = JSON.parse(JSON.stringify(AllTask));
+        
+        backupAllTasks = globalCommon?.deepCopy(AllTask);
         setAllTasks(backupAllTasks);
       } catch (error) {
 
@@ -794,6 +806,7 @@ const ProjectManagementMain = (props: any) => {
 
   };
 
+
   const getChilds = (item: any, items: any) => {
     items?.map((sub: any) => {
       if (sub?.Id == item?.ParentTask?.Id && sub?.isFlag != true) {
@@ -845,9 +858,26 @@ const ProjectManagementMain = (props: any) => {
     }
   };
   const Call = (propsItems: any, type: any) => {
+    if(propsItems?.Id!=undefined){
+      if (propsItems?.DueDate != undefined) {
+        propsItems.DisplayDueDate = propsItems.DueDate != null
+          ? Moment(propsItems.DueDate).format("DD/MM/YYYY")
+          : "";
+      } else {
+        propsItems.DisplayDueDate = '';
+      }
+      if (propsItems?.Created != undefined) {
+        propsItems.DisplayCreateDate = propsItems.Created != null
+          ? Moment(propsItems.Created).format("DD/MM/YYYY")
+          : "";
+      } else {
+        propsItems.DisplayCreateDate = '';
+      }
+    }
     if (propsItems?.Item_x0020_Type == "Project") {
       setMasterdata(propsItems)
     } else if (propsItems?.Item_x0020_Type == "Sprint") {
+      
       setData((prev: any) => {
         return prev?.map((object: any) => {
           if (object?.Id === propsItems?.Id) {
@@ -955,15 +985,54 @@ const ProjectManagementMain = (props: any) => {
     }
   }, []);
 
+
+  const switchFlatViewData = (data: any) => {
+    let groupedDataItems = globalCommon?.deepCopy(data);
+    const flattenedData = flattenData(groupedDataItems);
+    hasCustomExpanded = false
+    hasExpanded = false
+    isHeaderNotAvlable = true
+    isColumnDefultSortingAsc = true
+    setGroupByButtonClickData(data);
+    setclickFlatView(true);
+    setFlatViewDataAll(flattenedData)
+    setData(flattenedData);
+    // setData(smartAllFilterData);
+  }
+
+  function flattenData(groupedDataItems: any) {
+    const flattenedData: any = [];
+    function flatten(item: any) {
+      if (item.Title != "Others") {
+        flattenedData.push(item);
+      }
+      if (item?.subRows) {
+        item?.subRows.forEach((subItem: any) => flatten(subItem));
+        item.subRows = []
+      }
+    }
+    groupedDataItems?.forEach((item: any) => { flatten(item) });
+    return flattenedData;
+  }
+  const switchGroupbyData = () => {
+    isColumnDefultSortingAsc = false
+    hasCustomExpanded = true
+    hasExpanded = true
+    isHeaderNotAvlable = false
+    setclickFlatView(false);
+    setData(groupByButtonClickData);
+  }
+
   const column2 = React.useMemo<ColumnDef<any, unknown>[]>(
     () => [
       {
         accessorKey: "",
         placeholder: "",
-        hasCustomExpanded: true,
-        hasExpanded: true,
         hasCheckbox: true,
-        size: 10,
+        hasCustomExpanded: hasCustomExpanded,
+        hasExpanded: hasExpanded,
+        isHeaderNotAvlable: isHeaderNotAvlable,
+        size: 12,
         id: 'Id',
       },
       {
@@ -996,7 +1065,7 @@ const ProjectManagementMain = (props: any) => {
         cell: ({ row, getValue }) => (
           <>
             <span className="d-flex">
-              <ReactPopperTooltipSingleLevel AllListId={AllListId} ShareWebId={row?.original?.TaskID} row={row?.original} singleLevel={true} masterTaskData={MasterListData} AllSitesTaskData={AllSitesAllTasks} />
+              <ReactPopperTooltipSingleLevel   AllListId={AllListId} ShareWebId={row?.original?.TaskID} row={row?.original} singleLevel={true} masterTaskData={MasterListData} AllSitesTaskData={AllSitesAllTasks} />
             </span>
           </>
         ),
@@ -1057,7 +1126,7 @@ const ProjectManagementMain = (props: any) => {
       },
 
       {
-        accessorFn: (row) => row?.Portfolio,
+        accessorFn: (row) => row?.PortfolioTitle,
         cell: ({ row }) => (
           <a
             className="hreflink"
@@ -1066,12 +1135,12 @@ const ProjectManagementMain = (props: any) => {
             href={`${props?.siteUrl}/SitePages/Portfolio-Profile.aspx?taskId=${row?.original?.portfolio?.Id}`}
           >
             <span className="d-flex">
-              <ReactPopperTooltipSingleLevel  onclickPopup={false} AllListId={AllListId} ShareWebId={row?.original?.portfolio?.Title} row={row?.original?.Portfolio} singleLevel={true} masterTaskData={MasterListData} AllSitesTaskData={AllSitesAllTasks} />
+              <ReactPopperTooltipSingleLevel   AllListId={AllListId} onclickPopup={false} ShareWebId={row?.original?.portfolio?.Title} row={row?.original?.Portfolio} singleLevel={true} masterTaskData={MasterListData} AllSitesTaskData={AllSitesAllTasks} />
             </span>
           </a>
         ),
         id: "Portfolio",
-        placeholder: "Portfolio",
+        placeholder: "Portfolio Item",
         resetColumnFilters: false,
         resetSorting: false,
         header: ""
@@ -1672,13 +1741,17 @@ const ProjectManagementMain = (props: any) => {
                           <div className="Alltable">
                             <div className="section-event ps-0">
                               <div className="wrapper project-management-Table">
-                                {(data?.length == 0 || data?.length > 0) && <GlobalCommanTable AllListId={AllListId} headerOptions={headerOptions}
+                                {(data?.length == 0 || data?.length > 0) && <GlobalCommanTable AllListId={AllListId} headerOptions={headerOptions} updatedSmartFilterFlatView={false}
                                   projectmngmnt={"projectmngmnt"}
                                   MasterdataItem={Masterdata}
                                   columns={column2} data={data} callBackData={callBackData}
                                   smartTimeTotalFunction={smartTimeTotal} SmartTimeIconShow={true}
                                   TaskUsers={AllUser} showHeader={true} expendedTrue={false}
                                   showCreationAllButton={true}
+                                  flatViewDataAll={flatViewDataAll}
+                                  clickFlatView={clickFlatView} switchFlatViewData={switchFlatViewData}
+                                  flatView={true}
+                                  switchGroupbyData={switchGroupbyData}
                                   restructureCallBack={callBackData1}
                                   ref={childRef} callChildFunction={callChildFunction}
                                   OpenAddStructureModal={OpenAddStructureModal}
@@ -1733,6 +1806,7 @@ const ProjectManagementMain = (props: any) => {
                 Call={Call}
                 AllListId={AllListId}
                 TaskUsers={AllUser}
+                UsedFrom={"ProjectManagement"}
                 context={AllListId.Context}
                 LoadAllSiteTasks={LoadAllSiteTasks}
                 selectedItem={checkedList != null && checkedList?.Id != undefined ? checkedList : undefined}
@@ -1744,6 +1818,7 @@ const ProjectManagementMain = (props: any) => {
                 Call={Call}
                 context={AllListId.Context}
                 AllListId={AllListId}
+                UsedFrom={"ProjectManagement"}
                 TaskUsers={AllUser}
                 data={data}
               ></CreateWS>
