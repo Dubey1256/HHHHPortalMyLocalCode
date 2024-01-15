@@ -18,7 +18,7 @@ import zIndex from '@material-ui/core/styles/zIndex';
 import CheckboxTree from 'react-checkbox-tree';
 import 'react-checkbox-tree/lib/react-checkbox-tree.css';
 import { FaChevronDown, FaChevronRight, FaMinusSquare, FaPlusSquare, FaSquare, FaCheckSquare } from 'react-icons/fa';
-// import "./styles.css"
+import "./styles.css"
 
 const TaskUserManagementTable = ({ TaskUsersListData, TaskGroupsListData, baseUrl, TaskUserListId, context, fetchAPIData, smartMetaDataItems }: any) => {
     const [data, setData] = React.useState([]);
@@ -878,7 +878,7 @@ const TaskUserManagementTable = ({ TaskUsersListData, TaskGroupsListData, baseUr
                                         <label className='form-label full-width fw-semibold'>Roles: </label>
                                         <div className='row'>
                                             <div className='col-5 px-0'>
-                                                {['Component Teams', 'Service Teams'].map((role: any) => (
+                                                {['Component Teams', 'Service Teams', 'Component Creator', 'Component Editor', 'Task Creator'].map((role: any) => (
                                                     <React.Fragment key={role}>
                                                         <label className='SpfxCheckRadio mb-1' htmlFor={`role-${role}`}>
                                                             <input type="checkbox" className='form-check-input me-1' id={`role-${role}`} name="roles" value={role} checked={selectedRoles?.includes(role)}

@@ -16,7 +16,7 @@ import Tooltip from "../../../globalComponents/Tooltip";
 import { ColumnDef } from "@tanstack/react-table";
 import "bootstrap/dist/css/bootstrap.min.css";
 import HighlightableCell from "../../../globalComponents/GroupByReactTableComponents/highlight";
-import Loader from "react-loader";
+// import Loader from "react-loader";
 import { myContextValue } from '../../../globalComponents/globalCommon'
 import ShowClintCatogory from "../../../globalComponents/ShowClintCatogory";
 import ReactPopperTooltip from "../../../globalComponents/Hierarchy-Popper-tooltip";
@@ -2100,7 +2100,7 @@ const updatedDataDataFromPortfolios = (copyDtaArray: any, dataToUpdate: any) => 
                 <div className="col-sm-12 p-0 smart">
                   <div className="">
                     <div className="">
-                      <Loader
+                      {/* <Loader
                         loaded={loaded}
                         lines={13}
                         length={20}
@@ -2120,7 +2120,7 @@ const updatedDataDataFromPortfolios = (copyDtaArray: any, dataToUpdate: any) => 
                         left="50%"
                         scale={1.0}
                         loadedClassName="loadedContent"
-                      />
+                      /> */}
                       <GlobalCommanTable bulkEditIcon={true} priorityRank={priorityRank} precentComplete={precentComplete}
                       AllSitesTaskData={flatviewTasklist} masterTaskData={flatviewmastertask}
                         smartTimeTotalFunction={smartTimeTotal} SmartTimeIconShow={true}
@@ -2306,6 +2306,7 @@ const updatedDataDataFromPortfolios = (copyDtaArray: any, dataToUpdate: any) => 
           Context={SelectedProp?.NextProp.Context}
         ></TimeEntryPopup>
       )}
+     {!loaded && <PageLoader/>}
     </div>
     </myContextValue.Provider>
   );
