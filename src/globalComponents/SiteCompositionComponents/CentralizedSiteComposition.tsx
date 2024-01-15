@@ -9,7 +9,7 @@ import GlobalCommonTable from "../GroupByReactTableComponents/GlobalCommanTable"
 import { ColumnDef } from "@tanstack/react-table";
 import "bootstrap/dist/css/bootstrap.min.css";
 import HighlightableCell from "../GroupByReactTableComponents/highlight";
-import Loader from "react-loader";
+// import Loader from "react-loader";
 import ShowClintCategory from "../ShowClintCatogory";
 import ReactPopperTooltip from "../Hierarchy-Popper-tooltipSilgleLevel/Hierarchy-Popper-tooltipSingleLevel";
 import { FaCompressArrowsAlt } from "react-icons/fa";
@@ -19,6 +19,7 @@ import SmartTotalTime from '../EditTaskPopup/SmartTimeTotal';
 import { SlArrowDown, SlArrowRight } from "react-icons/sl";
 import ShowSiteComposition from "./ShowSiteComposition";
 import VersionHistory from "../VersionHistroy/VersionHistory";
+import PageLoader from "../pageLoader";
 import moment from "moment";
 let AllSiteDataBackup: any = [];
 let AllClientCategoryDataBackup: any = [];
@@ -193,6 +194,14 @@ const CentralizedSiteComposition = (Props: any) => {
                 if (TempAllSiteData?.length > 0) {
                     setAllSiteData(TempAllSiteData);
                     AllSiteDataBackup = TempAllSiteData;
+                    if (ItemDetails?.SiteIcon == undefined || ItemDetails?.SiteIcon == null) {
+                        TempAllSiteData?.map((AllSiteData: any) => {
+                            if (AllSiteData.Title == ItemDetails.SiteType) {
+                                ItemDetails.SiteIcon = AllSiteData?.Item_x005F_x0020_Cover?.Url;
+                            }
+                        })
+                    }
+
                 }
                 GetSelectedItemDetails();
             }
@@ -2031,7 +2040,7 @@ const CentralizedSiteComposition = (Props: any) => {
                                 </div>
                             </div>
                             <div className="tagged-child-items-table border">
-                                <Loader
+                                {/* <Loader
                                     loaded={loaded}
                                     lines={13}
                                     length={20}
@@ -2051,7 +2060,8 @@ const CentralizedSiteComposition = (Props: any) => {
                                     left="50%"
                                     scale={1.0}
                                     loadedClassName="loadedContent"
-                                />
+                                /> */}
+
                                 <GlobalCommonTable
                                     setLoaded={setLoaded}
                                     AllListId={RequiredListIds}
@@ -2083,7 +2093,9 @@ const CentralizedSiteComposition = (Props: any) => {
                     }
 
                 </section>
+                {!loaded ? <PageLoader /> : ""}
             </Panel>
+
         </section>
     )
 }
