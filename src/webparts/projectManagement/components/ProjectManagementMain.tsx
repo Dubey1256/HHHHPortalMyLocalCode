@@ -1743,6 +1743,8 @@ const ProjectManagementMain = (props: any) => {
                               <div className="wrapper project-management-Table">
                                 {(data?.length == 0 || data?.length > 0) && <GlobalCommanTable AllListId={AllListId} headerOptions={headerOptions} updatedSmartFilterFlatView={false}
                                   projectmngmnt={"projectmngmnt"}
+                                  masterTaskData={MasterListData}
+                                  AllSitesTaskData={AllSitesAllTasks}
                                   MasterdataItem={Masterdata}
                                   columns={column2} data={data} callBackData={callBackData}
                                   smartTimeTotalFunction={smartTimeTotal} SmartTimeIconShow={true}

@@ -9,7 +9,7 @@ import { FaHome, FaPencilAlt } from "react-icons/fa";
 import { IoMdArrowDropright, IoMdArrowDropdown } from "react-icons/io";
 import CommentCard from "../../../globalComponents/Comments/CommentCard";
 import EditInstituton from "../../EditPopupFiles/EditComponent";
-import ComponentTable from "./Taskwebparts";
+import ComponentTable from "./ComponentPortfolioTable";
 // import Sitecomposition from "../../../globalComponents/SiteComposition";
 import SmartInformation from "../../taskprofile/components/SmartInformation";
 import { spfi } from "@pnp/sp/presets/all";
