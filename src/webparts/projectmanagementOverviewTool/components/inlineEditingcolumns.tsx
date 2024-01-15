@@ -1357,8 +1357,7 @@ const inlineEditingcolumns = (props: any) => {
             );
           }}
         >
-          {" "}
-          {props?.item?.DisplayDueDate}{" "}&nbsp;
+        {props?.item?.DisplayDueDate!=undefined ?props?.item?.DisplayDueDate: <>&nbsp;</>}
           {showEditPencil && (
             <a className="pancil-icons">
               <span className="svg__iconbox svg__icon--editBox"></span>

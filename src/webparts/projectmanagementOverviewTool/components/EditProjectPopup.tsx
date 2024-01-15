@@ -836,8 +836,14 @@ function EditProjectPopup(item: any) {
   };
   function EditComponentCallback() {
     if (postedData?.Id == undefined && postedData?.ID == undefined) {
-      postedData = {
+      postedData ={
         ...postedData,...EditData
+      }
+      postedData ={
+        ...postedData,
+        ComponentLink: {
+          Url: EditData?.ComponentLink!=undefined?EditData?.ComponentLink:''
+        },
       }
     }
     item.Call(postedData, "EditPopup");

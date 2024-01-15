@@ -263,19 +263,19 @@ export default function ReactPopperTooltipSingleLevel({ ShareWebId, row, masterT
                     <div className="d-grid" style={{ maxWidth: "200px", width: "100%" }}>
                         <div className={firstChild == false ? 'alignCenter' : lastChild == true ? `alignCenter levelml-${marginCount} bg-siteColor py-1 ps-2 roundLeft lastlevel ` : `alignCenter levelpl-${paddingCount}`}>
                             {hasChildren &&
-                                <div style={{ width: "20px" }} className="mt--5" onClick={() => onToggle(itemData)}>
+                                <span style={{ width: "20px" }} className="mt--5" onClick={() => onToggle(itemData)}>
                                     {hasChildren && (
                                         itemData.isExpanded ? <SlArrowDown style={{ color: "#000" }} /> : <SlArrowRight style={{ color: "#000" }} />
                                     )}
-                                </div>
+                                </span>
                             }
                             {itemData?.SiteIcon != undefined ? <>
                                 <img className="icon-sites-img ml20 me-1" src={itemData?.SiteIcon}></img>
                                 <span className="fw-normal">{itemData?.TaskId != undefined ? itemData?.TaskId : itemData?.TaskID}</span>
                               
                             </> : <>{itemData?.Title != "Others" ? <>
-                                <div className='Dyicons me-1'>{itemData?.Item_x0020_Type?.toUpperCase()?.charAt(0)}
-                                </div>
+                                <span className='Dyicons me-1'>{itemData?.Item_x0020_Type?.toUpperCase()?.charAt(0)}
+                                </span>
                                 <span className="fw-normal">{itemData?.PortfolioStructureID}</span>
                                 
                             </>

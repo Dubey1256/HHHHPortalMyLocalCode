@@ -397,14 +397,14 @@ export default function ManageSmartMetadata(selectedProps: any) {
         <div className='TableContentSection'>
             {/* {<BraedCrum AllList={selectedProps.AllList} />} */}
             <section className='col-sm-12 clearfix'>
-                
-                    <div className='d-flex justify-content-between align-items-center siteColor  serviceColor_Active mb-2'>
-                        <h3 className="heading">ManageSmartMetaData
-                        </h3>
-                        <span><a data-interception="off" target="_blank" href="https://hhhhteams.sharepoint.com/sites/HHHH/SP/SitePages/managesmartmetadata-old.aspx">Old ManageSmartMetadata</a></span>
-                    </div>
-                    
-               
+
+                <div className='d-flex justify-content-between align-items-center siteColor  serviceColor_Active mb-2'>
+                    <h3 className="heading">ManageSmartMetaData
+                    </h3>
+                    <span><a data-interception="off" target="_blank" href="https://hhhhteams.sharepoint.com/sites/HHHH/SP/SitePages/managesmartmetadata-old.aspx">Old ManageSmartMetadata</a></span>
+                </div>
+
+
             </section>
 
             <ul className="nav nav-tabs" role="tablist">
@@ -435,11 +435,21 @@ export default function ManageSmartMetadata(selectedProps: any) {
                         ))}
                     </ul>
                 }
-                <div className="tab-pane Alltable mx-height show active" id="URLTasks" role="tabpanel" aria-labelledby="URLTasks">
-                    {
-                        Smartmetadata &&
-                        <GlobalCommanTable smartMetadataCount={smartMetadataCount} Tabs={Tabs} compareSeletected={compareSeletected} CloseEditSmartMetaPopup={CloseEditSmartMetaPopup} SelectedItem={SelectedItem} setName={setName} ParentItem={Smartmetadata} AllList={selectedProps.AllList} data={Smartmetadata} TabSelected={TabSelected} ref={childRefdata} childRefdata={childRefdata} callChildFunction={callChildFunction} callBackSmartMetaData={callBackSmartMetaData} columns={columns} showHeader={true} expandIcon={true} showPagination={true} callBackData={callBackSmartMetaData} />
-                    }
+                <div className="tab-pane  show active" id="URLTasks" role="tabpanel" aria-labelledby="URLTasks">
+                    <div className='TableSection'>
+                        <div className='container p-0'>
+                            <div className='Alltable'>
+                                <div className='col-md-12 p-0 smart'>
+                                    <div className='wrapper'>
+                                        {
+                                            Smartmetadata &&
+                                            <GlobalCommanTable smartMetadataCount={smartMetadataCount} Tabs={Tabs} compareSeletected={compareSeletected} CloseEditSmartMetaPopup={CloseEditSmartMetaPopup} SelectedItem={SelectedItem} setName={setName} ParentItem={Smartmetadata} AllList={selectedProps.AllList} data={Smartmetadata} TabSelected={TabSelected} ref={childRefdata} childRefdata={childRefdata} callChildFunction={callChildFunction} callBackSmartMetaData={callBackSmartMetaData} columns={columns} showHeader={true} expandIcon={true} showPagination={true} callBackData={callBackSmartMetaData} />
+                                        }
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
                 </div>
             </div>
             {isVisible && (<div>
