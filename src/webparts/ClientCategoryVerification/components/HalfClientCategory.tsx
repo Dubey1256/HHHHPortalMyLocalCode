@@ -39,6 +39,7 @@ let BackUpAllCCTask: any = [];
 var isShowSiteCompostion: any = "";
 let ProjectData: any = [];
 let portfolioColor: any = "#000069";
+let portfolioTypeDataItemCopy: any = [];
 const HalfClientCategory = (props: any) => {
     const rerender = React.useReducer(() => ({}), {})[1]
     const [pageLoaderActive, setPageLoader] = React.useState(false)
@@ -93,14 +94,13 @@ const HalfClientCategory = (props: any) => {
             siteUrl: props?.props?.siteUrl,
             isShowTimeEntry: isShowTimeEntry,
             isShowSiteCompostion: isShowSiteCompostion,
-            Context:props?.props?.Context
+            Context: props?.props?.Context
         }
         TaskUser()
         GetMetaData()
         getTaskType()
-        findPortFolioIconsAndPortfolio()
-
     }, [])
+
 
     const TaskUser = async () => {
         if (AllListId?.TaskUsertListID != undefined) {
@@ -125,7 +125,7 @@ const HalfClientCategory = (props: any) => {
             } catch (error) {
                 console.log(error)
             }
-
+            findPortFolioIconsAndPortfolio();
             AllTaskUsers = taskUser;
         } else {
             alert('Task User List Id not available')
@@ -267,7 +267,7 @@ const HalfClientCategory = (props: any) => {
                     smartmeta = await web.lists
                         .getById(config.listId)
                         .items
-                        .select("ID", "Title", "ClientCategory/Id", "Portfolio/PortfolioStructureID", "Sitestagging","TaskID", "ParentTask/TaskID", "ParentTask/Title", "ParentTask/Id", "ClientCategory/Title", "EstimatedTimeDescription", 'ClientCategory', "Comments", "DueDate", "ClientActivityJson", "EstimatedTime", "Approver/Id", "Approver/Title", "ParentTask/Id", "ParentTask/Title", "FeedBack", "workingThisWeek", "IsTodaysTask", "AssignedTo/Id", "TaskLevel", "TaskLevel", "OffshoreComments", "AssignedTo/Title", "OffshoreImageUrl", "TaskCategories/Id", "TaskCategories/Title", "Status", "StartDate", "CompletedDate", "TeamMembers/Title", "TeamMembers/Id", "ItemRank", "PercentComplete", "Priority", "Body", "PriorityRank", "Created", "Author/Title", "Author/Id", "BasicImageInfo", "ComponentLink", "FeedBack", "ResponsibleTeam/Title", "ResponsibleTeam/Id", "TaskType/Title", "ClientTime", "Portfolio/Id", "Portfolio/Title", "Modified")
+                        .select("ID", "Title", "ClientCategory/Id", "Portfolio/PortfolioStructureID", "Sitestagging", "TaskID", "ParentTask/TaskID", "ParentTask/Title", "ParentTask/Id", "ClientCategory/Title", "EstimatedTimeDescription", 'ClientCategory', "Comments", "DueDate", "ClientActivityJson", "EstimatedTime", "Approver/Id", "Approver/Title", "ParentTask/Id", "ParentTask/Title", "FeedBack", "workingThisWeek", "IsTodaysTask", "AssignedTo/Id", "TaskLevel", "TaskLevel", "OffshoreComments", "AssignedTo/Title", "OffshoreImageUrl", "TaskCategories/Id", "TaskCategories/Title", "Status", "StartDate", "CompletedDate", "TeamMembers/Title", "TeamMembers/Id", "ItemRank", "PercentComplete", "Priority", "Body", "PriorityRank", "Created", "Author/Title", "Author/Id", "BasicImageInfo", "ComponentLink", "FeedBack", "ResponsibleTeam/Title", "ResponsibleTeam/Id", "TaskType/Title", "ClientTime", "Portfolio/Id", "Portfolio/Title", "Modified")
                         .expand("TeamMembers", "Approver", "ParentTask", "ClientCategory", "AssignedTo", "TaskCategories", "Author", "ResponsibleTeam", "ParentTask", "TaskType", "Portfolio")
                         .top(4999)
                         .get();
@@ -452,8 +452,9 @@ const HalfClientCategory = (props: any) => {
         }
     };
     const GetMasterData = async () => {
-        let portFoliotypeCount = JSON.parse(JSON.stringify(portfolioTypeDataItem?.map((taskLevelcount: any) => {
-            taskLevelcount[taskLevelcount.Title + 'filterNumber'] = 0; return taskLevelcount
+        let portFoliotypeCount = JSON.parse(JSON.stringify(portfolioTypeDataItemCopy?.map((taskLevelcount: any) => {
+            taskLevelcount[taskLevelcount.Title + 'number'] = 0;
+            return taskLevelcount
         }
         )))
         setPageLoader(true);
@@ -466,10 +467,9 @@ const HalfClientCategory = (props: any) => {
             // var AllUsers: any = []
             AllMasterTaskItems = await web.lists.getById(AllListId?.MasterTaskListID).items
                 .select("Deliverables,PortfolioStructureID,ClientCategory/Id,ClientCategory/Title,TechnicalExplanations,ValueAdded,Categories,Idea,Short_x0020_Description_x0020_On,Background,Help_x0020_Information,Short_x0020_Description_x0020__x,ComponentCategory/Id,ComponentCategory/Title,Comments,HelpDescription,Body,SiteCompositionSettings,ClientTime,ShortDescriptionVerified,Portfolio_x0020_Type,BackgroundVerified,descriptionVerified,Synonyms,BasicImageInfo,OffshoreComments,OffshoreImageUrl,HelpInformationVerified,IdeaVerified,TechnicalExplanationsVerified,Deliverables,DeliverablesVerified,ValueAddedVerified,CompletedDate,Idea,ValueAdded,TechnicalExplanations,Item_x0020_Type,Sitestagging,Package,Parent/Id,Parent/Title,Short_x0020_Description_x0020_On,Short_x0020_Description_x0020__x,Short_x0020_description_x0020__x0,AdminNotes,AdminStatus,Background,Help_x0020_Information,TaskCategories/Id,TaskCategories/Title,PriorityRank,Reference_x0020_Item_x0020_Json,TeamMembers/Title,TeamMembers/Name,TeamMembers/Id,Item_x002d_Image,ComponentLink,IsTodaysTask,AssignedTo/Title,AssignedTo/Name,AssignedTo/Id,AttachmentFiles/FileName,FileLeafRef,Title,Id,PercentComplete,Company,StartDate,DueDate,Comments,Categories,Status,WebpartId,Body,Mileage,PercentComplete,Attachments,Priority,Created,Modified,Author/Id,Author/Title,Editor/Id,Editor/Title,PortfolioType/Id,PortfolioType/Color,PortfolioType/IdRange,PortfolioType/Title")
-                .filter("Item_x0020_Type ne 'Project'")
                 .expand("ComponentCategory,ClientCategory,AssignedTo,AttachmentFiles,Author,Editor,TeamMembers,TaskCategories,Parent,PortfolioType").top(4999).getAll();
 
-            ProjectData = AllMasterTaskItems?.filter((projectItem: any) => projectItem.Item_x0020_Type === "Project")
+            ProjectData = AllMasterTaskItems.filter((projectItem: any) => projectItem.Item_x0020_Type === "Project" || projectItem.Item_x0020_Type === 'Sprint');
             AllMasterTaskItems.map((items: any) => {
                 if (items?.ClientCategory?.length > 0 || items?.SiteCompositionSettings != undefined || items?.Sitestagging != undefined) {
                     items.ShowTeamsIcon = false
@@ -569,8 +569,10 @@ const HalfClientCategory = (props: any) => {
                             portFoliotypeCount?.map((type: any) => {
                                 if (items?.Item_x0020_Type === type?.Title && items.PortfolioType != undefined) {
                                     type[type.Title + 'filterNumber'] += 1;
+                                    type[type.Title + 'number'] += 1;
                                 }
                             })
+
                         }
                     } catch (error) {
 
@@ -656,7 +658,7 @@ const HalfClientCategory = (props: any) => {
             let filterDataBackup = JSON.parse(JSON.stringify(filterData));
             setAllSmartFilterData(filterDataBackup);
             setSmartTimeTotalFunction(() => smartTimeTotal);
-           
+
         } else if (filterData.length === 0) {
             setAllSiteTasks([]);
             setAllMasterTasks([]);
@@ -666,13 +668,12 @@ const HalfClientCategory = (props: any) => {
 
     React.useEffect(() => {
         let taskTypeCount = JSON.parse(JSON.stringify(typeData));
-        let portFoliotypeCount = JSON.parse(JSON.stringify(portfolioTypeDataItem?.map((taskLevelcount: any) => {
+        let portFoliotypeCount = JSON.parse(JSON.stringify(portfolioTypeDataItemCopy?.map((taskLevelcount: any) => {
             taskLevelcount[taskLevelcount.Title + 'filterNumber'] = 0; return taskLevelcount
         }
         )))
 
         if (smartAllFilterData?.length > 0) {
-
             let findAllProtFolioData = smartAllFilterData?.filter((elem: any) => {
                 if (elem?.PortfolioType?.Id != undefined && elem?.TaskType === undefined) {
                     portFoliotypeCount?.map((type: any) => {
@@ -694,7 +695,7 @@ const HalfClientCategory = (props: any) => {
                 }
             });
             setTaskTypeDataItem(taskTypeCount)
-            setPortFolioTypeIcon(portFoliotypeCount);
+            // setPortFolioTypeIcon(portFoliotypeCount)
             setAllSiteTasks(findAllTaskData);
             setAllMasterTasks(findAllProtFolioData);
             setLoaded(true);
@@ -708,6 +709,14 @@ const HalfClientCategory = (props: any) => {
                 portfolioTypeDataItem?.map((type: any) => {
                     if (result?.Item_x0020_Type === type.Title && result.PortfolioType != undefined) {
                         type[type.Title + 'filterNumber'] += 1;
+                    }
+                })
+            })
+        } if (countTaskAWTLevel?.length > 0 && afterFilter != true) {
+            countTaskAWTLevel?.map((result: any) => {
+                portfolioTypeDataItem?.map((type: any) => {
+                    if (result?.Item_x0020_Type === type.Title && result.PortfolioType != undefined) {
+                        type[type.Title + 'number'] += 1;
                     }
                 })
             })
@@ -1190,6 +1199,7 @@ const HalfClientCategory = (props: any) => {
                     });
                 }
                 console.log("Portfolio icons retrieved:", newarray);
+                portfolioTypeDataItemCopy = portfolioTypeDataItemCopy.concat(newarray)
                 setPortFolioTypeIcon(newarray);
             }
         } catch (error) {
@@ -1247,53 +1257,53 @@ const HalfClientCategory = (props: any) => {
                 loadedClassName="loadedContent"
             />
 
-         <div id='ExandTableIds'>
-            <section className="ContentSection smartFilterSection">
-                <div className="align-items-center d-flex justify-content-between  mt-1">
-                    <h2 className="heading">
-                        Client Category Verification Tool
-                    </h2>
+            <div id='ExandTableIds'>
+                <section className="ContentSection smartFilterSection">
+                    <div className="align-items-center d-flex justify-content-between  mt-1">
+                        <h2 className="heading">
+                            Client Category Verification Tool
+                        </h2>
+                    </div>
+                    <div className="togglecontent ">
+                        {filterCounters == true ? <TeamSmartFilter ProjectData={ProjectData} IsSmartfavorite={IsSmartfavorite} IsSmartfavoriteId={IsSmartfavoriteId} setLoaded={setLoaded} AllSiteTasksData={AllSiteTasksData} AllMasterTasksData={AllMasterTasksData} ContextValue={AllListId} smartFiltercallBackData={smartFiltercallBackData} portfolioColor={portfolioColor} /> : ''}
+                    </div>
+                </section>
+                <div className='ProjectOverViewRadioFlat SpfxCheckRadio  justify-content-between mb-2'>
+                    <dl className='alignCenter gap-2 mb-0'>
+                        <dt>
+                            <input className="radio" type="radio" value="grouped" name="date" checked={selectedView == 'MasterTask'} onClick={() => setSelectedView('MasterTask')} /> Portfolio View
+                        </dt>
+                        <dt>
+                            <input className="radio" type="radio" value="flat" name="date" checked={selectedView == 'AllSiteTasks'} onClick={() => setSelectedView('AllSiteTasks')} /> All Sites Task View
+                        </dt>
+                        <dt>
+                            <input className="form-check-input" type="checkbox" checked={protectedView == true} onClick={() => filterProtectedView(protectedView)} /> Protected View
+                        </dt>
+
+                    </dl>
                 </div>
-                <div className="togglecontent ">
-                    {filterCounters == true ? <TeamSmartFilter ProjectData={ProjectData}  IsSmartfavorite={IsSmartfavorite} IsSmartfavoriteId={IsSmartfavoriteId} setLoaded={setLoaded} AllSiteTasksData={AllSiteTasksData} AllMasterTasksData={AllMasterTasksData} ContextValue={AllListId} smartFiltercallBackData={smartFiltercallBackData} portfolioColor={portfolioColor} /> : ''}
+                <div className='Tabl1eContentSection row taskprofilepagegreen'>
+                    <div className='container-fluid p-0'>
+                        <section className='TableSection'>
+                            <div className='container p-0'>
+                                <div className="Alltable ">
+                                    {selectedView == 'MasterTask' ? <div>
+                                        <GlobalCommanTable headerOptions={headerOptions} AllListId={AllListId} columns={columnsMaster} data={AllMasterTasks} portfolioTypeData={portfolioTypeDataItem} showingAllPortFolioCount={true} showPagination={true} callBackData={TaskSiteComp} pageName={"ProjectOverviewGrouped"} TaskUsers={AllTaskUser} showHeader={true} />
+
+                                    </div> : ''}
+                                    {selectedView == 'AllSiteTasks' ? <div>
+                                        <GlobalCommanTable headerOptions={headerOptions} AllListId={AllListId} columns={columns} data={AllSiteTasks} showPagination={true} callBackData={TaskSiteComp} taskTypeDataItem={taskTypeDataItem} showingAllPortFolioCount={true} pageName={"ProjectOverviewGrouped"} TaskUsers={AllTaskUser} showHeader={true} />
+
+
+                                    </div> : ''}
+                                </div>
+                            </div>
+                        </section>
+                    </div>
                 </div>
-            </section>
-            <div className='ProjectOverViewRadioFlat SpfxCheckRadio  justify-content-between mb-2'>
-                <dl className='alignCenter gap-2 mb-0'>
-                    <dt>
-                        <input className="radio" type="radio" value="grouped" name="date" checked={selectedView == 'MasterTask'} onClick={() => setSelectedView('MasterTask')} /> Portfolio View
-                    </dt>
-                    <dt>
-                        <input className="radio"  type="radio" value="flat" name="date" checked={selectedView == 'AllSiteTasks'} onClick={() => setSelectedView('AllSiteTasks')} /> All Sites Task View
-                    </dt>
-                    <dt>
-                        <input className="form-check-input" type="checkbox" checked={protectedView == true} onClick={() => filterProtectedView(protectedView)} /> Protected View
-                    </dt>
-
-                </dl>
             </div>
-            <div className='Tabl1eContentSection row taskprofilepagegreen'>
-            <div className='container-fluid p-0'>
-            <section className='TableSection'>
-            <div className='container p-0'>
-            <div className="Alltable ">
-                {selectedView == 'MasterTask' ? <div>
-                    <GlobalCommanTable headerOptions={headerOptions} AllListId={AllListId} columns={columnsMaster} data={AllMasterTasks} portfolioTypeData={portfolioTypeDataItem} showingAllPortFolioCount={true} showPagination={true} callBackData={TaskSiteComp} pageName={"ProjectOverviewGrouped"} TaskUsers={AllTaskUser} showHeader={true} />
-
-                </div> : ''}
-                {selectedView == 'AllSiteTasks' ? <div>
-                    <GlobalCommanTable headerOptions={headerOptions} AllListId={AllListId} columns={columns} data={AllSiteTasks} showPagination={true} callBackData={TaskSiteComp} taskTypeDataItem={taskTypeDataItem} showingAllPortFolioCount={true} pageName={"ProjectOverviewGrouped"} TaskUsers={AllTaskUser} showHeader={true} />
 
 
-                </div> : ''}
-            </div>
-            </div>
-            </section>
-            </div>
-            </div>
-                </div>
-          
-            
             {isOpenEditPopup ? (
                 <EditTaskPopup AllListId={AllListId} context={props?.props?.Context} Items={passdata} pageName="TaskDashBoard" Call={editTaskCallBack} />
             ) : (
@@ -1308,7 +1318,7 @@ const HalfClientCategory = (props: any) => {
                     {" "}
                 </EditInstituton>
             )}
-            {EditSiteCompositionStatus ? <CentralizedSiteComposition ItemDetails={selectedItem}  usedFor={'AWT'} RequiredListIds={AllListId} closePopupCallBack={TaskSiteComp} /> : ''}
+            {EditSiteCompositionStatus ? <CentralizedSiteComposition ItemDetails={selectedItem} usedFor={'AWT'} RequiredListIds={AllListId} closePopupCallBack={TaskSiteComp} /> : ''}
             {EditSiteCompositionMaster ?
                 <CentralizedSiteComposition ItemDetails={selectedItem} usedFor={'CSF'} closePopupCallBack={MasterSiteComp} RequiredListIds={AllListId} />
                 : null

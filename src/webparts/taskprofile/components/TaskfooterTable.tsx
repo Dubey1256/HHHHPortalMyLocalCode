@@ -1180,6 +1180,7 @@ function TasksTable(props: any) {
               <div> <BulkeditTask SelectedTask={BulkTaskUpdate} Call={Call}></BulkeditTask></div>
 
               <GlobalCommanTable
+              AllSitesTaskData={props?.AllSiteTasks} masterTaskData={props?.AllMasterTasks}
                 queryItems={props?.props}
                 ref={childRef}
                 callChildFunction={callChildFunction}

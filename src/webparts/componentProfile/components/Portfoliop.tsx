@@ -1586,18 +1586,18 @@ function Portfolio({ SelectedProp, TaskUser }: any) {
                     <dl>
                       <dt className="bg-fxdark" title="Task Category">Categories</dt>
                       <dd className="bg-light text-break">
-                        {/* {data?.length > 0 &&
-                          // <>
-                          //   <InlineEditingcolumns
-                          //     AllListId={ContextValue}
-                          //     callBack={inlineCallBack}
-                          //     columnName='TaskCategories'
-                          //     item={data[0]}
-                          //     TaskUsers={AllTaskuser}
-                          //     pageName={'portfolioprofile'}
-                          //   />
-                          // </>
-                        } */}
+                        {data?.length > 0 &&
+                          <>
+                            <InlineEditingcolumns
+                              AllListId={ContextValue}
+                              callBack={inlineCallBack}
+                              columnName='TaskCategories'
+                              item={data[0]}
+                              TaskUsers={AllTaskuser}
+                              pageName={'portfolioprofile'}
+                            />
+                          </>
+                        }
                         {/* {data.map((item,index) => (
                             
                             <a>{item?.Categories}
@@ -1968,7 +1968,7 @@ function Portfolio({ SelectedProp, TaskUser }: any) {
                                                 <span className="mx-2">
                                                   {Number(
                                                     SiteDtls.ClienTimeDescription
-                                                  ).toFixed(2)}
+                                                  ).toFixed(1)}
                                                   %
                                                 </span>
                                               )}
