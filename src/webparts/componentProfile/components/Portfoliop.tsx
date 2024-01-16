@@ -2053,6 +2053,16 @@ function Portfolio({ SelectedProp, TaskUser }: any) {
                 </aside>
               </div>
             </div>
+            <div className='row url'>
+                    <div className="d-flex p-0">
+                      <div className='bg-Fa p-2'><label>Url</label></div>
+                      <div className='bg-Ff p-2 text-break full-width'>
+                        {(data.length!= 0 && data[0]?.ComponentLink != null)  &&
+                          <a target="_blank" data-interception="off" href={data[0].ComponentLink?.Url}>{data[0]?.ComponentLink?.Url}</a>
+                        }
+                      </div>
+                    </div>
+                  </div>
           </section>
         </section>
         {/* table secation artical */}
