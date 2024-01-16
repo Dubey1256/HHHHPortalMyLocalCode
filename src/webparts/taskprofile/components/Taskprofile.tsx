@@ -2821,6 +2821,7 @@ class Taskprofile extends React.Component<ITaskprofileProps, ITaskprofileState> 
               RequiredListIds={AllListId}
               closePopupCallBack={(Type: any) => { this.CallBack(Type) }}
               usedFor={"AWT"}
+              ColorCode={this.state.Result["Portfolio"]?.PortfolioType?.Color}
             /> : ''}
           {this.state?.emailcomponentopen && countemailbutton == 0 && <EmailComponenet approvalcallback={() => { this.approvalcallback() }} Context={this.props?.Context} emailStatus={this.state?.emailComponentstatus} currentUser={this?.currentUser} items={this.state?.Result} />}
 

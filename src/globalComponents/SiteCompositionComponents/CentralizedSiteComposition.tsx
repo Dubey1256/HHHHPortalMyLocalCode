@@ -142,6 +142,19 @@ const CentralizedSiteComposition = (Props: any) => {
         getSmartMetaDataListAllItems();
         getTaskType();
         loadAllTaskUsers();
+        if (PropsData?.ColorCode != undefined) {
+            PortfolioItemColor = PropsData?.ColorCode;
+            let targetDiv: any =
+                document?.querySelector(".ms-Panel-main");
+            setTimeout(() => {
+                if (targetDiv) {
+                    $(".ms-Panel-main").css(
+                        "--SiteBlue",
+                        PropsData?.ColorCode
+                    );
+                }
+            }, 1000);
+        }
 
     }, [])
 
@@ -829,7 +842,7 @@ const CentralizedSiteComposition = (Props: any) => {
 
     const CustomFooter = () => {
         return (
-            <footer className="bg-f4 alignCenter fixed-bottom justify-content-between p-3 me-4">
+            <footer className="bg-f4 alignCenter fixed-bottom justify-content-between p-3">
                 <div>
                     {ItemDetails?.Id != undefined ?
                         <VersionHistory
@@ -1721,7 +1734,7 @@ const CentralizedSiteComposition = (Props: any) => {
                 type={PanelType.custom}
                 customWidth="1500px"
             >
-                <section className="main-container mb-5">
+                <section className="mb-5 modal-body">
                     <div className="Site-composition-and-client-category d-flex full-width my-2">
                         <div className="site-settings-and-site-composition-distributions full-width">
                             <div className="site-settings">
@@ -1928,7 +1941,7 @@ const CentralizedSiteComposition = (Props: any) => {
                                                         </span>
                                                     </div>
                                                     <span className="border" style={{ padding: '5px 20px' }}>
-                                                        {TaskTotalTime > 0 ? Number(TaskTotalTime).toFixed(1) : 0} h
+                                                        {TaskTotalTime > 0 ? Number(TaskTotalTime).toFixed(2) : 0} h
                                                     </span>
                                                 </div>
                                             </>
@@ -1983,7 +1996,7 @@ const CentralizedSiteComposition = (Props: any) => {
                                                                     <div className="input-group">
                                                                         <input type="text"
                                                                             className="border-end-0 form-control"
-                                                                            placeholder="Search Client Category Here"
+                                                                            placeholder={`Search ${CCDetails.Title} Client Categories Here`}
                                                                             value={CCDetails.Title == SelectedSiteName ? searchedKey : ""}
                                                                             onChange={(e: any) => CCAutoSuggestionsMain(e, CCDetails.Title)}
                                                                             defaultValue={CCDetails.Title == SelectedSiteName ? searchedKey : ""}
@@ -2116,7 +2129,6 @@ const CentralizedSiteComposition = (Props: any) => {
                         </div>
                         : null
                     }
-
                 </section>
                 {!loaded ? <PageLoader /> : ""}
             </Panel>
