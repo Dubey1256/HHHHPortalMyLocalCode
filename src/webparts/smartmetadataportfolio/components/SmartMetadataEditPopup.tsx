@@ -159,9 +159,9 @@ export default function SmartMetadataEditPopup(props: any) {
                     if (item?.SharewebCategories.length > 0) {
                         item.SharewebCategories.forEach((cate: any) => {
                             if (cate.Id === CategoryTitle) {
-                                item.Created = moment(item?.Created).format("DD/MM/YYYY");
-                                item.DueDate = moment(item?.DueDate).format("DD/MM/YYYY")
-                                item.Modified = moment(item?.Modified).format("DD/MM/YYYY")
+                                item.Created = item.Created !== null ? moment(item?.Created).format("DD/MM/YYYY") : '';
+                                item.DueDate = item.DueDate !== null ? moment(item?.DueDate).format("DD/MM/YYYY") : '';
+                                item.Modified = item.Modified !== null ? moment(item?.Modified).format("DD/MM/YYYY") : '';
                                 if (item.ComponentId.length > 0) {
                                     item['Portfoliotype'] = 'Component';
                                 } else if (item.ServicesId.length > 0) {
@@ -194,9 +194,9 @@ export default function SmartMetadataEditPopup(props: any) {
                         })
                     } else {
                         if (item.SharewebCategories[0]?.Id === CategoryTitle) {
-                            item.Created = moment(item?.Created).format("DD/MM/YYYY");
-                            item.DueDate = moment(item?.DueDate).format("DD/MM/YYYY")
-                            item.Modified = moment(item?.Modified).format("DD/MM/YYYY")
+                            item.Created = item.Created !== null ? moment(item?.Created).format("DD/MM/YYYY") : '';
+                            item.DueDate = item.DueDate !== null ? moment(item?.DueDate).format("DD/MM/YYYY") : '';
+                            item.Modified = item.Modified !== null ? moment(item?.Modified).format("DD/MM/YYYY") : '';
                             if (item.ComponentId.length > 0) {
                                 item['Portfoliotype'] = 'Component';
                             } else if (item.ServicesId.length > 0) {
