@@ -429,7 +429,7 @@ export default function ManageSmartMetadata(selectedProps: any) {
                                     index === 0
                                         ? "nav-link active"
                                         : "nav-link"
-                                } onClick={() => ShowingCategoriesTabsData(Parent.Title)} key={index} data-bs-toggle="tab" data-bs-target="#URLTasks" type="button" role="tab" aria-controls="URLTasks" aria-selected="true">
+                                } onClick={() => ShowingCategoriesTabsData(Parent)} key={index} data-bs-toggle="tab" data-bs-target="#URLTasks" type="button" role="tab" aria-controls="URLTasks" aria-selected="true">
                                     {Parent.Title}
                                 </button>
                             ))}
