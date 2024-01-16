@@ -150,6 +150,7 @@ const AddEditPostion = (props: any) => {
                 ),
                 id: "Title",
                 placeholder: "Title",
+                resetColumnFilters: false,
                 header: "",
                 size: 155
             },
