@@ -24,6 +24,7 @@ export interface IEmployeDashBoardWebPartProps {
   UpComingBirthdayId: 'a7b80424-e5e1-47c6-80a1-0ee44a70f92c';
   MyNotesId: '2163fbd9-b6f0-48b8-bc1b-bb48e43f188d',
   UpComingBdaySiteName: 'HR';
+  AdminConfigurtionListId:'e968902a-3021-4af2-a30a-174ea95cf8fa'
 
 }
 
@@ -52,6 +53,7 @@ export default class EmployeDashBoardWebPart extends BaseClientSideWebPart<IEmpl
         UpComingBirthdayId: this.properties.UpComingBirthdayId,
         MyNotesId: this.properties.MyNotesId,
         UpComingBdaySiteName: 'HR',
+        AdminConfigurtionListId:this.properties.AdminConfigurtionListId,
       }
     );
 
@@ -152,6 +154,9 @@ export default class EmployeDashBoardWebPart extends BaseClientSideWebPart<IEmpl
                 }),
                 PropertyPaneTextField("MyNotesId", {
                   label: "MyNotesId"
+                }),
+                PropertyPaneTextField("AdminConfigurtionListId", {
+                  label: "AdminConfigurtionListId"
                 }),
 
                 // PropertyPaneTextField('MasterTaskListID', {

@@ -10,10 +10,13 @@ const AddMorePosition = (props: any) => {
     const [skill, setSkill] = React.useState('');
     const [skills, setSkills]: any = React.useState([]);
     const [portfiloData, setportfiloData]: any = React.useState([]);
+    const [isSaveDisabled, setIsSaveDisabled] = React.useState(true)
     const HRweb = new Web(props?.siteUrl);
 
     const handleTitleChange = (e: any) => {
+        const titleValue = e?.target?.value
         setpositionTitle(e.target.value);
+        setIsSaveDisabled(titleValue.trim() === '')
     };
 
     const handleSkillChange = (event: { target: { value: React.SetStateAction<string>; }; }) => {
@@ -63,6 +66,7 @@ const AddMorePosition = (props: any) => {
 
     const updateChoiceField = async () => {
         const skillsCopy = [];
+        const newSkillsCopy = []
         if (skills && skills.length > 0) {
             for (const skill of skills) {
                 if (skill && skill !== '') {
@@ -73,17 +77,50 @@ const AddMorePosition = (props: any) => {
                         Comment: '',
                         PositionDescription: jobDescription,
                     };
-
+                    const obj1 = {"SkillTitle":"Salary Expectations","current":0,"max":10,"Comment":"","PositionDescription":jobDescription}
+                    const obj2 = {"SkillTitle":"Availability","current":0,"max":10,"Comment":"","PositionDescription":jobDescription}
+    
                     skillsCopy.push(obj);
+                    skillsCopy.push(obj1);
+                    skillsCopy.push(obj2);
                 }
             }
         }
+    
         try {
-            await HRweb.lists.getById(props?.skillsList).items.add({
+            const listItem = await HRweb.lists.getById(props?.skillsList).items.add({
                 Title: positionTitle,
                 PositionDescription: jobDescription,
                 JobSkills: JSON.stringify(skillsCopy),
             });
+    
+            // Get the ID of the newly added item
+            const newItemId = listItem.data.Id;
+
+            if (skills && skills.length > 0) {
+                for (const skill of skills) {
+                    if (skill && skill !== '') {
+                        const obj = {
+                            SkillTitle: skill,
+                            current: 0,
+                            max: 10,
+                            Comment: '',
+                            PositionDescription: jobDescription,
+                            itemParentId: newItemId
+                        };
+                        const obj3 = {"SkillTitle":"Salary Expectations","current":0,"max":10,"Comment":"","PositionDescription":jobDescription, "itemParentId": newItemId}
+                        const obj4 = {"SkillTitle":"Availability","current":0,"max":10,"Comment":"","PositionDescription":jobDescription, "itemParentId": newItemId}
+        
+                        newSkillsCopy.push(obj);
+                        newSkillsCopy.push(obj3);
+                        newSkillsCopy.push(obj4);
+                    }
+                }
+            }
+            await HRweb.lists.getById(props?.skillsList).items.getById(newItemId).update({
+                JobSkills: JSON.stringify(newSkillsCopy)
+            });
+    
             alert("Position added successfully")
             props?.closePopup()
             props?.callbackAdd()
@@ -121,7 +158,7 @@ const AddMorePosition = (props: any) => {
             >
                 <div className="modal-body">
                     <div className="input-group">
-                        <div className="full-width">Position Title</div>
+                        <div className="full-width">Position Title <span className="text-danger">*</span></div>
                         <input className="form-control" value={positionTitle}
                             onChange={handleTitleChange} type="text" placeholder="New Position Title" />
                     </div>
@@ -163,7 +200,7 @@ const AddMorePosition = (props: any) => {
 
                 <footer className="py-2 clearfix">
                     <div className="float-end text-end">
-                        <button onClick={updateChoiceField} type='button' className='btn btn-primary'>Save</button>
+                        <button disabled={isSaveDisabled} onClick={updateChoiceField} type='button' className='btn btn-primary'>Save</button>
                         <button onClick={() => {props?.closePopup()}} type='button' className='btn btn-default ms-1'>Cancel</button>
                     </div>
                 </footer>

@@ -180,7 +180,7 @@ const EditPopup = (props: any) => {
                 CandidateName: CandidateTitle,
                 Email: Email,
                 PhoneNumber: PhoneNumber,
-                Experience: experienceValue,
+                Experience: experienceValue == "" ? null : experienceValue,
                 Remarks: overAllRemark,
                 Status0: selectedStatus,
                 Motivation: Motivation,
@@ -346,14 +346,15 @@ const EditPopup = (props: any) => {
         setLocalRatings(updatedRatings);
     };
     const removeDocuments = async (libraryTitle: string, documentId: number | undefined, docName: string) => {
+        const confirmDeleteDoc = window.confirm("Are you sure you want to Delete Document?")
         try {
             const list = HRweb.lists.getByTitle('Documents');
             
-            if (documentId) {
+            if (documentId && confirmDeleteDoc) {
                 await list.items.getById(documentId).delete();
                 setTaggedDocuments(prevDocuments => prevDocuments.filter(doc => doc.Id !== documentId));
                 console.log(`Document with ID ${documentId} removed successfully from ${libraryTitle}.`);
-            } else {            
+            } else if (docName && confirmDeleteDoc) {            
                 setTaggedDocuments(prevDocuments => prevDocuments.filter(doc => doc.FileLeafRef !== docName));
                 console.log(`Document with FileLeafRef ${docName} removed successfully from ${libraryTitle}.`);
             }
@@ -437,14 +438,12 @@ const EditPopup = (props: any) => {
         });
         setFileSections(updatedFileSections);
     };
-    let clickCount = 0;
+    
     const openDocInNewTab = (url: string | URL | undefined) => {
-        clickCount++;
-        if (clickCount === 1) {
-            window.open(url, '_blank');
-        } else {
-            window.open(url + '?download=1');
-        }
+        window.open(url, '_blank')
+    };
+    const downloadDoc = (url: string | URL | undefined) => {
+        window.open(url + '?download=1');
     };
     var handleDocuments = function () {
         if (fileSections.length > 0) {
@@ -622,7 +621,7 @@ const EditPopup = (props: any) => {
                                         <span className="svg__iconbox svg__icon--document"></span>
                                     </span>
                                     <span style={{ display: document.File_x0020_Type !== 'aspx' ? 'inline' : 'none' }}>
-                                        <a onClick={() => openDocInNewTab(document.EncodedAbsUrl)}>
+                                        <a onClick={() => openDocInNewTab(document.EncodedAbsUrl)} onDoubleClick={() => {downloadDoc(document.EncodedAbsUrl)}}>
                                             <span>
                                                 <span style={{ display: document.FileLeafRef !== 'undefined' ? 'inline' : 'none' }}>
                                                     {document.FileLeafRef}

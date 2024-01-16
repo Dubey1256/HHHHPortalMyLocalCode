@@ -170,11 +170,11 @@ const addToLocalDBComponent = (props: any) => {
                                                 Description: (Item?.WebPage ? Item?.WebPage?.Url :null) ,
                                                 Url: (Item?.WebPage ? Item?.WebPage?.Url :null)
                                             },
-                                            ItemImage:{
-                                                "__metadata": { type: "SP.FieldUrlValue" },
-                                                Description: Item?.Item_x002d_Image!=undefined ? Item?.Item_x002d_Image?.Url : (Item?.Item_x0020_Cover!=undefined?Item?.Item_x0020_Cover?.Url:""),
-                                                Url: Item?.Item_x002d_Image!=undefined ? Item?.Item_x002d_Image?.Url : (Item?.Item_x0020_Cover!=undefined?Item?.Item_x0020_Cover?.Url:"")
-                                            },
+                                            // ItemImage:{
+                                            //     "__metadata": { type: "SP.FieldUrlValue" },
+                                            //     Description: Item?.Item_x002d_Image!=undefined ? Item?.Item_x002d_Image?.Url : (Item?.Item_x0020_Cover!=undefined?Item?.Item_x0020_Cover?.Url:""),
+                                            //     Url: Item?.Item_x002d_Image!=undefined ? Item?.Item_x002d_Image?.Url : (Item?.Item_x0020_Cover!=undefined?Item?.Item_x0020_Cover?.Url:"")
+                                            // },
                                             WorkZip: (Item?.WorkZip ),
                                            
                                             SocialMediaUrls:item?.SocialMediaUrls!=undefined&&item?.SocialMediaUrls!=null? item?.SocialMediaUrls:null,
@@ -486,7 +486,7 @@ const addToLocalDBComponent = (props: any) => {
             <div className="panel-body">
                             <div className="tag-section">
                                 <span onClick={() => setSelectedSite('HR')}>
-                                    <input type='radio' className="mx-1" name="HR" />
+                                    <input type='radio' className="mx-1" name="GMBH" />
                                     <label className="mx-2">HR</label>
                                 </span>
                                 <span>

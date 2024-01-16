@@ -305,7 +305,7 @@ function TimeEntryPopup(item: any) {
 
 
   const changeTimes = (val: any, time: any, type: any) => {
-    if (type == 'AddTime' || type == 'AddTimeCat') {
+    if (type == 'AddTime' || type == 'AddTime Category') {
       if (val === "15") {
         changeTime = Number(changeTime);
 
@@ -480,7 +480,7 @@ function TimeEntryPopup(item: any) {
       // setsaveEditTaskTime(Array)
       setsaveEditTaskTimeChild(childitem);
     }
-    if (Type == 'AddTimeCat') {
+    if (Type == 'AddTime Category') {
       setTaskStatuspopup(true);
       await getAllTime();
       PopupType = Type
@@ -537,7 +537,7 @@ function TimeEntryPopup(item: any) {
     if (type == 'CopyTime') {
       type = 'EditTime'
     }
-    if (type == 'AddTimeCat') {
+    if (type == 'AddTime Category') {
       type = 'AddTime'
     }
     if (type == 'AddTime') {
@@ -2263,7 +2263,7 @@ function TimeEntryPopup(item: any) {
         setediteddata(change);
       }
     }
-    if (Popup == "AddTime" || Popup == "AddTimeCat") {
+    if (Popup == "AddTime" || Popup == "AddTime Category") {
 
       if (type == "firstdate") {
         var newStartDate: any = Moment(date).format("DD/MM/YYYY");
@@ -2556,7 +2556,7 @@ function TimeEntryPopup(item: any) {
                   FlatView
                 </div>
                 <a className="mr-0 btn  btn-default"
-                  onClick={() => openAddTasktimepopup('MyData', 'AddTimeCat')}
+                  onClick={() => openAddTasktimepopup('MyData', 'AddTime Category')}
                 >
                   + Add New Structure
                 </a>
@@ -2966,14 +2966,14 @@ function TimeEntryPopup(item: any) {
                     </> : ''}
                   {PopupTypeCat == true ?
                     <button
-                      disabled={(PopupType == 'AddTime' ||PopupType == 'AddTimeCat') && TimeInMinutes <= 0 ? true : false}
+                      disabled={(PopupType == 'AddTime' ||PopupType == 'AddTime Category') && TimeInMinutes <= 0 ? true : false}
                       type="button"
                       className="btn btn-primary ms-2"
                       onClick={() => saveTimeSpent()}
                     >
                       Save
                     </button> : <button
-                      disabled={(PopupType == 'AddTime' ||PopupType == 'AddTimeCat') && TimeInMinutes <= 0 ? true : false || buttonDisable == true}
+                      disabled={(PopupType == 'AddTime' ||PopupType == 'AddTime Category') && TimeInMinutes <= 0 ? true : false || buttonDisable == true}
                       type="button"
                       className="btn btn-primary ms-2"
                       onClick={() => AddTaskTime(saveEditTaskTimeChild, PopupType)}

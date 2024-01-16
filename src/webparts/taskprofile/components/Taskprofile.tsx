@@ -329,7 +329,19 @@ class Taskprofile extends React.Component<ITaskprofileProps, ITaskprofileState> 
         })
       }
     } else {
+
       tempEstimatedArrayData = [];
+    }
+    if(taskDetails?.Sitestagging!=undefined){
+      try{
+        let parsedSiteTagging = JSON.parse(taskDetails?.Sitestagging)
+        parsedSiteTagging?.map((site:any)=>{
+          site.SiteImages= this.GetSiteIcon(site?.Title)
+        })
+        taskDetails.Sitestagging = JSON.stringify(parsedSiteTagging)
+      }catch(e){
+
+      }
     }
     const maxTitleLength: number = 75;
 
@@ -585,6 +597,11 @@ class Taskprofile extends React.Component<ITaskprofileProps, ITaskprofileState> 
 
         })
       })
+    }else{
+      ClientTimeArray?.map((item: any) => {
+        item.SiteImages= this?.GetSiteIcon(item?.SiteName!=undefined?item?.SiteName:item?.Title)
+      })
+
     }
   }
   private GetSiteIcon(listName: string) {
@@ -1587,13 +1604,32 @@ class Taskprofile extends React.Component<ITaskprofileProps, ITaskprofileState> 
       }
     }));
   };
+  private TaskProfilePriorityCallback=(priorityValue:any)=>{
+    console.log("TaskProfilePriorityCallback")
+    let resultData=this.state.Result;
+    resultData.PriorityRank=Number(priorityValue);
+    resultData. SmartPriority=""
+   
+    this.setState((prevState) => ({
+      Result: {
+        ...prevState.Result,
+        PriorityRank:Number(priorityValue),
+        ["SmartPriority"]:  globalCommon?.calculateSmartPriority(resultData),  
+      }
+    }));
+   
+  }
 
   private inlineCallBack = (item: any) => {
-
+    let resultData=this.state.Result;
+    resultData.Categories=item?.Categories;
+    resultData.SmartPriority=""
+    resultData.TaskCategories=item?.TaskCategories
     this.setState((prevState) => ({
       Result: {
         ...prevState.Result,
         Categories: item?.Categories,
+        ["SmartPriority"]:  globalCommon?.calculateSmartPriority(resultData),  
 
       }
     }));
@@ -1689,6 +1725,16 @@ class Taskprofile extends React.Component<ITaskprofileProps, ITaskprofileState> 
           dataUpdate = {
             ProjectId: DataItem[0]?.Id
           }
+          let resultData=this.state.Result;
+          resultData.Project=DataItem[0]
+          resultData.SmartPriority=""
+          this.setState((prevState) => ({
+            Result: {
+              ...prevState.Result,
+             ["SmartPriority"]: globalCommon?.calculateSmartPriority(resultData),  
+      
+            }
+          }));
           this?.updateProjectComponentServices(dataUpdate)
         }
       }
@@ -1849,6 +1895,7 @@ class Taskprofile extends React.Component<ITaskprofileProps, ITaskprofileState> 
                                 ? this?.state?.Result?.DueDate
                                 : ""
                             }
+                            TaskProfilePriorityCallback={null}
                             onChange={this.handleFieldChange("DueDate")}
                             type="Date"
                             web={AllListId?.siteUrl}
@@ -1895,6 +1942,7 @@ class Taskprofile extends React.Component<ITaskprofileProps, ITaskprofileState> 
                                 ? this?.state?.Result?.ItemRank
                                 : ""
                             }
+                            TaskProfilePriorityCallback={null}
                             onChange={this.handleFieldChange("ItemRank")}
                             type=""
                             web={AllListId?.siteUrl}
@@ -1925,9 +1973,6 @@ class Taskprofile extends React.Component<ITaskprofileProps, ITaskprofileState> 
 
                         </dd>
                       </dl>
-
-
-
                       <dl>
                         <dt className='bg-Fa'>Status</dt>
                         <dd className='bg-Ff'>{this.state.Result["Status"]}<br></br>
@@ -1960,13 +2005,13 @@ class Taskprofile extends React.Component<ITaskprofileProps, ITaskprofileState> 
                                 onMouseEnter={this.showOnHoldReason}
                                 onMouseLeave={this.hideOnHoldReason}
                               />
-                              <span className="tooltip-text pop-right">
+                              <span className="tooltip-text tooltipboxs  pop-right">
                                 {this.state.showOnHoldComment &&
                                   comments.map((item: any, index: any) =>
                                     item.CommentFor !== undefined &&
                                       item.CommentFor === "On-Hold" ? (
                                       <div key={index}>
-                                        <span className="siteColor p-1 border-bottom">
+                                        <span className="siteColor H-overTitle">
                                           Task On-Hold by{" "}
                                           <span>
                                             {
@@ -2001,6 +2046,7 @@ class Taskprofile extends React.Component<ITaskprofileProps, ITaskprofileState> 
                                 ? this.state.Result?.PriorityRank
                                 : ""
                             }
+                            TaskProfilePriorityCallback={(priorityValue: any) =>this.TaskProfilePriorityCallback(priorityValue)}
                             onChange={this.handleFieldChange("Priority")}
                             type=""
                             web={AllListId?.siteUrl}
@@ -2088,7 +2134,7 @@ class Taskprofile extends React.Component<ITaskprofileProps, ITaskprofileState> 
                                     </span>
                                     {cltime?.ClienTimeDescription != undefined &&
                                       <span>
-                                        {Number(cltime?.ClienTimeDescription).toFixed(2)}%
+                                        {Number(cltime?.ClienTimeDescription).toFixed(1)}%
                                       </span>
                                     }
                                     {cltime.ClientCategory != undefined && cltime.ClientCategory.length > 0 ? cltime.ClientCategory?.map((clientcat: any) => {
@@ -2147,7 +2193,7 @@ class Taskprofile extends React.Component<ITaskprofileProps, ITaskprofileState> 
                                 }
                               </div>
                             </div>
-                            <div className="spxdropdown-menu ps-2 py-1 border-top-0" style={{zIndex:0}}>
+                            <div className="spxdropdown-menu ps-2 py-1 " style={{zIndex:0}}>
                               <span>Total Estimated Time : </span><span className="mx-1">{this.state.Result?.TotalEstimatedTime > 1 ? this.state.Result?.TotalEstimatedTime + " hours" : this.state.Result?.TotalEstimatedTime + " hour"} </span>
                             </div>
                           </div>

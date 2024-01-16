@@ -1100,7 +1100,8 @@ function EditInstitution({ item, SelectD, Calls, usedFor, portfolioTypeData, fil
             res.PortfolioType = item.PortfolioType;
             res.SiteIcon = undefined;
             res.siteUrl = RequireData?.siteUrl;
-            Calls(res);
+            res.data = res;
+            Calls(res,"UpdatedData");
         }
     }
 
@@ -1388,6 +1389,7 @@ function EditInstitution({ item, SelectD, Calls, usedFor, portfolioTypeData, fil
                     // Categories:EditData?.smartCategories != undefined && EditData?.smartCategories != ''?EditData?.smartCategories[0].Title:EditData?.Categories,
                     Categories: categoriesItem ? categoriesItem : null,
                     SharewebCategoriesId: { results: CategoryID },
+                    TaskCategoriesId:{results: CategoryID},
                     // ClientCategoryId: { "results": RelevantPortfolioIds },
                     ServicePortfolioId:
                         RelevantPortfolioIds != "" ? RelevantPortfolioIds : null,
@@ -3607,7 +3609,7 @@ function EditInstitution({ item, SelectD, Calls, usedFor, portfolioTypeData, fil
                                                                                                         <span className="mx-2">
                                                                                                             {Number(
                                                                                                                 SiteDtls.ClienTimeDescription
-                                                                                                            ).toFixed(2)}
+                                                                                                            ).toFixed(1)}
                                                                                                             %
                                                                                                         </span>
                                                                                                     )}
@@ -4216,7 +4218,7 @@ function EditInstitution({ item, SelectD, Calls, usedFor, portfolioTypeData, fil
                                             {EditData?.ID ? (
                                                 <VersionHistoryPopup
                                                     taskId={EditData?.ID}
-                                                    listId={RequireData.MasterTaskListID}
+                                                    listId={RequireData?.MasterTaskListID}
                                                     siteUrls={RequireData?.siteUrl}
                                                 />
                                             ) : (
@@ -4694,11 +4696,11 @@ function EditInstitution({ item, SelectD, Calls, usedFor, portfolioTypeData, fil
                                 className="radio"
                                 type="radio"
                                 name="selectedTitle"
-                                value={value.Title}
-                                checked={selectPortfolioType.Title === value.Title}
+                                value={value?.Title}
+                                checked={selectPortfolioType?.Title === value?.Title}
                                 onChange={() => setSelectPortfolioType(value)}
                             />
-                            {value.Title}</div>
+                            {value?.Title}</div>
                     ))}
                 </div>
                 <footer className="footer-right">

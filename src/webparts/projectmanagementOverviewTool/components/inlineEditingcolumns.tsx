@@ -104,18 +104,21 @@ const inlineEditingcolumns = (props: any) => {
     { value: 100, status: "100% Closed", taskStatusComment: "Closed" }
   ];
   React.useEffect(() => {
-    try{
-      setpriorityRank(JSON.parse(localStorage.getItem("Priority"))) ;
+    updateItemValues();
+
+  }, [dueDate.editPopup ,TaskStatusPopup,remark,teamMembersPopup, UpdateEstimatedTime,TaskPriorityPopup,taskCategoriesPopup,props?.item?.TaskCategories?.results]);
+  const updateItemValues=()=>{
+    selectedCatTitleVal=[];
+    try {
+      setpriorityRank(JSON.parse(localStorage.getItem("Priority")));
       setImpTaskCategoryType(JSON.parse(
         localStorage.getItem("impTaskCategoryType")
       ));
-    }catch(e){
-    console.error("Priority and impTaskCategoryType")
+    } catch (e) {
+      console.error("Priority and impTaskCategoryType")
     }
     try {
-      if (props?.columnName == 'Priority') {
-        comments = JSON.parse(props?.item?.Comments)
-      }
+     
       if (props?.pageName === "portfolioprofile" || props?.pageName === 'ProjectManagmentMaster') {
         setShowEditPencil(true)
       }
@@ -175,9 +178,11 @@ const inlineEditingcolumns = (props: any) => {
         setTaskStatusInNumber(props.item.PercentComplete);
       }
       GetSmartMetadata();
+      if (props?.columnName == 'Priority') {
+        comments = JSON.parse(props?.item?.Comments)
+      }
     } catch (e) { console.log }
-
-  }, [props, props?.item?.TaskCategories?.results]);
+  }
   const getPercentCompleteTitle = (percent: any) => {
     let result = "";
     StatusArray?.map((status: any) => {
@@ -644,9 +649,9 @@ const inlineEditingcolumns = (props: any) => {
             task.siteType = props?.item?.siteType;
             task.listId = props?.item?.listId;
             task.siteUrl = props?.item?.siteUrl;
-            task.AssignedTo= TaskAssignedTo;
-            task.ResponsibleTeam= TaskResponsibleTeam ;
-            task.TeamMembers= TaskTeamMembers;
+            task.AssignedTo = TaskAssignedTo;
+            task.ResponsibleTeam = TaskResponsibleTeam;
+            task.TeamMembers = TaskTeamMembers;
             task.PercentComplete = (task.PercentComplete * 100).toFixed(0);
             task.DisplayDueDate =
               task.DueDate != null
@@ -1168,7 +1173,7 @@ const inlineEditingcolumns = (props: any) => {
             }}
             onClick={() => setTaskPriorityPopup(true)}
           >
-            &nbsp;
+
             {props?.mypriority === true && props?.item?.PriorityRank != null && props?.item?.PriorityRank != undefined ? `(${props?.item?.PriorityRank}) ${props?.item?.Priority?.slice(3)}` : props?.item?.PriorityRank}
             {props?.item?.TaskCategories?.map((items: any) =>
               items?.Title === "On-Hold" ? (
@@ -1225,6 +1230,7 @@ const inlineEditingcolumns = (props: any) => {
                 );
               }
             })}
+            &nbsp;
             {showEditPencil && (
               <a className="pancil-icons">
                 <span className="svg__iconbox svg__icon--editBox"></span>
@@ -1248,7 +1254,7 @@ const inlineEditingcolumns = (props: any) => {
             }
             onClick={() => setRemark(true)}
           >
-            &nbsp;{props?.item?.Remark}
+            {props?.item?.Remark}&nbsp;
           </span>
         </>
       ) : (
@@ -1266,7 +1272,7 @@ const inlineEditingcolumns = (props: any) => {
             }
             onClick={() => setUpdateEstimatedTime(true)}
           >
-            &nbsp;{props?.item?.EstimatedTime}
+            {props?.item?.EstimatedTime}&nbsp;
           </span>
         </>
       ) : (
@@ -1284,7 +1290,7 @@ const inlineEditingcolumns = (props: any) => {
             }
             onClick={() => openTaskStatusUpdatePopup()}
           >
-            &nbsp;
+
             {/* <span className="d-inline-block" data-bs-toggle="popover" data-bs-trigger="hover focus" data-bs-content="Disabled popover">
                                 {props.item.PercentComplete}
                             </span> */}
@@ -1324,6 +1330,7 @@ const inlineEditingcolumns = (props: any) => {
             ) : (
               ""
             )}
+            &nbsp;
             {showEditPencil && (
               <a className="pancil-icons ml-auto">
                 <span className="svg__iconbox svg__icon--editBox"></span>
@@ -1350,8 +1357,7 @@ const inlineEditingcolumns = (props: any) => {
             );
           }}
         >
-          {" "}
-          &nbsp;{props?.item?.DisplayDueDate}{" "}
+        {props?.item?.DisplayDueDate!=undefined ?props?.item?.DisplayDueDate: <>&nbsp;</>}
           {showEditPencil && (
             <a className="pancil-icons">
               <span className="svg__iconbox svg__icon--editBox"></span>
@@ -1733,7 +1739,7 @@ const inlineEditingcolumns = (props: any) => {
           style={{ display: "block", width: "100%", height: "100%" }}
         >
           {" "}
-          &nbsp;{props?.item?.Categories}{" "}
+          {props?.item?.Categories}{" "}  &nbsp;
           {showEditPencil && (
             <a className="pancil-icons">
               <span className="svg__iconbox svg__icon--editBox"></span>

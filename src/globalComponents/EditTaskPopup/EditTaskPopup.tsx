@@ -30,7 +30,7 @@ import VersionHistory from "../VersionHistroy/VersionHistory";
 import Tooltip from "../Tooltip";
 import FlorarImageUploadComponent from "../FlorarComponents/FlorarImageUploadComponent";
 import "bootstrap/dist/css/bootstrap.min.css";
-import Loader from "react-loader";
+import PageLoader from "../pageLoader";
 import { Table } from "reactstrap";
 import { FaSort, FaSortDown, FaSortUp } from "react-icons/fa";
 import {
@@ -44,7 +44,6 @@ import {
 import { Filter, DefaultColumnFilter } from "../ReactTableComponents/filters";
 import ShowTaskTeamMembers from "../ShowTaskTeamMembers";
 import EmailComponent from "../EmailComponents";
-import EditSiteComposition from "./EditSiteComposition";
 import SmartTotalTime from "./SmartTimeTotal";
 import "react-datepicker/dist/react-datepicker.css";
 import BackgroundCommentComponent from "./BackgroundCommentComponent";
@@ -221,7 +220,7 @@ const EditTaskPopup = (Items: any) => {
     const [OpenEODReportPopup, setOpenEODReportPopup] = useState(false);
     const [CurrentImageIndex, setCurrentImageIndex] = useState("");
     const [loaded, setLoaded] = React.useState(true);
-   
+
     let [StatusOptions, setStatusOptions] = useState([
         { value: 0, status: "0% Not Started", taskStatusComment: "Not Started" },
         { value: 1, status: "1% For Approval", taskStatusComment: "For Approval" },
@@ -247,7 +246,7 @@ const EditTaskPopup = (Items: any) => {
     ]);
 
     const [counter, setCounter] = useState(1);
-    
+
 
     const handlePostComment = () => {
         setCounter(counter + 1);
@@ -1008,7 +1007,8 @@ const EditTaskPopup = (Items: any) => {
                 }
                 item.TaskId = globalCommon.GetTaskId(item);
                 item.siteUrl = siteUrls;
-                item.siteType = Items.Items.siteType;
+                item.siteType = Items?.Items?.siteType;
+                item.SiteIcon = Items?.Items?.SiteIcon;
                 let AssignedUsers: any = [];
                 item.listId = Items.Items.listId;
                 if (globalSelectedProject?.Id != undefined) {
@@ -1527,9 +1527,9 @@ const EditTaskPopup = (Items: any) => {
                                 ...updatedItem,
                                 SmartPriority: SmartPriority
                             }
-                            EditDataBackup=updatedItem;
+                            EditDataBackup = updatedItem;
                             setEditData(updatedItem);
-                             globalSelectedProject = DataItem[0];
+                            globalSelectedProject = DataItem[0];
 
                         } else {
                             setTaggedPortfolioData(DataItem);
@@ -1579,6 +1579,20 @@ const EditTaskPopup = (Items: any) => {
                 } else {
                     TempArrya.push(selectedData);
                 }
+                if (selectedData?.IsSendAttentionEmail?.Id != undefined) {
+                    setIsSendAttentionMsgStatus(true);
+                    userSendAttentionEmails.push(selectedData?.IsSendAttentionEmail?.EMail);
+                    setSendCategoryName("Attention");
+                }
+                if (selectedData?.Title == "Bottleneck") {
+                    setIsSendAttentionMsgStatus(true);
+                    if (EditData?.TaskAssignedUsers?.length > 0) {
+                        EditData?.TaskAssignedUsers?.map((AssignedUser: any, Index: any) => {
+                            userSendAttentionEmails.push(AssignedUser.Email);
+                        });
+                    }
+                    setSendCategoryName(selectedData?.Title);
+                }
             })
             tempShareWebTypeData = TempArrya;
         } else {
@@ -1609,7 +1623,7 @@ const EditTaskPopup = (Items: any) => {
             SmartPriority: SmartPriority
         }
         setEditData(updatedItem);
-        EditDataBackup=updatedItem;
+        EditDataBackup = updatedItem;
         setPhoneStatus(result?.some((category: any) => category.Title === "Phone"));
         setEmailStatus(result?.some((category: any) => category.Title === "Email Notification"));
         setImmediateStatus(result?.some((category: any) => category.Title === "Immediate"));
@@ -1759,7 +1773,7 @@ const EditTaskPopup = (Items: any) => {
                             if (CheckTaagedCategory) {
                                 ShareWebTypeData.push(dataItem);
                                 tempShareWebTypeData.push(dataItem);
-                               
+
                             }
                         }
                     });
@@ -1834,7 +1848,7 @@ const EditTaskPopup = (Items: any) => {
             ...updatedItem,
             SmartPriority: SmartPriority
         }
-        EditDataBackup=updatedItem;
+        EditDataBackup = updatedItem;
         setEditData(updatedItem);
     };
 
@@ -3085,7 +3099,7 @@ const EditTaskPopup = (Items: any) => {
                 ...updatedItem,
                 SmartPriority: SmartPriority
             }
-            EditDataBackup=updatedItem;
+            EditDataBackup = updatedItem;
             setEditData(updatedItem);
             // setEditData({ ...EditData, PriorityRank: e.target.value });
         } else {
@@ -3637,21 +3651,21 @@ const EditTaskPopup = (Items: any) => {
                 }
             });
         }
-        if (UploadImageArray != undefined && UploadImageArray.length > 0) {
-            try {
-                let web = new Web(siteUrls);
-                await web.lists
-                    .getById(Items.Items.listId)
-                    .items.getById(Items.Items.Id)
-                    .update({ BasicImageInfo: JSON.stringify(UploadImageArray) })
-                    .then((res: any) => {
-                        console.log("Image JSON Updated !!");
-                        AddImageDescriptionsIndex = undefined;
-                    });
-            } catch (error) {
-                console.log("Error Message :", error);
-            }
+
+        try {
+            let web = new Web(siteUrls);
+            await web.lists
+                .getById(Items.Items.listId)
+                .items.getById(Items.Items.Id)
+                .update({ BasicImageInfo: UploadImageArray?.length > 0 ? JSON.stringify(UploadImageArray) : null })
+                .then((res: any) => {
+                    console.log("Image JSON Updated !!");
+                    AddImageDescriptionsIndex = undefined;
+                });
+        } catch (error) {
+            console.log("Error Message :", error);
         }
+
     };
     const RemoveImageFunction = (
         imageIndex: number,
@@ -3989,13 +4003,44 @@ const EditTaskPopup = (Items: any) => {
         //   .filter(`${SiteId}/Id eq '${Items?.Items?.Id}'`)
         //  .get();
 
+        let SelectedSiteImage: any = '';
+
         let TaskDataJSON: any = await MakeUpdateDataJSON();
         if (SiteTypes != undefined && SiteTypes.length > 0) {
             SiteTypes.map((dataItem: any) => {
                 if (dataItem.isSelected == true) {
                     SelectedSite = dataItem.Title;
+                    SelectedSiteImage = dataItem?.Item_x005F_x0020_Cover?.Url
                 }
             });
+        }
+
+        let TempSitesTaggingData: any = [];
+        let TempCCDataIds: any = [];
+
+        if (SelectedSite?.toLowerCase() !== "shareweb") {
+            let TempObject: any = {
+                Title: SelectedSite,
+                ClienTimeDescription: "100",
+                SiteImages: SelectedSiteImage,
+                Date: Moment(new Date()).format("DD/MM/YYYY")
+            }
+            TempSitesTaggingData.push(TempObject);
+        } else {
+            TempSitesTaggingData = ClientTimeData;
+        }
+
+        if (selectedClientCategoryData?.length > 0) {
+            selectedClientCategoryData?.map((selectedCC: any) => {
+                if (SelectedSite?.toLowerCase() !== "shareweb") {
+                    if (selectedCC.siteName == SelectedSite) {
+                        TempCCDataIds.push(selectedCC.Id)
+                    }
+                } else {
+                    TempCCDataIds.push(selectedCC.Id);
+                }
+
+            })
         }
         let UpdatedJSON = {
             Comments: EditData.Comments,
@@ -4006,7 +4051,15 @@ const EditTaskPopup = (Items: any) => {
                         ? TempSmartInformationIds
                         : [],
             },
+            Sitestagging: TempSitesTaggingData?.length > 0 ? JSON.stringify(TempSitesTaggingData) : null,
+            ClientCategoryId: {
+                results:
+                    TempCCDataIds?.length > 0
+                        ? TempCCDataIds
+                        : [],
+            },
         };
+
         TaskDataJSON = { ...TaskDataJSON, ...UpdatedJSON };
         try {
             if (SelectedSite.length > 0) {
@@ -4016,46 +4069,8 @@ const EditTaskPopup = (Items: any) => {
                     .items.add(TaskDataJSON)
                     .then(async (res: any) => {
                         newGeneratedId = res.data.Id;
-                        //    const attachmentss = await web.lists.getById(Items?.Items?.listId)
-                        //     .items.getById(Items.Items.Id)
-                        //     .attachmentFiles.get();
-
-                        // const imageData = await attachmentss.download();
-                        // for (const attachment of attachments) {
-                        //     await web.lists.getByTitle(SelectedSite)
-                        //       .items.getById(newGeneratedId)
-                        //       .attachmentFiles.add(attachment?.FileName, imageData);
-                        //   }
-
-                        // for (const attachmentName of attachmentss) {
-                        //     var attachmentEndpoint = web.lists.getById(Items?.Items?.listId)
-                        //       .items.getById(Items.Items.Id)
-                        //       .attachmentFiles.getByName(attachmentName.FileName).toUrl();
-
-                        //     const response = await fetch(attachmentEndpoint);
-                        //     const attachmentData = await response.arrayBuffer();
-
-                        //     var uint8Arrayw:any = new Uint8Array(attachmentData);
-                        //var uint8Arrayss = new Uint8Array(response.arrayBuffer());
-
-                        // var byteArray = new Uint8Array(atob(uint8Arrayw)?.split("")?.map(function (c) {
-                        //     return c.charCodeAt(0);
-                        // }));
-                        // const data: any = byteArray
-                        // var fileData = '';
-                        // for (var i = 0; i < byteArray.byteLength; i++) {
-                        //     fileData += String.fromCharCode(byteArray[i]);
-                        // }
-
-                        //    const MyImage = await web.lists.getByTitle(SelectedSite)
-                        //       .items.getById(newGeneratedId)
-                        //       .attachmentFiles.add(attachmentName?.FileName, uint8Arrayw);
-
-                        //       console.log(MyImage)
-                        //   }
                         await CopyImageData(SelectedSite, res.data);
                         CopydocumentData(SelectedSite, res.data);
-
                         if (FunctionsType == "Copy-Task") {
                             setLoaded(true)
                             newGeneratedId = res.data.Id;
@@ -4077,7 +4092,6 @@ const EditTaskPopup = (Items: any) => {
             console.log("Copy-Task Error :", error);
         }
         closeCopyAndMovePopup();
-        // Items.Call();
     };
 
     const CopydocumentData = async (NewList: any, NewItem: any) => {
@@ -4122,15 +4136,13 @@ const EditTaskPopup = (Items: any) => {
     };
     const SaveImageDataOnLoop = async (response: any, NewList: any, NewItem: any) => {
         let tempArrayJsonData: any = [];
+        let arrangedArray: any = []
         let currentUserDataObject: any;
-    
-        // ... (Your existing code)
-    
         // Iterate over attachment files sequentially
         for (let index = 0; index < response?.AttachmentFiles?.length; index++) {
             const value = response.AttachmentFiles[index];
             const sourceEndpoint = `${siteUrls}/_api/web/lists/getbytitle('${Items?.Items?.siteType}')/items(${Items?.Items?.Id})/AttachmentFiles/getByFileName('${value.FileName}')/$value`;
-    
+
             try {
                 const response = await fetch(sourceEndpoint, {
                     method: "GET",
@@ -4138,59 +4150,65 @@ const EditTaskPopup = (Items: any) => {
                         Accept: "application/json;odata=nometadata",
                     },
                 });
-    
+
                 if (response.ok) {
                     const binaryData = await response.arrayBuffer();
-                                                console.log("Binary Data:", binaryData);
-                                                var uint8Array = new Uint8Array(binaryData);
-                                                console.log(uint8Array);
-                    
-                                                console.log(uint8Array);
-                                                let fileName: any = "";
-                                                let date = new Date();
-                                                let timeStamp = date.getTime();
-                                                let imageIndex = index + 1;
-                                                var file =
-                                                    "T" +
-                                                    NewItem.Id +
-                                                    "-Image" +
-                                                    imageIndex +
-                                                    "-" +
-                                                    NewItem.Title?.replace(/["/':?]/g, "")?.slice(0, 40) +
-                                                    " " +
-                                                    timeStamp +
-                                                    ".jpg";
-                    
-                                                // Your existing code for creating ImgArray
-                                                let ImgArray = {
-                                                    ImageName: file,
-                                                    UploadeDate: Moment(new Date()).format("DD/MM/YYYY"),
-                                                    ImageUrl:
-                                                        siteUrls +
-                                                        "/Lists/" +
-                                                        NewList +
-                                                        "/Attachments/" +
-                                                        NewItem?.Id +
-                                                        "/" +
-                                                        file,
-                                                    UserImage:
-                                                        currentUserDataObject != undefined &&
-                                                            currentUserDataObject.Item_x0020_Cover?.Url?.length > 0
-                                                            ? currentUserDataObject.Item_x0020_Cover?.Url
-                                                            : "https://hhhhteams.sharepoint.com/sites/HHHH/SiteCollectionImages/ICONS/32/icon_user.jpg",
-                                                    UserName:
-                                                        currentUserDataObject != undefined &&
-                                                            currentUserDataObject.Title?.length > 0
-                                                            ? currentUserDataObject.Title
-                                                            : Items.context.pageContext._user.displayName,
-                                                    Description: "",
-                                                };
-                                                tempArrayJsonData.push(ImgArray);
-                                                const item = await sp.web.lists.getByTitle(NewList).items.getById(NewItem?.Id).get();
-                    const currentETag = item?item['@odata.etag'] : null;
+                    console.log("Binary Data:", binaryData);
+                    var uint8Array = new Uint8Array(binaryData);
+                    console.log(uint8Array);
+
+                    console.log(uint8Array);
+                    let fileName: any = "";
+                    let date = new Date();
+                    let timeStamp = date.getTime();
+                    let imageIndex = index + 1;
+                    var file =
+                        "T" +
+                        NewItem.Id +
+                        "-Image" +
+                        imageIndex +
+                        "-" +
+                        NewItem.Title?.replace(/["/':?]/g, "")?.slice(0, 40) +
+                        " " +
+                        timeStamp +
+                        ".jpg";
+
+                    // Your existing code for creating ImgArray
+                    let ImgArray = {
+                        ImageName: file,
+                        UploadeDate: Moment(new Date()).format("DD/MM/YYYY"),
+                        ImageUrl:
+                            siteUrls +
+                            "/Lists/" +
+                            NewList +
+                            "/Attachments/" +
+                            NewItem?.Id +
+                            "/" +
+                            file,
+                        UserImage:
+                            currentUserDataObject != undefined &&
+                                currentUserDataObject.Item_x0020_Cover?.Url?.length > 0
+                                ? currentUserDataObject.Item_x0020_Cover?.Url
+                                : "https://hhhhteams.sharepoint.com/sites/HHHH/SiteCollectionImages/ICONS/32/icon_user.jpg",
+                        UserName:
+                            currentUserDataObject != undefined &&
+                                currentUserDataObject.Title?.length > 0
+                                ? currentUserDataObject.Title
+                                : Items.context.pageContext._user.displayName,
+                        Description: "",
+                    };
+                    tempArrayJsonData.push(ImgArray);
+
+                    if (tempArrayJsonData.length > 9) {
+                        arrangedArray = tempArrayJsonData.slice(tempArrayJsonData?.length - 9).concat(tempArrayJsonData.slice(0, tempArrayJsonData?.length - 9));
+                    } else {
+                        arrangedArray = tempArrayJsonData
+                    }
+                    const item = await sp.web.lists.getByTitle(NewList).items.getById(NewItem?.Id).get();
+                    const currentETag = item ? item['@odata.etag'] : null;
                     await sp.web.lists.getByTitle(NewList).items.getById(NewItem?.Id).attachmentFiles.add(file, uint8Array),
-                                              currentETag, { headers: { "If-Match": currentETag }}
-    
+                        currentETag, { headers: { "If-Match": currentETag } }
+
                     count++;
                 } else {
                     console.error("Error:", response.statusText);
@@ -4199,20 +4217,28 @@ const EditTaskPopup = (Items: any) => {
                 console.log(error, "HHHH Time");
             }
         }
-    
+
         // Call another function after all attachments are added
-        await SaveJSONData(NewList, NewItem, tempArrayJsonData);
+        await SaveJSONData(NewList, NewItem, arrangedArray);
     };
     const SaveJSONData = async (NewList: any, NewItem: any, tempArrayJsonData: any) => {
+        let arraydata = []
+        let c = 1
+        for (let i = 0; i < tempArrayJsonData.length; i++) {
+            tempArrayJsonData[i].ImageName = tempArrayJsonData[i].ImageName.replace(/Image(\d+)/, `Image${c}`);
+            c++
+            arraydata.push(tempArrayJsonData[i])
+        }
+        console.log(arraydata)
         let web = new Web(siteUrls);
         var Data = await web.lists
             .getByTitle(NewList)
             .items.getById(NewItem.Id)
             .update({
                 BasicImageInfo:
-                    tempArrayJsonData != undefined && tempArrayJsonData.length > 0
-                        ? JSON.stringify(tempArrayJsonData)
-                        : JSON.stringify(tempArrayJsonData),
+                    arraydata != undefined && arraydata.length > 0
+                        ? JSON.stringify(arraydata)
+                        : JSON.stringify(arraydata),
             });
         console.log(Data);
     };
@@ -4293,10 +4319,10 @@ const EditTaskPopup = (Items: any) => {
             ...updatedItem,
             SmartPriority: SmartPriority
         }
-        EditDataBackup=updatedItem;
+        EditDataBackup = updatedItem;
         setEditData(updatedItem);
-         globalSelectedProject = data;
-       
+        globalSelectedProject = data;
+
     };
 
     // ************ this is for Approver Popup Function And Approver Related All Functions section **************
@@ -4673,7 +4699,7 @@ const EditTaskPopup = (Items: any) => {
                         : "bg-f4 fixed-bottom"
                 }
             >
-                <div className="align-items-center d-flex justify-content-between me-3 px-4 py-2">
+                <div className="align-items-center d-flex justify-content-between px-4 py-2">
                     <div>
                         <div className="">
                             Created{" "}
@@ -4819,7 +4845,7 @@ const EditTaskPopup = (Items: any) => {
                         : "bg-f4 fixed-bottom"
                 }
             >
-                <div className="align-items-center d-flex justify-content-between me-3 px-4 py-2">
+                <div className="align-items-center d-flex justify-content-between px-4 py-2">
                     <div>
                         <div className="">
                             Created{" "}
@@ -4943,26 +4969,7 @@ const EditTaskPopup = (Items: any) => {
                     : `${EditData.Id}`
             }
         >
-                 <Loader
-                        loaded={loaded}
-                        lines={13}
-                        length={20}
-                        width={10}
-                        radius={30}
-                        corners={1}
-                        rotate={0}
-                        direction={1}
-                        speed={2}
-                        trail={60}
-                        shadow={false}
-                        hwaccel={false}
-                        className="spinner"
-                        zIndex={2e9}
-                        top="28%"
-                        left="50%"
-                        scale={1.0}
-                        loadedClassName="loadedContent"
-                      />
+           
             {/* ***************** this is status panel *********** */}
             <Panel
                 onRenderHeader={onRenderStatusPanelHeader}
@@ -6171,7 +6178,7 @@ const EditTaskPopup = (Items: any) => {
                                                                                                 <span className="mx-2">
                                                                                                     {Number(
                                                                                                         SiteDtls.ClienTimeDescription
-                                                                                                    ).toFixed(2)}
+                                                                                                    ).toFixed(1)}
                                                                                                     %
                                                                                                 </span>
                                                                                             )}
@@ -6743,7 +6750,7 @@ const EditTaskPopup = (Items: any) => {
                                                                 />
                                                             </div>
                                                         ) : null}
-                                                        {TaskImages?.length == 0 ? (
+                                                        {TaskImages?.length == 0 && EditData?.Id != undefined ? (
                                                             <div>
                                                                 <FlorarImageUploadComponent
                                                                     callBack={FlorarImageUploadComponentCallBack}
@@ -6884,6 +6891,7 @@ const EditTaskPopup = (Items: any) => {
                             RequiredListIds={AllListIdData}
                             closePopupCallBack={closeSiteCompsotionPanelFunction}
                             usedFor={"AWT"}
+                            ColorCode={PortfolioItemColor}
                         />
                     ) : null}
                     {sendEmailComponentStatus ? (
@@ -9025,6 +9033,7 @@ const EditTaskPopup = (Items: any) => {
                                     <h6>Sites</h6>
                                 </div>
                                 <div className="card-body">
+                                {!loaded?<PageLoader/>:''}
                                     <ul className="quick-actions">
                                         {SiteTypes?.map((siteData: any, index: number) => {
                                             if (siteData.Title !== "QA") {
@@ -9219,7 +9228,7 @@ const EditTaskPopup = (Items: any) => {
                         </div>
                     </div>
                     <footer className="fixed-bottom">
-                        <div className="align-items-center d-flex me-3 pull-right px-4 py-2">
+                        <div className="align-items-center d-flex pull-right px-4 py-2">
                             <button
                                 type="button"
                                 className="btn btn-primary px-3 mx-1"

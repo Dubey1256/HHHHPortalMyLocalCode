@@ -67,6 +67,7 @@ const LandingPage = (props: any) => {
                     if (indexToRemove !== -1) {
                         portfiloData.splice(indexToRemove, 1);
                         console.log("Item with specified Id removed from the array");
+                        getListData();
                     } else {
                         console.log("Item with specified Id not found in the array");
                     }

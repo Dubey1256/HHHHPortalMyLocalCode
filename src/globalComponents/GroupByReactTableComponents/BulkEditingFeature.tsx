@@ -2,6 +2,7 @@ import moment from "moment";
 import * as React from "react";
 import pnp, { sp, Web } from "sp-pnp-js";
 import ServiceComponentPortfolioPopup from "../EditTaskPopup/ServiceComponentPortfolioPopup";
+import SelectedTaskUpdateOnPopup from "./selectedTaskUpdateOnPopup";
 
 
 export function DueDateTaskUpdate(taskValue: any) {
@@ -46,23 +47,6 @@ export function DueDateTaskUpdate(taskValue: any) {
     }
     //Update Task After Drop
     const UpdateBulkTaskUpdate = async (task: any, dueDate: any) => {
-        // if (taskValue?.selectedData?.length > 0) {
-        //     taskValue?.selectedData?.map(async (elem: any) => {
-        //         let web = new Web(elem?.original?.siteUrl);
-        //         await web.lists.getById(elem?.original?.listId).items.getById(elem?.original?.Id).update({
-        //             DueDate: dueDate,
-        //         }).then((res: any) => {
-        //             console.log("Drop Updated!", res);
-        //         })
-        //     })
-        // } else {
-        //     let web = new Web(task?.taskValue?.siteUrl);
-        //     await web.lists.getById(task?.taskValue?.listId).items.getById(task?.taskValue?.Id).update({
-        //         DueDate: dueDate,
-        //     }).then((res: any) => {
-        //         console.log("Drop Updated!", res);
-        //     })
-        // }
         const updatePromises: Promise<any>[] = [];
         if (taskValue?.selectedData?.length > 0) {
             taskValue?.selectedData?.forEach((elem: any) => {
@@ -182,11 +166,11 @@ export function DueDateTaskUpdate(taskValue: any) {
             <div className='clearfix col px-1'>
                 <div className="taskcatgoryPannel dueDateSec alignCenter justify-content-lg-between" >
                     <div className="align-items-center d-flex" style={{ width: "100px" }}>Due Date</div>
-                    <div className="dueDateTile"><a className='subcategoryTask' onDrop={(e: any) => handleDrop('Today', 'DueDate')} onDragOver={(e: any) => e.preventDefault()}>Today&nbsp;{moment(new Date()).format('DD/MM/YYYY')}</a></div>
-                    <div className="dueDateTile"><a className='subcategoryTask' onDrop={(e: any) => handleDrop('Tomorrow', 'DueDate')} onDragOver={(e: any) => e.preventDefault()} id="Tomorrow">Tomorrow</a></div>
-                    <div className="dueDateTile"><a className='subcategoryTask' onDrop={(e: any) => handleDrop('ThisWeek', 'DueDate')} onDragOver={(e: any) => e.preventDefault()} id="ThisWeek">This Week</a></div>
-                    <div className="dueDateTile"><a className='subcategoryTask' onDrop={(e: any) => handleDrop('NextWeek', 'DueDate')} onDragOver={(e: any) => e.preventDefault()} id="NextWeek">Next Week</a></div>
-                    <div className="dueDateTile"><a className='subcategoryTask' onDrop={(e: any) => handleDrop('ThisMonth', 'DueDate')} onDragOver={(e: any) => e.preventDefault()} id="ThisMonth">This Month</a></div>
+                    <div style={taskValue?.isActive?.DueDate && taskValue?.save?.DueDate === 'Today' ? { border: '1px solid #000066' } : {}} className="dueDateTile" ><a className={taskValue?.isActive?.DueDate && taskValue?.save?.DueDate === 'Today' ? 'subcategoryTask isActives border-0' : 'subcategoryTask border-0'} onClick={() => taskValue?.setActiveTile('Today', "DueDate")} onDrop={(e: any) => handleDrop('Today', 'DueDate')} onDragOver={(e: any) => e.preventDefault()}>Today&nbsp;{moment(new Date()).format('DD/MM/YYYY')}</a></div>
+                    <div style={taskValue?.isActive?.DueDate && taskValue?.save?.DueDate === 'Tomorrow' ? { border: '1px solid #000066' } : {}} className="dueDateTile" ><a className={taskValue?.isActive?.DueDate && taskValue?.save?.DueDate === 'Tomorrow' ? 'subcategoryTask isActives border-0' : 'subcategoryTask border-0'} onClick={() => taskValue?.setActiveTile('Tomorrow', "DueDate")} onDrop={(e: any) => handleDrop('Tomorrow', 'DueDate')} onDragOver={(e: any) => e.preventDefault()} id="Tomorrow">Tomorrow</a></div>
+                    <div style={taskValue?.isActive?.DueDate && taskValue?.save?.DueDate === 'ThisWeek' ? { border: '1px solid #000066' } : {}} className="dueDateTile" ><a className={taskValue?.isActive?.DueDate && taskValue?.save?.DueDate === 'ThisWeek' ? 'subcategoryTask isActives border-0' : 'subcategoryTask border-0'} onClick={() => taskValue?.setActiveTile('ThisWeek', "DueDate")} onDrop={(e: any) => handleDrop('ThisWeek', 'DueDate')} onDragOver={(e: any) => e.preventDefault()} id="ThisWeek">This Week</a></div>
+                    <div style={taskValue?.isActive?.DueDate && taskValue?.save?.DueDate === 'NextWeek' ? { border: '1px solid #000066' } : {}} className="dueDateTile" ><a className={taskValue?.isActive?.DueDate && taskValue?.save?.DueDate === 'NextWeek' ? 'subcategoryTask isActives border-0' : 'subcategoryTask border-0'} onClick={() => taskValue?.setActiveTile('NextWeek', "DueDate")} onDrop={(e: any) => handleDrop('NextWeek', 'DueDate')} onDragOver={(e: any) => e.preventDefault()} id="NextWeek">Next Week</a></div>
+                    <div style={taskValue?.isActive?.DueDate && taskValue?.save?.DueDate === 'ThisMonth' ? { border: '1px solid #000066' } : {}} className="dueDateTile" ><a className={taskValue?.isActive?.DueDate && taskValue?.save?.DueDate === 'ThisMonth' ? 'subcategoryTask isActives border-0' : 'subcategoryTask border-0'} onClick={() => taskValue?.setActiveTile('ThisMonth', "DueDate")} onDrop={(e: any) => handleDrop('ThisMonth', 'DueDate')} onDragOver={(e: any) => e.preventDefault()} id="ThisMonth">This Month</a></div>
                 </div>
             </div>
         </>
@@ -210,23 +194,6 @@ export function PrecentCompleteUpdate(taskValue: any) {
     }
     //Update Task After Drop
     const UpdateBulkTaskUpdate = async (task: any, TaskStatus: any, TaskApproval: any) => {
-        // if (taskValue?.selectedData?.length > 0) {
-        //     taskValue?.selectedData?.map(async (elem: any) => {
-        //         let web = new Web(elem?.original?.siteUrl);
-        //         await web.lists.getById(elem?.original?.listId).items.getById(elem?.original?.Id).update({
-        //             PercentComplete: TaskStatus,
-        //         }).then((res: any) => {
-        //             console.log("Drop Updated!", res);
-        //         })
-        //     })
-        // } else {
-        //     let web = new Web(task?.taskValue?.siteUrl);
-        //     await web.lists.getById(task?.taskValue?.listId).items.getById(task?.taskValue?.Id).update({
-        //         PercentComplete: TaskStatus,
-        //     }).then((res: any) => {
-        //         console.log("Drop Updated!", res);
-        //     })
-        // }
         const updatePromises: Promise<any>[] = [];
         if (taskValue?.selectedData?.length > 0) {
             taskValue?.selectedData?.forEach((elem: any) => {
@@ -321,8 +288,8 @@ export function PrecentCompleteUpdate(taskValue: any) {
                     <span className="alignCenter" style={{ width: "110px" }}>Percent Complete</span>
                     {taskValue?.precentComplete?.map((item: any) => {
                         return (
-                            <div className="percentTile" onDrop={(e: any) => handleDrop(item?.Title, 'precentComplete')} onDragOver={(e: any) => e.preventDefault()}>
-                                <a className='alignCenter justify-content-around subcategoryTask'>{item?.Title}</a>
+                            <div style={taskValue?.isActive?.PercentComplete && taskValue?.save?.PercentComplete === item?.Title ? { border: '1px solid #000066' } : {}} className='percentTile' onClick={() => taskValue?.setActiveTile(item?.Title, 'PercentComplete')} onDrop={(e: any) => handleDrop(item?.Title, 'precentComplete')} onDragOver={(e: any) => e.preventDefault()}>
+                                <a className={taskValue?.isActive?.PercentComplete && taskValue?.save?.PercentComplete === item?.Title ? 'alignCenter justify-content-around subcategoryTask isActives border-0' : 'alignCenter justify-content-around subcategoryTask border-0'}>{item?.Title}</a>
                             </div>
                         )
                     })}
@@ -340,25 +307,6 @@ export function ProjectTaskUpdate(taskValue: any) {
             UpdateBulkTaskUpdate(taskValue, destination)
         }
     }
-    // const UpdateBulkTaskUpdate = async (task: any, project: any) => {
-    //     if (taskValue?.selectedData?.length > 0) {
-    //         taskValue?.selectedData?.map(async (elem: any) => {
-    //             let web = new Web(elem?.original?.siteUrl);
-    //             await web.lists.getById(elem?.original?.listId).items.getById(elem?.original?.Id).update({
-    //                 ProjectId: project?.Id,
-    //             }).then((res: any) => {
-    //                 console.log("Your Project being updated successfully!", res);
-    //             })
-    //         })
-    //     } else {
-    //         let web = new Web(task?.taskValue?.siteUrl);
-    //         await web.lists.getById(task?.taskValue?.listId).items.getById(task?.taskValue?.Id).update({
-    //             ProjectId: project?.Id,
-    //         }).then((res: any) => {
-    //             console.log("Your Project being updated successfully!", res);
-    //         })
-    //     }
-    // }
     const UpdateBulkTaskUpdate = async (task: any, project: any) => {
         const updatePromises: Promise<any>[] = [];
         if (taskValue?.selectedData?.length > 0) {
@@ -507,8 +455,8 @@ export function ProjectTaskUpdate(taskValue: any) {
                     {taskValue?.projectTiles && !taskValue?.projectTiles?.every((item: any) => !item?.original?.Project) ? (
                         taskValue?.projectTiles.map((item: any) => (
                             item?.original?.Project ? (
-                                <div key={item?.Title} className="priorityTile" onDrop={(e: any) => handleDrop(item?.original?.Project, 'procetSection')} onDragOver={(e: any) => e.preventDefault()}>
-                                    <a className='alignCenter justify-content-around subcategoryTask' title={item?.original?.Project?.Title}>{item?.original?.Project?.PortfolioStructureID}</a>
+                                <div style={taskValue?.isActive?.Project && taskValue?.save?.Project?.Title === item?.original?.Project?.Title ? { border: '1px solid #000066' } : {}} key={item?.Title} className='priorityTile' onClick={() => taskValue?.setActiveTile(item?.original?.Project, 'Project')} onDrop={(e: any) => handleDrop(item?.original?.Project, 'procetSection')} onDragOver={(e: any) => e.preventDefault()}>
+                                    <a className={taskValue?.isActive?.Project && taskValue?.save?.Project?.Title === item?.original?.Project?.Title ? 'alignCenter justify-content-around subcategoryTask isActives border-0' : 'alignCenter justify-content-around subcategoryTask border-0'} title={item?.original?.Project?.Title}>{item?.original?.Project?.PortfolioStructureID}</a>
                                 </div>
                             ) : null
                         ))
@@ -517,23 +465,23 @@ export function ProjectTaskUpdate(taskValue: any) {
                     )}
                     {ProjectData?.map((item: any) => {
                         return (
-                            <div className="priorityTile" onDrop={(e: any) => handleDrop(item, 'procetSection')} onDragOver={(e: any) => e.preventDefault()}>
-                                <a className='alignCenter justify-content-around subcategoryTask' title={item?.Title}>{item.PortfolioStructureID}</a>
+                            <div style={taskValue?.isActive?.Project && taskValue?.save?.Project?.Title === item?.Title ? { border: '1px solid #000066' } : {}} className='priorityTile' onClick={() => taskValue?.setActiveTile(item, 'Project')} onDrop={(e: any) => handleDrop(item, 'procetSection')} onDragOver={(e: any) => e.preventDefault()}>
+                                <a className={taskValue?.isActive?.Project && taskValue?.save?.Project?.Title === item?.Title ? 'alignCenter justify-content-around subcategoryTask isActives border-0' : 'alignCenter justify-content-around subcategoryTask border-0'} title={item?.Title}>{item.PortfolioStructureID}</a>
                             </div>
                         )
                     })}
                     <span onClick={() => setProjectManagementPopup(true)} title="Project Items Popup" className="svg__iconbox svg__icon--setting hreflink"></span>
                 </div>
-
             </div>
             {ProjectManagementPopup && <ServiceComponentPortfolioPopup Dynamic={taskValue?.ContextValue} ComponentType={"Component"} Call={ComponentServicePopupCallBack} selectionType={"Multi"} showProject={ProjectManagementPopup} />}
         </>
     )
 }
-
-
-
 const BulkEditingFeature = (props: any) => {
+    const [isActive, setIsActive] = React.useState({ priority: false, DueDate: false, PercentComplete: false, Project: false, });
+    const [save, setSave] = React.useState<any>({ priority: undefined, DueDate: '', PercentComplete: undefined, Project: {} })
+    const [bulkEditingSettingPopup, setBulkEditingSettingPopup] = React.useState(false);
+
     const handleDrop = (destination: any, priority: any) => {
         console.log("dragedTaskdragedTask", props?.dragedTask)
         console.log("destinationdestinationdestination", destination)
@@ -557,7 +505,6 @@ const BulkEditingFeature = (props: any) => {
             }
             UpdateBulkTaskUpdate(props?.dragedTask, priority, priorityRank);
         }
-
     }
     //Update Task After Drop
     const UpdateBulkTaskUpdate = async (task: any, priority: any, priorityRank: any) => {
@@ -580,9 +527,59 @@ const BulkEditingFeature = (props: any) => {
                 console.log("Drop Updated", res);
             })
         }
-
     }
     //ends
+    const bulkEditingSetting = React.useCallback((eventSetting: any) => {
+        if (eventSetting != 'close') {
+            const isActiveDataBackup = { priority: false, DueDate: false, PercentComplete: false, Project: false, }
+            const saveBackup: any = { priority: undefined, DueDate: '', PercentComplete: undefined, Project: {} }
+            setSave(saveBackup);
+            setIsActive(isActiveDataBackup)
+            setBulkEditingSettingPopup(false);
+        } else {
+            setBulkEditingSettingPopup(false);
+        }
+    }, []);
+    const bulkEditingSettingPopupEvent = () => {
+        if (props?.selectedData.length > 0 && (isActive.priority != true && isActive.DueDate != true && isActive.PercentComplete != true && isActive.Project != true)) {
+            alert("No Tiles are selected")
+        } else if (props?.selectedData.length <= 0 && (isActive.priority === true || isActive.DueDate === true || isActive.PercentComplete === true || isActive.Project === true)) {
+            alert("No items are selected")
+        } else if (props?.selectedData.length <= 0 && (isActive.priority != true && isActive.DueDate != true && isActive.PercentComplete != true && isActive.Project != true)) {
+            alert("No items are selected")
+        } else if (props?.selectedData.length > 0 && (isActive.priority === true || isActive.DueDate === true || isActive.PercentComplete === true || isActive.Project === true)) {
+            setBulkEditingSettingPopup(true);
+        }
+    }
+
+    const setActiveTile = (item: any, title: any) => {
+        if (title === 'priority') {
+            setIsActive({ ...isActive, priority: !isActive.priority });
+            setSave((prevSave: any) => ({
+                ...prevSave,
+                priority: !isActive.priority ? item : undefined,
+            }));
+        } else if (title === 'DueDate') {
+            setIsActive({ ...isActive, DueDate: !isActive.DueDate });
+            setSave((prevSave: any) => ({
+                ...prevSave,
+                DueDate: !isActive.DueDate ? item : '',
+            }));
+        } else if (title === 'PercentComplete') {
+            setIsActive({ ...isActive, PercentComplete: !isActive.PercentComplete });
+            setSave((prevSave: any) => ({
+                ...prevSave,
+                PercentComplete: !isActive.PercentComplete ? item : undefined,
+            }));
+        } else if (title === 'Project') {
+            setIsActive({ ...isActive, Project: !isActive.Project });
+            setSave((prevSave: any) => ({
+                ...prevSave,
+                Project: !isActive.Project ? item : {},
+            }));
+        }
+    }; 
+
     return (
         <>
             {props?.bulkEditingCongration?.priority && <div className='clearfix col px-1 my-3'>
@@ -590,8 +587,8 @@ const BulkEditingFeature = (props: any) => {
                     <span style={{ width: "100px" }}>Priority Rank</span>
                     {props?.priorityRank?.map((item: any) => {
                         return (
-                            <div className="priorityTile" onDrop={(e: any) => handleDrop(item?.Title, 'priority')} onDragOver={(e: any) => e.preventDefault()}>
-                                <a className='subcategoryTask'>{item?.Title}</a>
+                            <div style={isActive.priority && save.priority === item.Title ? { border: '1px solid #000066' } : {}} onDrop={(e: any) => handleDrop(item?.Title, 'priority')} className='priorityTile' onClick={() => setActiveTile(item.Title, "priority")} onDragOver={(e: any) => e.preventDefault()}>
+                                <a className={isActive.priority && save.priority === item.Title ? 'subcategoryTask isActives border-0' : 'subcategoryTask border-0'}>{item?.Title}</a>
                             </div>
                         )
                     })}
@@ -599,17 +596,19 @@ const BulkEditingFeature = (props: any) => {
             </div>}
 
             {props?.bulkEditingCongration?.dueDate && <div>
-                <DueDateTaskUpdate taskValue={props?.dragedTask?.task} selectedData={props?.selectedData} data={props?.data} updatedSmartFilterFlatView={props?.updatedSmartFilterFlatView} clickFlatView={props?.clickFlatView} setData={props?.setData} ContextValue={props?.ContextValue} />
+                <DueDateTaskUpdate taskValue={props?.dragedTask?.task} setActiveTile={setActiveTile} save={save} isActive={isActive} selectedData={props?.selectedData} data={props?.data} updatedSmartFilterFlatView={props?.updatedSmartFilterFlatView} clickFlatView={props?.clickFlatView} setData={props?.setData} ContextValue={props?.ContextValue} />
             </div>}
             {props?.bulkEditingCongration?.status && <div>
-                <PrecentCompleteUpdate taskValue={props?.dragedTask?.task} precentComplete={props?.precentComplete} selectedData={props?.selectedData} data={props?.data} updatedSmartFilterFlatView={props?.updatedSmartFilterFlatView} clickFlatView={props?.clickFlatView} setData={props?.setData} ContextValue={props?.ContextValue} />
+                <PrecentCompleteUpdate taskValue={props?.dragedTask?.task} setActiveTile={setActiveTile} save={save} isActive={isActive} precentComplete={props?.precentComplete} selectedData={props?.selectedData} data={props?.data} updatedSmartFilterFlatView={props?.updatedSmartFilterFlatView} clickFlatView={props?.clickFlatView} setData={props?.setData} ContextValue={props?.ContextValue} />
             </div>}
 
             {props?.bulkEditingCongration?.Project && <div>
-                <ProjectTaskUpdate taskValue={props?.dragedTask?.task} data={props?.data} updatedSmartFilterFlatView={props?.updatedSmartFilterFlatView} clickFlatView={props?.clickFlatView} setData={props?.setData} selectedData={props?.selectedData} ContextValue={props?.ContextValue} projectTiles={props?.projectTiles} />
+                <ProjectTaskUpdate taskValue={props?.dragedTask?.task} data={props?.data} save={save} setActiveTile={setActiveTile} isActive={isActive} updatedSmartFilterFlatView={props?.updatedSmartFilterFlatView} clickFlatView={props?.clickFlatView} setData={props?.setData} selectedData={props?.selectedData} ContextValue={props?.ContextValue} projectTiles={props?.projectTiles} />
             </div>}
 
-
+            {bulkEditingSettingPopup && <SelectedTaskUpdateOnPopup save={save} selectedData={props?.selectedData} isOpen={bulkEditingSettingPopup} bulkEditingSetting={bulkEditingSetting} columns={props?.columns} data={props?.data} setData={props?.setData} updatedSmartFilterFlatView={props?.updatedSmartFilterFlatView} clickFlatView={props?.clickFlatView} ContextValue={props?.ContextValue} masterTaskData={props?.masterTaskData} />}
+            {/* {(props?.bulkEditingCongration?.priority || props?.bulkEditingCongration?.dueDate || props?.bulkEditingCongration?.status || props?.bulkEditingCongration?.Project) && <div onClick={(e) => bulkEditingSettingPopupEvent()}><span className="svg__iconbox svg__icon--edit"></span></div>} */}
+            <div className='d-flex justify-content-end mx-2 mb-2'>{(props?.bulkEditingCongration?.priority || props?.bulkEditingCongration?.dueDate || props?.bulkEditingCongration?.status || props?.bulkEditingCongration?.Project) && <button onClick={(e) => bulkEditingSettingPopupEvent()} className='btn btn-primary'>Bulk Update</button>}</div>
         </>
     )
 }
