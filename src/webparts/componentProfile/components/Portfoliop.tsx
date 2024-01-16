@@ -641,7 +641,7 @@ function Portfolio({ SelectedProp, TaskUser }: any) {
               item.Item_x0020_Type == "Feature"
             ) {
               ParentId = item?.Parent?.Id;
-              let urln = `https://hhhhteams.sharepoint.com/sites/HHHH/SP/_api/lists/getbyid('${ContextValue.MasterTaskListID}')/items?$select=Id,Parent/Id,Title,Parent/Title,Parent/ItemType&$expand=Parent&$filter=Id eq ${ParentId}`;
+              let urln = `${SelectedProp.siteUrl}/_api/lists/getbyid('${ContextValue.MasterTaskListID}')/items?$select=Id,Parent/Id,Title,Parent/Title,Parent/ItemType&$expand=Parent&$filter=Id eq ${ParentId}`;
               $.ajax({
                 url: urln,
                 method: "GET",
@@ -1128,7 +1128,7 @@ function Portfolio({ SelectedProp, TaskUser }: any) {
                                           <a
                                             target="_blank"
                                             data-interception="off"
-                                            href={`https://hhhhteams.sharepoint.com/sites/HHHH/SP/SitePages/Portfolio-Profile.aspx?taskId=${ParentD?.Parent?.Id}`}
+                                            href={`${SelectedProp.siteUrl}/SitePages/Portfolio-Profile.aspx?taskId=${ParentD?.Parent?.Id}`}
                                           >
                                             {ParentD?.Parent?.Title}
                                           </a>
@@ -1143,7 +1143,7 @@ function Portfolio({ SelectedProp, TaskUser }: any) {
                                   <a
                                     target="_blank"
                                     data-interception="off"
-                                    href={`https://hhhhteams.sharepoint.com/sites/HHHH/SP/SitePages/Portfolio-Profile.aspx?taskId=${item?.Parent?.Id}`}
+                                    href={`${SelectedProp.siteUrl}/SitePages/Portfolio-Profile.aspx?taskId=${item?.Parent?.Id}`}
                                   >
                                     {item?.Parent?.Title}
                                   </a>
