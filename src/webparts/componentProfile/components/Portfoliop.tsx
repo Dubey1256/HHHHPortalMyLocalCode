@@ -1621,6 +1621,15 @@ function Portfolio({ SelectedProp, TaskUser }: any) {
                   </div>
                   <div className="col-md-12">
                     <section className="row  accordionbox">
+                    {(data.length!= 0 && data[0]?.ComponentLink != null)  &&
+                      <div className="d-flex">
+                      <div className='bg-fxdark p-2'><label>Url</label></div>
+                      <div className='bg-light p-2 text-break full-width'>
+                          <a target="_blank" data-interception="off" href={data[0].ComponentLink?.Url}>{data[0]?.ComponentLink?.Url}</a>
+                        
+                      </div>
+                    </div>
+                    }
                       <div className="accordion  pe-1 overflow-hidden">
                         {/* Project Management Box */}
                         {filterdata?.length !== 0 && (
@@ -1879,16 +1888,6 @@ function Portfolio({ SelectedProp, TaskUser }: any) {
                           </details>
                         )}
                       </div>
-                      
-                      {(data.length!= 0 && data[0]?.ComponentLink != null)  &&
-                      <div className="d-flex">
-                      <div className='bg-fxdark p-2'><label>Url</label></div>
-                      <div className='bg-light p-2 text-break full-width'>
-                          <a target="_blank" data-interception="off" href={data[0].ComponentLink?.Url}>{data[0]?.ComponentLink?.Url}</a>
-                        
-                      </div>
-                    </div>
-                    }
                     </section>
                   </div>
                 </div>
