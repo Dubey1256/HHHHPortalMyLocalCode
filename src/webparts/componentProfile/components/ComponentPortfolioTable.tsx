@@ -2154,6 +2154,7 @@ const updatedDataDataFromPortfolios = (copyDtaArray: any, dataToUpdate: any) => 
                         OpenAddStructureModal={OpenAddStructureModal}
                         addActivity={addActivity}
                         showFilterIcon={true} loadFilterTask={FilterAllTask}/>
+                         {!loaded && <PageLoader/>}
                     </div>
                   </div>
                 </div>
@@ -2306,7 +2307,6 @@ const updatedDataDataFromPortfolios = (copyDtaArray: any, dataToUpdate: any) => 
           Context={SelectedProp?.NextProp.Context}
         ></TimeEntryPopup>
       )}
-     {!loaded && <PageLoader/>}
     </div>
     </myContextValue.Provider>
   );

@@ -2540,7 +2540,7 @@ function TeamPortlioTable(SelectedProp: any) {
                 <EditInstituton
                     item={SharewebComponent}
                     Calls={Call}
-                    SelectD={SelectedProp}
+                    SelectD={SelectedProp?.SelectedProp}
                     portfolioTypeData={portfolioTypeData}
                 >
                 </EditInstituton>
