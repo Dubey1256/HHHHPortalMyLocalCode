@@ -329,19 +329,7 @@ class Taskprofile extends React.Component<ITaskprofileProps, ITaskprofileState> 
         })
       }
     } else {
-
       tempEstimatedArrayData = [];
-    }
-    if(taskDetails?.Sitestagging!=undefined){
-      try{
-        let parsedSiteTagging = JSON.parse(taskDetails?.Sitestagging)
-        parsedSiteTagging?.map((site:any)=>{
-          site.SiteImages= this.GetSiteIcon(site?.Title)
-        })
-        taskDetails.Sitestagging = JSON.stringify(parsedSiteTagging)
-      }catch(e){
-
-      }
     }
     const maxTitleLength: number = 75;
 

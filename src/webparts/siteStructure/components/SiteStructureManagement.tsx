@@ -165,7 +165,7 @@ export default function SiteStructureTool(Props: any) {
         setEditPopup(false);
         setPostData(undefined);
     };
-    const AddNewItem = (item: any) => {
+    const addStructure = (item: any) => {
         var Data: any = [];
         Data.push(item);
         setPopupData(Data);
@@ -371,16 +371,15 @@ export default function SiteStructureTool(Props: any) {
                     </h2>
                 </div>
             </section >
-            <button type="button" className="btn btn-primary ms-2" onClick={() => AddNewItem("New")} >
+            {/* <button type="button" className="btn btn-primary ms-2" onClick={() => addStructure("New")} >
                 Add Item
-            </button>
+            </button> */}
             {
                 SiteStructure && <div>
                     <div className="TableSection">
                         <div className='Alltable mt-2'>
                             <div className='col-md-12 p-0 smart'>
-                                <GlobalCommanTable columns={columns} data={SiteStructure} showHeader={true} callBackData={callBackData} />
-                            </div>
+                                <GlobalCommanTable columns={columns} data={SiteStructure} showHeader={true} callBackData={callBackData} addStructure={addStructure} siteStructureCreation={true} />                            </div>
                         </div>
                     </div>
                 </div>

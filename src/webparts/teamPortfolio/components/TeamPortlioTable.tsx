@@ -28,6 +28,7 @@ import InfoIconsToolTip from "../../../globalComponents/InfoIconsToolTip/InfoIco
 import TeamSmartFilter from "../../../globalComponents/SmartFilterGolobalBomponents/TeamSmartFilter";
 import ReactPopperTooltipSingleLevel from "../../../globalComponents/Hierarchy-Popper-tooltipSilgleLevel/Hierarchy-Popper-tooltipSingleLevel";
 import PageLoader from "../../../globalComponents/pageLoader";
+import CompareTool from "../../../globalComponents/CompareTool/CompareTool";
 var filt: any = "";
 var ContextValue: any = {};
 let globalFilterHighlited: any;
@@ -121,6 +122,7 @@ function TeamPortlioTable(SelectedProp: any) {
     const [flatViewDataAll, setFlatViewDataAll] = React.useState([]);
     const [priorityRank, setpriorityRank] = React.useState([])
     const [precentComplete, setPrecentComplete] = React.useState([])
+    const [openCompareToolPopup,setOpenCompareToolPopup]=React.useState(false);
     const rerender = React.useReducer(() => ({}), {})[1]
     // const [tableHeight, setTableHeight] = React.useState(window.innerHeight);
     const [portfolioTypeConfrigration, setPortfolioTypeConfrigration] = React.useState<any>([{ Title: 'Component', Suffix: 'C', Level: 1 }, { Title: 'SubComponent', Suffix: 'S', Level: 2 }, { Title: 'Feature', Suffix: 'F', Level: 3 }]);
@@ -2315,6 +2317,19 @@ function TeamPortlioTable(SelectedProp: any) {
         );
     };
 
+    ////Compare tool/////
+    const compareToolCallBack = React.useCallback((compareData) => {
+        if(compareData !="close"){
+            setOpenCompareToolPopup(false);
+        }else{
+            setOpenCompareToolPopup(false);
+        }
+    }, []);
+    const openCompareTool =()=>{
+        setOpenCompareToolPopup(true);
+    }
+    /////end////////////
+
 
     // React.useEffect(() => {
     //     const checkbox: any = document.querySelector('input[type="checkbox"]');
@@ -2381,20 +2396,7 @@ function TeamPortlioTable(SelectedProp: any) {
                                 <div className="col-sm-12 p-0 smart">
                                     <div>
                                         <div>
-                                            {/* <Loader loaded={loaded} lines={13} length={20} width={10} radius={30} corners={1} rotate={0} direction={1}
-                                                color={portfolioColor ? portfolioColor : "#000069"}
-                                                speed={2}
-                                                trail={60}
-                                                shadow={false}
-                                                hwaccel={false}
-                                                className="spinner"
-                                                zIndex={2e9}
-                                                top="28%"
-                                                left="50%"
-                                                scale={1.0}
-                                                loadedClassName="loadedContent"
-                                            /> */}
-                                            <GlobalCommanTable AllSitesTaskData={allTaskDataFlatLoadeViewBackup} masterTaskData={allMasterTaskDataFlatLoadeViewBackup} bulkEditIcon={true} priorityRank={priorityRank} precentComplete={precentComplete} portfolioTypeDataItemBackup={portfolioTypeDataItemBackup} taskTypeDataItemBackup={taskTypeDataItemBackup} flatViewDataAll={flatViewDataAll} setData={setData} updatedSmartFilterFlatView={updatedSmartFilterFlatView} setLoaded={setLoaded} clickFlatView={clickFlatView} switchFlatViewData={switchFlatViewData} flatView={true} switchGroupbyData={switchGroupbyData} smartTimeTotalFunction={smartTimeTotalFunction} SmartTimeIconShow={true} AllMasterTasksData={AllMasterTasksData} ref={childRef} callChildFunction={callChildFunction} AllListId={ContextValue} columns={columns} restructureCallBack={callBackData1} data={data} callBackData={callBackData} TaskUsers={AllUsers} showHeader={true} portfolioColor={portfolioColor} portfolioTypeData={portfolioTypeDataItem} taskTypeDataItem={taskTypeDataItem} fixedWidth={true} portfolioTypeConfrigration={portfolioTypeConfrigration} showingAllPortFolioCount={true} showCreationAllButton={true} OpenAddStructureModal={OpenAddStructureModal} addActivity={addActivity} />
+                                            <GlobalCommanTable openCompareTool={openCompareTool} columnSettingIcon={true} AllSitesTaskData={allTaskDataFlatLoadeViewBackup} masterTaskData={allMasterTaskDataFlatLoadeViewBackup} bulkEditIcon={true} priorityRank={priorityRank} precentComplete={precentComplete} portfolioTypeDataItemBackup={portfolioTypeDataItemBackup} taskTypeDataItemBackup={taskTypeDataItemBackup} flatViewDataAll={flatViewDataAll} setData={setData} updatedSmartFilterFlatView={updatedSmartFilterFlatView} setLoaded={setLoaded} clickFlatView={clickFlatView} switchFlatViewData={switchFlatViewData} flatView={true} switchGroupbyData={switchGroupbyData} smartTimeTotalFunction={smartTimeTotalFunction} SmartTimeIconShow={true} AllMasterTasksData={AllMasterTasksData} ref={childRef} callChildFunction={callChildFunction} AllListId={ContextValue} columns={columns} restructureCallBack={callBackData1} data={data} callBackData={callBackData} TaskUsers={AllUsers} showHeader={true} portfolioColor={portfolioColor} portfolioTypeData={portfolioTypeDataItem} taskTypeDataItem={taskTypeDataItem} fixedWidth={true} portfolioTypeConfrigration={portfolioTypeConfrigration} showingAllPortFolioCount={true} showCreationAllButton={true} OpenAddStructureModal={OpenAddStructureModal} addActivity={addActivity} />
                                         </div>
                                     </div>
                                 </div>
@@ -2416,6 +2418,9 @@ function TeamPortlioTable(SelectedProp: any) {
                     }
                 />
             </Panel>
+
+            {openCompareToolPopup && <CompareTool isOpen={openCompareToolPopup} compareToolCallBack={compareToolCallBack} compareData={childRef?.current?.table?.getSelectedRowModel()?.flatRows} contextValue={SelectedProp?.SelectedProp}/>}
+
             <Panel
                 onRenderHeader={onRenderCustomHeaderMain}
                 type={PanelType.custom}
