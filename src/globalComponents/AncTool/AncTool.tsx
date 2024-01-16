@@ -1668,7 +1668,7 @@ const AncTool = (props: any) => {
                                     </div>
                                     <div className='d-flex'>
                                     <Tooltip ComponentId="7642" />
-                                    <span style={{marginTop:"3px"}} onClick={() => cancelNewCreateFile()}><i className="svg__iconbox svg__icon--cross crossBtn me-1"></i></span>
+                                    <span style={{marginTop:"7px"}} onClick={() => cancelNewCreateFile()}><i className="svg__iconbox svg__icon--cross crossBtn me-1"></i></span>
                                     </div>
                                     </div>
                                     
