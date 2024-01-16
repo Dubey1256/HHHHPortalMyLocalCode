@@ -783,6 +783,8 @@ const GlobalCommanTable = (items: any, ref: any) => {
             items?.mailSend();
         } else if (eventValue === "loadFilterTask") {
             items?.loadFilterTask();
+        }else if(eventValue === "Add Site-Structure"){
+            items?.addStructure();
         }
     }
     ///////////////// code with neha /////////////////////
@@ -1044,7 +1046,10 @@ const GlobalCommanTable = (items: any, ref: any) => {
                         }
                     </>
                     }
-
+                    {
+                        items?.siteStructureCreation === true &&
+                        <button type="button" className="btn btn-primary" title='Add Site-Structure' style={{ backgroundColor: `${portfolioColor}`, borderColor: `${portfolioColor}`, color: '#fff' }} onClick={() => openCreationAllStructure("Add Site-Structure")}>Add +</button>
+                    }
                     {items?.hideTeamIcon != true ? <>
                         {table?.getSelectedRowModel()?.flatRows?.length > 0 ? <a className="teamIcon" onClick={() => ShowTeamFunc()}><span title="Create Teams Group" style={{ color: `${portfolioColor}`, backgroundColor: `${portfolioColor}` }} className="svg__iconbox svg__icon--team"></span></a>
                             : <a className="teamIcon"><span title="Create Teams Group" style={{ backgroundColor: "gray" }} className="svg__iconbox svg__icon--team"></span></a>}
