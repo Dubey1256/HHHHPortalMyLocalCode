@@ -406,10 +406,7 @@ export default function ManageSmartMetadata(selectedProps: any) {
                         </h3>
                         <span><a data-interception="off" target="_blank" href="https://hhhhteams.sharepoint.com/sites/HHHH/SP/SitePages/managesmartmetadata-old.aspx">Old ManageSmartMetadata</a></span>
                     </div>
-
-
                 </section>
-
                 <ul className="nav nav-tabs" role="tablist">
                     {Tabs.map((item: any, index: any) => (
                         <button className={
