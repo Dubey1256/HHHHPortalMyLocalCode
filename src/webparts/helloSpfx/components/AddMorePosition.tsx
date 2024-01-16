@@ -10,10 +10,13 @@ const AddMorePosition = (props: any) => {
     const [skill, setSkill] = React.useState('');
     const [skills, setSkills]: any = React.useState([]);
     const [portfiloData, setportfiloData]: any = React.useState([]);
+    const [isSaveDisabled, setIsSaveDisabled] = React.useState(true)
     const HRweb = new Web(props?.siteUrl);
 
     const handleTitleChange = (e: any) => {
+        const titleValue = e?.target?.value
         setpositionTitle(e.target.value);
+        setIsSaveDisabled(titleValue.trim() === '')
     };
 
     const handleSkillChange = (event: { target: { value: React.SetStateAction<string>; }; }) => {
@@ -197,7 +200,7 @@ const AddMorePosition = (props: any) => {
 
                 <footer className="py-2 clearfix">
                     <div className="float-end text-end">
-                        <button onClick={updateChoiceField} type='button' className='btn btn-primary'>Save</button>
+                        <button disabled={isSaveDisabled} onClick={updateChoiceField} type='button' className='btn btn-primary'>Save</button>
                         <button onClick={() => {props?.closePopup()}} type='button' className='btn btn-default ms-1'>Cancel</button>
                     </div>
                 </footer>
