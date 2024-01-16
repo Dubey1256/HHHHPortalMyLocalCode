@@ -13,6 +13,7 @@ export interface IEmployeDashBoardProps {
   MasterTaskListID: 'EC34B38F-0669-480A-910C-F84E92E58ADF';
   TaskTimeSheetListID: '11D52F95-4231-4852-AFDE-884D548C7F1B';
   UpComingBirthdayId: 'a7b80424-e5e1-47c6-80a1-0ee44a70f92c';
-  MyNotesId:'2163fbd9-b6f0-48b8-bc1b-bb48e43f188d',
-  UpComingBdaySiteName:'HR';
+  MyNotesId: '2163fbd9-b6f0-48b8-bc1b-bb48e43f188d',
+  UpComingBdaySiteName: 'HR';
+  AdminConfigurtionListId: 'e968902a-3021-4af2-a30a-174ea95cf8fa';
 }

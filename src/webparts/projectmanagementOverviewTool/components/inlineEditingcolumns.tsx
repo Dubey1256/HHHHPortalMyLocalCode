@@ -108,6 +108,7 @@ const inlineEditingcolumns = (props: any) => {
 
   }, [dueDate.editPopup ,TaskStatusPopup,remark,teamMembersPopup, UpdateEstimatedTime,TaskPriorityPopup,taskCategoriesPopup,props?.item?.TaskCategories?.results]);
   const updateItemValues=()=>{
+    selectedCatTitleVal=[];
     try {
       setpriorityRank(JSON.parse(localStorage.getItem("Priority")));
       setImpTaskCategoryType(JSON.parse(
@@ -1356,8 +1357,7 @@ const inlineEditingcolumns = (props: any) => {
             );
           }}
         >
-          {" "}
-          {props?.item?.DisplayDueDate}{" "}&nbsp;
+        {props?.item?.DisplayDueDate!=undefined ?props?.item?.DisplayDueDate: <>&nbsp;</>}
           {showEditPencil && (
             <a className="pancil-icons">
               <span className="svg__iconbox svg__icon--editBox"></span>

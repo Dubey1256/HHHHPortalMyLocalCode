@@ -836,7 +836,15 @@ function EditProjectPopup(item: any) {
   };
   function EditComponentCallback() {
     if (postedData?.Id == undefined && postedData?.ID == undefined) {
-      postedData = EditData
+      postedData ={
+        ...postedData,...EditData
+      }
+      postedData ={
+        ...postedData,
+        ComponentLink: {
+          Url: EditData?.ComponentLink!=undefined?EditData?.ComponentLink:''
+        },
+      }
     }
     item.Call(postedData, "EditPopup");
   }
@@ -1775,7 +1783,7 @@ function EditProjectPopup(item: any) {
                                 </li>
                             </ul>
                           </div> */}
-                          <div className="col-sm-6 pe-0">
+                          <div className="col-sm-6 p-0">
                             <div className="input-group position-relative mb-2">
                               <label className="form-label  full-width">
                                 Categories{" "}

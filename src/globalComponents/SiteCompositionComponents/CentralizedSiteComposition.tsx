@@ -3,13 +3,14 @@ import { useState, useEffect } from 'react';
 import Tooltip from '../Tooltip';
 import { Panel, PanelType } from 'office-ui-fabric-react';
 import { Web } from "sp-pnp-js";
+import * as $ from "jquery";
 import * as Moment from 'moment';
 import * as globalCommon from "../globalCommon";
 import GlobalCommonTable from "../GroupByReactTableComponents/GlobalCommanTable";
 import { ColumnDef } from "@tanstack/react-table";
 import "bootstrap/dist/css/bootstrap.min.css";
 import HighlightableCell from "../GroupByReactTableComponents/highlight";
-import Loader from "react-loader";
+// import Loader from "react-loader";
 import ShowClintCategory from "../ShowClintCatogory";
 import ReactPopperTooltip from "../Hierarchy-Popper-tooltipSilgleLevel/Hierarchy-Popper-tooltipSingleLevel";
 import { FaCompressArrowsAlt } from "react-icons/fa";
@@ -19,6 +20,7 @@ import SmartTotalTime from '../EditTaskPopup/SmartTimeTotal';
 import { SlArrowDown, SlArrowRight } from "react-icons/sl";
 import ShowSiteComposition from "./ShowSiteComposition";
 import VersionHistory from "../VersionHistroy/VersionHistory";
+import PageLoader from "../pageLoader";
 import moment from "moment";
 let AllSiteDataBackup: any = [];
 let AllClientCategoryDataBackup: any = [];
@@ -31,6 +33,7 @@ let GlobalAllTaskUsersData: any = [];
 let FlatViewTableData: any = [];
 let GroupByTableData: any = [];
 let taskTypeData: any = [];
+let PortfolioItemColor: any = "";
 const CentralizedSiteComposition = (Props: any) => {
     const PropsData: any = Props;
     const usedFor: string = PropsData?.usedFor;
@@ -139,7 +142,17 @@ const CentralizedSiteComposition = (Props: any) => {
         getSmartMetaDataListAllItems();
         getTaskType();
         loadAllTaskUsers();
+        
     }, [])
+
+    useEffect(()=>{
+        setTimeout(() => {
+            const panelMain: any = document.querySelector(".ms-Panel-main");
+            if (panelMain && PortfolioItemColor != "") {
+                $(".ms-Panel-main").css("--SiteBlue", PortfolioItemColor); // Set the desired color value here
+            }
+        }, 1000);
+    },[IsClientCategoryPopupOpen])
 
     const getTaskType = async () => {
         let taskTypeData1: any = [];
@@ -193,6 +206,14 @@ const CentralizedSiteComposition = (Props: any) => {
                 if (TempAllSiteData?.length > 0) {
                     setAllSiteData(TempAllSiteData);
                     AllSiteDataBackup = TempAllSiteData;
+                    if (ItemDetails?.SiteIcon == undefined || ItemDetails?.SiteIcon == null) {
+                        TempAllSiteData?.map((AllSiteData: any) => {
+                            if (AllSiteData.Title == ItemDetails.SiteType) {
+                                ItemDetails.SiteIcon = AllSiteData?.Item_x005F_x0020_Cover?.Url;
+                            }
+                        })
+                    }
+
                 }
                 GetSelectedItemDetails();
             }
@@ -274,17 +295,17 @@ const CentralizedSiteComposition = (Props: any) => {
                 SelectedItemDetails = await web.lists
                     .getById(ItemDetails?.listId)
                     .items.getById(ItemDetails?.Id).select(
-                        "SiteCompositionSettings,Sitestagging,ClientCategory/Id,ClientCategory/Title,Item_x0020_Type"
+                        "SiteCompositionSettings,Sitestagging,ClientCategory/Id,ClientCategory/Title,Item_x0020_Type,PortfolioType/Color"
                     )
-                    .expand("ClientCategory").get();
+                    .expand("ClientCategory,PortfolioType").get();
             }
             if (usedFor == "AWT") {
                 SelectedItemDetails = await web.lists
                     .getById(ItemDetails?.listId)
                     .items.getById(ItemDetails?.Id).select(
-                        "SiteCompositionSettings,Sitestagging,ClientCategory/Id,ClientCategory/Title,TaskType/Id,TaskType/Title"
+                        "SiteCompositionSettings,Sitestagging,ClientCategory/Id,ClientCategory/Title,TaskType/Id,TaskType/Title,Portfolio/Id,Portfolio/Title"
                     )
-                    .expand("ClientCategory,TaskType").get();
+                    .expand("ClientCategory,TaskType,Portfolio").get();
             }
             if (SelectedItemDetails.SiteCompositionSettings?.length > 0) {
                 SiteSettingTemp = JSON.parse(SelectedItemDetails.SiteCompositionSettings);
@@ -324,6 +345,19 @@ const CentralizedSiteComposition = (Props: any) => {
                 setSiteCompositionSettings(tempSiteSetting);
                 setIsSCManual(true);
                 setSiteSettingJSON([...SiteSettingJSON])
+            }
+            if (SelectedItemDetails.PortfolioType?.Color) {
+                PortfolioItemColor = SelectedItemDetails?.PortfolioType?.Color;
+                let targetDiv: any =
+                    document?.querySelector(".ms-Panel-main");
+                setTimeout(() => {
+                    if (targetDiv) {
+                        $(".ms-Panel-main").css(
+                            "--SiteBlue",
+                            SelectedItemDetails?.PortfolioType?.Color
+                        );
+                    }
+                }, 1000);
             }
             if (SelectedItemDetails.Sitestagging?.length > 0) {
                 SiteCompositionTemp = JSON.parse(SelectedItemDetails.Sitestagging);
@@ -423,15 +457,11 @@ const CentralizedSiteComposition = (Props: any) => {
         setLoaded(false);
         if (usedForLoad == "Individual-Site") {
             GlobalAllSiteData = await GetIndividualSiteAllData();
-
         }
         if (usedForLoad == "All-Sites") {
-            if (usedFor == "CSF") {
-                GlobalAllSiteData = await globalCommon?.loadAllSiteTasks(RequiredListIds, 'Portfolio/Id ne null')
-                // loadAllMasterListData();
-            } else {
-                GlobalAllSiteData = await globalCommon?.loadAllSiteTasks(RequiredListIds, undefined);
-            }
+
+            GlobalAllSiteData = await globalCommon?.loadAllSiteTasks(RequiredListIds, undefined);
+
 
         }
         let AllTaggedComponent: any = [];
@@ -481,7 +511,7 @@ const CentralizedSiteComposition = (Props: any) => {
     }
 
     const GetIndividualSiteAllData = async () => {
-        let query: any = "Id,Title,FeedBack,PriorityRank,Remark,Project/PriorityRank,ParentTask/Id,ParentTask/Title,ParentTask/TaskID,TaskID,SmartInformation/Id,SmartInformation/Title,Project/Id,Project/Title,workingThisWeek,EstimatedTime,TaskLevel,TaskLevel,OffshoreImageUrl,OffshoreComments,ClientTime,Priority,Status,ItemRank,IsTodaysTask,Body,Portfolio/Id,Portfolio/Title,Portfolio/PortfolioStructureID,PercentComplete,Categories,StartDate,PriorityRank,DueDate,TaskType/Id,TaskType/Title,Created,Modified,Author/Id,Author/Title,TaskCategories/Id,TaskCategories/Title,AssignedTo/Id,AssignedTo/Title,TeamMembers/Id,TeamMembers/Title,ResponsibleTeam/Id,ResponsibleTeam/Title,ClientCategory/Id,ClientCategory/Title&$expand=AssignedTo,Project,ParentTask,SmartInformation,Author,Portfolio,TaskType,TeamMembers,ResponsibleTeam,TaskCategories,ClientCategory"
+        let query: any = "Id,Title,FeedBack,PriorityRank,Remark,Project/PriorityRank,ParentTask/Id,ParentTask/Title,ParentTask/TaskID,TaskID,SmartInformation/Id,SmartInformation/Title,Project/Id,Project/Title,Project/PortfolioStructureID,workingThisWeek,EstimatedTime,TaskLevel,TaskLevel,OffshoreImageUrl,OffshoreComments,ClientTime,Priority,Status,ItemRank,IsTodaysTask,Body,Portfolio/Id,Portfolio/Title,Portfolio/PortfolioStructureID,PercentComplete,Categories,StartDate,PriorityRank,DueDate,TaskType/Id,TaskType/Title,Created,Modified,Author/Id,Author/Title,TaskCategories/Id,TaskCategories/Title,AssignedTo/Id,AssignedTo/Title,TeamMembers/Id,TeamMembers/Title,ResponsibleTeam/Id,ResponsibleTeam/Title,ClientCategory/Id,ClientCategory/Title&$expand=AssignedTo,Project,ParentTask,SmartInformation,Author,Portfolio,TaskType,TeamMembers,ResponsibleTeam,TaskCategories,ClientCategory"
         try {
             const data = await web.lists.getById(ItemDetails?.listId).items.select(query).getAll();
             data?.map((task: any) => {
@@ -497,7 +527,20 @@ const CentralizedSiteComposition = (Props: any) => {
                     task.PercentComplete = (task.PercentComplete * 100).toFixed(0);
                 }
                 let checkIsSCProtected: any = false;
+                task.TaskID = globalCommon.GetTaskId(task);
+                if (task.Project) {
+                    task.ProjectTitle = task?.Project?.Title;
+                    task.ProjectId = task?.Project?.Id;
+                    task.projectStructerId =
+                        task?.Project?.PortfolioStructureID;
+                    const title = task?.Project?.Title || "";
+                    const dueDate = task?.DueDate;
+                    task.joinedData = [];
+                    if (title) task.joinedData.push(`Title: ${title}`);
+                    if (dueDate) task.joinedData.push(`Due Date: ${dueDate}`);
+                }
                 task.DisplayCreateDate = moment(task.Created).format("DD/MM/YYYY");
+                task.descriptionsSearch = globalCommon.descriptionSearchData(task);
                 if (task?.SiteCompositionSettings != undefined) {
                     let TempSCSettingsData: any = JSON.parse(task?.SiteCompositionSettings);
                     if (TempSCSettingsData?.length > 0) {
@@ -763,7 +806,7 @@ const CentralizedSiteComposition = (Props: any) => {
                                 id="checkbox-Protected"
                                 name="Protected-view"
                             />
-                            {IsMakeSCProtected === true ? <div style={{ backgroundColor: '#000066' }} className="slider round" title='Switch to Un-Protected View'></div> : <div title='Switch to Protected-View' className="slider round"></div>}
+                            {IsMakeSCProtected === true ? <div style={{ backgroundColor: `${PortfolioItemColor}`, borderColor: `${PortfolioItemColor}`}} className="slider round" title='Switch to Un-Protected View'></div> : <div title='Switch to Protected-View' className="slider round"></div>}
                         </label>
                         <span className='ms-1 siteColor'>Protected</span>
                         <span className="hover-text alignIcon">
@@ -935,7 +978,7 @@ const CentralizedSiteComposition = (Props: any) => {
                 header: "",
                 resetColumnFilters: false,
                 // isColumnDefultSortingAsc:true,
-                size: 100
+                size: 130
             },
             {
                 accessorFn: (row) => row?.Title,
@@ -973,7 +1016,31 @@ const CentralizedSiteComposition = (Props: any) => {
                 placeholder: "Title",
                 resetColumnFilters: false,
                 header: "",
-                size: 500,
+                size: 400,
+            },
+            {
+                accessorFn: (row) => row?.projectStructerId + "." + row?.ProjectTitle,
+                cell: ({ row }) => (
+                    <>
+                        {row?.original?.ProjectTitle != (null || undefined) ?
+                            <span ><a style={row?.original?.fontColorTask != undefined ? { color: `${row?.original?.fontColorTask}` } : { color: `${row?.original?.PortfolioType?.Color}` }} data-interception="off" target="_blank" className="hreflink serviceColor_Active" href={`${siteUrl}/SitePages/Project-Management.aspx?ProjectId=${row?.original?.ProjectId}`} >
+                                <ReactPopperTooltip
+                                    ShareWebId={row?.original?.projectStructerId}
+                                    projectToolShow={true}
+                                    row={row?.original}
+                                    singleLevel={true}
+                                    masterTaskData={GlobalAllMasterListData}
+                                    AllSitesTaskData={GlobalAllSiteData}
+                                    AllListId={RequiredListIds}
+                                /></a></span>
+                            : ""}
+                    </>
+                ),
+                id: 'ProjectTitle',
+                placeholder: "Project",
+                resetColumnFilters: false,
+                header: "",
+                size: 70,
             },
             {
                 accessorFn: (row) => row?.IsSCProtectedStatus,
@@ -986,7 +1053,7 @@ const CentralizedSiteComposition = (Props: any) => {
                                 id="checkbox-Protected-Table"
                                 name="Protected-view"
                             />
-                            {row?.original?.IsSCProtected === true ? <div style={{ backgroundColor: '#000066' }} className="slider round" title='Switch to Un-Protect this item'></div> : <div title='Switch to Protect this item' className="slider round"></div>}
+                            {row?.original?.IsSCProtected === true ? <div style={{ backgroundColor: `${PortfolioItemColor}`, borderColor: `${PortfolioItemColor}`}} className="slider round" title='Switch to Un-Protect this item'></div> : <div title='Switch to Protect this item' className="slider round"></div>}
                         </label>
                     </div>
                 ),
@@ -1113,8 +1180,6 @@ const CentralizedSiteComposition = (Props: any) => {
         groupedDataItems?.forEach((item: any) => { flatten(item) });
         return flattenedData;
     }
-
-
 
     // Global Common Table Call Back Function // Selected Item Data for Table
 
@@ -1988,7 +2053,7 @@ const CentralizedSiteComposition = (Props: any) => {
                                 <div className="alignCenter">
                                     <label className="switch me-2 siteColor" htmlFor="checkbox-Flat">
                                         <input checked={flatView} onClick={() => switchFlatViewData(flatView)} type="checkbox" id="checkbox-Flat" name="Flat-view" />
-                                        {flatView === true ? <div style={{ backgroundColor: '#000066' }} className="slider round" title='Switch to GroupBy View'></div> : <div title='Switch to Flat-View' className="slider round"></div>}
+                                        {flatView === true ? <div style={{ backgroundColor: `${PortfolioItemColor}`, borderColor: `${PortfolioItemColor}`}} className="slider round" title='Switch to GroupBy View'></div> : <div title='Switch to Flat-View' className="slider round"></div>}
                                     </label>
                                     <span className='me-1 siteColor'>Flat View</span>
                                     <span className="hover-text alignIcon">
@@ -2000,7 +2065,7 @@ const CentralizedSiteComposition = (Props: any) => {
                                 </div>
                             </div>
                             <div className="tagged-child-items-table border">
-                                <Loader
+                                {/* <Loader
                                     loaded={loaded}
                                     lines={13}
                                     length={20}
@@ -2020,7 +2085,8 @@ const CentralizedSiteComposition = (Props: any) => {
                                     left="50%"
                                     scale={1.0}
                                     loadedClassName="loadedContent"
-                                />
+                                /> */}
+
                                 <GlobalCommonTable
                                     setLoaded={setLoaded}
                                     AllListId={RequiredListIds}
@@ -2052,7 +2118,9 @@ const CentralizedSiteComposition = (Props: any) => {
                     }
 
                 </section>
+                {!loaded ? <PageLoader /> : ""}
             </Panel>
+
         </section>
     )
 }

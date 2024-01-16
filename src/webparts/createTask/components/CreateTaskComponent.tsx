@@ -955,17 +955,16 @@ function CreateTaskComponent(props: any) {
                         }
 
                         if (CategoryTitle?.indexOf("Design") > -1) {
-                            setSendApproverMail(true);
                             globalCommon.sendImmediateEmailNotifications(data?.data?.Id, selectedSite?.siteUrl?.Url, selectedSite?.listId, data?.data, RecipientMail, 'DesignMail', taskUsers, props?.SelectedProp?.Context).then((response: any) => {
                                 console.log(response);
                             });
                         }
-                        // if (CategoryTitle?.indexOf("Approval") > -1) {
-                        //     setSendApproverMail(true);
-                        //     globalCommon.sendImmediateEmailNotifications(data?.data?.Id, selectedSite?.siteUrl?.Url, selectedSite?.listId, data?.data, RecipientMail, 'ApprovalMail', taskUsers, props?.SelectedProp?.Context).then((response: any) => {
-                        //         console.log(response);
-                        //     });
-                        // }
+                        if (CategoryTitle?.indexOf("Approval") > -1) {
+                            setSendApproverMail(true);
+                            // globalCommon.sendImmediateEmailNotifications(data?.data?.Id, selectedSite?.siteUrl?.Url, selectedSite?.listId, data?.data, RecipientMail, 'ApprovalMail', taskUsers, props?.SelectedProp?.Context).then((response: any) => {
+                            //     console.log(response);
+                            // });
+                        }
 
 
                         data.data.siteUrl = selectedSite?.siteUrl?.Url;

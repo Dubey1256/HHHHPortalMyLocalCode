@@ -221,9 +221,9 @@ export default function BulkeditTask(props: any) {
                         </div>
                    
                             {isTableVisible && (
-                            <div className='Alltable' style={{maxHeight:'350px'}}>
+                            <div className='Alltable' style={{height:'350px'}}>
                                 {AllSelectedTask && (
-                                    <GlobalCommanTable wrapperHeight="100%"  columns={columns} data={tableData} showHeader={true} callBackData={callBackData} />
+                                    <GlobalCommanTable wrapperHeight="350px"  columns={columns} data={tableData} showHeader={true} callBackData={callBackData} />
                                 )}
                             </div>
                         )}                              
