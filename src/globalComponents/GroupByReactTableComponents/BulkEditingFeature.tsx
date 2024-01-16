@@ -578,7 +578,7 @@ const BulkEditingFeature = (props: any) => {
                 Project: !isActive.Project ? item : {},
             }));
         }
-    };
+    }; 
 
     return (
         <>
