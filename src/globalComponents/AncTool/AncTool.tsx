@@ -1659,14 +1659,20 @@ const AncTool = (props: any) => {
                         <div className="modal-dialog modal-mg rounded-0 " style={{ maxWidth: "400px" }}>
                             <div className="modal-content rounded-0">
                                 <div className="modal-header">
-                                    <div className='subheading'>
+                                    <div className='d-flex full-width justify-content-between pb-1'>
+                                    <div className='subheading m-0'>
                                         {/* <img className="imgWid29 pe-1 mb-1 " src={Item?.SiteIcon} /> */}
                                         <span className="siteColor">
                                             Create New Online File {createNewDocType?.length > 0 ? ` - ${createNewDocType}` : ''}
                                         </span>
                                     </div>
+                                    <div className='d-flex'>
                                     <Tooltip ComponentId="7642" />
                                     <span onClick={() => cancelNewCreateFile()}><i className="svg__iconbox svg__icon--cross crossBtn me-1"></i></span>
+                                    </div>
+                                    </div>
+                                    
+                                   
                                 </div>
                                 <div className="modal-body p-2 row">
                                     <div className="AnC-CreateDoc-Icon">
