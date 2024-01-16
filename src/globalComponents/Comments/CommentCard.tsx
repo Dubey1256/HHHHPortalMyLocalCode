@@ -370,7 +370,8 @@ export class CommentCard extends React.Component<ICommentCardProps, ICommentCard
         Header: updateCommentPost.Header,
         ID: updateCommentPost.ID,
         Title: txtComment,
-        editable: false
+        editable: false,
+        CommentFor: updateCommentPost?.CommentFor
       };
       //Add object in feedback
       //delete the value before add new value
