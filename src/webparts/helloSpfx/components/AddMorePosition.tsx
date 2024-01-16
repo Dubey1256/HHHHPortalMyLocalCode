@@ -158,7 +158,7 @@ const AddMorePosition = (props: any) => {
             >
                 <div className="modal-body">
                     <div className="input-group">
-                        <div className="full-width">Position Title</div>
+                        <div className="full-width">Position Title <span className="text-danger">*</span></div>
                         <input className="form-control" value={positionTitle}
                             onChange={handleTitleChange} type="text" placeholder="New Position Title" />
                     </div>
