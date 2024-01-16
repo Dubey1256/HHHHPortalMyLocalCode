@@ -31,16 +31,18 @@ export const docxUint8Array = async () => {
     return result
 }
 export const SendTeamMessage = async (mention_To: any, txtComment: any, Context: any) => {
+    let currentUser:any={}
     try {
         let pageContent = await pageContext()
         let web = new Web(pageContent?.WebFullUrl);
-        let currentUser = await web.currentUser?.get()
-        if (currentUser) {
-            if (currentUser.Email?.length > 0) {
-            } else {
-                currentUser.Email = currentUser.UserPrincipalName;
-            }
-        }
+        //let currentUser = await web.currentUser?.get()
+         currentUser.Email =  Context.pageContext._legacyPageContext.userPrincipalName
+        // if (currentUser) {
+        //     if (currentUser.Email?.length > 0) {
+        //     } else {
+        //         currentUser.Email = currentUser.UserPrincipalName;
+        //     }
+        // }
         // const client: MSGraphClientV3 = await Context.msGraphClientFactory.getClient();
         await Context.msGraphClientFactory.getClient().then((client: MSGraphClientV3) => {
             client.api(`/users`).version("v1.0").get(async (err: any, res: any) => {
@@ -1829,7 +1831,7 @@ export const GetServiceAndComponentAllData = async (Props: any) => {
             result["siteType"] = "Master Tasks";
             result.AllTeamName = "";
             result.listId = Props.MasterTaskListID;
-            result.TaskID =  result?.PortfolioStructureID;
+            result.TaskID = result?.PortfolioStructureID;
             result.portfolioItemsSearch = result.Item_x0020_Type;
             result.isSelected = Props?.selectedItems?.find((obj: any) => obj.Id === result.ID);
             result.TeamLeaderUser = [];
@@ -2164,7 +2166,7 @@ export const loadAllTimeEntry = async (timesheetListConfig: any) => {
     }
 }
 export const loadAllSiteTasks = async (allListId: any, filter: any) => {
-    let query = "Id,Title,FeedBack,PriorityRank,Remark,Project/PriorityRank,ParentTask/Id,ParentTask/Title,ParentTask/TaskID,TaskID,SmartInformation/Id,SmartInformation/Title,Project/Id,Project/Title,workingThisWeek,EstimatedTime,TaskLevel,TaskLevel,OffshoreImageUrl,OffshoreComments,SiteCompositionSettings,Sitestagging,Priority,Status,ItemRank,IsTodaysTask,Body,Portfolio/Id,Portfolio/Title,Portfolio/PortfolioStructureID,PercentComplete,Categories,StartDate,PriorityRank,DueDate,TaskType/Id,TaskType/Title,TaskType/Level,Created,Modified,Author/Id,Author/Title,TaskCategories/Id,TaskCategories/Title,AssignedTo/Id,AssignedTo/Title,TeamMembers/Id,TeamMembers/Title,ResponsibleTeam/Id,ResponsibleTeam/Title,ClientCategory/Id,ClientCategory/Title&$expand=AssignedTo,Project,ParentTask,SmartInformation,Author,Portfolio,TaskType,TeamMembers,ResponsibleTeam,TaskCategories,ClientCategory"
+    let query = "Id,Title,FeedBack,PriorityRank,Remark,Project/PriorityRank,Project/PortfolioStructureID,ParentTask/Id,ParentTask/Title,ParentTask/TaskID,TaskID,SmartInformation/Id,SmartInformation/Title,Project/Id,Project/Title,workingThisWeek,EstimatedTime,TaskLevel,TaskLevel,OffshoreImageUrl,OffshoreComments,SiteCompositionSettings,Sitestagging,Priority,Status,ItemRank,IsTodaysTask,Body,Portfolio/Id,Portfolio/Title,Portfolio/PortfolioStructureID,PercentComplete,Categories,StartDate,PriorityRank,DueDate,TaskType/Id,TaskType/Title,TaskType/Level,Created,Modified,Author/Id,Author/Title,TaskCategories/Id,TaskCategories/Title,AssignedTo/Id,AssignedTo/Title,TeamMembers/Id,TeamMembers/Title,ResponsibleTeam/Id,ResponsibleTeam/Title,ClientCategory/Id,ClientCategory/Title&$expand=AssignedTo,Project,ParentTask,SmartInformation,Author,Portfolio,TaskType,TeamMembers,ResponsibleTeam,TaskCategories,ClientCategory"
     if (filter != undefined) {
         query += `&$filter=${filter}`
     }
@@ -2186,7 +2188,7 @@ export const loadAllSiteTasks = async (allListId: any, filter: any) => {
                     task["SiteIcon"] = site?.Item_x005F_x0020_Cover?.Url;
                     task.taskPriorityOnHover = task?.PriorityRank;
                     task.showFormulaOnHover;
-                 
+
                     if (task.PercentComplete != undefined) {
                         task.PercentComplete = (task.PercentComplete * 100).toFixed(0);
                     }
@@ -2196,6 +2198,18 @@ export const loadAllSiteTasks = async (allListId: any, filter: any) => {
                     }
                     let checkIsSCProtected: any = false;
                     task.DisplayCreateDate = moment(task.Created).format("DD/MM/YYYY");
+                    task.descriptionsSearch = descriptionSearchData(task);
+                    if (task.Project) {
+                        task.ProjectTitle = task?.Project?.Title;
+                        task.ProjectId = task?.Project?.Id;
+                        task.projectStructerId =
+                            task?.Project?.PortfolioStructureID;
+                        const title = task?.Project?.Title || "";
+                        const dueDate = task?.DueDate;
+                        task.joinedData = [];
+                        if (title) task.joinedData.push(`Title: ${title}`);
+                        if (dueDate) task.joinedData.push(`Due Date: ${dueDate}`);
+                    }
                     if (task?.SiteCompositionSettings != undefined) {
                         let TempSCSettingsData: any = JSON.parse(task?.SiteCompositionSettings);
                         if (TempSCSettingsData?.length > 0) {
@@ -2349,4 +2363,20 @@ function siteCompositionType(jsonStr: any) {
         console.log(error)
         return '';
     }
+}
+export const deepCopy = (obj: any, originalReferences = new WeakMap()) => {
+    if (obj === null || typeof obj !== 'object') {
+        return obj;
+    }
+    if (originalReferences.has(obj)) {
+        return originalReferences.get(obj);
+    }
+    const copy: any = Array.isArray(obj) ? [] : {};
+    originalReferences.set(obj, copy);
+    for (const key in obj) {
+        if (obj.hasOwnProperty(key)) {
+            copy[key] = deepCopy(obj[key], originalReferences);
+        }
+    }
+    return copy;
 }

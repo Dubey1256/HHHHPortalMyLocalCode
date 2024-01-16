@@ -291,6 +291,7 @@ const MeetingPopupComponent = (Props: any) => {
             }).then(async (res: any) => {
                 console.log("Updated Succesfully !!!!!!", res);
                 closeMeetingPopupFunction();
+                Props?.CallBack()
             })
 
         } catch (error) {
@@ -781,7 +782,7 @@ const MeetingPopupComponent = (Props: any) => {
                                 </div>
                             </div>
                             <div className="col-4 mx-2">
-                                <div className="col-10 ps-0 pe-0 pt-4">
+                                <div className="col-10 ps-0 pe-0">
                                                 <div className="time-status mt--2">
                                                     <div className="input-group">
                                                         <label className="form-label full-width">Priority

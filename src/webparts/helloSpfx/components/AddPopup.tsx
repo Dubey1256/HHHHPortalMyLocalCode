@@ -117,7 +117,7 @@ const AddPopup = (props: any) => {
             const candidateItem = await HRweb.lists.getById(allListID?.InterviewFeedbackFormListId).items.add({
                 CandidateName: name,
                 Email: email,
-                PhoneNumber: phone,
+                PhoneNumber: phone == '' ? null : phone,
                 Experience: formattedExp,
                 Date: new Date(selectedDate),
                 RecommendedAction: selectedRecAction,

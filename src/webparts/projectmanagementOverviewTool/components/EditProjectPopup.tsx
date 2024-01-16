@@ -836,7 +836,15 @@ function EditProjectPopup(item: any) {
   };
   function EditComponentCallback() {
     if (postedData?.Id == undefined && postedData?.ID == undefined) {
-      postedData = EditData
+      postedData ={
+        ...postedData,...EditData
+      }
+      postedData ={
+        ...postedData,
+        ComponentLink: {
+          Url: EditData?.ComponentLink!=undefined?EditData?.ComponentLink:''
+        },
+      }
     }
     item.Call(postedData, "EditPopup");
   }
@@ -1190,13 +1198,19 @@ function EditProjectPopup(item: any) {
           );
         }
         postData["TaskID"] = postData?.PortfolioStructureID;
-        postedData = {
+        postedData ={
           ...postData,
-          TaskCategories: CategoriesData,
-          AssignedTo: TaskAssignedTo,
-          ResponsibleTeam: TaskResponsibleTeam,
-          TeamMembers: TaskTeamMembers,
-          Item_x0020_Type: EditData?.Item_x0020_Type
+          TaskCategories:CategoriesData,
+          AssignedTo:TaskAssignedTo,
+          ResponsibleTeam:TaskResponsibleTeam,
+          TeamMembers:TaskTeamMembers,
+          Item_x0020_Type : EditData?.Item_x0020_Type,
+          ComponentLink: {
+            Url: Items?.ComponentLink!=undefined?Items?.ComponentLink:''
+          },
+          Body:EditData.Body,
+          taggedPortfolios: projectTaggedPortfolios
+
         }
         console.log(res);
         TaggedPortfolios = [];
@@ -1769,7 +1783,7 @@ function EditProjectPopup(item: any) {
                                 </li>
                             </ul>
                           </div> */}
-                          <div className="col-sm-6 pe-0">
+                          <div className="col-sm-6 p-0">
                             <div className="input-group position-relative mb-2">
                               <label className="form-label  full-width">
                                 Categories{" "}

@@ -30,7 +30,7 @@ import VersionHistory from "../VersionHistroy/VersionHistory";
 import Tooltip from "../Tooltip";
 import FlorarImageUploadComponent from "../FlorarComponents/FlorarImageUploadComponent";
 import "bootstrap/dist/css/bootstrap.min.css";
-import Loader from "react-loader";
+import PageLoader from "../pageLoader";
 import { Table } from "reactstrap";
 import { FaSort, FaSortDown, FaSortUp } from "react-icons/fa";
 import {
@@ -44,7 +44,6 @@ import {
 import { Filter, DefaultColumnFilter } from "../ReactTableComponents/filters";
 import ShowTaskTeamMembers from "../ShowTaskTeamMembers";
 import EmailComponent from "../EmailComponents";
-import EditSiteComposition from "./EditSiteComposition";
 import SmartTotalTime from "./SmartTimeTotal";
 import "react-datepicker/dist/react-datepicker.css";
 import BackgroundCommentComponent from "./BackgroundCommentComponent";
@@ -1008,7 +1007,8 @@ const EditTaskPopup = (Items: any) => {
                 }
                 item.TaskId = globalCommon.GetTaskId(item);
                 item.siteUrl = siteUrls;
-                item.siteType = Items.Items.siteType;
+                item.siteType = Items?.Items?.siteType;
+                item.SiteIcon = Items?.Items?.SiteIcon;
                 let AssignedUsers: any = [];
                 item.listId = Items.Items.listId;
                 if (globalSelectedProject?.Id != undefined) {
@@ -4017,6 +4017,7 @@ const EditTaskPopup = (Items: any) => {
 
         let TempSitesTaggingData: any = [];
         let TempCCDataIds: any = [];
+
         if (SelectedSite?.toLowerCase() !== "shareweb") {
             let TempObject: any = {
                 Title: SelectedSite,
@@ -4025,16 +4026,22 @@ const EditTaskPopup = (Items: any) => {
                 Date: Moment(new Date()).format("DD/MM/YYYY")
             }
             TempSitesTaggingData.push(TempObject);
+        } else {
+            TempSitesTaggingData = ClientTimeData;
         }
 
         if (selectedClientCategoryData?.length > 0) {
-            selectedClientCategoryData?.map((selectedCC:any)=>{
-                if(selectedCC.siteName == SelectedSite){
-                    TempCCDataIds.push(selectedCC.Id)
+            selectedClientCategoryData?.map((selectedCC: any) => {
+                if (SelectedSite?.toLowerCase() !== "shareweb") {
+                    if (selectedCC.siteName == SelectedSite) {
+                        TempCCDataIds.push(selectedCC.Id)
+                    }
+                } else {
+                    TempCCDataIds.push(selectedCC.Id);
                 }
+
             })
         }
-
         let UpdatedJSON = {
             Comments: EditData.Comments,
             SmartInformationId: {
@@ -4047,7 +4054,7 @@ const EditTaskPopup = (Items: any) => {
             Sitestagging: TempSitesTaggingData?.length > 0 ? JSON.stringify(TempSitesTaggingData) : null,
             ClientCategoryId: {
                 results:
-                TempCCDataIds?.length > 0
+                    TempCCDataIds?.length > 0
                         ? TempCCDataIds
                         : [],
             },
@@ -4692,7 +4699,7 @@ const EditTaskPopup = (Items: any) => {
                         : "bg-f4 fixed-bottom"
                 }
             >
-                <div className="align-items-center d-flex justify-content-between me-3 px-4 py-2">
+                <div className="align-items-center d-flex justify-content-between px-4 py-2">
                     <div>
                         <div className="">
                             Created{" "}
@@ -4838,7 +4845,7 @@ const EditTaskPopup = (Items: any) => {
                         : "bg-f4 fixed-bottom"
                 }
             >
-                <div className="align-items-center d-flex justify-content-between me-3 px-4 py-2">
+                <div className="align-items-center d-flex justify-content-between px-4 py-2">
                     <div>
                         <div className="">
                             Created{" "}
@@ -4962,26 +4969,7 @@ const EditTaskPopup = (Items: any) => {
                     : `${EditData.Id}`
             }
         >
-            <Loader
-                loaded={loaded}
-                lines={13}
-                length={20}
-                width={10}
-                radius={30}
-                corners={1}
-                rotate={0}
-                direction={1}
-                speed={2}
-                trail={60}
-                shadow={false}
-                hwaccel={false}
-                className="spinner"
-                zIndex={2e9}
-                top="28%"
-                left="50%"
-                scale={1.0}
-                loadedClassName="loadedContent"
-            />
+           
             {/* ***************** this is status panel *********** */}
             <Panel
                 onRenderHeader={onRenderStatusPanelHeader}
@@ -5757,7 +5745,7 @@ const EditTaskPopup = (Items: any) => {
                                                                     ApproverHistoryData.length > 1 ? (
                                                                     <div className="border p-1">
                                                                         <div className="siteBdrBottom">
-                                                                            <p className="mb-1">Prev-Approver</p>
+                                                                            <p className="mb-1">Previous Approver</p>
                                                                         </div>
                                                                         {ApproverHistoryData.map(
                                                                             (HistoryData: any, index: any) => {
@@ -6762,7 +6750,7 @@ const EditTaskPopup = (Items: any) => {
                                                                 />
                                                             </div>
                                                         ) : null}
-                                                        {TaskImages?.length == 0 ? (
+                                                        {TaskImages?.length == 0 && EditData?.Id != undefined ? (
                                                             <div>
                                                                 <FlorarImageUploadComponent
                                                                     callBack={FlorarImageUploadComponentCallBack}
@@ -6903,6 +6891,7 @@ const EditTaskPopup = (Items: any) => {
                             RequiredListIds={AllListIdData}
                             closePopupCallBack={closeSiteCompsotionPanelFunction}
                             usedFor={"AWT"}
+                            ColorCode={PortfolioItemColor}
                         />
                     ) : null}
                     {sendEmailComponentStatus ? (
@@ -7870,7 +7859,7 @@ const EditTaskPopup = (Items: any) => {
                                                                                 ApproverHistoryData.length > 1 ? (
                                                                                 <div className="border p-1">
                                                                                     <div className="siteBdrBottom">
-                                                                                        <p className="mb-1">Prev-Approver</p>
+                                                                                        <p className="mb-1">Previous Approver</p>
                                                                                     </div>
                                                                                     {ApproverHistoryData.map(
                                                                                         (HistoryData: any, index: any) => {
@@ -9044,26 +9033,7 @@ const EditTaskPopup = (Items: any) => {
                                     <h6>Sites</h6>
                                 </div>
                                 <div className="card-body">
-                                    <Loader
-                                        loaded={loaded}
-                                        lines={13}
-                                        length={20}
-                                        width={10}
-                                        radius={30}
-                                        corners={1}
-                                        rotate={0}
-                                        direction={1}
-                                        speed={2}
-                                        trail={60}
-                                        shadow={false}
-                                        hwaccel={false}
-                                        className="spinner"
-                                        zIndex={2e9}
-                                        top="28%"
-                                        left="50%"
-                                        scale={1.0}
-                                        loadedClassName="loadedContent"
-                                    />
+                                {!loaded?<PageLoader/>:''}
                                     <ul className="quick-actions">
                                         {SiteTypes?.map((siteData: any, index: number) => {
                                             if (siteData.Title !== "QA") {
@@ -9258,7 +9228,7 @@ const EditTaskPopup = (Items: any) => {
                         </div>
                     </div>
                     <footer className="fixed-bottom">
-                        <div className="align-items-center d-flex me-3 pull-right px-4 py-2">
+                        <div className="align-items-center d-flex pull-right px-4 py-2">
                             <button
                                 type="button"
                                 className="btn btn-primary px-3 mx-1"

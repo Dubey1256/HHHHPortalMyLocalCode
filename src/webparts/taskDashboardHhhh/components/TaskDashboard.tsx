@@ -718,7 +718,7 @@ const TaskDashboard = (props: any) => {
             {
                 internalHeader: "Task Id",
                 accessor: "TaskID",
-                style: { width: '70px' },
+                style: { width: '100px' },
                 showSortIcon: true,
                 Cell: ({ row }: any) => (
                     <span>
@@ -762,7 +762,6 @@ const TaskDashboard = (props: any) => {
                 internalHeader: "Portfolio",
                 accessor: "PortfolioTitle",
                 showSortIcon: true,
-                style: { width: '150px' },
                 Cell: ({ row }: any) => (
                     <span>
                         <a className='hreflink' data-interception="off"
@@ -820,7 +819,7 @@ const TaskDashboard = (props: any) => {
                 internalHeader: "Due Date",
                 showSortIcon: true,
                 accessor: "DueDate",
-                style: { width: '80px' },
+                style: { width: '90px' },
                 Cell: ({ row }: any) => <InlineEditingcolumns
                     AllListId={AllListId}
                     callBack={inlineCallBack}
@@ -896,7 +895,7 @@ const TaskDashboard = (props: any) => {
                 internalHeader: "",
                 id: "Id", // 'id' is required
                 isSorted: false,
-                style: { width: '35px' },
+                style: { width: '25px' },
                 showSortIcon: false,
                 Cell: ({ row }: any) => (
                     <span
@@ -1050,7 +1049,7 @@ const TaskDashboard = (props: any) => {
                 internalHeader: "",
                 id: "Id", // 'id' is required
                 isSorted: false,
-                style: { width: '65px' },
+                style: { width: '35px' },
                 showSortIcon: false,
                 Cell: ({ row }: any) => (
                     <div className='alignCenter'>
@@ -1060,8 +1059,7 @@ const TaskDashboard = (props: any) => {
                             data-bs-placement="auto"
                             title="Click To Edit Timesheet"
                         ></span>
-                        <span
-                            title="Edit Task"
+                        <span title="Edit Task" style={{marginTop:"1px",marginLeft:"4px"}}
                             onClick={() => EditPopup(row?.original)}
                             className="svg__iconbox svg__icon--edit hreflink"
                         ></span>

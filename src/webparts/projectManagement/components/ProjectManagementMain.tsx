@@ -666,7 +666,8 @@ const ProjectManagementMain = (props: any) => {
         AllTask.push(items);
       });
       try {
-        backupAllTasks = JSON.parse(JSON.stringify(AllTask));
+        
+        backupAllTasks = globalCommon?.deepCopy(AllTask);
         setAllTasks(backupAllTasks);
       } catch (error) {
 
@@ -857,9 +858,26 @@ const ProjectManagementMain = (props: any) => {
     }
   };
   const Call = (propsItems: any, type: any) => {
+    if(propsItems?.Id!=undefined){
+      if (propsItems?.DueDate != undefined) {
+        propsItems.DisplayDueDate = propsItems.DueDate != null
+          ? Moment(propsItems.DueDate).format("DD/MM/YYYY")
+          : "";
+      } else {
+        propsItems.DisplayDueDate = '';
+      }
+      if (propsItems?.Created != undefined) {
+        propsItems.DisplayCreateDate = propsItems.Created != null
+          ? Moment(propsItems.Created).format("DD/MM/YYYY")
+          : "";
+      } else {
+        propsItems.DisplayCreateDate = '';
+      }
+    }
     if (propsItems?.Item_x0020_Type == "Project") {
       setMasterdata(propsItems)
     } else if (propsItems?.Item_x0020_Type == "Sprint") {
+      
       setData((prev: any) => {
         return prev?.map((object: any) => {
           if (object?.Id === propsItems?.Id) {
@@ -969,7 +987,7 @@ const ProjectManagementMain = (props: any) => {
 
 
   const switchFlatViewData = (data: any) => {
-    let groupedDataItems = JSON.parse(JSON.stringify(data));
+    let groupedDataItems = globalCommon?.deepCopy(data);
     const flattenedData = flattenData(groupedDataItems);
     hasCustomExpanded = false
     hasExpanded = false
@@ -1047,7 +1065,7 @@ const ProjectManagementMain = (props: any) => {
         cell: ({ row, getValue }) => (
           <>
             <span className="d-flex">
-              <ReactPopperTooltipSingleLevel ShareWebId={row?.original?.TaskID} row={row?.original} singleLevel={true} masterTaskData={MasterListData} AllSitesTaskData={AllSitesAllTasks} />
+              <ReactPopperTooltipSingleLevel   AllListId={AllListId} ShareWebId={row?.original?.TaskID} row={row?.original} singleLevel={true} masterTaskData={MasterListData} AllSitesTaskData={AllSitesAllTasks} />
             </span>
           </>
         ),
@@ -1117,12 +1135,12 @@ const ProjectManagementMain = (props: any) => {
             href={`${props?.siteUrl}/SitePages/Portfolio-Profile.aspx?taskId=${row?.original?.portfolio?.Id}`}
           >
             <span className="d-flex">
-              <ReactPopperTooltipSingleLevel onclickPopup={false} ShareWebId={row?.original?.portfolio?.Title} row={row?.original?.Portfolio} singleLevel={true} masterTaskData={MasterListData} AllSitesTaskData={AllSitesAllTasks} />
+              <ReactPopperTooltipSingleLevel   AllListId={AllListId} onclickPopup={false} ShareWebId={row?.original?.portfolio?.Title} row={row?.original?.Portfolio} singleLevel={true} masterTaskData={MasterListData} AllSitesTaskData={AllSitesAllTasks} />
             </span>
           </a>
         ),
         id: "Portfolio",
-        placeholder: "Portfolio",
+        placeholder: "Portfolio Item",
         resetColumnFilters: false,
         resetSorting: false,
         header: ""
@@ -1788,6 +1806,7 @@ const ProjectManagementMain = (props: any) => {
                 Call={Call}
                 AllListId={AllListId}
                 TaskUsers={AllUser}
+                UsedFrom={"ProjectManagement"}
                 context={AllListId.Context}
                 LoadAllSiteTasks={LoadAllSiteTasks}
                 selectedItem={checkedList != null && checkedList?.Id != undefined ? checkedList : undefined}
@@ -1799,6 +1818,7 @@ const ProjectManagementMain = (props: any) => {
                 Call={Call}
                 context={AllListId.Context}
                 AllListId={AllListId}
+                UsedFrom={"ProjectManagement"}
                 TaskUsers={AllUser}
                 data={data}
               ></CreateWS>

@@ -30,7 +30,10 @@ import "bootstrap/dist/js/bootstrap.min.js";
 import GlobalCommanTable from '../../../globalComponents/GroupByReactTableComponents/GlobalCommanTable';
 import HighlightableCell from '../../../globalComponents/GroupByReactTableComponents/highlight';
 
+
+let TaskUserBackup:any=[]
 const Tabless = (props: any) => {
+  let UserId:any = ''
   let count: any = 0;
   let AllListId: any = {
     MasterTaskListID: props?.Items?.MasterTaskListID,
@@ -135,6 +138,7 @@ const Tabless = (props: any) => {
       .then((data) => {
         userlists = data;
         setTaskUser(data);
+        TaskUserBackup = data
         setPercentagess([0, 5, 10, 70, 80, 90, 93, 96, 99, 100]);
         setPriorityss([1, 2, 3, 4, 5, 6, 7, 8, 9, 10]);
         getQueryVariable();
@@ -210,6 +214,14 @@ const Tabless = (props: any) => {
 
     setQueryId(CreatedBy);
     console.log(CreatedBy);
+    if(TaskUserBackup != undefined && TaskUserBackup.length > 0){
+      TaskUserBackup.map((val:any)=>{
+        if(val.Title.indexOf(CreatedByQueryId) !== -1){
+          UserId = val.AssingedToUser.Id
+        }
+      })
+
+    }
   };
 
 
@@ -238,14 +250,14 @@ const Tabless = (props: any) => {
 
   const getAllData = async (items: any) => {
     let filter: any;
-    if (CreatedByQueryId != null) {
-      filter = `substringof('${CreatedByQueryId}', Author/Title) and PercentComplete le 0.91`
+    if (UserId != null) {
+      filter = `(Author/Id eq '${UserId}') and PercentComplete le 0.91`
     } else if (PriorityQueryId != null) {
       filter = `Priority_x0020_Rank eq ${PriorityQueryId} and PercentComplete le 0.91`
     } else if (CategoriesQueryId != null) {
       filter = `substringof('${CategoriesQueryId}', Categories) and PercentComplete le 0.91`
     } else if (AssignedToQueryId != null) {
-      filter = `substringof('${AssignedToQueryId}', AssignedTo/Title) or substringof('${AssignedToQueryId}', Responsible_x0020_Team/Title) or substringof('${AssignedToQueryId}', Team_x0020_Members/Title) and PercentComplete le 0.91`
+      filter = `substringof('${AssignedToQueryId}', AssignedTo/Id) or substringof('${AssignedToQueryId}', Responsible_x0020_Team/Title) or substringof('${AssignedToQueryId}', Team_x0020_Members/Title) and PercentComplete le 0.91`
     } else {
       filter = `PercentComplete le 0.91`
     }

@@ -215,15 +215,15 @@ export default function BulkeditTask(props: any) {
                                 )}
                                 
                             </span>
-                            <span className='f-16 fw-bold'>
+                            <span className='f-16 fw-semibold ms-1'>
                                 Selected Tasks To be Updated
                             </span>
                         </div>
                    
                             {isTableVisible && (
-                            <div className='Alltable'>
+                            <div className='Alltable' style={{height:'350px'}}>
                                 {AllSelectedTask && (
-                                    <GlobalCommanTable  columns={columns} data={tableData} showHeader={true} callBackData={callBackData} />
+                                    <GlobalCommanTable wrapperHeight="350px"  columns={columns} data={tableData} showHeader={true} callBackData={callBackData} />
                                 )}
                             </div>
                         )}                              

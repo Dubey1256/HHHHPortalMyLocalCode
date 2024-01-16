@@ -9,20 +9,31 @@ import InfoIconsToolTip from "../../../globalComponents/InfoIconsToolTip/InfoIco
 import GlobalCommanTable from "../../../globalComponents/GroupByReactTableComponents/GlobalCommanTable";
 import ReactPopperTooltipSingleLevel from "../../../globalComponents/Hierarchy-Popper-tooltipSilgleLevel/Hierarchy-Popper-tooltipSingleLevel";
 import EmailComponenet from "../../taskprofile/components/emailComponent";
+import ManageConfigPopup from "../../../globalComponents/ManageConfigPopup";
 let DashboardConfig: any = [];
 let DashboardConfigCopy: any = [];
+let AllapprovalTask: any = [];
 let flagApproval: boolean = false;
 let approveItem: any;
 let emailStatus: any = "";
+let IsShowConfigBtn = false;
 const TaskStatusTbl = (Tile: any) => {
   const ContextData: any = React.useContext(myContextValue);
   const AllTaskUser: any = ContextData?.AlltaskData?.AllTaskUser;
   const AllMasterTasks: any = ContextData?.AllMasterTasks;
   const [editPopup, setEditPopup]: any = React.useState(false);
   const [result, setResult]: any = React.useState(false);
-  const AllapprovalTask: any = ContextData?.AlltaskData.ApprovalTask;
+  if (ContextData != undefined && ContextData?.DashboardConfig != undefined && ContextData?.DashboardConfig?.length > 0)
+    AllapprovalTask = ContextData.DashboardConfig.filter((item: any) => item.Id == 6)[0].Tasks;
   let [approvalTask, setapprovalTask]: any = React.useState([]);
   const [sendMail, setsendMail]: any = React.useState(false);
+  const [IsManageConfigPopup, setIsManageConfigPopup] = React.useState(false);
+  const [SelectedItem, setSelectedItem]: any = React.useState({});
+  if (ContextData != undefined && ContextData != '') {
+    ContextData.ShowHideSettingIcon = (Value: any) => {
+      IsShowConfigBtn = Value;
+    };
+  }
   let AllListId: any = {
     TaskUsertListID: ContextData?.propsValue?.TaskUsertListID,
     SmartMetadataListID: ContextData?.propsValue?.SmartMetadataListID,
@@ -53,7 +64,7 @@ const TaskStatusTbl = (Tile: any) => {
     {
       cell: ({ row, getValue }: any) => (
         <div>
-          <img width={"20px"} height={"20px"} className="rounded-circle" src={row?.original?.siteIcon} />
+          <img width={"20px"} height={"20px"} className="rounded-circle" src={row?.original?.SiteIcon} />
         </div>
       ),
       accessorKey: "",
@@ -168,7 +179,6 @@ const TaskStatusTbl = (Tile: any) => {
     DashboardConfig = DashboardConfigCopy.filter((config: any) => config?.TileName == '' || config?.TileName == Tile.activeTile);
   const updatedDashboardConfig = DashboardConfig?.map((item: any) => {
     let columnss: any = [];
-    // if (item?.Tasks != null && item?.Tasks.length > 0)
     columnss = generateDynamicColumns(item);
     return { ...item, column: columnss };
   });
@@ -196,7 +206,7 @@ const TaskStatusTbl = (Tile: any) => {
   const approvalcallback = () => {
     setsendMail(false)
     emailStatus = ""
-    const data: any = ContextData?.AlltaskData.ApprovalTask.filter((i: any) => { return i.Id != approveItem.Id })
+    const data: any = AllapprovalTask.filter((i: any) => { return i.Id != approveItem.Id })
     setapprovalTask(data);
   }
   const sendAllWorkingTodayTasks = async (sharingTasks: any) => {
@@ -275,6 +285,14 @@ const TaskStatusTbl = (Tile: any) => {
       console.log(err.message);
     });
   }
+  const OpenConfigPopup = (Config: any) => {
+    setIsManageConfigPopup(true);
+    setSelectedItem(Config)
+  }
+  const CloseOpenConfigPopup = () => {
+    setIsManageConfigPopup(false);
+    setSelectedItem('')
+  }
   const generateDashboard = () => {
     const rows: any = [];
     let currentRow: any = [];
@@ -282,13 +300,14 @@ const TaskStatusTbl = (Tile: any) => {
       if (Tile.activeTile === config?.TileName || config?.TileName === "") {
         const box = (
           <div className={`col-${12 / config.highestColumn} px-1 mb-2 `} key={index}>
-            {config?.ShowWebpart == true && config?.IsTable != false && <section>
+            {config?.ShowWebpart == true && config?.GroupByView != undefined && <section>
               <div className="workingSec empAllSec clearfix">
                 <div className="alignCenter mb-2 justify-content-between">
                   <span className="fw-bold">
                     {`${config?.WebpartTitle}`}  {config?.Tasks != undefined && `(${config?.Tasks?.length})`}
                   </span>
                   <span className="alignCenter">
+                    {IsShowConfigBtn && <span className="svg__iconbox svg__icon--setting hreflink" title="Manage Configuration" onClick={(e) => OpenConfigPopup(config)}></span>}
                     {config?.WebpartTitle != 'Draft Tasks' && config?.WebpartTitle != 'Waiting for Approval' && <a className="empCol hreflink me-2"
                       target="_blank" data-interception="off" title="Create New Task" href="/sites/HHHH/SP/SitePages/CreateTask.aspx">
                       <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 48 48" fill="none">
@@ -312,14 +331,14 @@ const TaskStatusTbl = (Tile: any) => {
                 </div>
               </div>
             </section>}
-            {config.IsMyNotes == true && config?.ShowWebpart == true && config?.IsTable == false &&
+            {config.IsMyNotes == true && config?.ShowWebpart == true && config?.GroupByView == undefined &&
               <div className="empAllSec notesSec clearfix">
-                <MyNotes WebpartTitle={config?.WebpartTitle} />
+                <MyNotes config={config} IsShowConfigBtn={IsShowConfigBtn} />
               </div>
             }
-            {config.IsUpcomingBday == true && config?.ShowWebpart == true && config?.IsTable == false &&
+            {config.IsUpcomingBday == true && config?.ShowWebpart == true && config?.GroupByView == undefined &&
               <div className="empAllSec birthSec clearfix">
-                <ComingBirthday WebpartTitle={config?.WebpartTitle} />
+                <ComingBirthday config={config} IsShowConfigBtn={IsShowConfigBtn} />
               </div>
             }
           </div>
@@ -338,12 +357,14 @@ const TaskStatusTbl = (Tile: any) => {
     });
     return rows;
   };
-
   return (
     <div>
       {Tile.activeTile && generateDashboard()}
       <span>
         {editPopup && <EditTaskPopup Items={result} context={ContextData?.propsValue?.Context} AllListId={AllListId} Call={() => { CallBack() }} />}
+      </span>
+      <span>
+        {IsManageConfigPopup && <ManageConfigPopup SelectedItem={SelectedItem} IsManageConfigPopup={IsManageConfigPopup} CloseOpenConfigPopup={CloseOpenConfigPopup} />}
       </span>
     </div>
   );

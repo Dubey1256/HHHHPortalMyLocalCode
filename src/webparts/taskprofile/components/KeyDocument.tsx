@@ -176,7 +176,7 @@ const callBackData = useCallback((elem: any, getSelectedRowModel: any) => {
                 &&
                     <div className='mb-3 card commentsection'>
                          <div className='card-header'> 
-                             <div className="card-title h5 d-flex justify-content-between align-items-center  mb-0">Key Documents<span><Tooltip ComponentId={'359'} /></span></div> 
+                             <div className="card-title h5 d-flex justify-content-between align-items-center  mb-0">Key Documents<span><Tooltip ComponentId={'1298'} /></span></div> 
                          </div>
                         {(keyDocument.map((item: any, index: any) => {
                             return (

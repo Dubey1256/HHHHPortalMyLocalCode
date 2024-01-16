@@ -192,7 +192,7 @@ const AncTool = (props: any) => {
     // Create Group Hierarchy of Folder //
     const createGrouping = (): any[] => {
         const groupedFolder: any[] = [];
-        let copyFolders = JSON.parse(JSON.stringify(folders));
+        let copyFolders = GlobalFunction?.deepCopy(folders);
         const findChildren = (parent: any): void => {
             const children = copyFolders.filter((item: any) => item.parentFolderUrl === parent.EncodedAbsUrl);
             if (children.length > 0) {
@@ -468,149 +468,92 @@ const AncTool = (props: any) => {
         } else {
             fileName = selectedFile != undefined ? selectedFile.name : uploadselectedFile.name;
         }
-        if (isFolderAvailable == false) {
-            try {
-                if (tasktypecopy != undefined && tasktypecopy != '') {
-                    await CreateFolder(`${props?.Context?.pageContext?.web?.serverRelativeUrl}${generatedLocalPath?.split(tasktypecopy)[0]}`, tasktypecopy).then((data: any) => {
-                        isFolderAvailable = true
-                        setFolderExist(true)
-                    })
-
-                }
-                else {
-                    await CreateFolder(`${props?.Context?.pageContext?.web?.serverRelativeUrl}${generatedLocalPath?.split(siteName)[0]}`, siteName).then((data: any) => {
-                        isFolderAvailable = true
-                        setFolderExist(true)
-                    })
-                }
-
-            } catch (error) {
-                console.log('An error occurred while creating the folder:', error);
-            }
-        }
-        if (isFolderAvailable == true) {
-            try {
-                // Read the file content
-                const reader = new FileReader();
-                let msgfile: any = {};
-                reader.onloadend = async () => {
-                    const fileContent = reader.result as ArrayBuffer;
-                    setCreateNewDocType(getFileType(selectedFile != undefined ? selectedFile.name : uploadselectedFile.name));
-                    if (getFileType(selectedFile != undefined ? selectedFile.name : uploadselectedFile.name) == 'msg') {
-
-                        const reader = new FileReader();
-                        attachmentFile = true;
-                        const testMsg = new MsgReader(fileContent)
-                        const testMsgInfo = testMsg.getFileData()
-                        console.log(testMsgInfo);
-                        msgfile = testMsgInfo
-                        if(msgfile?.attachments?.length>0){
-                            msgfile?.attachments?.map((attach:any)=>{
-                                attach.extension=getFileType(attach?.fileName)
-                            })
-                        }
-                       
-                        reader.readAsArrayBuffer(selectedFile != undefined ? selectedFile : uploadselectedFile);
-                        emailDoc = emailDoc.concat(selectedFile != undefined ? selectedFile : uploadselectedFile);
-                        emailDoc = emailDoc.concat(msgfile.attachments);
-                        emailDoc?.map((AttachFile: any, index: any) => {
-                            if (AttachFile?.extension?.toLowerCase() != "png" && AttachFile?.extension?.toLowerCase() != "jpg" && AttachFile?.extension?.toLowerCase() != "jpeg" && AttachFile?.extension?.toLowerCase() != "svg") {
-                                attachmentFileIndex = index
-
-                                if (renamedFileName?.length > 0 && selectedFile.name?.length > 0 && getFileType(selectedFile != undefined ? selectedFile.name : uploadselectedFile.name) == "msg") {
-                                    filetype = getFileType(selectedFile != undefined ? selectedFile.name : uploadselectedFile.name)
-                                    fileName = renamedFileName + `.${filetype}`;
-                                } else {
-                                    fileName = AttachFile.fileName != undefined ? AttachFile?.fileName : AttachFile?.name;
-                                }
-                                uploadFile(AttachFile)
-                            }
+        setTimeout(async () => {
+            if (isFolderAvailable == false) {
+                try {
+                    if (tasktypecopy != undefined && tasktypecopy != '') {
+                        await CreateFolder(`${props?.Context?.pageContext?.web?.serverRelativeUrl}${generatedLocalPath?.split(tasktypecopy)[0]}`, tasktypecopy).then((data: any) => {
+                            isFolderAvailable = true
+                            setFolderExist(true)
                         })
-                        // };
 
-                    } else {
-
-                        uploadFile(fileContent)
+                    }
+                    else {
+                        await CreateFolder(`${props?.Context?.pageContext?.web?.serverRelativeUrl}${generatedLocalPath?.split(siteName)[0]}`, siteName).then((data: any) => {
+                            isFolderAvailable = true
+                            setFolderExist(true)
+                        })
                     }
 
+                } catch (error) {
+                    console.log('An error occurred while creating the folder:', error);
+                }
+            }
+            if (isFolderAvailable == true) {
+                try {
+                    // Read the file content
+                    const reader = new FileReader();
+                    let msgfile: any = {};
+                    reader.onloadend = async () => {
+                        const fileContent = reader.result as ArrayBuffer;
+                        setCreateNewDocType(getFileType(selectedFile != undefined ? selectedFile.name : uploadselectedFile.name));
+                        if (getFileType(selectedFile != undefined ? selectedFile.name : uploadselectedFile.name) == 'msg') {
 
-                };
+                            const reader = new FileReader();
+                            attachmentFile = true;
+                            const testMsg = new MsgReader(fileContent)
+                            const testMsgInfo = testMsg.getFileData()
+                            console.log(testMsgInfo);
+                            msgfile = testMsgInfo
+                            if (msgfile?.attachments?.length > 0) {
+                                msgfile?.attachments?.map((attach: any) => {
+                                    attach.extension = getFileType(attach?.fileName)
+                                })
+                            }
 
-                reader.readAsArrayBuffer(selectedFile != undefined ? selectedFile : uploadselectedFile);
+                            reader.readAsArrayBuffer(selectedFile != undefined ? selectedFile : uploadselectedFile);
+                            emailDoc = emailDoc.concat(selectedFile != undefined ? selectedFile : uploadselectedFile);
+                            emailDoc = emailDoc.concat(msgfile.attachments);
+                            emailDoc?.map((AttachFile: any, index: any) => {
+                                if (AttachFile?.extension?.toLowerCase() != "png" && AttachFile?.extension?.toLowerCase() != "jpg" && AttachFile?.extension?.toLowerCase() != "jpeg" && AttachFile?.extension?.toLowerCase() != "svg") {
+                                    attachmentFileIndex = index
 
-
-                const uploadFile = async (fileToUpload: any) => {
-                    return new Promise<void>(function (myResolve, myReject) {
-                        let fileItems: any;
-                        let web = new Web(props?.AllListId?.siteUrl);
-                        web.getFolderByServerRelativeUrl(uploadPath)
-                            .files.add(fileName, fileToUpload, true).then(async (uploadedFile: any) => {
-                                console.log(uploadedFile);
-                                uploadedAttachmentFile.push(uploadedFile?.data);
-                                if (attachmentFile == true && attachmentFileIndex == uploadedAttachmentFile?.length - 1) {
-                                    console.log(uploadedAttachmentFile)
-                                    fileItems = await getExistingUploadedDocuments()
-                                    uploadedAttachmentFile?.map((attachfile: any) => {
-                                        fileItems?.map(async (file: any) => {
-                                            if (file?.FileDirRef != undefined && file?.FileDirRef?.toLowerCase() == uploadPath?.toLowerCase() && file?.FileSystemObjectType == 0 && file?.FileLeafRef == attachfile?.Name) {
-                                                let resultArray: any = [];
-                                                resultArray.push(props?.item?.Id)
-                                                let siteColName = `${siteName}Id`
-                                                let fileSize = getSizeString(fileToUpload?.byteLength)
-                                                taggedDocument = {
-                                                    ...taggedDocument,
-                                                    fileName: fileName,
-                                                    docType: getFileType(attachfile?.Name),
-                                                    uploaded: true,
-                                                    link: `${rootSiteName}${selectedPath.displayPath}/${fileName}?web=1`,
-                                                    size: fileSize
-                                                }
-                                                taggedDocument.link = file?.EncodedAbsUrl;
-                                                // Update the document file here
-                                                let postData = {
-                                                    [siteColName]: { "results": resultArray },
-                                                    ItemRank: itemRank,
-                                                    Title: attachfile?.Name
-                                                }
-                                                if (props?.item?.Portfolio?.Id != undefined) {
-                                                    postData.PortfoliosId = { "results": [props?.item?.Portfolio?.Id] };
-                                                }
-                                                if (getFileType(attachfile?.Name) == 'msg') {
-                                                    postData = {
-                                                        ...postData,
-                                                        Body: msgfile?.body != undefined ? msgfile?.body : null,
-                                                        recipients: msgfile?.recipients?.length > 0 ? JSON.stringify(msgfile?.recipients) : null,
-                                                        senderEmail: msgfile?.senderEmail != undefined ? msgfile?.senderEmail : null,
-                                                        creationTime: msgfile?.creationTime != undefined ? new Date(msgfile?.creationTime).toISOString() : null
-                                                    }
-                                                }
-                                                let web = new Web(props?.AllListId?.siteUrl);
-                                                await web.lists.getByTitle('Documents').items.getById(file.Id)
-                                                    .update(postData).then((updatedFile: any) => {
-                                                        file[siteName].push({ Id: props?.item?.Id, Title: props?.item?.Title });
-                                                        setAllReadytagged([...AllReadytagged, ...[file]])
-                                                        msgfile.fileuploaded = true;
-                                                        myResolve()
-                                                        pathGenerator();
-                                                        cancelPathFolder()
-                                                        props?.callBack()
-                                                        taggedDocument.tagged = true;
-                                                        setUploadedDocDetails(taggedDocument);
-                                                        setRenamedFileName('')
-                                                        return file;
-                                                    })
-
-                                                console.log("File uploaded successfully.", file);
-                                            }
-                                        })
+                                    if (renamedFileName?.length > 0 && selectedFile.name?.length > 0 && getFileType(selectedFile != undefined ? selectedFile.name : uploadselectedFile.name) == "msg") {
+                                        filetype = getFileType(selectedFile != undefined ? selectedFile.name : uploadselectedFile.name)
+                                        fileName = renamedFileName + `.${filetype}`;
+                                    } else {
+                                        fileName = AttachFile.fileName != undefined ? AttachFile?.fileName : AttachFile?.name;
                                     }
-                                    )
-                                } else {
-                                    setTimeout(async () => {
-                                        if (attachmentFile == false) {
-                                            fileItems = await getExistingUploadedDocuments()
+                                    uploadFile(AttachFile)
+                                }
+                            })
+                            // };
+
+                        } else {
+
+                            uploadFile(fileContent)
+                        }
+
+
+                    };
+
+                    reader.readAsArrayBuffer(selectedFile != undefined ? selectedFile : uploadselectedFile);
+
+
+                    const uploadFile = async (fileToUpload: any) => {
+                        return new Promise<void>(function (myResolve, myReject) {
+                            let fileItems: any;
+                            let web = new Web(props?.AllListId?.siteUrl);
+                            web.getFolderByServerRelativeUrl(uploadPath)
+                                .files.add(fileName, fileToUpload, true).then(async (uploadedFile: any) => {
+                                    console.log(uploadedFile);
+                                    uploadedAttachmentFile.push(uploadedFile?.data);
+                                    if (attachmentFile == true && attachmentFileIndex == uploadedAttachmentFile?.length - 1) {
+                                        console.log(uploadedAttachmentFile)
+                                        fileItems = await getExistingUploadedDocuments()
+                                        uploadedAttachmentFile?.map((attachfile: any) => {
                                             fileItems?.map(async (file: any) => {
-                                                if (file?.FileDirRef != undefined && file?.FileDirRef?.toLowerCase() == uploadPath?.toLowerCase() && file?.FileSystemObjectType == 0 && file?.FileLeafRef == fileName) {
+                                                if (file?.FileDirRef != undefined && file?.FileDirRef?.toLowerCase() == uploadPath?.toLowerCase() && file?.FileSystemObjectType == 0 && file?.FileLeafRef == attachfile?.Name) {
                                                     let resultArray: any = [];
                                                     resultArray.push(props?.item?.Id)
                                                     let siteColName = `${siteName}Id`
@@ -618,7 +561,7 @@ const AncTool = (props: any) => {
                                                     taggedDocument = {
                                                         ...taggedDocument,
                                                         fileName: fileName,
-                                                        docType: getFileType(selectedFile != undefined ? selectedFile.name : uploadselectedFile.name),
+                                                        docType: getFileType(attachfile?.Name),
                                                         uploaded: true,
                                                         link: `${rootSiteName}${selectedPath.displayPath}/${fileName}?web=1`,
                                                         size: fileSize
@@ -628,17 +571,30 @@ const AncTool = (props: any) => {
                                                     let postData = {
                                                         [siteColName]: { "results": resultArray },
                                                         ItemRank: itemRank,
-                                                        Title: fileName
+                                                        Title: attachfile?.Name
+                                                    }
+                                                    if (props?.item?.Portfolio?.Id != undefined) {
+                                                        postData.PortfoliosId = { "results": [props?.item?.Portfolio?.Id] };
+                                                    }
+                                                    if (getFileType(attachfile?.Name) == 'msg') {
+                                                        postData = {
+                                                            ...postData,
+                                                            Body: msgfile?.body != undefined ? msgfile?.body : null,
+                                                            recipients: msgfile?.recipients?.length > 0 ? JSON.stringify(msgfile?.recipients) : null,
+                                                            senderEmail: msgfile?.senderEmail != undefined ? msgfile?.senderEmail : null,
+                                                            creationTime: msgfile?.creationTime != undefined ? new Date(msgfile?.creationTime).toISOString() : null
+                                                        }
                                                     }
                                                     let web = new Web(props?.AllListId?.siteUrl);
                                                     await web.lists.getByTitle('Documents').items.getById(file.Id)
                                                         .update(postData).then((updatedFile: any) => {
                                                             file[siteName].push({ Id: props?.item?.Id, Title: props?.item?.Title });
+                                                            props?.callBack()
                                                             setAllReadytagged([...AllReadytagged, ...[file]])
                                                             msgfile.fileuploaded = true;
                                                             myResolve()
                                                             pathGenerator();
-                                                            props?.callBack()
+                                                            cancelPathFolder()
                                                             taggedDocument.tagged = true;
                                                             setUploadedDocDetails(taggedDocument);
                                                             setRenamedFileName('')
@@ -649,22 +605,71 @@ const AncTool = (props: any) => {
                                                 }
                                             })
                                         }
-                                    }, 2000);
-                                }
+                                        )
+                                    } else {
+                                        setTimeout(async () => {
+                                            if (attachmentFile == false) {
+                                                fileItems = await getExistingUploadedDocuments()
+                                                fileItems?.map(async (file: any) => {
+                                                    if (file?.FileDirRef != undefined && file?.FileDirRef?.toLowerCase() == uploadPath?.toLowerCase() && file?.FileSystemObjectType == 0 && file?.FileLeafRef == fileName) {
+                                                        let resultArray: any = [];
+                                                        resultArray.push(props?.item?.Id)
+                                                        let siteColName = `${siteName}Id`
+                                                        let fileSize = getSizeString(fileToUpload?.byteLength)
+                                                        taggedDocument = {
+                                                            ...taggedDocument,
+                                                            fileName: fileName,
+                                                            docType: getFileType(selectedFile != undefined ? selectedFile.name : uploadselectedFile.name),
+                                                            uploaded: true,
+                                                            link: `${rootSiteName}${selectedPath.displayPath}/${fileName}?web=1`,
+                                                            size: fileSize
+                                                        }
+                                                        taggedDocument.link = file?.EncodedAbsUrl;
+                                                        // Update the document file here
+                                                        let postData = {
+                                                            [siteColName]: { "results": resultArray },
+                                                            ItemRank: itemRank,
+                                                            Title: fileName
+                                                        }
+                                                        if (props?.item?.Portfolio?.Id != undefined) {
+                                                            postData.PortfoliosId = { "results": [props?.item?.Portfolio?.Id] };
+                                                        }
+                                                        let web = new Web(props?.AllListId?.siteUrl);
+                                                        await web.lists.getByTitle('Documents').items.getById(file.Id)
+                                                            .update(postData).then((updatedFile: any) => {
+                                                                file[siteName].push({ Id: props?.item?.Id, Title: props?.item?.Title });
+                                                                props?.callBack()
+                                                                setAllReadytagged([...AllReadytagged, ...[file]])
+                                                                msgfile.fileuploaded = true;
+                                                                myResolve()
+                                                                pathGenerator();
+                                                                taggedDocument.tagged = true;
+                                                                setUploadedDocDetails(taggedDocument);
+                                                                setRenamedFileName('')
+                                                                return file;
+                                                            })
+
+                                                        console.log("File uploaded successfully.", file);
+                                                    }
+                                                })
+                                            }
+                                        }, 2000);
+                                    }
 
 
-                            });
-                        setUploadedDocDetails(taggedDocument);
-                        setShowConfirmation(true)
-                        setUploadEmailModal(false)
-                        setModalIsOpenToFalse()
-                    })
+                                });
+                            setUploadedDocDetails(taggedDocument);
+                            setShowConfirmation(true)
+                            setUploadEmailModal(false)
+                            setModalIsOpenToFalse()
+                        })
+                    }
+
+                } catch (error) {
+                    console.log("File upload failed:", error);
                 }
-
-            } catch (error) {
-                console.log("File upload failed:", error);
             }
-        }
+        }, 1500);
         setSelectedFile(null);
         cancelNewCreateFile()
         setItemRank(5);
@@ -1360,7 +1365,7 @@ const AncTool = (props: any) => {
                                         <Col xs={6}>
 
                                             <div> <label className='form-label full-width fw-semibold'>Select Upload Folder  {temptasktype !== undefined && temptasktype?.length > 2 && <label className='alignIcon svg__iconbox svg__icon--setting' onClick={() => openTaskTypesPopup()}></label>}</label></div>
-                                            
+
                                             <div className='alignCenter'>
                                                 <span>{folderExist == true ? <span>{selectedPath?.displayPath}</span> : <>{(tasktypecopy != undefined && tasktypecopy != '') ? <span>{selectedPath?.displayPath?.split(tasktypecopy)}
                                                     <span className='highlighted'>{tasktypecopy}
@@ -1376,7 +1381,7 @@ const AncTool = (props: any) => {
                                                 </span>
                                                     :
                                                     <span>{selectedPath?.displayPath?.split(siteName)}<span className=''>{siteName}
-                                                      
+
                                                     </span></span>}</>}</span>
                                                 <span><a title="Click for Associated Folder" className='hreflink ms-2' onClick={() => setChoosePathPopup(true)} > Change Path </a></span>
                                             </div>
@@ -1396,7 +1401,7 @@ const AncTool = (props: any) => {
                                                                     <tr>
                                                                         <th></th>
                                                                         <th className='p-1'>Type</th>
-                                                                        <th className='p-1' style={{width:"300px"}}>Title</th>
+                                                                        <th className='p-1' style={{ width: "300px" }}>Title</th>
                                                                         <th style={{ width: '100px' }} className='p-1'>Rank</th>
 
                                                                     </tr>
@@ -1409,7 +1414,7 @@ const AncTool = (props: any) => {
                                                                                 <tr>
                                                                                     <td><input type="checkbox" className='form-check-input hreflink' checked={AllReadytagged?.some((doc: any) => file.Id == doc.Id)} onClick={() => { tagSelectedDoc(file) }} /></td>
                                                                                     <td><span className={`alignIcon  svg__iconbox svg__icon--${file?.docType}`} title={file?.File_x0020_Type}></span></td>
-                                                                                    <td><a style={{wordBreak:"break-all"}} href={`${file?.EncodedAbsUrl}?web=1`} target="_blank" data-interception="off" className='hreflink'>{file?.Title}</a></td>
+                                                                                    <td><a style={{ wordBreak: "break-all" }} href={file?.EncodedAbsUrl} target="_blank" data-interception="off" className='hreflink'>{file?.Title}</a></td>
                                                                                     <td>{file?.ItemRank}</td>
                                                                                 </tr>
                                                                             )
@@ -1470,11 +1475,11 @@ const AncTool = (props: any) => {
                                                     <div className="tab-pane show" id="DRAGDROP" role="tabpanel" aria-labelledby="DRAGDROP">
                                                         <div className='input-group'>
                                                             <label className='form-label full-width fw-semibold'>Item Rank
-                                                            <span className='hover-text'>
-                                                                <span className='alignIcon svg__iconbox svg__icon--info dark'></span>
-                                                                <span className='tooltip-text pop-right fw-normal'>
-                                                                    Select Importance and where it should show: 8 =Top highlight(Shows under highlight item list), 7=featured (shows on featured item list on homepage), 6=key item (shows on right list on homepage and as key item on featured profile pages,5=relevant (shows on profile pages), 4= background item (....), 2= to be verified (...)  1= Archive (...) ,  0= no show (does not show in any list but in search results)
-                                                                </span></span>
+                                                                <span className='hover-text'>
+                                                                    <span className='alignIcon svg__iconbox svg__icon--info dark'></span>
+                                                                    <span className='tooltip-text pop-right fw-normal'>
+                                                                        Select Importance and where it should show: 8 =Top highlight(Shows under highlight item list), 7=featured (shows on featured item list on homepage), 6=key item (shows on right list on homepage and as key item on featured profile pages,5=relevant (shows on profile pages), 4= background item (....), 2= to be verified (...)  1= Archive (...) ,  0= no show (does not show in any list but in search results)
+                                                                    </span></span>
                                                             </label>
                                                             <Dropdown className='full-width'
                                                                 id="ItemRankLinkDoc"
@@ -1493,11 +1498,11 @@ const AncTool = (props: any) => {
                                                             <Col className='pe-0'>
                                                                 <div className='input-group'>
                                                                     <label className='form-label full-width fw-semibold'>Item Rank
-                                                                    <span className='hover-text'>
-                                                                        <span className='alignIcon svg__iconbox svg__icon--info dark'></span>
-                                                                        <span className='tooltip-text pop-right fw-normal'>
-                                                                            Select Importance and where it should show: 8 =Top highlight(Shows under highlight item list), 7=featured (shows on featured item list on homepage), 6=key item (shows on right list on homepage and as key item on featured profile pages,5=relevant (shows on profile pages), 4= background item (....), 2= to be verified (...)  1= Archive (...) ,  0= no show (does not show in any list but in search results)
-                                                                        </span></span>
+                                                                        <span className='hover-text'>
+                                                                            <span className='alignIcon svg__iconbox svg__icon--info dark'></span>
+                                                                            <span className='tooltip-text pop-right fw-normal'>
+                                                                                Select Importance and where it should show: 8 =Top highlight(Shows under highlight item list), 7=featured (shows on featured item list on homepage), 6=key item (shows on right list on homepage and as key item on featured profile pages,5=relevant (shows on profile pages), 4= background item (....), 2= to be verified (...)  1= Archive (...) ,  0= no show (does not show in any list but in search results)
+                                                                            </span></span>
                                                                     </label>
                                                                     <Dropdown className='full-width'
                                                                         id="ItemRankLinkDoc"
@@ -1518,7 +1523,7 @@ const AncTool = (props: any) => {
                                                                     <label className='form-label full-width fw-semibold'>URL</label>
                                                                     <input type="text" onChange={(e) => { setLinkToDocUrl(encodeURIComponent(e.target.value)) }} value={LinkToDocUrl} placeholder='Url' className='form-control' />
                                                                 </div>
-                                                            </Col>      
+                                                            </Col>
 
                                                             <Col>
                                                                 <button disabled={(LinkToDocUrl?.length > 0 && LinkToDocTitle?.length > 0) ? false : true} className="btn btn-primary mt-2 my-1  float-end px-3" onClick={() => { CreateLinkAndTag() }}>Create</button>
@@ -1530,7 +1535,7 @@ const AncTool = (props: any) => {
                                         </Col>
                                     </Row>
                                 </div>
-                               
+
                                 <Row className='mt-2'>
                                     <Col xs={12}>
                                         {/* <ConnectExistingDoc Context={props.Context} AllListId={props?.AllListId} item={Item} folderPath={selectedPath?.completePath} /> */}
@@ -1549,8 +1554,8 @@ const AncTool = (props: any) => {
 
                                                                     <th className='p-1'>Type</th>
                                                                     <th className='p-1'>Title</th>
-                                                                    <th style={{width:"150px"}}>Item Rank</th>
-                                                                    <th style={{width:"15x"}}>&nbsp;</th>
+                                                                    <th style={{ width: "150px" }}>Item Rank</th>
+                                                                    <th style={{ width: "15x" }}>&nbsp;</th>
 
                                                                 </tr>
 
@@ -1585,7 +1590,7 @@ const AncTool = (props: any) => {
                                             </div>
                                         </div>
                                     </Col>
-                                  
+
 
                                 </Row>
                             </div>
@@ -1653,18 +1658,24 @@ const AncTool = (props: any) => {
                     <div className="modal Anc-Confirmation-modal" >
                         <div className="modal-dialog modal-mg rounded-0 " style={{ maxWidth: "400px" }}>
                             <div className="modal-content rounded-0">
-                                <div className="modal-header">
-                                    <div className='subheading'>
+                                <div className="modal-header py-0">
+                                    <div className='d-flex full-width justify-content-between pb-1'>
+                                    <div className='subheading m-0'>
                                         {/* <img className="imgWid29 pe-1 mb-1 " src={Item?.SiteIcon} /> */}
                                         <span className="siteColor">
                                             Create New Online File {createNewDocType?.length > 0 ? ` - ${createNewDocType}` : ''}
                                         </span>
                                     </div>
+                                    <div className='d-flex'>
                                     <Tooltip ComponentId="7642" />
-                                    <span onClick={() => cancelNewCreateFile()}><i className="svg__iconbox svg__icon--cross crossBtn me-1"></i></span>
+                                    <span style={{marginTop:"7px"}} onClick={() => cancelNewCreateFile()}><i className="svg__iconbox svg__icon--cross crossBtn me-1"></i></span>
+                                    </div>
+                                    </div>
+                                    
+                                   
                                 </div>
                                 <div className="modal-body p-2 row">
-                                    <div className="AnC-CreateDoc-Icon">
+                                    <div className="AnC-CreateDoc-Icon p-0">
                                         <div className={createNewDocType == 'docx' ? 'selected' : ''}>
                                             <span onClick={() => createBlankWordDocx()} className='svg__iconbox svg__icon--docx hreflink' title='Word'></span>
                                         </div>
@@ -1675,7 +1686,7 @@ const AncTool = (props: any) => {
                                             <span onClick={() => createBlankPowerPointPptx()} className='svg__iconbox svg__icon--ppt hreflink' title='Presentation'></span>
                                         </div>
                                     </div>
-                                    <div className="col-sm-12 mt-2">
+                                    <div className="col-sm-12 mt-2 p-0">
                                         <input type="text" onChange={(e) => { setRenamedFileName(e.target.value) }} value={renamedFileName} placeholder='Enter File Name' className='full-width' />
                                     </div>
                                 </div>
@@ -1831,3 +1842,6 @@ const AncTool = (props: any) => {
 
 export default AncTool;
 
+function myReject(error: any) {
+    throw new Error('Function not implemented.');
+}

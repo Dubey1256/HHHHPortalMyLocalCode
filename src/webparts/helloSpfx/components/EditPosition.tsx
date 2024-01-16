@@ -100,6 +100,7 @@ const EditPosition = (props: any) => {
                 .then(() => {
                     const filteredItems = portfiloData.filter((data: { Id: any; }) => data.Id !== itm.Id);
                     setportfiloData(filteredItems)
+                    getListData();
                 })
                 .catch((error: any) => {
                     console.log(error);

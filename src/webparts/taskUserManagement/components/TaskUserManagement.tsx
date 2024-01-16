@@ -13,7 +13,8 @@ export default class TaskUserManagement extends React.Component<ITaskUserManagem
       userDisplayName,
       context,
       TaskUserListId,
-      SmartMetaDataId
+      SmartMetaDataId,
+      SitePagesList
     } = this.props;
 
     return (
