@@ -783,6 +783,10 @@ const GlobalCommanTable = (items: any, ref: any) => {
             items?.mailSend();
         } else if (eventValue === "loadFilterTask") {
             items?.loadFilterTask();
+        } else if (eventValue === "Add Site-Structure") {
+            items?.addStructure();
+        } else if (eventValue === "Compare") {
+            items?.openCompareTool()
         }
     }
     ///////////////// code with neha /////////////////////
@@ -1024,6 +1028,11 @@ const GlobalCommanTable = (items: any, ref: any) => {
                                 <RestructuringCom AllSitesTaskData={items?.AllSitesTaskData} AllMasterTasksData={items?.masterTaskData} projectmngmnt={items?.projectmngmnt} MasterdataItem={items?.MasterdataItem} queryItems={items.queryItems} restructureFunct={restructureFunct} ref={childRef} taskTypeId={items.TaskUsers} contextValue={items.AllListId} allData={data} restructureCallBack={items.restructureCallBack} restructureItem={table?.getSelectedRowModel()?.flatRows} />
                                 : <button type="button" title="Restructure" disabled={true} className="btn btn-primary">Restructure</button>
                         }
+                        {
+                            ((table?.getSelectedRowModel()?.flatRows?.length === 2) && (table?.getSelectedRowModel()?.flatRows[0]?.original?.TaskType?.Title != "Activities" && table?.getSelectedRowModel()?.flatRows[0]?.original?.TaskType?.Title != "Workstream" && table?.getSelectedRowModel()?.flatRows[0]?.original?.TaskType?.Title != "Task")) ?
+                                < button type="button" className="btn btn-primary" title='Add Activity' style={{ backgroundColor: `${portfolioColor}`, borderColor: `${portfolioColor}`, color: '#fff' }} onClick={() => openCreationAllStructure("Compare")}>Compare</button> :
+                                <button type="button" className="btn btn-primary" style={{ backgroundColor: `${portfolioColor}`, borderColor: `${portfolioColor}`, color: '#fff' }} disabled={true} >Compare</button>
+                        }
                     </>
                     }
                     {
@@ -1044,7 +1053,10 @@ const GlobalCommanTable = (items: any, ref: any) => {
                         }
                     </>
                     }
-
+                    {
+                        items?.siteStructureCreation === true &&
+                        <button type="button" className="btn btn-primary" title='Add Site-Structure' style={{ backgroundColor: `${portfolioColor}`, borderColor: `${portfolioColor}`, color: '#fff' }} onClick={() => openCreationAllStructure("Add Site-Structure")}>Add +</button>
+                    }
                     {items?.hideTeamIcon != true ? <>
                         {table?.getSelectedRowModel()?.flatRows?.length > 0 ? <a className="teamIcon" onClick={() => ShowTeamFunc()}><span title="Create Teams Group" style={{ color: `${portfolioColor}`, backgroundColor: `${portfolioColor}` }} className="svg__iconbox svg__icon--team"></span></a>
                             : <a className="teamIcon"><span title="Create Teams Group" style={{ backgroundColor: "gray" }} className="svg__iconbox svg__icon--team"></span></a>}
