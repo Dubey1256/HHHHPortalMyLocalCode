@@ -254,11 +254,8 @@ const CentralizedSiteComposition = (Props: any) => {
             }
         }
         console.log("Get buildClientCategoryAllDataArray Call");
-
         // AllClientCategoriesForAutoSuggestion = FinalArrayForAutoSuggestions;
         return FinalArrayForAutoSuggestions;
-
-
     };
 
     const buildClientCategoryAllDataArrayRecursive = (dataItem: any, parentId: number = 0) => {
@@ -472,10 +469,7 @@ const CentralizedSiteComposition = (Props: any) => {
             GlobalAllSiteData = await GetIndividualSiteAllData();
         }
         if (usedForLoad == "All-Sites") {
-
             GlobalAllSiteData = await globalCommon?.loadAllSiteTasks(RequiredListIds, undefined);
-
-
         }
         let AllTaggedComponent: any = [];
         ComponentChildData?.map((TaggedCSF: any) => {
@@ -504,7 +498,6 @@ const CentralizedSiteComposition = (Props: any) => {
             FilterAllClientCategories();
             setLoaded(true);
         }
-
     }
 
     function siteCompositionType(jsonStr: any) {
@@ -1294,28 +1287,29 @@ const CentralizedSiteComposition = (Props: any) => {
 
     // this is used for Auto Suggestions on Main Panel 
 
-    const CCAutoSuggestionsMain = (Event: any, siteName: String) => {
+    const CCAutoSuggestionsMain = async (Event: any, siteName: String) => {
         setSelectedSiteName(siteName);
-        const searchedKey: string = Event.target.value;
-
+        const searchedInputKey: string = Event.target.value;
         const tempArray: any = [];
-        let CCDataForAutoSuggestions: any[] = buildClientCategoryAllDataArray(AllClientCategoryDataBackup);
-        if (searchedKey?.length > 0) {
-            setSearchedKey(searchedKey)
-            if (CCDataForAutoSuggestions?.length > 0) {
-                CCDataForAutoSuggestions?.map((CCItem: any) => {
-                    if (CCItem.newLabel?.toLowerCase().includes(searchedKey.toLowerCase())) {
-                        tempArray.push(CCItem)
-                    }
-                })
-                setSearchedClientCategoryData(tempArray);
+        let CCDataForAutoSuggestions: any[] = await buildClientCategoryAllDataArray(AllClientCategoryDataBackup);
+        
+        if (searchedInputKey?.length > 0) {
+            setSearchedKey(searchedInputKey);
+            if(searchedInputKey?.length > 1){
+                if (CCDataForAutoSuggestions?.length > 0) {
+                    CCDataForAutoSuggestions?.map((CCItem: any) => {
+                        if (CCItem.newLabel?.toLowerCase().includes(searchedInputKey.toLowerCase())) {
+                            tempArray.push(CCItem)
+                        }
+                    })
+                    setSearchedClientCategoryData(tempArray);
+                }
             }
+           
         } else {
-            setSearchedClientCategoryData([]);
+            setSearchedClientCategoryData(tempArray);
             setSearchedKey('')
         }
-
-
     }
 
     const filterDataRecursively = (data: any[], searchedKey: string, tempArray: any[]) => {
@@ -1326,7 +1320,6 @@ const CentralizedSiteComposition = (Props: any) => {
             ) {
                 tempArray.push(item);
             }
-
             if (item.Child && item.Child.length > 0) {
                 filterDataRecursively(item.Child, searchedKey, tempArray);
             }
@@ -1397,7 +1390,6 @@ const CentralizedSiteComposition = (Props: any) => {
             refreshSiteCompositionConfigurations();
             ChangeSiteCompositionInstant("Standard");
         }
-        console.log(" setting data type =====", SettingType + "Setting JSON" + SiteSettingJSON)
     }
 
 
@@ -2021,23 +2013,25 @@ const CentralizedSiteComposition = (Props: any) => {
                                                                                 )}
                                                                             </ul>
                                                                         </div>) : null}
-                                                                    <ul className="border list-group px-1 rounded-0 my-1">
-                                                                        {CCDetails.ClientCategories?.map((CCItem: any, ChildIndex: any) => {
-                                                                            return (
-                                                                                <li className="alignCenter SpfxCheckRadio border-0 list-group-item px-1 p-1">
-                                                                                    <input
-                                                                                        className="radio"
-                                                                                        type="radio"
-                                                                                        name={`Client-Category-${CCTableCount}`}
-                                                                                        defaultChecked={CCItem.checked == true ? true : false}
-                                                                                        checked={CCItem.checked == true ? true : false}
-                                                                                        onClick={() => selectedParentClientCategory(ChildIndex, CCDetails.Title)}
-                                                                                        id="firstRadio" />
-                                                                                    <label className="form-check-label ms-2">{CCItem.Title}</label>
-                                                                                </li>
-                                                                            )
-                                                                        })}
-                                                                    </ul>
+                                                                    {CCDetails.ClientCategories?.length > 0 ?
+                                                                        <ul className="border list-group px-1 rounded-0 my-1">
+                                                                            {CCDetails.ClientCategories?.map((CCItem: any, ChildIndex: any) => {
+                                                                                return (
+                                                                                    <li className="alignCenter SpfxCheckRadio border-0 list-group-item px-1 p-1">
+                                                                                        <input
+                                                                                            className="radio"
+                                                                                            type="radio"
+                                                                                            name={`Client-Category-${CCTableCount}`}
+                                                                                            defaultChecked={CCItem.checked == true ? true : false}
+                                                                                            checked={CCItem.checked == true ? true : false}
+                                                                                            onClick={() => selectedParentClientCategory(ChildIndex, CCDetails.Title)}
+                                                                                            id="firstRadio" />
+                                                                                        <label className="form-check-label ms-2">{CCItem.Title}</label>
+                                                                                    </li>
+                                                                                )
+                                                                            })}
+                                                                        </ul>
+                                                                        : null}
                                                                 </td>
                                                             </tr>
                                                         )
