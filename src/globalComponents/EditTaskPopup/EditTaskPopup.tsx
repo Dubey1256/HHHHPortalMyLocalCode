@@ -6891,6 +6891,7 @@ const EditTaskPopup = (Items: any) => {
                             RequiredListIds={AllListIdData}
                             closePopupCallBack={closeSiteCompsotionPanelFunction}
                             usedFor={"AWT"}
+                            ColorCode={PortfolioItemColor}
                         />
                     ) : null}
                     {sendEmailComponentStatus ? (
