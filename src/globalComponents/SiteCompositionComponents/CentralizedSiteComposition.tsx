@@ -142,17 +142,17 @@ const CentralizedSiteComposition = (Props: any) => {
         getSmartMetaDataListAllItems();
         getTaskType();
         loadAllTaskUsers();
-        
+
     }, [])
 
-    useEffect(()=>{
+    useEffect(() => {
         setTimeout(() => {
             const panelMain: any = document.querySelector(".ms-Panel-main");
             if (panelMain && PortfolioItemColor != "") {
                 $(".ms-Panel-main").css("--SiteBlue", PortfolioItemColor); // Set the desired color value here
             }
         }, 1000);
-    },[IsClientCategoryPopupOpen])
+    }, [IsClientCategoryPopupOpen])
 
     const getTaskType = async () => {
         let taskTypeData1: any = [];
@@ -806,7 +806,7 @@ const CentralizedSiteComposition = (Props: any) => {
                                 id="checkbox-Protected"
                                 name="Protected-view"
                             />
-                            {IsMakeSCProtected === true ? <div style={{ backgroundColor: `${PortfolioItemColor}`, borderColor: `${PortfolioItemColor}`}} className="slider round" title='Switch to Un-Protected View'></div> : <div title='Switch to Protected-View' className="slider round"></div>}
+                            {IsMakeSCProtected === true ? <div style={{ backgroundColor: `${PortfolioItemColor}`, borderColor: `${PortfolioItemColor}` }} className="slider round" title='Switch to Un-Protected View'></div> : <div title='Switch to Protected-View' className="slider round"></div>}
                         </label>
                         <span className='ms-1 siteColor'>Protected</span>
                         <span className="hover-text alignIcon">
@@ -1053,7 +1053,7 @@ const CentralizedSiteComposition = (Props: any) => {
                                 id="checkbox-Protected-Table"
                                 name="Protected-view"
                             />
-                            {row?.original?.IsSCProtected === true ? <div style={{ backgroundColor: `${PortfolioItemColor}`, borderColor: `${PortfolioItemColor}`}} className="slider round" title='Switch to Un-Protect this item'></div> : <div title='Switch to Protect this item' className="slider round"></div>}
+                            {row?.original?.IsSCProtected === true ? <div style={{ backgroundColor: `${PortfolioItemColor}`, borderColor: `${PortfolioItemColor}` }} className="slider round" title='Switch to Un-Protect this item'></div> : <div title='Switch to Protect this item' className="slider round"></div>}
                         </label>
                     </div>
                 ),
@@ -1928,7 +1928,7 @@ const CentralizedSiteComposition = (Props: any) => {
                                                         </span>
                                                     </div>
                                                     <span className="border" style={{ padding: '5px 20px' }}>
-                                                        {TaskTotalTime} h
+                                                        {TaskTotalTime > 0 ? Number(TaskTotalTime).toFixed(1) : 0} h
                                                     </span>
                                                 </div>
                                             </>
@@ -2053,7 +2053,7 @@ const CentralizedSiteComposition = (Props: any) => {
                                 <div className="alignCenter">
                                     <label className="switch me-2 siteColor" htmlFor="checkbox-Flat">
                                         <input checked={flatView} onClick={() => switchFlatViewData(flatView)} type="checkbox" id="checkbox-Flat" name="Flat-view" />
-                                        {flatView === true ? <div style={{ backgroundColor: `${PortfolioItemColor}`, borderColor: `${PortfolioItemColor}`}} className="slider round" title='Switch to GroupBy View'></div> : <div title='Switch to Flat-View' className="slider round"></div>}
+                                        {flatView === true ? <div style={{ backgroundColor: `${PortfolioItemColor}`, borderColor: `${PortfolioItemColor}` }} className="slider round" title='Switch to GroupBy View'></div> : <div title='Switch to Flat-View' className="slider round"></div>}
                                     </label>
                                     <span className='me-1 siteColor'>Flat View</span>
                                     <span className="hover-text alignIcon">
