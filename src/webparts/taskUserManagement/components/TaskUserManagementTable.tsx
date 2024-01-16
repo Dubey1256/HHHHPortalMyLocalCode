@@ -15,6 +15,10 @@ import Button from "react-bootstrap/Button";
 import moment from 'moment';
 import Tooltip from '../../../globalComponents/Tooltip';
 import zIndex from '@material-ui/core/styles/zIndex';
+import CheckboxTree from 'react-checkbox-tree';
+import 'react-checkbox-tree/lib/react-checkbox-tree.css';
+import { FaChevronDown, FaChevronRight, FaMinusSquare, FaPlusSquare, FaSquare, FaCheckSquare } from 'react-icons/fa';
+import "./styles.css"
 
 const TaskUserManagementTable = ({ TaskUsersListData, TaskGroupsListData, baseUrl, TaskUserListId, context, fetchAPIData, smartMetaDataItems }: any) => {
     const [data, setData] = React.useState([]);
@@ -46,6 +50,9 @@ const TaskUserManagementTable = ({ TaskUsersListData, TaskGroupsListData, baseUr
     const [autoSuggestData, setAutoSuggestData] = useState(null);
     const [selectedCategories, setSelectedCategories] = useState([]);
     const [isUserNameValid, setIsUserNameValid] = useState(false);
+    const [checked, setChecked] = useState([]);
+    const [expanded, setExpanded] = useState([]);
+    const [selectedApproval, setSelectedApproval] = useState('');
     // const [searchedProjectKey, setSearchedProjectKey] = React.useState("");
 
     const Categories: any = (smartMetaDataItems.filter((items: any) => items.TaxType === "TimesheetCategories"))
@@ -61,7 +68,7 @@ const TaskUserManagementTable = ({ TaskUsersListData, TaskGroupsListData, baseUr
     console.log(uniqueCategories)
 
     const TaxTypeCategories: any = (smartMetaDataItems.filter((items: any) => items.TaxType === "Categories"))
-
+    const MyCategories = TaxTypeCategories.filter((items: any) => items.ParentID === 0)
     // When the member to update is set, initialize the Member states
     useEffect(() => {
         if (memberToUpdate) {
@@ -72,7 +79,14 @@ const TaskUserManagementTable = ({ TaskUsersListData, TaskGroupsListData, baseUr
             setIsActive(memberToUpdate.IsActive);
             setIsTaskNotifications(memberToUpdate.IsTaskNotifications);
             setUserCategory(memberToUpdate.TimeCategory)
-            setSelectedCategories(JSON.parse(memberToUpdate.CategoriesItemsJson))
+            // setSelectedCategories(JSON.parse(memberToUpdate.CategoriesItemsJson))
+
+            // Parse JSON and set selected categories
+            const categoriesJson = JSON.parse(memberToUpdate?.CategoriesItemsJson);
+            setSelectedCategories(categoriesJson);
+            // Extract IDs and set them as checked
+            const categoryIds = categoriesJson?.map((category: any) => category.Id.toString());
+            setChecked(categoryIds);
             setAssignedToUser(memberToUpdate.AssingedToUser?.Id)
             setApprover([memberToUpdate.Approver?.[0]?.Id])
             setUserTeam(memberToUpdate.Team)
@@ -465,68 +479,9 @@ const TaskUserManagementTable = ({ TaskUsersListData, TaskGroupsListData, baseUr
         return rootCategories.map((rootCategory: any) => findChildren(rootCategory));
     };
 
-    const createMenuProps = (categories: any) => {
-        const buildNestedItems = (category: any) => {
-            return {
-                key: category.Id,
-                text: category.Title,
-                subMenuProps: category.children && {
-                    items: category.children.map(buildNestedItems), // recursively build children
-                },
-                onClick: () => handleCategoryClick(category),
-            };
-        };
-
-        return {
-            items: categories.map(buildNestedItems),
-        };
-    };
-
-    const handleCategoryClick = (category: any) => {
-        // const isCategorySelected = selectedCategories?.some(c => c.Id === category.Id);
-        const isCategorySelected = (selectedCategories || []).some(c => c.Id === category.Id);
-
-        if (isCategorySelected) {
-            const removeCategoryAndChildren = (cat: any) => {
-                let newSelectedCategories = selectedCategories?.filter(c => c.Id !== cat.Id);
-                if (cat.children) {
-                    cat.children.forEach((child: any) => {
-                        newSelectedCategories = removeCategoryAndChildren(child);
-                    });
-                }
-                return newSelectedCategories;
-            };
-
-            setSelectedCategories(prevCategories => removeCategoryAndChildren(category));
-        } else {
-            setSelectedCategories(prevCategories => {
-                // const newSelection = [...prevCategories, { Title: category?.Title, Id: category?.Id }];
-                const newSelection = [...(prevCategories || []), { Title: category?.Title, Id: category?.Id }];
-                return newSelection?.filter(c => !category?.children?.some((child: any) => child.Id === c.Id));
-            });
-        }
-    };
-
-    const handleCategoryRemoval = (categoryToRemove: any) => {
-        setSelectedCategories(prevCategories => {
-            const removeCategoryAndChildren = (cat: any) => {
-                // let newSelectedCategories = prevCategories.filter(c => c.Id !== cat.Id);
-                let newSelectedCategories = (prevCategories || []).filter(c => c.Id !== cat.Id);
-                if (cat.children) {
-                    cat.children.forEach((child: any) => {
-                        newSelectedCategories = removeCategoryAndChildren(child);
-                    });
-                }
-                return newSelectedCategories;
-            };
-
-            return removeCategoryAndChildren(categoryToRemove);
-        });
-    };
-
-
-    const TaxTypeCategoriesHierarchy = buildHierarchy(TaxTypeCategories);
-    const menuItems: IContextualMenuItem[] = createMenuProps(TaxTypeCategoriesHierarchy).items;
+    useEffect(() => {
+        buildHierarchy(TaxTypeCategories);
+    }, [TaxTypeCategories])
 
     // Headers for Panel customisation code
 
@@ -586,6 +541,81 @@ const TaskUserManagementTable = ({ TaskUsersListData, TaskGroupsListData, baseUr
         setUserTeam(memberToUpdate.Team)
         setOpenUpdateMemberPopup(false)
     }
+
+    const findCategoryById = (categories: any, id: any): any => {
+        for (const category of categories) {
+            if (category.Id.toString() === id) {
+                return category;
+            }
+            if (category.children) {
+                const result = findCategoryById(category.children, id);
+                if (result) {
+                    return result;
+                }
+            }
+        }
+        return null;
+    };
+
+    const handleCheck = (checked: any) => {
+        setChecked(checked);
+        const selected = checked.map((id: any) => {
+            const category = findCategoryById(MyCategories, id);
+            return category ? { Title: category.Title, Id: category.Id } : null;
+        }).filter((cat: any) => cat !== null);
+        setSelectedCategories(selected);
+    };
+
+    // const renderRadios = (approvalCategory: any) => {
+    //     console.log(approvalCategory)
+    // }
+
+    const transformCategoriesToNodes = (categories: any) => {
+        return categories.map((category: any) => {
+            // Check if the category has children
+            const hasChildren = category.children && category.children.length > 0;
+            const node:any = {
+                value: category.Id.toString(),
+                label: category.Title,
+            };    
+            // Conditionally add the 'children' property if the category has children
+            if (hasChildren) {
+                node.children = transformCategoriesToNodes(category.children);
+            }
+            return node;
+        });
+    };
+
+    // const transformCategoriesToNodes = (categories: any, ) => {
+    //     return categories.map((category: any) => {
+    //         // Skip the Approval category's children as they are rendered separately
+    //         if (parentId === 'Approval') return null;
+
+    //         const hasChildren = category.children && category.children.length > 0;
+    //         const node = {
+    //             value: category.Id.toString(),
+    //             label: category.Title,
+    //             children: hasChildren ? transformCategoriesToNodes(category.children, category.Title) : []
+    //         };
+    //         return node;
+    //     }).filter(Boolean); // Remove any null entries
+    // };
+    
+    
+    
+
+
+    const icons: any = {
+        check: <FaCheckSquare />,
+        uncheck: <span className="alignIcon svg__iconbox svg__icon--sqCheckbox" />,
+        halfCheck: <span className="alignIcon svg__iconbox svg__icon--dotCheckbox" />,
+        expandClose: <span className="alignIcon svg__iconbox svg__icon--arrowRight" />,
+        expandOpen: <span className='alignIcon svg__iconbox svg__icon--arrowDown' />,
+        parentClose: <span className='alignIcon svg__iconbox svg__icon--arrowRight' />,
+        parentOpen: <span className='alignIcon svg__iconbox svg__icon--arrowDown' />,
+        leaf: null
+    };
+
 
     // JSX Code starts here
 
@@ -705,16 +735,16 @@ const TaskUserManagementTable = ({ TaskUsersListData, TaskGroupsListData, baseUr
             >
                 <div className='modal-body'>
                     <div className="add-datapanel">
-                        <div className='input-group'>
-                            <label className='form-label full-width'>Title: </label>
+                        <div className='input-group mb-1'>
+                            <label className='form-label full-width fw-semibold'>Title: </label>
                             <input className='form-control' type="text" defaultValue={itemToUpdate?.Title} onChange={(e: any) => setTitle(e.target.value)} />
                         </div>
-                        <div className='input-group'>
-                            <label className='form-label full-width'>Suffix: </label>
+                        <div className='input-group mb-1'>
+                            <label className='form-label full-width fw-semibold'>Suffix: </label>
                             <input className='form-control' type="text" defaultValue={itemToUpdate?.Suffix} onChange={(e: any) => setSuffix(e.target.value)} />
                         </div>
-                        <div className='input-group'>
-                            <label className='form-label full-width'>Sort Order: </label>
+                        <div className='input-group mb-1'>
+                            <label className='form-label full-width fw-semibold'>Sort Order: </label>
                             <input className='form-control' type="text" defaultValue={itemToUpdate?.SortOrder} onChange={(e: any) => setSortOrder(e.target.value)} />
                         </div>
                     </div>
@@ -732,7 +762,7 @@ const TaskUserManagementTable = ({ TaskUsersListData, TaskGroupsListData, baseUr
                 onRenderHeader={onRenderCustomHeaderUpdateUser}
                 type={PanelType.large}
                 isOpen={openUpdateMemberPopup}
-                onDismiss={() => setOpenUpdateMemberPopup(false)}
+                onDismiss={cancelUpdate}
                 isFooterAtBottom={true}
                 isBlocking={!openUpdateMemberPopup}
             >
@@ -758,160 +788,192 @@ const TaskUserManagementTable = ({ TaskUsersListData, TaskGroupsListData, baseUr
                             role="tabpanel"
                             aria-labelledby="basic-info-tab"
                         >
-                            <div className="row">
-                                <div className='col-md-4'>
+                            <div className="row mb-2">
+                                <div className='col-2'>
                                     <div className='input-group'>
-                                        <label className='form-label full-width'>Title: </label>
+                                        <label className='form-label full-width fw-semibold'>Title: </label>
                                         <input className='form-control' type="text" defaultValue={memberToUpdate?.Title} onChange={(e: any) => setTitle(e.target.value)} />
                                     </div>
                                 </div>
 
-                                <div className='col-md-2'>
+                                <div className='col p-0'>
                                     <div className='input-group'>
-                                        <label className='form-label full-width'>Suffix: </label>
+                                        <label className='form-label full-width fw-semibold'>Suffix: </label>
                                         <input className='form-control' type="text" defaultValue={memberToUpdate?.Suffix} onChange={(e: any) => setSuffix(e.target.value)} />
                                     </div></div>
-                                <div className='col-md-3'>
+                                <div className='col'>
                                     <div className='input-group'>
-                                        <label className='form-label full-width'>User Name:</label>
+                                        <label className='form-label full-width fw-semibold'>User Name:</label>
                                         <PeoplePicker context={context} titleText="" personSelectionLimit={1} showHiddenInUI={false}
                                             principalTypes={[PrincipalType.User]} resolveDelay={1000} onChange={(items) => AssignedToUser(items)}
                                             defaultSelectedUsers={email ? [email] : []} />
-                                    </div></div>
-                                <div className='col-md-3'>
+                                    </div>
+                                </div>
+                                <div className='col p-0'>
                                     <div className='input-group'>
-                                        <label className='form-label full-width'>Group: </label>
+                                        <label className='form-label full-width fw-semibold'>Group: </label>
                                         <select className='form-control' id="sites" defaultValue={memberToUpdate?.UserGroup?.Id} onChange={(e: any) => setUserGroup(e.target.value)}>
                                             <option>Select</option>
                                             {TaskGroupsListData.map((elem: any) => <option value={elem?.Id}>{elem?.Title}</option>)}
                                         </select>
                                     </div>
                                 </div>
-                            </div>
-                            <div className="row my-2">
-                                <div className='col-md-3'>
+                                <div className='col'>
                                     <div className='input-group'>
-                                        <label className='form-label full-width'>Sort Order: </label>
+                                        <label className='form-label full-width fw-semibold'>Sort Order: </label>
                                         <input className='form-control' type="text" defaultValue={memberToUpdate?.SortOrder} onChange={(e: any) => setSortOrder(e.target.value)} />
-                                    </div></div>
-                                <div className='col-md-3'>
+                                    </div>
+                                </div>
+
+                                <div className='col p-0'>
                                     <div className='input-group'>
-                                        <label className='form-label full-width'>Manage Categories: </label>
-                                        <select id="sites" defaultValue={memberToUpdate?.TimeCategory} onChange={(e: any) => setUserCategory(e.target.value)}>
+                                        <label className='form-label full-width fw-semibold'>Manage Categories: </label>
+                                        <select className='full-width' id="sites" defaultValue={memberToUpdate?.TimeCategory} onChange={(e: any) => setUserCategory(e.target.value)}>
                                             <option>Select</option>
                                             {uniqueCategories.map((elem: any) => <option value={elem.Title}>{elem.Title}</option>)}
                                         </select>
                                     </div></div>
-                                <div className='col-md-3'>
+                                <div className='col'>
                                     <div className='input-group'>
-                                        <label className='form-label full-width'>Approver:</label>
+                                        <label className='form-label full-width fw-semibold'>Approver:</label>
                                         <PeoplePicker context={context} titleText="" personSelectionLimit={1} showHiddenInUI={false} principalTypes=
                                             {[PrincipalType.User]} resolveDelay={1000} onChange={(items) => ApproverFunction(items)}
                                             defaultSelectedUsers={email2 ? [email2] : []} />
                                     </div></div>
-                                <div className='col-md-3'>
+                                <div className='col p-0'>
                                     <div className='input-group'>
-                                        <label className='form-label full-width'>Team: </label>
+                                        <label className='form-label full-width fw-semibold'>Team: </label>
                                         <select className='form-control' id="sites" defaultValue={memberToUpdate?.Team} onChange={(e: any) => setUserTeam(e.target.value)}
                                         >
                                             <option>Select</option>
                                             <option value="SPFx">SPFx</option>
-                                            <option value="Project Database">Contact</option>
-                                            <option value="Contact Database">AnC</option>
-                                            <option value="Portfolio Database">Project</option>
-                                            <option value="QA">Design</option>
-                                            <option value="Design">QA</option>
+                                            <option value="Project">Project</option>
+                                            <option value="AnC">AnC</option>
+                                            <option value="Contact">Contact</option>
+                                            <option value="QA">QA</option>
+                                            <option value="Design">Design</option>
                                         </select>
                                     </div>
                                 </div>
                             </div>
-                            <div className="row">
-                                <div className='col-md-3'>
-                                    <div className='input-group'>
-                                        <label className='form-label full-width'>Approval Type: </label>
-                                        <div>
-                                            <div>
-                                                <label className='SpfxCheckRadio' htmlFor="approveAll">
-                                                    <input type="radio" id="Approve All" className='radio' name="approvalType" value="Approve All" checked={selectedApprovalType === 'Approve All'} onChange={handleApprovalTypeChange} />
-                                                    Approve All</label>
-                                            </div>
-                                            <div>
-                                                <label className='SpfxCheckRadio' htmlFor="approveSelected">
-                                                    <input type="radio" id="Approve Selected" className='radio' name="approvalType" value="Approve Selected" checked={selectedApprovalType === 'Approve Selected'} onChange={handleApprovalTypeChange} />
-                                                    Approve Selected</label>
-                                            </div>
-                                            <div>
-                                                <label className='SpfxCheckRadio' htmlFor="caseByCase">
-                                                    <input type="radio" id="Decide Case By Case" className='radio' name="approvalType" value="Decide Case By Case" checked={selectedApprovalType === 'Decide Case By Case'} onChange={handleApprovalTypeChange} />
-                                                    Case by Case</label>
-                                                {selectedApprovalType === "Approve Selected" ?
-                                                    <>
-                                                        <PrimaryButton text="Select Category" menuProps={{ items: menuItems }} styles={{ root: { display: 'block', width: '100%' } }} />
-                                                        {(selectedCategories || []).map((category: any) => (
-                                                            <div key={category.Id} className='alignCenter block'>
-                                                                <span className='wid90'>{category.Title}</span>
-                                                                {/* <Icon
-                                                                    iconName="Cancel"
-                                                                    onClick={() => handleCategoryRemoval(category)}
-                                                                    styles={{ root: { marginLeft: '5px', cursor: 'pointer' } }}
-                                                                /> */}
-                                                                <span className='svg__iconbox svg__icon--cross light hreflink'></span>
-                                                            </div>
-                                                        ))}
-                                                    </>
-                                                    : ""}
-                                            </div>
-                                        </div>
-                                    </div></div>
 
-                                <div className='col-md-3'>
+                            <div className="row mb-2">
+                                <div className='col-2'>
                                     <div className='input-group'>
-                                        <label className='form-label full-width'>Roles: </label>
-                                        <div>
-                                            {['Component Teams', 'Service Teams'].map((role: any) => (
-                                                <React.Fragment key={role}>
-                                                    <label className='SpfxCheckRadio' htmlFor={`role-${role}`}>
-                                                        <input type="checkbox" className='form-check-input me-1' id={`role-${role}`} name="roles" value={role} checked={selectedRoles?.includes(role)}
-                                                            onChange={() => handleRoleChange(role)}
-                                                        />
-                                                        {role}</label>
-                                                </React.Fragment>
-                                            ))}
-                                        </div>
-                                    </div>
-                                </div>
-                                <div className='col-md-3'>
-                                    <div className='input-group'>
-                                        <div>
-                                            <div>
-                                                <label className='SpfxCheckRadio'>
-                                                    <input type="checkbox" className='form-check-input me-1' id="IsActive" checked={isActive} onChange={(e) => setIsActive(e.target.checked)} />
-                                                    Active User</label>
-                                            </div>
-                                            <div>
-                                                <label className='SpfxCheckRadio'>
-                                                    <input type="checkbox" className='form-check-input me-1' id="IsTaskNotifications" checked={isTaskNotifications} onChange={(e) => setIsTaskNotifications(e.target.checked)} />
-                                                    Task Notifications</label>
-                                            </div>
-                                        </div>
-                                    </div>
-                                </div>
-                                <div className='col-md-3'>
-                                    <div className='input-group'>
-                                        <label className='form-label full-width'>Company: </label>
-                                        <div>
-                                            <div>
+                                        <label className='form-label full-width fw-semibold'>Company: </label>
+                                        <div className='col'>
+                                            <div className='mb-1'>
                                                 <label className='SpfxCheckRadio'>
                                                     <input className='radio' type="radio" id="HHHH" name="company" value="HHHH" checked={selectedCompany === 'HHHH'} onChange={handleCompanyChange} />
                                                     HHHH Team</label>
                                             </div>
-                                            <div>
+                                            <div className='mb-1'>
                                                 <label className='SpfxCheckRadio'>
                                                     <input className='radio' type="radio" id="Smalsus" name="company" value="Smalsus" checked={selectedCompany === 'Smalsus'} onChange={handleCompanyChange} />
                                                     Smalsus Team</label>
                                             </div>
                                         </div>
                                     </div></div>
+                                <div className='col-md-4'>
+                                    <div className='input-group'>
+                                        <label className='form-label full-width fw-semibold'>Roles: </label>
+                                        <div className='row'>
+                                            <div className='col-5 px-0'>
+                                                {['Component Teams', 'Service Teams', 'Component Creator', 'Component Editor', 'Task Creator'].map((role: any) => (
+                                                    <React.Fragment key={role}>
+                                                        <label className='SpfxCheckRadio mb-1' htmlFor={`role-${role}`}>
+                                                            <input type="checkbox" className='form-check-input me-1' id={`role-${role}`} name="roles" value={role} checked={selectedRoles?.includes(role)}
+                                                                onChange={() => handleRoleChange(role)}
+                                                            />
+                                                            {role}</label>
+                                                    </React.Fragment>
+                                                ))}
+                                            </div>
+                                            <div className='col'>
+                                                <div>
+                                                    <label className='SpfxCheckRadio mb-1'>
+                                                        <input type="checkbox" className='form-check-input me-1' id="IsActive" checked={isActive} onChange={(e) => setIsActive(e.target.checked)} />
+                                                        Active User</label>
+                                                </div>
+                                                <div>
+                                                    <label className='SpfxCheckRadio'>
+                                                        <input type="checkbox" className='form-check-input me-1' id="IsTaskNotifications" checked={isTaskNotifications} onChange={(e) => setIsTaskNotifications(e.target.checked)} />
+                                                        Task Notifications</label>
+                                                </div>
+
+                                            </div>
+
+                                        </div>
+
+                                    </div>
+                                </div>
+
+                            </div>
+                            <div className='row'>
+                                <label className='form-label full-width fw-semibold'>Approval Type: </label>
+                                <div className='row'>
+                                    <div className='mb-1'>
+                                        <label className='SpfxCheckRadio' htmlFor="approveAll">
+                                            <input type="radio" id="Approve All" className='radio' name="approvalType" value="Approve All" checked={selectedApprovalType === 'Approve All'} onChange={handleApprovalTypeChange} />
+                                            Approve All</label>
+                                    </div>
+                                    <div className='mb-1'>
+                                        <label className='SpfxCheckRadio' htmlFor="caseByCase">
+                                            <input type="radio" id="Decide Case By Case" className='radio' name="approvalType" value="Decide Case By Case" checked={selectedApprovalType === 'Decide Case By Case'} onChange={handleApprovalTypeChange} />
+                                            Case by Case</label>
+
+                                    </div>
+                                    <div className='mb-1 row'>
+                                        <label className='SpfxCheckRadio' htmlFor="approveSelected">
+                                            <input type="radio" id="Approve Selected" className='radio' name="approvalType" value="Approve Selected" checked={selectedApprovalType === 'Approve Selected'} onChange={handleApprovalTypeChange} />
+                                            Approve Selected</label>
+                                        {selectedApprovalType === "Approve Selected" ?
+                                            <>
+                                                <div className="approvelSelected">
+                                                    <CheckboxTree
+                                                        nodes={transformCategoriesToNodes(MyCategories)}
+                                                        checked={checked}
+                                                        expanded={expanded}
+                                                        onCheck={handleCheck}
+                                                        onExpand={setExpanded}
+                                                        icons={icons}
+                                                        showNodeIcon={false}
+                                                        showExpandAll={false}
+                                                    />
+                                                </div>
+
+                                                {/* <div className="categories-container">
+                                                                {MyCategories?.map((parent: any) => (
+                                                                    <div key={parent?.Id} className="parent-category">
+                                                                        <div className="parent-title">{parent?.Title}</div>
+                                                                        <div className="child-categories">
+                                                                            {parent?.children?.map((child: any) => (
+                                                                                <>
+                                                                                    <div key={child?.Id} className="child-category">{child?.Title}</div>
+                                                                                    <div className="child-categories">
+                                                                                        {child?.children?.map((subChild: any) => (
+                                                                                            <div key={subChild?.Id} className="child-category">{subChild?.Title}</div>
+                                                                                        ))}
+                                                                                    </div>
+                                                                                </>
+                                                                            ))}
+                                                                        </div>
+                                                                    </div>
+                                                                ))}
+                                                            </div> */}
+
+                                                {/* <PrimaryButton text="Select Category" menuProps={{ items: menuItems }} styles={{ root: { display: 'block', width: '100%' } }} />
+                                                        {(selectedCategories || []).map((category: any) => (
+                                                            <div key={category.Id} className='alignCenter block'>
+                                                                <span className='wid90'>{category.Title}</span>
+                                                                <span className='svg__iconbox svg__icon--cross light hreflink'></span>
+                                                            </div>
+                                                        ))} */}
+                                            </>
+                                            : ""}
+                                    </div>
+
+                                </div>
                             </div>
                         </div>
 
@@ -1065,3 +1127,17 @@ export default TaskUserManagementTable;
 //     );
 // };
 
+
+
+{/* <div className="categories-container">
+  {MyCategories.map((parent) => (
+    <div key={parent.Id} className="parent-category">
+      <div className="parent-title">{parent.Title}</div>
+      <div className="child-categories">
+        {parent.children.map((child) => (
+          <div key={child.Id} className="child-category">{child.Title}</div>
+        ))}
+      </div>
+    </div>
+  ))}
+</div> */}

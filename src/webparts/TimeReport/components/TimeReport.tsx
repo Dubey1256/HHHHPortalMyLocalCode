@@ -21,7 +21,7 @@ import ShowClintCatogory from "../../../globalComponents/ShowClintCatogory";
 // import * as Moment from 'moment';
 import * as Moment from 'moment-timezone';
 import { MdEmail } from "react-icons/Md";
- import Loader from "react-loader";
+ import PageLoader from '../../../globalComponents/pageLoader';
 import ReactPopperTooltipSingleLevel from '../../../globalComponents/Hierarchy-Popper-tooltipSilgleLevel/Hierarchy-Popper-tooltipSingleLevel';
 var AllUsers: any = []
 let smartmetaDetails: any = [];
@@ -1521,28 +1521,7 @@ var ReportDate = new Date(a1)
                <GlobalCommanTable columns={column} data={data} callBackData={callBackData} showHeader={true} expandIcon={true} mailSend={sendEmail} showEmailIcon={true}/> </>:
                 <div className="bg-f5f5 mb-2 mt-2">Oops! Time Entries not available (Might be Weekend or Holiday or No data available In this Selected Date).</div>
              }
-            
-            <Loader
-                  loaded={loaded}
-                  lines={13}
-                  length={20}
-                  width={10}
-                  radius={30}
-                  corners={1}
-                  rotate={0}
-                  direction={1}
-                  
-                  speed={2}
-                  trail={60}
-                  shadow={false}
-                  hwaccel={false}
-                  className="spinner"
-                  zIndex={2e9}
-                  top="28%"
-                  left="50%"
-                  scale={1.0}
-                  loadedClassName="loadedContent"
-                />
+          
             </div>
             </section>
             <Panel
@@ -1645,7 +1624,7 @@ var ReportDate = new Date(a1)
 
             </Panel >
 
-
+            {!loaded ?<PageLoader/>:""}
 
         </>
     )
