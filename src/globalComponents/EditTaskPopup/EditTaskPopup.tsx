@@ -4699,7 +4699,7 @@ const EditTaskPopup = (Items: any) => {
                         : "bg-f4 fixed-bottom"
                 }
             >
-                <div className="align-items-center d-flex justify-content-between me-3 px-4 py-2">
+                <div className="align-items-center d-flex justify-content-between px-4 py-2">
                     <div>
                         <div className="">
                             Created{" "}
@@ -4845,7 +4845,7 @@ const EditTaskPopup = (Items: any) => {
                         : "bg-f4 fixed-bottom"
                 }
             >
-                <div className="align-items-center d-flex justify-content-between me-3 px-4 py-2">
+                <div className="align-items-center d-flex justify-content-between px-4 py-2">
                     <div>
                         <div className="">
                             Created{" "}
@@ -9227,7 +9227,7 @@ const EditTaskPopup = (Items: any) => {
                         </div>
                     </div>
                     <footer className="fixed-bottom">
-                        <div className="align-items-center d-flex me-3 pull-right px-4 py-2">
+                        <div className="align-items-center d-flex pull-right px-4 py-2">
                             <button
                                 type="button"
                                 className="btn btn-primary px-3 mx-1"
