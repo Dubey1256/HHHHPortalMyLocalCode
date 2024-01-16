@@ -1941,7 +1941,7 @@ const CentralizedSiteComposition = (Props: any) => {
                                                         </span>
                                                     </div>
                                                     <span className="border" style={{ padding: '5px 20px' }}>
-                                                        {TaskTotalTime} h
+                                                        {TaskTotalTime > 0 ? Number(TaskTotalTime).toFixed(2) : 0} h
                                                     </span>
                                                 </div>
                                             </>
@@ -1996,7 +1996,7 @@ const CentralizedSiteComposition = (Props: any) => {
                                                                     <div className="input-group">
                                                                         <input type="text"
                                                                             className="border-end-0 form-control"
-                                                                            placeholder="Search Client Category Here"
+                                                                            placeholder={`Search ${CCDetails.Title} Client Categories Here`}
                                                                             value={CCDetails.Title == SelectedSiteName ? searchedKey : ""}
                                                                             onChange={(e: any) => CCAutoSuggestionsMain(e, CCDetails.Title)}
                                                                             defaultValue={CCDetails.Title == SelectedSiteName ? searchedKey : ""}

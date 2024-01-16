@@ -360,9 +360,9 @@ const SmartInformation = (props: any, ref: any) => {
 
 
     await web.lists.getById(props?.AllListId?.SmartMetadataListID)
-      .items.select('ID,Title,ProfileType', 'Parent/Id', 'Parent/Title', "TaxType", 'Description', 'Created', 'Modified', 'Author/Id', 'Author/Title', 'Editor/Title', 'Editor/Id')
+      .items.select('ID,Title,ProfileType', 'Parent/Id', 'Parent/Title', 'TaxType', 'Created', 'Modified', 'Author/Id', 'Author/Title', 'Editor/Title', 'Editor/Id')
       .expand("Author", "Editor", "Parent").filter("ProfileType eq 'Information'").top(4999)
-      .get()
+      .getAll()
       .then((Data: any[]) => {
         console.log(Data)
         setLoadSmartMetaData(Data);
