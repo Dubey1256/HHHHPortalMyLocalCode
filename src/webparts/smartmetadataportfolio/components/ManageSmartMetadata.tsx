@@ -10,7 +10,9 @@ let TabSelected: string;
 let compareSeletected: any = [];
 let childRefdata: any;
 let ParentMetaDataItems: any = [];
+
 export default function ManageSmartMetadata(selectedProps: any) {
+    const [categoriesTabName, setCategoriesTabName]: any = useState([]);
     const [setName]: any = useState('');
     const [AllCombinedJSON, setAllCombinedJSON] = useState(JSON);
     const [isVisible, setIsVisible] = useState(false);
@@ -105,6 +107,7 @@ export default function ManageSmartMetadata(selectedProps: any) {
     const ShowingTabsData = async (Tab: any) => {
         TabsFilter = [];
         TabSelected = Tab;
+        setCategoriesTabName({});
         if (ParentMetaDataItems.length > 0)
             ParentMetaDataItems = [];
         SmartmetadataItems?.filter((comp: any) => {
@@ -123,15 +126,16 @@ export default function ManageSmartMetadata(selectedProps: any) {
             }
         });
         if (TabSelected === 'Categories') {
-            ShowingCategoriesTabsData(TabsFilter[0]?.Title)
+            ShowingCategoriesTabsData(TabsFilter[0])
         } else
             setSmartmetadata(TabsFilter);
         childRefdata?.current?.setRowSelection({});
     };
     const ShowingCategoriesTabsData = (tabData: any) => {
         TabsFilter = [];
+        setCategoriesTabName(tabData);
         ParentMetaDataItems.filter((item: any) => {
-            if (item.TaxType && item.Title === tabData) {
+            if (item.TaxType && item.Title === tabData.Title) {
                 if (item?.subRows.length > 0) {
                     item?.subRows.filter((item2: any) => {
                         TabsFilter.push(item2);
@@ -394,17 +398,20 @@ export default function ManageSmartMetadata(selectedProps: any) {
     }
     //-------------------------------------------------- GENERATE JSON FUNCTION end---------------------------------------------------------------
     return (
-        <div className='TableContentSection'>
+        <>
             {/* {<BraedCrum AllList={selectedProps.AllList} />} */}
-            <section className='col-sm-12 clearfix'>
-
-                <div className='d-flex justify-content-between align-items-center siteColor  serviceColor_Active mb-2'>
-                    <h3 className="heading">ManageSmartMetaData
-                    </h3>
-                    <span><a data-interception="off" target="_blank" href="https://hhhhteams.sharepoint.com/sites/HHHH/SP/SitePages/managesmartmetadata-old.aspx">Old ManageSmartMetadata</a></span>
+            <section className='ContentSection'>
+                <div className='row'>
+                    <div className='col-sm-3 text-primary'>
+                        <h3 className="heading">ManageSmartMetaData
+                        </h3>
+                    </div>
+                    <div className='col-sm-9 text-primary'>
+                        <h6 className='pull-right'><b><a data-interception="off"
+                            target="_blank" href="https://hhhhteams.sharepoint.com/sites/HHHH/SP/SitePages/managesmartmetadata-old.aspx">Old ManageSmartMetadata</a></b>
+                        </h6>
+                    </div>
                 </div>
-
-
             </section>
 
             <ul className="nav nav-tabs" role="tablist">
@@ -429,27 +436,17 @@ export default function ManageSmartMetadata(selectedProps: any) {
                                 index === 0
                                     ? "nav-link active"
                                     : "nav-link"
-                            } onClick={() => ShowingCategoriesTabsData(Parent.Title)} key={index} data-bs-toggle="tab" data-bs-target="#URLTasks" type="button" role="tab" aria-controls="URLTasks" aria-selected="true">
+                            } onClick={() => ShowingCategoriesTabsData(Parent)} key={index} data-bs-toggle="tab" data-bs-target="#URLTasks" type="button" role="tab" aria-controls="URLTasks" aria-selected="true">
                                 {Parent.Title}
                             </button>
                         ))}
                     </ul>
                 }
-                <div className="tab-pane  show active" id="URLTasks" role="tabpanel" aria-labelledby="URLTasks">
-                    <div className='TableSection'>
-                        <div className='container p-0'>
-                            <div className='Alltable'>
-                                <div className='col-md-12 p-0 smart'>
-                                    <div className='wrapper'>
-                                        {
-                                            Smartmetadata &&
-                                            <GlobalCommanTable smartMetadataCount={smartMetadataCount} Tabs={Tabs} compareSeletected={compareSeletected} CloseEditSmartMetaPopup={CloseEditSmartMetaPopup} SelectedItem={SelectedItem} setName={setName} ParentItem={Smartmetadata} AllList={selectedProps.AllList} data={Smartmetadata} TabSelected={TabSelected} ref={childRefdata} childRefdata={childRefdata} callChildFunction={callChildFunction} callBackSmartMetaData={callBackSmartMetaData} columns={columns} showHeader={true} expandIcon={true} showPagination={true} callBackData={callBackSmartMetaData} />
-                                        }
-                                    </div>
-                                </div>
-                            </div>
-                        </div>
-                    </div>
+                <div className="tab-pane Alltable mx-height show active" id="URLTasks" role="tabpanel" aria-labelledby="URLTasks">
+                    {
+                        Smartmetadata &&
+                        <GlobalCommanTable smartMetadataCount={smartMetadataCount} Tabs={Tabs} compareSeletected={compareSeletected} CloseEditSmartMetaPopup={CloseEditSmartMetaPopup} SelectedItem={SelectedItem} setName={setName} ParentItem={Smartmetadata} AllList={selectedProps.AllList} data={Smartmetadata} TabSelected={TabSelected} ref={childRefdata} childRefdata={childRefdata} callChildFunction={callChildFunction} callBackSmartMetaData={callBackSmartMetaData} columns={columns} showHeader={true} expandIcon={true} showPagination={true} callBackData={callBackSmartMetaData} categoriesTabName={categoriesTabName} />
+                    }
                 </div>
             </div>
             {isVisible && (<div>
@@ -481,7 +478,7 @@ export default function ManageSmartMetadata(selectedProps: any) {
             </div>)}
             {SmartMetadataEditPopupOpen ? <SmartMetadataEditPopup AllList={selectedProps.AllList} CloseEditSmartMetaPopup={CloseEditSmartMetaPopup} EditItemCallBack={callBackSmartMetaData} AllMetadata={Smartmetadata} MetadataItems={SmartmetadataItems} modalInstance={SelectedSmartMetadataItem} TabSelected={TabSelected} ParentMetaDataItems={ParentMetaDataItems} childRefdata={childRefdata} /> : ''}
             {SmartMetadataDeletePopupOpen ? <DeleteSmartMetadata AllList={selectedProps.AllList} CloseDeleteSmartMetaPopup={CloseDeleteSmartMetaPopup} DeleteItemCallBack={callBackSmartMetaData} AllMetadata={Smartmetadata} modalInstance={SelectedSmartMetadataItem} childRefdata={childRefdata} /> : ''}
-        </div>
+        </>
     );
 }
 
