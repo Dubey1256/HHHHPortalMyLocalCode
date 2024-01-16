@@ -64,7 +64,7 @@ const TaskStatusTbl = (Tile: any) => {
     {
       cell: ({ row, getValue }: any) => (
         <div>
-          <img width={"20px"} height={"20px"} className="rounded-circle" src={row?.original?.siteIcon} />
+          <img width={"20px"} height={"20px"} className="rounded-circle" src={row?.original?.SiteIcon} />
         </div>
       ),
       accessorKey: "",
