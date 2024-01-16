@@ -1658,18 +1658,24 @@ const AncTool = (props: any) => {
                     <div className="modal Anc-Confirmation-modal" >
                         <div className="modal-dialog modal-mg rounded-0 " style={{ maxWidth: "400px" }}>
                             <div className="modal-content rounded-0">
-                                <div className="modal-header">
-                                    <div className='subheading'>
+                                <div className="modal-header py-0">
+                                    <div className='d-flex full-width justify-content-between pb-1'>
+                                    <div className='subheading m-0'>
                                         {/* <img className="imgWid29 pe-1 mb-1 " src={Item?.SiteIcon} /> */}
                                         <span className="siteColor">
                                             Create New Online File {createNewDocType?.length > 0 ? ` - ${createNewDocType}` : ''}
                                         </span>
                                     </div>
+                                    <div className='d-flex'>
                                     <Tooltip ComponentId="7642" />
-                                    <span onClick={() => cancelNewCreateFile()}><i className="svg__iconbox svg__icon--cross crossBtn me-1"></i></span>
+                                    <span style={{marginTop:"3px"}} onClick={() => cancelNewCreateFile()}><i className="svg__iconbox svg__icon--cross crossBtn me-1"></i></span>
+                                    </div>
+                                    </div>
+                                    
+                                   
                                 </div>
                                 <div className="modal-body p-2 row">
-                                    <div className="AnC-CreateDoc-Icon">
+                                    <div className="AnC-CreateDoc-Icon p-0">
                                         <div className={createNewDocType == 'docx' ? 'selected' : ''}>
                                             <span onClick={() => createBlankWordDocx()} className='svg__iconbox svg__icon--docx hreflink' title='Word'></span>
                                         </div>
@@ -1680,7 +1686,7 @@ const AncTool = (props: any) => {
                                             <span onClick={() => createBlankPowerPointPptx()} className='svg__iconbox svg__icon--ppt hreflink' title='Presentation'></span>
                                         </div>
                                     </div>
-                                    <div className="col-sm-12 mt-2">
+                                    <div className="col-sm-12 mt-2 p-0">
                                         <input type="text" onChange={(e) => { setRenamedFileName(e.target.value) }} value={renamedFileName} placeholder='Enter File Name' className='full-width' />
                                     </div>
                                 </div>
