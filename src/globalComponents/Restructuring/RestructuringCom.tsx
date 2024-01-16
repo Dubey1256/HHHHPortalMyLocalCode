@@ -125,15 +125,8 @@ const RestructuringCom = (props: any, ref: any) => {
     if (restructureItem != undefined && restructureItem?.length > 0) {
       if (restructureItem?.length > 1 && props?.projectmngmnt != "projectmngmnt") {
         restructureItem?.map((items: any, length: any) => {
-          if (
-            PortfolioType === items?.PortfolioTypeCheck &&
-            checkPortfolioType
-          ) {
-            if (
-              (checkItem_x0020_Type === items?.TaskType?.Id ||
-                checkItem_x0020_Type === items?.Item_x0020_Type) &&
-              alertNotifyFirst
-            ) {
+          if ( PortfolioType === items?.PortfolioTypeCheck && checkPortfolioType) {
+            if ((checkItem_x0020_Type === items?.TaskType?.Id ||  checkItem_x0020_Type === items?.Item_x0020_Type) &&alertNotifyFirst) {
               if (checkSiteType == items?.siteType && alertNotify) {
                 itemTypes = "SAME_TYPE";
               } else {
@@ -165,12 +158,10 @@ const RestructuringCom = (props: any, ref: any) => {
           buttonRestructureDifferentType();
         }
       }else{
-        let typeCheck :any = '';
         let typeAlert : boolean = true;
-        typeCheck = restructureItem[0].TaskType?.Id;
         restructureItem?.map((items: any, length: any) => {
           if(items?.Item_x0020_Type != 'Sprint'){
-             if(typeCheck == items?.TaskType?.Id && typeAlert){
+             if(restructureItem[0].TaskType?.Id == items?.TaskType?.Id && restructureItem[0]?.siteType == items?.siteType && typeAlert){
               typeAlert = true;
                }else{
                 if(typeAlert){
@@ -248,12 +239,7 @@ const RestructuringCom = (props: any, ref: any) => {
                         ? "https://hhhhteams.sharepoint.com/sites/HHHH/SP/SiteCollectionImages/ICONS/Shareweb/Restructuring_Tool.png"
                         : "https://hhhhteams.sharepoint.com/sites/HHHH/SP/SiteCollectionImages/ICONS/Service_Icons/Restructuring_Tool.png";
                   } else {
-                    newObj = {
-                      Title: obj?.Title,
-                      TaskType: {
-                        Id:
-                          obj.TaskType?.Id == undefined ? "" : obj.TaskType?.Id,
-                      },
+                    newObj = {Title: obj?.Title,TaskType: {  Id:    obj.TaskType?.Id == undefined ? "" : obj.TaskType?.Id,},
                       Id: obj.Id,
                       Item_x0020_Type: obj.Item_x0020_Type,
                       siteIcon:
@@ -1010,34 +996,14 @@ const RestructuringCom = (props: any, ref: any) => {
                                   }
                                 } else {
                                   if (items?.Id === wrkstrm.Id) {
-                                    newObj = {
-                                      Title: obj?.Title,
-                                      TaskType: {
-                                        Id:
-                                          obj.TaskType?.Id == undefined
-                                            ? ""
-                                            : obj.TaskType?.Id,
-                                      },
+                                    newObj = {Title: obj?.Title,  TaskType: {Id:obj.TaskType?.Id == undefined ? "" : obj.TaskType?.Id,  },
                                       Item_x0020_Type: obj.Item_x0020_Type,
                                       Id: obj.Id,
-                                      siteIcon:
-                                        obj.SiteIconTitle === undefined
-                                          ? obj.SiteIcon
-                                          : obj.SiteIconTitle,
-                                      newSubChild: {
-                                        Title: sub?.Title,
-                                        TaskType: {
-                                          Id:
-                                            sub.TaskType?.Id == undefined
-                                              ? ""
-                                              : sub.TaskType?.Id,
-                                        },
+                                      siteIcon:obj.SiteIconTitle === undefined  ? obj.SiteIcon  : obj.SiteIconTitle,
+                                      newSubChild: { Title: sub?.Title, TaskType: {   Id:     sub.TaskType?.Id == undefined       ? ""       : sub.TaskType?.Id, },
                                         Item_x0020_Type: sub.Item_x0020_Type,
                                         Id: sub.Id,
-                                        siteIcon:
-                                          sub.SiteIconTitle === undefined
-                                            ? sub.SiteIcon
-                                            : sub.SiteIconTitle,
+                                        siteIcon: sub.SiteIconTitle === undefined   ? sub.SiteIcon   : sub.SiteIconTitle,
                                         newFeatChild: {
                                           Title: feature?.Title,
                                           TaskType: {
@@ -1449,6 +1415,10 @@ const RestructuringCom = (props: any, ref: any) => {
                     obj.isRestructureActive = true;
                   }
                 }
+
+                if(obj?.siteType != restructureItem[0]?.siteType && obj?.Item_x0020_Type !== 'Sprint'){
+                  obj.isRestructureActive = false;
+                }
                
                 if(obj?.Title == restructureItem[0]?.Title && obj?.Id == restructureItem[0]?.Id && obj?.TaskType?.Id == restructureItem[0]?.TaskType?.Id){
                   topCompo = false;
@@ -1475,6 +1445,10 @@ const RestructuringCom = (props: any, ref: any) => {
                         sub.isRestructureActive = true;
                       }
                     }
+
+                    if(sub?.siteType != restructureItem[0]?.siteType && sub?.Item_x0020_Type !== 'Sprint'){
+                      sub.isRestructureActive = false;
+                    }
                     if (sub?.Title == restructureItem[0]?.Title && sub?.Id == restructureItem[0]?.Id && sub?.TaskType?.Id == restructureItem[0]?.TaskType?.Id) {
                             sub.isRestructureActive = false;
                             newObj = {...obj,newSubChild:{...sub}}
@@ -1498,6 +1472,9 @@ const RestructuringCom = (props: any, ref: any) => {
                           if(feat?.TaskType?.Id != 2 && feat?.TaskType !== null && feat?.TaskType !== undefined){
                             feat.isRestructureActive = true;
                           }
+                        }
+                        if(feat?.siteType != restructureItem[0]?.siteType && feat?.Item_x0020_Type !== 'Sprint'){
+                          feat.isRestructureActive = false;
                         }
                         if (feat?.Title == restructureItem[0]?.Title && feat?.Id == restructureItem[0]?.Id && feat?.TaskType?.Id == restructureItem[0]?.TaskType?.Id) {
         
@@ -1527,7 +1504,9 @@ const RestructuringCom = (props: any, ref: any) => {
                                 last.isRestructureActive = true;
                               }
                             }
-                           
+                            if(last?.siteType != restructureItem[0]?.siteType && last?.Item_x0020_Type !== 'Sprint'){
+                              last.isRestructureActive = false;
+                            }
                             if (last?.Title == restructureItem[0]?.Title && last?.Id == restructureItem[0]?.Id && last?.TaskType?.Id == restructureItem[0]?.TaskType?.Id) {
                               newObj = {...obj,newSubChild:{...sub,feature:{...feat,activity:{...last}}}}
                                         obj.isRestructureActive = false;
@@ -4869,9 +4848,8 @@ const RestructuringCom = (props: any, ref: any) => {
           array?.map((obj: any, index: any) => {
             obj.isRestructureActive = false;
             if (
-              newItemBackUp == undefined ||
-              newItemBackUp == null ||
-              (newItemBackUp?.length == 0 && onceRender)
+             ( newItemBackUp == undefined || newItemBackUp == null) &&
+              newItemBackUp?.length == 0 && onceRender && checkUpdate != 3
             ) {
               array?.push(...latestCheckedList);
               checkUpdate = checkUpdate + 1;
@@ -5856,11 +5834,11 @@ const RestructuringCom = (props: any, ref: any) => {
               inside
               {newItemBackUp?.SiteIconTitle != undefined &&
               newItemBackUp?.SiteIconTitle != null ? (
-                <span className="Dyicons me-1">
+                <span className="Dyicons me-1 ms-1">
                   {newItemBackUp?.SiteIconTitle}
                 </span>
               ) : (
-                <img className="workmember" src={newItemBackUp?.SiteIcon} />
+                <img className="workmember me-1 ms-1" src={newItemBackUp?.SiteIcon} />
               )}
               {newItemBackUp?.Title}
             </div>
@@ -6596,7 +6574,7 @@ const RestructuringCom = (props: any, ref: any) => {
                   <span>
                     <span>
                       {"Select Component Type :"}
-                      <label className="SpfxCheckRadio ms-2">
+                      <label className="SpfxCheckRadio ms-3 me-1">
                         <input
                           type="radio"
                           name="fav_language"
@@ -6619,7 +6597,7 @@ const RestructuringCom = (props: any, ref: any) => {
                       <label className="ms-1"> {"SubComponent"} </label>
                     </span>
                     <span>
-                      <label className="SpfxCheckRadio ms-2">
+                      <label className="SpfxCheckRadio ms-3 me-1">
                         <input
                           type="radio"
                           className="radio"
@@ -6654,8 +6632,8 @@ const RestructuringCom = (props: any, ref: any) => {
               restructureItem[0]?.TaskType?.Id == 2) ? (
               <div className="mt-2">
                 <span>
-                  {"Select Component Type :"}
-                  <label className="SpfxCheckRadio ms-2">
+                  {"Select Task Type :"}
+                  <label className="SpfxCheckRadio ms-3 me-1">
                     <input
                       type="radio"
                       className="radio"
@@ -6674,7 +6652,7 @@ const RestructuringCom = (props: any, ref: any) => {
                   <label className="ms-1"> {"Workstream"} </label>
                 </span>
                 <span>
-                  <label className="SpfxCheckRadio ms-2">
+                  <label className="SpfxCheckRadio ms-3 me-1">
                     <input
                       type="radio"
                       className="radio"
@@ -6704,8 +6682,8 @@ const RestructuringCom = (props: any, ref: any) => {
                 restructureItem[0]?.subRows?.length == 0)) ? (
               <div className="mt-2">
                 <span>
-                  {"Select Component Type :"}
-                  <label className="SpfxCheckRadio ms-2">
+                  {"Select Task Type :"}
+                  <label className="SpfxCheckRadio ms-3 me-1">
                     <input
                       type="radio"
                       className="radio"
@@ -6724,7 +6702,7 @@ const RestructuringCom = (props: any, ref: any) => {
                   <label className="ms-1"> {"Activity"} </label>
                 </span>
                 <span>
-                  <label className="SpfxCheckRadio ms-2">
+                  <label className="SpfxCheckRadio ms-3 me-1">
                     <input
                       type="radio"
                       className="radio"
@@ -6841,8 +6819,8 @@ const RestructuringCom = (props: any, ref: any) => {
                
                 {newItemBackUp?.Item_x0020_Type != "Task" ? (
                   <>
-                   {"Select Component Type :"}
-                    <label className="SpfxCheckRadio ms-2">
+                   {"Select Task Type :"}
+                    <label className="SpfxCheckRadio ms-3 me-1">
                       <input
                         type="radio"
                         className="radio"
@@ -6859,7 +6837,7 @@ const RestructuringCom = (props: any, ref: any) => {
                       />
                     </label>
                     <label className="ms-1"> {"Activity"} </label>
-                    <label className="SpfxCheckRadio ms-2">
+                    <label className="SpfxCheckRadio ms-3 me-1">
                       <input
                         type="radio"
                         className="radio"
@@ -6880,8 +6858,8 @@ const RestructuringCom = (props: any, ref: any) => {
                     {newItemBackUp?.Item_x0020_Type == "Task" &&
                     newItemBackUp?.TaskType?.Id == 1 ? (
                       <>
-                       {"Select Component Type :"}
-                        <label className="SpfxCheckRadio ms-2">
+                       {"Select Task Type :"}
+                        <label className="SpfxCheckRadio ms-3 me-1">
                           <input
                             type="radio"
                             className="radio"
@@ -6900,7 +6878,7 @@ const RestructuringCom = (props: any, ref: any) => {
                           />
                         </label>
                         <label className="ms-1"> {"Workstream"} </label>
-                        <label className="SpfxCheckRadio ms-2">
+                        <label className="SpfxCheckRadio ms-3 me-1">
                           <input
                             type="radio"
                             className="radio"
@@ -7618,8 +7596,8 @@ const RestructuringCom = (props: any, ref: any) => {
             newItemBackUp?.TaskType?.Id == 1 && (
               <div className="mt-2">
                 <span>
-                  {"Select Component Type :"}
-                  <label className="SpfxCheckRadio ms-2">
+                  {"Select Task Type :"}
+                  <label className="SpfxCheckRadio ms-3 me-1">
                     <input
                       type="radio"
                       className="radio"
@@ -7638,7 +7616,7 @@ const RestructuringCom = (props: any, ref: any) => {
                   <label className="ms-1"> {"Workstream"} </label>
                 </span>
                 <span>
-                  <label className="SpfxCheckRadio ms-2">
+                  <label className="SpfxCheckRadio ms-3 me-1">
                     <input
                       type="radio"
                       className="radio"
