@@ -2015,7 +2015,7 @@ class Taskprofile extends React.Component<ITaskprofileProps, ITaskprofileState> 
                                         {item.CommentFor !== undefined &&
                                           item.CommentFor !== "" ? (
                                           <div key={index}>
-                                            {item.Description}
+                                            {item?.Description?.replace(/\n/g, '<br>')}
                                           </div>
                                         ) : null}
                                       </div>
