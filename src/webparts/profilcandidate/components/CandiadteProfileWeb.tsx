@@ -13,7 +13,6 @@ import HHHHEditComponent from '../../contactSearch/components/contact-search/pop
 import GlobalCommanTable from '../../../globalComponents/GroupByReactTableComponents/GlobalCommanTable';
 import CandidateRating from './CandidateRating';
 import EditPopup from '../../helloSpfx/components/EditPopup';
-import pageLoader from '../../../globalComponents/pageLoader';
 import PageLoader from '../../../globalComponents/pageLoader';
 
 let allSite: any = {
