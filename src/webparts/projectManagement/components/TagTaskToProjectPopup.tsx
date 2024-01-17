@@ -361,7 +361,7 @@ const TagTaskToProjectPopup = (props: any) => {
                             <ReactPopperTooltip ShareWebId={getValue()} row={row} AllListId={props?.AllListId} />
                             : ''} */}
                         {row?.original?.TitleNew != "Tasks" ?
-                            <ReactPopperTooltipSingleLevel AllListId={props?.AllListId} ShareWebId={row?.original?.TaskID} row={row?.original} singleLevel={true} masterTaskData={props?.masterTaskData} AllSitesTaskData={AllTasks} />
+                            <ReactPopperTooltipSingleLevel AllListId={props?.AllListId} ShareWebId={row?.original?.TaskID} row={row?.original} singleLevel={true} masterTaskData={props?.masterTaskData!=undefined ? props?.masterTaskData :[]} AllSitesTaskData={AllTasks} />
                             : ''}                            
                     </div>
                 ),
