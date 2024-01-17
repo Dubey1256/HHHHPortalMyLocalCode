@@ -9,7 +9,7 @@ import { FaHome, FaPencilAlt } from "react-icons/fa";
 import { IoMdArrowDropright, IoMdArrowDropdown } from "react-icons/io";
 import CommentCard from "../../../globalComponents/Comments/CommentCard";
 import EditInstituton from "../../EditPopupFiles/EditComponent";
-import ComponentTable from "./Taskwebparts";
+import ComponentTable from "./ComponentPortfolioTable";
 // import Sitecomposition from "../../../globalComponents/SiteComposition";
 import SmartInformation from "../../taskprofile/components/SmartInformation";
 import { spfi } from "@pnp/sp/presets/all";
@@ -641,7 +641,7 @@ function Portfolio({ SelectedProp, TaskUser }: any) {
               item.Item_x0020_Type == "Feature"
             ) {
               ParentId = item?.Parent?.Id;
-              let urln = `https://hhhhteams.sharepoint.com/sites/HHHH/SP/_api/lists/getbyid('${ContextValue.MasterTaskListID}')/items?$select=Id,Parent/Id,Title,Parent/Title,Parent/ItemType&$expand=Parent&$filter=Id eq ${ParentId}`;
+              let urln = `${SelectedProp.siteUrl}/_api/lists/getbyid('${ContextValue.MasterTaskListID}')/items?$select=Id,Parent/Id,Title,Parent/Title,Parent/ItemType&$expand=Parent&$filter=Id eq ${ParentId}`;
               $.ajax({
                 url: urln,
                 method: "GET",
@@ -1128,7 +1128,7 @@ function Portfolio({ SelectedProp, TaskUser }: any) {
                                           <a
                                             target="_blank"
                                             data-interception="off"
-                                            href={`https://hhhhteams.sharepoint.com/sites/HHHH/SP/SitePages/Portfolio-Profile.aspx?taskId=${ParentD?.Parent?.Id}`}
+                                            href={`${SelectedProp.siteUrl}/SitePages/Portfolio-Profile.aspx?taskId=${ParentD?.Parent?.Id}`}
                                           >
                                             {ParentD?.Parent?.Title}
                                           </a>
@@ -1143,7 +1143,7 @@ function Portfolio({ SelectedProp, TaskUser }: any) {
                                   <a
                                     target="_blank"
                                     data-interception="off"
-                                    href={`https://hhhhteams.sharepoint.com/sites/HHHH/SP/SitePages/Portfolio-Profile.aspx?taskId=${item?.Parent?.Id}`}
+                                    href={`${SelectedProp.siteUrl}/SitePages/Portfolio-Profile.aspx?taskId=${item?.Parent?.Id}`}
                                   >
                                     {item?.Parent?.Title}
                                   </a>
@@ -1621,6 +1621,15 @@ function Portfolio({ SelectedProp, TaskUser }: any) {
                   </div>
                   <div className="col-md-12">
                     <section className="row  accordionbox">
+                    {(data.length!= 0 && data[0]?.ComponentLink != null)  &&
+                      <div className="d-flex mb-1">
+                      <div className='bg-fxdark p-2'><label>Url</label></div>
+                      <div className='bg-light p-2 text-break full-width'>
+                          <a target="_blank" data-interception="off" href={data[0].ComponentLink?.Url}>{data[0]?.ComponentLink?.Url}</a>
+                        
+                      </div>
+                    </div>
+                    }
                       <div className="accordion  pe-1 overflow-hidden">
                         {/* Project Management Box */}
                         {filterdata?.length !== 0 && (

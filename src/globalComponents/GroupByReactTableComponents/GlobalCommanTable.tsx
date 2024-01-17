@@ -801,9 +801,13 @@ const GlobalCommanTable = (items: any, ref: any) => {
             childRef.current.trueTopIcon(items);
         }
     };
-
+    const projectTopIcon = (items: any) => {
+        if (childRef.current) {
+            childRef.current.projectTopIcon(items);
+        }
+    };
     React.useImperativeHandle(ref, () => ({
-        callChildFunction, trueTopIcon, setRowSelection, globalFilter, setColumnFilters, setGlobalFilter, coustomFilterColumns, table
+        callChildFunction, trueTopIcon, setRowSelection, globalFilter,projectTopIcon, setColumnFilters, setGlobalFilter, coustomFilterColumns, table
     }));
 
     const restructureFunct = (items: any) => {
