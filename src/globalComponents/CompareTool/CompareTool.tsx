@@ -117,9 +117,15 @@ const CompareTool = (props: any) => {
                         datas[0].AssignToUsers = [];
                         datas[0].TeamMembersUsers = [];
                         datas[0].TaskCategories = datas[0]?.TaskCategories === undefined ? [] : datas[0]?.TaskCategories;
-
-                        datas[0].PortfolioItem = datas[0]?.Portfolios === undefined ? [] : datas[0]?.Portfolios;
-                        datas[0].ProjectItem = datas[0]?.Portfolios === undefined ? [] : datas[0]?.Portfolios;
+                        datas[0].PortfolioItem = [];
+                        datas[0].ProjectItem = [];
+                        datas[0]?.Portfolios?.forEach((obj: any) => {
+                            if (obj.ItemType === 'Project')
+                                datas[0].ProjectItem.push(obj)
+                            else datas[0].PortfolioItem.push(obj);
+                        })
+                        // datas[0].PortfolioItem = datas[0]?.Portfolios === undefined ? [] : datas[0]?.Portfolios;
+                        // datas[0].ProjectItem = datas[0]?.Portfolios === undefined ? [] : datas[0]?.Portfolios;
                         datas[0].ResponsibileUsers = [];
                         if (datas[0]?.CompletedDate != undefined && datas[0]?.CompletedDate != null)
                             datas[0].CompletedDate = new Date(datas[0]?.CompletedDate);
@@ -370,8 +376,16 @@ const CompareTool = (props: any) => {
                 fieldName: floraData[htmlEditor.fieldName],
                 ItemIndex: floraData[htmlEditor.ItemIndex]
             }));
-        } else
+        } else {
             changeData(htmlEditor.ItemIndex, htmlEditor.fieldName, floraData)
+            setHtmlEditor((prev: any) => ({
+                ...prev,
+                data: "",
+                condition: false,
+                fieldName: floraData[htmlEditor.fieldName],
+                ItemIndex: floraData[htmlEditor.ItemIndex]
+            }));
+        }
     }
 
     const handleRadioChange = (item: any, property: any) => {
@@ -929,18 +943,19 @@ const CompareTool = (props: any) => {
 
     //Save func
     const TaggedTaskSavingConfiguration = (item: any) => {
-        let temp1 = item.TaggedTask.filter(function (val: any) { return val?.Portfolios?.Id == item.Id })
+        let temp1 = item?.TaggedTask?.filter(function (val: any) { return val?.Portfolios?.Id == item.Id })
 
     }
     const SaveComponentsItems = async (Item: any) => {
-        if (Item.TaskComponent.length > 0) {
-            let allCompo = Item.TaskComponent.filter((obj: any) => obj.Portfolios.Id != Item.Id)
+        if (Item?.TaskComponent?.length > 0) {
+            let allCompo = Item?.TaskComponent?.filter((obj: any) => obj.Portfolios.Id != Item.Id)
             allCompo.forEach((item: any) => {
                 const postData: any = {
                     PortfolioId: Item.Id,
                 }
                 globalCommon.updateItemById(props?.contextValue?.siteUrl, props?.contextValue?.MasterTaskListID, postData, item.Id)
                     .then((returnresult) => {
+                        console.log(returnresult);
                         // result.smartTime = String(returnresult)
                         // console.log("Final Total Time:", returnresult);
                     })
@@ -966,7 +981,7 @@ const CompareTool = (props: any) => {
 
         //  return SharewebListService.UpdateListItemByListId(GlobalConstants.ADMIN_SITE_URL, GlobalConstants.QUESTIONHELPDESCRIPTION_LISTID, postData, obj.Id);
     }
-    const SaveComponent = async (Item: any) => {
+    const SaveComponent = async (Item: any, type: any) => {
         var AssignedToIds: any = [];
         var TeamMembersIds: any = [];
         let ResponsibleTeamIds: any = [];
@@ -1037,6 +1052,18 @@ const CompareTool = (props: any) => {
             })
         }
 
+        let portfolioIds: any = [];
+        if (Item.PortfolioItem.length > 0) {
+            Item.PortfolioItem.forEach((portfolio: any) => {
+                portfolioIds.push(portfolio.Id);
+            })
+        }
+        if (Item.ProjectItem.length > 0) {
+            Item.ProjectItem.forEach((project: any) => {
+                portfolioIds.push(project.Id);
+            })
+        }
+
 
         let postData: any = {
             'Title': Item.Title,
@@ -1059,7 +1086,7 @@ const CompareTool = (props: any) => {
             'Mileage': Item.Mileage,
             'Priority_x0020_Rank': Item.PriorityRank,
             // 'ComponentId': { "results": $scope.smartComponentsIds },
-
+            'PortfoliosId': { "results": portfolioIds },
             'TaskCategoriesId': { "results": taskCategoryIds },
             'Package': Item.Package,
             // 'SiteCompositionSettings': angular.toJson(Item.SiteCompositionSettingsValue),
@@ -1089,6 +1116,12 @@ const CompareTool = (props: any) => {
         globalCommon.updateItemById(props?.contextValue?.siteUrl, props?.contextValue?.MasterTaskListID, postData, Item.Id)
             .then((returnresult) => {
                 console.log(returnresult);
+                if (type === 'Keep1')
+                    props.compareToolCallBack(data[0])
+                if (type === 'Keep2')
+                    props.compareToolCallBack(data[1])
+                if (type === 'KeepBoth')
+                    props.compareToolCallBack(data)
                 // result.smartTime = String(returnresult)
                 // console.log("Final Total Time:", returnresult);
             })
@@ -1119,22 +1152,22 @@ const CompareTool = (props: any) => {
 
             // SaveComponentsItems(data[1]);
             if (type == 'Keep1') {
-                SaveComponent(data[0]);
+                SaveComponent(data[0], type);
                 TaggedTaskSavingConfiguration(data[0]);
                 SaveComponentsItems(data[0]);
-                deleteComponent(data[1]);
+                // deleteComponent(data[1]);
                 // $rootScope.compareComponentInstance.EditItemCallBack(data[1].Id);
             } else if (type == 'Keep2') {
-                SaveComponent(data[1]);
+                SaveComponent(data[1], type);
                 TaggedTaskSavingConfiguration(data[1]);
                 SaveComponentsItems(data[1]);
-                deleteComponent(data[0]);
+                // deleteComponent(data[0]);
                 // $rootScope.compareComponentInstance.EditItemCallBack(data[0].Id);
             } else if (type == 'KeepBoth') {
-                SaveComponent(data[0]);
+                SaveComponent(data[0], '');
                 TaggedTaskSavingConfiguration(data[0]);
                 SaveComponentsItems(data[0]);
-                SaveComponent(data[1]);
+                SaveComponent(data[1], type);
                 TaggedTaskSavingConfiguration(data[1]);
                 SaveComponentsItems(data[1]);
             }
@@ -1148,7 +1181,7 @@ const CompareTool = (props: any) => {
                         <Row className="Metadatapannel ">
                             <Col sm="5" md="5" lg="5" className="alignCenter siteColor">
                                 <span className="Dyicons me-1">{data[0]?.Item_x0020_Type.charAt(0)}</span> <Label><a target="_blank" data-interception="off"
-                                    href={`${data[0]?.siteUrl}//SitePages/Portfolio-Profile.aspx?taskId=${data[0]?.Id}`}>
+                                    href={`${data[0]?.siteUrl}/SitePages/Portfolio-Profile.aspx?taskId=${data[0]?.Id}`}>
                                     {data[0]?.Title}
                                 </a></Label>
                             </Col>
@@ -1157,7 +1190,7 @@ const CompareTool = (props: any) => {
                             <Col sm="5" md="5" lg="5" className="alignCenter siteColor">
                                 <span className="Dyicons me-1">{data[1]?.Item_x0020_Type.charAt(0)}</span> <Label>
                                     <a target="_blank" data-interception="off"
-                                        href={`${data[1]?.siteUrl}//SitePages/Portfolio-Profile.aspx?taskId=${data[1]?.Id}`}>
+                                        href={`${data[1]?.siteUrl}/SitePages/Portfolio-Profile.aspx?taskId=${data[1]?.Id}`}>
                                         {data[1]?.Title}
                                     </a>
                                 </Label>
@@ -2025,21 +2058,21 @@ const CompareTool = (props: any) => {
                             <Col sm="5" md="5" lg="5">
                                 <div className="input-group">
                                     <label className="fw-semibold full-width form-label">Comments {data[1]?.Comments?.length > 0 && (data[1]?.Comments?.length)}
-                                        <span className="svg__iconbox alignIcon svg__icon--edit" onClick={() => setOpenComment({ data: data[1]?.Comments, condition: true, fieldName: 'Comments', ItemIndex: 1 })}></span>
+                                        <span className="svg__iconbox alignIcon svg__icon--edit" onClick={() => OpenComment(data[1], true, 'Comments', 1)}></span>
                                     </label>
                                     {data[1]?.Comments?.length > 0 && <div className="alignCenter">
                                         <div className="alignCenter">
                                             <div className="alignCenter f-13">
                                                 <span className='comment-date'>
-                                                    <span className='round  pe-1'> <img className='align-self-start me-1' title={data[1]?.Comments[1]?.AuthorName}
-                                                        src={data[1]?.Comments[1]?.AuthorImage != undefined && data[1]?.Comments[1]?.AuthorImage != '' ?
-                                                            data[1]?.Comments[1]?.AuthorImage :
+                                                    <span className='round  pe-1'> <img className='align-self-start me-1' title={data[1]?.Comments[0]?.AuthorName}
+                                                        src={data[1]?.Comments[0]?.AuthorImage != undefined && data[1]?.Comments[0]?.AuthorImage != '' ?
+                                                            data[1]?.Comments[0]?.AuthorImage :
                                                             "https://hhhhteams.sharepoint.com/sites/HHHH/SiteCollectionImages/ICONS/32/icon_user.jpg"}
                                                     />
-                                                        <a>{data[1]?.Comments[1]?.AuthorName} - </a>   {data[1]?.Comments[1]?.Created}
+                                                        <a>{data[1]?.Comments[0]?.AuthorName} - </a>   {data[1]?.Comments[0]?.Created}
 
                                                     </span>
-                                                    <p className='m-0' id="pageContent">  <span dangerouslySetInnerHTML={{ __html: data[1]?.Comments[1]?.Description }}></span></p>
+                                                    <p className='m-0' id="pageContent">  <span dangerouslySetInnerHTML={{ __html: data[1]?.Comments[0]?.Description }}></span></p>
                                                 </span>
                                             </div>
                                             <div>
@@ -2059,8 +2092,8 @@ const CompareTool = (props: any) => {
                                     <label className="fw-semibold full-width form-label">Description
                                         <span className="svg__iconbox alignIcon svg__icon--edit" onClick={() => { bindEditorData(data[0], 0, "Body", true) }}></span>
                                     </label>
-                                    <textarea rows={3} className="form-control">
-                                        {data[0]?.Body != undefined && data[0]?.Body != null ? data[0]?.Body.replace(/(<([^>]+)>)/gi, "").replace(/\n/g, '').replace(/&#160;/g, ' ') : ''}
+                                    <textarea rows={3} className="form-control" value={data[0]?.Body != undefined && data[0]?.Body != null ? data[0]?.Body.replace(/(<([^>]+)>)/gi, "").replace(/\n/g, '').replace(/&#160;/g, ' ') : ''}>
+
                                     </textarea>
                                 </div>
                             </Col>
@@ -2075,7 +2108,7 @@ const CompareTool = (props: any) => {
                                     <label className="fw-semibold full-width form-label">Description
                                         <span className="svg__iconbox alignIcon svg__icon--edit" onClick={() => { bindEditorData(data[1], 1, "Body", true) }}></span>
                                     </label>
-                                    <textarea className="form-control" rows={3}>{data[1]?.Body != undefined && data[1]?.Body != null ? data[1]?.Body.replace(/(<([^>]+)>)/gi, "").replace(/\n/g, '').replace(/&#160;/g, ' ') : ''}</textarea>
+                                    <textarea className="form-control" rows={3} value={data[1]?.Body != undefined && data[1]?.Body != null ? data[1]?.Body.replace(/(<([^>]+)>)/gi, "").replace(/\n/g, '').replace(/&#160;/g, ' ') : ''}></textarea>
                                 </div>
                             </Col>
                             <Col sm="1" md="1" lg="1">
@@ -2088,7 +2121,7 @@ const CompareTool = (props: any) => {
                                     <label className="fw-semibold full-width form-label">Help Information
                                         <span className="svg__iconbox alignIcon svg__icon--edit" onClick={() => { bindEditorData(data[0], 0, "Help_x0020_Information", true) }}></span>
                                     </label>
-                                    <textarea className="form-control" rows={3}>{data[0]?.Help_x0020_Information != undefined && data[0]?.Help_x0020_Information != null ? data[0]?.Help_x0020_Information.replace(/(<([^>]+)>)/gi, "").replace(/\n/g, '').replace(/&#160;/g, ' ') : ''}</textarea>
+                                    <textarea className="form-control" rows={3} value={data[0]?.Help_x0020_Information != undefined && data[0]?.Help_x0020_Information != null ? data[0]?.Help_x0020_Information.replace(/(<([^>]+)>)/gi, "").replace(/\n/g, '').replace(/&#160;/g, ' ') : ''}></textarea>
                                 </div>
                             </Col>
                             <Col sm="1" md="1" lg="1">
@@ -2102,7 +2135,7 @@ const CompareTool = (props: any) => {
                                     <label className="fw-semibold full-width form-label">Help Information
                                         <span className="svg__iconbox alignIcon svg__icon--edit" onClick={() => { bindEditorData(data[1], 1, "Help_x0020_Information", true) }}></span>
                                     </label>
-                                    <textarea className="form-control" rows={3}>{data[1]?.Help_x0020_Information != undefined && data[1]?.Help_x0020_Information != null ? data[1]?.Help_x0020_Information.replace(/(<([^>]+)>)/gi, "").replace(/\n/g, '').replace(/&#160;/g, ' ') : ''}</textarea>
+                                    <textarea className="form-control" rows={3} value={data[1]?.Help_x0020_Information != undefined && data[1]?.Help_x0020_Information != null ? data[1]?.Help_x0020_Information.replace(/(<([^>]+)>)/gi, "").replace(/\n/g, '').replace(/&#160;/g, ' ') : ''}></textarea>
 
                                 </div>
                             </Col>
@@ -2116,7 +2149,7 @@ const CompareTool = (props: any) => {
                                     <label className="fw-semibold full-width form-label">Technical Explanations
                                         <span className="svg__iconbox alignIcon svg__icon--edit" onClick={() => { bindEditorData(data[0], 0, "TechnicalExplanations", true) }}></span>
                                     </label>
-                                    <textarea className="form-control" rows={3}>{data[0]?.TechnicalExplanations != null && data[0]?.TechnicalExplanations != undefined ? data[0]?.TechnicalExplanations.replace(/(<([^>]+)>)/gi, "").replace(/\n/g, '').replace(/&#160;/g, ' ') : ''}</textarea>
+                                    <textarea className="form-control" rows={3} value={data[0]?.TechnicalExplanations != null && data[0]?.TechnicalExplanations != undefined ? data[0]?.TechnicalExplanations.replace(/(<([^>]+)>)/gi, "").replace(/\n/g, '').replace(/&#160;/g, ' ') : ''}></textarea>
                                 </div>
                             </Col>
                             <Col sm="1" md="1" lg="1">
@@ -2130,7 +2163,7 @@ const CompareTool = (props: any) => {
                                     <label className="fw-semibold full-width form-label">Technical Explanations
                                         <span className="svg__iconbox alignIcon svg__icon--edit" onClick={() => { bindEditorData(data[1], 1, "TechnicalExplanations", true) }}></span>
                                     </label>
-                                    <textarea className="form-control" rows={3}>{data[1]?.TechnicalExplanations != null && data[1]?.TechnicalExplanations != undefined ? data[1]?.TechnicalExplanations.replace(/(<([^>]+)>)/gi, "").replace(/\n/g, '').replace(/&#160;/g, ' ') : ''}</textarea>
+                                    <textarea className="form-control" rows={3} value={data[1]?.TechnicalExplanations != null && data[1]?.TechnicalExplanations != undefined ? data[1]?.TechnicalExplanations.replace(/(<([^>]+)>)/gi, "").replace(/\n/g, '').replace(/&#160;/g, ' ') : ''}></textarea>
                                 </div>
                             </Col>
                             <Col sm="1" md="1" lg="1">
@@ -2143,7 +2176,7 @@ const CompareTool = (props: any) => {
                                     <label className="fw-semibold full-width form-label">Deliverables
                                         <span className="svg__iconbox alignIcon svg__icon--edit" onClick={() => { bindEditorData(data[0], 0, "Deliverables", true) }}></span>
                                     </label>
-                                    <textarea className="form-control" rows={3}>{data[0]?.Deliverables != null && data[0]?.Deliverables != undefined ? data[0]?.Deliverables.replace(/(<([^>]+)>)/gi, "").replace(/\n/g, '').replace(/&#160;/g, ' ') : ''}</textarea>
+                                    <textarea className="form-control" rows={3} value={data[0]?.Deliverables != null && data[0]?.Deliverables != undefined ? data[0]?.Deliverables.replace(/(<([^>]+)>)/gi, "").replace(/\n/g, '').replace(/&#160;/g, ' ') : ''}></textarea>
                                 </div>
                             </Col>
                             <Col sm="1" md="1" lg="1">
@@ -2157,7 +2190,7 @@ const CompareTool = (props: any) => {
                                     <label className="fw-semibold full-width form-label">Deliverables
                                         <span className="svg__iconbox alignIcon svg__icon--edit" onClick={() => { bindEditorData(data[1], 1, "Deliverables", true) }}></span>
                                     </label>
-                                    <textarea className="form-control" rows={3}>{data[1]?.Deliverables != undefined && data[1]?.Deliverables != null ? data[1]?.Deliverables.replace(/(<([^>]+)>)/gi, "").replace(/\n/g, '').replace(/&#160;/g, ' ') : ''}</textarea>
+                                    <textarea className="form-control" rows={3} value={data[1]?.Deliverables != undefined && data[1]?.Deliverables != null ? data[1]?.Deliverables.replace(/(<([^>]+)>)/gi, "").replace(/\n/g, '').replace(/&#160;/g, ' ') : ''}></textarea>
                                 </div>
                             </Col>
                             <Col sm="1" md="1" lg="1">
@@ -2170,7 +2203,7 @@ const CompareTool = (props: any) => {
                                     <label className="fw-semibold full-width form-label">Short Description
                                         <span className="svg__iconbox alignIcon svg__icon--edit" onClick={() => { bindEditorData(data[0], 0, "Short_x0020_Description_x0020_On", true) }}></span>
                                     </label>
-                                    <textarea className="form-control" rows={3}>{data[0]?.Short_x0020_Description_x0020_On != null && data[0]?.Short_x0020_Description_x0020_On != undefined ? data[0]?.Short_x0020_Description_x0020_On.replace(/(<([^>]+)>)/gi, "").replace(/\n/g, '').replace(/&#160;/g, ' ') : ''}</textarea>
+                                    <textarea className="form-control" rows={3} value={data[0]?.Short_x0020_Description_x0020_On != null && data[0]?.Short_x0020_Description_x0020_On != undefined ? data[0]?.Short_x0020_Description_x0020_On.replace(/(<([^>]+)>)/gi, "").replace(/\n/g, '').replace(/&#160;/g, ' ') : ''}></textarea>
                                 </div>
                             </Col>
                             <Col sm="1" md="1" lg="1">
@@ -2184,7 +2217,7 @@ const CompareTool = (props: any) => {
                                     <label className="fw-semibold full-width form-label">Short Description
                                         <span className="svg__iconbox alignIcon svg__icon--edit" onClick={() => { bindEditorData(data[1], 1, "Short_x0020_Description_x0020_On", true) }}></span>
                                     </label>
-                                    <textarea className="form-control" rows={3}>{data[1]?.Short_x0020_Description_x0020_On != undefined && data[1]?.Short_x0020_Description_x0020_On != null ? data[1]?.Short_x0020_Description_x0020_On.replace(/(<([^>]+)>)/gi, "").replace(/\n/g, '').replace(/&#160;/g, ' ') : ''}</textarea>
+                                    <textarea className="form-control" rows={3} value={data[1]?.Short_x0020_Description_x0020_On != undefined && data[1]?.Short_x0020_Description_x0020_On != null ? data[1]?.Short_x0020_Description_x0020_On.replace(/(<([^>]+)>)/gi, "").replace(/\n/g, '').replace(/&#160;/g, ' ') : ''}></textarea>
                                 </div>
                             </Col>
                             <Col sm="1" md="1" lg="1">

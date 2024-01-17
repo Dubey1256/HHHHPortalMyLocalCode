@@ -640,10 +640,7 @@ relevantDocRef = React.useRef();
           items.PortfolioTitle = items?.Portfolio?.Title;
           // items["Portfoliotype"] = "Component";
         }
-        if(items?.Project?.Id!=undefined){
-          items.Project = AllFlatProject?.find((Project: any) => Project?.Id == items?.Project?.Id)
-        }
-        
+
 
         items.TeamMembersSearch = "";
         if (items.AssignedTo != undefined) {
@@ -995,7 +992,7 @@ relevantDocRef = React.useRef();
     renderData = [];
     renderData = renderData.concat(getData);
     refreshData();
-    if(callback){
+    if (callback == true) {
       LoadAllSiteTasks();
     }
   }, []);
@@ -1080,7 +1077,7 @@ relevantDocRef = React.useRef();
         cell: ({ row, getValue }) => (
           <>
             <span className="d-flex">
-              <ReactPopperTooltipSingleLevel   AllListId={AllListId} ShareWebId={row?.original?.TaskID} row={row?.original} singleLevel={true} masterTaskData={MasterListData} AllSitesTaskData={AllSitesAllTasks} />
+              <ReactPopperTooltipSingleLevel ShareWebId={row?.original?.TaskID} row={row?.original} singleLevel={true} masterTaskData={MasterListData} AllSitesTaskData={AllSitesAllTasks} />
             </span>
           </>
         ),
@@ -1150,12 +1147,12 @@ relevantDocRef = React.useRef();
             href={`${props?.siteUrl}/SitePages/Portfolio-Profile.aspx?taskId=${row?.original?.portfolio?.Id}`}
           >
             <span className="d-flex">
-              <ReactPopperTooltipSingleLevel   AllListId={AllListId} onclickPopup={false} ShareWebId={row?.original?.portfolio?.Title} row={row?.original?.Portfolio} singleLevel={true} masterTaskData={MasterListData} AllSitesTaskData={AllSitesAllTasks} />
+              <ReactPopperTooltipSingleLevel onclickPopup={false} ShareWebId={row?.original?.portfolio?.Title} row={row?.original?.Portfolio} singleLevel={true} masterTaskData={MasterListData} AllSitesTaskData={AllSitesAllTasks} />
             </span>
           </a>
         ),
         id: "Portfolio",
-        placeholder: "Portfolio Item",
+        placeholder: "Portfolio",
         resetColumnFilters: false,
         resetSorting: false,
         header: ""
@@ -1613,7 +1610,6 @@ const contextCall = React.useCallback((data: any, path: any, releventKey: any) =
                                     {projectId && (
                                       <TagTaskToProjectPopup
                                         projectItem={Masterdata}
-                                        masterTaskData={MasterListData}
                                         className="ms-2"
                                         projectId={projectId}
                                         AllListId={AllListId}
@@ -1796,8 +1792,6 @@ const contextCall = React.useCallback((data: any, path: any, releventKey: any) =
                               <div className="wrapper project-management-Table">
                                 {(data?.length == 0 || data?.length > 0) && <GlobalCommanTable AllListId={AllListId} headerOptions={headerOptions} updatedSmartFilterFlatView={false}
                                   projectmngmnt={"projectmngmnt"}
-                                  masterTaskData={MasterListData}
-                                  AllSitesTaskData={AllSitesAllTasks}
                                   MasterdataItem={Masterdata}
                                   columns={column2} data={data} callBackData={callBackData}
                                   smartTimeTotalFunction={smartTimeTotal} SmartTimeIconShow={true}
@@ -1861,7 +1855,6 @@ const contextCall = React.useCallback((data: any, path: any, releventKey: any) =
                 Call={Call}
                 AllListId={AllListId}
                 TaskUsers={AllUser}
-                UsedFrom={"ProjectManagement"}
                 context={AllListId.Context}
                 LoadAllSiteTasks={LoadAllSiteTasks}
                 selectedItem={checkedList != null && checkedList?.Id != undefined ? checkedList : undefined}
@@ -1873,7 +1866,6 @@ const contextCall = React.useCallback((data: any, path: any, releventKey: any) =
                 Call={Call}
                 context={AllListId.Context}
                 AllListId={AllListId}
-                UsedFrom={"ProjectManagement"}
                 TaskUsers={AllUser}
                 data={data}
               ></CreateWS>

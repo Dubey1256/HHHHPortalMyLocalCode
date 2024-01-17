@@ -86,6 +86,12 @@ const AddMorePosition = (props: any) => {
                 }
             }
         }
+        else if (skills.length == 0) {
+            const obj5 = {"SkillTitle":"Salary Expectations","current":0,"max":10,"Comment":"","PositionDescription":jobDescription}
+            const obj6 = {"SkillTitle":"Availability","current":0,"max":10,"Comment":"","PositionDescription":jobDescription}
+            skillsCopy.push(obj5)
+            skillsCopy.push(obj6)
+        }
     
         try {
             const listItem = await HRweb.lists.getById(props?.skillsList).items.add({
@@ -116,6 +122,12 @@ const AddMorePosition = (props: any) => {
                         newSkillsCopy.push(obj4);
                     }
                 }
+            }
+            else if(skills.length == 0) {
+                const obj9 = {"SkillTitle":"Salary Expectations","current":0,"max":10,"Comment":"","PositionDescription":jobDescription}
+                const obj0 = {"SkillTitle":"Availability","current":0,"max":10,"Comment":"","PositionDescription":jobDescription}
+                newSkillsCopy.push(obj9)
+                newSkillsCopy.push(obj0) 
             }
             await HRweb.lists.getById(props?.skillsList).items.getById(newItemId).update({
                 JobSkills: JSON.stringify(newSkillsCopy)

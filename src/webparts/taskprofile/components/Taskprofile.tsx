@@ -112,6 +112,7 @@ export interface ITaskprofileState {
 class Taskprofile extends React.Component<ITaskprofileProps, ITaskprofileState> {
   private relevantDocRef: any;
   private smartInfoRef: any;
+   private keyDocRef:any
   private taskUsers: any = [];
   private smartMetaDataIcon: any;
   private masterTaskData: any = [];
@@ -128,6 +129,7 @@ class Taskprofile extends React.Component<ITaskprofileProps, ITaskprofileState> 
     super(props);
     this.relevantDocRef = React.createRef();
     this.smartInfoRef = React.createRef();
+    this.keyDocRef=React.createRef()
     const params = new URLSearchParams(window.location.search);
     console.log(params.get('taskId'));
     console.log(params.get('Site'));
@@ -410,7 +412,7 @@ class Taskprofile extends React.Component<ITaskprofileProps, ITaskprofileState> 
       EstimatedTimeDescriptionArray: tempEstimatedArrayData,
       TotalEstimatedTime: TotalEstimatedTime,
 
-      Portfolio: portfolio != undefined && portfolio.length > 0 ? portfolio[0] : undefined,
+      Portfolio: portfolio != undefined && portfolio.length > 0 ? portfolio[0] : taskDetails?.Portfolio,
       PortfolioType: portfolio != undefined && portfolio.length > 0 ? portfolio[0]?.PortfolioType : undefined,
       Creation: taskDetails["Created"],
       Modified: taskDetails["Modified"],
@@ -483,6 +485,7 @@ class Taskprofile extends React.Component<ITaskprofileProps, ITaskprofileState> 
       default: {
         this?.relevantDocRef?.current?.loadAllSitesDocuments()
         this?.smartInfoRef?.current?.GetResult();
+        this?.keyDocRef?.current?.loadAllSitesDocumentsEmail()
         break
       }
     }
@@ -1525,15 +1528,18 @@ class Taskprofile extends React.Component<ITaskprofileProps, ITaskprofileState> 
       </>
     );
   };
-  private contextCall = (data: any, path: any, component: any) => {
+  private contextCall = (data: any, path: any, releventKey: any) => {
     if (data != null && path != null) {
       this.setState({
         keydoc: data,
         FileDirRef: path
       })
     }
-    if (component) {
+    if (releventKey) {
       this?.relevantDocRef?.current?.loadAllSitesDocuments()
+    }
+    else if(data==null && path==null && releventKey== false ){
+      this?.keyDocRef?.current?.loadAllSitesDocumentsEmail()
     }
   };
 
