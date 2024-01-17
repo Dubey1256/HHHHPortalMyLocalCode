@@ -6812,7 +6812,7 @@ const EditTaskPopup = (Items: any) => {
                                                         Context: Context,
                                                         siteType: Items.Items.siteType,
                                                     }}
-                                                    taskCreatedCallback={GetExtraLookupColumnData}
+                                                    taskCreatedCallback={UpdateTaskInfoFunction}
                                                 />
                                             </>
                                         ) : null}
@@ -8842,7 +8842,7 @@ const EditTaskPopup = (Items: any) => {
                                     }}
                                 >
                                     <div>
-                                        {EditData.Id != null ? (
+                                    {EditData.Id != null ? (
                                             <>
                                                 <CommentBoxComponent
                                                     data={
@@ -8857,6 +8857,7 @@ const EditTaskPopup = (Items: any) => {
                                                     SmartLightStatus={SmartLightStatus}
                                                     SmartLightPercentStatus={SmartLightPercentStatus}
                                                     Context={Context}
+                                                    FeedbackCount={FeedBackCount}
                                                 />
                                                 <Example
                                                     textItems={
@@ -8873,6 +8874,18 @@ const EditTaskPopup = (Items: any) => {
                                                     SmartLightStatus={SmartLightStatus}
                                                     SmartLightPercentStatus={SmartLightPercentStatus}
                                                     Context={Context}
+                                                    FeedbackCount={FeedBackCount}
+                                                    TaskUpdatedData={MakeUpdateDataJSON}
+                                                    TaskListDetails={{
+                                                        SiteURL: siteUrls,
+                                                        ListId: Items.Items.listId,
+                                                        TaskId: Items.Items.Id,
+                                                        TaskDetails: EditData,
+                                                        AllListIdData: AllListIdData,
+                                                        Context: Context,
+                                                        siteType: Items.Items.siteType,
+                                                    }}
+                                                    taskCreatedCallback={UpdateTaskInfoFunction}
                                                 />
                                             </>
                                         ) : null}
