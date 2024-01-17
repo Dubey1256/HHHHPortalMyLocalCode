@@ -1,3 +1,4 @@
+
 import * as React from "react";
 import { Panel, PanelType, DefaultButton } from "office-ui-fabric-react";
 import "bootstrap/dist/css/bootstrap.min.css";
@@ -45,8 +46,12 @@ let ShowCategoryDatabackup: any = [];
 let subCategories: any = [];
 let IsapprovalTask = false;
 let CategoryAllData: any = [];
+let mydata: any = [];
+let componentDetailsData:any = [];
+let count = 0;
 let ID: any;
-function EditInstitution({ item, SelectD, Calls, usedFor, portfolioTypeData, filterdata, openPortfolioPopup }: any) {
+
+  function EditInstitution({ item, SelectD, Calls, usedFor, portfolioTypeData}: any) {
     // var AssignedToIds: any = [];
     ResponsibleTeamIds = [];
     AssignedToIds = [];
@@ -77,6 +82,7 @@ function EditInstitution({ item, SelectD, Calls, usedFor, portfolioTypeData, fil
     const [SharewebItemRank, setSharewebItemRank] = React.useState([]);
     const [isOpenPicker, setIsOpenPicker] = React.useState(false);
     const [IsComponent, setIsComponent] = React.useState(false);
+    const [isopenProjectpopup, setisopenProjectpopup] = React.useState(false);
     const [SharewebComponent, setSharewebComponent] = React.useState("");
     const [SharewebCategory, setSharewebCategory] = React.useState("");
     const [CollapseExpend, setCollapseExpend] = React.useState(true);
@@ -91,6 +97,7 @@ function EditInstitution({ item, SelectD, Calls, usedFor, portfolioTypeData, fil
     const [TaskAssignedTo, setTaskAssignedTo] = React.useState([]);
     const [TaskTeamMembers, setTaskTeamMembers] = React.useState([]);
     const [TaskResponsibleTeam, setTaskResponsibleTeam] = React.useState([]);
+    const [filterdata, setfilterData] = React.useState([]);
     const [Completiondate, setCompletiondate] = React.useState(undefined);
     const [AssignUser, setAssignUser] = React.useState(undefined);
     const [IsComponentPicker, setIsComponentPicker] = React.useState(false);
@@ -199,6 +206,63 @@ function EditInstitution({ item, SelectD, Calls, usedFor, portfolioTypeData, fil
         EditComponentCallback("Close");
         setModalIsOpen(false);
     };
+
+    async function updateMultiLookup(itemIds: number[], lookupIds: number[], AllListId: any) {
+      try {
+        if(itemIds?.length==0){
+          getMasterTaskListTasksData();
+        }else{
+          let web = new Web(AllListId?.siteUrl);
+          for (const itemId of itemIds) {
+            // Update the multi-lookup field for each item
+            await web.lists
+              .getById(AllListId?.MasterTaskListID)
+              .items.getById(itemId)
+              .update({
+                PortfoliosId: {
+                  results:
+                    lookupIds !== undefined && lookupIds?.length >0
+                      ? lookupIds
+                      : [],
+                }
+              })
+              .then((res: any) => {
+                getMasterTaskListTasksData();
+                count++;
+                console.log(res);
+              });
+        }
+       
+  
+        }
+      } catch (error) {
+       
+        console.error("Error updating multi-lookup field:", error);
+      }
+    }
+
+    let getMasterTaskListTasksData = async function () {
+      try{
+      let web = new Web(SelectD?.siteUrl);
+     
+      componentDetailsData = await web.lists
+        .getById(SelectD.MasterTaskListID)
+        .items.select("Item_x0020_Type", "Title", "PortfolioStructureID", "Id", "PercentComplete", "Portfolios/Id", "Portfolios/Title")
+        .expand("Portfolios")
+        .filter("Item_x0020_Type eq 'Project' and Portfolios/Id eq " + item.Id)
+        .top(4000)
+        .getAll();
+  
+  
+      // Project Data for HHHH Project Management
+     
+      setfilterData(componentDetailsData)
+      console.log("data show on componentdetails",componentDetailsData)
+      }catch (error) {
+        console.log("error show",error );
+      }
+    };
+  
 
     const Call = React.useCallback((item1: any, type: any, functionType: any) => {
         if (type == "SmartComponent") {
@@ -411,10 +475,12 @@ function EditInstitution({ item, SelectD, Calls, usedFor, portfolioTypeData, fil
         }
     };
 
+   
     var getMasterTaskListTasks = async function () {
         //  var query = "ComponentCategory/Id,ComponentCategory/Title,ComponentPortfolio/Id,ComponentPortfolio/Title,ServicePortfolio/Id,ServicePortfolio/Title,SiteCompositionSettings,PortfolioStructureID,ItemRank,ShortDescriptionVerified,Portfolio_x0020_Type,BackgroundVerified,descriptionVerified,Synonyms,BasicImageInfo,DeliverableSynonyms,OffshoreComments,OffshoreImageUrl,HelpInformationVerified,IdeaVerified,TechnicalExplanationsVerified,Deliverables,DeliverablesVerified,ValueAddedVerified,CompletedDate,Idea,ValueAdded,TechnicalExplanations,Item_x0020_Type,Sitestagging,Package,Parent/Id,Parent/Title,Short_x0020_Description_x0020_On,Short_x0020_Description_x0020__x,Short_x0020_description_x0020__x0,AdminNotes,AdminStatus,Background,Help_x0020_Information,SharewebComponent/Id,TaskCategories/Id,TaskCategories/Title,PriorityRank,Reference_x0020_Item_x0020_Json,TeamMembers/Title,TeamMembers/Name,Component/Id,Component/Title,Component/ItemType,TeamMembers/Id,Item_x002d_Image,ComponentLink,IsTodaysTask,AssignedTo/Title,AssignedTo/Name,AssignedTo/Id,AttachmentFiles/FileName,FileLeafRef,FeedBack,Title,Id,PercentComplete,Company,StartDate,DueDate,Comments,Categories,Status,WebpartId,Body,Mileage,PercentComplete,Attachments,Priority,Created,Modified,Author/Id,Author/Title,Editor/Id,Editor/Title,ClientCategory/Id,ClientCategory/Title";
+        
+        let componentDetails:any = [];
 
-        let componentDetails = [];
         componentDetails = await web.lists
             .getById(RequireData.MasterTaskListID)
             .items.select(
@@ -519,8 +585,10 @@ function EditInstitution({ item, SelectD, Calls, usedFor, portfolioTypeData, fil
                 "Parent"
             )
             .filter("Id eq " + item.Id + "")
-            .get();
-        console.log(componentDetails);
+            .top(4000)
+            .getAll();
+        console.log("data show on componentdetails",componentDetails);
+
 
         var Tasks = componentDetails;
         let ParentData: any = [];
@@ -810,16 +878,12 @@ function EditInstitution({ item, SelectD, Calls, usedFor, portfolioTypeData, fil
         Tasks[0].listId = RequireData.MasterTaskListID;
         Tasks[0].siteUrl = RequireData.siteUrl;
         setEditData(Tasks[0]);
+        getMasterTaskListTasksData()
         setModalIsOpenToTrue(true);
-
-        //  setModalIsOpenToTrue();
+      
     };
 
-    //     error: function (error) {
-
-    //     }
-    // });
-    // }
+   
     const onRenderCustomHeaderQuestion = () => {
         return (
             <>
@@ -996,6 +1060,31 @@ function EditInstitution({ item, SelectD, Calls, usedFor, portfolioTypeData, fil
 
         // <ComponentPortPolioPopup props={item}></ComponentPortPolioPopup>
     };
+
+  const openPortfolioPopup=(itemm:any)=>{
+    setisopenProjectpopup(true)
+    mydata.push(item.Id)
+    setSharewebComponent(itemm);
+}
+
+  const callServiceComponent = React.useCallback((item1: any, type: any, functionType: any) => {
+    if (functionType === "Close") {
+      if (type === "Multi") {
+        setisopenProjectpopup(false);
+      } else {
+        setisopenProjectpopup(false);
+      }
+    } else {
+      if (type === "Multi" || type === "Single") {
+        let mydataid: any = [item?.Id];
+        let filteredIds = item1.filter((item: { Id: null; }) => item.Id !== null).map((item: { Id: any; }) => item.Id);
+
+        updateMultiLookup(filteredIds, mydataid, SelectD);
+        setisopenProjectpopup(false);
+      }
+    }
+  }, []);
+
     const GetComponents = async () => {
         let componentDetails = [];
         componentDetails = await web.lists
@@ -1100,15 +1189,9 @@ function EditInstitution({ item, SelectD, Calls, usedFor, portfolioTypeData, fil
             res.PortfolioType = item.PortfolioType;
             res.SiteIcon = undefined;
             res.siteUrl = RequireData?.siteUrl;
-            res.data = res;
-            Calls(res,"UpdatedData");
+            Calls(res);
         }
     }
-
-
-
-
-
 
     let mentionUsers: any = [];
     var generateHierarchichalData = function (item: any, items: any) {
@@ -1248,10 +1331,16 @@ function EditInstitution({ item, SelectD, Calls, usedFor, portfolioTypeData, fil
         let ClientCategoryIDs: any = [];
         var item: any = {};
         var smartComponentsIds: any[] = [];
+        // var RelevantPortfolioIds = "";
+        var RelevantProjectIds = "";
         var RelevantPortfolioIds = "";
         let PortfolioIds: any[] = [];
+        let ProjectId:any[] = [];
+        var RelevantProjectIdRemove = "";
+        let ProjectIdRemove:any[] = [];
         let TotalCompositionsValue: any = 0;
         var Items = EditData;
+    
         if (SiteTaggingData?.length > 0) {
             SiteTaggingData.map((clientData: any) => {
                 TotalCompositionsValue =
@@ -1327,6 +1416,27 @@ function EditInstitution({ item, SelectD, Calls, usedFor, portfolioTypeData, fil
                 });
             }
 
+            if (filterdata != undefined && filterdata?.length > 0) {
+                      filterdata?.map((com: any) => {
+                        if (
+                          filterdata != undefined &&
+                          filterdata?.length >= 0
+                        ) {
+                          $.each(filterdata, function (index: any, smart: any) {
+                            RelevantProjectIds = smart.Id;
+                            ProjectId.push(smart.Id)
+                          });
+                        }
+                      });
+                    }
+              
+                    if (filterdata != null && filterdata.length >= 0) {
+                      filterdata.filter((com: any) => {
+                        RelevantProjectIdRemove = com.Id;
+                        ProjectIdRemove.push(com.Id);
+                      });
+                    }                   
+
 
             if (TaskTeamMembers != undefined && TaskTeamMembers?.length > 0) {
                 TaskTeamMembers?.map((taskInfo) => {
@@ -1389,11 +1499,10 @@ function EditInstitution({ item, SelectD, Calls, usedFor, portfolioTypeData, fil
                     // Categories:EditData?.smartCategories != undefined && EditData?.smartCategories != ''?EditData?.smartCategories[0].Title:EditData?.Categories,
                     Categories: categoriesItem ? categoriesItem : null,
                     SharewebCategoriesId: { results: CategoryID },
-                    TaskCategoriesId:{results: CategoryID},
                     // ClientCategoryId: { "results": RelevantPortfolioIds },
                     ServicePortfolioId:
-                        RelevantPortfolioIds != "" ? RelevantPortfolioIds : null,
-                    PortfoliosId: { results: (PortfolioIds?.length != 0 ? PortfolioIds : []) },
+                                ((RelevantPortfolioIds != "" ? RelevantPortfolioIds : null)? (RelevantProjectIds != "" ? RelevantProjectIds : null):null)? (RelevantProjectIdRemove != "" ? RelevantProjectIdRemove : null):null ,
+                              PortfoliosId: ({ results: (PortfolioIds?.length != 0 ? PortfolioIds : []) } ? { results: (ProjectId?.length != 0 ? ProjectId : []) } :null)?{ results: (ProjectIdRemove?.length >= 0 ? ProjectIdRemove : []) }:null,
                     Synonyms: JSON.stringify(Items["Synonyms"]),
                     Package: Items.Package,
                     AdminStatus: Items.AdminStatus,
@@ -2420,6 +2529,40 @@ function EditInstitution({ item, SelectD, Calls, usedFor, portfolioTypeData, fil
             }
         });
     };
+
+    const DeleteCrossIconData = async (titleToRemove:any) => {
+            try {
+        
+              let web = new Web(SelectD?.siteUrl);
+            
+                // Update the multi-lookup field for each item
+                (titleToRemove.length>0 &&
+                await web.lists
+                  .getById(SelectD?.MasterTaskListID)
+                  .items.getById(titleToRemove[0])
+                  .update({
+                    PortfoliosId: {
+                      results: titleToRemove !== undefined ? titleToRemove: [],
+                    }
+                  })
+                  .then((res: any) => {             
+                    console.log(res);            
+                  }).catch((error)=>{
+                    console.log( "error",error)
+                  })
+                  
+                )
+      
+             let updatedComponentData: any = [];  
+              updatedComponentData = filterdata.filter((itemmm: any) => itemmm.Id !== titleToRemove[0]);      
+              console.log("remove data", updatedComponentData);
+              setfilterData(updatedComponentData);
+                
+          }catch(error){
+            console.log(error)
+          }
+        }
+        
 
     const choiceHandler = (event: any) => {
         setChoice(event.target.value)
@@ -3458,107 +3601,49 @@ function EditInstitution({ item, SelectD, Calls, usedFor, portfolioTypeData, fil
                                                         })}
                                                     </div>
                                                 ) : null}
-                                                <div className="col-sm-12 mt-2">
-                                                    <div className="col-sm-12 padding-0 input-group">
-                                                        <label className="full_width">Project</label>
+                                               <div className="col-sm-12 mt-2">
+                          <div className="col-sm-12 padding-0 input-group">
+                            <label className="full_width">Project</label>
+                            <input type="text" className="form-control" />
+                            <span className="input-group-text" placeholder="Project">
+                              <span title="Project" onClick={(e) => openPortfolioPopup("Project")} className="svg__iconbox svg__icon--editBox"></span>
+                            </span>
+                        </div>
+                            <div className="col-sm-12  inner-tabb">
+                            {filterdata && filterdata.length > 0 ? 
+                            (
+                              <div className="serviepannelgreena">
+                                {filterdata?.map((items:any, Index: any)=>
+                                 <div className="block d-flex justify-content-between mb-1" key={Index}>
+                              
+                                  <a
+                                    href={`${SelectD.siteUrl}/SitePages/Portfolio-Profile.aspx?=${items.Id}`}
+                                    className="wid-90 light"
+                                    data-interception="off"
+                                    target="_blank"
+                                  >
+                                    {items?.Title}
+                                  </a>
+                                  <a className="text-end">
+                                            {" "}
+                                            <span
+                                              className="bg-light svg__icon--cross svg__iconbox"
+                                              onClick={() =>
+                                                DeleteCrossIconData([items?.Id])
+                                              }
+                                            ></span>
+                                          </a>
+                                </div>)}
+                                </div>) : ""
+                  
+                            }
+                          
+                          </div>                                  
+                        </div>
 
-                                                        {filterdata && filterdata.length <= 1 ? (
-                                                            // Render a single item in an input field
-                                                            <input
-                                                                type="text"
-                                                                className="form-control"
-                                                                defaultValue={filterdata[0]?.PortfolioStructureID}
-                                                            />
-                                                        ) : (
-                                                            // Render multiple items in anchor tags
-                                                            filterdata?.map((item: any, Index: any) => (
-                                                                <div className="block alignCenter" key={Index}>
-                                                                    <a
-                                                                        href={`${SelectD.siteUrl}/SitePages/Project-Management.aspx?ProjectId=${item.Id}`}
-                                                                        className="wid-90 light"
-                                                                        data-interception="off"
-                                                                        target="_blank"
-                                                                    >
-                                                                        {item?.PortfolioStructureID}
-                                                                    </a>
-                                                                    <span className="svg__iconbox ml-auto hreflink svg__icon--cross light"
-                                                                    ></span>
-                                                                </div>
-                                                            ))
-                                                        )}
+                       </div>
 
-                                                        <input type="text" className="form-control" />
-                                                        <span className="input-group-text" placeholder="Project">
-                                                            <span title="Project" onClick={() => openPortfolioPopup("Project")} className="svg__iconbox svg__icon--editBox"></span>
-                                                        </span>
-                                                    </div>
-
-
-                                                    {/* <dd className="bg-light">
-                                                        <div>
-                                                            {filterdata && filterdata.length === 1 ? (
-                                                                // Render a single item in an input field
-                                                                <input
-                                                                    type="text"
-                                                                    className="form-control"
-                                                                    defaultValue={filterdata[0].PortfolioStructureID}
-                                                                />
-                                                            ) : (
-                                                                // Render multiple items in anchor tags
-                                                                filterdata?.map((item: any, Index: any) => (
-                                                                    <div className="block alignCenter" key={Index}>
-                                                                        <a
-                                                                            href={`${SelectD.siteUrl}/SitePages/Project-Management.aspx?ProjectId=${item.Id}`}
-                                                                            className="wid-90 light"
-                                                                            data-interception="off"
-                                                                            target="_blank"
-                                                                        >
-                                                                            {item.PortfolioStructureID}
-                                                                        </a>
-                                                                        <span className="svg__iconbox ml-auto hreflink svg__icon--cross light"
-                                                                        ></span>
-                                                                    </div>
-                                                                ))
-                                                            )}
-                                                            <a className="pancil-icons" onClick={() => openPortfolioPopup("Project")}>
-                                                                <span className="svg__iconbox svg__icon--editBox"></span>
-                                                            </a>
-                                                        </div>
-                                                    </dd> */}
-
-
-                                                    {/* <dd className="bg-light">
-                                                        <div>
-                                                            {filterdata?.map((item: any, Index: any) => (
-                                                                <span
-                                                                    className="accordion-body pt-1"
-                                                                    id="testDiv1"
-                                                                    key={Index}
-                                                                >
-                                                                    <a
-                                                                        href={
-                                                                            SelectD.siteUrl +
-                                                                            "/SitePages/Project-Management.aspx?ProjectId=" +
-                                                                            item?.Id
-                                                                        }
-                                                                        data-interception="off"
-                                                                        target="_blank"
-                                                                    >
-                                                                        {item?.PortfolioStructureID}{", "}
-                                                                    </a>{" "}
-                                                                    {Index !== filterdata.length - 1 ? ", " : ""}
-                                                                </span>
-                                                            ))}
-                                                            <a className="pancil-icons" onClick={() => openPortfolioPopup("Project")}>
-                                                                <span className="svg__iconbox svg__icon--editBox"></span>
-                                                            </a>
-                                                        </div>
-                                                    </dd> */}
-                                                </div>
-
-                                            </div>
-
-                                        </div>
+                      </div>
                                         <div className="col-sm-4  ">
                                             <div className="mb-3 mt-1">
                                                 {RequireData?.isShowSiteCompostion ? (
@@ -3609,7 +3694,7 @@ function EditInstitution({ item, SelectD, Calls, usedFor, portfolioTypeData, fil
                                                                                                         <span className="mx-2">
                                                                                                             {Number(
                                                                                                                 SiteDtls.ClienTimeDescription
-                                                                                                            ).toFixed(1)}
+                                                                                                            ).toFixed(2)}
                                                                                                             %
                                                                                                         </span>
                                                                                                     )}
@@ -4218,7 +4303,7 @@ function EditInstitution({ item, SelectD, Calls, usedFor, portfolioTypeData, fil
                                             {EditData?.ID ? (
                                                 <VersionHistoryPopup
                                                     taskId={EditData?.ID}
-                                                    listId={RequireData?.MasterTaskListID}
+                                                    listId={RequireData.MasterTaskListID}
                                                     siteUrls={RequireData?.siteUrl}
                                                 />
                                             ) : (
@@ -4301,6 +4386,19 @@ function EditInstitution({ item, SelectD, Calls, usedFor, portfolioTypeData, fil
                                 selectionType={"Multi"}
                             />
                         ) : null}
+
+                   {isopenProjectpopup ? (
+                   <ServiceComponentPortfolioPopup
+                   props={setSharewebComponent}
+                   Dynamic={SelectD}
+                   ComponentType={"Component"}
+                   selectionType={"Multi"}
+                   Call={(Call:any, type: any, functionType: any)=>{callServiceComponent(Call, type,functionType)}}
+                   updateMultiLookup={updateMultiLookup}
+                   showProject={isopenProjectpopup}
+                  />
+                  ) : null}
+
                         {IsComponentPicker && (
                             <Picker
                                 props={SharewebCategory}
@@ -4696,11 +4794,11 @@ function EditInstitution({ item, SelectD, Calls, usedFor, portfolioTypeData, fil
                                 className="radio"
                                 type="radio"
                                 name="selectedTitle"
-                                value={value?.Title}
-                                checked={selectPortfolioType?.Title === value?.Title}
+                                value={value.Title}
+                                checked={selectPortfolioType.Title === value.Title}
                                 onChange={() => setSelectPortfolioType(value)}
                             />
-                            {value?.Title}</div>
+                            {value.Title}</div>
                     ))}
                 </div>
                 <footer className="footer-right">
