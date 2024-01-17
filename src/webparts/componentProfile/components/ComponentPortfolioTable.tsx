@@ -28,6 +28,7 @@ import PageLoader from "../../../globalComponents/pageLoader";
 import CreateActivity from "../../../globalComponents/CreateActivity";
 import CreateWS from '../../../globalComponents/CreateWS';
 import ReactPopperTooltipSingleLevel from "../../../globalComponents/Hierarchy-Popper-tooltipSilgleLevel/Hierarchy-Popper-tooltipSingleLevel";
+import CompareTool from "../../../globalComponents/CompareTool/CompareTool";
 //import RestructuringCom from "../../../globalComponents/Restructuring/RestructuringCom";
 
 var filt: any = "";
@@ -97,6 +98,7 @@ function PortfolioTable(SelectedProp: any) {
   const [checkedList1, setCheckedList1] = React.useState([]);
   const [topCompoIcon, setTopCompoIcon]: any = React.useState(false);
   const [IsTimeEntry, setIsTimeEntry] = React.useState(false);
+  const [openCompareToolPopup,setOpenCompareToolPopup]=React.useState(false);
   const [portfolioTypeConfrigration, setPortfolioTypeConfrigration] =
     React.useState<any>([
       { Title: "Component", Suffix: "C", Level: 1 },
@@ -1981,6 +1983,18 @@ const updatedDataDataFromPortfolios = (copyDtaArray: any, dataToUpdate: any) => 
       </div>
     );
   };
+
+
+  const compareToolCallBack = React.useCallback((compareData) => {
+    if(compareData !="close"){
+        setOpenCompareToolPopup(false);
+    }else{
+        setOpenCompareToolPopup(false);
+    }
+}, []);
+const openCompareTool =()=>{
+    setOpenCompareToolPopup(true);
+}
   //-------------------------------------------------------------End---------------------------------------------------------------------------------
   return (
     <myContextValue.Provider value={{ ...globalContextData,  tagProjectFromTable:TagProjectToStructure}}>
@@ -2182,6 +2196,8 @@ const updatedDataDataFromPortfolios = (copyDtaArray: any, dataToUpdate: any) => 
           }
         />
       </Panel>
+      {openCompareToolPopup && <CompareTool isOpen={openCompareToolPopup} compareToolCallBack={compareToolCallBack} compareData={childRef?.current?.table?.getSelectedRowModel()?.flatRows} contextValue={SelectedProp?.SelectedProp}/>}
+
       <Panel
         onRenderHeader={onRenderCustomHeaderMain}
         type={PanelType.custom}

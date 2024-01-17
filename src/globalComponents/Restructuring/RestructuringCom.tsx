@@ -2558,92 +2558,7 @@ const RestructuringCom = (props: any, ref: any) => {
                   }
                 });
               }
-            }
-      //       if(props?.projectmngmnt == "projectmngmnt"){
-      //          if(obj?.Item_x0020_Type === 'Sprint'){
-      //            obj.isRestructureActive = true;
-      //           }
-      //           if(obj?.Title == items?.Title && obj?.Id == items?.Id && obj?.TaskType?.Id == items?.TaskType?.Id){
-      //             topCompo = false;
-      //             newObj = {...obj}
-                 
-      //             obj.isRestructureActive = false;
-      //             newarrays?.push(obj);
-      //             setRestructuredItemarray(newarrays);
-      //             // setCheckSubChilds(task);
-      //             newChildarray?.push(newObj);
-      //             setRestructureChecked(newChildarray);
-      //             ArrayTest?.push(newObj);
-      //           }
-               
-      //           obj?.subRows != undefined &&
-      //        obj?.subRows != null &&
-      //        obj?.subRows?.length > 0 &&
-      //        obj?.subRows?.map((sub: any) => {
-      //          if (sub?.Title == items?.Title && sub?.Id == items?.Id) {
-                
-      //            newObj = {...obj,newSubChild:{...sub}}
-      //            if(obj?.TaskType?.Id == 1 || obj?.TaskType?.Id == 2  || obj?.TaskType?.Id == 3 ){
-      //             topCompo = false;
-      //       }
-      //            obj.isRestructureActive = false;
-      //            newarrays?.push(obj);
-      //            setRestructuredItemarray(newarrays);
-      //            // setCheckSubChilds(task);
-      //            newChildarray?.push(newObj.newSubChild);
-      //            setRestructureChecked(newChildarray);
-      //            ArrayTest?.push(newObj);
-      //            // task.isRestructureActive = false;
-      //          }
-      //          sub?.subRows != undefined &&
-      //          sub?.subRows != null &&
-      //          sub?.subRows?.length > 0 &&
-      //          sub?.subRows?.map((feat: any) => {
-      //            if (feat?.Title == items?.Title && feat?.Id == items?.Id) {
-                 
-      //              newObj = {...obj,newSubChild:{...sub,feature:{...feat}}}
-      //              if(obj?.TaskType?.Id == 1 || obj?.TaskType?.Id == 2  || obj?.TaskType?.Id == 3 ){
-      //               topCompo = false;
-      //         }
-      //              obj.isRestructureActive = false;
-      //              newarrays?.push(obj);
-      //              setRestructuredItemarray(newarrays);
-      //              // setCheckSubChilds(task);
-      //              newChildarray?.push(newObj.newSubChild.feature);
-      //              setRestructureChecked(newChildarray);
-      //              ArrayTest?.push(newObj);
-      //              // task.isRestructureActive = false;
-      //            }
-      //            feat?.subRows != undefined &&
-      //            feat?.subRows != null &&
-      //            feat?.subRows?.length > 0 &&
-      //            feat?.subRows?.map((last: any) => {
-      //              if (last?.Title == items?.Title && last?.Id == items?.Id) {
-                  
-      //                newObj = {...obj,newSubChild:{...sub,feature:{...feat,activity:{...last}}}}
-      //                if(obj?.TaskType?.Id == 1 || obj?.TaskType?.Id == 2  || obj?.TaskType?.Id == 3 ){
-      //                 topCompo = false;
-      //           }
-      //                obj.isRestructureActive = false;
-      //                newarrays?.push(obj);
-      //                setRestructuredItemarray(newarrays);
-      //                // setCheckSubChilds(task);
-      //                newChildarray?.push(newObj.newSubChild.feature.activity);
-      //                setRestructureChecked(newChildarray);
-      //                ArrayTest?.push(newObj);
-      //                // task.isRestructureActive = false;
-      //              }
-   
-                   
-      //            });
-                 
-      //          });
-               
-      //        });
-          
-        
-      // }
-          });
+            } });
     } else if (items.TaskType?.Id === 3) {
           if (
             props?.queryItems?.Item_x0020_Type !== "Task" &&
@@ -2973,89 +2888,7 @@ const RestructuringCom = (props: any, ref: any) => {
                   }
                 });
               }
-            }
-      //       if(props?.projectmngmnt == "projectmngmnt"){
-              
-      //          if(obj?.Item_x0020_Type === 'Sprint'){
-      //            obj.isRestructureActive = true;
-      //           }
-      //           if(obj?.Title == items?.Title && obj?.Id == items?.Id && obj?.TaskType?.Id == items?.TaskType?.Id){
-      //             topCompo = false;
-      //             newObj = {...obj}
-      //             obj.isRestructureActive = false;
-      //             newarrays?.push(obj);
-      //             setRestructuredItemarray(newarrays);
-      //             // setCheckSubChilds(task);
-      //             newChildarray?.push(newObj);
-      //             setRestructureChecked(newChildarray);
-      //             ArrayTest?.push(newObj);
-      //           }
-               
-      //           obj?.subRows != undefined &&
-      //        obj?.subRows != null &&
-      //        obj?.subRows?.length > 0 &&
-      //        obj?.subRows?.map((sub: any) => {
-      //          if (sub?.Title == items?.Title && sub?.Id == items?.Id) {
-      //            newObj = {...obj,newSubChild:{...sub}}
-      //            if(obj?.TaskType?.Id == 1 || obj?.TaskType?.Id == 2  || obj?.TaskType?.Id == 3 ){
-      //             topCompo = false;
-      //       }
-      //            obj.isRestructureActive = false;
-      //            newarrays?.push(obj);
-      //            setRestructuredItemarray(newarrays);
-      //            // setCheckSubChilds(task);
-      //            newChildarray?.push(newObj.newSubChild);
-      //            setRestructureChecked(newChildarray);
-      //            ArrayTest?.push(newObj);
-      //            // task.isRestructureActive = false;
-      //          }
-      //          sub?.subRows != undefined &&
-      //          sub?.subRows != null &&
-      //          sub?.subRows?.length > 0 &&
-      //          sub?.subRows?.map((feat: any) => {
-      //            if (feat?.Title == items?.Title && feat?.Id == items?.Id) {
-      //              newObj = {...obj,newSubChild:{...sub,feature:{...feat}}}
-      //              if(obj?.TaskType?.Id == 1 || obj?.TaskType?.Id == 2  || obj?.TaskType?.Id == 3 ){
-      //               topCompo = false;
-      //         }
-      //              obj.isRestructureActive = false;
-      //              newarrays?.push(obj);
-      //              setRestructuredItemarray(newarrays);
-      //              // setCheckSubChilds(task);
-      //              newChildarray?.push(newObj.newSubChild.feature);
-      //              setRestructureChecked(newChildarray);
-      //              ArrayTest?.push(newObj);
-      //              // task.isRestructureActive = false;
-      //            }
-      //            feat?.subRows != undefined &&
-      //            feat?.subRows != null &&
-      //            feat?.subRows?.length > 0 &&
-      //            feat?.subRows?.map((last: any) => {
-      //              if (last?.Title == items?.Title && last?.Id == items?.Id) {
-      //                newObj = {...obj,newSubChild:{...sub,feature:{...feat,activity:{...last}}}}
-      //                if(obj?.TaskType?.Id == 1 || obj?.TaskType?.Id == 2  || obj?.TaskType?.Id == 3 ){
-      //                 topCompo = false;
-      //           }
-      //                obj.isRestructureActive = false;
-      //                newarrays?.push(obj);
-      //                setRestructuredItemarray(newarrays);
-      //                // setCheckSubChilds(task);
-      //                newChildarray?.push(newObj.newSubChild.feature.activity);
-      //                setRestructureChecked(newChildarray);
-      //                ArrayTest?.push(newObj);
-      //                // task.isRestructureActive = false;
-      //              }
-   
-                   
-      //            });
-                 
-      //          });
-               
-      //        });
-          
-        
-      // }
-          });
+            } });
         } else if (items.TaskType?.Id === 2
         ) {
           if (
@@ -3338,97 +3171,7 @@ const RestructuringCom = (props: any, ref: any) => {
                   }
                 });
               }
-            }
-           
-            // if(props?.projectmngmnt == "projectmngmnt"){
-                   
-            //          if(obj?.Item_x0020_Type === 'Sprint'){
-            //            obj.isRestructureActive = true;
-            //           }
-            //           if(obj?.Title == items?.Title && obj?.Id == items?.Id && obj?.TaskType?.Id == items?.TaskType?.Id){
-            //             topCompo = false;
-            //             newObj = {...obj, TaskType: {Id:obj.TaskType?.Id == undefined ? "" : obj.TaskType?.Id,Title:obj.TaskType?.Title}, siteIcon:obj.SiteIconTitle === undefined? obj.SiteIcon: obj.SiteIconTitle}
-                                    
-            //             obj.isRestructureActive = false;
-            //             newarrays?.push(obj);
-            //             setRestructuredItemarray(newarrays);
-            //             newChildarray?.push(newObj);
-            //             setRestructureChecked(newChildarray);
-            //             ArrayTest?.push(newObj);
-            //           }
-                     
-            //           obj?.subRows != undefined &&
-            //        obj?.subRows != null &&
-            //        obj?.subRows?.length > 0 &&
-            //        obj?.subRows?.map((sub: any) => {
-                       
-            //          if (sub?.Title == items?.Title && sub?.Id == items?.Id) {
-            //           newObj = {...obj, TaskType: {Id:obj.TaskType?.Id == undefined ? "" : obj.TaskType?.Id,Title:obj.TaskType?.Title}, siteIcon:obj.SiteIconTitle === undefined? obj.SiteIcon: obj.SiteIconTitle,
-            //           newSubChild:{...sub, TaskType: {Id:sub.TaskType?.Id == undefined ? "" : sub.TaskType?.Id,Title:sub.TaskType?.Title}, siteIcon:sub.SiteIconTitle === undefined? sub.SiteIcon: sub.SiteIconTitle }}
-                      
-            //            if(obj?.TaskType?.Id == 1 || obj?.TaskType?.Id == 2  || obj?.TaskType?.Id == 3 ){
-            //                   topCompo = false;
-            //             }
-            //            obj.isRestructureActive = false;
-            //            newarrays?.push(obj);
-            //            setRestructuredItemarray(newarrays);
-            //            newChildarray?.push(newObj.newSubChild);
-            //            setRestructureChecked(newChildarray);
-            //            ArrayTest?.push(newObj);
-            //          }
-            //          sub?.subRows != undefined &&
-            //          sub?.subRows != null &&
-            //          sub?.subRows?.length > 0 &&
-            //          sub?.subRows?.map((feat: any) => {
-            //            if (feat?.Title == items?.Title && feat?.Id == items?.Id) {
-            //              newObj = {...obj, TaskType: {Id:obj.TaskType?.Id == undefined ? "" : obj.TaskType?.Id,Title:obj.TaskType?.Title}, siteIcon:obj.SiteIconTitle === undefined? obj.SiteIcon: obj.SiteIconTitle,
-            //              newSubChild:{...sub, TaskType: {Id:sub.TaskType?.Id == undefined ? "" : sub.TaskType?.Id,Title:sub.TaskType?.Title}, siteIcon:sub.SiteIconTitle === undefined? sub.SiteIcon: sub.SiteIconTitle,
-            //              newFeatChild : {...feat, TaskType: {Id:feat.TaskType?.Id == undefined ? "" : feat.TaskType?.Id,Title:feat.TaskType?.Title}, siteIcon:feat.SiteIconTitle === undefined? feat.SiteIcon: feat.SiteIconTitle} }}
-                         
-            //              if(obj?.TaskType?.Id == 1 || obj?.TaskType?.Id == 2  || obj?.TaskType?.Id == 3 ){
-            //               topCompo = false;
-            //                }
-            //              obj.isRestructureActive = false;
-            //              newarrays?.push(obj);
-            //              setRestructuredItemarray(newarrays);
-            //              newChildarray?.push(newObj.newSubChild.feature);
-            //              setRestructureChecked(newChildarray);
-            //              ArrayTest?.push(newObj);
-            //            }
-            //            feat?.subRows != undefined &&
-            //            feat?.subRows != null &&
-            //            feat?.subRows?.length > 0 &&
-            //            feat?.subRows?.map((last: any) => {
-            //              if (last?.Title == items?.Title && last?.Id == items?.Id) {
-            //                newObj = {...obj, TaskType: {Id:obj.TaskType?.Id == undefined ? "" : obj.TaskType?.Id,Title:obj.TaskType?.Title}, siteIcon:obj.SiteIconTitle === undefined? obj.SiteIcon: obj.SiteIconTitle,
-            //                newSubChild:{...sub, TaskType: {Id:sub.TaskType?.Id == undefined ? "" : sub.TaskType?.Id,Title:sub.TaskType?.Title}, siteIcon:sub.SiteIconTitle === undefined? sub.SiteIcon: sub.SiteIconTitle,
-            //                newFeatChild : {...feat, TaskType: {Id:feat.TaskType?.Id == undefined ? "" : feat.TaskType?.Id,Title:feat.TaskType?.Title}, siteIcon:feat.SiteIconTitle === undefined? feat.SiteIcon: feat.SiteIconTitle,
-            //                newActChild : {...last, TaskType: {Id:last.TaskType?.Id == undefined ? "" : last.TaskType?.Id,Title:last.TaskType?.Title}, siteIcon:last.SiteIconTitle === undefined? last.SiteIcon: last.SiteIconTitle}} }}
-                           
-            //                if(obj?.TaskType?.Id == 1 || obj?.TaskType?.Id == 2  || obj?.TaskType?.Id == 3 ){
-            //                 topCompo = false;
-            //                   }
-            //                obj.isRestructureActive = false;
-            //                newarrays?.push(obj);
-            //                setRestructuredItemarray(newarrays);
-            //                // setCheckSubChilds(task);
-            //                newChildarray?.push(newObj.newSubChild.feature.activity);
-            //                setRestructureChecked(newChildarray);
-            //                ArrayTest?.push(newObj);
-            //                // task.isRestructureActive = false;
-            //              }
-         
-                         
-            //            });
-                       
-            //          });
-                     
-            //        });
-                
-              
-            // }
-            
-          });
+            }});
         } else if (items?.Item_x0020_Type === "Sprint" && props?.projectmngmnt !== "projectmngmnt") {
           let newarrays: any = [];
           let newObj: any;
@@ -3505,7 +3248,6 @@ const RestructuringCom = (props: any, ref: any) => {
         newItemBackUp?.TaskID == undefined ? null : newItemBackUp?.TaskID;
       let TaskLevel: number = 0;
       let Level: number = 0;
-      // let ActivityLevel: number = 0;
       if (
         newItemBackUp?.subRows != undefined &&
         newItemBackUp?.subRows?.length > 0 &&
@@ -3606,9 +3348,6 @@ const RestructuringCom = (props: any, ref: any) => {
           .items.getById(items.Id)
           .update(postData)
           .then(async (res: any) => {
-            // let checkUpdate: number = 1;
-            // let pushData: boolean = false;
-            // let spliceData: boolean = false;
             let TaskId =
               newItemBackUp?.TaskID == undefined ? null : newItemBackUp?.TaskID;
 
@@ -3802,24 +3541,6 @@ const RestructuringCom = (props: any, ref: any) => {
             : item?.TaskType?.Id == obj?.TaskType?.Id &&
               item?.siteType == obj?.siteType)
         ) {
-          // object = {
-          //   Title: obj?.Title,
-          //   PortfolioStructureID : obj?.PortfolioStructureID,
-          //   Portfolio: obj?.Portfolio,
-          //   ParentTask : obj?.ParentTask,
-          //   siteType: obj?.siteType,
-          //   listId : obj?.listId,
-          //   TaskID: obj?.TaskID,
-          //   Id: obj.Id,
-          //   TaskType: {
-          //     Id: obj.TaskType?.Id == undefined ? "" : obj.TaskType?.Id,Title:obj.TaskType?.Title
-          //   },
-          //   Item_x0020_Type: obj.Item_x0020_Type,
-          //   siteIcon:
-          //     obj.SiteIconTitle === undefined
-          //       ? obj.SiteIcon
-          //       : obj.SiteIconTitle,
-          // };
           object = {...obj, TaskType: {Id:obj.TaskType?.Id == undefined ? "" : obj.TaskType?.Id,Title:obj.TaskType?.Title}, siteIcon:obj.SiteIconTitle === undefined? obj.SiteIcon: obj.SiteIconTitle}
           
           TestArray?.push(object);
@@ -3834,42 +3555,6 @@ const RestructuringCom = (props: any, ref: any) => {
                 : item?.TaskType?.Id == sub?.TaskType?.Id &&
                   item?.siteType == sub?.siteType)
             ) {
-              // object = {
-              //   Title: obj?.Title,
-              //   TaskID: obj?.TaskID,
-              //   listId : obj?.listId,
-              //   PortfolioStructureID : obj?.PortfolioStructureID,
-              //   Portfolio: obj?.Portfolio,
-              //   ParentTask : obj?.ParentTask,
-              //   siteType: obj?.siteType,
-              //   TaskType: {
-              //     Id: obj.TaskType?.Id == undefined ? "" : obj.TaskType?.Id,Title:obj.TaskType?.Title
-              //   },
-              //   Item_x0020_Type: obj.Item_x0020_Type,
-              //   Id: obj.Id,
-              //   siteIcon:
-              //     obj.SiteIconTitle === undefined
-              //       ? obj.SiteIcon
-              //       : obj.SiteIconTitle,
-              //   newSubChild: {
-              //     Title: sub?.Title,
-              //     PortfolioStructureID : sub?.PortfolioStructureID,
-              //     Portfolio: sub?.Portfolio,
-              //     ParentTask : sub?.ParentTask,
-              //     TaskID: sub?.TaskID,
-              //     listId : sub?.listId,
-              //     siteType: sub?.siteType,
-              //     TaskType: {
-              //       Id: sub.TaskType?.Id == undefined ? "" : sub.TaskType?.Id,Title:sub.TaskType?.Title
-              //     },
-              //     Item_x0020_Type: sub.Item_x0020_Type,
-              //     Id: sub.Id,
-              //     siteIcon:
-              //       sub.SiteIconTitle === undefined
-              //         ? sub.SiteIcon
-              //         : sub.SiteIconTitle,
-              //   },
-              // };
               object = {...obj, TaskType: {Id:obj.TaskType?.Id == undefined ? "" : obj.TaskType?.Id,Title:obj.TaskType?.Title}, siteIcon:obj.SiteIconTitle === undefined? obj.SiteIcon: obj.SiteIconTitle,
               newSubChild:{...sub, TaskType: {Id:sub.TaskType?.Id == undefined ? "" : sub.TaskType?.Id,Title:sub.TaskType?.Title}, siteIcon:sub.SiteIconTitle === undefined? sub.SiteIcon: sub.SiteIconTitle }}
               
@@ -3885,64 +3570,6 @@ const RestructuringCom = (props: any, ref: any) => {
                     : item?.TaskType?.Id == newsub?.TaskType?.Id &&
                       item?.siteType == newsub?.siteType)
                 ) {
-                  // object = {
-                  //   Title: obj?.Title,
-                  //   PortfolioStructureID : obj?.PortfolioStructureID,
-                  //   Portfolio: obj?.Portfolio,
-                  //   ParentTask : obj?.ParentTask,
-                  //   TaskID: obj?.TaskID,
-                  //   listId : obj?.listId,
-                  //   siteType: obj?.siteType,
-                  //   TaskType: {
-                  //     Id: obj.TaskType?.Id == undefined ? "" : obj.TaskType?.Id,Title:obj.TaskType?.Title
-                  //   },
-                  //   Item_x0020_Type: obj.Item_x0020_Type,
-                  //   Id: obj.Id,
-                  //   siteIcon:
-                  //     obj.SiteIconTitle === undefined
-                  //       ? obj.SiteIcon
-                  //       : obj.SiteIconTitle,
-                  //   newSubChild: {
-                  //     Title: sub?.Title,
-                  //     listId : sub?.listId,
-                  //     PortfolioStructureID : sub?.PortfolioStructureID,
-                  //     Portfolio: sub?.Portfolio,
-                  //     ParentTask : sub?.ParentTask,
-                  //     TaskID: sub?.TaskID,
-                  //     siteType: sub?.siteType,
-                  //     TaskType: {
-                  //       Id:
-                  //         sub.TaskType?.Id == undefined ? "" : sub.TaskType?.Id,Title:sub.TaskType?.Title
-                  //     },
-                  //     Item_x0020_Type: sub.Item_x0020_Type,
-                  //     Id: sub.Id,
-                  //     siteIcon:
-                  //       sub.SiteIconTitle === undefined
-                  //         ? sub.SiteIcon
-                  //         : sub.SiteIconTitle,
-                  //     newFeatChild: {
-                  //       Title: newsub?.Title,
-                  //       listId : newsub?.listId,
-                  //       PortfolioStructureID : newsub?.PortfolioStructureID,
-                  //       Portfolio: newsub?.Portfolio,
-                  //       ParentTask : newsub?.ParentTask,
-                  //       TaskID: newsub?.TaskID,
-                  //       siteType: newsub?.siteType,
-                  //       TaskType: {
-                  //         Id:
-                  //           newsub.TaskType?.Id == undefined
-                  //             ? ""
-                  //             : newsub.TaskType?.Id,Title:newsub.TaskType?.Title
-                  //       },
-                  //       Item_x0020_Type: newsub.Item_x0020_Type,
-                  //       Id: newsub.Id,
-                  //       siteIcon:
-                  //         newsub.SiteIconTitle === undefined
-                  //           ? newsub.SiteIcon
-                  //           : newsub.SiteIconTitle,
-                  //     },
-                  //   },
-                  // };
                   object = {...obj, TaskType: {Id:obj.TaskType?.Id == undefined ? "" : obj.TaskType?.Id,Title:obj.TaskType?.Title}, siteIcon:obj.SiteIconTitle === undefined? obj.SiteIcon: obj.SiteIconTitle,
                   newSubChild:{...sub, TaskType: {Id:sub.TaskType?.Id == undefined ? "" : sub.TaskType?.Id,Title:sub.TaskType?.Title}, siteIcon:sub.SiteIconTitle === undefined? sub.SiteIcon: sub.SiteIconTitle,
                   newFeatChild : {...newsub, TaskType: {Id:newsub.TaskType?.Id == undefined ? "" : newsub.TaskType?.Id,Title:newsub.TaskType?.Title}, siteIcon:newsub.SiteIconTitle === undefined? newsub.SiteIcon: newsub.SiteIconTitle} }}
@@ -3959,87 +3586,6 @@ const RestructuringCom = (props: any, ref: any) => {
                         : item?.TaskType?.Id == activity?.TaskType?.Id &&
                           item?.siteType == activity?.siteType)
                     ) {
-                      // object = {
-                      //   Title: obj?.Title,
-                      //   TaskID: obj?.TaskID,
-                      //   PortfolioStructureID : obj?.PortfolioStructureID,
-                      //   Portfolio: obj?.Portfolio,
-                      //   siteType: obj?.siteType,
-                      //   listId : obj?.listId,
-                      //   ParentTask : obj?.ParentTask,
-                      //   TaskType: {
-                      //     Id:
-                      //       obj.TaskType?.Id == undefined
-                      //         ? ""
-                      //         : obj.TaskType?.Id,Title:obj.TaskType?.Title
-                      //   },
-                      //   Item_x0020_Type: obj.Item_x0020_Type,
-                      //   Id: obj.Id,
-                      //   siteIcon:
-                      //     obj.SiteIconTitle === undefined
-                      //       ? obj.SiteIcon
-                      //       : obj.SiteIconTitle,
-                      //   newSubChild: {
-                      //     Title: sub?.Title,
-                      //     PortfolioStructureID : sub?.PortfolioStructureID,
-                      //     Portfolio: sub?.Portfolio,
-                      //     siteType: sub?.siteType,
-                      //     listId : sub?.listId,
-                      //     ParentTask : sub?.ParentTask,
-                      //     TaskID: sub?.TaskID,
-                      //     TaskType: {
-                      //       Id:
-                      //         sub.TaskType?.Id == undefined
-                      //           ? ""
-                      //           : sub.TaskType?.Id,Title:sub.TaskType?.Title
-                      //     },
-                      //     Item_x0020_Type: sub.Item_x0020_Type,
-                      //     Id: sub.Id,
-                      //     siteIcon:
-                      //       sub.SiteIconTitle === undefined
-                      //         ? sub.SiteIcon
-                      //         : sub.SiteIconTitle,
-                      //     newFeatChild: {
-                      //       Title: newsub?.Title,
-                      //       PortfolioStructureID : newsub?.PortfolioStructureID,
-                      //       Portfolio: newsub?.Portfolio,
-                      //       ParentTask : newsub?.ParentTask,
-                      //       siteType: newsub?.siteType,
-                      //       listId : newsub?.listId,
-                      //       TaskID: newsub?.TaskID,
-                      //       TaskType: {
-                      //         Id:
-                      //           newsub.TaskType?.Id == undefined
-                      //             ? ""
-                      //             : newsub.TaskType?.Id,Title:newsub.TaskType?.Title
-                      //       },
-                      //       Item_x0020_Type: newsub.Item_x0020_Type,
-                      //       Id: newsub.Id,
-                      //       siteIcon:
-                      //         newsub.SiteIconTitle === undefined
-                      //           ? newsub.SiteIcon
-                      //           : newsub.SiteIconTitle,
-                      //       newActChild: {
-                      //         Title: activity?.Title,
-                      //         PortfolioStructureID : activity?.PortfolioStructureID,
-                      //         Portfolio: activity?.Portfolio,
-                      //         ParentTask : activity?.ParentTask,
-                      //         siteType: activity?.siteType,
-                      //         listId : activity?.listId,
-                      //         TaskID: activity?.TaskID,
-                      //         TaskType: {
-                      //           Id:
-                      //             activity.TaskType?.Id == undefined
-                      //               ? ""
-                      //               : activity.TaskType?.Id,Title:activity.TaskType?.Title
-                      //         },
-                      //         Item_x0020_Type: activity.Item_x0020_Type,
-                      //         Id: activity.Id,
-                      //         siteIcon: activity.SiteIcon,
-                      //       },
-                      //     },
-                      //   },
-                      // };
                       object = {...obj, TaskType: {Id:obj.TaskType?.Id == undefined ? "" : obj.TaskType?.Id,Title:obj.TaskType?.Title}, siteIcon:obj.SiteIconTitle === undefined? obj.SiteIcon: obj.SiteIconTitle,
                       newSubChild:{...sub, TaskType: {Id:sub.TaskType?.Id == undefined ? "" : sub.TaskType?.Id,Title:sub.TaskType?.Title}, siteIcon:sub.SiteIconTitle === undefined? sub.SiteIcon: sub.SiteIconTitle,
                       newFeatChild : {...newsub, TaskType: {Id:newsub.TaskType?.Id == undefined ? "" : newsub.TaskType?.Id,Title:newsub.TaskType?.Title}, siteIcon:newsub.SiteIconTitle === undefined? newsub.SiteIcon: newsub.SiteIconTitle,
@@ -4060,104 +3606,6 @@ const RestructuringCom = (props: any, ref: any) => {
                             : item?.TaskType?.Id == wrkstrm?.TaskType?.Id &&
                               item?.siteType == wrkstrm?.siteType)
                         ) {
-                          // object = {
-                          //   Title: obj?.Title,
-                          //   PortfolioStructureID : obj?.PortfolioStructureID,
-                          //   Portfolio: obj?.Portfolio,
-                          //   siteType: obj?.siteType,
-                          //   listId : obj?.listId,
-                          //   ParentTask : obj?.ParentTask,
-                          //   TaskID: obj?.TaskID,
-                          //   TaskType: {
-                          //     Id:
-                          //       obj.TaskType?.Id == undefined
-                          //         ? ""
-                          //         : obj.TaskType?.Id,Title:obj.TaskType?.Title
-                          //   },
-                          //   Item_x0020_Type: obj.Item_x0020_Type,
-                          //   Id: obj.Id,
-                          //   siteIcon:
-                          //     obj.SiteIconTitle === undefined
-                          //       ? obj.SiteIcon
-                          //       : obj.SiteIconTitle,
-                          //   newSubChild: {
-                          //     Title: sub?.Title,
-                          //     PortfolioStructureID : sub?.PortfolioStructureID,
-                          //     Portfolio: sub?.Portfolio,
-                          //     siteType: sub?.siteType,
-                          //     listId : sub?.listId,
-                          //     ParentTask : sub?.ParentTask,
-                          //     TaskID: sub?.TaskID,
-                          //     TaskType: {
-                          //       Id:
-                          //         sub.TaskType?.Id == undefined
-                          //           ? ""
-                          //           : sub.TaskType?.Id,Title:sub.TaskType?.Title
-                          //     },
-                          //     Item_x0020_Type: sub.Item_x0020_Type,
-                          //     Id: sub.Id,
-                          //     siteIcon:
-                          //       sub.SiteIconTitle === undefined
-                          //         ? sub.SiteIcon
-                          //         : sub.SiteIconTitle,
-                          //     newFeatChild: {
-                          //       Title: newsub?.Title,
-                          //       PortfolioStructureID : newsub?.PortfolioStructureID,
-                          //       Portfolio: newsub?.Portfolio,
-                          //       siteType: newsub?.siteType,
-                          //       listId : newsub?.listId,
-                          //       ParentTask : newsub?.ParentTask,
-                          //       TaskID: newsub?.TaskID,
-                          //       TaskType: {
-                          //         Id:
-                          //           newsub.TaskType?.Id == undefined
-                          //             ? ""
-                          //             : newsub.TaskType?.Id,Title:newsub.TaskType?.Title
-                          //       },
-                          //       Item_x0020_Type: newsub.Item_x0020_Type,
-                          //       Id: newsub.Id,
-                          //       siteIcon:
-                          //         newsub.SiteIconTitle === undefined
-                          //           ? newsub.SiteIcon
-                          //           : newsub.SiteIconTitle,
-                          //       newActChild: {
-                          //         Title: activity?.Title,
-                          //         PortfolioStructureID : activity?.PortfolioStructureID,
-                          //         Portfolio: activity?.Portfolio,
-                          //         siteType: activity?.siteType,
-                          //         listId : activity?.listId,
-                          //         ParentTask : activity?.ParentTask,
-                          //         TaskID: activity?.TaskID,
-                          //         TaskType: {
-                          //           Id:
-                          //             activity.TaskType?.Id == undefined
-                          //               ? ""
-                          //               : activity.TaskType?.Id,Title:activity.TaskType?.Title
-                          //         },
-                          //         Item_x0020_Type: activity.Item_x0020_Type,
-                          //         Id: activity.Id,
-                          //         siteIcon: activity.SiteIcon,
-                          //         newWrkChild: {
-                          //           Title: wrkstrm?.Title,
-                          //           PortfolioStructureID : wrkstrm?.PortfolioStructureID,
-                          //           Portfolio: wrkstrm?.Portfolio,
-                          //           ParentTask : wrkstrm?.ParentTask,
-                          //           TaskID: wrkstrm?.TaskID,
-                          //           siteType: wrkstrm?.siteType,
-                          //           TaskType: {
-                          //             Id:
-                          //               wrkstrm.TaskType?.Id == undefined
-                          //                 ? ""
-                          //                 : wrkstrm.TaskType?.Id,Title:wrkstrm.TaskType?.Title
-                          //           },
-                          //           Item_x0020_Type: wrkstrm.Item_x0020_Type,
-                          //           Id: wrkstrm.Id,
-                          //           siteIcon: wrkstrm.SiteIcon,
-                          //         },
-                          //       },
-                          //     },
-                          //   },
-                          // };
                           object = {...obj, TaskType: {Id:obj.TaskType?.Id == undefined ? "" : obj.TaskType?.Id,Title:obj.TaskType?.Title}, siteIcon:obj.SiteIconTitle === undefined? obj.SiteIcon: obj.SiteIconTitle,
                           newSubChild:{...sub, TaskType: {Id:sub.TaskType?.Id == undefined ? "" : sub.TaskType?.Id,Title:sub.TaskType?.Title}, siteIcon:sub.SiteIconTitle === undefined? sub.SiteIcon: sub.SiteIconTitle,
                           newFeatChild : {...newsub, TaskType: {Id:newsub.TaskType?.Id == undefined ? "" : newsub.TaskType?.Id,Title:newsub.TaskType?.Title}, siteIcon:newsub.SiteIconTitle === undefined? newsub.SiteIcon: newsub.SiteIconTitle,
@@ -4186,18 +3634,6 @@ const RestructuringCom = (props: any, ref: any) => {
           obj.Id === item.Id &&
           item?.Item_x0020_Type == obj.Item_x0020_Type
         ) {
-          // object = {
-          //   Title: obj?.Title,
-          //   PortfolioStructureID : obj?.PortfolioStructureID,
-          //   Portfolio: obj?.Portfolio,
-          //   siteType: obj?.siteType,
-          //   listId : obj?.listId,
-          //   ParentTask : obj?.ParentTask,
-          //   Id: obj?.Id,
-          //   TaskID:obj?.TaskID,
-          //   SiteIcon : obj?.SiteIcon,
-          //   Item_x0020_Type: obj?.Item_x0020_Type,
-          // };
           object = {...obj}
           
           TestArray?.push(object);
@@ -4209,30 +3645,6 @@ const RestructuringCom = (props: any, ref: any) => {
               sub.Id === item.Id &&
               item?.Item_x0020_Type == sub.Item_x0020_Type
             ) {
-              // object = {
-              //   Title: obj?.Title,
-              //   Id: obj?.Id,
-              //   PortfolioStructureID : obj?.PortfolioStructureID,
-              //   Portfolio: obj?.Portfolio,
-              //   ParentTask : obj?.ParentTask,
-              //   siteType: obj?.siteType,
-              //   listId : obj?.listId,
-              //   TaskID:obj?.TaskID,
-              //   SiteIcon : obj?.SiteIcon,
-              //   Item_x0020_Type: obj?.Item_x0020_Type,
-              //   newSubChild: {
-              //     Title: sub?.Title,
-              //     Id: sub?.Id,
-              //     siteType: sub?.siteType,
-              //     listId : sub?.listId,
-              //     PortfolioStructureID : sub?.PortfolioStructureID,
-              //     Portfolio: sub?.Portfolio,
-              //     ParentTask : sub?.ParentTask,
-              //     TaskID:sub?.TaskID,
-              //     SiteIcon : sub?.SiteIcon,
-              //     Item_x0020_Type: sub?.Item_x0020_Type,
-              //   },
-              // };
               object = {...obj, 
               newSubChild:{...sub }}
               
@@ -4259,9 +3671,10 @@ const RestructuringCom = (props: any, ref: any) => {
   };
 
   const projectTopIcon = (items: any) => {
-    setTopProject(items);
     setTrueTopCompo(false);
     setResturuningOpen(false);
+    setTopProject(items);
+    
   };
 
   React.useImperativeHandle(ref, () => ({
@@ -5049,11 +4462,17 @@ const RestructuringCom = (props: any, ref: any) => {
               });
             }
           });
+          
+          const sortedArray = array.sort((a: any, b: any) => {
+            if (a.Title === "Others") return 1;
+            if (b.Title === "Others") return -1;
+            return 0;
+          });
           setResturuningOpen(false);
           setNewItemBackUp([]);
           setTrueTopCompo(false);
           setControlUseEffect(false);
-          restructureCallBack(array, false);
+          restructureCallBack(sortedArray, false);
         });
     } else {
       let array: any = [...allData];
@@ -5554,10 +4973,10 @@ const RestructuringCom = (props: any, ref: any) => {
       };
   
       const updateProjects = (arr:any) => {
-          arr.forEach((obj:any) => {
+          arr.map((obj:any) => {
               obj.isRestructureActive = false;
   
-              if (!newItemBackUp && onceRender) {
+              if (pushData != true && onceRender == true && newItemBackUp == null) {
                   onceRender = false;
                   pushData = true;
                   arr.push(...latestCheckedList);
@@ -5568,7 +4987,7 @@ const RestructuringCom = (props: any, ref: any) => {
                   arr.splice(arr.indexOf(obj), 1);
               }
   
-              if (pushData ==false && obj.Id === newItemBackUp?.Id && obj.Item_x0020_Type === newItemBackUp?.Item_x0020_Type) {
+              if (pushData == false && obj.Id === newItemBackUp?.Id && obj.Item_x0020_Type === newItemBackUp?.Item_x0020_Type) {
                   pushData = true;
                   obj.subRows?.push(...latestCheckedList);
               }
@@ -5578,9 +4997,6 @@ const RestructuringCom = (props: any, ref: any) => {
               }
           });
       };
-  
-      // Declaration of latestCheckedList and backupCheckedList
-      
   
       restructureItem?.map((items:any) => {
           latestCheckedList?.push({ ...items });
@@ -5610,7 +5026,7 @@ const RestructuringCom = (props: any, ref: any) => {
       setNewItemBackUp([]);
       setNewItemBackUp(null);
       setOldArrayBackup([]);
-      restructureCallBack(array, false, true);
+      restructureCallBack(array, false);
       setProjectmngmnt(false);
       setTopProject(false);
     }else{
@@ -6772,8 +6188,7 @@ const RestructuringCom = (props: any, ref: any) => {
               ) : (
                 <span>
                   <img
-                    width={"25px"}
-                    height={"25px"}
+                    className="workmember"
                     src={newItemBackUp?.SiteIcon}
                   />
                 </span>
@@ -7178,8 +6593,7 @@ const RestructuringCom = (props: any, ref: any) => {
                 <span className="Dyicons me-1 ms-1">
                   S
                 </span> : (newItemBackUp?.TaskType?.Id == 1 || newItemBackUp?.TaskType?.Id == 3 ?  <img
-                              width={"25px"}
-                              height={"25px"}
+                            className="workmember"
                               src={newItemBackUp?.SiteIcon}
                             /> : <span className="Dyicons me-1 ms-1">
                             P
@@ -7218,7 +6632,7 @@ const RestructuringCom = (props: any, ref: any) => {
         onDismiss={() => setProjectmngmnt(false)}
       >
 
-            <div>
+            <div className="modal-body">
             <div className="my-1">
               Selected Item will restructure 
               inside
@@ -7226,14 +6640,13 @@ const RestructuringCom = (props: any, ref: any) => {
                 <span className="Dyicons me-1 ms-1">
                   S
                 </span> : (newItemBackUp?.TaskType?.Id == 1 || newItemBackUp?.TaskType?.Id == 3 ?  <img
-                              width={"25px"}
-                              height={"25px"}
+                            className="workmember mx-1"
                               src={newItemBackUp?.SiteIcon}
                             /> : <span className="Dyicons me-1 ms-1">
                             P
                           </span>)
               }
-              {" " + newItemBackUp?.Title }
+              {newItemBackUp?.Title }
             </div>
             <label className="fw-bold form-label full-width"> Old: </label>
             <div
@@ -7261,8 +6674,7 @@ const RestructuringCom = (props: any, ref: any) => {
                        {  obj?.Item_x0020_Type == 'Project' ? <div className="Dyicons text-center">P</div> : (obj?.Item_x0020_Type == "Sprint" ? 
                             <div className="Dyicons text-center">S</div> : <span>
                             <img
-                              width={"25px"}
-                              height={"25px"}
+                            className="workmember"
                               src={obj?.SiteIcon}
                             />
                           </span>)}
@@ -7304,9 +6716,7 @@ const RestructuringCom = (props: any, ref: any) => {
                              {/* <div className="alignCenter">{obj?.newSubChild?.TaskID}</div> */}
                               {  obj?.newSubChild?.Item_x0020_Type == 'Project' ? <div className="Dyicons text-center">P</div> : (obj?.newSubChild?.Item_x0020_Type == "Sprint" ? 
                             <div className="Dyicons text-center">S</div> : <span>
-                            <img
-                              width={"25px"}
-                              height={"25px"}
+                            <img className="workmember"
                               src={obj?.newSubChild?.SiteIcon}
                             />
                           </span>)}
@@ -7349,14 +6759,12 @@ const RestructuringCom = (props: any, ref: any) => {
                               "/SP/SitePages/Task-Profile.aspx?taskId=" +
                               obj?.newSubChild?.feature?.Id + "&Site=" + obj?.newSubChild?.feature?.siteType
                             }
-                            className=""
+                            className="alignCenter"
                           >
                             {/* <div className="alignCenter">{obj?.newSubChild?.feature?.TaskID}</div> */}
                        {  obj?.newSubChild?.feature?.Item_x0020_Type == 'Project' ? <div className="Dyicons text-center">P</div> : (obj?.newSubChild?.feature?.Item_x0020_Type == "Sprint" ? 
                             <div className="Dyicons text-center">S</div> : <span>
-                            <img
-                              width={"25px"}
-                              height={"25px"}
+                            <img className="workmember"
                               src={obj?.newSubChild?.feature?.SiteIcon}
                             />
                           </span>)}
@@ -7369,11 +6777,16 @@ const RestructuringCom = (props: any, ref: any) => {
                           </a>
                           </div>
                         </div>
-                        <div className="alignCenter">
-                          
-                          <BsArrowRightShort />
-                        </div>
                       </>
+                    ) : (
+                      ""
+                    )}
+                     {obj?.newSubChild?.feature?.activity != undefined &&
+                    obj?.newSubChild?.feature?.activity != null ? (
+                      <div className="alignCenter">
+                        
+                        <BsArrowRightShort />
+                      </div>
                     ) : (
                       ""
                     )}
@@ -7398,9 +6811,7 @@ const RestructuringCom = (props: any, ref: any) => {
                             {/* <div className="alignCenter">{obj?.newSubChild?.feature?.activity?.TaskID}</div> */}
                        {  obj?.newSubChild?.feature?.activity?.Item_x0020_Type == 'Project' ? <div className="Dyicons text-center">P</div> : (obj?.newSubChild?.feature?.activity?.Item_x0020_Type == "Sprint" ? 
                             <div className="Dyicons text-center">S</div> : <span>
-                            <img
-                              width={"25px"}
-                              height={"25px"}
+                            <img className="workmember"
                               src={obj?.newSubChild?.feature?.activity?.SiteIcon}
                             />
                           </span>)}
@@ -7504,9 +6915,7 @@ const RestructuringCom = (props: any, ref: any) => {
                             {/* <div className="alignCenter">{obj?.newSubChild?.feature?.TaskID}</div> */}
                        {  obj?.newSubChild?.feature?.Item_x0020_Type == 'Project' ? <div className="Dyicons text-center">P</div> : (obj?.newSubChild?.feature?.Item_x0020_Type == "Sprint" ? 
                             <div className="Dyicons text-center">S</div> : <span>
-                            <img
-                              width={"25px"}
-                              height={"25px"}
+                            <img className="workmember"
                               src={obj?.newSubChild?.feature?.SiteIcon}
                             />
                           </span>)}
@@ -7549,8 +6958,7 @@ const RestructuringCom = (props: any, ref: any) => {
                        {  obj?.newSubChild?.feature?.activity?.Item_x0020_Type == 'Project' ? <div className="Dyicons text-center">P</div> : (obj?.newSubChild?.feature?.activity?.Item_x0020_Type == "Sprint" ? 
                             <div className="Dyicons text-center">S</div> : <span>
                             <img
-                              width={"25px"}
-                              height={"25px"}
+                            className="workmember"
                               src={obj?.newSubChild?.feature?.activity?.SiteIcon}
                             />
                           </span>)}
@@ -7580,8 +6988,7 @@ const RestructuringCom = (props: any, ref: any) => {
                           {items?.TaskID}
                             <span>
                                 <img
-                                  width={"25px"}
-                                  height={"25px"}
+                                 className="workmember"
                                   src={items?.SiteIcon}
                                 /></span>
                          
@@ -7592,12 +6999,19 @@ const RestructuringCom = (props: any, ref: any) => {
 
 
 
+                  </div>
+                  
+                );
+                
+              })}
+             
+            </div>
+            <div>
             {restructureItem != undefined && restructureItem?.length > 0 && 
             newItemBackUp?.TaskType?.Id == 1 && (
               <div className="mt-2">
-                <span>
-                  {"Select Task Type :"}
-                  <label className="SpfxCheckRadio ms-3 me-1">
+                  <label className="form-label me-2">{"Select Task Type :"}</label>
+                  <label className="SpfxCheckRadio">
                     <input
                       type="radio"
                       className="radio"
@@ -7612,11 +7026,9 @@ const RestructuringCom = (props: any, ref: any) => {
                       }
                       onChange={(e) => setRestructure(RestructureChecked, 1)}
                     />
+                    {"Workstream"}
                   </label>
-                  <label className="ms-1"> {"Workstream"} </label>
-                </span>
-                <span>
-                  <label className="SpfxCheckRadio ms-3 me-1">
+                  <label className="SpfxCheckRadio">
                     <input
                       type="radio"
                       className="radio"
@@ -7626,41 +7038,27 @@ const RestructuringCom = (props: any, ref: any) => {
                         RestructureChecked[0]?.TaskType?.Id === 2 ? true : false
                       }
                       onChange={(e) => setRestructure(RestructureChecked, 2)}
-                    />
+                    /> {"Task"}
                   </label>
-                  <label className="ms-1"> {"Task"} </label>
-                </span>
               </div>
-            ) }
-                  </div>
-                );
-              })}
+            ) }</div>
             </div>
         <footer className="mt-4 text-end">
           <button className="me-2 btn btn-primary" onClick={projectMngmntFuc}>
             Save
           </button>
           <button
-            className="btn me-2 btn-default ms-1"
+            className="btn btn-default ms-1"
             onClick={() => setProjectmngmnt(false)}
           >
             Cancel
           </button>
         </footer>
-        </div>
-
-
-
-      </Panel>
+        </Panel>
       }
 
 
-
-
-
-
-
-      {trueTopCompo == true ? (
+       {trueTopCompo == true ? (
         <span>
           <Panel
             onRenderHeader={onRenderCustomCalculateSC}
