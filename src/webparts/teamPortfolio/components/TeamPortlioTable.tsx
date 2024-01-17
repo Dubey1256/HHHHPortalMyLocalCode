@@ -2419,7 +2419,7 @@ function TeamPortlioTable(SelectedProp: any) {
                 />
             </Panel>
 
-            {openCompareToolPopup && <CompareTool isOpen={openCompareToolPopup} compareToolCallBack={compareToolCallBack} compareData={childRef?.current?.table?.getSelectedRowModel()?.flatRows} contextValue={SelectedProp?.SelectedProp}/>}
+            {openCompareToolPopup && <CompareTool isOpen={openCompareToolPopup} compareToolCallBack={compareToolCallBack} compareData={childRef?.current?.table?.getSelectedRowModel()?.flatRows} contextValue={SelectedProp?.NextProp}/>}
 
             <Panel
                 onRenderHeader={onRenderCustomHeaderMain}
@@ -2545,7 +2545,7 @@ function TeamPortlioTable(SelectedProp: any) {
                 <EditInstituton
                     item={SharewebComponent}
                     Calls={Call}
-                    SelectD={SelectedProp}
+                    SelectD={SelectedProp?.SelectedProp}
                     portfolioTypeData={portfolioTypeData}
                 >
                 </EditInstituton>

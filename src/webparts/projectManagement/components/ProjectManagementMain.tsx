@@ -981,7 +981,7 @@ relevantDocRef = React.useRef();
     renderData = [];
     renderData = renderData.concat(getData);
     refreshData();
-    if (callback == true) {
+    if(callback){
       LoadAllSiteTasks();
     }
   }, []);
@@ -1782,6 +1782,8 @@ const contextCall = React.useCallback((data: any, path: any, releventKey: any) =
                               <div className="wrapper project-management-Table">
                                 {(data?.length == 0 || data?.length > 0) && <GlobalCommanTable AllListId={AllListId} headerOptions={headerOptions} updatedSmartFilterFlatView={false}
                                   projectmngmnt={"projectmngmnt"}
+                                  masterTaskData={MasterListData}
+                                  AllSitesTaskData={AllSitesAllTasks}
                                   MasterdataItem={Masterdata}
                                   columns={column2} data={data} callBackData={callBackData}
                                   smartTimeTotalFunction={smartTimeTotal} SmartTimeIconShow={true}
