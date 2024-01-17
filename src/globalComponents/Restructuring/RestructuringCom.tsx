@@ -158,27 +158,27 @@ const RestructuringCom = (props: any, ref: any) => {
           buttonRestructureDifferentType();
         }
       }else{
-        let typeAlert : boolean = true;
-        restructureItem?.map((items: any, length: any) => {
-          if(items?.Item_x0020_Type != 'Sprint'){
-             if(restructureItem[0].TaskType?.Id == items?.TaskType?.Id && restructureItem[0]?.siteType == items?.siteType && typeAlert){
-              typeAlert = true;
-               }else{
-                if(typeAlert){
-                  typeAlert = false;
-                  alert('You are not allowed to restructure different Type of item !')
-                }
-                
-               }
-          }else{
-              alert("You are not allowed to restructure this item !")
+        if(props?.projectmngmnt == "projectmngmnt"){
+          let typeAlert : boolean = true;
+          restructureItem?.map((items: any, length: any) => {
+            if(items?.Item_x0020_Type != 'Sprint'){
+               if(restructureItem[0].TaskType?.Id == items?.TaskType?.Id && restructureItem[0]?.siteType == items?.siteType && typeAlert){
+                typeAlert = true;
+                 }else{
+                  if(typeAlert){
+                    typeAlert = false;
+                    alert('You are not allowed to restructure different Type of item !')
+                  }
+                  
+                 }
+            }else{
+                alert("You are not allowed to restructure this item !")
+            }
+          })
+          if(typeAlert && props?.projectmngmnt == "projectmngmnt"){
+            prjtMngmntRestructuring();
           }
-        })
-        if(typeAlert && props?.projectmngmnt == "projectmngmnt"){
-          prjtMngmntRestructuring();
-        }
-       
-      }
+        }}
     }
     if (restructureItem?.length == 1 && props?.projectmngmnt != "projectmngmnt") {
       buttonRestructuring();
@@ -3219,8 +3219,6 @@ const RestructuringCom = (props: any, ref: any) => {
               }
             });
           }
-        }else if(props?.projectmngmnt == "projectmngmnt" && (items?.Item_x0020_Type == "Sprint" || items?.Item_x0020_Type == null || items?.Item_x0020_Type == undefined)){
-              alert("You are not allowed to restructure this item !")
         }
       });
 
