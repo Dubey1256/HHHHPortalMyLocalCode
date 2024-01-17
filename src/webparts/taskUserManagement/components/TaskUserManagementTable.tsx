@@ -17,11 +17,11 @@ import Tooltip from '../../../globalComponents/Tooltip';
 import zIndex from '@material-ui/core/styles/zIndex';
 import CheckboxTree from 'react-checkbox-tree';
 import 'react-checkbox-tree/lib/react-checkbox-tree.css';
-import { FaCheckSquare } from 'react-icons/fa';
+import { FaChevronDown, FaChevronRight, FaMinusSquare, FaPlusSquare, FaSquare, FaCheckSquare } from 'react-icons/fa';
 import "./styles.css"
 
 const TaskUserManagementTable = ({ TaskUsersListData, TaskGroupsListData, baseUrl, TaskUserListId, context, fetchAPIData, smartMetaDataItems }: any) => {
-    const [data, setData] = React.useState([]);
+    const [data, setData] = React.useState<any>([]);
     const [groupData, setGroupData] = useState([]);
     const [title, setTitle] = useState("");
     const [addTitle, setAddTitle] = useState("");
@@ -52,6 +52,7 @@ const TaskUserManagementTable = ({ TaskUsersListData, TaskGroupsListData, baseUr
     const [isUserNameValid, setIsUserNameValid] = useState(false);
     const [checked, setChecked] = useState([]);
     const [expanded, setExpanded] = useState([]);
+    const [selectedApproval, setSelectedApproval] = useState('');
     // const [searchedProjectKey, setSearchedProjectKey] = React.useState("");
 
     const Categories: any = (smartMetaDataItems.filter((items: any) => items.TaxType === "TimesheetCategories"))
@@ -87,7 +88,9 @@ const TaskUserManagementTable = ({ TaskUsersListData, TaskGroupsListData, baseUr
             const categoryIds = categoriesJson?.map((category: any) => category.Id.toString());
             setChecked(categoryIds);
             setAssignedToUser(memberToUpdate.AssingedToUser?.Id)
-            setApprover([memberToUpdate.Approver?.[0]?.Id])
+            // setApprover([memberToUpdate.Approver?.[0]?.Id])
+            const Approvers: any = memberToUpdate?.Approver?.map((item: any) => item.Id)
+            setApprover([Approvers])
             setUserTeam(memberToUpdate.Team)
         }
     }, [memberToUpdate]);
@@ -146,7 +149,7 @@ const TaskUserManagementTable = ({ TaskUsersListData, TaskGroupsListData, baseUr
         }).then((res: any) => {
             console.log(res);
             const newItem = res.data;
-            setData(prevData => [...prevData, newItem]);
+            setData((prevData: any) => [...prevData, newItem]);
             setTitle("");
             setAddTitle("");
             fetchAPIData()
@@ -180,7 +183,7 @@ const TaskUserManagementTable = ({ TaskUsersListData, TaskGroupsListData, baseUr
             await web.lists.getById(TaskUserListId).items.getById(itemToDelete.Id).recycle()
                 .then(i => {
                     console.log(i);
-                    setData(prevData => prevData.filter(item => item.Id !== itemToDelete.Id));
+                    setData((prevData: any) => prevData.filter((item: any) => item.Id !== itemToDelete.Id));
                     setGroupData(prevData => prevData.filter(item => item.Id !== itemToDelete.Id));
                     setItemToDelete(null);
                     fetchAPIData()
@@ -207,8 +210,9 @@ const TaskUserManagementTable = ({ TaskUsersListData, TaskGroupsListData, baseUr
                 Role: { "results": selectedRoles },
                 IsTaskNotifications: isTaskNotifications,
                 AssingedToUserId: typeof assignedToUser === 'number' ? assignedToUser : (assignedToUser?.length > 0 ? assignedToUser[0]?.AssingedToUser?.Id : null),
-                ApproverId: Array.isArray(approver) && approver.every(item => typeof item === 'number' && item != null)
-                    ? { "results": approver } : (approver.length > 0 && approver[0] != null && approver[0].AssingedToUser?.Id != null) ? { "results": [approver[0].AssingedToUser.Id] } : { "results": [] },
+                // ApproverId: Array.isArray(approver) && approver.every(item => typeof item === 'number' && item != null)
+                //     ? { "results": approver } : (approver.length > 0 && approver[0] != null && approver[0].AssingedToUser?.Id != null) ? { "results": [approver[0].AssingedToUser.Id] } : { "results": [] },
+                ApproverId: Array.isArray(approver) && approver.length > 0 ? { "results": approver.map(app => app.AssingedToUser.Id) } : { "results": [] },
                 UserGroupId: userGroup ? parseInt(userGroup) : memberToUpdate?.UserGroup?.Id,
                 Team: userTeam ? userTeam : memberToUpdate.Team,
                 // Item_x0020_Cover: { "__metadata": { type: "SP.FieldUrlValue" }, Description: "Description", Url: imageUrl?.Item_x002d_Image != undefined ? imageUrl?.Item_x002d_Image?.Url : (imageUrl?.Item_x0020_Cover != undefined ? imageUrl?.Item_x0020_Cover?.Url : null) },
@@ -221,7 +225,7 @@ const TaskUserManagementTable = ({ TaskUsersListData, TaskGroupsListData, baseUr
                 console.log('Updated Data:', updatedData);
 
                 // Update the data and groupData states
-                const updatedMemberData = data.map(item => {
+                const updatedMemberData = data.map((item: any) => {
                     if (item.Id === memberToUpdate.Id) {
                         return { ...item, ...updatedData };
                     }
@@ -335,7 +339,8 @@ const TaskUserManagementTable = ({ TaskUsersListData, TaskGroupsListData, baseUr
             size: 70,
         },
         {
-            accessorFn: (row) => row.Approver?.[0]?.Title || '',
+            // accessorFn: (row) => row.Approver?.[0]?.Title || '',
+            accessorFn: (row) => row?.Approver?.map((item: any) => item?.Title) || '',
             header: "",
             id: 'Approver',
             placeholder: "Approver"
@@ -372,26 +377,26 @@ const TaskUserManagementTable = ({ TaskUsersListData, TaskGroupsListData, baseUr
                 id: "Title",
                 header: "",
                 placeholder: "Title",
+                sortDescFirst: false
             },
             {
                 accessorKey: "SortOrder",
                 header: "",
                 placeholder: "SortOrder",
-                id: "SortOrder",
-                isColumnDefultSortingDesc: true,
                 filterFn: (row: any, columnId: any, filterValue: any) => {
                     return row?.original?.SortOrder == filterValue
                 },
             },
             {
+                accessorKey: "TaskId",
+                header: null,
                 cell: (info) => (<div className='pull-right alignCenter'>
                     <span onClick={() => handleUpdateClick(info.row.original)} className='svg__iconbox svg__icon--edit' title='Edit'></span>
                     <span onClick={() => handleDeleteClick(info.row.original)} className='svg__iconbox svg__icon--trash' title='Trash'></span>
                 </div>),
-                id: "editIcon",
-                canSort: false,
-                placeholder: "",
-                size: 30,
+                enableColumnFilter: false,
+                enableSorting: false,
+                Size: 60
             }
         ],
         [groupData]
@@ -400,8 +405,11 @@ const TaskUserManagementTable = ({ TaskUsersListData, TaskGroupsListData, baseUr
     const userIdentifier = memberToUpdate?.AssingedToUser?.Name;
     const email = userIdentifier ? userIdentifier.split('|').pop() : '';
 
-    const userIdentifier2 = memberToUpdate?.Approver?.[0]?.Name;
-    const email2 = userIdentifier2 ? userIdentifier2.split('|').pop() : '';
+    // const userIdentifier2 = memberToUpdate?.Approver?.[0]?.Name;
+    // const email2 = userIdentifier2 ? userIdentifier2.split('|').pop() : '';
+
+    const userIdentifiers = memberToUpdate?.Approver?.map((approver: any) => approver.Name) || [];
+    const emails = userIdentifiers.map((identifier: any) => identifier.split('|').pop());
 
     const callBackData = React.useCallback((elem: any, ShowingData: any) => {
 
@@ -426,16 +434,29 @@ const TaskUserManagementTable = ({ TaskUsersListData, TaskGroupsListData, baseUr
         }
     }
 
-    const ApproverFunction = (item: any) => {
-        if (item.length > 0) {
-            const email = item.length > 0 ? item[0].loginName.split('|').pop() : null;
-            const member = data.filter((elem: any) => elem.Email === email)
-            setApprover(member)
-        }
-        else {
-            setApprover([])
+    // const ApproverFunction = (item: any) => {
+    //     if (item.length > 0) {
+    //         const email = item.length > 0 ? item[0].loginName.split('|').pop() : null;
+    //         const member = data.filter((elem: any) => elem.Email === email)
+    //         setApprover(member)
+    //     }
+    //     else {
+    //         setApprover([])
+    //     }
+    // }
+    const ApproverFunction = (items: any[]) => {
+        if (items.length > 0) {
+            const approvers = items.map(item => {
+                const email = item.loginName.split('|').pop();
+                return data.find((elem: any) => elem.Email === email);
+            }).filter(approver => approver != null); // Filter out any undefined or null values
+
+            setApprover(approvers);
+        } else {
+            setApprover([]);
         }
     }
+
 
     // Autosuggestion code
 
@@ -535,70 +556,85 @@ const TaskUserManagementTable = ({ TaskUsersListData, TaskGroupsListData, baseUr
         setUserCategory(memberToUpdate.TimeCategory)
         setSelectedCategories(JSON.parse(memberToUpdate.CategoriesItemsJson))
         // setAssignedToUser(memberToUpdate.AssingedToUser?.Id)
-        setApprover([memberToUpdate.Approver?.[0]?.Id])
+        // setApprover([memberToUpdate.Approver?.[0]?.Id])
+        const Approvers: any = memberToUpdate?.Approver?.map((item: any) => item.Id)
+        setApprover([Approvers])
         setUserTeam(memberToUpdate.Team)
         setOpenUpdateMemberPopup(false)
     }
 
     const findCategoryById = (categories: any, id: any): any => {
-        let result = null;
-
         for (const category of categories) {
             if (category.Id.toString() === id) {
                 return category;
             }
             if (category.children) {
-                result = findCategoryById(category.children, id);
+                const result = findCategoryById(category.children, id);
                 if (result) {
                     return result;
                 }
             }
         }
-
-        return result;
+        return null;
     };
 
     const handleCheck = (checked: any) => {
         setChecked(checked);
-
         const selected = checked.map((id: any) => {
             const category = findCategoryById(MyCategories, id);
-            // Transform the category object to only include Title and Id
-            if (category) {
-                return { Title: category.Title, Id: category.Id };
-            }
-            return null;
-        }).filter((cat: any) => cat !== null); // Filter out any null values
-
+            return category ? { Title: category.Title, Id: category.Id } : null;
+        }).filter((cat: any) => cat !== null);
         setSelectedCategories(selected);
     };
 
+    // const renderRadios = (approvalCategory: any) => {
+    //     console.log(approvalCategory)
+    // }
 
     const transformCategoriesToNodes = (categories: any) => {
         return categories.map((category: any) => {
-            return {
+            // Check if the category has children
+            const hasChildren = category.children && category.children.length > 0;
+            const node: any = {
                 value: category.Id.toString(),
                 label: category.Title,
-                children: category.children ? transformCategoriesToNodes(category.children) : []
             };
+            // Conditionally add the 'children' property if the category has children
+            if (hasChildren) {
+                node.children = transformCategoriesToNodes(category.children);
+            }
+            return node;
         });
     };
 
-    const nodes = transformCategoriesToNodes(MyCategories);
+    // const transformCategoriesToNodes = (categories: any, ) => {
+    //     return categories.map((category: any) => {
+    //         // Skip the Approval category's children as they are rendered separately
+    //         if (parentId === 'Approval') return null;
+
+    //         const hasChildren = category.children && category.children.length > 0;
+    //         const node = {
+    //             value: category.Id.toString(),
+    //             label: category.Title,
+    //             children: hasChildren ? transformCategoriesToNodes(category.children, category.Title) : []
+    //         };
+    //         return node;
+    //     }).filter(Boolean); // Remove any null entries
+    // };
+
+
+
+
 
     const icons: any = {
         check: <FaCheckSquare />,
-        uncheck: <span className=" alignIcon  svg__iconbox svg__icon--sqCheckbox " />,
-        halfCheck: <span className="alignIcon  svg__iconbox svg__icon--dotCheckbox " />,
-        expandClose: <span className="alignIcon  svg__iconbox svg__icon--arrowRight" />,
-        expandOpen: <span className='alignIcon  svg__iconbox svg__icon--arrowDown' />,
-        parentClose: <span className='alignIcon  svg__iconbox svg__icon--arrowRight'></span>,
-        parentOpen: <span className='alignIcon  svg__iconbox svg__icon--arrowDown'></span>,
-        // expandClose: <FaChevronRight />,
-        //expandOpen: <FaChevronDown />,
-        //parentClose: <FaChevronRight />,
-        //parentOpen: <FaChevronDown />,
-        leaf: null, // you can set to null or any icon for leaf nodes
+        uncheck: <span className="alignIcon svg__iconbox svg__icon--sqCheckbox" />,
+        halfCheck: <span className="alignIcon svg__iconbox svg__icon--dotCheckbox" />,
+        expandClose: <span className="alignIcon svg__iconbox svg__icon--arrowRight" />,
+        expandOpen: <span className='alignIcon svg__iconbox svg__icon--arrowDown' />,
+        parentClose: <span className='alignIcon svg__iconbox svg__icon--arrowRight' />,
+        parentOpen: <span className='alignIcon svg__iconbox svg__icon--arrowDown' />,
+        leaf: null
     };
 
 
@@ -720,16 +756,16 @@ const TaskUserManagementTable = ({ TaskUsersListData, TaskGroupsListData, baseUr
             >
                 <div className='modal-body'>
                     <div className="add-datapanel">
-                        <div className='input-group'>
-                            <label className='form-label full-width'>Title: </label>
+                        <div className='input-group mb-1'>
+                            <label className='form-label full-width fw-semibold'>Title: </label>
                             <input className='form-control' type="text" defaultValue={itemToUpdate?.Title} onChange={(e: any) => setTitle(e.target.value)} />
                         </div>
-                        <div className='input-group'>
-                            <label className='form-label full-width'>Suffix: </label>
+                        <div className='input-group mb-1'>
+                            <label className='form-label full-width fw-semibold'>Suffix: </label>
                             <input className='form-control' type="text" defaultValue={itemToUpdate?.Suffix} onChange={(e: any) => setSuffix(e.target.value)} />
                         </div>
-                        <div className='input-group'>
-                            <label className='form-label full-width'>Sort Order: </label>
+                        <div className='input-group mb-1'>
+                            <label className='form-label full-width fw-semibold'>Sort Order: </label>
                             <input className='form-control' type="text" defaultValue={itemToUpdate?.SortOrder} onChange={(e: any) => setSortOrder(e.target.value)} />
                         </div>
                     </div>
@@ -776,27 +812,27 @@ const TaskUserManagementTable = ({ TaskUsersListData, TaskGroupsListData, baseUr
                             <div className="row mb-2">
                                 <div className='col-2'>
                                     <div className='input-group'>
-                                        <label className='form-label full-width'>Title: </label>
+                                        <label className='form-label full-width fw-semibold'>Title: </label>
                                         <input className='form-control' type="text" defaultValue={memberToUpdate?.Title} onChange={(e: any) => setTitle(e.target.value)} />
                                     </div>
                                 </div>
 
-                                <div className='col'>
+                                <div className='col p-0'>
                                     <div className='input-group'>
-                                        <label className='form-label full-width'>Suffix: </label>
+                                        <label className='form-label full-width fw-semibold'>Suffix: </label>
                                         <input className='form-control' type="text" defaultValue={memberToUpdate?.Suffix} onChange={(e: any) => setSuffix(e.target.value)} />
                                     </div></div>
                                 <div className='col'>
                                     <div className='input-group'>
-                                        <label className='form-label full-width'>User Name:</label>
+                                        <label className='form-label full-width fw-semibold'>User Name:</label>
                                         <PeoplePicker context={context} titleText="" personSelectionLimit={1} showHiddenInUI={false}
                                             principalTypes={[PrincipalType.User]} resolveDelay={1000} onChange={(items) => AssignedToUser(items)}
                                             defaultSelectedUsers={email ? [email] : []} />
                                     </div>
                                 </div>
-                                <div className='col'>
+                                <div className='col p-0'>
                                     <div className='input-group'>
-                                        <label className='form-label full-width'>Group: </label>
+                                        <label className='form-label full-width fw-semibold'>Group: </label>
                                         <select className='form-control' id="sites" defaultValue={memberToUpdate?.UserGroup?.Id} onChange={(e: any) => setUserGroup(e.target.value)}>
                                             <option>Select</option>
                                             {TaskGroupsListData.map((elem: any) => <option value={elem?.Id}>{elem?.Title}</option>)}
@@ -805,14 +841,14 @@ const TaskUserManagementTable = ({ TaskUsersListData, TaskGroupsListData, baseUr
                                 </div>
                                 <div className='col'>
                                     <div className='input-group'>
-                                        <label className='form-label full-width'>Sort Order: </label>
+                                        <label className='form-label full-width fw-semibold'>Sort Order: </label>
                                         <input className='form-control' type="text" defaultValue={memberToUpdate?.SortOrder} onChange={(e: any) => setSortOrder(e.target.value)} />
                                     </div>
                                 </div>
 
-                                <div className='col'>
+                                <div className='col p-0'>
                                     <div className='input-group'>
-                                        <label className='form-label full-width'>Manage Categories: </label>
+                                        <label className='form-label full-width fw-semibold'>Manage Categories: </label>
                                         <select className='full-width' id="sites" defaultValue={memberToUpdate?.TimeCategory} onChange={(e: any) => setUserCategory(e.target.value)}>
                                             <option>Select</option>
                                             {uniqueCategories.map((elem: any) => <option value={elem.Title}>{elem.Title}</option>)}
@@ -820,23 +856,23 @@ const TaskUserManagementTable = ({ TaskUsersListData, TaskGroupsListData, baseUr
                                     </div></div>
                                 <div className='col'>
                                     <div className='input-group'>
-                                        <label className='form-label full-width'>Approver:</label>
-                                        <PeoplePicker context={context} titleText="" personSelectionLimit={1} showHiddenInUI={false} principalTypes=
+                                        <label className='form-label full-width fw-semibold'>Approver:</label>
+                                        <PeoplePicker context={context} titleText="" personSelectionLimit={4} showHiddenInUI={false} principalTypes=
                                             {[PrincipalType.User]} resolveDelay={1000} onChange={(items) => ApproverFunction(items)}
-                                            defaultSelectedUsers={email2 ? [email2] : []} />
+                                            defaultSelectedUsers={emails.length > 0 ? emails : []}  />
                                     </div></div>
-                                <div className='col'>
+                                <div className='col p-0'>
                                     <div className='input-group'>
-                                        <label className='form-label full-width'>Team: </label>
+                                        <label className='form-label full-width fw-semibold'>Team: </label>
                                         <select className='form-control' id="sites" defaultValue={memberToUpdate?.Team} onChange={(e: any) => setUserTeam(e.target.value)}
                                         >
                                             <option>Select</option>
                                             <option value="SPFx">SPFx</option>
-                                            <option value="Project Database">Contact</option>
-                                            <option value="Contact Database">AnC</option>
-                                            <option value="Portfolio Database">Project</option>
-                                            <option value="QA">Design</option>
-                                            <option value="Design">QA</option>
+                                            <option value="Project">Project</option>
+                                            <option value="AnC">AnC</option>
+                                            <option value="Contact">Contact</option>
+                                            <option value="QA">QA</option>
+                                            <option value="Design">Design</option>
                                         </select>
                                     </div>
                                 </div>
@@ -845,7 +881,7 @@ const TaskUserManagementTable = ({ TaskUsersListData, TaskGroupsListData, baseUr
                             <div className="row mb-2">
                                 <div className='col-2'>
                                     <div className='input-group'>
-                                        <label className='form-label full-width'>Company: </label>
+                                        <label className='form-label full-width fw-semibold'>Company: </label>
                                         <div className='col'>
                                             <div className='mb-1'>
                                                 <label className='SpfxCheckRadio'>
@@ -859,12 +895,12 @@ const TaskUserManagementTable = ({ TaskUsersListData, TaskGroupsListData, baseUr
                                             </div>
                                         </div>
                                     </div></div>
-                                <div className='col-md-3'>
+                                <div className='col-md-4'>
                                     <div className='input-group'>
-                                        <label className='form-label full-width'>Roles: </label>
+                                        <label className='form-label full-width fw-semibold'>Roles: </label>
                                         <div className='row'>
-                                            <div className='col px-0'>
-                                                {['Component Teams', 'Service Teams'].map((role: any) => (
+                                            <div className='col-5 px-0'>
+                                                {['Component Teams', 'Service Teams', 'Component Creator', 'Component Editor', 'Task Creator'].map((role: any) => (
                                                     <React.Fragment key={role}>
                                                         <label className='SpfxCheckRadio mb-1' htmlFor={`role-${role}`}>
                                                             <input type="checkbox" className='form-check-input me-1' id={`role-${role}`} name="roles" value={role} checked={selectedRoles?.includes(role)}
@@ -895,7 +931,7 @@ const TaskUserManagementTable = ({ TaskUsersListData, TaskGroupsListData, baseUr
 
                             </div>
                             <div className='row'>
-                                <label className='form-label full-width'>Approval Type: </label>
+                                <label className='form-label full-width fw-semibold'>Approval Type: </label>
                                 <div className='row'>
                                     <div className='mb-1'>
                                         <label className='SpfxCheckRadio' htmlFor="approveAll">
@@ -916,7 +952,7 @@ const TaskUserManagementTable = ({ TaskUsersListData, TaskGroupsListData, baseUr
                                             <>
                                                 <div className="approvelSelected">
                                                     <CheckboxTree
-                                                        nodes={nodes}
+                                                        nodes={transformCategoriesToNodes(MyCategories)}
                                                         checked={checked}
                                                         expanded={expanded}
                                                         onCheck={handleCheck}
@@ -926,18 +962,6 @@ const TaskUserManagementTable = ({ TaskUsersListData, TaskGroupsListData, baseUr
                                                         showExpandAll={false}
                                                     />
                                                 </div>
-
-                                                {/* <div className="categories-container">
-                                                            <CheckboxTree
-                                                                nodes={nodes}
-                                                                checked={checked}
-                                                                expanded={expanded}
-                                                                onCheck={setChecked}
-                                                                onExpand={setExpanded}
-                                                                showNodeIcon={false}
-                                                                iconsClass="fa5"
-                                                            />
-                                                        </div> */}
 
                                                 {/* <div className="categories-container">
                                                                 {MyCategories?.map((parent: any) => (
