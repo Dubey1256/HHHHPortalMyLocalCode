@@ -552,30 +552,16 @@ relevantDocRef = React.useRef();
         if (projectData?.subRows == undefined || projectData?.subRows?.length == 0) {
           AllProjectTasks = smartmeta = await globalCommon?.loadAllSiteTasks(AllListId, `Project/Id eq ${projectData?.Id}`)
         } else if (projectData?.subRows?.length > 0 && projectData?.subRows?.length < 7) {
-          let filterQuery =''
-          try{
+          let filterQuery = ''
+          try {
             filterQuery = projectData?.subRows?.map((Sprint: any) => `Project/Id eq ${Sprint?.Id}`).join(' or ');
             filterQuery += ` or Project/Id eq ${projectData?.Id}`
-          }catch(e){
+          } catch (e) {
 
           }
-          smartmeta = await globalCommon?.loadAllSiteTasks(AllListId, filterQuery)
-          AllProjectTasks = smartmeta?.filter((task: any) => task?.Project?.Id == projectData?.Id)
-          if (projectData?.subRows?.length > 0 && projectData?.subRows?.length < 6) {
-            projectData?.subRows?.map((sprint: any) => {
-              const data = smartmeta?.filter((task: any) => task?.Project?.Id == sprint?.Id)
-              AllProjectTasks = [...AllProjectTasks, ...data]
-            })
-          }
+          AllProjectTasks = smartmeta = await globalCommon?.loadAllSiteTasks(AllListId, filterQuery)
         } else {
-          smartmeta = await globalCommon?.loadAllSiteTasks(AllListId, `Project/Id ne null`)
-          AllProjectTasks = smartmeta?.filter((task: any) => task?.Project?.Id == projectData?.Id)
-          if (projectData?.subRows?.length > 0 && projectData?.subRows?.length < 6) {
-            projectData?.subRows?.map((sprint: any) => {
-              const data = smartmeta?.filter((task: any) => task?.Project?.Id == sprint?.Id)
-              AllProjectTasks = [...AllProjectTasks, ...data]
-            })
-          }
+          AllProjectTasks =  smartmeta = await globalCommon?.loadAllSiteTasks(AllListId, `Project/Id ne null`)
         }
       }
 
