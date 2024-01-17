@@ -13,7 +13,8 @@ import HHHHEditComponent from '../../contactSearch/components/contact-search/pop
 import GlobalCommanTable from '../../../globalComponents/GroupByReactTableComponents/GlobalCommanTable';
 import CandidateRating from './CandidateRating';
 import EditPopup from '../../helloSpfx/components/EditPopup';
-import Loader from 'react-loader'
+import pageLoader from '../../../globalComponents/pageLoader';
+import PageLoader from '../../../globalComponents/pageLoader';
 
 let allSite: any = {
     GMBHSite: false,
@@ -59,7 +60,7 @@ const Profilcandidate = ({ props }: any) => {
     };
     const loadDocumentsByCandidate = async (candidateId: any) => {
         try {
-            setLoaded(false)
+            setLoaded(true)
             const libraryTitle = 'Documents';
             const columnName = 'InterviewCandidates';
             const documents = await web.lists.getByTitle(libraryTitle)
@@ -72,12 +73,12 @@ const Profilcandidate = ({ props }: any) => {
             console.log('Documents loaded successfully:', documents);
             setTaggedDocuments(documents);
             setTimeout(() => {
-                setLoaded(true);
+                setLoaded(false);
               }, 3000);
             return documents;
         } catch (error) {
             console.error('Error loading documents by candidate:', error);
-            setLoaded(false)
+            setLoaded(true)
             return [];
         }
     };
@@ -127,8 +128,9 @@ const Profilcandidate = ({ props }: any) => {
         window.open(url + '?download=1');
     }
     return (
+        <>
+        {loaded ? <PageLoader/> : null}
         <myContextValue.Provider value={{ ...myContextValue, allSite: allSite, allListId: allListId, loggedInUserName: props?.userDisplayName }}>
-            <Loader loaded={loaded} lines={13} length={20} width={10} radius={30} corners={1} rotate={0} direction={1} speed={2} trail={60} shadow={false} hwaccel={false} className="spinner" zIndex={2e9} top="28%" left="50%" scale={1.0} loadedClassName="loadedContent"/>
             {isEditPopupOpen ? <EditPopup siteUrl={'https://hhhhteams.sharepoint.com/sites/HHHH/HR/'} EditPopupClose={EditPopupClose} callbackEdit={callbackEdit} item={selectedItem} ListID={'298bc01c-710d-400e-bf48-8604d297c3c6'} skillsList={'e79dfd6d-18aa-40e2-8d6e-930a37fe54e4'} /> : ''}
             <div className='alignCenter border-bottom pb-2'>
                 <div>
@@ -313,6 +315,7 @@ const Profilcandidate = ({ props }: any) => {
                 </div>
             </div>
         </myContextValue.Provider>
+        </>
     )
 }
 export default Profilcandidate
