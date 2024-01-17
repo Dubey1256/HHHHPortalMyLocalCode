@@ -346,14 +346,15 @@ const EditPopup = (props: any) => {
         setLocalRatings(updatedRatings);
     };
     const removeDocuments = async (libraryTitle: string, documentId: number | undefined, docName: string) => {
+        const confirmDeleteDoc = window.confirm("Are you sure you want to Delete Document?")
         try {
             const list = HRweb.lists.getByTitle('Documents');
             
-            if (documentId) {
+            if (documentId && confirmDeleteDoc) {
                 await list.items.getById(documentId).delete();
                 setTaggedDocuments(prevDocuments => prevDocuments.filter(doc => doc.Id !== documentId));
                 console.log(`Document with ID ${documentId} removed successfully from ${libraryTitle}.`);
-            } else {            
+            } else if (docName && confirmDeleteDoc) {            
                 setTaggedDocuments(prevDocuments => prevDocuments.filter(doc => doc.FileLeafRef !== docName));
                 console.log(`Document with FileLeafRef ${docName} removed successfully from ${libraryTitle}.`);
             }

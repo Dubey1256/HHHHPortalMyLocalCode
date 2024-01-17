@@ -33,15 +33,28 @@ const LandingPage = (props: any) => {
     const getListData = () => {
         HRweb.lists.getById(allListID?.SkillsPortfolioListID).items.select('Id', 'Title', 'PositionTitle', 'PositionDescription', 'JobSkills', 'Created', 'Modified', 'Author/Id', 'Author/Title', 'Editor/Id', 'Editor/Title')
             .expand('Author', 'Editor').getAll().then((response: any) => { 
-            const updatedData = response.map((itm: { JobSkills: string | undefined; ImpSkills?: { itemParentId: any; }[]; Id: any; }) => {
+            const updatedData = response.map((itm: { JobSkills: string | undefined; ImpSkills?: { itemParentId: any; }[]; Id: any; PositionDescription: any; Skills: any }) => {
+                itm.PositionDescription = itm.PositionDescription !== null ? getPlainTextFromHTML(itm.PositionDescription) : null;
                 if (itm.JobSkills !== undefined && itm.JobSkills !== '') {
                     const impSkills = JSON.parse(itm.JobSkills).map((skill: { itemParentId: any; }) => ({
                         ...skill,
                         itemParentId: itm.Id,
                     }));
+
+                    let tempString = ''
+                    impSkills.forEach((items: any, index: any) => {
+                        if (index < impSkills.length -1) {
+                            tempString += items?.SkillTitle + ' ,'
+                        }
+                        else {
+                            tempString += items?.SkillTitle
+                        }
+                    })
+
                     return {
                         ...itm,
                         ImpSkills: impSkills,
+                        Skills: tempString
                     };
                 }
                 return itm;
@@ -67,6 +80,7 @@ const LandingPage = (props: any) => {
                     if (indexToRemove !== -1) {
                         portfiloData.splice(indexToRemove, 1);
                         console.log("Item with specified Id removed from the array");
+                        getListData();
                     } else {
                         console.log("Item with specified Id not found in the array");
                     }
@@ -81,10 +95,7 @@ const LandingPage = (props: any) => {
     const callBackData = React.useCallback((elem: any, getSelectedRowModel: any, ShowingData: any) => {
         console.log(elem)
     }, []);
-    const stripHtmlTags = (html: string) => {
-        const doc = new DOMParser().parseFromString(html, 'text/html');
-        return doc.body.textContent || "";
-    };
+    const getPlainTextFromHTML = (htmlString: string) => {   const temporaryElement = document.createElement('div');   temporaryElement.innerHTML = htmlString;   return temporaryElement.innerText; }
     const columns = React.useMemo<ColumnDef<any, unknown>[]>(
         () => [
             {
@@ -131,7 +142,7 @@ const LandingPage = (props: any) => {
                             : ""}
                     </>
                 ),
-                id: 'ProjectTitle',
+                id: 'Skills',
                 placeholder: "Skills",
                 resetColumnFilters: false,
                 header: "",
@@ -141,7 +152,7 @@ const LandingPage = (props: any) => {
                 accessorFn: (row) => row?.PositionDescription,
                 cell: ({ row, getValue }) => (
                     <div className="columnFixedTitle">
-                        <div className="text-content" title={stripHtmlTags(row.original.PositionDescription)} dangerouslySetInnerHTML={{ __html: row.original.PositionDescription ? stripHtmlTags(row.original.PositionDescription) : '' }} />
+                        <div className="text-content" title={row.original.PositionDescription} dangerouslySetInnerHTML={{ __html: row.original.PositionDescription}} />
                     </div>
 
                 ),

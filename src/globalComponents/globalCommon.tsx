@@ -31,16 +31,18 @@ export const docxUint8Array = async () => {
     return result
 }
 export const SendTeamMessage = async (mention_To: any, txtComment: any, Context: any) => {
+    let currentUser:any={}
     try {
         let pageContent = await pageContext()
         let web = new Web(pageContent?.WebFullUrl);
-        let currentUser = await web.currentUser?.get()
-        if (currentUser) {
-            if (currentUser.Email?.length > 0) {
-            } else {
-                currentUser.Email = currentUser.UserPrincipalName;
-            }
-        }
+        //let currentUser = await web.currentUser?.get()
+         currentUser.Email =  Context.pageContext._legacyPageContext.userPrincipalName
+        // if (currentUser) {
+        //     if (currentUser.Email?.length > 0) {
+        //     } else {
+        //         currentUser.Email = currentUser.UserPrincipalName;
+        //     }
+        // }
         // const client: MSGraphClientV3 = await Context.msGraphClientFactory.getClient();
         await Context.msGraphClientFactory.getClient().then((client: MSGraphClientV3) => {
             client.api(`/users`).version("v1.0").get(async (err: any, res: any) => {

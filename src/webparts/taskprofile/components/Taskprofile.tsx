@@ -329,19 +329,7 @@ class Taskprofile extends React.Component<ITaskprofileProps, ITaskprofileState> 
         })
       }
     } else {
-
       tempEstimatedArrayData = [];
-    }
-    if(taskDetails?.Sitestagging!=undefined){
-      try{
-        let parsedSiteTagging = JSON.parse(taskDetails?.Sitestagging)
-        parsedSiteTagging?.map((site:any)=>{
-          site.SiteImages= this.GetSiteIcon(site?.Title)
-        })
-        taskDetails.Sitestagging = JSON.stringify(parsedSiteTagging)
-      }catch(e){
-
-      }
     }
     const maxTitleLength: number = 75;
 
@@ -2027,7 +2015,7 @@ class Taskprofile extends React.Component<ITaskprofileProps, ITaskprofileState> 
                                         {item.CommentFor !== undefined &&
                                           item.CommentFor !== "" ? (
                                           <div key={index}>
-                                            {item.Description}
+                                            {item?.Description?.replace(/\n/g, '<br>')}
                                           </div>
                                         ) : null}
                                       </div>
@@ -2821,6 +2809,7 @@ class Taskprofile extends React.Component<ITaskprofileProps, ITaskprofileState> 
               RequiredListIds={AllListId}
               closePopupCallBack={(Type: any) => { this.CallBack(Type) }}
               usedFor={"AWT"}
+              ColorCode={this.state.Result["Portfolio"]?.PortfolioType?.Color}
             /> : ''}
           {this.state?.emailcomponentopen && countemailbutton == 0 && <EmailComponenet approvalcallback={() => { this.approvalcallback() }} Context={this.props?.Context} emailStatus={this.state?.emailComponentstatus} currentUser={this?.currentUser} items={this.state?.Result} />}
 

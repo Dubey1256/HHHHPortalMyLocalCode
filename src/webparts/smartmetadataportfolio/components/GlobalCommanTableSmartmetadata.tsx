@@ -925,7 +925,7 @@ const GlobalCommanTable = (items: any, ref: any) => {
                     {items.AllList && <>
                         {
                             SmartmetadataAdd === true ?
-                                <CreateMetadataItem childRefdata={items.childRefdata} AllList={items.AllList} addItemCallBack={items.callBackSmartMetaData} CloseEditSmartMetaPopup={items.CloseEditSmartMetaPopup} SelectedItem={items.SelectedItem} setName={items.setName} ParentItem={items.ParentItem} TabSelected={items.TabSelected}></CreateMetadataItem>
+                                <CreateMetadataItem childRefdata={items.childRefdata} AllList={items.AllList} addItemCallBack={items.callBackSmartMetaData} CloseEditSmartMetaPopup={items.CloseEditSmartMetaPopup} SelectedItem={items.SelectedItem} setName={items.setName} ParentItem={items.ParentItem} TabSelected={items.TabSelected} categoriesTabName={items.categoriesTabName}></CreateMetadataItem>
                                 : ''
                         }
                         {
