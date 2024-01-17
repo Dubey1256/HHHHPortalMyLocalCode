@@ -7,6 +7,7 @@ import GlobalCommanTable from './GlobalCommanTableSmartmetadata';
 import Tooltip from '../../../globalComponents/Tooltip';
 import ImageTabComponenet from './ImageTabComponent'
 import VersionHistory from '../../../globalComponents/VersionHistroy/VersionHistory';
+import PageLoader from '../../../globalComponents/pageLoader';
 import moment from 'moment';
 let modaltype: any;
 let SitesConfig: any[] = []
@@ -20,6 +21,7 @@ export default function SmartMetadataEditPopup(props: any) {
     const [activeTab, setActiveTab] = useState('BasicInfo');
     const [AllSitesTask, setAllSitesTask]: any = useState([]);
     const [dropdownArray, setDropdownArray]: any = useState([]);
+    const [loaded, setloaded]: any = useState(false);
     // const [dropdownArraySmartfilter, setDropdownArraySmartfilter]: any = useState([]);
     const [, setVersionHistoryPopup] = React.useState(false);
     const [openChangeParentPopup, setOpenChangeParentPopup] = useState(false);
@@ -142,49 +144,93 @@ export default function SmartMetadataEditPopup(props: any) {
     }
     const loadAllSitesTask = async () => {
         try {
-            const filters = CategoryTitle ? `SharewebCategories/Id eq '${CategoryTitle}'` : '';
+            //const filters = CategoryTitle ? `SharewebCategories/Id eq '${CategoryTitle}'` : '';
             allCalls = [];
             allCalls = SitesConfig.map((site) => {
                 let web = new Web(props.AllList.SPSitesListUrl);
                 return web.lists.getById(site.listId).items.select(`Id,Title,SharewebTaskLevel1No,SharewebTaskLevel2No,SharewebTaskType/Id,SharewebTaskType/Title,Component/Id,Services/Id,Events/Id,PercentComplete,ComponentId,ServicesId,EventsId,Priority_x0020_Rank,DueDate,Created,TaskID,Modified,Author/Id,Author/Title,Editor/Id,Editor/Title,ParentTask/Id,ParentTask/Title,SharewebCategories/Id,SharewebCategories/Title,AssignedTo/Id,AssignedTo/Title,Team_x0020_Members/Id,Team_x0020_Members/Title,Responsible_x0020_Team/Id,Responsible_x0020_Team/Title`).expand('AssignedTo', 'Author', 'Editor', 'Component', 'Services', 'Events', 'Team_x0020_Members', 'ParentTask', 'SharewebCategories', 'Responsible_x0020_Team', 'SharewebTaskType')
-                    .filter(filters)
                     .getAll();
             });
+            setloaded(true);
             const success = await Promise.all(allCalls);
             allSitesTask = [];
             success.forEach((val) => {
                 val.forEach((item: any) => {
-                    if (item.ComponentId.length > 0) {
-                        item['Portfoliotype'] = 'Component';
-                    } else if (item.ServicesId.length > 0) {
-                        item['Portfoliotype'] = 'Service';
-                    } else if (item.EventsId.length > 0) {
-                        item['Portfoliotype'] = 'Event';
-                    }
-                    if (item.PercentComplete != undefined) {
-                        item.PercentComplete = parseInt((item.PercentComplete * 100).toFixed(0));
-                    } else if (item.PercentComplete != undefined)
-                        item.PercentComplete = parseInt((item.PercentComplete * 100).toFixed(0));
-                    else
-                        item.PercentComplete = 0;
-                    if (item.ComponentId.length > 0) {
-                        item.Portfoliotype = 'Component';
-                    } else if (item.ServicesId.length > 0) {
-                        item.Portfoliotype = 'Service';
-                    } else if (item.EventsId.length > 0) {
-                        item.Portfoliotype = 'Event';
-                    }
-                    if (item.siteType != undefined && item.siteType == 'Offshore Tasks') {
-                        item.Companytype = 'Offshoretask';
+                    if (item?.SharewebCategories.length > 0) {
+                        item.SharewebCategories.forEach((cate: any) => {
+                            if (cate.Id === CategoryTitle) {
+                                item.Created = item.Created !== null ? moment(item?.Created).format("DD/MM/YYYY") : '';
+                                item.DueDate = item.DueDate !== null ? moment(item?.DueDate).format("DD/MM/YYYY") : '';
+                                item.Modified = item.Modified !== null ? moment(item?.Modified).format("DD/MM/YYYY") : '';
+                                if (item.ComponentId.length > 0) {
+                                    item['Portfoliotype'] = 'Component';
+                                } else if (item.ServicesId.length > 0) {
+                                    item['Portfoliotype'] = 'Service';
+                                } else if (item.EventsId.length > 0) {
+                                    item['Portfoliotype'] = 'Event';
+                                }
+                                if (item.PercentComplete != undefined) {
+                                    item.PercentComplete = parseInt((item.PercentComplete * 100).toFixed(0));
+                                } else if (item.PercentComplete != undefined)
+                                    item.PercentComplete = parseInt((item.PercentComplete * 100).toFixed(0));
+                                else
+                                    item.PercentComplete = 0;
+                                if (item.ComponentId.length > 0) {
+                                    item.Portfoliotype = 'Component';
+                                } else if (item.ServicesId.length > 0) {
+                                    item.Portfoliotype = 'Service';
+                                } else if (item.EventsId.length > 0) {
+                                    item.Portfoliotype = 'Event';
+                                }
+                                if (item.siteType != undefined && item.siteType == 'Offshore Tasks') {
+                                    item.Companytype = 'Offshoretask';
+                                } else {
+                                    item.Companytype = 'Alltask';
+                                }
+                                if (item.Companytype == 'Alltask') {
+                                    allSitesTask.push(item);
+                                }
+                            }
+                        })
                     } else {
-                        item.Companytype = 'Alltask';
-                    }
-                    if (item.Companytype == 'Alltask') {
-                        allSitesTask.push(item);
+                        if (item.SharewebCategories[0]?.Id === CategoryTitle) {
+                            item.Created = item.Created !== null ? moment(item?.Created).format("DD/MM/YYYY") : '';
+                            item.DueDate = item.DueDate !== null ? moment(item?.DueDate).format("DD/MM/YYYY") : '';
+                            item.Modified = item.Modified !== null ? moment(item?.Modified).format("DD/MM/YYYY") : '';
+                            if (item.ComponentId.length > 0) {
+                                item['Portfoliotype'] = 'Component';
+                            } else if (item.ServicesId.length > 0) {
+                                item['Portfoliotype'] = 'Service';
+                            } else if (item.EventsId.length > 0) {
+                                item['Portfoliotype'] = 'Event';
+                            }
+                            if (item.PercentComplete != undefined) {
+                                item.PercentComplete = parseInt((item.PercentComplete * 100).toFixed(0));
+                            } else if (item.PercentComplete != undefined)
+                                item.PercentComplete = parseInt((item.PercentComplete * 100).toFixed(0));
+                            else
+                                item.PercentComplete = 0;
+                            if (item.ComponentId.length > 0) {
+                                item.Portfoliotype = 'Component';
+                            } else if (item.ServicesId.length > 0) {
+                                item.Portfoliotype = 'Service';
+                            } else if (item.EventsId.length > 0) {
+                                item.Portfoliotype = 'Event';
+                            }
+                            if (item.siteType != undefined && item.siteType == 'Offshore Tasks') {
+                                item.Companytype = 'Offshoretask';
+                            } else {
+                                item.Companytype = 'Alltask';
+                            }
+                            if (item.Companytype == 'Alltask') {
+                                allSitesTask.push(item);
+                            }
+                        }
                     }
                 });
             })
             setAllSitesTask(allSitesTask);
+            setloaded(false);
         }
         catch (error) {
             console.error(error);
@@ -427,7 +473,7 @@ export default function SmartMetadataEditPopup(props: any) {
                 IsVisible: SmartTaxonomyItem.IsVisible,
                 SmartSuggestions: SmartTaxonomyItem.SmartSuggestions,
                 Selectable: SmartTaxonomyItem.Selectable,
-                ItemRank: SmartTaxonomyItem.ItemRank,
+                ItemRank: SmartTaxonomyItem.ItemRank !== undefined ? SmartTaxonomyItem.ItemRank : null,
                 Status: SmartTaxonomyItem.Status,
                 //SmartFilters: SmartTaxonomyItem.SmartFilters,
                 siteName: SmartTaxonomyItem.siteName,
@@ -519,7 +565,7 @@ export default function SmartMetadataEditPopup(props: any) {
                             isOpen={true}
                             onDismiss={closeParentPopup}
                             isBlocking={false}
-                            type={PanelType.large}
+                            type={PanelType.medium}
                             closeButtonAriaLabel="Close"
                         >
                             <div className="modal-body">
@@ -874,6 +920,9 @@ export default function SmartMetadataEditPopup(props: any) {
                             </div>
                         </div>
                     </footer>
+                    {
+                        loaded ? <PageLoader /> : ''
+                    }
                 </Panel>
             </div >
         </>
