@@ -336,16 +336,16 @@ const AddCommentComponent = (FbData: any) => {
                     {
                         FbData.postStatus ?
                             <section className="mt-1 clearfix">
-                                {ApprovalStatus ? <div className="col-10 d-flex float-end my-1">
+                                {ApprovalStatus ? <div className="col-11 d-flex float-end my-1">
                                     <input type="checkbox" onClick={() => setMarkAsApproval(true)} className="form-check-input m-0 me-1 mt-1 rounded-0" />
                                     <label className="siteColor">Mark as Approval Comment</label>
                                 </div> : null}
-                                <div className="col-10 d-flex float-end my-1">
-                                    <div className="row">
-                                    <div className="col-md-10 col-sm-9 px-1">
+                                <div className="col-11 d-flex float-end my-1">
+                                    <div className="d-flex justify-content-between align-items-center">
+                                    <div className="px-1" style={{width:"85%"}}>
                                     <textarea id="txtComment SubTestBorder" style={{ height: "33px" }} onChange={(e) => handleChangeInput(e)} className="full-width" ></textarea>
                                     </div>
-                                    <div className="col-md-2 col-sm-3 p-0">
+                                    <div style={{width:"145px;"}}>
                                     <button type="button" className="post btn btn-primary mx-1" onClick={() => PostButtonClick(FbData.postStatus, FbData.index)}>Post</button>
                                     <button type="button" className="post btn btn-default" onClick={cancelCommentBtn}>Cancel</button>
                                     </div>
