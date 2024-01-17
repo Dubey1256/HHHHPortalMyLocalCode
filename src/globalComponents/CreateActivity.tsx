@@ -1922,13 +1922,13 @@ const CreateActivity = (props: any) => {
         >
           Submit
         </button>
-        <button
+        {props?.pageName != "QuickTask"? <button
           type="button"
           className="btn btn-default"
           onClick={() => closeTaskStatusUpdatePoup("item")}
         >
           Cancel
-        </button>
+        </button>:''}
       </footer>
     </>
   );
