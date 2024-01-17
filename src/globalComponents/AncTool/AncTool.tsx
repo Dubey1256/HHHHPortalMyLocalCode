@@ -462,13 +462,13 @@ const AncTool = (props: any) => {
         }
         let filetype = '';
 
-        if (renamedFileName?.length > 0 && selectedFile.name?.length > 0) {
-            filetype = getFileType(selectedFile != undefined ? selectedFile.name : uploadselectedFile.name)
-            fileName = renamedFileName + `.${filetype}`;
-        } else {
-            fileName = selectedFile != undefined ? selectedFile.name : uploadselectedFile.name;
-        }
         setTimeout(async () => {
+            if (renamedFileName?.length > 0 && selectedFile.name?.length > 0) {
+                filetype = getFileType(selectedFile != undefined ? selectedFile.name : uploadselectedFile.name)
+                fileName = renamedFileName + `.${filetype}`;
+            } else {
+                fileName = selectedFile != undefined ? selectedFile.name : uploadselectedFile.name;
+            }
             if (isFolderAvailable == false) {
                 try {
                     if (tasktypecopy != undefined && tasktypecopy != '') {
@@ -1389,7 +1389,7 @@ const AncTool = (props: any) => {
 
                                             <div>
                                                 <div className='input-group'>
-                                                    <label className='form-label full-width fw-semibold'>Serach Existing Document</label>
+                                                    <label className='form-label full-width fw-semibold'>Search Existing Document</label>
                                                     <input id="searchinputCED" type="search" onChange={(e) => { searchExistingFile(e.target.value) }} placeholder="Search..." className="form-control" />
                                                 </div>
                                                 {ShowExistingDoc == true && <div className="Alltable mt-2">
@@ -1414,7 +1414,7 @@ const AncTool = (props: any) => {
                                                                                 <tr>
                                                                                     <td><input type="checkbox" className='form-check-input hreflink' checked={AllReadytagged?.some((doc: any) => file.Id == doc.Id)} onClick={() => { tagSelectedDoc(file) }} /></td>
                                                                                     <td><span className={`alignIcon  svg__iconbox svg__icon--${file?.docType}`} title={file?.File_x0020_Type}></span></td>
-                                                                                    <td><a style={{ wordBreak: "break-all" }} href={file?.EncodedAbsUrl} target="_blank" data-interception="off" className='hreflink'>{file?.Title}</a></td>
+                                                                                    <td><a style={{ wordBreak: "break-all" }} href={`${file?.EncodedAbsUrl}?web=1`} target="_blank" data-interception="off" className='hreflink'>{file?.Title}</a></td>
                                                                                     <td>{file?.ItemRank}</td>
                                                                                 </tr>
                                                                             )
@@ -1658,18 +1658,24 @@ const AncTool = (props: any) => {
                     <div className="modal Anc-Confirmation-modal" >
                         <div className="modal-dialog modal-mg rounded-0 " style={{ maxWidth: "400px" }}>
                             <div className="modal-content rounded-0">
-                                <div className="modal-header">
-                                    <div className='subheading'>
+                                <div className="modal-header py-0">
+                                    <div className='d-flex full-width justify-content-between pb-1'>
+                                    <div className='subheading m-0'>
                                         {/* <img className="imgWid29 pe-1 mb-1 " src={Item?.SiteIcon} /> */}
                                         <span className="siteColor">
                                             Create New Online File {createNewDocType?.length > 0 ? ` - ${createNewDocType}` : ''}
                                         </span>
                                     </div>
+                                    <div className='d-flex'>
                                     <Tooltip ComponentId="7642" />
-                                    <span onClick={() => cancelNewCreateFile()}><i className="svg__iconbox svg__icon--cross crossBtn me-1"></i></span>
+                                    <span style={{marginTop:"7px"}} onClick={() => cancelNewCreateFile()}><i className="svg__iconbox svg__icon--cross crossBtn me-1"></i></span>
+                                    </div>
+                                    </div>
+                                    
+                                   
                                 </div>
                                 <div className="modal-body p-2 row">
-                                    <div className="AnC-CreateDoc-Icon">
+                                    <div className="AnC-CreateDoc-Icon p-0">
                                         <div className={createNewDocType == 'docx' ? 'selected' : ''}>
                                             <span onClick={() => createBlankWordDocx()} className='svg__iconbox svg__icon--docx hreflink' title='Word'></span>
                                         </div>
@@ -1680,7 +1686,7 @@ const AncTool = (props: any) => {
                                             <span onClick={() => createBlankPowerPointPptx()} className='svg__iconbox svg__icon--ppt hreflink' title='Presentation'></span>
                                         </div>
                                     </div>
-                                    <div className="col-sm-12 mt-2">
+                                    <div className="col-sm-12 mt-2 p-0">
                                         <input type="text" onChange={(e) => { setRenamedFileName(e.target.value) }} value={renamedFileName} placeholder='Enter File Name' className='full-width' />
                                     </div>
                                 </div>

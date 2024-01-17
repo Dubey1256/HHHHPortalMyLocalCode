@@ -21,7 +21,7 @@ import { FaChevronDown, FaChevronRight, FaMinusSquare, FaPlusSquare, FaSquare, F
 import "./styles.css"
 
 const TaskUserManagementTable = ({ TaskUsersListData, TaskGroupsListData, baseUrl, TaskUserListId, context, fetchAPIData, smartMetaDataItems }: any) => {
-    const [data, setData] = React.useState([]);
+    const [data, setData] = React.useState<any>([]);
     const [groupData, setGroupData] = useState([]);
     const [title, setTitle] = useState("");
     const [addTitle, setAddTitle] = useState("");
@@ -88,7 +88,9 @@ const TaskUserManagementTable = ({ TaskUsersListData, TaskGroupsListData, baseUr
             const categoryIds = categoriesJson?.map((category: any) => category.Id.toString());
             setChecked(categoryIds);
             setAssignedToUser(memberToUpdate.AssingedToUser?.Id)
-            setApprover([memberToUpdate.Approver?.[0]?.Id])
+            // setApprover([memberToUpdate.Approver?.[0]?.Id])
+            const Approvers: any = memberToUpdate?.Approver?.map((item: any) => item.Id)
+            setApprover([Approvers])
             setUserTeam(memberToUpdate.Team)
         }
     }, [memberToUpdate]);
@@ -147,7 +149,7 @@ const TaskUserManagementTable = ({ TaskUsersListData, TaskGroupsListData, baseUr
         }).then((res: any) => {
             console.log(res);
             const newItem = res.data;
-            setData(prevData => [...prevData, newItem]);
+            setData((prevData: any) => [...prevData, newItem]);
             setTitle("");
             setAddTitle("");
             fetchAPIData()
@@ -181,7 +183,7 @@ const TaskUserManagementTable = ({ TaskUsersListData, TaskGroupsListData, baseUr
             await web.lists.getById(TaskUserListId).items.getById(itemToDelete.Id).recycle()
                 .then(i => {
                     console.log(i);
-                    setData(prevData => prevData.filter(item => item.Id !== itemToDelete.Id));
+                    setData((prevData: any) => prevData.filter((item: any) => item.Id !== itemToDelete.Id));
                     setGroupData(prevData => prevData.filter(item => item.Id !== itemToDelete.Id));
                     setItemToDelete(null);
                     fetchAPIData()
@@ -208,8 +210,9 @@ const TaskUserManagementTable = ({ TaskUsersListData, TaskGroupsListData, baseUr
                 Role: { "results": selectedRoles },
                 IsTaskNotifications: isTaskNotifications,
                 AssingedToUserId: typeof assignedToUser === 'number' ? assignedToUser : (assignedToUser?.length > 0 ? assignedToUser[0]?.AssingedToUser?.Id : null),
-                ApproverId: Array.isArray(approver) && approver.every(item => typeof item === 'number' && item != null)
-                    ? { "results": approver } : (approver.length > 0 && approver[0] != null && approver[0].AssingedToUser?.Id != null) ? { "results": [approver[0].AssingedToUser.Id] } : { "results": [] },
+                // ApproverId: Array.isArray(approver) && approver.every(item => typeof item === 'number' && item != null)
+                //     ? { "results": approver } : (approver.length > 0 && approver[0] != null && approver[0].AssingedToUser?.Id != null) ? { "results": [approver[0].AssingedToUser.Id] } : { "results": [] },
+                ApproverId: Array.isArray(approver) && approver.length > 0 ? { "results": approver.map(app => app.AssingedToUser.Id) } : { "results": [] },
                 UserGroupId: userGroup ? parseInt(userGroup) : memberToUpdate?.UserGroup?.Id,
                 Team: userTeam ? userTeam : memberToUpdate.Team,
                 // Item_x0020_Cover: { "__metadata": { type: "SP.FieldUrlValue" }, Description: "Description", Url: imageUrl?.Item_x002d_Image != undefined ? imageUrl?.Item_x002d_Image?.Url : (imageUrl?.Item_x0020_Cover != undefined ? imageUrl?.Item_x0020_Cover?.Url : null) },
@@ -222,7 +225,7 @@ const TaskUserManagementTable = ({ TaskUsersListData, TaskGroupsListData, baseUr
                 console.log('Updated Data:', updatedData);
 
                 // Update the data and groupData states
-                const updatedMemberData = data.map(item => {
+                const updatedMemberData = data.map((item: any) => {
                     if (item.Id === memberToUpdate.Id) {
                         return { ...item, ...updatedData };
                     }
@@ -336,7 +339,8 @@ const TaskUserManagementTable = ({ TaskUsersListData, TaskGroupsListData, baseUr
             size: 70,
         },
         {
-            accessorFn: (row) => row.Approver?.[0]?.Title || '',
+            // accessorFn: (row) => row.Approver?.[0]?.Title || '',
+            accessorFn: (row) => row?.Approver?.map((item: any) => item?.Title) || '',
             header: "",
             id: 'Approver',
             placeholder: "Approver"
@@ -401,8 +405,11 @@ const TaskUserManagementTable = ({ TaskUsersListData, TaskGroupsListData, baseUr
     const userIdentifier = memberToUpdate?.AssingedToUser?.Name;
     const email = userIdentifier ? userIdentifier.split('|').pop() : '';
 
-    const userIdentifier2 = memberToUpdate?.Approver?.[0]?.Name;
-    const email2 = userIdentifier2 ? userIdentifier2.split('|').pop() : '';
+    // const userIdentifier2 = memberToUpdate?.Approver?.[0]?.Name;
+    // const email2 = userIdentifier2 ? userIdentifier2.split('|').pop() : '';
+
+    const userIdentifiers = memberToUpdate?.Approver?.map((approver: any) => approver.Name) || [];
+    const emails = userIdentifiers.map((identifier: any) => identifier.split('|').pop());
 
     const callBackData = React.useCallback((elem: any, ShowingData: any) => {
 
@@ -427,16 +434,29 @@ const TaskUserManagementTable = ({ TaskUsersListData, TaskGroupsListData, baseUr
         }
     }
 
-    const ApproverFunction = (item: any) => {
-        if (item.length > 0) {
-            const email = item.length > 0 ? item[0].loginName.split('|').pop() : null;
-            const member = data.filter((elem: any) => elem.Email === email)
-            setApprover(member)
-        }
-        else {
-            setApprover([])
+    // const ApproverFunction = (item: any) => {
+    //     if (item.length > 0) {
+    //         const email = item.length > 0 ? item[0].loginName.split('|').pop() : null;
+    //         const member = data.filter((elem: any) => elem.Email === email)
+    //         setApprover(member)
+    //     }
+    //     else {
+    //         setApprover([])
+    //     }
+    // }
+    const ApproverFunction = (items: any[]) => {
+        if (items.length > 0) {
+            const approvers = items.map(item => {
+                const email = item.loginName.split('|').pop();
+                return data.find((elem: any) => elem.Email === email);
+            }).filter(approver => approver != null); // Filter out any undefined or null values
+
+            setApprover(approvers);
+        } else {
+            setApprover([]);
         }
     }
+
 
     // Autosuggestion code
 
@@ -536,7 +556,9 @@ const TaskUserManagementTable = ({ TaskUsersListData, TaskGroupsListData, baseUr
         setUserCategory(memberToUpdate.TimeCategory)
         setSelectedCategories(JSON.parse(memberToUpdate.CategoriesItemsJson))
         // setAssignedToUser(memberToUpdate.AssingedToUser?.Id)
-        setApprover([memberToUpdate.Approver?.[0]?.Id])
+        // setApprover([memberToUpdate.Approver?.[0]?.Id])
+        const Approvers: any = memberToUpdate?.Approver?.map((item: any) => item.Id)
+        setApprover([Approvers])
         setUserTeam(memberToUpdate.Team)
         setOpenUpdateMemberPopup(false)
     }
@@ -573,10 +595,10 @@ const TaskUserManagementTable = ({ TaskUsersListData, TaskGroupsListData, baseUr
         return categories.map((category: any) => {
             // Check if the category has children
             const hasChildren = category.children && category.children.length > 0;
-            const node:any = {
+            const node: any = {
                 value: category.Id.toString(),
                 label: category.Title,
-            };    
+            };
             // Conditionally add the 'children' property if the category has children
             if (hasChildren) {
                 node.children = transformCategoriesToNodes(category.children);
@@ -599,9 +621,9 @@ const TaskUserManagementTable = ({ TaskUsersListData, TaskGroupsListData, baseUr
     //         return node;
     //     }).filter(Boolean); // Remove any null entries
     // };
-    
-    
-    
+
+
+
 
 
     const icons: any = {
@@ -835,9 +857,9 @@ const TaskUserManagementTable = ({ TaskUsersListData, TaskGroupsListData, baseUr
                                 <div className='col'>
                                     <div className='input-group'>
                                         <label className='form-label full-width fw-semibold'>Approver:</label>
-                                        <PeoplePicker context={context} titleText="" personSelectionLimit={1} showHiddenInUI={false} principalTypes=
+                                        <PeoplePicker context={context} titleText="" personSelectionLimit={4} showHiddenInUI={false} principalTypes=
                                             {[PrincipalType.User]} resolveDelay={1000} onChange={(items) => ApproverFunction(items)}
-                                            defaultSelectedUsers={email2 ? [email2] : []} />
+                                            defaultSelectedUsers={emails.length > 0 ? emails : []}  />
                                     </div></div>
                                 <div className='col p-0'>
                                     <div className='input-group'>

@@ -74,15 +74,26 @@ const AddEditPostion = (props: any) => {
             .expand('Author', 'Editor')
             .getAll()
             .then((response: any) => {
-                const updatedData = response.map((itm: { JobSkills: string | undefined; ImpSkills?: { itemParentId: any; }[]; Id: any; Created: any; Modified: any; Author: { Id: any; Title: any; }; Editor: { Id: any; Title: any; }; }) => {
+                const updatedData = response.map((itm: { JobSkills: string | undefined; ImpSkills?: { itemParentId: any; }[]; Id: any; Created: any; Modified: any; Author: { Id: any; Title: any; }; Editor: { Id: any; Title: any; }; PositionDescription: any; Skills: any; }) => {
+                    itm.PositionDescription = itm.PositionDescription !== null ? getPlainTextFromHTML(itm.PositionDescription) : null;
                     if (itm.JobSkills !== undefined && itm.JobSkills !== '') {
                         const impSkills = JSON.parse(itm.JobSkills).map((skill: { itemParentId: any; }) => ({
                             ...skill,
                             itemParentId: itm.Id,
                         }));
+                    let tempString = ''
+                        impSkills.forEach((items: any, index: any) => {
+                        if (index < impSkills.length -1) {
+                            tempString += items?.SkillTitle + ' ,'
+                        }
+                        else {
+                            tempString += items?.SkillTitle
+                        }
+                    })
                         return {
                             ...itm,
                             ImpSkills: impSkills,
+                            Skills: tempString
                         };
                     }
                     return itm;
@@ -94,10 +105,7 @@ const AddEditPostion = (props: any) => {
             });
     };
 
-    const stripHtmlTags = (html: string) => {
-        const doc = new DOMParser().parseFromString(html, 'text/html');
-        return doc.body.textContent || "";
-    };
+    const getPlainTextFromHTML = (htmlString: string) => {   const temporaryElement = document.createElement('div');   temporaryElement.innerHTML = htmlString;   return temporaryElement.innerText; }
     const delPosition = (itm: any) => {
         const isConfirmed = window.confirm(`Are you sure you want to delete the position titled "${itm.Title}"?`);
         if (isConfirmed) {
@@ -108,6 +116,7 @@ const AddEditPostion = (props: any) => {
                 .then(() => {
                     const filteredItems = portfiloData.filter((data: { Id: any; }) => data.Id !== itm.Id);
                     setportfiloData(filteredItems)
+                    getListData();
                 })
                 .catch((error: any) => {
                     console.log(error);
@@ -118,10 +127,32 @@ const AddEditPostion = (props: any) => {
     const columns = React.useMemo<ColumnDef<any, unknown>[]>(
         () => [
             {
-                accessorKey: "Title",
+                accessorKey: "",
+                placeholder: "",
+                hasCheckbox: false,
+                hasCustomExpanded: false,
+                hasExpanded: false,
+                size: 1,
+                id: 'Id',
+            },
+            {
+                accessorFn: (row) => row?.Title,
+                cell: ({ row, getValue }) => (
+                    <a
+                        className="text-content hreflink"
+                        title={row?.original?.Title}
+                        data-interception="off"
+                        target="_blank"
+                        href={`${props?.props?.siteUrl}/SitePages/RecruitmentTool.aspx?PositionId=${row?.original?.Id}`}
+                    >
+                        {row?.original?.Title}
+                    </a>
+                ),
+                id: "Title",
                 placeholder: "Title",
+                resetColumnFilters: false,
                 header: "",
-                size: 155,
+                size: 155
             },
             {
                 accessorFn: (row) => row?.ImpSkills,
@@ -140,7 +171,7 @@ const AddEditPostion = (props: any) => {
                         </span>
                     </>
                 ),
-                id: 'ProjectTitle',
+                id: 'Skills',
                 placeholder: "Skills",
                 resetColumnFilters: false,
                 header: "",
@@ -148,11 +179,13 @@ const AddEditPostion = (props: any) => {
             },
             {
                 accessorKey: "PositionDescription",
+                id: "PositionDescription",
                 placeholder: "Position Description",
+                resetColumnFilters: false,
                 header: "",
                 // Custom cell rendering to remove HTML tags
                 cell: ({ row }) => (
-                    <div dangerouslySetInnerHTML={{ __html: row.original.PositionDescription ? stripHtmlTags(row.original.PositionDescription) : '' }} />
+                    <div title={row.original.PositionDescription} dangerouslySetInnerHTML={{ __html: row.original.PositionDescription}} />
                 ),
             },
             {

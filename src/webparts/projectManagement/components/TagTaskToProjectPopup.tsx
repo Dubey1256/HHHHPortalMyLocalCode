@@ -281,14 +281,11 @@ const TagTaskToProjectPopup = (props: any) => {
             <div className={"d-flex full-width pb-1"}>
                 <div className='subheading'>
                     <span className="siteColor">
-                        {`Add Existing Tasks -${props?.projectItem?.PortfolioStructureID} ${props.projectTitle}`}
+                        {`Add Existing Tasks - ${props?.projectItem?.MeetingId ? props?.projectItem?.MeetingId : props?.projectItem?.PortfolioStructureID} ${props?.projectTitle}`}
                     </span>
                 </div>
             </div>
-
-
         )
-
     }
     const onRenderCustomFooterMain = () => {
         return (
@@ -361,8 +358,8 @@ const TagTaskToProjectPopup = (props: any) => {
                             <ReactPopperTooltip ShareWebId={getValue()} row={row} AllListId={props?.AllListId} />
                             : ''} */}
                         {row?.original?.TitleNew != "Tasks" ?
-                            <ReactPopperTooltipSingleLevel ShareWebId={row?.original?.TaskID} row={row?.original} singleLevel={true} masterTaskData={props?.masterTaskData} AllSitesTaskData={AllTasks} />
-                            : ''}
+                            <ReactPopperTooltipSingleLevel AllListId={props?.AllListId} ShareWebId={row?.original?.TaskID} row={row?.original} singleLevel={true} masterTaskData={props?.masterTaskData} AllSitesTaskData={AllTasks} />
+                            : ''}                            
                     </div>
                 ),
             },
