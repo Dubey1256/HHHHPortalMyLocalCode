@@ -1785,6 +1785,7 @@ const contextCall = React.useCallback((data: any, path: any, releventKey: any) =
                                   masterTaskData={MasterListData}
                                   AllSitesTaskData={AllSitesAllTasks}
                                   MasterdataItem={Masterdata}
+                                  PortfolioFeature={'Feature'}
                                   columns={column2} data={data} callBackData={callBackData}
                                   smartTimeTotalFunction={smartTimeTotal} SmartTimeIconShow={true}
                                   TaskUsers={AllUser} showHeader={true} expendedTrue={false}
