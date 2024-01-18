@@ -173,10 +173,62 @@ export default function ProjectOverview(props: any) {
 
     }
     const LoadAllSiteAllTasks = async function () {
-       
+        await loadAllComponent()
+        let AllSiteTasks: any = [];
+        let query =
+            "&$filter=Status ne 'Completed'&$orderby=Created desc&$top=4999";
+        let web = new Web(AllListId?.siteUrl);
+        let arraycount = 0;
         try {
-            await loadAllComponent()
-        let AllSiteTasks: any =  await globalCommon?.loadAllSiteTasks(AllListId, undefined);
+            if (siteConfig?.length > 0) {
+
+                siteConfig.map(async (config: any) => {
+                    if (config.Title != "SDC Sites") {
+                        let smartmeta = [];
+                        await web.lists
+                            .getById(config.listId)
+                            .items.select("ID", "Title", "ClientCategory/Id", "ClientCategory/Title", 'ClientCategory', "Comments", "DueDate", "ClientActivityJson", "EstimatedTime", "Approver/Id", "Approver/Title", "ParentTask/Id", "ParentTask/Title", "workingThisWeek", "IsTodaysTask", "AssignedTo/Id", "TaskLevel", "TaskLevel", "OffshoreComments", "AssignedTo/Title", "OffshoreImageUrl", "TaskCategories/Id", "TaskCategories/Title", "Status", "StartDate", "CompletedDate", "TeamMembers/Title", "TeamMembers/Id", "ItemRank", "PercentComplete", "Priority", "Body", "PriorityRank", "Created", "Author/Title", "Author/Id", "BasicImageInfo", "ComponentLink", "FeedBack", "ResponsibleTeam/Title", "ResponsibleTeam/Id", "TaskType/Title", "ClientTime", "Portfolio/Id", "Portfolio/Title", "Modified")
+                            .expand("TeamMembers", "Approver", "ParentTask", "ClientCategory", "AssignedTo", "TaskCategories", "Author", "ResponsibleTeam", "TaskType", "Portfolio")
+                            .getAll().then((data: any) => {
+                                smartmeta = data;
+                                smartmeta.map((task: any) => {
+                                    task.AllTeamMember = [];
+                                    task.HierarchyData = [];
+                                    task.siteType = config.Title;
+                                    task.bodys = task.Body != null && task.Body.split('<p><br></p>').join('');
+                                    task.listId = config.listId;
+                                    task.siteUrl = config.siteUrl.Url;
+                                    task.PercentComplete = (task.PercentComplete * 100).toFixed(0);
+                                    task.DisplayDueDate =
+                                        task.DueDate != null
+                                            ? Moment(task.DueDate).format("DD/MM/YYYY")
+                                            : "";
+                                    task.portfolio = {};
+                                    if (task?.Portfolio?.Id != undefined) {
+                                        task.portfolio = task?.Portfolio;
+                                        task.PortfolioTitle = task?.Portfolio?.Title;
+                                        //task["Portfoliotype"] = "Component";
+                                    }
+
+                                    task["SiteIcon"] = config?.Item_x005F_x0020_Cover?.Url;
+                                    task.TeamMembersSearch = "";
+                                    task.TaskID = globalCommon.getTaskId(task);
+
+
+                                    AllSiteTasks.push(task)
+                                });
+                                arraycount++;
+                            });
+                        let currentCount = siteConfig?.length;
+                        if (arraycount === currentCount) {
+                            AllSitesAllTasks = AllSiteTasks;
+
+                        }
+                    } else {
+                        arraycount++;
+                    }
+                });
+            }
         } catch (e) {
             console.log(e)
         }
@@ -1742,139 +1794,157 @@ export default function ProjectOverview(props: any) {
     }, [])
 
 
-    const LoadAllSiteTasks = async () => {
+    const LoadAllSiteTasks = function () {
         if (siteConfig?.length > 0) {
             try {
                 var AllTask: any = [];
-                AllTask = await globalCommon?.loadAllSiteTasks(AllListId, `IsTodaysTask eq 1`)
-                AllTask.map((items: any) => {
-                    let EstimatedDesc = JSON.parse(items?.EstimatedTimeDescription)
-                    items.Item_x0020_Type = 'tasks';
-                    items.ShowTeamsIcon = false
-                    items.descriptionsSearch = '';
-                    items.AllTeamMember = [];
-                    items.EstimatedTime = 0
-                    let estimatedDescription = ''
-                    if (EstimatedDesc?.length > 0) {
-                        EstimatedDesc?.map((time: any) => {
-                            items.EstimatedTime += Number(time?.EstimatedTime)
-                            estimatedDescription += ', ' + time?.EstimatedTimeDescription
-                        })
-                    }
-                    if (items?.FeedBack != undefined) {
+                let web = new Web(AllListId?.siteUrl);
+                var arraycount = 0;
+                siteConfig.map(async (config: any) => {
 
-                        items.descriptionsSearch = globalCommon?.descriptionSearchData(items)
-                    }
-                    items.commentsSearch = items?.Comments != null && items?.Comments != undefined ? items.Comments.replace(/(<([^>]+)>)/gi, "").replace(/\n/g, '') : '';
-                    items.PercentComplete = (items.PercentComplete * 100).toFixed(0);
-                    items.DisplayDueDate =
-                        items.DueDate != null
-                            ? Moment(items.DueDate).format("DD/MM/YYYY")
-                            : "";
-                    items.DisplayCreateDate =
-                        items.Created != null
-                            ? Moment(items.Created).format("DD/MM/YYYY")
-                            : "";
-                    items.portfolio = {};
-                    items.TaskTypeValue = ''
-                    if (items?.TaskCategories?.length > 0) {
-                        items.TaskTypeValue = items?.TaskCategories?.map((val: any) => val.Title).join(",")
-                    }
-                    if (items?.TaskCategories?.length > 0) {
-                        items.Categories = items.TaskTypeValue;
-                    }
-                    if (items?.Portfolio?.Id != undefined) {
-                        items.portfolio = items?.Portfolio;
-                        items.PortfolioTitle = items?.Portfolio?.Title;
-                        //  items["Portfoliotype"] = "Component";
-                    } if (items?.Project?.Title != undefined) {
-                        items["ProjectTitle"] = items?.Project?.Title;
-                        items["ProjectPriority"] = items?.Project?.PriorityRank;
-                    } else {
-                        items["ProjectTitle"] = '';
-                        items["ProjectPriority"] = 0;
-                    }
+                    let smartmeta = [];
+                    smartmeta = await web.lists
+                        .getById(config.listId)
+                        .items
+                        .select("Id,Title,PriorityRank,Portfolio/Id,Portfolio/Title,Portfolio/PortfolioStructureID,ParentTask/TaskID,ParentTask/Title,ParentTask/Id,EstimatedTime,EstimatedTimeDescription,Project/PriorityRank,Project/Id,Project/Title,workingThisWeek,EstimatedTime,TaskLevel,TaskLevel,OffshoreImageUrl,OffshoreComments,ClientTime,Priority,Status,ItemRank,IsTodaysTask,Body,PercentComplete,Categories,StartDate,PriorityRank,DueDate,TaskType/Id,TaskType/Title,Created,Modified,Author/Id,Author/Title,Editor/Id,Editor/Title,TaskCategories/Id,TaskCategories/Title,AssignedTo/Id,AssignedTo/Title,TeamMembers/Id,TeamMembers/Title,ResponsibleTeam/Id,ResponsibleTeam/Title,ClientCategory/Id,ClientCategory/Title")
+                        .expand('AssignedTo,Project,Author,Editor,Portfolio,TaskType,ParentTask,TeamMembers,ResponsibleTeam,TaskCategories,ClientCategory')
+                        .filter("IsTodaysTask eq 1")
+                        .top(4999)
+                        .get();
+                    arraycount++;
+                    smartmeta.map((items: any) => {
+                        let EstimatedDesc = JSON.parse(items?.EstimatedTimeDescription)
+                        items.Item_x0020_Type = 'tasks';
+                        items.ShowTeamsIcon = false
+                        items.descriptionsSearch = '';
+                        items.AllTeamMember = [];
+                        items.siteType = config.Title;
+                        items.siteUrl = config.siteUrl.Url;
+                        items.EstimatedTime = 0
+                        let estimatedDescription = ''
+                        if (EstimatedDesc?.length > 0) {
+                            EstimatedDesc?.map((time: any) => {
+                                items.EstimatedTime += Number(time?.EstimatedTime)
+                                estimatedDescription += ', ' + time?.EstimatedTimeDescription
+                            })
+                        }
+                        if (items?.FeedBack != undefined) {
 
+                            items.descriptionsSearch = globalCommon?.descriptionSearchData(items)
+                        }
+                        items.commentsSearch = items?.Comments != null && items?.Comments != undefined ? items.Comments.replace(/(<([^>]+)>)/gi, "").replace(/\n/g, '') : '';
+                        items.listId = config.listId;
 
+                        items.PercentComplete = (items.PercentComplete * 100).toFixed(0);
+                        items.DisplayDueDate =
+                            items.DueDate != null
+                                ? Moment(items.DueDate).format("DD/MM/YYYY")
+                                : "";
+                        items.DisplayCreateDate =
+                            items.Created != null
+                                ? Moment(items.Created).format("DD/MM/YYYY")
+                                : "";
+                        items.portfolio = {};
+                        if (items?.Portfolio?.Id != undefined) {
+                            items.portfolio = items?.Portfolio;
+                            items.PortfolioTitle = items?.Portfolio?.Title;
+                            //  items["Portfoliotype"] = "Component";
+                        }
 
-                    items.TeamMembersSearch = "";
-                    items.AssignedToIds = [];
-                    if (items.AssignedTo != undefined) {
-                        items?.AssignedTo?.map((taskUser: any) => {
-                            items.AssignedToIds.push(taskUser?.Id)
-                            AllTaskUsers.map((user: any) => {
-                                if (user.AssingedToUserId == taskUser.Id) {
-                                    if (user?.Title != undefined) {
-                                        items.TeamMembersSearch =
-                                            items.TeamMembersSearch + " " + user?.Title;
+                        items["SiteIcon"] = config?.Item_x005F_x0020_Cover?.Url;
+                        if (items?.Project?.Title != undefined) {
+                            items["ProjectTitle"] = items?.Project?.Title;
+                            items["ProjectPriority"] = items?.Project?.PriorityRank;
+                        } else {
+                            items["ProjectTitle"] = '';
+                            items["ProjectPriority"] = 0;
+                        }
+                        items.TaskTypeValue = ''
+                        if (items?.TaskCategories?.length > 0) {
+                            items.TaskTypeValue = items?.TaskCategories?.map((val: any) => val.Title).join(",")
+                        }
+                        if (items?.TaskCategories?.length > 0) {
+                            items.Categories = items.TaskTypeValue;
+                        }
+                        items.TeamMembersSearch = "";
+                        items.AssignedToIds = [];
+                        if (items.AssignedTo != undefined) {
+                            items?.AssignedTo?.map((taskUser: any) => {
+                                items.AssignedToIds.push(taskUser?.Id)
+                                AllTaskUsers.map((user: any) => {
+                                    if (user.AssingedToUserId == taskUser.Id) {
+                                        if (user?.Title != undefined) {
+                                            items.TeamMembersSearch =
+                                                items.TeamMembersSearch + " " + user?.Title;
+                                        }
                                     }
-                                }
+                                });
                             });
+                        }
+
+                        items.TaskID = globalCommon.getTaskId(items);
+                        AllTaskUsers?.map((user: any) => {
+                            if (user.AssingedToUserId == items.Author.Id) {
+                                items.createdImg = user?.Item_x0020_Cover?.Url;
+                            }
+                            if (items.TeamMembers != undefined) {
+                                items.TeamMembers.map((taskUser: any) => {
+                                    var newuserdata: any = {};
+                                    if (user.AssingedToUserId == taskUser.Id) {
+                                        newuserdata["useimageurl"] = user?.Item_x0020_Cover?.Url;
+                                        newuserdata["Suffix"] = user?.Suffix;
+                                        newuserdata["Title"] = user?.Title;
+                                        newuserdata["UserId"] = user?.AssingedToUserId;
+                                        items["Usertitlename"] = user?.Title;
+                                        items.AllTeamMember.push(newuserdata);
+                                    }
+
+                                });
+                            }
                         });
-                    }
-
-                    items.TaskID = globalCommon.getTaskId(items);
-                    AllTaskUsers?.map((user: any) => {
-                        if (user.AssingedToUserId == items.Author.Id) {
-                            items.createdImg = user?.Item_x0020_Cover?.Url;
-                        }
-                        if (items.TeamMembers != undefined) {
-                            items.TeamMembers.map((taskUser: any) => {
-                                var newuserdata: any = {};
-                                if (user.AssingedToUserId == taskUser.Id) {
-                                    newuserdata["useimageurl"] = user?.Item_x0020_Cover?.Url;
-                                    newuserdata["Suffix"] = user?.Suffix;
-                                    newuserdata["Title"] = user?.Title;
-                                    newuserdata["UserId"] = user?.AssingedToUserId;
-                                    items["Usertitlename"] = user?.Title;
-                                    items.AllTeamMember.push(newuserdata);
-                                }
-
-                            });
-                        }
+                        AllTask.push(items);
                     });
-                    AllTask.push(items);
-                });
+                    let setCount = siteConfig?.length
+                    if (arraycount === setCount) {
+                        AllTask.sort((a: any, b: any) => {
+                            return b?.PriorityRank - a?.PriorityRank;
+                        })
+                        AllTask.sort((a: any, b: any) => {
+                            return b?.ProjectPriority - a?.ProjectPriority;
+                        })
+                        setAllSiteTasks(AllTask);
+                        const categorizedUsers: any = [];
 
-                AllTask.sort((a: any, b: any) => {
-                    return b?.PriorityRank - a?.PriorityRank;
-                })
-                AllTask.sort((a: any, b: any) => {
-                    return b?.ProjectPriority - a?.ProjectPriority;
-                })
-                setAllSiteTasks(AllTask);
-                const categorizedUsers: any = [];
+                        // Iterate over the users
+                        for (const user of AllTaskUsers) {
+                            const category = user?.technicalGroup;
+                            let categoryObject = categorizedUsers?.find((obj: any) => obj?.Title === category);
+                            // If the category doesn't exist, create a new category object
+                            if (!categoryObject) {
+                                categoryObject = { Title: category, users: [], subRows: [], type: 'Category' };
+                                categorizedUsers.push(categoryObject);
+                            }
+                            // const userTasks = AllTask?.filter((task:any) => 
+                            // if(){
+                            //     task?.AssignedTo?.filter((assigned:any)=>assigned?.Id=== user?.AssingedToUserId)
+                            // });
+                            const userTasks = AllTask?.filter((task: any) => task?.AssignedToIds?.includes(user?.AssingedToUserId));
+                            categoryObject.users.push({ user, tasks: userTasks });
+                        }
+                        console.log(categorizedUsers);
+                        for (const category of categorizedUsers) {
+                            category?.users?.map((teamMember: any) => {
+                                category.subRows = [...category?.subRows, ...teamMember?.tasks]
+                            })
+                        }
 
-                // Iterate over the users
-                for (const user of AllTaskUsers) {
-                    const category = user?.technicalGroup;
-                    let categoryObject = categorizedUsers?.find((obj: any) => obj?.Title === category);
-                    // If the category doesn't exist, create a new category object
-                    if (!categoryObject) {
-                        categoryObject = { Title: category, users: [], subRows: [], type: 'Category' };
-                        categorizedUsers.push(categoryObject);
+                        setCategoryGroup(categorizedUsers?.filter((item: any) => item?.Title != undefined))
+                        console.log(categorizedUsers);
+                        allSitesTasks = AllTask;
+                        GetMasterData();
                     }
-                    // const userTasks = AllTask?.filter((task:any) => 
-                    // if(){
-                    //     task?.AssignedTo?.filter((assigned:any)=>assigned?.Id=== user?.AssingedToUserId)
-                    // });
-                    const userTasks = AllTask?.filter((task: any) => task?.AssignedToIds?.includes(user?.AssingedToUserId));
-                    categoryObject.users.push({ user, tasks: userTasks });
-                }
-                console.log(categorizedUsers);
-                for (const category of categorizedUsers) {
-                    category?.users?.map((teamMember: any) => {
-                        category.subRows = [...category?.subRows, ...teamMember?.tasks]
-                    })
-                }
 
-                setCategoryGroup(categorizedUsers?.filter((item: any) => item?.Title != undefined))
-                console.log(categorizedUsers);
-                allSitesTasks = AllTask;
-                GetMasterData();
-
-
-
+                });
             } catch (error) {
                 console.log(error)
 
