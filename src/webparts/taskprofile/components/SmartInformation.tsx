@@ -10,12 +10,11 @@ import * as moment from "moment-timezone";
 import { IoMdArrowDropright, IoMdArrowDropdown } from 'react-icons/io';
 import { DragDropFiles } from "@pnp/spfx-controls-react/lib/DragDropFiles";
 import EditTaskPopup from '../../../globalComponents/EditTaskPopup/EditTaskPopup';
-// import ComponentPortPolioPopup from "../../EditPopupFiles/ComponentPortfolioSelection"
-// import LinkedComponent from '../../../globalComponents/EditTaskPopup/LinkedComponent'
+
 import ServiceComponentPortfolioPopup from "../../../globalComponents/EditTaskPopup/ServiceComponentPortfolioPopup"
 import { myContextValue } from "../../../globalComponents/globalCommon";
-import ImageTabComponenet from './ImageTabComponent'
-import { Mention } from 'react-mentions';
+
+
 let AllTasktagsmartinfo: any = [];
 let hhhsmartinfoId: any = [];
 let taskUser: any = [];
@@ -28,15 +27,14 @@ const SmartInformation = (props: any, ref: any) => {
   const [popupEdit, setpopupEdit] = useState(false);
   const [smartInformationArrow, setsmartInformationArrow] = useState(true);
   const [allValue, setallSetValue] = useState({
-    Title: "", URL: "", Acronym: "", Description: "", InfoType: "SmartNotes", SelectedFolder: "Public", fileupload: "", LinkTitle: "", LinkUrl: "", taskTitle: "", Dragdropdoc: "", emailDragdrop: "", ItemRank: "", componentservicesetdata: { smartComponent: undefined, linkedComponent: undefined }, componentservicesetdataTag: undefined, EditTaskpopupstatus: false, DocumentType: "", masterTaskdetails: [],
+    Title: "", URL: "", Acronym: "", Description: "", InfoType: "Information Note", SelectedFolder: "Public", fileupload: "", LinkTitle: "", LinkUrl: "", taskTitle: "", Dragdropdoc: "", emailDragdrop: "", ItemRank: "", componentservicesetdata: { smartComponent: undefined, linkedComponent: undefined }, componentservicesetdataTag: undefined, EditTaskpopupstatus: false, DocumentType: "", masterTaskdetails: [],
   })
-  const [addSmartInfoPopupAddlinkDoc, setaddSmartInfoPopupAddlinkDoc] = useState(false)
-  // const [imageTabOpen, setImageTabOpen] = useState(false);
+ 
+
   const [filterSmartinfo, setFiltersmartinfo] = useState([]);
 
   const [isopencomonentservicepopup, setisopencomonentservicepopup] = useState(false);
-  // const [componentpopup, setcomponentpopup] = useState(false);
-  // const [servicespopup, setservicespopup] = useState(false);
+
   const [uplodDoc, setUploaddoc] = useState(null);
   const [EditTaskdata, setEditTaskdata] = useState();
   const [PostSmartInfo, setPostSmartInfo] = useState(null);
@@ -54,7 +52,7 @@ const SmartInformation = (props: any, ref: any) => {
   const [EditSmartinfoValue, setEditSmartinfoValue] = useState(null);
   const [Today, setToday] = useState(moment().format("DD/MM/YYYY"));
   const [folderCreated, setFolderCreated] = useState(true)
-  // const [taskUser,setTaskUser]=useState([]);
+
   const handleClose = () => {
     if (addSmartInfoPopupAddlinkDoc2 == false) {
 
@@ -62,13 +60,15 @@ const SmartInformation = (props: any, ref: any) => {
       setpopupEdit(false);
       setshowAdddocument(false);
       setSelectedTilesTitle("")
+      
       setShow(false);
       seteditvalue(null);
-      setallSetValue({ ...allValue, Title: "", URL: "", Acronym: "", Description: "", InfoType: "SmartNotes", SelectedFolder: "Public", fileupload: "", LinkTitle: "", LinkUrl: "", taskTitle: "", Dragdropdoc: "", emailDragdrop: "", ItemRank: "", componentservicesetdata: { smartComponent: undefined, linkedComponent: undefined }, componentservicesetdataTag: undefined, EditTaskpopupstatus: false, DocumentType: "", masterTaskdetails: [] });
+      setallSetValue({ ...allValue, Title: "", URL: "", Acronym: "", Description: "", InfoType: "Information Note", SelectedFolder: "Public", fileupload: "", LinkTitle: "", LinkUrl: "", taskTitle: "", Dragdropdoc: "", emailDragdrop: "", ItemRank: "", componentservicesetdata: { smartComponent: undefined, linkedComponent: undefined }, componentservicesetdataTag: undefined, EditTaskpopupstatus: false, DocumentType: "", masterTaskdetails: [] });
       if (props.showHide === "projectManagement" || props.showHide === "ANCTaskProfile") {
         console.log(props.remarkData)
         props.setRemark(false)
       }
+      
     }
   }
   const handleClosedoc = () => {
@@ -92,12 +92,12 @@ const SmartInformation = (props: any, ref: any) => {
         }
     }, 1000)
     } else {
-      setallSetValue({ ...allValue, Title: "", URL: "", Acronym: "", Description: "", InfoType: "SmartNotes", SelectedFolder: "Public", fileupload: "", LinkTitle: "", LinkUrl: "", taskTitle: "", Dragdropdoc: "", emailDragdrop: "", ItemRank: "", componentservicesetdata: { smartComponent: undefined, linkedComponent: undefined }, componentservicesetdataTag: undefined, EditTaskpopupstatus: false, DocumentType: "", masterTaskdetails: [] });
+      setallSetValue({ ...allValue, Title: "", URL: "", Acronym: "", Description: "", InfoType: "Information Note", SelectedFolder: "Public", fileupload: "", LinkTitle: "", LinkUrl: "", taskTitle: "", Dragdropdoc: "", emailDragdrop: "", ItemRank: "", componentservicesetdata: { smartComponent: undefined, linkedComponent: undefined }, componentservicesetdataTag: undefined, EditTaskpopupstatus: false, DocumentType: "", masterTaskdetails: [] });
       if (props.showHide === "projectManagement") {
         setallSetValue({ ...allValue, InfoType: "Remarks" })
         // props.setRemark(false)
       } else {
-        setallSetValue({ ...allValue, Title: "", URL: "", Acronym: "", Description: "", InfoType: "SmartNotes", SelectedFolder: "Public", fileupload: "", LinkTitle: "", LinkUrl: "", taskTitle: "", Dragdropdoc: "", emailDragdrop: "", ItemRank: "", componentservicesetdata: { smartComponent: undefined, linkedComponent: undefined }, componentservicesetdataTag: undefined, EditTaskpopupstatus: false, DocumentType: "", masterTaskdetails: [] });
+        setallSetValue({ ...allValue, Title: "", URL: "", Acronym: "", Description: "", InfoType: "Information Note", SelectedFolder: "Public", fileupload: "", LinkTitle: "", LinkUrl: "", taskTitle: "", Dragdropdoc: "", emailDragdrop: "", ItemRank: "", componentservicesetdata: { smartComponent: undefined, linkedComponent: undefined }, componentservicesetdataTag: undefined, EditTaskpopupstatus: false, DocumentType: "", masterTaskdetails: [] });
       }
 
       setShow(true);
@@ -114,7 +114,7 @@ const SmartInformation = (props: any, ref: any) => {
   useEffect(() => {
     if ((props?.showHide == "projectManagement") && props.editSmartInfo) {
       handleShow(props.RemarkData.SmartInformation[0], "edit")
-    } if ((props?.showHide == "projectManagement") && props.editSmartInfo == false) {
+    } if (props.editSmartInfo == false) {
       handleShow(null, "add")
     }
     LoadMasterTaskList().then((data: any) => {
@@ -338,20 +338,7 @@ const SmartInformation = (props: any, ref: any) => {
   const SeleteMoveFloderItem = (item: any) => {
     setallSetValue({ ...allValue, SelectedFolder: item })
     setMovefolderItemUrl("/SmartInformation");
-    // switch (item) {
-    //   case 'Public':
-    //     setMovefolderItemUrl("/SmartInformation");
-    //     break;
-    //   // case 'Memberarea':
-    //   //   setMovefolderItemUrl('/Memberarea');
-    //   //   break;
-    //   // case 'EDA':
-    //   //   setMovefolderItemUrl('/EDA Only');
-    //   //   break;
-    //   case 'Only For Me':
-    //     setMovefolderItemUrl('/Only For Me');
-    //     break;
-    // }
+   
   }
   // ============load SmartMetaData to get the  infoType in popup======================= 
 
@@ -361,7 +348,7 @@ const SmartInformation = (props: any, ref: any) => {
 
     await web.lists.getById(props?.AllListId?.SmartMetadataListID)
       .items.select('ID,Title,ProfileType', 'Parent/Id', 'Parent/Title', 'TaxType', 'Created', 'Modified', 'Author/Id', 'Author/Title', 'Editor/Title', 'Editor/Id')
-      .expand("Author", "Editor", "Parent").filter("ProfileType eq 'Information'").top(4999)
+      .expand("Author", "Editor", "Parent").filter("TaxType eq 'Information'").top(4999)
       .getAll()
       .then((Data: any[]) => {
         console.log(Data)
@@ -588,7 +575,7 @@ const SmartInformation = (props: any, ref: any) => {
       setsmartDocumentpostData
     
       // setallSetValue({...allValue,AstricMesaage:true})
-      setaddSmartInfoPopupAddlinkDoc(false)
+   
       addSmartInfoPopupAddlinkDoc2 = false;
     }
 
@@ -657,7 +644,7 @@ const SmartInformation = (props: any, ref: any) => {
     }, 1000)
     }
     else {
-      setaddSmartInfoPopupAddlinkDoc(true);
+    
       addSmartInfoPopupAddlinkDoc2 = true;
       await saveSharewebItem();
       // if (addSmartInfoPopupAddlinkDoc) {

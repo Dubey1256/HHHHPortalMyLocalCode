@@ -91,7 +91,9 @@ const RelevantDocuments = (props: any, ref: any) => {
               console.log(error)
             })
           }
-         
+         else{
+          setDocumentData([]);
+         }
 
         })
     
@@ -164,8 +166,8 @@ const RelevantDocuments = (props: any, ref: any) => {
                       {item?.File_x0020_Type == "docx" && <span className='svg__iconbox svg__icon--docx' title="docx"></span>}
                       {item?.File_x0020_Type == "csv" && <span className='svg__iconbox svg__icon--csv' title="csv"></span>}
                       {item?.File_x0020_Type == "xlsx" && <span className='svg__iconbox svg__icon--xlsx' title="xlsx"></span>}
-                      {item?.File_x0020_Type == "jpeg" || item?.File_x0020_Type == "jpg " && <span className='svg__iconbox svg__icon--jpeg' title="jpeg"></span>}
-                      {item?.File_x0020_Type == "ppt" || item?.File_x0020_Type == "pptx" && <span className='svg__iconbox svg__icon--ppt' title="ppt"></span>}
+                      {item?.File_x0020_Type == "jpeg" || item?.File_x0020_Type == "jpg" && <span className='svg__iconbox svg__icon--jpeg' title={item?.File_x0020_Type}></span>}
+                      {item?.File_x0020_Type == "ppt" || item?.File_x0020_Type == "pptx" && <span className='svg__iconbox svg__icon--ppt' title={item?.File_x0020_Type}></span>}
                       {item?.File_x0020_Type == "svg" && <span className='svg__iconbox svg__icon--svg' title="svg"></span>}
                       {item?.File_x0020_Type == "zip" && <span className='svg__iconbox svg__icon--zip' title="zip"></span>}
                       {item?.File_x0020_Type == "png" && <span className='svg__iconbox svg__icon--png' title="png"></span>}
