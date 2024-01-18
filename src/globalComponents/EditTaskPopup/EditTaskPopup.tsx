@@ -215,7 +215,7 @@ const EditTaskPopup = (Items: any) => {
     const [SiteCompositionShow, setSiteCompositionShow] = useState(false);
     const [IsSendAttentionMsgStatus, setIsSendAttentionMsgStatus] =
         useState(false);
-    const [IsTaskCompleted, setIsTaskCompleted] = useState(false);
+    const [IsTaskStatusUpdated, setIsTaskStatusUpdated] = useState(false);
     const [SendCategoryName, setSendCategoryName] = useState("");
     const [TeamMemberChanged, setTeamMemberChanged] = useState(false);
     const [CurrentImageIndex, setCurrentImageIndex] = useState("");
@@ -2067,6 +2067,7 @@ const EditTaskPopup = (Items: any) => {
         let value = Number(e.target.value);
         if (value <= 100) {
             if (StatusInput.length > 0) {
+                setIsTaskStatusUpdated(true);
                 if (StatusInput == 0) {
                     setTaskStatus("Not Started");
                     setPercentCompleteStatus("0% Not Started");
@@ -2167,7 +2168,6 @@ const EditTaskPopup = (Items: any) => {
                 if (StatusInput == 90) {
                     EditData.IsTodaysTask = false;
                     EditData.workingThisWeek = false;
-                    setIsTaskCompleted(true);
                     if (EditData.siteType == "Offshore Tasks") {
                         setWorkingMember(36);
                     } else if (DesignStatus) {
@@ -2232,6 +2232,7 @@ const EditTaskPopup = (Items: any) => {
             setTaskStatus(StatusData.taskStatusComment);
             setPercentCompleteCheck(false);
             if (StatusData.value == 1) {
+                setIsTaskStatusUpdated(true);
                 let tempArray: any = [];
                 if (
                     TaskApproverBackupArray != undefined &&
@@ -2319,7 +2320,6 @@ const EditTaskPopup = (Items: any) => {
                 });
             }
             if (StatusData.value == 90) {
-                setIsTaskCompleted(true);
                 EditData.IsTodaysTask = false;
                 EditData.workingThisWeek = false;
                 if (EditData.siteType == "Offshore Tasks") {
@@ -2429,6 +2429,11 @@ const EditTaskPopup = (Items: any) => {
     // ******************** This is Task All Details Update Function  ***************************
 
     const UpdateTaskInfoFunction = async (usedFor: any) => {
+
+        let TaskShuoldBeUpdate = true;
+        let DataJSONUpdate: any = await MakeUpdateDataJSON();
+        let taskPercentageValue: any = DataJSONUpdate?.PercentComplete ? DataJSONUpdate?.PercentComplete : 0;
+
         if (isApprovalByStatus == true) {
             let web = new Web(siteUrls);
             await web.lists
@@ -2472,9 +2477,10 @@ const EditTaskPopup = (Items: any) => {
             }
         }
 
+
         // When task assigned to user, send a notification on MS Teams 
 
-        if (TeamMemberChanged && !IsUserFromHHHHTeam) {
+        if (!IsUserFromHHHHTeam) {
             try {
                 let sendUserEmails: any = [];
                 let AssignedUserName: string = '';
@@ -2487,20 +2493,36 @@ const EditTaskPopup = (Items: any) => {
                     });
                 });
                 let TaskCategories = tempShareWebTypeData.map((item: any) => item.Title).join(', ');
-                let SendMessage: string = `<p><b>Hi ${AssignedUserName},</b> </p></br><p> You have been marked as a working member on the below task. Please take necessary action :</p> </br> 
-                <p>
-                Task Link: <a href=${siteUrls + "/SitePages/Task-Profile.aspx?taskId=" + EditData.Id + "&Site" + EditData.siteType}>
-                ${siteUrls + "SitePages/Task-Profile.aspx?taskId=" + EditData.Id + "&Site" + EditData.siteType} 
-                </a>
-                </br>
-                Cateroy: <b>${TaskCategories}</b> </br>
-                Smartpriority: <b>${EditData?.SmartPriority}</b></br>
-                </p>
-                <p>
-                <b> Thanks, </br>
-                Task Management Team</b>
-                </p>
-                `
+                let SendMessage: string = '';
+                let CommonMsg: string = '';
+                if (TeamMemberChanged) {
+                    CommonMsg = "You have been marked as a working member on the below task. Please take necessary action (Analyse the points in the task, fill up the Estimation, Set to 10%)."
+                }
+                if (IsTaskStatusUpdated) {
+                    if ((Number(taskPercentageValue) * 100) == 80) {
+                        CommonMsg = `Below task has been set to 80% by ${Items.context.pageContext._user.displayName}, please review it.`
+                    }
+                    if ((Number(taskPercentageValue) * 100) == 70) {
+                        CommonMsg = `Below task has been re-opened by ${Items.context.pageContext._user.displayName}. Please review it and take necessary action on priority basis.`
+                    }
+                }
+
+                SendMessage = `<p><b>Hi ${AssignedUserName},</b> </p></br><p>${CommonMsg}</p> </br> 
+            <p>
+            Task Link: <a href=${siteUrls + "/SitePages/Task-Profile.aspx?taskId=" + EditData.Id + "&Site=" + EditData.siteType}>
+            ${siteUrls + "/SitePages/Task-Profile.aspx?taskId=" + EditData.Id + "&Site=" + EditData.siteType} 
+            </a>
+            </br>
+            Cateroy: ${TaskCategories}</br>
+            Smartpriority: <b>${EditData?.SmartPriority}</b></br>
+            </p>
+            <b> 
+            <p>
+            Thanks, </br>
+            Task Management Team
+            </p>
+            </b>
+            `
                 try {
                     if (sendUserEmails?.length > 0) {
                         await globalCommon.SendTeamMessage(
@@ -2518,23 +2540,7 @@ const EditTaskPopup = (Items: any) => {
 
         }
 
-        // if (IsTaskCompleted) {
-        //     let taskComplete = `Hi Robert, </br> Below task has been marked to 90% by ${Items.context.pageContext._user.displayName}. Please review.`;
-        //     let TeamEmail =
-        //         taskComplete +
-        //         `</br> <a href=${siteUrls + "/SitePages/Task-Profile.aspx?taskId=" + EditData.Id + "&Site=" + Items.Items.siteType}>${EditData.TaskId}-${EditData.Title}</a>`;
-        //     let sendEmail: any = ["robert.ungethuem@hochhuth-consulting.de"];
-        //     if (sendEmail?.length > 0) {
-        //         await globalCommon.SendTeamMessage(
-        //             sendEmail,
-        //             TeamEmail,
-        //             Items.context
-        //         );
-        //     }
-        // }
 
-        let TaskShuoldBeUpdate = true;
-        let DataJSONUpdate: any = await MakeUpdateDataJSON();
         if (EnableSiteCompositionValidation) {
             if (SiteCompositionPrecentageValue > 100) {
                 TaskShuoldBeUpdate = false;
@@ -4514,7 +4520,7 @@ const EditTaskPopup = (Items: any) => {
         setSiteCompositionShow(false);
     };
 
-   
+
 
     // const SiteCompositionCallBack = useCallback((Data: any, Type: any) => {
     //     if (Data.ClientTime != undefined && Data.ClientTime.length > 0) {
@@ -8893,7 +8899,7 @@ const EditTaskPopup = (Items: any) => {
                                     }}
                                 >
                                     <div>
-                                    {EditData.Id != null ? (
+                                        {EditData.Id != null ? (
                                             <>
                                                 <CommentBoxComponent
                                                     data={
