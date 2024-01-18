@@ -2472,9 +2472,9 @@ const EditTaskPopup = (Items: any) => {
             }
         }
 
-         // When task assigned to user, send a notification on MS Teams 
+        // When task assigned to user, send a notification on MS Teams 
 
-         if (TeamMemberChanged && !IsUserFromHHHHTeam) {
+        if (TeamMemberChanged && !IsUserFromHHHHTeam) {
             try {
                 let sendUserEmails: any = [];
                 let AssignedUserName: string = '';
@@ -2487,16 +2487,20 @@ const EditTaskPopup = (Items: any) => {
                     });
                 });
                 let TaskCategories = tempShareWebTypeData.map((item: any) => item.Title).join(', ');
-                let SendMessage: string = `<p>Hi ${AssignedUserName}, </p></br><p> You have been marked as a working member on the below task. Please take necessary action :</p> </br> 
-                <p>Task Link: <a href=${siteUrls + "/SitePages/Task-Profile.aspx?taskId=" + EditData.Id + "&Site" + EditData.siteType}>
+                let SendMessage: string = `<p><b>Hi ${AssignedUserName},</b> </p></br><p> You have been marked as a working member on the below task. Please take necessary action :</p> </br> 
+                <p>
+                Task Link: <a href=${siteUrls + "/SitePages/Task-Profile.aspx?taskId=" + EditData.Id + "&Site" + EditData.siteType}>
                 ${siteUrls + "SitePages/Task-Profile.aspx?taskId=" + EditData.Id + "&Site" + EditData.siteType} 
                 </a>
-                </p>
                 </br>
-                <p>Cateroy: ${TaskCategories} </p></br>
-                <p>Smartpriority: ${EditData?.SmartPriority}  </p></br>
-                <p>Thanks,</p> </br>
-                <p>Task Management Team`
+                Cateroy: <b>${TaskCategories}</b> </br>
+                Smartpriority: <b>${EditData?.SmartPriority}</b></br>
+                </p>
+                <p>
+                <b> Thanks, </br>
+                Task Management Team</b>
+                </p>
+                `
                 try {
                     if (sendUserEmails?.length > 0) {
                         await globalCommon.SendTeamMessage(
