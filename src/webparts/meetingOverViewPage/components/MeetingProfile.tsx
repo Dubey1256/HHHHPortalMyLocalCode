@@ -18,10 +18,9 @@ import {
   Panel,
 } from '@fluentui/react';
 import moment from 'moment';
-// import SmartInformation from '../../taskprofile/components/SmartInformation';
-// import RelevantDocuments from '../../taskprofile/components/RelevantDocuments';
+import SmartInformation from '../../taskprofile/components/SmartInformation';
+import RelevantDocuments from '../../taskprofile/components/RelevantDocuments';
 import MeetingPopupComponent from '../../../globalComponents/MeetingPopup/MeetingPopup';
-// import TagTaskToProjectPopup from '../../projectManagement/components/TagTaskToProjectPopup';
 import MettingTable from './MeetingFooterTable';
 import { map } from 'jquery';
 import TagTaskToProjectPopup from '../../projectManagement/components/TagTaskToProjectPopup';
@@ -1409,7 +1408,7 @@ const MeetingProfile = (props: any) => {
                   AllListId={AllListId} Context={props?.props?.Context} />}
 
               </div>
-              {/* <div>
+              <div>
                 {AllListId != null && <SmartInformation
                   ref={smartInfoRef}
                   Id={resultData.Id}
@@ -1417,15 +1416,15 @@ const MeetingProfile = (props: any) => {
                   Context={props?.props?.Context}
                   taskTitle={resultData?.Title}
                   listName={resultData?.listName}
-                />}</div> */}
+                />}</div>
               <div>
-                {/* {AllListId && <RelevantDocuments ref={relevantDocRef}
+                {AllListId && <RelevantDocuments ref={relevantDocRef}
                   siteUrl={props?.props.siteUrl}
                   DocumentsListID={props?.props?.DocumentsListID}
                   ID={resultData?.itemId}
                   siteName={resultData?.listName}
                   folderName={resultData?.Title}
-                ></RelevantDocuments>} */}
+                ></RelevantDocuments>}
               </div>
 
             </div>
