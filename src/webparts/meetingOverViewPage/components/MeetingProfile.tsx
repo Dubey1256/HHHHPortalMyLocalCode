@@ -4,7 +4,7 @@ import CommentCard from '../../../globalComponents/Comments/CommentCard';
 import AncTool from '../../../globalComponents/AncTool/AncTool';
 import { BiInfoCircle } from 'react-icons/bi';
 import PageLoader from "../../../globalComponents/pageLoader";
-
+import * as globalCommon from "../../../globalComponents/globalCommon";
 
 import { ImReply } from 'react-icons/im';
 import {
@@ -18,8 +18,8 @@ import {
   Panel,
 } from '@fluentui/react';
 import moment from 'moment';
-import SmartInformation from '../../taskprofile/components/SmartInformation';
-import RelevantDocuments from '../../taskprofile/components/RelevantDocuments';
+// import SmartInformation from '../../taskprofile/components/SmartInformation';
+// import RelevantDocuments from '../../taskprofile/components/RelevantDocuments';
 import MeetingPopupComponent from '../../../globalComponents/MeetingPopup/MeetingPopup';
 // import TagTaskToProjectPopup from '../../projectManagement/components/TagTaskToProjectPopup';
 import MettingTable from './MeetingFooterTable';
@@ -28,6 +28,9 @@ import TagTaskToProjectPopup from '../../projectManagement/components/TagTaskToP
 var count = 0;
 var isShowTimeEntry: any;
 var isShowSiteCompostion: any;
+var MasterListData: any = [];
+let AllFlatProject: any = [];
+let groupedComponentData: any = [];
 var AllListId: any;
 var taskUsers: any;
 var currentUser: any;
@@ -233,11 +236,12 @@ const MeetingProfile = (props: any) => {
     // console.log(this.taskUsers);
 
   }
-  const getQueryVariable = () => {
+  const getQueryVariable = async() => {
     const params = new URLSearchParams(window.location.search);
     let query = params?.get("meetingId");
     console.log(query)
     setmeetingId(query)
+    await loadAllComponent()
     AllListId = {
       MasterTaskListID: props?.props?.MasterTaskListID,
       TaskUsertListID: props?.props?.TaskUsertListID,
@@ -422,6 +426,25 @@ const MeetingProfile = (props: any) => {
   }
   const handleuffixLeave = () => {
     setDisplay('none')
+  }
+
+  const loadAllComponent = async () => {
+    let PropsObject: any = {
+      MasterTaskListID: AllListId?.MasterTaskListID,
+      siteUrl: AllListId?.siteUrl,
+      TaskUserListId: AllListId?.TaskUsertListID,
+    }
+    let componentDetails: any = [];
+    let results = await globalCommon.GetServiceAndComponentAllData(PropsObject)
+    if (results?.AllData?.length > 0) {
+      componentDetails = results?.AllData;
+      groupedComponentData = results?.GroupByData;
+      AllFlatProject = results?.FlatProjectData
+    }
+    MasterListData = componentDetails
+    if (AllFlatProject?.length > 0)
+      MasterListData = MasterListData.concat(AllFlatProject)
+
   }
 
 
@@ -911,8 +934,9 @@ const MeetingProfile = (props: any) => {
                 projectId={resultData.ID}
                 AllListId={AllListId}
                 callBack={tagAndCreateCallBack}
-                projectTitle={resultData.Title} /> </span>}
-
+                projectTitle={resultData.Title} 
+                masterTaskData={MasterListData}/> </span>}
+                
             </h2>
           </section>
 
@@ -1385,7 +1409,7 @@ const MeetingProfile = (props: any) => {
                   AllListId={AllListId} Context={props?.props?.Context} />}
 
               </div>
-              <div>
+              {/* <div>
                 {AllListId != null && <SmartInformation
                   ref={smartInfoRef}
                   Id={resultData.Id}
@@ -1393,15 +1417,15 @@ const MeetingProfile = (props: any) => {
                   Context={props?.props?.Context}
                   taskTitle={resultData?.Title}
                   listName={resultData?.listName}
-                />}</div>
+                />}</div> */}
               <div>
-                {AllListId && <RelevantDocuments ref={relevantDocRef}
+                {/* {AllListId && <RelevantDocuments ref={relevantDocRef}
                   siteUrl={props?.props.siteUrl}
                   DocumentsListID={props?.props?.DocumentsListID}
                   ID={resultData?.itemId}
                   siteName={resultData?.listName}
                   folderName={resultData?.Title}
-                ></RelevantDocuments>}
+                ></RelevantDocuments>} */}
               </div>
 
             </div>
