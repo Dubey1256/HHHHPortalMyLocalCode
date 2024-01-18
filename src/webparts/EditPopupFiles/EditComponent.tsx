@@ -1189,7 +1189,7 @@ let ID: any;
             res.PortfolioType = item.PortfolioType;
             res.SiteIcon = undefined;
             res.siteUrl = RequireData?.siteUrl;
-            Calls(res);
+            Calls(res, "UpdatedData");
         }
     }
 

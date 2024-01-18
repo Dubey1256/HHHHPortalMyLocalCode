@@ -64,6 +64,8 @@ const EmployeProfile = (props: any) => {
               if (results.Configurations !== undefined) {
                 item.configurationData = JSON.parse(results.Configurations);
                 item.configurationData.map((elem: any) => {
+                  item.CurrentUserID = elem?.CurrentUserID;
+                  item.isShowEveryone = elem?.isShowEveryone
                   elem.Id = results.Id;
                   if (elem.startDate != null && elem.startDate != undefined && elem.startDate != "") {
                     elem.startDate = new Date(elem.startDate);
@@ -182,7 +184,12 @@ const EmployeProfile = (props: any) => {
     DashboardConfig?.forEach((config: any) => {
       if (config?.Tasks == undefined)
         config.Tasks = []
-      if (config?.smartFevId != undefined && config?.smartFevId != '') {
+      if (config?.smartFevId != undefined && config?.smartFevId != '' && config?.isShowEveryone === false && currentUserData.AssingedToUser.Id == config?.CurrentUserID) {
+        config.LoadDefaultFilter = false;
+        FilterDataOnCheck(config);
+      }
+      else if (config?.smartFevId != undefined && config?.smartFevId != '' && config?.isShowEveryone === true) {
+        config.LoadDefaultFilter = false;
         FilterDataOnCheck(config);
       }
     })
@@ -190,7 +197,7 @@ const EmployeProfile = (props: any) => {
       DashboardConfig?.forEach((config: any) => {
         if (config?.Tasks == undefined)
           config.Tasks = []
-        if (config.smartFevId == undefined || config.smartFevId == '') {
+        if (config?.LoadDefaultFilter != false) {
           if (config?.IsDraftTask != undefined && items.Categories?.toLowerCase().indexOf(config?.IsDraftTask.toLowerCase()) > -1 && items.Author?.Id == currentUserData.AssingedToUser.Id && !isTaskItemExists(config?.Tasks, items)) {
             config?.Tasks.push(items);
           }

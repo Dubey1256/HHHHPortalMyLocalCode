@@ -2784,7 +2784,10 @@ const EditTaskPopup = (Items: any) => {
         let PrecentStatus: any = UpdateTaskInfo.PercentCompleteStatus
             ? Number(UpdateTaskInfo.PercentCompleteStatus)
             : 0;
-
+        if (PrecentStatus == 3) {
+            setTaskAssignedTo([])
+            TaskAssignedTo = []
+        }
         if (PrecentStatus == 1) {
             let tempArrayApprover: any = [];
 
@@ -4073,6 +4076,9 @@ const EditTaskPopup = (Items: any) => {
                         CopydocumentData(SelectedSite, res.data);
                         if (FunctionsType == "Copy-Task") {
                             setLoaded(true)
+                            if (timesheetData != undefined && timesheetData.length > 0) {
+                                await moveTimeSheet(SelectedSite, res.data);
+                            }
                             newGeneratedId = res.data.Id;
                             console.log(`Task Copied Successfully on ${SelectedSite} !!!!!`);
                             let url = `${siteUrls}/SitePages/Task-Profile.aspx?taskId=${newGeneratedId}&Site=${SelectedSite}`;
@@ -4969,7 +4975,7 @@ const EditTaskPopup = (Items: any) => {
                     : `${EditData.Id}`
             }
         >
-           
+
             {/* ***************** this is status panel *********** */}
             <Panel
                 onRenderHeader={onRenderStatusPanelHeader}
@@ -9046,7 +9052,7 @@ const EditTaskPopup = (Items: any) => {
                                     <h6>Sites</h6>
                                 </div>
                                 <div className="card-body">
-                                {!loaded?<PageLoader/>:''}
+                                    {!loaded ? <PageLoader /> : ''}
                                     <ul className="quick-actions">
                                         {SiteTypes?.map((siteData: any, index: number) => {
                                             if (siteData.Title !== "QA") {
