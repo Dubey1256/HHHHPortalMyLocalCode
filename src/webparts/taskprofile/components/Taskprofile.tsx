@@ -374,7 +374,7 @@ class Taskprofile extends React.Component<ITaskprofileProps, ITaskprofileState> 
       IsTodaysTask: taskDetails["IsTodaysTask"],
       PriorityRank: taskDetails["PriorityRank"],
       EstimatedTime: taskDetails["EstimatedTime"],
-      Sitestagging: taskDetails["Sitestagging"] != null && JSON.parse(taskDetails["Sitestagging"]),
+      Sitestagging: taskDetails["Sitestagging"] != null ? JSON.parse(taskDetails["Sitestagging"]):[],
       ClientTime: taskDetails["ClientTime"] != null && JSON.parse(taskDetails["ClientTime"]),
       ApproverHistory: taskDetails["ApproverHistory"] != null ? JSON.parse(taskDetails["ApproverHistory"]) : "",
       OffshoreComments: OffshoreComments.length > 0 ? OffshoreComments.reverse() : null,
