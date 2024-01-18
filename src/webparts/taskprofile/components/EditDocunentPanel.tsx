@@ -5,9 +5,8 @@ import { Button, Tabs, Tab, Col, Nav, Row } from 'react-bootstrap';
 import moment from 'moment';
 import { Web } from 'sp-pnp-js';
 import HtmlEditorCard from '../../../globalComponents/./HtmlEditor/HtmlEditor'
-import ImageTabComponenet from './ImageTabComponent'
 import ServiceComponentPortfolioPopup from '../../../globalComponents/EditTaskPopup/ServiceComponentPortfolioPopup';
-import Mycontext from './RelevantDocuments'
+import ImageInformation from '../../EditPopupFiles/ImageInformation';
  let mastertaskdetails:any=[]
  let   copyEditData:any={}
 const EditDocumentpanel = (props: any) => {
@@ -56,6 +55,7 @@ const EditDocumentpanel = (props: any) => {
           Data.Title = Data?.Title?.replace('.', "");
           Data.siteType = 'sp';
           Data.docTitle = Data?.Title?.replace('.', "");
+          Data.Item_x002d_Image=Data?.Item_x0020_Cover
            let portfolioData:any=[]
           if (Data.Portfolios != undefined && Data?.Portfolios?.length > 0) {
             Data?.Portfolios?.map((portfolio: any) => {
@@ -151,8 +151,8 @@ const EditDocumentpanel = (props: any) => {
         Body: EditdocumentsData?.Body,
         Item_x0020_Cover: {
           "__metadata": { type: 'SP.FieldUrlValue' },
-          'Description': EditdocumentsData?.Item_x0020_Cover?.Url != "" ? EditdocumentsData?.UrItem_x0020_Coverl?.Url : "",
-          'Url': EditdocumentsData?.Item_x0020_Cover?.Url ? EditdocumentsData?.Item_x0020_Cover?.Url : "",
+          'Description': EditdocumentsData?.Item_x002d_Image?.Url != "" ? EditdocumentsData?.UrItem_x002d_Imagel?.Url : "",
+          'Url': EditdocumentsData?.Item_x002d_Image?.Url ? EditdocumentsData?.Item_x002d_Image?.Url : "",
         },
         Url: {
           "__metadata": { type: 'SP.FieldUrlValue' },
@@ -341,10 +341,11 @@ const EditDocumentpanel = (props: any) => {
              {EditdocumentsData!=undefined && <div className='mt-3'> <HtmlEditorCard editorValue={EditdocumentsData?.Body != undefined ? EditdocumentsData?.Body : ""} HtmlEditorStateChange={HtmlEditorCallBack}> </HtmlEditorCard></div>} 
             </div>
           </Tab>
-          <Tab eventKey="IMAGEINFORMATION" title="IMAGE INFORMATION" className='p-0' >
+          <Tab eventKey="IMAGEINFORMATION" title="IMAGE INFORMATION" className='p-0'  >
             <div className='border border-top-0 p-2'>
-
-              {isOpenImageTab && <ImageTabComponenet EditdocumentsData={EditdocumentsData} AllListId={props.AllListId} Context={props.Context} callBack={imageTabCallBack} />}
+           
+            {isOpenImageTab && <ImageInformation EditdocumentsData={EditdocumentsData} setData={setEditdocumentsData} AllListId={props.AllListId} Context={props.Context} callBack={imageTabCallBack} />}
+              {/* {isOpenImageTab && <ImageTabComponenet EditdocumentsData={EditdocumentsData} AllListId={props.AllListId} Context={props.Context} callBack={imageTabCallBack} />} */}
             </div>
           </Tab>
         </Tabs>

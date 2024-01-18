@@ -286,7 +286,7 @@ const AddCommentComponent = (FbData: any) => {
                                                     <span className="alignCenter">
                                                         <span title="Comment Reply" data-toggle="tooltip" id={buttonId + "-" + index}
                                                             onClick={() => OpenCallOutFunction(index)} data-placement="bottom" className="hreflink ps-1 svg__iconbox svg__icon--reply"></span>
-                                                        <span title="Edit Comment" onClick={() => openEditModal(commentDtl.Title, index, FbData?.index, false, "ParentComment")} className="hreflink ps-1 svg__iconbox svg__icon--edit siteColor"></span>
+                                                        <span title="Edit Comment" onClick={() => openEditModal(commentDtl.Title, index, FbData?.index, false, "ParentComment")} style={{marginTop:"2px"}} className="hreflink ps-1 svg__iconbox svg__icon--edit siteColor"></span>
                                                         <span title="Delete Comment" onClick={() => clearComment(true, index, FbData?.index)} className="ps-1 hreflink svg__iconbox svg__icon--trash"></span>
                                                     </span>
                                                 </div>
