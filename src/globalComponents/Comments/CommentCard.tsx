@@ -370,7 +370,8 @@ export class CommentCard extends React.Component<ICommentCardProps, ICommentCard
         Header: updateCommentPost.Header,
         ID: updateCommentPost.ID,
         Title: txtComment,
-        editable: false
+        editable: false,
+        CommentFor: updateCommentPost?.CommentFor
       };
       //Add object in feedback
       //delete the value before add new value
@@ -1007,7 +1008,7 @@ export class CommentCard extends React.Component<ICommentCardProps, ICommentCard
               <HtmlEditorCard editorValue={this.state.editorValue} HtmlEditorStateChange={this.HtmlEditorStateChange}></HtmlEditorCard>
             </div>
             <footer className='text-end'>
-              <button type="button" className="btn btn-primary ms-2 mt-2" onClick={(e) => this.updateComment()} >Save</button>
+              <button type="button" className="btn btn-primary mx-2 mt-2" onClick={(e) => this.updateComment()} >Save</button>
               <button type="button" className="btn btn-default mt-2 " onClick={(e) => this.CloseModal(e)}>Cancel</button>
             </footer>
           </div>

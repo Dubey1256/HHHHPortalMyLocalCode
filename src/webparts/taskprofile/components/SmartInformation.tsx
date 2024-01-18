@@ -360,9 +360,9 @@ const SmartInformation = (props: any, ref: any) => {
 
 
     await web.lists.getById(props?.AllListId?.SmartMetadataListID)
-      .items.select('ID,Title,ProfileType', 'Parent/Id', 'Parent/Title', "TaxType", 'Description', 'Created', 'Modified', 'Author/Id', 'Author/Title', 'Editor/Title', 'Editor/Id')
+      .items.select('ID,Title,ProfileType', 'Parent/Id', 'Parent/Title', 'TaxType', 'Created', 'Modified', 'Author/Id', 'Author/Title', 'Editor/Title', 'Editor/Id')
       .expand("Author", "Editor", "Parent").filter("ProfileType eq 'Information'").top(4999)
-      .get()
+      .getAll()
       .then((Data: any[]) => {
         console.log(Data)
         setLoadSmartMetaData(Data);
@@ -1229,6 +1229,13 @@ const SmartInformation = (props: any, ref: any) => {
 
             <div className='col-sm-6 mt-2 p-0'>
               {popupEdit && <span className='pe-2'><a target="_blank" data-interception="off" href={`${props?.Context?._pageContext?._web?.absoluteUrl}/Lists/SmartInformation/EditForm.aspx?ID=${editvalue?.Id != null ? editvalue?.Id : null}`}>Open out-of-the-box form |</a></span>}
+
+             <span className='me-2'><a className="ForAll hreflink" target="_blank" data-interception="off"
+                                    href={`${props?.Context?._pageContext?._web?.absoluteUrl}/SitePages/ManageSmartMetaData.aspx`}>
+                                    Manage Information
+                                </a></span>
+                                <span className='mx-2'>|</span>
+
               <span><a title='Add Link/ Document' style={{ cursor: "pointer" }} onClick={() => addDocument("popupaddDocument", editvalue)}>Add Link/ Document</a></span>
               <Button className='btn btn-primary ms-1 me-1' onClick={saveSharewebItem}>
                 Save

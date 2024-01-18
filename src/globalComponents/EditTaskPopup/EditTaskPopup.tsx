@@ -205,8 +205,6 @@ const EditTaskPopup = (Items: any) => {
         useState<any>("");
     const [IsUserFromHHHHTeam, setIsUserFromHHHHTeam] = useState(false);
     const [IsCopyOrMovePanel, setIsCopyOrMovePanel] = useState<any>("");
-    const [EnableSiteCompositionValidation, setEnableSiteCompositionValidation] =
-        useState(false);
     const [EstimatedDescription, setEstimatedDescription] = useState("");
     const [EstimatedDescriptionCategory, setEstimatedDescriptionCategory] =
         useState("");
@@ -215,9 +213,9 @@ const EditTaskPopup = (Items: any) => {
     const [SiteCompositionShow, setSiteCompositionShow] = useState(false);
     const [IsSendAttentionMsgStatus, setIsSendAttentionMsgStatus] =
         useState(false);
-    const [IsTaskCompleted, setIsTaskCompleted] = useState(false);
+    const [IsTaskStatusUpdated, setIsTaskStatusUpdated] = useState(false);
     const [SendCategoryName, setSendCategoryName] = useState("");
-    const [OpenEODReportPopup, setOpenEODReportPopup] = useState(false);
+    const [TeamMemberChanged, setTeamMemberChanged] = useState(false);
     const [CurrentImageIndex, setCurrentImageIndex] = useState("");
     const [loaded, setLoaded] = React.useState(true);
 
@@ -2067,6 +2065,7 @@ const EditTaskPopup = (Items: any) => {
         let value = Number(e.target.value);
         if (value <= 100) {
             if (StatusInput.length > 0) {
+                setIsTaskStatusUpdated(true);
                 if (StatusInput == 0) {
                     setTaskStatus("Not Started");
                     setPercentCompleteStatus("0% Not Started");
@@ -2167,7 +2166,6 @@ const EditTaskPopup = (Items: any) => {
                 if (StatusInput == 90) {
                     EditData.IsTodaysTask = false;
                     EditData.workingThisWeek = false;
-                    setIsTaskCompleted(true);
                     if (EditData.siteType == "Offshore Tasks") {
                         setWorkingMember(36);
                     } else if (DesignStatus) {
@@ -2232,6 +2230,7 @@ const EditTaskPopup = (Items: any) => {
             setTaskStatus(StatusData.taskStatusComment);
             setPercentCompleteCheck(false);
             if (StatusData.value == 1) {
+                setIsTaskStatusUpdated(true);
                 let tempArray: any = [];
                 if (
                     TaskApproverBackupArray != undefined &&
@@ -2319,7 +2318,6 @@ const EditTaskPopup = (Items: any) => {
                 });
             }
             if (StatusData.value == 90) {
-                setIsTaskCompleted(true);
                 EditData.IsTodaysTask = false;
                 EditData.workingThisWeek = false;
                 if (EditData.siteType == "Offshore Tasks") {
@@ -2429,6 +2427,11 @@ const EditTaskPopup = (Items: any) => {
     // ******************** This is Task All Details Update Function  ***************************
 
     const UpdateTaskInfoFunction = async (usedFor: any) => {
+
+        let TaskShuoldBeUpdate = true;
+        let DataJSONUpdate: any = await MakeUpdateDataJSON();
+        let taskPercentageValue: any = DataJSONUpdate?.PercentComplete ? DataJSONUpdate?.PercentComplete : 0;
+
         if (isApprovalByStatus == true) {
             let web = new Web(siteUrls);
             await web.lists
@@ -2443,7 +2446,7 @@ const EditTaskPopup = (Items: any) => {
         }
 
         if (IsSendAttentionMsgStatus) {
-            let txtComment = `You have been tagged as ${SendCategoryName} in the below task by ${Items.context.pageContext._user.displayName}`;
+            let txtComment = `You have been tagged as ${SendCategoryName == "Bottleneck" ? SendCategoryName :"Attention"} in the below task by ${Items.context.pageContext._user.displayName}`;
             let TeamMsg =
                 txtComment +
                 `</br> <a href=${window.location.href}>${EditData.TaskId}-${EditData.Title}</a>`;
@@ -2472,44 +2475,71 @@ const EditTaskPopup = (Items: any) => {
             }
         }
 
-        // if (IsTaskCompleted) {
-        //     let taskComplete = `Hi Robert, </br> Below task has been marked to 90% by ${Items.context.pageContext._user.displayName}. Please review.`;
-        //     let TeamEmail =
-        //         taskComplete +
-        //         `</br> <a href=${siteUrls + "/SitePages/Task-Profile.aspx?taskId=" + EditData.Id + "&Site=" + Items.Items.siteType}>${EditData.TaskId}-${EditData.Title}</a>`;
-        //     let sendEmail: any = ["robert.ungethuem@hochhuth-consulting.de"];
-        //     if (sendEmail?.length > 0) {
-        //         await globalCommon.SendTeamMessage(
-        //             sendEmail,
-        //             TeamEmail,
-        //             Items.context
-        //         );
-        //     }
-        // }
 
-        let TaskShuoldBeUpdate = true;
-        let DataJSONUpdate: any = await MakeUpdateDataJSON();
-        if (EnableSiteCompositionValidation) {
-            if (SiteCompositionPrecentageValue > 100) {
-                TaskShuoldBeUpdate = false;
-                SiteCompositionPrecentageValue = 0;
-                alert("site composition allocation should not be more than 100%");
-            }
-            if (
-                SiteCompositionPrecentageValue.toFixed(0) < 100 &&
-                SiteCompositionPrecentageValue > 0
-            ) {
-                SiteCompositionPrecentageValue = 0;
-                let conformationSTatus = confirm(
-                    "Site composition should not be less than 100% if you still want to do it click on OK"
-                );
-                if (conformationSTatus) {
-                    TaskShuoldBeUpdate = true;
-                } else {
-                    TaskShuoldBeUpdate = false;
+        // When task assigned to user, send a notification on MS Teams 
+
+        if (!IsUserFromHHHHTeam) {
+            try {
+                let sendUserEmails: any = [];
+                let AssignedUserName: string = '';
+                TaskAssignedTo?.map((userDtl: any) => {
+                    taskUsers?.map((allUserItem: any) => {
+                        if (userDtl.Id == allUserItem.AssingedToUserId) {
+                            sendUserEmails.push(allUserItem.Email);
+                            AssignedUserName = allUserItem.Title;
+                        }
+                    });
+                });
+                let TaskCategories = tempShareWebTypeData.map((item: any) => item.Title).join(', ');
+                let SendMessage: string = '';
+                let CommonMsg: string = '';
+                if (TeamMemberChanged) {
+                    CommonMsg = "You have been marked as a working member on the below task. Please take necessary action (Analyse the points in the task, fill up the Estimation, Set to 10%)."
                 }
+                if (IsTaskStatusUpdated) {
+                    if ((Number(taskPercentageValue) * 100) == 80) {
+                        CommonMsg = `Below task has been set to 80% by ${Items.context.pageContext._user.displayName}, please review it.`
+                    }
+                    if ((Number(taskPercentageValue) * 100) == 70) {
+                        CommonMsg = `Below task has been re-opened by ${Items.context.pageContext._user.displayName}. Please review it and take necessary action on priority basis.`
+                    }
+                }
+
+                SendMessage = `<p><b>Hi ${AssignedUserName},</b> </p></br><p>${CommonMsg}</p> </br> 
+            <p>
+            Task Link: <a href=${siteUrls + "/SitePages/Task-Profile.aspx?taskId=" + EditData.Id + "&Site=" + EditData.siteType}>
+            ${siteUrls + "/SitePages/Task-Profile.aspx?taskId=" + EditData.Id + "&Site=" + EditData.siteType} 
+            </a>
+            </br>
+            Cateroy: ${TaskCategories}</br>
+            Smartpriority: <b>${EditData?.SmartPriority}</b></br>
+            </p>
+            <b> 
+            <p>
+            Thanks, </br>
+            Task Management Team
+            </p>
+            </b>
+            `
+                try {
+                    if (sendUserEmails?.length > 0) {
+                        await globalCommon.SendTeamMessage(
+                            sendUserEmails,
+                            SendMessage,
+                            Items.context
+                        );
+                    }
+                } catch (error) {
+                    console.log("Error", error.message);
+                }
+            } catch (error) {
+                console.log("Error", error.message)
             }
+
         }
+
+
+       
         if (TaskShuoldBeUpdate) {
             try {
                 let web = new Web(siteUrls);
@@ -2784,7 +2814,10 @@ const EditTaskPopup = (Items: any) => {
         let PrecentStatus: any = UpdateTaskInfo.PercentCompleteStatus
             ? Number(UpdateTaskInfo.PercentCompleteStatus)
             : 0;
-
+        if (PrecentStatus == 3) {
+            setTaskAssignedTo([])
+            TaskAssignedTo = []
+        }
         if (PrecentStatus == 1) {
             let tempArrayApprover: any = [];
 
@@ -3143,6 +3176,7 @@ const EditTaskPopup = (Items: any) => {
             // if (ChangeTaskUserStatus) {
             if (teamConfigData?.AssignedTo?.length > 0) {
                 let tempArray: any = [];
+                setTeamMemberChanged(true);
                 teamConfigData.AssignedTo?.map((arrayData: any) => {
                     if (arrayData.AssingedToUser != null) {
                         tempArray.push(arrayData.AssingedToUser);
@@ -4073,6 +4107,9 @@ const EditTaskPopup = (Items: any) => {
                         CopydocumentData(SelectedSite, res.data);
                         if (FunctionsType == "Copy-Task") {
                             setLoaded(true)
+                            if (timesheetData != undefined && timesheetData.length > 0) {
+                                await moveTimeSheet(SelectedSite, res.data);
+                            }
                             newGeneratedId = res.data.Id;
                             console.log(`Task Copied Successfully on ${SelectedSite} !!!!!`);
                             let url = `${siteUrls}/SitePages/Task-Profile.aspx?taskId=${newGeneratedId}&Site=${SelectedSite}`;
@@ -4461,50 +4498,9 @@ const EditTaskPopup = (Items: any) => {
         setSiteCompositionShow(false);
     };
 
-    const EODReportComponentCallback = () => {
-        setOpenEODReportPopup(false);
-    };
 
-    // const SiteCompositionCallBack = useCallback((Data: any, Type: any) => {
-    //     if (Data.ClientTime != undefined && Data.ClientTime.length > 0) {
-    //         setEnableSiteCompositionValidation(true)
-    //         let tempArray: any = [];
-    //         Data.ClientTime?.map((ClientTimeItems: any) => {
-    //             if (ClientTimeItems.ClientCategory != undefined || ClientTimeItems.siteIcons?.length > 0 || ClientTimeItems.siteIcons?.Url.length > 0) {
-    //                 let newObject: any = {
-    //                     SiteName: ClientTimeItems.SiteName,
-    //                     ClienTimeDescription: ClientTimeItems.ClienTimeDescription,
-    //                     localSiteComposition: true
-    //                 }
-    //                 tempArray.push(newObject);
-    //             } else {
-    //                 tempArray.push(ClientTimeItems);
-    //             }
-    //         })
-    //         const finalData = tempArray.filter((val: any, id: any, array: any) => {
-    //             return array.indexOf(val) == id;
-    //         })
-    //         setClientTimeData(finalData);
-    //     } else {
-    //         if (Type == "dataDeleted") {
-    //             setClientTimeData([{}])
-    //         }
-    //     }
-    //     if (Data.selectedClientCategory != undefined && Data.selectedClientCategory.length > 0) {
-    //         setSelectedClientCategory(Data.selectedClientCategory);
-    //     } else {
-    //         if (Type == "dataDeleted") {
-    //             setSelectedClientCategory([]);
-    //         }
-    //     }
-    //     if (Data.SiteCompositionSettings != undefined && Data.SiteCompositionSettings.length > 0) {
-    //         setSiteCompositionSetting(Data.SiteCompositionSettings);
-    //     }
-    //     console.log("Site Composition final Call back Data =========", Data);
-    // }, [])
 
-    // This is for the Upadte Estimated Time Descriptions  section Functions
-
+    
     const UpdateEstimatedTimeDescriptions = (e: any) => {
         if (e.target.name == "Description") {
             setEstimatedDescription(e.target.value);
@@ -4699,7 +4695,7 @@ const EditTaskPopup = (Items: any) => {
                         : "bg-f4 fixed-bottom"
                 }
             >
-                <div className="align-items-center d-flex justify-content-between me-3 px-4 py-2">
+                <div className="align-items-center d-flex justify-content-between px-4 py-2">
                     <div>
                         <div className="">
                             Created{" "}
@@ -4845,7 +4841,7 @@ const EditTaskPopup = (Items: any) => {
                         : "bg-f4 fixed-bottom"
                 }
             >
-                <div className="align-items-center d-flex justify-content-between me-3 px-4 py-2">
+                <div className="align-items-center d-flex justify-content-between px-4 py-2">
                     <div>
                         <div className="">
                             Created{" "}
@@ -4969,7 +4965,7 @@ const EditTaskPopup = (Items: any) => {
                     : `${EditData.Id}`
             }
         >
-           
+
             {/* ***************** this is status panel *********** */}
             <Panel
                 onRenderHeader={onRenderStatusPanelHeader}
@@ -5745,7 +5741,7 @@ const EditTaskPopup = (Items: any) => {
                                                                     ApproverHistoryData.length > 1 ? (
                                                                     <div className="border p-1">
                                                                         <div className="siteBdrBottom">
-                                                                            <p className="mb-1">Prev-Approver</p>
+                                                                            <p className="mb-1">Previous Approver</p>
                                                                         </div>
                                                                         {ApproverHistoryData.map(
                                                                             (HistoryData: any, index: any) => {
@@ -6812,7 +6808,7 @@ const EditTaskPopup = (Items: any) => {
                                                         Context: Context,
                                                         siteType: Items.Items.siteType,
                                                     }}
-                                                    taskCreatedCallback={GetExtraLookupColumnData}
+                                                    taskCreatedCallback={UpdateTaskInfoFunction}
                                                 />
                                             </>
                                         ) : null}
@@ -6891,6 +6887,7 @@ const EditTaskPopup = (Items: any) => {
                             RequiredListIds={AllListIdData}
                             closePopupCallBack={closeSiteCompsotionPanelFunction}
                             usedFor={"AWT"}
+                            ColorCode={PortfolioItemColor}
                         />
                     ) : null}
                     {sendEmailComponentStatus ? (
@@ -7858,7 +7855,7 @@ const EditTaskPopup = (Items: any) => {
                                                                                 ApproverHistoryData.length > 1 ? (
                                                                                 <div className="border p-1">
                                                                                     <div className="siteBdrBottom">
-                                                                                        <p className="mb-1">Prev-Approver</p>
+                                                                                        <p className="mb-1">Previous Approver</p>
                                                                                     </div>
                                                                                     {ApproverHistoryData.map(
                                                                                         (HistoryData: any, index: any) => {
@@ -8856,6 +8853,7 @@ const EditTaskPopup = (Items: any) => {
                                                     SmartLightStatus={SmartLightStatus}
                                                     SmartLightPercentStatus={SmartLightPercentStatus}
                                                     Context={Context}
+                                                    FeedbackCount={FeedBackCount}
                                                 />
                                                 <Example
                                                     textItems={
@@ -8872,6 +8870,18 @@ const EditTaskPopup = (Items: any) => {
                                                     SmartLightStatus={SmartLightStatus}
                                                     SmartLightPercentStatus={SmartLightPercentStatus}
                                                     Context={Context}
+                                                    FeedbackCount={FeedBackCount}
+                                                    TaskUpdatedData={MakeUpdateDataJSON}
+                                                    TaskListDetails={{
+                                                        SiteURL: siteUrls,
+                                                        ListId: Items.Items.listId,
+                                                        TaskId: Items.Items.Id,
+                                                        TaskDetails: EditData,
+                                                        AllListIdData: AllListIdData,
+                                                        Context: Context,
+                                                        siteType: Items.Items.siteType,
+                                                    }}
+                                                    taskCreatedCallback={UpdateTaskInfoFunction}
                                                 />
                                             </>
                                         ) : null}
@@ -9032,7 +9042,7 @@ const EditTaskPopup = (Items: any) => {
                                     <h6>Sites</h6>
                                 </div>
                                 <div className="card-body">
-                                {!loaded?<PageLoader/>:''}
+                                    {!loaded ? <PageLoader /> : ''}
                                     <ul className="quick-actions">
                                         {SiteTypes?.map((siteData: any, index: number) => {
                                             if (siteData.Title !== "QA") {
@@ -9227,7 +9237,7 @@ const EditTaskPopup = (Items: any) => {
                         </div>
                     </div>
                     <footer className="fixed-bottom">
-                        <div className="align-items-center d-flex me-3 pull-right px-4 py-2">
+                        <div className="align-items-center d-flex pull-right px-4 py-2">
                             <button
                                 type="button"
                                 className="btn btn-primary px-3 mx-1"
