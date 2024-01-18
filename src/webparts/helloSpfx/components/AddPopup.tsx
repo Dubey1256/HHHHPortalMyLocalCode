@@ -30,7 +30,7 @@ const AddPopup = (props: any) => {
             try {
                 const currentUser = await sp.web.currentUser.get();
                 const defaultUser = [{ text: currentUser.Title, key: currentUser.LoginName }];
-                await Promise.all([getchoicecolumns(), onPeoplePickerChange(defaultUser)]);
+                await Promise.all([onPeoplePickerChange(defaultUser)]);
             } catch (error) {
                 console.error(error);
             } finally {
@@ -38,6 +38,7 @@ const AddPopup = (props: any) => {
             }
         };
         fetchData();
+        getchoicecolumns();
         setDefaultDate(getCurrentDate());
     }, []);
     type FileSection = {
@@ -68,6 +69,7 @@ const AddPopup = (props: any) => {
     const [folderFiles, setfolderFiles]: any = useState([]);
     const [uploadedFile, setuploadedFile]: any = useState({});
     const [showTextInput, setshowTextInput] = useState(false);
+    const [positionChoices, setPositionChoices] = useState([])
     const ActionChoices = ['Scheduled', 'Hold', 'Reject', 'Invite to Interview'];
     const [updatedPlatformChoices, setupdatedPlatformChoices] = useState<{ name: string; selected: boolean; }[]>([]);
     const [platformChoices, setPlatformChoices] = useState([
@@ -148,11 +150,11 @@ const AddPopup = (props: any) => {
     };
 
 
-    const getchoicecolumns = () => {
+    const getchoicecolumns = async () => {
         const select = `Id,Title,PositionTitle,PositionDescription,JobSkills`;
-        HRweb.lists.getById(allListID?.SkillsPortfolioListID).items.select(select).get()
+        await HRweb.lists.getById(allListID?.SkillsPortfolioListID).items.select(select).get()
             .then(response => {
-                PositionChoices = response;
+                setPositionChoices(response)
             })
             .catch((error: unknown) => {
                 console.error(error);
@@ -479,7 +481,7 @@ const AddPopup = (props: any) => {
                             <Dropdown
                                 id="status" className='w-100 '
                                 placeholder='Select Position'
-                                options={PositionChoices.map((itm) => ({ key: itm.Id, text: itm.Title }))}
+                                options={positionChoices.map((itm) => ({ key: itm.Id, text: itm.Title }))}
                                 selectedKey={selectedPosition}
                                 onChange={handlePosition}
                                 styles={{ dropdown: { width: '100%' } }}

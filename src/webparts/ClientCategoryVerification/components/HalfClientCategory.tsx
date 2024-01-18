@@ -756,6 +756,7 @@ const HalfClientCategory = (props: any) => {
             {
                 accessorKey: "TaskID",
                 placeholder: "Id",
+                id: "TaskID",
                 resetColumnFilters: false,
                 resetSorting: false,
                 size: 120,
@@ -874,7 +875,7 @@ const HalfClientCategory = (props: any) => {
                 cell: ({ row }) => (
                     <ShowClintCatogory clintData={row?.original} AllMetadata={AllMetadata} />
                 ),
-                id: 'ClientCategory',
+                id: 'CCSearch',
                 placeholder: "Client Category",
                 header: "",
                 resetColumnFilters: false,
@@ -886,7 +887,7 @@ const HalfClientCategory = (props: any) => {
                 cell: ({ row }) => (
                     <span>{row?.original?.compositionType}</span>
                 ),
-                id: 'Type',
+                id: 'compositionType',
                 placeholder: "Composition Type",
                 header: "",
                 resetColumnFilters: false,
@@ -898,7 +899,7 @@ const HalfClientCategory = (props: any) => {
                 cell: ({ row }) => (
                     <span>{row?.original?.isProtectedValue}</span>
                 ),
-                id: 'Type',
+                id: 'isProtectedValue',
                 placeholder: "Protected",
                 header: "",
                 resetColumnFilters: false,
@@ -926,7 +927,7 @@ const HalfClientCategory = (props: any) => {
                         )}
                     </span>
                 ),
-                id: 'Created',
+                id: 'DisplayCreateDate',
                 canSort: false,
                 resetColumnFilters: false,
                 resetSorting: false,
@@ -972,6 +973,7 @@ const HalfClientCategory = (props: any) => {
             {
                 accessorKey: "TaskID",
                 placeholder: "Id",
+                id: "TaskID",
                 resetColumnFilters: false,
                 resetSorting: false,
                 size: 95,
@@ -1055,7 +1057,7 @@ const HalfClientCategory = (props: any) => {
                 cell: ({ row }) => (
                     <ShowClintCatogory clintData={row?.original} AllMetadata={AllMetadata} />
                 ),
-                id: 'ClientCategory',
+                id: 'CCSearch',
                 placeholder: "Client Category",
                 header: "",
                 resetColumnFilters: false,
@@ -1091,7 +1093,7 @@ const HalfClientCategory = (props: any) => {
                 cell: ({ row }) => (
                     <span>{row?.original?.isProtectedValue}</span>
                 ),
-                id: 'Type',
+                id: 'isProtectedValue',
                 placeholder: "Protected",
                 header: "",
                 resetColumnFilters: false,
@@ -1119,7 +1121,7 @@ const HalfClientCategory = (props: any) => {
                         )}
                     </span>
                 ),
-                id: 'Created',
+                id: 'DisplayCreateDate',
                 canSort: false,
                 resetColumnFilters: false,
                 resetSorting: false,
