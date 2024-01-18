@@ -4,52 +4,17 @@ import Tooltip from '../../../globalComponents/Tooltip';
 import { Button, Tabs, Tab, Col, Nav, Row } from 'react-bootstrap';
 import moment from 'moment';
 import { Web } from 'sp-pnp-js';
-
 import HtmlEditorCard from '../../../globalComponents/./HtmlEditor/HtmlEditor'
 import ImageTabComponenet from './ImageTabComponent'
 import ServiceComponentPortfolioPopup from '../../../globalComponents/EditTaskPopup/ServiceComponentPortfolioPopup';
 import Mycontext from './RelevantDocuments'
+ let mastertaskdetails:any=[]
+ let   copyEditData:any={}
 const EditDocumentpanel = (props: any) => {
-  // const contextdata: any = React.useContext<any>(Mycontext)
-  const [Editdocpanel, setEditdocpanel] = React.useState(false);
-  const [EditdocumentsData, setEditdocumentsData] = React.useState(null);
-  const [servicespopup, setservicespopup] = React.useState(false);
-
-  const [isOpenImageTab, setisOpenImageTab] = React.useState(false);
+ 
+  const [EditdocumentsData, setEditdocumentsData] :any= React.useState();
+   const [isOpenImageTab, setisOpenImageTab] = React.useState(false);
   const [isopencomonentservicepopup, setisopencomonentservicepopup] = React.useState(false);
-  const [editvalue, seteditvalue] = React.useState(null);
-  const [allValue, setallSetValue] = React.useState({
-    Title: "", URL: "", Acronym: "", Description: "", InfoType: "SmartNotes", SelectedFolder: "Public", fileupload: "", LinkTitle: "", LinkUrl: "", taskTitle: "", Dragdropdoc: "", emailDragdrop: "", ItemRank: "", componentservicesetdata: { smartComponent: undefined, linkedComponent: undefined }, componentservicesetdataTag: undefined, EditTaskpopupstatus: false, DocumentType: "", masterTaskdetails: [],
-  })
-
-  React.useEffect(() => {
-    if (props?.editData != undefined) {
-
-      if (props?.editData?.Portfolio != undefined) {
-        setallSetValue({ ...allValue, componentservicesetdataTag: props?.editData?.Portfolio })
-
-      }
-
-      if (props?.editData != undefined) {
-        props.editData.docTitle = props?.editData.Title.split(props?.editData.File_x0020_Type)[0]
-      }
-      setEditdocumentsData(props?.editData);
-      setTimeout(() => {
-        const panelMain: any = document.querySelector('.ms-Panel-main');
-        if (panelMain && props?.ColorCode) {
-          $('.ms-Panel-main').css('--SiteBlue', props?.ColorCode); // Set the desired color value here
-        }
-      }, 1000)
-    }
-
-  }, [])
-
-  const handleClosedoc = () => {
-
-    props.callbackeditpopup();
-
-
-  }
   let ItemRank = [
     { rankTitle: 'Select Item Rank', rank: null },
     { rankTitle: '(8) Top Highlights', rank: 8 },
@@ -61,20 +26,99 @@ const EditDocumentpanel = (props: any) => {
     { rankTitle: '(1) Archive', rank: 1 },
     { rankTitle: '(0) No Show', rank: 0 }
   ]
+  React.useEffect(() => {
+    if (props?.editData != undefined) {
+      LoadMasterTaskList().then((smartData: any) => {
+        loadSelectedDocuments() 
+      }).catch((error:any)=>{
+        console.log(error)
+      })
+  
+      
+      setTimeout(() => {
+        const panelMain: any = document.querySelector('.ms-Panel-main');
+        if (panelMain && props?.ColorCode) {
+          $('.ms-Panel-main').css('--SiteBlue', props?.ColorCode); // Set the desired color value here
+        }
+      }, 1000)
+    }
+  }, [props?.editData!=undefined])
+
+  const loadSelectedDocuments = async () => {
+    const web = new Web(props?.AllListId?.siteUrl);
+    try {
+      await web.lists.getById(props?.AllListId?.DocumentsListID)
+        .items.getById(props?.editData?.Id)
+        .select( 'Id','Title','PriorityRank','Year','Body','Item_x0020_Cover','Portfolios/Id','Portfolios/Title','File_x0020_Type','FileLeafRef','FileDirRef','ItemRank','ItemType','Url','Created','Modified','Author/Id','Author/Title','Editor/Id','Editor/Title','EncodedAbsUrl')
+        .expand('Author,Editor,Portfolios')
+        .get()
+        .then((Data) => {
+          Data.Title = Data?.Title?.replace('.', "");
+          Data.siteType = 'sp';
+          Data.docTitle = Data?.Title?.replace('.', "");
+           let portfolioData:any=[]
+          if (Data.Portfolios != undefined && Data?.Portfolios?.length > 0) {
+            Data?.Portfolios?.map((portfolio: any) => {
+              mastertaskdetails.map((mastertask: any) => {
+                if (mastertask.Id == portfolio.Id) {
+                  portfolioData.push(mastertask);
+                }
+              });
+            });
+            Data.Portfolios=portfolioData
+          }
+  
+          console.log("document data", Data);
+          setEditdocumentsData(Data);
+        });
+  
+    } catch (e: any) {
+      console.log(e);
+    }
+  };
+  
+  const LoadMasterTaskList = () => {
+    return new Promise(function (resolve, reject) {
+
+      let web = new Web(props.AllListId?.siteUrl);
+      web.lists
+        .getById(props?.AllListId.MasterTaskListID).items
+        .select(
+          "Id",
+          "Title",
+          "Mileage",
+          "TaskListId",
+          "TaskListName",
+          "PortfolioType/Id",
+          "PortfolioType/Title",
+          "PortfolioType/Color",
+        ).expand("PortfolioType").top(4999).get()
+        .then((dataserviccomponent: any) => {
+          console.log(dataserviccomponent)
+          mastertaskdetails = mastertaskdetails.concat(dataserviccomponent);
+          resolve(dataserviccomponent)
+
+        }).catch((error: any) => {
+          console.log(error)
+          reject(error)
+        })
+    })
+  }
+   const handleClosedoc = () => {
+    mastertaskdetails=[]
+     props.callbackeditpopup();
+   }
 
   const deleteDocumentsData = async (DeletItemId: any) => {
     console.log(DeletItemId);
     const web = new Web(props?.AllListId?.siteUrl);
-    // await web.lists.getByTitle("SmartInformation")
-    var text: any = "Are you sure want to Delete ?";
+   var text: any = "Are you sure want to Delete ?";
     if (confirm(text) == true) {
       await web.lists.getById(props?.AllListId?.DocumentsListID)
         .items.getById(DeletItemId).recycle()
         .then((res: any) => {
           console.log(res);
-          //   GetResult();
-          //   handleClose();
-          setEditdocpanel(false);
+          
           if (props.Keydoc) {
             props.callbackeditpopup("delete");
           } else {
@@ -85,34 +129,26 @@ const EditDocumentpanel = (props: any) => {
         .catch((err) => {
           console.log(err.message);
         });
-    }
-
+    }   
 
   };
   const updateDocumentsData = async () => {
-    console.log(EditdocumentsData);
-    console.log(allValue.Title);
-    console.log(allValue.DocumentType);
-    console.log(allValue.componentservicesetdata);
-    console.log(allValue.ItemRank);
-    var componetServicetagData: any;
-    if (allValue.componentservicesetdata.smartComponent != undefined) {
-      componetServicetagData = allValue.componentservicesetdata.smartComponent.Id;
+    let  componetServicetagData: any=[];
+    if (EditdocumentsData?.Portfolios?.length>0) {
+      EditdocumentsData?.Portfolios?.map((portfolioId:any)=>{
+        componetServicetagData.push(portfolioId?.Id)
+      })
+   
     }
-    if (allValue.componentservicesetdata.linkedComponent != undefined) {
-      componetServicetagData = allValue.componentservicesetdata.linkedComponent.Id;
-    }
-
-    const web = new Web(props?.AllListId?.siteUrl);
+  const web = new Web(props?.AllListId?.siteUrl);
     await web.lists.getById(props?.AllListId?.DocumentsListID)
       .items.getById(EditdocumentsData.Id).update({
-        Title: EditdocumentsData.docTitle,
+        Title: EditdocumentsData?.Title,
         ItemRank: EditdocumentsData?.ItemRank == 'Select Item Rank' ? null : EditdocumentsData?.ItemRank,
         Year: EditdocumentsData.Year,
         ItemType: EditdocumentsData.ItemType,
-
-        PortfoliosId: { "results": allValue.componentservicesetdataTag != undefined ? [allValue.componentservicesetdataTag.Id] : [] },
-        Body: allValue?.Description != "" ? allValue?.Description : "",
+         PortfoliosId: { "results": componetServicetagData.length>0 ?componetServicetagData : [] },
+        Body: EditdocumentsData?.Body,
         Item_x0020_Cover: {
           "__metadata": { type: 'SP.FieldUrlValue' },
           'Description': EditdocumentsData?.Item_x0020_Cover?.Url != "" ? EditdocumentsData?.UrItem_x0020_Coverl?.Url : "",
@@ -131,28 +167,27 @@ const EditDocumentpanel = (props: any) => {
         } else {
           alert("Document(s) update successfully");
         }
-        // handleClose();
-        setallSetValue({ ...allValue, EditTaskpopupstatus: false })
-
-        setEditdocpanel(false);
-        if (props.Keydoc) {
+      
+       
+        // setEditdocpanel(false);
+        if (props?.Keydoc) {
           props.callbackeditpopup(EditdocumentsData);
         } else {
           props.callbackeditpopup();
         }
-
-        // GetResult();
+        mastertaskdetails=[]
+      
       }).catch((err: any) => {
         console.log(err)
-      })
-
-    // })
-
-  }
+      }) 
+    }
   const imageTabCallBack = React.useCallback((data: any) => {
     console.log(EditdocumentsData);
     console.log(data)
-    setEditdocumentsData(data);
+    if(data!=undefined){
+      setEditdocumentsData(data);
+    }
+    
   }, [])
 
 
@@ -160,11 +195,10 @@ const EditDocumentpanel = (props: any) => {
 
     return (
       <>
-
         <div className='ps-4 siteColor subheading'>
           {true ? `Edit Document Metadata - ${EditdocumentsData?.FileLeafRef}` : null}
         </div>
-        <Tooltip ComponentId={'359'} />
+        <Tooltip ComponentId={'942'} />
       </>
     );
   };
@@ -176,25 +210,36 @@ const EditDocumentpanel = (props: any) => {
   const ComponentServicePopupCallBack = React.useCallback((DataItem: any, Type: any, functionType: any) => {
     console.log(DataItem)
     console.log(Type)
+    console.log(EditdocumentsData)
+    console.log(copyEditData)
     console.log(functionType)
     if (functionType == "Save") {
-      // if (Type == "Component") {
-      setallSetValue({ ...allValue, componentservicesetdataTag: DataItem[0] })
-      // }
-      // if (Type == "Service") {
-      //   setallSetValue({ ...allValue, componentservicesetdataTag: DataItem[0] })
-      // }
-      setisopencomonentservicepopup(false);
+      let copyPortfoliosData= copyEditData?.Portfolios?.length>0?copyEditData?.Portfolios:[]
+      copyPortfoliosData.push(DataItem[0])
+      setEditdocumentsData({...copyEditData,Portfolios:copyPortfoliosData});
+       setisopencomonentservicepopup(false);
     }
     else {
       setisopencomonentservicepopup(false);
     }
   }, [])
+
+
   const opencomonentservicepopup = () => {
+    copyEditData=[]
+    copyEditData= EditdocumentsData
     setisopencomonentservicepopup(true)
+     }
 
+      const DeleteTagPortfolios=(deletePortfolioId:any)=>{
+      let   copyEditData= EditdocumentsData
+          setEditdocumentsData((prev:any)=>{
+            return{
+              ...prev,Portfolios:prev.Portfolios?.filter((portfolio:any)=>portfolio?.Id!=deletePortfolioId)
+            }
+          })
 
-  }
+      }
   /////////folara editor function start//////////
   const HtmlEditorCallBack = (items: any) => {
     console.log(items);
@@ -204,7 +249,9 @@ const EditDocumentpanel = (props: any) => {
     } else {
       description = items
     }
-    setallSetValue({ ...allValue, Description: description })
+    let copyData= {...EditdocumentsData}
+    copyData.Body=description
+    setEditdocumentsData(copyData)
   }
   //////// folora editor function end///////////
   return (
@@ -215,7 +262,7 @@ const EditDocumentpanel = (props: any) => {
         customWidth="1091px"
         onDismiss={handleClosedoc}
         isBlocking={false}
-        className={servicespopup == true ? "serviepannelgreena" : "siteColor"}
+     
       >
 
 
@@ -223,7 +270,7 @@ const EditDocumentpanel = (props: any) => {
           defaultActiveKey="BASICINFORMATION"
           transition={false}
           id="noanim-tab-example"
-          className=""
+          className="rounded-0"
           onSelect={imageta}
         >
 
@@ -238,14 +285,12 @@ const EditDocumentpanel = (props: any) => {
 
               <div className='d-flex'>
                 <div className="input-group"><label className=" full-width ">Name </label>
-                  <input type="text" className="form-control" value={EditdocumentsData?.docTitle} onChange={(e => setEditdocumentsData({ ...EditdocumentsData, docTitle: e.target.value }))} />.{EditdocumentsData?.File_x0020_Type}
+                  <input type="text" className="form-control" value={EditdocumentsData?.docTitle} onChange={(e) => setEditdocumentsData({ ...EditdocumentsData, docTitle: e.target.value })} />.{EditdocumentsData?.File_x0020_Type}
                 </div>
 
                 <div className="input-group mx-4"><label className="full-width ">Year </label>
                   <input type="text" className="form-control" value={EditdocumentsData?.Year} onChange={(e) => setEditdocumentsData({ ...EditdocumentsData, Year: e.target.value })} />
-                  {/* <span className="input-group-text" title="Linked Component Task Popup">
-                    <span className="svg__iconbox svg__icon--editBox"></span>
-                  </span> */}
+               
                 </div>
 
                 <div className="input-group">
@@ -254,7 +299,7 @@ const EditDocumentpanel = (props: any) => {
                     {ItemRank.map(function (h: any, i: any) {
                       return (
                         <option key={i}
-                          selected={allValue?.ItemRank == h?.rank}
+                          selected={EditdocumentsData?.ItemRank == h?.rank}
                           value={h?.rank} >{h?.rankTitle}</option>
                       )
                     })}
@@ -264,30 +309,36 @@ const EditDocumentpanel = (props: any) => {
               <div className='d-flex mt-3'>
                 <div className="input-group"><label className="full-width ">Title </label>
                   <input type="text" className="form-control" value={EditdocumentsData?.Title}
-                    onChange={(e => setallSetValue({ ...allValue, Title: e.target.value }))}
+                    onChange={(e) =>setEditdocumentsData({ ...EditdocumentsData, Title: e.target.value })}
                   />
                 </div>
                 <div className="input-group mx-4">
                   <label className="form-label full-width">
-                    Portfolio
-
+                    Portfolios
                   </label>
 
-                  {allValue?.componentservicesetdataTag != undefined &&
-                    <div className="d-flex justify-content-between block px-2 py-1" style={{ width: '85%' }}>
-                      <a target="_blank" data-interception="off" href="HHHH/SitePages/Portfolio-Profile.aspx?taskId=undefined">{allValue?.componentservicesetdataTag.Title}</a>
+                  {EditdocumentsData?.Portfolios != undefined &&
+                  EditdocumentsData?.Portfolios?.map((portfolio:any)=>{
+                    return(
+                        <div className="d-flex justify-content-between block px-2 py-1" style={{ width: '85%' }}>
+                      <a target="_blank" data-interception="off" href={`${props?.AllListId?.siteUrl}/SitePages/Portfolio-Profile.aspx?taskId=${portfolio?.Id}`}>{portfolio?.Title}</a>
                       <a>
-                        <span className="bg-light svg__icon--cross svg__iconbox"></span>
-                      </a></div>}
+                        <span className="bg-light svg__icon--cross svg__iconbox" onClick={()=>DeleteTagPortfolios(portfolio?.Id)}></span>
+                      </a></div>
+                    )
+                  })
+                }
 
-                  {allValue?.componentservicesetdataTag == undefined && <input type="text" className="form-control" readOnly />}
+                  {EditdocumentsData?.Portfolios?.length==0  &&
+                  
+                  <input type="text" className="form-control" readOnly />}
                   <span className="input-group-text" title="Linked Component Task Popup">
                     <span className="svg__iconbox svg__icon--editBox" onClick={(e) => opencomonentservicepopup()}></span>
                   </span>
                 </div>
 
               </div>
-              <div className='mt-3'> <HtmlEditorCard editorValue={EditdocumentsData?.Description != null ? EditdocumentsData?.Description : ""} HtmlEditorStateChange={HtmlEditorCallBack}> </HtmlEditorCard></div>
+             {EditdocumentsData!=undefined && <div className='mt-3'> <HtmlEditorCard editorValue={EditdocumentsData?.Body != undefined ? EditdocumentsData?.Body : ""} HtmlEditorStateChange={HtmlEditorCallBack}> </HtmlEditorCard></div>} 
             </div>
           </Tab>
           <Tab eventKey="IMAGEINFORMATION" title="IMAGE INFORMATION" className='p-0' >
@@ -328,7 +379,7 @@ const EditDocumentpanel = (props: any) => {
       {isopencomonentservicepopup &&
         <ServiceComponentPortfolioPopup
 
-          props={allValue?.componentservicesetdata}
+          // props={allValue?.componentservicesetdata}
           Dynamic={props.AllListId}
           ComponentType={"Component"}
           Call={ComponentServicePopupCallBack}

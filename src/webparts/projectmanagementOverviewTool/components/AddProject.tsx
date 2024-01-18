@@ -7,8 +7,10 @@ import Button from 'react-bootstrap/Button';
 import LinkedComponent from '../../../globalComponents/EditTaskPopup/LinkedComponent';
 import PortfolioTagging from './PortfolioTagging';
 import ServiceComponentPortfolioPopup from '../../../globalComponents/EditTaskPopup/ServiceComponentPortfolioPopup';
+import * as globalCommon from "../../../globalComponents/globalCommon";
 let portfolioType = '';
 let AllListId: any = {};
+let AllFlatProject: any = [];
 const AddProject = (props: any) => {
     const [title, settitle] = React.useState('')
     const [lgShow, setLgShow] = useState(false);
@@ -19,6 +21,8 @@ const AddProject = (props: any) => {
     const [IsPortfolio, setIsPortfolio] = React.useState(false);
     const [save, setSave] = React.useState({ siteType: '', linkedServices: [], recentClick: undefined, Mileage: '', DueDate: undefined, dueDate: '', taskCategory: '', taskCategoryParent: '', rank: undefined, Time: '', taskName: '', taskUrl: undefined, portfolioType: 'Component', Component: [] })
     const [smartComponentData, setSmartComponentData] = React.useState([]);
+    const [projectData, setProjectData] = React.useState([]);
+    const [searchedProjectKey, setSearchedProjectKey] = React.useState("");
     const OpenCreateTaskPopup = () => {
         setLgShow(true)
     }
@@ -26,6 +30,7 @@ const AddProject = (props: any) => {
         if (props?.items?.length == 1 && props?.items[0]?.Item_x0020_Type == "Project") {
             setSetSelectedItem(props?.items[0])
         }
+        GetMasterData();
     }, [props?.items?.length])
     const addFunction = async () => {
         if (title?.length > 0) {
@@ -59,9 +64,69 @@ const AddProject = (props: any) => {
                             PortfoliosId: { "results": (selectedComponent !== undefined && selectedComponent?.length > 0) ? selectedComponent : [] },
                             PortfolioStructureID: portfolioStructureId,
                         }).then((res: any) => {
-                            closePopup()
-                            props?.CallBack()
+                            const newProjectId = res.data.Id;
+                            let result: any = res.data;
+                           try{
+                            result.siteUrl = props?.AllListId?.siteUrl;
+                            result["siteType"] = "Master Tasks";
+                            result.AllTeamName = "";
+                            result.portfolioItemsSearch = result?.Item_x0020_Type;
+                            result.TeamLeaderUser = []
+                            result.DisplayDueDate = Moment(result?.DueDate).format("DD/MM/YYYY");
+                            result.DisplayCreateDate = Moment(result?.Created).format("DD/MM/YYYY");
+                            result.DueDate = Moment(result?.DueDate).format('DD/MM/YYYY')
+                            if (result.DueDate == 'Invalid date' || '') {
+                                result.DueDate = result?.DueDate?.replaceAll("Invalid date", "")
+                            }
+                            if (result.DisplayDueDate == "Invalid date" || "") {
+                                result.DisplayDueDate = result.DisplayDueDate.replaceAll(
+                                    "Invalid date",
+                                    ""
+                                );
+                            }
+                            if (result.DisplayCreateDate == "Invalid date" || "") {
+                                result.DisplayCreateDate = result.DisplayCreateDate.replaceAll(
+                                    "Invalid date",
+                                    ""
+                                );
+                            }
+                            if (result.PercentComplete != undefined)
+                                result.PercentComplete = (result.PercentComplete * 100).toFixed(0);
 
+                            if (result.Item_x0020_Type === "Project") {
+                                result.lableColor = "w-bg";
+                                result.ItemCat = "Project"
+                            }
+                            if (result.Item_x0020_Type === "Sprint") {
+                                result.ItemCat = "Project"
+                            }
+                            if (result?.Item_x0020_Type != undefined) {
+                                result.SiteIconTitle = result?.Item_x0020_Type?.charAt(0);
+                            }
+
+                            result.descriptionsSearch = '';
+                            
+                            result.Id = result.Id != undefined ? result.Id : result.ID;
+                            result["TaskID"] = result?.PortfolioStructureID;
+                          
+                            if (result?.ClientCategory?.length > 0) {
+                                result.ClientCategorySearch = result?.ClientCategory?.map(
+                                    (elem: any) => elem.Title
+                                ).join(" ");
+                            } else {
+                                result.ClientCategorySearch = "";
+                            }
+                           }catch(e){
+                            console.log(e,'Error Creating Data after Post')
+                           }
+                            
+                            if (props?.PageName == "ProjectOverview") {
+                                window.open(`${props?.AllListId?.siteUrl}/SitePages/Project-Management.aspx?ProjectId=${newProjectId}`, "_blank");
+                                props?.CallBack(result,"Save")
+                            }else{
+                                props?.CallBack(result,"Save")
+                            }
+                            closePopup()
                         })
                     })
             } else {
@@ -89,9 +154,10 @@ const AddProject = (props: any) => {
                             PortfoliosId: { "results": (selectedComponent !== undefined && selectedComponent?.length > 0) ? selectedComponent : [] },
                             PortfolioStructureID: portfolioStructureId,
                         }).then((res: any) => {
+                            const newProjectId = res.data.Id;
                             closePopup()
-                            props?.CallBack()
-
+                            props?.CallBack(res.data,"Save")
+                            window.open(`${props?.AllListId?.siteUrl}/SitePages/Project-Management.aspx?ProjectId=${newProjectId}`, "_blank");
                         })
                     })
             }
@@ -115,11 +181,54 @@ const AddProject = (props: any) => {
 
         })
     }
+    const GetMasterData = async () => {
+        let PropsObject: any = {
+            MasterTaskListID: props?.AllListId.MasterTaskListID,
+            siteUrl: props?.AllListId.siteUrl,
+            TaskUserListId: props?.AllListId.TaskUsertListID,
+          }
+        let results = await globalCommon.GetServiceAndComponentAllData(PropsObject)
+        if (results?.AllData?.length > 0) {
+          AllFlatProject = results?.FlatProjectData
+        }
+
+    }
+    const autoSuggestionsForProject = (e: any) => {
+        let SearchedKeyWord: any = e.target.value;
+        let TempArray: any = [];
+        if (SearchedKeyWord.length > 0) {
+            if (AllFlatProject != undefined && AllFlatProject?.length > 0) {
+                AllFlatProject.map((AllDataItem: any) => {
+                    if (AllDataItem?.Title?.toLowerCase()?.includes(SearchedKeyWord.toLowerCase())) {
+                        TempArray.push(AllDataItem);
+                    }
+                });
+            }
+            if (TempArray != undefined && TempArray.length > 0) {
+                setProjectData(TempArray);
+                setSearchedProjectKey(SearchedKeyWord);
+            }
+            else {
+                setProjectData([]);                
+            }
+
+        } else {
+            setProjectData([]);
+            // setSearchedServiceCompnentKey("");
+        }
+        // let updatedInputData: any = [...backupInputData];
+        // updatedInputData[index].SearchedComps = [...TempArray];
+        // updatedInputData[index].searchText = SearchedKeyWord;
+        // setInputData(updatedInputData);
+    };
+
     const closePopup = () => {
         settitle('')
         setLinkedComponentData([])
         setSmartComponentData([])
+        setProjectData([])
         setLgShow(false)
+        props?.CallBack(undefined,"Save")
 
     }
     const ComponentServicePopupCallBack = React.useCallback((DataItem: any, Type: any, functionType: any) => {
@@ -133,7 +242,6 @@ const AddProject = (props: any) => {
             setIsPortfolio(false);
         }
     }, [])
-
 
     const unTagComponent = (array: any, index: any) => {
         array.splice(index, 1);
@@ -158,7 +266,7 @@ const AddProject = (props: any) => {
     ) => {
         return (
             <div className=" full-width pb-1" >
-                {props?.items != undefined && props?.items?.length == 1 && 
+                {props?.items != undefined && props?.items?.length == 1 &&
                     <div>
                         <ul className="spfxbreadcrumb mb-2 ms-2 p-0">
                             <li><a>Project Management</a></li>
@@ -168,7 +276,7 @@ const AddProject = (props: any) => {
                             </li>
                         </ul>
                     </div>
-               }
+                }
                 <div className="subheading">
                     <span className="siteColor">
                         {props?.items?.length == 1 ? 'Create Sprint' : 'Create Project'}
@@ -180,12 +288,10 @@ const AddProject = (props: any) => {
 
     return (
         <>
-            <button type="button" disabled={props?.items?.length > 1 || (props?.items?.length > 0 && props?.items[0]?.Item_x0020_Type != "Project")} className='btn btn-primary btnCol' onClick={() => OpenCreateTaskPopup()}>Add Structure</button>
-
             <Panel
                 onRenderHeader={onRenderCustomHeader}
                 type={PanelType.medium}
-                isOpen={lgShow}
+                isOpen={true}
                 onDismiss={() => closePopup()}
                 isBlocking={false}>
 
@@ -193,7 +299,24 @@ const AddProject = (props: any) => {
                     <span >
                         <div>
                             <span>
-                                <input type='text' className='form-control' placeholder='Enter Title' value={title} onChange={(e) => { settitle(e.target.value) }} />
+                                <input type='text' className='form-control' placeholder='Enter Title' value={title} onChange={(e) => { settitle(e.target.value); autoSuggestionsForProject(e) }} />
+                                {projectData?.length > 0 ? (
+                                    <div>
+                                        <ul className="list-group">
+                                            {projectData?.map((Item: any) => {
+                                                return (
+                                                    <li
+                                                        className="hreflink list-group-item rounded-0 list-group-item-action"
+                                                        key={Item.id}
+                                                        onClick={() => window.open(`${Item?.siteUrl}/SitePages/Project-Management.aspx?ProjectId=${Item?.Id}`, '_blank')}
+                                                    >
+                                                        <a>{Item.Title}</a>
+                                                    </li>
+                                                );
+                                            })}
+                                        </ul>
+                                    </div>
+                                ) : null}
                             </span>
                         </div>
                     </span>

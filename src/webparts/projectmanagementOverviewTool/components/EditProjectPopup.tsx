@@ -167,6 +167,7 @@ var BackupCat: any = [];
 let portfolioType = "";
 var CheckCategory: any = [];
 var backcatss: any = [];
+let postedData: any = {};
 var TaggedPortfolios: any = [];
 function EditProjectPopup(item: any) {
   // Id:any
@@ -245,6 +246,7 @@ function EditProjectPopup(item: any) {
     [editorState]
   );
   const setModalIsOpenToFalse = () => {
+
     EditComponentCallback();
     setModalIsOpen(false);
   };
@@ -833,7 +835,18 @@ function EditProjectPopup(item: any) {
     console.log(componentDetails);
   };
   function EditComponentCallback() {
-    item.Call("", "EditPopup");
+    if (postedData?.Id == undefined && postedData?.ID == undefined) {
+      postedData ={
+        ...postedData,...EditData
+      }
+      postedData ={
+        ...postedData,
+        ComponentLink: {
+          Url: EditData?.ComponentLink!=undefined?EditData?.ComponentLink:''
+        },
+      }
+    }
+    item.Call(postedData, "EditPopup");
   }
   let mentionUsers: any = [];
   //  mentionUsers = this.taskUsers.map((i:any)=>{
@@ -1027,6 +1040,7 @@ function EditProjectPopup(item: any) {
     } else {
       CheckCategory = [];
     }
+    var CategoryID: any = [];
     var categoriesItem = "";
     CategoriesData?.map((category: any) => {
       if (category.Title != undefined) {
@@ -1035,13 +1049,12 @@ function EditProjectPopup(item: any) {
             ? category.Title
             : categoriesItem + ";" + category.Title;
       }
-    });
-    var CategoryID: any = [];
-    CategoriesData?.map((category: any) => {
       if (category.Id != undefined) {
         CategoryID.push(category.Id);
       }
     });
+
+
     if (TaskAssignedTo != undefined && TaskAssignedTo?.length > 0) {
       TaskAssignedTo?.map((taskInfo) => {
         AssignedToIds.push(taskInfo.Id);
@@ -1080,98 +1093,125 @@ function EditProjectPopup(item: any) {
         (option: { rankTitle: any }) => option.rankTitle == Items.ItemRankTitle
       )[0].rank;
     let web = new Web(AllListId?.siteUrl);
+    let postData: any = {
+      Title: Items.Title,
+      ItemRank: ItemRank,
+      PriorityRank: Items.PriorityRank,
+      PortfoliosId: {
+        results:
+          selectedPortfoliosData !== undefined && selectedPortfoliosData?.length > 0
+            ? selectedPortfoliosData
+            : [],
+      },
+      DeliverableSynonyms: Items.DeliverableSynonyms,
+      StartDate: EditData.StartDate
+        ? moment(EditData.StartDate).format("MM-DD-YYYY")
+        : null,
+      DueDate: EditData.DueDate
+        ? moment(EditData.DueDate).format("MM-DD-YYYY")
+        : null,
+      CompletedDate: EditData.CompletedDate
+        ? moment(EditData.CompletedDate).format("MM-DD-YYYY")
+        : null,
+      // Categories:EditData.smartCategories != undefined && EditData.smartCategories != ''?EditData.smartCategories[0].Title:EditData.Categories,
+      Categories: categoriesItem ? categoriesItem : null,
+      TaskCategoriesId: { results: CategoryID },
+      // ClientCategoryId: { "results": RelevantPortfolioIds },
+      ServicePortfolioId:
+        RelevantPortfolioIds != "" ? RelevantPortfolioIds : null,
+      Synonyms: JSON.stringify(Items["Synonyms"]),
+      Package: Items.Package,
+      AdminStatus: Items.AdminStatus,
+      Priority: Items.Priority,
+      Mileage: Items.Mileage,
+      PercentComplete: Items?.PercentComplete ? (Items?.PercentComplete / 100) : null,
+      Status: Items?.Status ? Items?.Status : null,
+      ValueAdded: Items.ValueAdded,
+      Idea: Items.Idea,
+      Background: Items.Background,
+      AdminNotes: Items.AdminNotes,
+      ComponentLink: {
+        Description:
+          Items.ComponentLink != undefined
+            ? Items.ComponentLink
+            : null,
+        Url:
+          Items.ComponentLink != undefined
+            ? Items.ComponentLink
+            : null,
+      },
+      TechnicalExplanations:
+        PostTechnicalExplanations != undefined &&
+          PostTechnicalExplanations != ""
+          ? PostTechnicalExplanations
+          : EditData.TechnicalExplanations,
+      Deliverables:
+        PostDeliverables != undefined && PostDeliverables != ""
+          ? PostDeliverables
+          : EditData.Deliverables,
+      Short_x0020_Description_x0020_On:
+        PostShort_x0020_Description_x0020_On != undefined &&
+          PostShort_x0020_Description_x0020_On != ""
+          ? PostShort_x0020_Description_x0020_On
+          : EditData.Short_x0020_Description_x0020_On,
+      Body:
+        PostBody != undefined && PostBody != "" ? PostBody : EditData.Body,
+      AssignedToId: {
+        results:
+          AssignedToIds != undefined && AssignedToIds?.length > 0
+            ? AssignedToIds
+            : [],
+      },
+      ResponsibleTeamId: {
+        results:
+          ResponsibleTeamIds != undefined && ResponsibleTeamIds?.length > 0
+            ? ResponsibleTeamIds
+            : [],
+      },
+      TeamMembersId: {
+        results:
+          TeamMemberIds != undefined && TeamMemberIds?.length > 0
+            ? TeamMemberIds
+            : [],
+      }
+    }
     await web.lists
       .getById(AllListId?.MasterTaskListID)
       .items.getById(Items.ID)
-      .update({
-        Title: Items.Title,
-
-        ItemRank: ItemRank,
-        PriorityRank: Items.PriorityRank,
-        PortfoliosId: {
-          results:
-            selectedPortfoliosData !== undefined && selectedPortfoliosData?.length > 0
-              ? selectedPortfoliosData
-              : [],
-        },
-        DeliverableSynonyms: Items.DeliverableSynonyms,
-        StartDate: EditData.StartDate
-          ? moment(EditData.StartDate).format("MM-DD-YYYY")
-          : null,
-        DueDate: EditData.DueDate
-          ? moment(EditData.DueDate).format("MM-DD-YYYY")
-          : null,
-        CompletedDate: EditData.CompletedDate
-          ? moment(EditData.CompletedDate).format("MM-DD-YYYY")
-          : null,
-        // Categories:EditData.smartCategories != undefined && EditData.smartCategories != ''?EditData.smartCategories[0].Title:EditData.Categories,
-        Categories: categoriesItem ? categoriesItem : null,
-        SharewebCategoriesId: { results: CategoryID },
-        // ClientCategoryId: { "results": RelevantPortfolioIds },
-        ServicePortfolioId:
-          RelevantPortfolioIds != "" ? RelevantPortfolioIds : null,
-        Synonyms: JSON.stringify(Items["Synonyms"]),
-        Package: Items.Package,
-        AdminStatus: Items.AdminStatus,
-        Priority: Items.Priority,
-        Mileage: Items.Mileage,
-        PercentComplete: Items?.PercentComplete ? (Items?.PercentComplete / 100) : null,
-        Status: Items?.Status ? Items?.Status : null,
-        ValueAdded: Items.ValueAdded,
-        Idea: Items.Idea,
-        Background: Items.Background,
-        AdminNotes: Items.AdminNotes,
-        ComponentLink: {
-          Description:
-            Items.ComponentLink != undefined
-              ? Items.ComponentLink
-              : null,
-          Url:
-            Items.ComponentLink != undefined
-              ? Items.ComponentLink
-              : null,
-        },
-        TechnicalExplanations:
-          PostTechnicalExplanations != undefined &&
-            PostTechnicalExplanations != ""
-            ? PostTechnicalExplanations
-            : EditData.TechnicalExplanations,
-        Deliverables:
-          PostDeliverables != undefined && PostDeliverables != ""
-            ? PostDeliverables
-            : EditData.Deliverables,
-        Short_x0020_Description_x0020_On:
-          PostShort_x0020_Description_x0020_On != undefined &&
-            PostShort_x0020_Description_x0020_On != ""
-            ? PostShort_x0020_Description_x0020_On
-            : EditData.Short_x0020_Description_x0020_On,
-        Body:
-          PostBody != undefined && PostBody != "" ? PostBody : EditData.Body,
-        AssignedToId: {
-          results:
-            AssignedToIds != undefined && AssignedToIds?.length > 0
-              ? AssignedToIds
-              : [],
-        },
-        ResponsibleTeamId: {
-          results:
-            ResponsibleTeamIds != undefined && ResponsibleTeamIds?.length > 0
-              ? ResponsibleTeamIds
-              : [],
-        },
-        TeamMembersId: {
-          results:
-            TeamMemberIds != undefined && TeamMemberIds?.length > 0
-              ? TeamMemberIds
-              : [],
-        },
-        // PercentComplete: saveData.PercentComplete == undefined ? EditData.PercentComplete : saveData.PercentComplete,
-
-        // Categories: Items.Categories
-
-        // BasicImageInfo: JSON.stringify(UploadImage)
-      })
+      .update(postData)
       .then((res: any) => {
+        postData.DisplayDueDate = Moment(postData?.DueDate).format("DD/MM/YYYY");
+        postData.DisplayCreateDate = Moment(postData?.Created).format("DD/MM/YYYY");
+        if (postData.DueDate == 'Invalid date' || '') {
+          postData.DueDate = postData?.DueDate?.replaceAll("Invalid date", "")
+        }
+        if (postData.DisplayDueDate == "Invalid date" || "") {
+          postData.DisplayDueDate = postData.DisplayDueDate.replaceAll(
+            "Invalid date",
+            ""
+          );
+        }
+        if (postData.DisplayCreateDate == "Invalid date" || "") {
+          postData.DisplayCreateDate = postData.DisplayCreateDate.replaceAll(
+            "Invalid date",
+            ""
+          );
+        }
+        postData["TaskID"] = postData?.PortfolioStructureID;
+        postedData ={
+          ...postData,
+          TaskCategories:CategoriesData,
+          AssignedTo:TaskAssignedTo,
+          ResponsibleTeam:TaskResponsibleTeam,
+          TeamMembers:TaskTeamMembers,
+          Item_x0020_Type : EditData?.Item_x0020_Type,
+          ComponentLink: {
+            Url: Items?.ComponentLink!=undefined?Items?.ComponentLink:''
+          },
+          Body:EditData.Body,
+          taggedPortfolios: projectTaggedPortfolios
+
+        }
         console.log(res);
         TaggedPortfolios = [];
         setModalIsOpenToFalse();
@@ -1285,6 +1325,11 @@ function EditProjectPopup(item: any) {
                   Project
                 </a>
               </li>
+              {EditData?.Item_x0020_Type != "Project" && EditData?.Parent?.Title ?
+                <li>
+                  {" "}
+                  <a data-interception="off" href={`${AllListId?.siteUrl}/SitePages/Project-Management.aspx?ProjectId=${EditData?.Parent?.Id}`}>{EditData?.Parent?.Title}</a>{" "}
+                </li> : ''}
               <li>
                 <a>{EditData.Title}</a>
               </li>
@@ -1371,8 +1416,8 @@ function EditProjectPopup(item: any) {
       >
         {EditData != undefined && EditData.Title != undefined && (
           <div id="EditGrueneContactSearch">
-            <div className="modal-body">
-              <ul className="nav nav-tabs" id="myTab" role="tablist">
+            <div className="modal-body mb-5">
+              <ul className="fixed-Header nav nav-tabs" id="myTab" role="tablist">
                 <li className="nav-item" role="presentation">
                   <button
                     className="nav-link active"
@@ -1478,15 +1523,14 @@ function EditProjectPopup(item: any) {
                             </div>
                           </div>
 
-                          {EditData?.Item_x0020_Type == "Project" && (
                             <div className="col-sm-12 mt-2 p-0">
                               <div className="row">
                                 <div className="col-sm-6">
                                   <div className="input-group">
                                     <label className="form-label full-width">Status</label>
                                     <input type="text" maxLength={3} placeholder="% Complete" className="form-control px-2"
-                                      defaultValue={EditData?.PercentComplete != undefined ? Number(EditData.PercentComplete).toFixed(0) : null}
-                                      value={EditData?.PercentComplete != undefined ? Number(EditData.PercentComplete).toFixed(0) : null}
+                                      defaultValue={EditData?.PercentComplete != undefined ? Number(EditData?.PercentComplete).toFixed(0) : null}
+                                      value={EditData?.PercentComplete != undefined ? Number(EditData?.PercentComplete).toFixed(0) : null}
                                       onChange={(e) => StatusAutoSuggestion(e.target.value)} />
                                     <span className="input-group-text" title="Status Popup" onClick={() => setTaskStatusPopup(true)}>
                                       <span title="Edit Task" className="svg__iconbox svg__icon--editBox"></span>
@@ -1507,7 +1551,7 @@ function EditProjectPopup(item: any) {
                                     <label className="form-label full-width  mx-2">
                                       Working Member
                                     </label>
-                                    {EditData.AssignedUsers?.map(
+                                    {EditData?.AssignedUsers?.map(
                                       (userDtl: any, index: any) => {
                                         return (
                                           <div className="TaskUsers">
@@ -1528,7 +1572,7 @@ function EditProjectPopup(item: any) {
                                 </div>
                               </div>
                             </div>
-                          )}
+                          
                         </div>
                         <div className="mx-0 row mt-2">
                           <div className="col-sm-4 ps-0 ">
@@ -1609,7 +1653,7 @@ function EditProjectPopup(item: any) {
                           </div>
                         </div>
                         <div className="mx-0 row mt-2 ">
-                          <div className="col-sm-6 ps-0 time-status">
+                          {/* <div className="col-sm-6 ps-0 time-status">
                             <div className="input-group mb-2">
                               <label className="form-label  full-width">
                                 Status
@@ -1659,8 +1703,6 @@ function EditProjectPopup(item: any) {
                                         : false
                                     }
                                   ></input>
-
-                                  {" "}
                                   In Preparation
                                 </label>
                               </li>
@@ -1680,8 +1722,6 @@ function EditProjectPopup(item: any) {
                                         : false
                                     }
                                   ></input>
-
-                                  {" "}
                                   In Development{" "}
                                 </label>
                               </li>
@@ -1721,9 +1761,29 @@ function EditProjectPopup(item: any) {
                                   Archived{" "}
                                 </label>
                               </li>
+                              <li className="form-check">
+                                <label className="SpfxCheckRadio">
+                                  <input
+                                    className="radio"
+                                    name="NotStarted"
+                                    type="radio"
+                                    value="Completed"
+                                    onChange={(e) =>
+                                      setStatus(EditData, "Completed")
+                                    }
+                                    checked={
+                                      EditData.AdminStatus === "Completed"
+                                        ? true
+                                        : false
+                                    }
+                                  ></input>
+
+                                  Completed{" "}
+                                </label>
+                                </li>
                             </ul>
-                          </div>
-                          <div className="col-sm-6 pe-0">
+                          </div> */}
+                          <div className="col-sm-6 p-0">
                             <div className="input-group position-relative mb-2">
                               <label className="form-label  full-width">
                                 Categories{" "}
@@ -1797,8 +1857,7 @@ function EditProjectPopup(item: any) {
                                                     }}
                                                     target="_blank"
                                                     data-interception="off"
-                                                    href={`${item?.AllListId?.siteUrl}/SitePages/Portfolio-Profile.aspx?${EditData?.Id}`}
-                                                  >
+                                                   >
                                                     {type.Title}
                                                   </a>
                                                   <img
@@ -1886,7 +1945,7 @@ function EditProjectPopup(item: any) {
                           <div className="col mt-2">
                             <div className="input-group full-width">
                               <label className="form-label full-width">
-                                Portfolios
+                                Portfolio Items
                               </label>
                               <input
                                 type="text"
@@ -2226,7 +2285,7 @@ function EditProjectPopup(item: any) {
               </div>
             </div>
 
-            <footer className="bg-f4" style={{ position: "absolute", bottom: "0", width: "100%", zIndex: "9" }}>
+            <footer className="bg-f4" style={{ position: "absolute", bottom: "0", width: "100%", zIndex: "9", left:"0px" }}>
               <div className="align-items-center d-flex justify-content-between me-3 px-4 py-2">
                 <div>
                   <div>
@@ -2289,7 +2348,7 @@ function EditProjectPopup(item: any) {
                         Go to Profile page
                       </a>
                       ||
-                      <span className="hreflink mx-2 siteColor f-mailicons"><span title="Edit Task" className="svg__iconbox svg__icon--mail"></span>Share This Task</span>
+      
                       <a
                         target="_blank"
                         data-interception="off"
@@ -2319,7 +2378,7 @@ function EditProjectPopup(item: any) {
                     </button>
                     <button
                       type="button"
-                      className="btn btn-default btn-default mx-1 me-4"
+                      className="btn btn-default btn-default mx-1"
                       onClick={setModalIsOpenToFalse}
                     >
                       Cancel

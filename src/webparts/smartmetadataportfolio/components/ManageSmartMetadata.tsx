@@ -8,8 +8,11 @@ import DeleteSmartMetadata from "./DeleteSmartMetadata";
 let SmartmetadataItems: any = [];
 let TabSelected: string;
 let compareSeletected: any = [];
+let childRefdata: any;
 let ParentMetaDataItems: any = [];
+
 export default function ManageSmartMetadata(selectedProps: any) {
+    const [categoriesTabName, setCategoriesTabName]: any = useState([]);
     const [setName]: any = useState('');
     const [AllCombinedJSON, setAllCombinedJSON] = useState(JSON);
     const [isVisible, setIsVisible] = useState(false);
@@ -23,7 +26,10 @@ export default function ManageSmartMetadata(selectedProps: any) {
     const [smartMetadataCount, setSmartMetadataCount] = useState<any>()
     const [Tabs, setTabs] = useState([]);
     var [TabsFilter]: any = useState([]);
-    const childRef: any = useRef<any>();
+    const childRef = useRef<any>();
+    if (childRef != null) {
+        childRefdata = { ...childRef };
+    }
     //...........................................................Start Filter SmartMetadata Items counts....................................................
 
     const getFilterMetadataItems = (Metadata: any) => {
@@ -101,6 +107,7 @@ export default function ManageSmartMetadata(selectedProps: any) {
     const ShowingTabsData = async (Tab: any) => {
         TabsFilter = [];
         TabSelected = Tab;
+        setCategoriesTabName({});
         if (ParentMetaDataItems.length > 0)
             ParentMetaDataItems = [];
         SmartmetadataItems?.filter((comp: any) => {
@@ -119,19 +126,26 @@ export default function ManageSmartMetadata(selectedProps: any) {
             }
         });
         if (TabSelected === 'Categories') {
-            ShowingCategoriesTabsData(TabsFilter[0]?.Title)
+            ShowingCategoriesTabsData(TabsFilter[0])
         } else
             setSmartmetadata(TabsFilter);
+        childRefdata?.current?.setRowSelection({});
     };
     const ShowingCategoriesTabsData = (tabData: any) => {
         TabsFilter = [];
+        setCategoriesTabName(tabData);
         ParentMetaDataItems.filter((item: any) => {
-            if (item.TaxType && item.Title === tabData) {
-                TabsFilter.push(item);
+            if (item.TaxType && item.Title === tabData.Title) {
+                if (item?.subRows.length > 0) {
+                    item?.subRows.filter((item2: any) => {
+                        TabsFilter.push(item2);
+                    });
+                }
                 getFilterMetadataItems(TabsFilter);
             }
         });
         setSmartmetadata(TabsFilter);
+        childRefdata?.current?.setRowSelection({});
     }
     const EditSmartMetadataPopup = (item: any) => {
         setSelectedSmartMetadataItem(item);
@@ -166,8 +180,11 @@ export default function ManageSmartMetadata(selectedProps: any) {
                             row?.original?.Title != null &&
                             row?.original?.Title != '' ? (
                             <a>
-                                {row?.original?.Title}{row?.original?.subRows?.length > 0 ? '(' + row?.original?.subRows?.length + ')' : ''}
-
+                                {row?.original?.Title}
+                                {(row?.original?.Description1 !== null && row?.original?.Description1 !== undefined) && <div className='hover-text'>
+                                    <span className="alignIcon svg__iconbox svg__icon--info"></span>
+                                    <span className='tooltip-text pop-right'>{row?.original?.Description1} </span>
+                                </div>}
                             </a>
                         ) : null}
                     </div>
@@ -290,12 +307,15 @@ export default function ManageSmartMetadata(selectedProps: any) {
 
     const CloseEditSmartMetaPopup = () => {
         setSmartMetadataEditPopupOpen(false);
+        childRefdata?.current?.setRowSelection({});
     };
     const CloseDeleteSmartMetaPopup = () => {
         setSmartMetadataDeletePopupOpen(false);
+        childRefdata?.current?.setRowSelection({});
     };
     //-------------------------------------------------- RESTRUCTURING FUNCTION start---------------------------------------------------------------
-    const callBackData = useCallback((checkData: any) => {
+
+    const callBackSmartMetaData = useCallback((Array: any, topCompoIcon: any, Taxtype: any, checkData: any) => {
         let array: any = [];
         if (checkData != undefined) {
             compareSeletected.push(checkData);
@@ -304,12 +324,9 @@ export default function ManageSmartMetadata(selectedProps: any) {
         } else {
             setSelectedItem({});
             array = [];
-
             compareSeletected = [];
         }
         setSelectedItem(array);
-    }, []);
-    const callBackSmartMetaData = useCallback((Array: any, topCompoIcon: any, Taxtype: any) => {
         if (Array) {
             let MetaData: any = [...Array]
             console.log(MetaData)
@@ -317,17 +334,18 @@ export default function ManageSmartMetadata(selectedProps: any) {
         }
         if (Taxtype) {
             SmartmetadataItems = [];
+            setSelectedItem({});
             LoadSmartMetadata();
         }
     }, []);
     const callChildFunction = (items: any) => {
-        if (childRef.current) {
-            childRef.current.callChildFunction(items);
+        if (childRefdata.current) {
+            childRefdata.current.callChildFunction(items);
         }
     };
     const trueTopIcon = (items: any) => {
-        if (childRef.current) {
-            childRef.current.trueTopIcon(items);
+        if (childRefdata.current) {
+            childRefdata.current.trueTopIcon(items);
         }
     };
     //-------------------------------------------------- RESTRUCTURING FUNCTION end---------------------------------------------------------------
@@ -381,85 +399,89 @@ export default function ManageSmartMetadata(selectedProps: any) {
     //-------------------------------------------------- GENERATE JSON FUNCTION end---------------------------------------------------------------
     return (
         <>
-            {/* {<BraedCrum AllList={selectedProps.AllList} />} */}
-            <section className='ContentSection'>
-                <div className='row'>
-                    <div className='col-sm-3 text-primary'>
+            <div className='TableContentSection'>
+                <section className='col-sm-12 clearfix'>
+                    <div className='d-flex justify-content-between align-items-center siteColor  serviceColor_Active mb-2'>
                         <h3 className="heading">ManageSmartMetaData
                         </h3>
+                        <span><a data-interception="off" target="_blank" href="https://hhhhteams.sharepoint.com/sites/HHHH/SP/SitePages/managesmartmetadata-old.aspx">Old ManageSmartMetadata</a></span>
                     </div>
-                    <div className='col-sm-9 text-primary'>
-                        <h6 className='pull-right'><b><a data-interception="off"
-                            target="_blank" href="https://hhhhteams.sharepoint.com/sites/HHHH/SP/SitePages/managesmartmetadata-old.aspx">Old ManageSmartMetadata</a></b>
-                        </h6>
-                    </div>
-                </div>
-            </section>
-            
-            <ul className="nav nav-tabs" role="tablist">
-                {Tabs.map((item: any, index: any) => (
-                    <button className={
-                        index === 0
-                            ? "nav-link active"
-                            : "nav-link"
-                    } onClick={() => ShowingTabsData(item.Title)} key={index} data-bs-toggle="tab" data-bs-target="#URLTasks" type="button" role="tab" aria-controls="URLTasks" aria-selected="true">
-                        {item.Title}
-                    </button>
-                ))}
-                <span className='ml-auto'>
-                    <a className='text-end hyperlink ' onClick={() => generateJSONOfTaskLists()}>Generate JSON </a>
-                </span>
-            </ul>
-            <div className="border border-top-0 clearfix p-2 tab-content " id="myTabContent">
-                {TabSelected === 'Categories' &&
-                    <ul className="nav nav-tabs" role="tablist">
-                        {ParentMetaDataItems.map((Parent: any, index: any) => (
-                            <button className={
-                                index === 0
-                                    ? "nav-link active"
-                                    : "nav-link"
-                            } onClick={() => ShowingCategoriesTabsData(Parent.Title)} key={index} data-bs-toggle="tab" data-bs-target="#URLTasks" type="button" role="tab" aria-controls="URLTasks" aria-selected="true">
-                                {Parent.Title}
-                            </button>
-                        ))}
-                    </ul>
-                }
-                <div className="tab-pane Alltable mx-height show active" id="URLTasks" role="tabpanel" aria-labelledby="URLTasks">
-                    {
-                        Smartmetadata &&
-                        <GlobalCommanTable smartMetadataCount={smartMetadataCount} Tabs={Tabs} compareSeletected={compareSeletected} CloseEditSmartMetaPopup={CloseEditSmartMetaPopup} SelectedItem={SelectedItem} setName={setName} ParentItem={Smartmetadata} AllList={selectedProps.AllList} data={Smartmetadata} TabSelected={TabSelected} ref={childRef} callChildFunction={callChildFunction} callBackSmartMetaData={callBackSmartMetaData} columns={columns} showHeader={true} expandIcon={true} showPagination={true} callBackData={callBackData} />
+                </section>
+                <ul className="nav nav-tabs" role="tablist">
+                    {Tabs.map((item: any, index: any) => (
+                        <button className={
+                            index === 0
+                                ? "nav-link active"
+                                : "nav-link"
+                        } onClick={() => ShowingTabsData(item.Title)} key={index} data-bs-toggle="tab" data-bs-target="#URLTasks" type="button" role="tab" aria-controls="URLTasks" aria-selected="true">
+                            {item.Title}
+                        </button>
+                    ))}
+                    <span className='ml-auto'>
+                        <a className='text-end hyperlink ' onClick={() => generateJSONOfTaskLists()}>Generate JSON </a>
+                    </span>
+                </ul>
+                <div className="border border-top-0 clearfix p-2 tab-content " id="myTabContent">
+                    {TabSelected === 'Categories' &&
+                        <ul className="nav nav-tabs" role="tablist">
+                            {ParentMetaDataItems.map((Parent: any, index: any) => (
+                                <button className={
+                                    index === 0
+                                        ? "nav-link active"
+                                        : "nav-link"
+                                } onClick={() => ShowingCategoriesTabsData(Parent)} key={index} data-bs-toggle="tab" data-bs-target="#URLTasks" type="button" role="tab" aria-controls="URLTasks" aria-selected="true">
+                                    {Parent.Title}
+                                </button>
+                            ))}
+                        </ul>
                     }
-                </div>
-            </div>
-            {isVisible && (<div>
-                <Panel
-                    title="popup-title"
-                    isOpen={true}
-                    onDismiss={CloseGenerateJSONpopup}
-                    type={PanelType.custom}
-                    isBlocking={false}
-                    onRenderHeader={onRenderCustomHeaderDocuments}
-                    customWidth="750px"
-                >
-                    <div className="modal-body">
-                        <div className="col-sm-12 tab-content bdrbox">
-                            <div className="divPanelBody mt-10 mb-10  col-sm-12 padL-0 PadR0" id="#CopyJSON">
-                                {AllCombinedJSON}
+                    <div className="tab-pane  show active" id="URLTasks" role="tabpanel" aria-labelledby="URLTasks">
+                        <div className='TableSection'>
+                            <div className='container p-0'>
+                                <div className='Alltable'>
+                                    <div className='col-md-12 p-0 smart'>
+                                        <div className='wrapper'>
+                                            {
+                                                Smartmetadata &&
+                                                <GlobalCommanTable smartMetadataCount={smartMetadataCount} Tabs={Tabs} compareSeletected={compareSeletected} CloseEditSmartMetaPopup={CloseEditSmartMetaPopup} SelectedItem={SelectedItem} setName={setName} ParentItem={Smartmetadata} AllList={selectedProps.AllList} data={Smartmetadata} TabSelected={TabSelected} ref={childRefdata} childRefdata={childRefdata} callChildFunction={callChildFunction} callBackSmartMetaData={callBackSmartMetaData} columns={columns} showHeader={true} expandIcon={true} showPagination={true} callBackData={callBackSmartMetaData} categoriesTabName={categoriesTabName} />
+                                            }
+                                        </div>
+                                    </div>
+                                </div>
                             </div>
                         </div>
                     </div>
-                    <div className='applyLeavePopup'>
-                        <div className="modal-footer border-0 px-0">
-                            <button className='btnCol btn btn-primary mx-2 mt-0' onClick={CopyJSON}>
-                                <span>{isCopied ? 'Copied!' : 'CopyJSON'}</span>
-                            </button>
-                            <button className='btn btn-default m-0' onClick={() => CloseGenerateJSONpopup()}> Cancel</button>
+                </div>
+                {isVisible && (<div>
+                    <Panel
+                        title="popup-title"
+                        isOpen={true}
+                        onDismiss={CloseGenerateJSONpopup}
+                        type={PanelType.custom}
+                        isBlocking={false}
+                        onRenderHeader={onRenderCustomHeaderDocuments}
+                        customWidth="750px"
+                    >
+                        <div className="modal-body">
+                            <div className="col-sm-12 tab-content bdrbox">
+                                <div className="divPanelBody mt-10 mb-10  col-sm-12 padL-0 PadR0" id="#CopyJSON">
+                                    {AllCombinedJSON}
+                                </div>
+                            </div>
                         </div>
-                    </div>
-                </Panel>
-            </div>)}
-            {SmartMetadataEditPopupOpen ? <SmartMetadataEditPopup AllList={selectedProps.AllList} CloseEditSmartMetaPopup={CloseEditSmartMetaPopup} EditItemCallBack={callBackSmartMetaData} AllMetadata={Smartmetadata} MetadataItems={SmartmetadataItems} modalInstance={SelectedSmartMetadataItem} /> : ''}
-            {SmartMetadataDeletePopupOpen ? <DeleteSmartMetadata AllList={selectedProps.AllList} CloseDeleteSmartMetaPopup={CloseDeleteSmartMetaPopup} DeleteItemCallBack={callBackSmartMetaData} AllMetadata={Smartmetadata} modalInstance={SelectedSmartMetadataItem} /> : ''}
+                        <div className='applyLeavePopup'>
+                            <div className="modal-footer border-0 px-0">
+                                <button className='btnCol btn btn-primary mx-2 mt-0' onClick={CopyJSON}>
+                                    <span>{isCopied ? 'Copied!' : 'CopyJSON'}</span>
+                                </button>
+                                <button className='btn btn-default m-0' onClick={() => CloseGenerateJSONpopup()}> Cancel</button>
+                            </div>
+                        </div>
+                    </Panel>
+                </div>)}
+                {SmartMetadataEditPopupOpen ? <SmartMetadataEditPopup AllList={selectedProps.AllList} CloseEditSmartMetaPopup={CloseEditSmartMetaPopup} EditItemCallBack={callBackSmartMetaData} AllMetadata={Smartmetadata} MetadataItems={SmartmetadataItems} modalInstance={SelectedSmartMetadataItem} TabSelected={TabSelected} ParentMetaDataItems={ParentMetaDataItems} childRefdata={childRefdata} /> : ''}
+                {SmartMetadataDeletePopupOpen ? <DeleteSmartMetadata AllList={selectedProps.AllList} CloseDeleteSmartMetaPopup={CloseDeleteSmartMetaPopup} DeleteItemCallBack={callBackSmartMetaData} AllMetadata={Smartmetadata} modalInstance={SelectedSmartMetadataItem} childRefdata={childRefdata} /> : ''}
+            </div>
         </>
     );
 }

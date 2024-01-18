@@ -35,6 +35,23 @@ export default function subCommentComponent(SubTextItemsArray: any) {
                     subItem.ApproverData = [];
                 }
                 ChildArray.push(subItem);
+                ChildArray?.forEach((ele:any)=>{
+                    if(ele.ApproverData != undefined && ele.ApproverData.length > 0){
+                   ele.ApproverData?.forEach((ba:any)=>{
+                       if(ba.isShowLight == 'Reject'){
+                        ba.Status = 'Rejected by'
+                       }
+                       if(ba.isShowLight == 'Approve'){
+                           ba.Status = 'Approved by '
+                       }
+                       if(ba.isShowLight == 'Maybe'){
+                           ba.Status = 'For discussion with'
+                       }
+                       
+           
+                   })
+                 }
+                   })
                 UpdatedFeedBackChildArray.push(subItem);
                 subCommentsData.push(subItem);
             })
@@ -186,6 +203,23 @@ export default function subCommentComponent(SubTextItemsArray: any) {
         UpdatedFeedBackChildArray[index].isShowLight = value;
         UpdatedFeedBackChildArray[index].ApproverData.push(temObject);
         let tempApproverData: any = UpdatedFeedBackChildArray[index].ApproverData
+        UpdatedFeedBackChildArray?.forEach((ele: any) => {
+            if (ele.ApproverData != undefined && ele.ApproverData.length > 0) {
+                ele.ApproverData?.forEach((ba: any) => {
+                    if (ba.isShowLight == 'Reject') {
+                        ba.Status = 'Rejected by'
+                    }
+                    if (ba.isShowLight == 'Approve') {
+                        ba.Status = 'Approved by '
+                    }
+                    if (ba.isShowLight == 'Maybe') {
+                        ba.Status = 'For discussion with'
+                    }
+
+
+                })
+            }
+        })
         callBack(UpdatedFeedBackChildArray, currentArrayIndex);
         const copy = [...subCommentsData];
         const obj = { ...subCommentsData[index], isShowLight: value, ApproverData: tempApproverData };
@@ -259,16 +293,15 @@ export default function subCommentComponent(SubTextItemsArray: any) {
                                                     </div>
                                                     : null
                                                 }
-                                                {obj.ApproverData != undefined && obj.ApproverData.length > 0 ?
-                                                    <span className="siteColor hreflink ms-2" title="Approval-History Popup" onClick={() => ApprovalPopupOpenHandle(index, obj)}>
-                                                        Pre-approved by - <span className="ms-1">
-                                                            <a title={obj.ApproverData[obj.ApproverData.length - 1]?.Title}>
-                                                                <img className='imgAuthor' src={obj.ApproverData[obj.ApproverData.length - 1]?.ImageUrl} />
-                                                            </a>
-                                                        </span>
-                                                    </span>
-                                                    : null
-                                                }
+                                               {obj.ApproverData != undefined && obj.ApproverData.length > 0 ?
+                                                <>
+                                                   
+                                                            <span className="siteColor ms-2 hreflink" title="Approval-History Popup" onClick={() => ApprovalPopupOpenHandle(index, obj)}>
+                                                            {obj.ApproverData[obj?.ApproverData?.length - 1]?.Status} </span> <span className="ms-1"><a title={obj.ApproverData[obj.ApproverData?.length - 1]?.Title}><span><a href={`${Context.pageContext.web.absoluteUrl}/SitePages/TaskDashboard.aspx?UserId=${obj.ApproverData[obj?.ApproverData?.length - 1]?.Id}&Name=${obj.ApproverData[obj?.ApproverData?.length - 1]?.Title}`} target="_blank" data-interception="off" title={obj?.ApproverData[obj.ApproverData?.length - 1]?.Title}> <img className='imgAuthor' src={obj.ApproverData[obj.ApproverData?.length - 1]?.ImageUrl} /></a></span></a></span>
+                                                      
+                                                </> :
+                                                null
+                                            }
                                             </div>
                                         </div>
                                         <div>
@@ -367,6 +400,7 @@ export default function subCommentComponent(SubTextItemsArray: any) {
                                             CancelCallback={postBtnHandleCallBackCancel}
                                             Context={Context}
                                             ApprovalStatus={ApprovalStatus}
+                                            SmartLightStatus={obj?.isShowLight}
                                             isCurrentUserApprover={isCurrentUserApprover}
                                         />
                                     </div>

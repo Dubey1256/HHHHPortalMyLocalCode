@@ -267,7 +267,7 @@ export class TeamConfigurationCard extends React.Component<ITeamConfigurationPro
     private isItemExists = function (arr: any, Id: any) {
         var isExists = false;
         arr.forEach(function (item: any) {
-            if (item.Id == Id) {
+            if (item.ID == Id) {
                 isExists = true;
                 return false;
             }
@@ -427,8 +427,8 @@ export class TeamConfigurationCard extends React.Component<ITeamConfigurationPro
                                     Select Team Members
                                 </span>
                             </span>
-                            <span>
-                                <a target="_blank " className="me-1" href={`${this.props.AllListId?.siteUrl}/SitePages/TaskUser-Management.aspx`} data-interception="off">
+                            <span className='alignCenter'>
+                                <a target="_blank " className="me-1 mt-2" href={`${this.props.AllListId?.siteUrl}/SitePages/TaskUser-Management.aspx`} data-interception="off">
                                     Task User Management
                                 </a>
                                 <Tooltip ComponentId="1745" />
@@ -473,7 +473,7 @@ export class TeamConfigurationCard extends React.Component<ITeamConfigurationPro
 
                                 <div className="col-sm-7">
                                     <h6 className='mb-1'>Team Members</h6>
-                                    <div className="d-flex p-1  UserTimeTabGray">
+                                    <div className="d-flex p-1 pb-0  UserTimeTabGray">
                                         <div className="col-sm-5 border-end p-0" >
                                             <div className="col"
                                                 onDrop={(e) => this.onDropTeam(e, this.state.ResponsibleTeam, 'Team Leaders', this.state.taskUsers, 'ResponsibleTeam')}
@@ -524,7 +524,7 @@ export class TeamConfigurationCard extends React.Component<ITeamConfigurationPro
                                     <div className="col"
                                         onDrop={(e) => this.onDropTeam1(e, this.state.AssignedToUsers, 'Assigned User', this.state.taskUsers, 'Assigned User')}
                                         onDragOver={(e) => e.preventDefault()}>
-                                        <div className="working-box p-1" >
+                                        <div className="working-box p-1 pb-0" >
                                             <div className='d-flex flex-wrap' data-placeholder="Working Members">
                                                 {this.state.AssignedToUsers && this.state.AssignedToUsers.map((image: any, index: number) => {
                                                     return <img
@@ -545,17 +545,17 @@ export class TeamConfigurationCard extends React.Component<ITeamConfigurationPro
                                 </div>
 
                                 <div className="col-sm-2">
-                                    <div className='vacationpanel'>
-                                        <div onDrop={(e) => this.onDropRemoveTeam(e, this.state.taskUsers)}
+                                   
+                                        <div className="dustbin bg-siteColor" onDrop={(e) => this.onDropRemoveTeam(e, this.state.taskUsers)}
                                             onDragOver={(e) => e.preventDefault()}>
-                                            <img title="Drag user here to  remove user from team for this Network Activity." className="width-75 mt--5 vacation"
+                                            <img title="Drag user here to  remove user from team for this Network Activity." 
                                                 src={this.props.ItemInfo?.Services != undefined && (this.props.ItemInfo?.Services.length > 0 || this.props?.ItemInfo?.Portfolio_x0020_Type == 'Service') ?
-                                                    "https://hhhhteams.sharepoint.com/sites/HHHH/SP/SiteCollectionImages/ICONS/Service_Icons/icon_Dustbin-green.png" :
-                                                    "https://hhhhteams.sharepoint.com/sites/HHHH/SP/SiteCollectionImages/ICONS/Shareweb/icon_Dustbin.png"
+                                                    "https://hhhhteams.sharepoint.com/sites/HHHH/SP/SiteCollectionImages/ICONS/Service_Icons/icon_tree.png" :
+                                                    "https://hhhhteams.sharepoint.com/sites/HHHH/SP/SiteCollectionImages/ICONS/Shareweb/icon_tree.png"
                                                 }
                                             />
                                         </div>
-                                    </div>
+                                  
                                 </div>
                             </div>
                         </div>

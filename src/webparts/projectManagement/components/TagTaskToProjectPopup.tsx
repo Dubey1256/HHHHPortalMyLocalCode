@@ -12,7 +12,7 @@ import GlobalCommanTable from '../../../globalComponents/GroupByReactTableCompon
 import InlineEditingcolumns from '../../projectmanagementOverviewTool/components/inlineEditingcolumns';
 import { ColumnDef } from '@tanstack/react-table';
 import InfoIconsToolTip from '../../../globalComponents/InfoIconsToolTip/InfoIconsToolTip';
-import ReactPopperTooltip from '../../../globalComponents/Hierarchy-Popper-tooltip';
+import ReactPopperTooltipSingleLevel from '../../../globalComponents/Hierarchy-Popper-tooltipSilgleLevel/Hierarchy-Popper-tooltipSingleLevel';
 var AllUser: any = []
 var siteConfig: any = []
 var DataSiteIcon: any = []
@@ -128,6 +128,13 @@ const TagTaskToProjectPopup = (props: any) => {
                             : "";
 
                     items.portfolio = {};
+                    if (items?.TaskCategories?.length > 0) {
+                        items.TaskTypeValue = items?.TaskCategories?.map((val: any) => val.Title).join(",")
+                        items.Categories = items.TaskTypeValue;
+                    } else {
+                        items.TaskTypeValue = '';
+                        items.Categories = '';
+                    }
                     if (items?.Portfolio?.Id != undefined) {
                         items.portfolio = items?.Portfolio;
                         items.PortfolioTitle = items?.Portfolio?.Title;
@@ -148,7 +155,7 @@ const TagTaskToProjectPopup = (props: any) => {
                             });
                         });
                     }
-                  
+
                     items.TaskID = globalCommon.GetTaskId(items);
                     AllUser?.map((user: any) => {
                         if (user.AssingedToUserId == items.Author.Id) {
@@ -185,7 +192,7 @@ const TagTaskToProjectPopup = (props: any) => {
         Array.sort((a: any, b: any) => new Date(b.Created).getTime() - new Date(a.Created).getTime());
         return Array;
     }
-   
+
     useEffect(() => {
         AllListId = props?.AllListId;
         TaskUser();
@@ -207,25 +214,25 @@ const TagTaskToProjectPopup = (props: any) => {
             // }
 
         } else {
-            let tasksWithTaggedProjects:any=[];
-            let tasksWithNoProjects:any=[];
+            let tasksWithTaggedProjects: any = [];
+            let tasksWithNoProjects: any = [];
             selectedTasks?.map(async (item: any, index: any) => {
                 if (index == 0) {
                     selectedTaskId = selectedTaskId + '(' + item?.siteType + ') ' + item?.TaskID
                 } else {
                     selectedTaskId = selectedTaskId + ',' + '(' + item?.siteType + ') ' + item?.TaskID
                 }
-                if(item?.Project?.Id!=undefined){
+                if (item?.Project?.Id != undefined) {
                     tasksWithTaggedProjects.push(item)
-                }else{
+                } else {
                     tasksWithNoProjects.push(item)
                 }
             })
 
             let confirmation = confirm('Are you sure you want to tag ' + selectedTaskId + ' to this project ?')
             if (confirmation == true) {
-                if(tasksWithTaggedProjects?.length>0){
-                    let projectTagedTasks:any=''
+                if (tasksWithTaggedProjects?.length > 0) {
+                    let projectTagedTasks: any = ''
                     tasksWithTaggedProjects?.map(async (item: any, index: any) => {
                         if (index == 0) {
                             projectTagedTasks = projectTagedTasks + '(' + item?.siteType + ') ' + item?.TaskID
@@ -234,12 +241,12 @@ const TagTaskToProjectPopup = (props: any) => {
                         }
                     })
                     let taggedProjectConfirmation = confirm('These Tasks ' + projectTagedTasks + ' are already tagged to some other Projects, Do you want to over ride there project ?')
-                    if(taggedProjectConfirmation){
+                    if (taggedProjectConfirmation) {
                         updateSelectedTask(selectedTasks);
-                    }else{
+                    } else {
                         updateSelectedTask(tasksWithNoProjects)
                     }
-                }else{
+                } else {
                     updateSelectedTask(selectedTasks)
                 }
                 handleClose()
@@ -249,7 +256,7 @@ const TagTaskToProjectPopup = (props: any) => {
 
     }
 
-    const updateSelectedTask=(selectedTasksArray:any)=>{
+    const updateSelectedTask = (selectedTasksArray: any) => {
         selectedTasksArray?.map(async (item: any, index: any) => {
             const web = new Web(item?.siteUrl);
             await web.lists.getById(item?.listId).items.getById(item?.Id).update({
@@ -274,28 +281,25 @@ const TagTaskToProjectPopup = (props: any) => {
             <div className={"d-flex full-width pb-1"}>
                 <div className='subheading'>
                     <span className="siteColor">
-                        { `Add Existing Tasks -${props?.projectItem?.PortfolioStructureID} ${props.projectTitle}`}
+                        {`Add Existing Tasks - ${props?.projectItem?.MeetingId ? props?.projectItem?.MeetingId : props?.projectItem?.PortfolioStructureID} ${props?.projectTitle}`}
                     </span>
                 </div>
             </div>
-
-
         )
-
     }
     const onRenderCustomFooterMain = () => {
         return (
 
 
             <footer className='text-end p-2'>
-                  <button className="btn btn-primary mx-2"
+                <button className="btn btn-primary mx-2"
                     onClick={() => { tagSelectedTasks() }}>
                     Tag Tasks
                 </button>
                 <button type="button" className="btn btn-default me-4" onClick={handleClose}>
                     Cancel
                 </button>
-              
+
 
                 {/* <Button type="button" className="me-2" variant="secondary" onClick={handleClose}>Cancel</Button>
                 <Button type="button" variant="primary" disabled={selectedTasks?.length > 0 ? false : true} onClick={() => tagSelectedTasks()}>Tag</Button> */}
@@ -304,7 +308,7 @@ const TagTaskToProjectPopup = (props: any) => {
 
         )
     }
-    
+
     const inlineCallBack = React.useCallback((item: any) => {
         setAllTasks(prevTasks => {
             const updatedTasks = prevTasks.map((task: any) => {
@@ -349,13 +353,16 @@ const TagTaskToProjectPopup = (props: any) => {
                 id: 'TaskID',
                 size: 130,
                 cell: ({ row, getValue }) => (
-                  <div>
-                    {row?.original?.TitleNew != "Tasks" ?
-                      <ReactPopperTooltip ShareWebId={getValue()} row={row} AllListId={props?.AllListId} />
-                      : ''}
-                  </div>
+                    <div>
+                        {/* {row?.original?.TitleNew != "Tasks" ?
+                            <ReactPopperTooltip ShareWebId={getValue()} row={row} AllListId={props?.AllListId} />
+                            : ''} */}
+                        {row?.original?.TitleNew != "Tasks" ?
+                            <ReactPopperTooltipSingleLevel AllListId={props?.AllListId} ShareWebId={row?.original?.TaskID} row={row?.original} singleLevel={true} masterTaskData={props?.masterTaskData} AllSitesTaskData={AllTasks} />
+                            : ''}                            
+                    </div>
                 ),
-              },
+            },
             {
                 accessorFn: (row) => row?.Title,
                 cell: ({ row, column, getValue }) => (
@@ -368,7 +375,7 @@ const TagTaskToProjectPopup = (props: any) => {
                             >
                                 {row?.original?.Title}
                             </a>
-                            {row?.original?.FeedBack !== null && row?.original?.FeedBack != undefined ?<span className='alignIcon'> <InfoIconsToolTip Discription={row?.original?.FeedBack} row={row?.original} /> </span>: ''}
+                            {row?.original?.FeedBack !== null && row?.original?.FeedBack != undefined ? <span className='alignIcon'> <InfoIconsToolTip Discription={row?.original?.FeedBack} row={row?.original} /> </span> : ''}
                         </span>
                     </>
                 ),
@@ -433,6 +440,29 @@ const TagTaskToProjectPopup = (props: any) => {
                 resetSorting: false,
                 size: 75
             },
+            {
+                accessorFn: (row) => row?.TaskTypeValue,
+                cell: ({ row }) => (
+                    <>
+                        <span>
+                            <InlineEditingcolumns
+                                AllListId={AllListId}
+                                callBack={inlineCallBack}
+                                columnName='TaskCategories'
+                                item={row?.original}
+                                TaskUsers={AllUser}
+                                pageName={'ProjectManagment'}
+                            />
+                        </span>
+                    </>
+                ),
+                placeholder: "Task Type",
+                header: "",
+                resetColumnFilters: false,
+                size: 120,
+                id: "TaskTypeValue",
+            },
+
             {
                 accessorFn: (row) => row?.DueDate,
                 cell: ({ row }) => (

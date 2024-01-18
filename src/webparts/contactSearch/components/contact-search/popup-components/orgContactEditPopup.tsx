@@ -5,28 +5,52 @@ import { VscClearAll } from 'react-icons/Vsc';
 import Tooltip from "../../../../../globalComponents/Tooltip";
 import { Panel, PanelType } from 'office-ui-fabric-react';
 import { myContextValue } from '../../../../../globalComponents/globalCommon'
+import { ColumnDef } from '@tanstack/react-table';
+import GlobalCommanTable from "../../../../../globalComponents/GroupByReactTableComponents/GlobalCommanTable";
+
 const orgContactEditPopup = (props: any) => {
     const myContextData2: any = React.useContext<any>(myContextValue)
     const [institutionData, setInstitutionData] = useState([]);
-    const [searchedData, setSearchedData] = useState([]);
-    const [searchKeys, setSearchKeys] = useState({
-        FullName: '', City: '', Country: ''
-    })
-    const [updateData,setUpdateData]:any=React.useState()
+    // const [searchedData, setSearchedData] = useState([]);
+    // const [searchKeys, setSearchKeys] = useState({
+    //     FullName: '', City: '', Country: ''
+    // })
+    const [updateData,setUpdateData]:any=React.useState(props?.updateData)
 
    
     useEffect(() => {
-        if(props?.data!=undefined){
+        if(props?.updateData!=undefined){
             setUpdateData(props?.updateData) 
         }
         if(myContextData2?.allSite?.MainSite){
             InstitutionDetails();
-        }else{
-            setInstitutionData(myContextData2?.InstitutionAllData);
-            setSearchedData(myContextData2?.InstitutionAllData);   
+        }
+        
+        else{
+            GmbhHrInstitution();
+            // setSearchedData(myContextData2?.InstitutionAllData);   
         }
         
     }, [])
+    const GmbhHrInstitution=async()=>{
+        try {
+            let web = new Web(myContextData2?.allListId?.siteUrl);
+            await web.lists.getById(myContextData2?.allSite?.GMBHSite ? myContextData2?.allListId?.GMBH_CONTACT_SEARCH_LISTID : myContextData2?.allListId?.HR_EMPLOYEE_DETAILS_LIST_ID)
+                .items
+                .select("Id", "Title", "FirstName","FullName","DOJ","DOE", "Company", "WorkCity", "Suffix", "WorkPhone", "HomePhone", "Comments", "WorkAddress", "WorkFax", "WorkZip", "ItemType", "JobTitle", "Item_x0020_Cover", "WebPage", "CellPhone", "Email", "LinkedIn", "Created", "SocialMediaUrls", "Author/Title", "Modified", "Editor/Title", "Division/Title", "Division/Id", "EmployeeID/Title", "StaffID", "EmployeeID/Id", "Institution/Id", "Institution/FullName", "IM")
+                .expand("EmployeeID", "Division", "Author", "Editor", "Institution")
+                .orderBy("Created", true)
+                .get().then((data: any) => {
+                    let instData = data.filter((instItem: any) => instItem?.ItemType == "Institution")
+                    setInstitutionData(instData);
+                    
+                });
+
+        } catch (error) {
+            console.log("Error user response:", error.message);
+        }
+    }   
+    
     const InstitutionDetails = async () => {
         try {
             let web = new Web("https://hhhhteams.sharepoint.com/sites/HHHH");
@@ -37,69 +61,14 @@ const orgContactEditPopup = (props: any) => {
                 .get().then((data: any) => {
                     let instData = data.filter((instItem: any) => instItem.ItemType == "Institution")
                     setInstitutionData(instData);
-                    setSearchedData(instData);
+                    // setSearchedData(instData);
                 });
 
         } catch (error) {
             console.log("Error user response:", error.message);
         }
     }
-    const searchFunction = (e: any, item: any) => {
-        let Key: any = e.target.value.toLowerCase();
-        if (item == 'FullName') {
-            setSearchKeys({ ...searchKeys, FullName: Key });
-            const data: any = {
-                nodes: institutionData?.filter((items: any) =>
-                    items.FullName?.toLowerCase().includes(Key)
-                ),
-            };
-            setSearchedData(data.nodes);
-            if (Key.length == 0) {
-                setSearchedData(institutionData);
-            }
-        }
-        if (item == 'City') {
-            setSearchKeys({ ...searchKeys, City: Key });
-            const data: any = {
-                nodes: institutionData?.filter((items: any) =>
-                    items.WorkCity?.toLowerCase().includes(Key)
-                ),
-            };
-            setSearchedData(data.nodes);
-            if (Key.length == 0) {
-                setSearchedData(institutionData);
-            }
-        }
-        if (item == 'Country') {
-            setSearchKeys({ ...searchKeys, Country: Key });
-            const data: any = {
-                nodes: institutionData?.filter((items: any) =>
-                    items.WorkCountry?.toLowerCase().includes(Key)
-                ),
-            };
-            setSearchedData(data.nodes);
-            if (Key.length == 0) {
-                setSearchedData(institutionData);
-            }
-        }
-    }
-    const selectOrgStatus = (item: any, index: any) => {
-        let backupdata=JSON.parse(JSON.stringify(updateData));
-
-       backupdata={
-      ...backupdata,...{
-        Institution: item,
-           
-       }
-    }
-       setUpdateData(backupdata);
-    }
-    const ClearFilter = () => {
-        setSearchedData(institutionData);
-        setSearchKeys({
-            FullName: '', City: '', Country: ''
-        })
-    }
+ 
     const saveChange = () => {
      
         props.callBack(updateData);
@@ -110,10 +79,61 @@ const orgContactEditPopup = (props: any) => {
                 <div className='subheading alignCenter'>
                     Select Organization
                 </div>
-                <Tooltip ComponentId='3299' />
+                <Tooltip ComponentId='1626' />
             </>
         );
     };
+
+    const columns = React.useMemo<ColumnDef<unknown, unknown>[]>(() =>
+    [
+        {
+            accessorKey: "",
+            placeholder: "",
+            hasCheckbox: true,
+            hasCustomExpanded: false,
+            hasExpanded: false,
+            isHeaderNotAvlable: true,
+            size: 25,
+            id: 'Id',
+        },
+        {
+            accessorFn: (row: any) => row?.FullName,
+            cell: ({ row }: any) => (
+                <a target='_blank'
+                    // href={`${allListId?.siteUrl}/SitePages/Contact-Profile.aspx?contactId=${row?.original.Id}`}
+                >{row.original.FullName}</a>
+
+            ),
+
+            canSort: false,
+            placeholder: 'Name',
+            header: '',
+            id: 'FullName',
+            size: 150,
+        },
+        { accessorKey: "WorkCity", placeholder: "WorkCity", header: "", size: 100, },
+       
+        { accessorKey: "WorkCountry", placeholder: "WorkCountry", header: "", size: 100, },
+       
+        
+    ],
+    [institutionData]);
+    const callBackData=React.useCallback((data:any)=>{
+            console.log(data)
+            if(data!=undefined){
+                let backupdata=JSON.parse(JSON.stringify(updateData));
+
+                backupdata={
+               ...backupdata,...{
+                 Institution: data,
+                    
+                }
+             }
+                setUpdateData(backupdata);
+            }
+           
+    },[])
+    
     return (
         <>
             <Panel
@@ -126,32 +146,11 @@ const orgContactEditPopup = (props: any) => {
             >
 
                 <div>
-                    <div className="panel-body">
-                        <table className="table table-hover">
-                            <thead>
-                                <tr>
-                                    <th></th>
-                                    <th style={{ width: "400px" }}><input type='text' onChange={(e) => searchFunction(e, 'FullName')} placeholder="Title" value={searchKeys.FullName} /><button>=</button></th>
-                                    <th><input type='text' onChange={(e) => searchFunction(e, 'City')} placeholder="City" value={searchKeys.City} /><button>=</button></th>
-                                    <th><input type='text' onChange={(e) => searchFunction(e, 'Country')} placeholder="Country" value={searchKeys.Country} /><button>=</button></th>
-                                    <th><button onClick={ClearFilter}><VscClearAll /></button></th>
-                                </tr>
-                            </thead>
-                            <tbody>
-                                {searchedData.map((items: any, index: any) => {
-                                    if(items.FullName!=undefined && items.FullName!="")
-                                    return (
-                                        <tr key={index}>
-                                            <td><input type="radio" onClick={() => selectOrgStatus(items, index)} checked={updateData?.Institution?.FullName == items.FullName} /></td>
-                                            <td>{items.FullName ? items.FullName : "NA"}</td>
-                                            <td>{items.WorkCity ? items.WorkCity : "NA"}</td>
-                                            <td>{items.WorkCountry ? items.WorkCountry : "NA"}</td>
-                                        </tr>
-                                    )
-                                })}
-                            </tbody>
-                        </table>
-                    </div>
+                   
+                    <div className='Alltable'>
+                    <GlobalCommanTable columns={columns} data={institutionData.length>0?institutionData:[]} showHeader={false}callBackData={callBackData}/>
+                        </div >
+                   
                     
                     <footer className='pull-right'>
                         <button className='btn btn-primary mx-2'

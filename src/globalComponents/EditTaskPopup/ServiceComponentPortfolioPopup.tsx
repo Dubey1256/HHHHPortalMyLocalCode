@@ -15,8 +15,8 @@ import InfoIconsToolTip from "../InfoIconsToolTip/InfoIconsToolTip";
 var LinkedServicesBackupArray: any = [];
 var MultiSelectedData: any = [];
 let AllMetadata: any = [];
-const ServiceComponentPortfolioPopup = ({ props, Dynamic, Call, ComponentType, selectionType, groupedData ,showProject}: any) => {
-    const [modalIsOpen, setModalIsOpen] = React.useState(false);
+const ServiceComponentPortfolioPopup = ({ props, Dynamic, Call, ComponentType, selectionType, groupedData, showProject }: any) => {
+    // const [modalIsOpen, setModalIsOpen] = React.useState(true);
     const [data, setData] = React.useState([]);
     const [CheckBoxData, setCheckBoxData] = React.useState([]);
     const [AllMetadataItems, setAllMetadataItems] = React.useState([]);
@@ -33,19 +33,24 @@ const ServiceComponentPortfolioPopup = ({ props, Dynamic, Call, ComponentType, s
         []);
     function Example(callBack: any, type: any, functionType: any) {
         Call(callBack, type, functionType);
+        // setModalIsOpen(false);
     }
     const closePanel = (e: any) => {
         if (e != undefined && e?.type != 'mousedown')
             Example([], ComponentType, "Close");
     }
     const setModalIsOpenToOK = () => {
-        if (props.linkedComponent != undefined && props?.linkedComponent.length == 0)
-            props.linkedComponent = CheckBoxData;
-        else {
-            props.linkedComponent = [];
-            props.linkedComponent = CheckBoxData;
+        try {
+            if (props?.linkedComponent != undefined && props?.linkedComponent?.length == 0)
+                props.linkedComponent = CheckBoxData;
+            else {
+                props.linkedComponent = [];
+                props.linkedComponent = CheckBoxData;
+            }
+        } catch (e) {
+
         }
-        setModalIsOpen(false);
+        // // setModalIsOpen(false);
         if (selectionType == "Multi") {
             Example(MultiSelectedData, selectionType, "Save");
         } else {
@@ -128,8 +133,8 @@ const ServiceComponentPortfolioPopup = ({ props, Dynamic, Call, ComponentType, s
                 setData(GlobalArray.ProjectData);
                 LinkedServicesBackupArray = GlobalArray.ProjectData;
             }
-            setModalIsOpen(true);
         }
+        // setModalIsOpen(true);
     }
 
 
@@ -158,7 +163,7 @@ const ServiceComponentPortfolioPopup = ({ props, Dynamic, Call, ComponentType, s
             <div className="d-flex full-width pb-1" >
                 <div className='subheading'>
                     <span className="siteColor">
-                        {showProject==true?`Select Project`:`Select Portfolio`}
+                        {showProject == true ? `Select Project` : `Select Portfolio`}
                     </span>
                 </div>
                 <Tooltip ComponentId="1667" />
@@ -169,7 +174,7 @@ const ServiceComponentPortfolioPopup = ({ props, Dynamic, Call, ComponentType, s
 
     const CustomFooter = () => {
         return (
-            <footer className={ComponentType == "Service" ? "me-3 p-2 serviepannelgreena text-end" : "me-3 p-2 text-end"}>
+            <footer className={ComponentType == "Service" ? "p-2 px-4 serviepannelgreena text-end" : "p-2 px-4 text-end"}>
 
                 <button type="button" className="btn btn-primary me-1" onClick={setModalIsOpenToOK}>OK</button>
                 <button type="button" className="btn btn-default" onClick={(e: any) => closePanel(e)}>Cancel</button>
@@ -222,11 +227,16 @@ const ServiceComponentPortfolioPopup = ({ props, Dynamic, Call, ComponentType, s
                 accessorFn: (row) => row?.Title,
                 cell: ({ row, column, getValue }) => (
                     <>
-                        <a className="hreflink serviceColor_Active" target="_blank" style={row?.original?.fontColorTask != undefined ? { color: `${row?.original?.fontColorTask}` } : { color: `${row?.original?.PortfolioType?.Color}` }}
+                        {row?.original?.ItemCat == "Portfolio" ? <a className="hreflink serviceColor_Active" data-interception="off" target="_blank" style={row?.original?.fontColorTask != undefined ? { color: `${row?.original?.fontColorTask}` } : { color: `${row?.original?.PortfolioType?.Color}` }}
                             href={Dynamic.siteUrl + "/SitePages/Portfolio-Profile.aspx?taskId=" + row?.original?.Id}
                         >
                             <HighlightableCell value={getValue()} searchTerm={column.getFilterValue()} />
                         </a>
+                            : row?.original?.ItemCat == "Project" ? <a className="hreflink serviceColor_Active" data-interception="off" target="_blank" style={row?.original?.fontColorTask != undefined ? { color: `${row?.original?.fontColorTask}` } : { color: `${row?.original?.PortfolioType?.Color}` }}
+                                href={Dynamic.siteUrl + "/SitePages/Project-Management.aspx?ProjectId=" + row?.original?.Id}
+                            >
+                                <HighlightableCell value={getValue()} searchTerm={column.getFilterValue()} />
+                            </a> : ''}
 
                         {row?.original?.descriptionsSearch?.length > 0 && <span className='alignIcon  mt--5 '><InfoIconsToolTip Discription={row?.original?.Body} row={row?.original} /></span>}
                     </>
@@ -336,40 +346,43 @@ const ServiceComponentPortfolioPopup = ({ props, Dynamic, Call, ComponentType, s
         <Panel
             type={PanelType.custom}
             customWidth="1100px"
-            isOpen={modalIsOpen}
+            isOpen={true}
             onDismiss={(e: any) => closePanel(e)}
             onRenderHeader={onRenderCustomHeader}
-            isBlocking={modalIsOpen}
+            isBlocking={false}
             onRenderFooter={CustomFooter}
         >
             <div className={ComponentType == "Service" ? "serviepannelgreena" : ""}>
-                <div className="modal-body p-0 mt-2">
+                <div className="modal-body p-0 mt-2 mb-3 clearfix">
                     <div className="Alltable mt-10">
-                        <div className="tbl-headings p-2 bg-white">
-                            <span className="leftsec">
-                                {ShowingAllData[0]?.FilterShowhideShwingData == true ? <label>
-                                    Showing {ShowingAllData[0].ComponentCopy}  of {Component} Components
-                                </label> :
-                                    <label>
-                                        Showing {Component}  of {Component} Components
-                                    </label>}
+                        {showProject !== true &&
+                            <div className="tbl-headings p-2 bg-white">
+                                <span className="leftsec">
+                                    {ShowingAllData[0]?.FilterShowhideShwingData == true ? <label>
+                                        Showing {ShowingAllData[0].ComponentCopy}  of {Component} Components
+                                    </label> :
+                                        <label>
+                                            Showing {Component}  of {Component} Components
+                                        </label>}
 
-                                <label className="ms-1 me-1"> | </label>
-                                {ShowingAllData[0]?.FilterShowhideShwingData == true ? <label>
-                                    {ShowingAllData[0].SubComponentCopy} of {SubComponent} SubComponents
-                                </label> :
-                                    <label>
-                                        {SubComponent} of {SubComponent} SubComponents
-                                    </label>}
-                                <label className="ms-1 me-1"> | </label>
-                                {ShowingAllData[0]?.FilterShowhideShwingData == true ? <label>
-                                    {ShowingAllData[0].FeatureCopy}  of {Feature} Features
-                                </label> :
-                                    <label>
-                                        {Feature}  of {Feature} Features
-                                    </label>}
-                            </span>
-                        </div>
+                                    <label className="ms-1 me-1"> | </label>
+                                    {ShowingAllData[0]?.FilterShowhideShwingData == true ? <label>
+                                        {ShowingAllData[0].SubComponentCopy} of {SubComponent} SubComponents
+                                    </label> :
+                                        <label>
+                                            {SubComponent} of {SubComponent} SubComponents
+                                        </label>}
+                                    <label className="ms-1 me-1"> | </label>
+                                    {ShowingAllData[0]?.FilterShowhideShwingData == true ? <label>
+                                        {ShowingAllData[0].FeatureCopy}  of {Feature} Features
+                                    </label> :
+                                        <label>
+                                            {Feature}  of {Feature} Features
+                                        </label>}
+                                </span>
+                            </div>
+                        }
+
                         <div className="col-sm-12 p-0 smart">
                             <div className="">
                                 <GlobalCommanTable columns={columns} showHeader={true} data={data} selectedData={selectedDataArray} callBackData={callBackData} multiSelect={selectionType == 'Multi' ? true : false} />

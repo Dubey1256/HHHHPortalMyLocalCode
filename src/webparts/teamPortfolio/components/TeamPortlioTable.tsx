@@ -2,7 +2,7 @@ import * as React from "react";
 import * as $ from "jquery";
 import * as Moment from "moment";
 import { Panel, PanelType } from "office-ui-fabric-react";
-import { FaCompressArrowsAlt, } from "react-icons/fa";
+import { FaCompressArrowsAlt, FaFilter, } from "react-icons/fa";
 import pnp, { Web } from "sp-pnp-js";
 import { map } from "jquery";
 import EditInstituton from "../../EditPopupFiles/EditComponent";
@@ -11,8 +11,8 @@ import EditTaskPopup from "../../../globalComponents/EditTaskPopup/EditTaskPopup
 import * as globalCommon from "../../../globalComponents/globalCommon";
 import ShowTaskTeamMembers from "../../../globalComponents/ShowTaskTeamMembers";
 import { PortfolioStructureCreationCard } from "../../../globalComponents/tableControls/PortfolioStructureCreation";
-import CreateActivity from "../../servicePortfolio/components/CreateActivity";
-import CreateWS from "../../servicePortfolio/components/CreateWS";
+import CreateActivity from "../../../globalComponents/CreateActivity";
+import CreateWS from "../../../globalComponents/CreateWS";
 import "bootstrap/dist/css/bootstrap.min.css";
 import Tooltip from "../../../globalComponents/Tooltip";
 import { ColumnDef } from "@tanstack/react-table";
@@ -27,7 +27,8 @@ import GlobalCommanTable, { IndeterminateCheckbox } from "../../../globalCompone
 import InfoIconsToolTip from "../../../globalComponents/InfoIconsToolTip/InfoIconsToolTip";
 import TeamSmartFilter from "../../../globalComponents/SmartFilterGolobalBomponents/TeamSmartFilter";
 import ReactPopperTooltipSingleLevel from "../../../globalComponents/Hierarchy-Popper-tooltipSilgleLevel/Hierarchy-Popper-tooltipSingleLevel";
-//import RestructuringCom from "../../../globalComponents/Restructuring/RestructuringCom";
+import PageLoader from "../../../globalComponents/pageLoader";
+import CompareTool from "../../../globalComponents/CompareTool/CompareTool";
 var filt: any = "";
 var ContextValue: any = {};
 let globalFilterHighlited: any;
@@ -51,6 +52,7 @@ let hasCustomExpanded: any = true
 let hasExpanded: any = true
 let isHeaderNotAvlable: any = false
 let isColumnDefultSortingAsc: any = false;
+let tasksDataLoadUpdate: any = []
 function TeamPortlioTable(SelectedProp: any) {
     const childRef = React.useRef<any>();
     if (childRef != null) {
@@ -77,6 +79,7 @@ function TeamPortlioTable(SelectedProp: any) {
     const [dataAllGruping, seDataAllGruping] = React.useState([]);
     const [data, setData] = React.useState([]);
     copyDtaArray = data;
+    const [activeTile, setActiveTile] = React.useState("")
     const [AllUsers, setTaskUser] = React.useState([]);
     const [AllMetadata, setMetadata] = React.useState([])
     const [AllClientCategory, setAllClientCategory] = React.useState([])
@@ -85,6 +88,8 @@ function TeamPortlioTable(SelectedProp: any) {
     const [IsSmartfavorite, setIsSmartfavorite] = React.useState("");
     const [checkedList, setCheckedList] = React.useState<any>({});
     const [AllSiteTasksData, setAllSiteTasksData] = React.useState([]);
+    const [AllSiteTasksDataLoadAll, setAllSiteTasksDataLoadAll] = React.useState([]);
+    const [firstTimeFullDataGroupingCallCount, setfirstTimeFullDataGroupingCallCount] = React.useState(0)
     const [AllMasterTasksData, setAllMasterTasks] = React.useState([]);
     const [smartAllFilterData, setAllSmartFilterData] = React.useState([])
     const [smartAllFilterOriginalData, setAllSmartFilterOriginalData] = React.useState([])
@@ -96,6 +101,8 @@ function TeamPortlioTable(SelectedProp: any) {
     const [allDataBackup, setDataBackup] = React.useState([]);
     const [portfolioTypeDataItem, setPortFolioTypeIcon] = React.useState([]);
     const [taskTypeDataItem, setTaskTypeDataItem] = React.useState([]);
+    const [portfolioTypeDataItemBackup, setPortFolioTypeIconBackup] = React.useState([]);
+    const [taskTypeDataItemBackup, setTaskTypeDataItemBackup] = React.useState([]);
     const [OpenAddStructurePopup, setOpenAddStructurePopup] = React.useState(false);
     const [ActivityPopup, setActivityPopup] = React.useState(false)
     const [isOpenActivity, setIsOpenActivity] = React.useState(false)
@@ -112,12 +119,18 @@ function TeamPortlioTable(SelectedProp: any) {
     const [groupByButtonClickData, setGroupByButtonClickData] = React.useState([]);
     const [clickFlatView, setclickFlatView] = React.useState(false);
     const [updatedSmartFilterFlatView, setUpdatedSmartFilterFlatView] = React.useState(false);
+    const [flatViewDataAll, setFlatViewDataAll] = React.useState([]);
+    const [priorityRank, setpriorityRank] = React.useState([])
+    const [precentComplete, setPrecentComplete] = React.useState([])
+    const [openCompareToolPopup,setOpenCompareToolPopup]=React.useState(false);
+    const rerender = React.useReducer(() => ({}), {})[1]
     // const [tableHeight, setTableHeight] = React.useState(window.innerHeight);
     const [portfolioTypeConfrigration, setPortfolioTypeConfrigration] = React.useState<any>([{ Title: 'Component', Suffix: 'C', Level: 1 }, { Title: 'SubComponent', Suffix: 'S', Level: 2 }, { Title: 'Feature', Suffix: 'F', Level: 3 }]);
     let ComponetsData: any = {};
     let Response: any = [];
     let props = undefined;
     let AllTasks: any = [];
+    let AllTasksSiteTasks: any = [];
     let AllComponetsData: any = [];
     let TaskUsers: any = [];
     let TasksItem: any = [];
@@ -196,6 +209,8 @@ function TeamPortlioTable(SelectedProp: any) {
 
     const GetSmartmetadata = async () => {
         let siteConfigSites: any = []
+        var Priority: any = []
+        let PrecentComplete: any = [];
         let web = new Web(ContextValue.siteUrl);
         let smartmetaDetails: any = [];
         smartmetaDetails = await web.lists
@@ -210,10 +225,24 @@ function TeamPortlioTable(SelectedProp: any) {
             else if (newtest.TaxType == 'Sites') {
                 siteConfigSites.push(newtest)
             }
+            if (newtest?.TaxType == 'Priority Rank') {
+                Priority?.push(newtest)
+            }
+            if (newtest?.TaxType === 'Percent Complete' && newtest?.Title != 'In Preparation (0-9)' && newtest?.Title != 'Ongoing (10-89)' && newtest?.Title != 'Completed (90-100)') {
+                PrecentComplete.push(newtest);
+            }
         })
         if (siteConfigSites?.length > 0) {
             setSiteConfig(siteConfigSites)
         }
+        Priority?.sort((a: any, b: any) => {
+            return a.SortOrder - b.SortOrder;
+        });
+        PrecentComplete?.sort((a: any, b: any) => {
+            return a.SortOrder - b.SortOrder;
+        });
+        setpriorityRank(Priority)
+        setPrecentComplete(PrecentComplete)
         setMetadata(smartmetaDetails);
     };
     const findPortFolioIconsAndPortfolio = async () => {
@@ -276,6 +305,250 @@ function TeamPortlioTable(SelectedProp: any) {
         return user ? Image : null;
     };
 
+    /// backGround Loade All Task Data /////
+    const LoadAllSiteTasksAllData = function () {
+        let AllSiteTasksDataBackGroundLoad: any = [];
+        let Counter = 0;
+        if (siteConfig != undefined && siteConfig.length > 0) {
+            map(siteConfig, async (config: any) => {
+                let web = new Web(ContextValue.siteUrl);
+                let AllTasksMatches: any = [];
+                AllTasksMatches = await web.lists
+                    .getById(config.listId)
+                    .items.select("ParentTask/Title", "ParentTask/Id", "ItemRank", "TaskLevel", "OffshoreComments", "TeamMembers/Id", "ClientCategory/Id", "ClientCategory/Title",
+                        "TaskID", "ResponsibleTeam/Id", "ResponsibleTeam/Title", "ParentTask/TaskID", "TaskType/Level", "PriorityRank", "TeamMembers/Title", "FeedBack", "Title", "Id", "ID", "DueDate", "Comments", "Categories", "Status", "Body",
+                        "PercentComplete", "ClientCategory", "Priority", "TaskType/Id", "TaskType/Title", "Portfolio/Id", "Portfolio/ItemType", "Portfolio/PortfolioStructureID", "Portfolio/Title",
+                        "TaskCategories/Id", "TaskCategories/Title", "TeamMembers/Name", "Project/Id", "Project/PortfolioStructureID", "Project/Title", "Project/PriorityRank", "AssignedTo/Id", "AssignedTo/Title", "AssignedToId", "Author/Id", "Author/Title", "Editor/Id", "Editor/Title",
+                        "Created", "Modified", "IsTodaysTask", "workingThisWeek"
+                    )
+                    .expand(
+                        "ParentTask", "Portfolio", "TaskType", "ClientCategory", "TeamMembers", "ResponsibleTeam", "AssignedTo", "Editor", "Author",
+                        "TaskCategories", "Project",
+                    ).orderBy("orderby", false).filter("(PercentComplete gt 0.89)").getAll(5000);
+
+                console.log(AllTasksMatches);
+                Counter++;
+                console.log(AllTasksMatches.length);
+                if (AllTasksMatches != undefined && AllTasksMatches.length > 0) {
+                    $.each(AllTasksMatches, function (index: any, item: any) {
+                        item.isDrafted = false;
+                        item.flag = true;
+                        item.TitleNew = item.Title;
+                        item.siteType = config.Title;
+                        item.childs = [];
+                        item.listId = config.listId;
+                        item.siteUrl = ContextValue.siteUrl;
+                        item["SiteIcon"] = config?.Item_x005F_x0020_Cover?.Url;
+                        item.fontColorTask = "#000"
+                    });
+                    AllTasksSiteTasks = AllTasksSiteTasks.concat(AllTasksMatches);
+                    if (Counter == siteConfig.length) {
+                        map(AllTasksSiteTasks, (result: any) => {
+                            result.Id = result.Id != undefined ? result.Id : result.ID;
+                            result.TeamLeaderUser = [];
+                            result.AllTeamName = result.AllTeamName === undefined ? "" : result.AllTeamName;
+                            result.chekbox = false;
+                            result.descriptionsSearch = '';
+                            result.commentsSearch = '';
+                            result.timeSheetsDescriptionSearch = '';
+                            result.SmartPriority = 0;
+                            result.TaskTypeValue = '';
+                            result.projectPriorityOnHover = '';
+                            result.taskPriorityOnHover = result?.PriorityRank;
+                            result.showFormulaOnHover;
+                            result.portfolioItemsSearch = ''
+                            if (result?.DueDate != null && result?.DueDate != undefined) {
+                                result.serverDueDate = new Date(result?.DueDate).setHours(0, 0, 0, 0)
+                            }
+                            if (result?.Modified != null && result?.Modified != undefined) {
+                                result.serverModifiedDate = new Date(result?.Modified).setHours(0, 0, 0, 0)
+                            }
+                            if (result?.Created != null && result?.Created != undefined) {
+                                result.serverCreatedDate = new Date(result?.Created).setHours(0, 0, 0, 0)
+                            }
+                            result.DisplayCreateDate = Moment(result.Created).format("DD/MM/YYYY");
+                            if (result.DisplayCreateDate == "Invalid date" || "") {
+                                result.DisplayCreateDate = result.DisplayCreateDate.replaceAll("Invalid date", "");
+                            }
+                            if (result.Author) {
+                                result.Author.autherImage = findUserByName(result.Author?.Id)
+                            }
+                            result.DisplayDueDate = Moment(result?.DueDate).format("DD/MM/YYYY");
+                            if (result.DisplayDueDate == "Invalid date" || "") {
+                                result.DisplayDueDate = result?.DisplayDueDate.replaceAll("Invalid date", "");
+                            }
+                            if (result?.TaskType) {
+                                result.portfolioItemsSearch = result?.TaskType?.Title;
+                            }
+
+                            result.PercentComplete = (result.PercentComplete * 100).toFixed(0);
+
+                            if (result.PercentComplete != undefined && result.PercentComplete != '' && result.PercentComplete != null) {
+                                result.percentCompleteValue = parseInt(result?.PercentComplete);
+                            }
+
+                            result.chekbox = false;
+                            if (result?.FeedBack && result?.FeedBack != undefined) {
+                                const cleanText = (text: any) => text?.replace(/(<([^>]+)>)/gi, '').replace(/\n/g, '');
+                                let descriptionSearchData = '';
+                                try {
+                                    const feedbackData = JSON.parse(result.FeedBack);
+                                    descriptionSearchData = feedbackData[0]?.FeedBackDescriptions?.map((child: any) => {
+                                        const childText = cleanText(child?.Title);
+                                        const comments = (child?.Comments || [])?.map((comment: any) => {
+                                            const commentText = cleanText(comment?.Title);
+                                            const replyText = (comment?.ReplyMessages || [])?.map((val: any) => cleanText(val?.Title)).join(' ');
+                                            return [commentText, replyText]?.filter(Boolean).join(' ');
+                                        }).join(' ');
+
+                                        const subtextData = (child.Subtext || [])?.map((subtext: any) => {
+                                            const subtextComment = cleanText(subtext?.Title);
+                                            const subtextReply = (subtext.ReplyMessages || [])?.map((val: any) => cleanText(val?.Title)).join(' ');
+                                            const subtextComments = (subtext.Comments || [])?.map((subComment: any) => {
+                                                const subCommentTitle = cleanText(subComment?.Title);
+                                                const subCommentReplyText = (subComment.ReplyMessages || []).map((val: any) => cleanText(val?.Title)).join(' ');
+                                                return [subCommentTitle, subCommentReplyText]?.filter(Boolean).join(' ');
+                                            }).join(' ');
+                                            return [subtextComment, subtextReply, subtextComments].filter(Boolean).join(' ');
+                                        }).join(' ');
+
+                                        return [childText, comments, subtextData].filter(Boolean).join(' ');
+                                    }).join(' ');
+
+                                    result.descriptionsSearch = descriptionSearchData;
+                                } catch (error) {
+                                    console.error("Error:", error);
+                                }
+                            }
+                            try {
+                                if (result?.Comments != null && result?.Comments != undefined) {
+                                    const cleanedComments = result?.Comments?.replace(/[^\x20-\x7E]/g, '');
+                                    const commentsFormData = JSON?.parse(cleanedComments);
+                                    result.commentsSearch = commentsFormData?.reduce((accumulator: any, comment: any) => {
+                                        return (accumulator + comment.Title + " " + comment?.ReplyMessages?.map((reply: any) => reply?.Title).join(" ") + " ");
+                                    }, "").trim();
+                                }
+                            } catch (error) {
+                                console.error("An error occurred:", error);
+                            }
+                            if (
+                                result.AssignedTo != undefined &&
+                                result.AssignedTo.length > 0
+                            ) {
+                                map(result.AssignedTo, (Assig: any) => {
+                                    if (Assig.Id != undefined) {
+                                        map(AllUsers, (users: any) => {
+                                            if (Assig.Id != undefined && users.AssingedToUser != undefined && Assig.Id == users.AssingedToUser.Id) {
+                                                users.ItemCover = users.Item_x0020_Cover;
+                                                result.TeamLeaderUser.push(users);
+                                                result.AllTeamName += users.Title + ";";
+                                            }
+                                        });
+                                    }
+                                });
+                            }
+                            if (result.ResponsibleTeam != undefined && result.ResponsibleTeam.length > 0) {
+                                map(result.ResponsibleTeam, (Assig: any) => {
+                                    if (Assig.Id != undefined) {
+                                        map(AllUsers, (users: any) => {
+                                            if (Assig.Id != undefined && users.AssingedToUser != undefined && Assig.Id == users.AssingedToUser.Id) {
+                                                users.ItemCover = users.Item_x0020_Cover;
+                                                result.TeamLeaderUser.push(users);
+                                                result.AllTeamName += users.Title + ";";
+                                            }
+                                        });
+                                    }
+                                });
+                            }
+                            if (
+                                result.TeamMembers != undefined &&
+                                result.TeamMembers.length > 0
+                            ) {
+                                map(result.TeamMembers, (Assig: any) => {
+                                    if (Assig.Id != undefined) {
+                                        map(AllUsers, (users: any) => {
+                                            if (Assig.Id != undefined && users.AssingedToUser != undefined && Assig.Id == users.AssingedToUser.Id) {
+                                                users.ItemCover = users.Item_x0020_Cover;
+                                                result.TeamLeaderUser.push(users);
+                                                result.AllTeamName += users.Title + ";";
+                                            }
+                                        });
+                                    }
+                                });
+                            }
+                            if (result?.TaskCategories?.length > 0) {
+                                result.TaskTypeValue = result?.TaskCategories?.map((val: any) => val.Title).join(",")
+                            }
+
+                            if (result?.ClientCategory?.length > 0) {
+                                result.ClientCategorySearch = result?.ClientCategory?.map((elem: any) => elem.Title).join(" ")
+                            } else {
+                                result.ClientCategorySearch = ''
+                            }
+                            result["TaskID"] = globalCommon.GetTaskId(result);
+                            if (result.Project) {
+                                result.ProjectTitle = result?.Project?.Title;
+                                result.ProjectId = result?.Project?.Id;
+                                result.projectStructerId = result?.Project?.PortfolioStructureID
+                                const title = result?.Project?.Title || '';
+                                const formattedDueDate = Moment(result?.DueDate, 'DD/MM/YYYY').format('YYYY-MM');
+                                result.joinedData = [];
+                                if (result?.projectStructerId && title || formattedDueDate) {
+                                    result.joinedData.push(`Project ${result?.projectStructerId} - ${title}  ${formattedDueDate == "Invalid date" ? '' : formattedDueDate}`)
+                                }
+                            }
+                            result.SmartPriority = globalCommon.calculateSmartPriority(result);
+                            result["Item_x0020_Type"] = "Task";
+                            TasksItem.push(result);
+                            AllSiteTasksDataBackGroundLoad.push(result)
+                        });
+                        smartTimeUseLocalStorage(AllSiteTasksDataBackGroundLoad)
+                        console.log("loade All Data > 89% is ========", AllSiteTasksDataBackGroundLoad)
+                        // tasksDataLoadUpdate.push(AllSiteTasksData);
+                        tasksDataLoadUpdate = tasksDataLoadUpdate.concat(allTaskDataFlatLoadeViewBackup);
+
+                        tasksDataLoadUpdate = tasksDataLoadUpdate.concat(AllSiteTasksDataBackGroundLoad);
+                        setAllSiteTasksDataLoadAll(tasksDataLoadUpdate);
+                        let taskBackup: any = []
+                        try {
+                            taskBackup = JSON.parse(JSON.stringify(tasksDataLoadUpdate));
+                        } catch (error) {
+                            console.log("backup Json parse error backGround Loade All Task Data")
+                        }
+                        allLoadeDataMasterTaskAndTask = allLoadeDataMasterTaskAndTask.concat(taskBackup);
+                        let allTaskDataFlatLoadeViewBackupAllData: any = [];
+                        try {
+                            allTaskDataFlatLoadeViewBackupAllData = JSON.parse(JSON.stringify(AllSiteTasksDataBackGroundLoad))
+                        } catch (error) {
+                            console.log("backup Json parse error backGround Loade All Task Data")
+                        }
+                        allTaskDataFlatLoadeViewBackup = allTaskDataFlatLoadeViewBackup.concat(allTaskDataFlatLoadeViewBackupAllData);
+                        firstTimeFullDataGrouping();
+                    }
+                }
+            });
+        }
+    };
+    const smartTimeUseLocalStorage = (AllSiteTasksDataBackGroundLoad: any) => {
+        let timeEntryDataLocalStorage: any = localStorage.getItem('timeEntryIndex')
+        if (timeEntryDataLocalStorage?.length > 0) {
+            const timeEntryIndexLocalStorage = JSON.parse(timeEntryDataLocalStorage)
+            AllSiteTasksDataBackGroundLoad?.map((task: any) => {
+                task.TotalTaskTime = 0;
+                task.timeSheetsDescriptionSearch = "";
+                const key = `Task${task?.siteType + task.Id}`;
+                if (timeEntryIndexLocalStorage.hasOwnProperty(key) && timeEntryIndexLocalStorage[key]?.Id === task.Id && timeEntryIndexLocalStorage[key]?.siteType === task.siteType) {
+                    task.TotalTaskTime = timeEntryIndexLocalStorage[key]?.TotalTaskTime;
+                    task.timeSheetsDescriptionSearch = timeEntryIndexLocalStorage[key]?.timeSheetsDescriptionSearch;
+                }
+            })
+            console.log("timeEntryIndexLocalStorage", timeEntryIndexLocalStorage)
+            return AllSiteTasksDataBackGroundLoad;
+        }
+    };
+
+
+    // * page loade Task Data Only * ///////
     const LoadAllSiteTasks = function () {
         let AllTasksData: any = [];
         let Counter = 0;
@@ -288,13 +561,13 @@ function TeamPortlioTable(SelectedProp: any) {
                     .items.select("ParentTask/Title", "ParentTask/Id", "ItemRank", "TaskLevel", "OffshoreComments", "TeamMembers/Id", "ClientCategory/Id", "ClientCategory/Title",
                         "TaskID", "ResponsibleTeam/Id", "ResponsibleTeam/Title", "ParentTask/TaskID", "TaskType/Level", "PriorityRank", "TeamMembers/Title", "FeedBack", "Title", "Id", "ID", "DueDate", "Comments", "Categories", "Status", "Body",
                         "PercentComplete", "ClientCategory", "Priority", "TaskType/Id", "TaskType/Title", "Portfolio/Id", "Portfolio/ItemType", "Portfolio/PortfolioStructureID", "Portfolio/Title",
-                        "TaskCategories/Id", "TaskCategories/Title", "TeamMembers/Name", "Project/Id", "Project/PortfolioStructureID", "Project/Title", "AssignedTo/Id", "AssignedTo/Title", "AssignedToId", "Author/Id", "Author/Title", "Editor/Id", "Editor/Title",
+                        "TaskCategories/Id", "TaskCategories/Title", "TeamMembers/Name", "Project/Id", "Project/PortfolioStructureID", "Project/Title", "Project/PriorityRank", "AssignedTo/Id", "AssignedTo/Title", "AssignedToId", "Author/Id", "Author/Title", "Editor/Id", "Editor/Title",
                         "Created", "Modified", "IsTodaysTask", "workingThisWeek"
                     )
                     .expand(
                         "ParentTask", "Portfolio", "TaskType", "ClientCategory", "TeamMembers", "ResponsibleTeam", "AssignedTo", "Editor", "Author",
                         "TaskCategories", "Project",
-                    ).orderBy("orderby", false).getAll(4000);
+                    ).orderBy("orderby", false).filter("(PercentComplete eq 0.0 or (PercentComplete gt 0.0 and PercentComplete lt 0.89) or PercentComplete eq 0.89)").getAll(5000);
 
                 console.log(AllTasksMatches);
                 Counter++;
@@ -322,7 +595,12 @@ function TeamPortlioTable(SelectedProp: any) {
                             result.chekbox = false;
                             result.descriptionsSearch = '';
                             result.commentsSearch = '';
+                            result.timeSheetsDescriptionSearch = '';
+                            result.SmartPriority = 0;
                             result.TaskTypeValue = '';
+                            result.projectPriorityOnHover = '';
+                            result.taskPriorityOnHover = result?.PriorityRank;
+                            result.showFormulaOnHover;
                             result.portfolioItemsSearch = ''
                             if (result?.DueDate != null && result?.DueDate != undefined) {
                                 result.serverDueDate = new Date(result?.DueDate).setHours(0, 0, 0, 0)
@@ -464,31 +742,33 @@ function TeamPortlioTable(SelectedProp: any) {
                                 if (result?.projectStructerId && title || formattedDueDate) {
                                     result.joinedData.push(`Project ${result?.projectStructerId} - ${title}  ${formattedDueDate == "Invalid date" ? '' : formattedDueDate}`)
                                 }
-                                // if (result?.projectStructerId) result.joinedData.push(`Project: ${result?.projectStructerId}`);
-                                // if (title) result.joinedData.push(`Title: ${title}`);
-                                // if (dueDate) result.joinedData.push(`Due Date: ${dueDate}`);
                             }
-                            result["Item_x0020_Type"] = "Task"; 
+                            result.SmartPriority = globalCommon.calculateSmartPriority(result);
+                            result["Item_x0020_Type"] = "Task";
                             TasksItem.push(result);
-                            AllTasksData.push(result)
+                            AllTasksData.push(result);
                         });
                         setAllSiteTasksData(AllTasksData);
-                        let taskBackup = JSON.parse(JSON.stringify(AllTasksData));
-                        allTaskDataFlatLoadeViewBackup = JSON.parse(JSON.stringify(AllTasksData))
-                        allLoadeDataMasterTaskAndTask = allLoadeDataMasterTaskAndTask.concat(taskBackup);
+                        // let taskBackup = JSON.parse(JSON.stringify(AllTasksData));
+                        // allTaskDataFlatLoadeViewBackup = JSON.parse(JSON.stringify(AllTasksData))
+                        try {
+                            allTaskDataFlatLoadeViewBackup = JSON.parse(JSON.stringify(AllTasksData))
+                        } catch (error) {
+                            console.log("backup Json parse error Page Loade Task Data");
+                        }
+                        // allLoadeDataMasterTaskAndTask = allLoadeDataMasterTaskAndTask.concat(taskBackup);
                     }
                 }
             });
-            GetComponents();
+            // GetComponents();
         }
-
     };
     const GetComponents = async () => {
         if (portfolioTypeData.length > 0) {
             portfolioTypeData?.map((elem: any) => {
                 if (isUpdated === "") {
                     filt = "";
-                } else if (isUpdated === elem.Title || isUpdated?.toLowerCase() === elem?.Title?.toLowerCase()) { filt = "(Portfolio_x0020_Type eq '" + elem.Title + "')" }
+                } else if (isUpdated === elem.Title || isUpdated?.toLowerCase() === elem?.Title?.toLowerCase()) { filt = "(PortfolioType/Title eq '" + elem.Title + "')" }
             })
         }
         let web = new Web(ContextValue.siteUrl);
@@ -510,14 +790,16 @@ function TeamPortlioTable(SelectedProp: any) {
             .get();
 
         console.log(componentDetails);
-        ProjectData = componentDetails.filter((projectItem: any) => projectItem.Item_x0020_Type === "Project")
+        ProjectData = componentDetails.filter((projectItem: any) => projectItem.Item_x0020_Type === "Project" || projectItem.Item_x0020_Type === 'Sprint');
         componentDetails.forEach((result: any) => {
             result.siteUrl = ContextValue?.siteUrl;
             result["siteType"] = "Master Tasks";
             result.AllTeamName = "";
             result.descriptionsSearch = '';
+            result.SmartPriority = 0;
             result.commentsSearch = '';
             result.TaskTypeValue = '';
+            result.timeSheetsDescriptionSearch = '';
             result.portfolioItemsSearch = result.Item_x0020_Type;
             result.TeamLeaderUser = [];
             if (result.Item_x0020_Type === 'Component') {
@@ -629,9 +911,21 @@ function TeamPortlioTable(SelectedProp: any) {
                 result.ClientCategorySearch = ''
             }
         });
+        let portfolioLabelCountBackup: any = []
+        try {
+            portfolioLabelCountBackup = JSON.parse(JSON.stringify(portfolioTypeDataItem));
+        } catch (error) {
+            console.log("backup Json parse error Page Loade master Data");
+        }
+        setPortFolioTypeIconBackup(portfolioLabelCountBackup);
         setAllMasterTasks(componentDetails)
-        allMasterTaskDataFlatLoadeViewBackup = JSON.parse(JSON.stringify(componentDetails));
-        allLoadeDataMasterTaskAndTask = JSON.parse(JSON.stringify(componentDetails));
+
+        try {
+            allMasterTaskDataFlatLoadeViewBackup = JSON.parse(JSON.stringify(componentDetails));
+            allLoadeDataMasterTaskAndTask = JSON.parse(JSON.stringify(componentDetails));
+        } catch (error) {
+            console.log("backup Json parse error Page Loade master task Data");
+        }
         AllComponetsData = componentDetails;
         ComponetsData["allComponets"] = componentDetails;
     };
@@ -683,12 +977,20 @@ function TeamPortlioTable(SelectedProp: any) {
 
     React.useEffect(() => {
         if (AllMetadata.length > 0 && portfolioTypeData.length > 0) {
-            LoadAllSiteTasks()
+            GetComponents();
+            LoadAllSiteTasks();
+            LoadAllSiteTasksAllData();
         }
     }, [AllMetadata.length > 0 && portfolioTypeData.length > 0])
 
     React.useEffect(() => {
-        if (AllSiteTasksData.length > 0 && AllMasterTasksData.length > 0 && allLoadeDataMasterTaskAndTask?.length > 0) {
+        if (AllSiteTasksData.length > 0 && AllMasterTasksData.length > 0) {
+            setFilterCounters(true);
+        }
+    }, [AllSiteTasksData.length > 0 && AllMasterTasksData.length > 0])
+
+    const firstTimeFullDataGrouping = () => {
+        if (allLoadeDataMasterTaskAndTask?.length > 0) {
             countAllTasksData = [];
             let count = 0;
             if (IsUpdated === "") {
@@ -711,9 +1013,10 @@ function TeamPortlioTable(SelectedProp: any) {
                 return !isDuplicate;
             })
             countTaskAWTLevel(countAllTasksData, '');
-            setFilterCounters(true);
+            console.log("dataAllGrupingdataAllGrupingdataAllGrupingdataAllGruping ========", dataAllGruping);
+            rerender();
         }
-    }, [AllSiteTasksData.length > 0 && AllMasterTasksData.length > 0 && allLoadeDataMasterTaskAndTask?.length > 0])
+    }
 
     const AllcomponentGrouping = (portId: any, index: any) => {
         let FinalComponentAll: any = []
@@ -818,13 +1121,17 @@ function TeamPortlioTable(SelectedProp: any) {
         items.subRows = items?.subRows?.concat(findTasks)
     }
 
-
     const smartFiltercallBackData = React.useCallback((filterData, updatedSmartFilter, smartTimeTotal, flatView) => {
         if (filterData.length > 0 && smartTimeTotal) {
             setUpdatedSmartFilter(updatedSmartFilter);
             setUpdatedSmartFilterFlatView(flatView);
             setAllSmartFilterOriginalData(filterData);
-            let filterDataBackup = JSON.parse(JSON.stringify(filterData));
+            let filterDataBackup: any = []
+            try {
+                filterDataBackup = JSON.parse(JSON.stringify(filterData));
+            } catch (error) {
+                console.log("backup Json parse error smartFiltercallBackData function");
+            }
             setAllSmartFilterData(filterDataBackup);
             setSmartTimeTotalFunction(() => smartTimeTotal);
         } else if (updatedSmartFilter === true && filterData.length === 0) {
@@ -861,7 +1168,6 @@ function TeamPortlioTable(SelectedProp: any) {
                     }
                 })
             }
-            // if (count === portfolioTypeData?.length) {
             taskTypeDataItem?.filter((taskLevelcount: any) => { taskLevelcount[taskLevelcount.Title + 'filterNumber'] = 0 });
             AfterFilterTaskCount = AfterFilterTaskCount?.filter((ele: any, ind: any, arr: any) => {
                 const isDuplicate = arr.findIndex((elem: any) => { return (elem.ID === ele.ID || elem.Id === ele.Id) && elem.siteType === ele.siteType; }) !== ind
@@ -871,7 +1177,6 @@ function TeamPortlioTable(SelectedProp: any) {
             childRef?.current?.setRowSelection({});
             childRef?.current?.setColumnFilters([]);
             childRef?.current?.setGlobalFilter('');
-            // }
         }
         if (smartAllFilterData?.length > 0 && updatedSmartFilter === true && updatedSmartFilterFlatView === false) {
             isColumnDefultSortingAsc = false
@@ -1034,6 +1339,13 @@ function TeamPortlioTable(SelectedProp: any) {
                     }
                 });
             });
+            let taskLabelCountBackup: any = []
+            try {
+                taskLabelCountBackup = JSON.parse(JSON.stringify(taskTypeDataItem));
+            } catch (error) {
+                console.log('Json parse error countTaskAWTLevel function');
+            }
+            setTaskTypeDataItemBackup(taskLabelCountBackup)
         }
     };
 
@@ -1056,7 +1368,11 @@ function TeamPortlioTable(SelectedProp: any) {
         let afterFilter = true;
         let dataAllGrupingBackup: any = [];
         if (dataAllGruping?.length > 0) {
-            dataAllGrupingBackup = JSON.parse(JSON.stringify(dataAllGruping));
+            try {
+                dataAllGrupingBackup = JSON.parse(JSON.stringify(dataAllGruping));
+            } catch (error) {
+                console.log('Json parse error filterDataAfterUpdate function');
+            }
         }
         smartAllFilterData?.map((filterItem: any) => {
             count = count + 1;
@@ -1167,7 +1483,6 @@ function TeamPortlioTable(SelectedProp: any) {
             setData(finalDataCopyArray);
         }
     }
-
     const updatedSmartFilterFlatViewData = (data: any) => {
         hasCustomExpanded = false
         hasExpanded = false
@@ -1177,7 +1492,12 @@ function TeamPortlioTable(SelectedProp: any) {
         // setData(smartAllFilterData);
     }
     const switchFlatViewData = (data: any) => {
-        let groupedDataItems = JSON.parse(JSON.stringify(data));
+        let groupedDataItems: any = []
+        try {
+            groupedDataItems = JSON.parse(JSON.stringify(data));
+        } catch (error) {
+            console.log('Json parse error switchFlatViewData function');
+        }
         const flattenedData = flattenData(groupedDataItems);
         hasCustomExpanded = false
         hasExpanded = false
@@ -1185,6 +1505,7 @@ function TeamPortlioTable(SelectedProp: any) {
         isColumnDefultSortingAsc = true
         setGroupByButtonClickData(data);
         setclickFlatView(true);
+        setFlatViewDataAll(flattenedData)
         setData(flattenedData);
         // setData(smartAllFilterData);
     }
@@ -1212,10 +1533,10 @@ function TeamPortlioTable(SelectedProp: any) {
         setData(groupByButtonClickData);
     }
     // const setTableHeight = () => {
-    //     const table = document.getElementById('runtimeTable');
+    //     const table = document.getElementById('table-container');
     //     const screenHeight = window.innerHeight;
     //     const tableHeight = screenHeight * 0.8 - 5;
-    //     table.style.maxHeight = `${tableHeight}px`;
+    //     table.style.height = `${tableHeight}px`;
     // };
     // React.useEffect(() => {
     //     setTableHeight();
@@ -1225,7 +1546,7 @@ function TeamPortlioTable(SelectedProp: any) {
     //     };
     // }, []);
 
-   
+
 
     // const setTableDimensions = () => {
     //     const table = document.getElementById('runtimeTable');
@@ -1294,6 +1615,7 @@ function TeamPortlioTable(SelectedProp: any) {
                 header: "",
                 resetColumnFilters: false,
                 size: 95,
+                isColumnVisible: true
             },
             {
                 accessorFn: (row) => row?.TaskID,
@@ -1309,6 +1631,7 @@ function TeamPortlioTable(SelectedProp: any) {
                 isColumnDefultSortingAsc: isColumnDefultSortingAsc,
                 // isColumnDefultSortingAsc:true,
                 size: 190,
+                isColumnVisible: true
             },
             {
                 accessorFn: (row) => row?.Title,
@@ -1347,15 +1670,16 @@ function TeamPortlioTable(SelectedProp: any) {
                 resetColumnFilters: false,
                 header: "",
                 size: 500,
+                isColumnVisible: true
             },
             {
                 accessorFn: (row) => row?.projectStructerId + "." + row?.ProjectTitle,
                 cell: ({ row, column, getValue }) => (
                     <>
-                        {row?.original?.ProjectTitle != (null || undefined) ?
+                        {row?.original?.ProjectTitle != (null || undefined) &&
                             <span ><a style={row?.original?.fontColorTask != undefined ? { color: `${row?.original?.fontColorTask}` } : { color: `${row?.original?.PortfolioType?.Color}` }} data-interception="off" target="_blank" className="hreflink serviceColor_Active" href={`${ContextValue.siteUrl}/SitePages/Project-Management.aspx?ProjectId=${row?.original?.ProjectId}`} >
                                 <ReactPopperTooltip ShareWebId={row?.original?.projectStructerId} projectToolShow={true} row={row} AllListId={ContextValue} /></a></span>
-                            : ""}
+                        }
                     </>
                 ),
                 id: 'ProjectTitle',
@@ -1363,8 +1687,8 @@ function TeamPortlioTable(SelectedProp: any) {
                 resetColumnFilters: false,
                 header: "",
                 size: 70,
+                isColumnVisible: true
             },
-
             {
                 accessorFn: (row) => row?.TaskTypeValue,
                 cell: ({ row, column, getValue }) => (
@@ -1377,8 +1701,8 @@ function TeamPortlioTable(SelectedProp: any) {
                 resetColumnFilters: false,
                 size: 130,
                 id: "TaskTypeValue",
+                isColumnVisible: true
             },
-
             {
                 accessorFn: (row) => row?.ClientCategorySearch,
                 cell: ({ row }) => (
@@ -1391,6 +1715,7 @@ function TeamPortlioTable(SelectedProp: any) {
                 header: "",
                 resetColumnFilters: false,
                 size: 95,
+                isColumnVisible: true
             },
             {
                 accessorFn: (row) => row?.AllTeamName,
@@ -1404,6 +1729,7 @@ function TeamPortlioTable(SelectedProp: any) {
                 resetColumnFilters: false,
                 header: "",
                 size: 100,
+                isColumnVisible: true
             },
             {
                 accessorFn: (row) => row?.PercentComplete,
@@ -1415,6 +1741,7 @@ function TeamPortlioTable(SelectedProp: any) {
                 resetColumnFilters: false,
                 header: "",
                 size: 42,
+                isColumnVisible: true
             },
             {
                 accessorFn: (row) => row?.ItemRank,
@@ -1426,19 +1753,30 @@ function TeamPortlioTable(SelectedProp: any) {
                 resetColumnFilters: false,
                 header: "",
                 size: 42,
+                isColumnVisible: true
             },
-            // {
-            //     accessorKey: "DueDate",
-            //     placeholder: "Due Date",
-            //     header: "",
-            //     resetColumnFilters: false,
-            //     size: 91,
-            //     id: "DueDate",
-            // },
+            {
+                accessorFn: (row) => row?.SmartPriority,
+                cell: ({ row }) => (
+                    <div className="text-center boldClable" title={row?.original?.showFormulaOnHover}>{row?.original?.SmartPriority != 0 ? row?.original?.SmartPriority : null}</div>
+                ),
+                filterFn: (row: any, columnName: any, filterValue: any) => {
+                    if (row?.original?.SmartPriority == filterValue) {
+                        return true
+                    } else {
+                        return false
+                    }
+                },
+                id: "SmartPriority",
+                placeholder: "SmartPriority",
+                resetColumnFilters: false,
+                header: "",
+                size: 42,
+                isColumnVisible: true
+            },
             {
                 accessorFn: (row) => row?.DueDate,
                 cell: ({ row, column, getValue }) => (
-                    // <span className='ms-1'>{row?.original?.DisplayDueDate}</span>
                     <HighlightableCell value={row?.original?.DisplayDueDate} searchTerm={column.getFilterValue() != undefined ? column.getFilterValue() : childRef?.current?.globalFilter} />
                 ),
                 filterFn: (row: any, columnName: any, filterValue: any) => {
@@ -1454,6 +1792,7 @@ function TeamPortlioTable(SelectedProp: any) {
                 placeholder: "DueDate",
                 header: "",
                 size: 91,
+                isColumnVisible: true
             },
             {
                 accessorFn: (row) => row?.Created,
@@ -1462,7 +1801,6 @@ function TeamPortlioTable(SelectedProp: any) {
                         {row?.original?.Created == null ? ("") : (
                             <>
                                 <div style={{ width: "75px" }} className="me-1"><HighlightableCell value={row?.original?.DisplayCreateDate} searchTerm={column.getFilterValue() != undefined ? column.getFilterValue() : childRef?.current?.globalFilter} /></div>
-                                {/* <div className='ms-1'>{row?.original?.DisplayCreateDate} </div> */}
                                 {row?.original?.Author != undefined &&
                                     <>
                                         <a href={`${ContextValue?.siteUrl}/SitePages/TaskDashboard.aspx?UserId=${row?.original?.Author?.Id}&Name=${row?.original?.Author?.Title}`}
@@ -1479,6 +1817,7 @@ function TeamPortlioTable(SelectedProp: any) {
                 resetColumnFilters: false,
                 resetSorting: false,
                 placeholder: "Created",
+                isColumnVisible: true,
                 filterFn: (row: any, columnName: any, filterValue: any) => {
                     if (row?.original?.Author?.Title?.toLowerCase()?.includes(filterValue?.toLowerCase()) || row?.original?.DisplayCreateDate?.includes(filterValue)) {
                         return true
@@ -1495,6 +1834,7 @@ function TeamPortlioTable(SelectedProp: any) {
                 header: "",
                 resetColumnFilters: false,
                 id: "descriptionsSearch",
+                isColumnVisible: false
             },
             {
                 accessorKey: "commentsSearch",
@@ -1502,19 +1842,24 @@ function TeamPortlioTable(SelectedProp: any) {
                 header: "",
                 resetColumnFilters: false,
                 id: "commentsSearch",
+                isColumnVisible: false
             },
             {
-                accessorFn: (row) => row?.TotalTaskTime,
-                // cell: ({ row }) => (
-                //     <>
-                //         <div className="text-center" style={row?.original?.fontColorTask != undefined ? { color: `${row?.original?.fontColorTask}` } : {}}>{row?.original?.TotalTaskTime}</div>
-                //     </>
-                // ),
+                accessorKey: "timeSheetsDescriptionSearch",
+                placeholder: "timeSheetsDescriptionSearch",
+                header: "",
+                resetColumnFilters: false,
+                id: "timeSheetsDescriptionSearch",
+                isColumnVisible: false
+            },
+            {
+                accessorKey: "TotalTaskTime",
                 id: "TotalTaskTime",
                 placeholder: "Smart Time",
                 header: "",
                 resetColumnFilters: false,
                 size: 49,
+                isColumnVisible: true
             },
             {
                 cell: ({ row }) => (
@@ -1526,10 +1871,11 @@ function TeamPortlioTable(SelectedProp: any) {
                         )}
                     </>
                 ),
-                id: "row?.original.Id",
+                id: "timeShitsIcons",
                 canSort: false,
                 placeholder: "",
                 size: 1,
+                isColumnVisible: true
             },
             {
                 header: ({ table }: any) => (
@@ -1549,13 +1895,14 @@ function TeamPortlioTable(SelectedProp: any) {
                                 <span className="svg__iconbox svg__icon--re-structure"> </span>
                             </span>
                         )}
-                        {getValue()}
+                        {/* {getValue()} */}
                     </>
                 ),
-                id: "row?.original.Id",
+                id: "Restructure",
                 canSort: false,
                 placeholder: "",
                 size: 1,
+                isColumnVisible: true
             },
             {
                 cell: ({ row, getValue }) => (
@@ -1590,14 +1937,15 @@ function TeamPortlioTable(SelectedProp: any) {
                                     ></span>
                                 </a>
                             )}
-                        {getValue()}
+                        {/* {getValue()} */}
                     </>
                 ),
-                id: "row?.original.Id",
+                id: "editIcon",
                 canSort: false,
                 placeholder: "",
                 header: "",
                 size: 30,
+                isColumnVisible: true
             },
         ],
         [data]
@@ -1638,9 +1986,6 @@ function TeamPortlioTable(SelectedProp: any) {
             childRef.current.trueTopIcon(items);
         }
     };
-
-
-
     //-------------------------------------------------- restructuring function end---------------------------------------------------------------
 
     //// popup Edit Task And Component///
@@ -1893,24 +2238,44 @@ function TeamPortlioTable(SelectedProp: any) {
     }
     // new change////
     const CreateActivityPopup = (type: any) => {
+        setActiveTile(type)
         if (checkedList?.TaskType === undefined) {
-            checkedList.NoteCall = type
-            setIsOpenActivity(true)
+            checkedList.NoteCall = type;
 
         }
         if (checkedList?.TaskType?.Id == 1) {
-            checkedList.NoteCall = type
-            setIsOpenWorkstream(true);
+            checkedList.NoteCall = type;
         }
         if (checkedList?.TaskType?.Id == 3) {
-            checkedList.NoteCall = type
-            setIsOpenActivity(true);
-
+            checkedList.NoteCall = type;
         }
         if (checkedList?.TaskType?.Id == 2) {
-            alert("You can not create any item inside Task")
+            alert("You can not create ny item inside Task");
         }
-    }
+    };
+
+    const Createbutton = () => {
+        if (checkedList?.TaskType === undefined) {
+            // SelectedProp.props.NoteCall = type;
+            // checkedList.NoteCall = type;
+            setIsOpenActivity(true);
+            setActiveTile("")
+        }
+        if (checkedList?.TaskType?.Id == 1) {
+            // checkedList.NoteCall = type;
+            setIsOpenWorkstream(true);
+            setActiveTile("")
+        }
+        if (checkedList?.TaskType?.Id == 3) {
+            // SelectedProp.props.NoteCall = type;
+            // checkedList.NoteCall = type;
+            setIsOpenActivity(true);
+            setActiveTile("")
+        }
+        if (checkedList?.TaskType?.Id == 2) {
+            alert("You can not create ny item inside Task");
+        }
+    };
     const closeActivity = () => {
         setActivityPopup(false)
         childRef?.current?.setRowSelection({});
@@ -1922,7 +2287,8 @@ function TeamPortlioTable(SelectedProp: any) {
         }
         if (checkedList?.TaskTypeId === 3 || checkedList?.TaskType?.Id === 3) {
             checkedList.NoteCall = 'Task'
-            setIsOpenActivity(true);
+            // setIsOpenActivity(true);
+            setIsOpenWorkstream(true);
         }
         if (checkedList?.TaskType?.Id == 1 || checkedList?.TaskTypeId == 1) {
             checkedList.NoteCall = 'Workstream'
@@ -1951,17 +2317,30 @@ function TeamPortlioTable(SelectedProp: any) {
         );
     };
 
+    ////Compare tool/////
+    const compareToolCallBack = React.useCallback((compareData) => {
+        if(compareData !="close"){
+            setOpenCompareToolPopup(false);
+        }else{
+            setOpenCompareToolPopup(false);
+        }
+    }, []);
+    const openCompareTool =()=>{
+        setOpenCompareToolPopup(true);
+    }
+    /////end////////////
 
-    React.useEffect(() => {
-        const checkbox: any = document.querySelector('input[type="checkbox"]');
-        checkbox.addEventListener('change', function () {
-            if (checkbox.indeterminate) {
-                checkbox.style.backgroundColor = '#ffcc00'; // Change this to your desired color
-            } else {
-                checkbox.style.backgroundColor = ''; // Reset the background color for checked/unchecked state
-            }
-        });
-    }, [])
+
+    // React.useEffect(() => {
+    //     const checkbox: any = document.querySelector('input[type="checkbox"]');
+    //     checkbox.addEventListener('change', function () {
+    //         if (checkbox.indeterminate) {
+    //             checkbox.style.backgroundColor = '#ffcc00'; // Change this to your desired color
+    //         } else {
+    //             checkbox.style.backgroundColor = ''; // Reset the background color for checked/unchecked state
+    //         }
+    //     });
+    // }, [])
     //-------------------------------------------------------------End---------------------------------------------------------------------------------
 
 
@@ -2004,7 +2383,7 @@ function TeamPortlioTable(SelectedProp: any) {
                     </h2>
                 </div>
                 <div className="togglecontent mt-1">
-                    {filterCounters == true ? <TeamSmartFilter IsUpdated={IsUpdated} IsSmartfavorite={IsSmartfavorite} IsSmartfavoriteId={IsSmartfavoriteId} ProjectData={ProjectData} portfolioTypeData={portfolioTypeData} setLoaded={setLoaded} AllSiteTasksData={AllSiteTasksData} AllMasterTasksData={AllMasterTasksData} SelectedProp={SelectedProp.SelectedProp} ContextValue={ContextValue} smartFiltercallBackData={smartFiltercallBackData} portfolioColor={portfolioColor} /> : ''}
+                    {filterCounters == true ? <TeamSmartFilter AllSiteTasksDataLoadAll={AllSiteTasksDataLoadAll} IsUpdated={IsUpdated} IsSmartfavorite={IsSmartfavorite} IsSmartfavoriteId={IsSmartfavoriteId} ProjectData={ProjectData} portfolioTypeData={portfolioTypeData} setLoaded={setLoaded} AllSiteTasksData={AllSiteTasksData} AllMasterTasksData={AllMasterTasksData} SelectedProp={SelectedProp.SelectedProp} ContextValue={ContextValue} smartFiltercallBackData={smartFiltercallBackData} portfolioColor={portfolioColor} /> : ''}
                 </div>
             </section>
 
@@ -2015,22 +2394,9 @@ function TeamPortlioTable(SelectedProp: any) {
                         <div className="container p-0">
                             <div className="Alltable mt-2 ">
                                 <div className="col-sm-12 p-0 smart">
-                                    <div className="">
+                                    <div>
                                         <div>
-                                            <Loader loaded={loaded} lines={13} length={20} width={10} radius={30} corners={1} rotate={0} direction={1}
-                                                color={portfolioColor ? portfolioColor : "#000069"}
-                                                speed={2}
-                                                trail={60}
-                                                shadow={false}
-                                                hwaccel={false}
-                                                className="spinner"
-                                                zIndex={2e9}
-                                                top="28%"
-                                                left="50%"
-                                                scale={1.0}
-                                                loadedClassName="loadedContent"
-                                            />
-                                            <GlobalCommanTable updatedSmartFilterFlatView={updatedSmartFilterFlatView} setLoaded={setLoaded} clickFlatView={clickFlatView} switchFlatViewData={switchFlatViewData} flatView={true} switchGroupbyData={switchGroupbyData} smartTimeTotalFunction={smartTimeTotalFunction} SmartTimeIconShow={true} AllMasterTasksData={AllMasterTasksData} ref={childRef} callChildFunction={callChildFunction} AllListId={ContextValue} columns={columns} restructureCallBack={callBackData1} data={data} callBackData={callBackData} TaskUsers={AllUsers} showHeader={true} portfolioColor={portfolioColor} portfolioTypeData={portfolioTypeDataItem} taskTypeDataItem={taskTypeDataItem} fixedWidth={true} portfolioTypeConfrigration={portfolioTypeConfrigration} showingAllPortFolioCount={true} showCreationAllButton={true} OpenAddStructureModal={OpenAddStructureModal} addActivity={addActivity} />
+                                            <GlobalCommanTable openCompareTool={openCompareTool} columnSettingIcon={true} AllSitesTaskData={allTaskDataFlatLoadeViewBackup} masterTaskData={allMasterTaskDataFlatLoadeViewBackup} bulkEditIcon={true} priorityRank={priorityRank} precentComplete={precentComplete} portfolioTypeDataItemBackup={portfolioTypeDataItemBackup} taskTypeDataItemBackup={taskTypeDataItemBackup} flatViewDataAll={flatViewDataAll} setData={setData} updatedSmartFilterFlatView={updatedSmartFilterFlatView} setLoaded={setLoaded} clickFlatView={clickFlatView} switchFlatViewData={switchFlatViewData} flatView={true} switchGroupbyData={switchGroupbyData} smartTimeTotalFunction={smartTimeTotalFunction} SmartTimeIconShow={true} AllMasterTasksData={AllMasterTasksData} ref={childRef} callChildFunction={callChildFunction} AllListId={ContextValue} columns={columns} restructureCallBack={callBackData1} data={data} callBackData={callBackData} TaskUsers={AllUsers} showHeader={true} portfolioColor={portfolioColor} portfolioTypeData={portfolioTypeDataItem} taskTypeDataItem={taskTypeDataItem} fixedWidth={true} portfolioTypeConfrigration={portfolioTypeConfrigration} showingAllPortFolioCount={true} showCreationAllButton={true} OpenAddStructureModal={OpenAddStructureModal} addActivity={addActivity} />
                                         </div>
                                     </div>
                                 </div>
@@ -2039,7 +2405,7 @@ function TeamPortlioTable(SelectedProp: any) {
                     </section>
                 </div>
             </section>
-            <Panel onRenderHeader={onRenderCustomHeaderMain1} type={PanelType.large} isOpen={OpenAddStructurePopup} isBlocking={false} onDismiss={AddStructureCallBackCall} >
+            <Panel onRenderHeader={onRenderCustomHeaderMain1} type={PanelType.custom} customWidth="600px" isOpen={OpenAddStructurePopup} isBlocking={false} onDismiss={AddStructureCallBackCall} >
                 <PortfolioStructureCreationCard
                     CreatOpen={CreateOpenCall}
                     Close={AddStructureCallBackCall}
@@ -2052,15 +2418,18 @@ function TeamPortlioTable(SelectedProp: any) {
                     }
                 />
             </Panel>
+
+            {openCompareToolPopup && <CompareTool isOpen={openCompareToolPopup} compareToolCallBack={compareToolCallBack} compareData={childRef?.current?.table?.getSelectedRowModel()?.flatRows} contextValue={SelectedProp?.NextProp}/>}
+
             <Panel
                 onRenderHeader={onRenderCustomHeaderMain}
                 type={PanelType.custom}
-                customWidth="600px"
+                customWidth="620px"
                 isOpen={ActivityPopup}
                 onDismiss={closeActivity}
                 isBlocking={false}
             >
-                <div className="modal-body bg-f5f5 clearfix">
+                <div className="modal-body clearfix">
                     <div
                         className={
                             IsUpdated == "Events Portfolio"
@@ -2073,93 +2442,62 @@ function TeamPortlioTable(SelectedProp: any) {
                         <div id="portfolio" className="section-event pt-0">
                             {checkedList != undefined &&
                                 checkedList?.TaskType?.Title == "Workstream" ? (
-                                <ul className="quick-actions">
-                                    <li className="mx-1 p-2 position-relative bg-siteColor text-center mb-2">
-                                        <div onClick={(e) => CreateActivityPopup("Task")}>
-                                            <span className="icon-sites">
-                                                <img
-                                                    className="icon-sites"
-                                                    src="https://hhhhteams.sharepoint.com/sites/HHHH/SiteCollectionImages/ICONS/Shareweb/bug.png"
-                                                />
-                                            </span>
-                                            Bug
-                                        </div>
-                                    </li>
-                                    <li className="mx-1 p-2 position-relative bg-siteColor text-center mb-2">
-                                        <div onClick={() => CreateActivityPopup("Task")}>
-                                            <span className="icon-sites">
-                                                <img
-                                                    className="icon-sites"
-                                                    src="https://hhhhteams.sharepoint.com/sites/HHHH/SiteCollectionImages/ICONS/Shareweb/feedbck.png"
-                                                />
-                                            </span>
-                                            Feedback
-                                        </div>
-                                    </li>
-                                    <li className="mx-1 p-2 position-relative bg-siteColor text-center mb-2">
-                                        <div onClick={() => CreateActivityPopup("Task")}>
-                                            <span className="icon-sites">
-                                                <img src="	https://hhhhteams.sharepoint.com/sites/HHHH/SiteCollectionImages/ICONS/Shareweb/Impovement.png" />
-                                            </span>
-                                            Improvement
-                                        </div>
-                                    </li>
-                                    <li className="mx-1 p-2 position-relative bg-siteColor text-center mb-2">
-                                        <div onClick={() => CreateActivityPopup("Task")}>
-                                            <span className="icon-sites">
-                                                <img src="https://hhhhteams.sharepoint.com/sites/HHHH/SiteCollectionImages/ICONS/Shareweb/design.png" />
-                                            </span>
-                                            Design
-                                        </div>
-                                    </li>
-                                    <li className="mx-1 p-2 position-relative bg-siteColor text-center mb-2">
-                                        <div onClick={() => CreateActivityPopup("Task")}>
-                                            <span className="icon-sites"></span>
-                                            Task
-                                        </div>
-                                    </li>
-                                </ul>
+                                <div className="mt-4 clearfix">
+                                    <h4 className="titleBorder "> Type</h4>
+                                    <div className="col p-0 taskcatgoryPannel">
+                                        <a id="subcategorytasks936" onClick={(e) => CreateActivityPopup("Bug")} className={activeTile == "Bug" ? "active bg-siteColor subcategoryTask text-center" : "bg-siteColor subcategoryTask text-center"}>
+                                            <span className="tasks-label">Bug</span>
+                                        </a>
+                                        <a id="subcategorytasks936" onClick={(e) => CreateActivityPopup("Feedback")} className={activeTile == "Feedback" ? "active bg-siteColor subcategoryTask text-center" : "bg-siteColor subcategoryTask text-center"}>
+                                            <span className="tasks-label">Feedback</span>
+                                        </a>
+                                        <a id="subcategorytasks936" onClick={() => CreateActivityPopup("Improvement")} className={activeTile == "Improvement" ? "active bg-siteColor subcategoryTask text-center" : "bg-siteColor subcategoryTask text-center"}>
+                                            <span className="tasks-label">Improvement</span>
+                                        </a>
+                                        <a id="subcategorytasks936" onClick={(e) => CreateActivityPopup("Design")} className={activeTile == "Design" ? "active bg-siteColor subcategoryTask text-center" : "bg-siteColor subcategoryTask text-center"}>
+                                            <span className="tasks-label">Design</span>
+                                        </a>
+                                        <a id="subcategorytasks936" onClick={(e) => CreateActivityPopup("Task")} className={activeTile == "Task" ? "active bg-siteColor subcategoryTask text-center" : "bg-siteColor subcategoryTask text-center"}>
+                                            <span className="tasks-label">Task</span>
+                                        </a>
+                                    </div>
+                                </div>
                             ) : (
-                                <ul className="quick-actions">
-                                    <li className="mx-1 p-2 position-relative bg-siteColor text-center mb-2">
-                                        <div onClick={(e) => CreateActivityPopup("Implementation")}>
-                                            <span className="icon-sites">
-                                                <img
-                                                    className="icon-sites"
-                                                    src="https://hhhhteams.sharepoint.com/sites/HHHH/SiteCollectionImages/ICONS/Shareweb/Implementation.png"
-                                                />
-                                            </span>
-                                            Implmentation
-                                        </div>
-                                    </li>
-                                    <li className="mx-1 p-2 position-relative bg-siteColor text-center mb-2">
-                                        <div onClick={() => CreateActivityPopup("Development")}>
-                                            <span className="icon-sites">
-                                                <img
-                                                    className="icon-sites"
-                                                    src="https://hhhhteams.sharepoint.com/sites/HHHH/SiteCollectionImages/ICONS/Shareweb/development.png"
-                                                />
-                                            </span>
-                                            Development
-                                        </div>
-                                    </li>
-                                    <li className="mx-1 p-2 position-relative bg-siteColor text-center mb-2">
-                                        <div onClick={() => CreateActivityPopup("Activities")}>
-                                            <span className="icon-sites"></span>
-                                            Activity
-                                        </div>
-                                    </li>
-                                    <li className="mx-1 p-2 position-relative bg-siteColor text-center mb-2">
-                                        <div onClick={() => CreateActivityPopup("Task")}>
-                                            <span className="icon-sites"></span>
-                                            Task
-                                        </div>
-                                    </li>
-
-                                </ul>
+                                <div className="mt-4 clearfix">
+                                    <h4 className="titleBorder "> Type</h4>
+                                    <div className="col p-0 taskcatgoryPannel">
+                                        <a id="subcategorytasks936" onClick={(e) => CreateActivityPopup("Feedback")} className={activeTile == "Feedback" ? "active bg-siteColor subcategoryTask text-center" : "bg-siteColor subcategoryTask text-center"}>
+                                            <span className="tasks-label">Feedback</span>
+                                        </a>
+                                        <a id="subcategorytasks936" onClick={() => CreateActivityPopup("Improvement")} className={activeTile == "Improvement" ? "active bg-siteColor subcategoryTask text-center" : "bg-siteColor subcategoryTask text-center"}>
+                                            <span className="tasks-label">Improvement</span>
+                                        </a>
+                                        <a id="subcategorytasks936" onClick={(e) => CreateActivityPopup("Implementation")} className={activeTile == "Implementation" ? "active bg-siteColor subcategoryTask text-center" : "bg-siteColor subcategoryTask text-center"}>
+                                            <span className="tasks-label">Implementation</span>
+                                        </a>
+                                        <a id="subcategorytasks936" onClick={() => CreateActivityPopup("Development")} className={activeTile == "Development" ? "active bg-siteColor subcategoryTask text-center" : "bg-siteColor subcategoryTask text-center"}>
+                                            <span className="tasks-label">Development</span>
+                                        </a>
+                                        <a id="subcategorytasks936" onClick={() => CreateActivityPopup("Activities")} className={activeTile == "Activities" ? "active bg-siteColor subcategoryTask text-center" : "bg-siteColor subcategoryTask text-center"}>
+                                            <span className="tasks-label">Activity</span>
+                                        </a>
+                                        <a id="subcategorytasks936" onClick={() => CreateActivityPopup("Task")} className={activeTile == "Task" ? "active bg-siteColor subcategoryTask text-center" : "bg-siteColor subcategoryTask text-center"}>
+                                            <span className="tasks-label">Task</span>
+                                        </a>
+                                    </div>
+                                </div>
                             )}
                         </div>
                     </div>
+                </div>
+                <footer className="pull-right mt-3">
+                    <button
+                        type="button"
+                        className="btn btn-primary mx-2"
+                        onClick={() => Createbutton()}
+                    >
+                        Create
+                    </button>
                     <button
                         type="button"
                         className="btn btn-default btn-default ms-1 pull-right"
@@ -2167,7 +2505,7 @@ function TeamPortlioTable(SelectedProp: any) {
                     >
                         Cancel
                     </button>
-                </div>
+                </footer>
             </Panel>
             {isOpenActivity && (
                 <CreateActivity
@@ -2185,17 +2523,6 @@ function TeamPortlioTable(SelectedProp: any) {
                     portfolioTypeData={portfolioTypeData}
                 />
             )}
-            {/* {isOpenWorkstream && (
-                <CreateWS
-                    props={checkedList}
-                    Call={Call}
-                    TaskUsers={AllUsers}
-                    AllClientCategory={AllClientCategory}
-                    data={data}
-                    SelectedProp={SelectedProp}
-                    portfolioTypeData={portfolioTypeData}
-                ></CreateWS>
-            )} */}
             {isOpenWorkstream && (
                 <CreateWS
                     selectedItem={checkedList}
@@ -2214,11 +2541,11 @@ function TeamPortlioTable(SelectedProp: any) {
                     pageName={"TaskFooterTable"}
                 ></EditTaskPopup>
             )}
-           {IsComponent && (
+            {IsComponent && (
                 <EditInstituton
                     item={SharewebComponent}
                     Calls={Call}
-                    SelectD={SelectedProp}
+                    SelectD={SelectedProp?.SelectedProp}
                     portfolioTypeData={portfolioTypeData}
                 >
                 </EditInstituton>
@@ -2230,8 +2557,8 @@ function TeamPortlioTable(SelectedProp: any) {
                     Context={SelectedProp?.SelectedProp?.Context}
                 ></TimeEntryPopup>
             )}
+            {!loaded && <PageLoader />}
         </div>
     );
 }
 export default TeamPortlioTable;
-

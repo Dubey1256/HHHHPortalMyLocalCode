@@ -21,7 +21,7 @@ import * as globalCommon from "../../../globalComponents/globalCommon";
 import PreSetDatePikerPannel from "../../../globalComponents/SmartFilterGolobalBomponents/PreSetDatePiker"
 import TimeEntryPopup from "../../../globalComponents/TimeEntry/TimeEntryComponent";
 import ShowClintCatogory from "../../../globalComponents/ShowClintCatogory";
-import Sitecomposition from "../../../globalComponents/SiteComposition";
+import CentralizedSiteComposition from '../../../globalComponents/SiteCompositionComponents/CentralizedSiteComposition';
 import FileSaver from 'file-saver';
 import * as XLSX from "xlsx";
 var AllListId: any;
@@ -1205,6 +1205,10 @@ export default class UserTimeEntry extends React.Component<IUserTimeEntryProps, 
                   addtime.NewTimeEntryDate = TaskDate;
                   let datesplite = addtime.TaskDate.split("/");
                   addtime.TimeEntrykDateNew = new Date(parseInt(datesplite[2], 10), parseInt(datesplite[1], 10) - 1, parseInt(datesplite[0], 10));
+                  const maxTitleLength: number = 70;
+                  if (addtime["Description"] != undefined && addtime["Description"].length > maxTitleLength) {
+                    addtime.truncatedTitle = addtime["Description"].substring(0, maxTitleLength - 3) + "...";
+                  }
                   //addtime.TimeEntrykDateNewback = datesplite[1] + '/' + datesplite[0] + '/' + datesplite[2];
                   addtime.TaskTitle = time.TaskTitle;
                   addtime.ID = time.ID;
@@ -1222,24 +1226,24 @@ export default class UserTimeEntry extends React.Component<IUserTimeEntryProps, 
                   addtime.Author.Id = addtime.AuthorId
                   addtime.Author.autherImage = addtime.autherImage
                   addtime.Author.Title = addtime.AuthorName
-                  if (!this.isTaskItemExists(getAllTimeEntry, addtime)) {
-                    getAllTimeEntry.push(addtime);
-                  }
-                  else {
-                    try {
-                      getAllTimeEntry?.forEach(function (item: any) {
-                        if (item.TaskItemID == addtime.TaskItemID && item?.siteType.toLowerCase() == addtime?.siteType.toLowerCase()) {
-                          item.TaskTime = parseFloat(item.TaskTime)
-                          item.TaskTime += parseFloat(addtime?.TaskTime)
-                          item.Effort += addtime?.Effort
-                          item.DispEffort = item?.Effort
-                          item.DispEffort = item.DispEffort.toFixed(2);
-                        }
-                      })
-                    } catch (e) {
-                      console.log(e)
-                    }
-                  }
+                  // if (!this.isTaskItemExists(getAllTimeEntry, addtime)) {
+                  getAllTimeEntry.push(addtime);
+                  // }
+                  // else {
+                  //   try {
+                  //     getAllTimeEntry?.forEach(function (item: any) {
+                  //       if (item.TaskItemID == addtime.TaskItemID && item?.siteType.toLowerCase() == addtime?.siteType.toLowerCase()) {
+                  //         item.TaskTime = parseFloat(item.TaskTime)
+                  //         item.TaskTime += parseFloat(addtime?.TaskTime)
+                  //         item.Effort += addtime?.Effort
+                  //         item.DispEffort = item?.Effort
+                  //         item.DispEffort = item.DispEffort.toFixed(2);
+                  //       }
+                  //     })
+                  //   } catch (e) {
+                  //     console.log(e)
+                  //   }
+                  // }
                 }
               }
             }
@@ -2125,7 +2129,7 @@ export default class UserTimeEntry extends React.Component<IUserTimeEntryProps, 
         size: 90,
         cell: (info: any) => <>
           <span className="d-flex">
-            <ReactPopperTooltipSingleLevel ShareWebId={info?.row?.original?.DisplayTaskId} row={info?.row?.original} singleLevel={true} masterTaskData={AllPortfolios} AllSitesTaskData={AllSitesAllTasks} />
+            <ReactPopperTooltipSingleLevel  AllListId={AllListId} ShareWebId={info?.row?.original?.DisplayTaskId} row={info?.row?.original} singleLevel={true} masterTaskData={AllPortfolios} AllSitesTaskData={AllSitesAllTasks} />
           </span>
         </>
       },
@@ -2181,13 +2185,19 @@ export default class UserTimeEntry extends React.Component<IUserTimeEntryProps, 
         size: 275,
       },
 
-      // {
-      //   accessorKey: "Description",
-      //   id: "Description",
-      //   placeholder: "Time Description",
-      //   header: "",
-      //   // size: 175,
-      // },
+      {
+        accessorKey: "Description",
+        cell: (info: any) => <><span className='popover__wrapper ms-1' data-bs-toggle="tooltip" data-bs-placement="auto">
+          <span>{info?.row?.original.truncatedTitle?.length > 0 ? info?.row?.original?.truncatedTitle : info?.row?.original?.Description}</span>
+          {info?.row?.original.truncatedTitle?.length > 0 && <span className="f-13 popover__content" >
+            {info?.row?.original?.Description}
+          </span>}
+        </span></>,
+        id: "Description",
+        placeholder: "Time Description",
+        header: "",
+        // size: 175,
+      },
       // {
       //   accessorKey: "TimeEntryDate",
       //   id: "TimeEntryDate",
@@ -2195,40 +2205,41 @@ export default class UserTimeEntry extends React.Component<IUserTimeEntryProps, 
       //   header: "",
       //   size: 91,
       // },
-      // {
-      //   accessorFn: (info: any) => info?.NewTimeEntryDate,
-      //   cell: (info: any) => (
-      //     <div className="alignCenter">
-      //       {info?.row?.original?.NewTimeEntryDate == null ? ("") : (
-      //         <>
-      //           {/* <HighlightableCell value={info?.row?.original?.TimeEntryDate} searchTerm={column.getFilterValue()} /> */}
-      //           <span>{info?.row?.original?.TimeEntryDate}</span>
-      //           {info?.row?.original?.Author != undefined &&
-      //             <>
-      //               <a href={`${this.props.Context.pageContext.web.absoluteUrl}/SitePages/TaskDashboard.aspx?UserId=${info?.row?.original?.Author?.Id}&Name=${info?.row?.original?.Author?.Title}`}
-      //                 target="_blank" data-interception="off">
-      //                 <img title={info?.row?.original?.Author?.Title} className="workmember ms-1" src={info?.row?.original?.Author?.autherImage} />
-      //               </a>
-      //             </>
-      //           }
-      //         </>
-      //       )}
-      //     </div>
-      //   ),
-      //   filterFn: (info: any, columnName: any, filterValue: any) => {
-      //     if (info?.original?.Author?.Title?.toLowerCase()?.includes(filterValue?.toLowerCase()) || info?.original?.TimeEntryDate?.includes(filterValue)) {
-      //       return true
-      //     } else {
-      //       return false
-      //     }
-      //   },
-      //   id: 'NewTimeEntryDate',
-      //   resetColumnFilters: false,
-      //   resetSorting: false,
-      //   placeholder: "Time Entry",
-      //   header: "",
-      //   size: 91
-      // },
+      {
+        accessorFn: (info: any) => info?.NewTimeEntryDate,
+        cell: (info: any) => (
+          <div className="alignCenter">
+            {info?.row?.original?.NewTimeEntryDate == null ? ("") : (
+              <>
+                {/* <HighlightableCell value={info?.row?.original?.TimeEntryDate} searchTerm={column.getFilterValue()} /> */}
+                <span>{info?.row?.original?.TimeEntryDate}</span>
+                {info?.row?.original?.Author != undefined &&
+                  <>
+                    <a href={`${this.props.Context.pageContext.web.absoluteUrl}/SitePages/TaskDashboard.aspx?UserId=${info?.row?.original?.Author?.Id}&Name=${info?.row?.original?.Author?.Title}`}
+                      target="_blank" data-interception="off">
+                      <img title={info?.row?.original?.Author?.Title} className="workmember ms-1" src={info?.row?.original?.Author?.autherImage} />
+                    </a>
+                  </>
+                }
+              </>
+            )}
+          </div>
+        ),
+        filterFn: (info: any, columnName: any, filterValue: any) => {
+          if (info?.original?.Author?.Title?.toLowerCase()?.includes(filterValue?.toLowerCase()) || info?.original?.TimeEntryDate?.includes(filterValue)) {
+            return true
+          } else {
+            return false
+          }
+        },
+        id: 'NewTimeEntryDate',
+        resetColumnFilters: false,
+        resetSorting: false,
+        placeholder: "Time Entry",
+        isColumnDefultSortingDesc: true,
+        header: "",
+        size: 91
+      },
       {
         accessorKey: "DispEffort",
         id: "DispEffort",
@@ -2274,16 +2285,16 @@ export default class UserTimeEntry extends React.Component<IUserTimeEntryProps, 
   }
   private ExampleCustomInputStrat = React.forwardRef(({ value, onClick }: any, ref: any) => (
     <div style={{ position: "relative" }} onClick={onClick} ref={ref}>
-      <input type="text" id="datepicker" data-input-type="StartDate" className="form-control date-picker" placeholder="DD/MM/YYYY" value={value} />
-      <span style={{ position: "absolute", top: "50%", right: "5px", transform: "translateY(-50%)", cursor: "pointer" }}>
+      <input type="text" id="datepicker" data-input-type="StartDate" className="form-control date-picker ps-2" placeholder="DD/MM/YYYY" value={value} />
+      <span style={{ position: "absolute", top: "50%", right: "7px", transform: "translateY(-50%)", cursor: "pointer" }}>
         <span className="svg__iconbox svg__icon--calendar"></span>
       </span>
     </div>
   ));
   private ExampleCustomInputEnd = React.forwardRef(({ value, onClick }: any, ref: any) => (
     <div style={{ position: "relative" }} onClick={onClick} ref={ref}>
-      <input type="text" id="datepicker" data-input-type="EndDate" className="form-control date-picker" placeholder="DD/MM/YYYY" value={value} />
-      <span style={{ position: "absolute", top: "50%", right: "5px", transform: "translateY(-50%)", cursor: "pointer" }}>
+      <input type="text" id="datepicker" data-input-type="EndDate" className="form-control date-picker ps-2" placeholder="DD/MM/YYYY" value={value} />
+      <span style={{ position: "absolute", top: "50%", right: "7px", transform: "translateY(-50%)", cursor: "pointer" }}>
         <span className="svg__iconbox svg__icon--calendar"></span>
       </span>
     </div>
@@ -2484,10 +2495,8 @@ export default class UserTimeEntry extends React.Component<IUserTimeEntryProps, 
                     <input type="checkbox" className="" onClick={(e) => this.SelectAllGroupMember(e)} />
                     <label>Select All </label>
                   </span>
-                  <summary className='hyperlink'>
-                    Team members
-                    <hr></hr>
-                  </summary>
+                  <summary className='hyperlink'>Team members</summary>
+                  <hr style={{width:"97%", marginLeft:"30px"}}></hr>  
                   <div style={{ display: "block" }}>
                     <div className="taskTeamBox ps-30 ">
                       {this.state.taskUsers != null && this.state.taskUsers.length > 0 && this.state.taskUsers.map((users: any, i: number) => {
@@ -2526,8 +2535,9 @@ export default class UserTimeEntry extends React.Component<IUserTimeEntryProps, 
                 <details className='m-0' open>
                   <summary className='hyperlink'>
                     Date
-                    <hr></hr>
+                    
                   </summary>
+                  <hr style={{width:"97%", marginLeft:"30px"}}></hr>
                   <Row className="ps-30">
                     <div>
                       <div className="col TimeReportDays">
@@ -2618,7 +2628,7 @@ export default class UserTimeEntry extends React.Component<IUserTimeEntryProps, 
                     <details open>
                       <summary className='hyperlink'>
                         SmartSearch – Filters
-                        <hr></hr>
+                        
                         <span>
                           {this.state.checkedAll && this.state.filterItems != null && this.state.filterItems.length > 0 &&
                             this.state.filterItems.map((obj: any) => {
@@ -2649,6 +2659,7 @@ export default class UserTimeEntry extends React.Component<IUserTimeEntryProps, 
                           }
                         </span>
                       </summary>
+                      <hr style={{width:"97%", marginLeft:"30px"}}></hr>  
                       <div className="togglecontent" style={{ display: "block", paddingLeft: "24px" }}>
                         <div className="smartSearch-Filter-Section">
                           <table width="100%" className="indicator_search">
@@ -2709,18 +2720,19 @@ export default class UserTimeEntry extends React.Component<IUserTimeEntryProps, 
                             </tbody>
                           </table>
                         </div>
-                        <div className="col text-end mb-2 ">
-                          <button type="button" className="btnCol btn btn-primary me-1" onClick={(e) => this.LoadAllTimeSheetaData()}>
-                            Update Filters
+                       
+                      </div>
+                    </details>
+                  </div>
+                </div>
+                <div className="col text-end mb-2 ">
+                         <button type="button" className="btnCol btn btn-primary me-1" onClick={(e) => this.LoadAllTimeSheetaData()}>
+                             Update Filters
                           </button>
                           <button type="button" className="btn btn-default me-1" onClick={() => this.ClearFilters()}>
                             Clear Filters
                           </button>
                         </div>
-                      </div>
-                    </details>
-                  </div>
-                </div>
               </Col>
             </Col>
           </details>
@@ -2743,7 +2755,12 @@ export default class UserTimeEntry extends React.Component<IUserTimeEntryProps, 
         }
         {
           this.state?.IsMasterTask &&
-          (<Sitecomposition props={this.state?.IsMasterTask} isDirectPopup={this.state?.isDirectPopup} callback={() => { this.Call('Master Task') }} sitedata={AllListId} ></Sitecomposition>
+          (<CentralizedSiteComposition
+            ItemDetails={this.state?.IsMasterTask}
+            RequiredListIds={AllListId}
+            closePopupCallBack={() => { this.Call('Master Task') }}
+            usedFor={"CSF"}
+          />
           )
         }
         {/* { this.state?.IsMasterTask && 

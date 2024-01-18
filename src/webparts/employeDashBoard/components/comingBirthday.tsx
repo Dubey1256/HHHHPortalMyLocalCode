@@ -1,18 +1,18 @@
 import * as React from 'react';
 import { useEffect, useState } from 'react';
 import { Web } from 'sp-pnp-js';
-// import {myContextValue} from '../../../globalComponents/globalCommon'
-// import styles from './UpcomingBirthday.module.scss';
+import { myContextValue } from '../../../globalComponents/globalCommon';
+import ManageConfigPopup from '../../../globalComponents/ManageConfigPopup';
 let data: any;
 let endOfWeek: any;
 let today: any;
-// let baseUrl:any;
 let Upcomingbirthday: any[] = []
-export default function ComingBirthday() {
-    // const ContextData:any=React.useContext(myContextValue);
+export default function ComingBirthday(UpcomingBday: any) {
+    const ContextData: any = React.useContext(myContextValue);
     const [AllHrContactDetails, setAllHrContactDetails] = useState([])
-    // baseUrl = props.SelectProperties.PageContext._pageContext._web.absoluteUrl;
-    const webHr = new Web(`${"https://hhhhteams.sharepoint.com/sites/HHHH"}/Hr/`);
+    const [IsManageConfigPopup, setIsManageConfigPopup] = React.useState(false);
+    const [SelectedItem, setSelectedItem]: any = React.useState({});
+    const WebHR = new Web(`${ContextData?.propsValue?.Context?.pageContext?._site?.absoluteUrl}/${ContextData?.propsValue?.UpComingBdaySiteName}/`);
     useEffect(() => {
         loadHRDetails()
     }, []);
@@ -27,25 +27,22 @@ export default function ComingBirthday() {
             endOfWeek.setDate(today.getDate() + daysUntilSunday);
             const todayFormatted = formatDate(today);
             const endOfWeekFormatted = formatDate(endOfWeek);
-
             //Calculate start day month
             const targetDateObj = new Date(todayFormatted);
             const targetDay = targetDateObj.getDate();
             const targetMonth = targetDateObj.getMonth() + 1;
-
             //Calculate end day month
             const targetEndDateObj = new Date(endOfWeekFormatted);
             const targetEndDay = targetEndDateObj.getDate();
             const targetEndMonth = targetEndDateObj.getMonth() + 1;
             //get Hr contact list data
-            data = await webHr.lists.getById("a7b80424-e5e1-47c6-80a1-0ee44a70f92c").items.select(...select).get();
+            data = await WebHR.lists.getById(ContextData?.propsValue?.UpComingBirthdayId).items.select(...select).get();
             if (data.length > 0) {
                 data.forEach((item: any) => {
-                    if (item.Item_x0020_Cover != undefined && item.Item_x0020_Cover != null && item.Item_x0020_Cover.Url != undefined) {
+                    if (item.Item_x0020_Cover != undefined && item.Item_x0020_Cover != null && item.Item_x0020_Cover.Url != undefined)
                         item.Item_x0020_Cover = item.Item_x0020_Cover.Url;
-                    } else {
-                        item.Item_x0020_Cover = `${"https://hhhhteams.sharepoint.com/sites/HHHH"}/GmBH/SiteCollectionImages/ICONS/32/icon_user.jpg`;
-                    }
+                    else
+                        item.Item_x0020_Cover = `${ContextData?.propsValue?.Context?.pageContext?._site?.absoluteUrl}/PublishingImages/Portraits/icon_user.jpg`;
                     if (item.dateOfBirth != undefined) {
                         const formattedDateOfBirth = formatDateItem(item.dateOfBirth, 'Formate');
                         const ShowformattedDateOfBirth = formatDateItem(item.dateOfBirth, 'ChangeFormate');
@@ -53,9 +50,8 @@ export default function ComingBirthday() {
                         const dayOfBirth = BirthdayDate.getDate();
                         const monthOfBirth = BirthdayDate.getMonth() + 1;
                         item.dateOfBirth = ShowformattedDateOfBirth
-                        if ((dayOfBirth >= targetDay && monthOfBirth == targetMonth) && (dayOfBirth <= targetEndDay && monthOfBirth == targetEndMonth)) {
+                        if ((dayOfBirth >= targetDay && monthOfBirth == targetMonth) && (dayOfBirth <= targetEndDay && monthOfBirth == targetEndMonth))
                             Upcomingbirthday.push(item);
-                        }
                     }
                 });
             }
@@ -83,14 +79,22 @@ export default function ComingBirthday() {
         const year = date.getFullYear();
         return `${month}/${day}/${year}`;
     }
-
+    const OpenConfigPopup = (Config: any) => {
+        setIsManageConfigPopup(true);
+        setSelectedItem(Config)
+    }
+    const CloseOpenConfigPopup = () => {
+        setIsManageConfigPopup(false);
+        setSelectedItem('')
+    }
     return (
         <>
             <div className="">
                 <div className='alignCenter'>
-                    <div className=' text-body'>Upcoming Birthday's</div>
-                    {/* <div className='boldClable f-17 mt-1 mx-2 text-black-50'>This Week</div> */}
-                    <div className='boldClable f-16 empCol' style={{ marginLeft: "auto" }}>{AllHrContactDetails.length} People</div>
+                    {UpcomingBday?.config?.WebpartTitle != undefined && <div className=' text-body'>{UpcomingBday?.config?.WebpartTitle}</div>}
+                    <div className='boldClable f-16 empCol' style={{ marginLeft: "auto" }}>
+                        {UpcomingBday?.IsShowConfigBtn && <span className="svg__iconbox svg__icon--setting hreflink" title="Manage Configuration" onClick={(e) => OpenConfigPopup(UpcomingBday?.config)}></span>}
+                        {AllHrContactDetails.length} People</div>
                 </div>
                 <div className='birthDaySec'>
                     {AllHrContactDetails?.length > 0 && AllHrContactDetails.map((Item: any) => {
@@ -116,8 +120,12 @@ export default function ComingBirthday() {
                                 </div>
                             </div>
                         )
-                    })}</div>
+                    })}
+                </div>
             </div>
+            <span>
+                {IsManageConfigPopup && <ManageConfigPopup SelectedItem={SelectedItem} IsManageConfigPopup={IsManageConfigPopup} CloseOpenConfigPopup={CloseOpenConfigPopup} />}
+            </span>
         </>
     )
 }

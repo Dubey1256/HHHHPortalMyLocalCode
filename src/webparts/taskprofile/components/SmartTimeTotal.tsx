@@ -165,16 +165,56 @@ let allTaskUsers:any;
         console.log(newArray);
 
         if (newArray.length > 0) {
+            let TotalTimeData: any = 0;
+            let FinalTotalTime: any = 0;
             newArray.map((items: any) => {
                 var hoverTime = 0;
                 if (items.additionaltime2.length > 0) {
-                    $.each(items.additionaltime2, function (index: any, time: any) {
-                        hoverTime = hoverTime + parseFloat(time.TaskTime);
-                        TotalTime=TotalTime+ parseFloat(time.TaskTime)
+                    $.each(items.additionaltime2, function (index: any, tempItem: any) {
+                        tempItem.hoverTime = 0;
+                        if (tempItem.TaskTimeInMin != undefined || tempItem.TaskTimeInMin != null) {
+                            if (typeof (tempItem.TaskTimeInMin) == 'string') {
+                                let timeValue = Number(tempItem.TaskTimeInMin);
+                                if (timeValue > 0) {
+                                    TotalTimeData = TotalTimeData + timeValue;
+                                    hoverTime = hoverTime + timeValue;
+                                }
+                            } else {
+                                if (tempItem.TaskTimeInMin > 0) {
+                                    TotalTimeData = TotalTimeData + tempItem.TaskTimeInMin;
+                                    hoverTime = hoverTime + tempItem.TaskTimeInMin;;
+                                }
+                            }
+                        }else{
+                            if (typeof (tempItem.TaskTime) == 'string') {
+                                let timeValue = Number(tempItem.TaskTime);
+                                if (timeValue > 0) {
+                                    let timeInMinute = timeValue * 60;
+                                    TotalTimeData = TotalTimeData + timeInMinute;
+                                    hoverTime = hoverTime + timeInMinute;
+                                }
+                            } else {
+                                if (tempItem.TaskTime > 0) {
+                                    let tempTImeInMinute:any = tempItem.TaskTime * 60
+                                    TotalTimeData = TotalTimeData + tempTImeInMinute;
+                                    hoverTime = hoverTime + tempTImeInMinute;
+                                }
+                            }
+                        }
+                        TotalTime = TotalTimeData;
+                        hoverTime = hoverTime;
+                        //tempItem.hoverTime = (hoverTime / 60) ;
+                        // hoverTime = hoverTime + parseFloat(tempItem.TaskTime);
+                        // TotalTime=TotalTime+ parseFloat(tempItem.TaskTime)
                     })
+                    items.hoverTime = hoverTime/60;
                 }
-                items.hoverTime = hoverTime;
-              
+                if (TotalTimeData > 0) {
+                    FinalTotalTime = (TotalTimeData / 60);
+                }
+                TotalTime = FinalTotalTime;
+                
+               
             })
         }
        setsmartTimeTotal(TotalTime)

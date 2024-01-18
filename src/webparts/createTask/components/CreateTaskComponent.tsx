@@ -19,6 +19,7 @@ let AssignedToUsers: any = []
 let AllClientCategories: any = [];
 let SitesTypes: any = []
 let subCategories: any = []
+let selectedPortfolio: any = [];
 let TeamMessagearray: any = [];
 let AllComponents: any = []
 let taskUsers: any = [];
@@ -108,7 +109,7 @@ function CreateTaskComponent(props: any) {
         base_Url = AllListId?.siteUrl
         pageContext();
         setRefreshPage(!refreshPage);
-    }, [PageRelevantTask,TaskUrlRelevantTask,ComponentRelevantTask])
+    }, [PageRelevantTask, TaskUrlRelevantTask, ComponentRelevantTask])
 
     const GetComponents = async () => {
         let PropsObject: any = {
@@ -144,6 +145,7 @@ function CreateTaskComponent(props: any) {
                 }));
                 // setSave({ ...save, Component: DataItem });
                 setSmartComponentData(DataItem);
+                selectedPortfolio = DataItem;
                 setSearchedServiceCompnentData([]);
                 setSearchedServiceCompnentKey('');
                 // selectPortfolioType('Component');
@@ -158,7 +160,7 @@ function CreateTaskComponent(props: any) {
         let TempArray: any = [];
         if (SearchedKeyWord.length > 0) {
             if (AllComponents != undefined && AllComponents?.length > 0) {
-                AllComponents.map((AllDataItem: any) => {
+                AllComponents?.map((AllDataItem: any) => {
                     if ((AllDataItem.Path?.toLowerCase())?.includes(SearchedKeyWord.toLowerCase())) {
                         TempArray.push(AllDataItem);
                     }
@@ -254,6 +256,7 @@ function CreateTaskComponent(props: any) {
             siteUrlData = siteUrlData?.slice(1, siteUrlData?.length)
             let paramSiteUrl = siteUrlData;
             let paramComponentId = params.get('ComponentID');
+            // let paramComponentId = params.get('Component');
             let paramType = params.get('Type');
             let paramTaskType = params.get('TaskType');
             let paramServiceId = params.get('ServiceID');
@@ -301,6 +304,7 @@ function CreateTaskComponent(props: any) {
                         setComponent.push(item)
                         setSave((prev: any) => ({ ...prev, Component: setComponent }));
                         setSmartComponentData(setComponent);
+                        selectedPortfolio = setComponent
                     }
                 })
                 if (SDCCreatedBy != undefined && SDCCreatedDate != undefined && SDCTaskUrl != undefined) {
@@ -427,7 +431,7 @@ function CreateTaskComponent(props: any) {
                     }
                     UrlPasteTitle(e);
                 }
-                if(paramTaskType != 'Bug' && paramTaskType != 'Design'){
+                if (paramTaskType != 'Bug' && paramTaskType != 'Design') {
                     await loadRelevantTask(paramComponentId, paramSiteUrl, PageName).then((response: any) => {
                         setRefreshPage(!refreshPage);
                     })
@@ -440,6 +444,7 @@ function CreateTaskComponent(props: any) {
                         setComponent.push(item)
                         setSave((prev: any) => ({ ...prev, portfolioType: 'Component' }))
                         setSmartComponentData(setComponent);
+                        selectedPortfolio = setComponent
                     }
                 }
             })
@@ -454,7 +459,7 @@ function CreateTaskComponent(props: any) {
         let PageRelevant = PageRelevantTask;
         let TaskUrlRelevant = TaskUrlRelevantTask;
         let ComponentRelevant = ComponentRelevantTask;
-      
+
         const web = new Web(AllListId?.siteUrl);
         const batch = sp.createBatch();
         let count: any = 0;
@@ -553,9 +558,9 @@ function CreateTaskComponent(props: any) {
             MetaData = await web.lists
                 .getById(ContextValue.SmartMetadataListID)
                 .items
-                .select("Id,Title,listId,siteUrl,siteName,Item_x005F_x0020_Cover,ParentID,Parent/Id,Parent/Title,EncodedAbsUrl,IsVisible,Created,Item_x0020_Cover,Modified,Description1,SortOrder,Selectable,TaxType,Created,Modified,Author/Name,Author/Title,Editor/Name,Editor/Title,AlternativeTitle")
+                .select("Id,Title,listId,siteUrl,siteName,IsSendAttentionEmail/Id,Item_x005F_x0020_Cover,ParentID,Parent/Id,Parent/Title,EncodedAbsUrl,IsVisible,Created,Item_x0020_Cover,Modified,Description1,SortOrder,Selectable,TaxType,Created,Modified,Author/Name,Author/Title,Editor/Name,Editor/Title,AlternativeTitle")
                 .top(4999)
-                .expand('Author,Editor,Parent')
+                .expand('Author,Editor,Parent,IsSendAttentionEmail')
                 .get();
             AllMetadata = MetaData;
             AllMetadata?.map((metadata: any) => {
@@ -802,8 +807,8 @@ function CreateTaskComponent(props: any) {
                     })
 
                     try {
-                        if (smartComponentData !== undefined && smartComponentData.length >= 0) {
-                            $.each(smartComponentData, function (index: any, smart: any) {
+                        if (selectedPortfolio !== undefined && selectedPortfolio.length >= 0) {
+                            $.each(selectedPortfolio, function (index: any, smart: any) {
                                 selectedComponent.push(smart.Id);
                                 portfolioId = smart?.Id
                                 if (selectedSite?.Parent?.Title == "SDC Sites") {
@@ -822,22 +827,21 @@ function CreateTaskComponent(props: any) {
                                 }
                             })
                         }
-                        if (save?.siteType?.toLowerCase() == "shareweb" && smartComponentData?.length > 0) {
-                            postClientTime = JSON.parse(smartComponentData[0]?.Sitestagging)
-                            postClientTime?.map((sitecomp: any) => {
-                                if (sitecomp.Title != undefined && sitecomp.Title != "" && sitecomp.SiteName == undefined) {
-                                    sitecomp.SiteName = sitecomp.Title
-                                }
-
-                            })
-                            siteCompositionDetails = smartComponentData[0]?.SiteCompositionSettings;
+                        if (save?.siteType?.toLowerCase() == "shareweb" && selectedPortfolio?.length > 0) {
+                            try {
+                                postClientTime = JSON.parse(selectedPortfolio[0]?.Sitestagging)
+                                siteCompositionDetails = selectedPortfolio[0]?.SiteCompositionSettings;
+                            } catch (error) {
+                                console.log(error, "Error Client Time")
+                            }
                         } else {
                             var siteComp: any = {};
-                            siteComp.SiteName = save?.siteType,
-                                siteComp.localSiteComposition = true
+                            siteComp.Title = save?.siteType,
+                            siteComp.localSiteComposition = true;
+                            siteComp.SiteImages = selectedSite?.Item_x005F_x0020_Cover?.Url;
                             siteComp.ClienTimeDescription = 100,
                                 //   siteComp.SiteImages = ,
-                                siteComp.Date = moment(new Date().toLocaleString()).format("MM-DD-YYYY");
+                            siteComp.Date = moment(new Date().toLocaleString()).format("MM-DD-YYYY");
                             postClientTime = [siteComp]
                         }
 
@@ -894,7 +898,7 @@ function CreateTaskComponent(props: any) {
                         SiteCompositionSettings: siteCompositionDetails != undefined ? siteCompositionDetails : '',
                         AssignedToId: { "results": AssignedToIds },
                         TaskTypeId: 2,
-                        ClientTime: postClientTime != undefined ? JSON.stringify(postClientTime) : '',
+                        Sitestagging: postClientTime != undefined ? JSON.stringify(postClientTime) : '',
                         ComponentLink: {
                             __metadata: { 'type': 'SP.FieldUrlValue' },
                             Description: save.taskUrl?.length > 0 ? save.taskUrl : null,
@@ -951,16 +955,15 @@ function CreateTaskComponent(props: any) {
                         }
 
                         if (CategoryTitle?.indexOf("Design") > -1) {
-                            setSendApproverMail(true);
                             globalCommon.sendImmediateEmailNotifications(data?.data?.Id, selectedSite?.siteUrl?.Url, selectedSite?.listId, data?.data, RecipientMail, 'DesignMail', taskUsers, props?.SelectedProp?.Context).then((response: any) => {
                                 console.log(response);
                             });
                         }
                         if (CategoryTitle?.indexOf("Approval") > -1) {
                             setSendApproverMail(true);
-                            globalCommon.sendImmediateEmailNotifications(data?.data?.Id, selectedSite?.siteUrl?.Url, selectedSite?.listId, data?.data, RecipientMail, 'ApprovalMail', taskUsers, props?.SelectedProp?.Context).then((response: any) => {
-                                console.log(response);
-                            });
+                            // globalCommon.sendImmediateEmailNotifications(data?.data?.Id, selectedSite?.siteUrl?.Url, selectedSite?.listId, data?.data, RecipientMail, 'ApprovalMail', taskUsers, props?.SelectedProp?.Context).then((response: any) => {
+                            //     console.log(response);
+                            // });
                         }
 
 
@@ -973,7 +976,40 @@ function CreateTaskComponent(props: any) {
                         data.data.SiteIcon = selectedSite?.Item_x005F_x0020_Cover?.Url;
                         createdTask.SiteIcon = selectedSite?.Item_x005F_x0020_Cover?.Url;
                         if (UserEmailNotify) {
-                            EmailNotificationOnTeams(data.data.siteUrl, data.data.Id, data.data.Title, save.siteType);
+
+                            if (UserEmailNotify) {
+
+                                let txtComment = `You have been tagged as Attention in the below task by ${loggedInUser?.Title}`;
+                                let TeamMsg =
+                                    txtComment +
+                                    `</br> <a href=${selectedSite?.siteUrl?.Url}>${CreatedTaskID}-${newTitle}</a>`;
+
+                                let sendUserEmail: any = [];
+                                TeamMessagearray?.map((userDtl: any) => {
+                                    taskUsers?.map((allUserItem: any) => {
+                                        if (userDtl?.IsSendAttentionEmail?.Id == allUserItem.AssingedToUserId) {
+                                            sendUserEmail.push(allUserItem.Email);
+                                        }
+                                    });
+                                });
+                                if (sendUserEmail?.length > 0) {
+                                    await globalCommon.SendTeamMessage(
+                                        sendUserEmail,
+                                        TeamMsg,
+                                        props.SelectedProp.Context
+                                    );
+                                }
+
+
+
+                            }
+
+
+
+
+
+
+                            // EmailNotificationOnTeams(data.data.siteUrl, data.data.Id, data.data.Title, save.siteType);
                         }
                         if (props?.projectId != undefined) {
                             EditPopup(data?.data)
@@ -1100,21 +1136,25 @@ function CreateTaskComponent(props: any) {
                     TestUrl = TestUrl.split('.com')[1];
                 else if (TestUrl.toLowerCase().indexOf('.ch') > -1)
                     TestUrl = TestUrl.split('.ch')[1];
-                else if (TestUrl.toLowerCase().indexOf('.de') > -1)
-                    TestUrl = TestUrl.split('.de')[1];
+                else if (TestUrl.toLowerCase().indexOf('.de') > -1) {
+                    TestUrl = TestUrl.split('.de');
+                    try {
+                        if (TestUrl[0]?.toLowerCase()?.indexOf('gruene-washington') > -1) {
+                            TestUrl = TestUrl[0];
+                        } else {
+                            TestUrl = TestUrl[1];
+                        }
+                    } catch (e) { }
+                }
                 let URLDataArr: any = TestUrl.split('/');
                 for (let index = 0; index < SitesTypes?.length; index++) {
                     let site = SitesTypes[index];
-
-
                     let Isfound = false;
-
                     if (TestUrl !== undefined && URLDataArr?.find((urlItem: any) => urlItem?.toLowerCase() == site?.Title?.toLowerCase()) || (site?.AlternativeTitle != null && URLDataArr?.find((urlItem: any) => urlItem?.toLowerCase() == site?.AlternativeTitle?.toLowerCase()))) {
                         item = site.Title;
                         selectedSiteTitle = site.Title;
                         Isfound = true;
                     }
-
                     if (!Isfound) {
                         if (TestUrl !== undefined && site.AlternativeTitle != null) {
                             let sitesAlterNatives = site.AlternativeTitle.toLowerCase().split(';');
@@ -1184,8 +1224,9 @@ function CreateTaskComponent(props: any) {
     }
 
     const selectSubTaskCategory = (title: any, Id: any, item: any) => {
-        if (item?.IsSendAttentionEmail != undefined) {
-            TeamMessagearray.push(item.IsSendAttentionEmail);
+        if (item?.Parent?.Title == "Attention") {
+            TeamMessagearray.push(item);
+            setUserEmailNotify(true)
         }
         if (loggedInUser?.IsApprovalMail?.toLowerCase() == 'approve all but selected items' || loggedInUser?.IsApprovalMail?.toLowerCase() == 'approve selected' && !IsapprovalTask) {
             try {
@@ -1553,9 +1594,12 @@ function CreateTaskComponent(props: any) {
             isOpenEditPopup: false,
             passdata: null
         })
-        if (items == 'Delete' || items == undefined) {
-            location.reload();
-        } else if (items=="Save") {
+        if (items == 'Delete' || items == "Close") {
+            if (burgerMenuTaskDetails?.TaskType == 'Bug' || burgerMenuTaskDetails?.TaskType == 'Design' && createdTask?.Id != undefined) {
+                window.open(base_Url + "/SitePages/CreateTask.aspx", "_self")
+                createdTask = {};
+            }
+        } else if (items == "Save" && createdTask?.Id != undefined) {
             setTimeout(() => {
                 window.open(base_Url + "/SitePages/Task-Profile.aspx?taskId=" + createdTask?.Id + "&Site=" + createdTask?.siteType, "_self")
                 createdTask = {};
@@ -1626,7 +1670,7 @@ function CreateTaskComponent(props: any) {
                                                     <div className="block d-flex justify-content-between pt-1 px-2" style={{ width: "95%" }}>
                                                         <a style={{ color: "#fff !important" }} data-interception="off" target="_blank" href={`${base_Url}/SitePages/Portfolio-Profile.aspx?taskId=${com.ID}`}>{com.Title}</a>
                                                         <a>
-                                                            <span title="Remove Component" onClick={() => setSmartComponentData([])}
+                                                            <span title="Remove Component" onClick={() => { setSmartComponentData([]), selectedPortfolio = [] }}
                                                                 style={{ backgroundColor: 'white' }} className="svg__iconbox svg__icon--cross hreflink mx-2"></span>
                                                         </a>
                                                     </div>
@@ -1669,7 +1713,7 @@ function CreateTaskComponent(props: any) {
 
                         </ul>
                         <div className="border border-top-0 clearfix p-2 tab-content " id="myTabContent">
-                            <div className="tab-pane Alltable mx-height p-0 show active" id="URLTasks" role="tabpanel" aria-labelledby="URLTasks">
+                            <div className="tab-pane Alltable p-0 show active" style={{ maxHeight: "300px", overflow: 'hidden' }} id="URLTasks" role="tabpanel" aria-labelledby="URLTasks">
                                 {TaskUrlRelevantTask?.length > 0 ?
                                     <>
                                         <div className={TaskUrlRelevantTask?.length > 0 ? 'fxhg' : ''}>
@@ -1680,7 +1724,7 @@ function CreateTaskComponent(props: any) {
                                     </div>
                                 }
                             </div>
-                            <div className="tab-pane Alltable p-0 mx-height" id="PageTasks" role="tabpanel" aria-labelledby="PageTasks">
+                            <div className="tab-pane Alltable p-0 " style={{ maxHeight: "300px", overflow: 'hidden' }} id="PageTasks" role="tabpanel" aria-labelledby="PageTasks">
                                 {PageRelevantTask?.length > 0 ?
                                     <>
                                         <div className={PageRelevantTask?.length > 0 ? 'fxhg' : ''}>
@@ -1691,7 +1735,7 @@ function CreateTaskComponent(props: any) {
                                     </div>
                                 }
                             </div>
-                            <div className="tab-pane Alltable mx-height p-0" id="ComponentTasks" role="tabpanel" aria-labelledby="ComponentTasks">
+                            <div className="tab-pane Alltable p-0" style={{ maxHeight: "300px", overflow: 'hidden' }} id="ComponentTasks" role="tabpanel" aria-labelledby="ComponentTasks">
 
                                 {ComponentRelevantTask?.length > 0 ?
                                     <>

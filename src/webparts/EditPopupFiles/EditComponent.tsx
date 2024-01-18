@@ -1,3 +1,4 @@
+
 import * as React from "react";
 import { Panel, PanelType, DefaultButton } from "office-ui-fabric-react";
 import "bootstrap/dist/css/bootstrap.min.css";
@@ -5,10 +6,7 @@ import "bootstrap/js/dist/modal.js";
 import "bootstrap/js/dist/tab.js";
 import * as moment from "moment";
 import { Web } from "sp-pnp-js";
-import ComponentPortPolioPopup from "./ComponentPortfolioSelection";
 import CommentCard from "../../globalComponents/Comments/CommentCard";
-import { IoMdArrowDropdown, IoMdArrowDropright } from "react-icons/io";
-import { SlArrowDown, SlArrowRight } from "react-icons/sl";
 import "react-draft-wysiwyg/dist/react-draft-wysiwyg.css";
 import { map } from "lodash";
 import "react-datepicker/dist/react-datepicker.css";
@@ -19,9 +17,10 @@ import HtmlEditorCard from "../../globalComponents/HtmlEditor/HtmlEditor";
 import TeamConfigurationCard from "./TeamConfigurationPortfolio";
 import Tooltip from "../../globalComponents/Tooltip";
 import VersionHistoryPopup from "../../globalComponents/VersionHistroy/VersionHistory";
-import Sitecomposition from "../../globalComponents/SiteComposition";
+import CentralizedSiteComposition from "../../globalComponents/SiteCompositionComponents/CentralizedSiteComposition";
 
 import ImagesC from "./ImageInformation";
+import { SlArrowDown, SlArrowRight } from "react-icons/sl";
 var PostTechnicalExplanations = "";
 var PostHelp_x0020_Information = "";
 var PostQuestionDescription = "";
@@ -47,9 +46,13 @@ let ShowCategoryDatabackup: any = [];
 let subCategories: any = [];
 let IsapprovalTask = false;
 let CategoryAllData: any = [];
+let mydata: any = [];
+let componentDetailsData:any = [];
+let count = 0;
 let ID: any;
-function EditInstitution({ item, SelectD, Calls, usedFor , portfolioTypeData}: any) {
-   // var AssignedToIds: any = [];
+
+  function EditInstitution({ item, SelectD, Calls, usedFor, portfolioTypeData}: any) {
+    // var AssignedToIds: any = [];
     ResponsibleTeamIds = [];
     AssignedToIds = [];
     TeamMemberIds = [];
@@ -69,7 +72,7 @@ function EditInstitution({ item, SelectD, Calls, usedFor , portfolioTypeData}: a
     }
     const [CompoenetItem, setComponent] = React.useState([]);
     const [changeType, setChangeType] = React.useState(false);
-    const [selectPortfolioType, setSelectPortfolioType]:any = React.useState({Title:item?.PortfolioType?.Title});
+    const [selectPortfolioType, setSelectPortfolioType]: any = React.useState({ Title: item?.PortfolioType?.Title });
     const [SmartHelpDetails, setSmartHelpDetails] = React.useState<any>([]);
     const [update, setUpdate] = React.useState(0);
     const [isDropItem, setisDropItem] = React.useState(false);
@@ -79,6 +82,7 @@ function EditInstitution({ item, SelectD, Calls, usedFor , portfolioTypeData}: a
     const [SharewebItemRank, setSharewebItemRank] = React.useState([]);
     const [isOpenPicker, setIsOpenPicker] = React.useState(false);
     const [IsComponent, setIsComponent] = React.useState(false);
+    const [isopenProjectpopup, setisopenProjectpopup] = React.useState(false);
     const [SharewebComponent, setSharewebComponent] = React.useState("");
     const [SharewebCategory, setSharewebCategory] = React.useState("");
     const [CollapseExpend, setCollapseExpend] = React.useState(true);
@@ -93,6 +97,7 @@ function EditInstitution({ item, SelectD, Calls, usedFor , portfolioTypeData}: a
     const [TaskAssignedTo, setTaskAssignedTo] = React.useState([]);
     const [TaskTeamMembers, setTaskTeamMembers] = React.useState([]);
     const [TaskResponsibleTeam, setTaskResponsibleTeam] = React.useState([]);
+    const [filterdata, setfilterData] = React.useState([]);
     const [Completiondate, setCompletiondate] = React.useState(undefined);
     const [AssignUser, setAssignUser] = React.useState(undefined);
     const [IsComponentPicker, setIsComponentPicker] = React.useState(false);
@@ -133,6 +138,50 @@ function EditInstitution({ item, SelectD, Calls, usedFor , portfolioTypeData}: a
     const [help, setHelp] = React.useState("");
     const [dataUpdate, setDataUpdate] = React.useState<any>();
     const [helpDataUpdate, setHelpDataUpdate] = React.useState<any>();
+    //    for the verified
+    const [shortDescriptionVerifieds, setShortDescriptionVerifieds] = React.useState(false); // State to manage checkbox status
+    const [descriptionVerifieds, setdescriptionVerifieds] = React.useState(false);
+    const [BackgroundVerifieds, setBackgroundVerifieds] = React.useState(false);
+    const [IdeaVerifieds, setIdeaVerifieds] = React.useState(false);
+    const [ValueAddedVerifieds, setValueAddedVerifieds] = React.useState(false);
+    const [DeliverablesVerifieds, setDeliverablesVerifieds] = React.useState(false);
+    const [TechnicalExplanationsVerifieds, setTechnicalExplanationsVerifieds] = React.useState(false);
+    const [HelpInformationVerifieds, setHelpInformationVerifieds] = React.useState(false);
+
+    const [SiteCompositionShow, setSiteCompositionShow] = React.useState(false);
+    const [composition, setComposition] = React.useState(true);
+
+    const handleCheckboxChange = () => {
+        setShortDescriptionVerifieds((prevChecked: any) => !prevChecked);
+    };
+    const handleCheckboxChangedescription = () => {
+        setdescriptionVerifieds((prevChecked: any) => !prevChecked);
+    };
+    const handleCheckboxBackground = () => {
+        setBackgroundVerifieds((prevChecked: any) => !prevChecked);
+    };
+    const handleCheckboxIdea = () => {
+        setIdeaVerifieds((prevChecked: any) => !prevChecked);
+    };
+    const handleCheckboxValueAdded = () => {
+        setValueAddedVerifieds((prevChecked: any) => !prevChecked);
+    };
+    const handleCheckboxDeliverables = () => {
+        setDeliverablesVerifieds((prevChecked: any) => !prevChecked);
+    };
+    const getPlainTextFromHTML = (htmlString: any) => {
+        const temporaryElement = document.createElement('div');
+        temporaryElement.innerHTML = htmlString;
+        const plainText = temporaryElement.innerText.replace(/\n/g, '');
+        return plainText;
+    };
+    const handleCheckboxTechnicalExplanations = () => {
+        setTechnicalExplanationsVerifieds((prevChecked: any) => !prevChecked);
+    };
+    const handleCheckboxHelpInformation = () => {
+        setHelpInformationVerifieds((prevChecked: any) => !prevChecked);
+    };
+
     function imageta() {
         setImagetab(true);
     }
@@ -157,6 +206,63 @@ function EditInstitution({ item, SelectD, Calls, usedFor , portfolioTypeData}: a
         EditComponentCallback("Close");
         setModalIsOpen(false);
     };
+
+    async function updateMultiLookup(itemIds: number[], lookupIds: number[], AllListId: any) {
+      try {
+        if(itemIds?.length==0){
+          getMasterTaskListTasksData();
+        }else{
+          let web = new Web(AllListId?.siteUrl);
+          for (const itemId of itemIds) {
+            // Update the multi-lookup field for each item
+            await web.lists
+              .getById(AllListId?.MasterTaskListID)
+              .items.getById(itemId)
+              .update({
+                PortfoliosId: {
+                  results:
+                    lookupIds !== undefined && lookupIds?.length >0
+                      ? lookupIds
+                      : [],
+                }
+              })
+              .then((res: any) => {
+                getMasterTaskListTasksData();
+                count++;
+                console.log(res);
+              });
+        }
+       
+  
+        }
+      } catch (error) {
+       
+        console.error("Error updating multi-lookup field:", error);
+      }
+    }
+
+    let getMasterTaskListTasksData = async function () {
+      try{
+      let web = new Web(SelectD?.siteUrl);
+     
+      componentDetailsData = await web.lists
+        .getById(SelectD.MasterTaskListID)
+        .items.select("Item_x0020_Type", "Title", "PortfolioStructureID", "Id", "PercentComplete", "Portfolios/Id", "Portfolios/Title")
+        .expand("Portfolios")
+        .filter("Item_x0020_Type eq 'Project' and Portfolios/Id eq " + item.Id)
+        .top(4000)
+        .getAll();
+  
+  
+      // Project Data for HHHH Project Management
+     
+      setfilterData(componentDetailsData)
+      console.log("data show on componentdetails",componentDetailsData)
+      }catch (error) {
+        console.log("error show",error );
+      }
+    };
+  
 
     const Call = React.useCallback((item1: any, type: any, functionType: any) => {
         if (type == "SmartComponent") {
@@ -242,6 +348,12 @@ function EditInstitution({ item, SelectD, Calls, usedFor , portfolioTypeData}: a
         });
         return isExists;
     };
+
+    const GetSmartHelpDetails = async () => {
+        let smartHelpDetails = await web.lists.getById(RequireData.SmartHelptListID).items.select("Title, Id, Body, Permission, ItemType, Components/Id, Components/Title").expand("Components").getAll();
+        setSmartHelpDetails(smartHelpDetails)
+    }
+
     const GetTaskUsers = async () => {
         let taskUsers = [];
         taskUsers = await web.lists
@@ -262,7 +374,37 @@ function EditInstitution({ item, SelectD, Calls, usedFor , portfolioTypeData}: a
             setAssignUser(Assin);
         });
     };
-   
+
+
+    const ClosePopupCallBack = (FnType: any) => {
+        if (FnType == "Close") {
+            setSiteCompositionShow(false)
+        }
+        if (FnType = "Save") {
+            setSiteCompositionShow(false);
+            setTimeout(() => {
+                getMasterTaskListTasks();
+            }, 1000);
+        }
+    }
+
+
+    // var ConvertLocalTOServerDate = function (LocalDateTime: any, dtformat: any) {
+    //     if (dtformat == undefined || dtformat == '') dtformat = "MM-DD-YYYY";
+
+    //     // below logic works fine in all condition
+    //     if (LocalDateTime != '') {
+    //         var serverDateTime;
+    //         var vLocalDateTime = new Date(LocalDateTime);
+    //         //var offsetObj = GetServerOffset();
+    //         //var IANATimeZoneName = GetIANATimeZoneName();
+    //         var mDateTime = moment(LocalDateTime);
+    //         // serverDateTime = mDateTime.tz('Europe/Berlin').format(dtformat); // 5am PDT
+    //         //serverDateTime = mDateTime.tz('America/Los_Angeles').format(dtformat);  // 5am PDT
+    //         return serverDateTime;
+    //     }
+    //     return '';
+    // }
     var getMultiUserValues = function (item: any) {
         var users = "";
         var isuserexists = false;
@@ -333,10 +475,12 @@ function EditInstitution({ item, SelectD, Calls, usedFor , portfolioTypeData}: a
         }
     };
 
+   
     var getMasterTaskListTasks = async function () {
         //  var query = "ComponentCategory/Id,ComponentCategory/Title,ComponentPortfolio/Id,ComponentPortfolio/Title,ServicePortfolio/Id,ServicePortfolio/Title,SiteCompositionSettings,PortfolioStructureID,ItemRank,ShortDescriptionVerified,Portfolio_x0020_Type,BackgroundVerified,descriptionVerified,Synonyms,BasicImageInfo,DeliverableSynonyms,OffshoreComments,OffshoreImageUrl,HelpInformationVerified,IdeaVerified,TechnicalExplanationsVerified,Deliverables,DeliverablesVerified,ValueAddedVerified,CompletedDate,Idea,ValueAdded,TechnicalExplanations,Item_x0020_Type,Sitestagging,Package,Parent/Id,Parent/Title,Short_x0020_Description_x0020_On,Short_x0020_Description_x0020__x,Short_x0020_description_x0020__x0,AdminNotes,AdminStatus,Background,Help_x0020_Information,SharewebComponent/Id,TaskCategories/Id,TaskCategories/Title,PriorityRank,Reference_x0020_Item_x0020_Json,TeamMembers/Title,TeamMembers/Name,Component/Id,Component/Title,Component/ItemType,TeamMembers/Id,Item_x002d_Image,ComponentLink,IsTodaysTask,AssignedTo/Title,AssignedTo/Name,AssignedTo/Id,AttachmentFiles/FileName,FileLeafRef,FeedBack,Title,Id,PercentComplete,Company,StartDate,DueDate,Comments,Categories,Status,WebpartId,Body,Mileage,PercentComplete,Attachments,Priority,Created,Modified,Author/Id,Author/Title,Editor/Id,Editor/Title,ClientCategory/Id,ClientCategory/Title";
+        
+        let componentDetails:any = [];
 
-        let componentDetails = [];
         componentDetails = await web.lists
             .getById(RequireData.MasterTaskListID)
             .items.select(
@@ -441,23 +585,49 @@ function EditInstitution({ item, SelectD, Calls, usedFor , portfolioTypeData}: a
                 "Parent"
             )
             .filter("Id eq " + item.Id + "")
-            .get();
-        console.log(componentDetails);
-        //   document.documentElement.style.setProperty('--SiteBlue', '#c31929');
+            .top(4000)
+            .getAll();
+        console.log("data show on componentdetails",componentDetails);
 
-        // var query = "ComponentCategory/Id,ComponentCategory/Title,ComponentPortfolio/Id,ComponentPortfolio/Title,ServicePortfolio/Id,ServicePortfolio/Title,SiteCompositionSettings,PortfolioStructureID,ItemRank,ShortDescriptionVerified,Portfolio_x0020_Type,BackgroundVerified,descriptionVerified,Synonyms,BasicImageInfo,DeliverableSynonyms,OffshoreComments,OffshoreImageUrl,HelpInformationVerified,IdeaVerified,TechnicalExplanationsVerified,Deliverables,DeliverablesVerified,ValueAddedVerified,CompletedDate,Idea,ValueAdded,TechnicalExplanations,Item_x0020_Type,Sitestagging,Package,Parent/Id,Parent/Title,Short_x0020_Description_x0020_On,Short_x0020_Description_x0020__x,Short_x0020_description_x0020__x0,AdminNotes,AdminStatus,Background,Help_x0020_Information,SharewebComponent/Id,TaskCategories/Id,TaskCategories/Title,PriorityRank,Reference_x0020_Item_x0020_Json,TeamMembers/Title,TeamMembers/Name,Component/Id,Component/Title,Component/ItemType,TeamMembers/Id,Item_x002d_Image,ComponentLink,IsTodaysTask,AssignedTo/Title,AssignedTo/Name,AssignedTo/Id,AttachmentFiles/FileName,FileLeafRef,FeedBack,Title,Id,PercentComplete,Company,StartDate,DueDate,Comments,Categories,Status,WebpartId,Body,Mileage,PercentComplete,Attachments,Priority,Created,Modified,Author/Id,Author/Title,Editor/Id,Editor/Title,ClientCategory/Id,ClientCategory/Title&$expand=ClientCategory,ComponentCategory,AssignedTo,Component,ComponentPortfolio,ServicePortfolio,AttachmentFiles,Author,Editor,TeamMembers,SharewebComponent,TaskCategories,Parent&$filter=Id eq " + item.Id + "";
-        // $.ajax({
-        //     url: "https://hhhhteams.sharepoint.com/sites/HHHH/SP/_api/lists/getbyid('ec34b38f-0669-480a-910c-f84e92e58adf')/items?$select=" + query + "",
-        //     method: "GET",
-        //     headers: {
-        //         "Accept": "application/json; odata=verbose"
-        //     },
-        //     success: function (data) {
+
         var Tasks = componentDetails;
         let ParentData: any = [];
-        let tempArray1 :any = [];
-        let tempArray2 :any = [];
+        let tempArray1: any = [];
+        let tempArray2: any = [];
         $.each(Tasks, function (index: any, item: any) {
+            if (item?.Short_x0020_Description_x0020_On) {
+                item.Short_x0020_Description_x0020_Onlength = getPlainTextFromHTML(item?.Short_x0020_Description_x0020_On)
+                setShortDescriptionVerifieds(item?.Short_x0020_Description_x0020_On)
+            }
+            shortDescriptionVerifieds
+            setShortDescriptionVerifieds(item?.ShortDescriptionVerified)
+            if (item?.Body) {
+                item.Bodylength = getPlainTextFromHTML(item?.Body)
+                setdescriptionVerifieds(item?.Body)
+            }
+            descriptionVerifieds
+            setdescriptionVerifieds(item?.descriptionVerified)
+            setBackgroundVerifieds(item?.BackgroundVerified)
+            setIdeaVerifieds(item?.IdeaVerified)
+            setValueAddedVerifieds(item?.ValueAddedVerified)
+            if (item?.Deliverables) {
+                item.Deliverableslength = getPlainTextFromHTML(item?.Deliverables)
+                setDeliverablesVerifieds(item?.Deliverables)
+            }
+            DeliverablesVerifieds
+            setDeliverablesVerifieds(item?.DeliverablesVerified)
+            if (item?.TechnicalExplanations) {
+                item.TechnicalExplanationslength = getPlainTextFromHTML(item?.TechnicalExplanations)
+                setTechnicalExplanationsVerifieds(item?.TechnicalExplanations)
+            }
+            TechnicalExplanationsVerifieds
+            if (item?.Help_x0020_Information) {
+                item.Help_x0020_Informationlength = getPlainTextFromHTML(item?.Help_x0020_Information)
+                setHelpInformationVerifieds(item?.Help_x0020_Information)
+            }
+            HelpInformationVerifieds
+            setHelpInformationVerifieds(item?.HelpInformationVerified)
+            setTechnicalExplanationsVerifieds(item?.TechnicalExplanationsVerified)
             PortfolioTypeColor = item?.PortfolioType?.Color
             item.DateTaskDueDate = new Date(item.DueDate);
             if (item.DueDate != null)
@@ -472,11 +642,9 @@ function EditInstitution({ item, SelectD, Calls, usedFor , portfolioTypeData}: a
                     if (arrayData != null) {
                         tempArray1.push(arrayData);
                     }
-
                 });
                 setTaskAssignedTo(tempArray1);
             }
-           
             if (item?.TeamMembers?.length > 0) {
 
                 item.TeamMembers?.map((arrayData: any) => {
@@ -555,99 +723,8 @@ function EditInstitution({ item, SelectD, Calls, usedFor , portfolioTypeData}: a
                     TempArray
                 );
             }
-            // if (item.Sitestagging != undefined && item.Sitestagging != null) {
-            //   item.Sitestagging = JSON.parse(item.Sitestagging);
-            //   item.Sitestagging.forEach(function (site: any) {
-            //     siteDetail.forEach(function (siteDetail: any) {
-            //       siteDetail.isEditableSiteDate = false;
-            //       if (siteDetail.Title == site.Title) {
-            //         siteDetail.Date = site.Date;
-            //         siteDetail.ClienTimeDescription = site.ClienTimeDescription;
-            //         siteDetail.Selected = true;
-            //         siteDetail.flag = true;
-            //       }
-            //     });
-            //   });
-            // }
-            if (item.Sitestagging != null && item.Sitestagging != undefined) {
-                let tempData: any = JSON.parse(item.Sitestagging);
-                let tempData2: any = [];
-                if (tempData != undefined && tempData.length > 0) {
-                    tempData.map((siteData: any) => {
-                        let siteName: any;
-                        if (siteData != undefined) {
-                            if (siteData.SiteName != undefined) {
-                                siteName = siteData?.SiteName?.toLowerCase();
-                            } else {
-                                siteName = siteData?.Title?.toLowerCase();
-                            }
-                        }
-                        if (
-                            siteName == "migration" ||
-                            siteName == "health" ||
-                            siteName == "eps" ||
-                            siteName == "qa" ||
-                            siteName == "ei" ||
-                            siteName == "gender" ||
-                            siteName == "education" ||
-                            siteName == "cep" ||
-                            siteName == "shareweb" ||
-                            siteName == "small projects" ||
-                            siteName == "offshore tasks"
-                        ) {
-                            siteData.siteIcons = `https://hhhhteams.sharepoint.com/sites/HHHH/SiteCollectionImages/ICONS/Shareweb/site_${siteName}.png`;
-                        }
-                        if (siteName == "alakdigital" || siteName == "da e+e") {
-                            siteData.siteIcons = `https://hhhhteams.sharepoint.com/sites/HHHH/SiteCollectionImages/ICONS/Shareweb/site_da.png`;
-                        }
-                        if (siteName == "development-effectiveness" || siteName == "de") {
-                            siteData.siteIcons = `https://hhhhteams.sharepoint.com/sites/HHHH/SiteCollectionImages/ICONS/Shareweb/site_de.png`;
-                        }
-                        if (siteName == "kathabeck") {
-                            siteData.siteIcons = `https://hhhhteams.sharepoint.com/sites/HHHH/SiteCollectionImages/ICONS/Foundation/Icon_Kathabeck.png`;
-                        }
-                        if (siteName == "gruene") {
-                            siteData.siteIcons = `https://hhhhteams.sharepoint.com/sites/HHHH/SiteCollectionImages/ICONS/Foundation/logo-gruene.png`;
-                        }
-                        if (siteName == "hhhh") {
-                            siteData.siteIcons = `https://hhhhteams.sharepoint.com/sites/HHHH/SiteCollectionImages/ICONS/Foundation/icon_hhhh.png`;
-                        }
-                        tempData2.push(siteData);
-                    });
-                }
 
-                let tempArray3: any = [];
-                if (tempData2 != undefined && tempData2.length > 0) {
-                    tempData2.map((siteData: any) => {
-                        siteData.ClientCategory = [];
-                        if (
-                            selectedClientCategoryData != undefined &&
-                            selectedClientCategoryData.length > 0
-                        ) {
-                            selectedClientCategoryData.map((ClientCategoryData: any) => {
-                                if (ClientCategoryData.siteName == siteData.SiteName) {
-                                    siteData.ClientCategory.push(ClientCategoryData);
-                                }
-                            });
-                            tempArray3.push(siteData);
-                        } else {
-                            tempArray3.push(siteData);
-                        }
-                    });
-                }
-                // setClientTimeData(tempArray3)
-                item.siteCompositionData = tempArray3;
-            } else {
-                const object: any = {
-                    SiteName: "HHHH",
-                    ClienTimeDescription: 100,
-                    localSiteComposition: true,
-                    siteIcons:
-                        "https://hhhhteams.sharepoint.com/sites/HHHH/SiteCollectionImages/ICONS/Service_Icons/component_icon.png"
-                };
-                item.siteCompositionData = [object];
-                // setClientTimeData([object]);
-            }
+
 
             item.AssignedUsers = [];
             AllUsers?.map((userData: any) => {
@@ -700,18 +777,14 @@ function EditInstitution({ item, SelectD, Calls, usedFor , portfolioTypeData}: a
                 Rr.push(item.ServicePortfolio);
                 setLinkedComponentData(Rr);
             }
-            // if (item.StartDate != undefined) {
-            //   item.StartDate = moment(item.StartDate).format("MM-DD-YYYY");
-            //   //setStartdate(item.StartDate);
-            // }
+
             if (item.ComponentLink != null) {
                 item.ComponentLink = item.ComponentLink.Url;
-                //setStartdate(item.StartDate);
+
             }
             if (item.CompletedDate != undefined) {
                 item.CompletedDate = moment(item.CompletedDate).format("MM-DD-YYYY");
-                // item.CompletedDate = item.CompletedDate.toString();
-                // setCompletiondatenew(item.CompletedDate);
+
             }
             item.SmartCountries = [];
             item.siteUrl = RequireData.siteUrl;
@@ -770,35 +843,77 @@ function EditInstitution({ item, SelectD, Calls, usedFor , portfolioTypeData}: a
             }
 
         }
-        setEditData(Tasks[0]);
-        setModalIsOpenToTrue(true);
 
-        //  setModalIsOpenToTrue();
+        let SiteCompositionTemp: any = [];
+        if (Tasks[0]?.Sitestagging?.length > 0) {
+            SiteCompositionTemp = JSON.parse(Tasks[0]?.Sitestagging);
+        } else {
+            SiteCompositionTemp = [];
+        }
+        if (Tasks[0]?.ClientCategory?.results?.length > 0) {
+            let TempCCItems: any = [];
+            AllClientCategoryDataBackup?.map((AllCCItem: any) => {
+                item.ClientCategory?.results?.map((SelectedCCItem: any) => {
+                    if (SelectedCCItem?.Id == AllCCItem?.Id) {
+                        TempCCItems.push(AllCCItem);
+                    }
+                })
+            })
+            if (TempCCItems?.length > 0) {
+                SiteCompositionTemp?.map((TaggedSC: any) => {
+                    TempCCItems?.map((TaggedCC: any) => {
+                        if (TaggedSC.Title == TaggedCC.siteName) {
+                            if (TaggedSC?.ClientCategory?.length > 0) {
+                                TaggedSC.ClientCategory?.push(TaggedCC)
+                            } else {
+                                TaggedSC.ClientCategory = [TaggedCC]
+                            }
+                        }
+                    })
+                })
+            }
+        }
+
+        Tasks[0].siteCompositionData = SiteCompositionTemp;
+        Tasks[0].listId = RequireData.MasterTaskListID;
+        Tasks[0].siteUrl = RequireData.siteUrl;
+        setEditData(Tasks[0]);
+        getMasterTaskListTasksData()
+        setModalIsOpenToTrue(true);
+      
     };
 
-    //     error: function (error) {
-
-    //     }
-    // });
-    // }
+   
     const onRenderCustomHeaderQuestion = () => {
         return (
-            <div className="subheading siteColor">Add Question</div>
+            <>
+                <div className="subheading siteColor">Add Question</div>
+                <Tooltip ComponentId="1626" />
+            </>
         );
     };
     const onRenderCustomHeaderHelp = () => {
         return (
-            <div className="subheading siteColor">Add Help</div>
+            <>
+                <div className="subheading siteColor">Add Help</div>
+                <Tooltip ComponentId="1626" />
+            </>
         );
     };
     const onRenderHeaderQuestionEdit = () => {
         return (
-            <div className="subheading siteColor">Edit Question</div>
+            <>
+                <div className="subheading siteColor">Edit Question</div>
+                <Tooltip ComponentId="1626" />
+            </>
         );
     };
     const onRenderHeaderHelpEdit = () => {
         return (
-            <div className="subheading siteColor">Edit Help</div>
+            <>
+                <div className="subheading siteColor">Edit Help</div>
+                <Tooltip ComponentId="1626" />
+            </>
         );
     };
     const onRenderHeaderChangeParent = () => {
@@ -903,6 +1018,7 @@ function EditInstitution({ item, SelectD, Calls, usedFor , portfolioTypeData}: a
     React.useEffect(() => {
         GetTaskUsers();
         getAllSitesData();
+        GetSmartHelpDetails();
         loadAllCategoryData("Categories");
         var initLoading = function () {
             if (item != undefined) {
@@ -927,10 +1043,7 @@ function EditInstitution({ item, SelectD, Calls, usedFor , portfolioTypeData}: a
                 ]);
                 setSharewebItemRank(TaskItemRank[0]);
                 loadAllClientCategoryData("Client Category");
-                // if (useeffectdata == false)
-                //     setuseeffectdata(true);
-                // else setuseeffectdata(false);
-                //loadColumnDetails();
+
             }
         };
         initLoading();
@@ -947,6 +1060,31 @@ function EditInstitution({ item, SelectD, Calls, usedFor , portfolioTypeData}: a
 
         // <ComponentPortPolioPopup props={item}></ComponentPortPolioPopup>
     };
+
+  const openPortfolioPopup=(itemm:any)=>{
+    setisopenProjectpopup(true)
+    mydata.push(item.Id)
+    setSharewebComponent(itemm);
+}
+
+  const callServiceComponent = React.useCallback((item1: any, type: any, functionType: any) => {
+    if (functionType === "Close") {
+      if (type === "Multi") {
+        setisopenProjectpopup(false);
+      } else {
+        setisopenProjectpopup(false);
+      }
+    } else {
+      if (type === "Multi" || type === "Single") {
+        let mydataid: any = [item?.Id];
+        let filteredIds = item1.filter((item: { Id: null; }) => item.Id !== null).map((item: { Id: any; }) => item.Id);
+
+        updateMultiLookup(filteredIds, mydataid, SelectD);
+        setisopenProjectpopup(false);
+      }
+    }
+  }, []);
+
     const GetComponents = async () => {
         let componentDetails = [];
         componentDetails = await web.lists
@@ -1051,20 +1189,11 @@ function EditInstitution({ item, SelectD, Calls, usedFor , portfolioTypeData}: a
             res.PortfolioType = item.PortfolioType;
             res.SiteIcon = undefined;
             res.siteUrl = RequireData?.siteUrl;
-            Calls(res);
+            Calls(res, "UpdatedData");
         }
     }
 
-
-
-
-
-
     let mentionUsers: any = [];
-    //  mentionUsers = this.taskUsers.map((i:any)=>{
-    //     return({id : i.Title,display: i.Title})
-    // });
-
     var generateHierarchichalData = function (item: any, items: any) {
         var autoCompleteItem: any = {};
         autoCompleteItem["value"] = item.Title;
@@ -1102,130 +1231,6 @@ function EditInstitution({ item, SelectD, Calls, usedFor , portfolioTypeData}: a
 
         return autoCompleteItem;
     };
-    // const bindAutoCompleteId = function (countrolId:any, taxItems:any, taxType:any, service:any, CompositionSiteType:any) {
-    //     var Items:any = [];
-    //     $.each(taxItems, function (taxItem:any) {
-    //         if (taxItem.TaxType == taxType && taxItem.TaxType != 'Components') {
-    //             var item = generateHierarchichalData(taxItem, taxItems);
-    //             item["Title"] = item.value;
-    //             Items.push(item);
-    //         }
-    //         if (taxItem.TaxType == 'Components') {
-    //             var item = generateHierarchichalData(taxItem, taxItems);
-    //             item["Title"] = item.value;
-    //             Items.push(item);
-    //         }
-    //     });
-    //     $("#" + countrolId).autocomplete({
-    //         source: function (request:any, response:any) {
-    //             // delegate back to autocomplete, but extract the last term
-    //             //var index= request.term.indexOf("@");
-    //             // if (request.term != undefined && request.term[index] == '@')
-    //             //     request.term = request.term.substr(index + 1, request.term.length);
-    //             //response($.ui.autocomplete.filter(Items, $scope.extractLast(request.term)));
-    //             var responseItems = $.ui.autocomplete.filter(Items, $scope.extractLast(request.term));
-    //             SharewebCommonFactoryService.DynamicSortitems(responseItems, 'label', 'Text', 'Ascending')
-    //             response(responseItems);
-
-    //         },
-    //         focus: function () {
-    //             // prevent value inserted on focus
-    //             return false;
-    //         },
-    //         select: function (event, ui) {
-    //             var terms = $scope.split(this.value);
-    //             // remove the current input
-    //             terms.pop();
-    //             // add the selected item
-    //             terms.push(ui.item.value);
-    //             // add placeholder to get the comma-and-space at the end
-    //             terms.push("");
-    //             this.value = terms.join("; ");
-    //             if (ui.item.TaxType != undefined && service == 'Service') {
-    //                 if (ui.item.Id != undefined && !$scope.isItemExists($scope.ServicesmartComponent, ui.item.Id)) {
-    //                     ui.item['siteType'] = 'Master Tasks';
-    //                     $scope.ServicesmartComponent[0] = ui.item;
-    //                     $scope.SmartCompCopy[0] = ui.item;
-    //                     $scope.$apply();
-    //                 }
-    //                 $('#txtServiceSharewebComponent').val('');
-    //                 $('#txtServiceSharewebComponentselsction').val('');
-    //             } else if (ui.item.TaxType != undefined && ui.item.TaxType == 'Components') {
-    //                 if (ui.item.Id != undefined && !$scope.isItemExists($scope.smartComponent, ui.item.Id)) {
-    //                     ui.item['siteType'] = 'Master Tasks';
-    //                     $scope.smartComponent[0] = ui.item;
-    //                     $scope.SmartCompCopy[0] = ui.item;
-    //                     $scope.$apply();
-    //                     $scope.Item.Portfolio_x0020_Type == 'Component'
-    //                 }
-    //                 $('#txtSharewebComponent').val('');
-    //                 $('#txtSharewebComponentselsction').val('');
-    //             } else if (ui.item.TaxType != undefined && ui.item.TaxType == 'Categories') {
-    //                 if (ui.item.Id != undefined && !$scope.isItemExists($scope.smartCategories, ui.item.Id)) {
-    //                     $scope.smartCategories.push(ui.item);
-    //                     $scope.$apply();
-    //                 }
-    //                 $('#txtCategories').val('');
-    //             } else if (ui.item.TaxType != undefined && ui.item.TaxType == 'Sites') {
-    //                 if (ui.item.Id != undefined && !$scope.isItemExists($scope.TargetedSites, ui.item.Id)) {
-    //                     $scope.TargetedSites.push(ui.item);
-    //                     $scope.$apply();
-    //                 }
-    //                 $('#txtSites').val('');
-    //             }
-    //             else if (ui.item.TaxType != undefined && ui.item.TaxType == 'SPComponents') {
-    //                 if (ui.item.Id != undefined && !$scope.isItemExists($scope.smartSPComponents, ui.item.Id)) {
-    //                     $scope.smartSPComponents.push(ui.item);
-    //                     $scope.$apply();
-    //                 }
-    //                 $('#txtSPComponents').val('');
-    //                 $('#txtSPComponentsselsction').val('');
-    //             }
-    //             else if (ui.item.TaxType != undefined && ui.item.TaxType == 'Client Category') {
-    //                 $scope.IsUpdateClientCategory = true;
-    //                 if (ui.item.Id != undefined && !$scope.isItemExists($scope.smartClientCategories, ui.item.Id)) {
-    //                     if ($scope.smartClientCategories != undefined && $scope.smartClientCategories.length > 0) {
-    //                         angular.forEach($scope.smartClientCategories, function (clientcategory, index) {
-    //                             $scope.IsPushed = true;
-    //                             if (clientcategory.SiteType == ui.item.SiteType && !$scope.isItemExists($scope.smartClientCategories, ui.item.Id)) {
-    //                                 $scope.smartClientCategories.push(ui.item);
-    //                                 $scope.IsPushed = false
-    //                             }
-    //                         })
-    //                         if ($scope.IsPushed == true && !$scope.isItemExists($scope.smartClientCategories, ui.item.Id))
-    //                             $scope.smartClientCategories.push(ui.item);
-    //                     }
-    //                     else {
-    //                         if (!$scope.isItemExists($scope.smartClientCategories, ui.item.Id))
-    //                             $scope.smartClientCategories.push(ui.item);
-    //                     }
-    //                 }
-    //                 angular.forEach($scope.smartClientCategories, function (item) {
-    //                     if (item.SiteType == 'EI' && !$scope.isItemExists($scope.EIClientCategory, item.Id)) {
-    //                         $scope.EIClientCategory.push(item);
-    //                     }
-
-    //                     else if (item.SiteType == 'EPS' && !$scope.isItemExists($scope.EPSClientCategory, item.Id)) {
-    //                         $scope.EPSClientCategory.push(item);
-    //                     }
-    //                     else if (item.SiteType == 'Education' && !$scope.isItemExists($scope.EducationClientCategory, item.Id)) {
-    //                         $scope.EducationClientCategory.push(item);
-    //                     }
-
-    //                 })
-    //                 $scope.$apply();
-    //                 $scope.CurrentCCSiteType = CompositionSiteType;
-    //                 $('#UpdateCCItem').show();
-    //                 $('#txtclientCategories').val('');
-    //                 $('#EItxtclientCategories').val('');
-    //                 $('#EPStxtclientCategories').val('');
-    //                 $('#EducationtxtclientCategories').val('');
-    //                 $('#txtclientCategories1').val('');
-    //             }
-    //             return false;
-    //         }
-    //     });
-    // }
     const setPriority = function (item: any, val: number) {
         item.PriorityRank = val;
         getpriority(item);
@@ -1326,10 +1331,16 @@ function EditInstitution({ item, SelectD, Calls, usedFor , portfolioTypeData}: a
         let ClientCategoryIDs: any = [];
         var item: any = {};
         var smartComponentsIds: any[] = [];
+        // var RelevantPortfolioIds = "";
+        var RelevantProjectIds = "";
         var RelevantPortfolioIds = "";
         let PortfolioIds: any[] = [];
+        let ProjectId:any[] = [];
+        var RelevantProjectIdRemove = "";
+        let ProjectIdRemove:any[] = [];
         let TotalCompositionsValue: any = 0;
         var Items = EditData;
+    
         if (SiteTaggingData?.length > 0) {
             SiteTaggingData.map((clientData: any) => {
                 TotalCompositionsValue =
@@ -1405,6 +1416,27 @@ function EditInstitution({ item, SelectD, Calls, usedFor , portfolioTypeData}: a
                 });
             }
 
+            if (filterdata != undefined && filterdata?.length > 0) {
+                      filterdata?.map((com: any) => {
+                        if (
+                          filterdata != undefined &&
+                          filterdata?.length >= 0
+                        ) {
+                          $.each(filterdata, function (index: any, smart: any) {
+                            RelevantProjectIds = smart.Id;
+                            ProjectId.push(smart.Id)
+                          });
+                        }
+                      });
+                    }
+              
+                    if (filterdata != null && filterdata.length >= 0) {
+                      filterdata.filter((com: any) => {
+                        RelevantProjectIdRemove = com.Id;
+                        ProjectIdRemove.push(com.Id);
+                      });
+                    }                   
+
 
             if (TaskTeamMembers != undefined && TaskTeamMembers?.length > 0) {
                 TaskTeamMembers?.map((taskInfo) => {
@@ -1426,69 +1458,6 @@ function EditInstitution({ item, SelectD, Calls, usedFor , portfolioTypeData}: a
             }
 
 
-            // if (isDropItemRes == true) {
-            //   if (TaskAssignedTo != undefined && TaskAssignedTo?.length > 0) {
-            //     TaskAssignedTo.map((taskInfo) => {
-            //       AssignedToIds.push(taskInfo.Id);
-            //     });
-            //   }
-            // } else {
-            //   if (
-            //     EditData?.AssignedTo != undefined &&
-            //     EditData?.AssignedTo?.length > 0
-            //   ) {
-            //     EditData?.AssignedTo.map((taskInfo: any) => {
-            //       AssignedToIds.push(taskInfo.Id);
-            //     });
-            //   }
-            // }
-            // if (isDropItem == true) {
-            //   if (TaskTeamMembers != undefined && TaskTeamMembers?.length > 0) {
-            //     TaskTeamMembers.map((taskInfo) => {
-            //       TeamMemberIds.push(taskInfo.Id);
-            //     });
-            //   }
-            // } else {
-            //   if (
-            //     EditData?.TeamMembers != undefined &&
-            //     EditData?.TeamMembers?.length > 0
-            //   ) {
-            //     EditData?.TeamMembers.map((taskInfo: any) => {
-            //       TeamMemberIds.push(taskInfo.Id);
-            //     });
-            //   }
-            // }
-
-            // if (TaskResponsibleTeam != undefined && TaskResponsibleTeam?.length > 0) {
-            //     TaskResponsibleTeam.map((taskInfo) => {
-            //         ResponsibleTeamIds.push(taskInfo.Id);
-            //     })
-            // }
-
-            //     if (EditData?.ResponsibleTeam != undefined && EditData?.ResponsibleTeam?.length > 0) {
-            //         EditData?.ResponsibleTeam.map((taskInfo: any) => {
-            //             ResponsibleTeamIds.push(taskInfo.Id);
-            //         })
-            //     }
-
-            // if (Items.smartComponent != undefined) {
-            //     Items.smartComponent.map((com: any) => {
-            //         // if (com.Title != undefined) {
-
-            //         //     component = com.Title
-
-            //         // }
-
-            //         if (Items.smartComponent != undefined && Items.smartComponent.length >= 0) {
-
-            //             $.each(Items.smartComponent, function (index: any, smart: any) {
-
-            //                 smartComponentsIds.push(smart.Id);
-
-            //             })
-            //         }
-            //     })
-            // }
 
             if (selectedClientCategory?.length > 0) {
                 selectedClientCategory.map((dataItem: any) => {
@@ -1532,8 +1501,8 @@ function EditInstitution({ item, SelectD, Calls, usedFor , portfolioTypeData}: a
                     SharewebCategoriesId: { results: CategoryID },
                     // ClientCategoryId: { "results": RelevantPortfolioIds },
                     ServicePortfolioId:
-                        RelevantPortfolioIds != "" ? RelevantPortfolioIds : null,
-                    PortfoliosId: { results: (PortfolioIds?.length != 0 ? PortfolioIds : []) },
+                                ((RelevantPortfolioIds != "" ? RelevantPortfolioIds : null)? (RelevantProjectIds != "" ? RelevantProjectIds : null):null)? (RelevantProjectIdRemove != "" ? RelevantProjectIdRemove : null):null ,
+                              PortfoliosId: ({ results: (PortfolioIds?.length != 0 ? PortfolioIds : []) } ? { results: (ProjectId?.length != 0 ? ProjectId : []) } :null)?{ results: (ProjectIdRemove?.length >= 0 ? ProjectIdRemove : []) }:null,
                     Synonyms: JSON.stringify(Items["Synonyms"]),
                     Package: Items.Package,
                     AdminStatus: Items.AdminStatus,
@@ -1543,6 +1512,13 @@ function EditInstitution({ item, SelectD, Calls, usedFor , portfolioTypeData}: a
                     Idea: Items.Idea,
                     Background: Items.Background,
                     AdminNotes: Items.AdminNotes,
+                    ShortDescriptionVerified: shortDescriptionVerifieds,
+                    descriptionVerified: descriptionVerifieds,
+                    BackgroundVerified: BackgroundVerifieds,
+                    IdeaVerified: IdeaVerifieds,
+                    ValueAddedVerified: ValueAddedVerifieds,
+                    DeliverablesVerified: DeliverablesVerifieds,
+                    TechnicalExplanationsVerified: TechnicalExplanationsVerifieds,
                     Item_x002d_Image: {
                         __metadata: { type: "SP.FieldUrlValue" },
                         Description:
@@ -1574,6 +1550,16 @@ function EditInstitution({ item, SelectD, Calls, usedFor , portfolioTypeData}: a
                             PostShort_x0020_Description_x0020_On != ""
                             ? PostShort_x0020_Description_x0020_On
                             : EditData?.Short_x0020_Description_x0020_On,
+                    Help_x0020_Information:
+                        PostHelp_x0020_Information != undefined &&
+                            PostHelp_x0020_Information != ""
+                            ? PostHelp_x0020_Information
+                            : EditData?.Help_x0020_Information,
+                    HelpInformation:
+                        PostHelp_x0020_Information != undefined &&
+                            PostHelp_x0020_Information != ""
+                            ? PostHelp_x0020_Information
+                            : EditData?.HelpInformation,
                     Body:
                         PostBody != undefined && PostBody != "" ? PostBody : EditData?.Body,
                     AssignedToId: {
@@ -1608,7 +1594,8 @@ function EditInstitution({ item, SelectD, Calls, usedFor , portfolioTypeData}: a
             let componentId = CompoenetItem[0].Id;
             const newItem = {
                 ItemType: "Question",
-                Title: `${CompoenetItem[0].Title} - ${question}`,
+                // Title: `${CompoenetItem[0].Title} - ${question}`,
+                Title: question,
                 ComponentsId: { "results": [componentId] },
                 Permission: choice,
                 Body: PostQuestionDescription || (EditData?.PostQuestionDescription || ""),
@@ -1634,7 +1621,8 @@ function EditInstitution({ item, SelectD, Calls, usedFor , portfolioTypeData}: a
             let componentId = CompoenetItem[0].Id;
             const newItem = {
                 ItemType: "Help",
-                Title: `${CompoenetItem[0].Title} - ${help}`,
+                // Title: `${CompoenetItem[0].Title} - ${help}`,
+                Title: help,
                 ComponentsId: { "results": [componentId] },
                 Permission: choice,
                 Body: PostQuestionDescription || (EditData?.PostQuestionDescription || ""),
@@ -1814,7 +1802,7 @@ function EditInstitution({ item, SelectD, Calls, usedFor , portfolioTypeData}: a
                                     <a
                                         target="_blank"
                                         data-interception="off"
-                                        href={`${RequireData.siteUrl}/SitePages/${EditData?.Portfolio_x0020_Type}-Portfolio.aspx`}
+                                        href={`${RequireData.siteUrl}/SitePages/Team-Portfolio.aspx?PortfolioType=${EditData?.Portfolio_x0020_Type}`}
                                     >
                                         {EditData?.Portfolio_x0020_Type}-Portfolio
                                     </a>
@@ -1857,7 +1845,7 @@ function EditInstitution({ item, SelectD, Calls, usedFor , portfolioTypeData}: a
                                 {EditData?.Item_x0020_Type == "Feature" && (
                                     <a>
                                         <>
-                                            <span className="Dyicons mt-1">F</span>
+                                            <span className="Dyicons mt--3 me-1">F</span>
 
                                             {EditData?.Title}
                                         </>
@@ -1866,7 +1854,7 @@ function EditInstitution({ item, SelectD, Calls, usedFor , portfolioTypeData}: a
                                 {EditData?.Item_x0020_Type == "SubComponent" && (
                                     <a>
                                         <>
-                                            <span className="Dyicons mt-1">S</span>
+                                            <span className="Dyicons mt--3 me-1">S</span>
                                             {EditData?.Title}
                                         </>
                                     </a>
@@ -1874,7 +1862,7 @@ function EditInstitution({ item, SelectD, Calls, usedFor , portfolioTypeData}: a
                                 {EditData?.Item_x0020_Type == "Component" && (
                                     <a>
                                         <>
-                                            <span className="Dyicons mt-1">C</span>
+                                            <span className="Dyicons mt--3 me-1">C</span>
                                             {EditData?.Title}
                                         </>
                                     </a>
@@ -1907,14 +1895,16 @@ function EditInstitution({ item, SelectD, Calls, usedFor , portfolioTypeData}: a
                     console.log(i);
                     setComponent((EditData) => [...EditData]);
 
-                    setModalIsOpenToFalse();
+
                     var ItmesDelete: any = {
                         data: {
                             Id: item.Id,
-                            ItmesDelete: true
+                            ItmesDelete: true,
+                            siteType: item?.siteType
                         }
                     }
                     Calls(ItmesDelete);
+                    setModalIsOpenToFalse();
 
                     item.showProgressBar();
                 });
@@ -2517,31 +2507,6 @@ function EditInstitution({ item, SelectD, Calls, usedFor , portfolioTypeData}: a
     }, [])
 
 
-
-    // const selectSubTaskCategory = (title: any, Id: any, item: any) => {
-    //   setCategoriesData((prevCategoriesData) => {
-    //     let itemIndex = -1;
-
-    //     for (let i = 0; i < prevCategoriesData.length; i++) {
-    //       if (prevCategoriesData[i].Id === Id) {
-    //         itemIndex = i;
-    //         break;
-    //       }
-    //     }
-
-    //     const updatedCategoriesData = [...prevCategoriesData];
-
-    //     if (itemIndex !== -1) {
-    //       updatedCategoriesData[itemIndex].ActiveTile = !updatedCategoriesData[itemIndex].ActiveTile;
-    //     } else {
-    //       item.ActiveTile = true;
-    //       updatedCategoriesData.push(item);
-    //     }
-
-    //     return updatedCategoriesData;
-    //   });
-    // };
-
     const toggleCategorySelection = function (item: any) {
         setCategoriesData(function (prevCategoriesData) {
             var itemIndex = -1;
@@ -2564,6 +2529,40 @@ function EditInstitution({ item, SelectD, Calls, usedFor , portfolioTypeData}: a
             }
         });
     };
+
+    const DeleteCrossIconData = async (titleToRemove:any) => {
+            try {
+        
+              let web = new Web(SelectD?.siteUrl);
+            
+                // Update the multi-lookup field for each item
+                (titleToRemove.length>0 &&
+                await web.lists
+                  .getById(SelectD?.MasterTaskListID)
+                  .items.getById(titleToRemove[0])
+                  .update({
+                    PortfoliosId: {
+                      results: titleToRemove !== undefined ? titleToRemove: [],
+                    }
+                  })
+                  .then((res: any) => {             
+                    console.log(res);            
+                  }).catch((error)=>{
+                    console.log( "error",error)
+                  })
+                  
+                )
+      
+             let updatedComponentData: any = [];  
+              updatedComponentData = filterdata.filter((itemmm: any) => itemmm.Id !== titleToRemove[0]);      
+              console.log("remove data", updatedComponentData);
+              setfilterData(updatedComponentData);
+                
+          }catch(error){
+            console.log(error)
+          }
+        }
+        
 
     const choiceHandler = (event: any) => {
         setChoice(event.target.value)
@@ -2654,96 +2653,99 @@ function EditInstitution({ item, SelectD, Calls, usedFor , portfolioTypeData}: a
 
 
     // Change Type functionality 
-    
-    const changePortfolioType=async ()=>{
+
+    const changePortfolioType = async () => {
         let confirmation = confirm("Are you sure you want to change the type ?");
         if (confirmation) {
-          let web = new Web(item.siteUrl);
-          const selectedPopupItem = item.PortfolioStructureID;
-          const numbersOnly = selectedPopupItem.substring(1);
-          const selectedPorfolioItem = selectPortfolioType?.Title;
-                 let firstWord : any;
-        
-                 if (selectedPorfolioItem.length > 0) {
-                  firstWord = selectedPorfolioItem[0]; 
-                 }
-        
-          var postData: any = {
-            PortfolioTypeId:  selectPortfolioType?.Id,
-            PortfolioStructureID: firstWord+numbersOnly
-         };
-        
-          await web.lists
-            .getById(RequireData.MasterTaskListID)
-            .items.getById(item.Id)
-            .update(postData)
-            .then(async (res: any) => {
-              if(item?.subRows?.length > 0 && item?.subRows != undefined && item?.subRows != null){
-                item?.subRows?.map(async (subRow:any)=>{
-                  if(subRow?.Item_x0020_Type === 'SubComponent' || subRow?.Item_x0020_Type === 'Feature'){
-                    var originalString = subRow.PortfolioStructureID;
-                    var stringWithoutFirstLetter = originalString.substring(1);
-                    const selectedPorfolioItem = selectPortfolioType?.Title;
-                           let firstWord : any;
-                  
-                           if (selectedPorfolioItem.length > 0) {
-                            firstWord = selectedPorfolioItem[0]; 
-                           }
-                  
-                    var postData1: any = {
-                      PortfolioTypeId:  selectPortfolioType?.Id,
-                      PortfolioStructureID: firstWord+stringWithoutFirstLetter
-                  }
-        
-                    await web.lists
-                    .getById(RequireData.MasterTaskListID)
-                    .items.getById(subRow.Id)
-                     .update(postData1)
-                     .then(async (res: any) => {
-                      if(subRow?.subRows?.length > 0 && subRow?.subRows != undefined && subRow?.subRows != null){
-                        subRow?.subRows?.map(async (feat:any)=>{
-                          if(feat?.Item_x0020_Type === 'Feature'){
-                            var originalString = feat.PortfolioStructureID;
-                            var stringWithoutFirstLetter = originalString.substring(1);
-                            const selectedPorfolioItem = selectPortfolioType?.Title;
-                                   let firstWord : any;
-                          
-                                   if (selectedPorfolioItem.length > 0) {
-                                    firstWord = selectedPorfolioItem[0]; 
-                                   }
-                          
-                            var postData2: any = {
-                              PortfolioTypeId:  selectPortfolioType?.Id,
-                              PortfolioStructureID: firstWord+stringWithoutFirstLetter
-                          }
-                          await web.lists
-                          .getById(RequireData.MasterTaskListID)
-                          .items.getById(feat.Id)
-                           .update(postData2)
-                           .then(async (res: any) => {
-                            setChangeType(false);
-                           }).catch((err:any)=>{
-        
-                           })
-                          }
-                        })}else{
-                          setChangeType(false);
-                        }
-                     })
-                     .catch((err:any)=>{
-                      console.log(err);
-                      })};
+            let web = new Web(item.siteUrl);
+            const selectedPopupItem = item.PortfolioStructureID;
+            const numbersOnly = selectedPopupItem.substring(1);
+            const selectedPorfolioItem = selectPortfolioType?.Title;
+            let firstWord: any;
+
+            if (selectedPorfolioItem.length > 0) {
+                firstWord = selectedPorfolioItem[0];
+            }
+
+            var postData: any = {
+                PortfolioTypeId: selectPortfolioType?.Id,
+                PortfolioStructureID: firstWord + numbersOnly
+            };
+
+            await web.lists
+                .getById(RequireData.MasterTaskListID)
+                .items.getById(item.Id)
+                .update(postData)
+                .then(async (res: any) => {
+                    if (item?.subRows?.length > 0 && item?.subRows != undefined && item?.subRows != null) {
+                        item?.subRows?.map(async (subRow: any) => {
+                            if (subRow?.Item_x0020_Type === 'SubComponent' || subRow?.Item_x0020_Type === 'Feature') {
+                                var originalString = subRow.PortfolioStructureID;
+                                var stringWithoutFirstLetter = originalString.substring(1);
+                                const selectedPorfolioItem = selectPortfolioType?.Title;
+                                let firstWord: any;
+
+                                if (selectedPorfolioItem.length > 0) {
+                                    firstWord = selectedPorfolioItem[0];
+                                }
+
+                                var postData1: any = {
+                                    PortfolioTypeId: selectPortfolioType?.Id,
+                                    PortfolioStructureID: firstWord + stringWithoutFirstLetter
+                                }
+
+                                await web.lists
+                                    .getById(RequireData.MasterTaskListID)
+                                    .items.getById(subRow.Id)
+                                    .update(postData1)
+                                    .then(async (res: any) => {
+                                        if (subRow?.subRows?.length > 0 && subRow?.subRows != undefined && subRow?.subRows != null) {
+                                            subRow?.subRows?.map(async (feat: any) => {
+                                                if (feat?.Item_x0020_Type === 'Feature') {
+                                                    var originalString = feat.PortfolioStructureID;
+                                                    var stringWithoutFirstLetter = originalString.substring(1);
+                                                    const selectedPorfolioItem = selectPortfolioType?.Title;
+                                                    let firstWord: any;
+
+                                                    if (selectedPorfolioItem.length > 0) {
+                                                        firstWord = selectedPorfolioItem[0];
+                                                    }
+
+                                                    var postData2: any = {
+                                                        PortfolioTypeId: selectPortfolioType?.Id,
+                                                        PortfolioStructureID: firstWord + stringWithoutFirstLetter
+                                                    }
+                                                    await web.lists
+                                                        .getById(RequireData.MasterTaskListID)
+                                                        .items.getById(feat.Id)
+                                                        .update(postData2)
+                                                        .then(async (res: any) => {
+                                                            setChangeType(false);
+                                                        }).catch((err: any) => {
+
+                                                        })
+                                                }
+                                            })
+                                        } else {
+                                            setChangeType(false);
+                                        }
+                                    })
+                                    .catch((err: any) => {
+                                        console.log(err);
+                                    })
+                            };
+                        })
+                    } else {
+                        setChangeType(false);
+                    }
                 })
-              }else{
-                setChangeType(false);
-              }})
-            .catch((err:any)=>{
-                console.log(err);
-            })
+                .catch((err: any) => {
+                    console.log(err);
+                })
         }
-      
-       
-      }
+
+
+    }
 
     return (
         <>
@@ -2846,18 +2848,22 @@ function EditInstitution({ item, SelectD, Calls, usedFor , portfolioTypeData}: a
                                         IMAGE INFORMATION
                                     </button>
                                 </li>
-                                <li  className="alignCenter ml-auto">
-                <span  className="mt--2"  role="button"
-                  onClick={()=>{
-                    setChangeType(true)
-                  }}
-                  >
-                    Change Type 
-                  </span>
-                 
-        <span className="svg__iconbox svg__icon--info dark" data-toggle="tooltip" data-placement="bottom" title="This link will be used to change the portfolio type of the Component item.">
-         </span>
-                </li>
+                                <li className="alignCenter ml-auto">
+                                    <a className="mt--2 hreflink" role="button"
+                                        onClick={() => {
+                                            setChangeType(true)
+                                        }}
+                                    >
+                                        Change Type
+                                    </a>
+                                    <span className="hover-text">
+                                        <span className="svg__iconbox mt-1 svg__icon--info dark">
+                                        </span>
+                                        <span className="tooltip-text pop-left">
+                                            This link will be used to change the portfolio type of the Component item.
+                                        </span>
+                                    </span>
+                                </li>
                             </ul>
                             <div className="tab-content clearfix " id="myTabContent">
                                 <div
@@ -3006,7 +3012,7 @@ function EditInstitution({ item, SelectD, Calls, usedFor , portfolioTypeData}: a
                                                                     })}
                                                                 </div>
                                                             ) : null}
-                                                            
+
                                                         </div>
                                                     )}
                                                     {EditData?.Portfolio_x0020_Type == "Service" && (
@@ -3039,13 +3045,13 @@ function EditInstitution({ item, SelectD, Calls, usedFor , portfolioTypeData}: a
                                                                     })}
                                                                 </div>
                                                             ) : null}
-                                                         
+
                                                         </div>
                                                     )}
 
                                                     <div className="col-sm-12  inner-tabb">
                                                         <div>
-                                                         
+
                                                             {smartComponentData
                                                                 ? smartComponentData?.map((com: any) => {
                                                                     return (
@@ -3411,12 +3417,7 @@ function EditInstitution({ item, SelectD, Calls, usedFor , portfolioTypeData}: a
                                             </div>
                                         </div>
                                         <div className="col-sm-2 ">
-                                            <div className="col">
-                                                <Sitecomposition
-                                                    props={EditData}
-                                                    sitedata={RequireData}
-                                                />
-                                            </div>
+
                                             <div className="col" title="Priority">
                                                 <div className="input-group mb-2">
                                                     <label className="form-label  full-width">
@@ -3530,7 +3531,7 @@ function EditInstitution({ item, SelectD, Calls, usedFor , portfolioTypeData}: a
                                                             onChange={(e) => autoSuggestionsForCategory(e)}
                                                         />
                                                         <span className="input-group-text">
-                                                          
+
                                                             <span title="Edit Categories" onClick={() => EditComponentPicker(item)} className="svg__iconbox svg__icon--editBox"></span>
                                                         </span>
 
@@ -3600,12 +3601,126 @@ function EditInstitution({ item, SelectD, Calls, usedFor , portfolioTypeData}: a
                                                         })}
                                                     </div>
                                                 ) : null}
-                                            
+                                               <div className="col-sm-12 mt-2">
+                          <div className="col-sm-12 padding-0 input-group">
+                            <label className="full_width">Project</label>
+                            <input type="text" className="form-control" />
+                            <span className="input-group-text" placeholder="Project">
+                              <span title="Project" onClick={(e) => openPortfolioPopup("Project")} className="svg__iconbox svg__icon--editBox"></span>
+                            </span>
+                        </div>
+                            <div className="col-sm-12  inner-tabb">
+                            {filterdata && filterdata.length > 0 ? 
+                            (
+                              <div className="serviepannelgreena">
+                                {filterdata?.map((items:any, Index: any)=>
+                                 <div className="block d-flex justify-content-between mb-1" key={Index}>
+                              
+                                  <a
+                                    href={`${SelectD.siteUrl}/SitePages/Portfolio-Profile.aspx?=${items.Id}`}
+                                    className="wid-90 light"
+                                    data-interception="off"
+                                    target="_blank"
+                                  >
+                                    {items?.Title}
+                                  </a>
+                                  <a className="text-end">
+                                            {" "}
+                                            <span
+                                              className="bg-light svg__icon--cross svg__iconbox"
+                                              onClick={() =>
+                                                DeleteCrossIconData([items?.Id])
+                                              }
+                                            ></span>
+                                          </a>
+                                </div>)}
+                                </div>) : ""
+                  
+                            }
+                          
+                          </div>                                  
+                        </div>
 
-                                            </div>
+                       </div>
 
-                                        </div>
+                      </div>
                                         <div className="col-sm-4  ">
+                                            <div className="mb-3 mt-1">
+                                                {RequireData?.isShowSiteCompostion ? (
+                                                    <div className="Sitecomposition mb-2">
+                                                        <div className="dropdown">
+                                                            <a className="sitebutton bg-fxdark alignCenter justify-content-between">
+                                                                <div
+                                                                    style={{ cursor: "pointer" }}
+                                                                    onClick={() =>
+                                                                        setComposition(composition ? false : true)
+                                                                    }
+                                                                >
+                                                                    <span>
+                                                                        {composition ? (
+                                                                            <SlArrowDown />
+                                                                        ) : (
+                                                                            <SlArrowRight />
+                                                                        )}
+                                                                    </span>
+                                                                    <span className="mx-2">Site Composition</span>
+                                                                </div>
+                                                                <span
+                                                                    className="svg__iconbox svg__icon--editBox hreflink"
+                                                                    title="Edit Site Composition"
+                                                                    onClick={() => setSiteCompositionShow(true)}
+                                                                ></span>
+                                                            </a>
+                                                            {composition && EditData?.siteCompositionData?.length > 0 &&
+                                                                EditData?.siteCompositionData?.length > 0 ? (
+                                                                <div className="spxdropdown-menu">
+                                                                    <ul>
+                                                                        {EditData?.siteCompositionData != undefined &&
+                                                                            EditData?.siteCompositionData?.length > 0 ? (
+                                                                            <>
+                                                                                {EditData?.siteCompositionData?.map(
+                                                                                    (SiteDtls: any, i: any) => {
+                                                                                        return (
+                                                                                            <li className="Sitelist">
+                                                                                                <span className="ms-2" title={SiteDtls.Title}>
+                                                                                                    <img
+                                                                                                        style={{ width: "22px" }}
+                                                                                                        src={SiteDtls.SiteImages}
+                                                                                                    />
+                                                                                                </span>
+
+                                                                                                {SiteDtls.ClienTimeDescription !=
+                                                                                                    undefined && (
+                                                                                                        <span className="mx-2">
+                                                                                                            {Number(
+                                                                                                                SiteDtls.ClienTimeDescription
+                                                                                                            ).toFixed(2)}
+                                                                                                            %
+                                                                                                        </span>
+                                                                                                    )}
+
+                                                                                                <span className="d-inline">
+                                                                                                    {SiteDtls.ClientCategory != undefined && SiteDtls.ClientCategory.length > 0 ? SiteDtls.ClientCategory?.map((clientcat: any, Index: any) => {
+                                                                                                        return (
+                                                                                                            <div className={Index == SiteDtls.ClientCategory?.length - 1 ? "mb-0" : "mb-0 border-bottom"}>{clientcat.Title}</div>
+                                                                                                        )
+                                                                                                    }) : null}
+                                                                                                </span>
+
+                                                                                            </li>
+                                                                                        );
+                                                                                    }
+                                                                                )}
+                                                                            </>
+                                                                        ) : null}
+                                                                    </ul>
+                                                                </div>
+                                                            ) : null}
+
+                                                        </div>
+                                                    </div>
+                                                ) : null}
+                                            </div>
                                             <CommentCard
                                                 siteUrl={EditData?.siteUrl}
                                                 userDisplayName={EditData?.userDisplayName}
@@ -3642,9 +3757,9 @@ function EditInstitution({ item, SelectD, Calls, usedFor , portfolioTypeData}: a
                                                         <span className="svg__iconbox svg__icon--link"></span>
                                                     </a>
                                                 </span>
-                                                {/* <span> <a target="_blank" data-interception="off" > Open  </a></span> */}
                                             </div>
                                         </div>
+
                                     </div>
                                 </div>
 
@@ -3665,267 +3780,236 @@ function EditInstitution({ item, SelectD, Calls, usedFor , portfolioTypeData}: a
                                                     ItemInfo={EditData}
                                                     AllListId={RequireData}
                                                     parentCallback={DDComponentCallBack}
-                                                ></TeamConfigurationCard>
+                                                />
                                             </div>
                                             <div className="row">
-                        <section className="accordionbox mt-2">
-                          <div className="accordion p-0  overflow-hidden">
-                            <details>
-                              <summary className="alignCenter">
-                                <label className="toggler full_width">
-                                  <div className="alignCenter">Admin Notes{`(${EditData?.AdminNotes?.length != undefined ?EditData?.AdminNotes?.length:0 })`}<span className="ml-auto">
-                                    <input className="form-check-input me-1 rounded-0"
-                                      type="checkbox"
-                                      defaultChecked={
-                                        EditData?.descriptionVerified ===
-                                        true
-                                      }
-                                    ></input>
-                                    <span>Verified</span>
-                                  </span></div>
-                                </label>
-                              </summary>
-                              <div className="border border-top-0 p-2">
-                                <div className="accordion-body py-2 px-2"
-                                  id="testDiv1">
-                                  <textarea
-                                    className="full_width"
-                                    defaultValue={EditData?.AdminNotes}
-                                    onChange={(e) =>
-                                      (EditData.AdminNotes = e.target.value)
-                                    }
-                                  ></textarea>
-                                </div>
-                              </div>
-                            </details>
-                            
-                            <details>
-                              <summary className="alignCenter">
-                                <label className="toggler full_width">
-                                  <div className="alignCenter">Description{`(${EditData?.Body?.length != undefined ?EditData?.Body?.length:0 })`} <span className="ml-auto">
-                                    <input className="form-check-input me-1 rounded-0"
-                                      type="checkbox"
-                                      defaultChecked={
-                                        EditData?.descriptionVerified ===
-                                        true
-                                      }
-                                    ></input>
-                                    <span>Verified</span>
-                                  </span></div>
-                                </label>
-                              </summary>
-                              <div className="border border-top-0 p-2">
+                                                <section className="accordionbox mt-2">
+                                                    <div className="accordion p-0  overflow-hidden">
+                                                        <details>
+                                                            <summary className="alignCenter">
+                                                                <label className="toggler full_width">
+                                                                    <div className="alignCenter">Admin Notes {`(${EditData?.AdminNotes?.length != undefined ? EditData?.AdminNotes?.length : 0})`}<span className="ml-auto">
 
-                                <div
-                                  id="testDiv1">
-                                 
-                                  <HtmlEditorCard
-                                    editorValue={
-                                      EditData?.Body != undefined
-                                        ? EditData?.Body
-                                        : ""
-                                    }
-                                    HtmlEditorStateChange={
-                                      HtmlEditorCallBack
-                                    }
-                                  ></HtmlEditorCard>
-                                </div>
 
-                              </div>
-                            </details>
-                            
-                            <details>
-                              <summary className="alignCenter">
-                                <label className="toggler full_width">
-                                  <div className="alignCenter">Short Description{`(${EditData?.Short_x0020_Description_x0020_On?.length != undefined ?EditData?.Short_x0020_Description_x0020_On?.length:0 })`}     <span className="ml-auto">
-                                    <input
-                                      type="checkbox" className="form-check-input me-1 rounded-0"
-                                      defaultChecked={
-                                        EditData?.ShortDescriptionVerified ===
-                                        true
-                                      }
-                                    ></input>
-                                    <span>Verified</span>
-                                  </span></div>
-                                </label>
-                              </summary>
-                              <div className="border border-top-0 p-2">
+                                                                    </span></div>
+                                                                </label>
+                                                            </summary>
+                                                            <div className="border border-top-0 p-2">
+                                                                <div id="testDiv1">
+                                                                    <textarea
+                                                                        className="full_width"
+                                                                        defaultValue={EditData?.AdminNotes}
+                                                                        onChange={(e) =>
+                                                                            (EditData.AdminNotes = e.target.value)
+                                                                        }
+                                                                    ></textarea>
+                                                                </div>
+                                                            </div>
+                                                        </details>
 
-                                <div id="testDiv1"
-                                >
-                             
+                                                        <details>
+                                                            <summary className="alignCenter">
+                                                                <label className="toggler full_width">
+                                                                    <div className="alignCenter">Description {`(${EditData?.Bodylength?.length != undefined ? EditData?.Bodylength?.length : 0})`} <span className="ml-auto">
+                                                                        <input
+                                                                            type="checkbox"
+                                                                            className="form-check-input me-1 rounded-0"
+                                                                            checked={descriptionVerifieds}
+                                                                            onChange={handleCheckboxChangedescription}
+                                                                        />
+                                                                        <span className="ps-1">Verified</span>
+                                                                    </span></div>
+                                                                </label>
+                                                            </summary>
+                                                            <div className="border border-top-0 p-2">
 
-                                  <HtmlEditorCard
-                                    editorValue={
-                                      EditData?.Short_x0020_Description_x0020_On !=
-                                        undefined
-                                        ? EditData?.Short_x0020_Description_x0020_On
-                                        : ""
-                                    }
-                                    HtmlEditorStateChange={
-                                      SortHtmlEditorCallBack
-                                    }
-                                  ></HtmlEditorCard>
-                                </div>
+                                                                <div
+                                                                    id="testDiv1">
 
-                              </div>
-                            </details>
-                            
-                            <details>
-                              <summary className="alignCenter">
-                                <label className="toggler full_width">
-                                  <div className="alignCenter">Background{`(${EditData?.Background?.length != undefined ?EditData?.Background?.length:0 })`}  <span className="ml-auto">
-                                    <input className="form-check-input me-1 rounded-0"
-                                      type="checkbox"
-                                      defaultChecked={
-                                        EditData?.BackgroundVerified ===
-                                        true
-                                      }
-                                      onChange={(e) =>
-                                      (EditData.BackgroundVerified =
-                                        e.target.value)
-                                      }
-                                    ></input>
-                                    <span>Verified</span>
-                                  </span></div>
-                                </label>
-                              </summary>
-                              <div className="border border-top-0 p-2">
+                                                                    <HtmlEditorCard
+                                                                        editorValue={
+                                                                            EditData?.Body != undefined
+                                                                                ? EditData?.Body
+                                                                                : ""
+                                                                        }
+                                                                        HtmlEditorStateChange={
+                                                                            HtmlEditorCallBack
+                                                                        }
+                                                                    ></HtmlEditorCard>
+                                                                </div>
 
-                                <div
-                                  className="accordion-body py-2 px-2"
-                                  id="testDiv1"
-                                >
-                                
-                                  <textarea
-                                    className="full_width"
-                                    defaultValue={EditData?.Background}
-                                    onChange={(e) =>
-                                      (EditData.Background = e.target.value)
-                                    }
-                                  ></textarea>
-                                </div>
+                                                            </div>
+                                                        </details>
 
-                              </div></details>
+                                                        <details>
+                                                            <summary className="alignCenter">
+                                                                <label className="toggler full_width">
+                                                                    <div className="alignCenter">Short Description {`(${EditData?.Short_x0020_Description_x0020_Onlength?.length != undefined ? EditData?.Short_x0020_Description_x0020_Onlength?.length : 0})`}     <span className="ml-auto">
 
-                
-                            <details>
-                              <summary className="alignCenter">
-                                <label className="toggler full_width">
-                                  <div className="alignCenter">Idea{`(${EditData?.Idea?.length != undefined ?EditData?.Idea?.length:0 })`} <span className="ml-auto">
-                                      <input
-                                      className="form-check-input me-1 rounded-0"
-                                        type="checkbox"
-                                        defaultChecked={
-                                          EditData?.IdeaVerified === true
-                                        }
-                                        onChange={(e) =>
-                                        (EditData.BackgroundVerified =
-                                          e.target.value)
-                                        }
-                                      ></input>
-                                      <span>Verified</span>
-                                    </span></div>
-                                </label>
-                              </summary>
-                              <div className="border border-top-0 p-2">
-                                
-                                  <div
-                                    className="accordion-body py-2 px-2"
-                                    id="testDiv1"
-                                  >
-                                   
-                                    <textarea
-                                      className="full_width"
-                                      defaultValue={EditData?.Idea}
-                                      onChange={(e) =>
-                                        (EditData.Idea = e.target.value)
-                                      }
-                                    ></textarea>
-                                  </div>
-                                
-                              </div></details>
+                                                                        <input
+                                                                            type="checkbox"
+                                                                            className="form-check-input me-1 rounded-0"
+                                                                            checked={shortDescriptionVerifieds}
+                                                                            onChange={handleCheckboxChange}
+                                                                        />
+                                                                        <span className="ps-1">Verified</span>
+                                                                    </span></div>
+                                                                </label>
+                                                            </summary>
+                                                            <div className="border border-top-0 p-2">
 
-                            
-                            <details>
-                              <summary className="alignCenter">
-                                <label className="toggler full_width">
-                                  <div className="alignCenter">Value Added{`(${EditData?.ValueAdded?.length != undefined ?EditData?.ValueAdded?.length:0 })`}<span className="ml-auto">
-                                    <input
-                                      type="checkbox" className="form-check-input me-1 rounded-0"
-                                      defaultChecked={
-                                        EditData?.ValueAddedVerified ===
-                                        true
-                                      }
-                                      onChange={(e) =>
-                                      (EditData.ValueAddedVerified =
-                                        e.target.value)
-                                      }
-                                    ></input>
-                                    <span>Verified</span>
-                                  </span></div>
-                                </label>
-                              </summary>
-                              <div className="border border-top-0 p-2">
+                                                                <div id="testDiv1"
+                                                                >
 
-                                <div
-                                  className="accordion-body py-2 px-2"
-                                  id="testDiv1"
-                                >
-                                  
-                                  <textarea
-                                    className="full_width"
-                                    defaultValue={EditData?.ValueAdded}
-                                    onChange={(e) =>
-                                      (EditData.ValueAdded = e.target.value)
-                                    }
-                                  ></textarea>
-                                </div>
 
-                              </div>
-                            </details>
-                            
-                            <details>
-                              <summary>
-                                <label className="toggler full_width alignCenter">
-                                  Deliverables{`(${EditData?.Deliverables?.length != undefined ?EditData?.Deliverables?.length:0 })`}  <span className="alignCenter ml-auto">
-                                    <input
-                                      type="checkbox" className="form-check-input me-1 rounded-0"
-                                      defaultChecked={
-                                        EditData?.DeliverablesVerified ===
-                                        true
-                                      }
-                                    ></input>
-                                    <span>Verified</span>
-                                  </span>
-                                </label>
-                              </summary>
-                              <div className="border border-top-0 p-2">
+                                                                    <HtmlEditorCard
+                                                                        editorValue={
+                                                                            EditData?.Short_x0020_Description_x0020_On !=
+                                                                                undefined
+                                                                                ? EditData?.Short_x0020_Description_x0020_On
+                                                                                : ""
+                                                                        }
+                                                                        HtmlEditorStateChange={
+                                                                            SortHtmlEditorCallBack
+                                                                        }
+                                                                    ></HtmlEditorCard>
+                                                                </div>
 
-                                <div
-                                  className="accordion-body py-2 px-2"
-                                  id="testDiv1"
-                                >
-                                
-                                  <HtmlEditorCard
-                                    editorValue={
-                                      EditData?.Deliverables != undefined
-                                        ? EditData?.Deliverables
-                                        : ""
-                                    }
-                                    HtmlEditorStateChange={
-                                      DeliverablesHtmlEditorCallBack
-                                    }
-                                  ></HtmlEditorCard>
-                                </div>
+                                                            </div>
+                                                        </details>
 
-                              </div></details>
-                           
-                          </div>
-                        </section>
-                      </div>
-                                                          </div>
-                                     
+                                                        <details>
+                                                            <summary className="alignCenter">
+                                                                <label className="toggler full_width">
+                                                                    <div className="alignCenter">Background {`(${EditData?.Background?.length != undefined ? EditData?.Background?.length : 0})`}
+                                                                        <span className="ml-auto">
+                                                                            <input type="checkbox"
+                                                                                className="form-check-input me-1 rounded-0"
+                                                                                checked={BackgroundVerifieds}
+                                                                                onChange={handleCheckboxBackground}
+                                                                            />
+                                                                            <span className="ps-1">Verified</span>
+                                                                        </span></div>
+                                                                </label>
+                                                            </summary>
+                                                            <div className="border border-top-0 p-2">
+
+                                                                <div id="testDiv1">
+                                                                    <textarea
+                                                                        className="full_width"
+                                                                        defaultValue={EditData?.Background}
+                                                                        onChange={(e) =>
+                                                                            (EditData.Background = e.target.value)
+                                                                        }
+                                                                    ></textarea>
+                                                                </div>
+
+                                                            </div></details>
+
+
+                                                        <details>
+                                                            <summary className="alignCenter">
+                                                                <label className="toggler full_width">
+                                                                    <div className="alignCenter">Idea {`(${EditData?.Idea?.length != undefined ? EditData?.Idea?.length : 0})`} <span className="ml-auto">
+
+                                                                        <input
+                                                                            type="checkbox"
+                                                                            className="form-check-input me-1 rounded-0"
+                                                                            checked={IdeaVerifieds}
+                                                                            onChange={handleCheckboxIdea}
+                                                                        />
+
+                                                                        <span className="ps-1">Verified</span>
+                                                                    </span></div>
+                                                                </label>
+                                                            </summary>
+                                                            <div className="border border-top-0 p-2">
+
+                                                                <div id="testDiv1">
+
+                                                                    <textarea
+                                                                        className="full_width"
+                                                                        defaultValue={EditData?.Idea}
+                                                                        onChange={(e) =>
+                                                                            (EditData.Idea = e.target.value)
+                                                                        }
+                                                                    ></textarea>
+                                                                </div>
+
+                                                            </div></details>
+
+
+                                                        <details>
+                                                            <summary className="alignCenter">
+                                                                <label className="toggler full_width">
+                                                                    <div className="alignCenter">Value Added {`(${EditData?.ValueAdded?.length != undefined ? EditData?.ValueAdded?.length : 0})`}
+                                                                        <span className="ml-auto alignCenter">
+                                                                            <input
+                                                                                type="checkbox"
+                                                                                className="form-check-input me-1 rounded-0"
+                                                                                checked={ValueAddedVerifieds}
+                                                                                onChange={handleCheckboxValueAdded}
+                                                                            />
+
+                                                                            <span className="ps-1">Verified</span>
+                                                                        </span></div>
+                                                                </label>
+                                                            </summary>
+                                                            <div className="border border-top-0 p-2">
+
+                                                                <div id="testDiv1">
+
+                                                                    <textarea
+                                                                        className="full_width"
+                                                                        defaultValue={EditData?.ValueAdded}
+                                                                        onChange={(e) =>
+                                                                            (EditData.ValueAdded = e.target.value)
+                                                                        }
+                                                                    ></textarea>
+                                                                </div>
+
+                                                            </div>
+                                                        </details>
+
+                                                        <details>
+                                                            <summary>
+                                                                <label className="toggler full_width">
+                                                                    <div className="alignCenter"> Deliverables {`(${EditData?.Deliverableslength?.length != undefined ? EditData?.Deliverableslength?.length : 0})`}
+                                                                        <span className="alignCenter ml-auto">
+                                                                            <input
+                                                                                type="checkbox"
+                                                                                className="form-check-input me-1 rounded-0"
+                                                                                checked={DeliverablesVerifieds}
+                                                                                onChange={handleCheckboxDeliverables}
+                                                                            />
+
+                                                                            <span className="ps-1">Verified</span>
+                                                                        </span>
+                                                                    </div>
+                                                                </label>
+                                                            </summary>
+                                                            <div className="border border-top-0 p-2">
+                                                                <div id="testDiv1">
+
+                                                                    <HtmlEditorCard
+                                                                        editorValue={
+                                                                            EditData?.Deliverables != undefined
+                                                                                ? EditData?.Deliverables
+                                                                                : ""
+                                                                        }
+                                                                        HtmlEditorStateChange={
+                                                                            DeliverablesHtmlEditorCallBack
+                                                                        }
+                                                                    ></HtmlEditorCard>
+                                                                </div>
+
+                                                            </div></details>
+
+                                                    </div>
+                                                </section>
+                                            </div>
+                                        </div>
+
                                     </div>
                                 </div>
                                 <div
@@ -3938,21 +4022,22 @@ function EditInstitution({ item, SelectD, Calls, usedFor , portfolioTypeData}: a
                                         <details>
                                             <summary className="alignCenter">
                                                 <label className="toggler full_width">
-                                                    <a className="alignCenter">Technical Concept{`(${EditData?.TechnicalExplanations?.length != undefined ?EditData?.TechnicalExplanations?.length:0 })`} <span className="ml-auto">
-                                                            <input
-                                                                type="checkbox" className="form-check-input me-1 rounded-0"
-                                                                defaultValue={
-                                                                    EditData?.TechnicalExplanationsVerified
-                                                                }
-                                                            />
-                                                            <span className="ps-1">Verified</span>
-                                                        </span></a>
+                                                    <div className="alignCenter">Technical Concept {`(${EditData?.TechnicalExplanationslength?.length != undefined ? EditData?.TechnicalExplanationslength?.length : 0})`} <span className="ml-auto">
+
+                                                        <input
+                                                            type="checkbox"
+                                                            className="form-check-input me-1 rounded-0"
+                                                            checked={TechnicalExplanationsVerifieds}
+                                                            onChange={handleCheckboxTechnicalExplanations}
+                                                        />
+                                                        <span className="ps-1">Verified</span>
+                                                    </span></div>
                                                 </label>
                                             </summary>
                                             <div className="border border-top-0 p-2">
                                                 {CollapseExpend && (
                                                     <div>
-                                                        
+
 
                                                         <HtmlEditorCard
                                                             editorValue={
@@ -3967,7 +4052,7 @@ function EditInstitution({ item, SelectD, Calls, usedFor , portfolioTypeData}: a
                                                     </div>
                                                 )}
                                             </div></details>
-                                   
+
                                     </div>
                                 </div>
                                 <div
@@ -3976,143 +4061,111 @@ function EditInstitution({ item, SelectD, Calls, usedFor , portfolioTypeData}: a
                                     role="tabpanel"
                                     aria-labelledby="help-tab"
                                 >
-                                    <div className="col  p-2">
+                                    <div className="col p-2">
                                         <section className="accordionbox">
-                                            <div className="accordion p-0  overflow-hidden">
-                                                <div className="card shadow-none  mb-2">
-                                                
-                                                    
-                                                        
-                                                            
-                                                            <details>
-                              <summary>
-                                <label className="alignCenter toggler full_width">
-                                   Help Information{`(${EditData?.Help_x0020_Information?.length != undefined ?EditData?.Help_x0020_Information?.length:0 })`}<span className="alignCenter ml-auto">
-                                  <input
-                                                                className="form-check-input me-1 mt-0 rounded-0"
+                                            <details>
+                                                <summary>
+                                                    <label className="toggler full_width">
+                                                        <div className="alignCenter">Help Information {`(${EditData?.Help_x0020_Informationlength?.length != undefined ? EditData?.Help_x0020_Informationlength?.length : 0})`}
+                                                            <span className="alignCenter ml-auto">
+
+                                                                <input
                                                                     type="checkbox"
-                                                                    defaultChecked={
-                                                                        EditData?.HelpInformationVerified ===
-                                                                        true
-                                                                    }
-                                                                    onChange={(e) =>
-                                                                    (EditData.HelpInformationVerified =
-                                                                        e.target.value)
-                                                                    }
-                                                                ></input>
-                                                                <span className="form-check m-0 p-0">Verified</span>
-                                  </span>
-                                </label>
-                              </summary>
-                              <HtmlEditorCard
-                             editorValue={
-                             EditData?.Help_x0020_Information != undefined
-                            ? EditData?.Help_x0020_Information
-                             : ""
-                            }
-                             HtmlEditorStateChange={
-                             HelpInformationHtmlEditorCallBack
-                             }
-                             ></HtmlEditorCard>
-                            </details>
-                                                           
-                                                   
+                                                                    className="form-check-input me-1 rounded-0"
+                                                                    checked={HelpInformationVerifieds}
+                                                                    onChange={handleCheckboxHelpInformation}
+                                                                />
+                                                                <span className="ps-1">Verified</span>
+                                                            </span></div>
+                                                    </label>
+                                                </summary>
+                                                <div className="border border-top-0 p-2">
+                                                    <HtmlEditorCard
+                                                        editorValue={
+                                                            EditData?.Help_x0020_Information != undefined
+                                                                ? EditData?.Help_x0020_Information
+                                                                : ""
+                                                        }
+                                                        HtmlEditorStateChange={
+                                                            HelpInformationHtmlEditorCallBack
+                                                        }
+                                                    ></HtmlEditorCard>
                                                 </div>
-                                            </div>
+                                            </details>
                                         </section>
                                         <div className="">
                                             <div className="col-md-12">
                                                 <div className="col-sm-12 mb-3 mt-10 pad0">
-                                                    <h5 className=""> Questions Description </h5><a className="pull-right" onClick={() => setIsOpenPopup(true)}>Add Questions</a>
-                                                    {/* {SmartHelpDetails?.filter((elem) => CompoenetItem[0]?.Id === elem.Components[0]?.Id).map((filteredItem) => (
-                    filteredItem.ItemType === "Question" &&
-                    <div className="block" key={filteredItem.Id}>
-                      {filteredItem.Title}
-                      <button onClick={() => editQuestionHandler(filteredItem)}>Edit</button>
-                      <button onClick={() => deleteQuestionHandler(filteredItem.Id)}>Delete</button>
-                    </div>
-                  ))} */}
+                                                    <div className="col-sm-12 p-0"> <label>Questions Description </label><a className="pull-right hreflink" onClick={() => setIsOpenPopup(true)}>Add Questions</a></div>
+                                                    <div className="borderDes p-2">
+                                                        {SmartHelpDetails?.filter((elem: any) => elem?.ComponentsId != undefined).map((item: any) => (
+                                                            CompoenetItem[0]?.Id === item.ComponentsId?.results[0] ? (
+                                                                item.ItemType === "Question" && (
+                                                                    <div key={item.Id}>
+                                                                        <details open>
+                                                                            <summary>
+                                                                                <label className="toggler full_width alignCenter">
+                                                                                    <span className="pull-left">
+                                                                                        {item.Title}
+                                                                                    </span>
 
-                                                    {SmartHelpDetails?.filter((elem: any) => elem?.ComponentsId != undefined).map((item: any) => (
-                                                        CompoenetItem[0]?.Id === item.ComponentsId?.results[0] ? (
-                                                            item.ItemType === "Question" && (
-                                                                <div key={item.Id}>
-                                                                    <details open>
-                                                                        <summary>
-                                                                            <label className="toggler full_width alignCenter">
-                                                                                <a className="pull-left">
-                                                                                    {item.Title}
-                                                                                </a>
-                                                                                {/* <button onClick={() => editQuestionHandler(item)}>Edit</button>
-                          <button onClick={() => deleteHandler(item.Id)}>Delete</button> */}
-                                                                                <div className="ml-auto alignCenter">
-                                                                                    <span className="svg__iconbox svg__icon--edit hreflink" onClick={() => editQuestionHandler(item)}>Edit</span>
-                                                                                    <span className="svg__iconbox svg__icon--cross hreflink" onClick={() => deleteHandler(item.Id)}>Delete</span>
-                                                                                </div>
+                                                                                    <div className="ml-auto alignCenter">
+                                                                                        <span className="svg__iconbox svg__icon--edit hreflink" onClick={() => editQuestionHandler(item)}>Edit</span>
+                                                                                        <span className="svg__iconbox svg__icon--cross hreflink" onClick={() => deleteHandler(item.Id)}>Delete</span>
+                                                                                    </div>
 
-                                                                            </label>
-                                                                        </summary>
-                                                                        <div className="border border-top-0 p-2">{item.Body?.replace(/<[^>]*>/g, '')}</div>
-                                                                    </details>
+                                                                                </label>
+                                                                            </summary>
+                                                                            <div className="border border-top-0 p-2">{item.Body?.replace(/<[^>]*>/g, '')}</div>
+                                                                        </details>
 
-                                                                </div>
-                                                            )
-                                                        ) : null
-                                                    ))}
+                                                                    </div>
+                                                                )
+                                                            ) : null
+                                                        ))}
 
-                                                    {SmartHelpDetails?.filter((elem: any) => elem.ComponentsId === undefined).map((filteredItem: any) => (
-                                                        filteredItem?.Components != undefined && CompoenetItem[0]?.Id === filteredItem?.Components[0]?.Id ? (
-                                                            filteredItem.ItemType === "Question" && (
-                                                                <div key={filteredItem.Id}>
-                                                                    <details open>
-                                                                        <summary>
-                                                                            <label className="toggler full_width alignCenter">
-                                                                                <a className="pull-left">
-                                                                                    {filteredItem.Title}
-                                                                                </a>
-                                                                                {/* <button onClick={() => editQuestionHandler(item)}>Edit</button>
-                          <button onClick={() => deleteHandler(item.Id)}>Delete</button> */}
-                                                                                <div className="ml-auto alignCenter">
-                                                                                    <span className="svg__iconbox svg__icon--edit hreflink" onClick={() => editQuestionHandler(filteredItem)}>Edit</span>
-                                                                                    <span className="svg__iconbox svg__icon--cross hreflink" onClick={() => deleteHandler(filteredItem.Id)}>Delete</span>
-                                                                                </div>
+                                                        {SmartHelpDetails?.filter((elem: any) => elem.ComponentsId === undefined).map((filteredItem: any) => (
+                                                            filteredItem?.Components != undefined && CompoenetItem[0]?.Id === filteredItem?.Components[0]?.Id ? (
+                                                                filteredItem.ItemType === "Question" && (
+                                                                    <div key={filteredItem.Id}>
+                                                                        <details open>
+                                                                            <summary>
+                                                                                <label className="toggler full_width alignCenter">
+                                                                                    <span className="pull-left">
+                                                                                        {filteredItem.Title}
+                                                                                    </span>
 
-                                                                            </label>
-                                                                        </summary>
-                                                                        <div className="border border-top-0 p-2">{filteredItem.Body?.replace(/<[^>]*>/g, '')}</div>
-                                                                    </details>
+                                                                                    <div className="ml-auto alignCenter">
+                                                                                        <span className="svg__iconbox svg__icon--edit hreflink" onClick={() => editQuestionHandler(filteredItem)}>Edit</span>
+                                                                                        <span className="svg__iconbox svg__icon--cross hreflink" onClick={() => deleteHandler(filteredItem.Id)}>Delete</span>
+                                                                                    </div>
 
-                                                                </div>
-                                                            )
-                                                        ) : null
-                                                    ))}
+                                                                                </label>
+                                                                            </summary>
+                                                                            <div className="border border-top-0 p-2">{filteredItem.Body?.replace(/<[^>]*>/g, '')}</div>
+                                                                        </details>
+
+                                                                    </div>
+                                                                )
+                                                            ) : null
+                                                        ))}
 
 
-                                                    {/* {SmartHelpDetails.filter((elem) => CompoenetItem[0].Id === elem.Components[0]?.Id).every((elem) => elem.ItemType !== "Question") && (
-                    <div>No Help Description available</div>
-                  )} */}
-                                                    {SmartHelpDetails.filter((elem: any) => elem.Components && elem.Components[0] && CompoenetItem[0]?.Id === elem.Components[0]?.Id)
-                                                        .every((elem: any) => elem.ItemType !== "Question")
-                                                        ? <div>No Help Description available</div>
-                                                        : null}
-                                                </div>
-                                                <div>
 
+                                                        {SmartHelpDetails.filter((elem: any) => elem.Components && elem.Components[0] && CompoenetItem[0]?.Id === elem.Components[0]?.Id)
+                                                            .every((elem: any) => elem.ItemType !== "Question")
+                                                            ? <div className="text-center p-2">No Questions Description available</div>
+                                                            : null}
+                                                    </div>
+                                                    <div>
+                                                    </div>
                                                 </div>
 
                                             </div>
-                                            <div>
 
-                                                <div>
-                                                    <h5 className=""> Help Description </h5> <a className="pull-right" onClick={() => setOpenPopup(true)}>Add Help</a>
-                                                    {/* {SmartHelpDetails.filter((elem) => CompoenetItem[0].Id === elem.Components[0]?.Id).map((filteredItem) => (
-                    filteredItem.ItemType === "Help" &&
-                    <div className="block" key={filteredItem.Id}>
-                      {filteredItem.Title}
-                      <button onClick={() => editHelpHandler(filteredItem)}>Edit</button>
-                      <button onClick={() => deleteHelpHandler(filteredItem.Id)}>Delete</button>
-                    </div>
-                  ))} */}
+                                            <div>
+                                                <div className="col-sm-12 p-0"><label> Help Description </label> <a className="pull-right hreflink" onClick={() => setOpenPopup(true)}>Add Help</a></div>
+                                                <div className="borderDes p-2">
 
                                                     {SmartHelpDetails?.filter((elem: any) => elem?.ComponentsId != undefined).map((item: any) => (
                                                         CompoenetItem[0]?.Id === item.ComponentsId?.results[0] ? (
@@ -4121,11 +4174,10 @@ function EditInstitution({ item, SelectD, Calls, usedFor , portfolioTypeData}: a
                                                                     <details open>
                                                                         <summary>
                                                                             <label className="toggler full_width alignCenter">
-                                                                                <a className="pull-left">
+                                                                                <span className="pull-left">
                                                                                     {item.Title}
-                                                                                </a>
-                                                                                {/* <button onClick={() => editQuestionHandler(item)}>Edit</button>
-                          <button onClick={() => deleteHandler(item.Id)}>Delete</button> */}
+                                                                                </span>
+
                                                                                 <div className="ml-auto alignCenter">
                                                                                     <span className="svg__iconbox svg__icon--edit hreflink" onClick={() => editHelpHandler(item)}>Edit</span>
                                                                                     <span className="svg__iconbox svg__icon--cross hreflink" onClick={() => deleteHandler(item.Id)}>Delete</span>
@@ -4139,18 +4191,7 @@ function EditInstitution({ item, SelectD, Calls, usedFor , portfolioTypeData}: a
                                                             )
                                                         ) : null
                                                     ))}
-                                                    {/* 
-                  {SmartHelpDetails?.filter((elem: any) => elem?.ComponentsId != undefined).map((item: any) => (
-                    CompoenetItem[0]?.Id === item.ComponentsId?.results[0] ? (
-                      item.ItemType === "Help" && (
-                        <div className="block" key={item.Id}>
-                          {item.Title}
-                          <button onClick={() => editHelpHandler(item)}>Edit</button>
-                          <button onClick={() => deleteHandler(item.Id)}>Delete</button>
-                        </div>
-                      )
-                    ) : null
-                  ))} */}
+
 
                                                     {SmartHelpDetails?.filter((elem: any) => elem?.ComponentsId === undefined).map((filteredItem: any) => (
                                                         filteredItem?.Components != undefined && CompoenetItem[0]?.Id === filteredItem?.Components[0]?.Id ? (
@@ -4159,11 +4200,10 @@ function EditInstitution({ item, SelectD, Calls, usedFor , portfolioTypeData}: a
                                                                     <details open>
                                                                         <summary>
                                                                             <label className="toggler full_width alignCenter">
-                                                                                <a className="pull-left">
+                                                                                <span className="pull-left">
                                                                                     {filteredItem.Title}
-                                                                                </a>
-                                                                                {/* <button onClick={() => editQuestionHandler(item)}>Edit</button>
-                          <button onClick={() => deleteHandler(item.Id)}>Delete</button> */}
+                                                                                </span>
+
                                                                                 <div className="ml-auto alignCenter">
                                                                                     <span className="svg__iconbox svg__icon--edit hreflink" onClick={() => editHelpHandler(filteredItem)}>Edit</span>
                                                                                     <span className="svg__iconbox svg__icon--cross hreflink" onClick={() => deleteHandler(filteredItem.Id)}>Delete</span>
@@ -4178,29 +4218,16 @@ function EditInstitution({ item, SelectD, Calls, usedFor , portfolioTypeData}: a
                                                         ) : null
                                                     ))}
 
-                                                    {/* {SmartHelpDetails?.filter((elem: any) => elem?.ComponentsId === undefined).map((filteredItem: any) => (
-                    filteredItem?.Components != undefined && CompoenetItem[0]?.Id === filteredItem?.Components[0]?.Id ? (
-                      filteredItem.ItemType === "Help" && (
-                        <div className="block" key={filteredItem.Id}>
-                          {filteredItem.Title}
-                          <button onClick={() => editHelpHandler(filteredItem)}>Edit</button>
-                          <button onClick={() => deleteHandler(filteredItem.Id)}>Delete</button>
-                        </div>
-                      )
-                    ) : null
-                  ))} */}
-                                                    {/* {SmartHelpDetails.filter((elem) => CompoenetItem[0].Id === elem.Components[0]?.Id).every((elem) => elem.ItemType !== "Help") && (
-                    <div>No Help Description available</div>
-                  )} */}
+
                                                     {SmartHelpDetails && CompoenetItem[0] ? (
                                                         SmartHelpDetails.filter((elem: any) => elem.Components && elem.Components[0] && CompoenetItem[0]?.Id === elem.Components[0]?.Id)
                                                             .every((elem: any) => elem.ItemType !== "Help")
-                                                            ? <div>No Help Description available</div>
+                                                            ? <div className="text-center p-2">No Help Description available</div>
                                                             : null
                                                     ) : null}
                                                 </div>
-
                                             </div>
+
                                         </div>
                                     </div>
                                 </div>
@@ -4290,6 +4317,7 @@ function EditInstitution({ item, SelectD, Calls, usedFor , portfolioTypeData}: a
                                         <span>
                                             <a className="me-1"
                                                 target="_blank"
+                                                data-interception="off"
                                                 href={`${RequireData.siteUrl}/SitePages/Portfolio-Profile.aspx?taskId=${EditData?.Id}`}
                                             >
                                                 {/* <img src="https://hhhhteams.sharepoint.com/sites/HHHH/_layouts/15/images/ichtm.gif?rev=23" />{" "} */}
@@ -4339,20 +4367,7 @@ function EditInstitution({ item, SelectD, Calls, usedFor , portfolioTypeData}: a
                             </div>
                         </footer>
 
-                        {/* {IsComponent && item.Portfolio_x0020_Type == "Component" && (
-            <LinkedComponent
-              props={SharewebComponent}
-              Dynamic={RequireData}
-              Call={Call}
-            ></LinkedComponent>
-          )}
-          {IsComponent && item.Portfolio_x0020_Type == "Service" && (
-            <ComponentPortPolioPopup
-              props={SharewebComponent}
-              Dynamic={RequireData}
-              Call={Call}
-            ></ComponentPortPolioPopup>
-          )} */}
+
                         {IsComponent ? (
                             <ServiceComponentPortfolioPopup
                                 props={SharewebComponent}
@@ -4371,6 +4386,19 @@ function EditInstitution({ item, SelectD, Calls, usedFor , portfolioTypeData}: a
                                 selectionType={"Multi"}
                             />
                         ) : null}
+
+                   {isopenProjectpopup ? (
+                   <ServiceComponentPortfolioPopup
+                   props={setSharewebComponent}
+                   Dynamic={SelectD}
+                   ComponentType={"Component"}
+                   selectionType={"Multi"}
+                   Call={(Call:any, type: any, functionType: any)=>{callServiceComponent(Call, type,functionType)}}
+                   updateMultiLookup={updateMultiLookup}
+                   showProject={isopenProjectpopup}
+                  />
+                  ) : null}
+
                         {IsComponentPicker && (
                             <Picker
                                 props={SharewebCategory}
@@ -4393,9 +4421,9 @@ function EditInstitution({ item, SelectD, Calls, usedFor , portfolioTypeData}: a
                 <div className="modal-body clearfix">
                     <div className="input-group mb-2">
                         <label className="form-label full-width">Title</label>
-                        <input type="text" className="form-control" onChange={(e) => { setQuestion(e.target.value) }}></input>
+                        <input type="text" className="form-control" defaultValue={`${CompoenetItem[0]?.Title} - ${question}`} onChange={(e) => setQuestion(e.target.value)}></input>
                     </div>
-                    <div className="input-group mb-2">
+                    {/* <div className="input-group mb-2">
                         <label className="full-width form-label">Permission</label>
 
                         <label className="SpfxCheckRadio">
@@ -4418,7 +4446,7 @@ function EditInstitution({ item, SelectD, Calls, usedFor , portfolioTypeData}: a
 
                         <label className="SpfxCheckRadio">
                             <input type="radio" id="admin" className="radio" value="Admin" checked={choice === 'Admin'} onChange={choiceHandler} /> Admin</label>
-                    </div>
+                    </div> */}
                     <div className="mb-2">
                         <label className="form-label">Description</label>
                         <div>
@@ -4434,9 +4462,54 @@ function EditInstitution({ item, SelectD, Calls, usedFor , portfolioTypeData}: a
                         </div>
                     </div>
                 </div>
-                <footer className="modal-body pull-right">
-                    <button className='btn btn-primary' onClick={() => AddQuestionFunc()}>Save</button>
-                    <button className='btn btn-default mx-1' onClick={() => setIsOpenPopup(false)}>Cancel</button>
+                <footer className="footer-right">
+                    <div className="align-items-center d-flex justify-content-between">
+                        <div className="">
+                            <div className="text-left">
+                                Created{" "}
+                                <span ng-bind="EditData?.Created | date:'MM-DD-YYYY'">
+                                    {" "}
+                                    {EditData.Created ? moment(EditData.Created).format("DD/MM/YYYY") : ""}
+                                </span>{" "}
+                                by
+                                <span className="panel-title ps-1 hreflink">
+                                    {EditData?.Author?.Title != undefined
+                                        ? EditData?.Author?.Title
+                                        : ""}
+                                </span>
+                            </div>
+                            <div className="text-left">
+                                Last modified{" "}
+                                <span>
+                                    {EditData.Modified ? moment(EditData.Modified).format("DD/MM/YYYY") : ''}
+                                </span>{" "}
+                                by{" "}
+                                <span className="panel-title hreflink">
+                                    {EditData?.Editor?.Title != undefined
+                                        ? EditData?.Editor?.Title
+                                        : ""}
+                                </span>
+                            </div>
+                            <div className="text-left">
+                                <span className="hreflink">
+                                    {" "}
+                                    {EditData?.ID ? (
+                                        <VersionHistoryPopup
+                                            taskId={EditData?.ID}
+                                            listId={RequireData.MasterTaskListID}
+                                            siteUrls={RequireData?.siteUrl}
+                                        />
+                                    ) : (
+                                        ""
+                                    )}
+                                </span>
+                            </div>
+                        </div>
+                        <div className="">
+                            <button className='btn btn-primary' onClick={() => AddQuestionFunc()}>Save</button>
+                            <button className='btn btn-default ms-1' onClick={() => setIsOpenPopup(false)}>Cancel</button>
+                        </div>
+                    </div>
                 </footer>
             </Panel>
 
@@ -4451,10 +4524,10 @@ function EditInstitution({ item, SelectD, Calls, usedFor , portfolioTypeData}: a
                 <div className="modal-body clearfix">
                     <div className="input-group mb-2">
                         <label className="form-label full-width">Title</label>
-                        <input type="text" defaultValue={dataUpdate?.Title} onChange={(e) => { setQuestion(e.target.value) }}></input>
+                        <input className="form-control" type="text" defaultValue={dataUpdate?.Title} onChange={(e) => { setQuestion(e.target.value) }}></input>
                     </div>
 
-                    <div className="input-group mb-2">
+                    {/* <div className="input-group mb-2">
                         <label className="full-width form-label">Permission</label>
 
                         <label className="SpfxCheckRadio">
@@ -4477,9 +4550,9 @@ function EditInstitution({ item, SelectD, Calls, usedFor , portfolioTypeData}: a
 
                         <label className="SpfxCheckRadio">
                             <input type="radio" id="admin" className="radio" value="Admin" checked={choice === 'Admin'} onChange={choiceHandler} /> Admin</label>
-                    </div>
+                    </div> */}
                     <div className="mb-2">
-                        <label className="form-label">Description{`(${EditData?.QuestionDescription?.length})`}</label>
+                        <label className="form-label full-width">Description{`(${EditData?.QuestionDescription?.length})`}</label>
                         <div>
                             <HtmlEditorCard editorValue={
                                 EditData.QuestionDescription != undefined
@@ -4493,9 +4566,54 @@ function EditInstitution({ item, SelectD, Calls, usedFor , portfolioTypeData}: a
                         </div>
                     </div>
                 </div>
-                <footer className="modal-body pull-right">
-                    <DefaultButton className='btn btn-primary' onClick={() => updateDetails()}>Save</DefaultButton>
-                    <DefaultButton className='btn btn-default mx-1' onClick={() => setEditPopup(false)}>Cancel</DefaultButton>
+                <footer className="footer-right">
+                    <div className="align-items-center d-flex justify-content-between">
+                        <div>
+                            <div className="text-left">
+                                Created{" "}
+                                <span ng-bind="EditData?.Created | date:'MM-DD-YYYY'">
+                                    {" "}
+                                    {EditData.Created ? moment(EditData.Created).format("DD/MM/YYYY") : ""}
+                                </span>{" "}
+                                by
+                                <span className="panel-title ps-1 hreflink">
+                                    {EditData?.Author?.Title != undefined
+                                        ? EditData?.Author?.Title
+                                        : ""}
+                                </span>
+                            </div>
+                            <div className="text-left">
+                                Last modified{" "}
+                                <span>
+                                    {EditData.Modified ? moment(EditData.Modified).format("DD/MM/YYYY") : ''}
+                                </span>{" "}
+                                by{" "}
+                                <span className="panel-title hreflink">
+                                    {EditData?.Editor?.Title != undefined
+                                        ? EditData?.Editor?.Title
+                                        : ""}
+                                </span>
+                            </div>
+                            <div className="text-left">
+                                <span className="hreflink">
+                                    {" "}
+                                    {EditData?.ID ? (
+                                        <VersionHistoryPopup
+                                            taskId={EditData?.ID}
+                                            listId={RequireData.MasterTaskListID}
+                                            siteUrls={RequireData?.siteUrl}
+                                        />
+                                    ) : (
+                                        ""
+                                    )}
+                                </span>
+                            </div>
+                        </div>
+                        <div className="">
+                            <button className="me-1 btn btn-primary" onClick={() => updateDetails()}>Save</button>
+                            <button className="btn btn-default" onClick={() => setEditPopup(false)}>Cancel</button>
+                        </div>
+                    </div>
                 </footer>
             </Panel>
             <Panel
@@ -4509,11 +4627,11 @@ function EditInstitution({ item, SelectD, Calls, usedFor , portfolioTypeData}: a
                 <div className="modal-body clearfix">
                     <div className="input-group mb-2">
                         <label className="form-label full-width">Title</label>
-                        <input type="text" onChange={(e) => { setHelp(e.target.value) }}></input>
+                        <input type="text" className="form-control" defaultValue={`${CompoenetItem[0]?.Title} - ${help}`} onChange={(e) => { setHelp(e.target.value) }}></input>
                     </div>
 
                     <div className="mb-2">
-                        <label className="form-label">Description</label>
+                        <label className="form-label full-width">Description</label>
                         <div>
                             <HtmlEditorCard
                                 editorValue={
@@ -4528,9 +4646,54 @@ function EditInstitution({ item, SelectD, Calls, usedFor , portfolioTypeData}: a
                         </div>
                     </div>
                 </div>
-                <footer className="modal-body pull-right">
-                    <DefaultButton className='btn btn-primary' onClick={() => AddHelpFunc()}>Save</DefaultButton>
-                    <DefaultButton className='btn btn-default mx-1' onClick={() => setOpenPopup(false)}>Cancel</DefaultButton>
+                <footer className="footer-right">
+                    <div className="align-items-center d-flex justify-content-between">
+                        <div>
+                            <div className="text-left">
+                                Created{" "}
+                                <span ng-bind="EditData?.Created | date:'MM-DD-YYYY'">
+                                    {" "}
+                                    {EditData.Created ? moment(EditData.Created).format("DD/MM/YYYY") : ""}
+                                </span>{" "}
+                                by
+                                <span className="panel-title ps-1 hreflink">
+                                    {EditData?.Author?.Title != undefined
+                                        ? EditData?.Author?.Title
+                                        : ""}
+                                </span>
+                            </div>
+                            <div className="text-left">
+                                Last modified{" "}
+                                <span>
+                                    {EditData.Modified ? moment(EditData.Modified).format("DD/MM/YYYY") : ''}
+                                </span>{" "}
+                                by{" "}
+                                <span className="panel-title hreflink">
+                                    {EditData?.Editor?.Title != undefined
+                                        ? EditData?.Editor?.Title
+                                        : ""}
+                                </span>
+                            </div>
+                            <div className="text-left">
+                                <span className="hreflink">
+                                    {" "}
+                                    {EditData?.ID ? (
+                                        <VersionHistoryPopup
+                                            taskId={EditData?.ID}
+                                            listId={RequireData.MasterTaskListID}
+                                            siteUrls={RequireData?.siteUrl}
+                                        />
+                                    ) : (
+                                        ""
+                                    )}
+                                </span>
+                            </div>
+                        </div>
+                        <div className="">
+                            <button className="me-1 btn btn-primary" onClick={() => AddHelpFunc()}>Save</button>
+                            <button className="btn btn-default" onClick={() => setOpenPopup(false)}>Cancel</button>
+                        </div>
+                    </div>
                 </footer>
             </Panel>
             <Panel
@@ -4539,13 +4702,12 @@ function EditInstitution({ item, SelectD, Calls, usedFor , portfolioTypeData}: a
                 onDismiss={() => setEditHelpPopup(false)}
                 closeButtonAriaLabel="Close"
                 onRenderHeader={onRenderHeaderHelpEdit}
-                headerText="Edit Help"
                 type={PanelType.large}
             >
                 <div className="modal-body clearfix">
                     <div className="input-group mb-2">
                         <label className="form-label full-width">Title</label>
-                        <input type="text" defaultValue={helpDataUpdate?.Title} onChange={(e) => { setHelp(e.target.value) }}></input>
+                        <input type="text" className="form-control" defaultValue={helpDataUpdate?.Title} onChange={(e) => { setHelp(e.target.value) }}></input>
                     </div>
                     <div className="mb-2">
                         <label className="form-label">Description</label>
@@ -4562,45 +4724,142 @@ function EditInstitution({ item, SelectD, Calls, usedFor , portfolioTypeData}: a
                         </div>
                     </div>
                 </div>
-                <footer className="modal-body pull-right">
-                    <DefaultButton className='btn btn-primary' onClick={() => updateHelpDetails()}>Save</DefaultButton>
-                    <DefaultButton className='btn btn-default mx-1' onClick={() => setEditHelpPopup(false)}>Cancel</DefaultButton>
+                <footer className="footer-right">
+                    <div className="align-items-center d-flex justify-content-between">
+                        <div>
+                            <div className="text-left">
+                                Created{" "}
+                                <span ng-bind="EditData?.Created | date:'MM-DD-YYYY'">
+                                    {" "}
+                                    {EditData.Created ? moment(EditData.Created).format("DD/MM/YYYY") : ""}
+                                </span>{" "}
+                                by
+                                <span className="panel-title ps-1 hreflink">
+                                    {EditData?.Author?.Title != undefined
+                                        ? EditData?.Author?.Title
+                                        : ""}
+                                </span>
+                            </div>
+                            <div className="text-left">
+                                Last modified{" "}
+                                <span>
+                                    {EditData.Modified ? moment(EditData.Modified).format("DD/MM/YYYY") : ''}
+                                </span>{" "}
+                                by{" "}
+                                <span className="panel-title hreflink">
+                                    {EditData?.Editor?.Title != undefined
+                                        ? EditData?.Editor?.Title
+                                        : ""}
+                                </span>
+                            </div>
+                            <div className="text-left">
+                                <span className="hreflink">
+                                    {" "}
+                                    {EditData?.ID ? (
+                                        <VersionHistoryPopup
+                                            taskId={EditData?.ID}
+                                            listId={RequireData.MasterTaskListID}
+                                            siteUrls={RequireData?.siteUrl}
+                                        />
+                                    ) : (
+                                        ""
+                                    )}
+                                </span>
+                            </div>
+                        </div>
+                        <div className="">
+                            <button className="me-1 btn btn-primary" onClick={() => updateHelpDetails()}>Save</button>
+                            <button className="btn btn-default" onClick={() => setEditHelpPopup(false)}>Cancel</button>
+                        </div>
+                    </div>
                 </footer>
             </Panel>
-                {/*change portfolio type */}
-      <Panel 
-      className={`${
-        EditData?.Portfolio_x0020_Type == "Service"
-          ? " serviepannelgreena"
-          : ""
-      }`}
-      onRenderHeader={onRenderHeaderChangeParent}
-      isOpen={changeType}
-      onDismiss={()=>{setChangeType(false)}}
-      isBlocking={false}
-      type={PanelType.medium}
-      >
+            {/*change portfolio type */}
+            <Panel
+                className={`${EditData?.Portfolio_x0020_Type == "Service"
+                    ? " serviepannelgreena"
+                    : ""
+                    }`}
+                onRenderHeader={onRenderHeaderChangeParent}
+                isOpen={changeType}
+                onDismiss={() => { setChangeType(false) }}
+                isBlocking={false}
+                type={PanelType.medium}
+            >
 
-        <div>
-        {portfolioTypeData?.map((value:any) => (
-          <div key={value.ID} className="SpfxCheckRadio">
-            <input
-              className="radio"
-              type="radio"
-              name="selectedTitle"
-              value={value.Title}
-              checked={selectPortfolioType.Title === value.Title}
-              onChange={() => setSelectPortfolioType(value)}
-            />
-            {value.Title}</div>
-        ))}
-      </div>
-      <footer className="mt-4 text-end">
-          <button className="me-2 btn btn-primary" onClick={changePortfolioType}>Save</button>
-          <button className="btn me-2 btn-default ms-1" onClick={()=>{setChangeType(false)}}>Cancel</button>
-       </footer>
-      </Panel>
-      
+                <div className="modal-body clearfix">
+                    {portfolioTypeData?.map((value: any) => (
+                        <div key={value.ID} className="SpfxCheckRadio">
+                            <input
+                                className="radio"
+                                type="radio"
+                                name="selectedTitle"
+                                value={value.Title}
+                                checked={selectPortfolioType.Title === value.Title}
+                                onChange={() => setSelectPortfolioType(value)}
+                            />
+                            {value.Title}</div>
+                    ))}
+                </div>
+                <footer className="footer-right">
+                    <div className="align-items-center d-flex justify-content-between">
+                        <div>
+                            <div className="text-left">
+                                Created{" "}
+                                <span className="hreflink" ng-bind="EditData?.Created | date:'MM-DD-YYYY'">
+                                    {" "}
+                                    {EditData.Created ? moment(EditData.Created).format("DD/MM/YYYY") : ""}
+                                </span>{" "}
+                                by
+                                <span className="panel-title ps-1 hreflink">
+                                    {EditData?.Author?.Title != undefined
+                                        ? EditData?.Author?.Title
+                                        : ""}
+                                </span>
+                            </div>
+                            <div className="text-left">
+                                Last modified{" "}
+                                <span>
+                                    {EditData.Modified ? moment(EditData.Modified).format("DD/MM/YYYY") : ''}
+                                </span>{" "}
+                                by{" "}
+                                <span className="panel-title hreflink">
+                                    {EditData?.Editor?.Title != undefined
+                                        ? EditData?.Editor?.Title
+                                        : ""}
+                                </span>
+                            </div>
+                            <div className="text-left">
+                                <span className="hreflink">
+                                    {" "}
+                                    {EditData?.ID ? (
+                                        <VersionHistoryPopup
+                                            taskId={EditData?.ID}
+                                            listId={RequireData.MasterTaskListID}
+                                            siteUrls={RequireData?.siteUrl}
+                                        />
+                                    ) : (
+                                        ""
+                                    )}
+                                </span>
+                            </div>
+                        </div>
+                        <div>
+                            <button className="btn btn-primary" onClick={changePortfolioType}>Save</button>
+                            <button className="btn btn-default ms-1" onClick={() => setChangeType(false)}>Cancel</button>
+                        </div>
+                    </div>
+                </footer>
+            </Panel>
+            {(SiteCompositionShow && EditData?.Title) && (
+                <CentralizedSiteComposition
+                    ItemDetails={EditData}
+                    RequiredListIds={RequireData}
+                    closePopupCallBack={ClosePopupCallBack}
+                    usedFor={"CSF"}
+                />
+            )}
+
         </>
     );
 }

@@ -11,12 +11,11 @@ const RelevantDocuments = (props: any, ref: any) => {
   const myContextData2: any = React.useContext<any>(myContextValue)
   const [documentData, setDocumentData] = useState([]);
 
-  // const [FileName, setFileName] = useState(props?.folderName);
   const [Fileurl, setFileurl] = useState("");
   (true);
   const [editdocpanel, setEditdocpanel] = useState(false);
   const [EditdocData, setEditdocData] = useState({});
-  // console.log(props?.folderName);
+
 
   useEffect(() => {
     loadAllSitesDocuments();
@@ -28,71 +27,74 @@ const RelevantDocuments = (props: any, ref: any) => {
     let query ="Id,Title,PriorityRank,Year,Body,Item_x0020_Cover,Portfolios/Id,Portfolios/Title,File_x0020_Type,FileLeafRef,FileDirRef,ItemRank,ItemType,Url,Created,Modified,Author/Id,Author/Title,Editor/Id,Editor/Title,EncodedAbsUrl&$expand=Author,Editor,Portfolios"
     if (props.siteName == "Offshore Tasks") {
       props.siteName = "OffShoreTask"
-    } else if (props.siteName == "Master Tasks") {
+    } else if (props?.siteName == "Master Tasks"|| props?.siteName=="Portfolios") {
       props.siteName = 'Portfolios';
       query ="Id,Title,PriorityRank,Year,Body,Item_x0020_Cover,Portfolios/Id,Portfolios/Title,File_x0020_Type,FileLeafRef,FileDirRef,ItemRank,ItemType,Url,Created,Modified,Author/Id,Author/Title,Editor/Id,Editor/Title,EncodedAbsUrl&$expand=Author,Editor,Portfolios"
       
     }
-    const web = new Web(props.siteUrl);
+    const web = new Web(props?.siteUrl);
     var filter = (`${props?.siteName}/Id eq ${props?.ID}`);
 
     console.log(filter);
     try {
-      // await web.lists.getByTitle("Documents")
-      await web.lists.getById(props.DocumentsListID)
-        // .items.select("Id,Title,PriorityRank,Year,File_x0020_Type,FileLeafRef,FileDirRef,ItemRank,ItemType,Url,Created,Modified,Author/Id,Author/Title,Editor/Id,Editor/Title,EncodedAbsUrl")
-        // .expand("Author,Editor").filter(`${props?.siteName}/Id eq ${props?.ID}`).top(4999)
-        // .get()
+    // await web.lists.getByTitle("Documents")
+      await web.lists.getById(props?.DocumentsListID)
+       
         .items.select(query)
-        .filter(`(${props?.siteName}/Id eq ${props?.ID})and(File_x0020_Type ne 'msg')`).top(4999)
-        .get()
+        .filter(`(${props?.siteName}/Id eq ${props?.ID})and(File_x0020_Type ne 'msg')`)
+        .getAll()
         .then((Data: any[]) => {
           let keydoc: any = [];
-          Data?.map((item: any, index: any) => {
-            item.Title = item.Title.replace('.', "")
-            item.siteType = 'sp'
-            item.Description = item?.Body
-            // item.Author = item?.Author?.Title;
-            // item.Editor = item?.Editor?.Title;
-            item.CreatedDate = moment(item?.Created).format("'DD/MM/YYYY HH:mm'");
-            item.ModifiedDate = moment(item?.ModifiedDate).format("'DD/MM/YYYY HH:mm'");
-            if (item.ItemRank === 6) {
-              keydoc.push(item)
-            }
-
-          })
-          console.log("document data", Data);
-          let smartmetadta: any = [];
-          myContextData2.FunctionCall(keydoc, Data[0]?.FileDirRef, false)
-          LoadMasterTaskList().then((smartData: any) => {
-            smartmetadta = smartmetadta.concat(smartData)
-            Data?.map((servicecomponent: any) => {
-              if (servicecomponent.Portfolios != undefined && servicecomponent.Portfolios.length > 0) {
-                smartmetadta.map((mastertask: any) => {
-                  if (mastertask.Id == servicecomponent.Portfolios[0].Id) {
-                    servicecomponent.Portfolio = mastertask
-                  }
-                })
+          if(Data?.length>0){
+            Data?.map((item: any, index: any) => {
+              item.Title = item?.Title?.replace('.', "")
+              item.siteType = 'sp'
+              item.Description = item?.Body
+              // item.Author = item?.Author?.Title;
+              // item.Editor = item?.Editor?.Title;
+              item.CreatedDate = moment(item?.Created).format("'DD/MM/YYYY HH:mm'");
+              item.ModifiedDate = moment(item?.ModifiedDate).format("'DD/MM/YYYY HH:mm'");
+              if (item.ItemRank === 6) {
+                keydoc.push(item)
               }
+  
             })
-
-            var releventData = Data.filter((d) => d.ItemRank != 6 && d.ItemRank != 0)
-            if (releventData.length > 0) {
+            console.log("document data", Data);
+            let smartmetadta: any = [];
+          if(  myContextData2?.FunctionCall!=undefined && keydoc?.length>0){
+            myContextData2?.FunctionCall(keydoc, Data[0]?.FileDirRef, false)
+          }
+           LoadMasterTaskList().then((smartData: any) => {
+              smartmetadta = smartmetadta?.concat(smartData)
+              Data?.map((servicecomponent: any) => {
+                if (servicecomponent?.Portfolios != undefined && servicecomponent?.Portfolios?.length > 0) {
+                  smartmetadta.map((mastertask: any) => {
+                    if (mastertask.Id == servicecomponent?.Portfolios[0]?.Id) {
+                      servicecomponent.Portfolio = mastertask
+                    }
+                  })
+                }
+              })
+  
+              var releventData = Data?.filter((d) => d.ItemRank != 6 && d.ItemRank != 0)
+              if (releventData?.length > 0) {
+                setDocumentData(releventData);
+              }else{
+                setDocumentData([])
+              }
+  
+  
+              setFileurl(Data[0]?.FileDirRef)
+            }).catch((error: any) => {
+              var releventData = Data?.filter((d) => d.ItemRank != 6)
               setDocumentData(releventData);
-            }
-
-
-            setFileurl(Data[0]?.FileDirRef)
-          }).catch((error: any) => {
-            var releventData = Data.filter((d) => d.ItemRank != 6)
-            setDocumentData(releventData);
-            console.log(error)
-          })
+              console.log(error)
+            })
+          }
+         
 
         })
-      // .catch((err) => {
-      //     console.log(err.message);
-      // });
+    
     } catch (e: any) {
       console.log(e)
     }
@@ -114,7 +116,7 @@ const RelevantDocuments = (props: any, ref: any) => {
           "PortfolioType/Id",
           "PortfolioType/Title",
           "PortfolioType/Color",
-        ).expand("PortfolioType").top(4999).get()
+        ).expand("PortfolioType").getAll()
         .then((dataserviccomponent: any) => {
           console.log(dataserviccomponent)
           mastertaskdetails = mastertaskdetails.concat(dataserviccomponent);
@@ -156,7 +158,7 @@ const RelevantDocuments = (props: any, ref: any) => {
                   {/* <li>
                                    <a  href={item?.FileDirRef} target="_blank" data-interception="off" > <span className='svg__iconbox svg__icon--folder'></span></a>
                                 </li> */}
-                  <li>
+                  <li className="text-break">
                     <a href={item.EncodedAbsUrl}>
                       {item?.File_x0020_Type == "pdf" && <span className='svg__iconbox svg__icon--pdf' title="pdf"></span>}
                       {item?.File_x0020_Type == "docx" && <span className='svg__iconbox svg__icon--docx' title="docx"></span>}
@@ -174,7 +176,7 @@ const RelevantDocuments = (props: any, ref: any) => {
 
                   </li>
                   <li>
-                    <a className='px-2' href={`${item?.EncodedAbsUrl}?web=1`} target="_blank" data-interception="off"> <span>{item?.Title}</span></a>
+                    <a className='px-2' href={item?.File_x0020_Type=="aspx"?`${item?.Url?.Url}`:`${item?.EncodedAbsUrl}?web=1`} target="_blank" data-interception="off"> <span>{item?.Title}</span></a>
                   </li>
                   <li className='d-end'>
                     <span title="Edit" className="svg__iconbox svg__icon--edit hreflink" onClick={() => editDocumentsLink(item)}></span>
@@ -189,7 +191,7 @@ const RelevantDocuments = (props: any, ref: any) => {
         </div>
       }
 
-      {documentData?.length > 0 && props?.keyDoc == undefined && <div className='mb-3 card commentsection'>
+      {documentData?.length > 0 && props?.keyDoc == undefined && props?.siteName!="Master Tasks" && props?.siteName!="Portfolios" && <div className='mb-3 card commentsection'>
         <div className='card-header'>
           <div className="card-title h5 d-flex justify-content-between align-items-center  mb-0">Main Folder<span><Tooltip /></span></div>
         </div>
@@ -203,7 +205,7 @@ const RelevantDocuments = (props: any, ref: any) => {
       </div>
       }
 
-      {editdocpanel && <EditDocument editData={EditdocData} ColorCode={myContextData2?.ColorCode}  AllListId={props.AllListId} Context={props.Context} editdocpanel={editdocpanel} callbackeditpopup={callbackeditpopup} />}
+      {editdocpanel && <EditDocument editData={EditdocData} ColorCode={myContextData2?.ColorCode}  AllListId={props.AllListId} Context={props.Context} editdocpanel={editdocpanel}  siteName ={props?.siteName} callbackeditpopup={callbackeditpopup} />}
 
     </>
 

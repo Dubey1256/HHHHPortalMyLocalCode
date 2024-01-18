@@ -20,12 +20,27 @@ const EmailComponenet = (props: any) => {
   const updateData = async (permission: any) => {
     const feedback: any = props?.items?.FeedBack != null ? props.items?.FeedBack : null;
     feedback?.map((items: any) => {
+      var approvalDataHistory = {
+        ApprovalDate: moment(new Date()).tz("Europe/Berlin").format('DD MMM YYYY HH:mm'),
+        Id: props?.currentUser[0].Id,
+        ImageUrl:  props?.currentUser[0].userImage,
+        Title:  props?.currentUser[0].Title,
+        isShowLight: permission,
+        Status:permission=="Approve"?'Approved by':"Rejected by"
+         }
       if (items?.FeedBackDescriptions != undefined && items?.FeedBackDescriptions?.length > 0) {
         items?.FeedBackDescriptions?.map((feedback: any) => {
           if (feedback?.Subtext != undefined) {
             feedback?.Subtext?.map((subtext: any) => {
               if (subtext?.isShowLight === "") {
-
+                if(props?.items["PercentComplete"]==1){
+                  if (subtext.ApproverData != undefined) {
+                    subtext.ApproverData.push(approvalDataHistory)
+                  } else {
+                    subtext.ApproverData = [];
+                    subtext.ApproverData.push(approvalDataHistory);
+                  }
+                }
                 subtext.isShowLight = permission
               } else {
 
@@ -33,6 +48,15 @@ const EmailComponenet = (props: any) => {
               }
             })
           }
+          if(props?.items["PercentComplete"]==1){
+            if (feedback.ApproverData != undefined) {
+              feedback.ApproverData.push(approvalDataHistory)
+            } else {
+              feedback.ApproverData = [];
+              feedback.ApproverData.push(approvalDataHistory);
+            }
+          }
+         
           if (feedback.isShowLight === "") {
 
             feedback.isShowLight = permission
@@ -80,8 +104,8 @@ const EmailComponenet = (props: any) => {
           FeedBack: feedback?.length > 0 ? JSON.stringify(feedback) : null
         }).then((res: any) => {
           console.log(res);
-
-
+          
+          props.approvalcallback()
         })
         .catch((err: any) => {
           console.log(err.message);
@@ -92,7 +116,7 @@ const EmailComponenet = (props: any) => {
     console.log(props);
 
     let mention_To: any = [];
-    mention_To.push(props?.items?.Author[0]?.Name?.replace('{', '').replace('}', '').trim());
+    mention_To.push(props?.items?.Approvee!=undefined?props?.items?.Approvee?.Email:props?.items?.Author[0]?.Name?.replace('{', '').replace('}', '').trim());
     console.log(mention_To);
     if (mention_To.length > 0) {
       let emailprops = {
@@ -145,8 +169,8 @@ const EmailComponenet = (props: any) => {
       {props.items != null && props?.items?.Approver != undefined &&
         <div id='htmlMailBodyemail' style={{ display: 'none' }}>
           <div style={{ marginTop: "2pt" }}>Hi,</div>
-          {taskpermission != null && taskpermission == "Approve" && <div style={{ marginTop: "2pt" }}>Your task has been Approved by {props?.currentUser[0]?.Title},team will process it further.Please refer to the Approved Comments.</div>}
-          {taskpermission != null && taskpermission == "Reject" && <div style={{ marginTop: "2pt" }}>Your task has been Rejected by {props?.currentUser[0]?.Title},team will process it further. Please refer to the  Rejected Comments.</div>}
+          {taskpermission != null && taskpermission == "Approve" && <div style={{ marginTop: "2pt" }}>Your task has been Approved by {props.items?.Approver?.Title},team will process it further.Please refer to the Approved Comments.</div>}
+          {taskpermission != null && taskpermission == "Reject" && <div style={{ marginTop: "2pt" }}>Your task has been Rejected by {props?.items?.Approver?.Title},team will process it further. Please refer to the  Rejected Comments.</div>}
 
           <div style={{ marginTop: "11.25pt" }}>
             <a href={`${props.items["siteUrl"]}/SitePages/Task-Profile.aspx?taskId=${props?.items?.Id}&Site=${props?.items?.siteType}`} target="_blank" data-interception="off">{props?.items["Title"]}</a><u></u><u></u></div>

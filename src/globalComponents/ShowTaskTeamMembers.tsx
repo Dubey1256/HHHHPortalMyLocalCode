@@ -1,4 +1,6 @@
 import * as React from "react";
+import { usePopperTooltip } from "react-popper-tooltip";
+import "react-popper-tooltip/dist/styles.css";
 var siteUrl = '';
 function ShowTaskTeamMembers(item: any) {
   siteUrl = item.props?.siteUrl != undefined ? item?.props?.siteUrl : item?.Context?.siteurl;
@@ -6,12 +8,36 @@ function ShowTaskTeamMembers(item: any) {
   const [taskData, settaskData] = React.useState<any>();
   const [key, setKey] = React.useState(0);
   const [LeadCount, setLeadCount] = React.useState(0);
+  const [controlledVisible, setControlledVisible] = React.useState(false);
+
+  const {
+    getArrowProps,
+    getTooltipProps,
+    setTooltipRef,
+    setTriggerRef,
+    visible,
+} = usePopperTooltip({
+    trigger: null,
+    interactive: true,
+    closeOnOutsideClick: false,
+    placement: "auto",
+    visible: controlledVisible,
+    onVisibleChange: setControlledVisible,
+});
   let TaskUsers: any = [];
   TaskUsers = item?.TaskUsers;
   let CompleteTeamMembers: any = [];
   React.useEffect(() => {
     if (item?.props != undefined) {
-      let taskDetails = item?.props;
+      let itemDetails={
+        ...item?.props
+      }
+      let taskDetails=item?.props;
+    try{
+     taskDetails = JSON.parse(JSON.stringify(itemDetails));
+    }catch(e){
+      // console.log('Team error',e)
+    }
       let LeadCount =0;
       if(taskDetails["ResponsibleTeam"] != undefined&&taskDetails["ResponsibleTeam"].length > 0){
         taskDetails["ResponsibleTeam"]=GetUserObjectFromCollection(taskDetails["ResponsibleTeam"]);
@@ -34,24 +60,24 @@ function ShowTaskTeamMembers(item: any) {
           CompleteTeamMembers.push(item);
         });
       }
-      if (taskDetails["TeamMembers"] != undefined) {
-        taskDetails["TeamMembers"]?.map((item: any, index: any) => {
-          if (taskDetails?.AssignedTo != undefined) {
-            for (let i = 0; i < taskDetails?.AssignedTo?.length; i++) {
-              if (item.Id == taskDetails?.AssignedTo[i]?.Id) {
+      if (taskDetails["AssignedTo"] != undefined) {
+        taskDetails["AssignedTo"]?.map((item: any, index: any) => {
+          if (taskDetails?.TeamMembers != undefined) {
+            for (let i = 0; i < taskDetails?.TeamMembers?.length; i++) {
+              if (item.Id == taskDetails?.TeamMembers[i]?.Id) {
                 item.workingMember = true;
-                taskDetails?.AssignedTo?.splice(i, true);
+                taskDetails?.TeamMembers?.splice(i, true);
                 i--;
               }
             }
           }
-
+          item.workingMember = true;          
           CompleteTeamMembers.push(item);
         });
       }
-      if (taskDetails?.AssignedTo != undefined) {
-        taskDetails["AssignedTo"]?.map((item: any, index: any) => {
-          item.workingMember = true;
+      if (taskDetails?.TeamMembers != undefined) {
+        taskDetails["TeamMembers"]?.map((item: any, index: any) => {
+        
           CompleteTeamMembers.push(item);
         });
       }
@@ -110,10 +136,12 @@ function ShowTaskTeamMembers(item: any) {
   const handleSuffixHover = () => {
     //e.preventDefault();
     setDisplay("block");
+    setControlledVisible(true)
   };
 
   const handleSuffixLeave = () => {
     setDisplay("none");
+    setControlledVisible(false)
   };
 
   return (
@@ -128,7 +156,7 @@ function ShowTaskTeamMembers(item: any) {
         } */}
         <div key={key} className="alignCenter">
           {taskData?.TeamMembersFlat != null &&
-            taskData?.TeamMembersFlat?.length > 0 &&
+            taskData?.TeamMembersFlat?.length > 0 && 
             taskData?.TeamMembersFlat?.map((rcData: any, i: any) => {
               return (
                 <a style={{marginRight:"4px"}} href={`${siteUrl}/SitePages/TaskDashboard.aspx?UserId=${rcData?.Id}&Name=${rcData?.Title}`}
@@ -161,51 +189,64 @@ function ShowTaskTeamMembers(item: any) {
         {taskData?.TeamMembersTip != null &&
           taskData?.TeamMembersTip?.length > 0 && (
             <div
-              className="hover-text user_Member_img_suffix2 alignCenter"
+              className="hover-text user_Member_img_suffix2 alignCenter" 
+              ref={setTriggerRef}
               onMouseOver={(e) => handleSuffixHover()}
               onMouseLeave={(e) => handleSuffixLeave()}
             >
               +{taskData?.TeamMembersTip?.length}
-              <span className="tooltip-text pop-right" style={{ display: Display, padding: "10px" }}>
-                <div key={key}>
-                  {taskData?.TeamMembersTip?.map((rcData: any, i: any) => {
-                    return (
-                      <div
-                        key={key}
-                        className="mb-1 team_Members_Item"
-                        style={{ padding: "2px" }}
+              {visible && (<span
+                ref={setTooltipRef}
+                {...getTooltipProps({ className: "tooltip-container" })}
+              >
+                <div key={key}
+                >
+                  {taskData?.TeamMembersTip?.map((rcData: any, i: any) => (
+                    <div
+                      key={i}
+                      className="mb-1 team_Members_Item"
+                      style={{ position: "relative" }}
+                    >
+                      <div 
                       >
                         <a
-                          href={`${siteUrl}/SitePages/TaskDashboard.aspx?UserId=${rcData?.Id}&Name=${rcData?.Title}`}
-                          target="_blank"
-                          data-interception="off"
-                        >
-                          {rcData.userImage != null && (
-                            <img
-                              className={
-                                rcData?.workingMember ? "suffix_Usericon activeimg" : "suffix_Usericon"
-                              }
-                              src={rcData?.userImage}
-                            />
-                          )}
-                          {rcData.userImage == null && (
-                            <span
-                              className={
-                                rcData?.workingMember
-                                  ? "suffix_Usericon activeimg "
-                                  : "suffix_Usericon "
-                              }
-                            >
-                              {rcData?.Suffix}
-                            </span>
-                          )}
-                          <span className="mx-2">{rcData?.Title}</span>
-                        </a>
-                      </div>
-                    );
-                  })}
+                        href={`${siteUrl}/SitePages/TaskDashboard.aspx?UserId=${rcData?.Id}&Name=${rcData?.Title}`}
+                        target="_blank"
+                        data-interception="off"
+                        style={{
+                          position: "relative",
+                          display: "inline-block",
+                        }}
+                      >
+                        {rcData.userImage != null && (
+                          <img
+                            className={
+                              rcData?.workingMember
+                                ? "suffix_Usericon activeimg"
+                                : "suffix_Usericon"
+                            }
+                            src={rcData?.userImage}
+                            alt={rcData?.Title}
+                          />
+                        )}
+                        {rcData.userImage == null && (
+                          <span
+                            className={
+                              rcData?.workingMember
+                                ? "suffix_Usericon activeimg"
+                                : "suffix_Usericon"
+                            }
+                          >
+                            {rcData?.Suffix}
+                          </span>
+                        )}
+                        <span className="mx-2">{rcData?.Title}</span>
+                      </a>
+                    </div>
+                    </div>
+                  ))}
                 </div>
-              </span>
+              </span>)}
             </div>
           )}
       </div>

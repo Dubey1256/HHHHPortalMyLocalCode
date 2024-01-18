@@ -6,25 +6,36 @@ import { Panel, PanelType } from 'office-ui-fabric-react';
 import Tooltip from "../../../../../globalComponents/Tooltip";
 import { myContextValue } from '../../../../../globalComponents/globalCommon'
 import { error } from "jquery";
+import EditInstitutionPopup from "./EditInstitutionPopup";
+
 const CreateContactComponent = (props: any) => {
     const myContextData2: any = React.useContext<any>(myContextValue)
     const listData = props.data;
     const [listIsVisible, setListIsVisible] = useState(false);
     const [profileStatus, setProfileStatus] = useState(false);
-    const [contactdata, setContactdata]:any = useState();
+    const [contactdata, setContactdata]: any = useState();
+    const [institutionData, setInstitutionData]: any = useState();
     const [searchedNameData, setSearchedDataName] = useState(props?.data)
     const [isUserExist, setUserExits] = useState(true);
     const [newContact, setNewContact] = useState(false);
+    const [newInstitution, setNewInstitution] = useState(false);
+   
+
     const [searchKey, setSearchKey] = useState({
         Title: '',
         FirstName: '',
     });
-    React.useEffect(()=>{
-   if(props?.data!=undefined){
-  
-    setSearchedDataName(props?.data)
-   }
-    },[])
+
+    React.useEffect(() => {
+        if (props?.data != undefined && props?.pageName!="Recruiting-Tool" ) {
+
+            setSearchedDataName(props?.data)
+        }
+        if (props?.data != undefined && props?.pageName=="Recruiting-Tool" ) {
+             saveDataFunction();
+            
+        }
+    }, [props?.data !=undefined])
     let updateCallBack = props.userUpdateFunction;
     const searchedName = async (e: any) => {
         setListIsVisible(true);
@@ -47,77 +58,229 @@ const CreateContactComponent = (props: any) => {
         }
     }
     const saveDataFunction = async () => {
-        if(props?.CreateInstituteStatus){
-            CreateInstitution() ;
-        }else{
+        if (props?.CreateInstituteStatus) {
+            CreateInstitution();
+        } else {
             try {
-           
-                let web = new Web(myContextData2?.allListId?.jointSiteUrl);
-                await web.lists.getById(myContextData2?.allListId?.HHHHContactListId).items.add({
-                    Title: (searchKey.FirstName[1] ? searchKey.FirstName[1] : " "),
-                    FirstName: searchKey.FirstName[0],
-                    FullName: searchKey.FirstName[0] + " " + (searchKey.FirstName[1] ? searchKey.FirstName[1] : " ")
-                }).then(async(data) => {
-                    if(myContextData2?.GMBHSite|| myContextData2?.HrSite){
-                        let web = new Web(myContextData2?.allListId?.siteUrl);
-                        await web.lists.getById(myContextData2?.allSite?.GMBHSite ? myContextData2?.allListId?.GMBH_CONTACT_SEARCH_LISTID : myContextData2?.allListId?.HR_EMPLOYEE_DETAILS_LIST_ID).items.add({
+                let jointData:any
+                if (myContextData2?.allSite?.GMBHSite || myContextData2?.allSite?.HrSite) {
+
+                    if(props?.pageName=="Recruiting-Tool"){
+                        jointData= {
+                            //     SharewebSites: {
+                            //     results: (myContextData2?.allSite?.GMBHSite?["GMBH"]:["HR"])
+                            // },
+                            Site: {
+                                results: (myContextData2?.allSite?.GMBHSite?["GMBH"]:["HR"])
+                            },
+        
+                          
+                            Title: props?.data?.Title.split(" ")[1]!=null?props?.data?.Title.split(" ")[1]:"",
+                            FirstName:  props?.data?.Title.split(" ")[0],
+                            FullName: props?.data?.Title,
+                            ItemType: "Contact"
+                            
+                        }   
+                    }else{
+                        jointData= {
+                            //     SharewebSites: {
+                            //     results: (myContextData2?.allSite?.GMBHSite?["GMBH"]:["HR"])
+                            // },
+                            Site: {
+                                results: (myContextData2?.allSite?.GMBHSite?["GMBH"]:["HR"])
+                            },
+        
+                           
                             Title: (searchKey.FirstName[1] ? searchKey.FirstName[1] : " "),
                             FirstName: searchKey.FirstName[0],
-                            FullName: searchKey.FirstName[0] + " " + (searchKey.FirstName[1] ? searchKey.FirstName[1] : " ")
-                        }).then((LocalData) => {
-                            setContactdata(LocalData?.data)
-                        }).catch((error:any)=>{
-    
-                        })
-                    }else{
-                        setContactdata(data?.data)
-                        console.log("request success");
+                            FullName: searchKey.FirstName[0] + " " + (searchKey.FirstName[1] ? searchKey.FirstName[1] : " "),
+                            ItemType: "Contact"
+                            
+                        }   
+                    }
+                    
+                }else{
+                    jointData= {
+                        Title: (searchKey.FirstName[1] ? searchKey.FirstName[1] : " "),
+                        FirstName: searchKey.FirstName[0],
+                        FullName: searchKey.FirstName[0] + " " + (searchKey.FirstName[1] ? searchKey.FirstName[1] : " "),
+                        ItemType: "Contact"
                     }
                    
+                }
+                let web = new Web(myContextData2?.allListId?.jointSiteUrl);
+                await web.lists.getById(myContextData2?.allListId?.HHHHContactListId).items.add(jointData).then(async (data: any) => {
+                    if (myContextData2?.allSite?.GMBHSite || myContextData2?.allSite?.HrSite) {
+                    let postData:any;
+                        if(myContextData2?.allSite?.HrSite){
+                            let staffIdData: any;
+                            let staffIdString: any;
+                              let web = new Web('https://hhhhteams.sharepoint.com/sites/HHHH/HR');
+                                    let Hrdata = await web.lists.getById(myContextData2?.allListId?.HR_EMPLOYEE_DETAILS_LIST_ID).items.select('Title,Id,staffID0').orderBy('staffID0', false).top(1).get();
+                                    let tempStaffIdLength: number = 1;
+                                    let tempStaffId: number = 1;
+                                    if (Hrdata[0].staffID0 != undefined) {
+                                        tempStaffId = Hrdata[0].staffID0 + 1;
+                                        tempStaffIdLength = (tempStaffId.toString()).length;
+                                        staffIdData = (Hrdata[0].staffID0 + 1);
+                                    } else (
+                                        staffIdData = 1
+                                    )
+                                    if (tempStaffIdLength == 1) {
+                                        staffIdString = ("HHHH-0000" + tempStaffId);
+                                    }
+                                    if (tempStaffIdLength == 2) {
+                                        staffIdString = ("HHHH-000" + tempStaffId);
+                                    }
+                                    if (tempStaffIdLength == 3) {
+                                        staffIdString = ("HHHH-00" + tempStaffId);
+                                    }
+                                    if (tempStaffIdLength == 4) {
+                                        staffIdString = ("HHHH-0" + tempStaffId);
+                                    }
+                                    if (tempStaffIdLength == 5) {
+                                        staffIdString = ("HHHH-" + tempStaffId);
+                                    }
+                                    if(props?.pageName=="Recruiting-Tool"){
+                                        postData={
+                                            Title: props?.data?.Title.split(" ")[1]!=null?props?.data?.Title.split(" ")[1]:"",
+                                            FirstName:  props?.data?.Title.split(" ")[0],
+                                            FullName:  props?.data?.Title,
+                                            staffID0: staffIdData,
+                                            StaffID: staffIdString,
+                                            SmartContactId: data?.data?.Id
+                                        }   
+                                    }else{
+                                        postData={
+                                            Title: (searchKey.FirstName[1] ? searchKey.FirstName[1] : " "),
+                                            FirstName: searchKey.FirstName[0],
+                                            FullName: searchKey.FirstName[0] + " " + (searchKey.FirstName[1] ? searchKey.FirstName[1] : " "),
+                                            staffID0: staffIdData,
+                                            StaffID: staffIdString,
+                                            SmartContactId: data?.data?.Id
+                                        }
+                                    }
+
+                                   
+                                  
+                        }
+                        else{
+                            postData={
+                                Title: (searchKey.FirstName[1] ? searchKey.FirstName[1] : " "),
+                                FirstName: searchKey.FirstName[0],
+                                FullName: searchKey.FirstName[0] + " " + (searchKey.FirstName[1] ? searchKey.FirstName[1] : " "),
+                               
+                                SmartContactId: data?.data?.Id
+                            }
+
+                        }
+                        let web = new Web(myContextData2?.allListId?.siteUrl);
+                        await web.lists.getById(myContextData2?.allSite?.GMBHSite ? myContextData2?.allListId?.GMBH_CONTACT_SEARCH_LISTID : myContextData2?.allListId?.HR_EMPLOYEE_DETAILS_LIST_ID).items.add(postData).then((LocalData) => {
+                            setContactdata(LocalData?.data)
+                            if(myContextData2?.allSite?.HrSite){
+                                PostJointHrDetails(data?.data).then((data:any)=>{
+                                    setNewContact(true) 
+                                }).catch((error:any)=>{
+                                    console.log(error)
+                                })
+                            }
+                          
+                        }).catch((error: any) => {
+                         console.log(error)
+                        })
+                    } else {
+                        setContactdata(data?.data)
+                        console.log("request success");
+                        props?.userUpdateFunction();
+                        setTimeout(() => {
+                            setNewContact(true)
+                        }, 1000)
+                    }
+                 
                 })
             } catch (error) {
                 console.log("Error:", error.message);
             }
             //    props.callBack();
-            props.userUpdateFunction();
-            setTimeout(() => {
-                setNewContact(true)
-            }, 1000)
+           
         }
-        
+
     }
-    const CreateInstitution=async()=>{
-        try{
+    const PostJointHrDetails=async(data:any)=>{
+        return new Promise(function(resolve, reject) {
+        const web = new Web(myContextData2?.allListId?.jointSiteUrl);
+        web.lists
+     .getById(myContextData2?.allListId?.MAIN_HR_LISTID)
+          .items.add({
+             Title:(data?.FirstName ) + " " + (data?.Title !=null?data?.Title:""),
+             SmartContactId:data?.Id
+          }).then((data:any)=>{
+            resolve(data)
+             console.log(data,"hr main post done")
+            //  alert("Your information has been updated successfully")
+          }).catch((error:any)=>{
+            reject()
+             console.log(error)
+          })
+        })
+    }
+    const CreateInstitution = async () => {
+        try {
+            let jointData:any
+                if (myContextData2?.allSite?.GMBHSite || myContextData2?.allSite?.HrSite) {
+                    jointData= {
+                        SharewebSites: {
+                            results: (myContextData2?.allSite?.GMBHSite?["GMBH"]:["HR"])
+                        },
+                        Site: {
+                            results: (myContextData2?.allSite?.GMBHSite?["GMBH"]:["HR"])
+                        },
+                    Title: (searchKey.FirstName[1] ? searchKey.FirstName[1] : " "),
+                    FirstName: searchKey.FirstName[0],
+                    FullName: searchKey.FirstName[0] + " " + (searchKey.FirstName[1] ? searchKey.FirstName[1] : " "),
+                    ItemType: "Institution"
+                    
+                }   
+                }else{
+                    jointData= {
+                        Title: (searchKey.FirstName[1] ? searchKey.FirstName[1] : " "),
+                        FirstName: searchKey.FirstName[0],
+                        FullName: searchKey.FirstName[0] + " " + (searchKey.FirstName[1] ? searchKey.FirstName[1] : " "),
+                        ItemType: "Institution"
+                    }
+                   
+                }
 
             let web = new Web(myContextData2?.allListId?.jointSiteUrl);
-             await web.lists.getById(myContextData2?.allListId?.HHHHInstitutionListId).items.add({
-                Title: (searchKey.FirstName[1] ? searchKey.FirstName[1] : " "),
-                FirstName: searchKey.FirstName[0],
-                FullName: searchKey.FirstName[0] + " " + (searchKey.FirstName[1] ? searchKey.FirstName[1] : " "),
-                ItemType: "Institution"
-            }).then(async(data) => {
-                console.log( "joint institution post sucessfully",data)
-                if(myContextData2?.GMBHSite|| myContextData2?.HrSite){
+            await web.lists.getById(myContextData2?.allListId?.HHHHInstitutionListId).items.add(jointData ).then(async (data) => {
+                console.log("joint institution post sucessfully", data)
+                if (myContextData2?.allSite?.GMBHSite || myContextData2?.allSite?.HrSite) {
                     let web = new Web(myContextData2?.allListId?.siteUrl);
                     await web.lists.getById(myContextData2?.allSite?.GMBHSite ? myContextData2?.allListId?.GMBH_CONTACT_SEARCH_LISTID : myContextData2?.allListId?.HR_EMPLOYEE_DETAILS_LIST_ID).items.add({
                         Title: (searchKey.FirstName[1] ? searchKey.FirstName[1] : " "),
                         FirstName: searchKey.FirstName[0],
                         FullName: searchKey.FirstName[0] + " " + (searchKey.FirstName[1] ? searchKey.FirstName[1] : " "),
-                        ItemType: "Institution"
-                    }).then((LocalData) => {
-                       console.log("local institution also done")
-                    }).catch((error:any)=>{
-
+                        ItemType: "Institution",
+                        SmartInstitutionId:data?.data?.Id
+                    }).then((newData) => {
+                        console.log("local institution also done")
+                        setInstitutionData(newData?.data)
+                    }).catch((error: any) => {
+                    console.log(error)
                     })
-                }else{
-                    setNewContact(true)
+                } else {
+                    setInstitutionData(data?.data)
+
                     console.log("request success");
                 }
-               
+
             })
-        }catch(error){
-            console.log("eeeorCreate Institution",error.message)
+        } catch (error) {
+            console.log("eeeorCreate Institution", error.message)
         }
+        setTimeout(() => {
+            setNewInstitution(true)
+        }, 1000)
     }
     const editProfile = (item: any) => {
         setProfileStatus(true);
@@ -132,49 +295,56 @@ const CreateContactComponent = (props: any) => {
     const onRenderCustomHeadersmartinfo = () => {
         return (
             <>
-            <div className='subheading alignCenter'>
-                Create Contact
+                <div className='subheading alignCenter'>
+                    {props?.CreateInstituteStatus?"Create Institution":"Create Contact"}
+                 
                 </div>
-                <Tooltip ComponentId='3299' />
+                <Tooltip ComponentId='696' />
             </>
         );
     };
+   
     return (
-
+<>
+       {props?.pageName!="Recruiting-Tool" ?
         <Panel
-        onRenderHeader={onRenderCustomHeadersmartinfo}
-        isOpen={true}
-        type={PanelType.custom}
-        customWidth="450px"
-        isBlocking={false}
-        onDismiss={()=>props?.callBack()}
-    >
+            onRenderHeader={onRenderCustomHeadersmartinfo}
+            isOpen={true}
+            type={PanelType.custom}
+            customWidth="450px"
+            isBlocking={false}
+            onDismiss={() => props?.callBack()}
+        >
 
             <div className="modal-body">
-                <div className="input-group">
+                <div className="">
                     <label className="form-label full-width"></label>
-                
-                <input type='text' placeholder="Enter Contacts Name" onChange={(e) => searchedName(e)} className="form-control" />
-                {listIsVisible ? <div>
-                    <ul className="list-group">
-                        {searchedNameData.map((item: any) => {
-                            return (
-                                <li className="list-group-item" onClick={() => editProfile(item)} >{item.FullName}</li>
-                            )
-                        })}
-                    </ul>
+
+                    <input type='text' placeholder="Enter Contacts Name" onChange={(e) => searchedName(e)} className="form-control" />
+                    {listIsVisible ? <div>
+                        <ul className="list-group">
+                            {searchedNameData?.map((item: any) => {
+                                return (
+                                    <li className="list-group-item" onClick={() => editProfile(item)} >{item.FullName}</li>
+                                )
+                            })}
+                        </ul>
+                    </div>
+                        : null}
                 </div>
-                    : null}
-            </div></div>
+                </div>
             <footer className="mt-2 pull-right">
                 <button className="btn btn-primary mx-1" onClick={saveDataFunction} disabled={isUserExist}>Save</button>
                 <button onClick={() => props.callBack()} className="btn btn-default">Cancel</button>
             </footer>
-          
-            {profileStatus ? <HHHHEditComponent  props={contactdata} callBack={ClosePopup} /> : null}
-            {newContact ? <HHHHEditComponent props={contactdata} userUpdateFunction={updateCallBack} callBack={ClosePopup} /> : null}
+
+            {profileStatus ? <HHHHEditComponent props={contactdata} callBack={ClosePopup} /> : null}
+            {newContact ? <HHHHEditComponent props={contactdata} userUpdateFunction={updateCallBack} callBack={ClosePopup}  /> : null}
+            {newInstitution ? <EditInstitutionPopup props={institutionData} callBack={ClosePopup} /> : null}
        
-        </Panel>
+        </Panel>:contactdata!=undefined&&<HHHHEditComponent props={contactdata} userUpdateFunction={updateCallBack} callBack={ClosePopup} pageName={props?.pageName}/>}
+
+        </>
     )
 }
 export default CreateContactComponent;

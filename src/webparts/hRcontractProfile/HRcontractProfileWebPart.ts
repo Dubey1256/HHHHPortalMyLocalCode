@@ -7,41 +7,50 @@ import {
 } from '@microsoft/sp-property-pane';
 import { BaseClientSideWebPart } from '@microsoft/sp-webpart-base';
 import { IReadonlyTheme } from '@microsoft/sp-component-base';
-
-import * as strings from 'HRcontractProfileWebPartStrings';
-import HRcontractProfile from './components/HRcontractProfile';
+import pnp from 'sp-pnp-js';
+import HrContractProfile from './components/HRcontractProfile';
 import { IHRcontractProfileProps } from './components/IHRcontractProfileProps';
-
-export interface IHRcontractProfileWebPartProps {
+import * as strings from 'HrContractProfileWebPartStrings';
+export interface IHrContractProfileWebPartProps {
   description: string;
+  ContractListID:'c0106d10-a71c-4153-b204-7cf7b45a68b8',
+  HR_EMPLOYEE_DETAILS_LIST_ID:'a7b80424-e5e1-47c6-80a1-0ee44a70f92c',
+  MAIN_SMARTMETADATA_LISTID:'63CAE346-409E-4457-B996-85A788074BCE',
+  MAIN_HR_LISTID:'6DD8038B-40D2-4412-B28D-1C86528C7842',
 }
 
-export default class HRcontractProfileWebPart extends BaseClientSideWebPart<IHRcontractProfileWebPartProps> {
+export default class HrContractProfileWebPart extends BaseClientSideWebPart<IHrContractProfileWebPartProps> {
 
   private _isDarkTheme: boolean = false;
   private _environmentMessage: string = '';
 
   public render(): void {
     const element: React.ReactElement<IHRcontractProfileProps> = React.createElement(
-      HRcontractProfile,
+      HrContractProfile,
       {
         description: this.properties.description,
         isDarkTheme: this._isDarkTheme,
         environmentMessage: this._environmentMessage,
         hasTeamsContext: !!this.context.sdks.microsoftTeams,
-        userDisplayName: this.context.pageContext.user.displayName
+        userDisplayName: this.context.pageContext.user.displayName,
+        siteUrl: this.context.pageContext.web.absoluteUrl,
+        ContractListID : this.properties.ContractListID,
+        MAIN_SMARTMETADATA_LISTID:'63CAE346-409E-4457-B996-85A788074BCE',
+        MAIN_HR_LISTID:'6DD8038B-40D2-4412-B28D-1C86528C7842',
+        HR_EMPLOYEE_DETAILS_LIST_ID:'a7b80424-e5e1-47c6-80a1-0ee44a70f92c',
       }
     );
 
     ReactDom.render(element, this.domElement);
   }
 
-  protected onInit(): Promise<void> {
-    this._environmentMessage = this._getEnvironmentMessage();
-
-    return super.onInit();
+  protected async onInit(): Promise<void> {
+    //this._environmentMessage = this._getEnvironmentMessage();
+    const _ = await super.onInit();
+    pnp.setup({
+      spfxContext: this.context,
+    });
   }
-
   private _getEnvironmentMessage(): string {
     if (!!this.context.sdks.microsoftTeams) { // running in Teams
       return this.context.isServedFromLocalhost ? strings.AppLocalEnvironmentTeams : strings.AppTeamsTabEnvironment;
@@ -89,6 +98,18 @@ export default class HRcontractProfileWebPart extends BaseClientSideWebPart<IHRc
               groupFields: [
                 PropertyPaneTextField('description', {
                   label: strings.DescriptionFieldLabel
+                }),
+                PropertyPaneTextField('ContractListID', {
+                  label: 'ContractListID'
+                }),
+                PropertyPaneTextField('MAIN_SMARTMETADATA_LISTID', {
+                  label: "Main SmartMetadata ListId"
+                }),
+                PropertyPaneTextField('MAIN_HR_LISTID', {
+                  label: "Main Hr ListId"
+                }),
+                PropertyPaneTextField('HR_EMPLOYEE_DETAILS_LIST_ID', {
+                  label: "Hr Employee Details ListId"
                 })
               ]
             }

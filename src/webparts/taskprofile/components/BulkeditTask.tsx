@@ -44,6 +44,7 @@ export default function BulkeditTask(props: any) {
         { value: 10, status: "10% working on it", taskStatusComment: "working on it" }
     ]);
     const [isTableVisible, setTableVisibility] = useState(true);
+    const [selectedValue, setSelectedValue] = useState('');
     const toggleTable = () => {
         setTableVisibility(!isTableVisible);
     };
@@ -90,31 +91,37 @@ export default function BulkeditTask(props: any) {
                 id: 'icons',
                 size: 10,
             },
-            { accessorKey: "TaskID", placeholder: "Id", header: "", size: 10, },
+            { accessorKey: "TaskID", placeholder: "Id",id: 'TaskID', header: "", size: 10, },
             {
                 cell: ({ row }: any) => (
-                    <a target='_blank' href={`https://hhhhteams.sharepoint.com/sites/HHHH/sp/SitePages/Task-Profile.aspx?taskId=${row?.original.Id}&Site=${row?.original.Title}`}>{row.original.Title}</a>
+                    <a target='_blank' href={`https://hhhhteams.sharepoint.com/sites/HHHH/sp/SitePages/Task-Profile.aspx?taskId=${row?.original.Id}&Site=${row?.original.siteType}`}>{row.original.Title}</a>
 
                 ),
                 accessorKey: 'Title',
                 canSort: false,
                 placeholder: 'Task Title',
                 header: '',
-                id: 'row.original',
+                id: "Title",
                 size: 10,
             },
-            { accessorKey: "Priority", placeholder: "OldPriority", header: "", size: 10, },
-            { accessorKey: "NewPriority", placeholder: "NewPriority", header: "", size: 10, },
-            { accessorKey: "ItemRank", placeholder: "OldItemRank", header: "", size: 10, },
-            { accessorKey: "NewItemRank", placeholder: "NewItemRank", header: "", size: 10, },
-            { accessorKey: "Status", placeholder: "OldStatus", header: "", size: 10, },
-            { accessorKey: "NewStatus", placeholder: "NewStatus", header: "", size: 10, },
-            { accessorKey: "DueDate", placeholder: "OldDueDate", header: "", size: 10, },
-            { accessorKey: "NewDueDate", placeholder: "NewDueDate", header: "", size: 10, },
+            { accessorKey: "Priority", placeholder: "OldPriority",id: "Priority", header: "", size: 10, },
+            { accessorKey: "NewPriority", placeholder: "NewPriority",id:"NewPriority", header: "", size: 10, },
+            { accessorKey: "ItemRank", placeholder: "OldItemRank",id:"ItemRank",header: "", size: 10, },
+            { accessorKey: "NewItemRank", placeholder: "NewItemRank",id:"NewItemRank", header: "", size: 10, },
+            { accessorKey: "Status", placeholder: "OldStatus",id: 'Status', header: "", size: 10, },
+            { accessorKey: "NewStatus", placeholder: "NewStatus",id:"NewStatus", header: "", size: 10, },
+            {  cell: ({ row }: any) => (
+                                (row?.original?.DueDate == "Invalid date") ? (
+                                    ""
+                                    ):
+                                  <span className='ms-1'>{row?.original?.DisplayDueDate} </span>
+                            ),accessorKey: "DueDate", placeholder: "OldDueDate",id: 'DisplayDueDate',header: "", size: 10 },
+            { accessorKey: "NewDueDate", placeholder: "NewDueDate",id:"NewDueDate", header: "", size: 10, },
         ], [AllSelectedTask]);
     const PercentCompleted = (StatusData: any) => {
         setTaskStatusPopup(false);
         setStatus(StatusData)
+        setSelectedValue(StatusData);
     }
     const closeTaskStatusUpdatePopup = () => {
         setTaskStatusPopup(false)
@@ -165,7 +172,7 @@ export default function BulkeditTask(props: any) {
                     Bulk Item Update
                     </span>
                 </div>
-                <Tooltip ComponentId="528" />
+                <Tooltip ComponentId="6797" />
             </div>
         );
     };
@@ -177,7 +184,7 @@ export default function BulkeditTask(props: any) {
                     Update Task Status
                     </span>
                 </div>
-                <Tooltip ComponentId="528" />
+                <Tooltip ComponentId="6797" />
             </div>
         );
     };
@@ -199,7 +206,7 @@ export default function BulkeditTask(props: any) {
                 isOpen={isModalOpen}
                 onDismiss={CloseBulkItemUpdatePopup}
                 onRenderHeader={onRenderCustomHeaderMain}
-                isBlocking={isModalOpen}
+                isBlocking={false}
                 closeButtonAriaLabel="Close">
                 <div className="modal-body">
                     <div>
@@ -213,15 +220,15 @@ export default function BulkeditTask(props: any) {
                                 )}
                                 
                             </span>
-                            <span className='f-16 fw-bold'>
+                            <span className='f-16 fw-semibold ms-1'>
                                 Selected Tasks To be Updated
                             </span>
                         </div>
                    
                             {isTableVisible && (
-                            <div className='Alltable'>
+                            <div className='Alltable' style={{height:'350px'}}>
                                 {AllSelectedTask && (
-                                    <GlobalCommanTable  columns={columns} data={tableData} showHeader={true} callBackData={callBackData} />
+                                    <GlobalCommanTable wrapperHeight="350px"  columns={columns} data={tableData} showHeader={true} callBackData={callBackData} />
                                 )}
                             </div>
                         )}                              
@@ -314,7 +321,7 @@ export default function BulkeditTask(props: any) {
                 isOpen={TaskStatusPopup}
                 onDismiss={closeTaskStatusUpdatePopup}
                 onRenderHeader={onRenderCustomHeaderUpdatePopup}
-                isBlocking={TaskStatusPopup}
+                isBlocking={false}
                 closeButtonAriaLabel="Close">
             
                 <div>
@@ -331,6 +338,7 @@ export default function BulkeditTask(props: any) {
                                                         onClick={(e) => PercentCompleted(item.taskStatusComment)} // Wrap in an arrow function
                                                         type="radio"
                                                         value={item.taskStatusComment}
+                                                        checked={selectedValue === item.taskStatusComment}
                                                     />
                                                     {item.status} </label>
                                             </div>
@@ -347,5 +355,3 @@ export default function BulkeditTask(props: any) {
         </>
     );
 }
-
-

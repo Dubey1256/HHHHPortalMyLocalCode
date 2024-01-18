@@ -54,6 +54,23 @@ const CommentBoxComponent = (commentData: any) => {
             Array.push(object);
             FirstFeedBackArray.push(object);
         }
+        data?.forEach((ele: any) => {
+            if (ele.ApproverData != undefined && ele.ApproverData.length > 0) {
+                ele.ApproverData?.forEach((ba: any) => {
+                    if (ba.isShowLight == 'Reject') {
+                        ba.Status = 'Rejected by'
+                    }
+                    if (ba.isShowLight == 'Approve') {
+                        ba.Status = 'Approved by '
+                    }
+                    if (ba.isShowLight == 'Maybe') {
+                        ba.Status = 'For discussion with'
+                    }
+
+
+                })
+            }
+        })
         setCommentArray(data);
         setFirstFeedBackArray(data);
         if (SmartLightStatus) {
@@ -134,6 +151,23 @@ const CommentBoxComponent = (commentData: any) => {
         FirstFeedBackArray[index].isShowLight = value;
         FirstFeedBackArray[index].ApproverData.push(temObject);
         let tempApproverData: any = FirstFeedBackArray[index].ApproverData;
+        FirstFeedBackArray?.forEach((ele: any) => {
+            if (ele.ApproverData != undefined && ele.ApproverData.length > 0) {
+                ele.ApproverData?.forEach((ba: any) => {
+                    if (ba.isShowLight == 'Reject') {
+                        ba.Status = 'Rejected by'
+                    }
+                    if (ba.isShowLight == 'Approve') {
+                        ba.Status = 'Approved by '
+                    }
+                    if (ba.isShowLight == 'Maybe') {
+                        ba.Status = 'For discussion with'
+                    }
+
+
+                })
+            }
+        })
         CallBack(FirstFeedBackArray);
         const copy = [...commentArray];
         const obj = { ...commentArray[index], isShowLight: value, ApproverData: tempApproverData };
@@ -219,10 +253,13 @@ const CommentBoxComponent = (commentData: any) => {
                                                 </div>
                                                 : null
                                             }
-                                            {obj.ApproverData != undefined && obj.ApproverData.length > 0 ?
-                                                <span className="siteColor ms-2 hreflink" title="Approval-History Popup" onClick={() => ApprovalPopupOpenHandle(i, obj)}>
-                                                    Pre-approved by - <span className="ms-1"><a title={obj.ApproverData[obj.ApproverData.length - 1]?.Title}><img className='imgAuthor' src={obj.ApproverData[obj.ApproverData.length - 1]?.ImageUrl} /></a></span>
-                                                </span> :
+                                             {obj.ApproverData != undefined && obj.ApproverData.length > 0 ?
+                                                <>
+                                                   
+                                                            <span className="siteColor ms-2 hreflink" title="Approval-History Popup" onClick={() => ApprovalPopupOpenHandle(i, obj)}>
+                                                            {obj?.ApproverData[obj?.ApproverData?.length - 1]?.Status} </span> <span className="ms-1"><a title={obj?.ApproverData[obj.ApproverData?.length - 1]?.Title}><span><a href={`${Context.pageContext.web.absoluteUrl}/SitePages/TaskDashboard.aspx?UserId=${obj.ApproverData[obj.ApproverData?.length - 1]?.Id}&Name=${obj.ApproverData[obj.ApproverData?.length - 1]?.Title}`} target="_blank" data-interception="off" title={obj.ApproverData[obj.ApproverData?.length - 1]?.Title}> <img className='imgAuthor' src={obj.ApproverData[obj.ApproverData?.length - 1]?.ImageUrl} /></a></span></a></span>
+                                                      
+                                                </> :
                                                 null
                                             }
                                         </div>
@@ -309,6 +346,7 @@ const CommentBoxComponent = (commentData: any) => {
                                             CancelCallback={postBtnHandleCallBackCancel}
                                             Context={Context}
                                             ApprovalStatus={ApprovalStatus}
+                                            SmartLightStatus={obj?.isShowLight}
                                             isCurrentUserApprover={isCurrentUserApprover}
                                         />
                                     </div>

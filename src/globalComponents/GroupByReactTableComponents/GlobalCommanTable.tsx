@@ -17,13 +17,13 @@ import {
 } from "@tanstack/react-table";
 import { useVirtualizer, notUndefined } from "@tanstack/react-virtual";
 import { RankingInfo, rankItem, compareItems } from "@tanstack/match-sorter-utils";
-import { FaSort, FaSortDown, FaSortUp, FaChevronRight, FaChevronLeft, FaAngleDoubleRight, FaAngleDoubleLeft, FaInfoCircle, FaPlus, FaMinus, FaListAlt } from 'react-icons/fa';
+import { FaSort, FaSortDown, FaSortUp, FaChevronRight, FaChevronLeft, FaAngleDoubleRight, FaAngleDoubleLeft, FaPlus, FaMinus, FaListAlt } from 'react-icons/fa';
 import { HTMLProps } from 'react';
 import jsPDF from 'jspdf';
 import autoTable from 'jspdf-autotable';
 import * as XLSX from "xlsx";
 import saveAs from "file-saver";
-import { RiFileExcel2Fill } from 'react-icons/ri';
+import { RiFileExcel2Fill, RiFilter3Fill, RiListSettingsFill } from 'react-icons/ri';
 import ShowTeamMembers from '../ShowTeamMember';
 import SelectFilterPanel from './selectFilterPannel';
 import ExpndTable from '../ExpandTable/Expandtable';
@@ -32,6 +32,12 @@ import { SlArrowDown, SlArrowRight } from 'react-icons/sl';
 import { BsClockHistory, BsList, BsSearch } from 'react-icons/bs';
 import Tooltip from "../../globalComponents/Tooltip";
 import { Alert } from 'react-bootstrap';
+import DateColumnFilter from './DateColumnFilter';
+import { AiFillSetting, AiOutlineMore } from 'react-icons/ai';
+import { BiDotsVertical } from 'react-icons/bi';
+import BulkEditingFeature from './BulkEditingFeature';
+import BulkEditingConfrigation from './BulkEditingConfrigation';
+import ColumnsSetting from './ColumnsSetting';
 // ReactTable Part/////
 declare module "@tanstack/table-core" {
     interface FilterFns {
@@ -106,17 +112,9 @@ export function Filter({
     placeholder: any
 }): any {
     const columnFilterValue = column.getFilterValue();
-    // style={{ width: placeholder?.size }}
     return (
-        <input style={{ width: "100%" }} className="m-1 ps-10 on-search-cross"
-            // type="text"
-            title={placeholder?.placeholder}
-            type="search"
-            value={(columnFilterValue ?? "") as string}
-            onChange={(e) => column.setFilterValue(e.target.value)}
-            placeholder={`${placeholder?.placeholder}`}
-        // className="w-36 border shadow rounded"
-        />
+        <input style={{ width: "100%", paddingRight: "10px" }} className="m-1 ps-10 on-search-cross" title={placeholder?.placeholder} type="search" value={(columnFilterValue ?? "") as string}
+            onChange={(e) => column.setFilterValue(e.target.value)} placeholder={`${placeholder?.placeholder}`} />
     );
 }
 
@@ -148,13 +146,13 @@ const getFirstColHeader = ({ hasCheckbox, hasExpanded, isHeaderNotAvlable, portf
     return ({ table }: any) => (
         <>
             {hasExpanded && isHeaderNotAvlable != true && (<>
-                <span className="border-0 bg-Ff ms-1" {...{ onClick: table.getToggleAllRowsExpandedHandler(), }}>
+                <span className="border-0 bg-Ff ms-1 mb-1" {...{ onClick: table.getToggleAllRowsExpandedHandler(), }}>
                     {table.getIsAllRowsExpanded() ? (
                         <SlArrowDown style={{ color: portfolioColor, width: '12px' }} title='Tap to collapse the childs' />) : (<SlArrowRight style={{ color: portfolioColor, width: '12px' }} title='Tap to expand the childs' />)}
                 </span>{" "}
             </>)}
             {hasCheckbox && (
-                <span style={hasExpanded ? { marginLeft: '7px', marginBottom: '5px' } : {}} ><IndeterminateCheckbox className="mx-1 " {...{ checked: table.getIsAllRowsSelected(), indeterminate: table.getIsSomeRowsSelected(), onChange: table.getToggleAllRowsSelectedHandler(), }} />{" "}</span>
+                <span style={hasExpanded ? { marginLeft: '7px', marginBottom: '0px' } : {}} ><IndeterminateCheckbox className="mx-1 " style={{ marginTop: "5px" }} {...{ checked: table.getIsAllRowsSelected(), indeterminate: table.getIsSomeRowsSelected(), onChange: table.getToggleAllRowsSelectedHandler(), }} />{" "}</span>
             )}
         </>
     );
@@ -238,7 +236,6 @@ const GlobalCommanTable = (items: any, ref: any) => {
     const childRef = React.useRef<any>();
     if (childRef != null) {
         childRefdata = { ...childRef };
-
     }
     let expendedTrue = items?.expendedTrue
     let data = items?.data;
@@ -250,7 +247,7 @@ const GlobalCommanTable = (items: any, ref: any) => {
     let showHeader = items?.showHeader;
     let showPagination: any = items?.showPagination;
     let usedFor: any = items?.usedFor;
-    let portfolioColor = items?.portfolioColor;
+    let portfolioColor = items?.portfolioColor != undefined ? items?.portfolioColor : "#000066";
     let expandIcon = items?.expandIcon;
     let fixedWidth = items?.fixedWidth;
     let portfolioTypeData = items?.portfolioTypeData;
@@ -266,17 +263,28 @@ const GlobalCommanTable = (items: any, ref: any) => {
     const [showTeamMemberOnCheck, setShowTeamMemberOnCheck] = React.useState(false)
     const [globalSearchType, setGlobalSearchType] = React.useState("ALL");
     const [selectedFilterPanelIsOpen, setSelectedFilterPanelIsOpen] = React.useState(false);
+    const [dateColumnFilter, setDateColumnFilter] = React.useState(false);
+    const [bulkEditingSettingPopup, setBulkEditingSettingPopup] = React.useState(false);
+    const [dateColumnFilterData, setDateColumnFilterData] = React.useState({});
     const [tablecontiner, settablecontiner]: any = React.useState("hundred");
     const [trueRestructuring, setTrueRestructuring] = React.useState(false);
     // const [clickFlatView, setclickFlatView] = React.useState(false);
-    const [columnVisibility, setColumnVisibility] = React.useState({ descriptionsSearch: false, commentsSearch: false });
-    const [selectedFilterPannelData, setSelectedFilterPannelData] = React.useState({
-        Title: { Title: 'Title', Selected: true },
-        commentsSearch: { commentsSearch: 'commentsSearch', Selected: true },
-        descriptionsSearch: { descriptionsSearch: 'descriptionsSearch', Selected: true },
+    const [columnVisibility, setColumnVisibility] = React.useState({ descriptionsSearch: false, commentsSearch: false, timeSheetsDescriptionSearch: false });
+    const [selectedFilterPannelData, setSelectedFilterPannelData] = React.useState<any>({
+        Title: { Title: 'Title', Selected: true, lebel: 'Title' },
+        commentsSearch: { commentsSearch: 'commentsSearch', Selected: true, lebel: 'Comments' },
+        descriptionsSearch: { descriptionsSearch: 'descriptionsSearch', Selected: true, lebel: 'Descriptions' },
+        timeSheetsDescriptionSearch: { timeSheetsDescriptionSearch: 'timeSheetsDescriptionSearch', Selected: true, lebel: 'Timesheet Data' },
     });
+    const [selectedFilterCount, setSelectedFilterCount] = React.useState<any>({ selectedFilterCount: 'All content' })
+
+    const [dragedTask, setDragedTask] = React.useState({ task: {}, taskId: '' });
+    const [bulkEditingCongration, setBulkEditingCongration] = React.useState<any>({});
+    const [columnSettingPopup, setColumnSettingPopup] = React.useState<any>(false);
+    const [projectTiles, setProjectTiles] = React.useState<any>([]);
 
     React.useEffect(() => {
+
         if (fixedWidth === true) {
             try {
                 $('#spPageCanvasContent').removeClass();
@@ -294,7 +302,7 @@ const GlobalCommanTable = (items: any, ref: any) => {
         if (String(query).trim() === "") return true;
 
         if ((selectedFilterPannelData?.Title?.Title === id && selectedFilterPannelData?.Title?.Selected === true) || (selectedFilterPannelData?.commentsSearch?.commentsSearch === id && selectedFilterPannelData?.commentsSearch?.Selected === true) ||
-            (selectedFilterPannelData?.descriptionsSearch?.descriptionsSearch === id && selectedFilterPannelData?.descriptionsSearch?.Selected === true)) {
+            (selectedFilterPannelData?.descriptionsSearch?.descriptionsSearch === id && selectedFilterPannelData?.descriptionsSearch?.Selected === true) || (selectedFilterPannelData?.timeSheetsDescriptionSearch?.timeSheetsDescriptionSearch === id && selectedFilterPannelData?.timeSheetsDescriptionSearch?.Selected === true)) {
 
             const cellValue: any = String(row.getValue(id)).toLowerCase();
 
@@ -348,10 +356,47 @@ const GlobalCommanTable = (items: any, ref: any) => {
         if (item != undefined) {
             setSelectedFilterPannelData(item)
         }
-        setSelectedFilterPanelIsOpen(false)
+        setSelectedFilterPanelIsOpen(false);
     }, []);
 
     /****************** defult sorting  part *******************/
+
+    /****************** DateColumns Filter Part ***************/
+    const selectedDateColumnFilter = React.useCallback((compareItemsValue: any) => {
+        if (compareItemsValue != undefined && compareItemsValue != null) {
+            setDateColumnFilterData(compareItemsValue);
+            setDateColumnFilter(false);
+        } else if (compareItemsValue === "clearFilter") {
+            setDateColumnFilter(false);
+            setDateColumnFilterData({});
+        } else {
+            setDateColumnFilter(false);
+        }
+    }, []);
+    const coustomFilterColumns = (valueEvents: any, event: any) => {
+        if (valueEvents === "DueDate") {
+            setDateColumnFilter(true);
+        }
+    }
+    /****************** DateColumns Filter End ***************/
+    /// ******************* Bulk Editing Setting ******************/
+
+    const bulkEditingSetting = React.useCallback((eventSetting: any) => {
+        if (eventSetting != 'close') {
+            if (eventSetting?.Project === false) {
+                setProjectTiles([]);
+            }
+            setBulkEditingCongration(eventSetting);
+            setBulkEditingSettingPopup(false);
+        } else {
+            setBulkEditingSettingPopup(false);
+        }
+    }, []);
+    const bulkEditingSettingPopupEvent = () => {
+        setBulkEditingSettingPopup(true);
+    }
+    ///******************** Bulk Editing Setting End************* */
+
     React.useEffect(() => {
         if (columns?.length > 0 && columns != undefined) {
             let sortingDescData: any = [];
@@ -511,6 +556,9 @@ const GlobalCommanTable = (items: any, ref: any) => {
         if (usedFor == "SiteComposition" || items?.multiSelect === true) {
             let finalData: any = table?.getSelectedRowModel()?.flatRows;
             callBackData(finalData);
+            if (table?.getSelectedRowModel()?.flatRows.length > 0) {
+                restructureFunct(true)
+            };
         } else {
             if (table?.getSelectedRowModel()?.flatRows.length > 0) {
                 restructureFunct(true)
@@ -573,12 +621,17 @@ const GlobalCommanTable = (items: any, ref: any) => {
             } else {
                 siteUrl = items?.AllListId?.siteUrl;
             }
-            if (item?.original?.siteType === "Master Tasks") {
-                window.open(`${siteUrl}/SitePages/Portfolio-Profile.aspx?taskId=${item?.original?.Id}`, '_blank')
-            } else if (item?.original?.siteType === "Project") {
-                window.open(`${siteUrl}/SitePages/Project-Management.aspx?taskId=${item?.original?.Id}`, '_blank')
-            } else {
-                window.open(`${siteUrl}/SitePages/Task-Profile.aspx?taskId=${item?.original?.Id}&Site=${item?.original?.siteType}`, '_blank')
+            if (item?.original?.ItemCat === "Project") {
+                window.open(`${siteUrl}/SitePages/Project-Management.aspx?ProjectId=${item?.original?.Id}`, '_blank')
+            }
+            else {
+                if (item?.original?.siteType === "Master Tasks") {
+                    window.open(`${siteUrl}/SitePages/Portfolio-Profile.aspx?taskId=${item?.original?.Id}`, '_blank')
+                } else if (item?.original?.siteType === "Project") {
+                    window.open(`${siteUrl}/SitePages/Project-Management.aspx?ProjectId=${item?.original?.Id}`, '_blank')
+                } else {
+                    window.open(`${siteUrl}/SitePages/Task-Profile.aspx?taskId=${item?.original?.Id}&Site=${item?.original?.siteType}`, '_blank')
+                }
             }
         })
     }
@@ -726,11 +779,16 @@ const GlobalCommanTable = (items: any, ref: any) => {
             items?.switchFlatViewData(data);
         } else if (eventValue === "Groupby-View") {
             items?.switchGroupbyData();
+        } else if (eventValue === "sendEmail") {
+            items?.mailSend();
+        } else if (eventValue === "loadFilterTask") {
+            items?.loadFilterTask();
+        } else if (eventValue === "Add Site-Structure") {
+            items?.addStructure();
+        } else if (eventValue === "Compare") {
+            items?.openCompareTool()
         }
     }
-
-
-
     ///////////////// code with neha /////////////////////
     const callChildFunction = (items: any) => {
         if (childRef.current) {
@@ -743,9 +801,13 @@ const GlobalCommanTable = (items: any, ref: any) => {
             childRef.current.trueTopIcon(items);
         }
     };
-
+    const projectTopIcon = (items: any) => {
+        if (childRef.current) {
+            childRef.current.projectTopIcon(items);
+        }
+    };
     React.useImperativeHandle(ref, () => ({
-        callChildFunction, trueTopIcon, setRowSelection, globalFilter, setColumnFilters, setGlobalFilter
+        callChildFunction, trueTopIcon, setRowSelection, globalFilter,projectTopIcon, setColumnFilters, setGlobalFilter, coustomFilterColumns, table
     }));
 
     const restructureFunct = (items: any) => {
@@ -795,8 +857,77 @@ const GlobalCommanTable = (items: any, ref: any) => {
     //Virtual rows
 
 
+
+    /**************************************** Drag And Drop Functionality ***************************************/
+    const startDrag = (task: any, taskId: any) => {
+        if (items?.bulkEditIcon === true) {
+            let taskDetails = {
+                task: task,
+                taskId: taskId
+            }
+            setDragedTask(taskDetails)
+            console.log(task, origin);
+        }
+    }
+
+    React.useEffect(() => {
+        if (bulkEditingCongration?.Project === true && table?.getSelectedRowModel()?.flatRows?.length > 0 && projectTiles?.length === 0) {
+            setProjectTiles(table?.getSelectedRowModel()?.flatRows)
+        }
+    }, [bulkEditingSettingPopup]);
+    React.useEffect(() => {
+        if (items?.defultSelectedRows?.length > 0) {
+            let selectedRow: any = {}
+            table?.getRowModel()?.rows?.map((elem: any) => {
+                items?.defultSelectedRows?.map((selectedId: any) => {
+                    if (elem?.original?.Id == selectedId?.original?.Id) {
+                        selectedRow = { ...selectedRow, [elem.id]: true }
+                    }
+                })
+            })
+            setRowSelection(selectedRow);
+        }
+    }, [items?.defultSelectedRows?.length > 0])
+
+    const columnSettingCallBack = React.useCallback((eventSetting: any) => {
+        if (eventSetting != 'close') {
+            setColumnSettingPopup(false)
+            setColumnVisibility((prevCheckboxes: any) => ({ ...prevCheckboxes, ...eventSetting }));
+        } else {
+            setColumnSettingPopup(false)
+        }
+    }, []);
+    // const coustomColumnsSetting = (item: any, event: any) => {
+    //     const { name, checked } = event.target;
+    //     if (name != "toggleAll") {
+    //         setColumnVisibility((prevCheckboxes: any) => ({
+    //             ...prevCheckboxes,
+    //             [name]: checked
+    //         }));
+    //         columns?.forEach((element: any) => {
+    //             if (element.id === item.id) {
+    //                 return element.isColumnVisible = checked
+    //             }
+    //         });
+    //     } else {
+    //         columns?.forEach((element: any) => {
+    //             if (element.id != "Title" && element.id === "portfolioItemsSearch" && element.id === "TaskID" && element.id != "descriptionsSearch" && element.id != "commentsSearch" && element.id != "timeSheetsDescriptionSearch") {
+    //                 element.isColumnVisible = checked
+    //                 setColumnVisibility((prevCheckboxes: any) => ({
+    //                     ...prevCheckboxes,
+    //                     [element.id]: checked
+    //                 }));
+    //             }
+    //         });
+    //     }
+    // }
+
+    /**************************************** Drag And Drop Functionality End ***************************************/
     return (
         <>
+            {items?.bulkEditIcon === true && (bulkEditingCongration?.priority === true || bulkEditingCongration?.dueDate === true || bulkEditingCongration?.status === true || bulkEditingCongration?.Project === true) && <span className="toolbox">
+                <BulkEditingFeature masterTaskData={items?.masterTaskData} data={data} columns={items?.columns} setData={items?.setData} updatedSmartFilterFlatView={items?.updatedSmartFilterFlatView} clickFlatView={items?.clickFlatView} ContextValue={items?.AllListId} priorityRank={items?.priorityRank} dragedTask={dragedTask} precentComplete={items?.precentComplete} bulkEditingCongration={bulkEditingCongration} selectedData={table?.getSelectedRowModel()?.flatRows} projectTiles={projectTiles} />
+            </span>}
             {showHeader === true && <div className='tbl-headings justify-content-between fixed-Header top-0' style={{ background: '#e9e9e9' }}>
                 <span className='leftsec'>
                     {showingAllPortFolioCount === true ? <div className='alignCenter mt--2'>
@@ -807,8 +938,8 @@ const GlobalCommanTable = (items: any, ref: any) => {
                             {portfolioTypeData?.map((type: any, index: any) => {
                                 return (
                                     <>
-                                        {isShowingDataAll === true ? <><label className='ms-1' style={{ color: "#333333" }}>{` ${type[type.Title + 'numberCopy']} `} of {" "} </label> <label style={{ color: "#333333" }} className='ms-0'>{` ${type[type.Title + 'number']} `}</label><label style={{ color: "#333333" }} className='ms-1'>{" "} {type.Title}</label>{index < type.length - 1 && <label style={{ color: "#333333" }} className="ms-1"> | </label>}</> :
-                                            <><label className='ms-1' style={{ color: "#333333" }}>{` ${type[type.Title + 'filterNumber']} `} of {" "} </label> <label style={{ color: "#333333" }} className='ms-0'>{` ${type[type.Title + 'number']} `}</label><label style={{ color: "#333333" }} className='ms-1'>{" "} {type.Title}</label>{index < type.length - 1 && <label style={{ color: "#333333" }} className="ms-1"> | </label>}</>}
+                                        {isShowingDataAll === true ? <><label className='ms-1' style={{ color: "#333333" }}>{` ${type[type.Title + 'numberCopy']} `} of {" "} </label> <label style={{ color: "#333333" }} className='ms-1'>{` ${type[type.Title + 'number']} `}</label><label style={{ color: "#333333" }} className='ms-1'>{" "} {type.Title}</label>{index < type.length - 1 && <label style={{ color: "#333333" }} className="ms-1"> | </label>}</> :
+                                            <><label className='ms-1' style={{ color: "#333333" }}>{` ${type[type.Title + 'filterNumber']} `} of {" "} </label> <label style={{ color: "#333333" }} className='ms-1'>{` ${type[type.Title + 'number']} `}</label><label style={{ color: "#333333" }} className='ms-1'>{" "} {type.Title}</label>{index < type.length - 1 && <label style={{ color: "#333333" }} className="ms-1"> | </label>}</>}
                                     </>
                                 )
                             })}
@@ -859,7 +990,8 @@ const GlobalCommanTable = (items: any, ref: any) => {
                         placeholder="Search All..."
                         portfolioColor={portfolioColor}
                     />
-                    <span className="svg__iconbox svg__icon--setting" style={{ backgroundColor: `${portfolioColor}` }} onClick={() => setSelectedFilterPanelIsOpen(true)}></span>
+                    {selectedFilterCount?.selectedFilterCount == "No item is selected" ? <span className="svg__iconbox svg__icon--setting hreflink" style={{ backgroundColor: 'gray' }} title={selectedFilterCount?.selectedFilterCount} onClick={() => setSelectedFilterPanelIsOpen(true)}></span> :
+                        <span className="svg__iconbox svg__icon--setting hreflink" style={selectedFilterCount?.selectedFilterCount == 'All content' ? { backgroundColor: `${portfolioColor}` } : { backgroundColor: 'rgb(68 114 199)' }} title={selectedFilterCount?.selectedFilterCount} onClick={() => setSelectedFilterPanelIsOpen(true)}></span>}
                     <span className='mx-1'>
                         <select style={{ height: "30px", paddingTop: "3px", color: `${portfolioColor}` }}
                             className="w-100"
@@ -870,17 +1002,17 @@ const GlobalCommanTable = (items: any, ref: any) => {
                                 setGlobalFilter("");
                             }}
                         >
-                            <option value="ALL">All Words</option>
-                            <option value="ANY">Any Words</option>
-                            <option value="EXACT">Exact Phrase</option>
+                            <option title='text need to contain word1 and word2. (order not important)' value="ALL">All Words</option>
+                            <option title=' text need to contain any word1 or word2 or Both.' value="ANY">Any Words</option>
+                            <option title=' text must contain exact Phrase in same order.' value="EXACT">Exact Phrase</option>
                         </select>
                     </span>
                 </span>
                 <span className="toolbox">
                     {items.taskProfile != true && items?.showCreationAllButton === true && <>
-                        {items?.PortfolioFeature === "Feature" ? (
+                        {items?.PortfolioFeature === "Feature" && items?.hideRestructureBtn != true ? (
                             <button type="button" disabled className="btn btn-primary" style={{ backgroundColor: `${portfolioColor}`, borderColor: `${portfolioColor}`, color: "#fff" }} title=" Add Structure"> {" "} Add Structure{" "}</button>
-                        ) : (table?.getSelectedRowModel()?.flatRows?.length === 1 && table?.getSelectedRowModel()?.flatRows[0]?.original?.Item_x0020_Type != "Feature" && table?.getSelectedRowModel()?.flatRows[0]?.original
+                        ) : (table?.getSelectedRowModel()?.flatRows?.length === 1 && table?.getSelectedRowModel()?.flatRows[0]?.original?.Item_x0020_Type != "Feature" && table?.getSelectedRowModel()?.flatRows[0]?.original?.Item_x0020_Type != "Sprint" && table?.getSelectedRowModel()?.flatRows[0]?.original
                             ?.TaskType?.Title != "Activities" && table?.getSelectedRowModel()?.flatRows[0]?.original?.TaskType?.Title != "Workstream" && table?.getSelectedRowModel()?.flatRows[0]?.original
                                 ?.TaskType?.Title != "Task") || table?.getSelectedRowModel()?.flatRows?.length === 0 ? (
                             <button type="button" className="btn btn-primary" style={{ backgroundColor: `${portfolioColor}`, borderColor: `${portfolioColor}`, color: "#fff" }} title=" Add Structure" onClick={() => openCreationAllStructure("Add Structure")}>
@@ -889,38 +1021,60 @@ const GlobalCommanTable = (items: any, ref: any) => {
                             <button type="button" disabled className="btn btn-primary" style={{ backgroundColor: `${portfolioColor}`, borderColor: `${portfolioColor}`, color: "#fff" }} title=" Add Structure"> {" "} Add Structure{" "}</button>
                         )}
 
-                        {items?.protfolioProfileButton != true && <>{table?.getSelectedRowModel()?.flatRows.length === 1 && table?.getSelectedRowModel()?.flatRows[0]?.original?.TaskType?.Title != "Task" ? <button type="button" className="btn btn-primary" title='Add Activity' style={{ backgroundColor: `${portfolioColor}`, borderColor: `${portfolioColor}`, color: '#fff' }} onClick={() => openCreationAllStructure("Add Activity-Task")}>Add Activity-Task</button> :
+                        {items?.protfolioProfileButton != true && items?.hideAddActivityBtn != true && <>{table?.getSelectedRowModel()?.flatRows.length === 1 && table?.getSelectedRowModel()?.flatRows[0]?.original?.TaskType?.Title != "Task" && table?.getSelectedRowModel()?.flatRows[0]?.original?.Item_x0020_Type != "Sprint" ? <button type="button" className="btn btn-primary" title='Add Activity' style={{ backgroundColor: `${portfolioColor}`, borderColor: `${portfolioColor}`, color: '#fff' }} onClick={() => openCreationAllStructure("Add Activity-Task")}>Add Activity-Task</button> :
                             <button type="button" className="btn btn-primary" style={{ backgroundColor: `${portfolioColor}`, borderColor: `${portfolioColor}`, color: '#fff' }} disabled={true} > Add Activity-Task</button>}</>}
 
-                        {items?.protfolioProfileButton === true && <>{items?.protfolioProfileButton === true && table?.getSelectedRowModel()?.flatRows[0]?.original?.TaskType?.Title != "Task" ? <button type="button" className="btn btn-primary" title='Add Activity' style={{ backgroundColor: `${portfolioColor}`, borderColor: `${portfolioColor}`, color: '#fff' }} onClick={() => openCreationAllStructure("Add Activity-Task")}>Add Activity-Task</button> :
+                        {items?.protfolioProfileButton === true && items?.hideAddActivityBtn != true && <>{items?.protfolioProfileButton === true && table?.getSelectedRowModel()?.flatRows[0]?.original?.TaskType?.Title != "Task" && table?.getSelectedRowModel()?.flatRows[0]?.original?.Item_x0020_Type != "Sprint" ? <button type="button" className="btn btn-primary" title='Add Activity' style={{ backgroundColor: `${portfolioColor}`, borderColor: `${portfolioColor}`, color: '#fff' }} onClick={() => openCreationAllStructure("Add Activity-Task")}>Add Activity-Task</button> :
                             <button type="button" className="btn btn-primary" style={{ backgroundColor: `${portfolioColor}`, borderColor: `${portfolioColor}`, color: '#fff' }} disabled={true} > Add Activity-Task</button>}</>}
 
                         {
                             trueRestructuring == true ?
-                                <RestructuringCom AllMasterTasksData={items.AllMasterTasksData} queryItems={items.queryItems} restructureFunct={restructureFunct} ref={childRef} taskTypeId={items.TaskUsers} contextValue={items.AllListId} allData={data} restructureCallBack={items.restructureCallBack} restructureItem={table?.getSelectedRowModel()?.flatRows} />
+                                <RestructuringCom AllSitesTaskData={items?.AllSitesTaskData} AllMasterTasksData={items?.masterTaskData} projectmngmnt={items?.projectmngmnt} MasterdataItem={items?.MasterdataItem} queryItems={items.queryItems} restructureFunct={restructureFunct} ref={childRef} taskTypeId={items.TaskUsers} contextValue={items.AllListId} allData={data} restructureCallBack={items.restructureCallBack} restructureItem={table?.getSelectedRowModel()?.flatRows} />
                                 : <button type="button" title="Restructure" disabled={true} className="btn btn-primary">Restructure</button>
+                        }
+                        {
+                            ((table?.getSelectedRowModel()?.flatRows?.length === 2) && (table?.getSelectedRowModel()?.flatRows[0]?.original?.TaskType?.Title != "Activities" && table?.getSelectedRowModel()?.flatRows[0]?.original?.TaskType?.Title != "Workstream" && table?.getSelectedRowModel()?.flatRows[0]?.original?.TaskType?.Title != "Task")) ?
+                                < button type="button" className="btn btn-primary" title='Add Activity' style={{ backgroundColor: `${portfolioColor}`, borderColor: `${portfolioColor}`, color: '#fff' }} onClick={() => openCreationAllStructure("Compare")}>Compare</button> :
+                                <button type="button" className="btn btn-primary" style={{ backgroundColor: `${portfolioColor}`, borderColor: `${portfolioColor}`, color: '#fff' }} disabled={true} >Compare</button>
                         }
                     </>
                     }
+                    {
+                        items?.pageProjectOverview === true &&
+                        <>{trueRestructuring === true ? <RestructuringCom AllSitesTaskData={items?.AllSitesTaskData} AllMasterTasksData={items?.masterTaskData} queryItems={items.queryItems} restructureFunct={restructureFunct} ref={childRef} taskTypeId={items.TaskUsers} contextValue={items.AllListId} allData={data} restructureCallBack={items.restructureCallBack} restructureItem={table?.getSelectedRowModel()?.flatRows} />
+                            : <button type="button" title="Restructure" disabled={true} className="btn btn-primary">Restructure</button>}</>
+                    }
 
-                    {items.taskProfile === true && items?.showCreationAllButton === true && <>
-                        {table?.getSelectedRowModel()?.flatRows.length < 2 ? <button type="button" className="btn btn-primary" title='Add Activity' style={{ backgroundColor: `${portfolioColor}`, borderColor: `${portfolioColor}`, color: '#fff' }} onClick={() => openCreationAllStructure("Add Workstream-Task")}>Add Workstream-Task</button> :
-                            <button type="button" className="btn btn-primary" style={{ backgroundColor: `${portfolioColor}`, borderColor: `${portfolioColor}`, color: '#fff' }} disabled={true} > Add Workstream-Task</button>}
+                    {items.taskProfile === true && items?.showCreationAllButton === true && items?.hideRestructureBtn != true && <>
+                        {table?.getSelectedRowModel()?.flatRows.length < 2 ? <button type="button" className="btn btn-primary" title='Add Activity' onClick={() => openCreationAllStructure("Add Workstream-Task")}>{(table?.getSelectedRowModel()?.flatRows.length > 0 && table?.getSelectedRowModel()?.flatRows[0]?.original?.TaskType.Title == "Workstream") || (items?.queryItems?.TaskType?.Title == "Workstream") ? "Add Task" : "Add Workstream-Task"}</button> :
+                            <button type="button" className="btn btn-primary" disabled={true} > Add Workstream-Task</button>}
 
                         {
                             trueRestructuring == true ?
-                                <RestructuringCom AllMasterTasksData={items.AllMasterTasksData} queryItems={items.queryItems} restructureFunct={restructureFunct} ref={childRef} taskTypeId={items.TaskUsers} contextValue={items.AllListId} allData={data} restructureCallBack={items.restructureCallBack} restructureItem={table?.getSelectedRowModel()?.flatRows} />
+                                <RestructuringCom AllSitesTaskData={items?.AllSitesTaskData} AllMasterTasksData={items?.masterTaskData} queryItems={items.queryItems} restructureFunct={restructureFunct} ref={childRef} taskTypeId={items.TaskUsers} contextValue={items.AllListId} allData={data} restructureCallBack={items.restructureCallBack} restructureItem={table?.getSelectedRowModel()?.flatRows} />
                                 : <button type="button" title="Restructure" disabled={true} className="btn btn-primary"
                                 >Restructure</button>
                         }
                     </>
                     }
+                    {
+                        items?.siteStructureCreation === true &&
+                        <button type="button" className="btn btn-primary" title='Add Site-Structure' style={{ backgroundColor: `${portfolioColor}`, borderColor: `${portfolioColor}`, color: '#fff' }} onClick={() => openCreationAllStructure("Add Site-Structure")}>Add +</button>
+                    }
+                    {items?.hideTeamIcon != true ? <>
+                        {table?.getSelectedRowModel()?.flatRows?.length > 0 ? <a className="teamIcon" onClick={() => ShowTeamFunc()}><span title="Create Teams Group" style={{ color: `${portfolioColor}`, backgroundColor: `${portfolioColor}` }} className="svg__iconbox svg__icon--team"></span></a>
+                            : <a className="teamIcon"><span title="Create Teams Group" style={{ backgroundColor: "gray" }} className="svg__iconbox svg__icon--team"></span></a>}
+                    </> : ''}
 
-                    {table?.getSelectedRowModel()?.flatRows?.length > 0 ? <a className="teamIcon" onClick={() => ShowTeamFunc()}><span title="Create Teams Group" style={{ color: `${portfolioColor}`, backgroundColor: `${portfolioColor}` }} className="svg__iconbox svg__icon--team"></span></a>
-                        : <a className="teamIcon"><span title="Create Teams Group" style={{ backgroundColor: "gray" }} className="svg__iconbox svg__icon--team"></span></a>}
-                    {table?.getSelectedRowModel()?.flatRows?.length > 0 ?
-                        <a onClick={() => openTaskAndPortfolioMulti()} title='Open in New Tab' className="openWebIcon p-0"><span style={{ color: `${portfolioColor}`, backgroundColor: `${portfolioColor}` }} className="svg__iconbox svg__icon--openWeb"></span></a>
-                        : <a className="openWebIcon p-0" title='Open in New Tab'><span className="svg__iconbox svg__icon--openWeb" style={{ backgroundColor: "gray" }}></span></a>}
+                    {items?.showEmailIcon === true ? <>
+                        <a className="teamIcon" onClick={() => openCreationAllStructure("sendEmail")}><span title="send email" style={{ color: `${portfolioColor}`, backgroundColor: `${portfolioColor}` }} className="svg__iconbox svg__icon--mail"></span></a>
+                    </> : ''}
+
+                    {items?.hideOpenNewTableIcon != true ? <>
+                        {table?.getSelectedRowModel()?.flatRows?.length > 0 ?
+                            <a onClick={() => openTaskAndPortfolioMulti()} title='Open in New Tab' className="openWebIcon p-0"><span style={{ color: `${portfolioColor}`, backgroundColor: `${portfolioColor}` }} className="svg__iconbox svg__icon--openWeb"></span></a>
+                            : <a className="openWebIcon p-0" title='Open in New Tab'><span className="svg__iconbox svg__icon--openWeb" style={{ backgroundColor: "gray" }}></span></a>}
+                    </> : ''}
 
                     {items?.OpenAdjustedTimePopupCategory && items?.showCatIcon === true && <a onClick={items.OpenAdjustedTimePopupCategory} title="Open Adjusted Time Popup">
                         <i className="fa fa-cog brush" aria-hidden="true"></i>
@@ -928,8 +1082,6 @@ const GlobalCommanTable = (items: any, ref: any) => {
 
                     {items?.showCatIcon != true ? <a className='excal' title='Export to Excel' onClick={() => exportToExcel()}><RiFileExcel2Fill style={{ color: `${portfolioColor}` }} /></a> :
                         <a className='excal' title='Export to Excel' onClick={items?.exportToExcelCategoryReport}><RiFileExcel2Fill style={{ color: `${portfolioColor}` }} /></a>}
-
-                    {/* <a className='excal' title='Export To Excel' onClick={() => exportToExcel()}><RiFileExcel2Fill style={{ color: `${portfolioColor}` }} /></a> */}
 
                     {items?.SmartTimeIconShow === true && items?.AllListId?.isShowTimeEntry === true && <a className='smartTotalTime' title="Load SmartTime of AWT" onClick={() => openCreationAllStructure("Smart-Time")} > <BsClockHistory style={{ color: `${portfolioColor}` }} /></a>}
 
@@ -945,9 +1097,14 @@ const GlobalCommanTable = (items: any, ref: any) => {
                     <a className='Prints' onClick={() => downloadPdf()}>
                         <i className="fa fa-print" aria-hidden="true" style={{ color: `${portfolioColor}` }} title="Print"></i>
                     </a>
+                    {items?.bulkEditIcon === true && <a className='smartTotalTime' title='Bulk editing setting' onClick={() => bulkEditingSettingPopupEvent()} ><RiListSettingsFill style={{ color: `${portfolioColor}` }} /></a>}
+
                     {expandIcon === true && <a className="expand" title="Expand table section" style={{ color: `${portfolioColor}` }}>
                         <ExpndTable prop={expndpopup} prop1={tablecontiner} />
                     </a>}
+
+                    {items?.showFilterIcon === true && <><a className='smartTotalTime' title='Filter all task' style={{ color: `${portfolioColor}` }} onClick={() => openCreationAllStructure("loadFilterTask")}><RiFilter3Fill /></a></>}
+                    {items?.columnSettingIcon === true && <><a className='smartTotalTime' title='Column setting' style={{ color: `${portfolioColor}` }} onClick={() => setColumnSettingPopup(true)}><AiFillSetting /></a></>}
                     <Tooltip ComponentId={5756} />
                 </span>
             </div>}
@@ -967,11 +1124,9 @@ const GlobalCommanTable = (items: any, ref: any) => {
                                                             header.getContext()
                                                         )}
                                                         {header.column.getCanFilter() ? (
-                                                            // <span>
                                                             <Filter column={header.column} table={table} placeholder={header.column.columnDef} />
-                                                            // </span>
                                                         ) : null}
-                                                        {header.column.getCanSort() ? <div
+                                                        {header.column.getCanSort() ? <div style={items?.clickFlatView === true && header?.column?.columnDef?.placeholder === 'DueDate' ? { position: 'absolute', top: '8px', right: '16px' } : {}}
                                                             {...{
                                                                 className: header.column.getCanSort()
                                                                     ? "cursor-pointer select-none shorticon"
@@ -985,6 +1140,7 @@ const GlobalCommanTable = (items: any, ref: any) => {
                                                                 ] ?? null
                                                                 : <FaSort style={{ color: "gray" }} />}
                                                         </div> : ""}
+                                                        {items?.clickFlatView === true && header?.column?.columnDef?.placeholder === 'DueDate' && <div className='dotFilterIcon' style={{ position: "absolute", top: "8px", right: "5px" }} ><BiDotsVertical style={Object?.keys(dateColumnFilterData)?.length ? { color: `${portfolioColor}`, height: '15px', width: '15px' } : { color: 'gray', height: '15px', width: '15px' }} onClick={(event) => coustomFilterColumns('DueDate', event)} /></div>}
                                                     </div>
                                                 )}
                                             </th>
@@ -1003,21 +1159,25 @@ const GlobalCommanTable = (items: any, ref: any) => {
                                 const row = rows[virtualRow.index] as Row<any>;
                                 return (
                                     <tr
-                                        // className={row?.original?.lableColor}
-                                        className={row?.original?.IsSCProtected != undefined && row?.original?.IsSCProtected == true ? `Disabled-Link opacity-75 ${row?.original?.lableColor}` : `${row?.original?.lableColor}`}
-                                        key={row.id}
-                                        data-index={virtualRow.index}
-                                        ref={virtualizer.measureElement}
-                                    >
+                                        className={row?.original?.lableColor}
+                                        // className={row?.original?.IsSCProtected != undefined && row?.original?.IsSCProtected == true ? `Disabled-Link opacity-75 ${row?.original?.lableColor}` : `${row?.original?.lableColor}`}
+                                        key={row.id} data-index={virtualRow.index} ref={virtualizer.measureElement} onDragStart={(e) => startDrag(row?.original, row?.original?.TaskId)} onDragOver={(e) => e.preventDefault()}>
                                         {row.getVisibleCells().map((cell: any) => {
-                                            return (
-                                                <td className={row?.original?.boldRow} key={cell.id} style={row?.original?.fontColorTask != undefined ? { color: `${row?.original?.fontColorTask}` } : { color: `${row?.original?.PortfolioType?.Color}` }}>
-                                                    {flexRender(
-                                                        cell.column.columnDef.cell,
-                                                        cell.getContext()
-                                                    )}
-                                                </td>
-                                            );
+                                            if (cell.column.columnDef.id == "Id" && row?.original?.IsSCProtected == true) {
+                                                return (
+                                                    <td className={row?.original?.boldRow} key={cell.id} style={row?.original?.fontColorTask != undefined ? { color: `${row?.original?.fontColorTask}` } : { color: `${row?.original?.PortfolioType?.Color}` }}>
+                                                    </td>
+                                                )
+                                            } else {
+                                                return (
+                                                    <td className={row?.original?.boldRow} key={cell.id} style={row?.original?.fontColorTask != undefined ? { color: `${row?.original?.fontColorTask}` } : { color: `${row?.original?.PortfolioType?.Color}` }}>
+                                                        {flexRender(
+                                                            cell.column.columnDef.cell,
+                                                            cell.getContext()
+                                                        )}
+                                                    </td>
+                                                );
+                                            }
                                         })}
                                     </tr>
                                 );
@@ -1029,11 +1189,11 @@ const GlobalCommanTable = (items: any, ref: any) => {
                             )}
                         </tbody>
                     </table>
+                    {data?.length === 0 && <div className='mt-2'>
+                        <div className='d-flex justify-content-center' style={{ height: "30px", color: portfolioColor ? `${portfolioColor}` : "#000069" }}>No data available</div>
+                    </div>}
                 </div>
             </div>
-            {data?.length === 0 && <div className='mt-2'>
-                <div className='d-flex justify-content-center' style={{ height: "30px", color: portfolioColor ? `${portfolioColor}` : "#000069" }}>No data available</div>
-            </div>}
             {showPagination === true && table?.getFilteredRowModel()?.rows?.length > table.getState().pagination.pageSize ? <div className="d-flex gap-2 items-center mb-3 mx-2">
                 <button
                     className="border rounded p-1"
@@ -1085,8 +1245,11 @@ const GlobalCommanTable = (items: any, ref: any) => {
             </div> : ''}
             {/* {ShowTeamPopup === true && items?.TaskUsers?.length > 0 ? <ShowTeamMembers props={table?.getSelectedRowModel()?.flatRows} callBack={showTaskTeamCAllBack} TaskUsers={items?.TaskUsers} /> : ''} */}
             {ShowTeamPopup === true && items?.TaskUsers?.length > 0 ? <ShowTeamMembers props={table?.getSelectedRowModel()?.flatRows} callBack={showTaskTeamCAllBack} TaskUsers={items?.TaskUsers} portfolioTypeData={items?.portfolioTypeData} context={items?.AllListId?.Context} /> : ''}
-            {selectedFilterPanelIsOpen && <SelectFilterPanel isOpen={selectedFilterPanelIsOpen} selectedFilterCallBack={selectedFilterCallBack} setSelectedFilterPannelData={setSelectedFilterPannelData} selectedFilterPannelData={selectedFilterPannelData} portfolioColor={portfolioColor} />}
+            {selectedFilterPanelIsOpen && <SelectFilterPanel isOpen={selectedFilterPanelIsOpen} selectedFilterCount={selectedFilterCount} setSelectedFilterCount={setSelectedFilterCount} selectedFilterCallBack={selectedFilterCallBack} setSelectedFilterPannelData={setSelectedFilterPannelData} selectedFilterPannelData={selectedFilterPannelData} portfolioColor={portfolioColor} />}
+            {dateColumnFilter && <DateColumnFilter portfolioTypeDataItemBackup={items?.portfolioTypeDataItemBackup} taskTypeDataItemBackup={items?.taskTypeDataItemBackup} portfolioTypeData={portfolioTypeData} taskTypeDataItem={items?.taskTypeDataItem} dateColumnFilterData={dateColumnFilterData} flatViewDataAll={items?.flatViewDataAll} data={data} setData={items?.setData} setLoaded={items?.setLoaded} isOpen={dateColumnFilter} selectedDateColumnFilter={selectedDateColumnFilter} portfolioColor={portfolioColor} Lable='DueDate' />}
+            {bulkEditingSettingPopup && <BulkEditingConfrigation isOpen={bulkEditingSettingPopup} bulkEditingSetting={bulkEditingSetting} />}
+            {columnSettingPopup && <ColumnsSetting isOpen={columnSettingPopup} columnSettingCallBack={columnSettingCallBack} columns={columns} />}
         </>
     )
 }
-export default React.forwardRef(GlobalCommanTable);    
+export default React.forwardRef(GlobalCommanTable);

@@ -3,6 +3,9 @@ import { Web } from 'sp-pnp-js';
 import CommentCard from '../../../globalComponents/Comments/CommentCard';
 import AncTool from '../../../globalComponents/AncTool/AncTool';
 import { BiInfoCircle } from 'react-icons/bi';
+import PageLoader from "../../../globalComponents/pageLoader";
+import * as globalCommon from "../../../globalComponents/globalCommon";
+
 import { ImReply } from 'react-icons/im';
 import {
   mergeStyleSets,
@@ -18,12 +21,15 @@ import moment from 'moment';
 import SmartInformation from '../../taskprofile/components/SmartInformation';
 import RelevantDocuments from '../../taskprofile/components/RelevantDocuments';
 import MeetingPopupComponent from '../../../globalComponents/MeetingPopup/MeetingPopup';
-// import TagTaskToProjectPopup from '../../projectManagement/components/TagTaskToProjectPopup';
 import MettingTable from './MeetingFooterTable';
 import { map } from 'jquery';
+import TagTaskToProjectPopup from '../../projectManagement/components/TagTaskToProjectPopup';
 var count = 0;
 var isShowTimeEntry: any;
 var isShowSiteCompostion: any;
+var MasterListData: any = [];
+let AllFlatProject: any = [];
+let groupedComponentData: any = [];
 var AllListId: any;
 var taskUsers: any;
 var currentUser: any;
@@ -46,6 +52,7 @@ const MeetingProfile = (props: any) => {
   const [display, setDisplay] = React.useState('none');
   const [openModelImg, setOpenModelImg] = React.useState<any>({ isModalOpen: false, imageInfo: { ImageName: "", ImageUrl: "" }, showPopup: 'none' })
   const [showMeetingPopup, setshowMeetingPopup] = React.useState(false);
+  const [pageLoaderActive, setPageLoader] = React.useState(true)
   const [feedbackpopup, setfeedbackpopup] = React.useState(
     {
       showcomment: 'none',
@@ -92,8 +99,8 @@ const MeetingProfile = (props: any) => {
     });
 
 
-
   }, [])
+
   const smartMetaData = async () => {
     return new Promise<void>((resolve, reject) => {
       let sites = [];
@@ -127,8 +134,6 @@ const MeetingProfile = (props: any) => {
               }
             }
           });
-
-
           setAllSite(AllsiteData)
         })
 
@@ -169,6 +174,7 @@ const MeetingProfile = (props: any) => {
     })
 
   };
+
 
   //  ============current user details=========
   const GetUserObject = (username: any) => {
@@ -229,11 +235,12 @@ const MeetingProfile = (props: any) => {
     // console.log(this.taskUsers);
 
   }
-  const getQueryVariable = () => {
+  const getQueryVariable = async() => {
     const params = new URLSearchParams(window.location.search);
     let query = params?.get("meetingId");
     console.log(query)
     setmeetingId(query)
+    await loadAllComponent()
     AllListId = {
       MasterTaskListID: props?.props?.MasterTaskListID,
       TaskUsertListID: props?.props?.TaskUsertListID,
@@ -285,11 +292,14 @@ const MeetingProfile = (props: any) => {
 
             });
           }
-          let siteTaggJson: any = taskDetails.Sitestagging != undefined ? JSON.parse(taskDetails.Sitestagging) : null
+          let siteTaggJson: any = taskDetails?.Sitestagging != undefined ? JSON.parse(taskDetails?.Sitestagging) : null
           let siteTagg2: any = []
-          // allData.map((item:any)=>{
-          //     siteTagg2= siteTagg2.concat(siteTaggJson.filter((data:any)=>data.Id==item.Id && data.siteType==item.siteType))
-          // })
+          allData.map((item: any) => {
+            if(siteTaggJson?.length>0){
+             siteTagg2 = siteTagg2.concat(siteTaggJson?.filter((data: any) => data.Id == item.Id && data.siteType == item.siteType))
+            }
+            
+          })
 
           var array2: any = taskDetails["AssignedTo"] != undefined ? taskDetails["AssignedTo"] : []
           if (taskDetails["TeamMembers"] != undefined) {
@@ -320,6 +330,7 @@ const MeetingProfile = (props: any) => {
             AssignedTo: taskDetails["AssignedTo"] != null ? GetUserObjectFromCollection(taskDetails["AssignedTo"]) : null,
           }
           resultDatabackup = data;
+          setPageLoader(false);
           setResultData(data);
         })
     }
@@ -414,6 +425,25 @@ const MeetingProfile = (props: any) => {
   }
   const handleuffixLeave = () => {
     setDisplay('none')
+  }
+
+  const loadAllComponent = async () => {
+    let PropsObject: any = {
+      MasterTaskListID: AllListId?.MasterTaskListID,
+      siteUrl: AllListId?.siteUrl,
+      TaskUserListId: AllListId?.TaskUsertListID,
+    }
+    let componentDetails: any = [];
+    let results = await globalCommon.GetServiceAndComponentAllData(PropsObject)
+    if (results?.AllData?.length > 0) {
+      componentDetails = results?.AllData;
+      groupedComponentData = results?.GroupByData;
+      AllFlatProject = results?.FlatProjectData
+    }
+    MasterListData = componentDetails
+    if (AllFlatProject?.length > 0)
+      MasterListData = MasterListData.concat(AllFlatProject)
+
   }
 
 
@@ -874,36 +904,42 @@ const MeetingProfile = (props: any) => {
   return (
     <>
       <mycontextValue.Provider value={{ ...mycontextValue, AllListId: AllListId, Context: props?.props?.Context, currentUser: currentUser, taskUsers: taskUsers }}>
-        <div>
-          {console.log("resultData", resultData)}
-          <section className='row'>
-            <h2 className="heading d-flex ps-0 justify-content-between align-items-center">
-              <span>
-                {/* {resultData["SiteIcon"] != "" && <img className="imgWid29 pe-1 " title={resultData?.siteType} src={resultData["SiteIcon"]} />}
-                            {resultData["SiteIcon"] === "" && <img className="imgWid29 pe-1 " src="" />} */}
-                <span className='popover__wrapper ms-1' data-bs-toggle="tooltip" data-bs-placement="auto">
-                  <span >
-                    {resultData['MeetingId']} - {resultData['Title']}</span>
-                  {/* <span className="f-13 popover__content" >
-                                    {resultData['Title']}
-                                </span> */}
-                </span>
-                <a className="hreflink" title='Edit'
+       <section>  <ul className="spfxbreadcrumb mb-2  mt-16 p-0">
+                <li>
+                  <a href={`${props?.props?.siteUrl}/SitePages/Meeting-Overview.aspx`}>
+                    Meeting Overview
+                  </a>
+                </li>
+                  
+                <li>
+                  {" "}
+                  <a>{resultData?.Title}</a>{" "}
+                </li>
+              </ul>
+              </section>
+      
+         
+          <section>
+            <h2 className=" d-flex ps-0 justify-content-between align-items-center">
+                <span className='heading popover__wrapper' data-bs-toggle="tooltip" data-bs-placement="auto">
+                    {resultData['MeetingId']} - {resultData['Title']}
+                    <a className="hreflink ms-1" title='Edit'
                   onClick={() => setshowMeetingPopup(true)}
-                > <span className='svg__iconbox svg__icon--edit'></span></a>
-
-              </span>
-              {/* {resultData.Id!=null&& <span>< TagTaskToProjectPopup   projectItem={resultData}
-                                  className="ms-2"
-                                  meetingPages={true}
-                                  projectId={resultData.ID}
-                                  AllListId={AllListId}
-                                  callBack={tagAndCreateCallBack}
-                                  projectTitle={resultData.Title}/> </span>} */}
+                > <span className='alignIcon svg__iconbox svg__icon--edit'></span></a>
+                </span>
+                {resultData.Id != null && <span>< TagTaskToProjectPopup projectItem={resultData}
+                className="ms-2"
+                meetingPages={true}
+                projectId={resultData.ID}
+                AllListId={AllListId}
+                callBack={tagAndCreateCallBack}
+                projectTitle={resultData.Title} 
+                masterTaskData={MasterListData}/> </span>}
+                
             </h2>
           </section>
 
-        </div>
+      
 
         <div className='row'>
           <section className='col-9 ps-0'>
@@ -1474,6 +1510,7 @@ const MeetingProfile = (props: any) => {
 
 
         }
+        {pageLoaderActive ? <PageLoader /> : ''}
       </mycontextValue.Provider>
     </>
   )

@@ -1,19 +1,12 @@
 import * as React from 'react';
 import { Web } from "sp-pnp-js";
-/*
-import 'setimmediate'; 
-import { Editor } from "react-draft-wysiwyg";
-import { EditorState, convertToRaw,Modifier, ContentState, convertFromHTML } from 'draft-js';  
-import "react-draft-wysiwyg/dist/react-draft-wysiwyg.css";
-import draftToHtml from 'draftjs-to-html'; 
-*/
 import { MentionsInput, Mention } from 'react-mentions';
 import mentionClass from './mention.module.scss';
 import Tooltip from '../Tooltip';
 import "@pnp/sp/sputilities";
 import * as moment from "moment-timezone";
 import HtmlEditorCard from '../HtmlEditor/HtmlEditor';
-import { arraysEqual, Modal, Panel, PanelType } from 'office-ui-fabric-react';
+import { Panel, PanelType } from 'office-ui-fabric-react';
 import * as globalCommon from '../../globalComponents/globalCommon';
 import { getSP } from '../../spservices/pnpjsConfig';
 import { spfi, SPFx as spSPFx } from "@pnp/sp";
@@ -29,7 +22,10 @@ export interface ICommentCardProps {
   itemID?: number;
   Context?: any;
   AllListId?: any;
-
+  counter?: number;
+  onHoldCallBack?: any;
+  commentFor?: string;
+  postCommentCallBack?: any;
 }
 const sp = spfi();
 export interface ICommentCardState {
@@ -57,6 +53,8 @@ export interface ICommentCardState {
   postButtonHide: boolean;
   topCommenterShow: boolean;
   keyPressed: boolean;
+  onHoldCallBack: any;
+
 }
 export class CommentCard extends React.Component<ICommentCardProps, ICommentCardState> {
   private taskUsers: any = [];
@@ -75,6 +73,7 @@ export class CommentCard extends React.Component<ICommentCardProps, ICommentCard
       // itemID: (this.params1.get('taskId') != undefined ? Number(this.params1.get('taskId')) : props?.itemID),
       itemID: (props?.itemID != undefined ? props?.itemID : this.params1.get('taskId') != undefined ? Number(this.params1.get('taskId')) : null),
       listId: props.AllListId.listId,
+      onHoldCallBack: props.onHoldCallBack,
       CommenttoPost: '',
       updateComment: false,
       isCalloutVisible: false,
@@ -99,13 +98,10 @@ export class CommentCard extends React.Component<ICommentCardProps, ICommentCard
       editorValue: '',
       ChildLevel: false,
       ReplyParent: {},
-      editorChangeValue: ''
+      editorChangeValue: '',
     }
     this.GetResult();
     console.log(this.props.Context);
-    // sp.setup({
-    //   spfxContext: this.props.Context
-    // });
     const sp = spfi().using(spSPFx(this.context));
     this.handleKeyDown = this.handleKeyDown.bind(this);
     this.handleMouseClick = this.handleMouseClick.bind(this);
@@ -120,7 +116,7 @@ export class CommentCard extends React.Component<ICommentCardProps, ICommentCard
           .getByTitle(this.state.listName)
           .items
           .getById(this.state.itemID)
-          .select("ID", "Title", "DueDate", "PortfolioType/Id", "PortfolioType/Title", "ClientCategory/Id", "ClientCategory/Title", "Categories", "Status", "StartDate", "CompletedDate", "TeamMembers/Title", "TeamMembers/Id", "ItemRank", "PercentComplete", "Priority", "Created", "Author/Title", "Author/EMail", "BasicImageInfo", "component_x0020_link", "FeedBack", "ResponsibleTeam/Title", "ResponsibleTeam/Id", "SharewebTaskType/Title", "ClientTime", "Editor/Title", "Modified", "Comments")
+          .select("ID", "Title", "DueDate", "PortfolioType/Id", "PortfolioType/Title", "ClientCategory/Id", "ClientCategory/Title", "Categories", "Status", "StartDate", "CompletedDate", "TeamMembers/Title", "TeamMembers/Id", "ItemRank", "PercentComplete", "Priority", "Created", "Author/Title", "Author/EMail", "BasicImageInfo", "component_x0020_link", "FeedBack", "ResponsibleTeam/Title", "ResponsibleTeam/Id", "SharewebTaskType/Title", "Sitestagging", "ClientTime", "Editor/Title", "Modified", "Comments")
           .expand("TeamMembers", "Author", "ClientCategory", "ResponsibleTeam", "PortfolioType", "SharewebTaskType", "Editor")
           .get()
       } else {
@@ -128,13 +124,13 @@ export class CommentCard extends React.Component<ICommentCardProps, ICommentCard
           .getByTitle(this.state.listName)
           .items
           .getById(this.state.itemID)
-          .select("ID", "Title", "DueDate", "PortfolioType/Id", "PortfolioType/Title", "ClientCategory/Id", "ClientCategory/Title", "Categories", "Status", "StartDate", "CompletedDate", "TeamMembers/Title", "TeamMembers/Id", "ItemRank", "PercentComplete", "Priority", "Created", "Author/Title", "Author/EMail", "BasicImageInfo", "component_x0020_link", "FeedBack", "ResponsibleTeam/Title", "ResponsibleTeam/Id", "SharewebTaskType/Title", "ClientTime", "Portfolio/Id", "Portfolio/Title", "Portfolio/PortfolioStructureID", "Editor/Title", "Modified", "Comments")
+          .select("ID", "Title", "DueDate", "PortfolioType/Id", "PortfolioType/Title", "ClientCategory/Id", "ClientCategory/Title", "Categories", "Status", "StartDate", "CompletedDate", "TeamMembers/Title", "TeamMembers/Id", "ItemRank", "PercentComplete", "Priority", "Created", "Author/Title", "Author/EMail", "BasicImageInfo", "component_x0020_link", "FeedBack", "ResponsibleTeam/Title", "ResponsibleTeam/Id", "SharewebTaskType/Title", "Sitestagging", "ClientTime", "Portfolio/Id", "Portfolio/Title", "Portfolio/PortfolioStructureID", "Editor/Title", "Modified", "Comments")
           .expand("TeamMembers", "Author", "ClientCategory", "ResponsibleTeam", "PortfolioType", "SharewebTaskType", "Portfolio", "Editor")
           .get()
 
       }
     } else {
-      taskDetails = await web.lists.getById(this.state.listId).items.getById(this.state.itemID).select("ID", "Title", "DueDate", "PortfolioType/Id", "PortfolioType/Title", "ClientCategory/Id", "ClientCategory/Title", "Categories", "Status", "StartDate", "CompletedDate", "TeamMembers/Title", "TeamMembers/Id", "ItemRank", "PercentComplete", "Priority", "Created", "Author/Title", "Author/EMail", "BasicImageInfo", "component_x0020_link", "FeedBack", "ResponsibleTeam/Title", "ResponsibleTeam/Id", "SharewebTaskType/Title", "ClientTime", "Portfolio/Id", "Portfolio/Title", "Portfolio/PortfolioStructureID", "Editor/Title", "Modified", "Comments")
+      taskDetails = await web.lists.getById(this.state.listId).items.getById(this.state.itemID).select("ID", "Title", "DueDate", "PortfolioType/Id", "PortfolioType/Title", "ClientCategory/Id", "ClientCategory/Title", "Categories", "Status", "StartDate", "CompletedDate", "TeamMembers/Title", "TeamMembers/Id", "ItemRank", "PercentComplete", "Priority", "Created", "Author/Title", "Author/EMail", "BasicImageInfo", "component_x0020_link", "Sitestagging", "FeedBack", "ResponsibleTeam/Title", "ResponsibleTeam/Id", "SharewebTaskType/Title", "ClientTime", "Portfolio/Id", "Portfolio/Title", "Portfolio/PortfolioStructureID", "Editor/Title", "Modified", "Comments")
         .expand("TeamMembers", "Author", "ClientCategory", "ResponsibleTeam", "SharewebTaskType", "Portfolio", "PortfolioType", "Editor")
         .get()
     }
@@ -163,7 +159,6 @@ export class CommentCard extends React.Component<ICommentCardProps, ICommentCard
       Comments: JSON.parse(taskDetails["Comments"]),
       FeedBack: JSON.parse(taskDetails["FeedBack"]),
       SharewebTaskType: taskDetails["SharewebTaskType"] != null ? taskDetails["SharewebTaskType"].Title : '',
-
       PortfolioType: taskDetails["PortfolioType"],
       TaskUrl: `${this.props.siteUrl}/SitePages/Task-Profile.aspx?taskId=${this.state.itemID}&Site=${this.state.listName}`
     };
@@ -288,7 +283,8 @@ export class CommentCard extends React.Component<ICommentCardProps, ICommentCard
         Header: this.GetMentionValues(this.state.mentionValue),
         ID: this.state.Result["Comments"] != undefined ? this.state.Result["Comments"].length + 1 : 1,
         Title: txtComment,
-        editable: false
+        editable: false,
+        CommentFor: this.props.commentFor == "On-Hold" ? "On-Hold" : ''
       };
       if (this.state?.ChildLevel == true) {
         this.state?.Result?.Comments?.forEach((element: any) => {
@@ -341,6 +337,7 @@ export class CommentCard extends React.Component<ICommentCardProps, ICommentCard
         .getById(this.state.itemID).update({
           Comments: JSON.stringify(this.state.Result["Comments"])
         });
+
       if (isPushOnRoot != false)
         this.setState({ updateComment: true }, () => this.GetEmailObjects(txtComment, this.state.mentionValue));
       else
@@ -373,7 +370,8 @@ export class CommentCard extends React.Component<ICommentCardProps, ICommentCard
         Header: updateCommentPost.Header,
         ID: updateCommentPost.ID,
         Title: txtComment,
-        editable: false
+        editable: false,
+        CommentFor: updateCommentPost?.CommentFor
       };
       //Add object in feedback
       //delete the value before add new value
@@ -651,11 +649,11 @@ export class CommentCard extends React.Component<ICommentCardProps, ICommentCard
           if (this.state?.ChildLevel == true) {
             if (this.state?.ReplyParent?.MsTeamCreated == undefined)
               this.state.ReplyParent.MsTeamCreated = ''
-            TeamMsg = `<blockquote>${this.state?.ReplyParent?.AuthorName} ${this.state?.ReplyParent?.MsTeamCreated} </br> ${this.state?.ReplyParent?.Description.replace(/<\/?[^>]+(>|$)/g, '')} </br> <a href=${window.location.href}>${this.state?.Result?.TaskId}-${this.state?.Result?.Title}</a></blockquote>${txtComment}`;
+            TeamMsg = `<blockquote>${this.state?.ReplyParent?.AuthorName} ${this.state?.ReplyParent?.MsTeamCreated} </br> ${this.state?.ReplyParent?.Description.replace(/<\/?[^>]+(>|$)/g, '')} </br> <a href=${`${this.props.siteUrl}/SitePages/Task-Profile.aspx?taskId=${this.state.itemID}&Site=${this.state.listName}`}>${this.state?.Result?.TaskId}-${this.state?.Result?.Title}</a></blockquote>${txtComment}`;
 
           }
           else {
-            TeamMsg = txtComment + `</br> <a href=${window.location.href}>${this.state?.Result?.TaskId}-${this.state?.Result?.Title}</a>`
+            TeamMsg = txtComment + `</br> <a href=${`${this.props.siteUrl}/SitePages/Task-Profile.aspx?taskId=${this.state.itemID}&Site=${this.state.listName}`}>${this.state?.Result?.TaskId}-${this.state?.Result?.Title}</a>`
           }
           await globalCommon.SendTeamMessage(mention_To, TeamMsg, this.props.Context)
           this.SendEmail(emailprops);
@@ -664,8 +662,13 @@ export class CommentCard extends React.Component<ICommentCardProps, ICommentCard
             ReplyParent: {}
           });
 
+
         }
+
       }
+    }
+    if (this.props.commentFor == "On-Hold") {
+      this.state.onHoldCallBack("Save");
     }
   }
   private BindHtmlBody() {
@@ -995,9 +998,7 @@ export class CommentCard extends React.Component<ICommentCardProps, ICommentCard
           </div>
         </div>
 
-
         <Panel isOpen={this.state.isModalOpen} isBlocking={false}
-
           type={PanelType.custom}
           customWidth="500px"
           onRenderHeader={this.customHeaderforEditCommentpopup}
@@ -1007,17 +1008,11 @@ export class CommentCard extends React.Component<ICommentCardProps, ICommentCard
               <HtmlEditorCard editorValue={this.state.editorValue} HtmlEditorStateChange={this.HtmlEditorStateChange}></HtmlEditorCard>
             </div>
             <footer className='text-end'>
-              <button type="button" className="btn btn-primary ms-2 mt-2" onClick={(e) => this.updateComment()} >Save</button>
+              <button type="button" className="btn btn-primary mx-2 mt-2" onClick={(e) => this.updateComment()} >Save</button>
               <button type="button" className="btn btn-default mt-2 " onClick={(e) => this.CloseModal(e)}>Cancel</button>
-
             </footer>
           </div>
-
-
         </Panel>
-
-
-
         <Panel
 
           onRenderHeader={this.customHeaderforALLcomments}
@@ -1034,7 +1029,7 @@ export class CommentCard extends React.Component<ICommentCardProps, ICommentCard
                 <div className="col-sm-12">
                   <div className="row d-flex mb-2">
                     <div>
-                      <textarea id="txtCommentModal" onChange={(e) => this.handleInputChange(e)} className="form-control ng-pristine ng-untouched ng-empty ng-invalid ng-invalid-required ui-autocomplete-input" rows={2} ng-required="true" placeholder="Enter your comments here" ng-model="Feedback.comment"></textarea>
+                      <textarea id="txtCommentModal" onChange={(e) => this.handleInputChange(e)} className="form-control p-1 ng-pristine ng-untouched ng-empty ng-invalid ng-invalid-required ui-autocomplete-input" rows={2} ng-required="true" placeholder="Enter your comments here" ng-model="Feedback.comment"></textarea>
                       <span role="status" aria-live="polite" className="ui-helper-hidden-accessible"></span>
                     </div>
                     <div className='text-end mt-1'> <span className='btn btn-primary hreflink' onClick={() => this.PostComment('txtCommentModal')} >Post</span></div>
@@ -1336,8 +1331,6 @@ export class CommentCard extends React.Component<ICommentCardProps, ICommentCard
 
           </div>
         }
-
-
       </div >
     );
   }

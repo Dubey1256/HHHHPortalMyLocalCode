@@ -1,7 +1,6 @@
 {
-  "extends": "./node_modules/@microsoft/rush-stack-compiler-4.5/includes/tsconfig-web.json",
   "compilerOptions": {
-    "allowSyntheticDefaultImports" : true,
+    "allowSyntheticDefaultImports": true,
     "target": "es5",
     "forceConsistentCasingInFileNames": true,
     "module": "esnext",
@@ -16,7 +15,6 @@
     "strictNullChecks": false,
     "noUnusedLocals": false,
     "noImplicitAny": true,
-
     "typeRoots": [
       "./node_modules/@types",
       "./node_modules/@microsoft"

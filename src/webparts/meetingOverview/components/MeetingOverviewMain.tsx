@@ -142,7 +142,7 @@ const MeetingOverviewMain = (props: any) => {
             let Alltask: any = [];
             // var AllUsers: any = []
             Alltask = await web.lists.getById(AllListId?.MasterTaskListID).items
-                .select("Deliverables,TechnicalExplanations,PortfolioLevel,PortfolioStructureID,ValueAdded,Categories,Idea,Short_x0020_Description_x0020_On,Background,Help_x0020_Information,Short_x0020_Description_x0020__x,ComponentCategory/Id,ComponentCategory/Title,Comments,HelpDescription,FeedBack,Body,Services/Title,Services/Id,Events/Id,Events/Title,SiteCompositionSettings,ShortDescriptionVerified,Portfolio_x0020_Type,BackgroundVerified,descriptionVerified,Synonyms,BasicImageInfo,OffshoreComments,OffshoreImageUrl,HelpInformationVerified,IdeaVerified,TechnicalExplanationsVerified,Deliverables,DeliverablesVerified,ValueAddedVerified,CompletedDate,Idea,ValueAdded,TechnicalExplanations,Item_x0020_Type,Sitestagging,Package,Parent/Id,Parent/Title,Short_x0020_Description_x0020_On,Short_x0020_Description_x0020__x,Short_x0020_description_x0020__x0,Admin_x0020_Notes,AdminStatus,Background,Help_x0020_Information,SharewebCategories/Id,SharewebCategories/Title,Priority_x0020_Rank,Reference_x0020_Item_x0020_Json,TeamMembers/Id,TeamMembers/Title,ResponsibleTeam/Id,ResponsibleTeam/Title,Component/Id,Component/Title,Component/ItemType,Item_x002d_Image,component_x0020_link,IsTodaysTask,AssignedTo/Title,AssignedTo/Name,AssignedTo/Id,AttachmentFiles/FileName,FileLeafRef,FeedBack,Title,Id,PercentComplete,Company,StartDate,DueDate,Comments,Categories,Status,WebpartId,Body,Mileage,PercentComplete,Attachments,Priority,Created,Modified,Author/Id,Author/Title,Editor/Id,Editor/Title")
+                .select("Deliverables,TechnicalExplanations,PortfolioLevel,PortfolioStructureID,ValueAdded,Categories,Idea,Short_x0020_Description_x0020_On,Background,Help_x0020_Information,Short_x0020_Description_x0020__x,ComponentCategory/Id,ComponentCategory/Title,Comments,HelpDescription,FeedBack,Body,Services/Title,Services/Id,Events/Id,Events/Title,SiteCompositionSettings,ShortDescriptionVerified,Portfolio_x0020_Type,BackgroundVerified,descriptionVerified,Synonyms,BasicImageInfo,OffshoreComments,OffshoreImageUrl,HelpInformationVerified,IdeaVerified,TechnicalExplanationsVerified,Deliverables,DeliverablesVerified,ValueAddedVerified,CompletedDate,Idea,ValueAdded,TechnicalExplanations,Item_x0020_Type,Sitestagging,Package,Parent/Id,Parent/Title,Short_x0020_Description_x0020_On,Short_x0020_Description_x0020__x,Short_x0020_description_x0020__x0,Admin_x0020_Notes,AdminStatus,Background,Help_x0020_Information,SharewebCategories/Id,SharewebCategories/Title,PriorityRank,Reference_x0020_Item_x0020_Json,TeamMembers/Id,TeamMembers/Title,ResponsibleTeam/Id,ResponsibleTeam/Title,Component/Id,Component/Title,Component/ItemType,Item_x002d_Image,component_x0020_link,IsTodaysTask,AssignedTo/Title,AssignedTo/Name,AssignedTo/Id,AttachmentFiles/FileName,FileLeafRef,FeedBack,Title,Id,PercentComplete,Company,StartDate,DueDate,Comments,Categories,Status,WebpartId,Body,Mileage,PercentComplete,Attachments,Priority,Created,Modified,Author/Id,Author/Title,Editor/Id,Editor/Title")
                 .expand("ComponentCategory,AssignedTo,Component,Events,Services,AttachmentFiles,Author,Editor,TeamMembers,SharewebCategories,Parent,ResponsibleTeam")
                 .top(4999).filter("Item_x0020_Type eq 'Meeting'")
                 .getAll();
@@ -235,14 +235,14 @@ const MeetingOverviewMain = (props: any) => {
                 header: "",
             },
             {
-                accessorFn: (row) => row?.Priority_x0020_Rank,
+                accessorFn: (row) => row?.PriorityRank,
                 cell: ({ row }) => (
                     <span>
                         <InlineEditingcolumns AllListId={AllListId} callBack={CallBack} columnName='Priority' TaskUsers={AllTaskUser} item={row?.original} pageName={'ProjectManagment'} />
 
                     </span>
                 ),
-                id: "Priority_x0020_Rank",
+                id: "PriorityRank",
                 placeholder: "Priority",
                 resetColumnFilters: false,
                 size: 100,
@@ -352,7 +352,7 @@ const MeetingOverviewMain = (props: any) => {
                         smartmeta = await web.lists
                             .getById(config?.listId)
                             .items
-                            .select("Id,Title,Priority_x0020_Rank,ParentTask/Id,EstimatedTime,TaskID,TaskLevel,EstimatedTimeDescription,ComponentLink,workingThisWeek,EstimatedTime,SharewebTaskLevel1No,SharewebTaskLevel2No,OffshoreImageUrl,OffshoreComments,ClientTime,Priority,Status,ItemRank,IsTodaysTask,Body,Component/Id,Component/Title,Services/Id,Services/Title,PercentComplete,Events/Id,ComponentId,Categories,ServicesId,EventsId,PriorityRank,Priority_x0020_Rank,DueDate,SharewebTaskType/Id,SharewebTaskType/Title,TaskType/Id,TaskType/Title,Created,Modified,SharewebCategories/Id,SharewebCategories/Title,AssignedTo/Id,AssignedTo/Title,Portfolio/Id,Portfolio/Title,Team_x0020_Members/Id,Team_x0020_Members/Title,Responsible_x0020_Team/Id,Responsible_x0020_Team/Title,component_x0020_link,TaskCategories/Title,TaskCategories/Id")
+                            .select("Id,Title,PriorityRank,ParentTask/Id,EstimatedTime,TaskID,TaskLevel,EstimatedTimeDescription,ComponentLink,workingThisWeek,EstimatedTime,SharewebTaskLevel1No,SharewebTaskLevel2No,OffshoreImageUrl,OffshoreComments,ClientTime,Sitestagging,Priority,Status,ItemRank,IsTodaysTask,Body,Component/Id,Component/Title,Services/Id,Services/Title,PercentComplete,Events/Id,ComponentId,Categories,ServicesId,EventsId,PriorityRank,PriorityRank,DueDate,SharewebTaskType/Id,SharewebTaskType/Title,TaskType/Id,TaskType/Title,Created,Modified,SharewebCategories/Id,SharewebCategories/Title,AssignedTo/Id,AssignedTo/Title,Portfolio/Id,Portfolio/Title,Team_x0020_Members/Id,Team_x0020_Members/Title,Responsible_x0020_Team/Id,Responsible_x0020_Team/Title,component_x0020_link,TaskCategories/Title,TaskCategories/Id")
                             .expand('AssignedTo,Team_x0020_Members,Portfolio,ParentTask,Component,Services,Events,SharewebTaskType,TaskType,Responsible_x0020_Team,SharewebCategories,TaskCategories')
                             .top(4999)
                             .get();
@@ -407,8 +407,8 @@ const MeetingOverviewMain = (props: any) => {
 
                             }
 
-                            if (items?.Priority_x0020_Rank != undefined) {
-                                items.PriorityRank = items?.Priority_x0020_Rank
+                            if (items?.PriorityRank != undefined) {
+                                items.PriorityRank = items?.PriorityRank
                             }
                             AllTask.push(items);
 
@@ -659,7 +659,7 @@ const MeetingOverviewMain = (props: any) => {
                         
                     </div>
                     {pageLoaderActive ? <PageLoader /> : ''}
-                    {showMeetingPopup ? <MeetingPopupComponent Items={OverviewMeeting} AllListIdData={props.props} isShow={showMeetingPopup} closePopup={closeMeetingPopupFunction} /> : null}
+                    {showMeetingPopup ? <MeetingPopupComponent Items={OverviewMeeting} AllListIdData={props.props} isShow={showMeetingPopup} closePopup={closeMeetingPopupFunction} CallBack={CallBack}/> : null}
                 </div>
             </mycontextValue.Provider>
         </>

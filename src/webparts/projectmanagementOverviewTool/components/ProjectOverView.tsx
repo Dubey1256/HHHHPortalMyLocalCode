@@ -47,8 +47,7 @@ export default function ProjectOverview(props: any) {
     const [checkData, setcheckData] = React.useState([])
     const [showTeamMemberOnCheck, setShowTeamMemberOnCheck] = React.useState(false)
     const [isOpenEditPopup, setisOpenEditPopup] = React.useState(false);
-    const [listIsVisible, setListIsVisible] = React.useState(false);
-    const [GroupedDisplayTable, setDisplayGroupedTable] = React.useState(false);
+    const [isAddStructureOpen, setIsAddStructureOpen] = React.useState(false);
     const [IsComponent, setIsComponent] = React.useState(false);
     const [AllTaskUser, setAllTaskUser] = React.useState([]);
     const [SharewebComponent, setSharewebComponent] = React.useState('');
@@ -56,11 +55,14 @@ export default function ProjectOverview(props: any) {
     const [data, setData] = React.useState([]);
     const [flatData, setFlatData] = React.useState([]);
     const [AllTasks, setAllTasks]: any = React.useState([]);
+    const [topCompoIcon, setTopCompoIcon]: any = React.useState(false);
     const [passdata, setpassdata] = React.useState("");
     const [selectedView, setSelectedView] = React.useState("Projects");
     const [AllSiteTasks, setAllSiteTasks]: any = React.useState([]);
     const [pageLoaderActive, setPageLoader] = React.useState(false)
     const [taskTimeDetails, setTaskTimeDetails] = React.useState([]);
+    const childRef = React.useRef<any>();
+
     React.useEffect(() => {
         try {
             $("#spPageCanvasContent").removeClass();
@@ -265,15 +267,44 @@ export default function ProjectOverview(props: any) {
             siteConfig = [];
         }
     };
+    const findUserByName = (name: any) => {
+        const user = AllTaskUsers.filter(
+            (user: any) => user?.AssingedToUser?.Id === name
+        );
+        let Image: any;
+        if (user[0]?.Item_x0020_Cover != undefined) {
+            Image = user[0].Item_x0020_Cover.Url;
+        } else {
+            Image =
+                "https://hhhhteams.sharepoint.com/sites/HHHH/PublishingImages/Portraits/icon_user.jpg";
+        }
+        return user ? Image : null;
+    };
+
+
+
+    const callChildFunction = (items: any) => {
+        if (childRef.current) {
+            childRef.current.callChildFunction(items);
+        }
+    };
+
+
+    const projectTopIcon = (items: any) => {
+        if (childRef.current) {
+            childRef.current.projectTopIcon(items);
+        }
+    };
+
     const columns = React.useMemo<ColumnDef<any, unknown>[]>(
         () => [
             {
                 accessorKey: "",
                 placeholder: "",
-                hasCheckbox: true,
-                hasCustomExpanded: true,
-                hasExpanded: true,
-                size: 55,
+                hasCheckbox: false,
+                hasCustomExpanded: false,
+                hasExpanded: false,
+                size: 1,
                 id: 'Id',
             },
             {
@@ -438,6 +469,65 @@ export default function ProjectOverview(props: any) {
                 size: 60,
             },
             {
+                accessorFn: (row) => row?.TaskCategories,
+                cell: ({ row }) => (
+                    <span>
+                        {row?.original?.TaskCategories && row?.original?.TaskCategories.length > 0
+                            ? row?.original?.TaskCategories.map((category: any, index: any) => (
+                                <div key={index}>{category.Title}</div>
+                            ))
+                            : ''}
+                    </span>
+                ),
+                id: 'TaskCategories',
+                placeholder: "Task Categories",
+                resetColumnFilters: false,
+                resetSorting: false,
+                header: "",
+                size: 100
+            },
+            {
+                accessorFn: (row) => row?.Created,
+                cell: ({ row }) => (
+                    <span>
+                        {row?.original?.Created == null ? (
+                            ""
+                        ) : (
+                            <>
+                                <span className='ms-1'>{row?.original?.DisplayCreateDate} </span>
+
+                                {row?.original?.Author != undefined ? (
+                                    <>
+                                        <a
+                                            href={`${AllListId?.siteUrl}/SitePages/TaskDashboard.aspx?UserId=${row?.original?.Author?.Id}&Name=${row?.original?.Author?.Title}`}
+                                            target="_blank"
+                                            data-interception="off"
+                                        >
+                                            <img title={row?.original?.Author?.Title} className="workmember ms-1" src={findUserByName(row?.original?.Author?.Id)} />
+                                        </a>
+                                    </>
+                                ) : (
+                                    <span className='svg__iconbox svg__icon--defaultUser grey' title={row?.original?.Author?.Title}></span>
+                                )}
+                            </>
+                        )}
+                    </span>
+                ),
+                id: 'Created',
+                resetColumnFilters: false,
+                resetSorting: false,
+                placeholder: "Created",
+                filterFn: (row: any, columnName: any, filterValue: any) => {
+                    if (row?.original?.Author?.Title?.toLowerCase()?.includes(filterValue?.toLowerCase()) || row?.original?.DisplayCreateDate?.includes(filterValue)) {
+                        return true
+                    } else {
+                        return false
+                    }
+                },
+                header: "",
+                size: 125
+            },
+            {
                 accessorKey: "descriptionsSearch",
                 placeholder: "descriptionsSearch",
                 header: "",
@@ -453,6 +543,7 @@ export default function ProjectOverview(props: any) {
                 size: 100,
                 id: "commentsSearch",
             },
+          
             {
 
                 cell: ({ row }) => (
@@ -498,7 +589,7 @@ export default function ProjectOverview(props: any) {
                 cell: ({ row, getValue }) => (
                     <div>
                         <>
-                            <ReactPopperTooltipSingleLevel ShareWebId={row?.original?.TaskID} row={row?.original} singleLevel={true} masterTaskData={MyAllData} AllSitesTaskData={AllSitesAllTasks} />
+                            <ReactPopperTooltipSingleLevel ShareWebId={row?.original?.TaskID}  AllListId={AllListId} row={row?.original} singleLevel={true} masterTaskData={MyAllData} AllSitesTaskData={AllSitesAllTasks} />
 
                         </>
                     </div>
@@ -696,6 +787,65 @@ export default function ProjectOverview(props: any) {
                 size: 60,
             },
             {
+                accessorFn: (row) => row?.TaskCategories,
+                cell: ({ row }) => (
+                    <span>
+                        {row?.original?.TaskCategories && row?.original?.TaskCategories.length > 0
+                            ? row?.original?.TaskCategories.map((category: any, index: any) => (
+                                <div key={index}>{category.Title}</div>
+                            ))
+                            : ''}
+                    </span>
+                ),
+                id: 'TaskCategories',
+                placeholder: "Task Categories",
+                resetColumnFilters: false,
+                resetSorting: false,
+                header: "",
+                size: 100
+            },
+            {
+                accessorFn: (row) => row?.Created,
+                cell: ({ row }) => (
+                    <span>
+                        {row?.original?.Created == null ? (
+                            ""
+                        ) : (
+                            <>
+                                <span className='ms-1'>{row?.original?.DisplayCreateDate} </span>
+
+                                {row?.original?.Author != undefined ? (
+                                    <>
+                                        <a
+                                            href={`${AllListId?.siteUrl}/SitePages/TaskDashboard.aspx?UserId=${row?.original?.Author?.Id}&Name=${row?.original?.Author?.Title}`}
+                                            target="_blank"
+                                            data-interception="off"
+                                        >
+                                            <img title={row?.original?.Author?.Title} className="workmember ms-1" src={findUserByName(row?.original?.Author?.Id)} />
+                                        </a>
+                                    </>
+                                ) : (
+                                    <span className='svg__iconbox svg__icon--defaultUser grey' title={row?.original?.Author?.Title}></span>
+                                )}
+                            </>
+                        )}
+                    </span>
+                ),
+                id: 'Created',
+                resetColumnFilters: false,
+                resetSorting: false,
+                placeholder: "Created",
+                filterFn: (row: any, columnName: any, filterValue: any) => {
+                    if (row?.original?.Author?.Title?.toLowerCase()?.includes(filterValue?.toLowerCase()) || row?.original?.DisplayCreateDate?.includes(filterValue)) {
+                        return true
+                    } else {
+                        return false
+                    }
+                },
+                header: "",
+                size: 125
+            },
+            {
 
                 cell: ({ row }) => (
                     <>
@@ -878,7 +1028,91 @@ export default function ProjectOverview(props: any) {
                 header: "",
                 size: 100,
             },
+            {
+                accessorFn: (row) => row?.TaskCategories,
+                cell: ({ row }) => (
+                    <span>
+                        {row?.original?.TaskCategories && row?.original?.TaskCategories.length > 0
+                            ? row?.original?.TaskCategories.map((category: any, index: any) => (
+                                <div key={index}>{category.Title}</div>
+                            ))
+                            : ''}
+                    </span>
+                ),
+                id: 'TaskCategories',
+                placeholder: "Task Categories",
+                resetColumnFilters: false,
+                resetSorting: false,
+                header: "",
+                size: 100
+            },
+            {
+                accessorFn: (row) => row?.Created,
+                cell: ({ row }) => (
+                    <span>
+                        {row?.original?.Created == null ? (
+                            ""
+                        ) : (
+                            <>
+                                <span className='ms-1'>{row?.original?.DisplayCreateDate} </span>
 
+                                {row?.original?.Author != undefined ? (
+                                    <>
+                                        <a
+                                            href={`${AllListId?.siteUrl}/SitePages/TaskDashboard.aspx?UserId=${row?.original?.Author?.Id}&Name=${row?.original?.Author?.Title}`}
+                                            target="_blank"
+                                            data-interception="off"
+                                        >
+                                            <img title={row?.original?.Author?.Title} className="workmember ms-1" src={findUserByName(row?.original?.Author?.Id)} />
+                                        </a>
+                                    </>
+                                ) : (
+                                    <span className='svg__iconbox svg__icon--defaultUser grey' title={row?.original?.Author?.Title}></span>
+                                )}
+                            </>
+                        )}
+                    </span>
+                ),
+                id: 'Created',
+                resetColumnFilters: false,
+                resetSorting: false,
+                placeholder: "Created",
+                filterFn: (row: any, columnName: any, filterValue: any) => {
+                    if (row?.original?.Author?.Title?.toLowerCase()?.includes(filterValue?.toLowerCase()) || row?.original?.DisplayCreateDate?.includes(filterValue)) {
+                        return true
+                    } else {
+                        return false
+                    }
+                },
+                header: "",
+                size: 125
+            },
+            {
+                header: ({ table }: any) => (
+                    <>{
+                        topCompoIcon ?
+                            <span style={{ backgroundColor: `${''}` }} title="Restructure" className="Dyicons mb-1 mx-1 p-1" onClick={() => projectTopIcon(true)}>
+                                <span className="svg__iconbox svg__icon--re-structure"></span>
+                            </span>
+                            : ''
+                    }
+                    </>
+                ),
+                cell: ({ row, getValue }) => (
+                    <>
+                        {row?.original?.isRestructureActive && row?.original?.Title != "Others" && (
+                            <span className="Dyicons p-1" title="Restructure" style={{ backgroundColor: `${row?.original?.PortfolioType?.Color}` }} onClick={() => callChildFunction(row?.original)}>
+                                <span className="svg__iconbox svg__icon--re-structure"> </span>
+                            </span>
+                        )}
+                        {getValue()}
+                    </>
+                ),
+                id: "row?.original.Id",
+                canSort: false,
+                placeholder: "",
+                size: 1,
+            },
             {
 
                 cell: ({ row }) => (
@@ -917,7 +1151,7 @@ export default function ProjectOverview(props: any) {
                 cell: ({ row }) => (
                     <div>
                         <>
-                            <ReactPopperTooltipSingleLevel ShareWebId={row?.original?.TaskID} row={row?.original} singleLevel={true} masterTaskData={MyAllData} AllSitesTaskData={AllSitesAllTasks} />
+                            <ReactPopperTooltipSingleLevel  AllListId={AllListId} ShareWebId={row?.original?.TaskID} row={row?.original} singleLevel={true} masterTaskData={MyAllData} AllSitesTaskData={AllSitesAllTasks} />
                         </>
                     </div>
                 ),
@@ -1109,6 +1343,65 @@ export default function ProjectOverview(props: any) {
                 resetSorting: false,
                 header: "",
                 size: 60,
+            },
+            {
+                accessorFn: (row) => row?.TaskCategories,
+                cell: ({ row }) => (
+                    <span>
+                        {row?.original?.TaskCategories && row?.original?.TaskCategories.length > 0
+                            ? row?.original?.TaskCategories.map((category: any, index: any) => (
+                                <div key={index}>{category.Title}</div>
+                            ))
+                            : ''}
+                    </span>
+                ),
+                id: 'TaskCategories',
+                placeholder: "Task Categories",
+                resetColumnFilters: false,
+                resetSorting: false,
+                header: "",
+                size: 100
+            },
+            {
+                accessorFn: (row) => row?.Created,
+                cell: ({ row }) => (
+                    <span>
+                        {row?.original?.Created == null ? (
+                            ""
+                        ) : (
+                            <>
+                                <span className='ms-1'>{row?.original?.DisplayCreateDate} </span>
+
+                                {row?.original?.Author != undefined ? (
+                                    <>
+                                        <a
+                                            href={`${AllListId?.siteUrl}/SitePages/TaskDashboard.aspx?UserId=${row?.original?.Author?.Id}&Name=${row?.original?.Author?.Title}`}
+                                            target="_blank"
+                                            data-interception="off"
+                                        >
+                                            <img title={row?.original?.Author?.Title} className="workmember ms-1" src={findUserByName(row?.original?.Author?.Id)} />
+                                        </a>
+                                    </>
+                                ) : (
+                                    <span className='svg__iconbox svg__icon--defaultUser grey' title={row?.original?.Author?.Title}></span>
+                                )}
+                            </>
+                        )}
+                    </span>
+                ),
+                id: 'Created',
+                resetColumnFilters: false,
+                resetSorting: false,
+                placeholder: "Created",
+                filterFn: (row: any, columnName: any, filterValue: any) => {
+                    if (row?.original?.Author?.Title?.toLowerCase()?.includes(filterValue?.toLowerCase()) || row?.original?.DisplayCreateDate?.includes(filterValue)) {
+                        return true
+                    } else {
+                        return false
+                    }
+                },
+                header: "",
+                size: 125
             },
             {
                 cell: ({ row }) => (
@@ -1413,6 +1706,7 @@ export default function ProjectOverview(props: any) {
                 items.commentsSearch = items?.Comments != null && items?.Comments != undefined ? items.Comments.replace(/(<([^>]+)>)/gi, "").replace(/\n/g, '') : '';
                 items['TaskID'] = items?.PortfolioStructureID
                 items.DisplayDueDate = items.DueDate != null ? Moment(items.DueDate).format('DD/MM/YYYY') : ""
+                items.DisplayCreateDate = items.Created != null ? Moment(items.Created).format("DD/MM/YYYY") : "";
             })
             let AllProject = Alltask?.filter((item: any) => item?.Item_x0020_Type == "Project")
 
@@ -1488,10 +1782,20 @@ export default function ProjectOverview(props: any) {
 
     }, []);
 
+    const restructureCallback = React.useCallback((getData: any, topCompoIcon: any,callback:any) => {
+        setTopCompoIcon(topCompoIcon);
+       setData(getData);
+       if(callback == true){
+        GetMasterData();
+       }
 
+    }, []);
 
-    const CallBack = React.useCallback(() => {
-        GetMasterData()
+    const CallBack = React.useCallback((item:any, type:any) => {
+        setIsAddStructureOpen(false)
+        if(type=='Save'){
+            GetMasterData()
+        }
     }, [])
 
 
@@ -1682,6 +1986,9 @@ export default function ProjectOverview(props: any) {
             console.log(peopleOnLeave);
         }
     }
+    const OpenAddStructureModal = () => {
+        setIsAddStructureOpen(true);
+      }
     //End
 
 
@@ -1715,7 +2022,7 @@ export default function ProjectOverview(props: any) {
 
                                     </dl>
                                     <div className="m-0 text-end">
-                                        <AddProject CallBack={CallBack} items={CheckBoxData} AllListId={AllListId} />
+                                     
                                         {currentUserData?.Title == "Deepak Trivedi" || currentUserData?.Title == "Ranu Trivedi" || currentUserData?.Title == "Abhishek Tiwari" || currentUserData?.Title == "Prashant Kumar" ?
                                             <>
                                                 <a className="hreflink  ms-1" onClick={() => { sendAllWorkingTodayTasks() }}>Share Working Todays's Task</a></>
@@ -1724,10 +2031,11 @@ export default function ProjectOverview(props: any) {
                                 </div>
                                 <div className="TableSection"><div className="Alltable">
                                     <div className='wrapper'>
-                                        {selectedView == 'grouped' ? <GlobalCommanTable expandIcon={true} headerOptions={headerOptions} AllListId={AllListId} columns={columns} multiSelect={true} data={data} paginatedTable={false} callBackData={callBackData} pageName={"ProjectOverviewGrouped"} TaskUsers={AllTaskUser} showHeader={true} /> : ''}
-                                        {selectedView == 'flat' ? <GlobalCommanTable expandIcon={true} headerOptions={headerOptions} AllListId={AllListId} columns={flatView} paginatedTable={true} data={AllSiteTasks} callBackData={callBackData} pageName={"ProjectOverview"} TaskUsers={AllTaskUser} showHeader={true} /> : ''}
-                                        {selectedView == 'teamWise' ? <GlobalCommanTable expandIcon={true} headerOptions={headerOptions} AllListId={AllListId} columns={groupedUsers} paginatedTable={true} data={categoryGroup} callBackData={callBackData} pageName={"ProjectOverviewGrouped"} TaskUsers={AllTaskUser} showHeader={true} /> : ''}
-                                        {selectedView == 'Projects' ? <GlobalCommanTable expandIcon={true} AllListId={AllListId} headerOptions={headerOptions} paginatedTable={false} multiSelect={true} columns={column2} data={flatData} callBackData={callBackData} pageName={"ProjectOverview"} TaskUsers={AllTaskUser} showHeader={true} /> : ''}
+                                        {selectedView == 'grouped' ? <GlobalCommanTable expandIcon={true}   headerOptions={headerOptions} AllListId={AllListId} columns={columns} multiSelect={true} data={data} paginatedTable={false} callBackData={callBackData} pageName={"ProjectOverviewGrouped"} TaskUsers={AllTaskUser} showHeader={true} /> : ''}
+                                        {selectedView == 'flat' ? <GlobalCommanTable expandIcon={true}   headerOptions={headerOptions} AllListId={AllListId} columns={flatView} paginatedTable={true} data={AllSiteTasks} callBackData={callBackData} pageName={"ProjectOverview"} TaskUsers={AllTaskUser} showHeader={true} /> : ''}
+                                        {selectedView == 'teamWise' ? <GlobalCommanTable expandIcon={true}   headerOptions={headerOptions} AllListId={AllListId} columns={groupedUsers} paginatedTable={true} data={categoryGroup} callBackData={callBackData} pageName={"ProjectOverviewGrouped"} TaskUsers={AllTaskUser} showHeader={true} /> : ''}
+                                        {selectedView == 'Projects' ? <GlobalCommanTable expandIcon={true} hideAddActivityBtn={true} ref={childRef} callChildFunction={callChildFunction} restructurebtn={true} restructureCallBack={restructureCallback}  AllListId={AllListId} headerOptions={headerOptions} paginatedTable={false}  showCreationAllButton={true}
+                                  OpenAddStructureModal={OpenAddStructureModal} AllSitesTaskData={AllSitesAllTasks} masterTaskData={MyAllData}  multiSelect={true} columns={column2} data={flatData} callBackData={callBackData} pageName={"ProjectOverview"} pageProjectOverview={true} TaskUsers={AllTaskUser} showHeader={true} /> : ''}
                                     </div>
                                 </div>
                                 </div>
@@ -1744,7 +2052,7 @@ export default function ProjectOverview(props: any) {
                 {IsComponent && <EditProjectPopup props={SharewebComponent} AllListId={AllListId} Call={Call} showProgressBar={showProgressBar}> </EditProjectPopup>}
                 {ShowTeamPopup === true ? <ShowTeamMembers props={checkData} callBack={showTaskTeamCAllBack} TaskUsers={AllTaskUser} /> : ''}
                 {openTimeEntryPopup && <TimeEntryPopup props={taskTimeDetails} CallBackTimeEntry={TimeEntryCallBack} Context={props?.props?.Context} />}
-
+                {isAddStructureOpen && <AddProject CallBack={CallBack} items={CheckBoxData} PageName={"ProjectOverview"} AllListId={AllListId} data={data}/>}
             </div>
             {pageLoaderActive ? <PageLoader /> : ''}
         </>

@@ -1,0 +1,149 @@
+.orange-star {
+    color: orange;
+    margin-right: 5px; 
+  }
+.inline-fieldbtn {
+    align-items: center;
+    display: flex;
+    gap:10px;
+}
+
+ul.status-lists>li {
+    display: flex;
+    width: 47.9%;
+    background: #f2f2f2;
+    padding: 6px 15px;
+    border-radius: 12rem;
+    cursor: pointer;
+    margin-bottom: 0;
+}
+
+ul.status-lists {
+    display: flex;
+    flex-wrap: wrap;
+    grid-column-gap: 20px;
+    margin: 10px 0px 0 0;
+    grid-row-gap: 10px;
+    padding: 0
+    ;
+}
+
+ul.status-lists>li:hover {
+    background: var(--SiteBlue);
+    color: #fff;
+}
+
+ul.status-lists>li:hover span.svg__iconbox.svg__icon--trash {
+    background-color: #fff;
+}
+.rating {
+    list-style: none; /* Remove the list item marker */
+    padding: 0; /* Remove default padding */
+    margin: 0; /* Remove default margin */
+}
+
+.rating li {
+    display: inline-block; /* Display list items in a row */
+}
+.rating li.filled {
+    color: orangered; /* Set your desired yellow color */
+}
+.clear {
+    margin-top: 20px;
+}
+
+.star-block {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 10px;
+}
+
+.star-block>span {
+    display: flex;
+    width: 100%;
+    justify-content: space-between;
+    gap: 10px;
+    align-items: center;
+    border-bottom: 1px solid #dfdfdf;
+    padding-bottom: 10px;
+}
+
+.star-block>span>span.skillTitle {
+    width: 85px;
+    padding: 10px;
+    margin-right: 5px;
+}
+
+.star-block>div {
+    width: auto;
+}
+
+.star-block>span .comment-block {
+    flex: 1 1 auto;
+}
+
+.skillTitle {
+    flex: 0 220px;
+    font-weight: 500;
+}
+
+.skillRating {
+    flex: 0 100px;
+}
+.star-label {
+    display: flex;
+    align-items: center;
+}
+
+.star-icon {
+    margin-left: 5px;
+    cursor: pointer;
+}
+
+.star-icon.clicked {
+    color: gray; /* Change to the color when clicked (default: gray) */
+}
+
+.star-icon.orange {
+    color: orange; /* Change to the color when it is a favorite (default: orange) */
+}
+
+.form-control.orange {
+    border-color: orange; /* Change to the border color when it is a favorite (default: orange) */
+}
+.input-addon-starIcon{
+    cursor: pointer;
+    position: absolute;
+    right: 10px;
+    top: 50%;
+    transform: translateY(-50%);
+    font-size: 1.3rem;
+}
+.ms-Dropdown-container {
+    border: var(--bs-border-width) solid var(--bs-border-color) !important;
+}
+
+.ms-Dropdown-container span {
+    border: none !important;
+}
+.TextField-Input .ms-TextField-fieldGroup  {
+    background-color: var(--bs-body-bg);
+    border: var(--bs-border-width) solid var(--bs-border-color) !important;
+}
+.TextField-Input label.ms-Label {
+    font-size: 14px;
+    pointer-events: none;
+    color: rgb(50, 49, 48) !important;
+    padding: 0;
+}
+.ms-TextField.TextField-Input {
+    margin-bottom: 5px;
+}
+.ms-TooltipHost div#people .ms-BasePicker-text::after {
+    border: none;
+}
+.ms-TooltipHost div#people .ms-BasePicker-text {background-color: var(--bs-body-bg);border: var(--bs-border-width) solid var(--bs-border-color) !important;height:29px}
+.valign-middle {
+    display: flex;
+    align-items: center;
+}
