@@ -29,6 +29,7 @@ import { Filter, DefaultColumnFilter, } from "../../projectmanagementOverviewToo
 import PageLoader from '../../../globalComponents/pageLoader';
 import ShowClintCatogory from '../../../globalComponents/ShowClintCatogory';
 import SendEmailEODReport from './SendEmailEODReport';
+import SmartPriorityToolTip from '../../../globalComponents/SmartPriorityTooltip';
 var taskUsers: any = [];
 var userGroups: any = [];
 var siteConfig: any = [];
@@ -804,15 +805,8 @@ const TaskDashboard = (props: any) => {
                 showSortIcon: true,
                 accessor: "SmartPriority",
                 style: { width: '42px' },
-                Cell: ({ row }: any) => (
-                    <span className="hover-text m-0 ">
-                        <span className="boldClable hreflink">
-                        {row?.original?.SmartPriority != undefined ? row?.original?.SmartPriority : ''}
-                        </span>
-                       <span className="tooltip-text pop-right">
-                       {row?.original?.showFormulaOnHover}
-                       </span>
-                    </span>
+                Cell: ({ row }: any) => row?.original?.SmartPriority !== null && (
+                    <SmartPriorityToolTip smartPriority={row?.original?.SmartPriority} hoverFormula={row?.original?.showFormulaOnHover}/>
                 ),
             },
             {
