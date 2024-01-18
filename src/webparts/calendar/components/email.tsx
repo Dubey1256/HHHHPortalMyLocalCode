@@ -73,7 +73,7 @@ let SendEmailMessage =
       .sendEmail({
         Body: BindHtmlBody(),
          Subject: "HHHH - Team Attendance " + formattedDate + " " + Allteamoforganization + " available - " + (Object?.keys(nameidTotals)?.length - membersWorkfromHome?.length) + " on leave",
-        To: ["anubhav.shukla@hochhuth-consulting.de"],
+        To: ["deepak@hochhuth-consulting.de","stefan.hochhuth@hochhuth-consulting.de","robert.ungethuem@hochhuth-consulting.de","prashant.kumar@hochhuth-consulting.de"],
         // ,"prashant.kumar@hochhuth-consulting.de","ranu.trivedi@hochhuth-consulting.de","jyoti.prasad@hochhuth-consulting.de"
        
         AdditionalHeaders: {
