@@ -2488,7 +2488,15 @@ const EditTaskPopup = (Items: any) => {
                         }
                     });
                 });
-                let TaskCategories = tempShareWebTypeData.map((item: any) => item.Title).join(', ');
+                let uniqueIds: any = {};
+                const result: any = tempShareWebTypeData.filter((item: any) => {
+                    if (!uniqueIds[item.Id]) {
+                        uniqueIds[item.Id] = true;
+                        return true;
+                    }
+                    return false;
+                });
+                let TaskCategories = result?.map((item: any) => item.Title).join(', ');
                 let SendMessage: string = '';
                 let CommonMsg: string = '';
                 if (TeamMemberChanged) {
@@ -2504,23 +2512,22 @@ const EditTaskPopup = (Items: any) => {
                 }
 
                 SendMessage = `<p><b>Hi ${AssignedUserName},</b> </p></br><p>${CommonMsg}</p> </br> 
-            <p>
-            Task Link: <a href=${siteUrls + "/SitePages/Task-Profile.aspx?taskId=" + EditData.Id + "&Site=" + EditData.siteType}>
-            ${siteUrls + "/SitePages/Task-Profile.aspx?taskId=" + EditData.Id + "&Site=" + EditData.siteType} 
-            </a>
-            </br>
-            Cateroy: ${TaskCategories}</br>
-            Smartpriority: <b>${EditData?.SmartPriority}</b></br>
-            </p>
-            <b> 
-            <p>
-            Thanks, </br>
-            Task Management Team
-            </p>
-            </b>
-            `
+                <p>
+                Task Link:  <a href=${siteUrls + "/SitePages/Task-Profile.aspx?taskId=" + EditData.Id + "&Site=" + EditData.siteType}>
+                 ${EditData.TaskId}-${EditData.Title}
+                </a>
+                </br>
+                Task Category: ${TaskCategories}</br>
+                Smartpriority: <b>${EditData?.SmartPriority}</b></br>
+                </p>
+                <p></p>
+                <b>
+                Thanks, </br>
+                Task Management Team
+                </b>
+                `
                 try {
-                    if (IsTaskStatusUpdated || TeamMemberChanged) {
+                    if ((IsTaskStatusUpdated || TeamMemberChanged) && ((Number(taskPercentageValue) * 100) <= 85)) {
                         if (sendUserEmails?.length > 0) {
                             await globalCommon.SendTeamMessage(
                                 sendUserEmails,
@@ -2529,6 +2536,7 @@ const EditTaskPopup = (Items: any) => {
                             );
                         }
                     }
+
                 } catch (error) {
                     console.log("Error", error.message);
                 }
