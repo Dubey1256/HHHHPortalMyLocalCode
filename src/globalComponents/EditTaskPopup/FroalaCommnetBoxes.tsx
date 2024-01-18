@@ -297,11 +297,12 @@ export default function FroalaCommnetBoxes(textItems: any) {
 
     }
 
+
     const UpdateFeedbackDetails = async (NewTaskDetails: any, Index: any, OldItemData: any) => {
         let param: any = Moment(new Date().toLocaleString());
         let baseUrl = window.location.href;
         let TaskURL = baseUrl.replace(TaskDetails.TaskDetails?.Id, NewTaskDetails.Id)
-        let CommentTitle: any = `A separate task for this point has been created and below is the URL for same. Task URL : ${TaskURL}`;
+        let CommentTitle: any = `A new task was created to address this issue: ${TaskURL} Created by ${currentUserData.Title != undefined ? currentUserData.Title : Context.pageContext._user.displayName}`;
         let oldTaskDetails: any = OldItemData;
         let oldFeedbackData: any;
         if (oldTaskDetails?.FeedBack?.length > 0) {
@@ -318,43 +319,32 @@ export default function FroalaCommnetBoxes(textItems: any) {
             isApprovalComment: false,
             isShowLight: ""
         }]
-        let UpdateJSONIndex = Index + 1;
-        FeedbackBackupArray[UpdateJSONIndex].TaskCreatedForThis = true;
-        FeedbackBackupArray[UpdateJSONIndex].Completed = true;
-        if (FeedbackBackupArray[UpdateJSONIndex].Comments?.length > 0) {
-            FeedbackBackupArray[UpdateJSONIndex].Comments.unshift(CreateTaskFor[0]);
+        let UpdateJSONIndex = Index;
+        UpdatedFeedBackParentArray[UpdateJSONIndex].TaskCreatedForThis = true;
+        UpdatedFeedBackParentArray[UpdateJSONIndex].Completed = true;
+        if (UpdatedFeedBackParentArray[UpdateJSONIndex].Comments?.length > 0) {
+            UpdatedFeedBackParentArray[UpdateJSONIndex].Comments.unshift(CreateTaskFor[0]);
         } else {
-            FeedbackBackupArray[UpdateJSONIndex].Comments = CreateTaskFor;
+            UpdatedFeedBackParentArray[UpdateJSONIndex].Comments = CreateTaskFor;
         }
-        let web = new Web(TaskDetails?.SiteURL);
-        oldFeedbackData[0].FeedBackDescriptions = FeedbackBackupArray;
-        await web.lists.getById(TaskDetails?.ListId).items.getById(TaskDetails?.TaskId).update({
-            FeedBack: oldFeedbackData?.length > 0 ? JSON.stringify(oldFeedbackData) : null
-        }).then(async (res: any) => {
-            console.log("Onld Feedback Updated");
-        })
+        callBack(UpdatedFeedBackParentArray);
+        // let web = new Web(TaskDetails?.SiteURL);
+        // oldFeedbackData[0].FeedBackDescriptions = FeedbackBackupArray;
+        // await web.lists.getById(TaskDetails?.ListId).items.getById(TaskDetails?.TaskId).update({
+        //     FeedBack: oldFeedbackData?.length > 0 ? JSON.stringify(oldFeedbackData) : null
+        // }).then(async (res: any) => {
+        //     console.log("Only Feedback Updated");
+        // })
         const copy = [...State];
-        const obj = { ...State[Index], TaskCreatedForThis: true, Comments: FeedbackBackupArray[UpdateJSONIndex].Comments, Completed: true };
+        const obj = { ...State[Index], TaskCreatedForThis: true, Comments: UpdatedFeedBackParentArray[UpdateJSONIndex].Comments, Completed: true };
         copy[Index] = obj;
         setState(copy);
-        taskCreatedCallback();
+        taskCreatedCallback("Image-Tab");
     }
-
-    // function updateTaskIdInUrl(url: any, newTaskId: any) {
-    //     const urlParams = new URLSearchParams(url);
-    //     urlParams.set('taskId', newTaskId);
-    //     const baseUrl = url.split('?')[0];
-    //     const updatedUrl = `${baseUrl}?${urlParams.toString()}`;
-    //     return updatedUrl;
-    // }
-
     const TaskPopupCallBack = () => {
         UpdateTaskPopupPanelStatus(false);
     }
-
     // ********************* this is for the Approval Point History Popup ************************
-
-
     const ApprovalPopupOpenHandle = (index: any, data: any) => {
         setApprovalPointCurrentIndex(index);
         setApprovalPointHistoryStatus(true);
@@ -559,7 +549,7 @@ export default function FroalaCommnetBoxes(textItems: any) {
                 {ApprovalPointHistoryStatus ?
                     <ApprovalHistoryPopup
                         ApprovalPointUserData={ApprovalPointUserData}
-                        ApprovalPointCurrentIndex={ApprovalPointCurrentIndex+1}
+                        ApprovalPointCurrentIndex={ApprovalPointCurrentIndex + 1}
                         ApprovalPointHistoryStatus={ApprovalPointHistoryStatus}
                         callBack={ApprovalHistoryPopupCallBack}
                     />

@@ -217,7 +217,7 @@ const EditTaskPopup = (Items: any) => {
         useState(false);
     const [IsTaskCompleted, setIsTaskCompleted] = useState(false);
     const [SendCategoryName, setSendCategoryName] = useState("");
-    const [OpenEODReportPopup, setOpenEODReportPopup] = useState(false);
+    const [TeamMemberChanged, setTeamMemberChanged] = useState(false);
     const [CurrentImageIndex, setCurrentImageIndex] = useState("");
     const [loaded, setLoaded] = React.useState(true);
 
@@ -2472,6 +2472,48 @@ const EditTaskPopup = (Items: any) => {
             }
         }
 
+         // When task assigned to user, send a notification on MS Teams 
+
+         if (TeamMemberChanged && !IsUserFromHHHHTeam) {
+            try {
+                let sendUserEmails: any = [];
+                let AssignedUserName: string = '';
+                TaskAssignedTo?.map((userDtl: any) => {
+                    taskUsers?.map((allUserItem: any) => {
+                        if (userDtl.Id == allUserItem.AssingedToUserId) {
+                            sendUserEmails.push(allUserItem.Email);
+                            AssignedUserName = allUserItem.Title;
+                        }
+                    });
+                });
+                let TaskCategories = tempShareWebTypeData.map((item: any) => item.Title).join(', ');
+                let SendMessage: string = `<p>Hi ${AssignedUserName}, </p></br><p> You have been marked as a working member on the below task. Please take necessary action :</p> </br> 
+                <p>Task Link: <a href=${siteUrls + "/SitePages/Task-Profile.aspx?taskId=" + EditData.Id + "&Site" + EditData.siteType}>
+                ${siteUrls + "SitePages/Task-Profile.aspx?taskId=" + EditData.Id + "&Site" + EditData.siteType} 
+                </a>
+                </p>
+                </br>
+                <p>Cateroy: ${TaskCategories} </p></br>
+                <p>Smartpriority: ${EditData?.SmartPriority}  </p></br>
+                <p>Thanks,</p> </br>
+                <p>Task Management Team`
+                try {
+                    if (sendUserEmails?.length > 0) {
+                        await globalCommon.SendTeamMessage(
+                            sendUserEmails,
+                            SendMessage,
+                            Items.context
+                        );
+                    }
+                } catch (error) {
+                    console.log("Error", error.message);
+                }
+            } catch (error) {
+                console.log("Error", error.message)
+            }
+
+        }
+
         // if (IsTaskCompleted) {
         //     let taskComplete = `Hi Robert, </br> Below task has been marked to 90% by ${Items.context.pageContext._user.displayName}. Please review.`;
         //     let TeamEmail =
@@ -2784,7 +2826,10 @@ const EditTaskPopup = (Items: any) => {
         let PrecentStatus: any = UpdateTaskInfo.PercentCompleteStatus
             ? Number(UpdateTaskInfo.PercentCompleteStatus)
             : 0;
-
+        if (PrecentStatus == 3) {
+            setTaskAssignedTo([])
+            TaskAssignedTo = []
+        }
         if (PrecentStatus == 1) {
             let tempArrayApprover: any = [];
 
@@ -3143,6 +3188,7 @@ const EditTaskPopup = (Items: any) => {
             // if (ChangeTaskUserStatus) {
             if (teamConfigData?.AssignedTo?.length > 0) {
                 let tempArray: any = [];
+                setTeamMemberChanged(true);
                 teamConfigData.AssignedTo?.map((arrayData: any) => {
                     if (arrayData.AssingedToUser != null) {
                         tempArray.push(arrayData.AssingedToUser);
@@ -4073,6 +4119,9 @@ const EditTaskPopup = (Items: any) => {
                         CopydocumentData(SelectedSite, res.data);
                         if (FunctionsType == "Copy-Task") {
                             setLoaded(true)
+                            if (timesheetData != undefined && timesheetData.length > 0) {
+                                await moveTimeSheet(SelectedSite, res.data);
+                            }
                             newGeneratedId = res.data.Id;
                             console.log(`Task Copied Successfully on ${SelectedSite} !!!!!`);
                             let url = `${siteUrls}/SitePages/Task-Profile.aspx?taskId=${newGeneratedId}&Site=${SelectedSite}`;
@@ -4461,9 +4510,7 @@ const EditTaskPopup = (Items: any) => {
         setSiteCompositionShow(false);
     };
 
-    const EODReportComponentCallback = () => {
-        setOpenEODReportPopup(false);
-    };
+   
 
     // const SiteCompositionCallBack = useCallback((Data: any, Type: any) => {
     //     if (Data.ClientTime != undefined && Data.ClientTime.length > 0) {
@@ -4969,7 +5016,7 @@ const EditTaskPopup = (Items: any) => {
                     : `${EditData.Id}`
             }
         >
-           
+
             {/* ***************** this is status panel *********** */}
             <Panel
                 onRenderHeader={onRenderStatusPanelHeader}
@@ -6812,7 +6859,7 @@ const EditTaskPopup = (Items: any) => {
                                                         Context: Context,
                                                         siteType: Items.Items.siteType,
                                                     }}
-                                                    taskCreatedCallback={GetExtraLookupColumnData}
+                                                    taskCreatedCallback={UpdateTaskInfoFunction}
                                                 />
                                             </>
                                         ) : null}
@@ -8842,7 +8889,7 @@ const EditTaskPopup = (Items: any) => {
                                     }}
                                 >
                                     <div>
-                                        {EditData.Id != null ? (
+                                    {EditData.Id != null ? (
                                             <>
                                                 <CommentBoxComponent
                                                     data={
@@ -8857,6 +8904,7 @@ const EditTaskPopup = (Items: any) => {
                                                     SmartLightStatus={SmartLightStatus}
                                                     SmartLightPercentStatus={SmartLightPercentStatus}
                                                     Context={Context}
+                                                    FeedbackCount={FeedBackCount}
                                                 />
                                                 <Example
                                                     textItems={
@@ -8873,6 +8921,18 @@ const EditTaskPopup = (Items: any) => {
                                                     SmartLightStatus={SmartLightStatus}
                                                     SmartLightPercentStatus={SmartLightPercentStatus}
                                                     Context={Context}
+                                                    FeedbackCount={FeedBackCount}
+                                                    TaskUpdatedData={MakeUpdateDataJSON}
+                                                    TaskListDetails={{
+                                                        SiteURL: siteUrls,
+                                                        ListId: Items.Items.listId,
+                                                        TaskId: Items.Items.Id,
+                                                        TaskDetails: EditData,
+                                                        AllListIdData: AllListIdData,
+                                                        Context: Context,
+                                                        siteType: Items.Items.siteType,
+                                                    }}
+                                                    taskCreatedCallback={UpdateTaskInfoFunction}
                                                 />
                                             </>
                                         ) : null}
@@ -9033,7 +9093,7 @@ const EditTaskPopup = (Items: any) => {
                                     <h6>Sites</h6>
                                 </div>
                                 <div className="card-body">
-                                {!loaded?<PageLoader/>:''}
+                                    {!loaded ? <PageLoader /> : ''}
                                     <ul className="quick-actions">
                                         {SiteTypes?.map((siteData: any, index: number) => {
                                             if (siteData.Title !== "QA") {
