@@ -1746,7 +1746,7 @@ export default function ProjectOverview(props: any) {
         if (siteConfig?.length > 0) {
             try {
                 var AllTask: any = [];
-                AllTask = await globalCommon?.loadAllSiteTasks(AllListId, `IsTodaysTask eq 1"`)
+                AllTask = await globalCommon?.loadAllSiteTasks(AllListId, `IsTodaysTask eq 1`)
                 AllTask.map((items: any) => {
                     let EstimatedDesc = JSON.parse(items?.EstimatedTimeDescription)
                     items.Item_x0020_Type = 'tasks';
