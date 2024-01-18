@@ -5809,7 +5809,7 @@ if (newItemBackUp?.Item_x0020_Type == 'Sprint' || newItemBackUp == null) {
                           >
                             {/* <div className="alignCenter">{obj?.newSubChild?.newFeatChild?.TaskID}</div> */}
                             {obj?.newSubChild?.newFeatChild?.siteIcon ===
-                            "F" ? (
+                            "F"  ? (
                               <span className="Dyicons">
                                 {obj?.newSubChild?.newFeatChild?.siteIcon}
                               </span>
@@ -6011,14 +6011,8 @@ if (newItemBackUp?.Item_x0020_Type == 'Sprint' || newItemBackUp == null) {
                             (newItemBackUp?.TaskType?.Id == 1 || newItemBackUp?.TaskType?.Id == 3 ? items?.TaskID : (newItemBackUp?.TaskType?.Id == 2 ? items?.Id : ``) ) : (newItemBackUp?.TaskType?.Id == 1 ? (items?.TaskType?.Id == 2 ? (`${newItemBackUp?.TaskID}-T${items?.Id}`) :
                              (`${items?.TaskType?.Id == 3 ? (`${newItemBackUp?.TaskID}-W`) : ('') }`)) : (newItemBackUp?.TaskType?.Id == 3 ? (`${newItemBackUp?.TaskID}-T${items?.Id}`) : ''))
                           }
-                          {items?.Item_x0020_Type === "Component" ? (
-                            <span className="Dyicons"> S </span>
-                          ) : newItemBackUp?.Item_x0020_Type ==
-                              "SubComponent" &&
-                            (items?.Item_x0020_Type === "SubComponent" ||
-                              items?.Item_x0020_Type === "Component") ? (
-                            <span className="Dyicons">F</span>
-                          ) : items?.Item_x0020_Type === "Task" ? (
+                          {newItemBackUp?.Item_x0020_Type === "Component" ? ( <span className="Dyicons"> S </span>) : 
+                          newItemBackUp?.Item_x0020_Type == "SubComponent"  ? (<span className="Dyicons">F</span>) : items?.Item_x0020_Type === "Task" ? (
                             <span>
                               <img
                                 className="workmember"
@@ -6094,7 +6088,11 @@ if (newItemBackUp?.Item_x0020_Type == 'Sprint' || newItemBackUp == null) {
             ) : (
               ""
             )}
-
+            
+            {/* {
+              newItemBackUp?.subRows?.length > 0 &&
+              newItemBackUp?.subRows?.some((item:any) => JSON.stringify(item) === JSON.stringify(restructureItem[0]))
+            } */}
             {restructureItem != undefined &&
             restructureItem?.length > 0 &&
             restructureItem[0]?.Item_x0020_Type === "Task" &&

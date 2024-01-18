@@ -7,7 +7,7 @@ import {
 } from "@tanstack/react-table";
 import ReactPopperTooltipSingleLevel from '../../../globalComponents/Hierarchy-Popper-tooltipSilgleLevel/Hierarchy-Popper-tooltipSingleLevel';
 import { FaPrint, FaFileExcel, FaPaintBrush, FaEdit, FaSearch, FaInfoCircle, FaChevronRight, FaChevronDown } from 'react-icons/fa';
-import GlobalCommanTable, { IndeterminateCheckbox } from "../../../globalComponents/GroupByReactTableComponents/GlobalCommanTable";
+import GlobalCommanTable from "../../../globalComponents/GroupByReactTableComponents/GlobalCommanTable";
 import HighlightableCell from "../../../globalComponents/GroupByReactTableComponents/highlight";
 import { Web } from "sp-pnp-js";
 import { SPFI, spfi, SPFx as spSPFx } from "@pnp/sp";
@@ -330,10 +330,10 @@ export default function ProjectOverview(props: any) {
                             <span>
                                 {row?.original?.SiteIcon != undefined ?
                                     <img title={row?.original?.siteType} className="workmember" src={row?.original?.SiteIcon} /> : ''}
-                            </span> : row?.original?.Item_x0020_Type == "Sprint"  ?
-                            <div title={row?.original?.Item_x0020_Type}  style={{ backgroundColor: '#000066' }} className={"Dyicons me-1"}>
-                            X
-                          </div>:''
+                            </span> : row?.original?.Item_x0020_Type == "Sprint" ?
+                                <div title={row?.original?.Item_x0020_Type} style={{ backgroundColor: '#000066' }} className={"Dyicons me-1"}>
+                                    X
+                                </div> : ''
                     }</>
                 ),
                 id: "siteType",
@@ -469,17 +469,13 @@ export default function ProjectOverview(props: any) {
                 size: 60,
             },
             {
-                accessorFn: (row) => row?.TaskCategories,
+                accessorFn: (row) => row?.TaskTypeValue,
                 cell: ({ row }) => (
                     <span>
-                        {row?.original?.TaskCategories && row?.original?.TaskCategories.length > 0
-                            ? row?.original?.TaskCategories.map((category: any, index: any) => (
-                                <div key={index}>{category.Title}</div>
-                            ))
-                            : ''}
+                        {row?.original?.TaskTypeValue}
                     </span>
                 ),
-                id: 'TaskCategories',
+                id: 'TaskTypeValue',
                 placeholder: "Task Categories",
                 resetColumnFilters: false,
                 resetSorting: false,
@@ -543,7 +539,7 @@ export default function ProjectOverview(props: any) {
                 size: 100,
                 id: "commentsSearch",
             },
-          
+
             {
 
                 cell: ({ row }) => (
@@ -589,7 +585,7 @@ export default function ProjectOverview(props: any) {
                 cell: ({ row, getValue }) => (
                     <div>
                         <>
-                            <ReactPopperTooltipSingleLevel ShareWebId={row?.original?.TaskID}  AllListId={AllListId} row={row?.original} singleLevel={true} masterTaskData={MyAllData} AllSitesTaskData={AllSitesAllTasks} />
+                            <ReactPopperTooltipSingleLevel ShareWebId={row?.original?.TaskID} AllListId={AllListId} row={row?.original} singleLevel={true} masterTaskData={MyAllData} AllSitesTaskData={AllSitesAllTasks} />
 
                         </>
                     </div>
@@ -786,24 +782,20 @@ export default function ProjectOverview(props: any) {
                 header: "",
                 size: 60,
             },
-            {
-                accessorFn: (row) => row?.TaskCategories,
-                cell: ({ row }) => (
-                    <span>
-                        {row?.original?.TaskCategories && row?.original?.TaskCategories.length > 0
-                            ? row?.original?.TaskCategories.map((category: any, index: any) => (
-                                <div key={index}>{category.Title}</div>
-                            ))
-                            : ''}
-                    </span>
-                ),
-                id: 'TaskCategories',
-                placeholder: "Task Categories",
-                resetColumnFilters: false,
-                resetSorting: false,
-                header: "",
-                size: 100
-            },
+                {
+                    accessorFn: (row) => row?.TaskTypeValue,
+                    cell: ({ row }) => (
+                        <span>
+                            {row?.original?.TaskTypeValue}
+                        </span>
+                    ),
+                    id: 'TaskTypeValue',
+                    placeholder: "Task Categories",
+                    resetColumnFilters: false,
+                    resetSorting: false,
+                    header: "",
+                    size: 100
+                },
             {
                 accessorFn: (row) => row?.Created,
                 cell: ({ row }) => (
@@ -1029,17 +1021,13 @@ export default function ProjectOverview(props: any) {
                 size: 100,
             },
             {
-                accessorFn: (row) => row?.TaskCategories,
+                accessorFn: (row) => row?.TaskTypeValue,
                 cell: ({ row }) => (
                     <span>
-                        {row?.original?.TaskCategories && row?.original?.TaskCategories.length > 0
-                            ? row?.original?.TaskCategories.map((category: any, index: any) => (
-                                <div key={index}>{category.Title}</div>
-                            ))
-                            : ''}
+                        {row?.original?.TaskTypeValue}
                     </span>
                 ),
-                id: 'TaskCategories',
+                id: 'TaskTypeValue',
                 placeholder: "Task Categories",
                 resetColumnFilters: false,
                 resetSorting: false,
@@ -1151,7 +1139,7 @@ export default function ProjectOverview(props: any) {
                 cell: ({ row }) => (
                     <div>
                         <>
-                            <ReactPopperTooltipSingleLevel  AllListId={AllListId} ShareWebId={row?.original?.TaskID} row={row?.original} singleLevel={true} masterTaskData={MyAllData} AllSitesTaskData={AllSitesAllTasks} />
+                            <ReactPopperTooltipSingleLevel AllListId={AllListId} ShareWebId={row?.original?.TaskID} row={row?.original} singleLevel={true} masterTaskData={MyAllData} AllSitesTaskData={AllSitesAllTasks} />
                         </>
                     </div>
                 ),
@@ -1345,17 +1333,13 @@ export default function ProjectOverview(props: any) {
                 size: 60,
             },
             {
-                accessorFn: (row) => row?.TaskCategories,
+                accessorFn: (row) => row?.TaskTypeValue,
                 cell: ({ row }) => (
                     <span>
-                        {row?.original?.TaskCategories && row?.original?.TaskCategories.length > 0
-                            ? row?.original?.TaskCategories.map((category: any, index: any) => (
-                                <div key={index}>{category.Title}</div>
-                            ))
-                            : ''}
+                        {row?.original?.TaskTypeValue}
                     </span>
                 ),
-                id: 'TaskCategories',
+                id: 'TaskTypeValue',
                 placeholder: "Task Categories",
                 resetColumnFilters: false,
                 resetSorting: false,
@@ -1662,6 +1646,7 @@ export default function ProjectOverview(props: any) {
 
     const GetMasterData = async () => {
         if (AllListId?.MasterTaskListID != undefined) {
+          try{
             let web = new Web(`${AllListId?.siteUrl}`);
             let taskUsers: any = [];
             let Alltask: any = [];
@@ -1698,6 +1683,13 @@ export default function ProjectOverview(props: any) {
                         })
                     })
                 }
+                items.TaskTypeValue='';
+                if (items?.TaskCategories?.length > 0) {
+                    items.TaskTypeValue = items?.TaskCategories?.map((val: any) => val.Title).join(",")
+                  }
+                  if (items?.TaskCategories?.length > 0) {
+                    items.Categories = items.TaskTypeValue;
+                  }
                 items.subRows = Alltask?.filter((child: any) => child?.Item_x0020_Type == "Sprint" && child?.Parent?.Id == items?.Id)
                 // items?.subRows?.map((sprint: any) => {
                 //     sprint.subRows = allSitesTasks?.filter((child: any) => child?.Project?.Id == sprint?.Id && child?.IsTodaysTask == true)
@@ -1714,19 +1706,22 @@ export default function ProjectOverview(props: any) {
             let flatDataProjects = JSON.parse(JSON.stringify(AllProject))
             setFlatData(flatDataProjects);
             AllProject.map((items: any) => {
-                items?.subRows?.map((sprint: any) => {
-                    sprint.subRows = allSitesTasks?.filter((child: any) => child?.Project?.Id == sprint?.Id && child?.IsTodaysTask == true)
-                })
                 allSitesTasks?.map((task: any) => {
                     if (task?.IsTodaysTask == true && task?.Project?.Id == items?.Id) {
                         items['subRows'].push(task);
                     }
+                })
+                items?.subRows?.map((sprint: any) => {
+                    sprint.subRows = allSitesTasks?.filter((child: any) => child?.Project?.Id == sprint?.Id && child?.IsTodaysTask == true)
                 })
             })
             // })
             setAllTasks(AllProject);
             setPageLoader(false);
             setData(AllProject);
+          }catch(e){
+
+          }
         } else {
             alert('Master Task List Id Not Available')
         }
@@ -1747,10 +1742,10 @@ export default function ProjectOverview(props: any) {
 
     const callBackData = React.useCallback((elem: any, getSelectedRowModel: any, ShowingData: any) => {
         if (elem != undefined) {
-            let selectedItem:any=[]
-            elem?.map((Project:any)=>{
+            let selectedItem: any = []
+            elem?.map((Project: any) => {
                 selectedItem?.push(Project?.original)
-              //  Project = Project?.original
+                //  Project = Project?.original
             })
             setCheckBoxData(selectedItem)
             setTableProperty(getSelectedRowModel?.getSelectedRowModel()?.flatRows)
@@ -1782,18 +1777,18 @@ export default function ProjectOverview(props: any) {
 
     }, []);
 
-    const restructureCallback = React.useCallback((getData: any, topCompoIcon: any,callback:any) => {
+    const restructureCallback = React.useCallback((getData: any, topCompoIcon: any, callback: any) => {
         setTopCompoIcon(topCompoIcon);
-       setData(getData);
-       if(callback == true){
-        GetMasterData();
-       }
+        setData(getData);
+        if (callback == true) {
+            GetMasterData();
+        }
 
     }, []);
 
-    const CallBack = React.useCallback((item:any, type:any) => {
+    const CallBack = React.useCallback((item: any, type: any) => {
         setIsAddStructureOpen(false)
-        if(type=='Save'){
+        if (type == 'Save') {
             GetMasterData()
         }
     }, [])
@@ -1864,9 +1859,13 @@ export default function ProjectOverview(props: any) {
                             items["ProjectTitle"] = '';
                             items["ProjectPriority"] = 0;
                         }
-
-
-
+                        items.TaskTypeValue = ''
+                        if (items?.TaskCategories?.length > 0) {
+                            items.TaskTypeValue = items?.TaskCategories?.map((val: any) => val.Title).join(",")
+                        }
+                        if (items?.TaskCategories?.length > 0) {
+                            items.Categories = items.TaskTypeValue;
+                        }
                         items.TeamMembersSearch = "";
                         items.AssignedToIds = [];
                         if (items.AssignedTo != undefined) {
@@ -1988,7 +1987,7 @@ export default function ProjectOverview(props: any) {
     }
     const OpenAddStructureModal = () => {
         setIsAddStructureOpen(true);
-      }
+    }
     //End
 
 
@@ -2022,7 +2021,7 @@ export default function ProjectOverview(props: any) {
 
                                     </dl>
                                     <div className="m-0 text-end">
-                                     
+
                                         {currentUserData?.Title == "Deepak Trivedi" || currentUserData?.Title == "Ranu Trivedi" || currentUserData?.Title == "Abhishek Tiwari" || currentUserData?.Title == "Prashant Kumar" ?
                                             <>
                                                 <a className="hreflink  ms-1" onClick={() => { sendAllWorkingTodayTasks() }}>Share Working Todays's Task</a></>
@@ -2031,11 +2030,11 @@ export default function ProjectOverview(props: any) {
                                 </div>
                                 <div className="TableSection"><div className="Alltable">
                                     <div className='wrapper'>
-                                        {selectedView == 'grouped' ? <GlobalCommanTable expandIcon={true}   headerOptions={headerOptions} AllListId={AllListId} columns={columns} multiSelect={true} data={data} paginatedTable={false} callBackData={callBackData} pageName={"ProjectOverviewGrouped"} TaskUsers={AllTaskUser} showHeader={true} /> : ''}
-                                        {selectedView == 'flat' ? <GlobalCommanTable expandIcon={true}   headerOptions={headerOptions} AllListId={AllListId} columns={flatView} paginatedTable={true} data={AllSiteTasks} callBackData={callBackData} pageName={"ProjectOverview"} TaskUsers={AllTaskUser} showHeader={true} /> : ''}
-                                        {selectedView == 'teamWise' ? <GlobalCommanTable expandIcon={true}   headerOptions={headerOptions} AllListId={AllListId} columns={groupedUsers} paginatedTable={true} data={categoryGroup} callBackData={callBackData} pageName={"ProjectOverviewGrouped"} TaskUsers={AllTaskUser} showHeader={true} /> : ''}
-                                        {selectedView == 'Projects' ? <GlobalCommanTable expandIcon={true} hideAddActivityBtn={true} ref={childRef} callChildFunction={callChildFunction} restructurebtn={true} restructureCallBack={restructureCallback}  AllListId={AllListId} headerOptions={headerOptions} paginatedTable={false}  showCreationAllButton={true}
-                                  OpenAddStructureModal={OpenAddStructureModal} AllSitesTaskData={AllSitesAllTasks} masterTaskData={MyAllData}  multiSelect={true} columns={column2} data={flatData} callBackData={callBackData} pageName={"ProjectOverview"} pageProjectOverview={true} TaskUsers={AllTaskUser} showHeader={true} /> : ''}
+                                        {selectedView == 'grouped' ? <GlobalCommanTable expandIcon={true} headerOptions={headerOptions} AllListId={AllListId} columns={columns} multiSelect={true} data={data} paginatedTable={false} callBackData={callBackData} pageName={"ProjectOverviewGrouped"} TaskUsers={AllTaskUser} showHeader={true} /> : ''}
+                                        {selectedView == 'flat' ? <GlobalCommanTable expandIcon={true} headerOptions={headerOptions} AllListId={AllListId} columns={flatView} paginatedTable={true} data={AllSiteTasks} callBackData={callBackData} pageName={"ProjectOverview"} TaskUsers={AllTaskUser} showHeader={true} /> : ''}
+                                        {selectedView == 'teamWise' ? <GlobalCommanTable expandIcon={true} headerOptions={headerOptions} AllListId={AllListId} columns={groupedUsers} paginatedTable={true} data={categoryGroup} callBackData={callBackData} pageName={"ProjectOverviewGrouped"} TaskUsers={AllTaskUser} showHeader={true} /> : ''}
+                                        {selectedView == 'Projects' ? <GlobalCommanTable expandIcon={true} hideAddActivityBtn={true} ref={childRef} callChildFunction={callChildFunction} restructurebtn={true} restructureCallBack={restructureCallback} AllListId={AllListId} headerOptions={headerOptions} paginatedTable={false} showCreationAllButton={true}
+                                            OpenAddStructureModal={OpenAddStructureModal} AllSitesTaskData={AllSitesAllTasks} masterTaskData={MyAllData} multiSelect={true} columns={column2} data={flatData} callBackData={callBackData} pageName={"ProjectOverview"} pageProjectOverview={true} TaskUsers={AllTaskUser} showHeader={true} /> : ''}
                                     </div>
                                 </div>
                                 </div>
@@ -2052,7 +2051,7 @@ export default function ProjectOverview(props: any) {
                 {IsComponent && <EditProjectPopup props={SharewebComponent} AllListId={AllListId} Call={Call} showProgressBar={showProgressBar}> </EditProjectPopup>}
                 {ShowTeamPopup === true ? <ShowTeamMembers props={checkData} callBack={showTaskTeamCAllBack} TaskUsers={AllTaskUser} /> : ''}
                 {openTimeEntryPopup && <TimeEntryPopup props={taskTimeDetails} CallBackTimeEntry={TimeEntryCallBack} Context={props?.props?.Context} />}
-                {isAddStructureOpen && <AddProject CallBack={CallBack} items={CheckBoxData} PageName={"ProjectOverview"} AllListId={AllListId} data={data}/>}
+                {isAddStructureOpen && <AddProject CallBack={CallBack} items={CheckBoxData} PageName={"ProjectOverview"} AllListId={AllListId} data={data} />}
             </div>
             {pageLoaderActive ? <PageLoader /> : ''}
         </>

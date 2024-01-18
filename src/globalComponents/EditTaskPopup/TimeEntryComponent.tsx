@@ -61,7 +61,7 @@ var PopupType: any = ''
 var PopupTypeCat: any = false;
 const SP = spfi();
 var AllMetadata: [] = [];
-function TimeEntryPopup(item: any) {
+const TimeEntryPopup = (item: any)=> {
   if (item?.props?.siteUrl != undefined) {
     var Url = item?.props?.siteUrl.split("https://hhhhteams.sharepoint.com");
     RelativeUrl = Url[1];
@@ -146,10 +146,6 @@ function TimeEntryPopup(item: any) {
     let taskUsers = [];
     taskUsers = await web.lists.getByTitle("Task Users").items.top(4999).get();
     AllUsers = taskUsers;
-    // if(AllTimeEntry.length == 0){
-    //     await getAllTime()
-    // }
-
     EditData(item.props);
     //console.log(this.taskUsers);
   };
