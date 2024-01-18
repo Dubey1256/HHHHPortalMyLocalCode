@@ -196,7 +196,7 @@ const EditDocumentpanel = (props: any) => {
     return (
       <>
         <div className='ps-4 siteColor subheading'>
-          {true ? `Edit Document Metadata - ${EditdocumentsData?.FileLeafRef}` : null}
+          {true ? `Edit Document Metadata - ${EditdocumentsData?.Title}` : null}
         </div>
         <Tooltip ComponentId={'942'} />
       </>

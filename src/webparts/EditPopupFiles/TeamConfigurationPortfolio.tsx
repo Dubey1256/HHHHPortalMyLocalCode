@@ -474,7 +474,7 @@ export class TeamConfigurationCard extends React.Component<ITeamConfigurationPro
 
                                 <div className="col-sm-7">
                                     <h6 className='mb-1'>Team Members</h6>
-                                    <div className="d-flex p-1 pb-0 UserTimeTabGray">
+                                    <div className="d-flex py-1 pb-0 UserTimeTabGray">
                                         <div className="col-sm-5 border-end p-0" >
                                         <div className="col"
                                             onDrop={(e) => this.onDropTeam(e, this.state.AssignedToUsers, 'Team Leaders', this.state.taskUsers, 'AssignedToUsers')}
@@ -529,8 +529,6 @@ export class TeamConfigurationCard extends React.Component<ITeamConfigurationPro
 
                                     </div>
                                 </div>
-
-                                
 
                                 <div className="col-sm-2">
                                    
