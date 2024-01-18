@@ -932,7 +932,7 @@ const GlobalCommanTable = (items: any, ref: any) => {
                 <span className='leftsec'>
                     {showingAllPortFolioCount === true ? <div className='alignCenter mt--2'>
                         <label>
-                            <label style={{ color: "#333333" }}>alignCenter mt--2
+                            <label style={{ color: "#333333" }}>
                                 Showing
                             </label>
                             {portfolioTypeData?.map((type: any, index: any) => {
