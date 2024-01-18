@@ -2021,7 +2021,7 @@ class Taskprofile extends React.Component<ITaskprofileProps, ITaskprofileState> 
                                         {item.CommentFor !== undefined &&
                                           item.CommentFor !== "" ? (
                                           <div key={index}>
-                                            {item?.Description?.replace(/\n/g, '<br>')}
+                                           <span  dangerouslySetInnerHTML={{ __html: this.cleanHTML(item?.Description, "folora", index)}}></span>
                                           </div>
                                         ) : null}
                                       </div>
