@@ -342,7 +342,7 @@ const AddCommentComponent = (FbData: any) => {
                                 </div> : null}
                                 <div className="col-11 d-flex float-end my-1">
                                     <div className="d-flex justify-content-between align-items-center col">
-                                    <div className="px-1" style={{width:"85%"}}>
+                                    <div className="pe-1" style={{width:"85%"}}>
                                     <textarea id="txtComment SubTestBorder" style={{ height: "33px" }} onChange={(e) => handleChangeInput(e)} className="full-width" ></textarea>
                                     </div>
                                     <div style={{width:"145px"}}>
