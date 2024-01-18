@@ -617,7 +617,7 @@ const AddPopup = (props: any) => {
             </footer>
 
         </Panel>
-        {isAddPosititionOpen && <AddMorePosition siteUrl={allListID?.siteUrl} skillsList={allListID?.SkillsPortfolioListID} openPopup={isAddPosititionOpen} closePopup={AddMorePositionClose}/>}
+        {isAddPosititionOpen && <AddMorePosition siteUrl={allListID?.siteUrl} skillsList={allListID?.SkillsPortfolioListID} openPopup={isAddPosititionOpen} closePopup={AddMorePositionClose} callbackAdd={getchoicecolumns()}/>}
         </>
     );
 };
