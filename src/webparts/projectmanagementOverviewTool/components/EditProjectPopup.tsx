@@ -2286,7 +2286,7 @@ function EditProjectPopup(item: any) {
             </div>
 
             <footer className="bg-f4" style={{ position: "absolute", bottom: "0", width: "100%", zIndex: "9", left:"0px" }}>
-              <div className="align-items-center d-flex justify-content-between me-3 px-4 py-2">
+              <div className="align-items-center d-flex justify-content-between px-4 py-2">
                 <div>
                   <div>
                     Created{" "}
