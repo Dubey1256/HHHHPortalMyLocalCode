@@ -374,6 +374,7 @@ class Taskprofile extends React.Component<ITaskprofileProps, ITaskprofileState> 
       IsTodaysTask: taskDetails["IsTodaysTask"],
       PriorityRank: taskDetails["PriorityRank"],
       EstimatedTime: taskDetails["EstimatedTime"],
+      Sitestagging: taskDetails["Sitestagging"] != null ? JSON.parse(taskDetails["Sitestagging"]):[],
       ClientTime: taskDetails["ClientTime"] != null && JSON.parse(taskDetails["ClientTime"]),
       ApproverHistory: taskDetails["ApproverHistory"] != null ? JSON.parse(taskDetails["ApproverHistory"]) : "",
       OffshoreComments: OffshoreComments.length > 0 ? OffshoreComments.reverse() : null,
@@ -424,80 +425,6 @@ class Taskprofile extends React.Component<ITaskprofileProps, ITaskprofileState> 
       Approver: taskDetails?.Approver != undefined ? this.taskUsers.find((userData: any) => userData?.AssingedToUser?.Id == taskDetails?.Approver[0]?.Id) : "",
       ParentTask: taskDetails?.ParentTask,
     };
-    try {
-      let tempTask = {
-        SiteIcon: this.GetSiteIcon(this.state?.listName),
-        sitePage: this.props.Context?._pageContext?._web?.title,
-        Comments: comments != null && comments != undefined ? comments : "",
-        Id: taskDetails["ID"],
-        ID: taskDetails["ID"],
-  
-        SmartPriority: globalCommon.calculateSmartPriority(taskDetails),
-        TaskTypeValue: '',
-        projectPriorityOnHover: '',
-        taskPriorityOnHover: taskDetails?.PriorityRank != undefined ? taskDetails?.PriorityRank : undefined,
-        showFormulaOnHover: taskDetails?.showFormulaOnHover != undefined ? taskDetails?.showFormulaOnHover : undefined,
-  
-        Approvee: taskDetails?.Approvee != undefined ? this.taskUsers.find((userData: any) => userData?.AssingedToUser?.Id == taskDetails?.Approvee?.Id) : undefined,
-        TaskCategories: taskDetails["TaskCategories"],
-        Project: taskDetails["Project"],
-        IsTodaysTask: taskDetails["IsTodaysTask"],
-        PriorityRank: taskDetails["PriorityRank"],
-        EstimatedTime: taskDetails["EstimatedTime"],
-        ClientTime: taskDetails["ClientTime"] != null && JSON.parse(taskDetails["ClientTime"]),
-        ApproverHistory: taskDetails["ApproverHistory"] != null ? JSON.parse(taskDetails["ApproverHistory"]) : "",
-        OffshoreComments: OffshoreComments.length > 0 ? OffshoreComments.reverse() : null,
-        OffshoreImageUrl: taskDetails["OffshoreImageUrl"] != null && JSON.parse(taskDetails["OffshoreImageUrl"]),
-  
-        ClientCategory: taskDetails["ClientCategory"],
-        siteType: taskDetails["siteType"],
-        listName: taskDetails["listName"],
-        siteUrl: taskDetails["siteUrl"],
-        TaskId: taskDetails["TaskId"],
-        TaskID: taskDetails["TaskID"],
-        Title: taskDetails["Title"],
-        Item_x0020_Type: 'Task',
-        DueDate: taskDetails["DueDate"] != null ? moment(taskDetails["DueDate"]).format("DD/MM/YYYY") : null,
-        Categories: taskDetails["Categories"],
-        Status: taskDetails["Status"],
-        StartDate: taskDetails["StartDate"] != null ? moment(taskDetails["StartDate"]).format("DD/MM/YYYY") : "",
-        CompletedDate: taskDetails["CompletedDate"] != null ? moment(taskDetails["CompletedDate"])?.format("DD/MM/YYYY") : "",
-        TeamLeader: taskDetails["ResponsibleTeam"] != null ? taskDetails["ResponsibleTeam"] : null,
-        ResponsibleTeam: taskDetails["ResponsibleTeam"] != null ? taskDetails["ResponsibleTeam"] : null,
-        TeamMembers: taskDetails.TeamMembers != null ? taskDetails.TeamMembers : null,
-        AssignedTo: taskDetails["AssignedTo"] != null ? taskDetails["AssignedTo"] : null,
-        ItemRank: taskDetails["ItemRank"],
-        PercentComplete: (taskDetails["PercentComplete"] * 100),
-        Priority: taskDetails["Priority"],
-        Created: taskDetails["Created"],
-        Author: this.GetUserObject(taskDetails["Author"]?.Title),
-        component_url: taskDetails["ComponentLink"],
-        BasicImageInfo: this.GetAllImages(JSON.parse(taskDetails["BasicImageInfo"]), taskDetails["AttachmentFiles"], taskDetails["Attachments"]),
-        FeedBack: JSON.parse(taskDetails["FeedBack"]),
-        FeedBackBackup: JSON.parse(taskDetails["FeedBack"]),
-        FeedBackArray: feedBackData != undefined && feedBackData?.length > 0 ? feedBackData[0]?.FeedBackDescriptions : [],
-        TaskType: taskDetails["TaskType"] != null ? taskDetails["TaskType"] : '',
-        TaskTypeTitle: taskDetails["TaskType"] != null ? taskDetails["TaskType"]?.Title : '',
-        EstimatedTimeDescriptionArray: tempEstimatedArrayData,
-        TotalEstimatedTime: TotalEstimatedTime,
-  
-        Portfolio: portfolio != undefined && portfolio.length > 0 ? portfolio[0] : taskDetails?.Portfolio,
-        PortfolioType: portfolio != undefined && portfolio.length > 0 ? portfolio[0]?.PortfolioType : undefined,
-        Creation: taskDetails["Created"],
-        Modified: taskDetails["Modified"],
-        ModifiedBy: taskDetails["Editor"],
-        listId: listInfo.Id,
-        TaskLevel: taskDetails["TaskLevel"],
-        Attachments: taskDetails["Attachments"],
-        AttachmentFiles: taskDetails["AttachmentFiles"],
-        SmartInformationId: taskDetails["SmartInformation"],
-        Approver: taskDetails?.Approver != undefined ? this.taskUsers.find((userData: any) => userData?.AssingedToUser?.Id == taskDetails?.Approver[0]?.Id) : "",
-        ParentTask: taskDetails?.ParentTask,
-      };
-      tempTask.Sitestagging= taskDetails["Sitestagging"] != null ? JSON.parse(taskDetails["Sitestagging"]):[];
-    } catch (error) {
-      console.log(error)
-    }
     if (tempTask?.ClientTime == false) {
       tempTask.ClientTime = null
     }
