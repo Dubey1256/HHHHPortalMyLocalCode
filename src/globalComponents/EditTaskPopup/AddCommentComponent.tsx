@@ -341,11 +341,11 @@ const AddCommentComponent = (FbData: any) => {
                                     <label className="siteColor">Mark as Approval Comment</label>
                                 </div> : null}
                                 <div className="col-11 d-flex float-end my-1">
-                                    <div className="d-flex justify-content-between align-items-center">
+                                    <div className="d-flex justify-content-between align-items-center col">
                                     <div className="px-1" style={{width:"85%"}}>
                                     <textarea id="txtComment SubTestBorder" style={{ height: "33px" }} onChange={(e) => handleChangeInput(e)} className="full-width" ></textarea>
                                     </div>
-                                    <div style={{width:"145px;"}}>
+                                    <div style={{width:"145px"}}>
                                     <button type="button" className="post btn btn-primary mx-1" onClick={() => PostButtonClick(FbData.postStatus, FbData.index)}>Post</button>
                                     <button type="button" className="post btn btn-default" onClick={cancelCommentBtn}>Cancel</button>
                                     </div>
