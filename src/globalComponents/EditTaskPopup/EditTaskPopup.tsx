@@ -205,8 +205,6 @@ const EditTaskPopup = (Items: any) => {
         useState<any>("");
     const [IsUserFromHHHHTeam, setIsUserFromHHHHTeam] = useState(false);
     const [IsCopyOrMovePanel, setIsCopyOrMovePanel] = useState<any>("");
-    const [EnableSiteCompositionValidation, setEnableSiteCompositionValidation] =
-        useState(false);
     const [EstimatedDescription, setEstimatedDescription] = useState("");
     const [EstimatedDescriptionCategory, setEstimatedDescriptionCategory] =
         useState("");
@@ -2448,7 +2446,7 @@ const EditTaskPopup = (Items: any) => {
         }
 
         if (IsSendAttentionMsgStatus) {
-            let txtComment = `You have been tagged as ${SendCategoryName} in the below task by ${Items.context.pageContext._user.displayName}`;
+            let txtComment = `You have been tagged as ${SendCategoryName == "Bottleneck" ? SendCategoryName :"Attention"} in the below task by ${Items.context.pageContext._user.displayName}`;
             let TeamMsg =
                 txtComment +
                 `</br> <a href=${window.location.href}>${EditData.TaskId}-${EditData.Title}</a>`;
@@ -2541,27 +2539,7 @@ const EditTaskPopup = (Items: any) => {
         }
 
 
-        if (EnableSiteCompositionValidation) {
-            if (SiteCompositionPrecentageValue > 100) {
-                TaskShuoldBeUpdate = false;
-                SiteCompositionPrecentageValue = 0;
-                alert("site composition allocation should not be more than 100%");
-            }
-            if (
-                SiteCompositionPrecentageValue.toFixed(0) < 100 &&
-                SiteCompositionPrecentageValue > 0
-            ) {
-                SiteCompositionPrecentageValue = 0;
-                let conformationSTatus = confirm(
-                    "Site composition should not be less than 100% if you still want to do it click on OK"
-                );
-                if (conformationSTatus) {
-                    TaskShuoldBeUpdate = true;
-                } else {
-                    TaskShuoldBeUpdate = false;
-                }
-            }
-        }
+       
         if (TaskShuoldBeUpdate) {
             try {
                 let web = new Web(siteUrls);
@@ -4522,46 +4500,7 @@ const EditTaskPopup = (Items: any) => {
 
 
 
-    // const SiteCompositionCallBack = useCallback((Data: any, Type: any) => {
-    //     if (Data.ClientTime != undefined && Data.ClientTime.length > 0) {
-    //         setEnableSiteCompositionValidation(true)
-    //         let tempArray: any = [];
-    //         Data.ClientTime?.map((ClientTimeItems: any) => {
-    //             if (ClientTimeItems.ClientCategory != undefined || ClientTimeItems.siteIcons?.length > 0 || ClientTimeItems.siteIcons?.Url.length > 0) {
-    //                 let newObject: any = {
-    //                     SiteName: ClientTimeItems.SiteName,
-    //                     ClienTimeDescription: ClientTimeItems.ClienTimeDescription,
-    //                     localSiteComposition: true
-    //                 }
-    //                 tempArray.push(newObject);
-    //             } else {
-    //                 tempArray.push(ClientTimeItems);
-    //             }
-    //         })
-    //         const finalData = tempArray.filter((val: any, id: any, array: any) => {
-    //             return array.indexOf(val) == id;
-    //         })
-    //         setClientTimeData(finalData);
-    //     } else {
-    //         if (Type == "dataDeleted") {
-    //             setClientTimeData([{}])
-    //         }
-    //     }
-    //     if (Data.selectedClientCategory != undefined && Data.selectedClientCategory.length > 0) {
-    //         setSelectedClientCategory(Data.selectedClientCategory);
-    //     } else {
-    //         if (Type == "dataDeleted") {
-    //             setSelectedClientCategory([]);
-    //         }
-    //     }
-    //     if (Data.SiteCompositionSettings != undefined && Data.SiteCompositionSettings.length > 0) {
-    //         setSiteCompositionSetting(Data.SiteCompositionSettings);
-    //     }
-    //     console.log("Site Composition final Call back Data =========", Data);
-    // }, [])
-
-    // This is for the Upadte Estimated Time Descriptions  section Functions
-
+    
     const UpdateEstimatedTimeDescriptions = (e: any) => {
         if (e.target.name == "Description") {
             setEstimatedDescription(e.target.value);
