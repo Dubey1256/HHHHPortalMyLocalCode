@@ -2507,11 +2507,11 @@ const EditTaskPopup = (Items: any) => {
 
                 SendMessage = `<p><b>Hi ${AssignedUserName},</b> </p></br><p>${CommonMsg}</p> </br> 
             <p>
-            Task Link: <a href=${siteUrls + "/SitePages/Task-Profile.aspx?taskId=" + EditData.Id + "&Site=" + EditData.siteType}>
-            ${siteUrls + "/SitePages/Task-Profile.aspx?taskId=" + EditData.Id + "&Site=" + EditData.siteType} 
+            Task URL: <a href=${siteUrls + "/SitePages/Task-Profile.aspx?taskId=" + EditData.Id + "&Site=" + EditData.siteType}>
+            ${EditData.TaskId}-${EditData.Title}
             </a>
             </br>
-            Cateroy: ${TaskCategories}</br>
+            Task Category: ${TaskCategories}</br>
             Smartpriority: <b>${EditData?.SmartPriority}</b></br>
             </p>
             <b> 

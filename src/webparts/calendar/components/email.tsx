@@ -73,7 +73,7 @@ let SendEmailMessage =
       .sendEmail({
         Body: BindHtmlBody(),
          Subject: "HHHH - Team Attendance " + formattedDate + " " + Allteamoforganization + " available - " + (Object?.keys(nameidTotals)?.length - membersWorkfromHome?.length) + " on leave",
-        To: ["deepak@hochhuth-consulting.de","stefan.hochhuth@hochhuth-consulting.de","robert.ungethuem@hochhuth-consulting.de","prashant.kumar@hochhuth-consulting.de"],
+        To: ["anubhav.shukla@hochhuth-consulting.de"],
         // ,"prashant.kumar@hochhuth-consulting.de","ranu.trivedi@hochhuth-consulting.de","jyoti.prasad@hochhuth-consulting.de"
        
         AdditionalHeaders: {
@@ -120,58 +120,56 @@ let SendEmailMessage =
   let yeardata = leaveData.filter((item:any) => item?.EventDate?.substring(0, 4) === `${year}`)
 
   const calculateTotalWorkingDays = (matchedData: any) => {
-    const currentYear = new Date().getFullYear();
-
+    const today = new Date();
+  
     return matchedData.reduce((total: any, item: any) => {
-      
       const endDate = new Date(item.EndDate);
-      const eventDate: any = new Date(item.EventDate);
+      const eventDate = new Date(item.EventDate);
       const timezoneOffset = endDate.getTimezoneOffset();
       const timezoneOffsetInHours = timezoneOffset / 60;
       const adjustedEndDate = new Date(endDate.getTime() + timezoneOffsetInHours * 60 * 60 * 1000);
       const adjustedEventDate:any = new Date(eventDate.getTime() + timezoneOffsetInHours * 60 * 60 * 1000);
-
+  
       // Filter data based on the event date being in the current year
-      if (adjustedEventDate.getFullYear() === currentYear) {
-        // Adjust the end date to the last day of the current year
-        const endOfYearDate = new Date(currentYear, 11, 31);
-        const adjustedEndDateToYearEnd = adjustedEndDate  < endOfYearDate ? adjustedEndDate  : endOfYearDate;
-
-        const oneDay = 24 * 60 * 60 * 1000; // Number of milliseconds in a day
-
+      if (adjustedEventDate.getFullYear() === today.getFullYear()) {
+        const adjustedEndDateToToday = today < adjustedEndDate ? today : adjustedEndDate;
+  
+        // Set hours to 0 for accurate date comparisons
+        adjustedEndDateToToday.setHours(0);
         let workingDays = 0;
-        let workingDayT = 0;
         let currentDate = new Date(adjustedEventDate);
-
-        while (currentDate <= adjustedEndDateToYearEnd) {
+        currentDate.setHours(0);
+  
+        while (currentDate <= adjustedEndDateToToday) {
           const dayOfWeek = currentDate.getDay();
-
-          if (dayOfWeek !== 0 && dayOfWeek !== 6 && !isWeekend(currentDate, adjustedEndDateToYearEnd)) {
+  
+          if (dayOfWeek !== 0 && dayOfWeek !== 6 && !isWeekend(currentDate, adjustedEndDateToToday)) {
             // Exclude Sunday (0) and Saturday (6), and the event date and end date if they're both on a weekend
-            if (item?.Event_x002d_Type != "Work From Home") {
-              if (item?.HalfDay == true) { 
-                workingDays += 0.5; // Consider first half-day
-              }
-              else if(item?.HalfDayTwo == true){
-                workingDays += 0.5;
-              }
-              else {
+            if (item?.Event_x002d_Type !== "Work From Home") {
+              if (
+                (item?.HalfDay === true) ||
+                (item?.HalfDayTwo === true)
+              ) {
+                workingDays += 0.5; // Consider half-day
+              } else {
                 workingDays++;
-              } 
+              }
             }
-           
           }
-
-          currentDate.setTime(currentDate.getTime() + oneDay); // Move to the next day
+  
+          currentDate.setDate(currentDate.getDate() + 1); // Move to the next day
         }
-
+  
         return total + workingDays;
       }
-
-      return total ;
+  
+      return total;
     }, 0);
-    
   };
+  
+  
+  
+  
  
 
   // Function to check if a date falls on a weekend
