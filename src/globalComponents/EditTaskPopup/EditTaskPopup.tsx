@@ -2427,11 +2427,9 @@ const EditTaskPopup = (Items: any) => {
     // ******************** This is Task All Details Update Function  ***************************
 
     const UpdateTaskInfoFunction = async (usedFor: any) => {
-
         let TaskShuoldBeUpdate = true;
         let DataJSONUpdate: any = await MakeUpdateDataJSON();
         let taskPercentageValue: any = DataJSONUpdate?.PercentComplete ? DataJSONUpdate?.PercentComplete : 0;
-
         if (isApprovalByStatus == true) {
             let web = new Web(siteUrls);
             await web.lists
@@ -2446,7 +2444,7 @@ const EditTaskPopup = (Items: any) => {
         }
 
         if (IsSendAttentionMsgStatus) {
-            let txtComment = `You have been tagged as ${SendCategoryName == "Bottleneck" ? SendCategoryName :"Attention"} in the below task by ${Items.context.pageContext._user.displayName}`;
+            let txtComment = `You have been tagged as ${SendCategoryName == "Bottleneck" ? SendCategoryName : "Attention"} in the below task by ${Items.context.pageContext._user.displayName}`;
             let TeamMsg =
                 txtComment +
                 `</br> <a href=${window.location.href}>${EditData.TaskId}-${EditData.Title}</a>`;
@@ -2522,12 +2520,14 @@ const EditTaskPopup = (Items: any) => {
             </b>
             `
                 try {
-                    if (sendUserEmails?.length > 0) {
-                        await globalCommon.SendTeamMessage(
-                            sendUserEmails,
-                            SendMessage,
-                            Items.context
-                        );
+                    if (IsTaskStatusUpdated || TeamMemberChanged) {
+                        if (sendUserEmails?.length > 0) {
+                            await globalCommon.SendTeamMessage(
+                                sendUserEmails,
+                                SendMessage,
+                                Items.context
+                            );
+                        }
                     }
                 } catch (error) {
                     console.log("Error", error.message);
@@ -2539,7 +2539,7 @@ const EditTaskPopup = (Items: any) => {
         }
 
 
-       
+
         if (TaskShuoldBeUpdate) {
             try {
                 let web = new Web(siteUrls);
@@ -4500,7 +4500,7 @@ const EditTaskPopup = (Items: any) => {
 
 
 
-    
+
     const UpdateEstimatedTimeDescriptions = (e: any) => {
         if (e.target.name == "Description") {
             setEstimatedDescription(e.target.value);
