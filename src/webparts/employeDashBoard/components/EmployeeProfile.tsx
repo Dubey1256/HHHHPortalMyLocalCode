@@ -197,7 +197,7 @@ const EmployeProfile = (props: any) => {
       DashboardConfig?.forEach((config: any) => {
         if (config?.Tasks == undefined)
           config.Tasks = []
-        if (config?.LoadDefaultFilter != false && (config.smartFevId == undefined || config.smartFevId == '')) {
+        if (config?.LoadDefaultFilter != false) {
           if (config?.IsDraftTask != undefined && items.Categories?.toLowerCase().indexOf(config?.IsDraftTask.toLowerCase()) > -1 && items.Author?.Id == currentUserData.AssingedToUser.Id && !isTaskItemExists(config?.Tasks, items)) {
             config?.Tasks.push(items);
           }
