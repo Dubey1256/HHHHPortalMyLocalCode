@@ -58,7 +58,7 @@ const EditPopup = (props: any) => {
         siteUrl: props?.siteUrl
     }
 
-    const HRweb = new Web(allListID?.siteUrl)
+    const HRweb = new Web(allListID?.siteUrl);
 
     const handlePlatformClick = (e: React.ChangeEvent<HTMLInputElement>, PlatformName: string) => {
         const clickedPlatform = e.target.value; // Assuming the value of the checkbox is the platform name
