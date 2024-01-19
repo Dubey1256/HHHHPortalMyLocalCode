@@ -87,6 +87,7 @@ export default function InterviewFeedbackForm(props: any) {
     const CloseCreateStatus = () => {
         setopenModalPopup(false)
         setNewStatus('')
+        setIsAddStatusButonDisabled(true)
     }
     const openChangeStatus = () => {
         setisChangeStatusPopup(true)
