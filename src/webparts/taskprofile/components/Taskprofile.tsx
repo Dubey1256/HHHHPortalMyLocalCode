@@ -2000,13 +2000,9 @@ class Taskprofile extends React.Component<ITaskprofileProps, ITaskprofileState> 
                         <dd className='bg-Ff position-relative' ><span className='tooltipbox'>{this.state.Result["IsTodaysTask"] ? "Yes" : "No"} </span>
                         </dd>
                       </dl>
-
                       <dl>
                         <dt className='bg-Fa'>% Complete</dt>
-
                         <dd className='bg-Ff'>{this.state.Result["PercentComplete"] != undefined ? this.state.Result["PercentComplete"]?.toFixed(0) : 0}</dd>
-
-
                       </dl>
                       <dl>
                         <dt className='bg-Fa'>Priority</dt>

@@ -2229,8 +2229,8 @@ const EditTaskPopup = (Items: any) => {
             setPercentCompleteStatus(StatusData.status);
             setTaskStatus(StatusData.taskStatusComment);
             setPercentCompleteCheck(false);
+            setIsTaskStatusUpdated(true);
             if (StatusData.value == 1) {
-                setIsTaskStatusUpdated(true);
                 let tempArray: any = [];
                 if (
                     TaskApproverBackupArray != undefined &&
@@ -2500,7 +2500,7 @@ const EditTaskPopup = (Items: any) => {
                 let SendMessage: string = '';
                 let CommonMsg: string = '';
                 if (TeamMemberChanged) {
-                    CommonMsg = "You have been marked as a working member on the below task. Please take necessary action (Analyse the points in the task, fill up the Estimation, Set to 10%)."
+                    CommonMsg = `You have been marked as a working member on the below task by ${Items.context.pageContext._user.displayName}. Please take necessary action (Analyse the points in the task, fill up the Estimation, Set to 10%).`
                 }
                 if (IsTaskStatusUpdated) {
                     if ((Number(taskPercentageValue) * 100) == 80) {
@@ -2527,7 +2527,7 @@ const EditTaskPopup = (Items: any) => {
                 </b>
                 `
                 try {
-                    if ((IsTaskStatusUpdated || TeamMemberChanged) && ((Number(taskPercentageValue) * 100) <= 85)) {
+                    if ((IsTaskStatusUpdated || TeamMemberChanged) && ((Number(taskPercentageValue) * 100) + 1 <= 85)) {
                         if (sendUserEmails?.length > 0) {
                             await globalCommon.SendTeamMessage(
                                 sendUserEmails,
