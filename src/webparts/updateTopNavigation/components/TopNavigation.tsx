@@ -14,8 +14,11 @@ var ParentData: any = [];
 var childData: any = [];
 var newData: any = "";
 var MydataSorted: any = [];
+let CurrentSite = ''
+let isSort:any= false;
 const TopNavigation = (dynamicData: any) => {
-  var ListId = dynamicData.dynamicData.TopNavigationListID;
+  CurrentSite = dynamicData?.dynamicData?.Context?.pageContext?.web.title
+  var ListId = dynamicData?.dynamicData?.TopNavigationListID;
   const [root, setRoot] = React.useState([]);
   const [EditPopup, setEditPopup] = React.useState(false);
   const [sortedArray, setSortedArray] = React.useState([]);
@@ -144,6 +147,9 @@ const TopNavigation = (dynamicData: any) => {
     });
     console.log(Nodes);
     var AllData = Nodes.sort((a:any, b:any) => a.SortOrder - b.SortOrder);
+    AllData.map((val:any)=>{
+        val.childs =  val?.childs.sort((a:any, b:any) => a.SortOrder - b.SortOrder);
+    })
     setRoot(AllData);
   };
   const getChilds = (item: any, items: any) => {
@@ -353,6 +359,7 @@ const TopNavigation = (dynamicData: any) => {
   const sortBy = (type: any) => {
     const copy = data;
     if (type == "Title") {
+      isSort = true;
       copy.sort((a: any, b: any) => (a.Title > b?.Title ? 1 : -1));
     }
     if (type == "SortOrder") {
@@ -369,7 +376,9 @@ const TopNavigation = (dynamicData: any) => {
   const sortByDng = (type: any) => {
     const copy = data;
     if (type == "Title") {
+      isSort = true;
       copy.sort((a: any, b: any) => (a?.Title > b?.Title ? -1 : 1));
+
     }
     if (type == "SortOrder") {
       copy?.forEach((val: any) => {
@@ -543,7 +552,7 @@ const TopNavigation = (dynamicData: any) => {
     <>
       <div className="row">
         <h2 className="d-flex justify-content-between align-items-center siteColor  serviceColor_Active p-0">
-          <div className="siteColor headign">Update TopNavigation</div>
+          <div className="siteColor headign">Update TopNavigation - ({CurrentSite})</div>
           <div className="text-end fs-6">
           <span className="hyperlink me-3" onClick={() => sortItem(root)} >Change Sort Order</span>
               <a
@@ -622,10 +631,10 @@ const TopNavigation = (dynamicData: any) => {
                                 className="svg__iconbox svg__icon--Switcher"
                                 onClick={() => sortItem(item.childs)}
                               ></span>
-                              <span
+                              {/* <span
                                 className="svg__iconbox svg__icon--trash"
                                 onClick={() => deleteDataFunction(child)}
-                              ></span>
+                              ></span> */}
                             </span>
                             <ul className="sub-menu">
                               <li onClick={() => AddNewItem(child)}>
@@ -663,12 +672,12 @@ const TopNavigation = (dynamicData: any) => {
                                           className="svg__iconbox svg__icon--Switcher"
                                           onClick={() => sortItem(child.childs)}
                                         ></span>
-                                        <span
+                                        {/* <span
                                           className="svg__iconbox svg__icon--trash"
                                           onClick={() =>
                                             deleteDataFunction(subchild)
                                           }
-                                        ></span>
+                                        ></span> */}
                                       </span>
 
                                       <ul className="sub-menu">
@@ -729,14 +738,14 @@ const TopNavigation = (dynamicData: any) => {
                                                         )
                                                       }
                                                     ></span>
-                                                    <span
+                                                    {/* <span
                                                       className="svg__iconbox svg__icon--trash"
                                                       onClick={() =>
                                                         deleteDataFunction(
                                                           subchildLast
                                                         )
                                                       }
-                                                    ></span>
+                                                    ></span> */}
                                                   </span>
                                                 </li>
                                               </>
@@ -1279,35 +1288,37 @@ const TopNavigation = (dynamicData: any) => {
                       </th>
 
                       <th style={{ width: "20%" }}>
+                       
                         <div
-                          style={{ width: "100%" }}
-                          className="position-relative smart-relative  p-1"
-                        >
-                          <input
-                            id="
-                            "
-                            type="search"
-                            placeholder="SortOrder"
-                            title="Client Category"
-                            className="full_width searchbox_height bg-Ff"
-                            onChange={SearchedData}
-                            autoComplete="off"
-                          />
-                          <span className="sorticon" style={{ top: "5px" }}>
-                            <span
-                              className="up"
-                              onClick={() => sortBy("SortOrder")}
-                            >
-                              <FaAngleUp />
-                            </span>
-                            <span
-                              className="down"
-                              onClick={() => sortByDng("SortOrder")}
-                            >
-                              <FaAngleDown />
-                            </span>
+                        style={{ width: "100%" }}
+                        className="position-relative smart-relative  p-1"
+                      >
+                        <input
+                          id="
+                          "
+                          type="search"
+                          placeholder="SortOrder"
+                          title="Client Category"
+                          className="full_width searchbox_height bg-Ff"
+                          onChange={SearchedData}
+                          autoComplete="off"
+                        />
+                        <span className="sorticon" style={{ top: "5px" }}>
+                          <span
+                            className="up"
+                            onClick={() => sortBy("SortOrder")}
+                          >
+                            <FaAngleUp />
                           </span>
-                        </div>
+                          <span
+                            className="down"
+                            onClick={() => sortByDng("SortOrder")}
+                          >
+                            <FaAngleDown />
+                          </span>
+                        </span>
+                      </div>
+                       
                       </th>
                     </tr>
                   </thead>

@@ -374,7 +374,7 @@ class Taskprofile extends React.Component<ITaskprofileProps, ITaskprofileState> 
       IsTodaysTask: taskDetails["IsTodaysTask"],
       PriorityRank: taskDetails["PriorityRank"],
       EstimatedTime: taskDetails["EstimatedTime"],
-      Sitestagging: taskDetails["Sitestagging"] != null && JSON.parse(taskDetails["Sitestagging"]),
+      Sitestagging: taskDetails["Sitestagging"] != null ? JSON.parse(taskDetails["Sitestagging"]):[],
       ClientTime: taskDetails["ClientTime"] != null && JSON.parse(taskDetails["ClientTime"]),
       ApproverHistory: taskDetails["ApproverHistory"] != null ? JSON.parse(taskDetails["ApproverHistory"]) : "",
       OffshoreComments: OffshoreComments.length > 0 ? OffshoreComments.reverse() : null,
@@ -412,7 +412,7 @@ class Taskprofile extends React.Component<ITaskprofileProps, ITaskprofileState> 
       EstimatedTimeDescriptionArray: tempEstimatedArrayData,
       TotalEstimatedTime: TotalEstimatedTime,
 
-      Portfolio: portfolio != undefined && portfolio.length > 0 ? portfolio[0] : taskDetails?.Portfolio,
+      Portfolio: portfolio != undefined && portfolio.length > 0 ? portfolio[0] : undefined,
       PortfolioType: portfolio != undefined && portfolio.length > 0 ? portfolio[0]?.PortfolioType : undefined,
       Creation: taskDetails["Created"],
       Modified: taskDetails["Modified"],
@@ -425,9 +425,7 @@ class Taskprofile extends React.Component<ITaskprofileProps, ITaskprofileState> 
       Approver: taskDetails?.Approver != undefined ? this.taskUsers.find((userData: any) => userData?.AssingedToUser?.Id == taskDetails?.Approver[0]?.Id) : "",
       ParentTask: taskDetails?.ParentTask,
     };
-    if (tempTask?.ClientTime == false) {
-      tempTask.ClientTime = null
-    }
+  
     if (tempTask?.FeedBack != null && tempTask?.FeedBack.length > 0) {
       tempTask?.FeedBack[0]?.FeedBackDescriptions?.map((items: any) => {
         if (items?.Comments?.length > 0) {
@@ -838,18 +836,39 @@ class Taskprofile extends React.Component<ITaskprofileProps, ITaskprofileState> 
     var data = this.state.Result;
     if (item == "Approved") {
       // data.PercentComplete = 3
-      var data = this.state.Result;
-      this.setState({
-        Result: data,
-      }),
-        console.log(item);
-      this.setState({
-        sendMail: true,
+      // var data = this.state.Result;
+      // this.setState({
+      //   Result: data,
+      // }),
+      let TeamMembers: any = []
+      TeamMembers.push(this.state.Result.TeamMembers[0]?.Id)
+      let changeData: any = {
+        TeamMembers: TeamMembers,
+           AssignedTo: []
+      }
+      this.ChangeApprovalMember(changeData).then((data: any) => {
+        var data = this.state.Result;
+        this.setState({
+          Result: data,
+        }),
+          console.log(item);
+        this.setState({
+          sendMail: true,
+        });
+        this.setState({
+          emailStatus: item,
+        });
+      }).catch((error) => {
+        console.log(error)
       });
-      this.setState({
-        emailStatus: item,
-      });
-    } else {
+      // this.setState({
+      //   sendMail: true,
+      // });
+      // this.setState({
+      //   emailStatus: item,
+      // });
+    } 
+    else {
 
       let TeamMembers: any = []
       TeamMembers.push(this.state.Result.TeamMembers[0]?.Id)
@@ -1281,7 +1300,7 @@ class Taskprofile extends React.Component<ITaskprofileProps, ITaskprofileState> 
           let changeData: any = {
 
             TeamMembers: TeamMembers,
-            AssignedTo: [this.currentUser?.[0]?.Id]
+            AssignedTo: []
           }
           this.ChangeApprovalMember(changeData).then((data: any) => {
             this.GetResult();
@@ -2021,7 +2040,8 @@ class Taskprofile extends React.Component<ITaskprofileProps, ITaskprofileState> 
                                         {item.CommentFor !== undefined &&
                                           item.CommentFor !== "" ? (
                                           <div key={index}>
-                                           <span  dangerouslySetInnerHTML={{ __html: this.cleanHTML(item?.Description, "folora", index)}}></span>
+                                           <span  dangerouslySetInnerHTML={{ __html: this.cleanHTML(item?.Description, "folora", index)}}>
+                                             </span>
                                           </div>
                                         ) : null}
                                       </div>
@@ -2592,9 +2612,7 @@ class Taskprofile extends React.Component<ITaskprofileProps, ITaskprofileState> 
                                               </div>
                                             </div>
                                             {this.state?.subchildcomment == j && this.state?.subchildParentIndex == i ? <div className='SpfxCheckRadio' >
-                                              <div className="col-sm-12 mt-2 p-0  "
-
-                                              >
+                                              <div className="col-sm-12 mt-2 p-0  ">
                                                 {this.state.Result["Approver"] != "" && this.state.Result["Approver"] != undefined && (this.state.Result["Approver"]?.AssingedToUser?.Id == this.currentUser[0]?.Id || (this.state.Result["Approver"]?.Approver[0]?.Id == this?.currentUser[0]?.Id)) && <label className='label--checkbox'><input type='checkbox' className='checkbox' checked={this.state?.ApprovalCommentcheckbox} onChange={(e) => this.setState({ ApprovalCommentcheckbox: e.target?.checked })} />Mark as Approval Comment</label>}
 
                                               </div>

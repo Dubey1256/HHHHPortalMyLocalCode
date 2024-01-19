@@ -1757,7 +1757,7 @@ const AncTool = (props: any) => {
                     Context={props?.Context}
                     taskTitle={props?.item?.Title}
                     listName={props?.item?.siteType != undefined ? props?.item?.siteType : 'Master Tasks'}
-                    showHide={"projectManagement"}
+                    showHide={"ANCTaskProfile"}
                     setRemark={setRemark}
                     editSmartInfo={editSmartInfo}
                     callback={smartnotecall}
