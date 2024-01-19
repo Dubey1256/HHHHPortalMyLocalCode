@@ -1065,7 +1065,7 @@ function Portfolio({ SelectedProp, TaskUser }: any) {
 
 
   return (
-    <myContextValue.Provider value={{ ...myContextValue, FunctionCall: contextCall, keyDoc: keydoc, FileDirRef: FileDirRef }}>
+    <myContextValue.Provider value={{ ...myContextValue, FunctionCall: contextCall, keyDoc: keydoc, FileDirRef: FileDirRef,ColorCode:data[0]?.PortfolioType?.Color }}>
       <div >
         {/* breadcrumb & title */}
         <section className="ContentSection">
