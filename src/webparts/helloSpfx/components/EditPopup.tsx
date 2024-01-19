@@ -640,7 +640,7 @@ const EditPopup = (props: any) => {
                         <div className="sectionHead siteBdrBottom mb-1 w-100">Status</div>
                         <Dropdown
                             id="status"
-                            options={props?.statusData.map((itm: any) => ({ key: itm?.Title, text: itm }))}
+                            options={props?.statusData.map((itm: any) => ({ key: itm?.Title, text: itm?.Title }))}
                             selectedKey={selectedStatus}
                             onChange={(e, option) => setSelectedStatus(option?.key || '')}
                             styles={{ dropdown: { width: '100%' } }}
