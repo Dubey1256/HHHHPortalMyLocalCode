@@ -29,7 +29,6 @@ const EditPopup = (props: any) => {
     const [experienceMonths, setExperienceMonths]: any = useState<any>();
     const [showAddDocumentPanel, setShowAddDocumentPanel] = useState(false);
     const star = props.item.IsFavorite ? '⭐' : '';
-    const Status = ['New Candidate', 'Under Consideration', 'Interview', 'Negotiation', 'Hired', 'Rejected'];
     const [platformChoices, setPlatformChoices] = useState([
         { name: 'Indeed', selected: false },
         { name: 'Agentur für Arbeit', selected: false },
@@ -641,7 +640,7 @@ const EditPopup = (props: any) => {
                         <div className="sectionHead siteBdrBottom mb-1 w-100">Status</div>
                         <Dropdown
                             id="status"
-                            options={Status.map((itm) => ({ key: itm, text: itm }))}
+                            options={props?.statusData.map((itm: any) => ({ key: itm?.Title, text: itm }))}
                             selectedKey={selectedStatus}
                             onChange={(e, option) => setSelectedStatus(option?.key || '')}
                             styles={{ dropdown: { width: '100%' } }}
