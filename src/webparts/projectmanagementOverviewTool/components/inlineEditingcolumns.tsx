@@ -186,12 +186,10 @@ const inlineEditingcolumns = (props: any) => {
     } catch (e) { console.log }
   }
 
-  const updateTaskComments = async () => {
+  const updateTaskComments = () => {
     try{
-    if(props?.item?.Comments) {
     let allComments: any = JSON.parse(props?.item?.Comments)
     setComments(allComments)
-    }
     }
     catch{
       console.log('JSON cannot be parsed')
