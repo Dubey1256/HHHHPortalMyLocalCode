@@ -2229,8 +2229,8 @@ const EditTaskPopup = (Items: any) => {
             setPercentCompleteStatus(StatusData.status);
             setTaskStatus(StatusData.taskStatusComment);
             setPercentCompleteCheck(false);
+            setIsTaskStatusUpdated(true);
             if (StatusData.value == 1) {
-                setIsTaskStatusUpdated(true);
                 let tempArray: any = [];
                 if (
                     TaskApproverBackupArray != undefined &&
