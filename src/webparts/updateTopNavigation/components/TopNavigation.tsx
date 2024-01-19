@@ -17,8 +17,8 @@ var MydataSorted: any = [];
 let CurrentSite = ''
 let isSort:any= false;
 const TopNavigation = (dynamicData: any) => {
-  CurrentSite = dynamicData.dynamicData.Context.pageContext.web.title
-  var ListId = dynamicData.dynamicData.TopNavigationListID;
+  CurrentSite = dynamicData?.dynamicData?.Context?.pageContext?.web.title
+  var ListId = dynamicData?.dynamicData?.TopNavigationListID;
   const [root, setRoot] = React.useState([]);
   const [EditPopup, setEditPopup] = React.useState(false);
   const [sortedArray, setSortedArray] = React.useState([]);
