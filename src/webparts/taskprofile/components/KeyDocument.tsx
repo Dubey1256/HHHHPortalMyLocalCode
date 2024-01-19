@@ -105,7 +105,8 @@ const RelevantDocuments = (props: any, ref: any) => {
         [{
             accessorKey: "",
             placeholder: "",
-            size: 5,
+            size: 3,
+            padding:"0px",
             id: 'Id',
         },
         {
@@ -130,7 +131,7 @@ const RelevantDocuments = (props: any, ref: any) => {
         {
             accessorFn: (row: any) => row?.Modified,
             cell: ({ row }: any) => (
-                <div className="text-center"> {row?.original.Modified !== null ? moment(row?.original.Modified).format("DD/MM/YYYY") : ""}
+                <div> {row?.original.Modified !== null ? moment(row?.original.Modified).format("DD/MM/YYYY") : ""}
                     <>
                         <a href={`${myContextValue?.siteUrl}/SitePages/TaskDashboard.aspx?UserId=${row?.original?.Editor?.Id}&Name=${row?.original?.Editor?.Title}`}
                             target="_blank" data-interception="off">
@@ -144,12 +145,12 @@ const RelevantDocuments = (props: any, ref: any) => {
             placeholder: 'Modified',
             resetColumnFilters: false,
             header: '',
-            size: 172,
+            size: 115,
         },
         {
             accessorFn: (row: any) => row?.Created,
             cell: ({ row }: any) => (
-                <div className="text-center">{row?.original.Created !== null ? moment(row?.original.Created).format("DD/MM/YYYY") : ""}
+                <div>{row?.original.Created !== null ? moment(row?.original.Created).format("DD/MM/YYYY") : ""}
 
 
                     <>
@@ -168,7 +169,7 @@ const RelevantDocuments = (props: any, ref: any) => {
             placeholder: 'Created',
             resetColumnFilters: false,
             header: '',
-            size: 120,
+            size: 115,
         },
         {
             accessorFn: "",
@@ -220,7 +221,7 @@ const RelevantDocuments = (props: any, ref: any) => {
             {(keyDocument != undefined && keyDocument?.length > 0)
 
                 &&
-                <div className='mb-3 card commentsection'>
+                <div className='mb-3 card commentsection  mt-4'>
                     <div className='card-header'>
                         <div className="card-title h5 d-flex justify-content-between align-items-center  mb-0">Key Documents<span><Tooltip ComponentId={'1298'} /></span></div>
                     </div>
