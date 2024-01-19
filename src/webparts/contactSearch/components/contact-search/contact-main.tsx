@@ -396,7 +396,7 @@ const ContactMainPage = (props: any) => {
                 canSort: false,
                 placeholder: 'Name',
                 header: '',
-                id: 'FullName',
+                id: 'Title',
                 size: 150,
             },
             { accessorKey: "Email", placeholder: "Email Address", header: "", size: 80,id:"Email" },
@@ -477,7 +477,7 @@ const ContactMainPage = (props: any) => {
             canSort: false,
             placeholder: '',
             header: '',
-            id: 'row.original',
+            id: 'ItemImage',
             size: 25,
         },
         {
@@ -492,12 +492,12 @@ const ContactMainPage = (props: any) => {
             canSort: false,
             placeholder: 'Search Instituion',
             header: '',
-            id: 'FullName',
+            id: 'Title',
             size: 150,
         },
-        { accessorKey: "WorkCity", placeholder: "City", header: "", size: 80, },
-        { accessorKey: "SmartCountriesIns", placeholder: "Country", header: "", size: 80, },
-        { accessorKey: "SitesTagged", placeholder: "Site", header: "", size: 80, },
+        { accessorKey: "WorkCity", placeholder: "City", header: "", size: 80, id:"WorkCity"},
+        { accessorKey: "SmartCountriesIns", placeholder: "Country", header: "", size: 80,id:"SmartCountriesIns" },
+        { accessorKey: "SitesTagged", placeholder: "Site", header: "", size: 80,id:"SitesTagged" },
        
         {
             cell: ({ row }) => (

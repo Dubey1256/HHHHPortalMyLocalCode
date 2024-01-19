@@ -12,7 +12,8 @@ export default class UpdateTopNavigation extends React.Component<IUpdateTopNavig
       environmentMessage,
       hasTeamsContext,
       TopNavigationListID,
-      userDisplayName
+      userDisplayName,
+      Context
     } = this.props;
 
     return (

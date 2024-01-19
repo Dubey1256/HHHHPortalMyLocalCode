@@ -2229,8 +2229,8 @@ const EditTaskPopup = (Items: any) => {
             setPercentCompleteStatus(StatusData.status);
             setTaskStatus(StatusData.taskStatusComment);
             setPercentCompleteCheck(false);
+            setIsTaskStatusUpdated(true);
             if (StatusData.value == 1) {
-                setIsTaskStatusUpdated(true);
                 let tempArray: any = [];
                 if (
                     TaskApproverBackupArray != undefined &&
@@ -2427,11 +2427,9 @@ const EditTaskPopup = (Items: any) => {
     // ******************** This is Task All Details Update Function  ***************************
 
     const UpdateTaskInfoFunction = async (usedFor: any) => {
-
         let TaskShuoldBeUpdate = true;
         let DataJSONUpdate: any = await MakeUpdateDataJSON();
         let taskPercentageValue: any = DataJSONUpdate?.PercentComplete ? DataJSONUpdate?.PercentComplete : 0;
-
         if (isApprovalByStatus == true) {
             let web = new Web(siteUrls);
             await web.lists
@@ -2446,7 +2444,7 @@ const EditTaskPopup = (Items: any) => {
         }
 
         if (IsSendAttentionMsgStatus) {
-            let txtComment = `You have been tagged as ${SendCategoryName == "Bottleneck" ? SendCategoryName :"Attention"} in the below task by ${Items.context.pageContext._user.displayName}`;
+            let txtComment = `You have been tagged as ${SendCategoryName == "Bottleneck" ? SendCategoryName : "Attention"} in the below task by ${Items.context.pageContext._user.displayName}`;
             let TeamMsg =
                 txtComment +
                 `</br> <a href=${window.location.href}>${EditData.TaskId}-${EditData.Title}</a>`;
@@ -2490,11 +2488,19 @@ const EditTaskPopup = (Items: any) => {
                         }
                     });
                 });
-                let TaskCategories = tempShareWebTypeData.map((item: any) => item.Title).join(', ');
+                let uniqueIds: any = {};
+                const result: any = tempShareWebTypeData.filter((item: any) => {
+                    if (!uniqueIds[item.Id]) {
+                        uniqueIds[item.Id] = true;
+                        return true;
+                    }
+                    return false;
+                });
+                let TaskCategories = result?.map((item: any) => item.Title).join(', ');
                 let SendMessage: string = '';
                 let CommonMsg: string = '';
                 if (TeamMemberChanged) {
-                    CommonMsg = "You have been marked as a working member on the below task. Please take necessary action (Analyse the points in the task, fill up the Estimation, Set to 10%)."
+                    CommonMsg = `You have been marked as a working member on the below task by ${Items.context.pageContext._user.displayName}. Please take necessary action (Analyse the points in the task, fill up the Estimation, Set to 10%).`
                 }
                 if (IsTaskStatusUpdated) {
                     if ((Number(taskPercentageValue) * 100) == 80) {
@@ -2506,29 +2512,31 @@ const EditTaskPopup = (Items: any) => {
                 }
 
                 SendMessage = `<p><b>Hi ${AssignedUserName},</b> </p></br><p>${CommonMsg}</p> </br> 
-            <p>
-            Task URL: <a href=${siteUrls + "/SitePages/Task-Profile.aspx?taskId=" + EditData.Id + "&Site=" + EditData.siteType}>
-            ${EditData.TaskId}-${EditData.Title}
-            </a>
-            </br>
-            Task Category: ${TaskCategories}</br>
-            Smartpriority: <b>${EditData?.SmartPriority}</b></br>
-            </p>
-            <b> 
-            <p>
-            Thanks, </br>
-            Task Management Team
-            </p>
-            </b>
-            `
+                <p>
+                Task Link:  <a href=${siteUrls + "/SitePages/Task-Profile.aspx?taskId=" + EditData.Id + "&Site=" + EditData.siteType}>
+                 ${EditData.TaskId}-${EditData.Title}
+                </a>
+                </br>
+                Task Category: ${TaskCategories}</br>
+                Smartpriority: <b>${EditData?.SmartPriority}</b></br>
+                </p>
+                <p></p>
+                <b>
+                Thanks, </br>
+                Task Management Team
+                </b>
+                `
                 try {
-                    if (sendUserEmails?.length > 0) {
-                        await globalCommon.SendTeamMessage(
-                            sendUserEmails,
-                            SendMessage,
-                            Items.context
-                        );
+                    if ((IsTaskStatusUpdated || TeamMemberChanged) && ((Number(taskPercentageValue) * 100) + 1 <= 85)) {
+                        if (sendUserEmails?.length > 0) {
+                            await globalCommon.SendTeamMessage(
+                                sendUserEmails,
+                                SendMessage,
+                                Items.context
+                            );
+                        }
                     }
+
                 } catch (error) {
                     console.log("Error", error.message);
                 }
@@ -2539,7 +2547,7 @@ const EditTaskPopup = (Items: any) => {
         }
 
 
-       
+
         if (TaskShuoldBeUpdate) {
             try {
                 let web = new Web(siteUrls);
@@ -4500,7 +4508,7 @@ const EditTaskPopup = (Items: any) => {
 
 
 
-    
+
     const UpdateEstimatedTimeDescriptions = (e: any) => {
         if (e.target.name == "Description") {
             setEstimatedDescription(e.target.value);

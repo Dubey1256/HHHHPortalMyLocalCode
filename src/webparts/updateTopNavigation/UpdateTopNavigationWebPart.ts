@@ -15,6 +15,7 @@ import { IUpdateTopNavigationProps } from './components/IUpdateTopNavigationProp
 
 export interface IUpdateTopNavigationWebPartProps {
   description: string;
+  Context:any;
   TopNavigationListID:"7ee58156-c976-46b6-9b08-b700bf8e724b"
 }
 
@@ -33,6 +34,7 @@ export default class UpdateTopNavigationWebPart extends BaseClientSideWebPart<IU
         siteUrl: this.context.pageContext.web.absoluteUrl,
         TopNavigationListID: this.properties.TopNavigationListID,
         hasTeamsContext: !!this.context.sdks.microsoftTeams,
+        Context: this.context,
         userDisplayName: this.context.pageContext.user.displayName
       }
     );

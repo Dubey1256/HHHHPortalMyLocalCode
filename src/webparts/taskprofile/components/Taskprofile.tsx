@@ -425,9 +425,7 @@ class Taskprofile extends React.Component<ITaskprofileProps, ITaskprofileState> 
       Approver: taskDetails?.Approver != undefined ? this.taskUsers.find((userData: any) => userData?.AssingedToUser?.Id == taskDetails?.Approver[0]?.Id) : "",
       ParentTask: taskDetails?.ParentTask,
     };
-    if (tempTask?.ClientTime == false) {
-      tempTask.ClientTime = null
-    }
+  
     if (tempTask?.FeedBack != null && tempTask?.FeedBack.length > 0) {
       tempTask?.FeedBack[0]?.FeedBackDescriptions?.map((items: any) => {
         if (items?.Comments?.length > 0) {
@@ -2002,13 +2000,9 @@ class Taskprofile extends React.Component<ITaskprofileProps, ITaskprofileState> 
                         <dd className='bg-Ff position-relative' ><span className='tooltipbox'>{this.state.Result["IsTodaysTask"] ? "Yes" : "No"} </span>
                         </dd>
                       </dl>
-
                       <dl>
                         <dt className='bg-Fa'>% Complete</dt>
-
                         <dd className='bg-Ff'>{this.state.Result["PercentComplete"] != undefined ? this.state.Result["PercentComplete"]?.toFixed(0) : 0}</dd>
-
-
                       </dl>
                       <dl>
                         <dt className='bg-Fa'>Priority</dt>
@@ -2042,7 +2036,8 @@ class Taskprofile extends React.Component<ITaskprofileProps, ITaskprofileState> 
                                         {item.CommentFor !== undefined &&
                                           item.CommentFor !== "" ? (
                                           <div key={index}>
-                                           <span  dangerouslySetInnerHTML={{ __html: this.cleanHTML(item?.Description, "folora", index)}}></span>
+                                           <span  dangerouslySetInnerHTML={{ __html: this.cleanHTML(item?.Description, "folora", index)}}>
+                                             </span>
                                           </div>
                                         ) : null}
                                       </div>
