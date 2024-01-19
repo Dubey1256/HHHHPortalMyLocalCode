@@ -110,7 +110,9 @@ const DashboardConfiguration = (props: any) => {
     }
     return (
         <>
-            <div className='mb-5'><a className="pull-right empCol hreflink" onClick={(e) => AddNewConfig()}> Add New Dashboard </a>
+            <h3 className="heading">Dashboard Landing Page
+            </h3>
+            <div ><a className="pull-right empCol hreflink" onClick={(e) => AddNewConfig()}> Add New Dashboard </a>
             </div>
             <div className="Alltable maXh-300" style={{ height: "300px" }}>
                 {WebpartConfig?.length > 0 && (
