@@ -475,7 +475,7 @@ const SmartInformation = (props: any, ref: any) => {
           .items.getById(editvalue?.Id).update(postdata)
           .then(async (editData: any) => {
             console.log(editData)
-            if (props.showHide === "projectManagement") {
+            if (props.showHide === "projectManagement"||props.showHide=="ANCTaskProfile") {
               console.log(props.RemarkData)
               let restdata = editData
               let urlcallback: any = {
@@ -533,7 +533,7 @@ const SmartInformation = (props: any, ref: any) => {
                 }
               ).then(async (data: any) => {
                 console.log(data);
-                if (props.showHide === "projectManagement" && addSmartInfoPopupAddlinkDoc2 == false) {
+                if ((props.showHide === "projectManagement"||props.showHide=="ANCTaskProfile") && addSmartInfoPopupAddlinkDoc2 == false) {
                   console.log(props.RemarkData)
                   let backupremarkdata = props?.RemarkData
                   res.data.InfoType = {}
@@ -606,7 +606,7 @@ const SmartInformation = (props: any, ref: any) => {
         .items.getById(DeletItemId).recycle()
         .then((res: any) => {
           console.log(res);
-          if (props.showHide === "projectManagement") {
+          if (props.showHide === "projectManagement"||props.showHide=="ANCTaskProfile") {
             console.log(props.RemarkData)
             let backupremarkdata = props?.RemarkData
             if (backupremarkdata.SmartInformation !== undefined || null) {
@@ -793,7 +793,7 @@ const SmartInformation = (props: any, ref: any) => {
         }
         addSmartInfoPopupAddlinkDoc2 = false;
         handleClose();
-        if (props.showHide === "projectManagement") {
+        if (props.showHide === "projectManagement"|| props.showHide=="ANCTaskProfile") {
           if (props?.callback != undefined || null) {
             props?.callback()
           }
@@ -1049,7 +1049,7 @@ const SmartInformation = (props: any, ref: any) => {
               <Tooltip ComponentId='993' /></span></div>
         </div>
 
-        {SmartInformation != null && SmartInformation.length > 0 && <div className="Sitecomposition p-2">{SmartInformation?.map((SmartInformation: any, i: any) => {
+        {SmartInformation != null && SmartInformation.length > 0 && <div className="p-2">{SmartInformation?.map((SmartInformation: any, i: any) => {
           if ((props?.Context?.pageContext?.legacyPageContext?.userId == SmartInformation?.Author?.Id && SmartInformation?.SelectedFolder == "Only For Me") || SmartInformation.SelectedFolder == "Public") {
             return (
               <>
@@ -1207,14 +1207,14 @@ const SmartInformation = (props: any, ref: any) => {
         <div className='mt-3'> <HtmlEditorCard editorValue={allValue?.Description != null ? allValue?.Description : ""} HtmlEditorStateChange={HtmlEditorCallBack}> </HtmlEditorCard></div>
         <footer className='text-end mt-2'>
           <div className='col-sm-12 row m-0'>
-            <div className="col-sm-6 text-lg-start ps-1">
+            <div className={popupEdit?"col-sm-4 text-lg-start ps-1":"col-sm-6 text-lg-start ps-1"}>
               {popupEdit && <div><div><span className='pe-2'>Created</span><span className='pe-2'>{editvalue?.Created !== null ? moment(editvalue?.Created).format("DD/MM/YYYY HH:mm") : ""}&nbsp;By</span><span><a>{editvalue?.Author?.Title}</a></span></div>
                 <div><span className='pe-2'>Last modified</span><span className='pe-2'>{editvalue?.Modified !== null ? moment(editvalue?.Modified).format("DD/MM/YYYY HH:mm") : ""}&nbsp;By</span><span><a>{editvalue?.Editor?.Title}</a></span></div>
                 <div className='alignCenter'>Delete this item<span className="svg__iconbox svg__icon--trash" onClick={() => deleteSmartinfoData(editvalue.Id)}> </span></div>
               </div>}
             </div>
 
-            <div className='col-sm-6 mt-2 p-0'>
+            <div className={popupEdit?'col-sm-8 mt-2 p-0':"col-sm-6 mt-2 p-0"}>
               {popupEdit && <span className='pe-2'><a target="_blank" data-interception="off" href={`${props?.Context?._pageContext?._web?.absoluteUrl}/Lists/SmartInformation/EditForm.aspx?ID=${editvalue?.Id != null ? editvalue?.Id : null}`}>Open out-of-the-box form |</a></span>}
 
              <span className='me-2'><a className="ForAll hreflink" target="_blank" data-interception="off"

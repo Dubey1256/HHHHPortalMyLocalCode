@@ -600,6 +600,7 @@ function PortfolioTable(SelectedProp: any) {
         ProjectData=results?.ProjectData;
         componentDetails?.map((items: any) => {
           items.SmartPriority;
+          items.TaskTypeValue = '';
       });
     }
     flatviewmastertask = JSON.parse(JSON.stringify(componentDetails));
@@ -1711,6 +1712,11 @@ const switchGroupbyData = () => {
       copyDtaArray.unshift(item.data);
       renderData = [];
       renderData = renderData.concat(copyDtaArray);
+      if (item?.CreateOpenType === 'CreatePopup') {
+        const openEditItem = (item?.CreatedItem != undefined ? item.CreatedItem[0]?.data : item.data);
+        setSharewebComponent(openEditItem);
+        setIsComponent(true);
+    }
       refreshData();
     }
     setOpenAddStructurePopup(false);
@@ -1769,6 +1775,7 @@ const addedCreatedDataFromAWT = (arr: any, dataToPush: any) => {
       temp.Title = "Others";
       temp.TaskID = "";
       temp.subRows = [];
+      temp.TaskTypeValue = '';
       temp.PercentComplete = "";
       temp.ItemRank = "";
       temp.DueDate = null;

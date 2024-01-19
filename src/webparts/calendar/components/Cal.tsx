@@ -434,7 +434,7 @@ const App = (props: any) => {
     { key: "Design", text: "Design" },
     { key: "HR", text: "HR" },
     { key: "Admin", text: "Admin" },
-    { key: "JTM(Junior Technical Manager)", text: "JTM(Junior Technical Manager)" }
+    { key: "JTM (Junior Task Manager)", text: "JTM (Junior Task Manager)" }
   ];
   const openm = () => {
     setm(true);

@@ -23,8 +23,14 @@ const TaskStatusTbl = (Tile: any) => {
   const AllMasterTasks: any = ContextData?.AllMasterTasks;
   const [editPopup, setEditPopup]: any = React.useState(false);
   const [result, setResult]: any = React.useState(false);
-  if (ContextData != undefined && ContextData?.DashboardConfig != undefined && ContextData?.DashboardConfig?.length > 0)
-    AllapprovalTask = ContextData.DashboardConfig.filter((item: any) => item.Id == 6)[0].Tasks;
+  if (ContextData != undefined && ContextData?.DashboardConfig != undefined && ContextData?.DashboardConfig?.length > 0) {
+    AllapprovalTask = ContextData.DashboardConfig.filter((item: any) => item.Id == 6)[0];
+    if (AllapprovalTask != undefined && AllapprovalTask.length > 0)
+      AllapprovalTask = AllapprovalTask[0].Tasks;
+    else
+      AllapprovalTask = []
+  }
+
   let [approvalTask, setapprovalTask]: any = React.useState([]);
   const [sendMail, setsendMail]: any = React.useState(false);
   const [IsManageConfigPopup, setIsManageConfigPopup] = React.useState(false);
@@ -364,7 +370,7 @@ const TaskStatusTbl = (Tile: any) => {
         {editPopup && <EditTaskPopup Items={result} context={ContextData?.propsValue?.Context} AllListId={AllListId} Call={() => { CallBack() }} />}
       </span>
       <span>
-        {IsManageConfigPopup && <ManageConfigPopup SelectedItem={SelectedItem} IsManageConfigPopup={IsManageConfigPopup} CloseOpenConfigPopup={CloseOpenConfigPopup} />}
+        {IsManageConfigPopup && <ManageConfigPopup DashboardConfigBackUp={ContextData?.DashboardConfigBackUp} props={ContextData?.propsValue} SelectedItem={SelectedItem} IsManageConfigPopup={IsManageConfigPopup} CloseOpenConfigPopup={CloseOpenConfigPopup} />}
       </span>
     </div>
   );

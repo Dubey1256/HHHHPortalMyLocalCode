@@ -480,7 +480,7 @@ export class TeamConfigurationCard extends React.Component<ITeamConfigurationPro
                                             onDrop={(e) => this.onDropTeam(e, this.state.AssignedToUsers, 'Team Leaders', this.state.taskUsers, 'AssignedToUsers')}
                                             onDragOver={(e) => e.preventDefault()}>
                                             <div className="p-1">
-                                                <div data-placeholder="Team Leader" className='d-flex flex-wrap selectmember'>
+                                                <div data-placeholder="Team Leader" className='flex-wrap selectmember'>
                                                     {this.state.AssignedToUsers && this.state.AssignedToUsers.length > 0 ? (
                                                         this.state.AssignedToUsers.map((image: any, index: number) => (
                                                             <img
@@ -506,7 +506,7 @@ export class TeamConfigurationCard extends React.Component<ITeamConfigurationPro
                                                     onDrop={(e) => this.onDropTeam(e, this.state.TeamMemberUsers, 'Team Members', this.state.taskUsers, 'TeamMemberUsers')}
                                                     onDragOver={(e) => e.preventDefault()}>
                                                     <div className="p-1">
-                                                        <div data-placeholder="Responsible Team" className='d-flex flex-wrap selectmember'>
+                                                        <div data-placeholder="Responsible Team" className='flex-wrap selectmember'>
                                                             {this.state.TeamMemberUsers && this.state.TeamMemberUsers.length > 0 ? (
                                                                 this.state.TeamMemberUsers.map((image: any, index: number) => (
                                                                     <img

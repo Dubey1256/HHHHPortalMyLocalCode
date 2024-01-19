@@ -29,29 +29,20 @@ const RestructuringCom = (props: any, ref: any) => {
   const [topProject, setTopProject]: any = React.useState(false);
 
   useEffect(() => {
-    if (
-      props?.restructureItem != undefined &&
-      props?.restructureItem?.length > 0
-    ) {
+    if (props?.restructureItem != undefined && props?.restructureItem?.length > 0) {
       let array: any = [];
       let portfolioTypeCheck: any = null;
       props?.restructureItem?.map((obj: any) => {
         if (obj?.original?.Item_x0020_Type === "Task") {
-          const matchingTask = props?.AllMasterTasksData?.find(
-            (task: any) => obj?.original?.Portfolio?.Id === task?.Id
-          );
+          const matchingTask = props?.AllMasterTasksData?.find((task: any) => obj?.original?.Portfolio?.Id === task?.Id);
           if (matchingTask) {
             portfolioTypeCheck = matchingTask?.PortfolioType?.Title;
-            obj.original.PortfolioTypeCheck =
-              matchingTask?.PortfolioType?.Title;
+            obj.original.PortfolioTypeCheck = matchingTask?.PortfolioType?.Title;
           } else {
             portfolioTypeCheck = "";
             obj.original.PortfolioTypeCheck = "";
           }
-        } else if (
-          obj?.original?.Item_x0020_Type === "Project" ||
-          obj?.original?.Item_x0020_Type === "Sprint"
-        ) {
+        } else if (obj?.original?.Item_x0020_Type === "Project" || obj?.original?.Item_x0020_Type === "Sprint") {
           portfolioTypeCheck = null;
         }
         array?.push(obj.original);
@@ -61,17 +52,11 @@ const RestructuringCom = (props: any, ref: any) => {
       const setPortfolioTypeCheck = (arr: any, portfolioTypeCheck: any) => {
         arr?.forEach((obj: any) => {
           obj.PortfolioTypeCheck = "";
-          const matchingTask = props?.AllMasterTasksData?.find(
-            (task: any) => obj?.Portfolio?.Id === task?.Id
-          );
+          const matchingTask = props?.AllMasterTasksData?.find((task: any) => obj?.Portfolio?.Id === task?.Id);
           if (matchingTask && portfolioTypeCheck !== "") {
             obj.PortfolioTypeCheck = matchingTask?.PortfolioType?.Title;
           } else {
-            if (
-              portfolioTypeCheck !== "" &&
-              obj?.Item_x0020_Type !== "Task" &&
-              obj?.Title !== "Others"
-            ) {
+            if (portfolioTypeCheck !== "" && obj?.Item_x0020_Type !== "Task" && obj?.Title !== "Others") {
               obj.PortfolioTypeCheck = obj?.PortfolioType?.Title;
             } else if (portfolioTypeCheck !== "" && obj?.Title === "Others") {
               obj.PortfolioTypeCheck = portfolioTypeCheck;
@@ -1566,7 +1551,7 @@ const RestructuringCom = (props: any, ref: any) => {
                   let newChildarray: any = [];
                   let newarrays: any = [];
                   let newObj: any;
-                  if (items?.PortfolioTypeCheck === obj.PortfolioTypeCheck) {
+                  if (items?.PortfolioType?.Title === obj.PortfolioType?.Title) {
                     if (items?.Id !== obj.Id && obj.Item_x0020_Type != "Task") {
                       obj.isRestructureActive = true;
                       obj.Restructuring =
@@ -1596,7 +1581,7 @@ const RestructuringCom = (props: any, ref: any) => {
                     let newChildarray: any = [];
                     let newarrays: any = [];
                     let newObj: any;
-                    if (items?.PortfolioTypeCheck === obj.PortfolioTypeCheck) {
+                    if (items?.PortfolioType?.Title === obj.PortfolioType?.Title) {
                       if (
                         items?.Id !== obj.Id &&
                         obj.Item_x0020_Type != "Task"
@@ -1651,7 +1636,7 @@ const RestructuringCom = (props: any, ref: any) => {
               let newChildarray: any = [];
               let newarrays: any = [];
               let newObj: any;
-              if (items?.PortfolioTypeCheck === obj.PortfolioTypeCheck) {
+              if (items?.PortfolioType?.Title === obj.PortfolioType?.Title) {
                 if (items?.Id !== obj.Id && obj.Item_x0020_Type != "Task") {
                   obj.isRestructureActive = true;
                   obj.Restructuring =
@@ -1715,7 +1700,7 @@ const RestructuringCom = (props: any, ref: any) => {
                   let newChildarray: any = [];
                   let newarrays: any = [];
                   let newObj: any;
-                  if (items?.PortfolioTypeCheck === obj.PortfolioTypeCheck) {
+                  if (items?.PortfolioType?.Title === obj.PortfolioType?.Title) {
                     if (
                       items?.Id !== obj.Id &&
                       obj.Item_x0020_Type != "Task" &&
@@ -1782,7 +1767,7 @@ const RestructuringCom = (props: any, ref: any) => {
                     let newChildarray: any = [];
                     let newarrays: any = [];
                     let newObj: any;
-                    if (items?.PortfolioTypeCheck === obj.PortfolioTypeCheck) {
+                    if (items?.PortfolioType?.Title === obj.PortfolioType?.Title) {
                       if (
                         items?.Id !== obj.Id &&
                         obj.Item_x0020_Type != "Task" &&
@@ -1866,7 +1851,7 @@ const RestructuringCom = (props: any, ref: any) => {
               let newChildarray: any = [];
               let newarrays: any = [];
               let newObj: any;
-              if (items?.PortfolioTypeCheck === obj.PortfolioTypeCheck) {
+              if (items?.PortfolioType?.Title === obj.PortfolioType?.Title) {
                 if (
                   items?.Id !== obj.Id &&
                   obj.Item_x0020_Type != "Task" &&
@@ -1950,7 +1935,7 @@ const RestructuringCom = (props: any, ref: any) => {
             let newChildarray: any = [];
             let newarrays: any = [];
             let newObj: any;
-            if (items?.PortfolioTypeCheck === obj.PortfolioTypeCheck) {
+            if (items?.PortfolioType?.Title === obj.PortfolioType?.Title) {
               if (
                 obj.Item_x0020_Type != "Task" &&
                 obj.Item_x0020_Type != "Feature"
@@ -1968,22 +1953,8 @@ const RestructuringCom = (props: any, ref: any) => {
                 items?.Id == obj.Id &&
                 items?.Item_x0020_Type == obj?.Item_x0020_Type
               ) {
-                newObj = {
-                  Title: obj?.Title,
-                  PortfolioStructureID : obj?.PortfolioStructureID,
-                  Portfolio: obj?.Portfolio,
-                  ParentTask : obj?.ParentTask,
-                  TaskID: obj?.TaskID,
-                  Item_x0020_Type: obj.Item_x0020_Type,
-                  TaskType: {
-                    Id: obj.TaskType?.Id == undefined ? "" : obj.TaskType?.Id,
-                  },
-                  Id: obj.Id,
-                  siteIcon:
-                    obj.SiteIconTitle === undefined
-                      ? obj.SiteIcon
-                      : obj.SiteIconTitle,
-                };
+                newObj = {...obj, TaskType: {Id:obj.TaskType?.Id == undefined ? "" : obj.TaskType?.Id,Title:obj.TaskType?.Title}, siteIcon:obj.SiteIconTitle === undefined? obj.SiteIcon: obj.SiteIconTitle,}
+                        
                 newChildarray?.push(newObj);
                 newarrays?.push(obj);
                 setRestructuredItemarray(newarrays);
@@ -2008,42 +1979,10 @@ const RestructuringCom = (props: any, ref: any) => {
                     items?.Id == sub.Id &&
                     items?.Item_x0020_Type == sub?.Item_x0020_Type
                   ) {
-                    newObj = {
-                      Title: obj?.Title,
-                      PortfolioStructureID : obj?.PortfolioStructureID,
-                      Portfolio: obj?.Portfolio,
-                      ParentTask : obj?.ParentTask,
-                      TaskID: obj?.TaskID,
-                      TaskType: {
-                        Id:
-                          obj.TaskType?.Id == undefined ? "" : obj.TaskType?.Id,
-                      },
-                      Item_x0020_Type: obj.Item_x0020_Type,
-                      Id: obj.Id,
-                      siteIcon:
-                        obj.SiteIconTitle === undefined
-                          ? obj.SiteIcon
-                          : obj.SiteIconTitle,
-                      newSubChild: {
-                        Title: sub?.Title,
-                        PortfolioStructureID : sub?.PortfolioStructureID,
-                        Portfolio: sub?.Portfolio,
-                        ParentTask : sub?.ParentTask,
-                        TaskID: sub?.TaskID,
-                        TaskType: {
-                          Id:
-                            sub.TaskType?.Id == undefined
-                              ? ""
-                              : sub.TaskType?.Id,
-                        },
-                        Item_x0020_Type: sub.Item_x0020_Type,
-                        Id: sub.Id,
-                        siteIcon:
-                          sub.SiteIconTitle === undefined
-                            ? sub.SiteIcon
-                            : sub.SiteIconTitle,
-                      },
-                    };
+                   
+                    newObj = {...obj, TaskType: {Id:obj.TaskType?.Id == undefined ? "" : obj.TaskType?.Id,Title:obj.TaskType?.Title}, siteIcon:obj.SiteIconTitle === undefined? obj.SiteIcon: obj.SiteIconTitle,
+                        newSubChild:{...sub, TaskType: {Id:sub.TaskType?.Id == undefined ? "" : sub.TaskType?.Id,Title:sub.TaskType?.Title}, siteIcon:sub.SiteIconTitle === undefined? sub.SiteIcon: sub.SiteIconTitle, }}
+                        
                     newarrays?.push(obj);
                     setRestructuredItemarray(newarrays);
                     setCheckSubChilds(sub);
@@ -2058,67 +1997,12 @@ const RestructuringCom = (props: any, ref: any) => {
                   }
                   if (sub?.subRows?.length > 0 && sub?.subRows != undefined) {
                     sub.subRows?.map((feature: any) => {
-                      if (
-                        items?.Id == feature.Id &&
-                        items?.Item_x0020_Type == feature?.Item_x0020_Type
-                      ) {
-                        newObj = {
-                          Title: obj?.Title,
-                          PortfolioStructureID : obj?.PortfolioStructureID,
-                          Portfolio: obj?.Portfolio,
-                          ParentTask : obj?.ParentTask,
-                          TaskID: obj?.TaskID,
-                          TaskType: {
-                            Id:
-                              obj.TaskType?.Id == undefined
-                                ? ""
-                                : obj.TaskType?.Id,
-                          },
-                          Item_x0020_Type: obj.Item_x0020_Type,
-                          Id: obj.Id,
-                          siteIcon:
-                            obj.SiteIconTitle === undefined
-                              ? obj.SiteIcon
-                              : obj.SiteIconTitle,
-                          newSubChild: {
-                            Title: sub?.Title,
-                            PortfolioStructureID : sub?.PortfolioStructureID,
-                            Portfolio: sub?.Portfolio,
-                            ParentTask : sub?.ParentTask,
-                            TaskID: sub?.TaskID,
-                            TaskType: {
-                              Id:
-                                sub.TaskType?.Id == undefined
-                                  ? ""
-                                  : sub.TaskType?.Id,
-                            },
-                            Item_x0020_Type: sub.Item_x0020_Type,
-                            Id: sub.Id,
-                            siteIcon:
-                              sub.SiteIconTitle === undefined
-                                ? sub.SiteIcon
-                                : sub.SiteIconTitle,
-                            newFeatChild: {
-                              Title: feature?.Title,
-                              PortfolioStructureID : feature?.PortfolioStructureID,
-                              Portfolio: feature?.Portfolio,
-                              ParentTask : feature?.ParentTask,
-                              TaskID: feature?.TaskID,
-                              TaskType: {
-                                Id:
-                                  feature.TaskType?.Id == undefined
-                                    ? ""
-                                    : feature.TaskType?.Id,
-                              },
-                              Item_x0020_Type: feature.Item_x0020_Type,
-                              Id: feature.Id,
-                              siteIcon:
-                                feature.SiteIconTitle === undefined
-                                  ? feature.SiteIcon
-                                  : feature.SiteIconTitle,
-                            },
-                          },
-                        };
+                      if (items?.Id == feature.Id && items?.Item_x0020_Type == feature?.Item_x0020_Type) {
+                        
+                        newObj = {...obj, TaskType: {Id:obj.TaskType?.Id == undefined ? "" : obj.TaskType?.Id,Title:obj.TaskType?.Title}, siteIcon:obj.SiteIconTitle === undefined? obj.SiteIcon: obj.SiteIconTitle,
+                        newSubChild:{...sub, TaskType: {Id:sub.TaskType?.Id == undefined ? "" : sub.TaskType?.Id,Title:sub.TaskType?.Title}, siteIcon:sub.SiteIconTitle === undefined? sub.SiteIcon: sub.SiteIconTitle,
+                        newFeatChild : {...feature, TaskType: {Id:feature.TaskType?.Id == undefined ? "" : feature.TaskType?.Id,Title:feature.TaskType?.Title}, siteIcon:feature.SiteIconTitle === undefined? feature.SiteIcon: feature.SiteIconTitle} }}
+                        
                         newarrays?.push(obj);
                         setRestructuredItemarray(newarrays);
                         setCheckSubChilds(feature);
@@ -3808,38 +3692,30 @@ const RestructuringCom = (props: any, ref: any) => {
     if (restructureItem[0]?.Item_x0020_Type == "Task") {
       let ParentTask_Id: any;
       let Portfolio: any;
-      let TaskId =
-        newItemBackUp?.TaskID !== undefined ? newItemBackUp?.TaskID : "";
+      let TaskId = newItemBackUp?.TaskID !== undefined ? newItemBackUp?.TaskID : "";
       let TaskLevel: number = 0;
       let TaskTypeId: any;
 
-      if (
-        newItemBackUp?.Item_x0020_Type != "Task" &&
-        RestructureChecked[0]?.TaskType?.Id === 3
-      ) {
-        TaskTypeId = 1;
-      } else {
-        if (
-          newItemBackUp?.Item_x0020_Type == "Task" &&
-          newItemBackUp?.TaskType?.Id == 3 &&
-          RestructureChecked[0].Item_x0020_Type === "Task"
-        ) {
-          TaskTypeId = 2;
-        } else if (
-          newItemBackUp?.Item_x0020_Type == "Task" &&
-          newItemBackUp?.TaskType?.Id == 1 &&
-          RestructureChecked[0]?.TaskType?.Id == 1
-        ) {
+      if ( newItemBackUp?.Item_x0020_Type != "Task" && RestructureChecked[0]?.TaskType?.Id === 3) {
+         TaskTypeId = 1;
+      } else { 
+        if (newItemBackUp?.Item_x0020_Type == "Task" &&   newItemBackUp?.TaskType?.Id == 3 &&   RestructureChecked[0].Item_x0020_Type === "Task" ) {   
+          TaskTypeId = 2; 
+         } else if ( newItemBackUp?.Item_x0020_Type == "Task" && newItemBackUp?.TaskType?.Id == 1 && RestructureChecked[0]?.TaskType?.Id == 1) {
           TaskTypeId = 3;
-        } else {
+        } 
+        else {
           TaskTypeId = RestructureChecked[0]?.TaskType?.Id;
         }
       }
 
-      if (
-        newItemBackUp?.subRows != undefined &&
-        newItemBackUp?.subRows?.length > 0
-      ) {
+
+      if(newItemBackUp?.TaskType?.Id == 1 && newItemBackUp?.subRows?.some((item: any) => item?.Id === restructureItem[0]?.Id && item?.Title === restructureItem[0]?.Title)){
+        TaskTypeId = RestructureChecked[0]?.TaskType?.Id == 2 ? 3 : 2
+        }
+
+
+      if ( newItemBackUp?.subRows != undefined && newItemBackUp?.subRows?.length > 0 ) {
         newItemBackUp?.subRows?.map((sub: any) => {
           if (TaskTypeId === sub?.TaskType?.Id) {
             if (TaskLevel <= sub.TaskLevel) {
@@ -4922,86 +4798,6 @@ const RestructuringCom = (props: any, ref: any) => {
 
   
   const projectMngmntFuc = async () => {
-  //   let web = new Web(props?.contextValue?.siteUrl);
-  //   let latestCheckedList:any = [];
-  //     let backupCheckedList:any = [];
-  //     let array = [...allData];
-  //   if(newItemBackUp?.Item_x0020_Type == 'Sprint' || newItemBackUp == null){
-  //     restructureItem?.map(async (items:any)=>{
-  //       const updateItem = async (item:any) => {
-  //         await web.lists.getById(item?.listId).items.getById(item?.Id).update({
-  //             ProjectId: newItemBackUp ? newItemBackUp?.Id : props?.MasterdataItem?.Id
-  //         });
-  //     };
-  
-  //     const processItems = async (items:any) => {
-  //         for (const item of items) {
-  //             await updateItem(item);
-  //             if (item?.subRows?.length > 0) {
-  //                 await processItems(item?.subRows);
-  //             }
-  //         }
-  //     };
-
-      
-
-  //   let onceRender = true;
-  //   let spliceData = false;
-  //   let pushData = false;
-
-  //   await updateItem(items);
-
-  //   if (items?.subRows?.length > 0) {
-  //       await processItems(items?.subRows);
-  //   }
-
-  //   restructureItem?.map((items:any) => {
-  //     latestCheckedList?.push({ ...items });
-  //     backupCheckedList?.push({ ...items });
-  // });
-
-  // latestCheckedList?.map((items:any) => {
-  //     items.Project = newItemBackUp != null && newItemBackUp != undefined ? { Id: newItemBackUp?.Id, Title: newItemBackUp?.Title } : { Id: props?.MasterdataItem?.Id, Title: props?.MasterdataItem?.Title };
-  // });
-  
-  //     const updateProjects = (arr:any) => {
-  //         arr.map((obj:any) => {
-  //             obj.isRestructureActive = false;
-  
-  //             if (pushData != true && onceRender == true && newItemBackUp == null) {
-  //                 onceRender = false;
-  //                 pushData = true;
-  //                 arr.push(...latestCheckedList);
-  //             }
-  
-  //             if (spliceData == false && obj.Id === backupCheckedList[0]?.Id && obj.Item_x0020_Type === backupCheckedList[0]?.Item_x0020_Type) {
-  //                 spliceData = true;
-  //                 arr.splice(arr.indexOf(obj), 1);
-  //             }
-  
-  //             if (pushData == false && obj.Id === newItemBackUp?.Id && obj.Item_x0020_Type === newItemBackUp?.Item_x0020_Type) {
-  //                 pushData = true;
-  //                 obj.subRows?.push(...latestCheckedList);
-  //             }
-  
-  //             if (obj.subRows?.length > 0) {
-  //                 updateProjects(obj.subRows);
-  //             }
-  //         });
-  //     };
-  
-  //        updateProjects(array);
-  
-      
-  //     })
-  //     setProjects(false);
-  //     setNewItemBackUp([]);
-  //     setNewItemBackUp(null);
-  //     setOldArrayBackup([]);
-  //     restructureCallBack(array, false);
-  //     setProjectmngmnt(false);
-  //     setTopProject(false);
-  //   }
   let web = new Web(props?.contextValue?.siteUrl);
 let latestCheckedList:any = [];
 let backupCheckedList:any = [];
@@ -5045,32 +4841,33 @@ if (newItemBackUp?.Item_x0020_Type == 'Sprint' || newItemBackUp == null) {
     });
 
     const updateProjects = (arr: any) => {
-      arr.map((obj: any) => {
+      arr.forEach((obj: any, index: number) => {
         obj.isRestructureActive = false;
-
-        if (spliceData == false && obj.Id === backupCheckedList[0]?.Id && obj.Item_x0020_Type === backupCheckedList[0]?.Item_x0020_Type) {
+    
+        if (!spliceData && obj.Id === backupCheckedList[0]?.Id && obj.Item_x0020_Type === backupCheckedList[0]?.Item_x0020_Type) {
           spliceData = true;
-          arr.splice(arr.indexOf(obj), 1);
+          arr.splice(index, 1);
         }
-
-        if (pushData != true && onceRender == true && newItemBackUp == null) {
+    
+        if (!pushData && onceRender && newItemBackUp === null) {
           onceRender = false;
           pushData = true;
           arr.push(...latestCheckedList);
         }
-
-        if (pushData == false && obj.Id === newItemBackUp?.Id && obj.Item_x0020_Type === newItemBackUp?.Item_x0020_Type) {
+    
+        if (!pushData && obj.Id === newItemBackUp?.Id && obj.Item_x0020_Type === newItemBackUp?.Item_x0020_Type) {
           pushData = true;
-          obj.subRows?.push(...latestCheckedList);
+          obj.subRows = obj.subRows ? [...obj.subRows, ...latestCheckedList] : [...latestCheckedList];
         }
-
+    
         if (obj.subRows?.length > 0) {
           updateProjects(obj.subRows);
         }
       });
     };
-
+    
     updateProjects(array);
+    
   });
 
   // Wait for all promises to resolve before executing the next lines
@@ -5084,9 +4881,7 @@ if (newItemBackUp?.Item_x0020_Type == 'Sprint' || newItemBackUp == null) {
   restructureCallBack(array, false);
   setProjectmngmnt(false);
   setTopProject(false);
-}
-
-    else{
+}else{
         let ParentTask_Portfolio: any = newItemBackUp?.TaskType?.Id == 1 || newItemBackUp?.TaskType?.Id == 3    ? newItemBackUp?.Portfolio?.Id   : newItemBackUp?.Id;
         let ParentTask_ID: any = newItemBackUp?.TaskType?.Id == 1 || newItemBackUp?.TaskType?.Id == 3  ? newItemBackUp?.Id : null;
         let Project_ID: any = newItemBackUp?.TaskType?.Id == 1 || newItemBackUp?.TaskType?.Id == 3  ? newItemBackUp?.Project?.Id : null;
@@ -6011,17 +5806,12 @@ if (newItemBackUp?.Item_x0020_Type == 'Sprint' || newItemBackUp == null) {
                             (newItemBackUp?.TaskType?.Id == 1 || newItemBackUp?.TaskType?.Id == 3 ? items?.TaskID : (newItemBackUp?.TaskType?.Id == 2 ? items?.Id : ``) ) : (newItemBackUp?.TaskType?.Id == 1 ? (items?.TaskType?.Id == 2 ? (`${newItemBackUp?.TaskID}-T${items?.Id}`) :
                              (`${items?.TaskType?.Id == 3 ? (`${newItemBackUp?.TaskID}-W`) : ('') }`)) : (newItemBackUp?.TaskType?.Id == 3 ? (`${newItemBackUp?.TaskID}-T${items?.Id}`) : ''))
                           }
-                          {newItemBackUp?.Item_x0020_Type === "Component" ? ( <span className="Dyicons"> S </span>) : 
-                          newItemBackUp?.Item_x0020_Type == "SubComponent"  ? (<span className="Dyicons">F</span>) : items?.Item_x0020_Type === "Task" ? (
-                            <span>
-                              <img
-                                className="workmember"
-                                src={items?.siteIcon}
-                              />
-                            </span>
-                          ) : (
-                            <span className="Dyicons">{items?.siteIcon}</span>
-                          )}
+                          {newItemBackUp?.Item_x0020_Type === "Component" && (items?.Item_x0020_Type === "Component" || items?.Item_x0020_Type === "SubComponent" || items?.Item_x0020_Type === "Feature") ?  <span className="Dyicons"> S </span> : 
+                          (newItemBackUp?.Item_x0020_Type == "SubComponent" && (items?.Item_x0020_Type === "Component" || items?.Item_x0020_Type === "SubComponent" || items?.Item_x0020_Type === "Feature") ? <span className="Dyicons">F</span> : 
+                          items?.Item_x0020_Type === "Task" ? <span><img className="workmember" src={items?.siteIcon} /> </span>
+                           : 
+                            "")
+                          }
                           {items?.Title}
                         </a>
                       </span>
@@ -6089,11 +5879,12 @@ if (newItemBackUp?.Item_x0020_Type == 'Sprint' || newItemBackUp == null) {
               ""
             )}
             
-            {/* {
+            {
               newItemBackUp?.subRows?.length > 0 &&
-              newItemBackUp?.subRows?.some((item:any) => JSON.stringify(item) === JSON.stringify(restructureItem[0]))
-            } */}
-            {restructureItem != undefined &&
+              newItemBackUp?.TaskType?.Id == 1 && newItemBackUp?.subRows?.some((item: any) => item?.Id === restructureItem[0]?.Id && item?.Title === restructureItem[0]?.Title) ?
+              "" :
+              <>
+               {restructureItem != undefined &&
             restructureItem?.length > 0 &&
             restructureItem[0]?.Item_x0020_Type === "Task" &&
             newItemBackUp?.TaskType?.Id == 1 &&
@@ -6141,6 +5932,60 @@ if (newItemBackUp?.Item_x0020_Type == 'Sprint' || newItemBackUp == null) {
             ) : (
               " "
             )}
+              </>
+
+            }
+             {/* <>
+               {restructureItem != undefined &&
+            restructureItem?.length > 0 &&
+            restructureItem[0]?.Item_x0020_Type === "Task" &&
+            newItemBackUp?.TaskType?.Id == 1 &&
+            newItemBackUp?.Item_x0020_Type == "Task" &&
+            (restructureItem[0]?.TaskType?.Id == 1 ||
+              restructureItem[0]?.TaskType?.Id == 3 ||
+              restructureItem[0]?.TaskType?.Id == 2) ? (
+              <div className="mt-2">
+                <span>
+                  {"Select Task Type :"}
+                  <label className="SpfxCheckRadio ms-3 me-1">
+                    <input
+                      type="radio"
+                      className="radio"
+                      name="fav_language"
+                      value="Workstream"
+                      checked={
+                        RestructureChecked[0]?.TaskType?.Id == 3
+                          ? true
+                          : RestructureChecked[0]?.TaskType?.Id == 1
+                          ? true
+                          : false
+                      }
+                      onChange={(e) => setRestructure(RestructureChecked, 3)}
+                    />
+                  </label>
+                  <label className="ms-1"> {"Workstream"} </label>
+                </span>
+                <span>
+                  <label className="SpfxCheckRadio ms-3 me-1">
+                    <input
+                      type="radio"
+                      className="radio"
+                      name="fav_language"
+                      value="Task"
+                      checked={
+                        RestructureChecked[0]?.TaskType?.Id === 2 ? true : false
+                      }
+                      onChange={(e) => setRestructure(RestructureChecked, 2)}
+                    />
+                  </label>
+                  <label className="ms-1"> {"Task"} </label>
+                </span>
+              </div>
+            ) : (
+              " "
+            )}
+              </> */}
+           
 
             {restructureItem != undefined &&
             restructureItem?.length > 0 &&

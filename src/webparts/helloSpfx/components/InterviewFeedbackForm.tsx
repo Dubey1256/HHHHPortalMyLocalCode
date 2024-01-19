@@ -58,6 +58,8 @@ export default function InterviewFeedbackForm(props: any) {
     const [isChangeStatusPopup, setisChangeStatusPopup] = useState(false);
     const [selectedStatus, setSelectedStatus] = useState('');
     const [isStatButtonDisabled, setisStatButtonDisabled] = useState(true);
+    const [newStatus, setNewStatus] = useState('')
+    const [isAddStatusButtonDisabld, setIsAddStatusButonDisabled] = useState(true)
 
     const HRweb = new Web(props?.props?.siteUrl);
     const EditPopupOpen = (item: any) => {
@@ -84,6 +86,8 @@ export default function InterviewFeedbackForm(props: any) {
     }
     const CloseCreateStatus = () => {
         setopenModalPopup(false)
+        setNewStatus('')
+        setIsAddStatusButonDisabled(true)
     }
     const openChangeStatus = () => {
         setisChangeStatusPopup(true)
@@ -92,11 +96,17 @@ export default function InterviewFeedbackForm(props: any) {
         setSelectedStatus('');
         setisChangeStatusPopup(false)
     }
+
+    const handleNewStatus = (e: any) => {
+        const statusValue = e.target.value
+        setNewStatus(statusValue)
+        setIsAddStatusButonDisabled(statusValue.trim() === '')
+    }
+
     const AddnewStatusTitle = () => {
-        const inputElement = document.getElementById("myInputStatus") as HTMLInputElement;
         const newStatusObj = {
             "Id": AllAvlStatusdata.length,
-            "Title": inputElement.value,
+            "Title": newStatus,
             "selectItem": false,
             "showTextInput": false,
             "siteName": "Status0"
@@ -105,18 +115,25 @@ export default function InterviewFeedbackForm(props: any) {
         updatedStatusData = [...AllAvlStatusdata, newStatusObj];
         // Update the state with the new array
         setAllAvlStatusdata(updatedStatusData);
+        setNewStatus('')
+        setIsAddStatusButonDisabled(true)
         console.log(updatedStatusData); // This will show the updated array with the new object
     };
     const AddnewStatus = async (values: any, isDEL: boolean) => {
         if (isDEL) {
-            const updatedStatusDatas = AllAvlStatusdata.filter(item => item.Id !== values.Id);
-            setAllAvlStatusdata(updatedStatusDatas);
+            const confirmDeletion = window.confirm('Are you sure you want to delete this Status?')
+            if(confirmDeletion) {
+                const updatedStatusDatas = AllAvlStatusdata.filter(item => item.Id !== values.Id);
+                setAllAvlStatusdata(updatedStatusDatas);
+            }
         }
         const postData = {
             "Configurations": JSON.stringify(AllAvlStatusdata)
         }
         try {
-            await HRweb.lists.getById('2e5ed76d-63ae-4f4a-887a-6d56f0b925c3').items.getById(statusKeyID).update(postData);
+            await HRweb.lists.getById('2e5ed76d-63ae-4f4a-887a-6d56f0b925c3').items.getById(statusKeyID).update(postData).then((response: any) => {
+                setNewStatus('')
+            })
         } catch (error) {
             if (!isDEL) {
                 setopenModalPopup(false)
@@ -126,6 +143,7 @@ export default function InterviewFeedbackForm(props: any) {
         } finally {
             if (!isDEL) {
                 setopenModalPopup(false)
+                setIsAddStatusButonDisabled(true)
             }
         }
     };
@@ -406,7 +424,7 @@ export default function InterviewFeedbackForm(props: any) {
         return (
             <>
                 <div className='subheading'>
-                    Add / Edit Status
+                    Add / Remove Status
                 </div>
                 <Tooltip ComponentId='7930' />
             </>
@@ -481,7 +499,7 @@ export default function InterviewFeedbackForm(props: any) {
                         {ArchiveCandidates && <div className='Alltable'><GlobalCommanTable columns={columns} data={ArchiveCandidates} multiSelect={true} showHeader={true} callBackData={callBackData} showEmailIcon={true}/></div>}
                     </div>
                 </div>
-                {isEditPopupOpen ? <EditPopup siteUrl={props?.props?.siteUrl} EditPopupClose={EditPopupClose} callbackEdit={callbackEdit} item={selectedItem} ListID={props?.props?.InterviewFeedbackFormListId} skillsList={props?.props?.SkillsPortfolioListID}/> : ''}
+                {isEditPopupOpen ? <EditPopup siteUrl={props?.props?.siteUrl} EditPopupClose={EditPopupClose} callbackEdit={callbackEdit} item={selectedItem} ListID={props?.props?.InterviewFeedbackFormListId} skillsList={props?.props?.SkillsPortfolioListID} statusData={AllAvlStatusdata}/> : ''}
                 {isAddPopupOpen ? <AddPopup siteUrl={props?.props?.siteUrl} context={props?.props?.Context} AddPopupClose={AddPopupClose} callbackAdd={callbackAdd} ListID={props?.props?.InterviewFeedbackFormListId} skillsList={props?.props?.SkillsPortfolioListID}/> : ''}
                 {isAddEditPositionOpen ? <AddEditPostion AddEditPositionCLose={AddEditPositionCLose} props={props?.props}/> : ''}
             </div>
@@ -502,11 +520,11 @@ export default function InterviewFeedbackForm(props: any) {
                                 </div> */}
                         <div className="card-body">
                             <div className="col-sm-12 pad0 inline-fieldbtn input-group">
-                                <input className="form-control" placeholder="Add Status" id="myInputStatus" type="text" />
+                                <input className="form-control" placeholder="Add Status" value={newStatus} onChange={(e) => handleNewStatus(e)} type="text" />
                                 {/* <button type="button" onClick={AddnewStatusTitle} className="btn btn-primary btn-sm ml-15 pull-right">
                                             Add
                                         </button> */}
-                                <button onClick={AddnewStatusTitle} type='button' className='btn btn-primary btn-sm ml-15 pull-right'>Add</button>
+                                <button disabled={isAddStatusButtonDisabld} onClick={AddnewStatusTitle} type='button' className='btn btn-primary btn-sm ml-15 pull-right'>Add</button>
                             </div>
                             <div className="col-sm-12 pad0">
                                 <ul className="full-width mt-10 p0 status-lists">
