@@ -600,6 +600,7 @@ function PortfolioTable(SelectedProp: any) {
         ProjectData=results?.ProjectData;
         componentDetails?.map((items: any) => {
           items.SmartPriority;
+          items.TaskTypeValue = '';
       });
     }
     flatviewmastertask = JSON.parse(JSON.stringify(componentDetails));
@@ -1769,6 +1770,7 @@ const addedCreatedDataFromAWT = (arr: any, dataToPush: any) => {
       temp.Title = "Others";
       temp.TaskID = "";
       temp.subRows = [];
+      temp.TaskTypeValue = '';
       temp.PercentComplete = "";
       temp.ItemRank = "";
       temp.DueDate = null;
