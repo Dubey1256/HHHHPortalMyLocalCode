@@ -2527,7 +2527,7 @@ const EditTaskPopup = (Items: any) => {
                 </b>
                 `
                 try {
-                    if ((IsTaskStatusUpdated || TeamMemberChanged) && ((Number(taskPercentageValue) * 100) <= 85)) {
+                    if ((IsTaskStatusUpdated || TeamMemberChanged) && ((Number(taskPercentageValue) * 100) + 1 <= 85)) {
                         if (sendUserEmails?.length > 0) {
                             await globalCommon.SendTeamMessage(
                                 sendUserEmails,
