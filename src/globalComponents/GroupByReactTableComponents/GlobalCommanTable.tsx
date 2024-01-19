@@ -1067,7 +1067,7 @@ const GlobalCommanTable = (items: any, ref: any) => {
                     </> : ''}
 
                     {items?.showEmailIcon === true ? <>
-                        <a className="teamIcon" onClick={() => openCreationAllStructure("sendEmail")}><span title="send email" style={{ color: `${portfolioColor}`, backgroundColor: `${portfolioColor}` }} className="svg__iconbox svg__icon--mail"></span></a>
+                        <a className="teamIcon p-0" onClick={() => openCreationAllStructure("sendEmail")}><span title="send email" style={{ color: `${portfolioColor}`, backgroundColor: `${portfolioColor}` }} className="svg__iconbox svg__icon--mail"></span></a>
                     </> : ''}
 
                     {items?.hideOpenNewTableIcon != true ? <>
