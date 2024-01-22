@@ -10,16 +10,16 @@ import Tooltip from '../../../globalComponents/Tooltip';
 
 let finalKeyData: any = [];
 var MyContextdata: any
- let copyEditData:any
+let copyEditData: any
 const RelevantDocuments = (props: any, ref: any) => {
     MyContextdata = React.useContext(myContextValue)
     const [keyDocument, setKeyDocument]: any = useState([])
-      const [copykeyDocument, setCopyKeyDocument]: any = useState([])
+    const [copykeyDocument, setCopyKeyDocument]: any = useState([])
     const [Fileurl, setFileurl] = useState("");
     const [editdocpanel, setEditdocpanel] = useState(false);
     const [EditdocData, setEditdocData]: any = useState({});
     const getKeyDoc = () => {
-        finalKeyData=[]
+        finalKeyData = []
         if (MyContextdata?.keyDoc?.length > 0) {
             MyContextdata?.keyDoc.map((doc: any) => {
                 MyContextdata?.user?.map((user: any) => {
@@ -34,56 +34,56 @@ const RelevantDocuments = (props: any, ref: any) => {
                 })
             })
             let keydata: any = JSON.parse(JSON.stringify(MyContextdata.keyDoc))
-           
+
             setKeyDocument(MyContextdata.keyDoc)
             if (keydata?.length > 3) {
                 setCopyKeyDocument(keydata?.splice(1, 3))
 
             }
-         
+
             setFileurl(MyContextdata.FileDirRef)
-        
-        }else{
+
+        } else {
             setKeyDocument([])
         }
 
     }
     React.useMemo(() => {
         getKeyDoc();
-    }, [MyContextdata?.keyDoc ])
-  
+    }, [MyContextdata?.keyDoc])
+
     const callbackeditpopup = React.useCallback((EditdocumentsData: any) => {
         // loadAllSitesDocuments();
         console.log(EditdocumentsData)
 
         if (EditdocumentsData != undefined) {
-            if(EditdocumentsData=="delete"){
-                finalKeyData =[]
-                if( MyContextdata?.keyDoc?.length==1){
-                    MyContextdata.keyDoc = []; 
-                    MyContextdata.FunctionCall(null, null, false) 
-                }else{
+            if (EditdocumentsData == "delete") {
+                finalKeyData = []
+                if (MyContextdata?.keyDoc?.length == 1) {
+                    MyContextdata.keyDoc = [];
+                    MyContextdata.FunctionCall(null, null, false)
+                } else {
                     let deleteKeyData: any = MyContextdata?.keyDoc?.filter((item: any) => item.Id != copyEditData?.Id)
                     MyContextdata.keyDoc = deleteKeyData;
-                  
+
                     MyContextdata.FunctionCall(null, null, false)
                 }
-            
+
                 setEditdocpanel(false);
-                copyEditData={}
+                copyEditData = {}
             }
-            if (EditdocumentsData?.ItemRank!=undefined && EditdocumentsData?.ItemRank != 6) {
+            if (EditdocumentsData?.ItemRank != undefined && EditdocumentsData?.ItemRank != 6) {
                 if (MyContextdata?.keyDoc?.length > 0) {
                     let updatedData: any = MyContextdata?.keyDoc?.filter((item: any) => item.Id != EditdocumentsData.Id)
                     MyContextdata.keyDoc = updatedData;
-                   
+
                     MyContextdata.FunctionCall(null, null, false)
                     setEditdocpanel(false);
-                    
+
                 }
             } else {
                 if (MyContextdata?.keyDoc?.length > 0) {
-                    finalKeyData =[]
+                    finalKeyData = []
                     let AllkeydocData = MyContextdata?.keyDoc
                     const indexToReplace = AllkeydocData?.findIndex((item: any) => item.Id == EditdocumentsData.Id)
                     if (indexToReplace !== -1) {
@@ -103,16 +103,9 @@ const RelevantDocuments = (props: any, ref: any) => {
     }, [])
     const columns = useMemo<ColumnDef<unknown, unknown>[]>(() =>
         [{
-            accessorKey: "",
-            placeholder: "",
-            size: 3,
-            padding:"0px",
-            id: 'Id',
-        },
-        {
             accessorFn: (row: any) => row?.FileLeafRef,
             cell: ({ row, column, getValue }: any) => (
-                <div className='alignCenter columnFixedTitle'>
+                <div className='alignCenter columnFixedTitle p-0'>
                     {row?.original?.File_x0020_Type != 'msg' && row?.original?.File_x0020_Type != 'docx' && row?.original?.File_x0020_Type != 'doc' && row?.original?.File_x0020_Type != 'rar' && row?.original?.File_x0020_Type != 'jpeg' && row?.original?.File_x0020_Type != 'jpg' && row?.original?.File_x0020_Type != 'aspx' && row?.original?.File_x0020_Type != 'jfif' && <span className={` svg__iconbox svg__icon--${row?.original?.File_x0020_Type}`}></span>}
                     {row?.original?.File_x0020_Type == 'rar' && <span className="svg__iconbox svg__icon--zip "></span>}
                     {row?.original?.File_x0020_Type == 'aspx' || row?.original?.File_x0020_Type == 'msg' || row?.original?.File_x0020_Type == 'apk' ? <span className=" svg__iconbox svg__icon--unknownFile "></span> : ''}
@@ -201,10 +194,10 @@ const RelevantDocuments = (props: any, ref: any) => {
 
 
     const editDocumentsLink = (editData: any) => {
-        copyEditData=[];
+        copyEditData = [];
         setEditdocpanel(true);
         console.log(editData)
-        copyEditData=editData
+        copyEditData = editData
         setEditdocData(editData)
 
     }
@@ -255,7 +248,18 @@ const RelevantDocuments = (props: any, ref: any) => {
 
                     )
                         ?
-                        <div style={{ height: "214px", overflow: 'hidden' }}><GlobalCommanTable columns={columns} wrapperHeight="100%" data={copykeyDocument?.length > 0 ? copykeyDocument : keyDocument} callBackData={callBackData} /></div> : ""}
+                        <div className='TableSection'>
+                            <div className='Alltable'>
+                                <div className='smart Key-documents'>
+                                    <div style={{ height: "214px", overflow: 'hidden' }}><GlobalCommanTable columns={columns} wrapperHeight="100%" data={copykeyDocument?.length > 0 ? copykeyDocument : keyDocument} callBackData={callBackData} /></div>
+                                </div>
+                            </div>
+                        </div>
+
+
+
+
+                        : ""}
 
                     {copykeyDocument?.length < keyDocument?.length && copykeyDocument?.length > 0 && (
                         <button onClick={ShowData}>
