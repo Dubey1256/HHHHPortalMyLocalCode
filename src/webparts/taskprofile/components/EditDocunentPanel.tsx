@@ -34,12 +34,7 @@ const EditDocumentpanel = (props: any) => {
       })
   
       
-      setTimeout(() => {
-        const panelMain: any = document.querySelector('.ms-Panel-main');
-        if (panelMain && props?.ColorCode) {
-          $('.ms-Panel-main').css('--SiteBlue', props?.ColorCode); // Set the desired color value here
-        }
-      }, 1000)
+     
     }
   }, [props?.editData!=undefined])
 
@@ -67,7 +62,12 @@ const EditDocumentpanel = (props: any) => {
             });
             Data.Portfolios=portfolioData
           }
-  
+          setTimeout(() => {
+            const panelMain: any = document.querySelector('.ms-Panel-main');
+            if (panelMain && portfolioData?.PortfolioType?.Color) {
+              $('.ms-Panel-main').css('--SiteBlue', portfolioData?.PortfolioType?.Color); // Set the desired color value here
+            }
+          }, 1000)
           console.log("document data", Data);
           setEditdocumentsData(Data);
         });
