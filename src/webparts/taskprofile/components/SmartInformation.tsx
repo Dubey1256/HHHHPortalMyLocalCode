@@ -78,19 +78,19 @@ const SmartInformation = (props: any, ref: any) => {
   const handleShow = async (item: any, value: any) => {
 
     await LoadSmartMetaData();
-
+    setTimeout(() => {
+      const panelMain: any = document.querySelector('.ms-Panel-main');
+      if (panelMain && myContextData2?.ColorCode!=undefined) {
+          $('.ms-Panel-main').css('--SiteBlue', myContextData2?.ColorCode); // Set the desired color value here
+      }
+  }, 1000)
     if (value == "edit") {
       setpopupEdit(true);
       seteditvalue(item);
       setEditSmartinfoValue(item)
       setallSetValue({ ...allValue, Title: item.Title, URL: item?.URL?.Url, Description: item?.Description, InfoType: item?.InfoType?.Title, Acronym: item?.Acronym, SelectedFolder: item.SelectedFolder });
       setShow(true);
-      setTimeout(() => {
-        const panelMain: any = document.querySelector('.ms-Panel-main');
-        if (panelMain && myContextData2?.ColorCode) {
-            $('.ms-Panel-main').css('--SiteBlue', myContextData2?.ColorCode); // Set the desired color value here
-        }
-    }, 1000)
+     
     } else {
       setallSetValue({ ...allValue, Title: "", URL: "", Acronym: "", Description: "", InfoType: "Information Note", SelectedFolder: "Public", fileupload: "", LinkTitle: "", LinkUrl: "", taskTitle: "", Dragdropdoc: "", emailDragdrop: "", ItemRank: "", componentservicesetdata: { smartComponent: undefined, linkedComponent: undefined }, componentservicesetdataTag: undefined, EditTaskpopupstatus: false, DocumentType: "", masterTaskdetails: [] });
       if (props.showHide === "projectManagement") {
@@ -436,7 +436,8 @@ const SmartInformation = (props: any, ref: any) => {
   //============= save function to save the data inside smartinformation list  ================.
 
   const saveSharewebItem = async () => {
-    var movefolderurl = `${props?.Context?._pageContext?._web.serverRelativeUrl}/Lists/SmartInformation`
+     return new Promise<void>(async(resolve, reject) => {
+      var movefolderurl = `${props?.Context?._pageContext?._web.serverRelativeUrl}/Lists/SmartInformation`
     let infotypeSelectedData: any
     console.log(movefolderurl);
     console.log(allValue);
@@ -514,6 +515,8 @@ const SmartInformation = (props: any, ref: any) => {
       }
       else {
 
+
+     
         // await web.lists.getByTitle("SmartInformation")
         await web.lists.getById(props?.AllListId?.SmartInformationListID)
           .items.add(postdata)
@@ -556,15 +559,17 @@ const SmartInformation = (props: any, ref: any) => {
                   GetResult();
                   handleClose();
                 }
-
+                resolve(data)
 
 
               }).catch((err) => {
+                reject(err)
                 console.log(err.message);
               })
 
           })
           .catch((err) => {
+            reject(err)
             console.log(err.message);
           });
       }
@@ -572,12 +577,14 @@ const SmartInformation = (props: any, ref: any) => {
     else {
     
       alert("Please fill the Title")
-      setsmartDocumentpostData
+      reject("Please fill the Title")
     
       // setallSetValue({...allValue,AstricMesaage:true})
    
       addSmartInfoPopupAddlinkDoc2 = false;
     }
+     })
+    
 
 
   }
@@ -646,16 +653,19 @@ const SmartInformation = (props: any, ref: any) => {
     else {
     
       addSmartInfoPopupAddlinkDoc2 = true;
-      await saveSharewebItem();
-      // if (addSmartInfoPopupAddlinkDoc) {
+      await saveSharewebItem().then((resolve:any)=>{
       alert('Information saved now items can be attached.');
-      setshowAdddocument(true)
-      setTimeout(() => {
-        const panelMain: any = document.querySelector('.ms-Panel-main');
-        if (panelMain && myContextData2?.ColorCode) {
-            $('.ms-Panel-main').css('--SiteBlue', myContextData2?.ColorCode); // Set the desired color value here
-        }
-    }, 1000)
+       setshowAdddocument(true)
+        setTimeout(() => {
+       const panelMain: any = document.querySelector('.ms-Panel-main');
+       if (panelMain && myContextData2?.ColorCode!=undefined) {
+        $('.ms-Panel-main').css('--SiteBlue', myContextData2?.ColorCode); // Set the desired color value here
+      }
+       }, 1000)
+      }).catch((reject:any)=>{
+        setshowAdddocument(false)
+      })
+      
       // }
 
     }
