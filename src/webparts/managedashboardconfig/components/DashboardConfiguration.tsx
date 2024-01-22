@@ -9,7 +9,7 @@ const DashboardConfiguration = (props: any) => {
     let DashboardId: any = params.get('DashBoardId');
     const [WebpartConfig, setWebpartConfig] = React.useState<any>([]);
     const [IsOpenPopup, setIsOpenPopup] = React.useState<any>(false);
-    const [EditItem, setEditItem] = React.useState<any>({});
+    const [EditItem, setEditItem] = React.useState<any>(undefined);
 
     const LoadAdminConfiguration = async () => {
         const web = new Web(props?.props?.Context?._pageContext?._web?.absoluteUrl);

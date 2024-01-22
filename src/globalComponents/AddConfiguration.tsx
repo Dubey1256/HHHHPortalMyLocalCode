@@ -44,6 +44,9 @@ const AddConfiguration = (props: any) => {
                 })
                 setNewItem(newArray);
             }
+            else {
+                setNewItem([defaultConfig])
+            }
             setSmartFav(SmartFavData)
         }).catch((err: any) => {
             console.log(err);
@@ -103,7 +106,8 @@ const AddConfiguration = (props: any) => {
                 <div className='siteColor subheading'>
                     {props?.EditItem != undefined && props?.EditItem != '' ? <span>Edit Dashboard Configuration</span> : <span>Add Dashboard Configuration</span>}
                 </div>
-                <Tooltip ComponentId={props?.EditItem != undefined && props?.EditItem != '' ? 869 : 1107} />
+                {props?.EditItem != undefined && props?.EditItem != '' ? <Tooltip ComponentId={869} /> : <Tooltip ComponentId={1107} />}
+
             </>
         );
     };
