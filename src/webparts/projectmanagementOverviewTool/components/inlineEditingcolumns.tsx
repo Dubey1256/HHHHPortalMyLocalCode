@@ -26,7 +26,6 @@ let smartMetadataListId: any = "";
 let AllMetadata: any = [];
 let TaskCreatorApproverBackupArray: any = [];
 let TaskApproverBackupArray: any = [];
-let comments: any = []
 const inlineEditingcolumns = (props: any) => {
   const [TimeInHours, setTimeInHours] = React.useState(0);
   const [taskStatusInNumber, setTaskStatusInNumber] = React.useState(0);
@@ -73,6 +72,7 @@ const inlineEditingcolumns = (props: any) => {
   const [PercentCompleteCheck, setPercentCompleteCheck] = React.useState(true);
   const [selectedCatId, setSelectedCatId]: any[] = React.useState([]);
   const [feedback, setFeedback] = useState("");
+  const [comments, setComments] = useState([])
   const StatusArray = [
     { value: 1, status: "01% For Approval", taskStatusComment: "For Approval" },
     { value: 2, status: "02% Follow Up", taskStatusComment: "Follow Up" },
@@ -107,6 +107,11 @@ const inlineEditingcolumns = (props: any) => {
     updateItemValues();
 
   }, [dueDate.editPopup ,TaskStatusPopup,remark,teamMembersPopup, UpdateEstimatedTime,TaskPriorityPopup,taskCategoriesPopup,props?.item?.TaskCategories?.results]);
+  
+  React.useEffect(() => {
+    updateTaskComments();
+  }, [])
+  
   const updateItemValues=()=>{
     selectedCatTitleVal=[];
     try {
@@ -178,10 +183,17 @@ const inlineEditingcolumns = (props: any) => {
         setTaskStatusInNumber(props.item.PercentComplete);
       }
       GetSmartMetadata();
-      if (props?.columnName == 'Priority') {
-        comments = JSON.parse(props?.item?.Comments)
-      }
     } catch (e) { console.log }
+  }
+
+  const updateTaskComments = () => {
+    try{
+    let allComments: any = JSON.parse(props?.item?.Comments)
+    setComments(allComments)
+    }
+    catch{
+      console.log('JSON cannot be parsed')
+    }
   }
   const getPercentCompleteTitle = (percent: any) => {
     let result = "";
