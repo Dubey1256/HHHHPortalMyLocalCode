@@ -2773,7 +2773,7 @@ export default class UserTimeEntry extends React.Component<IUserTimeEntryProps, 
           this.state.IsTimeEntry &&
           (<TimeEntryPopup props={this.state.SharewebTimeComponent} CallBackTimeEntry={this.TimeEntryCallBack} Context={this?.props?.Context}></TimeEntryPopup>)
         }
-      </div >
+      </div>
     );
   }
 }
