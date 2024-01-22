@@ -1567,38 +1567,21 @@ class Taskprofile extends React.Component<ITaskprofileProps, ITaskprofileState> 
   private cleanHTML = (html: any, folora: any, index: any) => {
     const div = document.createElement('div');
     div.innerHTML = html;
-
-    const paragraphs = div.querySelectorAll('p');
-
-    // Filter out empty <p> tags
+   const paragraphs = div.querySelectorAll('p');
+ // Filter out empty <p> tags
     paragraphs.forEach((p) => {
       if (p.innerText.trim() === '') {
         p.parentNode.removeChild(p); // Remove empty <p> tags
       }
     });
-
-    // Replace newline characters with <br> elements
-    div.innerHTML = div.innerHTML.replace(/\n/g, '<br>');
-    if (folora == "folora" && index == 0) {
-      const brTags = div.querySelectorAll('br');
-      let prevBr = null;
-
-      for (let i = brTags.length - 1; i >= 0; i--) {
-        const br = brTags[i];
-        if (prevBr) {
-          br.parentNode.removeChild(br); // Remove consecutive <br> tags
-        }
-        prevBr = br;
-      }
-    }
-
-
-    return div.innerHTML;
+   div.innerHTML = div.innerHTML.replace(/\n/g, '<br>')  // Convert newlines to <br> tags first
+  div.innerHTML = div.innerHTML.replace(/(?:<br\s*\/?>\s*)+(?=<\/?[a-z][^>]*>)/gi, '');
+  
+ 
+ return div.innerHTML;
   };
 
-
-
-  //******* End ****************************/
+//******* End ****************************/
   private callbackTotalTime = ((Time: any) => {
     this.setState(({
       TotalTimeEntry: Time
@@ -1797,7 +1780,7 @@ class Taskprofile extends React.Component<ITaskprofileProps, ITaskprofileState> 
 
 
     return (
-      <myContextValue.Provider value={{ ...myContextValue, FunctionCall: this.contextCall, keyDoc: this.state.keydoc, FileDirRef: this.state.FileDirRef, user:this?.taskUsers }}>
+      <myContextValue.Provider value={{ ...myContextValue, FunctionCall: this.contextCall, keyDoc: this.state.keydoc, FileDirRef: this.state.FileDirRef, user:this?.taskUsers ,ColorCode: this.state.Result["Portfolio"]?.PortfolioType?.Color }}>
         <div>
           <section className='ContentSection'> {this.state.breadCrumData != undefined &&
             <div className='row'>
