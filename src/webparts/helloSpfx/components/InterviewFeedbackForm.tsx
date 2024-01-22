@@ -87,6 +87,7 @@ export default function InterviewFeedbackForm(props: any) {
     const CloseCreateStatus = () => {
         setopenModalPopup(false)
         setNewStatus('')
+        setIsAddStatusButonDisabled(true)
     }
     const openChangeStatus = () => {
         setisChangeStatusPopup(true)
@@ -114,6 +115,8 @@ export default function InterviewFeedbackForm(props: any) {
         updatedStatusData = [...AllAvlStatusdata, newStatusObj];
         // Update the state with the new array
         setAllAvlStatusdata(updatedStatusData);
+        setNewStatus('')
+        setIsAddStatusButonDisabled(true)
         console.log(updatedStatusData); // This will show the updated array with the new object
     };
     const AddnewStatus = async (values: any, isDEL: boolean) => {
@@ -140,6 +143,7 @@ export default function InterviewFeedbackForm(props: any) {
         } finally {
             if (!isDEL) {
                 setopenModalPopup(false)
+                setIsAddStatusButonDisabled(true)
             }
         }
     };
@@ -516,7 +520,7 @@ export default function InterviewFeedbackForm(props: any) {
                                 </div> */}
                         <div className="card-body">
                             <div className="col-sm-12 pad0 inline-fieldbtn input-group">
-                                <input className="form-control" placeholder="Add Status" value={newStatus} onChange={handleNewStatus} type="text" />
+                                <input className="form-control" placeholder="Add Status" value={newStatus} onChange={(e) => handleNewStatus(e)} type="text" />
                                 {/* <button type="button" onClick={AddnewStatusTitle} className="btn btn-primary btn-sm ml-15 pull-right">
                                             Add
                                         </button> */}
