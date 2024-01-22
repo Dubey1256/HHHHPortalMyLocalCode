@@ -156,13 +156,13 @@ const AddConfiguration = (props: any) => {
                 isBlocking={false}
                 type={PanelType.medium}>
                 <div className='border container modal-body p-1 mb-1'>
-                    <Row className="Metadatapannel">
+                    <Row className="Metadatapannel p-2 mb-2">
                         <Col sm="6" md="6" lg="6">
                             <label className='form-label full-width'>Dashboard Title</label>
                             <input className='form-control' type='text' placeholder="Dashboard Title" value={DashboardTitle} onChange={(e) => setDashboardTitle(e.target.value)} />
                         </Col>
                     </Row>
-                    <Row className="Metadatapannel">
+                    <Row className="Metadatapannel p-2 mb-2">
                         <Col sm="12" md="12" lg="12">
                             <label className='form-label full-width'>Webpart Configuartion</label>
                             {NewItem != undefined && NewItem?.length > 0 && NewItem.map((items: any, index: any) => {
