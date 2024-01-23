@@ -192,7 +192,6 @@ const RelevantDocuments = (props: any, ref: any) => {
 
     };
 
-
     const editDocumentsLink = (editData: any) => {
         copyEditData = [];
         setEditdocpanel(true);
@@ -201,7 +200,6 @@ const RelevantDocuments = (props: any, ref: any) => {
         setEditdocData(editData)
 
     }
-
 
     const callBackData = useCallback((elem: any, getSelectedRowModel: any) => {
         console.log(getSelectedRowModel)
