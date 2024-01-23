@@ -4,14 +4,12 @@ import { Web } from "sp-pnp-js";
 import { Col, Row } from "react-bootstrap";
 import Tooltip from "./Tooltip";
 let portfolioColor: any = '#057BD0';
-
 const AddConfiguration = (props: any) => {
     let defaultConfig = { "WebpartTitle": '', "TileName": '', "ShowWebpart": '', "WebpartPosition": { "Row": 0, "Column": 0 }, "GroupByView": '', "Id": 1, "AdditonalHeader": false, "smartFevId": '' }
     const [NewItem, setNewItem]: any = React.useState<any>([defaultConfig]);
     const [SmartFav, setSmartFav] = React.useState<any>([]);
     const [DashboardTitle, setDashboardTitle] = React.useState<any>('');
     const [IsCheck, setIsCheck] = React.useState<any>(false);
-
     const LoadSmartFav = async () => {
         let SmartFavData: any = []
         const web = new Web(props?.props?.Context?._pageContext?._web?.absoluteUrl);
@@ -59,7 +57,6 @@ const AddConfiguration = (props: any) => {
     const SaveConfigPopup = async () => {
         try {
             let web = new Web(props?.props?.Context?._pageContext?._web?.absoluteUrl);
-
             await web.lists.getById(props?.props?.AdminConfigurationListId).items.select("Title", "Id", "Value", "Key", "Configurations").filter("Key eq 'DashBoardConfigurationId'").getAll().then(async (data: any) => {
                 let result = data?.length + 1
                 let newArray = [...NewItem];
@@ -90,7 +87,6 @@ const AddConfiguration = (props: any) => {
                             console.log(err);
                         })
                 }
-
             }).catch((err: any) => {
                 console.log(err);
             })
@@ -156,13 +152,13 @@ const AddConfiguration = (props: any) => {
                 isBlocking={false}
                 type={PanelType.medium}>
                 <div className='border container modal-body p-1 mb-1'>
-                    <Row className="Metadatapannel">
+                    <Row className="Metadatapannel p-2 mb-2">
                         <Col sm="6" md="6" lg="6">
                             <label className='form-label full-width'>Dashboard Title</label>
                             <input className='form-control' type='text' placeholder="Dashboard Title" value={DashboardTitle} onChange={(e) => setDashboardTitle(e.target.value)} />
                         </Col>
                     </Row>
-                    <Row className="Metadatapannel">
+                    <Row className="Metadatapannel p-2 mb-2">
                         <Col sm="12" md="12" lg="12">
                             <label className='form-label full-width'>Webpart Configuartion</label>
                             {NewItem != undefined && NewItem?.length > 0 && NewItem.map((items: any, index: any) => {
