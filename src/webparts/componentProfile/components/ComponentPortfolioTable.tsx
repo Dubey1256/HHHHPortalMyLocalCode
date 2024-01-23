@@ -1597,7 +1597,7 @@ const switchGroupbyData = () => {
           
           <span className="siteColor">{`Create Component `}</span>
         </div>
-        <Tooltip ComponentId={checkedList?.Id} />
+        <Tooltip ComponentId={1271} />
       </div>
     );
   };
