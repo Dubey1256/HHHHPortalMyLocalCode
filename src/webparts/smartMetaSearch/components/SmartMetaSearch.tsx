@@ -1,9 +1,9 @@
 import * as React from 'react';
 // import styles from './SmartMetaSearch.module.scss';
 import { ISmartMetaSearchProps } from './ISmartMetaSearchProps';
-import SmartSearchTable from './SmartMetaSearchTable'
+// import SmartSearchTable from './SmartMetaSearchTable'
 // import { escape } from '@microsoft/sp-lodash-subset';
-import SmartFilterSearchGlobal from '../../../globalComponents/SmartSearchfilter/SmartSearchfilter';
+import TaskMangementTable from '../../../globalComponents/SmartSearchfilter/SmartSearchfilter';
 export default class SmartMetaSearch extends React.Component<ISmartMetaSearchProps, {}> {
   public render(): React.ReactElement<ISmartMetaSearchProps> {
     const {
@@ -13,14 +13,16 @@ export default class SmartMetaSearch extends React.Component<ISmartMetaSearchPro
       hasTeamsContext,
       ContextValue,
       userDisplayName,
-      SmartMetadataListId,
-      TaskUserListId,     
+      SmartMetadataListID,
+      TaskUsertListID,
+      PortFolioTypeID,
+      siteUrl     
     } = this.props;
 
     return (    
       <>
          <div>
-          <SmartFilterSearchGlobal selectedArray={this.props}/>
+          <TaskMangementTable selectedArray={this.props}/>
           {/* <SmartSearchTable />*/}
          </div>
       </>
