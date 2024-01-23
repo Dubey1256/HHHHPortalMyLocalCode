@@ -541,15 +541,10 @@ export class CommentCard extends React.Component<ICommentCardProps, ICommentCard
     }
   }
   private openEditModal(cmdData: any, indexOfDeleteElement: any, ItemLevel: any) {
-    this.setState({
+     this.setState({
       isModalOpen: true,
-      editorValue: cmdData.Description,
+      editorValue: cmdData.Description?.replace(/\n/g, '<br>') ,
       ChildLevel: ItemLevel,
-      /*editorState : EditorState.createWithContent(
-        ContentState.createFromBlockArray(
-          convertFromHTML('<p>'+cmdData.Description+'</p>').contentBlocks
-        )
-      ),*/
       updateCommentPost: cmdData
     })
   }
@@ -787,23 +782,39 @@ export class CommentCard extends React.Component<ICommentCardProps, ICommentCard
   private handleMouseClick = (e: any) => {
     this.setState({ keyPressed: false });
   };
-  private detectAndRenderLinks = (text: any) => {
-    const tempElement = document.createElement('div');
-    tempElement.innerHTML = text;
-    text = tempElement.textContent || tempElement.innerText || '';
-    text = text.replace(/\s+/g, ' ').trim();
+  // private detectAndRenderLinks = (text: any) => {
+  //   const tempElement = document.createElement('div');
+  //   tempElement.innerHTML = text;
+  //   text = tempElement.textContent || tempElement.innerText || '';
+  //   text = text.replace(/\s+/g, ' ').trim();
 
-    const urlRegex = /(https?:\/\/[^\s]+)/g;
-    return text.split(urlRegex).map((part: any, index: any) => {
-      if (part.match(urlRegex)) {
-        return (
-          <a key={index} href={part} target="_blank" rel="noopener noreferrer">
-            {part}
-          </a>
-        );
+  //   const urlRegex = /(https?:\/\/[^\s]+)/g;
+  //   return text.split(urlRegex).map((part: any, index: any) => {
+  //     if (part.match(urlRegex)) {
+  //       return (
+  //         <a key={index} href={part} target="_blank" rel="noopener noreferrer">
+  //           {part}
+  //         </a>
+  //       );
+  //     }
+  //     return part;
+  //   });
+  // };
+  private detectAndRenderLinks = (html:any) => {
+    const div = document.createElement('div');
+    div.innerHTML = html;
+   const paragraphs = div.querySelectorAll('p');
+ // Filter out empty <p> tags
+    paragraphs.forEach((p) => {
+      if (p.innerText.trim() === '') {
+        p.parentNode.removeChild(p); // Remove empty <p> tags
       }
-      return part;
     });
+   div.innerHTML = div.innerHTML.replace(/\n/g, '<br>')  // Convert newlines to <br> tags first
+  div.innerHTML = div.innerHTML.replace(/(?:<br\s*\/?>\s*)+(?=<\/?[a-z][^>]*>)/gi, '');
+  
+ 
+ return div.innerHTML;
   };
   public render(): React.ReactElement<ICommentCardProps> {
 
@@ -897,11 +908,12 @@ export class CommentCard extends React.Component<ICommentCardProps, ICommentCard
 
                           <div className="media-text">
                             {cmtData.Header != '' && <h6 className="userid m-0"><a className="align-top">{cmtData?.Header}</a></h6>}
-                            {/* <p className='m-0'><span dangerouslySetInnerHTML={{ __html: this.detectAndRenderLinks(cmtData?.Description) }}>
+                            {/* <p className='m-0'>
+                            <span dangerouslySetInnerHTML={{ __html: this.detectAndRenderLinks(cmtData?.Description) }}>
 
                             </span></p> */}
-
-                            {this.detectAndRenderLinks(cmtData?.Description)}
+    <span dangerouslySetInnerHTML={{ __html: this.detectAndRenderLinks(cmtData?.Description) }}></span>
+                            {/* {this.detectAndRenderLinks(cmtData?.Description)} */}
                           </div>
 
                         </div>
@@ -973,7 +985,8 @@ export class CommentCard extends React.Component<ICommentCardProps, ICommentCard
                                       <div className="media-text">
                                         {/* {ReplyMsg.Header != '' && <h6 className="userid m-0"><a className="ng-binding">{ReplyMsg?.Header}</a></h6>} */}
                                         {/* <p className='m-0'><span dangerouslySetInnerHTML={{ __html: ReplyMsg?.Description }}></span></p> */}
-                                        {this.detectAndRenderLinks(ReplyMsg?.Description)}
+                                        <span dangerouslySetInnerHTML={{ __html: this.detectAndRenderLinks(cmtData?.Description) }}></span>
+                                        {/* {this.detectAndRenderLinks(ReplyMsg?.Description)} */}
                                       </div>
                                     </div>
                                   </li>
