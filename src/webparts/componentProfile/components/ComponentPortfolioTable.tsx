@@ -1198,6 +1198,19 @@ const switchGroupbyData = () => {
         size: 410
       },
       {
+        accessorFn: (row) => row?.FeatureTypeTitle,
+        cell: ({ row, column, getValue }) => (
+            <>
+                <span className="columnportfoliotaskCate"><span title={row?.original?.FeatureTypeTitle} className="text-content"><HighlightableCell value={getValue()} searchTerm={column.getFilterValue() != undefined ? column.getFilterValue() : childRef?.current?.globalFilter} /></span></span>
+            </>
+        ),
+        placeholder: "Feature Type",
+        header: "",
+        resetColumnFilters: false,
+        size: 90,
+        id: "FeatureTypeTitle",
+    },
+      {
         accessorFn: (row) => row?.projectStructerId + "." + row?.ProjectTitle,
         cell: ({ row }) => (
           <>
