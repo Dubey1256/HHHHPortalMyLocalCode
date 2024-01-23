@@ -970,15 +970,20 @@ function Portfolio({ SelectedProp, TaskUser }: any) {
     }
   }
 
-  const contextCall = (data: any, path: any, component: any) => {
-    if (data != null && path != null) {
+  const contextCall = React.useCallback((data: any, path: any, releventKey: any) => {
+    if (data != null &&  path != null && path != "") {
       Setkeydoc(data)
       SetFileDirRef(path)
     }
-    if (component) {
-      this?.relevantDocRef?.current?.loadAllSitesDocuments()
+    if (releventKey) {
+      relevantDocRef?.current?.loadAllSitesDocuments()
+     
     }
-  };
+    else if(data==null && path==null && releventKey== false ){
+      keyDocRef?.current?.loadAllSitesDocumentsEmail()
+      relevantDocRef?.current?.loadAllSitesDocuments()
+    }
+  },[])
 
 
   //  inline editing callback 
