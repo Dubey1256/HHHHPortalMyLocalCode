@@ -674,7 +674,7 @@ function Portfolio({ SelectedProp, TaskUser }: any) {
                 filter += "(Service / Id eq " + ID + ")";
               }
 
-              let urln = `${web}/_api/lists/getbyid('${ContextValue.SmartHelptListID}')/items?$select=Id,Title,ItemRank,PercentComplete,Categories,AssignedTo/Id,AssignedTo/Title,Body,DueDate,ItemType,Priority,StartDate,Status&$expand=AssignedTo&$filter=${filter}`;
+              let urln = `${web}/_api/lists/getbyid('${ContextValue.SmartHelptListID}')/items?$select=Id,Title,ItemRank,PercentComplete,Categories,FeatureType/Title,FeatureType/Id,AssignedTo/Id,AssignedTo/Title,Body,DueDate,ItemType,Priority,StartDate,Status&$expand=AssignedTo,FeatureType&$filter=${filter}`;
               $.ajax({
                 url: urln,
                 method: "GET",
@@ -1615,6 +1615,15 @@ function Portfolio({ SelectedProp, TaskUser }: any) {
                               />
                             </a>
                           ))} */}
+                      </dd>
+                    </dl>
+                    <dl>
+                      <dt className="bg-fxdark" title="Feature Type">Feature Type</dt>
+                      <dd className="bg-light text-break">
+                        {data?.length > 0 &&
+                          <span>{data[0]?.FeatureType?.Title}</span>
+                        }
+                        
                       </dd>
                     </dl>
 

@@ -1818,8 +1818,8 @@ export const GetServiceAndComponentAllData = async (Props: any) => {
         AllMasterTaskData = await web.lists
             .getById(Props.MasterTaskListID)
             .items
-            .select("ID", "Id", "Title", "PortfolioLevel", "PortfolioStructureID", "Comments", "ItemRank", "Portfolio_x0020_Type", "Parent/Id", "Parent/Title", "DueDate", "Created", "Body", "SiteCompositionSettings", "Sitestagging", "Item_x0020_Type", "Categories", "Short_x0020_Description_x0020_On", "PriorityRank", "Priority", "AssignedTo/Title", "TeamMembers/Id", "TeamMembers/Title", "ClientCategory/Id", "ClientCategory/Title", "PercentComplete", "ResponsibleTeam/Id", "Author/Id", "Author/Title", "ResponsibleTeam/Title", "PortfolioType/Id", "PortfolioType/Color", "PortfolioType/IdRange", "PortfolioType/Title", "AssignedTo/Id")
-            .expand("Parent", "PortfolioType", "AssignedTo", "Author", "ClientCategory", "TeamMembers", "ResponsibleTeam")
+            .select("ID", "Id", "Title", "PortfolioLevel","FeatureType/Title","FeatureType/Id", "PortfolioStructureID", "Comments", "ItemRank", "Portfolio_x0020_Type", "Parent/Id", "Parent/Title", "DueDate", "Created", "Body", "SiteCompositionSettings", "Sitestagging", "Item_x0020_Type", "Categories", "Short_x0020_Description_x0020_On", "PriorityRank", "Priority", "AssignedTo/Title", "TeamMembers/Id", "TeamMembers/Title", "ClientCategory/Id", "ClientCategory/Title", "PercentComplete", "ResponsibleTeam/Id", "Author/Id", "Author/Title", "ResponsibleTeam/Title", "PortfolioType/Id", "PortfolioType/Color", "PortfolioType/IdRange", "PortfolioType/Title", "AssignedTo/Id")
+            .expand("Parent", "PortfolioType", "FeatureType","AssignedTo", "Author", "ClientCategory", "TeamMembers", "ResponsibleTeam")
             .getAll();
 
         // console.log("all Service and Coponent data form global Call=======", AllMasterTaskData);
@@ -1882,6 +1882,11 @@ export const GetServiceAndComponentAllData = async (Props: any) => {
             if (result?.Item_x0020_Type != undefined) {
                 result.SiteIconTitle = result?.Item_x0020_Type?.charAt(0);
             }
+            result.FeatureTypeTitle = ''
+            if(result?.FeatureType?.Id!=undefined){
+                result.FeatureTypeTitle = result?.FeatureType?.Title
+            }   
+
 
             result.descriptionsSearch = '';
             try {
@@ -2378,4 +2383,12 @@ export const deepCopy = (obj: any, originalReferences = new WeakMap()) => {
         }
     }
     return copy;
+}
+
+export const openUsersDashboard = (siteUrl ?:any|undefined,AssignedUserId?:any|undefined) =>{
+    if(AssignedUserId!=undefined){
+        window?.open(`${siteUrl}/SitePages/TaskDashboard.aspx?UserId=${AssignedUserId}`,'_blank')
+    }else{
+        window?.open(`${siteUrl}/SitePages/TaskDashboard.aspx`,'_blank')
+    }
 }
