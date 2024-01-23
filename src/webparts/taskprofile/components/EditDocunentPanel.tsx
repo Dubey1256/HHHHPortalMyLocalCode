@@ -64,8 +64,8 @@ const EditDocumentpanel = (props: any) => {
           }
           setTimeout(() => {
             const panelMain: any = document.querySelector('.ms-Panel-main');
-            if (panelMain && portfolioData?.PortfolioType?.Color) {
-              $('.ms-Panel-main').css('--SiteBlue', portfolioData?.PortfolioType?.Color); // Set the desired color value here
+            if (panelMain && portfolioData[0]?.PortfolioType?.Color) {
+              $('.ms-Panel-main').css('--SiteBlue', portfolioData[0]?.PortfolioType?.Color); // Set the desired color value here
             }
           }, 1000)
           console.log("document data", Data);
