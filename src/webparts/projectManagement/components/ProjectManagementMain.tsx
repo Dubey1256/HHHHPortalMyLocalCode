@@ -1440,7 +1440,7 @@ const  AncCallback = (type: any) => {
   }
 
   const inlineCallBackMasterTask = React.useCallback((item: any) => {
-
+    item.taggedPortfolios = Masterdata?.taggedPortfolios;
     setMasterdata(item);
 
   }, []);

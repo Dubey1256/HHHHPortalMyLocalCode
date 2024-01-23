@@ -600,6 +600,7 @@ function PortfolioTable(SelectedProp: any) {
         ProjectData=results?.ProjectData;
         componentDetails?.map((items: any) => {
           items.SmartPriority;
+          items.TaskTypeValue = '';
       });
     }
     flatviewmastertask = JSON.parse(JSON.stringify(componentDetails));
@@ -1197,6 +1198,19 @@ const switchGroupbyData = () => {
         size: 410
       },
       {
+        accessorFn: (row) => row?.FeatureTypeTitle,
+        cell: ({ row, column, getValue }) => (
+            <>
+                <span className="columnportfoliotaskCate"><span title={row?.original?.FeatureTypeTitle} className="text-content"><HighlightableCell value={getValue()} searchTerm={column.getFilterValue() != undefined ? column.getFilterValue() : childRef?.current?.globalFilter} /></span></span>
+            </>
+        ),
+        placeholder: "Feature Type",
+        header: "",
+        resetColumnFilters: false,
+        size: 90,
+        id: "FeatureTypeTitle",
+    },
+      {
         accessorFn: (row) => row?.projectStructerId + "." + row?.ProjectTitle,
         cell: ({ row }) => (
           <>
@@ -1711,6 +1725,11 @@ const switchGroupbyData = () => {
       copyDtaArray.unshift(item.data);
       renderData = [];
       renderData = renderData.concat(copyDtaArray);
+      if (item?.CreateOpenType === 'CreatePopup') {
+        const openEditItem = (item?.CreatedItem != undefined ? item.CreatedItem[0]?.data : item.data);
+        setSharewebComponent(openEditItem);
+        setIsComponent(true);
+    }
       refreshData();
     }
     setOpenAddStructurePopup(false);
@@ -1769,6 +1788,7 @@ const addedCreatedDataFromAWT = (arr: any, dataToPush: any) => {
       temp.Title = "Others";
       temp.TaskID = "";
       temp.subRows = [];
+      temp.TaskTypeValue = '';
       temp.PercentComplete = "";
       temp.ItemRank = "";
       temp.DueDate = null;
