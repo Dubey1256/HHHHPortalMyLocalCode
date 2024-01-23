@@ -7,7 +7,7 @@ import {
 } from "@tanstack/react-table";
 import ReactPopperTooltipSingleLevel from '../../../globalComponents/Hierarchy-Popper-tooltipSilgleLevel/Hierarchy-Popper-tooltipSingleLevel';
 import { FaPrint, FaFileExcel, FaPaintBrush, FaEdit, FaSearch, FaInfoCircle, FaChevronRight, FaChevronDown } from 'react-icons/fa';
-import GlobalCommanTable, { IndeterminateCheckbox } from "../../../globalComponents/GroupByReactTableComponents/GlobalCommanTable";
+import GlobalCommanTable from "../../../globalComponents/GroupByReactTableComponents/GlobalCommanTable";
 import HighlightableCell from "../../../globalComponents/GroupByReactTableComponents/highlight";
 import { Web } from "sp-pnp-js";
 import { SPFI, spfi, SPFx as spSPFx } from "@pnp/sp";
@@ -29,6 +29,7 @@ let timeSheetConfig: any = {};
 var AllListId: any = {};
 var currentUserId: '';
 var currentUser: any = [];
+let AllTimeEntries: any = [];
 let headerOptions: any = {
     openTab: true,
     teamsIcon: true
@@ -37,12 +38,15 @@ let AllSitesAllTasks: any = [];
 let AllLeaves: any = [];
 var isShowTimeEntry: any = "";
 var isShowSiteCompostion: any = "";
+let renderData: any = []
 export default function ProjectOverview(props: any) {
     const [TableProperty, setTableProperty] = React.useState([]);
     const [openTimeEntryPopup, setOpenTimeEntryPopup] = React.useState(false);
     const [currentUserData, setCurrentUserData]: any = React.useState({});
     const [onLeaveEmployees, setOnLeaveEmployees] = React.useState([]);
     const [CheckBoxData, setCheckBoxData] = React.useState([]);
+    const rerender = React.useReducer(() => ({}), {})[1]
+    const refreshData = () => setData(() => renderData);
     const [ShowTeamPopup, setShowTeamPopup] = React.useState(false);
     const [checkData, setcheckData] = React.useState([])
     const [showTeamMemberOnCheck, setShowTeamMemberOnCheck] = React.useState(false)
@@ -160,17 +164,18 @@ export default function ProjectOverview(props: any) {
     const editTaskCallBack = React.useCallback((item: any) => {
         setisOpenEditPopup(false);
     }, []);
+
     const loadAllComponent = async () => {
         MyAllData = [];
-        let web = new Web(AllListId?.siteUrl);
-        MyAllData = await web.lists
-            .getById(AllListId?.MasterTaskListID)
-            .items.select("ComponentCategory/Id", "ComponentCategory/Title", "DueDate", "SiteCompositionSettings", "PortfolioStructureID", "ItemRank", "ShortDescriptionVerified", "Portfolio_x0020_Type", "BackgroundVerified", "descriptionVerified", "Synonyms", "BasicImageInfo", "DeliverableSynonyms", "OffshoreComments", "OffshoreImageUrl", "HelpInformationVerified", "IdeaVerified", "TechnicalExplanationsVerified", "Deliverables", "DeliverablesVerified", "ValueAddedVerified", "CompletedDate", "Idea", "ValueAdded", "TechnicalExplanations", "Item_x0020_Type", "Sitestagging", "Package", "Parent/Id", "Parent/Title", "Short_x0020_Description_x0020_On", "Short_x0020_Description_x0020__x", "Short_x0020_description_x0020__x0", "AdminNotes", "AdminStatus", "Background", "Help_x0020_Information", "TaskCategories/Id", "TaskCategories/Title", "PriorityRank", "Reference_x0020_Item_x0020_Json", "TeamMembers/Title", "TeamMembers/Name", "TeamMembers/Id", "Item_x002d_Image", "ComponentLink", "IsTodaysTask", "AssignedTo/Title", "AssignedTo/Name", "AssignedTo/Id", "AttachmentFiles/FileName", "FileLeafRef", "FeedBack", "Title", "Id", "PercentComplete", "Company", "StartDate", "DueDate", "Comments", "Categories", "Status", "WebpartId", "Body", "Mileage", "PercentComplete", "Attachments", "Priority", "Created", "Modified", "Author/Id", "Author/Title", "Editor/Id", "Editor/Title", "ClientCategory/Id", "ClientCategory/Title")
-            .expand("ClientCategory", "ComponentCategory", "AssignedTo", "AttachmentFiles", "Author", "Editor", "TeamMembers", "TaskCategories", "Parent")
-            .top(4999)
-            .get()
-
-
+        let PropsObject: any = {
+            MasterTaskListID: AllListId.MasterTaskListID,
+            siteUrl: AllListId.siteUrl,
+            TaskUserListId: AllListId.TaskUsertListID,
+        }
+        let results = await globalCommon.GetServiceAndComponentAllData(PropsObject)
+        if (results?.AllData?.length > 0) {
+            MyAllData = results?.AllData;
+        }
     }
     const LoadAllSiteAllTasks = async function () {
         await loadAllComponent()
@@ -302,9 +307,9 @@ export default function ProjectOverview(props: any) {
                 accessorKey: "",
                 placeholder: "",
                 hasCheckbox: false,
-                hasCustomExpanded: false,
-                hasExpanded: false,
-                size: 1,
+                hasCustomExpanded: true,
+                hasExpanded: true,
+                size: 12,
                 id: 'Id',
             },
             {
@@ -330,10 +335,10 @@ export default function ProjectOverview(props: any) {
                             <span>
                                 {row?.original?.SiteIcon != undefined ?
                                     <img title={row?.original?.siteType} className="workmember" src={row?.original?.SiteIcon} /> : ''}
-                            </span> : row?.original?.Item_x0020_Type == "Sprint"  ?
-                            <div title={row?.original?.Item_x0020_Type}  style={{ backgroundColor: '#000066' }} className={"Dyicons me-1"}>
-                            X
-                          </div>:''
+                            </span> : row?.original?.Item_x0020_Type == "Sprint" ?
+                                <div title={row?.original?.Item_x0020_Type} style={{ backgroundColor: '#000066' }} className={"Dyicons me-1"}>
+                                    X
+                                </div> : ''
                     }</>
                 ),
                 id: "siteType",
@@ -469,17 +474,13 @@ export default function ProjectOverview(props: any) {
                 size: 60,
             },
             {
-                accessorFn: (row) => row?.TaskCategories,
+                accessorFn: (row) => row?.TaskTypeValue,
                 cell: ({ row }) => (
                     <span>
-                        {row?.original?.TaskCategories && row?.original?.TaskCategories.length > 0
-                            ? row?.original?.TaskCategories.map((category: any, index: any) => (
-                                <div key={index}>{category.Title}</div>
-                            ))
-                            : ''}
+                        {row?.original?.TaskTypeValue}
                     </span>
                 ),
-                id: 'TaskCategories',
+                id: 'TaskTypeValue',
                 placeholder: "Task Categories",
                 resetColumnFilters: false,
                 resetSorting: false,
@@ -543,7 +544,7 @@ export default function ProjectOverview(props: any) {
                 size: 100,
                 id: "commentsSearch",
             },
-          
+
             {
 
                 cell: ({ row }) => (
@@ -589,7 +590,7 @@ export default function ProjectOverview(props: any) {
                 cell: ({ row, getValue }) => (
                     <div>
                         <>
-                            <ReactPopperTooltipSingleLevel ShareWebId={row?.original?.TaskID}  AllListId={AllListId} row={row?.original} singleLevel={true} masterTaskData={MyAllData} AllSitesTaskData={AllSitesAllTasks} />
+                            <ReactPopperTooltipSingleLevel ShareWebId={row?.original?.TaskID} AllListId={AllListId} row={row?.original} singleLevel={true} masterTaskData={MyAllData} AllSitesTaskData={AllSitesAllTasks} />
 
                         </>
                     </div>
@@ -787,17 +788,13 @@ export default function ProjectOverview(props: any) {
                 size: 60,
             },
             {
-                accessorFn: (row) => row?.TaskCategories,
+                accessorFn: (row) => row?.TaskTypeValue,
                 cell: ({ row }) => (
                     <span>
-                        {row?.original?.TaskCategories && row?.original?.TaskCategories.length > 0
-                            ? row?.original?.TaskCategories.map((category: any, index: any) => (
-                                <div key={index}>{category.Title}</div>
-                            ))
-                            : ''}
+                        {row?.original?.TaskTypeValue}
                     </span>
                 ),
-                id: 'TaskCategories',
+                id: 'TaskTypeValue',
                 placeholder: "Task Categories",
                 resetColumnFilters: false,
                 resetSorting: false,
@@ -1029,17 +1026,13 @@ export default function ProjectOverview(props: any) {
                 size: 100,
             },
             {
-                accessorFn: (row) => row?.TaskCategories,
+                accessorFn: (row) => row?.TaskTypeValue,
                 cell: ({ row }) => (
                     <span>
-                        {row?.original?.TaskCategories && row?.original?.TaskCategories.length > 0
-                            ? row?.original?.TaskCategories.map((category: any, index: any) => (
-                                <div key={index}>{category.Title}</div>
-                            ))
-                            : ''}
+                        {row?.original?.TaskTypeValue}
                     </span>
                 ),
-                id: 'TaskCategories',
+                id: 'TaskTypeValue',
                 placeholder: "Task Categories",
                 resetColumnFilters: false,
                 resetSorting: false,
@@ -1151,7 +1144,7 @@ export default function ProjectOverview(props: any) {
                 cell: ({ row }) => (
                     <div>
                         <>
-                            <ReactPopperTooltipSingleLevel  AllListId={AllListId} ShareWebId={row?.original?.TaskID} row={row?.original} singleLevel={true} masterTaskData={MyAllData} AllSitesTaskData={AllSitesAllTasks} />
+                            <ReactPopperTooltipSingleLevel AllListId={AllListId} ShareWebId={row?.original?.TaskID} row={row?.original} singleLevel={true} masterTaskData={MyAllData} AllSitesTaskData={AllSitesAllTasks} />
                         </>
                     </div>
                 ),
@@ -1345,17 +1338,13 @@ export default function ProjectOverview(props: any) {
                 size: 60,
             },
             {
-                accessorFn: (row) => row?.TaskCategories,
+                accessorFn: (row) => row?.TaskTypeValue,
                 cell: ({ row }) => (
                     <span>
-                        {row?.original?.TaskCategories && row?.original?.TaskCategories.length > 0
-                            ? row?.original?.TaskCategories.map((category: any, index: any) => (
-                                <div key={index}>{category.Title}</div>
-                            ))
-                            : ''}
+                        {row?.original?.TaskTypeValue}
                     </span>
                 ),
-                id: 'TaskCategories',
+                id: 'TaskTypeValue',
                 placeholder: "Task Categories",
                 resetColumnFilters: false,
                 resetSorting: false,
@@ -1426,7 +1415,7 @@ export default function ProjectOverview(props: any) {
 
     const sendAllWorkingTodayTasks = async () => {
         setPageLoader(true);
-        let AllTimeEntries: any = [];
+        AllTimeEntries = [];
         if (timeSheetConfig?.Id != undefined) {
             AllTimeEntries = await globalCommon.loadAllTimeEntry(timeSheetConfig);
         }
@@ -1442,153 +1431,10 @@ export default function ProjectOverview(props: any) {
         if (confirmation) {
             var subject = "Today's Working Tasks Under Projects";
             const GroupedPromises = await groupedData?.map(async (group: any) => {
-
-                let projectLeaderTitle = '';
-                let projectLeaderId: any = '';
-
-                if (group?.ResponsibleTeam?.lemgth > 0) {
-                    projectLeaderTitle = group?.ResponsibleTeam[0]?.Title
-                    projectLeaderId = group?.ResponsibleTeam[0]?.Id
-                }
-                let tasksCopy: any = [];
-                let text = '';
-                tasksCopy = group?.subRows
-                if (tasksCopy?.length > 0) {
-                    let taskCount = 0;
-
-                    tasksCopy?.map(async (item: any) => {
-                        try {
-
-                            item.smartTime = 0;
-
-                            let EstimatedDesc: any = []
-
-                            item.showDesc = '';
-                            try {
-                                AllTimeEntries?.map((entry: any) => {
-                                    if (entry[`Task${item?.siteType}`] != undefined && entry[`Task${item?.siteType}`].Id == item.Id) {
-                                        let AdditionalTimeEntry = JSON.parse(entry?.AdditionalTimeEntry)
-                                        AdditionalTimeEntry?.map((time: any) => {
-                                            item.smartTime += parseFloat(time?.TaskTime);
-                                        })
-                                    }
-                                })
-                                let parser = new DOMParser();
-                                let shortDesc = parser.parseFromString(item?.bodys, "text/html");
-                                EstimatedDesc = JSON.parse(item?.EstimatedTimeDescription)
-                                item?.bodys?.split(' ').map((des: any, index: any) => {
-                                    if (index <= 10) {
-                                        item.showDesc += ' ' + des;
-                                    }
-                                })
-                            } catch (error) {
-                                console.log(error)
-                            }
-
-                            let memberOnLeave = false;
-                            item?.AssignedTo?.map((user: any) => {
-                                memberOnLeave = AllLeaves.some((emp: any) => emp == user?.Id)
-                            });
-                            if (!memberOnLeave) {
-                                taskCount++;
-                                let teamUsers: any = [];
-                                if (item?.AssignedTo?.length > 0) {
-                                    item.AssignedTitle = item?.AssignedTo?.map((elem: any) => elem?.Title).join(" ")
-                                } else {
-                                    item.AssignedTitle = ''
-                                }
-                                if (item.DueDate != undefined) {
-                                    item.TaskDueDatenew = Moment(item.DueDate).format("DD/MM/YYYY");
-                                }
-                                if (item.TaskDueDatenew == undefined || item.TaskDueDatenew == '')
-                                    item.TaskDueDatenew = '';
-                                if (item.Categories == undefined || item.Categories == '')
-                                    item.Categories = '';
-
-                                if (item.EstimatedTime == undefined || item.EstimatedTime == '' || item.EstimatedTime == null) {
-                                    item.EstimatedTime = ''
-                                }
-                                let estimatedDescription = ''
-                                if (EstimatedDesc?.length > 0) {
-                                    EstimatedDesc?.map((time: any, index: any) => {
-                                        if (index == 0) {
-                                            estimatedDescription += time?.EstimatedTimeDescription
-                                        } else {
-                                            estimatedDescription += ', ' + time?.EstimatedTimeDescription
-                                        }
-
-                                    })
-                                }
-                                text +=
-                                    `<tr>
-                                    <td height="10" align="left" valign="middle" style="border-left: 0px; border-top: 0px; padding: 5px 0px; padding-left:5px">${item?.siteType} </td>
-                                    <td height="10" align="left" valign="middle" style="border-left: 0px; border-top: 0px; padding: 5px 0px; padding-left:5px"> ${item.TaskID} </td>
-                                    <td height="10" align="left" valign="middle" style="border-left: 0px; border-top: 0px; padding: 5px 0px; padding-left:5px"><p style="margin:0px; color:#333;"><a style="text-decoration: none;" href =${item?.siteUrl}/SitePages/Task-Profile.aspx?taskId=${item?.Id}&Site=${item?.siteType}> ${item?.Title} </a></p></td>
-                                    <td height="10" align="left" valign="middle" style="border-left: 0px; border-top: 0px; padding: 5px 0px; padding-left:5px"> ${item?.showDesc} </td>
-                                    <td height="10" align="left" valign="middle" style="border-left: 0px; border-top: 0px; padding: 5px 0px; padding-left:5px"> ${item.Categories} </td>
-                                    <td height="10" align="left" valign="middle" style="border-left: 0px; border-top: 0px; padding: 5px 0px; padding-left:5px"> ${item.PercentComplete} </td>
-                                    <td height="10" align="left" valign="middle" style="border-left: 0px; border-top: 0px; padding: 5px 0px; padding-left:5px"> ${item.PriorityRank} </td>
-                                    <td height="10" align="left" valign="middle" style="border-left: 0px; border-top: 0px; padding: 5px 0px; padding-left:5px"> ${(item?.AssignedTo?.length > 0 ? item?.AssignedTo?.map((AssignedUser: any) => {
-                                        return (
-                                            '<p style="margin:0px;">' + '<a style="text-decoration: none;" href =' + AllListId.siteUrl + '/SitePages/UserTimeEntry.aspx?userId=' + AssignedUser?.Id + '><span>' + AssignedUser?.Title + '</span></a>' + '</p>'
-                                        )
-                                    }) : '')} </td>
-                                    <td height="10" align="left" valign="middle" style="border-left: 0px; border-top: 0px; padding: 5px 0px; padding-left:5px">${item.TaskDueDatenew} </td>
-                                    <td height="10" align="left" valign="middle" style="border-left: 0px; border-top: 0px; padding: 5px 0px; padding-left:5px">${item.smartTime} </td>
-                                    <td height="10" align="left" valign="middle" style="border-left: 0px; border-top: 0px; padding: 5px 0px; padding-left:5px; border-right:0px"> ${item.EstimatedTime} </td>
-                                    </tr>`
-                                    ;
-                            }
-
-                        } catch (error) {
-                            setPageLoader(false);
-                            console.log(error)
-                        }
-                    })
-                    if (taskCount > 0) {
-                        body +=
-                            `<table cellpadding="0" cellspacing="0" align="center" style="margin-top:10px" width="100%" border="0">
-                            <tr>
-                            <td width="20%" height="30" align="left" valign="middle"bgcolor="#a2d1ff" style="padding-left:10px;border-bottom: 1px solid #a19f9f;border-right: 1px solid #a19f9f;border-left: 1px solid #a19f9f;color:#000;"><strong>Title</strong></td>
-                            <td height="30" colspan="6" bgcolor="#eee" style="padding-left: 10px; color: #eee;border: 1px solid #a19f9f;"><strong><a style="text-decoration: none;" href =${AllListId.siteUrl}/SitePages/Project-Management.aspx?ProjectId=${group?.Id}> ${group?.Title}</a></strong></td>
-                            </tr>
-                            <tr>
-                            <td width="10%" height="30" align="left" valign="middle" bgcolor="#a2d1ff" style="padding-left:10px;border-bottom: 1px solid #a19f9f;border-right: 1px solid #a19f9f;border-left: 1px solid #a19f9f;color:#000;"><strong>Project Priority</strong></td>
-                            <td  width="20%" height="30" bgcolor="#eee" style="padding-left:10px;border-bottom: 1px solid #a19f9f;border-right: 1px solid #a19f9f;border-left: 1px solid #a19f9f;">${group?.PriorityRank}</td>
-                            <td width="10%" align="left" valign="middle" bgcolor="#a2d1ff" style="padding-left:10px;border-bottom: 1px solid #a19f9f;border-right: 1px solid #a19f9f;border-left: 1px solid #a19f9f;color:#000;"><strong>Due Date</strong></td>
-                            <td width="20%" height="30" bgcolor="#eee" style="padding-left:10px;border-bottom: 1px solid #a19f9f;border-right: 1px solid #a19f9f;border-left: 1px solid #a19f9f;"> ${group?.DisplayDueDate} </td>
-                            <td width="10%" align="left" valign="middle" bgcolor="#a2d1ff" style="padding-left:10px;border-bottom: 1px solid #a19f9f;border-right: 1px solid #a19f9f;border-left: 1px solid #a19f9f;color:#000;"><strong>Team Leader</strong></td>
-                            <td width="20%" height="30" bgcolor="#eee" style="padding-left:10px;border-bottom: 1px solid #a19f9f;border-right: 1px solid #a19f9f;border-left: 1px solid #a19f9f;"><a style="text-decoration: none;" href = ${AllListId?.siteUrl}/SitePages/TaskDashboard.aspx?UserId=${projectLeaderId} >${projectLeaderTitle} </a></td>
-                            </tr>
-                            <tr><td colspan="4" height="10"></td></tr>
-                            </table >
-                            <table cellpadding="0" cellspacing="0" align="left" width="100%" border="1" style=" border-color: #444;margin-bottom:10px">
-                            <thead>
-                            <tr>
-                            <th width="40" height="12" align="center" valign="middle" bgcolor="#eeeeee" style="padding:10px 5px;border-top: 0px;border-left: 0px;">Site</th>
-                            <th width="80" height="12" align="center" valign="middle" bgcolor="#eeeeee" style="padding:10px 5px;border-top: 0px;border-left: 0px;x">Task ID</th>
-                            <th width="500" height="12" align="center" valign="middle" bgcolor="#eeeeee" style="padding:10px 5px;border-top: 0px;border-left: 0px;">Title</th>
-                            <th width="140" height="12" align="center" valign="middle" bgcolor="#eeeeee" style="padding:10px 5px;border-top: 0px;border-left: 0px;" >Desc.</th>
-                            <th width="80" height="12" align="center" valign="middle" bgcolor="#eeeeee" style="padding:10px 5px;border-top: 0px;border-left: 0px;">Category</th>
-                            <th width="40" height="12" align="center" valign="middle" bgcolor="#eeeeee" style="padding:10px 5px;border-top: 0px;border-left: 0px;">% </th>
-                            <th width="40" height="12" align="center" valign="middle" bgcolor="#eeeeee" style="padding:10px 5px;border-top: 0px;border-left: 0px;">Priority</th>
-                            <th width="130" height="12" align="center" valign="middle" bgcolor="#eeeeee" style="padding:10px 5px;border-top: 0px;border-left: 0px;">Team</th>
-                            <th width="80" height="12" align="center" valign="middle" bgcolor="#eeeeee" style="padding:10px 5px;border-top: 0px;border-left: 0px;">Duedate</th>
-                            <th width="80" height="12" align="center" valign="middle" bgcolor="#eeeeee" style="padding:10px 5px;border-top: 0px;border-left: 0px;">Smart Time</th>
-                            <th width="70" height="12" align="center" valign="middle" bgcolor="#eeeeee" style="padding:10px 5px;border-top: 0px;border-left: 0px; border-right:0px" >Est</th>
-                            </tr>
-                            </thead>
-                            <tbody>
-                            ${text}
-                            </tbody>
-                            </table>`
-                    }
-                }
-
-
-
+                body += projectEmailContent(group, false)
 
             })
+
             let sendAllTasks =
                 `<span style="font-size: 18px;margin-bottom: 10px;">
                 Hi there, <br><br>
@@ -1600,10 +1446,181 @@ export default function ProjectOverview(props: any) {
                 Thanks.
                 </h3>`
             setPageLoader(false);
+            sendAllTasks = sendAllTasks.replace(/(?:undefined)+/g, "");
             SendEmailFinal(to, subject, sendAllTasks);
 
         }
 
+
+    }
+
+    const projectEmailContent = (group: any, CreateSprint: boolean) => {
+        let projectLeaderTitle = '';
+        let projectLeaderId: any = '';
+        let body: any = '';
+        if (group?.ResponsibleTeam?.lemgth > 0) {
+            projectLeaderTitle = group?.ResponsibleTeam[0]?.Title
+            projectLeaderId = group?.ResponsibleTeam[0]?.Id
+        }
+        let tasksCopy: any = [];
+        let text = '';
+        tasksCopy = group?.subRows
+        const uniqueObjects = [];
+        const idSet = new Set();
+        for (const obj of tasksCopy) {
+            if (!idSet.has(obj?.Id)) {
+                idSet.add(obj?.Id);
+                uniqueObjects.push(obj);
+            }
+        }
+        tasksCopy = uniqueObjects;
+        if (tasksCopy?.length > 0) {
+            let taskCount = 0;
+
+            tasksCopy?.map(async (item: any) => {
+                try {
+                    if (item?.Item_x0020_Type != 'Sprint' || CreateSprint == true) {
+                        item.smartTime = 0;
+
+                        let EstimatedDesc: any = []
+
+                        item.showDesc = '';
+                        try {
+                            AllTimeEntries?.map((entry: any) => {
+                                if (entry[`Task${item?.siteType}`] != undefined && entry[`Task${item?.siteType}`].Id == item.Id) {
+                                    let AdditionalTimeEntry = JSON.parse(entry?.AdditionalTimeEntry)
+                                    AdditionalTimeEntry?.map((time: any) => {
+                                        item.smartTime += parseFloat(time?.TaskTime);
+                                    })
+                                }
+                            })
+                            let parser = new DOMParser();
+                            let shortDesc = parser.parseFromString(item?.bodys, "text/html");
+                            EstimatedDesc = JSON.parse(item?.EstimatedTimeDescription)
+                            item?.bodys?.split(' ').map((des: any, index: any) => {
+                                if (index <= 10) {
+                                    item.showDesc += ' ' + des;
+                                }
+                            })
+                        } catch (error) {
+                            console.log(error)
+                        }
+
+                        let memberOnLeave = false;
+                        item?.AssignedTo?.map((user: any) => {
+                            memberOnLeave = AllLeaves.some((emp: any) => emp == user?.Id)
+                        });
+                        if (!memberOnLeave) {
+                            taskCount++;
+                            let teamUsers: any = [];
+                            if (item?.AssignedTo?.length > 0) {
+                                item.AssignedTitle = item?.AssignedTo?.map((elem: any) => elem?.Title).join(" ")
+                            } else {
+                                item.AssignedTitle = ''
+                            }
+                            if (item.DueDate != undefined) {
+                                item.TaskDueDatenew = Moment(item.DueDate).format("DD/MM/YYYY");
+                            }
+                            if (item.TaskDueDatenew == undefined || item.TaskDueDatenew == '')
+                                item.TaskDueDatenew = '';
+                            if (item.Categories == undefined || item.Categories == '')
+                                item.Categories = '';
+
+                            if (item.EstimatedTime == undefined || item.EstimatedTime == '' || item.EstimatedTime == null) {
+                                item.EstimatedTime = ''
+                            }
+                            let estimatedDescription = ''
+                            if (EstimatedDesc?.length > 0) {
+                                EstimatedDesc?.map((time: any, index: any) => {
+                                    if (index == 0) {
+                                        estimatedDescription += time?.EstimatedTimeDescription
+                                    } else {
+                                        estimatedDescription += ', ' + time?.EstimatedTimeDescription
+                                    }
+
+                                })
+                            }
+                            text +=
+                                `<tr>
+                            <td height="10" align="left" valign="middle" style="border-left: 0px; border-top: 0px; padding: 5px 0px; padding-left:5px">${item?.siteType} </td>
+                            <td height="10" align="left" valign="middle" style="border-left: 0px; border-top: 0px; padding: 5px 0px; padding-left:5px"> ${item.TaskID} </td>
+                            <td height="10" align="left" valign="middle" style="border-left: 0px; border-top: 0px; padding: 5px 0px; padding-left:5px"><p style="margin:0px; color:#333;"><a style="text-decoration: none;" href =${item?.siteUrl}/SitePages/Task-Profile.aspx?taskId=${item?.Id}&Site=${item?.siteType}> ${item?.Title} </a></p></td>
+                            <td height="10" align="left" valign="middle" style="border-left: 0px; border-top: 0px; padding: 5px 0px; padding-left:5px"> ${item?.showDesc} </td>
+                            <td height="10" align="left" valign="middle" style="border-left: 0px; border-top: 0px; padding: 5px 0px; padding-left:5px"> ${item.Categories} </td>
+                            <td height="10" align="left" valign="middle" style="border-left: 0px; border-top: 0px; padding: 5px 0px; padding-left:5px"> ${item.PercentComplete} </td>
+                            <td height="10" align="left" valign="middle" style="border-left: 0px; border-top: 0px; padding: 5px 0px; padding-left:5px"> ${item.SmartPriority != undefined ? item.SmartPriority : ''} </td>
+                            <td height="10" align="left" valign="middle" style="border-left: 0px; border-top: 0px; padding: 5px 0px; padding-left:5px"> ${(item?.AssignedTo?.length > 0 ? item?.AssignedTo?.map((AssignedUser: any) => {
+                                    return (
+                                        '<p style="margin:0px;">' + '<a style="text-decoration: none;" href =' + AllListId.siteUrl + '/SitePages/UserTimeEntry.aspx?userId=' + AssignedUser?.Id + '><span>' + AssignedUser?.Title + '</span></a>' + '</p>'
+                                    )
+                                }) : '')} </td>
+                            <td height="10" align="left" valign="middle" style="border-left: 0px; border-top: 0px; padding: 5px 0px; padding-left:5px">${item.TaskDueDatenew} </td>
+                            <td height="10" align="left" valign="middle" style="border-left: 0px; border-top: 0px; padding: 5px 0px; padding-left:5px">${item.smartTime} </td>
+                            <td height="10" align="left" valign="middle" style="border-left: 0px; border-top: 0px; padding: 5px 0px; padding-left:5px; border-right:0px"> ${item.EstimatedTime} </td>
+                            </tr>`
+                                ;
+                        }
+                    }
+
+                } catch (error) {
+                    setPageLoader(false);
+                    console.log(error)
+                }
+            })
+            if (taskCount > 0) {
+                let bgColor = group?.Item_x0020_Type == 'Sprint' ? '#6cacf3' : '#2d89ef';
+                let textColor = '#ffffff'
+                body +=
+                    `<table cellpadding="0" cellspacing="0" align="center" style="margin-top:10px; margin-left:${group?.Item_x0020_Type == 'Sprint' ? '20px' : ''}" width="100%" border="0">
+                    <tr>
+                    <td width="20%" height="30" align="left" valign="middle"bgcolor=${bgColor} style="padding-left:10px;border-bottom: 1px solid #a19f9f;border-right: 1px solid #a19f9f;border-left: 1px solid #a19f9f;color:${textColor};"><strong>Title</strong></td>
+                    <td height="30" colspan="6" bgcolor="#eee" style="padding-left: 10px; color: #eee;border: 1px solid #a19f9f;"><strong><a style="text-decoration: none;" href =${AllListId.siteUrl}/SitePages/Project-Management.aspx?ProjectId=${group?.Id}> ${group?.PortfolioStructureID} - ${group?.Title}</a></strong></td>
+                    </tr>
+                    <tr>
+                    <td width="10%" height="30" align="left" valign="middle" bgcolor=${bgColor} style="padding-left:10px;border-bottom: 1px solid #a19f9f;border-right: 1px solid #a19f9f;border-left: 1px solid #a19f9f;color:${textColor};"><strong>Project Priority</strong></td>
+                    <td  width="20%" height="30" bgcolor="#eee" style="padding-left:10px;border-bottom: 1px solid #a19f9f;border-right: 1px solid #a19f9f;border-left: 1px solid #a19f9f;">${group?.PriorityRank}</td>
+                    <td width="10%" align="left" valign="middle" bgcolor=${bgColor} style="padding-left:10px;border-bottom: 1px solid #a19f9f;border-right: 1px solid #a19f9f;border-left: 1px solid #a19f9f;color:${textColor};"><strong>Due Date</strong></td>
+                    <td width="20%" height="30" bgcolor="#eee" style="padding-left:10px;border-bottom: 1px solid #a19f9f;border-right: 1px solid #a19f9f;border-left: 1px solid #a19f9f;"> ${group?.DisplayDueDate} </td>
+                    <td width="10%" align="left" valign="middle" bgcolor=${bgColor} style="padding-left:10px;border-bottom: 1px solid #a19f9f;border-right: 1px solid #a19f9f;border-left: 1px solid #a19f9f;color:${textColor};"><strong>Team Leader</strong></td>
+                    <td width="20%" height="30" bgcolor="#eee" style="padding-left:10px;border-bottom: 1px solid #a19f9f;border-right: 1px solid #a19f9f;border-left: 1px solid #a19f9f;"><a style="text-decoration: none;" href = ${AllListId?.siteUrl}/SitePages/TaskDashboard.aspx?UserId=${projectLeaderId} >${projectLeaderTitle} </a></td>
+                    </tr>
+                    <tr><td colspan="4" height="10"></td></tr>
+                    </table >
+                    <table cellpadding="0" cellspacing="0" align="left" width="100%" border="1" style=" border-color: #444;margin-bottom:10px;margin-left:${group?.Item_x0020_Type == 'Sprint' ? '20px' : ''}">
+                    <thead>
+                    <tr>
+                    <th width="40" height="12" align="center" valign="middle" bgcolor="#eeeeee" style="padding:10px 5px;border-top: 0px;border-left: 0px;">Site</th>
+                    <th width="80" height="12" align="center" valign="middle" bgcolor="#eeeeee" style="padding:10px 5px;border-top: 0px;border-left: 0px;x">Task ID</th>
+                    <th width="500" height="12" align="center" valign="middle" bgcolor="#eeeeee" style="padding:10px 5px;border-top: 0px;border-left: 0px;">Title</th>
+                    <th width="140" height="12" align="center" valign="middle" bgcolor="#eeeeee" style="padding:10px 5px;border-top: 0px;border-left: 0px;" >Desc.</th>
+                    <th width="80" height="12" align="center" valign="middle" bgcolor="#eeeeee" style="padding:10px 5px;border-top: 0px;border-left: 0px;">Category</th>
+                    <th width="40" height="12" align="center" valign="middle" bgcolor="#eeeeee" style="padding:10px 5px;border-top: 0px;border-left: 0px;">% </th>
+                    <th width="40" height="12" align="center" valign="middle" bgcolor="#eeeeee" style="padding:10px 5px;border-top: 0px;border-left: 0px;">Smart Priority</th>
+                    <th width="130" height="12" align="center" valign="middle" bgcolor="#eeeeee" style="padding:10px 5px;border-top: 0px;border-left: 0px;">Team</th>
+                    <th width="80" height="12" align="center" valign="middle" bgcolor="#eeeeee" style="padding:10px 5px;border-top: 0px;border-left: 0px;">Duedate</th>
+                    <th width="80" height="12" align="center" valign="middle" bgcolor="#eeeeee" style="padding:10px 5px;border-top: 0px;border-left: 0px;">Smart Time</th>
+                    <th width="70" height="12" align="center" valign="middle" bgcolor="#eeeeee" style="padding:10px 5px;border-top: 0px;border-left: 0px; border-right:0px" >Est</th>
+                    </tr>
+                    </thead>
+                    <tbody>
+                    ${text}
+                    </tbody>
+                    </table>`
+            }
+            tasksCopy?.map(async (item: any) => {
+                try {
+                    if (item?.Item_x0020_Type == 'Sprint' && item?.subRows?.length > 0) {
+                        let result = projectEmailContent(item, true)
+                        body += result != undefined ? result : '';
+                    }
+
+                } catch (error) {
+                    setPageLoader(false);
+                    console.log(error)
+                }
+            })
+            return body != undefined ? body : ''
+        }
 
     }
 
@@ -1662,71 +1679,96 @@ export default function ProjectOverview(props: any) {
 
     const GetMasterData = async () => {
         if (AllListId?.MasterTaskListID != undefined) {
-            let web = new Web(`${AllListId?.siteUrl}`);
-            let taskUsers: any = [];
-            let Alltask: any = [];
-            // var AllUsers: any = []
-            Alltask = await web.lists.getById(AllListId?.MasterTaskListID).items
-                .select("Deliverables,TechnicalExplanations,ResponsibleTeam/Id,ResponsibleTeam/Title,PortfolioLevel,PortfolioStructureID,ValueAdded,Categories,Idea,Short_x0020_Description_x0020_On,Background,Help_x0020_Information,Short_x0020_Description_x0020__x,ComponentCategory/Id,ComponentCategory/Title,Comments,HelpDescription,FeedBack,Body,SiteCompositionSettings,ShortDescriptionVerified,Portfolio_x0020_Type,BackgroundVerified,descriptionVerified,Synonyms,BasicImageInfo,OffshoreComments,OffshoreImageUrl,HelpInformationVerified,IdeaVerified,TechnicalExplanationsVerified,Deliverables,DeliverablesVerified,ValueAddedVerified,CompletedDate,Idea,ValueAdded,TechnicalExplanations,Item_x0020_Type,Sitestagging,Package,Parent/Id,Parent/Title,Short_x0020_Description_x0020_On,Short_x0020_Description_x0020__x,Short_x0020_description_x0020__x0,AdminNotes,AdminStatus,Background,Help_x0020_Information,TaskCategories/Id,TaskCategories/Title,PriorityRank,Reference_x0020_Item_x0020_Json,TeamMembers/Title,TeamMembers/Name,TeamMembers/Id,Item_x002d_Image,ComponentLink,IsTodaysTask,AssignedTo/Title,AssignedTo/Name,AssignedTo/Id,AttachmentFiles/FileName,FileLeafRef,FeedBack,Title,Id,PercentComplete,Company,StartDate,DueDate,Comments,Categories,Status,WebpartId,Body,Mileage,PercentComplete,Attachments,Priority,Created,Modified,Author/Id,Author/Title,Editor/Id,Editor/Title")
-                .expand("ComponentCategory,AssignedTo,AttachmentFiles,ResponsibleTeam,Author,Editor,TeamMembers,TaskCategories,Parent")
-                .top(4999).filter("(Item_x0020_Type eq 'Project') or (Item_x0020_Type eq 'Sprint')")
-                .getAll();
+            try {
+                let web = new Web(`${AllListId?.siteUrl}`);
+                let taskUsers: any = [];
+                let Alltask: any = [];
+                // var AllUsers: any = []
+                Alltask = await web.lists.getById(AllListId?.MasterTaskListID).items
+                    .select("Deliverables,TechnicalExplanations,ResponsibleTeam/Id,ResponsibleTeam/Title,PortfolioLevel,PortfolioStructureID,ValueAdded,Categories,Idea,Short_x0020_Description_x0020_On,Background,Help_x0020_Information,Short_x0020_Description_x0020__x,ComponentCategory/Id,ComponentCategory/Title,Comments,HelpDescription,FeedBack,Body,SiteCompositionSettings,ShortDescriptionVerified,Portfolio_x0020_Type,BackgroundVerified,descriptionVerified,Synonyms,BasicImageInfo,OffshoreComments,OffshoreImageUrl,HelpInformationVerified,IdeaVerified,TechnicalExplanationsVerified,Deliverables,DeliverablesVerified,ValueAddedVerified,CompletedDate,Idea,ValueAdded,TechnicalExplanations,Item_x0020_Type,Sitestagging,Package,Parent/Id,Parent/Title,Short_x0020_Description_x0020_On,Short_x0020_Description_x0020__x,Short_x0020_description_x0020__x0,AdminNotes,AdminStatus,Background,Help_x0020_Information,TaskCategories/Id,TaskCategories/Title,PriorityRank,Reference_x0020_Item_x0020_Json,TeamMembers/Title,TeamMembers/Name,TeamMembers/Id,Item_x002d_Image,ComponentLink,IsTodaysTask,AssignedTo/Title,AssignedTo/Name,AssignedTo/Id,AttachmentFiles/FileName,FileLeafRef,FeedBack,Title,Id,PercentComplete,Company,StartDate,DueDate,Comments,Categories,Status,WebpartId,Body,Mileage,PercentComplete,Attachments,Priority,Created,Modified,Author/Id,Author/Title,Editor/Id,Editor/Title")
+                    .expand("ComponentCategory,AssignedTo,AttachmentFiles,ResponsibleTeam,Author,Editor,TeamMembers,TaskCategories,Parent")
+                    .top(4999).filter("(Item_x0020_Type eq 'Project') or (Item_x0020_Type eq 'Sprint')")
+                    .getAll();
 
-            // if(taskUsers.ItemType=="Project"){
-            // taskUsers.map((item: any) => {
-            //     if (item.Item_x0020_Type != null && item.Item_x0020_Type == "Project") {
-            //         Alltask.push(item)
-            //     }
+                // if(taskUsers.ItemType=="Project"){
+                // taskUsers.map((item: any) => {
+                //     if (item.Item_x0020_Type != null && item.Item_x0020_Type == "Project") {
+                //         Alltask.push(item)
+                //     }
 
-            Alltask.map((items: any) => {
-                items.descriptionsSearch = '';
-                items.ShowTeamsIcon = false
-                items.PercentComplete = (items.PercentComplete * 100).toFixed(0);
-                items.siteUrl = AllListId?.siteUrl;
-                items.listId = AllListId?.MasterTaskListID;
-                items.AssignedUser = []
-                items.siteType = "Project"
-                items.TeamMembersSearch = '';
-                if (items.AssignedTo != undefined) {
-                    items.AssignedTo.map((taskUser: any) => {
-                        AllTaskUsers.map((user: any) => {
-                            if (user.AssingedToUserId == taskUser.Id) {
-                                if (user?.Title != undefined) {
-                                    items.TeamMembersSearch = items.TeamMembersSearch + ' ' + user?.Title
+                Alltask.map((items: any) => {
+                    items.descriptionsSearch = '';
+                    items.ShowTeamsIcon = false
+                    items.PercentComplete = (items.PercentComplete * 100).toFixed(0);
+                    items.siteUrl = AllListId?.siteUrl;
+                    items.listId = AllListId?.MasterTaskListID;
+                    items.AssignedUser = []
+                    items.siteType = "Project"
+                    items.TeamMembersSearch = '';
+                    if (items.AssignedTo != undefined) {
+                        items.AssignedTo.map((taskUser: any) => {
+                            AllTaskUsers.map((user: any) => {
+                                if (user.AssingedToUserId == taskUser.Id) {
+                                    if (user?.Title != undefined) {
+                                        items.TeamMembersSearch = items.TeamMembersSearch + ' ' + user?.Title
+                                    }
                                 }
+                            })
+                        })
+                    }
+                    items.TaskTypeValue = '';
+                    if (items?.TaskCategories?.length > 0) {
+                        items.TaskTypeValue = items?.TaskCategories?.map((val: any) => val.Title).join(",")
+                    }
+                    if (items?.TaskCategories?.length > 0) {
+                        items.Categories = items.TaskTypeValue;
+                    }
+                    items.subRows = Alltask?.filter((child: any) => child?.Item_x0020_Type == "Sprint" && child?.Parent?.Id == items?.Id)
+                    // items?.subRows?.map((sprint: any) => {
+                    //     sprint.subRows = allSitesTasks?.filter((child: any) => child?.Project?.Id == sprint?.Id && child?.IsTodaysTask == true)
+                    // })
+                    items.descriptionsSearch = globalCommon.portfolioSearchData(items)
+                    items.commentsSearch = items?.Comments != null && items?.Comments != undefined ? items.Comments.replace(/(<([^>]+)>)/gi, "").replace(/\n/g, '') : '';
+                    items['TaskID'] = items?.PortfolioStructureID
+                    items.DisplayDueDate = items.DueDate != null ? Moment(items.DueDate).format('DD/MM/YYYY') : ""
+                    items.DisplayCreateDate = items.Created != null ? Moment(items.Created).format("DD/MM/YYYY") : "";
+                })
+                let AllProject = Alltask?.filter((item: any) => item?.Item_x0020_Type == "Project")
+
+                AllProject = sortOnPriority(AllProject)
+                let flatDataProjects = JSON.parse(JSON.stringify(AllProject))
+                setFlatData(flatDataProjects);
+                AllProject.map((items: any) => {
+                    allSitesTasks?.map((task: any) => {
+                        if (task?.IsTodaysTask == true && task?.Project?.Id == items?.Id) {
+                            items['subRows'].push(task);
+                        }
+                    })
+                    items.subRows = items?.subRows?.filter((sprint: any) => {
+                        sprint.subRows = allSitesTasks?.filter((child: any) => {
+                            if (child?.Project?.Id == sprint?.Id && child?.IsTodaysTask == true) {
+                                return true;
                             }
                         })
+                        if (sprint?.Item_x0020_Type == 'Sprint' && sprint?.subRows?.length > 0) {
+                            return true;
+                        } else if (sprint?.Item_x0020_Type != 'Sprint') {
+                            return true;
+                        }
                     })
-                }
-                items.subRows = Alltask?.filter((child: any) => child?.Item_x0020_Type == "Sprint" && child?.Parent?.Id == items?.Id)
-                // items?.subRows?.map((sprint: any) => {
-                //     sprint.subRows = allSitesTasks?.filter((child: any) => child?.Project?.Id == sprint?.Id && child?.IsTodaysTask == true)
+                    // items.subRows =  items?.subRows?.filter((sprint: any) => {
+                    //     if(sprint?.Item_x0020_Type=='Sprint' && sprint?.subRows?.lenght > 0 ){
+                    //         return true
+                    //     }else if(sprint?.Item_x0020_Type!='Sprint'){return true }
+                    // })
+                })
                 // })
-                items.descriptionsSearch = globalCommon.portfolioSearchData(items)
-                items.commentsSearch = items?.Comments != null && items?.Comments != undefined ? items.Comments.replace(/(<([^>]+)>)/gi, "").replace(/\n/g, '') : '';
-                items['TaskID'] = items?.PortfolioStructureID
-                items.DisplayDueDate = items.DueDate != null ? Moment(items.DueDate).format('DD/MM/YYYY') : ""
-                items.DisplayCreateDate = items.Created != null ? Moment(items.Created).format("DD/MM/YYYY") : "";
-            })
-            let AllProject = Alltask?.filter((item: any) => item?.Item_x0020_Type == "Project")
+                setAllTasks(AllProject);
+                setPageLoader(false);
+                setData(AllProject);
+            } catch (e) {
 
-            AllProject = sortOnPriority(AllProject)
-            let flatDataProjects = JSON.parse(JSON.stringify(AllProject))
-            setFlatData(flatDataProjects);
-            AllProject.map((items: any) => {
-                items?.subRows?.map((sprint: any) => {
-                    sprint.subRows = allSitesTasks?.filter((child: any) => child?.Project?.Id == sprint?.Id && child?.IsTodaysTask == true)
-                })
-                allSitesTasks?.map((task: any) => {
-                    if (task?.IsTodaysTask == true && task?.Project?.Id == items?.Id) {
-                        items['subRows'].push(task);
-                    }
-                })
-            })
-            // })
-            setAllTasks(AllProject);
-            setPageLoader(false);
-            setData(AllProject);
+            }
         } else {
             alert('Master Task List Id Not Available')
         }
@@ -1747,10 +1789,10 @@ export default function ProjectOverview(props: any) {
 
     const callBackData = React.useCallback((elem: any, getSelectedRowModel: any, ShowingData: any) => {
         if (elem != undefined) {
-            let selectedItem:any=[]
-            elem?.map((Project:any)=>{
+            let selectedItem: any = []
+            elem?.map((Project: any) => {
                 selectedItem?.push(Project?.original)
-              //  Project = Project?.original
+                //  Project = Project?.original
             })
             setCheckBoxData(selectedItem)
             setTableProperty(getSelectedRowModel?.getSelectedRowModel()?.flatRows)
@@ -1784,7 +1826,9 @@ export default function ProjectOverview(props: any) {
 
     const restructureCallback = React.useCallback((getData: any, topCompoIcon: any,callback:any) => {
         setTopCompoIcon(topCompoIcon);
-       setData(getData);
+        renderData = [];
+        renderData = renderData.concat(getData)
+        refreshData()
        if(callback == true){
         GetMasterData();
        }
@@ -1825,6 +1869,8 @@ export default function ProjectOverview(props: any) {
                         items.AllTeamMember = [];
                         items.siteType = config.Title;
                         items.siteUrl = config.siteUrl.Url;
+                        items.SmartPriority;
+                        items.SmartPriority = globalCommon.calculateSmartPriority(items);
                         items.EstimatedTime = 0
                         let estimatedDescription = ''
                         if (EstimatedDesc?.length > 0) {
@@ -1864,9 +1910,13 @@ export default function ProjectOverview(props: any) {
                             items["ProjectTitle"] = '';
                             items["ProjectPriority"] = 0;
                         }
-
-
-
+                        items.TaskTypeValue = ''
+                        if (items?.TaskCategories?.length > 0) {
+                            items.TaskTypeValue = items?.TaskCategories?.map((val: any) => val.Title).join(",")
+                        }
+                        if (items?.TaskCategories?.length > 0) {
+                            items.Categories = items.TaskTypeValue;
+                        }
                         items.TeamMembersSearch = "";
                         items.AssignedToIds = [];
                         if (items.AssignedTo != undefined) {
@@ -1988,7 +2038,7 @@ export default function ProjectOverview(props: any) {
     }
     const OpenAddStructureModal = () => {
         setIsAddStructureOpen(true);
-      }
+    }
     //End
 
 
@@ -2022,7 +2072,7 @@ export default function ProjectOverview(props: any) {
 
                                     </dl>
                                     <div className="m-0 text-end">
-                                     
+
                                         {currentUserData?.Title == "Deepak Trivedi" || currentUserData?.Title == "Ranu Trivedi" || currentUserData?.Title == "Abhishek Tiwari" || currentUserData?.Title == "Prashant Kumar" ?
                                             <>
                                                 <a className="hreflink  ms-1" onClick={() => { sendAllWorkingTodayTasks() }}>Share Working Todays's Task</a></>
@@ -2035,7 +2085,7 @@ export default function ProjectOverview(props: any) {
                                         {selectedView == 'flat' ? <GlobalCommanTable expandIcon={true}   headerOptions={headerOptions} AllListId={AllListId} columns={flatView} paginatedTable={true} data={AllSiteTasks} callBackData={callBackData} pageName={"ProjectOverview"} TaskUsers={AllTaskUser} showHeader={true} /> : ''}
                                         {selectedView == 'teamWise' ? <GlobalCommanTable expandIcon={true}   headerOptions={headerOptions} AllListId={AllListId} columns={groupedUsers} paginatedTable={true} data={categoryGroup} callBackData={callBackData} pageName={"ProjectOverviewGrouped"} TaskUsers={AllTaskUser} showHeader={true} /> : ''}
                                         {selectedView == 'Projects' ? <GlobalCommanTable expandIcon={true} hideAddActivityBtn={true} ref={childRef} callChildFunction={callChildFunction} restructurebtn={true} restructureCallBack={restructureCallback}  AllListId={AllListId} headerOptions={headerOptions} paginatedTable={false}  showCreationAllButton={true}
-                                  OpenAddStructureModal={OpenAddStructureModal} AllSitesTaskData={AllSitesAllTasks} masterTaskData={MyAllData}  multiSelect={true} columns={column2} data={flatData} callBackData={callBackData} pageName={"ProjectOverview"} pageProjectOverview={true} TaskUsers={AllTaskUser} showHeader={true} /> : ''}
+                                  OpenAddStructureModal={OpenAddStructureModal} pageProjectOverview={true} AllSitesTaskData={AllSitesAllTasks} masterTaskData={MyAllData}  multiSelect={true} columns={column2} data={flatData} callBackData={callBackData} pageName={"ProjectOverview"}  TaskUsers={AllTaskUser} showHeader={true} /> : ''}
                                     </div>
                                 </div>
                                 </div>
@@ -2052,7 +2102,7 @@ export default function ProjectOverview(props: any) {
                 {IsComponent && <EditProjectPopup props={SharewebComponent} AllListId={AllListId} Call={Call} showProgressBar={showProgressBar}> </EditProjectPopup>}
                 {ShowTeamPopup === true ? <ShowTeamMembers props={checkData} callBack={showTaskTeamCAllBack} TaskUsers={AllTaskUser} /> : ''}
                 {openTimeEntryPopup && <TimeEntryPopup props={taskTimeDetails} CallBackTimeEntry={TimeEntryCallBack} Context={props?.props?.Context} />}
-                {isAddStructureOpen && <AddProject CallBack={CallBack} items={CheckBoxData} PageName={"ProjectOverview"} AllListId={AllListId} data={data}/>}
+                {isAddStructureOpen && <AddProject CallBack={CallBack} items={CheckBoxData} PageName={"ProjectOverview"} AllListId={AllListId} data={data} />}
             </div>
             {pageLoaderActive ? <PageLoader /> : ''}
         </>

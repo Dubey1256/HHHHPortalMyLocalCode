@@ -14,15 +14,15 @@ const ManageConfigPopup = (props: any) => {
     const [SelectedFilter, setSelectedFilter] = React.useState<any>([]);
     const LoadSmartFav = async () => {
         let SmartFavData: any = []
-        const web = new Web(ContextData?.siteUrl);
-        await web.lists.getById(ContextData?.propsValue?.AdminConfigurtionListId).items.select("Title", "Id", "Value", "Key", "Configurations").filter("Key eq 'Smartfavorites'").getAll().then(async (data: any) => {
+        const web = new Web(props?.props?.Context?._pageContext?._web?.absoluteUrl);
+        await web.lists.getById(props?.props?.AdminConfigurationListId).items.select("Title", "Id", "Value", "Key", "Configurations").filter("Key eq 'Smartfavorites'").getAll().then(async (data: any) => {
             data.forEach((config: any) => {
                 config.configurationData = JSON.parse(config?.Configurations);
                 config?.configurationData?.forEach((elem: any) => {
                     elem.UpdatedId = config.Id;
                     if (elem.isShowEveryone == true)
                         SmartFavData.push(elem)
-                    else if (elem.isShowEveryone == false && elem?.CurrentUserID == ContextData?.currentUserData.AssingedToUserId) {
+                    else if (elem.isShowEveryone == false && elem?.CurrentUserID == props?.props?.Context?._pageContext?._legacyPageContext.userId) {
                         SmartFavData.push(elem)
                     }
                 })
@@ -40,11 +40,11 @@ const ManageConfigPopup = (props: any) => {
         try {
             if (DashboardId == undefined || DashboardId == '')
                 DashboardId = 1;
-            let web = new Web(ContextData?.siteUrl);
-            await web.lists.getById(ContextData?.propsValue?.AdminConfigurtionListId).items.select("Title", "Id", "Value", "Key", "Configurations").filter("Key eq 'DashBoardConfigurationId'").getAll().then(async (data: any) => {
+            let web = new Web(props?.props?.Context?._pageContext?._web?.absoluteUrl);
+            await web.lists.getById(props?.props?.AdminConfigurationListId).items.select("Title", "Id", "Value", "Key", "Configurations").filter("Key eq 'DashBoardConfigurationId'").getAll().then(async (data: any) => {
                 data = data?.filter((config: any) => config?.Value == DashboardId)[0];
-                if (ContextData?.DashboardConfigBackUp && EditItem?.Id !== undefined) {
-                    ContextData.DashboardConfigBackUp.forEach((item: any) => {
+                if (props?.DashboardConfigBackUp && EditItem?.Id !== undefined) {
+                    props.DashboardConfigBackUp.forEach((item: any) => {
                         if (item?.Id !== undefined && item.Id === EditItem.Id) {
                             Object.keys(EditItem).forEach((key) => {
                                 if (key in item) {
@@ -54,11 +54,12 @@ const ManageConfigPopup = (props: any) => {
                         }
                     });
                 }
-                await web.lists.getById(ContextData?.propsValue?.AdminConfigurtionListId).items.getById(data.Id).update({ Configurations: JSON.stringify(ContextData?.DashboardConfigBackUp) })
+                await web.lists.getById(props?.props.AdminConfigurationListId).items.getById(data.Id).update({ Configurations: JSON.stringify(props?.DashboardConfigBackUp) })
                     .then(async (res: any) => {
                         setEditItem('');
                         CloseConfiguationPopup();
-                        ContextData?.callbackFunction();
+                        if (ContextData != undefined && ContextData?.callbackFunction != undefined)
+                            ContextData?.callbackFunction();
                     }).catch((err: any) => {
                         console.log(err);
                     })
@@ -85,8 +86,8 @@ const ManageConfigPopup = (props: any) => {
         setEditItem((prevState: any) => ({ ...prevState, smartFevId: event }));
     };
     useEffect(() => {
-        if (ContextData != undefined && ContextData?.DashboardConfigBackUp != undefined && ContextData?.DashboardConfigBackUp?.length > 0) {
-            let EditData = ContextData?.DashboardConfigBackUp.filter((item: any) => item?.WebpartTitle?.toLowerCase() == props?.SelectedItem?.WebpartTitle?.toLowerCase())[0];
+        if (props != undefined && props?.DashboardConfigBackUp != undefined && props?.DashboardConfigBackUp?.length > 0) {
+            let EditData = props?.DashboardConfigBackUp.filter((item: any) => item?.WebpartTitle?.toLowerCase() == props?.SelectedItem?.WebpartTitle?.toLowerCase())[0];
             setEditItem(EditData);
             setSelectedFilter(EditData?.smartFevId)
         }

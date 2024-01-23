@@ -28,6 +28,7 @@ import PageLoader from "../../../globalComponents/pageLoader";
 import CreateActivity from "../../../globalComponents/CreateActivity";
 import CreateWS from '../../../globalComponents/CreateWS';
 import ReactPopperTooltipSingleLevel from "../../../globalComponents/Hierarchy-Popper-tooltipSilgleLevel/Hierarchy-Popper-tooltipSingleLevel";
+import CompareTool from "../../../globalComponents/CompareTool/CompareTool";
 //import RestructuringCom from "../../../globalComponents/Restructuring/RestructuringCom";
 
 var filt: any = "";
@@ -97,6 +98,7 @@ function PortfolioTable(SelectedProp: any) {
   const [checkedList1, setCheckedList1] = React.useState([]);
   const [topCompoIcon, setTopCompoIcon]: any = React.useState(false);
   const [IsTimeEntry, setIsTimeEntry] = React.useState(false);
+  const [openCompareToolPopup,setOpenCompareToolPopup]=React.useState(false);
   const [portfolioTypeConfrigration, setPortfolioTypeConfrigration] =
     React.useState<any>([
       { Title: "Component", Suffix: "C", Level: 1 },
@@ -598,6 +600,7 @@ function PortfolioTable(SelectedProp: any) {
         ProjectData=results?.ProjectData;
         componentDetails?.map((items: any) => {
           items.SmartPriority;
+          items.TaskTypeValue = '';
       });
     }
     flatviewmastertask = JSON.parse(JSON.stringify(componentDetails));
@@ -1195,6 +1198,19 @@ const switchGroupbyData = () => {
         size: 410
       },
       {
+        accessorFn: (row) => row?.FeatureTypeTitle,
+        cell: ({ row, column, getValue }) => (
+            <>
+                <span className="columnportfoliotaskCate"><span title={row?.original?.FeatureTypeTitle} className="text-content"><HighlightableCell value={getValue()} searchTerm={column.getFilterValue() != undefined ? column.getFilterValue() : childRef?.current?.globalFilter} /></span></span>
+            </>
+        ),
+        placeholder: "Feature Type",
+        header: "",
+        resetColumnFilters: false,
+        size: 90,
+        id: "FeatureTypeTitle",
+    },
+      {
         accessorFn: (row) => row?.projectStructerId + "." + row?.ProjectTitle,
         cell: ({ row }) => (
           <>
@@ -1709,6 +1725,11 @@ const switchGroupbyData = () => {
       copyDtaArray.unshift(item.data);
       renderData = [];
       renderData = renderData.concat(copyDtaArray);
+      if (item?.CreateOpenType === 'CreatePopup') {
+        const openEditItem = (item?.CreatedItem != undefined ? item.CreatedItem[0]?.data : item.data);
+        setSharewebComponent(openEditItem);
+        setIsComponent(true);
+    }
       refreshData();
     }
     setOpenAddStructurePopup(false);
@@ -1767,6 +1788,7 @@ const addedCreatedDataFromAWT = (arr: any, dataToPush: any) => {
       temp.Title = "Others";
       temp.TaskID = "";
       temp.subRows = [];
+      temp.TaskTypeValue = '';
       temp.PercentComplete = "";
       temp.ItemRank = "";
       temp.DueDate = null;
@@ -1981,6 +2003,18 @@ const updatedDataDataFromPortfolios = (copyDtaArray: any, dataToUpdate: any) => 
       </div>
     );
   };
+
+
+  const compareToolCallBack = React.useCallback((compareData) => {
+    if(compareData !="close"){
+        setOpenCompareToolPopup(false);
+    }else{
+        setOpenCompareToolPopup(false);
+    }
+}, []);
+const openCompareTool =()=>{
+    setOpenCompareToolPopup(true);
+}
   //-------------------------------------------------------------End---------------------------------------------------------------------------------
   return (
     <myContextValue.Provider value={{ ...globalContextData,  tagProjectFromTable:TagProjectToStructure}}>
@@ -2121,7 +2155,7 @@ const updatedDataDataFromPortfolios = (copyDtaArray: any, dataToUpdate: any) => 
                         scale={1.0}
                         loadedClassName="loadedContent"
                       /> */}
-                      <GlobalCommanTable bulkEditIcon={true} priorityRank={priorityRank} precentComplete={precentComplete}
+                      <GlobalCommanTable openCompareTool={openCompareTool}  bulkEditIcon={true} priorityRank={priorityRank} precentComplete={precentComplete}
                       AllSitesTaskData={flatviewTasklist} masterTaskData={flatviewmastertask}
                         smartTimeTotalFunction={smartTimeTotal} SmartTimeIconShow={true}
                         portfolioTypeDataItemBackup={portfolioTypeDataItemBackup} taskTypeDataItemBackup={taskTypeDataItemBackup} flatViewDataAll={flatViewDataAll} setData={setData}
@@ -2154,6 +2188,7 @@ const updatedDataDataFromPortfolios = (copyDtaArray: any, dataToUpdate: any) => 
                         OpenAddStructureModal={OpenAddStructureModal}
                         addActivity={addActivity}
                         showFilterIcon={true} loadFilterTask={FilterAllTask}/>
+                         {!loaded && <PageLoader/>}
                     </div>
                   </div>
                 </div>
@@ -2181,6 +2216,8 @@ const updatedDataDataFromPortfolios = (copyDtaArray: any, dataToUpdate: any) => 
           }
         />
       </Panel>
+      {openCompareToolPopup && <CompareTool isOpen={openCompareToolPopup} compareToolCallBack={compareToolCallBack} compareData={childRef?.current?.table?.getSelectedRowModel()?.flatRows} contextValue={SelectedProp?.NextProp}/>}
+
       <Panel
         onRenderHeader={onRenderCustomHeaderMain}
         type={PanelType.custom}
@@ -2306,7 +2343,6 @@ const updatedDataDataFromPortfolios = (copyDtaArray: any, dataToUpdate: any) => 
           Context={SelectedProp?.NextProp.Context}
         ></TimeEntryPopup>
       )}
-     {!loaded && <PageLoader/>}
     </div>
     </myContextValue.Provider>
   );

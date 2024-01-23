@@ -5,6 +5,7 @@ import Tooltip from '../../../globalComponents/Tooltip';
 import { useEffect } from 'react';
 import { ColumnDef } from '@tanstack/react-table';
 import GlobalCommanTable from './GlobalCommanTableSmartmetadata';
+import PageLoader from '../../../globalComponents/pageLoader';
 export default function DeleteSmartMetadataOpenPopup(props: any) {
     let DeleteItemCallBack: any = props.DeleteItemCallBack
     let smartMetadataItem: any = props.modalInstance;
@@ -12,6 +13,7 @@ export default function DeleteSmartMetadataOpenPopup(props: any) {
     let SitesConfig: any[] = [];
     let allSitesTask: any = [];
     let allCalls: any[] = [];
+    const [loaded, setloaded]: any = React.useState(false);
     const [AllSitesTask, setAllSitesTask]: any = React.useState([]);
     const closeDeleteSmartMetaPopup = () => {
         props.CloseDeleteSmartMetaPopup();
@@ -45,49 +47,87 @@ export default function DeleteSmartMetadataOpenPopup(props: any) {
     }
     const loadAllSitesTask = async (Item: any) => {
         try {
-            const filters = Item.Id ? `SharewebCategories/Id eq '${Item.Id}'` : '';
             allCalls = [];
             allCalls = SitesConfig.map((site) => {
                 let web = new Web(props.AllList.SPSitesListUrl);
                 return web.lists.getById(site.listId).items.select(`Id,Title,SharewebTaskLevel1No,SharewebTaskLevel2No,SharewebTaskType/Id,SharewebTaskType/Title,Component/Id,Services/Id,Events/Id,PercentComplete,ComponentId,ServicesId,EventsId,Priority_x0020_Rank,DueDate,Created,TaskID,Modified,Author/Id,Author/Title,Editor/Id,Editor/Title,ParentTask/Id,ParentTask/Title,SharewebCategories/Id,SharewebCategories/Title,AssignedTo/Id,AssignedTo/Title,Team_x0020_Members/Id,Team_x0020_Members/Title,Responsible_x0020_Team/Id,Responsible_x0020_Team/Title`).expand('AssignedTo', 'Author', 'Editor', 'Component', 'Services', 'Events', 'Team_x0020_Members', 'ParentTask', 'SharewebCategories', 'Responsible_x0020_Team', 'SharewebTaskType')
-                    .filter(filters)
                     .getAll();
             });
             const success = await Promise.all(allCalls);
             allSitesTask = [];
+            setloaded(true);
             success.forEach((val) => {
                 val.forEach((item: any) => {
-                    if (item.ComponentId.length > 0) {
-                        item['Portfoliotype'] = 'Component';
-                    } else if (item.ServicesId.length > 0) {
-                        item['Portfoliotype'] = 'Service';
-                    } else if (item.EventsId.length > 0) {
-                        item['Portfoliotype'] = 'Event';
-                    }
-                    if (item.PercentComplete != undefined) {
-                        item.PercentComplete = parseInt((item.PercentComplete * 100).toFixed(0));
-                    } else if (item.PercentComplete != undefined)
-                        item.PercentComplete = parseInt((item.PercentComplete * 100).toFixed(0));
-                    else
-                        item.PercentComplete = 0;
-                    if (item.ComponentId.length > 0) {
-                        item.Portfoliotype = 'Component';
-                    } else if (item.ServicesId.length > 0) {
-                        item.Portfoliotype = 'Service';
-                    } else if (item.EventsId.length > 0) {
-                        item.Portfoliotype = 'Event';
-                    }
-                    if (item.siteType != undefined && item.siteType == 'Offshore Tasks') {
-                        item.Companytype = 'Offshoretask';
+                    if (item?.SharewebCategories.length > 0) {
+                        item.SharewebCategories.forEach((cate: any) => {
+                            if (cate.Id === Item.Id) {
+                                if (item.ComponentId.length > 0) {
+                                    item['Portfoliotype'] = 'Component';
+                                } else if (item.ServicesId.length > 0) {
+                                    item['Portfoliotype'] = 'Service';
+                                } else if (item.EventsId.length > 0) {
+                                    item['Portfoliotype'] = 'Event';
+                                }
+                                if (item.PercentComplete != undefined) {
+                                    item.PercentComplete = parseInt((item.PercentComplete * 100).toFixed(0));
+                                } else if (item.PercentComplete != undefined)
+                                    item.PercentComplete = parseInt((item.PercentComplete * 100).toFixed(0));
+                                else
+                                    item.PercentComplete = 0;
+                                if (item.ComponentId.length > 0) {
+                                    item.Portfoliotype = 'Component';
+                                } else if (item.ServicesId.length > 0) {
+                                    item.Portfoliotype = 'Service';
+                                } else if (item.EventsId.length > 0) {
+                                    item.Portfoliotype = 'Event';
+                                }
+                                if (item.siteType != undefined && item.siteType == 'Offshore Tasks') {
+                                    item.Companytype = 'Offshoretask';
+                                } else {
+                                    item.Companytype = 'Alltask';
+                                }
+                                if (item.Companytype == 'Alltask') {
+                                    allSitesTask.push(item);
+                                }
+                            }
+                        })
                     } else {
-                        item.Companytype = 'Alltask';
-                    }
-                    if (item.Companytype == 'Alltask') {
-                        allSitesTask.push(item);
+                        if (item.SharewebCategories[0]?.Id === Item.Id) {
+                            if (item.ComponentId.length > 0) {
+                                item['Portfoliotype'] = 'Component';
+                            } else if (item.ServicesId.length > 0) {
+                                item['Portfoliotype'] = 'Service';
+                            } else if (item.EventsId.length > 0) {
+                                item['Portfoliotype'] = 'Event';
+                            }
+                            if (item.PercentComplete != undefined) {
+                                item.PercentComplete = parseInt((item.PercentComplete * 100).toFixed(0));
+                            } else if (item.PercentComplete != undefined)
+                                item.PercentComplete = parseInt((item.PercentComplete * 100).toFixed(0));
+                            else
+                                item.PercentComplete = 0;
+                            if (item.ComponentId.length > 0) {
+                                item.Portfoliotype = 'Component';
+                            } else if (item.ServicesId.length > 0) {
+                                item.Portfoliotype = 'Service';
+                            } else if (item.EventsId.length > 0) {
+                                item.Portfoliotype = 'Event';
+                            }
+                            if (item.siteType != undefined && item.siteType == 'Offshore Tasks') {
+                                item.Companytype = 'Offshoretask';
+                            } else {
+                                item.Companytype = 'Alltask';
+                            }
+                            if (item.Companytype == 'Alltask') {
+                                allSitesTask.push(item);
+                            }
+                        }
                     }
                 });
             })
             setAllSitesTask(allSitesTask);
+            if (allSitesTask.length > 0)
+                setloaded(false)
         }
         catch (error) {
             console.error(error);
@@ -226,6 +266,9 @@ export default function DeleteSmartMetadataOpenPopup(props: any) {
                             <button className='btn btn-default m-0' onClick={() => closeDeleteSmartMetaPopup()}> Cancel</button>
                         </div>
                     </div>
+                    {
+                        loaded ? <PageLoader /> : ''
+                    }
                 </Panel>
             </div>
         </>

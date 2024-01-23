@@ -12,6 +12,7 @@ var currentUserData: any;
 let DashboardConfig: any = [];
 let DashboardConfigBackUp: any = [];
 let allData: any = [];
+let ActiveTile = ''
 const EmployeProfile = (props: any) => {
   const params = new URLSearchParams(window.location.search);
   let DashboardId: any = params.get('DashBoardId');
@@ -43,7 +44,7 @@ const EmployeProfile = (props: any) => {
     if (DashboardId == undefined || DashboardId == '')
       DashboardId = 1;
     const web = new Web(props.props?.siteUrl);
-    await web.lists.getById(props?.props?.AdminConfigurtionListId).items.select("Title", "Id", "Value", "Key", "Configurations").filter("Key eq 'DashBoardConfigurationId'").getAll().then(async (data: any) => {
+    await web.lists.getById(props?.props?.AdminConfigurationListId).items.select("Title", "Id", "Value", "Key", "Configurations").filter("Key eq 'DashBoardConfigurationId'").getAll().then(async (data: any) => {
       data = data?.filter((config: any) => config?.Value == DashboardId)[0];
       DashboardConfig = globalCommon.parseJSON(data?.Configurations)
       DashboardConfig = DashboardConfig.sort((a: any, b: any) => {
@@ -53,6 +54,8 @@ const EmployeProfile = (props: any) => {
       });
       DashboardConfigBackUp = JSON.parse(JSON.stringify(DashboardConfig));
       DashboardConfig.forEach((config: any) => {
+        if (config?.AdditonalHeader != undefined && config?.AdditonalHeader === true)
+          ActiveTile = config?.TileName
         config.highestColumn = addHighestColumnToObject(config, DashboardConfig)
       })
       if (DashboardConfig != undefined && DashboardConfig?.length > 0) {
@@ -60,10 +63,12 @@ const EmployeProfile = (props: any) => {
           item.configurationData = []
           if (item?.smartFevId != undefined && item?.smartFevId != '') {
             try {
-              const results = await web.lists.getById(props?.props?.AdminConfigurtionListId).items.getById(parseInt(item?.smartFevId)).select('Id', 'Title', 'Value', 'Key', 'Description', 'DisplayTitle', 'Configurations').get()
+              const results = await web.lists.getById(props?.props?.AdminConfigurationListId).items.getById(parseInt(item?.smartFevId)).select('Id', 'Title', 'Value', 'Key', 'Description', 'DisplayTitle', 'Configurations').get()
               if (results.Configurations !== undefined) {
                 item.configurationData = JSON.parse(results.Configurations);
                 item.configurationData.map((elem: any) => {
+                  item.CurrentUserID = elem?.CurrentUserID;
+                  item.isShowEveryone = elem?.isShowEveryone
                   elem.Id = results.Id;
                   if (elem.startDate != null && elem.startDate != undefined && elem.startDate != "") {
                     elem.startDate = new Date(elem.startDate);
@@ -182,7 +187,12 @@ const EmployeProfile = (props: any) => {
     DashboardConfig?.forEach((config: any) => {
       if (config?.Tasks == undefined)
         config.Tasks = []
-      if (config?.smartFevId != undefined && config?.smartFevId != '') {
+      if (config?.smartFevId != undefined && config?.smartFevId != '' && config?.isShowEveryone === false && currentUserData.AssingedToUser.Id == config?.CurrentUserID) {
+        config.LoadDefaultFilter = false;
+        FilterDataOnCheck(config);
+      }
+      else if (config?.smartFevId != undefined && config?.smartFevId != '' && config?.isShowEveryone === true) {
+        config.LoadDefaultFilter = false;
         FilterDataOnCheck(config);
       }
     })
@@ -190,7 +200,7 @@ const EmployeProfile = (props: any) => {
       DashboardConfig?.forEach((config: any) => {
         if (config?.Tasks == undefined)
           config.Tasks = []
-        if (config.smartFevId == undefined || config.smartFevId == '') {
+        if (config?.LoadDefaultFilter != false) {
           if (config?.IsDraftTask != undefined && items.Categories?.toLowerCase().indexOf(config?.IsDraftTask.toLowerCase()) > -1 && items.Author?.Id == currentUserData.AssingedToUser.Id && !isTaskItemExists(config?.Tasks, items)) {
             config?.Tasks.push(items);
           }
@@ -582,7 +592,7 @@ const EmployeProfile = (props: any) => {
   return (
     <>
       {progressBar && <PageLoader />}
-      <myContextValue.Provider value={{ ...myContextValue, approverEmail: approverEmail, propsValue: props.props, currentTime: currentTime, annouceMents: annouceMents, siteUrl: props?.props?.siteUrl, AllSite: AllSite, currentUserData: currentUserData, AlltaskData: data, timesheetListConfig: timesheetListConfig, AllMasterTasks: AllMasterTasks, AllTaskUser: taskUsers, DashboardConfig: DashboardConfig, DashboardConfigBackUp: DashboardConfigBackUp, callbackFunction: callbackFunction }}>
+      <myContextValue.Provider value={{ ...myContextValue, ActiveTile: ActiveTile, approverEmail: approverEmail, propsValue: props.props, currentTime: currentTime, annouceMents: annouceMents, siteUrl: props?.props?.siteUrl, AllSite: AllSite, currentUserData: currentUserData, AlltaskData: data, timesheetListConfig: timesheetListConfig, AllMasterTasks: AllMasterTasks, AllTaskUser: taskUsers, DashboardConfig: DashboardConfig, DashboardConfigBackUp: DashboardConfigBackUp, callbackFunction: callbackFunction }}>
         <div> <Header /></div>
         <TaskStatusTbl />
       </myContextValue.Provider>

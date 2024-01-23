@@ -50,7 +50,6 @@
         }
       ]
     },
-    
     "taskprofile-web-part": {
       "components": [
         {
@@ -83,7 +82,6 @@
         }
       ]
     },
-   
     "projectmanagement-overview-tool-web-part": {
       "components": [
         {
@@ -100,7 +98,6 @@
         }
       ]
     },
-
     "create-task-web-part": {
       "components": [
         {
@@ -134,23 +131,21 @@
       ]
     },
     "document-search-web-part": {
-     "components": [
-       {
-         "entrypoint": "./lib/webparts/documentSearch/DocumentSearchWebPart.js",
-         "manifest": "./src/webparts/documentSearch/DocumentSearchWebPart.manifest.json"
-       }
-     ]
-   }
-  ,
-  "smart-meta-search-web-part": {
-   "components": [
-     {
-       "entrypoint": "./lib/webparts/smartMetaSearch/SmartMetaSearchWebPart.js",
-       "manifest": "./src/webparts/smartMetaSearch/SmartMetaSearchWebPart.manifest.json"
-     }
-   ]
- },
-
+      "components": [
+        {
+          "entrypoint": "./lib/webparts/documentSearch/DocumentSearchWebPart.js",
+          "manifest": "./src/webparts/documentSearch/DocumentSearchWebPart.manifest.json"
+        }
+      ]
+    },
+    "smart-meta-search-web-part": {
+      "components": [
+        {
+          "entrypoint": "./lib/webparts/smartMetaSearch/SmartMetaSearchWebPart.js",
+          "manifest": "./src/webparts/smartMetaSearch/SmartMetaSearchWebPart.manifest.json"
+        }
+      ]
+    },
     "tasks-view-web-part": {
       "components": [
         {
@@ -278,7 +273,6 @@
           "manifest": "./src/webparts/employeDashBoard/EmployeDashBoardWebPart.manifest.json"
         }
       ]
-
     },
     "site-data-backup-tool-web-part": {
       "components": [
@@ -367,6 +361,14 @@
           "manifest": "./src/webparts/helloSpfx/HelloSpfxWebPart.manifest.json"
         }
       ]
+    },
+    "managedashboardconfig-web-part": {
+      "components": [
+        {
+          "entrypoint": "./lib/webparts/managedashboardconfig/ManagedashboardconfigWebPart.js",
+          "manifest": "./src/webparts/managedashboardconfig/ManagedashboardconfigWebPart.manifest.json"
+        }
+      ]
     }
   },
   "externals": {
@@ -396,7 +398,7 @@
     "SmartConnectWebPartStrings": "lib/webparts/smartConnect/loc/{locale}.js",
     "ComponentProfileWebPartStrings": "lib/webparts/componentProfile/loc/{locale}.js",
     "RecruitmentLandingPageWebPartStrings": "lib/webparts/recruitmentLandingPage/loc/{locale}.js",
-   "TaskprofileWebPartStrings": "lib/webparts/taskprofile/loc/{locale}.js",
+    "TaskprofileWebPartStrings": "lib/webparts/taskprofile/loc/{locale}.js",
     "ComponentCommentsWebPartStrings": "lib/webparts/componentComments/loc/{locale}.js",
     "FeedbackWebPartStrings": "lib/webparts/TimeReport/loc/{locale}.js",
     "TaskStepsWebPartStrings": "lib/webparts/taskSteps/loc/{locale}.js",
@@ -433,6 +435,7 @@
     "MeetingOverviewWebPartStrings": "lib/webparts/meetingOverview/loc/{locale}.js",
     "HrContractSearchWebPartStrings": "lib/webparts/hrContractSearch/loc/{locale}.js",
     "ContactSearchWebPartStrings": "lib/webparts/contactSearch/loc/{locale}.js",
-    "HrContractProfileWebPartStrings": "lib/webparts/hrContractProfile/loc/{locale}.js"
+    "HrContractProfileWebPartStrings": "lib/webparts/hrContractProfile/loc/{locale}.js",
+    "ManagedashboardconfigWebPartStrings": "lib/webparts/managedashboardconfig/loc/{locale}.js"
   }
 }

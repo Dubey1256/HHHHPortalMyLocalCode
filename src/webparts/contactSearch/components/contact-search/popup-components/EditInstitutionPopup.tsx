@@ -124,14 +124,14 @@ const HrGmbhInstitutionDeatails=async(Id:any)=>{
             
         })
     }
-    const onRenderCustomHeadersmartinfo = () => {
+    const onRenderCustomHeaderEditInstitution = () => {
         return (
             <>
                 <div className='subheading alignCenter'>
-                Add Division
+                Edit Institution:- {updateData?.FullName}
                      
                 </div>
-                <Tooltip ComponentId='3299' />
+                <Tooltip ComponentId='626' />
             </>
         );
     };
@@ -141,10 +141,10 @@ const HrGmbhInstitutionDeatails=async(Id:any)=>{
                 <div className='subheading alignCenter'>
                     <img className='workmember' 
                     src={updateData?.ItemImage != undefined ? updateData?.ItemImage.Url : "https://hhhhteams.sharepoint.com/sites/HHHH/SiteCollectionImages/ICONS/32/InstitutionPicture.jpg"}
-                     />Edit Institution- 
+                     />Add  Division - 
                       {updateData?.FullName}
                 </div>
-                <Tooltip ComponentId='3299' />
+                <Tooltip ComponentId='1064' />
             </>
         );
     };
@@ -367,13 +367,14 @@ const CreateDivision= async()=>{
                 .items.add(localData).then((newData) => {
                     console.log("local institution also done")
                     setOpenDivision(false)
+                    
                     // setInstitutionData(newData?.data)
                 }).catch((error: any) => {
                 console.log(error)
                 })
             } else {
-                // setInstitutionData(data?.data)
-
+               
+                setOpenDivision(false)
                 console.log("request success");
             }
 
@@ -417,9 +418,24 @@ const CloseCountryPopup = React.useCallback((data:any) => {
         setUpdateData(data);
     }
 }, []);
+
+
+const DeleteDivision= async(divisiondetails:any)=>{
+    let copyInstitutionData=updateData
+    copyInstitutionData?.Institution?.map((division:any)=>division?.Id!=divisiondetails?.Id)
+    setUpdateData(copyInstitutionData);
+
+    let web = new Web(myContextData2?.allListId?.siteUrl);
+    await web.lists.getById(myContextData2.allSite?.MainSite?myContextData2?.allListId?.HHHHInstitutionListId:myContextData2.allSite?.HrSite?myContextData2?.allListId?.HR_EMPLOYEE_DETAILS_LIST_ID:myContextData2?.allListId?.GMBH_CONTACT_SEARCH_LISTID).items.getById(divisiondetails?.Id).recycle().then(async (data: any) => {
+        console.log("request success", data);
+        // callBack();
+    }).catch((error: any) => {
+        console.log(error)
+    })
+}
 return(
     <>
-      <Panel onRenderHeader={onRenderCustomHeadersmartinfo}
+      <Panel onRenderHeader={onRenderCustomHeaderEditInstitution}
                 isOpen={true}
                 type={PanelType.custom}
                 customWidth="1280px"
@@ -622,7 +638,7 @@ return(
                                     <div className='col-sm-12'>
                                     <div className='col-sm-4 block'>
                                         <a className='wid90'>{division?.FullName}</a>
-                                        <span className='svg__iconbox svg__icon--cross light ml-auto clearfix'></span>
+                                        <span className='svg__iconbox svg__icon--cross light ml-auto clearfix'onClick={()=>DeleteDivision(division)} ></span>
                                     </div>
                                  </div>
                                 )

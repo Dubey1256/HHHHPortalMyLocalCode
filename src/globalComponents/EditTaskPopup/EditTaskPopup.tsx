@@ -217,7 +217,7 @@ const EditTaskPopup = (Items: any) => {
         useState(false);
     const [IsTaskCompleted, setIsTaskCompleted] = useState(false);
     const [SendCategoryName, setSendCategoryName] = useState("");
-    const [OpenEODReportPopup, setOpenEODReportPopup] = useState(false);
+    const [TeamMemberChanged, setTeamMemberChanged] = useState(false);
     const [CurrentImageIndex, setCurrentImageIndex] = useState("");
     const [loaded, setLoaded] = React.useState(true);
 
@@ -926,7 +926,7 @@ const EditTaskPopup = (Items: any) => {
                     GetPortfolioSiteComposition(PortfolioId, item);
                 }
 
-                let ClientCategory = item.ClientCategory;
+                let ClientCategory = item?.ClientCategory;
                 if (ClientCategory != undefined && ClientCategory.length > 0) {
                     let selectedCC: any = [];
                     ClientCategory.map((ClientData: any) => {
@@ -983,7 +983,7 @@ const EditTaskPopup = (Items: any) => {
                     setClientTimeData([object]);
                 }
                 if (item.Body != undefined) {
-                    item.Body = item.Body.replace(/(<([^>]+)>)/gi, "");
+                    item.Body = item?.Body?.replace(/(<([^>]+)>)/gi, "");
                 }
                 if (item.BasicImageInfo != null && item.Attachments) {
                     saveImage.push(JSON.parse(item.BasicImageInfo));
@@ -1019,7 +1019,7 @@ const EditTaskPopup = (Items: any) => {
                 item.projectPriorityOnHover = '';
                 item.taskPriorityOnHover = item?.PriorityRank;
                 item.showFormulaOnHover;
-                item.SmartPriority = globalCommon.calculateSmartPriority(item);
+                item.SmartPriority = globalCommon?.calculateSmartPriority(item);
                 // let ApproverDataTemp: any = [];
                 let TeamMemberTemp: any = [];
                 let TaskCreatorData: any = [];
@@ -1041,10 +1041,10 @@ const EditTaskPopup = (Items: any) => {
                                 PercentCompleteStatus: `${statusValue}`,
                             });
                         } else {
-                            StatusOptions?.map((item: any) => {
-                                if (statusValue == item.value) {
-                                    setPercentCompleteStatus(item.status);
-                                    setTaskStatus(item.taskStatusComment);
+                            StatusOptions?.map((statusItem: any) => {
+                                if (statusValue == statusItem?.value) {
+                                    setPercentCompleteStatus(statusItem?.status);
+                                    setTaskStatus(statusItem?.taskStatusComment);
                                 }
                             });
                         }
@@ -1057,9 +1057,9 @@ const EditTaskPopup = (Items: any) => {
                 }
 
                 if (item.Author != undefined && item.Author != null) {
-                    taskUsers.map((userData: any) => {
-                        if (item.Author.Id == userData?.AssingedToUserId) {
-                            TaskCreatorData.push(userData);
+                    taskUsers?.map((userData: any) => {
+                        if (item.Author?.Id == userData?.AssingedToUserId) {
+                            TaskCreatorData?.push(userData);
                             userData.Approver?.map((AData: any) => {
                                 // ApproverDataTemp.push(AData);
                                 TaskCreatorApproverBackupArray.push(AData);
@@ -1143,8 +1143,12 @@ const EditTaskPopup = (Items: any) => {
                     TaskApproverBackupArray.map((itemData: any) => {
                         currentUserBackupArray?.map((currentUser: any) => {
                             taskUsers?.map((userData: any) => {
-                                if (userData?.AssingedToUserId == itemData.Id) {
-                                    ApprovarDataId = userData?.Approver[0].Id;
+                                if (userData?.AssingedToUserId == itemData.Id) 
+                                try{
+                                    ApprovarDataId = userData?.Approver[0]?.Id;
+                                }
+                                catch(error){
+                                    console.log("Error :", error.message);
                                 }
                             });
                             if (
@@ -1231,7 +1235,7 @@ const EditTaskPopup = (Items: any) => {
                     let Count: any = 0;
                     let feedbackArray = message[0]?.FeedBackDescriptions;
                     if (feedbackArray != undefined && feedbackArray.length > 0) {
-                        let CommentBoxText = feedbackArray[0].Title?.replace(
+                        let CommentBoxText = feedbackArray[0]?.Title?.replace(
                             /(<([^>]+)>)/gi,
                             ""
                         );
@@ -2472,6 +2476,48 @@ const EditTaskPopup = (Items: any) => {
             }
         }
 
+        // When task assigned to user, send a notification on MS Teams 
+
+        if (TeamMemberChanged && !IsUserFromHHHHTeam) {
+            try {
+                let sendUserEmails: any = [];
+                let AssignedUserName: string = '';
+                TaskAssignedTo?.map((userDtl: any) => {
+                    taskUsers?.map((allUserItem: any) => {
+                        if (userDtl.Id == allUserItem.AssingedToUserId) {
+                            sendUserEmails.push(allUserItem.Email);
+                            AssignedUserName = allUserItem.Title;
+                        }
+                    });
+                });
+                let TaskCategories = tempShareWebTypeData.map((item: any) => item.Title).join(', ');
+                let SendMessage: string = `<p>Hi ${AssignedUserName}, </p></br><p> You have been marked as a working member on the below task. Please take necessary action :</p> </br> 
+                <p>Task Link: <a href=${siteUrls + "/SitePages/Task-Profile.aspx?taskId=" + EditData.Id + "&Site" + EditData.siteType}>
+                ${siteUrls + "SitePages/Task-Profile.aspx?taskId=" + EditData.Id + "&Site" + EditData.siteType} 
+                </a>
+                </p>
+                </br>
+                <p>Cateroy: ${TaskCategories} </p></br>
+                <p>Smartpriority: ${EditData?.SmartPriority}  </p></br>
+                <p>Thanks,</p> </br>
+                <p>Task Management Team`
+                try {
+                    if (sendUserEmails?.length > 0) {
+                        await globalCommon.SendTeamMessage(
+                            sendUserEmails,
+                            SendMessage,
+                            Items.context
+                        );
+                    }
+                } catch (error) {
+                    console.log("Error", error.message);
+                }
+            } catch (error) {
+                console.log("Error", error.message)
+            }
+
+        }
+
         // if (IsTaskCompleted) {
         //     let taskComplete = `Hi Robert, </br> Below task has been marked to 90% by ${Items.context.pageContext._user.displayName}. Please review.`;
         //     let TeamEmail =
@@ -2784,7 +2830,10 @@ const EditTaskPopup = (Items: any) => {
         let PrecentStatus: any = UpdateTaskInfo.PercentCompleteStatus
             ? Number(UpdateTaskInfo.PercentCompleteStatus)
             : 0;
-
+        if (PrecentStatus == 3) {
+            setTaskAssignedTo([])
+            TaskAssignedTo = []
+        }
         if (PrecentStatus == 1) {
             let tempArrayApprover: any = [];
 
@@ -2907,7 +2956,7 @@ const EditTaskPopup = (Items: any) => {
                 updateFeedbackArray[0].FeedBackDescriptions = result;
             }
         } else {
-            updateFeedbackArray = JSON.parse(EditData.FeedBack);
+            updateFeedbackArray = JSON.parse(EditData?.FeedBack);
         }
         // FeedBackBackupArray = [];
         if (tempShareWebTypeData != undefined && tempShareWebTypeData?.length > 0) {
@@ -3143,6 +3192,7 @@ const EditTaskPopup = (Items: any) => {
             // if (ChangeTaskUserStatus) {
             if (teamConfigData?.AssignedTo?.length > 0) {
                 let tempArray: any = [];
+                setTeamMemberChanged(true);
                 teamConfigData.AssignedTo?.map((arrayData: any) => {
                     if (arrayData.AssingedToUser != null) {
                         tempArray.push(arrayData.AssingedToUser);
@@ -4073,6 +4123,9 @@ const EditTaskPopup = (Items: any) => {
                         CopydocumentData(SelectedSite, res.data);
                         if (FunctionsType == "Copy-Task") {
                             setLoaded(true)
+                            if (timesheetData != undefined && timesheetData.length > 0) {
+                                await moveTimeSheet(SelectedSite, res.data);
+                            }
                             newGeneratedId = res.data.Id;
                             console.log(`Task Copied Successfully on ${SelectedSite} !!!!!`);
                             let url = `${siteUrls}/SitePages/Task-Profile.aspx?taskId=${newGeneratedId}&Site=${SelectedSite}`;
@@ -4362,7 +4415,7 @@ const EditTaskPopup = (Items: any) => {
 
     const selectApproverFunction = (selectedData: any) => {
         selectedData.Id = selectedData.AssingedToUserId;
-        setApproverData([selectedData]);
+        setApproverData([...ApproverData, selectedData]);
     };
     // const removeApproverFunction = (Title: any, Id: any) => {
     //     let tempArray: any = [];
@@ -4461,9 +4514,7 @@ const EditTaskPopup = (Items: any) => {
         setSiteCompositionShow(false);
     };
 
-    const EODReportComponentCallback = () => {
-        setOpenEODReportPopup(false);
-    };
+
 
     // const SiteCompositionCallBack = useCallback((Data: any, Type: any) => {
     //     if (Data.ClientTime != undefined && Data.ClientTime.length > 0) {
@@ -4959,6 +5010,10 @@ const EditTaskPopup = (Items: any) => {
         );
     };
 
+    const removeAssignedMember = (value: any) => {
+        const afterItemDelete: any = ApproverData.filter((item: any) => item.Title != value.Title)
+        setApproverData(afterItemDelete)
+    }
 
 
     return (
@@ -4969,7 +5024,7 @@ const EditTaskPopup = (Items: any) => {
                     : `${EditData.Id}`
             }
         >
-           
+
             {/* ***************** this is status panel *********** */}
             <Panel
                 onRenderHeader={onRenderStatusPanelHeader}
@@ -5674,71 +5729,121 @@ const EditTaskPopup = (Items: any) => {
                                                     </div>
                                                     {ApprovalStatus ? (
                                                         <div>
-                                                            <div className="col">
-                                                                <div className="input-group">
-                                                                    <label className="form-label full-width"></label>
-                                                                    {ApproverData != undefined &&
-                                                                        ApproverData.length > 0 ? (
-                                                                        <>
-                                                                            {ApproverData.map(
-                                                                                (Approver: any, index: number) => {
+                                                            <div className="input-group mb-2">
+                                                                <label className="form-label full-width"></label>
+                                                                {ApproverData?.length > 1 ? <>
+                                                                    <input
+                                                                        type="text"
+                                                                        className="form-control"
+                                                                        placeholder="Search Approver's Name Here"
+                                                                        value={ApproverSearchKey}
+                                                                        onChange={(e) =>
+                                                                            autoSuggestionsForApprover(e, "OnTaskPopup")
+                                                                        }
+                                                                    />
+                                                                    {ApproverSearchedData?.length > 0 ? (
+                                                                        <div className="SmartTableOnTaskPopup w-100">
+                                                                            <ul className="list-group">
+                                                                                {ApproverSearchedData.map((item: any) => {
                                                                                     return (
-                                                                                        <div className="full-width replaceInput alignCenter">
-                                                                                            <a
-                                                                                                className="hreflink"
-                                                                                                target="_blank"
-                                                                                                data-interception="off"
-                                                                                            >
-                                                                                                {Approver.Title}
-                                                                                            </a>
-                                                                                        </div>
+                                                                                        <li
+                                                                                            className="hreflink list-group-item rounded-0 list-group-item-action"
+                                                                                            key={item.id}
+                                                                                            onClick={() =>
+                                                                                                SelectApproverFromAutoSuggestion(
+                                                                                                    item
+                                                                                                )
+                                                                                            }
+                                                                                        >
+                                                                                            <a>{item.NewLabel}</a>
+                                                                                        </li>
                                                                                     );
-                                                                                }
-                                                                            )}
-                                                                        </>
-                                                                    ) :
-                                                                        <input
-                                                                            type="text"
-                                                                            className="form-control"
-                                                                            placeholder="Search Approver's Name Here"
-                                                                            value={ApproverSearchKey}
-                                                                            onChange={(e) =>
-                                                                                autoSuggestionsForApprover(
-                                                                                    e,
-                                                                                    "OnTaskPopup"
-                                                                                )
-                                                                            }
-                                                                        />
-                                                                    }
-                                                                    <span
-                                                                        className="input-group-text mt--10"
-                                                                        onClick={OpenApproverPopupFunction}
-                                                                        title="Approver Data Popup"
-                                                                    >
-                                                                        <span className="svg__iconbox svg__icon--editBox mt--10"></span>
-                                                                    </span>
-                                                                </div>
-                                                                {ApproverSearchedData?.length > 0 ? (
-                                                                    <div className="SmartTableOnTaskPopup">
-                                                                        <ul className="list-group">
-                                                                            {ApproverSearchedData.map((item: any) => {
-                                                                                return (
-                                                                                    <li
-                                                                                        className="hreflink list-group-item rounded-0 p-1 list-group-item-action"
-                                                                                        key={item.id}
-                                                                                        onClick={() =>
-                                                                                            SelectApproverFromAutoSuggestion(
-                                                                                                item
-                                                                                            )
-                                                                                        }
+                                                                                })}
+                                                                            </ul>
+                                                                        </div>
+                                                                    ) : null}
+                                                                    {ApproverData?.map(
+                                                                        (type: any, index: number) => {
+
+                                                                            return (
+                                                                                <div className="block w-100">
+                                                                                    <a
+                                                                                        style={{ color: "#fff !important" }}
+                                                                                        className="textDotted"
                                                                                     >
-                                                                                        <a>{item.NewLabel}</a>
-                                                                                    </li>
-                                                                                );
-                                                                            })}
-                                                                        </ul>
-                                                                    </div>
-                                                                ) : null}
+                                                                                        {type.Title}
+                                                                                    </a>
+                                                                                    <span
+                                                                                        onClick={() => removeAssignedMember(type)}
+                                                                                        className="bg-light hreflink ml-auto svg__icon--cross svg__iconbox"
+                                                                                    ></span>
+                                                                                </div>
+                                                                            );
+                                                                        }
+
+                                                                    )}</> :
+                                                                    <>
+                                                                        {ApproverData?.length == 1 ?
+
+                                                                            <div className="full-width">
+
+                                                                                {ApproverData.map(
+                                                                                    (Approver: any, index: number) => {
+                                                                                        return (
+                                                                                            <div className="full-width replaceInput alignCenter">
+                                                                                                <a
+                                                                                                    className="hreflink"
+                                                                                                    target="_blank"
+                                                                                                    data-interception="off"
+                                                                                                >
+                                                                                                    {Approver.Title}
+                                                                                                </a>
+                                                                                            </div>
+                                                                                        );
+                                                                                    }
+                                                                                )}
+                                                                            </div>
+                                                                            :
+                                                                            <>
+                                                                                <input
+                                                                                    type="text"
+                                                                                    className="form-control"
+                                                                                    id="txtApprover"
+                                                                                    // onChange={(e) => autoSuggestionsForCategory(e)}
+                                                                                    placeholder="Search Name Here!"
+                                                                                    value={ApproverSearchKey}
+                                                                                    onChange={(e) => autoSuggestionsForApprover(e, "OnTaskPopup")}
+                                                                                />
+                                                                                {ApproverSearchedDataForPopup?.length > 0 ? (
+                                                                                    <div className="SmartTableOnTaskPopup  w-100">
+                                                                                        <ul className="list-group">
+                                                                                            {ApproverSearchedDataForPopup.map((item: any) => {
+                                                                                                return (
+                                                                                                    <li
+                                                                                                        className="hreflink list-group-item rounded-0 list-group-item-action"
+                                                                                                        key={item.id}
+                                                                                                        onClick={() => SelectApproverFromAutoSuggestion(item)}
+                                                                                                    >
+                                                                                                        <a>{item.NewLabel}</a>
+                                                                                                    </li>
+                                                                                                );
+                                                                                            })}
+                                                                                        </ul>
+                                                                                    </div>
+                                                                                ) : null}
+                                                                            </>
+                                                                        }
+                                                                    </>
+
+                                                                }
+
+                                                                <span
+                                                                    className="input-group-text mt--10"
+                                                                    onClick={OpenApproverPopupFunction}
+                                                                    title="Approver Data Popup"
+                                                                >
+                                                                    <span className="svg__iconbox svg__icon--editBox mt--10"></span>
+                                                                </span>
                                                             </div>
                                                             <div className="Approval-History-section my-2">
                                                                 {ApproverHistoryData != undefined &&
@@ -6812,7 +6917,7 @@ const EditTaskPopup = (Items: any) => {
                                                         Context: Context,
                                                         siteType: Items.Items.siteType,
                                                     }}
-                                                    taskCreatedCallback={GetExtraLookupColumnData}
+                                                    taskCreatedCallback={UpdateTaskInfoFunction}
                                                 />
                                             </>
                                         ) : null}
@@ -8857,6 +8962,7 @@ const EditTaskPopup = (Items: any) => {
                                                     SmartLightStatus={SmartLightStatus}
                                                     SmartLightPercentStatus={SmartLightPercentStatus}
                                                     Context={Context}
+                                                    FeedbackCount={FeedBackCount}
                                                 />
                                                 <Example
                                                     textItems={
@@ -8873,6 +8979,18 @@ const EditTaskPopup = (Items: any) => {
                                                     SmartLightStatus={SmartLightStatus}
                                                     SmartLightPercentStatus={SmartLightPercentStatus}
                                                     Context={Context}
+                                                    FeedbackCount={FeedBackCount}
+                                                    TaskUpdatedData={MakeUpdateDataJSON}
+                                                    TaskListDetails={{
+                                                        SiteURL: siteUrls,
+                                                        ListId: Items.Items.listId,
+                                                        TaskId: Items.Items.Id,
+                                                        TaskDetails: EditData,
+                                                        AllListIdData: AllListIdData,
+                                                        Context: Context,
+                                                        siteType: Items.Items.siteType,
+                                                    }}
+                                                    taskCreatedCallback={UpdateTaskInfoFunction}
                                                 />
                                             </>
                                         ) : null}
@@ -9033,7 +9151,7 @@ const EditTaskPopup = (Items: any) => {
                                     <h6>Sites</h6>
                                 </div>
                                 <div className="card-body">
-                                {!loaded?<PageLoader/>:''}
+                                    {!loaded ? <PageLoader /> : ''}
                                     <ul className="quick-actions">
                                         {SiteTypes?.map((siteData: any, index: number) => {
                                             if (siteData.Title !== "QA") {
@@ -9162,11 +9280,11 @@ const EditTaskPopup = (Items: any) => {
                                 <div className="border full-width my-1 p-1">
                                     {ApproverData?.map((val: any) => {
                                         return (
-                                            <a className="hreflink block">
+                                            <a className="hreflink block me-1">
                                                 {" "}
                                                 {val.Title}
                                                 <span
-                                                    onClick={() => setApproverData([])}
+                                                    onClick={() => removeAssignedMember(val)}
                                                     className="bg-light hreflink ms-1 svg__icon--cross svg__iconbox"
                                                 ></span>
                                             </a>

@@ -81,7 +81,12 @@ export default function ManageSmartMetadata(selectedProps: any) {
             let web = new Web(selectedProps.AllList.SPSitesListUrl);
             const AllMetaDataItems = await web.lists.getById(selectedProps.AllList.SPSmartMetadataListID).items.select("*,Author/Title,Editor/Title,Parent/Id,Parent/Title&$expand=Parent,Author,Editor&$orderby=Title&$filter=isDeleted ne 1").getAll();
             SmartmetadataItems = SmartmetadataItems.concat(AllMetaDataItems)
-            ShowingTabsData('Categories')
+            if (Tabs.length > 0) {
+                Tabs.filter((item: any) => {
+                    if (item.Title === 'Categories')
+                        ShowingTabsData(item.Title);
+                })
+            }
         } catch (error) {
             console.error(error);
         }

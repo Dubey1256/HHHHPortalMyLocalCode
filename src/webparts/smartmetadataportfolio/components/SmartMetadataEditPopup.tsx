@@ -473,7 +473,7 @@ export default function SmartMetadataEditPopup(props: any) {
                 IsVisible: SmartTaxonomyItem.IsVisible,
                 SmartSuggestions: SmartTaxonomyItem.SmartSuggestions,
                 Selectable: SmartTaxonomyItem.Selectable,
-                ItemRank: SmartTaxonomyItem.ItemRank,
+                ItemRank: SmartTaxonomyItem.ItemRank !== "" ? SmartTaxonomyItem.ItemRank : null,
                 Status: SmartTaxonomyItem.Status,
                 //SmartFilters: SmartTaxonomyItem.SmartFilters,
                 siteName: SmartTaxonomyItem.siteName,

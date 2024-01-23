@@ -29,6 +29,7 @@ import { Filter, DefaultColumnFilter, } from "../../projectmanagementOverviewToo
 import PageLoader from '../../../globalComponents/pageLoader';
 import ShowClintCatogory from '../../../globalComponents/ShowClintCatogory';
 import SendEmailEODReport from './SendEmailEODReport';
+import SmartPriorityToolTip from '../../../globalComponents/SmartPriorityTooltip';
 var taskUsers: any = [];
 var userGroups: any = [];
 var siteConfig: any = [];
@@ -804,15 +805,8 @@ const TaskDashboard = (props: any) => {
                 showSortIcon: true,
                 accessor: "SmartPriority",
                 style: { width: '42px' },
-                Cell: ({ row }: any) => (
-                    <span className="hover-text m-0 ">
-                        <span className="boldClable hreflink">
-                        {row?.original?.SmartPriority != undefined ? row?.original?.SmartPriority : ''}
-                        </span>
-                       <span className="tooltip-text pop-right">
-                       {row?.original?.showFormulaOnHover}
-                       </span>
-                    </span>
+                Cell: ({ row }: any) => row?.original?.SmartPriority !== null && (
+                    <SmartPriorityToolTip smartPriority={row?.original?.SmartPriority} hoverFormula={row?.original?.showFormulaOnHover}/>
                 ),
             },
             {
@@ -1898,7 +1892,7 @@ const TaskDashboard = (props: any) => {
                         + '<td style="line-height:24px;font-size:13px;padding:15px;">' + '<p style="margin-top:0px; margin-bottom:2px;font-size:14px; color:#333;">' + '<a href =' + item.siteUrl + '/SitePages/Task-Profile.aspx?taskId=' + item.Id + '&Site=' + item.siteType + '><span style="font-size:13px; font-weight:600">' + item.Title + '</span></a>' + '</p>' + '</td>'
                         + '<td style="line-height:24px;font-size:13px;padding:15px;">' + item.Categories + '</td>'
                         + '<td style="line-height:24px;font-size:13px;padding:15px;">' + item.PercentComplete + '</td>'
-                        + '<td style="line-height:24px;font-size:13px;padding:15px;">' + item.PriorityRank + '</td>'
+                        + '<td style="line-height:24px;font-size:13px;padding:15px;">' + (item?.SmartPriority !== undefined ? item?.SmartPriority : '') + '</td>'
                         + '<td style="line-height:24px;font-size:13px;padding:15px;">' + teamUsers + '</td>'
                         + '<td style="line-height:24px;font-size:13px;padding:15px;">' + item.TaskDueDatenew + '</td>'
                         + '<td style="line-height:24px;font-size:13px;padding:15px;">' + item.EstimatedTime + '</td>'
@@ -1916,7 +1910,7 @@ const TaskDashboard = (props: any) => {
                     + '<th style="line-height:24px;font-size:15px;padding:10px;" bgcolor="#f5f5f5">' + 'Title' + '</th>'
                     + '<th style="line-height:24px;font-size:15px;padding:10px;" bgcolor="#f5f5f5">' + 'Category' + '</th>'
                     + '<th style="line-height:24px;font-size:15px;padding:10px;" bgcolor="#f5f5f5">' + '% Complete' + '</th>'
-                    + '<th style="line-height:24px;font-size:15px;padding:10px;" bgcolor="#f5f5f5">' + 'Priority' + '</th>'
+                    + '<th style="line-height:24px;font-size:15px;padding:10px;" bgcolor="#f5f5f5">' + 'Smart Priority' + '</th>'
                     + '<th style="line-height:24px;font-size:15px;padding:10px;" bgcolor="#f5f5f5">' + 'Team' + '</th>'
                     + '<th style="line-height:24px;font-size:15px;padding:10px;" bgcolor="#f5f5f5">' + 'Duedate' + '</th>'
                     + '<th style="line-height:24px;font-size:15px;padding:10px;" bgcolor="#f5f5f5">' + 'Estimated Time (In Hrs)' + '</th>'
@@ -2051,7 +2045,7 @@ const TaskDashboard = (props: any) => {
             var subject = "Today's Working Tasks of All Team";
             taskUsersGroup?.map((userGroup: any) => {
                 let teamsTaskBody: any = [];
-                if (userGroup.Title == "Junior Developer Team" || userGroup.Title == "Senior Developer Team" || userGroup.Title == "Design Team" || userGroup.Title == "QA Team" || userGroup.Title == "Smalsus Lead Team" || userGroup.Title == "Business Analyst") {
+                if (userGroup.Title == "Junior Developer Team" || userGroup.Title == "Senior Developer Team" ||  userGroup.Title == "Mobile Team" || userGroup.Title == "Design Team" || userGroup.Title == "QA Team" || userGroup.Title == "Smalsus Lead Team" || userGroup.Title == "Business Analyst") {
                     if (userGroup.Title == "Smalsus Lead Team") {
                         userGroup.childBackup = userGroup?.childs;
                         userGroup.childs = [];
@@ -2092,7 +2086,7 @@ const TaskDashboard = (props: any) => {
                                         + '<td style="line-height:24px;font-size:13px;padding:15px;">' + '<p style="margin-top:0px; margin-bottom:2px;font-size:14px; color:#333;">' + '<a href =' + item.siteUrl + '/SitePages/Task-Profile.aspx?taskId=' + item.Id + '&Site=' + item.siteType + '><span style="font-size:13px; font-weight:600">' + item.Title + '</span></a>' + '</p>' + '</td>'
                                         + '<td style="line-height:24px;font-size:13px;padding:15px;">' + item.Categories + '</td>'
                                         + '<td style="line-height:24px;font-size:13px;padding:15px;">' + item.PercentComplete + '</td>'
-                                        + '<td style="line-height:24px;font-size:13px;padding:15px;">' + item.PriorityRank + '</td>'
+                                        + '<td style="line-height:24px;font-size:13px;padding:15px;">' + (item?.SmartPriority !== undefined ? item?.SmartPriority : '') + '</td>'
                                         + '<td style="line-height:24px;font-size:13px;padding:15px;">' + teamUsers + '</td>'
                                         + '<td style="line-height:24px;font-size:13px;padding:15px;">' + item.TaskDueDatenew + '</td>'
                                         + '<td style="line-height:24px;font-size:13px;padding:15px;">' + item.EstimatedTime + '</td>'
@@ -2110,7 +2104,7 @@ const TaskDashboard = (props: any) => {
                                     + '<th style="line-height:24px;font-size:15px;padding:10px;" bgcolor="#f5f5f5">' + 'Title' + '</th>'
                                     + '<th style="line-height:24px;font-size:15px;padding:10px;" bgcolor="#f5f5f5">' + 'Category' + '</th>'
                                     + '<th style="line-height:24px;font-size:15px;padding:10px;" bgcolor="#f5f5f5">' + '% Complete' + '</th>'
-                                    + '<th style="line-height:24px;font-size:15px;padding:10px;" bgcolor="#f5f5f5">' + 'Priority' + '</th>'
+                                    + '<th style="line-height:24px;font-size:15px;padding:10px;" bgcolor="#f5f5f5">' + 'Smart Priority' + '</th>'
                                     + '<th style="line-height:24px;font-size:15px;padding:10px;" bgcolor="#f5f5f5">' + 'Team' + '</th>'
                                     + '<th style="line-height:24px;font-size:15px;padding:10px;" bgcolor="#f5f5f5">' + 'Duedate' + '</th>'
                                     + '<th style="line-height:24px;font-size:15px;padding:10px;" bgcolor="#f5f5f5">' + 'Estimated Time (In Hrs)' + '</th>'
