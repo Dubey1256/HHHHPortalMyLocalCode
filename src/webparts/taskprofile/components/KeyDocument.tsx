@@ -167,7 +167,7 @@ const RelevantDocuments = (props: any, ref: any) => {
         {
             accessorFn: "",
             cell: ({ row }: any) => (
-                <span title="Edit" className="svg__iconbox svg__icon--edit hreflink" onClick={() => editDocumentsLink(row?.original)}></span>
+                <span  title="Edit" className="svg__iconbox svg__icon--edit hreflink" onClick={() => editDocumentsLink(row?.original)}></span>
 
             ),
             id: 'CreatedDate',

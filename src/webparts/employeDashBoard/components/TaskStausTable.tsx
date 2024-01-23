@@ -98,7 +98,7 @@ const TaskStatusTbl = (Tile: any) => {
             rel='noopener noreferrer' data-interception="off" > {row?.original?.Title}
           </a>
           {row?.original?.descriptionsSearch != null && row?.original?.descriptionsSearch != "" && (
-            <InfoIconsToolTip Discription={row?.original?.descriptionsSearch} row={row?.original} />
+         <span className="alignIcon"> <InfoIconsToolTip Discription={row?.original?.descriptionsSearch} row={row?.original} /></span>
           )}
         </div>
       ),
