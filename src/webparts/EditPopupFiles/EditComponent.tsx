@@ -2985,7 +2985,7 @@ let ID: any;
                                                     {EditData?.Portfolio_x0020_Type == "Component" && (
                                                         <div className="col-sm-12  inner-tabb">
                                                             {linkedComponentData?.length > 0 ? (
-                                                                <div className="serviepannelgreena">
+                                                                <div >
                                                                     {linkedComponentData?.map((com: any) => {
                                                                         return (
                                                                             <>
@@ -3613,7 +3613,7 @@ let ID: any;
                             <div className="col-sm-12  inner-tabb">
                             {filterdata && filterdata.length > 0 ? 
                             (
-                              <div className="serviepannelgreena">
+                              <div >
                                 {filterdata?.map((items:any, Index: any)=>
                                  <div className="block d-flex justify-content-between mb-1" key={Index}>
                               

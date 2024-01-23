@@ -523,6 +523,7 @@ const changeHeader=(items:any)=>{
         isOpen={addUser}
         isBlocking={false}
         onDismiss={() => { setAddUser(false), setSuggestions([]) }}
+        className="PresetDate"
       >
         <div className="modal-body">
           <div className="input-group">

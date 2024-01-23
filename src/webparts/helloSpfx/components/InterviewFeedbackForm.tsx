@@ -86,6 +86,8 @@ export default function InterviewFeedbackForm(props: any) {
     }
     const CloseCreateStatus = () => {
         setopenModalPopup(false)
+        setNewStatus('')
+        setIsAddStatusButonDisabled(true)
     }
     const openChangeStatus = () => {
         setisChangeStatusPopup(true)
@@ -100,7 +102,7 @@ export default function InterviewFeedbackForm(props: any) {
         setNewStatus(statusValue)
         setIsAddStatusButonDisabled(statusValue.trim() === '')
     }
-    
+
     const AddnewStatusTitle = () => {
         const newStatusObj = {
             "Id": AllAvlStatusdata.length,
@@ -113,6 +115,8 @@ export default function InterviewFeedbackForm(props: any) {
         updatedStatusData = [...AllAvlStatusdata, newStatusObj];
         // Update the state with the new array
         setAllAvlStatusdata(updatedStatusData);
+        setNewStatus('')
+        setIsAddStatusButonDisabled(true)
         console.log(updatedStatusData); // This will show the updated array with the new object
     };
     const AddnewStatus = async (values: any, isDEL: boolean) => {
@@ -127,7 +131,9 @@ export default function InterviewFeedbackForm(props: any) {
             "Configurations": JSON.stringify(AllAvlStatusdata)
         }
         try {
-            await HRweb.lists.getById('2e5ed76d-63ae-4f4a-887a-6d56f0b925c3').items.getById(statusKeyID).update(postData);
+            await HRweb.lists.getById('2e5ed76d-63ae-4f4a-887a-6d56f0b925c3').items.getById(statusKeyID).update(postData).then((response: any) => {
+                setNewStatus('')
+            })
         } catch (error) {
             if (!isDEL) {
                 setopenModalPopup(false)
@@ -137,6 +143,7 @@ export default function InterviewFeedbackForm(props: any) {
         } finally {
             if (!isDEL) {
                 setopenModalPopup(false)
+                setIsAddStatusButonDisabled(true)
             }
         }
     };
@@ -417,7 +424,7 @@ export default function InterviewFeedbackForm(props: any) {
         return (
             <>
                 <div className='subheading'>
-                    Add / Edit Status
+                    Add / Remove Status
                 </div>
                 <Tooltip ComponentId='7930' />
             </>
@@ -513,7 +520,7 @@ export default function InterviewFeedbackForm(props: any) {
                                 </div> */}
                         <div className="card-body">
                             <div className="col-sm-12 pad0 inline-fieldbtn input-group">
-                                <input className="form-control" placeholder="Add Status" onChange={handleNewStatus} type="text" />
+                                <input className="form-control" placeholder="Add Status" value={newStatus} onChange={(e) => handleNewStatus(e)} type="text" />
                                 {/* <button type="button" onClick={AddnewStatusTitle} className="btn btn-primary btn-sm ml-15 pull-right">
                                             Add
                                         </button> */}

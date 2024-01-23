@@ -109,8 +109,7 @@ const inlineEditingcolumns = (props: any) => {
   }, [dueDate.editPopup ,TaskStatusPopup,remark,teamMembersPopup, UpdateEstimatedTime,TaskPriorityPopup,taskCategoriesPopup,props?.item?.TaskCategories?.results]);
   
   React.useEffect(() => {
-    let allComments: any = JSON.parse(props?.item?.Comments)
-    setComments(allComments)
+    updateTaskComments();
   }, [])
   
   const updateItemValues=()=>{
@@ -185,6 +184,16 @@ const inlineEditingcolumns = (props: any) => {
       }
       GetSmartMetadata();
     } catch (e) { console.log }
+  }
+
+  const updateTaskComments = () => {
+    try{
+    let allComments: any = JSON.parse(props?.item?.Comments)
+    setComments(allComments)
+    }
+    catch{
+      console.log('JSON cannot be parsed')
+    }
   }
   const getPercentCompleteTitle = (percent: any) => {
     let result = "";
