@@ -24,6 +24,7 @@ import InlineEditingcolumns from "../../projectmanagementOverviewTool/components
 import ServiceComponentPortfolioPopup from "../../../globalComponents/EditTaskPopup/ServiceComponentPortfolioPopup";
 import { SlArrowDown, SlArrowRight } from "react-icons/sl";
 import CentralizedSiteComposition from "../../../globalComponents/SiteCompositionComponents/CentralizedSiteComposition";
+import KeyDocuments from "../../taskprofile/components/KeyDocument";
 const sp = spfi();
 let AllClientCategoryDataBackup: any = [];
 // Work the Inline Editing
@@ -407,9 +408,11 @@ let count = 0;
 let ParentData: any[] = [];
 
 let AllMasterTaskData: any = [];
+let keyDocRef:any;
+
 function Portfolio({ SelectedProp, TaskUser }: any) {
   AllTaskuser = TaskUser;
-
+  keyDocRef=React.useRef();
 
   const relevantDocRef: any = React.createRef();
   const smartInfoRef: any = React.createRef();
@@ -948,7 +951,7 @@ function Portfolio({ SelectedProp, TaskUser }: any) {
   };
 
   // ********* anc calll back ****************
-  const AncCallback = (type: any) => {
+  const  AncCallback = (type: any) => {
     switch (type) {
       case 'anc': {
         relevantDocRef?.current?.loadAllSitesDocuments()
@@ -960,11 +963,13 @@ function Portfolio({ SelectedProp, TaskUser }: any) {
       }
       default: {
         relevantDocRef?.current?.loadAllSitesDocuments()
-        smartInfoRef?.current?.GetResult();
+           smartInfoRef?.current?.GetResult();
+           keyDocRef?.current?.loadAllSitesDocumentsEmail()
         break
       }
     }
   }
+
   const contextCall = (data: any, path: any, component: any) => {
     if (data != null && path != null) {
       Setkeydoc(data)
@@ -2034,7 +2039,8 @@ function Portfolio({ SelectedProp, TaskUser }: any) {
                         siteName={"Master Tasks"}
                         folderName={item?.Title}
                       ></RelevantDocuments>
-                      <RelevantEmail ref={this?.relevantDocRef}
+                     <RelevantEmail 
+                        ref={keyDocRef}
                         AllListId={SelectedProp}
                         Context={SelectedProp?.Context}
                         siteUrl={SelectedProp?.siteUrl}
@@ -2063,7 +2069,9 @@ function Portfolio({ SelectedProp, TaskUser }: any) {
               </div>
             </div>
           </section>
+          {<KeyDocuments ref={relevantDocRef} AllListId={SelectedProp} Context={SelectedProp?.Context} siteUrl={SelectedProp?.siteUrl}  DocumentsListID={SelectedProp.DocumentsListID}  siteName={"Master Tasks"} folderName={data[0]?.Title} keyDoc={true}></KeyDocuments>}
         </section>
+        
         {/* table secation artical */}
 
         {data.map((item: any) => (
