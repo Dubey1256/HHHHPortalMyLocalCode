@@ -556,7 +556,7 @@ function Portfolio({ SelectedProp, TaskUser }: any) {
     
     loadAllMasterTask();
     let web = ContextValue.siteUrl;
-    let url = `${web}/_api/lists/getbyid('${ContextValue.MasterTaskListID}')/items?$select=ItemRank,Item_x0020_Type,Portfolios/Id,Portfolios/Title,PortfolioType/Id,PortfolioType/Title,PortfolioType/Color,PortfolioType/IdRange,Site,FolderID,PortfolioStructureID,ValueAdded,Idea,TaskListName,TaskListId,WorkspaceType,CompletedDate,ClientActivityJson,ClientSite,Item_x002d_Image,Sitestagging,SiteCompositionSettings,TechnicalExplanations,Deliverables,Author/Id,Author/Title,Editor/Id,Editor/Title,Package,Short_x0020_Description_x0020_On,Short_x0020_Description_x0020__x,Short_x0020_description_x0020__x0,AdminNotes,AdminStatus,Background,Help_x0020_Information,BasicImageInfo,Item_x0020_Type,AssignedTo/Title,AssignedTo/Name,AssignedTo/Id,Categories,FeedBack,ComponentLink,FileLeafRef,Title,Id,Comments,StartDate,DueDate,Status,Body,Company,Mileage,PercentComplete,FeedBack,Attachments,Priority,PriorityRank,Created,Modified,TeamMembers/Id,TeamMembers/Title,Parent/Id,Parent/Title,Parent/ItemType,TaskCategories/Id,TaskCategories/Title,ClientCategory/Id,ClientCategory/Title&$expand=Author,Editor,ClientCategory,Parent,AssignedTo,TeamMembers,PortfolioType,Portfolios,TaskCategories&$filter=Id eq ${ID}&$top=4999`;
+    let url = `${web}/_api/lists/getbyid('${ContextValue.MasterTaskListID}')/items?$select=ItemRank,Item_x0020_Type,Portfolios/Id,Portfolios/Title,PortfolioType/Id,PortfolioType/Title,PortfolioType/Color,PortfolioType/IdRange,Site,FolderID,PortfolioStructureID,ValueAdded,Idea,TaskListName,TaskListId,WorkspaceType,CompletedDate,ClientActivityJson,ClientSite,Item_x002d_Image,Sitestagging,SiteCompositionSettings,TechnicalExplanations,Deliverables,Author/Id,Author/Title,Editor/Id,Editor/Title,Package,Short_x0020_Description_x0020_On,Short_x0020_Description_x0020__x,Short_x0020_description_x0020__x0,AdminNotes,AdminStatus,Background,Help_x0020_Information,BasicImageInfo,Item_x0020_Type,AssignedTo/Title,AssignedTo/Name,AssignedTo/Id,Categories,FeedBack,ComponentLink,FileLeafRef,Title,Id,Comments,StartDate,DueDate,Status,Body,Company,Mileage,PercentComplete,FeedBack,Attachments,Priority,PriorityRank,Created,Modified,TeamMembers/Id,TeamMembers/Title,Parent/Id,Parent/Title,Parent/ItemType,TaskCategories/Id,TaskCategories/Title,ClientCategory/Id,ClientCategory/Title,FeatureType/Title,FeatureType/Id&$expand=Author,Editor,ClientCategory,Parent,AssignedTo,TeamMembers,PortfolioType,Portfolios,FeatureType,TaskCategories&$filter=Id eq ${ID}&$top=4999`;
     let response: any = [];
     let responsen: any = []; // this variable is used for storing list items
     let SiteCompositionTemp: any = [];
@@ -581,6 +581,11 @@ function Portfolio({ SelectedProp, TaskUser }: any) {
                 : item.TeamMembers.results;
 
             item.siteUrl = ContextValue.siteUrl;
+            item.FeatureTypeTitle = ''
+            if(item?.FeatureType?.Id!=undefined){
+                item.FeatureTypeTitle = item?.FeatureType?.Title
+            }   
+
             if (item.Sitestagging?.length > 0) {
               SiteCompositionTemp = JSON.parse(item.Sitestagging);
             } else {
@@ -674,7 +679,7 @@ function Portfolio({ SelectedProp, TaskUser }: any) {
                 filter += "(Service / Id eq " + ID + ")";
               }
 
-              let urln = `${web}/_api/lists/getbyid('${ContextValue.SmartHelptListID}')/items?$select=Id,Title,ItemRank,PercentComplete,Categories,FeatureType/Title,FeatureType/Id,AssignedTo/Id,AssignedTo/Title,Body,DueDate,ItemType,Priority,StartDate,Status&$expand=AssignedTo,FeatureType&$filter=${filter}`;
+              let urln = `${web}/_api/lists/getbyid('${ContextValue.SmartHelptListID}')/items?$select=Id,Title,ItemRank,PercentComplete,Categories,AssignedTo/Id,AssignedTo/Title,Body,DueDate,ItemType,Priority,StartDate,Status&$expand=AssignedTo&$filter=${filter}`;
               $.ajax({
                 url: urln,
                 method: "GET",
