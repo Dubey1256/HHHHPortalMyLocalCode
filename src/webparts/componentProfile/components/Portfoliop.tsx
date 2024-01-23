@@ -1070,7 +1070,7 @@ function Portfolio({ SelectedProp, TaskUser }: any) {
 
 
   return (
-    <myContextValue.Provider value={{ ...myContextValue, FunctionCall: contextCall, keyDoc: keydoc, FileDirRef: FileDirRef,ColorCode:data[0]?.PortfolioType?.Color }}>
+    <myContextValue.Provider value={{ ...myContextValue, user:AllTaskuser,FunctionCall: contextCall, keyDoc: keydoc, FileDirRef: FileDirRef,ColorCode:data[0]?.PortfolioType?.Color } }>
       <div >
         {/* breadcrumb & title */}
         <section className="ContentSection">
@@ -1892,6 +1892,7 @@ function Portfolio({ SelectedProp, TaskUser }: any) {
                             </div>
                           </details>
                         )}
+                         {<KeyDocuments ref={relevantDocRef} AllListId={SelectedProp} Context={SelectedProp?.Context} siteUrl={SelectedProp?.siteUrl}  DocumentsListID={SelectedProp.DocumentsListID}  siteName={"Master Tasks"} folderName={data[0]?.Title} keyDoc={true}></KeyDocuments>}
                       </div>
                     </section>
                   </div>
@@ -2069,7 +2070,7 @@ function Portfolio({ SelectedProp, TaskUser }: any) {
               </div>
             </div>
           </section>
-          {<KeyDocuments ref={relevantDocRef} AllListId={SelectedProp} Context={SelectedProp?.Context} siteUrl={SelectedProp?.siteUrl}  DocumentsListID={SelectedProp.DocumentsListID}  siteName={"Master Tasks"} folderName={data[0]?.Title} keyDoc={true}></KeyDocuments>}
+         
         </section>
         
         {/* table secation artical */}
