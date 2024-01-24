@@ -5,10 +5,7 @@ import "react-datepicker/dist/react-datepicker-cssmodules.css";
 import GlobalCommanTable from "./GlobalCommanTable";
 import { Web } from "sp-pnp-js";
 import moment from "moment";
-import Loader from "react-loader";
 import HighlightableCell from "./highlight";
-import ShowTaskTeamMembers from "../ShowTaskTeamMembers";
-import ShowClintCatogory from "../ShowClintCatogory";
 import { ColumnDef } from "@tanstack/react-table";
 import ReactPopperTooltipSingleLevel from "../Hierarchy-Popper-tooltipSilgleLevel/Hierarchy-Popper-tooltipSingleLevel";
 import ReactPopperTooltip from "../Hierarchy-Popper-tooltip";
@@ -16,6 +13,7 @@ import InfoIconsToolTip from "../InfoIconsToolTip/InfoIconsToolTip";
 import { FaCompressArrowsAlt } from "react-icons/fa";
 import * as globalCommon from "../globalCommon";
 import PageLoader from "../pageLoader";
+import InlineBulkEditingTask from "./InlineBulkEditingTask";
 let childRefdata: any;
 const SelectedTaskUpdateOnPopup = (item: any) => {
     const childRef: any = React.useRef<any>();
@@ -28,99 +26,32 @@ const SelectedTaskUpdateOnPopup = (item: any) => {
     const handleChangeDateAndDataCallBack = async () => {
         if (childRef?.current?.table?.getSelectedRowModel()?.flatRows?.length > 0) {
             setLoaded(false);
-            console.log(item?.save)
-            const filteredValues: Record<string, any> = {};
-            const isEmptyObject = (obj: Record<string, any>): boolean => {
-                return Object.keys(obj)?.length === 0 && obj?.constructor === Object;
-            }
-            for (const key in item?.save) {
-                if (Object.prototype?.hasOwnProperty?.call(item?.save, key)) {
-                    const value = item?.save[key];
-                    if (value !== undefined && value !== '' && !isEmptyObject(value)) {
-                        filteredValues[key] = value;
-                    }
-                }
-            }
-            let updateData: any = {}
-            if (filteredValues) {
-                if (filteredValues?.priority) {
-                    let priority: any;
-                    let priorityRank = 4;
-                    if (parseInt(filteredValues?.priority) <= 0 && filteredValues?.priority != undefined && filteredValues?.priority != null) {
-                        priorityRank = 4;
-                        priority = "(2) Normal";
-                    } else {
-                        priorityRank = parseInt(filteredValues?.priority);
-                        if (priorityRank >= 8 && priorityRank <= 10) {
-                            priority = "(1) High";
-                        }
-                        if (priorityRank >= 4 && priorityRank <= 7) {
-                            priority = "(2) Normal";
-                        }
-                        if (priorityRank >= 1 && priorityRank <= 3) {
-                            priority = "(3) Low";
-                        }
-                    }
-                    if (priority && priorityRank) {
-                        updateData.Priority = priority,
-                            updateData.PriorityRank = priorityRank
-                    }
-                }
-            }
-            if (filteredValues?.DueDate && filteredValues?.DueDate != undefined) {
-                let date = new Date();
-                let dueDate: string | number;
-                if (filteredValues?.DueDate === "Today") {
-                    dueDate = date.toISOString();
-                }
-                if (filteredValues?.DueDate === "Tomorrow") {
-                    dueDate = date.setDate(date.getDate() + 1);
-                    dueDate = date.toISOString();
-                }
-                if (filteredValues?.DueDate === "ThisWeek") {
-                    date.setDate(date.getDate());
-                    var getdayitem = date.getDay();
-                    var dayscount = 7 - getdayitem
-                    date.setDate(date.getDate() + dayscount);
-                    dueDate = date.toISOString();
-                }
-                if (filteredValues?.DueDate === "NextWeek") {
-                    date.setDate(date.getDate() + 7);
-                    var getdayitem = date.getDay();
-                    var dayscount = 7 - getdayitem
-                    date.setDate(date.getDate() + dayscount);
-                    dueDate = date.toISOString();
-                }
-                if (filteredValues?.DueDate === "ThisMonth") {
-                    var year = date.getFullYear();
-                    var month = date.getMonth();
-                    var lastday = new Date(year, month + 1, 0);
-                    dueDate = lastday.toISOString();
-                }
-                if (dueDate) {
-                    updateData.DueDate = dueDate
-                }
-            }
-            if (filteredValues?.PercentComplete && filteredValues?.PercentComplete != undefined) {
-                let TaskStatus;
-                if (filteredValues?.PercentComplete) {
-                    const match = filteredValues?.PercentComplete?.match(/(\d+)%\s*(.+)/);
-                    if (match) {
-                        TaskStatus = parseInt(match[1]) / 100;
-                    }
-                }
-                updateData.PercentComplete = TaskStatus
-            }
-            if (filteredValues?.Project && filteredValues?.Project != undefined) {
-                updateData.ProjectId = filteredValues?.Project?.Id
-            }
             const slectedPopupData = childRef?.current?.table?.getSelectedRowModel()?.flatRows
             const updatePromises: Promise<any>[] = [];
             if (slectedPopupData?.length > 0) {
                 slectedPopupData?.forEach((elem: any) => {
                     const web = new Web(elem?.original?.siteUrl);
-                    const updatePromise = web.lists.getById(elem?.original?.listId).items.getById(elem?.original?.Id).update(updateData);
-                    updatePromises.push(updatePromise);
+                    const updateData: { [key: string]: any } = {};
+                    if (elem?.original?.postPriorityRankValue !== undefined && elem?.original?.postPriorityValue !== undefined) {
+                        updateData.PriorityRank = elem?.original?.postPriorityRankValue;
+                        updateData.Priority = elem?.original?.postPriorityValue;
+                    }
+                    if (elem?.original?.postDueDateValue !== undefined) {
+                        updateData.DueDate = elem?.original?.postDueDateValue;
+                    }
+                    if (elem?.original?.postStatusValue !== undefined) {
+                        updateData.PercentComplete = elem?.original?.postStatusValue;
+                    }
+                    if (elem?.original?.postProjectValue !== undefined) {
+                        updateData.ProjectId = elem?.original?.postProjectValue?.Id;
+                    }
+                    if (elem?.original?.postTaskCategoriesId !== undefined) {
+                        updateData.TaskCategoriesId = { results: elem?.original?.postTaskCategoriesId }
+                    }
+                    if (Object.keys(updateData)?.length > 0) {
+                        const updatePromise = web.lists.getById(elem?.original?.listId).items.getById(elem?.original?.Id).update(updateData);
+                        updatePromises.push(updatePromise);
+                    }
                 });
             }
             try {
@@ -132,25 +63,29 @@ const SelectedTaskUpdateOnPopup = (item: any) => {
                 } catch (error) {
                     console.log(error)
                 }
-                // let allData = JSON.parse(JSON.stringify(item?.data))
                 let checkBoolian: any = null;
                 if (item?.updatedSmartFilterFlatView != true && item?.clickFlatView != true) {
                     if (slectedPopupData?.length > 0) {
                         slectedPopupData?.forEach((value: any) => {
-                            if (updateData?.Priority) {
-                                value.original.Priority = updateData?.Priority;
+                            if (value?.original?.postPriorityValue) {
+                                value.original.Priority = value?.original?.postPriorityValue;
                             }
-                            if (updateData?.PriorityRank) {
-                                value.original.PriorityRank = updateData?.PriorityRank;
+                            if (value?.original?.postPriorityRankValue) {
+                                value.original.PriorityRank = value?.original?.postPriorityRankValue;
                             }
-                            if (updateData?.DueDate) {
-                                value.original.DueDate = updateData?.DueDate;
+                            if (value?.original?.postDueDateValue) {
+                                value.original.DueDate = value?.original?.postDueDateValue;
                             }
-                            if (updateData?.PercentComplete) {
-                                value.original.PercentComplete = (updateData?.PercentComplete * 100).toFixed(0);
+                            if (value?.original?.postStatusValue) {
+                                value.original.PercentComplete = (value?.original?.postStatusValue * 100).toFixed(0);
                             }
-                            if (filteredValues?.Project) {
-                                const makeProjectData = { Id: filteredValues?.Project?.Id, PortfolioStructureID: filteredValues?.Project?.PortfolioStructureID, PriorityRank: filteredValues?.Project?.PriorityRank, Title: filteredValues?.Project?.Title }
+                            if (value?.original?.postTaskCategoriesId != undefined) {
+                                let category = item?.activeCategory.filter((elem: any) => value?.original?.postTaskCategoriesId.filter((catVal: any) => elem.Id === catVal))
+                                value.original.TaskCategories = category;
+                                value.original.TaskTypeValue = value?.original?.TaskCategories?.map((val: any) => val.Title).join(",");
+                            }
+                            if (value.original?.postProjectValue) {
+                                const makeProjectData = { Id: value.original?.postProjectValue?.Id, PortfolioStructureID: value.original?.postProjectValue?.PortfolioStructureID, PriorityRank: value.original?.postProjectValue?.PriorityRank, Title: value.original?.postProjectValue?.Title }
                                 value.original.Project = makeProjectData
                                 value.original.projectStructerId = makeProjectData.PortfolioStructureID;
                                 value.original.ProjectTitle = makeProjectData.Title
@@ -181,20 +116,25 @@ const SelectedTaskUpdateOnPopup = (item: any) => {
                         updatedAllData = item?.data?.map((elem: any) => {
                             const value = slectedPopupData?.find((match: any) => match?.original?.Id === elem?.Id && match?.original?.siteType === elem?.siteType);
                             if (value) {
-                                if (updateData?.Priority) {
-                                    value.original.Priority = updateData?.Priority;
+                                if (value?.original?.postPriorityValue) {
+                                    value.original.Priority = value?.original?.postPriorityValue;
                                 }
-                                if (updateData?.PriorityRank) {
-                                    value.original.PriorityRank = updateData?.PriorityRank;
+                                if (value?.original?.postPriorityRankValue) {
+                                    value.original.PriorityRank = value?.original?.postPriorityRankValue;
                                 }
-                                if (updateData?.DueDate) {
-                                    value.original.DueDate = updateData?.DueDate;
+                                if (value?.original?.postDueDateValue) {
+                                    value.original.DueDate = value?.original?.postDueDateValue;
                                 }
-                                if (updateData?.PercentComplete) {
-                                    value.original.PercentComplete = (updateData?.PercentComplete * 100).toFixed(0);
+                                if (value?.original?.postStatusValue) {
+                                    value.original.PercentComplete = (value?.original?.postStatusValue * 100).toFixed(0);
                                 }
-                                if (filteredValues?.Project) {
-                                    const makeProjectData = { Id: filteredValues?.Project?.Id, PortfolioStructureID: filteredValues?.Project?.PortfolioStructureID, PriorityRank: filteredValues?.Project?.PriorityRank, Title: filteredValues?.Project?.Title }
+                                if (value?.original?.postTaskCategoriesId != undefined) {
+                                    let category = item?.activeCategory.filter((elem: any) => value?.original?.postTaskCategoriesId.filter((catVal: any) => elem.Id === catVal))
+                                    value.original.TaskCategories = category;
+                                    value.original.TaskTypeValue = value?.original?.TaskCategories?.map((val: any) => val.Title).join(",");
+                                }
+                                if (value.original?.postProjectValue) {
+                                    const makeProjectData = { Id: value.original?.postProjectValue?.Id, PortfolioStructureID: value.original?.postProjectValue?.PortfolioStructureID, PriorityRank: value.original?.postProjectValue?.PriorityRank, Title: value.original?.postProjectValue?.Title }
                                     value.original.Project = makeProjectData
                                     value.original.projectStructerId = makeProjectData.PortfolioStructureID;
                                     value.original.ProjectTitle = makeProjectData.Title
@@ -213,7 +153,20 @@ const SelectedTaskUpdateOnPopup = (item: any) => {
                                 if (value?.original?.DueDate != null && value?.original?.DueDate != undefined) {
                                     value.original.serverDueDate = new Date(value?.original?.DueDate).setHours(0, 0, 0, 0)
                                 }
-                                return value?.original;
+                                const curentElement = { ...value?.original }
+                                let dataToPush = { ...curentElement }
+                                delete dataToPush.updatedDisplayDueDate,
+                                    delete dataToPush.postDueDateValue,
+                                    delete dataToPush.postStatusValue,
+                                    delete dataToPush.updatedPercentComplete,
+                                    delete dataToPush.postPriorityRankValue,
+                                    delete dataToPush.postPriorityValue,
+                                    delete dataToPush.updatedPriorityRank,
+                                    delete dataToPush.updatedPortfolioStructureID,
+                                    delete dataToPush.postProjectValue,
+                                    delete dataToPush.postTaskCategoriesId,
+                                    delete dataToPush.updatedTaskTypeValue
+                                return dataToPush;
                             } return elem;
                         });
                     }
@@ -224,12 +177,23 @@ const SelectedTaskUpdateOnPopup = (item: any) => {
             } catch (error) {
                 console.error("Error updating projects:", error);
             }
-            console.log(filteredValues);
         } else {
             alert('Please select any items');
         }
     };
-    const addedCreatedDataFromAWT = (itemData: any, dataToPush: any) => {
+    const addedCreatedDataFromAWT = (itemData: any, taskObj: any) => {
+        let dataToPush = { ...taskObj }
+        delete dataToPush.updatedDisplayDueDate,
+            delete dataToPush.postDueDateValue,
+            delete dataToPush.postStatusValue,
+            delete dataToPush.updatedPercentComplete,
+            delete dataToPush.postPriorityRankValue,
+            delete dataToPush.postPriorityValue,
+            delete dataToPush.updatedPriorityRank,
+            delete dataToPush.updatedPortfolioStructureID,
+            delete dataToPush.postProjectValue,
+            delete dataToPush.postTaskCategoriesId,
+            delete dataToPush.updatedTaskTypeValue
         for (let val of itemData) {
             if (dataToPush?.Portfolio?.Id === val.Id && dataToPush?.ParentTask?.Id === undefined) {
                 const existingIndex = val.subRows?.findIndex((subRow: any) => subRow?.Id === dataToPush?.Id);
@@ -269,22 +233,20 @@ const SelectedTaskUpdateOnPopup = (item: any) => {
         );
     };
 
-    React.useEffect(() => {
-        if (item?.selectedData?.length > 0) {
-            const filteredValues: Record<string, any> = {};
-
-            const isEmptyObject = (obj: Record<string, any>): boolean => {
-                return Object.keys(obj)?.length === 0 && obj?.constructor === Object;
-            }
-            for (const key in item?.save) {
-                if (Object.prototype?.hasOwnProperty?.call(item?.save, key)) {
-                    const value = item?.save[key];
-                    if (value !== undefined && value !== '' && !isEmptyObject(value)) {
-                        filteredValues[key] = value;
-                    }
+    const makePostDataMake = (value: any) => {
+        const filteredValues: Record<string, any> = {};
+        const isEmptyObject = (obj: Record<string, any>): boolean => {
+            return Object.keys(obj)?.length === 0 && obj?.constructor === Object;
+        }
+        for (const key in item?.save) {
+            if (Object.prototype?.hasOwnProperty?.call(item?.save, key)) {
+                const value = item?.save[key];
+                if (value !== undefined && value !== '' && !isEmptyObject(value)) {
+                    filteredValues[key] = value;
                 }
             }
-            let showUpdateData: any = {};
+        }
+        if (filteredValues) {
             if (filteredValues?.priority) {
                 let priority: any;
                 let priorityRank = 4;
@@ -304,57 +266,73 @@ const SelectedTaskUpdateOnPopup = (item: any) => {
                     }
                 }
                 if (priority && priorityRank) {
-                    showUpdateData.Priority = priority,
-                        showUpdateData.PriorityRank = priorityRank
+                    value.original.updatedPriorityRank = priorityRank
+                    value.original.postPriorityRankValue = priorityRank;
+                    value.original.postPriorityValue = priority;
                 }
             }
-            if (filteredValues?.DueDate && filteredValues?.DueDate != undefined) {
-                let date = new Date();
-                let dueDate: string | number;
-                if (filteredValues?.DueDate === "Today") {
-                    dueDate = date.toISOString();
-                }
-                if (filteredValues?.DueDate === "Tomorrow") {
-                    dueDate = date.setDate(date.getDate() + 1);
-                    dueDate = date.toISOString();
-                }
-                if (filteredValues?.DueDate === "ThisWeek") {
-                    date.setDate(date.getDate());
-                    var getdayitem = date.getDay();
-                    var dayscount = 7 - getdayitem
-                    date.setDate(date.getDate() + dayscount);
-                    dueDate = date.toISOString();
-                }
-                if (filteredValues?.DueDate === "NextWeek") {
-                    date.setDate(date.getDate() + 7);
-                    var getdayitem = date.getDay();
-                    var dayscount = 7 - getdayitem
-                    date.setDate(date.getDate() + dayscount);
-                    dueDate = date.toISOString();
-                }
-                if (filteredValues?.DueDate === "ThisMonth") {
-                    var year = date.getFullYear();
-                    var month = date.getMonth();
-                    var lastday = new Date(year, month + 1, 0);
-                    dueDate = lastday.toISOString();
-                }
-                if (dueDate) {
-                    showUpdateData.DueDate = moment(dueDate).format("DD/MM/YYYY");
+        }
+        if (filteredValues?.DueDate && filteredValues?.DueDate != undefined) {
+            let date = new Date();
+            let dueDate: string | number;
+            if (filteredValues?.DueDate === "Today") {
+                dueDate = date.toISOString();
+            }
+            if (filteredValues?.DueDate === "Tomorrow") {
+                dueDate = date.setDate(date.getDate() + 1);
+                dueDate = date.toISOString();
+            }
+            if (filteredValues?.DueDate === "ThisWeek") {
+                date.setDate(date.getDate());
+                var getdayitem = date.getDay();
+                var dayscount = 7 - getdayitem
+                date.setDate(date.getDate() + dayscount);
+                dueDate = date.toISOString();
+            }
+            if (filteredValues?.DueDate === "NextWeek") {
+                date.setDate(date.getDate() + 7);
+                var getdayitem = date.getDay();
+                var dayscount = 7 - getdayitem
+                date.setDate(date.getDate() + dayscount);
+                dueDate = date.toISOString();
+            }
+            if (filteredValues?.DueDate === "ThisMonth") {
+                var year = date.getFullYear();
+                var month = date.getMonth();
+                var lastday = new Date(year, month + 1, 0);
+                dueDate = lastday.toISOString();
+            }
+            if (dueDate) {
+                value.original.updatedDisplayDueDate = moment(dueDate).format("DD/MM/YYYY")
+                value.original.postDueDateValue = dueDate;
+            }
+        }
+        if (filteredValues?.PercentComplete && filteredValues?.PercentComplete != undefined) {
+            let TaskStatus;
+            if (filteredValues?.PercentComplete) {
+                const match = filteredValues?.PercentComplete?.match(/(\d+)%\s*(.+)/);
+                if (match) {
+                    TaskStatus = parseInt(match[1]) / 100;
+                    value.original.postStatusValue = TaskStatus;
+                    value.original.updatedPercentComplete = parseInt(match[1]);
                 }
             }
-            if (filteredValues?.PercentComplete && filteredValues?.PercentComplete != undefined) {
-                let TaskStatus;
-                if (filteredValues?.PercentComplete) {
-                    const match = filteredValues?.PercentComplete?.match(/(\d+)%\s*(.+)/);
-                    if (match) {
-                        TaskStatus = parseInt(match[1]);
-                    }
-                }
-                showUpdateData.PercentComplete = TaskStatus
-            }
-            if (filteredValues?.Project && filteredValues?.Project != undefined) {
-                showUpdateData.PortfolioStructureID = filteredValues?.Project?.PortfolioStructureID
-            }
+        }
+        if (filteredValues?.Project && filteredValues?.Project != undefined) {
+            value.original.postProjectValue = filteredValues?.Project
+            value.original.updatedPortfolioStructureID = filteredValues?.Project?.PortfolioStructureID
+        }
+        if (item?.activeCategory?.length > 0) {
+            value.original.postTaskCategoriesId = []
+            item?.activeCategory.map((elem: any) => {
+                value.original.postTaskCategoriesId.push(elem.Id);
+            })
+            value.original.updatedTaskTypeValue = item?.activeCategory?.map((val: any) => val.Title).join(",");
+        }
+    }
+
+    React.useEffect(() => {
+        if (item?.selectedData?.length > 0) {
             let selectedDataPropsCopy: any = []
             try {
                 selectedDataPropsCopy = globalCommon.deepCopy(item?.selectedData);
@@ -364,16 +342,10 @@ const SelectedTaskUpdateOnPopup = (item: any) => {
             let selecteDataValue: any = []
             selectedDataPropsCopy?.map((elem: any) => {
                 if (elem.original.subRows?.length > 0) {
-                    elem.original.updatedPortfolioStructureID = showUpdateData?.PortfolioStructureID
-                    elem.original.updatedDisplayDueDate = showUpdateData?.DueDate
-                    elem.original.updatedPercentComplete = showUpdateData?.PercentComplete
-                    elem.original.updatedPriorityRank = showUpdateData?.PriorityRank
+                    makePostDataMake(elem)
                     selecteDataValue.push(elem.original);
                 } else {
-                    elem.original.updatedPortfolioStructureID = showUpdateData?.PortfolioStructureID
-                    elem.original.updatedDisplayDueDate = showUpdateData?.DueDate
-                    elem.original.updatedPercentComplete = showUpdateData?.PercentComplete
-                    elem.original.updatedPriorityRank = showUpdateData?.PriorityRank
+                    makePostDataMake(elem)
                     selecteDataValue.push(elem.original);
                 }
             });
@@ -382,6 +354,9 @@ const SelectedTaskUpdateOnPopup = (item: any) => {
         }
     }, [item?.selectedData?.length > 0])
     const callBackData = React.useCallback((checkData: any) => {
+    }, []);
+    const inlineEditingCallBack = React.useCallback((updatedData: any) => {
+        setPopupData(updatedData);
     }, []);
     const columns: any = React.useMemo<ColumnDef<any, unknown>[]>(
         () => [
@@ -440,7 +415,7 @@ const SelectedTaskUpdateOnPopup = (item: any) => {
                 header: "",
                 resetColumnFilters: false,
                 isColumnDefultSortingAsc: true,
-                size: 190,
+                size: 110,
             },
             {
                 accessorFn: (row) => row?.Title,
@@ -485,44 +460,84 @@ const SelectedTaskUpdateOnPopup = (item: any) => {
                 cell: ({ row, column, getValue }) => (
                     <>
                         {row?.original?.ProjectTitle != (null || undefined) ?
-                            <div className="d-flex"><span style={{ width: '44%' }}><a style={row?.original?.fontColorTask != undefined ? { color: `${row?.original?.fontColorTask}` } : { color: `${row?.original?.PortfolioType?.Color}` }} data-interception="off" target="_blank" className="hreflink serviceColor_Active" href={`${item?.ContextValue?.siteUrl}/SitePages/Project-Management.aspx?ProjectId=${row?.original?.ProjectId}`} >
-                                <ReactPopperTooltip ShareWebId={row?.original?.projectStructerId} projectToolShow={true} row={row} AllListId={item?.ContextValue} /></a></span> <span className="px-1" style={{ width: '10%', textAlign: 'center' }}>{row?.original?.updatedPortfolioStructureID ? " | " : ''}</span> <span style={{ background: 'yellow', textAlign: 'right', width: '44%' }}>{row?.original?.updatedPortfolioStructureID}</span></div>
-                            : <div className="d-flex"><span style={{ width: '44%' }}>&nbsp;</span><span className="px-1" style={{ width: '10%', textAlign: 'center' }}>{row?.original?.updatedPortfolioStructureID ? " | " : ''}</span><span style={{ background: 'yellow', textAlign: 'right', width: '44%' }}>{row?.original?.updatedPortfolioStructureID}</span></div>}
+                            <div className="d-flex"><span style={{ width: '44%' }}><a style={row?.original?.updatedPortfolioStructureID ? { color: "#5b5b5be0" } : row?.original?.fontColorTask != undefined ? { color: `${row?.original?.fontColorTask}` } : { color: `${row?.original?.PortfolioType?.Color}` }} data-interception="off" target="_blank" className="hreflink serviceColor_Active" href={`${item?.ContextValue?.siteUrl}/SitePages/Project-Management.aspx?ProjectId=${row?.original?.ProjectId}`} >
+                                <ReactPopperTooltip ShareWebId={row?.original?.projectStructerId} projectToolShow={true} row={row} AllListId={item?.ContextValue} /></a></span> <span className="px-1" style={{ width: '10%', textAlign: 'center' }}>{row?.original?.updatedPortfolioStructureID ? " | " : ''}</span> <span style={{ fontWeight: 600, textAlign: 'right', width: '44%' }}>
+                                    <InlineBulkEditingTask columnName="Project" item={row?.original} ContextValue={item?.ContextValue} popupData={popupData} setPopupData={setPopupData} value={row?.original?.updatedPortfolioStructureID} inlineEditingCallBack={inlineEditingCallBack} />
+                                </span></div>
+                            : <div className="d-flex"><span style={{ width: '44%' }}>&nbsp;</span><span className="px-1" style={{ width: '10%', textAlign: 'center' }}>{row?.original?.updatedPortfolioStructureID ? " | " : ''}</span><span style={{ fontWeight: 600, textAlign: 'right', width: '44%' }}>
+
+                                <InlineBulkEditingTask columnName="Project" item={row?.original} ContextValue={item?.ContextValue} popupData={popupData} setPopupData={setPopupData} value={row?.original?.updatedPortfolioStructureID} inlineEditingCallBack={inlineEditingCallBack} />
+                            </span></div>}
                     </>
                 ),
                 id: 'ProjectTitle',
                 placeholder: "Project",
                 resetColumnFilters: false,
                 header: "",
-                size: 130,
+                size: 110,
+            },
+            {
+                accessorFn: (row) => row?.TaskTypeValue,
+                cell: ({ row, column, getValue }) => (
+                    <>
+                        {row?.original?.TaskTypeValue != (null || "") ? <div className="d-flex">
+                            <span className="columnFixedTaskCate" style={{ width: '44%' }}>
+                                <span style={row?.original?.updatedTaskTypeValue ? { color: "#5b5b5be0" } : {}} title={row?.original?.TaskTypeValue} className="text-content">{row?.original?.TaskTypeValue}</span>
+                            </span>
+                            <span className="px-1" style={{ width: '10%', textAlign: 'center' }}>{row?.original?.updatedTaskTypeValue ? " | " : ''}</span>
+                            <span className="columnFixedTaskCate" style={{ fontWeight: 600, width: '44%' }}>
+                                <InlineBulkEditingTask className="text-content" activeCategory={item?.activeCategory} ContextValue={item?.ContextValue} columnName="categories" item={row?.original} popupData={popupData} setPopupData={setPopupData} value={row?.original?.updatedTaskTypeValue} inlineEditingCallBack={inlineEditingCallBack} />
+                            </span>
+                        </div> :
+                            <div className="d-flex">
+                                <span style={{ width: '41%' }}>&nbsp;</span>
+                                <span className="px-1" style={{ width: '10%', textAlign: 'center' }}>{row?.original?.updatedTaskTypeValue ? " | " : ''}</span>
+                                <span className="columnFixedTaskCate" style={{ fontWeight: 600, width: '44%' }}>
+                                    <InlineBulkEditingTask className="text-content" activeCategory={item?.activeCategory} ContextValue={item?.ContextValue} columnName="categories" item={row?.original} popupData={popupData} setPopupData={setPopupData} value={row?.original?.updatedTaskTypeValue} inlineEditingCallBack={inlineEditingCallBack} />
+                                </span>
+                            </div>
+                        }
+                    </>
+                ),
+                placeholder: "Task Type",
+                header: "",
+                resetColumnFilters: false,
+                size: 180,
+                id: "TaskTypeValue",
+                isColumnVisible: true
             },
             {
                 accessorFn: (row) => row?.PercentComplete,
                 cell: ({ row }) => (
-                    <div className="d-flex"><span style={{ width: '44%' }}>{row?.original?.PercentComplete}</span> <span className="px-1" style={{ width: '10%', textAlign: 'center' }}>{row?.original?.updatedPercentComplete ? " | " : ''}</span><span style={{ background: 'yellow', textAlign: 'right', width: '44%' }}>{row?.original?.updatedPercentComplete}</span></div>
+                    <div className="d-flex"><span style={row?.original?.updatedPercentComplete ? { color: "#5b5b5be0", width: '44%' } : { width: '44%' }}>{row?.original?.PercentComplete}</span> <span className="px-1" style={{ width: '10%', textAlign: 'center' }}>{row?.original?.updatedPercentComplete ? " | " : ''}</span><span style={{ fontWeight: 600, textAlign: 'right', width: '44%' }}>
+                        <InlineBulkEditingTask columnName="PercentComplete" precentComplete={item?.precentComplete} item={row?.original} popupData={popupData} setPopupData={setPopupData} value={row?.original?.updatedPercentComplete} inlineEditingCallBack={inlineEditingCallBack} />
+                    </span></div>
                 ),
                 id: "PercentComplete",
                 placeholder: "Status",
                 resetColumnFilters: false,
                 header: "",
-                size: 80,
+                size: 60,
             },
             {
                 accessorFn: (row) => row?.PriorityRank,
                 cell: ({ row }) => (
-                    <div className="d-flex"><span style={{ width: '44%' }}>{row?.original?.PriorityRank}</span>  <span className="px-1" style={{ width: '10%', textAlign: 'center' }}>{row?.original?.updatedPriorityRank ? " | " : ''}</span><span style={{ background: 'yellow', textAlign: 'right', width: '44%' }}>{row?.original?.updatedPriorityRank}</span></div>
-
+                    <div className="d-flex"><span style={row?.original?.updatedPriorityRank ? { color: "#5b5b5be0", width: '44%' } : { width: '44%' }}>{row?.original?.PriorityRank}</span>  <span className="px-1" style={{ width: '10%', textAlign: 'center' }}>{row?.original?.updatedPriorityRank ? " | " : ''}</span><span style={{ fontWeight: 600, textAlign: 'right', width: '44%' }}>
+                        <InlineBulkEditingTask columnName="Priority" priorityRank={item?.priorityRank} item={row?.original} popupData={popupData} setPopupData={setPopupData} value={row?.original?.updatedPriorityRank} inlineEditingCallBack={inlineEditingCallBack} />
+                    </span></div>
                 ),
                 id: "PriorityRank",
                 placeholder: "Priority",
                 resetColumnFilters: false,
                 header: "",
-                size: 80,
+                size: 42,
             },
             {
                 accessorFn: (row) => row?.DueDate,
                 cell: ({ row, column, getValue }) => (
-                    <div className="d-flex"><span style={{ width: '44%' }}>{row?.original?.DisplayDueDate}</span> <span className="px-1" style={{ width: '10%', textAlign: 'center' }}>{row?.original?.updatedDisplayDueDate ? " | " : ''}</span><span style={{ background: 'yellow', textAlign: 'right', width: '44%' }}>{row?.original?.updatedDisplayDueDate}</span></div>
+                    <div className="d-flex"><span style={row?.original?.updatedDisplayDueDate ? { color: "#5b5b5be0", width: '44%' } : { width: '44%' }} >{row?.original?.DisplayDueDate}</span> <span className="px-1" style={{ width: '10%', textAlign: 'center' }}>{row?.original?.updatedDisplayDueDate ? " | " : ''}</span><span style={{ fontWeight: 600, textAlign: 'right', width: '44%' }}>
+                        <InlineBulkEditingTask columnName="DueDate" item={row?.original} popupData={popupData} setPopupData={setPopupData} value={row?.original?.updatedDisplayDueDate} inlineEditingCallBack={inlineEditingCallBack} />
+                    </span></div>
                 ),
                 filterFn: (row: any, columnName: any, filterValue: any) => {
                     if (row?.original?.DisplayDueDate?.includes(filterValue)) {
@@ -536,7 +551,7 @@ const SelectedTaskUpdateOnPopup = (item: any) => {
                 resetSorting: false,
                 placeholder: "DueDate",
                 header: "",
-                size: 120,
+                size: 160,
             },
         ],
         [popupData]
@@ -557,19 +572,6 @@ const SelectedTaskUpdateOnPopup = (item: any) => {
                             <div className="container p-0">
                                 <div className="Alltable mt-2 ">
                                     <div className="col-sm-12 p-0 smart">
-                                        {/* <Loader loaded={loaded} lines={13} length={20} width={10} radius={30} corners={1} rotate={0} direction={1}
-                                            color="#000069"
-                                            speed={2}
-                                            trail={60}
-                                            shadow={false}
-                                            hwaccel={false}
-                                            className="spinner"
-                                            zIndex={2e9}
-                                            top="28%"
-                                            left="50%"
-                                            scale={1.0}
-                                            loadedClassName="loadedContent"
-                                        /> */}
                                         <div>
                                             <GlobalCommanTable columns={columns} data={popupData} callBackData={callBackData} showHeader={true} fixedWidth={true} ref={childRef} defultSelectedRows={defultSelectedRows} />
                                         </div>
