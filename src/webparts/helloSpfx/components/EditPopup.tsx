@@ -495,7 +495,7 @@ const EditPopup = (props: any) => {
                                 <label className='form-label full-width'>Experience</label>
                                 <div className='d-flex'>
                                     <input
-                                        className='form-control me-2'
+                                        className='form-control form-control-sm'
                                         type='number'
                                         placeholder='Years'
                                         value={experienceYears}
@@ -508,7 +508,7 @@ const EditPopup = (props: any) => {
                                         }}
                                     />
                                     <input
-                                        className='form-control'
+                                        className='form-control form-control-sm'
                                         type='number'
                                         placeholder='Months'
                                         value={experienceMonths}
