@@ -172,7 +172,7 @@ export default function subCommentComponent(SubTextItemsArray: any) {
         });
         setSubCommentsData(updatedSubCommentsData);
 
-        callBack(UpdatedFeedBackChildArray, currentArrayIndex);
+        callBack(updatedSubCommentsData, currentArrayIndex);
     }
 
     const postBtnHandle = (index: any) => {
