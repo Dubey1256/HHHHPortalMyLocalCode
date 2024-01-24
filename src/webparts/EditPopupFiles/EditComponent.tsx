@@ -21,6 +21,7 @@ import CentralizedSiteComposition from "../../globalComponents/SiteCompositionCo
 
 import ImagesC from "./ImageInformation";
 import { SlArrowDown, SlArrowRight } from "react-icons/sl";
+import  Smartmetadatapickerin  from "../../globalComponents/Smartmetadatapickerindependent/Smartmetadatapickerin";
 var PostTechnicalExplanations = "";
 var PostHelp_x0020_Information = "";
 var PostQuestionDescription = "";
@@ -70,6 +71,10 @@ let ID: any;
     if (item.Categories != undefined) {
         categoryitem = item.Categories.split(';')
     }
+    // 
+    // smart fetaure data 
+    const [Smartdatapopup, setSmartdatapopup] = React.useState(false);
+    const [Smartdata, setSmartdata] = React.useState([]);
     const [CompoenetItem, setComponent] = React.useState([]);
     const [changeType, setChangeType] = React.useState(false);
     const [selectPortfolioType, setSelectPortfolioType]: any = React.useState({ Title: item?.PortfolioType?.Title });
@@ -150,7 +155,8 @@ let ID: any;
 
     const [SiteCompositionShow, setSiteCompositionShow] = React.useState(false);
     const [composition, setComposition] = React.useState(true);
-
+    const [FeatureTypeData, setFeatureTypeData] = React.useState([]);
+  
     const handleCheckboxChange = () => {
         setShortDescriptionVerifieds((prevChecked: any) => !prevChecked);
     };
@@ -375,6 +381,21 @@ let ID: any;
         });
     };
 
+   //Popup call for smartmetdata min
+
+   const Smartmetadatafeature = React.useCallback((data: any) => {
+    if(data === "close"){
+        setSmartdatapopup(false)
+    }else{
+        setSmartdatapopup(false)
+        setFeatureTypeData(data) ;
+    }
+  },[])
+  const deleteFeatureItem=(Item:any)=>{
+    const updatedSelectedItems = FeatureTypeData.filter((valuee: any) => Item !== valuee.Id);
+    setFeatureTypeData(updatedSelectedItems) ;
+  }
+
 
     const ClosePopupCallBack = (FnType: any) => {
         if (FnType == "Close") {
@@ -389,22 +410,6 @@ let ID: any;
     }
 
 
-    // var ConvertLocalTOServerDate = function (LocalDateTime: any, dtformat: any) {
-    //     if (dtformat == undefined || dtformat == '') dtformat = "MM-DD-YYYY";
-
-    //     // below logic works fine in all condition
-    //     if (LocalDateTime != '') {
-    //         var serverDateTime;
-    //         var vLocalDateTime = new Date(LocalDateTime);
-    //         //var offsetObj = GetServerOffset();
-    //         //var IANATimeZoneName = GetIANATimeZoneName();
-    //         var mDateTime = moment(LocalDateTime);
-    //         // serverDateTime = mDateTime.tz('Europe/Berlin').format(dtformat); // 5am PDT
-    //         //serverDateTime = mDateTime.tz('America/Los_Angeles').format(dtformat);  // 5am PDT
-    //         return serverDateTime;
-    //     }
-    //     return '';
-    // }
     var getMultiUserValues = function (item: any) {
         var users = "";
         var isuserexists = false;
@@ -484,8 +489,6 @@ let ID: any;
         componentDetails = await web.lists
             .getById(RequireData.MasterTaskListID)
             .items.select(
-                "ComponentPortfolio/Id",
-                "ComponentPortfolio/Title",
                 "ServicePortfolio/Id",
                 "ServicePortfolio/Title",
                 "SiteCompositionSettings",
@@ -565,6 +568,7 @@ let ID: any;
                 "ResponsibleTeam/Id",
                 "ResponsibleTeam/Title",
                 "Parent/Id",
+                "FeatureType/Title","FeatureType/Id",
                 "Parent/Title",
                 "Parent/ItemType",
                 "PortfolioType/Color"
@@ -572,10 +576,10 @@ let ID: any;
             .expand(
                 "ClientCategory",
                 "AssignedTo",
-                "ComponentPortfolio",
                 "ServicePortfolio",
                 "AttachmentFiles",
                 "Author",
+                "FeatureType",
                 "Editor",
                 "PortfolioType",
                 "TeamMembers",
@@ -655,6 +659,7 @@ let ID: any;
                 });
                 setTaskTeamMembers(tempArray2);
             }
+            setFeatureTypeData([item.FeatureType])
             item.DateCreated = item.CreatedDate = moment(item.Created).format(
                 "MM-DD-YYYY"
             ); // ConvertLocalTOServerDate(item.Created, 'MM-DD-YYYY');
@@ -690,11 +695,11 @@ let ID: any;
             item.smartComponent = [];
             item.smartCategories = [];
             if (item.ComponentPortfolio != undefined) {
-                if (item.ComponentPortfolio.Id != undefined) {
+                if (item?.ComponentPortfolio?.Id != undefined) {
                     if (item.smartComponent != undefined)
                         item.smartComponent.push({
-                            Title: item.ComponentPortfolio.Title,
-                            Id: item.ComponentPortfolio.Id
+                            Title: item?.ComponentPortfolio?.Title,
+                            Id: item?.ComponentPortfolio?.Id
                         });
                 }
             }
@@ -934,7 +939,6 @@ let ID: any;
     const TaskItemRank: any = [];
     const site: any = [];
     const siteDetail: any = [];
-
     const GetSmartmetadata = async () => {
         let smartmetaDetails = [];
         subCategories = [];
@@ -957,7 +961,9 @@ let ID: any;
                 if (val.TaxType == "Sites") {
                     site.push(val);
                 }
+               
             });
+           
             site.forEach(function (val: any) {
                 if (
                     val.listId != undefined &&
@@ -1098,6 +1104,7 @@ let ID: any;
                 "Status",
                 "ItemRank",
                 "Item_x0020_Type",
+                "FeatureType/Title","FeatureType/Id",
                 "Parent/Id",
                 "Author/Id",
                 "Author/Title",
@@ -1117,7 +1124,8 @@ let ID: any;
                 "ClientCategory",
                 "Parent",
                 "TaskCategories",
-                "AssignedTo"
+                "AssignedTo",
+                "FeatureType"
             )
             .top(4999)
             .filter("Item_x0020_Type eq Component")
@@ -1476,13 +1484,13 @@ let ID: any;
                     (option: { rankTitle: any }) =>
                         option.rankTitle == Items.ItemRankTitle
                 )[0].rank;
-
+               let  FeatureTypeIds = FeatureTypeData?.length != 0?FeatureTypeData[0]?.Id:null;
             await web.lists
                 .getById(RequireData.MasterTaskListID)
                 .items.getById(Items.Id)
                 .update({
                     Title: Items.Title,
-
+                    FeatureTypeId: FeatureTypeIds,
                     ItemRank: ItemRank,
                     PriorityRank: Items.PriorityRank,
                     // ComponentId: { results: smartComponentsIds },
@@ -1644,8 +1652,11 @@ let ID: any;
     }
     const EditComponentPicker = (item: any) => {
         setIsComponentPicker(true);
-
         setSharewebCategory(item);
+    };
+    const opensmartmetadatapopup = (item: any) => {
+        setSmartdatapopup(true);
+        setSmartdata(item);
     };
     const ChangeStatus = (e: any, item: any) => {
         item.AdminStatus = e.target.value;
@@ -3610,6 +3621,26 @@ let ID: any;
                               <span title="Project" onClick={(e) => openPortfolioPopup("Project")} className="svg__iconbox svg__icon--editBox"></span>
                             </span>
                         </div>
+                        <div className="col-sm-12 padding-0 input-group">
+                            <label className="full_width">Feature Type </label>
+                            <input type="text" className="form-control" />
+                            
+                            <span className="input-group-text" placeholder="Feature Type">
+                              <span title="Feature Type" onClick={(e) => opensmartmetadatapopup(EditData?.FeatureType)} className="svg__iconbox svg__icon--editBox"></span>
+                            </span>
+                            {FeatureTypeData?.map((item:any)=>{
+                                return(
+                                <>
+                                {item != undefined && 
+                                    <div className="block d-flex full-width justify-content-between mb-1 p-2">
+                                    <a style={{ color: "#fff !important" }}>{item?.Title}</a><span  className="bg-light svg__iconbox svg__icon--cross" onClick={() => deleteFeatureItem(item?.Id)}
+                                    ></span>
+                                    </div>
+                            }
+                              
+                              </>)
+                            })}
+                        </div>
                             <div className="col-sm-12  inner-tabb">
                             {filterdata && filterdata.length > 0 ? 
                             (
@@ -4848,6 +4879,14 @@ let ID: any;
                     usedFor={"CSF"}
                 />
             )}
+             {Smartdatapopup && (
+              <Smartmetadatapickerin
+                props={FeatureTypeData}
+                Call={Smartmetadatafeature}
+                selectedFeaturedata={Smartdata}
+                AllListId={RequireData}
+                 ></Smartmetadatapickerin>
+             )}
 
         </>
     );

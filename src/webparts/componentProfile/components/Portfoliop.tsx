@@ -409,13 +409,14 @@ let ParentData: any[] = [];
 
 let AllMasterTaskData: any = [];
 let keyDocRef:any;
-
+let relevantDocRef:any;
+let smartInfoRef:any;
 function Portfolio({ SelectedProp, TaskUser }: any) {
   AllTaskuser = TaskUser;
   keyDocRef=React.useRef();
 
-  const relevantDocRef: any = React.createRef();
-  const smartInfoRef: any = React.createRef();
+   relevantDocRef = React.createRef();
+  smartInfoRef = React.createRef();
   const [data, setTaskData] = React.useState<any>([]);
   const [FolderData, SetFolderData] = React.useState([]);
   const [keydoc, Setkeydoc] = React.useState([]);
