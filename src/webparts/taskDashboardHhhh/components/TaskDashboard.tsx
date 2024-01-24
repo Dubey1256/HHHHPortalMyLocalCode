@@ -1682,9 +1682,9 @@ const TaskDashboard = (props: any) => {
     //region end
 
     // People on Leave Today //
-    const toIST = (dateString: any, isEndDate: boolean) => {
+    const toIST = (dateString: any, isEndDate: boolean, isFirstHalf: boolean, isSecondHalf: boolean) => {
         const date = new Date(dateString);
-        if (isEndDate) {
+        if ((isFirstHalf !== undefined && isSecondHalf != undefined) && (isEndDate || isFirstHalf || isSecondHalf)) {
             date.setHours(date.getHours() - 5);
             date.setMinutes(date.getMinutes() - 30);
         }
@@ -1706,11 +1706,11 @@ const TaskDashboard = (props: any) => {
                 .top(5000)
                 .getAll();
             results?.map((emp: any) => {
-                emp.leaveStart = toIST(emp.EventDate, false)
+                emp.leaveStart = toIST(emp.EventDate, false, emp.HalfDay, emp.HalfDayTwo)
                 emp.leaveStart = new Date(emp.leaveStart).setHours(0,0,0,0)
-                emp.leaveEnd = toIST(emp.EndDate, true);
+                emp.leaveEnd = toIST(emp.EndDate, true, emp.HalfDay, emp.HalfDayTwo);
                 emp.leaveEnd = new Date(emp.leaveEnd).setHours(0,0,0,0)
-                if (startDate >= emp.leaveStart && startDate <= emp.leaveEnd && (emp.HalfDay !== null && emp.HalfdayTwo !== null) && (emp.HalfDay != true || emp.HalfdayTwo != true)) {
+                if ((startDate >= emp.leaveStart && startDate <= emp.leaveEnd) && (emp.HalfDay !== null && emp.HalfdayTwo !== null) && (emp.HalfDay != true && emp.HalfdayTwo != true)) {
                     AllLeaves.push(emp?.Employee?.Id);
                 }
             })
