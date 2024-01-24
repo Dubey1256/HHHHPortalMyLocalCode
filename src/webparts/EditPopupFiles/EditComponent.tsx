@@ -21,7 +21,7 @@ import CentralizedSiteComposition from "../../globalComponents/SiteCompositionCo
 
 import ImagesC from "./ImageInformation";
 import { SlArrowDown, SlArrowRight } from "react-icons/sl";
-import  Smartmetadatapickerin  from "../../globalComponents/Smartmetadatapickerindependent/Smartmetadatapickerin";
+import  Smartmetadatapickerin  from "../../globalComponents/Smartmetadatapickerindependent/SmartmetadatapickerSingleORMulti";
 var PostTechnicalExplanations = "";
 var PostHelp_x0020_Information = "";
 var PostQuestionDescription = "";
@@ -4879,12 +4879,14 @@ let ID: any;
                     usedFor={"CSF"}
                 />
             )}
-             {Smartdatapopup && (
+           {Smartdatapopup && (
               <Smartmetadatapickerin
                 props={FeatureTypeData}
                 Call={Smartmetadatafeature}
                 selectedFeaturedata={Smartdata}
                 AllListId={RequireData}
+                TaxType='Feature Type'
+                usedFor="Single"
                  ></Smartmetadatapickerin>
              )}
 

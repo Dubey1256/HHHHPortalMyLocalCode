@@ -1169,7 +1169,7 @@ const CompareTool = (props: any) => {
                                 </a></Label>
                             </Col>
                             <Col sm="1" md="1" lg="1" className="text-center">
-                                <span><img className="imgWid29" src={`${props?.contextValue?.Context?._pageContext?._site?.absoluteUrl}/SiteCollectionImages/ICONS/Shareweb/SwitchItem_icon.png`} title="Switch Items" onClick={() => switchItems()} /></span>
+                                <span><img className="imgWid29" src={`${props?.contextValue?.siteUrl}/SiteCollectionImages/ICONS/Shareweb/SwitchItem_icon.png`} title="Switch Items" onClick={() => switchItems()} /></span>
                             </Col>
                             <Col sm="5" md="5" lg="5" className="alignCenter siteColor">
                                 <span className="Dyicons me-1">{data[1]?.Item_x0020_Type.charAt(0)}</span> <Label>
