@@ -120,10 +120,11 @@ function TeamPortlioTable(SelectedProp: any) {
     const [clickFlatView, setclickFlatView] = React.useState(false);
     const [updatedSmartFilterFlatView, setUpdatedSmartFilterFlatView] = React.useState(false);
     const [flatViewDataAll, setFlatViewDataAll] = React.useState([]);
-    const [priorityRank, setpriorityRank] = React.useState([])
-    const [precentComplete, setPrecentComplete] = React.useState([])
-    const [openCompareToolPopup,setOpenCompareToolPopup]=React.useState(false);
-    const rerender = React.useReducer(() => ({}), {})[1]
+    const [priorityRank, setpriorityRank] = React.useState([]);
+    const [precentComplete, setPrecentComplete] = React.useState([]);
+    const [taskCatagory, setTaskCatagory] = React.useState([]);
+    const [openCompareToolPopup, setOpenCompareToolPopup] = React.useState(false);
+    const rerender = React.useReducer(() => ({}), {})[1];
     // const [tableHeight, setTableHeight] = React.useState(window.innerHeight);
     const [portfolioTypeConfrigration, setPortfolioTypeConfrigration] = React.useState<any>([{ Title: 'Component', Suffix: 'C', Level: 1 }, { Title: 'SubComponent', Suffix: 'S', Level: 2 }, { Title: 'Feature', Suffix: 'F', Level: 3 }]);
     let ComponetsData: any = {};
@@ -211,6 +212,7 @@ function TeamPortlioTable(SelectedProp: any) {
         let siteConfigSites: any = []
         var Priority: any = []
         let PrecentComplete: any = [];
+        let Categories: any = [];
         let web = new Web(ContextValue.siteUrl);
         let smartmetaDetails: any = [];
         smartmetaDetails = await web.lists
@@ -231,6 +233,9 @@ function TeamPortlioTable(SelectedProp: any) {
             if (newtest?.TaxType === 'Percent Complete' && newtest?.Title != 'In Preparation (0-9)' && newtest?.Title != 'Ongoing (10-89)' && newtest?.Title != 'Completed (90-100)') {
                 PrecentComplete.push(newtest);
             }
+            if (newtest.TaxType == 'Categories') {
+                Categories.push(newtest);
+            }
         })
         if (siteConfigSites?.length > 0) {
             setSiteConfig(siteConfigSites)
@@ -241,6 +246,7 @@ function TeamPortlioTable(SelectedProp: any) {
         PrecentComplete?.sort((a: any, b: any) => {
             return a.SortOrder - b.SortOrder;
         });
+        setTaskCatagory(Categories);
         setpriorityRank(Priority)
         setPrecentComplete(PrecentComplete)
         setMetadata(smartmetaDetails);
@@ -356,7 +362,7 @@ function TeamPortlioTable(SelectedProp: any) {
                             result.projectPriorityOnHover = '';
                             result.taskPriorityOnHover = result?.PriorityRank;
                             result.showFormulaOnHover;
-                            result.portfolioItemsSearch = ''
+                            result.portfolioItemsSearch = '';
                             if (result?.DueDate != null && result?.DueDate != undefined) {
                                 result.serverDueDate = new Date(result?.DueDate).setHours(0, 0, 0, 0)
                             }
@@ -497,6 +503,7 @@ function TeamPortlioTable(SelectedProp: any) {
                                     result.joinedData.push(`Project ${result?.projectStructerId} - ${title}  ${formattedDueDate == "Invalid date" ? '' : formattedDueDate}`)
                                 }
                             }
+                            // result = globalCommon.findTaskCategoryParent(taskCatagory, result)
                             result.SmartPriority = globalCommon.calculateSmartPriority(result);
                             result["Item_x0020_Type"] = "Task";
                             TasksItem.push(result);
@@ -601,7 +608,7 @@ function TeamPortlioTable(SelectedProp: any) {
                             result.projectPriorityOnHover = '';
                             result.taskPriorityOnHover = result?.PriorityRank;
                             result.showFormulaOnHover;
-                            result.portfolioItemsSearch = ''
+                            result.portfolioItemsSearch = '';
                             if (result?.DueDate != null && result?.DueDate != undefined) {
                                 result.serverDueDate = new Date(result?.DueDate).setHours(0, 0, 0, 0)
                             }
@@ -744,6 +751,7 @@ function TeamPortlioTable(SelectedProp: any) {
                                 }
                             }
                             result.SmartPriority = globalCommon.calculateSmartPriority(result);
+                            // result = globalCommon.findTaskCategoryParent(taskCatagory, result)
                             result["Item_x0020_Type"] = "Task";
                             TasksItem.push(result);
                             AllTasksData.push(result);
@@ -1120,7 +1128,6 @@ function TeamPortlioTable(SelectedProp: any) {
         items.subRows = items?.subRows?.concat(findActivity)
         items.subRows = items?.subRows?.concat(findTasks)
     }
-
     const smartFiltercallBackData = React.useCallback((filterData, updatedSmartFilter, smartTimeTotal, flatView) => {
         if (filterData.length > 0 && smartTimeTotal) {
             setUpdatedSmartFilter(updatedSmartFilter);
@@ -1139,7 +1146,6 @@ function TeamPortlioTable(SelectedProp: any) {
             renderData = renderData.concat(filterData)
             refreshData();
             setLoaded(true);
-            // setData([])
         }
     }, []);
 
@@ -1200,11 +1206,9 @@ function TeamPortlioTable(SelectedProp: any) {
             updatedSmartFilterFlatViewData(smartAllFilterData);
         }
     }, [smartAllFilterData]);
-
     function structuredClone(obj: any): any {
         return JSON.parse(JSON.stringify(obj));
     }
-
     const DynamicSort = function (items: any, column: any, orderby: any) {
         items?.sort(function (a: any, b: any) {
             var aID = a[column];
@@ -1456,23 +1460,14 @@ function TeamPortlioTable(SelectedProp: any) {
             finalDataCopy = [...finalData];
             let finalDataCopyArray = finalDataCopy?.filter((ele: any, ind: any) => ind === finalDataCopy.findIndex((elem: any) => elem.ID === ele.ID || elem.Id === ele.Id && elem.siteType === ele.siteType));
             finalDataCopyArray?.map((comp: any) => {
-                // comp.subRows = comp?.subRows?.filter((ele: any, ind: any) => ind === comp?.subRows?.findIndex((elem: any) => elem.ID === ele.ID || elem.Id === ele.Id && elem.siteType === ele.siteType));
                 comp.subRows = comp?.subRows?.filter((sub: any) => sub.filterFlag === true)
-
                 comp?.subRows?.map((subComp: any) => {
-                    // subComp.subRows = subComp?.subRows?.filter((ele: any, ind: any) => ind === subComp?.subRows?.findIndex((elem: any) => elem.ID === ele.ID || elem.Id === ele.Id && elem.siteType === ele.siteType));
                     subComp.subRows = subComp?.subRows?.filter((subComp1: any) => subComp1.filterFlag === true)
-
                     subComp?.subRows?.map((feat: any) => {
-                        // feat.subRows = feat?.subRows?.filter((ele: any, ind: any) => ind === feat?.subRows?.findIndex((elem: any) => elem.ID === ele.ID || elem.Id === ele.Id && elem.siteType === ele.siteType));
                         feat.subRows = feat?.subRows?.filter((feat1: any) => feat1.filterFlag === true)
-
                         feat?.subRows?.map((activ: any) => {
-                            // activ.subRows = activ?.subRows?.filter((ele: any, ind: any) => ind === activ?.subRows?.findIndex((elem: any) => elem.ID === ele.ID || elem.Id === ele.Id && elem.siteType === ele.siteType));
                             activ.subRows = activ?.subRows?.filter((activ1: any) => activ1.filterFlag === true)
-
                             activ?.subRows?.map((works: any) => {
-                                // works.subRows = works?.subRows?.filter((ele: any, ind: any) => ind === works?.subRows?.findIndex((elem: any) => elem.ID === ele.ID || elem.Id === ele.Id && elem.siteType === ele.siteType));
                                 works.subRows = works?.subRows?.filter((works1: any) => works1.filterFlag === true);
                             })
                         })
@@ -1532,45 +1527,6 @@ function TeamPortlioTable(SelectedProp: any) {
         setclickFlatView(false);
         setData(groupByButtonClickData);
     }
-    // const setTableHeight = () => {
-    //     const table = document.getElementById('table-container');
-    //     const screenHeight = window.innerHeight;
-    //     const tableHeight = screenHeight * 0.8 - 5;
-    //     table.style.height = `${tableHeight}px`;
-    // };
-    // React.useEffect(() => {
-    //     setTableHeight();
-    //     window.addEventListener('resize', setTableHeight);
-    //     return () => {
-    //         window.removeEventListener('resize', setTableHeight);
-    //     };
-    // }, []);
-
-
-
-    // const setTableDimensions = () => {
-    //     const table = document.getElementById('runtimeTable');
-    //     const screenHeight = window.innerHeight;
-    //     const screenWidth = window.innerWidth;
-
-    //     // Set table height
-    //     const tableHeight = screenHeight * 0.8 - 5;
-    //     table.style.maxHeight = `${tableHeight}px`;
-
-    //     // Set table width (example: 80% of screen width)
-    //     const tableWidth = screenWidth * 0.8;
-    //     table.style.maxWidth = `${tableWidth}px`;
-    // };
-
-    // React.useEffect(() => {
-    //     setTableDimensions();
-    //     window.addEventListener('resize', setTableDimensions);
-
-    //     return () => {
-    //         window.removeEventListener('resize', setTableDimensions);
-    //     };
-    // }, []);
-
     const columns: any = React.useMemo<ColumnDef<any, unknown>[]>(
         () => [
             {
@@ -2319,13 +2275,13 @@ function TeamPortlioTable(SelectedProp: any) {
 
     ////Compare tool/////
     const compareToolCallBack = React.useCallback((compareData) => {
-        if(compareData !="close"){
+        if (compareData != "close") {
             setOpenCompareToolPopup(false);
-        }else{
+        } else {
             setOpenCompareToolPopup(false);
         }
     }, []);
-    const openCompareTool =()=>{
+    const openCompareTool = () => {
         setOpenCompareToolPopup(true);
     }
     /////end////////////
@@ -2386,8 +2342,6 @@ function TeamPortlioTable(SelectedProp: any) {
                     {filterCounters == true ? <TeamSmartFilter AllSiteTasksDataLoadAll={AllSiteTasksDataLoadAll} IsUpdated={IsUpdated} IsSmartfavorite={IsSmartfavorite} IsSmartfavoriteId={IsSmartfavoriteId} ProjectData={ProjectData} portfolioTypeData={portfolioTypeData} setLoaded={setLoaded} AllSiteTasksData={AllSiteTasksData} AllMasterTasksData={AllMasterTasksData} SelectedProp={SelectedProp.SelectedProp} ContextValue={ContextValue} smartFiltercallBackData={smartFiltercallBackData} portfolioColor={portfolioColor} /> : ''}
                 </div>
             </section>
-
-
             <section className="Tabl1eContentSection row taskprofilepagegreen">
                 <div className="container-fluid p-0">
                     <section className="TableSection">
@@ -2396,7 +2350,7 @@ function TeamPortlioTable(SelectedProp: any) {
                                 <div className="col-sm-12 p-0 smart">
                                     <div>
                                         <div>
-                                            <GlobalCommanTable openCompareTool={openCompareTool} columnSettingIcon={true} AllSitesTaskData={allTaskDataFlatLoadeViewBackup} masterTaskData={allMasterTaskDataFlatLoadeViewBackup} bulkEditIcon={true} priorityRank={priorityRank} precentComplete={precentComplete} portfolioTypeDataItemBackup={portfolioTypeDataItemBackup} taskTypeDataItemBackup={taskTypeDataItemBackup} flatViewDataAll={flatViewDataAll} setData={setData} updatedSmartFilterFlatView={updatedSmartFilterFlatView} setLoaded={setLoaded} clickFlatView={clickFlatView} switchFlatViewData={switchFlatViewData} flatView={true} switchGroupbyData={switchGroupbyData} smartTimeTotalFunction={smartTimeTotalFunction} SmartTimeIconShow={true} AllMasterTasksData={AllMasterTasksData} ref={childRef} callChildFunction={callChildFunction} AllListId={ContextValue} columns={columns} restructureCallBack={callBackData1} data={data} callBackData={callBackData} TaskUsers={AllUsers} showHeader={true} portfolioColor={portfolioColor} portfolioTypeData={portfolioTypeDataItem} taskTypeDataItem={taskTypeDataItem} fixedWidth={true} portfolioTypeConfrigration={portfolioTypeConfrigration} showingAllPortFolioCount={true} showCreationAllButton={true} OpenAddStructureModal={OpenAddStructureModal} addActivity={addActivity} />
+                                            <GlobalCommanTable showRestructureButton={true} showCompareButton={true} openCompareTool={openCompareTool} columnSettingIcon={true} AllSitesTaskData={allTaskDataFlatLoadeViewBackup} masterTaskData={allMasterTaskDataFlatLoadeViewBackup} bulkEditIcon={true} priorityRank={priorityRank} precentComplete={precentComplete} portfolioTypeDataItemBackup={portfolioTypeDataItemBackup} taskTypeDataItemBackup={taskTypeDataItemBackup} flatViewDataAll={flatViewDataAll} setData={setData} updatedSmartFilterFlatView={updatedSmartFilterFlatView} setLoaded={setLoaded} clickFlatView={clickFlatView} switchFlatViewData={switchFlatViewData} flatView={true} switchGroupbyData={switchGroupbyData} smartTimeTotalFunction={smartTimeTotalFunction} SmartTimeIconShow={true} AllMasterTasksData={AllMasterTasksData} ref={childRef} callChildFunction={callChildFunction} AllListId={ContextValue} columns={columns} restructureCallBack={callBackData1} data={data} callBackData={callBackData} TaskUsers={AllUsers} showHeader={true} portfolioColor={portfolioColor} portfolioTypeData={portfolioTypeDataItem} taskTypeDataItem={taskTypeDataItem} fixedWidth={true} portfolioTypeConfrigration={portfolioTypeConfrigration} showingAllPortFolioCount={true} showCreationAllButton={true} OpenAddStructureModal={OpenAddStructureModal} addActivity={addActivity} />
                                         </div>
                                     </div>
                                 </div>

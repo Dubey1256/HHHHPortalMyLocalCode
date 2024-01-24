@@ -1610,7 +1610,7 @@ const switchGroupbyData = () => {
           
           <span className="siteColor">{`Create Component `}</span>
         </div>
-        <Tooltip ComponentId={checkedList?.Id} />
+        <Tooltip ComponentId={1271} />
       </div>
     );
   };
@@ -1618,8 +1618,9 @@ const switchGroupbyData = () => {
   let isOpenPopup = false;
   const AddStructureCallBackCall = React.useCallback((item) => {
     childRef?.current?.setRowSelection({});
-    if (!isOpenPopup && item.CreatedItem != undefined) {
-      if (item?.CreatedItem[0]?.data?.ItemType == "SubComponent") {
+  
+    if (!isOpenPopup) {
+      if (item.CreatedItem !== undefined) {
         item.CreatedItem.forEach((obj: any) => {
           obj.data.childs = [];
           obj.data.subRows = [];
@@ -1627,113 +1628,74 @@ const switchGroupbyData = () => {
           obj.data.TitleNew = obj.data.Title;
           obj.data.siteType = "Master Tasks";
           obj.data.SiteIconTitle = obj?.data?.Item_x0020_Type?.charAt(0);
-          obj.data["TaskID"] = obj.data.PortfolioStructureID;
+          obj.data.TaskID = obj.data.PortfolioStructureID;
+  
           if (
-            item.props != undefined &&
-            item.props.SelectedItem != undefined &&
-            (item.props.SelectedItem.subRows == undefined || item.props.SelectedItem.subRows != undefined)
+            item.props !== undefined &&
+            item.props.SelectedItem !== undefined &&
+            (item.props.SelectedItem.subRows === undefined || item.props.SelectedItem.subRows !== undefined)
           ) {
-            item.props.SelectedItem.subRows =
-              item.props.SelectedItem.subRows == undefined
-                ? []
-                : item.props.SelectedItem.subRows;
+            item.props.SelectedItem.subRows = item.props.SelectedItem.subRows === undefined ? [] : item.props.SelectedItem.subRows;
             item.props.SelectedItem.subRows.unshift(obj.data);
-            copyDtaArray = copyDtaArray.concat(item.props.SelectedItem.subRows)
           }
         });
+  
+        // Create a new array with updated items
+        copyDtaArray = [
+          ...item.props.SelectedItem.subRows,
+          ...copyDtaArray.filter((existingItem: any) => existingItem.Id !== item.props.SelectedItem.Id)
+        ];
       }
-      item.CreatedItem.forEach((obj: any) => {
-        obj.data.childs = [];
-        obj.data.subRows = [];
-        obj.data.flag = true;
-        obj.data.TitleNew = obj.data.Title;
-        obj.data.siteType = "Master Tasks";
-        obj.data.SiteIconTitle = obj?.data?.Item_x0020_Type?.charAt(0);
-        obj.data["TaskID"] = obj.data.PortfolioStructureID;
-        if (
-          item.props != undefined &&
-          item.props.SelectedItem != undefined &&
-          (item.props.SelectedItem.subRows == undefined || item.props.SelectedItem.subRows != undefined)
-        ) {
-          item.props.SelectedItem.subRows =
-            item.props.SelectedItem.subRows == undefined
-              ? []
-              : item.props.SelectedItem.subRows;
-          item.props.SelectedItem.subRows.unshift(obj.data);
-        }
-      });
-
-      if (copyDtaArray != undefined && copyDtaArray.length > 0) {
-        copyDtaArray.forEach((compnew: any, index: any) => {
-          if (compnew.subRows != undefined && compnew.subRows.length > 0) {
-            item.props.SelectedItem.downArrowIcon = compnew.downArrowIcon;
-            item.props.SelectedItem.RightArrowIcon = compnew.RightArrowIcon;
-            return false;
-          }
-        });
-        copyDtaArray.forEach((comp: any, index: any) => {
-          if (
-            comp.Id != undefined &&
-            item.props.SelectedItem != undefined &&
-            comp.Id === item.props.SelectedItem.Id
-          ) {
-            comp.childsLength = item.props.SelectedItem.subRows.length;
-            comp.show = comp.show == undefined ? false : comp.show;
-            comp.downArrowIcon = item.props.SelectedItem.downArrowIcon;
-            comp.RightArrowIcon = item.props.SelectedItem.RightArrowIcon;
-
-            //comp.childs = item.props.SelectedItem.subRows;
-            comp.subRows = item.props.SelectedItem.subRows;
-          }
-          if (comp.subRows != undefined && comp.subRows.length > 0) {
-            comp.subRows.forEach((subcomp: any, index: any) => {
-              if (
-                subcomp.Id != undefined &&
-                item.props.SelectedItem != undefined &&
-                subcomp.Id === item.props.SelectedItem.Id
-              ) {
-                subcomp.childsLength = item.props.SelectedItem.subRows.length;
-                subcomp.show = subcomp.show == undefined ? false : subcomp.show;
-                subcomp.childs = item.props.SelectedItem.childs;
-                subcomp.subRows = item.props.SelectedItem.subRows;
-                comp.downArrowIcon = item.props.SelectedItem.downArrowIcon;
-                comp.RightArrowIcon = item.props.SelectedItem.RightArrowIcon;
-              }
-            });
-          }
-        });
-        // }
+  
+      renderData = copyDtaArray.slice(); // Create a shallow copy of copyDtaArray
+  
+      if (item?.CreateOpenType === 'CreatePopup') {
+        const openEditItem = item?.CreatedItem !== undefined ? item.CreatedItem[0]?.data : item.data;
+        setSharewebComponent(openEditItem);
+        setIsComponent(true);
       }
-      renderData = [];
-      renderData = renderData.concat(copyDtaArray);
+  
       refreshData();
-      // rerender();
     }
-    if (!isOpenPopup && item.data != undefined) {
+  
+    if (!isOpenPopup && item.data !== undefined) {
       item.data.subRows = [];
       item.data.flag = true;
       item.data.TitleNew = item.data.Title;
       item.data.siteType = "Master Tasks";
-      if (portfolioTypeData != undefined && portfolioTypeData.length > 0) {
+  
+      if (portfolioTypeData !== undefined && portfolioTypeData.length > 0) {
         portfolioTypeData.forEach((obj: any) => {
-          if (item.data?.PortfolioTypeId != undefined)
+          if (item.data?.PortfolioTypeId !== undefined) {
             item.data.PortfolioType = obj;
+          }
         });
       }
+  
       item.data.SiteIconTitle = item?.data?.Item_x0020_Type?.charAt(0);
-      item.data["TaskID"] = item.data.PortfolioStructureID;
-      copyDtaArray.unshift(item.data);
-      renderData = [];
-      renderData = renderData.concat(copyDtaArray);
+      item.data.TaskID = item.data.PortfolioStructureID;
+  
+      // Create a new array with the new item at the beginning
+      copyDtaArray = [
+        item.data,
+        ...copyDtaArray
+      ];
+  
+      renderData = copyDtaArray.slice(); // Create a shallow copy of copyDtaArray
+  
       if (item?.CreateOpenType === 'CreatePopup') {
-        const openEditItem = (item?.CreatedItem != undefined ? item.CreatedItem[0]?.data : item.data);
+        const openEditItem = item?.CreatedItem !== undefined ? item.CreatedItem[0]?.data : item.data;
         setSharewebComponent(openEditItem);
         setIsComponent(true);
-    }
+      }
+  
       refreshData();
     }
+  
     setOpenAddStructurePopup(false);
   }, []);
+  
+  
 
   const CreateOpenCall = React.useCallback((item) => { }, []);
   /// END ////
@@ -1744,23 +1706,30 @@ const switchGroupbyData = () => {
   function deletedDataFromPortfolios(dataArray: any, idToDelete: any, siteName: any) {
     let updatedArray = [];
     let itemDeleted = false;
+  
     for (let item of dataArray) {
-        if (item.Id === idToDelete && item.siteType === siteName) {
-            itemDeleted = true;
-            continue;
-        }
-        let newItem = { ...item };
-        if (newItem.subRows && newItem.subRows.length > 0) {
-            newItem.subRows = deletedDataFromPortfolios(newItem.subRows, idToDelete, siteName);
-        }
-        updatedArray.push(newItem);
-        if (itemDeleted) {
-            return updatedArray;
-        }
+      if (item.Id === idToDelete && item.siteType === siteName) {
+        itemDeleted = true;
+        continue;
+      }
+  
+      let newItem = { ...item };
+      
+      if (newItem.subRows && newItem.subRows.length > 0) {
+        newItem.subRows = deletedDataFromPortfolios(newItem.subRows, idToDelete, siteName);
+      }
+  
+      updatedArray.push(newItem);
     }
+  
+    if (itemDeleted) {
+      // Remove deleted item from the array
+      updatedArray = updatedArray.filter(item => item.Id !== idToDelete || item.siteType !== siteName);
+    }
+  
     return updatedArray;
-}
-
+  }
+  
 const addedCreatedDataFromAWT = (arr: any, dataToPush: any) => {
   if(dataToPush?.PortfolioId === SelectedProp.props.Id && dataToPush?.ParentTask?.Id === undefined){
     arr.push(dataToPush)

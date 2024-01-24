@@ -384,7 +384,7 @@ export default function VersionHistory(props: any) {
                     <div className='dropdown'>
                         <div className="spxdropdown-menu" style={{ display: showComposition ? 'block' : 'none' }}>
                             <ul>
-                                {SitesTaggingArray.map((site: any, indx: any) => {
+                                {SitesTaggingArray?.map((site: any, indx: any) => {
                                     return <li className="Sitelist">
                                         <span>
                                             <img style={{ width: "22px" }} title={site?.Title} src={site?.SiteImages} />

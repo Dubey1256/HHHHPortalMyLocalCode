@@ -1258,7 +1258,7 @@ QATime = 0.00;
             + '<td width="10%" style="border: 1px solid #aeabab;padding: 4px">' + item?.Components + '</td>'
             + '<td style="border: 1px solid #aeabab;padding: 4px">' + item?.SubComponents + '</td>'
             + '<td style="border: 1px solid #aeabab;padding: 4px">' + item?.Features + '</td>'
-            + '<td style="border: 1px solid #aeabab;padding: 4px">' + '<a href=`https://hhhhteams.sharepoint.com/sites/HHHH/sp/SitePages/Task-Profile.aspx?taskId='+ item.TaskId +'&Site=' + item.siteType +'>' + '<span style="font-size:11px; font-weight:600">' + item.Task + '</span>' + '</a >' + '</td>'
+            + '<td style="border: 1px solid #aeabab;padding: 4px">' + `<a href='https://hhhhteams.sharepoint.com/sites/HHHH/sp/SitePages/Task-Profile.aspx?taskId=${item.TaskId}&Site=${item.siteType}'>` + '<span style="font-size:11px; font-weight:600">' + item.Task + '</span>' + '</a >' + '</td>'
             + '<td align="left" style="border: 1px solid #aeabab;padding: 4px">' + item?.Comments + '</td>'
             + '<td style="border: 1px solid #aeabab;padding: 4px">' + item?.PriorityRank + '</td>'
             + '<td style="border: 1px solid #aeabab;padding: 4px">' + item?.Effort + '</td>'
