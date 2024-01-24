@@ -26,6 +26,7 @@ import ExpandTable from '../../../globalComponents/ExpandTable/Expandtable';
 import EditTaskPopup from '../../../globalComponents/EditTaskPopup/EditTaskPopup';
 import { RiFileExcel2Fill } from 'react-icons/ri';
 import "bootstrap/dist/css/bootstrap.min.css";
+import PageLoad from '../../../globalComponents/pageLoader';
 import "bootstrap/dist/js/bootstrap.min.js";
 import GlobalCommanTable from '../../../globalComponents/GroupByReactTableComponents/GlobalCommanTable';
 import HighlightableCell from '../../../globalComponents/GroupByReactTableComponents/highlight';
@@ -81,6 +82,7 @@ const Tabless = (props: any) => {
   const [checkedValues, setCheckedValues]: any = React.useState([]);
   const [copyData, setCopyData]: any = React.useState([]);
   const [date, setDate]: any = React.useState({ due: null, modify: null, created: null });
+  const [loading,setloading] = React.useState(false);
   const [priorAndPerc, setPriorAndPerc]: any = React.useState({ priority: true, percentage: true })
   const [selectAllChecks, setSelectAllChecks]: any = React.useState({ idType: false, priority: false, percentage: false, catogries: false, teamMembers: false });
   const [radio, setRadio]: any = React.useState({ due: true, modify: true, created: true, priority: true, percentage: true });
@@ -241,6 +243,7 @@ const Tabless = (props: any) => {
       .top(4999)
       .get().then((data: any) => {
         masterTasks = data;
+        setloading(true);
         getTaskUserData();
       }).catch((err: any) => {
         console.log(err);
@@ -378,6 +381,7 @@ dataItem.AllTeamName = dataItem.AllTeamName.split(';').filter(Boolean).join(';')
 
         if (count == dataLength.length) {
           setData(allData);
+          setloading(false);
           setCopyData(allData);
 
         }
@@ -657,11 +661,13 @@ dataItem.AllTeamName = dataItem.AllTeamName.split(';').filter(Boolean).join(';')
         <div className='Alltable'>
           <GlobalCommanTable expandIcon={true} showHeader={true} showPagination={true} columns={columns} data={data} callBackData={callBackData} />
         </div>
+        {loading && <PageLoad />} 
       </section>
       <span>
         {editPopup && <EditTaskPopup Items={result} context={props.Items.Context} AllListId={AllListId} Call={() => { CallBack() }} />}
 
       </span>
+     
     </div>
   )
 }
