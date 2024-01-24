@@ -19,6 +19,7 @@ export interface IFeedbackWebPartProps {
   TaskUsertListID: "b318ba84-e21d-4876-8851-88b94b9dc300";
   LeaveCalenderListID: "72ABA576-5272-4E30-B332-25D7E594AAA4"
   MasterTaskListID: 'ec34b38f-0669-480a-910c-f84e92e58adf';
+  SitePagesList:"16839758-4688-49D5-A45F-CFCED9F80BA6"
 }
 
 export default class FeedbackWebPart extends BaseClientSideWebPart<IFeedbackWebPartProps> {
@@ -40,6 +41,7 @@ export default class FeedbackWebPart extends BaseClientSideWebPart<IFeedbackWebP
         TaskUsertListID: this.properties.TaskUsertListID,
         SmartMetadataListID: this.properties.SmartMetadataListID,
         LeaveCalenderListID: this.properties.LeaveCalenderListID,
+        SitePagesList: this.properties.SitePagesList,
         MasterTaskListID: this.properties.MasterTaskListID,
 
       }
@@ -117,6 +119,9 @@ export default class FeedbackWebPart extends BaseClientSideWebPart<IFeedbackWebP
                 }),
                 PropertyPaneTextField("MasterTaskListID", {
                   label: "Master List",
+                }),
+                PropertyPaneTextField('SitePagesList', {
+                  label: 'Site Pages'
                 }),
               ]
             }

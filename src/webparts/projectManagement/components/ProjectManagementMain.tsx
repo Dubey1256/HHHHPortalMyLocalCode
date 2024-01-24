@@ -1795,6 +1795,7 @@ const  AncCallback = (type: any) => {
                                   flatViewDataAll={flatViewDataAll}
                                   clickFlatView={clickFlatView} switchFlatViewData={switchFlatViewData}
                                   flatView={true}
+                                  showRestructureButton={true}
                                   switchGroupbyData={switchGroupbyData}
                                   restructureCallBack={callBackData1}
                                   ref={childRef} callChildFunction={callChildFunction}

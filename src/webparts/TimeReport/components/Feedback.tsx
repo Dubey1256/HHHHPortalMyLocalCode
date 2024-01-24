@@ -14,6 +14,7 @@ export default class Feedback extends React.Component<IFeedbackProps, {}> {
       userDisplayName,
       TaskUsertListID,
       SmartMetadataListID,
+      SitePagesList
     } = this.props;
 
     return (
