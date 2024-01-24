@@ -138,6 +138,8 @@ export const PopHoverBasedOnTaskId = (item: any) => {
     //     }
     return finalArray = structur?.slice(-1);
 }
+
+
 export const hierarchyData = (items: any, MyAllData: any) => {
     var MasterListData: any = []
     var ChildData: any = []
@@ -2167,7 +2169,7 @@ export const loadAllTimeEntry = async (timesheetListConfig: any) => {
 
     }
 }
-export const loadAllSiteTasks = async (allListId: any, filter: any) => {
+export const loadAllSiteTasks = async (allListId?: any | undefined, filter?: any | undefined) => {
     let query = "Id,Title,FeedBack,PriorityRank,Remark,Project/PriorityRank,Project/PortfolioStructureID,ParentTask/Id,ParentTask/Title,ParentTask/TaskID,TaskID,SmartInformation/Id,SmartInformation/Title,Project/Id,Project/Title,workingThisWeek,EstimatedTime,TaskLevel,TaskLevel,OffshoreImageUrl,OffshoreComments,SiteCompositionSettings,Sitestagging,Priority,Status,ItemRank,IsTodaysTask,Body,Portfolio/Id,Portfolio/Title,Portfolio/PortfolioStructureID,PercentComplete,Categories,StartDate,PriorityRank,DueDate,TaskType/Id,TaskType/Title,TaskType/Level,Created,Modified,Author/Id,Author/Title,Editor/Id,Editor/Title,TaskCategories/Id,TaskCategories/Title,AssignedTo/Id,AssignedTo/Title,TeamMembers/Id,TeamMembers/Title,ResponsibleTeam/Id,ResponsibleTeam/Title,ClientCategory/Id,ClientCategory/Title&$expand=AssignedTo,Project,ParentTask,SmartInformation,Author,Portfolio,Editor,TaskType,TeamMembers,ResponsibleTeam,TaskCategories,ClientCategory"
     if (filter != undefined) {
         query += `&$filter=${filter}`
@@ -2354,12 +2356,10 @@ export const calculateSmartPriority = (result: any) => {
 function siteCompositionType(jsonStr: any) {
     var data = JSON.parse(jsonStr);
     try {
-        if (data != undefined && data?.length > 0) {
-            data = data[0];
-            for (var key in data) {
-                if (data?.hasOwnProperty(key) && data[key] === true) {
-                    return key;
-                }
+        data = data[0];
+        for (var key in data) {
+            if (data?.hasOwnProperty(key) && data[key] === true) {
+                return key;
             }
         }
         return '';
