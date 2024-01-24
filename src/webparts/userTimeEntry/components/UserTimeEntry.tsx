@@ -21,9 +21,10 @@ import * as globalCommon from "../../../globalComponents/globalCommon";
 import PreSetDatePikerPannel from "../../../globalComponents/SmartFilterGolobalBomponents/PreSetDatePiker"
 import TimeEntryPopup from "../../../globalComponents/TimeEntry/TimeEntryComponent";
 import ShowClintCatogory from "../../../globalComponents/ShowClintCatogory";
-import CentralizedSiteComposition from '../../../globalComponents/SiteCompositionComponents/CentralizedSiteComposition';
+// import CentralizedSiteComposition from '../../../globalComponents/SiteCompositionComponents/CentralizedSiteComposition';
 import FileSaver from 'file-saver';
 import * as XLSX from "xlsx";
+import CentralizedSiteComposition from '../../../globalComponents/SiteCompositionComponents/CentralizedSiteComposition';
 var AllListId: any;
 var siteConfig: any[] = []
 var AllPortfolios: any[] = [];
@@ -2475,7 +2476,7 @@ export default class UserTimeEntry extends React.Component<IUserTimeEntryProps, 
     } = this.props;
     return (
       <div id="TimeSheet-Section" >
-        <div className="p-0  " style={{ verticalAlign: "top" }}><h2 className="heading d-flex justify-content-between align-items-center"><span> <a>All Timesheets</a> </span><span className="text-end fs-6"><a target="_blank" data-interception="off" href={`${this.props.Context.pageContext.web.absoluteUrl}/SitePages/UserTimeEntry-Old.aspx`}>Old UserTimeEntry</a></span></h2></div>
+        <div className="p-0" style={{ verticalAlign: "top" }}><h2 className="heading d-flex justify-content-between align-items-center"><span> <a>All Timesheets</a> </span><span className="text-end fs-6"><a target="_blank" data-interception="off" href={`${this.props.Context.pageContext.web.absoluteUrl}/SitePages/UserTimeEntry-Old.aspx`}>Old UserTimeEntry</a></span></h2></div>
         <Col className='smartFilter bg-light border mb-3 '>
           <details className='p-0 m-0 allfilter' open>
             <summary className='hyperlink'><a className="fw-semibold hreflink mr-5 pe-2 pull-left ">All Filters - <span className='me-1 fw-normal'>Task User :</span> </a>
@@ -2495,10 +2496,10 @@ export default class UserTimeEntry extends React.Component<IUserTimeEntryProps, 
                     <input type="checkbox" className="" onClick={(e) => this.SelectAllGroupMember(e)} />
                     <label>Select All </label>
                   </span>
-                  <summary className='hyperlink'>Team members</summary>
-                  <hr style={{width:"97%", marginLeft:"30px"}}></hr>  
+                  <summary><span className='fw-semibold f-15 fw-semibold'>Team members</span></summary>
+                  <hr style={{width:"98%", marginLeft:"30px"}}></hr>  
                   <div style={{ display: "block" }}>
-                    <div className="taskTeamBox ps-30 ">
+                    <div className="taskTeamBox ps-30 my-2">
                       {this.state.taskUsers != null && this.state.taskUsers.length > 0 && this.state.taskUsers.map((users: any, i: number) => {
                         return users?.childs?.length > 0 && <div className="top-assign">
                           <div className="team ">
@@ -2519,7 +2520,7 @@ export default class UserTimeEntry extends React.Component<IUserTimeEntryProps, 
                                         title={item.AssingedToUser.Title}
                                         src={item.Item_x0020_Cover.Url} />
                                     </span> :
-                                    <span id={"UserImg" + item.Id} className={item?.AssingedToUserId == user?.Id ? 'activeimg seclected-Image suffix_Usericon showSuffixIcon' : 'suffix_Usericon showSuffixIcon'} title={item.Title} onClick={(e) => this.SelectUserImage(e, item)} ui-draggable="true" on-drop-success="dropSuccessHandler($event, $index, user.childs)"
+                                    <span id={"UserImg" + item.Id} className={item?.AssingedToUserId == user?.Id ? 'activeimg newDynamicUserIcon' : 'newDynamicUserIcon'} title={item.Title} onClick={(e) => this.SelectUserImage(e, item)} ui-draggable="true" on-drop-success="dropSuccessHandler($event, $index, user.childs)"
                                     >{item?.Suffix}</span>
                                   }
                                 </div>
@@ -2533,12 +2534,9 @@ export default class UserTimeEntry extends React.Component<IUserTimeEntryProps, 
                   </div>
                 </details>
                 <details className='m-0' open>
-                  <summary className='hyperlink'>
-                    Date
-                    
-                  </summary>
-                  <hr style={{width:"97%", marginLeft:"30px"}}></hr>
-                  <Row className="ps-30">
+                  <summary><span className='fw-semibold f-15 fw-semibold'> Date</span> </summary>
+                  <hr style={{width:"98%", marginLeft:"30px"}}></hr>
+                  <Row className="ps-30 my-2">
                     <div>
                       <div className="col TimeReportDays">
                         <span className='SpfxCheckRadio'>
@@ -2593,13 +2591,13 @@ export default class UserTimeEntry extends React.Component<IUserTimeEntryProps, 
                       </div>
                     </div>
                   </Row>
-                  <Row className='ps-30 mt-2'>
+                  <Row className='ps-30 mb-2'>
                     <div className="col-2">
                       <div className='input-group'>
                         <label className='full-width'>Start Date</label>
                         <span>
                           <DatePicker selected={this.state.startdate} data-input-type="First" onChange={(date: any) => this.setStartDate(date)} dateFormat="dd/MM/yyyy" // Format as DD/MM/YYYY
-                            className="form-control date-picker" popperPlacement="bottom-start" customInput={<this.ExampleCustomInputStrat />}
+                            className="form-control date-picker p-1" popperPlacement="bottom-start" customInput={<this.ExampleCustomInputStrat />}
                           />
                         </span>
                       </div>
@@ -2609,7 +2607,7 @@ export default class UserTimeEntry extends React.Component<IUserTimeEntryProps, 
                         <label className='full-width'>End Date</label>
                         <span>
                           <DatePicker selected={this.state.enddate} onChange={(date: any) => this.setEndDate(date)} dateFormat="dd/MM/yyyy" // Format as DD/MM/YYYY
-                            className="form-control date-picker" popperPlacement="bottom-start" customInput={<this.ExampleCustomInputEnd />}
+                            className="form-control date-picker p-1" popperPlacement="bottom-start" customInput={<this.ExampleCustomInputEnd />}
                           />
                         </span>
                       </div>
@@ -2623,13 +2621,12 @@ export default class UserTimeEntry extends React.Component<IUserTimeEntryProps, 
                     </div>
                   </Row>
                 </details>
-                <div id="showFilterBox" className="col mb-2 p-0 ">
+                <div id="showFilterBox" className="col m-0 p-0 ">
                   <div className="togglebox">
                     <details open>
-                      <summary className='hyperlink'>
-                        SmartSearch – Filters
-                        
-                        <span>
+                      <summary>
+                        <span className='fw-semibold f-15 fw-semibold'> SmartSearch – Filters</span>
+                        <span className='f-14 ps-2'>
                           {this.state.checkedAll && this.state.filterItems != null && this.state.filterItems.length > 0 &&
                             this.state.filterItems.map((obj: any) => {
                               return <span> {obj.Title}
@@ -2659,8 +2656,8 @@ export default class UserTimeEntry extends React.Component<IUserTimeEntryProps, 
                           }
                         </span>
                       </summary>
-                      <hr style={{width:"97%", marginLeft:"30px"}}></hr>  
-                      <div className="togglecontent" style={{ display: "block", paddingLeft: "24px" }}>
+                      <hr style={{width:"98%", marginLeft:"30px"}}></hr>  
+                      <div className="togglecontent my-2" style={{ display: "block", paddingLeft: "24px" }}>
                         <div className="smartSearch-Filter-Section">
                           <table width="100%" className="indicator_search">
                             <Loader loaded={this.state.loaded} lines={13} length={20} width={10} radius={30} corners={1} rotate={0} direction={1} color={portfolioColor ? portfolioColor : "#000066"}
@@ -2669,7 +2666,8 @@ export default class UserTimeEntry extends React.Component<IUserTimeEntryProps, 
                               <tr>
                                 <td valign="top">
                                   <div className='row'>
-                                    <div className='col-md-6'>
+                                    <div className='col-md-4'>
+                                    <div className='col-md-10'>
                                       <label className='border-bottom full-width pb-1'>
                                         <input id='chkAllCategory' defaultChecked={this.state.checkedAll} onClick={(e) => this.SelectAllCategories(e)} type="checkbox" className="form-check-input me-1" />
                                         Client Category
@@ -2686,9 +2684,10 @@ export default class UserTimeEntry extends React.Component<IUserTimeEntryProps, 
                                           checkModel={'all'}
                                           icons={{ expandOpen: <SlArrowDown />, expandClose: <SlArrowRight />, parentClose: null, parentOpen: null, leaf: null, }}
                                         />
-                                      </div>
+                                      </div></div>
                                     </div>
-                                    <div className='col-md-6'>
+                                    <div className='col-md-4'>
+                                    <div className='col-md-10'>
                                       <label className='border-bottom full-width pb-1'>
                                         <input type="checkbox" id='chkAllSites' defaultChecked={this.state.checkedAllSites} onClick={(e) => this.SelectAllSits(e)} className="form-check-input me-1" />
                                         Sites
@@ -2712,6 +2711,7 @@ export default class UserTimeEntry extends React.Component<IUserTimeEntryProps, 
                                           }}
                                         />
                                       </div>
+                                      </div>
                                     </div>
                                   </div>
 
@@ -2725,14 +2725,14 @@ export default class UserTimeEntry extends React.Component<IUserTimeEntryProps, 
                     </details>
                   </div>
                 </div>
-                <div className="col text-end mb-2 ">
-                         <button type="button" className="btnCol btn btn-primary me-1" onClick={(e) => this.LoadAllTimeSheetaData()}>
-                             Update Filters
-                          </button>
-                          <button type="button" className="btn btn-default me-1" onClick={() => this.ClearFilters()}>
-                            Clear Filters
-                          </button>
-                        </div>
+                <div className="col text-end mb-2">
+                    <button type="button" className="btnCol btn btn-primary me-1" onClick={(e) => this.LoadAllTimeSheetaData()}>
+                        Update Filters
+                    </button>
+                    <button type="button" className="btn btn-default me-1" onClick={() => this.ClearFilters()}>
+                        Clear Filters
+                    </button>
+                </div>
               </Col>
             </Col>
           </details>
