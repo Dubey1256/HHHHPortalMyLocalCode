@@ -488,7 +488,7 @@ const EditPopup = (props: any) => {
                         <div className='col-sm-6 mb-2'>
                             <div className='input-group'>
                                 <label className='form-label full-width'>Phone Number</label>
-                                <input className='form-control' type='number' placeholder="Phone Number" defaultValue={props.item.PhoneNumber} onChange={(newValue: any) => setPhoneNumber(newValue.target.value)} />
+                                <input className='form-control form-control-sm' type='number' placeholder="Phone Number" defaultValue={props.item.PhoneNumber} onChange={(newValue: any) => setPhoneNumber(newValue.target.value)} />
                             </div></div>
                         <div className='col-sm-6 mb-2'>
                             <div className='input-group'>
