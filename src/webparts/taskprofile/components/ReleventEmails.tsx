@@ -46,27 +46,32 @@ const RelevantEmail = (props: any, ref: any) => {
         .get()
         .then((Data: any[]) => {
           let keydoc: any = [];
-          Data?.map((item: any, index: any) => {
-            item.Title = item.Title.replace('.', "")
-            item.siteType = 'sp'
-            item.Description = item?.Body
-            // item.Author = item?.Author?.Title;
-            // item.Editor = item?.Editor?.Title;
-            item.CreatedDate = moment(item?.Created).format("'DD/MM/YYYY HH:mm'");
-            item.ModifiedDate = moment(item?.ModifiedDate).format("'DD/MM/YYYY HH:mm'");
-            if (item.ItemRank === 6) {
-              keydoc.push(item)
+          if(Data?.length>0){
+            Data?.map((item: any, index: any) => {
+              item.Title = item.Title.replace('.', "")
+              item.siteType = 'sp'
+              item.Description = item?.Body
+              // item.Author = item?.Author?.Title;
+              // item.Editor = item?.Editor?.Title;
+              item.CreatedDate = moment(item?.Created).format("'DD/MM/YYYY HH:mm'");
+              item.ModifiedDate = moment(item?.ModifiedDate).format("'DD/MM/YYYY HH:mm'");
+              if (item.ItemRank === 6) {
+                keydoc.push(item)
+              }
+  
+            })
+            if(  myContextData2?.FunctionCall!=undefined && keydoc?.length>0){
+              myContextData2?.FunctionCall(keydoc, Data[0]?.FileDirRef, false)
             }
-
-          })
-          if(  myContextData2?.FunctionCall!=undefined && keydoc?.length>0){
-            myContextData2?.FunctionCall(keydoc, Data[0]?.FileDirRef, false)
+            var releventKey = Data?.filter((d) => d.ItemRank != 6)
+            setDocumentData(releventKey);
+                
+            console.log("document data", Data);
+             setFileurl(Data[0]?.FileDirRef)
+          }else{
+            setDocumentData([])
           }
-          var releventKey = Data?.filter((d) => d.ItemRank != 6)
-          setDocumentData(releventKey);
-              
-          console.log("document data", Data);
-           setFileurl(Data[0]?.FileDirRef)
+         
        })
       
     } catch (e: any) {
