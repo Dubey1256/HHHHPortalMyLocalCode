@@ -1,5 +1,5 @@
 import React, { useEffect } from "react";
-import { Panel, PanelType } from 'office-ui-fabric-react';
+import { Dropdown, Panel, PanelType } from 'office-ui-fabric-react';
 import { Web } from "sp-pnp-js";
 import { myContextValue } from "./globalCommon";
 import { Button, Col, Container, Modal, Row } from "react-bootstrap";
@@ -10,7 +10,28 @@ const ManageConfigPopup = (props: any) => {
     let DashboardId: any = params.get('DashBoardId');
     const ContextData: any = React.useContext(myContextValue);
     const [EditItem, setEditItem]: any = React.useState({});
-
+    const [SmartFav, setSmartFav] = React.useState<any>([]);
+    const [SelectedFilter, setSelectedFilter] = React.useState<any>([]);
+    const LoadSmartFav = async () => {
+        let SmartFavData: any = []
+        const web = new Web(props?.props?.Context?._pageContext?._web?.absoluteUrl);
+        await web.lists.getById(props?.props?.AdminConfigurationListId).items.select("Title", "Id", "Value", "Key", "Configurations").filter("Key eq 'Smartfavorites'").getAll().then(async (data: any) => {
+            data.forEach((config: any) => {
+                config.configurationData = JSON.parse(config?.Configurations);
+                config?.configurationData?.forEach((elem: any) => {
+                    elem.UpdatedId = config.Id;
+                    if (elem.isShowEveryone == true)
+                        SmartFavData.push(elem)
+                    else if (elem.isShowEveryone == false && elem?.CurrentUserID == props?.props?.Context?._pageContext?._legacyPageContext.userId) {
+                        SmartFavData.push(elem)
+                    }
+                })
+            })
+            setSmartFav(SmartFavData)
+        }).catch((err: any) => {
+            console.log(err);
+        })
+    }
     const CloseConfiguationPopup = () => {
         setEditItem('');
         props?.CloseOpenConfigPopup()
@@ -19,11 +40,11 @@ const ManageConfigPopup = (props: any) => {
         try {
             if (DashboardId == undefined || DashboardId == '')
                 DashboardId = 1;
-            let web = new Web(ContextData?.siteUrl);
-            await web.lists.getById(ContextData?.propsValue?.AdminConfigurtionListId).items.select("Title", "Id", "Value", "Key", "Configurations").filter("Key eq 'DashBoardConfigurationId'").getAll().then(async (data: any) => {
+            let web = new Web(props?.props?.Context?._pageContext?._web?.absoluteUrl);
+            await web.lists.getById(props?.props?.AdminConfigurationListId).items.select("Title", "Id", "Value", "Key", "Configurations").filter("Key eq 'DashBoardConfigurationId'").getAll().then(async (data: any) => {
                 data = data?.filter((config: any) => config?.Value == DashboardId)[0];
-                if (ContextData?.DashboardConfigBackUp && EditItem?.Id !== undefined) {
-                    ContextData.DashboardConfigBackUp.forEach((item: any) => {
+                if (props?.DashboardConfigBackUp && EditItem?.Id !== undefined) {
+                    props.DashboardConfigBackUp.forEach((item: any) => {
                         if (item?.Id !== undefined && item.Id === EditItem.Id) {
                             Object.keys(EditItem).forEach((key) => {
                                 if (key in item) {
@@ -33,11 +54,12 @@ const ManageConfigPopup = (props: any) => {
                         }
                     });
                 }
-                await web.lists.getById(ContextData?.propsValue?.AdminConfigurtionListId).items.getById(data.Id).update({ Configurations: JSON.stringify(ContextData?.DashboardConfigBackUp) })
+                await web.lists.getById(props?.props.AdminConfigurationListId).items.getById(data.Id).update({ Configurations: JSON.stringify(props?.DashboardConfigBackUp) })
                     .then(async (res: any) => {
                         setEditItem('');
                         CloseConfiguationPopup();
-                        ContextData?.callbackFunction();
+                        if (ContextData != undefined && ContextData?.callbackFunction != undefined)
+                            ContextData?.callbackFunction();
                     }).catch((err: any) => {
                         console.log(err);
                     })
@@ -59,11 +81,17 @@ const ManageConfigPopup = (props: any) => {
             </>
         );
     };
+    const handleSelectFilterChange = (event: any) => {
+        setSelectedFilter(event)
+        setEditItem((prevState: any) => ({ ...prevState, smartFevId: event }));
+    };
     useEffect(() => {
-        if (ContextData != undefined && ContextData?.DashboardConfigBackUp != undefined && ContextData?.DashboardConfigBackUp?.length > 0) {
-            let EditData = ContextData?.DashboardConfigBackUp.filter((item: any) => item?.WebpartTitle?.toLowerCase() == props?.SelectedItem?.WebpartTitle?.toLowerCase())[0];
+        if (props != undefined && props?.DashboardConfigBackUp != undefined && props?.DashboardConfigBackUp?.length > 0) {
+            let EditData = props?.DashboardConfigBackUp.filter((item: any) => item?.WebpartTitle?.toLowerCase() == props?.SelectedItem?.WebpartTitle?.toLowerCase())[0];
             setEditItem(EditData);
+            setSelectedFilter(EditData?.smartFevId)
         }
+        LoadSmartFav()
     }, []);
     return (
         <>
@@ -81,7 +109,10 @@ const ManageConfigPopup = (props: any) => {
                         <Col sm="4" md="4" lg="4">
                             <div> Show WebPart</div>
                             <label className="switch me-2" htmlFor="ShowWebpartCheckbox">
-                                <input checked={EditItem?.ShowWebpart} onChange={(e: any) => setEditItem({ ...EditItem, ShowWebpart: e.target.checked, })} type="checkbox" id="ShowWebpartCheckbox" />
+                                <input checked={EditItem?.ShowWebpart} onChange={(e: any) => {
+                                    const isChecked = e.target.checked; setEditItem({ ...EditItem, ShowWebpart: isChecked });
+                                    if (!isChecked) { alert('Webpart will not be shown when toggle is active!'); }
+                                }} type="checkbox" id="ShowWebpartCheckbox" />
                                 {EditItem?.ShowWebpart === true ? <div className="slider round" style={{ backgroundColor: `${portfolioColor}`, borderColor: `${portfolioColor}` }}></div> : <div className="slider round"></div>}
                             </label>
                         </Col>
@@ -108,8 +139,11 @@ const ManageConfigPopup = (props: any) => {
                                 onChange={(e) => setEditItem({ ...EditItem, WebpartPosition: { ...EditItem.WebpartPosition, Column: parseInt(e.target.value) } })} />
                         </Col>
                         {EditItem?.GroupByView != undefined && <Col sm="4" md="4" lg="4">
-                            <label className='form-label full-width'>Filter-Today Task</label>
-                            <input className='form-control' type='text' placeholder="Name" defaultValue={EditItem?.IsTodaysTask} onChange={(e) => setEditItem({ ...EditItem, IsTodaysTask: e.target.value == 'true' ? true : false, })} />
+                            <label className='form-label full-width'>Select Filter</label>
+                            <Dropdown id="Filtes" options={[{ key: '', text: '' }, ...(SmartFav?.map((item: any) => ({ key: item?.UpdatedId, text: item?.Title })) || [])]} selectedKey={SelectedFilter}
+                                onChange={(e, option) => handleSelectFilterChange(option?.key)}
+                                styles={{ dropdown: { width: '100%' } }}
+                            />
                         </Col>}
                     </Row>
                 </div>

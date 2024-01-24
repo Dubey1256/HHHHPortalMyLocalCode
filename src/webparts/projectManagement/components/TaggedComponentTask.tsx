@@ -1,6 +1,6 @@
 import { Panel, PanelType } from "office-ui-fabric-react";
 import * as React from "react";
-import ComponentTable from "../../componentProfile/components/Taskwebparts";
+import ComponentTable from "../../componentProfile/components/ComponentPortfolioTable";
 
 const TaggedComponentTask = (props: any) => {    
     const onRenderCustomHeaderMain = () => {

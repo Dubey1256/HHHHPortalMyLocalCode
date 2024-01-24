@@ -1356,7 +1356,7 @@ const CreateActivity = (props: any) => {
               if (selectedItem.PageType == "ProjectManagement") {
                 props.Call();
                 let url = `${AllListId.siteUrl}/SitePages/Task-Profile.aspx?taskId=${res.data.Id}&Site=${res.data.siteType}`;
-                window.location.href = url;
+                window.open(url, "_blank");
               } else if (selectedItem.PageType == "QuickTask") {
                 let url = `${AllListId.siteUrl}/SitePages/Task-Profile.aspx?taskId=${res.data.Id}&Site=${res.data.siteType}`;
                 window.open(url, "_blank");
@@ -1922,13 +1922,13 @@ const CreateActivity = (props: any) => {
         >
           Submit
         </button>
-        <button
+        {props?.pageName != "QuickTask"? <button
           type="button"
           className="btn btn-default"
           onClick={() => closeTaskStatusUpdatePoup("item")}
         >
           Cancel
-        </button>
+        </button>:''}
       </footer>
     </>
   );

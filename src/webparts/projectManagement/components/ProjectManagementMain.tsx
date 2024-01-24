@@ -27,6 +27,10 @@ import PageLoader from "../../../globalComponents/pageLoader";
 import AddProject from "../../projectmanagementOverviewTool/components/AddProject";
 import CreateActivity from "../../../globalComponents/CreateActivity";
 import CreateWS from "../../../globalComponents/CreateWS";
+import AncTool from '../../../globalComponents/AncTool/AncTool'
+import RelevantDocuments from "../../taskprofile/components/RelevantDocuments";
+import RelevantEmail from '../../taskprofile/components/./ReleventEmails'
+import KeyDocuments from '../../taskprofile/components/KeyDocument';
 //import { BsXCircleFill, BsCheckCircleFill } from "react-icons/bs";
 var QueryId: any = "";
 let smartPortfoliosData: any = [];
@@ -57,7 +61,15 @@ let hasCustomExpanded: any = true
 let hasExpanded: any = true
 let isHeaderNotAvlable: any = false
 let isColumnDefultSortingAsc: any = false;
+let  relevantDocRef: any;
+let smartInfoRef: any;
+let keyDocRef:any;
 const ProjectManagementMain = (props: any) => {
+relevantDocRef = React.useRef();
+  smartInfoRef = React.useRef();
+  keyDocRef=React.useRef();
+  const [keydoc, Setkeydoc] = React.useState([]);
+  const [FileDirRef, SetFileDirRef] = React.useState('');
   // const [item, setItem] = React.useState({});
   const [AllTaskUsers, setAllTaskUsers] = React.useState([]);
   const [groupByButtonClickData, setGroupByButtonClickData] = React.useState([]);
@@ -540,30 +552,16 @@ const ProjectManagementMain = (props: any) => {
         if (projectData?.subRows == undefined || projectData?.subRows?.length == 0) {
           AllProjectTasks = smartmeta = await globalCommon?.loadAllSiteTasks(AllListId, `Project/Id eq ${projectData?.Id}`)
         } else if (projectData?.subRows?.length > 0 && projectData?.subRows?.length < 7) {
-          let filterQuery =''
-          try{
+          let filterQuery = ''
+          try {
             filterQuery = projectData?.subRows?.map((Sprint: any) => `Project/Id eq ${Sprint?.Id}`).join(' or ');
             filterQuery += ` or Project/Id eq ${projectData?.Id}`
-          }catch(e){
+          } catch (e) {
 
           }
-          smartmeta = await globalCommon?.loadAllSiteTasks(AllListId, filterQuery)
-          AllProjectTasks = smartmeta?.filter((task: any) => task?.Project?.Id == projectData?.Id)
-          if (projectData?.subRows?.length > 0 && projectData?.subRows?.length < 6) {
-            projectData?.subRows?.map((sprint: any) => {
-              const data = smartmeta?.filter((task: any) => task?.Project?.Id == sprint?.Id)
-              AllProjectTasks = [...AllProjectTasks, ...data]
-            })
-          }
+          AllProjectTasks = smartmeta = await globalCommon?.loadAllSiteTasks(AllListId, filterQuery)
         } else {
-          smartmeta = await globalCommon?.loadAllSiteTasks(AllListId, `Project/Id ne null`)
-          AllProjectTasks = smartmeta?.filter((task: any) => task?.Project?.Id == projectData?.Id)
-          if (projectData?.subRows?.length > 0 && projectData?.subRows?.length < 6) {
-            projectData?.subRows?.map((sprint: any) => {
-              const data = smartmeta?.filter((task: any) => task?.Project?.Id == sprint?.Id)
-              AllProjectTasks = [...AllProjectTasks, ...data]
-            })
-          }
+          AllProjectTasks =  smartmeta = await globalCommon?.loadAllSiteTasks(AllListId, `Project/Id ne null`)
         }
       }
 
@@ -591,7 +589,7 @@ const ProjectManagementMain = (props: any) => {
         } catch (error) {
 
         }
-
+        items.TaskTypeValue =''
         if (items?.TaskCategories?.length > 0) {
           items.TaskTypeValue = items?.TaskCategories?.map((val: any) => val.Title).join(",")
         }
@@ -624,11 +622,15 @@ const ProjectManagementMain = (props: any) => {
             taskComponent.push(comp?.Id)
             taskTaggedComponents.push(comp)
           }
+          items.PortfolioTitle='';
           items.portfolio = items?.Portfolio;
           items.PortfolioTitle = items?.Portfolio?.Title;
           // items["Portfoliotype"] = "Component";
         }
-
+        if(items?.Project?.Id!=undefined){
+          items.Project = AllFlatProject?.find((Project: any) => Project?.Id == items?.Project?.Id)
+        }
+        
 
         items.TeamMembersSearch = "";
         if (items.AssignedTo != undefined) {
@@ -902,7 +904,7 @@ const ProjectManagementMain = (props: any) => {
 
   const LoadAllSiteAllTasks = async function () {
     try {
-      AllSitesAllTasks = await globalCommon?.loadAllSiteTasks(AllListId, undefined);
+      AllSitesAllTasks = await globalCommon?.loadAllSiteTasks(AllListId);
       return AllSitesAllTasks
     } catch (e) {
       console.log(e)
@@ -980,7 +982,7 @@ const ProjectManagementMain = (props: any) => {
     renderData = [];
     renderData = renderData.concat(getData);
     refreshData();
-    if (callback == true) {
+    if(callback){
       LoadAllSiteTasks();
     }
   }, []);
@@ -1419,15 +1421,46 @@ const ProjectManagementMain = (props: any) => {
     setMasterdata(projectData);
     setData(displayTasks);
   };
-
+const  AncCallback = (type: any) => {
+    switch (type) {
+      case 'anc': {
+        relevantDocRef?.current?.loadAllSitesDocuments()
+        break
+      }
+      case 'smartInfo': {
+        smartInfoRef?.current?.GetResult();
+        break
+      }
+      default: {
+        relevantDocRef?.current?.loadAllSitesDocuments()
+           smartInfoRef?.current?.GetResult();
+           keyDocRef?.current?.loadAllSitesDocumentsEmail()
+        break
+      }
+    }
+  }
 
   const inlineCallBackMasterTask = React.useCallback((item: any) => {
-
+    item.taggedPortfolios = Masterdata?.taggedPortfolios
     setMasterdata(item);
-
   }, []);
+  const contextCall = React.useCallback((data: any, path: any, releventKey: any) => {
+    if (data != null &&  path != null && path != "") {
+      Setkeydoc(data)
+      SetFileDirRef(path)
+    }
+    if (releventKey) {
+      relevantDocRef?.current?.loadAllSitesDocuments()
+     
+    }
+    else if(data==null && path==null && releventKey== false ){
+      keyDocRef?.current?.loadAllSitesDocumentsEmail()
+      relevantDocRef?.current?.loadAllSitesDocuments()
+    }
+  },[])
+
   return (
-    <myContextValue.Provider value={{ ...myContextValue, ProjectLandingPageDetails: Masterdata, closeCompTaskPopup: tagAndCreateCallBack, projectCallBackTask: LoadAllSiteTasks, portfolioCreationCallBack: ComponentServicePopupCallBack, tagProjectFromTable: true }}>
+    <myContextValue.Provider value={{ ...myContextValue,user:AllUser ,ProjectLandingPageDetails: Masterdata,FunctionCall: contextCall,keyDoc: keydoc, FileDirRef: FileDirRef ,closeCompTaskPopup: tagAndCreateCallBack, projectCallBackTask: LoadAllSiteTasks, portfolioCreationCallBack: ComponentServicePopupCallBack, tagProjectFromTable: true }}>
 
       <div>
         {QueryId != "" ? (
@@ -1568,6 +1601,7 @@ const ProjectManagementMain = (props: any) => {
                                     {projectId && (
                                       <TagTaskToProjectPopup
                                         projectItem={Masterdata}
+                                        masterTaskData={MasterListData}
                                         className="ms-2"
                                         projectId={projectId}
                                         AllListId={AllListId}
@@ -1715,6 +1749,7 @@ const ProjectManagementMain = (props: any) => {
 
                                   </div>
                                 </div>
+           <div className='p-0'> {Masterdata?.Id != undefined && <KeyDocuments ref={relevantDocRef} AllListId={AllListId} Context={props?.Context} siteUrl={AllListId?.siteUrl}  DocumentsListID={AllListId.DocumentsListID}  siteName={"Master Tasks"} folderName={Masterdata?.Title} keyDoc={true}></KeyDocuments>}</div>
                               </div>
                             </div>
                           </section>
@@ -1733,6 +1768,12 @@ const ProjectManagementMain = (props: any) => {
                               )}
                             </span>
                           </div>
+                           <div>
+                          <AncTool item={Masterdata} callBack={AncCallback} AllListId={AllListId} Context={props.Context}listName={"Master Tasks"} />
+                          </div>
+                          <div>{Masterdata?.Id && <SmartInformation ref={smartInfoRef} Id={Masterdata?.Id} AllListId={AllListId} Context={props?.Context} taskTitle={Masterdata?.Title} listName={"Master Tasks"} />}</div>
+                  <div> {Masterdata?.Id != undefined && <RelevantDocuments ref={relevantDocRef} AllListId={AllListId} Context={props?.Context} siteUrl={AllListId?.siteUrl} DocumentsListID={AllListId.DocumentsListID} ID={Masterdata?.Id} siteName={"Master Tasks"} folderName={Masterdata?.Title}Keydoc={true}></RelevantDocuments>}</div>
+                  <div> {Masterdata?.Id != undefined && <RelevantEmail ref={keyDocRef} AllListId={AllListId} Context={props?.Context} siteUrl={AllListId?.siteUrl} DocumentsListID={AllListId?.DocumentsListID} ID={Masterdata?.Id} siteName={"Master Tasks"} folderName={Masterdata?.Title} ></RelevantEmail>}</div>
                         </div>
                       </div>
 
@@ -1743,6 +1784,9 @@ const ProjectManagementMain = (props: any) => {
                               <div className="wrapper project-management-Table">
                                 {(data?.length == 0 || data?.length > 0) && <GlobalCommanTable AllListId={AllListId} headerOptions={headerOptions} updatedSmartFilterFlatView={false}
                                   projectmngmnt={"projectmngmnt"}
+                                  masterTaskData={MasterListData}
+                                  PortfolioFeature={Masterdata?.Item_x0020_Type == "Sprint"? 'Feature':''}
+                                  AllSitesTaskData={AllSitesAllTasks}
                                   MasterdataItem={Masterdata}
                                   columns={column2} data={data} callBackData={callBackData}
                                   smartTimeTotalFunction={smartTimeTotal} SmartTimeIconShow={true}
