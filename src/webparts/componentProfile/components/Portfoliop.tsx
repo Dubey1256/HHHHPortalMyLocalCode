@@ -24,6 +24,7 @@ import InlineEditingcolumns from "../../projectmanagementOverviewTool/components
 import ServiceComponentPortfolioPopup from "../../../globalComponents/EditTaskPopup/ServiceComponentPortfolioPopup";
 import { SlArrowDown, SlArrowRight } from "react-icons/sl";
 import CentralizedSiteComposition from "../../../globalComponents/SiteCompositionComponents/CentralizedSiteComposition";
+import KeyDocuments from "../../taskprofile/components/KeyDocument";
 const sp = spfi();
 let AllClientCategoryDataBackup: any = [];
 // Work the Inline Editing
@@ -407,9 +408,11 @@ let count = 0;
 let ParentData: any[] = [];
 
 let AllMasterTaskData: any = [];
+let keyDocRef:any;
+
 function Portfolio({ SelectedProp, TaskUser }: any) {
   AllTaskuser = TaskUser;
-
+  keyDocRef=React.useRef();
 
   const relevantDocRef: any = React.createRef();
   const smartInfoRef: any = React.createRef();
@@ -556,7 +559,7 @@ function Portfolio({ SelectedProp, TaskUser }: any) {
     
     loadAllMasterTask();
     let web = ContextValue.siteUrl;
-    let url = `${web}/_api/lists/getbyid('${ContextValue.MasterTaskListID}')/items?$select=ItemRank,Item_x0020_Type,Portfolios/Id,Portfolios/Title,PortfolioType/Id,PortfolioType/Title,PortfolioType/Color,PortfolioType/IdRange,Site,FolderID,PortfolioStructureID,ValueAdded,Idea,TaskListName,TaskListId,WorkspaceType,CompletedDate,ClientActivityJson,ClientSite,Item_x002d_Image,Sitestagging,SiteCompositionSettings,TechnicalExplanations,Deliverables,Author/Id,Author/Title,Editor/Id,Editor/Title,Package,Short_x0020_Description_x0020_On,Short_x0020_Description_x0020__x,Short_x0020_description_x0020__x0,AdminNotes,AdminStatus,Background,Help_x0020_Information,BasicImageInfo,Item_x0020_Type,AssignedTo/Title,AssignedTo/Name,AssignedTo/Id,Categories,FeedBack,ComponentLink,FileLeafRef,Title,Id,Comments,StartDate,DueDate,Status,Body,Company,Mileage,PercentComplete,FeedBack,Attachments,Priority,PriorityRank,Created,Modified,TeamMembers/Id,TeamMembers/Title,Parent/Id,Parent/Title,Parent/ItemType,TaskCategories/Id,TaskCategories/Title,ClientCategory/Id,ClientCategory/Title&$expand=Author,Editor,ClientCategory,Parent,AssignedTo,TeamMembers,PortfolioType,Portfolios,TaskCategories&$filter=Id eq ${ID}&$top=4999`;
+    let url = `${web}/_api/lists/getbyid('${ContextValue.MasterTaskListID}')/items?$select=ItemRank,Item_x0020_Type,Portfolios/Id,Portfolios/Title,PortfolioType/Id,PortfolioType/Title,PortfolioType/Color,PortfolioType/IdRange,Site,FolderID,PortfolioStructureID,ValueAdded,Idea,TaskListName,TaskListId,WorkspaceType,CompletedDate,ClientActivityJson,ClientSite,Item_x002d_Image,Sitestagging,SiteCompositionSettings,TechnicalExplanations,Deliverables,Author/Id,Author/Title,Editor/Id,Editor/Title,Package,Short_x0020_Description_x0020_On,Short_x0020_Description_x0020__x,Short_x0020_description_x0020__x0,AdminNotes,AdminStatus,Background,Help_x0020_Information,BasicImageInfo,Item_x0020_Type,AssignedTo/Title,AssignedTo/Name,AssignedTo/Id,Categories,FeedBack,ComponentLink,FileLeafRef,Title,Id,Comments,StartDate,DueDate,Status,Body,Company,Mileage,PercentComplete,FeedBack,Attachments,Priority,PriorityRank,Created,Modified,TeamMembers/Id,TeamMembers/Title,Parent/Id,Parent/Title,Parent/ItemType,TaskCategories/Id,TaskCategories/Title,ClientCategory/Id,ClientCategory/Title,FeatureType/Title,FeatureType/Id&$expand=Author,Editor,ClientCategory,Parent,AssignedTo,TeamMembers,PortfolioType,Portfolios,FeatureType,TaskCategories&$filter=Id eq ${ID}&$top=4999`;
     let response: any = [];
     let responsen: any = []; // this variable is used for storing list items
     let SiteCompositionTemp: any = [];
@@ -581,6 +584,11 @@ function Portfolio({ SelectedProp, TaskUser }: any) {
                 : item.TeamMembers.results;
 
             item.siteUrl = ContextValue.siteUrl;
+            item.FeatureTypeTitle = ''
+            if(item?.FeatureType?.Id!=undefined){
+                item.FeatureTypeTitle = item?.FeatureType?.Title
+            }   
+
             if (item.Sitestagging?.length > 0) {
               SiteCompositionTemp = JSON.parse(item.Sitestagging);
             } else {
@@ -948,7 +956,7 @@ function Portfolio({ SelectedProp, TaskUser }: any) {
   };
 
   // ********* anc calll back ****************
-  const AncCallback = (type: any) => {
+  const  AncCallback = (type: any) => {
     switch (type) {
       case 'anc': {
         relevantDocRef?.current?.loadAllSitesDocuments()
@@ -960,20 +968,27 @@ function Portfolio({ SelectedProp, TaskUser }: any) {
       }
       default: {
         relevantDocRef?.current?.loadAllSitesDocuments()
-        smartInfoRef?.current?.GetResult();
+           smartInfoRef?.current?.GetResult();
+           keyDocRef?.current?.loadAllSitesDocumentsEmail()
         break
       }
     }
   }
-  const contextCall = (data: any, path: any, component: any) => {
-    if (data != null && path != null) {
+
+  const contextCall = React.useCallback((data: any, path: any, releventKey: any) => {
+    if (data != null &&  path != null && path != "") {
       Setkeydoc(data)
       SetFileDirRef(path)
     }
-    if (component) {
-      this?.relevantDocRef?.current?.loadAllSitesDocuments()
+    if (releventKey) {
+      relevantDocRef?.current?.loadAllSitesDocuments()
+     
     }
-  };
+    else if(data==null && path==null && releventKey== false ){
+      keyDocRef?.current?.loadAllSitesDocumentsEmail()
+      relevantDocRef?.current?.loadAllSitesDocuments()
+    }
+  },[])
 
 
   //  inline editing callback 
@@ -1065,7 +1080,7 @@ function Portfolio({ SelectedProp, TaskUser }: any) {
 
 
   return (
-    <myContextValue.Provider value={{ ...myContextValue, FunctionCall: contextCall, keyDoc: keydoc, FileDirRef: FileDirRef,ColorCode:data[0]?.PortfolioType?.Color }}>
+    <myContextValue.Provider value={{ ...myContextValue, user:AllTaskuser,FunctionCall: contextCall, keyDoc: keydoc, FileDirRef: FileDirRef,ColorCode:data[0]?.PortfolioType?.Color } }>
       <div >
         {/* breadcrumb & title */}
         <section className="ContentSection">
@@ -1617,6 +1632,15 @@ function Portfolio({ SelectedProp, TaskUser }: any) {
                           ))} */}
                       </dd>
                     </dl>
+                    <dl>
+                      <dt className="bg-fxdark" title="Feature Type">Feature Type</dt>
+                      <dd className="bg-light text-break">
+                        {data?.length > 0 &&
+                          <span>{data[0]?.FeatureType?.Title}</span>
+                        }
+                        
+                      </dd>
+                    </dl>
 
                   </div>
                   <div className="col-md-12">
@@ -1887,6 +1911,7 @@ function Portfolio({ SelectedProp, TaskUser }: any) {
                             </div>
                           </details>
                         )}
+                         {<KeyDocuments ref={relevantDocRef} AllListId={SelectedProp} Context={SelectedProp?.Context} siteUrl={SelectedProp?.siteUrl}  DocumentsListID={SelectedProp.DocumentsListID}  siteName={"Master Tasks"} folderName={data[0]?.Title} keyDoc={true}></KeyDocuments>}
                       </div>
                     </section>
                   </div>
@@ -2034,7 +2059,8 @@ function Portfolio({ SelectedProp, TaskUser }: any) {
                         siteName={"Master Tasks"}
                         folderName={item?.Title}
                       ></RelevantDocuments>
-                      <RelevantEmail ref={this?.relevantDocRef}
+                     <RelevantEmail 
+                        ref={keyDocRef}
                         AllListId={SelectedProp}
                         Context={SelectedProp?.Context}
                         siteUrl={SelectedProp?.siteUrl}
@@ -2063,7 +2089,9 @@ function Portfolio({ SelectedProp, TaskUser }: any) {
               </div>
             </div>
           </section>
+         
         </section>
+        
         {/* table secation artical */}
 
         {data.map((item: any) => (

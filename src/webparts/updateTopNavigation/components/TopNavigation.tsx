@@ -647,7 +647,7 @@ const TopNavigation = (dynamicData: any) => {
                   </span>
                   <span className="float-end ms-2">
                     <span
-                      className="svg__iconbox svg__icon--editBox"
+                      className="alignIcon svg__iconbox svg__icon--editBox"
                       onClick={() => editPopup(item)}
                     ></span>
                    
@@ -681,11 +681,11 @@ const TopNavigation = (dynamicData: any) => {
                             </span>
                             <span className="float-end">
                               <span
-                                className="svg__iconbox svg__icon--editBox"
+                                className="alignIcon svg__iconbox svg__icon--editBox"
                                 onClick={() => editPopup(child)}
                               ></span>
                               <span
-                                className="svg__iconbox svg__icon--Switcher"
+                                className="alignIcon svg__iconbox svg__icon--Switcher"
                                 onClick={() => sortItem(item.childs)}
                               ></span>
                               {/* <span
@@ -722,11 +722,11 @@ const TopNavigation = (dynamicData: any) => {
                                       </span>
                                       <span className="float-end">
                                         <span
-                                          className="svg__iconbox svg__icon--editBox"
+                                          className="alignIcon svg__iconbox svg__icon--editBox"
                                           onClick={() => editPopup(subchild)}
                                         ></span>
                                         <span
-                                          className="svg__iconbox svg__icon--Switcher"
+                                          className="alignIcon svg__iconbox svg__icon--Switcher"
                                           onClick={() => sortItem(child.childs)}
                                         ></span>
                                         {/* <span
@@ -782,13 +782,13 @@ const TopNavigation = (dynamicData: any) => {
                                                   </span>
                                                   <span className="float-end">
                                                     <span
-                                                      className="svg__iconbox svg__icon--editBox"
+                                                      className="alignIcon svg__iconbox svg__icon--editBox"
                                                       onClick={() =>
                                                         editPopup(subchildLast)
                                                       }
                                                     ></span>
                                                     <span
-                                                      className="svg__iconbox svg__icon--Switcher"
+                                                      className="alignIcon svg__iconbox svg__icon--Switcher"
                                                       onClick={() =>
                                                         sortItem(
                                                           subchild.childs
