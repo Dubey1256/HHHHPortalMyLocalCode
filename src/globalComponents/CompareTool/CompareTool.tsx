@@ -12,6 +12,7 @@ import _ from "lodash";
 import HtmlEditorCard from "../HtmlEditor/HtmlEditor";
 import Picker from "../EditTaskPopup/SmartMetaDataPicker";
 import { FaLeftLong, FaRightLong } from "react-icons/fa6";
+import PageLoader from "../pageLoader";
 import DatePicker from "react-datepicker";
 import ServiceComponentPortfolioPopup from "../EditTaskPopup/ServiceComponentPortfolioPopup";
 import { TbRuler2Off } from "react-icons/tb";
@@ -42,7 +43,8 @@ const CompareTool = (props: any) => {
     const [categorySearchKey, setCategorySearchKey] = React.useState<any>('');
     const [AllMasterTasksItems, setAllMasterTasksItems] = React.useState<any>({});
     const [selectedData, setSelectedData] = React.useState([]);
-    const [AllCommentModal, setAllCommentModal] = React.useState<any>(false)
+    const [AllCommentModal, setAllCommentModal] = React.useState<any>(false) 
+    const [showLoader, setshowLoader] = React.useState<any>(false)
     const rerender = React.useReducer(() => ({}), {})[1]
     const [ItemRankArray, setItemRankArray]: any = useState([
         { rankTitle: 'Select Item Rank', rank: null },
@@ -89,6 +91,7 @@ const CompareTool = (props: any) => {
                     if (Items?.length === count) {
                         setData(Items);
                         setVersionHistory(Items);
+                        setshowLoader(false);
                     }
                 }).catch((err: any) => {
                     console.error(err);
@@ -286,7 +289,7 @@ const CompareTool = (props: any) => {
                     selectedDataValue.push(elem?.original)
                 }
             })
-
+            setshowLoader(true);
             setSelectedData(selectedDataValue)
             getTaskUsers();
             SmartMetaDataListInformations();
@@ -1166,7 +1169,7 @@ const CompareTool = (props: any) => {
                                 </a></Label>
                             </Col>
                             <Col sm="1" md="1" lg="1" className="text-center">
-                                <span><img className="imgWid29" src={`${props?.contextValue?.Context?._pageContext?._site?.absoluteUrl}/SiteCollectionImages/ICONS/Shareweb/SwitchItem_icon.png`} title="Switch Items" onClick={() => switchItems()} /></span>
+                                <span><img className="imgWid29" src={`${props?.contextValue?.siteUrl}/SiteCollectionImages/ICONS/Shareweb/SwitchItem_icon.png`} title="Switch Items" onClick={() => switchItems()} /></span>
                             </Col>
                             <Col sm="5" md="5" lg="5" className="alignCenter siteColor">
                                 <span className="Dyicons me-1">{data[1]?.Item_x0020_Type.charAt(0)}</span> <Label>
@@ -2477,6 +2480,7 @@ const CompareTool = (props: any) => {
                         </div>
                     </div>
                 </footer>
+                {showLoader ? <PageLoader/>:''}
             </Panel>
             {
                 categories?.condition && <Picker
@@ -2584,7 +2588,7 @@ const CompareTool = (props: any) => {
                     </footer>
 
                 </div>
-
+                            
             </Panel>
         </>
     );
