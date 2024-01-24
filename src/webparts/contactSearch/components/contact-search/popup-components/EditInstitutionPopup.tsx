@@ -23,6 +23,7 @@ const EditInstitutionPopup=(props:any)=>{
 React.useEffect(()=>{
     getSmartMetaData();
     if(myContextData2.allSite?.MainSite){
+    
     jointInstitutionDetails(props.props.Id);
     }else{
         HrGmbhInstitutionDeatails(props?.props?.Id)
@@ -54,7 +55,7 @@ const HrGmbhInstitutionDeatails=async(Id:any)=>{
                     jointInstitutionDetails(data?.SmartInstitutionId)
                 }
                 if(myContextData2?.divisionData!=undefined){
-                 tagDivision=   myContextData2?.divisionData?.filter((divData:any)=>divData?.Institution?.Id==data?.Id)
+                 tagDivision=   myContextData2?.divisionData?.filter((divData:any)=>divData?.Institution!=undefined?divData?.Institution?.Id==data?.Id:divData?.InstitutionId==data?.Id)
                 }
                 if(tagDivision?.length>0){
                     data.Institution=  tagDivision
@@ -100,7 +101,7 @@ const HrGmbhInstitutionDeatails=async(Id:any)=>{
                     JointData=data;
                   }else{
                     if(myContextData2?.divisionData!=undefined){
-                        tagDivision=   myContextData2?.divisionData?.filter((divData:any)=>divData?.Parent?.Id==data?.Id)
+                        tagDivision=   myContextData2?.divisionData?.filter((divData:any)=> divData?.Parent?.Id==data?.Id)
                        }
                        if(tagDivision?.length>0){
                            data.Institution=  tagDivision
@@ -357,28 +358,47 @@ const CreateDivision= async()=>{
                     
                 } 
             }
-
-        let web = new Web(myContextData2?.allListId?.jointSiteUrl);
-        await web.lists.getById(myContextData2?.allListId?.HHHHInstitutionListId).items.add(jointData ).then(async (data) => {
-            console.log("joint institution post sucessfully", data)
-            if (myContextData2?.allSite?.GMBHSite || myContextData2?.allSite?.HrSite) {
+            
+            let tagdiv= updateData?.Institution
+            if(tagdiv==undefined){
+                tagdiv=[]
+            }
+           let copydivsion:any=myContextData2?.divisionData;
+    if (myContextData2?.allSite?.GMBHSite || myContextData2?.allSite?.HrSite) {
                 let web = new Web(myContextData2?.allListId?.siteUrl);
                 await web.lists.getById(myContextData2?.allSite?.GMBHSite ? myContextData2?.allListId?.GMBH_CONTACT_SEARCH_LISTID : myContextData2?.allListId?.HR_EMPLOYEE_DETAILS_LIST_ID)
                 .items.add(localData).then((newData) => {
                     console.log("local institution also done")
+                    newData.data.Parent={
+                       Id: newData?.data?.ParentId
+                    } 
+                    tagdiv.push(newData?.data)
+                    copydivsion.push(newData?.data)
+                    myContextData2?.setDivisionData(copydivsion)
+                 
+                  setUpdateData({...updateData,Institution:tagdiv})
                     setOpenDivision(false)
                     
-                    // setInstitutionData(newData?.data)
                 }).catch((error: any) => {
                 console.log(error)
                 })
             } else {
-               
+                let web = new Web(myContextData2?.allListId?.jointSiteUrl);
+           await web.lists.getById(myContextData2?.allListId?.HHHHInstitutionListId).items.add(jointData ).then(async (data) => {
+            console.log("joint institution post sucessfully", data)
+            data.data.Parent={
+                Id: data?.data?.ParentId
+             } 
+            tagdiv.push(data?.data)
+                    copydivsion.push(data?.data)
+            myContextData2?.setDivisionData(copydivsion)
+         setUpdateData({...updateData,Institution:tagdiv})
                 setOpenDivision(false)
                 console.log("request success");
+            })
             }
 
-        })
+        
     } catch (error) {
         console.log("eeeorCreate Institution", error.message)
     }
@@ -398,10 +418,7 @@ const getSmartMetaData = async () => {
                 countryData.push(item)
                
             }
-            // else if (item.TaxType == "State") {
-            //     stateData.push(item)
-            // }
-
+            
         })
         setCountryData(countryData);
         // setStateData(stateData);
@@ -421,17 +438,34 @@ const CloseCountryPopup = React.useCallback((data:any) => {
 
 
 const DeleteDivision= async(divisiondetails:any)=>{
+let copyDivision=myContextData2.divisionData
+let filterDivision:any
     let copyInstitutionData=updateData
-    copyInstitutionData?.Institution?.map((division:any)=>division?.Id!=divisiondetails?.Id)
-    setUpdateData(copyInstitutionData);
-
-    let web = new Web(myContextData2?.allListId?.siteUrl);
+    if( copyInstitutionData?.Institution?.length==1){
+        copyInstitutionData.Institution=[]
+    }else if( copyInstitutionData?.Institution?.length>1){
+        copyInstitutionData?.Institution?.filter((division:any)=>division?.Id!=divisiondetails?.Id)
+    }
+     setUpdateData(copyInstitutionData);
+    if( myContextData2?.divisionData!=undefined){
+        filterDivision = copyDivision?.filter((divData:any)=>divData?.Id!=divisiondetails?.Id)
+        myContextData2?.setDivisionData(filterDivision)
+    //  myContextData2.divisionData=[...filterDivision]
+   
+      }
+     let web = new Web(myContextData2?.allListId?.siteUrl);
     await web.lists.getById(myContextData2.allSite?.MainSite?myContextData2?.allListId?.HHHHInstitutionListId:myContextData2.allSite?.HrSite?myContextData2?.allListId?.HR_EMPLOYEE_DETAILS_LIST_ID:myContextData2?.allListId?.GMBH_CONTACT_SEARCH_LISTID).items.getById(divisiondetails?.Id).recycle().then(async (data: any) => {
         console.log("request success", data);
-        // callBack();
+
+        setUpdateData((prevData:any) => ({ ...prevData }));
+      
+
+       
+     
     }).catch((error: any) => {
         console.log(error)
     })
+   
 }
 return(
     <>
