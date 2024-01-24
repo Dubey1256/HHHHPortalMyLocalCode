@@ -717,7 +717,7 @@ const TaskDashboard = (props: any) => {
     const columns = React.useMemo(
         () => [
             {
-                internalHeader: "Task Id",
+                internalHeader: "ID",
                 accessor: "TaskID",
                 style: { width: '100px' },
                 showSortIcon: true,
@@ -834,7 +834,7 @@ const TaskDashboard = (props: any) => {
                 ),
             },
             {
-                internalHeader: "% Complete",
+                internalHeader: "% ",
                 accessor: "PercentComplete",
                 style: { width: '42px' },
                 showSortIcon: true,
@@ -905,7 +905,7 @@ const TaskDashboard = (props: any) => {
     const columnTimeReport = React.useMemo(
         () => [
             {
-                internalHeader: "Task Id",
+                internalHeader: "ID",
                 accessor: "TaskID",
                 style: { width: '70px' },
                 showSortIcon: true,
@@ -1008,7 +1008,7 @@ const TaskDashboard = (props: any) => {
             },
 
             {
-                internalHeader: "% Complete",
+                internalHeader: "% ",
                 accessor: "PercentComplete",
                 style: { width: '55px' },
                 showSortIcon: true,
