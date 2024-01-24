@@ -117,7 +117,7 @@ const SmartInformation = (props: any, ref: any) => {
 
     // GetResult();
 
-  }, [show])
+  }, [])
   useImperativeHandle(ref, () => ({
     GetResult
   }))
@@ -266,8 +266,8 @@ const SmartInformation = (props: any, ref: any) => {
         const web = new Web(props?.AllListId?.siteUrl);
         await web.lists.getById(props?.AllListId?.DocumentsListID)
           .items.select("Id,Title,PriorityRank,Year,Item_x0020_Cover,Body,Portfolios/Id,Portfolios/Title,File_x0020_Type,FileLeafRef,FileDirRef,ItemRank,ItemType,Url,Created,Modified,Author/Id,Author/Title,Editor/Id,Editor/Title,EncodedAbsUrl")
-          .expand("Author,Editor,Portfolios").filter(`SmartInformation/ID  eq ${items?.Id}`).top(4999)
-          .get()
+          .expand("Author,Editor,Portfolios").filter(`SmartInformation/ID  eq ${items?.Id}`).getAll()
+       
           .then(async (result: any[]) => {
             console.log(result);
             result?.map((servicecomponent: any) => {
@@ -629,7 +629,7 @@ const SmartInformation = (props: any, ref: any) => {
 
   const addDocument = async (Status: any, items: any) => {
     setsmartDocumentpostData(items)
-    if (Status == "AddDocument") {
+    if (Status == "AddDocument"||popupEdit) {
       setshowAdddocument(true)
       setTimeout(() => {
         const panelMain: any = document.querySelector('.ms-Panel-main');
@@ -638,7 +638,7 @@ const SmartInformation = (props: any, ref: any) => {
         }
     }, 1000)
     }
-    else {
+    else  {
     
       addSmartInfoPopupAddlinkDoc2 = true;
       await saveSharewebItem().then((resolve:any)=>{
@@ -1002,8 +1002,8 @@ const SmartInformation = (props: any, ref: any) => {
                               {item.Url == null && <span><a className='px-2' href={`${item?.EncodedAbsUrl}?web=1`} target="_blank" data-interception="off"> <span>{item?.Title}</span></a></span>}
                               {item.Url != null && <span><a className='px-2' href={`${item?.Url?.Url}`} target="_blank" data-interception="off"> <span>{item?.Title}</span></a></span>}
                             </li>
-                            <li className='d-end'>
-                              <span title="Edit" className="svg__iconbox svg__icon--edit hreflink" onClick={() => editDocumentsLink(item)}></span>
+                            <li className='ml-auto'>
+                              <span title="Edit" className="svg__iconbox svg__icon--edit hreflink alignIcon" onClick={() => editDocumentsLink(item)}></span>
                             </li>
 
                           </ul>

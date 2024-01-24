@@ -1970,19 +1970,14 @@ function TeamPortlioTable(SelectedProp: any) {
     };
     const onRenderCustomHeaderMain1 = () => {
         return (
-            <div className="d-flex full-width pb-1">
-                <div
-                    style={{
-                        marginRight: "auto",
-                        fontSize: "20px",
-                        fontWeight: "600",
-                        marginLeft: "20px",
-                    }}
-                >
-                    <span>{`Create Component `}</span>
+            <>
+                <div className="subheading alignCenter">
+                    <>
+                        {checkedList != null && checkedList != undefined && checkedList?.SiteIconTitle != undefined && checkedList?.SiteIconTitle != null ? <span className="Dyicons me-2" >{checkedList?.SiteIconTitle}</span> : ''} {`${checkedList != null && checkedList != undefined && checkedList?.Title != undefined && checkedList?.Title != null ? checkedList?.Title
+                            + '- Create Child Component' : 'Create Component'}`}</>
                 </div>
                 <Tooltip ComponentId={checkedList?.Id} />
-            </div>
+            </>
         );
     };
 
@@ -2373,7 +2368,7 @@ function TeamPortlioTable(SelectedProp: any) {
                 />
             </Panel>
 
-            {openCompareToolPopup && <CompareTool isOpen={openCompareToolPopup} compareToolCallBack={compareToolCallBack} compareData={childRef?.current?.table?.getSelectedRowModel()?.flatRows} contextValue={SelectedProp?.NextProp}/>}
+            {openCompareToolPopup && <CompareTool isOpen={openCompareToolPopup} compareToolCallBack={compareToolCallBack} compareData={childRef?.current?.table?.getSelectedRowModel()?.flatRows} contextValue={SelectedProp?.SelectedProp} />}
 
             <Panel
                 onRenderHeader={onRenderCustomHeaderMain}
