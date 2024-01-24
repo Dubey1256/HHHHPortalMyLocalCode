@@ -138,8 +138,6 @@ export const PopHoverBasedOnTaskId = (item: any) => {
     //     }
     return finalArray = structur?.slice(-1);
 }
-
-
 export const hierarchyData = (items: any, MyAllData: any) => {
     var MasterListData: any = []
     var ChildData: any = []
