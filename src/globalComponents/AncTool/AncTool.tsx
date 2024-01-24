@@ -96,7 +96,7 @@ const AncTool = (props: any) => {
         }
         pathGenerator();
         rootSiteName = props.Context.pageContext.site.absoluteUrl.split(props.Context.pageContext.site.serverRelativeUrl)[0];
-    }, [])
+    }, [modalIsOpen])
     React.useEffect(() => {
         setTimeout(() => {
             const panelMain: any = document.querySelector('.ms-Panel-main');
@@ -443,6 +443,15 @@ const AncTool = (props: any) => {
             return null;
         }
     }
+    const getUploadedFileName = (fileName: any) => {
+        const indexOfLastDot = fileName?.lastIndexOf('.');
+        if (indexOfLastDot !== -1) {
+            const extractedPart = fileName?.substring(0, indexOfLastDot);
+            return extractedPart;
+        }else{
+            return fileName
+        }
+    }
 
     const handleUpload = async (uploadselectedFile: any) => {
         let emailDoc: any = [];
@@ -465,9 +474,9 @@ const AncTool = (props: any) => {
         setTimeout(async () => {
             if (renamedFileName?.length > 0 && selectedFile.name?.length > 0) {
                 filetype = getFileType(selectedFile != undefined ? selectedFile.name : uploadselectedFile.name)
-                fileName = renamedFileName + `.${filetype}`;
+                fileName = sanitizeFileName(renamedFileName) + `.${filetype}`;
             } else {
-                fileName = selectedFile != undefined ? selectedFile.name : uploadselectedFile.name;
+                fileName = selectedFile != undefined ? sanitizeFileName(selectedFile.name) : sanitizeFileName(uploadselectedFile.name);
             }
             if (isFolderAvailable == false) {
                 try {
@@ -571,7 +580,7 @@ const AncTool = (props: any) => {
                                                     let postData = {
                                                         [siteColName]: { "results": resultArray },
                                                         ItemRank: itemRank,
-                                                        Title: attachfile?.Name
+                                                        Title: getUploadedFileName(attachfile?.Name)
                                                     }
                                                     if (props?.item?.Portfolio?.Id != undefined) {
                                                         postData.PortfoliosId = { "results": [props?.item?.Portfolio?.Id] };
@@ -629,7 +638,7 @@ const AncTool = (props: any) => {
                                                         let postData = {
                                                             [siteColName]: { "results": resultArray },
                                                             ItemRank: itemRank,
-                                                            Title: fileName
+                                                            Title: getUploadedFileName(fileName)
                                                         }
                                                         if (props?.item?.Portfolio?.Id != undefined) {
                                                             postData.PortfoliosId = { "results": [props?.item?.Portfolio?.Id] };
@@ -822,7 +831,7 @@ const AncTool = (props: any) => {
                                     let postData = {
                                         [siteColName]: { "results": resultArray },
                                         ItemRank: 5,
-                                        Title: fileName
+                                        Title: getUploadedFileName(fileName)
                                     }
                                     if (props?.item?.Portfolio?.Id != undefined) {
                                         postData.PortfoliosId = { "results": [props?.item?.Portfolio?.Id] };
@@ -1206,7 +1215,7 @@ const AncTool = (props: any) => {
                     '<mso:CustomDocumentProperties>' +
                     '<mso:ContentTypeId msdt:dt="string">0x01010A00A9B5E70634EEA14BBCC80A59F37723F3</mso:ContentTypeId>' +
                     '<mso:IconOverlay msdt:dt="string">|docx?d=wb030a1c46dee4fd6ac9e319218f7b63b|linkoverlay.gif</mso:IconOverlay>' +
-                    '<mso:Url msdt:dt="string">' + LinkToDocUrl + ', ' + LinkToDocUrl + '</mso:Url>' +
+                    '<mso:Url msdt:dt="string">' + encodeURIComponent(LinkToDocUrl) + ', ' + encodeURIComponent(LinkToDocUrl) + '</mso:Url>' +
                     '</mso:CustomDocumentProperties>' +
                     '</xml></SharePoint:CTFieldRefs><![endif]-->' +
                     '</head>' +
@@ -1240,7 +1249,7 @@ const AncTool = (props: any) => {
                                     let postData = {
                                         [siteColName]: { "results": resultArray },
                                         ItemRank: 5,
-                                        Title: fileName,
+                                        Title: getUploadedFileName(fileName),
                                         Url: {
                                             "__metadata": { type: "SP.FieldUrlValue" },
                                             Description: LinkToDocUrl ? LinkToDocUrl : '',
@@ -1301,6 +1310,13 @@ const AncTool = (props: any) => {
         </>
         );
     };
+    function sanitizeFileName(fileName: any) {
+        const sanitizedFileName =fileName.replaceAll(/[~#%&*{}/:<>?/+|"'-]/g, '_');
+        const trimmedFileName = sanitizedFileName.trim();
+        const truncatedFileName = trimmedFileName.substring(0, 260);
+        return truncatedFileName;
+    }
+    
     return (
         <>
             <div className={ServicesTaskCheck ? "serviepannelgreena mb-3 card commentsection" : "mb-3 card commentsection"}>
@@ -1521,7 +1537,7 @@ const AncTool = (props: any) => {
                                                             <Col className='clearfix col mb-2'>
                                                                 <div className='input-group'>
                                                                     <label className='form-label full-width fw-semibold'>URL</label>
-                                                                    <input type="text" onChange={(e) => { setLinkToDocUrl(encodeURIComponent(e.target.value)) }} value={LinkToDocUrl} placeholder='Url' className='form-control' />
+                                                                    <input type="text" onChange={(e) => { setLinkToDocUrl(decodeURIComponent(e.target.value)) }} value={LinkToDocUrl} placeholder='Url' className='form-control' />
                                                                 </div>
                                                             </Col>
 
@@ -1660,19 +1676,19 @@ const AncTool = (props: any) => {
                             <div className="modal-content rounded-0">
                                 <div className="modal-header py-0">
                                     <div className='d-flex full-width justify-content-between pb-1'>
-                                    <div className='subheading m-0'>
-                                        {/* <img className="imgWid29 pe-1 mb-1 " src={Item?.SiteIcon} /> */}
-                                        <span className="siteColor">
-                                            Create New Online File {createNewDocType?.length > 0 ? ` - ${createNewDocType}` : ''}
-                                        </span>
+                                        <div className='subheading m-0'>
+                                            {/* <img className="imgWid29 pe-1 mb-1 " src={Item?.SiteIcon} /> */}
+                                            <span className="siteColor">
+                                                Create New Online File {createNewDocType?.length > 0 ? ` - ${createNewDocType}` : ''}
+                                            </span>
+                                        </div>
+                                        <div className='d-flex'>
+                                            <Tooltip ComponentId="7642" />
+                                            <span style={{ marginTop: "7px" }} onClick={() => cancelNewCreateFile()}><i className="svg__iconbox svg__icon--cross crossBtn me-1"></i></span>
+                                        </div>
                                     </div>
-                                    <div className='d-flex'>
-                                    <Tooltip ComponentId="7642" />
-                                    <span style={{marginTop:"7px"}} onClick={() => cancelNewCreateFile()}><i className="svg__iconbox svg__icon--cross crossBtn me-1"></i></span>
-                                    </div>
-                                    </div>
-                                    
-                                   
+
+
                                 </div>
                                 <div className="modal-body p-2 row">
                                     <div className="AnC-CreateDoc-Icon p-0">
@@ -1842,6 +1858,3 @@ const AncTool = (props: any) => {
 
 export default AncTool;
 
-function myReject(error: any) {
-    throw new Error('Function not implemented.');
-}

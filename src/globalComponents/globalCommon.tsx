@@ -138,6 +138,8 @@ export const PopHoverBasedOnTaskId = (item: any) => {
     //     }
     return finalArray = structur?.slice(-1);
 }
+
+
 export const hierarchyData = (items: any, MyAllData: any) => {
     var MasterListData: any = []
     var ChildData: any = []
@@ -2354,12 +2356,10 @@ export const calculateSmartPriority = (result: any) => {
 function siteCompositionType(jsonStr: any) {
     var data = JSON.parse(jsonStr);
     try {
-        if (data != undefined && data?.length > 0) {
-            data = data[0];
-            for (var key in data) {
-                if (data?.hasOwnProperty(key) && data[key] === true) {
-                    return key;
-                }
+        data = data[0];
+        for (var key in data) {
+            if (data?.hasOwnProperty(key) && data[key] === true) {
+                return key;
             }
         }
         return '';

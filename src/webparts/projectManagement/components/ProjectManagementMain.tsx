@@ -1769,7 +1769,7 @@ const  AncCallback = (type: any) => {
                             </span>
                           </div>
                            <div>
-                          <AncTool item={Masterdata} callBack={AncCallback} AllListId={AllListId} Context={props.Context}listName={"Master Tasks"} />
+                           {Masterdata?.Id &&<AncTool item={Masterdata} callBack={AncCallback} AllListId={AllListId} Context={props.Context}listName={"Master Tasks"} />}
                           </div>
                           <div>{Masterdata?.Id && <SmartInformation ref={smartInfoRef} Id={Masterdata?.Id} AllListId={AllListId} Context={props?.Context} taskTitle={Masterdata?.Title} listName={"Master Tasks"} />}</div>
                   <div> {Masterdata?.Id != undefined && <RelevantDocuments ref={relevantDocRef} AllListId={AllListId} Context={props?.Context} siteUrl={AllListId?.siteUrl} DocumentsListID={AllListId.DocumentsListID} ID={Masterdata?.Id} siteName={"Master Tasks"} folderName={Masterdata?.Title}Keydoc={true}></RelevantDocuments>}</div>
