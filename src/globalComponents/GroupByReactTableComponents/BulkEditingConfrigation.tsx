@@ -1,9 +1,7 @@
 import * as React from "react";
 import { Panel, PanelType } from 'office-ui-fabric-react';
-import DatePicker from "react-datepicker";
 import "react-datepicker/dist/react-datepicker.css";
 import "react-datepicker/dist/react-datepicker-cssmodules.css";
-import { FaFilter } from "react-icons/fa";
 const BulkEditingConfrigation = (item: any) => {
     const [checkboxValues, setCheckboxValues] = React.useState({ priority: false, status: false, dueDate: false, itemRank: false, categories: false, clientCategories: false, Project: false });
 
@@ -58,6 +56,11 @@ const BulkEditingConfrigation = (item: any) => {
                                 <label>
                                     <input type="checkbox" className="cursor-pointer form-check-input rounded-0 me-1" checked={checkboxValues.Project} onChange={() => handleCheckboxChange('Project')} />
                                     Project
+                                </label>
+                                <br />
+                                <label>
+                                    <input type="checkbox" className="cursor-pointer form-check-input rounded-0 me-1" checked={checkboxValues.categories} onChange={() => handleCheckboxChange('categories')} />
+                                    Categories
                                 </label>
                                 {/* <label>
                                     <input type="checkbox" className="cursor-pointer form-check-input rounded-0" checked={checkboxValues.itemRank} onChange={() => handleCheckboxChange('itemRank')} />
