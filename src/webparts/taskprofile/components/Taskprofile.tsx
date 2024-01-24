@@ -1539,8 +1539,7 @@ class Taskprofile extends React.Component<ITaskprofileProps, ITaskprofileState> 
   private onRenderCustomHeadereditcomment = () => {
     return (
       <>
-
-        <div className='siteColor subheading' >
+        <div className='subheading' >
           Update Comment
         </div>
         <Tooltip ComponentId='1683' />
@@ -1559,6 +1558,7 @@ class Taskprofile extends React.Component<ITaskprofileProps, ITaskprofileState> 
     }
     else if(data==null && path==null && releventKey== false ){
       this?.keyDocRef?.current?.loadAllSitesDocumentsEmail()
+      this?. relevantDocRef?.current?.loadAllSitesDocuments()
     }
   };
 
@@ -1567,38 +1567,21 @@ class Taskprofile extends React.Component<ITaskprofileProps, ITaskprofileState> 
   private cleanHTML = (html: any, folora: any, index: any) => {
     const div = document.createElement('div');
     div.innerHTML = html;
-
-    const paragraphs = div.querySelectorAll('p');
-
-    // Filter out empty <p> tags
+   const paragraphs = div.querySelectorAll('p');
+ // Filter out empty <p> tags
     paragraphs.forEach((p) => {
       if (p.innerText.trim() === '') {
         p.parentNode.removeChild(p); // Remove empty <p> tags
       }
     });
-
-    // Replace newline characters with <br> elements
-    div.innerHTML = div.innerHTML.replace(/\n/g, '<br>');
-    if (folora == "folora" && index == 0) {
-      const brTags = div.querySelectorAll('br');
-      let prevBr = null;
-
-      for (let i = brTags.length - 1; i >= 0; i--) {
-        const br = brTags[i];
-        if (prevBr) {
-          br.parentNode.removeChild(br); // Remove consecutive <br> tags
-        }
-        prevBr = br;
-      }
-    }
-
-
-    return div.innerHTML;
+   div.innerHTML = div.innerHTML.replace(/\n/g, '<br>')  // Convert newlines to <br> tags first
+  div.innerHTML = div.innerHTML.replace(/(?:<br\s*\/?>\s*)+(?=<\/?[a-z][^>]*>)/gi, '');
+  
+ 
+ return div.innerHTML;
   };
 
-
-
-  //******* End ****************************/
+//******* End ****************************/
   private callbackTotalTime = ((Time: any) => {
     this.setState(({
       TotalTimeEntry: Time
@@ -1797,7 +1780,7 @@ class Taskprofile extends React.Component<ITaskprofileProps, ITaskprofileState> 
 
 
     return (
-      <myContextValue.Provider value={{ ...myContextValue, FunctionCall: this.contextCall, keyDoc: this.state.keydoc, FileDirRef: this.state.FileDirRef, user:this?.taskUsers }}>
+      <myContextValue.Provider value={{ ...myContextValue, FunctionCall: this.contextCall, keyDoc: this.state.keydoc, FileDirRef: this.state.FileDirRef, user:this?.taskUsers ,ColorCode: this.state.Result["Portfolio"]?.PortfolioType?.Color }}>
         <div>
           <section className='ContentSection'> {this.state.breadCrumData != undefined &&
             <div className='row'>
@@ -2000,9 +1983,13 @@ class Taskprofile extends React.Component<ITaskprofileProps, ITaskprofileState> 
                         <dd className='bg-Ff position-relative' ><span className='tooltipbox'>{this.state.Result["IsTodaysTask"] ? "Yes" : "No"} </span>
                         </dd>
                       </dl>
+
                       <dl>
                         <dt className='bg-Fa'>% Complete</dt>
+
                         <dd className='bg-Ff'>{this.state.Result["PercentComplete"] != undefined ? this.state.Result["PercentComplete"]?.toFixed(0) : 0}</dd>
+
+
                       </dl>
                       <dl>
                         <dt className='bg-Fa'>Priority</dt>
@@ -2623,35 +2610,8 @@ class Taskprofile extends React.Component<ITaskprofileProps, ITaskprofileState> 
                                           </div>
                                         })}
 
-                                        <Panel
-                                          onRenderHeader={this.onRenderCustomHeadereditcomment}
-                                          isOpen={this.state.isEditModalOpen ? this.state.isEditModalOpen : this.state.isEditReplyModalOpen}
-                                          onDismiss={this.Closecommentpopup}
-                                          isBlocking={this.state.isEditModalOpen ? !this.state.isEditModalOpen : !this.state.isEditReplyModalOpen}>
-                                          <div className="modal-body">
-                                            <div className='col'><textarea id="txtUpdateComment" rows={6} className="full-width" onChange={(e) => this.handleUpdateComment(e)}  >{this.state?.CommenttoUpdate}</textarea></div>
-                                          </div>
-                                          <footer className='modal-footer'>
-                                            <button className="btn btn-primary ms-1" onClick={(e) => this.updateComment()}>Save</button>
-                                            <button className='btn btn-default ms-1' onClick={this.Closecommentpopup}>Cancel</button>
+                                    
 
-
-                                          </footer>
-
-
-                                        </Panel>
-
-                                        {this.state.ApprovalHistoryPopup ? <ApprovalHistoryPopup
-                                          ApprovalPointUserData={this.state.ApprovalPointUserData}
-                                          indexSHow={this.state.currentArraySubTextIndex != null ? this.state.ApprovalPointCurrentParentIndex + "." + this.state.currentArraySubTextIndex : this.state.ApprovalPointCurrentParentIndex}
-                                          ApprovalPointCurrentIndex={this.state.ApprovalPointCurrentParentIndex - 1}
-                                          ApprovalPointHistoryStatus={this.state.ApprovalHistoryPopup}
-                                          currentArrayIndex={this.state.currentArraySubTextIndex - 1}
-                                          usefor="TaskProfile"
-
-                                          callBack={() => this.ApprovalHistoryPopupCallBack()}
-                                        />
-                                          : null}
                                       </div>
 
 
@@ -2844,6 +2804,36 @@ class Taskprofile extends React.Component<ITaskprofileProps, ITaskprofileState> 
               showProject={this.state?.isopenProjectpopup}
             />
           }
+             {(this.state?.CommenttoUpdate!=undefined) &&<Panel
+                                          onRenderHeader={this.onRenderCustomHeadereditcomment}
+                                          isOpen={this.state.isEditModalOpen ? this.state.isEditModalOpen : this.state.isEditReplyModalOpen}
+                                          onDismiss={this.Closecommentpopup}
+                                          isBlocking={this.state.isEditModalOpen ? !this.state.isEditModalOpen : !this.state.isEditReplyModalOpen}
+                                          >
+                                          <div className="modal-body">
+                                            <div className='col'>
+                                              <textarea id="txtUpdateComment" rows={6} className="full-width" onChange={(e) => this.handleUpdateComment(e)}  >{this.state?.CommenttoUpdate}</textarea>
+                                              </div>
+                                          </div>
+                                          <footer className='modal-footer mt-2'>
+                                            <button className="btn btn-primary ms-1" onClick={(e) => this.updateComment()}>Save</button>
+                                            <button className='btn btn-default ms-1' onClick={this.Closecommentpopup}>Cancel</button>
+                                            </footer>
+
+
+                                        </Panel>}
+                                        
+                                        {this.state.ApprovalHistoryPopup ? <ApprovalHistoryPopup
+                                          ApprovalPointUserData={this.state.ApprovalPointUserData}
+                                          indexSHow={this.state.currentArraySubTextIndex != null ? this.state.ApprovalPointCurrentParentIndex + "." + this.state.currentArraySubTextIndex : this.state.ApprovalPointCurrentParentIndex}
+                                          ApprovalPointCurrentIndex={this.state.ApprovalPointCurrentParentIndex - 1}
+                                          ApprovalPointHistoryStatus={this.state.ApprovalHistoryPopup}
+                                          currentArrayIndex={this.state.currentArraySubTextIndex - 1}
+                                          usefor="TaskProfile"
+
+                                          callBack={() => this.ApprovalHistoryPopupCallBack()}
+                                        />
+                                          : null}
 
         </div>
       </myContextValue.Provider>

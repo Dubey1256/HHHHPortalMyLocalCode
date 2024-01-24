@@ -2447,7 +2447,7 @@ const EditTaskPopup = (Items: any) => {
             let txtComment = `You have been tagged as ${SendCategoryName == "Bottleneck" ? SendCategoryName : "Attention"} in the below task by ${Items.context.pageContext._user.displayName}`;
             let TeamMsg =
                 txtComment +
-                `</br> <a href=${window.location.href}>${EditData.TaskId}-${EditData.Title}</a>`;
+                `</br> <a href=${siteUrls + "/SitePages/Task-Profile.aspx?taskId=" + EditData.Id + "&Site=" + EditData.siteType}>${EditData.TaskId}-${EditData.Title}</a>`;
             if (SendCategoryName == "Bottleneck") {
                 let sendUserEmail: any = [];
                 TaskAssignedTo?.map((userDtl: any) => {
@@ -2484,7 +2484,11 @@ const EditTaskPopup = (Items: any) => {
                     taskUsers?.map((allUserItem: any) => {
                         if (userDtl.Id == allUserItem.AssingedToUserId) {
                             sendUserEmails.push(allUserItem.Email);
-                            AssignedUserName = allUserItem.Title;
+                            if (AssignedUserName?.length > 0) {
+                                AssignedUserName = "Team";
+                            } else {
+                                AssignedUserName = allUserItem.Title;
+                            }
                         }
                     });
                 });
@@ -2500,14 +2504,14 @@ const EditTaskPopup = (Items: any) => {
                 let SendMessage: string = '';
                 let CommonMsg: string = '';
                 if (TeamMemberChanged) {
-                    CommonMsg = `You have been marked as a working member on the below task by ${Items.context.pageContext._user.displayName}. Please take necessary action (Analyse the points in the task, fill up the Estimation, Set to 10%).`
+                    CommonMsg = `You have been marked as a working member on the below task. Please take necessary action (Analyse the points in the task, fill up the Estimation, Set to 10%).`
                 }
                 if (IsTaskStatusUpdated) {
                     if ((Number(taskPercentageValue) * 100) == 80) {
-                        CommonMsg = `Below task has been set to 80% by ${Items.context.pageContext._user.displayName}, please review it.`
+                        CommonMsg = `Below task has been set to 80%, please review it.`
                     }
                     if ((Number(taskPercentageValue) * 100) == 70) {
-                        CommonMsg = `Below task has been re-opened by ${Items.context.pageContext._user.displayName}. Please review it and take necessary action on priority basis.`
+                        CommonMsg = `Below task has been re-opened. Please review it and take necessary action on priority basis.`
                     }
                 }
 
@@ -2549,6 +2553,7 @@ const EditTaskPopup = (Items: any) => {
 
 
         if (TaskShuoldBeUpdate) {
+           
             try {
                 let web = new Web(siteUrls);
                 await web.lists
@@ -2790,13 +2795,10 @@ const EditTaskPopup = (Items: any) => {
     };
 
     const MakeUpdateDataJSON = async () => {
-        // const attachments = await web.lists.getByTitle('TimesheetListNewId')
-        // .items.getById(Items.Items.Id)
-        // .attachmentFiles.get();
-
         var UploadImageArray: any = [];
         var ApprovalData: any = [];
-
+        const uniqueObjects = [];
+        const idSet = new Set();
         if (TaskImages != undefined && TaskImages.length > 0) {
             TaskImages?.map((imgItem: any) => {
                 if (imgItem.ImageName != undefined && imgItem.ImageName != null) {
@@ -2889,6 +2891,13 @@ const EditTaskPopup = (Items: any) => {
             }
         }
         if (CommentBoxData?.length > 0 || SubCommentBoxData?.length > 0) {
+            for (const obj of SubCommentBoxData) {
+                if (!idSet.has(obj?.Title)) {
+                    idSet.add(obj?.Title);
+                    uniqueObjects.push(obj);
+                }
+            }
+            SubCommentBoxData = uniqueObjects;
             if (CommentBoxData?.length == 0 && SubCommentBoxData?.length > 0) {
                 let message = JSON.parse(EditData.FeedBack);
                 let feedbackArray: any = [];

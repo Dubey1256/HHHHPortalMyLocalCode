@@ -73,15 +73,20 @@ export default function VersionHistory(props: any) {
                     if (val?.Sitestagging?.length > 5) {
                         TempSCDataItems.push(val);
                     }
-                    if (val.FeedBack !== undefined && val.FeedBack !== null && val.FeedBack !== '[]') {
-                        val.FeedBackDescription = JSON.parse(val?.FeedBack)[0].FeedBackDescriptions
-                        if (val.FeedBackDescription !== undefined) {
-                            val?.FeedBackDescription?.map((feedback: any) => {
-                                if (feedback.Title != '')
-                                    feedback.Title = $.parseHTML(feedback?.Title)[0].textContent;
-                            })
+                    try{
+                        if (val.FeedBack !== undefined && val.FeedBack !== null && val.FeedBack !== '[]') {
+                            val.FeedBackDescription = JSON.parse(val?.FeedBack)[0].FeedBackDescriptions
+                            if (val.FeedBackDescription !== undefined) {
+                                val?.FeedBackDescription?.map((feedback: any) => {
+                                    if (feedback.Title != '')
+                                        feedback.Title = $.parseHTML(feedback?.Title)[0].textContent;
+                                })
+                            }
                         }
                     }
+                    catch(e){
+                        console.log(e);
+                    }                   
                     if (val?.BasicImageInfo != undefined) {
                         try {
                             val.BasicImageInfoArray = JSON.parse(val?.BasicImageInfo)
@@ -379,7 +384,7 @@ export default function VersionHistory(props: any) {
                     <div className='dropdown'>
                         <div className="spxdropdown-menu" style={{ display: showComposition ? 'block' : 'none' }}>
                             <ul>
-                                {SitesTaggingArray.map((site: any, indx: any) => {
+                                {SitesTaggingArray?.map((site: any, indx: any) => {
                                     return <li className="Sitelist">
                                         <span>
                                             <img style={{ width: "22px" }} title={site?.Title} src={site?.SiteImages} />
