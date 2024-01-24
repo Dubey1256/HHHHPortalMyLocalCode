@@ -384,7 +384,7 @@ let ID: any;
    //Popup call for smartmetdata min
 
    const Smartmetadatafeature = React.useCallback((data: any) => {
-    if(data === "close"){
+    if(data === "Close"){
         setSmartdatapopup(false)
     }else{
         setSmartdatapopup(false)

@@ -1,7 +1,7 @@
 import React, { useEffect, useState } from 'react';
 import { Panel, PanelType } from 'office-ui-fabric-react';
 import { Web } from 'sp-pnp-js';
-import Tooltip from '../../Tooltip';
+import Tooltip from '../Tooltip';
 
 const Smartmetadatapickerin = (props:any) => {
   const [opensmartmetapopup, setopensmartmetapopup] = useState(true);
@@ -35,10 +35,10 @@ const Smartmetadatapickerin = (props:any) => {
   };
 
   const customHeader = () => (
-    <div>
-      <div className="subheading siteColor">Select Feature Type</div>
+    <>
+      <div className="subheading">Select Feature Type</div>
       <Tooltip ComponentId="1741" />
-    </div>
+    </>
   );
 
   const closePopupSmartPopup = (item:any) => {
@@ -63,11 +63,11 @@ const deleteSelectedFeature = (val: any) => {
     <Panel
       onRenderHeader={customHeader}
       isOpen={opensmartmetapopup}
-      type={PanelType.custom}
-      customWidth="850px"
-      onDismiss={() => setopensmartmetapopup(false)}
+      type={PanelType.medium}
+      onDismiss={closePopupSmartPopup}
       isBlocking={opensmartmetapopup}
     >
+      <div className='modal-body mb-5'>
        {selectedItems?.length > 0 ? (
         <div className="full-width">
           {selectedItems?.map((val: any) => (
@@ -81,39 +81,22 @@ const deleteSelectedFeature = (val: any) => {
           ))}
         </div>
       ) : null}
-
+      <div className='mt-3'>
+<ul className='categories-menu p-0'>
       {allsmartmetdata.map((item, index) => (
-        <div key={index} onClick={() => handleItemClick(item)}>
+        <li key={index} onClick={() => handleItemClick(item)}>
           {item.Title}
-        </div>
+        </li>
       ))}
-         <footer className= "fixed-bottom bg-f4 p-3">
-                        <div className="alignCenter justify-content-between">
-                            <div className="">
-                                <div id="addNewTermDescription">
-                                    <p className="mb-1"> New items are added under the currently selected item.
-                                        <span><a className="hreflink" target="_blank" data-interception="off" href={`${Urls}/SitePages/SmartMetadata.aspx`} > Add New Item </a></span>
-                                    </p>
-                                </div>
-                                <div id="SendFeedbackTr">
-                                    <p className="mb-1">Make a request or send feedback to the Term Set manager.
-                                        <span><a className="hreflink"> Send Feedback </a></span>
-                                    </p>
-                                </div>
-
-                            </div>
-                            <div className="pull-right">
-                                <span>
-                                    <a className="siteColor mx-1" target="_blank" data-interception="off" href={`${Urls}/SitePages/SmartMetadata.aspx`} >Manage Smart Taxonomy</a>
-                                </span>
+      </ul></div></div>
+         <footer className="fixed-bottom bg-f4 p-3">
+                              
                                 <button type="button" className="btn btn-primary px-3 mx-1" onClick={saveselectctedData} >
                                     Save
                                 </button>
-                                <button type="button" className="btn btn-default mx-1" onClick={closePopupSmartPopup} >
+                                <button type="button" className="btn btn-default" onClick={closePopupSmartPopup} >
                                     Cancel
                                 </button>
-                            </div>
-                        </div>
                     </footer>
     </Panel>
   );
