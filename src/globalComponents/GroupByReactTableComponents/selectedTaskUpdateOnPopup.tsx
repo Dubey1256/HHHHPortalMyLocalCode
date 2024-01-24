@@ -80,8 +80,12 @@ const SelectedTaskUpdateOnPopup = (item: any) => {
                                 value.original.PercentComplete = (value?.original?.postStatusValue * 100).toFixed(0);
                             }
                             if (value?.original?.postTaskCategoriesId != undefined) {
-                                let category = item?.activeCategory.filter((elem: any) => value?.original?.postTaskCategoriesId.filter((catVal: any) => elem.Id === catVal))
-                                value.original.TaskCategories = category;
+                                // let category = item?.activeCategory.filter((elem: any) => value?.original?.postTaskCategoriesId.filter((catVal: any) => elem.Id === catVal))
+                                // let category = item?.activeCategory.filter((elem: any) => {
+                                //     const matchingCategories = value?.original?.postTaskCategoriesId.filter((catVal: any) => elem.Id === catVal);
+                                //     return matchingCategories && matchingCategories.length > 0;
+                                // });
+                                value.original.TaskCategories = value?.original?.updatedTaskCatData;
                                 value.original.TaskTypeValue = value?.original?.TaskCategories?.map((val: any) => val.Title).join(",");
                             }
                             if (value.original?.postProjectValue) {
@@ -129,8 +133,12 @@ const SelectedTaskUpdateOnPopup = (item: any) => {
                                     value.original.PercentComplete = (value?.original?.postStatusValue * 100).toFixed(0);
                                 }
                                 if (value?.original?.postTaskCategoriesId != undefined) {
-                                    let category = item?.activeCategory.filter((elem: any) => value?.original?.postTaskCategoriesId.filter((catVal: any) => elem.Id === catVal))
-                                    value.original.TaskCategories = category;
+                                    // let category = item?.activeCategory.filter((elem: any) => value?.original?.postTaskCategoriesId.filter((catVal: any) => elem.Id === catVal))
+                                    // let category = item?.activeCategory.filter((elem: any) => {
+                                    //     const matchingCategories = value?.original?.postTaskCategoriesId.filter((catVal: any) => elem.Id === catVal);
+                                    //     return matchingCategories && matchingCategories.length > 0;
+                                    // });
+                                    value.original.TaskCategories = value?.original?.updatedTaskCatData;
                                     value.original.TaskTypeValue = value?.original?.TaskCategories?.map((val: any) => val.Title).join(",");
                                 }
                                 if (value.original?.postProjectValue) {
@@ -165,7 +173,8 @@ const SelectedTaskUpdateOnPopup = (item: any) => {
                                     delete dataToPush.updatedPortfolioStructureID,
                                     delete dataToPush.postProjectValue,
                                     delete dataToPush.postTaskCategoriesId,
-                                    delete dataToPush.updatedTaskTypeValue
+                                    delete dataToPush.updatedTaskTypeValue,
+                                    delete dataToPush.updatedTaskCatData
                                 return dataToPush;
                             } return elem;
                         });
@@ -193,7 +202,8 @@ const SelectedTaskUpdateOnPopup = (item: any) => {
             delete dataToPush.updatedPortfolioStructureID,
             delete dataToPush.postProjectValue,
             delete dataToPush.postTaskCategoriesId,
-            delete dataToPush.updatedTaskTypeValue
+            delete dataToPush.updatedTaskTypeValue,
+            delete dataToPush.updatedTaskCatData
         for (let val of itemData) {
             if (dataToPush?.Portfolio?.Id === val.Id && dataToPush?.ParentTask?.Id === undefined) {
                 const existingIndex = val.subRows?.findIndex((subRow: any) => subRow?.Id === dataToPush?.Id);
@@ -323,9 +333,11 @@ const SelectedTaskUpdateOnPopup = (item: any) => {
             value.original.updatedPortfolioStructureID = filteredValues?.Project?.PortfolioStructureID
         }
         if (item?.activeCategory?.length > 0) {
+            value.original.updatedTaskCatData = [];
             value.original.postTaskCategoriesId = []
             item?.activeCategory.map((elem: any) => {
                 value.original.postTaskCategoriesId.push(elem.Id);
+                value.original.updatedTaskCatData.push(elem);
             })
             value.original.updatedTaskTypeValue = item?.activeCategory?.map((val: any) => val.Title).join(",");
         }

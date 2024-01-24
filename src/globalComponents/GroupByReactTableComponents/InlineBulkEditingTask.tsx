@@ -117,6 +117,9 @@ const InlineBulkEditingTask = (props: any) => {
                     if (popupValue?.length > 0) {
                         elem.postTaskCategoriesId = []
                         popupValue?.map((elemValue: any) => {
+                            const updatedTaskCatDatas = { Id: elemValue.Id, Title: elemValue.Title }
+                            elem.updatedTaskCatData = []
+                            elem.updatedTaskCatData.push(updatedTaskCatDatas);
                             elem.postTaskCategoriesId.push(elemValue.Id);
                         })
                         elem.updatedTaskTypeValue = popupValue?.map((val: any) => val.Title).join(",");
