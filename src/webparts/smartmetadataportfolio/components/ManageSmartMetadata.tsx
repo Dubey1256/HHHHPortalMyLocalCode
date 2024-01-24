@@ -10,7 +10,7 @@ let TabSelected: string;
 let compareSeletected: any = [];
 let childRefdata: any;
 let ParentMetaDataItems: any = [];
-
+let TabsData: any = [];
 export default function ManageSmartMetadata(selectedProps: any) {
     const [categoriesTabName, setCategoriesTabName]: any = useState([]);
     const [setName]: any = useState('');
@@ -68,6 +68,7 @@ export default function ManageSmartMetadata(selectedProps: any) {
             let web = new Web(selectedProps.AllList.SPSitesListUrl);
             const Config = await web.lists.getById(selectedProps.AllList.SPSiteConfigListID).items.select("ID,Title,OrderBy,WebpartId,DisplayColumns,Columns,QueryType,FilterItems&$filter=WebpartId eq 'AllManageSmartMetadataPortfolioTabs'").getAll();
             if (Config) {
+                TabsData = JSON.parse(Config[0].DisplayColumns);
                 setTabs(JSON.parse(Config[0].DisplayColumns));
                 console.log(Tabs);
             }
@@ -81,8 +82,8 @@ export default function ManageSmartMetadata(selectedProps: any) {
             let web = new Web(selectedProps.AllList.SPSitesListUrl);
             const AllMetaDataItems = await web.lists.getById(selectedProps.AllList.SPSmartMetadataListID).items.select("*,Author/Title,Editor/Title,Parent/Id,Parent/Title&$expand=Parent,Author,Editor&$orderby=Title&$filter=isDeleted ne 1").getAll();
             SmartmetadataItems = SmartmetadataItems.concat(AllMetaDataItems)
-            if (Tabs.length > 0) {
-                Tabs.filter((item: any) => {
+            if (TabsData.length > 0) {
+                TabsData.filter((item: any) => {
                     if (item.Title === 'Categories')
                         ShowingTabsData(item.Title);
                 })

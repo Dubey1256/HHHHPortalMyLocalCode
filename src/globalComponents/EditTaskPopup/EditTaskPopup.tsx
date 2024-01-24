@@ -2553,6 +2553,7 @@ const EditTaskPopup = (Items: any) => {
 
 
         if (TaskShuoldBeUpdate) {
+           
             try {
                 let web = new Web(siteUrls);
                 await web.lists
@@ -2794,16 +2795,10 @@ const EditTaskPopup = (Items: any) => {
     };
 
     const MakeUpdateDataJSON = async () => {
-        // const attachments = await web.lists.getByTitle('TimesheetListNewId')
-        // .items.getById(Items.Items.Id)
-        // .attachmentFiles.get();
-
         var UploadImageArray: any = [];
         var ApprovalData: any = [];
         const uniqueObjects = [];
         const idSet = new Set();
-
-
         if (TaskImages != undefined && TaskImages.length > 0) {
             TaskImages?.map((imgItem: any) => {
                 if (imgItem.ImageName != undefined && imgItem.ImageName != null) {
