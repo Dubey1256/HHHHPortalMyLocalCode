@@ -282,6 +282,7 @@ const GlobalCommanTable = (items: any, ref: any) => {
     const [bulkEditingCongration, setBulkEditingCongration] = React.useState<any>({});
     const [columnSettingPopup, setColumnSettingPopup] = React.useState<any>(false);
     const [projectTiles, setProjectTiles] = React.useState<any>([]);
+    const [categoriesTiles, setCategoriesTiles] = React.useState([]);
 
     React.useEffect(() => {
 
@@ -385,6 +386,9 @@ const GlobalCommanTable = (items: any, ref: any) => {
         if (eventSetting != 'close') {
             if (eventSetting?.Project === false) {
                 setProjectTiles([]);
+            }
+            if (eventSetting?.categories === false) {
+                setCategoriesTiles([]);
             }
             setBulkEditingCongration(eventSetting);
             setBulkEditingSettingPopup(false);
@@ -874,6 +878,17 @@ const GlobalCommanTable = (items: any, ref: any) => {
         if (bulkEditingCongration?.Project === true && table?.getSelectedRowModel()?.flatRows?.length > 0 && projectTiles?.length === 0) {
             setProjectTiles(table?.getSelectedRowModel()?.flatRows)
         }
+        if (bulkEditingCongration?.categories === true && table?.getSelectedRowModel()?.flatRows?.length > 0 && categoriesTiles?.length === 0) {
+            let collectedData: any = [];
+            let titlesSet = new Set();
+            table?.getSelectedRowModel()?.flatRows?.forEach((elem: any) =>
+                elem.original?.TaskCategories?.forEach((findElem: any) => {
+                    if (!titlesSet.has(findElem.Title)) { titlesSet.add(findElem.Title); collectedData.push(findElem); }
+                })
+            );
+            let uniqueDataArray = [...collectedData];
+            setCategoriesTiles(uniqueDataArray);
+        }
     }, [bulkEditingSettingPopup]);
     React.useEffect(() => {
         if (items?.defultSelectedRows?.length > 0) {
@@ -897,36 +912,11 @@ const GlobalCommanTable = (items: any, ref: any) => {
             setColumnSettingPopup(false)
         }
     }, []);
-    // const coustomColumnsSetting = (item: any, event: any) => {
-    //     const { name, checked } = event.target;
-    //     if (name != "toggleAll") {
-    //         setColumnVisibility((prevCheckboxes: any) => ({
-    //             ...prevCheckboxes,
-    //             [name]: checked
-    //         }));
-    //         columns?.forEach((element: any) => {
-    //             if (element.id === item.id) {
-    //                 return element.isColumnVisible = checked
-    //             }
-    //         });
-    //     } else {
-    //         columns?.forEach((element: any) => {
-    //             if (element.id != "Title" && element.id === "portfolioItemsSearch" && element.id === "TaskID" && element.id != "descriptionsSearch" && element.id != "commentsSearch" && element.id != "timeSheetsDescriptionSearch") {
-    //                 element.isColumnVisible = checked
-    //                 setColumnVisibility((prevCheckboxes: any) => ({
-    //                     ...prevCheckboxes,
-    //                     [element.id]: checked
-    //                 }));
-    //             }
-    //         });
-    //     }
-    // }
-
     /**************************************** Drag And Drop Functionality End ***************************************/
     return (
         <>
-            {items?.bulkEditIcon === true && (bulkEditingCongration?.priority === true || bulkEditingCongration?.dueDate === true || bulkEditingCongration?.status === true || bulkEditingCongration?.Project === true) && <span className="toolbox">
-                <BulkEditingFeature masterTaskData={items?.masterTaskData} data={data} columns={items?.columns} setData={items?.setData} updatedSmartFilterFlatView={items?.updatedSmartFilterFlatView} clickFlatView={items?.clickFlatView} ContextValue={items?.AllListId} priorityRank={items?.priorityRank} dragedTask={dragedTask} precentComplete={items?.precentComplete} bulkEditingCongration={bulkEditingCongration} selectedData={table?.getSelectedRowModel()?.flatRows} projectTiles={projectTiles} />
+            {items?.bulkEditIcon === true && (bulkEditingCongration?.priority === true || bulkEditingCongration?.dueDate === true || bulkEditingCongration?.status === true || bulkEditingCongration?.Project === true || bulkEditingCongration?.categories === true) && <span className="toolbox">
+                <BulkEditingFeature categoriesTiles={categoriesTiles} masterTaskData={items?.masterTaskData} data={data} columns={items?.columns} setData={items?.setData} updatedSmartFilterFlatView={items?.updatedSmartFilterFlatView} clickFlatView={items?.clickFlatView} ContextValue={items?.AllListId} priorityRank={items?.priorityRank} dragedTask={dragedTask} precentComplete={items?.precentComplete} bulkEditingCongration={bulkEditingCongration} selectedData={table?.getSelectedRowModel()?.flatRows} projectTiles={projectTiles} AllTaskUser={items.TaskUsers} />
             </span>}
             {showHeader === true && <div className='tbl-headings justify-content-between fixed-Header top-0' style={{ background: '#e9e9e9' }}>
                 <span className='leftsec'>
@@ -1027,16 +1017,19 @@ const GlobalCommanTable = (items: any, ref: any) => {
                         {items?.protfolioProfileButton === true && items?.hideAddActivityBtn != true && <>{items?.protfolioProfileButton === true && table?.getSelectedRowModel()?.flatRows[0]?.original?.TaskType?.Title != "Task" && table?.getSelectedRowModel()?.flatRows[0]?.original?.Item_x0020_Type != "Sprint" ? <button type="button" className="btn btn-primary" title='Add Activity' style={{ backgroundColor: `${portfolioColor}`, borderColor: `${portfolioColor}`, color: '#fff' }} onClick={() => openCreationAllStructure("Add Activity-Task")}>Add Activity-Task</button> :
                             <button type="button" className="btn btn-primary" style={{ backgroundColor: `${portfolioColor}`, borderColor: `${portfolioColor}`, color: '#fff' }} disabled={true} > Add Activity-Task</button>}</>}
 
-                        {
-                            trueRestructuring == true ?
-                                <RestructuringCom AllSitesTaskData={items?.AllSitesTaskData} AllMasterTasksData={items?.masterTaskData} projectmngmnt={items?.projectmngmnt} MasterdataItem={items?.MasterdataItem} queryItems={items.queryItems} restructureFunct={restructureFunct} ref={childRef} taskTypeId={items.TaskUsers} contextValue={items.AllListId} allData={data} restructureCallBack={items.restructureCallBack} restructureItem={table?.getSelectedRowModel()?.flatRows} />
-                                : <button type="button" title="Restructure" disabled={true} className="btn btn-primary">Restructure</button>
-                        }
-                        {
-                           <>{ ((table?.getSelectedRowModel()?.flatRows?.length === 2) && (table?.getSelectedRowModel()?.flatRows[0]?.original?.TaskType?.Title != "Activities" && table?.getSelectedRowModel()?.flatRows[0]?.original?.TaskType?.Title != "Workstream" && table?.getSelectedRowModel()?.flatRows[0]?.original?.TaskType?.Title != "Task")) ?
-                           < button type="button" className="btn btn-primary" title='Add Activity' style={{ backgroundColor: `${portfolioColor}`, borderColor: `${portfolioColor}`, color: '#fff' }} onClick={() => openCreationAllStructure("Compare")}>Compare</button> :
-                           <button type="button" className="btn btn-primary" style={{ backgroundColor: `${portfolioColor}`, borderColor: `${portfolioColor}`, color: '#fff' }} disabled={true} >Compare</button>}</>
-                        }
+                        {items?.showRestructureButton === true && <>
+                            {
+                                trueRestructuring == true ?
+                                    <RestructuringCom AllSitesTaskData={items?.AllSitesTaskData} AllMasterTasksData={items?.masterTaskData} projectmngmnt={items?.projectmngmnt} MasterdataItem={items?.MasterdataItem} queryItems={items.queryItems} restructureFunct={restructureFunct} ref={childRef} taskTypeId={items.TaskUsers} contextValue={items.AllListId} allData={data} restructureCallBack={items.restructureCallBack} restructureItem={table?.getSelectedRowModel()?.flatRows} />
+                                    : <button type="button" title="Restructure" disabled={true} className="btn btn-primary">Restructure</button>
+                            }
+                        </>}
+
+                        {items?.showCompareButton === true && <div> {
+                            ((table?.getSelectedRowModel()?.flatRows?.length === 2) && (table?.getSelectedRowModel()?.flatRows[0]?.original?.TaskType?.Title != "Activities" && table?.getSelectedRowModel()?.flatRows[0]?.original?.TaskType?.Title != "Workstream" && table?.getSelectedRowModel()?.flatRows[0]?.original?.TaskType?.Title != "Task")) ?
+                                < button type="button" className="btn btn-primary" title='Add Activity' style={{ backgroundColor: `${portfolioColor}`, borderColor: `${portfolioColor}`, color: '#fff' }} onClick={() => openCreationAllStructure("Compare")}>Compare</button> :
+                                <button type="button" className="btn btn-primary" style={{ backgroundColor: `${portfolioColor}`, borderColor: `${portfolioColor}`, color: '#fff' }} disabled={true} >Compare</button>
+                        }</div>}
                     </>
                     }
                     {/* {
@@ -1107,7 +1100,7 @@ const GlobalCommanTable = (items: any, ref: any) => {
                     {items?.columnSettingIcon === true && <><a className='smartTotalTime' title='Column setting' style={{ color: `${portfolioColor}` }} onClick={() => setColumnSettingPopup(true)}><AiFillSetting /></a></>}
                     <Tooltip ComponentId={5756} />
                 </span>
-            </div>}
+            </div >}
             <div ref={parentRef} style={{ overflow: "auto" }}>
                 <div style={{ height: `${virtualizer.getTotalSize()}px` }}>
                     <table className="SortingTable table table-hover mb-0" id='my-table' style={{ width: "100%" }}>
@@ -1194,55 +1187,57 @@ const GlobalCommanTable = (items: any, ref: any) => {
                     </div>}
                 </div>
             </div>
-            {showPagination === true && table?.getFilteredRowModel()?.rows?.length > table.getState().pagination.pageSize ? <div className="d-flex gap-2 items-center mb-3 mx-2">
-                <button
-                    className="border rounded p-1"
-                    onClick={() => table.setPageIndex(0)}
-                    disabled={!table.getCanPreviousPage()}
-                >
-                    <FaAngleDoubleLeft />
-                </button>
-                <button
-                    className="border rounded p-1"
-                    onClick={() => table.previousPage()}
-                    disabled={!table.getCanPreviousPage()}
-                >
-                    <FaChevronLeft />
-                </button>
-                <span className="flex items-center gap-1">
-                    <div>Page</div>
-                    <strong>
-                        {table.getState().pagination.pageIndex + 1} of{' '}
-                        {table.getPageCount()}
-                    </strong>
-                </span>
-                <button
-                    className="border rounded p-1"
-                    onClick={() => table.nextPage()}
-                    disabled={!table.getCanNextPage()}
-                >
-                    <FaChevronRight />
-                </button>
-                <button
-                    className="border rounded p-1"
-                    onClick={() => table.setPageIndex(table.getPageCount() - 1)}
-                    disabled={!table.getCanNextPage()}
-                >
-                    <FaAngleDoubleRight />
-                </button>
-                <select className='w-25'
-                    value={table.getState().pagination.pageSize}
-                    onChange={e => {
-                        table.setPageSize(Number(e.target.value))
-                    }}
-                >
-                    {[20, 30, 40, 50, 60, 100, 150, 200].map(pageSize => (
-                        <option key={pageSize} value={pageSize}>
-                            Show {pageSize}
-                        </option>
-                    ))}
-                </select>
-            </div> : ''}
+            {
+                showPagination === true && table?.getFilteredRowModel()?.rows?.length > table.getState().pagination.pageSize ? <div className="d-flex gap-2 items-center mb-3 mx-2">
+                    <button
+                        className="border rounded p-1"
+                        onClick={() => table.setPageIndex(0)}
+                        disabled={!table.getCanPreviousPage()}
+                    >
+                        <FaAngleDoubleLeft />
+                    </button>
+                    <button
+                        className="border rounded p-1"
+                        onClick={() => table.previousPage()}
+                        disabled={!table.getCanPreviousPage()}
+                    >
+                        <FaChevronLeft />
+                    </button>
+                    <span className="flex items-center gap-1">
+                        <div>Page</div>
+                        <strong>
+                            {table.getState().pagination.pageIndex + 1} of{' '}
+                            {table.getPageCount()}
+                        </strong>
+                    </span>
+                    <button
+                        className="border rounded p-1"
+                        onClick={() => table.nextPage()}
+                        disabled={!table.getCanNextPage()}
+                    >
+                        <FaChevronRight />
+                    </button>
+                    <button
+                        className="border rounded p-1"
+                        onClick={() => table.setPageIndex(table.getPageCount() - 1)}
+                        disabled={!table.getCanNextPage()}
+                    >
+                        <FaAngleDoubleRight />
+                    </button>
+                    <select className='w-25'
+                        value={table.getState().pagination.pageSize}
+                        onChange={e => {
+                            table.setPageSize(Number(e.target.value))
+                        }}
+                    >
+                        {[20, 30, 40, 50, 60, 100, 150, 200].map(pageSize => (
+                            <option key={pageSize} value={pageSize}>
+                                Show {pageSize}
+                            </option>
+                        ))}
+                    </select>
+                </div> : ''
+            }
             {/* {ShowTeamPopup === true && items?.TaskUsers?.length > 0 ? <ShowTeamMembers props={table?.getSelectedRowModel()?.flatRows} callBack={showTaskTeamCAllBack} TaskUsers={items?.TaskUsers} /> : ''} */}
             {ShowTeamPopup === true && items?.TaskUsers?.length > 0 ? <ShowTeamMembers props={table?.getSelectedRowModel()?.flatRows} callBack={showTaskTeamCAllBack} TaskUsers={items?.TaskUsers} portfolioTypeData={items?.portfolioTypeData} context={items?.AllListId?.Context} /> : ''}
             {selectedFilterPanelIsOpen && <SelectFilterPanel isOpen={selectedFilterPanelIsOpen} selectedFilterCount={selectedFilterCount} setSelectedFilterCount={setSelectedFilterCount} selectedFilterCallBack={selectedFilterCallBack} setSelectedFilterPannelData={setSelectedFilterPannelData} selectedFilterPannelData={selectedFilterPannelData} portfolioColor={portfolioColor} />}

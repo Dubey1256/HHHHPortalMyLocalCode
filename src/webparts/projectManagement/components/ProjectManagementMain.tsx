@@ -589,7 +589,7 @@ relevantDocRef = React.useRef();
         } catch (error) {
 
         }
-
+        items.TaskTypeValue =''
         if (items?.TaskCategories?.length > 0) {
           items.TaskTypeValue = items?.TaskCategories?.map((val: any) => val.Title).join(",")
         }
@@ -622,6 +622,7 @@ relevantDocRef = React.useRef();
             taskComponent.push(comp?.Id)
             taskTaggedComponents.push(comp)
           }
+          items.PortfolioTitle='';
           items.portfolio = items?.Portfolio;
           items.PortfolioTitle = items?.Portfolio?.Title;
           // items["Portfoliotype"] = "Component";
@@ -903,7 +904,7 @@ relevantDocRef = React.useRef();
 
   const LoadAllSiteAllTasks = async function () {
     try {
-      AllSitesAllTasks = await globalCommon?.loadAllSiteTasks(AllListId, undefined);
+      AllSitesAllTasks = await globalCommon?.loadAllSiteTasks(AllListId);
       return AllSitesAllTasks
     } catch (e) {
       console.log(e)
@@ -1440,23 +1441,24 @@ const  AncCallback = (type: any) => {
   }
 
   const inlineCallBackMasterTask = React.useCallback((item: any) => {
-    item.taggedPortfolios = Masterdata?.taggedPortfolios;
+    item.taggedPortfolios = Masterdata?.taggedPortfolios
     setMasterdata(item);
-
   }, []);
-const contextCall = React.useCallback((data: any, path: any, releventKey: any) => {
-  if (data != null &&  path != null && path != "") {
-    Setkeydoc(data)
-    SetFileDirRef(path)
-  }
-  if (releventKey) {
-    relevantDocRef?.current?.loadAllSitesDocuments()
-   
-  }
-  else if(data==null && path==null && releventKey== false ){
-    keyDocRef?.current?.loadAllSitesDocumentsEmail()
-  }
-},[]) 
+  const contextCall = React.useCallback((data: any, path: any, releventKey: any) => {
+    if (data != null &&  path != null && path != "") {
+      Setkeydoc(data)
+      SetFileDirRef(path)
+    }
+    if (releventKey) {
+      relevantDocRef?.current?.loadAllSitesDocuments()
+     
+    }
+    else if(data==null && path==null && releventKey== false ){
+      keyDocRef?.current?.loadAllSitesDocumentsEmail()
+      relevantDocRef?.current?.loadAllSitesDocuments()
+    }
+  },[])
+
   return (
     <myContextValue.Provider value={{ ...myContextValue,user:AllUser ,ProjectLandingPageDetails: Masterdata,FunctionCall: contextCall,keyDoc: keydoc, FileDirRef: FileDirRef ,closeCompTaskPopup: tagAndCreateCallBack, projectCallBackTask: LoadAllSiteTasks, portfolioCreationCallBack: ComponentServicePopupCallBack, tagProjectFromTable: true }}>
 
@@ -1767,7 +1769,7 @@ const contextCall = React.useCallback((data: any, path: any, releventKey: any) =
                             </span>
                           </div>
                            <div>
-                          <AncTool item={Masterdata} callBack={AncCallback} AllListId={AllListId} Context={props.Context}listName={"Master Tasks"} />
+                           {Masterdata?.Id &&<AncTool item={Masterdata} callBack={AncCallback} AllListId={AllListId} Context={props.Context}listName={"Master Tasks"} />}
                           </div>
                           <div>{Masterdata?.Id && <SmartInformation ref={smartInfoRef} Id={Masterdata?.Id} AllListId={AllListId} Context={props?.Context} taskTitle={Masterdata?.Title} listName={"Master Tasks"} />}</div>
                   <div> {Masterdata?.Id != undefined && <RelevantDocuments ref={relevantDocRef} AllListId={AllListId} Context={props?.Context} siteUrl={AllListId?.siteUrl} DocumentsListID={AllListId.DocumentsListID} ID={Masterdata?.Id} siteName={"Master Tasks"} folderName={Masterdata?.Title}Keydoc={true}></RelevantDocuments>}</div>
@@ -1783,9 +1785,9 @@ const contextCall = React.useCallback((data: any, path: any, releventKey: any) =
                                 {(data?.length == 0 || data?.length > 0) && <GlobalCommanTable AllListId={AllListId} headerOptions={headerOptions} updatedSmartFilterFlatView={false}
                                   projectmngmnt={"projectmngmnt"}
                                   masterTaskData={MasterListData}
+                                  PortfolioFeature={Masterdata?.Item_x0020_Type == "Sprint"? 'Feature':''}
                                   AllSitesTaskData={AllSitesAllTasks}
                                   MasterdataItem={Masterdata}
-                                  PortfolioFeature={Masterdata?.Item_x0020_Type == "Sprint"? 'Feature':''}
                                   columns={column2} data={data} callBackData={callBackData}
                                   smartTimeTotalFunction={smartTimeTotal} SmartTimeIconShow={true}
                                   TaskUsers={AllUser} showHeader={true} expendedTrue={false}
@@ -1793,6 +1795,7 @@ const contextCall = React.useCallback((data: any, path: any, releventKey: any) =
                                   flatViewDataAll={flatViewDataAll}
                                   clickFlatView={clickFlatView} switchFlatViewData={switchFlatViewData}
                                   flatView={true}
+                                  showRestructureButton={true}
                                   switchGroupbyData={switchGroupbyData}
                                   restructureCallBack={callBackData1}
                                   ref={childRef} callChildFunction={callChildFunction}

@@ -26,7 +26,9 @@ const TopNavigation = (dynamicData: any) => {
   const [AddPopup, setAddPopup] = React.useState(false);
   const [sorting, setSorting] = React.useState(false);
   const [changeroot, setChangeroot] = React.useState(false);
+  const [deletePopupData, setDeletePopupData] = React.useState([]);
   const [versionHistoryPopup, setVersionHistoryPopup] = React.useState(false);
+  const [deletePopup, setDeletePopup] = React.useState(false);
   try {
     $("#spPageCanvasContent").removeClass();
     $("#spPageCanvasContent").addClass("hundred");
@@ -280,20 +282,57 @@ const TopNavigation = (dynamicData: any) => {
         loadTopNavigation();
       });
   };
-  const deleteDataFunction = async (item: any) => {
-    var deleteConfirmation = confirm("Are you sure, you want to delete this?");
+  const uniqueBy = (arr: any, key: any) => {
+    const seen = new Set();
+    return arr.filter((item: any) => {
+      const val = key ? item[key] : item;
+      if (seen.has(val)) {
+        return false;
+      }
+      seen.add(val);
+      return true;
+    });
+  };
+  const deleteDataFunction = async (item: any, type: any) => {
+    if (item?.childs.length > 0 && type == 'single') {
+      item?.childs?.map((items: any) => {
+        items.value = items.Title
+        items.label = items.Title
+        items.children = items?.childs
+        items.checked = true
+      })
+      const filteredData = uniqueBy(item?.childs, 'odata.id');
+      if (filteredData != undefined) {
+        filteredData?.map((items: any) => {
+          items.children?.map((val: any) => {
+            val.value = val.Title
+            val.label = val.Title
+            val.children = val?.childs
+            val.checked = true;
+          })
 
-    if (deleteConfirmation) {
-      let web = new Web(dynamicData.dynamicData.siteUrl);
-      await web.lists
-        .getById(ListId)
-        .items.getById(item.Id)
-        .delete()
-        .then((i) => {
-          console.log(i);
-          loadTopNavigation();
-        });
+        })
+      }
+      ClosePopup();
+      setDeletePopupData(filteredData)
+      setDeletePopup(true)
     }
+    else {
+      var deleteConfirmation = confirm("Are you sure, you want to delete this?");
+      if (deleteConfirmation) {
+        let web = new Web(dynamicData.dynamicData.siteUrl);
+        await web.lists
+          .getById(ListId)
+          .items.getById(item.Id)
+          .delete()
+          .then((i) => {
+            console.log(i);
+            ClosePopup();
+            loadTopNavigation();
+          });
+      }
+    }
+
   };
 
   const Additem = async () => {
@@ -518,7 +557,9 @@ const TopNavigation = (dynamicData: any) => {
     // Enable editing of the order column on double-click
     setEditableOrder(index);
   };
-
+  const ClosedeletePopup = () => {
+    setDeletePopup(false);
+  };
   const handleOrderChange = (e: any, index: any) => {
     if (e.target.value != undefined) {
       const newOrder = parseInt(e.target.value, 10);
@@ -539,14 +580,30 @@ const TopNavigation = (dynamicData: any) => {
       }, 1000);
     }
   };
-
-  //   const handleButtonClick = () => {
-  //     // Sort the data based on the 'order' column
-  //     const sortedData = [...data];
-
-  //     setEditableOrder(false);
-  //     setData(sortedData);
-  //   };
+  const deleteDataFromPopup = async (Id:any) => {
+    var deleteConfirmation = confirm("Are you sure, you want to delete this?");
+    if (deleteConfirmation) {
+      let web = new Web(dynamicData.dynamicData.siteUrl);
+      await web.lists
+        .getById(ListId)
+        .items.getById(Id)
+        .delete()
+        .then((i) => {
+          console.log(i);
+          ClosedeletePopup()
+          ClosePopup();
+          loadTopNavigation();
+        });
+    }
+  }
+  const headerforDelectitems = () => {
+    return (
+      <>
+        <div className="subheading siteColor">Select items for delete</div>
+        <Tooltip ComponentId="1810" />
+      </>
+    );
+  };
 
   return (
     <>
@@ -590,7 +647,7 @@ const TopNavigation = (dynamicData: any) => {
                   </span>
                   <span className="float-end ms-2">
                     <span
-                      className="svg__iconbox svg__icon--editBox"
+                      className="alignIcon svg__iconbox svg__icon--editBox"
                       onClick={() => editPopup(item)}
                     ></span>
                    
@@ -624,11 +681,11 @@ const TopNavigation = (dynamicData: any) => {
                             </span>
                             <span className="float-end">
                               <span
-                                className="svg__iconbox svg__icon--editBox"
+                                className="alignIcon svg__iconbox svg__icon--editBox"
                                 onClick={() => editPopup(child)}
                               ></span>
                               <span
-                                className="svg__iconbox svg__icon--Switcher"
+                                className="alignIcon svg__iconbox svg__icon--Switcher"
                                 onClick={() => sortItem(item.childs)}
                               ></span>
                               {/* <span
@@ -665,11 +722,11 @@ const TopNavigation = (dynamicData: any) => {
                                       </span>
                                       <span className="float-end">
                                         <span
-                                          className="svg__iconbox svg__icon--editBox"
+                                          className="alignIcon svg__iconbox svg__icon--editBox"
                                           onClick={() => editPopup(subchild)}
                                         ></span>
                                         <span
-                                          className="svg__iconbox svg__icon--Switcher"
+                                          className="alignIcon svg__iconbox svg__icon--Switcher"
                                           onClick={() => sortItem(child.childs)}
                                         ></span>
                                         {/* <span
@@ -725,13 +782,13 @@ const TopNavigation = (dynamicData: any) => {
                                                   </span>
                                                   <span className="float-end">
                                                     <span
-                                                      className="svg__iconbox svg__icon--editBox"
+                                                      className="alignIcon svg__iconbox svg__icon--editBox"
                                                       onClick={() =>
                                                         editPopup(subchildLast)
                                                       }
                                                     ></span>
                                                     <span
-                                                      className="svg__iconbox svg__icon--Switcher"
+                                                      className="alignIcon svg__iconbox svg__icon--Switcher"
                                                       onClick={() =>
                                                         sortItem(
                                                           subchild.childs
@@ -933,7 +990,7 @@ const TopNavigation = (dynamicData: any) => {
                 Delete this item
                 <span
                   className="alignIcon  svg__iconbox svg__icon--trash"
-                  onClick={() => deleteDataFunction(popupData[0])}
+                  onClick={() => deleteDataFunction(popupData[0], 'single')}
                 ></span>
                     <span className="text-left" onClick={()=>setVersionHistoryPopup(false)}>
               {popupData[0]?.Id &&  <VersionHistory
@@ -1436,6 +1493,65 @@ const TopNavigation = (dynamicData: any) => {
           </footer>
         </div>
       </Panel>
+       {/* ---------------------------------------delete popup-------------------------------------------------------------------------------------- */}
+
+       <Panel
+        onRenderHeader={headerforDelectitems}
+        headerText="Delete Item"
+        type={PanelType.custom}
+        customWidth="500px"
+        isOpen={deletePopup}
+        onDismiss={ClosedeletePopup}
+        isBlocking={false}
+      >
+        <div className="modal-body border p-2 bg-f5f5 bdrbox clearfix" style={{ padding: "10px" }}>
+          <div className='col-sm-12'><h3 className="f-15 mt-0">Item Tagged with {deletePopupData[0]?.Title}</h3></div>
+          <div className='col-sm-12 mb-4' style={{color:'blue'}}><h3 className="panel-title"><span> All Tagged Childs</span></h3></div>
+          <div className="custom-checkbox-tree">
+            {deletePopupData?.map((val: any,index) => {
+              return (
+                <div>
+                 <div style={{fontWeight:'600'}}><span>{index+1}. </span> <span>{val?.Title}</span></div>
+                  {val.childs?.map((childs: any,number:any) => {
+                    return (
+                      <div style={{ marginLeft: '30px', marginBottom: "7px" }}>
+                        <div style={{fontWeight:'400'}}><span>{index+1}.{number+1}. </span><span>{childs?.Title}</span></div>
+                        {childs.childs?.map((subchilds: any,subNumber:any) => {
+                          return (
+                            <div style={{ marginLeft: '30px', marginBottom: "7px" }}>
+                              <div style={{fontWeight:'400'}}><span>{index+1}.{number+1}.{subNumber+1}. </span><span>{subchilds?.Title}</span></div>
+                            </div>
+
+                          )
+
+                        })}
+                      </div>
+
+                    )
+
+                  })}
+                </div>
+              )
+            })}
+
+
+          </div>
+        </div>
+
+        <div className="modal-footer mt-3">
+          <div className="row w-100">
+            <div className="text-end pe-0">
+              <button
+                type="button"
+                className="btn btn-primary ms-2"
+                onClick={() => deleteDataFromPopup(deletePopupData[0].ParentID)}
+              >
+                Delete
+              </button>
+            </div>
+          </div>
+        </div>
+      </Panel >
     </>
   );
 };
