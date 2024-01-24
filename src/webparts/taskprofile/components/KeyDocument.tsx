@@ -167,7 +167,7 @@ const RelevantDocuments = (props: any, ref: any) => {
         {
             accessorFn: "",
             cell: ({ row }: any) => (
-                <span title="Edit" className="svg__iconbox svg__icon--edit hreflink" onClick={() => editDocumentsLink(row?.original)}></span>
+                <span  title="Edit" className="svg__iconbox svg__icon--edit hreflink" onClick={() => editDocumentsLink(row?.original)}></span>
 
             ),
             id: 'CreatedDate',
@@ -192,7 +192,6 @@ const RelevantDocuments = (props: any, ref: any) => {
 
     };
 
-
     const editDocumentsLink = (editData: any) => {
         copyEditData = [];
         setEditdocpanel(true);
@@ -201,7 +200,6 @@ const RelevantDocuments = (props: any, ref: any) => {
         setEditdocData(editData)
 
     }
-
 
     const callBackData = useCallback((elem: any, getSelectedRowModel: any) => {
         console.log(getSelectedRowModel)

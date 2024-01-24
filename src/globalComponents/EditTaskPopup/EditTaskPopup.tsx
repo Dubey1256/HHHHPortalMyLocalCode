@@ -2486,7 +2486,11 @@ const EditTaskPopup = (Items: any) => {
                     taskUsers?.map((allUserItem: any) => {
                         if (userDtl.Id == allUserItem.AssingedToUserId) {
                             sendUserEmails.push(allUserItem.Email);
-                            AssignedUserName = allUserItem.Title;
+                            if (AssignedUserName?.length > 0) {
+                                AssignedUserName = "Team"
+                            } else {
+                                AssignedUserName = allUserItem.Title;
+                            }
                         }
                     });
                 });

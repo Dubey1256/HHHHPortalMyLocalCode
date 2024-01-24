@@ -985,7 +985,7 @@ export class CommentCard extends React.Component<ICommentCardProps, ICommentCard
                                       <div className="media-text">
                                         {/* {ReplyMsg.Header != '' && <h6 className="userid m-0"><a className="ng-binding">{ReplyMsg?.Header}</a></h6>} */}
                                         {/* <p className='m-0'><span dangerouslySetInnerHTML={{ __html: ReplyMsg?.Description }}></span></p> */}
-                                        <span dangerouslySetInnerHTML={{ __html: this.detectAndRenderLinks(cmtData?.Description) }}></span>
+                                        <span dangerouslySetInnerHTML={{ __html: this.detectAndRenderLinks(ReplyMsg?.Description) }}></span>
                                         {/* {this.detectAndRenderLinks(ReplyMsg?.Description)} */}
                                       </div>
                                     </div>
