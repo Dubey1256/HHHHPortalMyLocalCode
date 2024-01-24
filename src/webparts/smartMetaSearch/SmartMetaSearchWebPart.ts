@@ -17,6 +17,7 @@ export interface ISmartMetaSearchWebPartProps {
   SmartMetadataListId:string;
   ContextValue:any;
   TaskUserListId:string;
+  PortFolioTypeID: "c21ab0e4-4984-4ef7-81b5-805efaa3752e";
 }
 
 export default class SmartMetaSearchWebPart extends BaseClientSideWebPart<ISmartMetaSearchWebPartProps> {
@@ -35,6 +36,8 @@ export default class SmartMetaSearchWebPart extends BaseClientSideWebPart<ISmart
         userDisplayName: this.context.pageContext.user.displayName,
         SmartMetadataListId:this.properties.SmartMetadataListId,
         ContextValue:this.context,
+        siteUrl: this.context.pageContext.web.absoluteUrl,
+        PortFolioTypeID:this.properties.PortFolioTypeID,
         TaskUserListId: this.properties.TaskUserListId,       
       }
     );
@@ -121,8 +124,12 @@ export default class SmartMetaSearchWebPart extends BaseClientSideWebPart<ISmart
                 }),
                 PropertyPaneTextField('TaskUserListId', {
                   label:"TaskUserListId"
-                }),                              
+                }),
+                PropertyPaneTextField("PortFolioTypeID", {
+                  label: "Portfolio Type List",
+                })                              
               ]
+
             }
           ]
         }

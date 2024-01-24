@@ -1444,19 +1444,21 @@ const  AncCallback = (type: any) => {
     setMasterdata(item);
 
   }, []);
-const contextCall = React.useCallback((data: any, path: any, releventKey: any) => {
-  if (data != null &&  path != null && path != "") {
-    Setkeydoc(data)
-    SetFileDirRef(path)
-  }
-  if (releventKey) {
-    relevantDocRef?.current?.loadAllSitesDocuments()
-   
-  }
-  else if(data==null && path==null && releventKey== false ){
-    keyDocRef?.current?.loadAllSitesDocumentsEmail()
-  }
-},[]) 
+  const contextCall = React.useCallback((data: any, path: any, releventKey: any) => {
+    if (data != null &&  path != null && path != "") {
+      Setkeydoc(data)
+      SetFileDirRef(path)
+    }
+    if (releventKey) {
+      relevantDocRef?.current?.loadAllSitesDocuments()
+     
+    }
+    else if(data==null && path==null && releventKey== false ){
+      keyDocRef?.current?.loadAllSitesDocumentsEmail()
+      relevantDocRef?.current?.loadAllSitesDocuments()
+    }
+  },[])
+
   return (
     <myContextValue.Provider value={{ ...myContextValue,user:AllUser ,ProjectLandingPageDetails: Masterdata,FunctionCall: contextCall,keyDoc: keydoc, FileDirRef: FileDirRef ,closeCompTaskPopup: tagAndCreateCallBack, projectCallBackTask: LoadAllSiteTasks, portfolioCreationCallBack: ComponentServicePopupCallBack, tagProjectFromTable: true }}>
 
