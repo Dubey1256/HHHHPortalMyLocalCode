@@ -120,8 +120,8 @@ const RelevantDocuments = (props: any, ref: any) => {
                 accessorFn: (row) => row?.Title,
                 cell: ({ row }) => (
                     <div className='alignCenter columnFixedTitle p-0'>
-                        <>
-                            <span className={` svg__iconbox svg__icon--${row?.original?.File_x0020_Type}`} title={row?.original?.File_x0020_Type}></span>
+                        <><a href={`${row?.original?.EncodedAbsUrl}?web=1`}>
+                            <span className={` svg__iconbox svg__icon--${row?.original?.File_x0020_Type}`} title={row?.original?.File_x0020_Type}></span></a>
                             <a className='ms-1 wid90' target="_blank" href={`${row?.original?.EncodedAbsUrl}?web=1`}> {row?.original?.Title} </a>
                         </>
                     </div>
