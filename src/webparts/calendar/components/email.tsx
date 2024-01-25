@@ -275,7 +275,10 @@ let SendEmailMessage =
   qateamavailabel = qaleavetotal.length - qateamleave.length;
   const designteamleave = data.filter((item: any) => item.designteam.length != 0 && item.eventType != 'Work From Home');
   designteamavailabel = designttotal.length - designteamleave.length;
+// // <div style="margin-bottom: 40px;font-size: 32px;font-weight: 600;line-height: 40px;color: #2F5596;font-family: Segoe UI;">
 
+            //     ${Object?.keys(nameidTotals)?.length === 0 ? `The ${formattedDate} is a great Day! All ${Allteamoforganization} are in Office today!` : `${formattedDate}: ${(Object?.keys(nameidTotals)?.length - WorkfromHomeEmp?.length)} are on leave, ${Allteamoforganization - (Object?.keys(nameidTotals)?.length - WorkfromHomeEmp?.length)} are working`}
+            // </div>
   const returnEmailHtml = (): any => {
      let WorkfromHomeEmp: any = []
     props?.data.filter((items: any) => {
@@ -291,10 +294,7 @@ let SendEmailMessage =
                 <img src="https://hhhhteams.sharepoint.com/sites/HHHH/SiteCollectionImages/ICONS/Foundation/icon_hhhh.png" width="48px" height="48px" style="width: 48px;height: 48px;border-radius: 50%;" alt="Site Icon">
                 <div style="color: var(--black, #333);text-align: center;font-family: Segoe UI;font-size: 14px;font-style: normal; font-weight: 600;margin-left: 4px;">Attendance Report</div>
             </div>
-            <div style="margin-bottom: 40px;font-size: 32px;font-weight: 600;line-height: 40px;color: #2F5596;font-family: Segoe UI;">
-
-                ${Object?.keys(nameidTotals)?.length === 0 ? `The ${formattedDate} is a great Day! All ${Allteamoforganization} are in Office today!` : `${formattedDate}: ${(Object?.keys(nameidTotals)?.length - WorkfromHomeEmp?.length)} are on leave, ${Allteamoforganization - (Object?.keys(nameidTotals)?.length - WorkfromHomeEmp?.length)} are working`}
-            </div>
+            
         `;
 
     let tableBody = `

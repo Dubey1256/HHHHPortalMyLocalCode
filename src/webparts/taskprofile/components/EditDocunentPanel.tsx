@@ -47,9 +47,9 @@ const EditDocumentpanel = (props: any) => {
         .expand('Author,Editor,Portfolios')
         .get()
         .then((Data) => {
-          Data.Title = Data?.Title?.replace('.', "");
+          Data.Title = getUploadedFileName( Data?.Title);
           Data.siteType = 'sp';
-          Data.docTitle = Data?.Title?.replace('.', "");
+          Data.docTitle = getUploadedFileName( Data?.Title);
           Data.Item_x002d_Image=Data?.Item_x0020_Cover
            let portfolioData:any=[]
           if (Data.Portfolios != undefined && Data?.Portfolios?.length > 0) {
@@ -95,7 +95,7 @@ const EditDocumentpanel = (props: any) => {
         ).expand("PortfolioType").top(4999).get()
         .then((dataserviccomponent: any) => {
           console.log(dataserviccomponent)
-          mastertaskdetails = mastertaskdetails.concat(dataserviccomponent);
+          mastertaskdetails = dataserviccomponent;
           resolve(dataserviccomponent)
 
         }).catch((error: any) => {
@@ -224,6 +224,15 @@ const EditDocumentpanel = (props: any) => {
     }
   }, [])
 
+  const getUploadedFileName = (fileName: any) => {
+    const indexOfLastDot = fileName?.lastIndexOf('.');
+    if (indexOfLastDot !== -1) {
+        const extractedPart = fileName?.substring(0, indexOfLastDot);
+        return extractedPart;
+    }else{
+        return fileName
+    }
+}
 
   const opencomonentservicepopup = () => {
     copyEditData=[]
@@ -279,7 +288,7 @@ const EditDocumentpanel = (props: any) => {
             <div className='border border-top-0 p-2'>
               {EditdocumentsData?.Url?.Url && <div className='d-flex'>
                 <div className='input-group'><label className='form-label full-width'>URL</label>
-                  <input type='text' className="from-control w-75" value={EditdocumentsData?.Url?.Url} onChange={(e => setEditdocumentsData({ ...EditdocumentsData, Url: { ...EditdocumentsData.Url, Url: e.target.value } }))}></input>
+                  <input type='text' className="from-control w-75" value={EditdocumentsData?.EncodedAbsUrl} onChange={(e => setEditdocumentsData({ ...EditdocumentsData, Url: { ...EditdocumentsData.Url, Url: e.target.value } }))}></input>
                 </div>
               </div>}
 
@@ -358,7 +367,7 @@ const EditDocumentpanel = (props: any) => {
                 {console.log("footerdiv")}
                 <div><span className='pe-2'>Created</span><span className='pe-2'>{EditdocumentsData?.Created !== null ? moment(EditdocumentsData?.Created).format("DD/MM/YYYY HH:mm") : ""}&nbsp;By</span><span><a>{EditdocumentsData?.Author?.Title}</a></span></div>
                 <div><span className='pe-2'>Last modified</span><span className='pe-2'>{EditdocumentsData?.Modified !== null ? moment(EditdocumentsData?.Modified).format("DD/MM/YYYY HH:mm") : ""}&nbsp;By</span><span><a>{EditdocumentsData?.Editor?.Title}</a></span></div>
-                <div><span onClick={() => deleteDocumentsData(EditdocumentsData?.Id)} className="alignIcon hreflink svg__icon--trash svg__iconbox"></span>Delete this item</div>
+                <div onClick={() => deleteDocumentsData(EditdocumentsData?.Id)} className="hreflink"><span className="alignIcon hreflink svg__icon--trash svg__iconbox"></span>Delete this item</div>
               </div>
             </div>
 

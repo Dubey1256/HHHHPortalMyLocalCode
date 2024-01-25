@@ -58,6 +58,7 @@ var AllWorkingDayData: any = []
 var selectedInlineTask: any = {};
 var isShowTimeEntry: any;
 var isShowSiteCompostion: any;
+let AllLeaves: any = [];
 const TaskDashboard = (props: any) => {
     const [updateContent, setUpdateContent] = React.useState(false);
     const [createTaskId, setCreateTaskId] = React.useState({});
@@ -99,6 +100,7 @@ const TaskDashboard = (props: any) => {
         taskId: '',
         origin: ''
     });
+
     const TimeEntryCallBack = React.useCallback((item1) => {
         setOpenTimeEntryPopup(false);
     }, []);
@@ -1680,29 +1682,40 @@ const TaskDashboard = (props: any) => {
     //region end
 
     // People on Leave Today //
+    const toIST = (dateString: any, isEndDate: boolean, isFirstHalf: boolean, isSecondHalf: boolean) => {
+        const date = new Date(dateString);
+        if ((isFirstHalf !== undefined && isSecondHalf != undefined) && (isEndDate || isFirstHalf || isSecondHalf)) {
+            date.setHours(date.getHours() - 5);
+            date.setMinutes(date.getMinutes() - 30);
+        }
+        const formattedDate = date.toISOString().substring(0, 19).replace('T', ' ');
+        return formattedDate; 
+    };
+
     const loadTodaysLeave = async () => {
         if (AllListId?.SmalsusLeaveCalendar?.length > 0) {
             let startDate: any = getStartingDate('Today');
-            startDate = startDate.setHours(0, 0, 0, 0);
+            startDate = new Date(startDate).setHours(0,0,0,0)
             const web = new Web(AllListId?.siteUrl);
             const results = await web.lists
                 .getById(AllListId?.SmalsusLeaveCalendar)
                 .items.select(
-                    "RecurrenceData,Duration,Author/Title,Editor/Title,Name,Employee/Id,Employee/Title,Category,Description,ID,EndDate,EventDate,Location,Title,fAllDayEvent,EventType,UID,fRecurrence,Event_x002d_Type"
+                    "RecurrenceData,Duration,Author/Title,Editor/Title,Name,Employee/Id,Employee/Title,Category,Description,ID,EndDate,EventDate,Location,Title,fAllDayEvent,EventType,UID,fRecurrence,Event_x002d_Type,HalfDay,HalfDayTwo"
                 )
                 .expand("Author,Editor,Employee")
                 .top(5000)
                 .getAll();
-            let peopleOnLeave: any = [];
             results?.map((emp: any) => {
-                emp.leaveStart = new Date(emp.EventDate).setHours(0, 0, 0, 0);
-                emp.leaveEnd = new Date(emp.EndDate).setHours(0, 0, 0, 0);
-                if (startDate >= emp.leaveStart && startDate <= emp.leaveEnd) {
-                    peopleOnLeave.push(emp?.Employee?.Id);
+                emp.leaveStart = toIST(emp.EventDate, false, emp.HalfDay, emp.HalfDayTwo)
+                emp.leaveStart = new Date(emp.leaveStart).setHours(0,0,0,0)
+                emp.leaveEnd = toIST(emp.EndDate, true, emp.HalfDay, emp.HalfDayTwo);
+                emp.leaveEnd = new Date(emp.leaveEnd).setHours(0,0,0,0)
+                if ((startDate >= emp.leaveStart && startDate <= emp.leaveEnd) && (emp.HalfDay !== null && emp.HalfdayTwo !== null) && (emp.HalfDay != true && emp.HalfdayTwo != true)) {
+                    AllLeaves.push(emp?.Employee?.Id);
                 }
             })
-            setOnLeaveEmployees(peopleOnLeave)
-            console.log(peopleOnLeave);
+            setOnLeaveEmployees(AllLeaves)
+            console.log(AllLeaves);
         }
     }
     //End
@@ -1884,7 +1897,6 @@ const TaskDashboard = (props: any) => {
                         item.EstimatedTime = ''
                     }
 
-
                     text =
                         '<tr>' +
                         '<td style="line-height:24px;font-size:13px;padding:15px;">' + item.siteType + '</td>'
@@ -2045,7 +2057,7 @@ const TaskDashboard = (props: any) => {
             var subject = "Today's Working Tasks of All Team";
             taskUsersGroup?.map((userGroup: any) => {
                 let teamsTaskBody: any = [];
-                if (userGroup.Title == "Junior Developer Team" || userGroup.Title == "Senior Developer Team" ||  userGroup.Title == "Mobile Team" || userGroup.Title == "Design Team" || userGroup.Title == "QA Team" || userGroup.Title == "Smalsus Lead Team" || userGroup.Title == "Business Analyst") {
+                if (userGroup.Title == "Junior Developer Team" || userGroup.Title == "Senior Developer Team" ||  userGroup.Title == "Mobile Team" || userGroup.Title == "Design Team" || userGroup.Title == "QA Team" || userGroup.Title == "Smalsus Lead Team" || userGroup.Title == "Business Analyst" || userGroup.Title == "Trainees") {
                     if (userGroup.Title == "Smalsus Lead Team") {
                         userGroup.childBackup = userGroup?.childs;
                         userGroup.childs = [];

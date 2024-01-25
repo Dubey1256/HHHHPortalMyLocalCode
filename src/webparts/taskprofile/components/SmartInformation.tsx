@@ -117,7 +117,7 @@ const SmartInformation = (props: any, ref: any) => {
 
     // GetResult();
 
-  }, [show])
+  }, [])
   useImperativeHandle(ref, () => ({
     GetResult
   }))
@@ -266,8 +266,8 @@ const SmartInformation = (props: any, ref: any) => {
         const web = new Web(props?.AllListId?.siteUrl);
         await web.lists.getById(props?.AllListId?.DocumentsListID)
           .items.select("Id,Title,PriorityRank,Year,Item_x0020_Cover,Body,Portfolios/Id,Portfolios/Title,File_x0020_Type,FileLeafRef,FileDirRef,ItemRank,ItemType,Url,Created,Modified,Author/Id,Author/Title,Editor/Id,Editor/Title,EncodedAbsUrl")
-          .expand("Author,Editor,Portfolios").filter(`SmartInformation/ID  eq ${items?.Id}`).top(4999)
-          .get()
+          .expand("Author,Editor,Portfolios").filter(`SmartInformation/ID  eq ${items?.Id}`).getAll()
+       
           .then(async (result: any[]) => {
             console.log(result);
             result?.map((servicecomponent: any) => {
@@ -374,7 +374,7 @@ const SmartInformation = (props: any, ref: any) => {
     return (
       <>
          <div className='subheading'>
-          {popupEdit ? `Add SmartInformation - ${allValue?.Title}` : `Add SmartInformation - ${taskInfo?.Title}`}
+          {popupEdit ? `Edit SmartInformation - ${allValue?.Title}` : `Add SmartInformation - ${taskInfo?.Title}`}
          </div>
        <Tooltip ComponentId='3299' />
       </>
@@ -629,7 +629,7 @@ const SmartInformation = (props: any, ref: any) => {
 
   const addDocument = async (Status: any, items: any) => {
     setsmartDocumentpostData(items)
-    if (Status == "AddDocument") {
+    if (Status == "AddDocument"||popupEdit) {
       setshowAdddocument(true)
       setTimeout(() => {
         const panelMain: any = document.querySelector('.ms-Panel-main');
@@ -638,7 +638,7 @@ const SmartInformation = (props: any, ref: any) => {
         }
     }, 1000)
     }
-    else {
+    else  {
     
       addSmartInfoPopupAddlinkDoc2 = true;
       await saveSharewebItem().then((resolve:any)=>{
@@ -1002,8 +1002,8 @@ const SmartInformation = (props: any, ref: any) => {
                               {item.Url == null && <span><a className='px-2' href={`${item?.EncodedAbsUrl}?web=1`} target="_blank" data-interception="off"> <span>{item?.Title}</span></a></span>}
                               {item.Url != null && <span><a className='px-2' href={`${item?.Url?.Url}`} target="_blank" data-interception="off"> <span>{item?.Title}</span></a></span>}
                             </li>
-                            <li className='d-end'>
-                              <span title="Edit" className="svg__iconbox svg__icon--edit hreflink" onClick={() => editDocumentsLink(item)}></span>
+                            <li className='ml-auto'>
+                              <span title="Edit" className="svg__iconbox svg__icon--edit hreflink alignIcon" onClick={() => editDocumentsLink(item)}></span>
                             </li>
 
                           </ul>
@@ -1203,7 +1203,7 @@ const SmartInformation = (props: any, ref: any) => {
               <div className='col-md-6'><input type="text" className="full-width mt-3" placeholder='Rename your document' value={allValue?.fileupload != "" ? allValue?.fileupload : ""}></input></div>
             </div>
             <footer className='mt-2 text-end' >
-              <button className='btn btn-primary mx-3 text-end ' onClick={(e) => onUploadDocumentFunction("uploadFile", "UploadDocument")}>upload</button>
+              <button className='btn btn-primary mx-3 text-end ' onClick={(e) => onUploadDocumentFunction("uploadFile", "UploadDocument")}>Upload</button>
               <Button className='btn btn-default text-end  btn btn-primary' onClick={() => closeDoc()}>
                 Cancel
               </Button> </footer>

@@ -23,27 +23,28 @@ import * as Moment from 'moment-timezone';
 import { MdEmail } from "react-icons/Md";
  import PageLoader from '../../../globalComponents/pageLoader';
 import ReactPopperTooltipSingleLevel from '../../../globalComponents/Hierarchy-Popper-tooltipSilgleLevel/Hierarchy-Popper-tooltipSingleLevel';
-var AllUsers: any = []
+import EditPage from '../../../globalComponents/EditPanelPage/EditPage';
+let AllUsers: any = []
 let smartmetaDetails: any = [];
-var AllTasks: any = []
-var TaskItemRank: any = []
-var AllTime: any = []
-var AllTrainee: any = []
-var DevloperTime: any = 0.00;
-var QATime: any = 0.00;
-var QAMembers: any = 0;
-var DesignMembers: any = 0;
-var QAleaveHours:any = 0;
-var DevelopmentleaveHours:any = 0;
-var DesignMemberleaveHours:any = 0;
-var DevelopmentMembers: any = 0;
-var TotalQAMember: any = 0;
-var TotalDesignMember: any = 0;
-var TotalDevelopmentMember: any = 0;
-var DesignTime: any = 0.00;
-var TotleTaskTime:any=0.00
-var leaveUsers:any  = 0.00
-var checkDate: any = ''
+let AllTasks: any = []
+let TaskItemRank: any = []
+let AllTime: any = []
+let AllTrainee: any = []
+let DevloperTime: any = 0.00;
+let QATime: any = 0.00;
+let QAMembers: any = 0;
+let DesignMembers: any = 0;
+let QAleaveHours:any = 0;
+let DevelopmentleaveHours:any = 0;
+let DesignMemberleaveHours:any = 0;
+let DevelopmentMembers: any = 0;
+let TotalQAMember: any = 0;
+let TotalDesignMember: any = 0;
+let TotalDevelopmentMember: any = 0;
+let DesignTime: any = 0.00;
+let TotleTaskTime:any=0.00
+let leaveUsers:any  = 0.00
+let checkDate: any = ''
 //var DevloperTime: any = 0
 let isColumnDefultSortingAsc: any = false;
 //var QATime: any = 0
@@ -55,32 +56,32 @@ var TotalTime: any = 0
 var CurrentUserId=''
 var StartDatesss:any=''
 var selectDatess:any=''
-var QAhalfdayleave:any = [];
-var developmenthalfdayleave:any = [];
-var designhalfdayleave:any = [];
-var QAfulldayleave:any = [];
-var developmentfulldayleave:any = [];
-var AllMetadata:any=[]
-var componentDetails:any = [];
-var designfulldayleave:any = [];
+let QAhalfdayleave:any = [];
+let developmenthalfdayleave:any = [];
+let designhalfdayleave:any = [];
+let QAfulldayleave:any = [];
+let developmentfulldayleave:any = [];
+let AllMetadata:any=[]
+let componentDetails:any = [];
+let designfulldayleave:any = [];
 const TimeReport = (props:any) => {
    
     CurrentUserId = props.ContextData.Context.pageContext._legacyPageContext?.userId
     const web = new Web(props.ContextData.Context._pageContext._web.absoluteUrl);
-    var OffshoreSitee = '&$filter=';
-    var HealthSitee = '&$filter=';
-    var GenderSitee = '&$filter=';
-    var SharewebSitee = '&$filter=';
-    var EISitee = '&$filter=';
-    var EPSSitee = '&$filter=';
-    var EducationSitee = '&$filter=';
-    var DESitee = '&$filter=';
-    var QASitee = '&$filter=';
-    var GrueneSitee = '&$filter=';
-    var HHHHSitee = '&$filter=';
-    var KathaBeckSitee = '&$filter=';
-    var MigrationSitee = '&$filter=';
-    var ALAKDigitalSitee = '&$filter=';
+    let GenderSitee = '&$filter=';
+    let SharewebSitee = '&$filter=';
+    let EISitee = '&$filter=';
+    let HealthSitee = '&$filter=';
+    let EPSSitee = '&$filter=';
+    let EducationSitee = '&$filter=';
+    let DESitee = '&$filter=';
+    let QASitee = '&$filter=';
+    let GrueneSitee = '&$filter=';
+    let HHHHSitee = '&$filter=';
+    let KathaBeckSitee = '&$filter=';
+    let MigrationSitee = '&$filter=';
+    let ALAKDigitalSitee = '&$filter=';
+    let OffshoreSitee = '&$filter=';
     const [data, setData] = React.useState([])
     // const [checkDate, setcheckDate] = React.useState('')
     const [update, setUpdate] = React.useState(0)
@@ -90,6 +91,7 @@ const TimeReport = (props:any) => {
     
     var [selectdate, setSelectDate] = React.useState(undefined)
     const [checkedWS, setcheckedWS] = React.useState(false);
+    const [headerChange, setHeaderChange]: any = React.useState('');
     const [checkedTask, setcheckedTask] = React.useState(true);
     const [defaultDate,setDefaultDate] = React.useState()
     const [post, setPost] = React.useState({ Title: '', ItemRank: '', Body: '' })
@@ -108,13 +110,13 @@ const TimeReport = (props:any) => {
     }, [])
 
     const GetTaskUsers = async () => {
-        // let web = new Web("https://hhhhteams.sharepoint.com/sites/HHHH/SP");
         let taskUsers = [];
         taskUsers = await web.lists
             .getByTitle('Task Users')
             .items
             .select('Id,UserGroup/Id,UserGroup/Title,TimeCategory,Suffix,Title,Email,SortOrder,Role,Company,ParentID1,Status,Item_x0020_Cover,AssingedToUserId,isDeleted,AssingedToUser/Title,AssingedToUser/Id,AssingedToUser/EMail,ItemType,Approver/Id,Approver/Title,Approver/Name')
             .expand('AssingedToUser,Approver,UserGroup')
+            .filter("Company eq 'Smalsus'")
             .top(4999)
             .get();
         AllUsers = taskUsers;
@@ -716,9 +718,9 @@ QATime = 0.00;
     const finalTask = (SelectedTime: any) => {
         var MyData: any = []
         AllUsers?.forEach((val: any) => {
-            SelectedTime?.forEach((item: any) => {
-                item.Company = 'Smalsus'
-                if (item?.AuthorId == val?.AssingedToUserId) {
+            SelectedTime?.map((item: any) => {
+               
+                if (item?.AuthorId == val?.AssingedToUserId ) {
                     // item.Department = val.TimeCategory
                     // item.Company = val.Company
 
@@ -742,12 +744,10 @@ QATime = 0.00;
             })
 
         })
+       
         AllTasks?.forEach((task: any) => {
             SelectedTime?.forEach((item: any) => {
-
-                if (item.TaskId === task.Id && item.Task === task.Title && item?.Company == 'Smalsus') {
-
-
+                if (item.TaskId === task.Id && item.Task === task.Title && item?.userName != 'Kristina Kovach') {
                     if (task?.Portfolio?.ItemType == 'Component' || task?.Portfolio?.ItemType == 'Service') {
                         item.Components = task.Portfolio?.Title
                         item.siteUrl = task.siteUrl
@@ -895,7 +895,9 @@ QATime = 0.00;
 
 
     }
-
+    const changeHeader=(items:any)=>{
+        setHeaderChange(items)
+      }
     const column:any = React.useMemo<ColumnDef<any, unknown>[]>(
         () => [
             {
@@ -1258,7 +1260,7 @@ QATime = 0.00;
             + '<td width="10%" style="border: 1px solid #aeabab;padding: 4px">' + item?.Components + '</td>'
             + '<td style="border: 1px solid #aeabab;padding: 4px">' + item?.SubComponents + '</td>'
             + '<td style="border: 1px solid #aeabab;padding: 4px">' + item?.Features + '</td>'
-            + '<td style="border: 1px solid #aeabab;padding: 4px">' + '<a href=`https://hhhhteams.sharepoint.com/sites/HHHH/sp/SitePages/Task-Profile.aspx?taskId='+ item.TaskId +'&Site=' + item.siteType +'>' + '<span style="font-size:11px; font-weight:600">' + item.Task + '</span>' + '</a >' + '</td>'
+            + '<td style="border: 1px solid #aeabab;padding: 4px">' + `<a href='https://hhhhteams.sharepoint.com/sites/HHHH/sp/SitePages/Task-Profile.aspx?taskId=${item.TaskId}&Site=${item.siteType}'>` + '<span style="font-size:11px; font-weight:600">' + item.Task + '</span>' + '</a >' + '</td>'
             + '<td align="left" style="border: 1px solid #aeabab;padding: 4px">' + item?.Comments + '</td>'
             + '<td style="border: 1px solid #aeabab;padding: 4px">' + item?.PriorityRank + '</td>'
             + '<td style="border: 1px solid #aeabab;padding: 4px">' + item?.Effort + '</td>'
@@ -1436,13 +1438,10 @@ var ReportDate = new Date(a1)
         <>
         <section className='ContentSection'>
             <div className='row'>
-                <div className='col-sm-3 ps-0'>
-                    <h2 className="heading">Time Report
-                        <a className='ms-1'>
-                        <span className="alignIcon svg__iconbox svg__icon--edit "></span>
-                    </a>
-                    </h2>
-                </div>
+            <div className="alignCenter">
+          <h2 className="heading">{headerChange != undefined && headerChange != null && headerChange != '' ? headerChange : 'Permission-Management'} </h2>
+          <EditPage context={props?.ContextData} changeHeader={changeHeader} />
+        </div>
                 <div className='col-sm-9 pe-0'>
                     <h6 className='pull-right'><b><a  data-interception="off"
                     target="_blank" href="https://hhhhteams.sharepoint.com/sites/HHHH/SP/SitePages/TimeReport-old.aspx">Old Time Report</a></b>
