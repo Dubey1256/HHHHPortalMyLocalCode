@@ -288,7 +288,7 @@ const EditDocumentpanel = (props: any) => {
             <div className='border border-top-0 p-2'>
               {EditdocumentsData?.Url?.Url && <div className='d-flex'>
                 <div className='input-group'><label className='form-label full-width'>URL</label>
-                  <input type='text' className="from-control w-75" value={EditdocumentsData?.Url?.Url} onChange={(e => setEditdocumentsData({ ...EditdocumentsData, Url: { ...EditdocumentsData.Url, Url: e.target.value } }))}></input>
+                  <input type='text' className="from-control w-75" value={EditdocumentsData?.EncodedAbsUrl} onChange={(e => setEditdocumentsData({ ...EditdocumentsData, Url: { ...EditdocumentsData.Url, Url: e.target.value } }))}></input>
                 </div>
               </div>}
 

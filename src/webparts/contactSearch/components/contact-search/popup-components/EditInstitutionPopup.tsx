@@ -129,7 +129,10 @@ const HrGmbhInstitutionDeatails=async(Id:any)=>{
         return (
             <>
                 <div className='subheading alignCenter'>
-                Edit Institution:- {updateData?.FullName}
+                <img className='workmember' 
+                    src={updateData?.ItemImage != undefined ? updateData?.ItemImage.Url : "https://hhhhteams.sharepoint.com/sites/HHHH/SiteCollectionImages/ICONS/32/InstitutionPicture.jpg"}
+                     />
+                Edit Institution- {updateData?.FullName}
                      
                 </div>
                 <Tooltip ComponentId='626' />
@@ -140,10 +143,8 @@ const HrGmbhInstitutionDeatails=async(Id:any)=>{
         return (
             <>
                 <div className='subheading alignCenter'>
-                    <img className='workmember' 
-                    src={updateData?.ItemImage != undefined ? updateData?.ItemImage.Url : "https://hhhhteams.sharepoint.com/sites/HHHH/SiteCollectionImages/ICONS/32/InstitutionPicture.jpg"}
-                     />Add  Division - 
-                      {updateData?.FullName}
+                   Add  Division  
+                      
                 </div>
                 <Tooltip ComponentId='1064' />
             </>
