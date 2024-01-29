@@ -2229,7 +2229,6 @@ export const loadAllSiteTasks = async (allListId?: any|null, filter?: any|null) 
                         task.IsSCProtected = false;
                         task.IsSCProtectedStatus = "";
                     }
-                   
                     task.portfolioItemsSearch = site.Title;
                     task.TaskID = GetTaskId(task);
                 })

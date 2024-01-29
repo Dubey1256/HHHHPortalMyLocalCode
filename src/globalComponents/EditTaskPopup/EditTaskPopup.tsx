@@ -4771,6 +4771,7 @@ const EditTaskPopup = (Items: any) => {
                                         taskId={EditData.Id}
                                         listId={Items.Items.listId}
                                         siteUrls={siteUrls}
+                                        RequiredListIds = {AllListIdData}
                                     />
                                 ) : null}
                             </span>
@@ -4913,6 +4914,7 @@ const EditTaskPopup = (Items: any) => {
                                         taskId={EditData.Id}
                                         listId={Items.Items.listId}
                                         siteUrls={siteUrls}
+                                        RequiredListIds = {AllListIdData}
                                     />
                                 ) : null}
                             </span>
