@@ -93,7 +93,6 @@ const RelevantDocuments = (props: any, ref: any) => {
                         setEditdocpanel(false);
                     }
 
-
                 }
             }
         }
@@ -106,12 +105,7 @@ const RelevantDocuments = (props: any, ref: any) => {
             accessorFn: (row: any) => row?.FileLeafRef,
             cell: ({ row, column, getValue }: any) => (
                 <div className='alignCenter columnFixedTitle p-0'>
-                    {row?.original?.File_x0020_Type != 'msg' && row?.original?.File_x0020_Type != 'docx' && row?.original?.File_x0020_Type != 'doc' && row?.original?.File_x0020_Type != 'rar' && row?.original?.File_x0020_Type != 'jpeg' && row?.original?.File_x0020_Type != 'jpg' && row?.original?.File_x0020_Type != 'aspx' && row?.original?.File_x0020_Type != 'jfif' && <span className={` svg__iconbox svg__icon--${row?.original?.File_x0020_Type}`}></span>}
-                    {row?.original?.File_x0020_Type == 'rar' && <span className="svg__iconbox svg__icon--zip "></span>}
-                    {row?.original?.File_x0020_Type == 'aspx' || row?.original?.File_x0020_Type == 'msg' || row?.original?.File_x0020_Type == 'apk' ? <span className=" svg__iconbox svg__icon--unknownFile "></span> : ''}
-                    {row?.original?.File_x0020_Type == 'jpeg' || row?.original?.File_x0020_Type == 'jpg' ? <span className=" svg__iconbox svg__icon--jpeg "></span> : ''}
-                    {row?.original?.File_x0020_Type == 'doc' || row?.original?.File_x0020_Type == 'docx' ? <span className=" svg__iconbox svg__icon--docx "></span> : ''}
-                    {row?.original?.File_x0020_Type == 'jfif' ? <span className=" svg__iconbox svg__icon--jpeg "></span> : ''}
+                      <span className={`alignIcon  svg__iconbox svg__icon--${row?.original?.docType}`} title={row?.original?.File_x0020_Type}></span>
                     <a className='ms-1 wid90' target="_blank" href={`${row?.original?.EncodedAbsUrl}?web=1`}> {row?.original?.Title} </a>
                 </div>
             ),
@@ -216,36 +210,7 @@ const RelevantDocuments = (props: any, ref: any) => {
                     <div className='card-header'>
                         <div className="card-title h5 d-flex justify-content-between align-items-center  mb-0">Key Documents<span><Tooltip ComponentId={'1298'} /></span></div>
                     </div>
-                    {(keyDocument.map((item: any, index: any) => {
-                        return (
-                            <div className='card-body p-1'>
-                                <ul className='d-flex list-none'>
-
-                                    <li>
-                                        <a href={item.EncodedAbsUrl}>
-                                            {item?.File_x0020_Type == "pdf" && <span className='svg__iconbox svg__icon--pdf' title="pdf"></span>}
-                                            {item?.File_x0020_Type == "docx" && <span className='svg__iconbox svg__icon--docx' title="docx"></span>}
-                                            {item?.File_x0020_Type == "csv" && <span className='svg__iconbox svg__icon--csv' title="csv"></span>}
-                                            {item?.File_x0020_Type == "xlsx" && <span className='svg__iconbox svg__icon--xlsx' title="xlsx"></span>}
-                                            {item?.File_x0020_Type == "jpeg" || item?.File_x0020_Type == "jpg " && <span className='svg__iconbox svg__icon--jpeg' title="jpeg"></span>}
-                                            {item?.File_x0020_Type == "ppt" || item?.File_x0020_Type == "pptx" && <span className='svg__iconbox svg__icon--ppt' title="ppt"></span>}
-                                            {item?.File_x0020_Type == "svg" && <span className='svg__iconbox svg__icon--svg' title="svg"></span>}
-                                            {item?.File_x0020_Type == "zip" && <span className='svg__iconbox svg__icon--zip' title="zip"></span>}
-                                            {item?.File_x0020_Type == "png" && <span className='svg__iconbox svg__icon--png' title="png"></span>}
-                                            {item?.File_x0020_Type == "txt" && <span className='svg__iconbox svg__icon--txt' title="txt"></span>}
-                                            {item?.File_x0020_Type == "smg" && <span className='svg__iconbox svg__icon--smg' title="smg"></span>}
-
-                                        </a>
-
-                                    </li>
-                                </ul>
-
-                            </div>
-                        )
-                    })
-
-                    )
-                        ?
+                  
                         <div className='TableSection'>
                             <div className='Alltable'>
                                 <div className='smart Key-documents'>
@@ -253,12 +218,6 @@ const RelevantDocuments = (props: any, ref: any) => {
                                 </div>
                             </div>
                         </div>
-
-
-
-
-                        : ""}
-
                     {copykeyDocument?.length < keyDocument?.length && copykeyDocument?.length > 0 && (
                         <button onClick={ShowData}>
                             Show More
