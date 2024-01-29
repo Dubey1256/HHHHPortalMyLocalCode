@@ -2103,7 +2103,7 @@ const RestructuringCom = (props: any, ref: any) => {
                   setQuery4TopIcon("Activity");
                   checkPortfoliosAlrt = false;
                 }
-                if (props?.queryItems?.Item_x0020_Type == "Feature" && props?.queryItems?.Item_x0020_Type == "SubComponent" && props?.queryItems?.Item_x0020_Type == "Component" && (items?.TaskType?.Id==1) && props?.queryItems != undefined && props?.queryItems != null && checkPortfoliosAlrt && items?.subRows?.length === 0) {
+                if ((props?.queryItems?.Item_x0020_Type == "Feature" || props?.queryItems?.Item_x0020_Type == "SubComponent" || props?.queryItems?.Item_x0020_Type == "Component") && (items?.TaskType?.Id==1) && props?.queryItems != undefined && props?.queryItems != null && checkPortfoliosAlrt && items?.subRows?.length === 0) {
                   topCompo = false;
                   setQuery4TopIcon("");
                   checkPortfoliosAlrt = false;
@@ -5126,21 +5126,11 @@ if (newItemBackUp?.Item_x0020_Type == 'Sprint' || newItemBackUp == null) {
           <div>
             <div className="my-1">
               Selected Item will restructure into the
-              {RestructureChecked[0]?.Item_x0020_Type != "Task" ? newItemBackUp?.Item_x0020_Type == "Component" && RestructureChecked[0]?.Item_x0020_Type == "Component" ? " SubComponent "
-                  : newItemBackUp?.Item_x0020_Type == "SubComponent" &&
-                    (RestructureChecked[0]?.Item_x0020_Type == "SubComponent" ||
-                      RestructureChecked[0]?.Item_x0020_Type == "Component")
-                  ? " Feature "
-                  : ` ${RestructureChecked[0]?.Item_x0020_Type}`
-                : RestructureChecked[0]?.TaskType?.Id == 2 ||
-                  RestructureChecked[0]?.TaskType?.Id == 1 ||
-                  newItemBackUp?.TaskType?.Id == 3
-                ? " Task "
-                : RestructureChecked[0]?.TaskType?.Id == 1
-                ? " Activity "
-                : newItemBackUp?.Item_x0020_Type != "Task"
-                ? " Activity "
-                : " Workstream "}
+              {RestructureChecked[0]?.Item_x0020_Type != "Task" ? (newItemBackUp?.Item_x0020_Type == "Component" && RestructureChecked[0]?.Item_x0020_Type == "Component" ? " SubComponent " : (newItemBackUp?.Item_x0020_Type == "SubComponent" && (RestructureChecked[0]?.Item_x0020_Type == "SubComponent" || RestructureChecked[0]?.Item_x0020_Type == "Component") ? " Feature " : RestructureChecked[0]?.Item_x0020_Type ))
+              : (newItemBackUp?.Item_x0020_Type != "Task" && RestructureChecked[0]?.TaskType?.Id == 3 ? ' Activity '  : (newItemBackUp?.TaskType?.Id == 1 && RestructureChecked[0]?.TaskType?.Id == 1 ? ' Workstream ' : (newItemBackUp?.TaskType?.Id == 1 && newItemBackUp?.subRows?.some((item: any) => item?.Id === RestructureChecked[0]?.Id && item?.Title === RestructureChecked[0]?.Title) && RestructureChecked[0]?.TaskType?.Id == 3 ?
+              ' Task ' : (newItemBackUp?.TaskType?.Id == 1 && newItemBackUp?.subRows?.some((item: any) => item?.Id === RestructureChecked[0]?.Id && item?.Title === RestructureChecked[0]?.Title) && RestructureChecked[0]?.TaskType?.Id == 2 ? ' Workstream ' : RestructureChecked[0]?.TaskType?.Id == 2 ? ' Task ' : (RestructureChecked[0]?.TaskType?.Id == 3 ? ' Workstream ' : ''))))      
+                // RestructureChecked[0]?.TaskType?.Id == 2 || RestructureChecked[0]?.TaskType?.Id == 1 || newItemBackUp?.TaskType?.Id == 3 ? " Task " : (RestructureChecked[0]?.TaskType?.Id == 1 ? " Activity " : (newItemBackUp?.Item_x0020_Type != "Task" ? " Activity " : " Workstream "))
+              )}
               inside
               {newItemBackUp?.SiteIconTitle != undefined &&
               newItemBackUp?.SiteIconTitle != null ? (
@@ -5162,6 +5152,19 @@ if (newItemBackUp?.Item_x0020_Type == 'Sprint' || newItemBackUp == null) {
                   <div className="mainParentSec">
                     <div className="reStuMainTiles">
                       <div className="reStuTile">
+                      {obj?.Title != "Others" ? (
+                          obj?.siteIcon?.length === 1 ? (
+                            <div className="Dyicons text-center">
+                              {obj.siteIcon}
+                            </div>
+                          ) : (
+                            <div className="text-center">
+                              <img className="workmember" src={obj?.siteIcon} />
+                            </div>
+                          )
+                        ) : (
+                          ""
+                        )}
                     <ReactPopperTooltipSingleLevel ShareWebId={obj?.TaskID} row={obj} AllListId={props?.contextValue} singleLevel={true} masterTaskData={props?.AllMasterTasksData} AllSitesTaskData={props?.AllSitesTaskData} />
 
                       <a
@@ -5182,19 +5185,7 @@ if (newItemBackUp?.Item_x0020_Type == 'Sprint' || newItemBackUp == null) {
                             : ""
                         }
                       >
-                        {obj?.Title != "Others" ? (
-                          obj?.siteIcon?.length === 1 ? (
-                            <div className="Dyicons text-center">
-                              {obj.siteIcon}
-                            </div>
-                          ) : (
-                            <div className="text-center">
-                              <img className="workmember" src={obj?.siteIcon} />
-                            </div>
-                          )
-                        ) : (
-                          ""
-                        )}
+                        
                          {obj?.newSubChild != undefined &&
                     obj?.newSubChild != null ? (
                      ""
@@ -5221,6 +5212,19 @@ if (newItemBackUp?.Item_x0020_Type == 'Sprint' || newItemBackUp == null) {
                       <>
                         <div className="reStuMainTiles">
                         <div className="reStuTile">
+                        {obj?.newSubChild?.siteIcon === "S" ||
+                            obj?.newSubChild?.siteIcon === "F" ? (
+                              <span className="Dyicons me-1">
+                                {obj?.newSubChild?.siteIcon}
+                              </span>
+                            ) : (
+                              <span className="mx-1">
+                                <img
+                                  className="workmember"
+                                  src={obj?.newSubChild?.siteIcon}
+                                />
+                              </span>
+                            )}
                         <ReactPopperTooltipSingleLevel ShareWebId={obj?.newSubChild?.TaskID} row={obj?.newSubChild} AllListId={props?.contextValue} singleLevel={true} masterTaskData={props?.AllMasterTasksData} AllSitesTaskData={props?.AllSitesTaskData} />
                           <a
                             className=""
@@ -5241,19 +5245,7 @@ if (newItemBackUp?.Item_x0020_Type == 'Sprint' || newItemBackUp == null) {
                             }
                           >
                          {/* <div className="alignCenter">{obj?.newSubChild?.TaskID}</div> */}
-                            {obj?.newSubChild?.siteIcon === "S" ||
-                            obj?.newSubChild?.siteIcon === "F" ? (
-                              <span className="Dyicons me-1">
-                                {obj?.newSubChild?.siteIcon}
-                              </span>
-                            ) : (
-                              <span className="mx-1">
-                                <img
-                                  className="workmember"
-                                  src={obj?.newSubChild?.siteIcon}
-                                />
-                              </span>
-                            )}
+                            
                               {obj?.newSubChild?.newFeatChild != undefined &&
                         obj?.newSubChild?.newFeatChild != null ? (
                      ""
@@ -5279,6 +5271,19 @@ if (newItemBackUp?.Item_x0020_Type == 'Sprint' || newItemBackUp == null) {
                       <>
                         <div className="reStuMainTiles">
                         <div className="reStuTile">
+                        {obj?.newSubChild?.newFeatChild?.siteIcon ===
+                            "F" ? (
+                              <span className="Dyicons me-1">
+                                {obj?.newSubChild?.newFeatChild?.siteIcon}
+                              </span>
+                            ) : (
+                              <span className="mx-1">
+                                <img
+                                  className="workmember"
+                                  src={obj?.newSubChild?.newFeatChild?.siteIcon}
+                                />
+                              </span>
+                            )}
                         <ReactPopperTooltipSingleLevel ShareWebId={obj?.newSubChild?.newFeatChild?.TaskID} row={obj?.newSubChild?.newFeatChild} AllListId={props?.contextValue} singleLevel={true} masterTaskData={props?.AllMasterTasksData} AllSitesTaskData={props?.AllSitesTaskData} />
                           
                           <a
@@ -5301,19 +5306,7 @@ if (newItemBackUp?.Item_x0020_Type == 'Sprint' || newItemBackUp == null) {
                             }
                           >
                              {/* <div className="alignCenter">{obj?.newSubChild?.newFeatChild?.TaskID}</div> */}
-                            {obj?.newSubChild?.newFeatChild?.siteIcon ===
-                            "F" ? (
-                              <span className="Dyicons me-1">
-                                {obj?.newSubChild?.newFeatChild?.siteIcon}
-                              </span>
-                            ) : (
-                              <span className="mx-1">
-                                <img
-                                  className="workmember"
-                                  src={obj?.newSubChild?.newFeatChild?.siteIcon}
-                                />
-                              </span>
-                            )}
+                          
                              {obj?.newSubChild?.newFeatChild?.newActChild !=
                           undefined &&
                         obj?.newSubChild?.newFeatChild?.newActChild != null ? (
@@ -5341,6 +5334,13 @@ if (newItemBackUp?.Item_x0020_Type == 'Sprint' || newItemBackUp == null) {
                       <>
                         <div className="reStuMainTiles">
                         <div className="reStuTile">
+                        <img
+                              className="workmember"
+                              src={
+                                obj?.newSubChild?.newFeatChild?.newActChild
+                                  ?.siteIcon
+                              }
+                            />
                         <ReactPopperTooltipSingleLevel ShareWebId={obj?.newSubChild?.newFeatChild?.newActChild?.TaskID} row={obj?.newSubChild?.newFeatChild?.newActChild} AllListId={props?.contextValue} singleLevel={true} masterTaskData={props?.AllMasterTasksData} AllSitesTaskData={props?.AllSitesTaskData} />
                          
                           <a
@@ -5366,13 +5366,7 @@ if (newItemBackUp?.Item_x0020_Type == 'Sprint' || newItemBackUp == null) {
                             className=""
                           >
                              {/* <div className="alignCenter">{obj?.newSubChild?.newFeatChild?.newActChild?.TaskID}</div> */}
-                            <img
-                              className="workmember"
-                              src={
-                                obj?.newSubChild?.newFeatChild?.newActChild
-                                  ?.siteIcon
-                              }
-                            />
+                           
                               {obj?.newSubChild?.newFeatChild?.newActChild
                           ?.newWrkChild != undefined &&
                         obj?.newSubChild?.newFeatChild?.newActChild
@@ -5402,6 +5396,13 @@ if (newItemBackUp?.Item_x0020_Type == 'Sprint' || newItemBackUp == null) {
                       <>
                         <div className="reStuMainTiles">
                         <div className="reStuTile">
+                        <img
+                              className="workmember"
+                              src={
+                                obj?.newSubChild?.newFeatChild?.newActChild
+                                  ?.newWrkChild?.siteIcon
+                              }
+                            />
                         <ReactPopperTooltipSingleLevel ShareWebId={obj?.newSubChild?.newFeatChild?.newActChild?.newWrkChild?.TaskID} row={obj?.newSubChild?.newFeatChild?.newActChild?.newWrkChild} AllListId={props?.contextValue} singleLevel={true} masterTaskData={props?.AllMasterTasksData} AllSitesTaskData={props?.AllSitesTaskData} />
                          
                           <a
@@ -5427,13 +5428,7 @@ if (newItemBackUp?.Item_x0020_Type == 'Sprint' || newItemBackUp == null) {
                             className=""
                           >
                             {/* <div className="alignCenter">{obj?.newSubChild?.newFeatChild?.newActChild?.newWrkChild?.TaskID}</div> */}
-                            <img
-                              className="workmember"
-                              src={
-                                obj?.newSubChild?.newFeatChild?.newActChild
-                                  ?.newWrkChild?.siteIcon
-                              }
-                            />
+                           
                             {obj?.newSubChild?.newFeatChild?.newActChild
                           ?.newWrkChild?.newTskChild != undefined &&
                         obj?.newSubChild?.newFeatChild?.newActChild?.newWrkChild
@@ -5465,6 +5460,13 @@ if (newItemBackUp?.Item_x0020_Type == 'Sprint' || newItemBackUp == null) {
                       <>
                         <div className="reStuMainTiles">
                         <div className="reStuTile">
+                        <img
+                              className="workmember"
+                              src={
+                                obj?.newSubChild?.newFeatChild?.newActChild
+                                  ?.newWrkChild?.newTskChild?.siteIcon
+                              }
+                            />
                         <ReactPopperTooltipSingleLevel ShareWebId={obj?.newSubChild?.newFeatChild?.newActChild?.newWrkChild?.newTskChild?.TaskID} row={obj?.newSubChild?.newFeatChild?.newActChild?.newWrkChild?.newTskChild} AllListId={props?.contextValue} singleLevel={true} masterTaskData={props?.AllMasterTasksData} AllSitesTaskData={props?.AllSitesTaskData} />
                          
                           <a
@@ -5491,13 +5493,7 @@ if (newItemBackUp?.Item_x0020_Type == 'Sprint' || newItemBackUp == null) {
                             className=""
                           >
                               {/* <div className="alignCenter">{obj?.newSubChild?.newFeatChild?.newActChild?.newWrkChild?.newTskChild?.TaskID}</div> */}
-                            <img
-                              className="workmember"
-                              src={
-                                obj?.newSubChild?.newFeatChild?.newActChild
-                                  ?.newWrkChild?.newTskChild?.siteIcon
-                              }
-                            />
+                          
                             {
                               obj?.newSubChild?.newFeatChild?.newActChild
                                 ?.newWrkChild?.newTskChild?.Title
@@ -5523,6 +5519,17 @@ if (newItemBackUp?.Item_x0020_Type == 'Sprint' || newItemBackUp == null) {
                   <div className="mainParentSec">
                     <div className="reStuMainTiles">
                     <div className="reStuTile">
+                    {obj?.Title != "Others" ? (
+                          obj?.siteIcon?.length === 1 ? (
+                            <span className="Dyicons">{obj?.siteIcon}</span>
+                          ) : (
+                            <span>
+                              <img className="workmember" src={obj?.siteIcon} />
+                            </span>
+                          )
+                        ) : (
+                          ""
+                        )}
                     <ReactPopperTooltipSingleLevel ShareWebId={obj?.TaskID} row={obj} AllListId={props?.contextValue} singleLevel={true} masterTaskData={props?.AllMasterTasksData} AllSitesTaskData={props?.AllSitesTaskData} />
                          
                       <a
@@ -5544,17 +5551,7 @@ if (newItemBackUp?.Item_x0020_Type == 'Sprint' || newItemBackUp == null) {
                         }
                       >
                          {/* <div className="alignCenter">{obj?.TaskID}</div> */}
-                        {obj?.Title != "Others" ? (
-                          obj?.siteIcon?.length === 1 ? (
-                            <span className="Dyicons">{obj?.siteIcon}</span>
-                          ) : (
-                            <span>
-                              <img className="workmember" src={obj?.siteIcon} />
-                            </span>
-                          )
-                        ) : (
-                          ""
-                        )}
+                        
                         {/* {obj?.newSubChild != undefined &&
                         obj?.newSubChild != null ? (
                      ""
@@ -5573,6 +5570,19 @@ if (newItemBackUp?.Item_x0020_Type == 'Sprint' || newItemBackUp == null) {
                         
                         <div className="reStuMainTiles">
                         <div className="reStuTile">
+                        {obj?.newSubChild?.siteIcon === "S" ||
+                            obj?.newSubChild?.siteIcon === "F" ? (
+                              <span className="Dyicons">
+                                {obj?.newSubChild?.siteIcon}
+                              </span>
+                            ) : (
+                              <span className="mx-1">
+                                <img
+                                  className="workmember"
+                                  src={obj?.newSubChild?.siteIcon}
+                                />
+                              </span>
+                            )}
                         <ReactPopperTooltipSingleLevel ShareWebId={obj?.newSubChild?.TaskID} row={obj?.newSubChild} AllListId={props?.contextValue} singleLevel={true} masterTaskData={props?.AllMasterTasksData} AllSitesTaskData={props?.AllSitesTaskData} />
                          
                           <a
@@ -5594,19 +5604,7 @@ if (newItemBackUp?.Item_x0020_Type == 'Sprint' || newItemBackUp == null) {
                             className=""
                           >
                             {/* <div className="alignCenter">{obj?.newSubChild?.TaskID}</div> */}
-                            {obj?.newSubChild?.siteIcon === "S" ||
-                            obj?.newSubChild?.siteIcon === "F" ? (
-                              <span className="Dyicons">
-                                {obj?.newSubChild?.siteIcon}
-                              </span>
-                            ) : (
-                              <span className="mx-1">
-                                <img
-                                  className="workmember"
-                                  src={obj?.newSubChild?.siteIcon}
-                                />
-                              </span>
-                            )}
+                         
                             {/* {obj?.newSubChild?.Title} */}
                           </a>
                           </div>
@@ -5623,6 +5621,19 @@ if (newItemBackUp?.Item_x0020_Type == 'Sprint' || newItemBackUp == null) {
                       <>
                         <div className="reStuMainTiles">
                         <div className="reStuTile">
+                        {obj?.newSubChild?.newFeatChild?.siteIcon ===
+                            "F"  ? (
+                              <span className="Dyicons">
+                                {obj?.newSubChild?.newFeatChild?.siteIcon}
+                              </span>
+                            ) : (
+                              <span className="mx-1">
+                                <img
+                                  className="workmember"
+                                  src={obj?.newSubChild?.newFeatChild?.siteIcon}
+                                />
+                              </span>
+                            )}
                         <ReactPopperTooltipSingleLevel ShareWebId={obj?.newSubChild?.newFeatChild?.TaskID} row={obj?.newSubChild?.newFeatChild} AllListId={props?.contextValue} singleLevel={true} masterTaskData={props?.AllMasterTasksData} AllSitesTaskData={props?.AllSitesTaskData} />
                          
                           <a
@@ -5645,19 +5656,7 @@ if (newItemBackUp?.Item_x0020_Type == 'Sprint' || newItemBackUp == null) {
                             className=""
                           >
                             {/* <div className="alignCenter">{obj?.newSubChild?.newFeatChild?.TaskID}</div> */}
-                            {obj?.newSubChild?.newFeatChild?.siteIcon ===
-                            "F"  ? (
-                              <span className="Dyicons">
-                                {obj?.newSubChild?.newFeatChild?.siteIcon}
-                              </span>
-                            ) : (
-                              <span className="mx-1">
-                                <img
-                                  className="workmember"
-                                  src={obj?.newSubChild?.newFeatChild?.siteIcon}
-                                />
-                              </span>
-                            )}
+                          
                             {/* {obj?.newSubChild?.newFeatChild?.Title} */}
                           </a>
                           </div>
@@ -5674,6 +5673,13 @@ if (newItemBackUp?.Item_x0020_Type == 'Sprint' || newItemBackUp == null) {
                       <>
                         <div className="reStuMainTiles">
                         <div className="reStuTile">
+                        <img
+                              className="workmember"
+                              src={
+                                obj?.newSubChild?.newFeatChild?.newActChild
+                                  ?.siteIcon
+                              }
+                            />
                         <ReactPopperTooltipSingleLevel ShareWebId={obj?.newSubChild?.newFeatChild?.newActChild?.TaskID} row={obj?.newSubChild?.newFeatChild?.newActChild} AllListId={props?.contextValue} singleLevel={true} masterTaskData={props?.AllMasterTasksData} AllSitesTaskData={props?.AllSitesTaskData} />
                          
                           <a
@@ -5700,13 +5706,7 @@ if (newItemBackUp?.Item_x0020_Type == 'Sprint' || newItemBackUp == null) {
                             className=""
                           >
                             {/* <div className="alignCenter">{obj?.newSubChild?.newFeatChild?.newActChild?.TaskID}</div> */}
-                            <img
-                              className="workmember"
-                              src={
-                                obj?.newSubChild?.newFeatChild?.newActChild
-                                  ?.siteIcon
-                              }
-                            />
+                           
                             {/* {obj?.newSubChild?.newFeatChild?.newActChild?.Title} */}
                           </a></div>
                         </div>
@@ -5724,6 +5724,13 @@ if (newItemBackUp?.Item_x0020_Type == 'Sprint' || newItemBackUp == null) {
                         
                         <div className="reStuMainTiles">
                         <div className="reStuTile">
+                        <img
+                              className="workmember"
+                              src={
+                                obj?.newSubChild?.newFeatChild?.newActChild
+                                  ?.newWrkChild?.siteIcon
+                              }
+                            />
                         <ReactPopperTooltipSingleLevel ShareWebId={obj?.newSubChild?.newFeatChild?.newActChild?.newWrkChild?.TaskID} row={obj?.newSubChild?.newFeatChild?.newActChild?.newWrkChild} AllListId={props?.contextValue} singleLevel={true} masterTaskData={props?.AllMasterTasksData} AllSitesTaskData={props?.AllSitesTaskData} />
                          
                           <a
@@ -5750,13 +5757,7 @@ if (newItemBackUp?.Item_x0020_Type == 'Sprint' || newItemBackUp == null) {
                             className=""
                           >
                             {/* <div className="alignCenter">{obj?.newSubChild?.newFeatChild?.newActChild?.newWrkChild?.TaskID}</div> */}
-                            <img
-                              className="workmember"
-                              src={
-                                obj?.newSubChild?.newFeatChild?.newActChild
-                                  ?.newWrkChild?.siteIcon
-                              }
-                            />
+                           
                             {/* {
                               obj?.newSubChild?.newFeatChild?.newActChild
                                 ?.newWrkChild?.Title
@@ -5777,6 +5778,13 @@ if (newItemBackUp?.Item_x0020_Type == 'Sprint' || newItemBackUp == null) {
                         
                         <div className="reStuMainTiles">
                         <div className="reStuTile">
+                        <img
+                              className="workmember"
+                              src={
+                                obj?.newSubChild?.newFeatChild?.newActChild
+                                  ?.newWrkChild?.newTskChild?.siteIcon
+                              }
+                            />
                         <ReactPopperTooltipSingleLevel ShareWebId={obj?.newSubChild?.newFeatChild?.newActChild?.newWrkChild?.newTskChild?.TaskID} row={obj?.newSubChild?.newFeatChild?.newActChild?.newWrkChild?.newTskChild} AllListId={props?.contextValue} singleLevel={true} masterTaskData={props?.AllMasterTasksData} AllSitesTaskData={props?.AllSitesTaskData} />
                          
                           <a
@@ -5804,13 +5812,7 @@ if (newItemBackUp?.Item_x0020_Type == 'Sprint' || newItemBackUp == null) {
                             className=""
                           >
                             <div className="alignCenter">{obj?.newSubChild?.newFeatChild?.newActChild?.newWrkChild?.newTskChild?.TaskID}</div>
-                            <img
-                              className="workmember"
-                              src={
-                                obj?.newSubChild?.newFeatChild?.newActChild
-                                  ?.newWrkChild?.newTskChild?.siteIcon
-                              }
-                            />
+                          
                             {/* {
                               obj?.newSubChild?.newFeatChild?.newActChild
                                 ?.newWrkChild?.newTskChild?.Title
@@ -5977,57 +5979,6 @@ if (newItemBackUp?.Item_x0020_Type == 'Sprint' || newItemBackUp == null) {
               </>
 
             }
-             {/* <>
-               {restructureItem != undefined &&
-            restructureItem?.length > 0 &&
-            restructureItem[0]?.Item_x0020_Type === "Task" &&
-            newItemBackUp?.TaskType?.Id == 1 &&
-            newItemBackUp?.Item_x0020_Type == "Task" &&
-            (restructureItem[0]?.TaskType?.Id == 1 ||
-              restructureItem[0]?.TaskType?.Id == 3 ||
-              restructureItem[0]?.TaskType?.Id == 2) ? (
-              <div className="mt-2">
-                <span>
-                  {"Select Task Type :"}
-                  <label className="SpfxCheckRadio ms-3 me-1">
-                    <input
-                      type="radio"
-                      className="radio"
-                      name="fav_language"
-                      value="Workstream"
-                      checked={
-                        RestructureChecked[0]?.TaskType?.Id == 3
-                          ? true
-                          : RestructureChecked[0]?.TaskType?.Id == 1
-                          ? true
-                          : false
-                      }
-                      onChange={(e) => setRestructure(RestructureChecked, 3)}
-                    />
-                  </label>
-                  <label className="ms-1"> {"Workstream"} </label>
-                </span>
-                <span>
-                  <label className="SpfxCheckRadio ms-3 me-1">
-                    <input
-                      type="radio"
-                      className="radio"
-                      name="fav_language"
-                      value="Task"
-                      checked={
-                        RestructureChecked[0]?.TaskType?.Id === 2 ? true : false
-                      }
-                      onChange={(e) => setRestructure(RestructureChecked, 2)}
-                    />
-                  </label>
-                  <label className="ms-1"> {"Task"} </label>
-                </span>
-              </div>
-            ) : (
-              " "
-            )}
-              </> */}
-           
 
             {restructureItem != undefined &&
             restructureItem?.length > 0 &&
@@ -6349,6 +6300,11 @@ if (newItemBackUp?.Item_x0020_Type == 'Sprint' || newItemBackUp == null) {
                   <div className="mainParentSec">
                     <div className="reStuMainTiles">
                     <div className="reStuTile">
+                    {
+                          <div className="Dyicons text-center">
+                              {obj.Item_x0020_Type == 'Project' ? "P" : "S"}
+                            </div>
+                            }
                     <ReactPopperTooltipSingleLevel ShareWebId={obj?.TaskID} row={obj} AllListId={props?.contextValue} singleLevel={true} masterTaskData={props?.AllMasterTasksData} AllSitesTaskData={props?.AllSitesTaskData} />
                          
                       <a
@@ -6356,15 +6312,11 @@ if (newItemBackUp?.Item_x0020_Type == 'Sprint' || newItemBackUp == null) {
                         target="_blank"
                         className="serviceColor_Active "
                         href={ props?.contextValue?.siteUrl +
-                                "/SP/SitePages/Project-Management.aspx?ProjectId=" +
+                                "/SitePages/Project-Management.aspx?ProjectId=" +
                                 obj?.Id}
                       >
                         {/* <div className="alignCenter">{obj?.TaskID}</div> */}
-                        {
-                          <div className="Dyicons text-center">
-                              {obj.Item_x0020_Type == 'Project' ? "P" : "S"}
-                            </div>
-                            }
+                        
                               {obj?.newSubChild != undefined &&
                     obj?.newSubChild != null ? (
                       ""
@@ -6388,6 +6340,10 @@ if (newItemBackUp?.Item_x0020_Type == 'Sprint' || newItemBackUp == null) {
                       <>
                         <div className="reStuMainTiles">
                         <div className="reStuTile">
+                        {
+                              <span className="Dyicons me-1">
+                                {obj?.newSubChild?.Item_x0020_Type == 'Project' ? "P" : "S"}
+                              </span>}
                         <ReactPopperTooltipSingleLevel ShareWebId={obj?.newSubChild?.TaskID} row={obj?.newSubChild} AllListId={props?.contextValue} singleLevel={true} masterTaskData={props?.AllMasterTasksData} AllSitesTaskData={props?.AllSitesTaskData} />
                          
                           <a
@@ -6395,14 +6351,11 @@ if (newItemBackUp?.Item_x0020_Type == 'Sprint' || newItemBackUp == null) {
                             data-interception="off"
                             target="_blank"
                             href={ props?.contextValue?.siteUrl +
-                              "/SP/SitePages/Project-Management.aspx?ProjectId=" +
+                              "/SitePages/Project-Management.aspx?ProjectId=" +
                               obj?.newSubChild?.Id}
                           >
                             {/* <div className="alignCenter">{obj?.newSubChild?.TaskID}</div> */}
-                            {
-                              <span className="Dyicons me-1">
-                                {obj?.newSubChild?.Item_x0020_Type == 'Project' ? "P" : "S"}
-                              </span>}
+                           
                             {obj?.newSubChild?.Title}
                           </a>
                           </div>
@@ -6425,6 +6378,8 @@ if (newItemBackUp?.Item_x0020_Type == 'Sprint' || newItemBackUp == null) {
                   <div className="mainParentSec">
                     <div className="reStuMainTiles">
                     <div className="reStuTile">
+                      
+                    <span className="Dyicons">{obj?.Item_x0020_Type == 'Project' ? "P" : "S"}</span>
                     <ReactPopperTooltipSingleLevel ShareWebId={obj?.TaskID} row={obj} AllListId={props?.contextValue} singleLevel={true} masterTaskData={props?.AllMasterTasksData} AllSitesTaskData={props?.AllSitesTaskData} />
                          
                       <a
@@ -6432,12 +6387,11 @@ if (newItemBackUp?.Item_x0020_Type == 'Sprint' || newItemBackUp == null) {
                         target="_blank"
                         className="hreflink serviceColor_Active "
                         href={props?.contextValue?.siteUrl +
-                                "/SP/SitePages/Project-Management.aspx?ProjectId" +
+                                "/SitePages/Project-Management.aspx?ProjectId" +
                                 obj?.Id
                         }
                       >
                         {/* <div className="alignCenter">{obj?.TaskID}</div> */}
-                        <span className="Dyicons">{obj?.Item_x0020_Type == 'Project' ? "P" : "S"}</span>
                         {/* { obj?.Title} */}
                       </a>
                       </div>
@@ -6451,21 +6405,22 @@ if (newItemBackUp?.Item_x0020_Type == 'Sprint' || newItemBackUp == null) {
                         
                         <div className="reStuMainTiles">
                         <div className="reStuTile">
+                        <span className="Dyicons">
+                                {obj?.newSubChild?.Item_x0020_Type == 'Project' ? "P" : "S"}
+                              </span>
                         <ReactPopperTooltipSingleLevel ShareWebId={obj?.newSubChild?.TaskID} row={obj?.newSubChild} AllListId={props?.contextValue} singleLevel={true} masterTaskData={props?.AllMasterTasksData} AllSitesTaskData={props?.AllSitesTaskData} />
                          
                           <a
                             data-interception="off"
                             target="_blank"
                             href={props?.contextValue?.siteUrl +
-                                    "/SP/SitePages/Project-Management.aspx?ProjectId" +
+                                    "/SitePages/Project-Management.aspx?ProjectId" +
                                     obj?.newSubChild?.Id
                             }
                             className=""
                           >
-                        <div className="alignCenter">{obj?.newSubChild?.TaskID}</div>
-                              <span className="Dyicons">
-                                {obj?.newSubChild?.Item_x0020_Type == 'Project' ? "P" : "S"}
-                              </span>
+                        {/* <div className="alignCenter">{obj?.newSubChild?.TaskID}</div> */}
+                            
                             {/* {obj?.newSubChild?.Title} */}
                           </a>
                           </div>
@@ -6485,13 +6440,14 @@ if (newItemBackUp?.Item_x0020_Type == 'Sprint' || newItemBackUp == null) {
                           target="_blank"
                           className="hreflink serviceColor_Active reStuTile"
                           href={ props?.contextValue?.siteUrl +
-                                "/SP/SitePages/Project-Management.aspx?ProjectId" +
+                                "/SitePages/Project-Management.aspx?ProjectId" +
                                 obj?.Id
                           }
                         >
+                          
+                          <span className="Dyicons">{newItemBackUp != undefined && newItemBackUp != null ? "X" : "P"}</span>
                  <div className="alignCenter">{`${newItemBackUp?.TaskID}-X${newItemBackUp?.subRows?.length+1}`}</div>
                           
-                            <span className="Dyicons">{newItemBackUp != undefined && newItemBackUp != null ? "S" : "P"}</span>
                          
                           {items?.Title}
                         </a>
@@ -6567,7 +6523,7 @@ if (newItemBackUp?.Item_x0020_Type == 'Sprint' || newItemBackUp == null) {
               inside
               {newItemBackUp?.Item_x0020_Type == "Sprint" ?
                 <span className="Dyicons me-1 ms-1">
-                  S
+                  X
                 </span> : (newItemBackUp?.TaskType?.Id == 1 || newItemBackUp?.TaskType?.Id == 3 ?  <img
                             className="workmember"
                               src={newItemBackUp?.SiteIcon}
@@ -6614,7 +6570,7 @@ if (newItemBackUp?.Item_x0020_Type == 'Sprint' || newItemBackUp == null) {
               inside
               {newItemBackUp?.Item_x0020_Type == "Sprint" ?
                 <span className="Dyicons me-1 ms-1">
-                  S
+                  X
                 </span> : (newItemBackUp?.TaskType?.Id == 1 || newItemBackUp?.TaskType?.Id == 3 ?  <img
                             className="workmember mx-1"
                               src={newItemBackUp?.SiteIcon}
@@ -6634,6 +6590,13 @@ if (newItemBackUp?.Item_x0020_Type == 'Sprint' || newItemBackUp == null) {
                   <div className="mainParentSec">
                     <div className="reStuMainTiles">
                     <div className="reStuTile">
+                    {  obj?.Item_x0020_Type == 'Project' ? <div className="Dyicons text-center">P</div> : (obj?.Item_x0020_Type == "Sprint" ? 
+                            <div className="Dyicons text-center">X</div> : <span>
+                            <img
+                            className="workmember"
+                              src={obj?.SiteIcon}
+                            />
+                          </span>)}
                     <ReactPopperTooltipSingleLevel ShareWebId={obj?.TaskID} row={obj} AllListId={props?.contextValue} singleLevel={true} masterTaskData={props?.AllMasterTasksData} AllSitesTaskData={props?.AllSitesTaskData} />
                          
                       <a
@@ -6641,19 +6604,13 @@ if (newItemBackUp?.Item_x0020_Type == 'Sprint' || newItemBackUp == null) {
                         target="_blank"
                         className="serviceColor_Active alignCenter"
                         href={obj.Item_x0020_Type == "Project" || obj.Item_x0020_Type == "Sprint" ?  props?.contextValue?.siteUrl +
-                                "/SP/SitePages/Project-Management.aspx?ProjectId=" +
+                                "/SitePages/Project-Management.aspx?ProjectId=" +
                                 obj?.Id :props?.contextValue?.siteUrl +
-                                "/SP/SitePages/Task-Profile.aspx?taskId=" +
+                                "/SitePages/Task-Profile.aspx?taskId=" +
                                 obj?.Id + "&Site=" + obj?.siteType }
                       >
                          {/* <div className="alignCenter">{obj?.TaskID}</div> */}
-                       {  obj?.Item_x0020_Type == 'Project' ? <div className="Dyicons text-center">P</div> : (obj?.Item_x0020_Type == "Sprint" ? 
-                            <div className="Dyicons text-center">S</div> : <span>
-                            <img
-                            className="workmember"
-                              src={obj?.SiteIcon}
-                            />
-                          </span>)}
+                      
                           {obj?.newSubChild != undefined &&
                     obj?.newSubChild != null ? (
                      ""
@@ -6664,7 +6621,7 @@ if (newItemBackUp?.Item_x0020_Type == 'Sprint' || newItemBackUp == null) {
                       </a>
                       </div>
                     </div>
-                    {obj?.newSubChild != undefined &&
+                    {/* {obj?.newSubChild != undefined &&
                     obj?.newSubChild != null ? (
                       <div className="alignCenter">
                         
@@ -6672,11 +6629,17 @@ if (newItemBackUp?.Item_x0020_Type == 'Sprint' || newItemBackUp == null) {
                       </div>
                     ) : (
                       ""
-                    )}
+                    )} */}
                     {obj?.newSubChild ? (
                       <>
                         <div className="reStuMainTiles">
                         <div className="reStuTile">
+                        {  obj?.newSubChild?.Item_x0020_Type == 'Project' ? <div className="Dyicons text-center">P</div> : (obj?.newSubChild?.Item_x0020_Type == "Sprint" ? 
+                            <div className="Dyicons text-center">X</div> : <span>
+                            <img className="workmember"
+                              src={obj?.newSubChild?.SiteIcon}
+                            />
+                          </span>)}
                         <ReactPopperTooltipSingleLevel ShareWebId={obj?.newSubChild?.TaskID} row={obj?.newSubChild} AllListId={props?.contextValue} singleLevel={true} masterTaskData={props?.AllMasterTasksData} AllSitesTaskData={props?.AllSitesTaskData} />
                          
                           <a
@@ -6684,18 +6647,13 @@ if (newItemBackUp?.Item_x0020_Type == 'Sprint' || newItemBackUp == null) {
                             data-interception="off"
                             target="_blank"
                             href={ obj?.newSubChild?.Item_x0020_Type == "Project" || obj?.newSubChild?.Item_x0020_Type == "Sprint" ?  props?.contextValue?.siteUrl +
-                            "/SP/SitePages/Project-Management.aspx?ProjectId=" +
+                            "/SitePages/Project-Management.aspx?ProjectId=" +
                             obj?.newSubChild?.Id :props?.contextValue?.siteUrl +
-                            "/SP/SitePages/Task-Profile.aspx?taskId=" +
+                            "/SitePages/Task-Profile.aspx?taskId=" +
                             obj?.newSubChild?.Id + "&Site=" + obj?.newSubChild?.siteType}
                           >
                              {/* <div className="alignCenter">{obj?.newSubChild?.TaskID}</div> */}
-                              {  obj?.newSubChild?.Item_x0020_Type == 'Project' ? <div className="Dyicons text-center">P</div> : (obj?.newSubChild?.Item_x0020_Type == "Sprint" ? 
-                            <div className="Dyicons text-center">S</div> : <span>
-                            <img className="workmember"
-                              src={obj?.newSubChild?.SiteIcon}
-                            />
-                          </span>)}
+                             
                           {obj?.newSubChild?.feature != undefined &&
                     obj?.newSubChild?.feature != null ? (
                      ""
@@ -6723,6 +6681,12 @@ if (newItemBackUp?.Item_x0020_Type == 'Sprint' || newItemBackUp == null) {
                       <>
                         <div className="reStuMainTiles">
                         <div className="reStuTile">
+                        {  obj?.newSubChild?.feature?.Item_x0020_Type == 'Project' ? <div className="Dyicons text-center">P</div> : (obj?.newSubChild?.feature?.Item_x0020_Type == "Sprint" ? 
+                            <div className="Dyicons text-center">X</div> : <span>
+                            <img className="workmember"
+                              src={obj?.newSubChild?.feature?.SiteIcon}
+                            />
+                          </span>)}
                         <ReactPopperTooltipSingleLevel ShareWebId={obj?.newSubChild?.feature?.TaskID} row={obj?.newSubChild?.feature} AllListId={props?.contextValue} singleLevel={true} masterTaskData={props?.AllMasterTasksData} AllSitesTaskData={props?.AllSitesTaskData} />
                          
                           <a
@@ -6730,20 +6694,15 @@ if (newItemBackUp?.Item_x0020_Type == 'Sprint' || newItemBackUp == null) {
                             target="_blank"
                             href={
                               obj?.newSubChild?.feature?.Item_x0020_Type == "Project" || obj?.newSubChild?.feature?.Item_x0020_Type == "Sprint" ?  props?.contextValue?.siteUrl +
-                              "/SP/SitePages/Project-Management.aspx?ProjectId=" +
+                              "/SitePages/Project-Management.aspx?ProjectId=" +
                               obj?.newSubChild?.feature?.Id :props?.contextValue?.siteUrl +
-                              "/SP/SitePages/Task-Profile.aspx?taskId=" +
+                              "/SitePages/Task-Profile.aspx?taskId=" +
                               obj?.newSubChild?.feature?.Id + "&Site=" + obj?.newSubChild?.feature?.siteType
                             }
                             className="alignCenter"
                           >
                             {/* <div className="alignCenter">{obj?.newSubChild?.feature?.TaskID}</div> */}
-                       {  obj?.newSubChild?.feature?.Item_x0020_Type == 'Project' ? <div className="Dyicons text-center">P</div> : (obj?.newSubChild?.feature?.Item_x0020_Type == "Sprint" ? 
-                            <div className="Dyicons text-center">S</div> : <span>
-                            <img className="workmember"
-                              src={obj?.newSubChild?.feature?.SiteIcon}
-                            />
-                          </span>)}
+                     
                           {obj?.newSubChild?.feature?.activity != undefined &&
                     obj?.newSubChild?.feature?.activity != null ? (
                      ""
@@ -6770,6 +6729,12 @@ if (newItemBackUp?.Item_x0020_Type == 'Sprint' || newItemBackUp == null) {
                       <>
                         <div className="reStuMainTiles">
                         <div className="reStuTile">
+                        {  obj?.newSubChild?.feature?.activity?.Item_x0020_Type == 'Project' ? <div className="Dyicons text-center">P</div> : (obj?.newSubChild?.feature?.activity?.Item_x0020_Type == "Sprint" ? 
+                            <div className="Dyicons text-center">X</div> : <span>
+                            <img className="workmember"
+                              src={obj?.newSubChild?.feature?.activity?.SiteIcon}
+                            />
+                          </span>)}
                         <ReactPopperTooltipSingleLevel ShareWebId={obj?.newSubChild?.feature?.activity?.TaskID} row={obj?.newSubChild?.feature?.activity} AllListId={props?.contextValue} singleLevel={true} masterTaskData={props?.AllMasterTasksData} AllSitesTaskData={props?.AllSitesTaskData} />
                          
                           <a
@@ -6777,20 +6742,15 @@ if (newItemBackUp?.Item_x0020_Type == 'Sprint' || newItemBackUp == null) {
                             target="_blank"
                             href={
                               obj?.newSubChild?.feature?.activity?.Item_x0020_Type == "Project" || obj?.newSubChild?.feature?.activity?.Item_x0020_Type == "Sprint" ?  props?.contextValue?.siteUrl +
-                              "/SP/SitePages/Project-Management.aspx?ProjectId=" +
+                              "/SitePages/Project-Management.aspx?ProjectId=" +
                               obj?.newSubChild?.feature?.activity?.Id :props?.contextValue?.siteUrl +
-                              "/SP/SitePages/Task-Profile.aspx?taskId=" +
+                              "/SitePages/Task-Profile.aspx?taskId=" +
                               obj?.newSubChild?.feature?.activity?.Id + "&Site=" + obj?.newSubChild?.feature?.activity?.siteType
                             }
                             className=""
                           >
                             {/* <div className="alignCenter">{obj?.newSubChild?.feature?.activity?.TaskID}</div> */}
-                       {  obj?.newSubChild?.feature?.activity?.Item_x0020_Type == 'Project' ? <div className="Dyicons text-center">P</div> : (obj?.newSubChild?.feature?.activity?.Item_x0020_Type == "Sprint" ? 
-                            <div className="Dyicons text-center">S</div> : <span>
-                            <img className="workmember"
-                              src={obj?.newSubChild?.feature?.activity?.SiteIcon}
-                            />
-                          </span>)}
+                      
                             {obj?.newSubChild?.feature?.activity?.Title}
                           </a>
                           </div>
@@ -6817,6 +6777,8 @@ if (newItemBackUp?.Item_x0020_Type == 'Sprint' || newItemBackUp == null) {
                   <div className="mainParentSec">
                     <div className="reStuMainTiles">
                     <div className="reStuTile">
+                      
+                    <span className="Dyicons">{obj?.Item_x0020_Type == 'Project' ? "P" : "X"}</span>
                     <ReactPopperTooltipSingleLevel ShareWebId={obj?.TaskID} row={obj} AllListId={props?.contextValue} singleLevel={true} masterTaskData={props?.AllMasterTasksData} AllSitesTaskData={props?.AllSitesTaskData} />
                          
                       <a
@@ -6824,12 +6786,11 @@ if (newItemBackUp?.Item_x0020_Type == 'Sprint' || newItemBackUp == null) {
                         target="_blank"
                         className="hreflink serviceColor_Active "
                         href={props?.contextValue?.siteUrl +
-                                "/SP/SitePages/Project-Management.aspx?ProjectId" +
+                                "/SitePages/Project-Management.aspx?ProjectId" +
                                 obj?.Id
                         }
                       >
                          {/* <div className="alignCenter">{obj?.TaskID}</div> */}
-                        <span className="Dyicons">{obj?.Item_x0020_Type == 'Project' ? "P" : "S"}</span>
                         {/* { obj?.Title} */}
                       </a>
                       </div>
@@ -6843,21 +6804,22 @@ if (newItemBackUp?.Item_x0020_Type == 'Sprint' || newItemBackUp == null) {
                         
                         <div className="reStuMainTiles">
                         <div className="reStuTile">
+                        <span className="Dyicons">
+                                {obj?.newSubChild?.Item_x0020_Type == 'Project' ? "P" : "X"}
+                              </span>
                         <ReactPopperTooltipSingleLevel ShareWebId={obj?.newSubChild?.TaskID} row={obj?.newSubChild} AllListId={props?.contextValue} singleLevel={true} masterTaskData={props?.AllMasterTasksData} AllSitesTaskData={props?.AllSitesTaskData} />
                          
                           <a
                             data-interception="off"
                             target="_blank"
                             href={props?.contextValue?.siteUrl +
-                                    "/SP/SitePages/Project-Management.aspx?ProjectId" +
+                                    "/SitePages/Project-Management.aspx?ProjectId" +
                                     obj?.newSubChild?.Id
                             }
                             className=""
                           >
                          {/* <div className="alignCenter">{obj?.newSubChild?.TaskID}</div> */}
-                              <span className="Dyicons">
-                                {obj?.newSubChild?.Item_x0020_Type == 'Project' ? "P" : "S"}
-                              </span>
+                              
                             {/* {obj?.newSubChild?.Title} */}
                           </a>
                           </div>
@@ -6874,6 +6836,12 @@ if (newItemBackUp?.Item_x0020_Type == 'Sprint' || newItemBackUp == null) {
                       <>
                         <div className="reStuMainTiles">
                         <div className="reStuTile">
+                        {  obj?.newSubChild?.feature?.Item_x0020_Type == 'Project' ? <div className="Dyicons text-center">P</div> : (obj?.newSubChild?.feature?.Item_x0020_Type == "Sprint" ? 
+                            <div className="Dyicons text-center">X</div> : <span>
+                            <img className="workmember"
+                              src={obj?.newSubChild?.feature?.SiteIcon}
+                            />
+                          </span>)}
                         <ReactPopperTooltipSingleLevel ShareWebId={obj?.newSubChild?.feature?.TaskID} row={obj?.newSubChild?.feature} AllListId={props?.contextValue} singleLevel={true} masterTaskData={props?.AllMasterTasksData} AllSitesTaskData={props?.AllSitesTaskData} />
                          
                           <a
@@ -6881,20 +6849,15 @@ if (newItemBackUp?.Item_x0020_Type == 'Sprint' || newItemBackUp == null) {
                             target="_blank"
                             href={
                               obj?.newSubChild?.feature?.Item_x0020_Type == "Project" || obj?.newSubChild?.feature?.Item_x0020_Type == "Sprint" ?  props?.contextValue?.siteUrl +
-                              "/SP/SitePages/Project-Management.aspx?ProjectId=" +
+                              "/SitePages/Project-Management.aspx?ProjectId=" +
                               obj?.newSubChild?.feature?.Id :props?.contextValue?.siteUrl +
-                              "/SP/SitePages/Task-Profile.aspx?taskId=" +
+                              "/SitePages/Task-Profile.aspx?taskId=" +
                               obj?.newSubChild?.feature?.Id + "&Site=" + obj?.newSubChild?.feature?.siteType
                             }
                             className=""
                           >
                             {/* <div className="alignCenter">{obj?.newSubChild?.feature?.TaskID}</div> */}
-                       {  obj?.newSubChild?.feature?.Item_x0020_Type == 'Project' ? <div className="Dyicons text-center">P</div> : (obj?.newSubChild?.feature?.Item_x0020_Type == "Sprint" ? 
-                            <div className="Dyicons text-center">S</div> : <span>
-                            <img className="workmember"
-                              src={obj?.newSubChild?.feature?.SiteIcon}
-                            />
-                          </span>)}
+                      
                           {obj?.newSubChild?.feature?.activity != undefined &&
                     obj?.newSubChild?.feature?.activity != null ? (
                      ""
@@ -6916,6 +6879,13 @@ if (newItemBackUp?.Item_x0020_Type == 'Sprint' || newItemBackUp == null) {
                       <>
                         <div className="reStuMainTiles">
                         <div className="reStuTile">
+                        {  obj?.newSubChild?.feature?.activity?.Item_x0020_Type == 'Project' ? <div className="Dyicons text-center">P</div> : (obj?.newSubChild?.feature?.activity?.Item_x0020_Type == "Sprint" ? 
+                            <div className="Dyicons text-center">X</div> : <span>
+                            <img
+                            className="workmember"
+                              src={obj?.newSubChild?.feature?.activity?.SiteIcon}
+                            />
+                          </span>)}
                         <ReactPopperTooltipSingleLevel ShareWebId={obj?.newSubChild?.feature?.activity?.TaskID} row={obj?.newSubChild?.feature?.activity} AllListId={props?.contextValue} singleLevel={true} masterTaskData={props?.AllMasterTasksData} AllSitesTaskData={props?.AllSitesTaskData} />
                          
                           <a
@@ -6923,21 +6893,15 @@ if (newItemBackUp?.Item_x0020_Type == 'Sprint' || newItemBackUp == null) {
                             target="_blank"
                             href={
                               obj?.newSubChild?.feature?.activity?.Item_x0020_Type == "Project" || obj?.newSubChild?.feature?.activity?.Item_x0020_Type == "Sprint" ?  props?.contextValue?.siteUrl +
-                              "/SP/SitePages/Project-Management.aspx?ProjectId=" +
+                              "/SitePages/Project-Management.aspx?ProjectId=" +
                               obj?.newSubChild?.feature?.activity?.Id :props?.contextValue?.siteUrl +
-                              "/SP/SitePages/Task-Profile.aspx?taskId=" +
+                              "/SitePages/Task-Profile.aspx?taskId=" +
                               obj?.newSubChild?.feature?.activity?.Id + "&Site=" + obj?.newSubChild?.feature?.activity?.siteType
                             }
                             className=""
                           >
                             {/* <div className="alignCenter">{obj?.newSubChild?.feature?.activity?.TaskID}</div> */}
-                       {  obj?.newSubChild?.feature?.activity?.Item_x0020_Type == 'Project' ? <div className="Dyicons text-center">P</div> : (obj?.newSubChild?.feature?.activity?.Item_x0020_Type == "Sprint" ? 
-                            <div className="Dyicons text-center">S</div> : <span>
-                            <img
-                            className="workmember"
-                              src={obj?.newSubChild?.feature?.activity?.SiteIcon}
-                            />
-                          </span>)}
+                       
                             {obj?.newSubChild?.feature?.activity?.Title}
                           </a>
                           </div>
@@ -6957,7 +6921,7 @@ if (newItemBackUp?.Item_x0020_Type == 'Sprint' || newItemBackUp == null) {
                           target="_blank"
                           className="hreflink serviceColor_Active reStuTile"
                           href={ props?.contextValue?.siteUrl +
-                            "/SP/SitePages/Task-Profile.aspx?taskId=" +
+                            "/SitePages/Task-Profile.aspx?taskId=" +
                             items?.Id + "&Site=" + items?.siteType
                           }
                         >
