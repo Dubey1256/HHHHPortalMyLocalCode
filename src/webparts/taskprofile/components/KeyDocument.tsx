@@ -94,7 +94,6 @@ const RelevantDocuments = (props: any, ref: any) => {
                         setEditdocpanel(false);
                     }
 
-
                 }
             }
         }else{
