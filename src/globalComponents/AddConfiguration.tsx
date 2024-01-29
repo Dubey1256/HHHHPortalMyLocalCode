@@ -174,7 +174,9 @@ const AddConfiguration = (props: any) => {
                                                             setNewItem(updatedItems);
                                                         }} />
                                                 </Col>
-                                                <Col sm="3" md="3" lg="3">
+                                                <Col md="6"> 
+                                                <Row>
+                                                  <Col sm="5" md="5" lg="5">
                                                     <div> Show WebPart</div>
 
                                                     <label className="switch me-2" htmlFor={`ShowWebpartCheckbox${index}`}>
@@ -186,8 +188,8 @@ const AddConfiguration = (props: any) => {
                                                         }} type="checkbox" id={`ShowWebpartCheckbox${index}`} />
                                                         {items?.ShowWebpart === true ? <div className="slider round" style={{ backgroundColor: `${portfolioColor}`, borderColor: `${portfolioColor}` }}></div> : <div className="slider round"></div>}
                                                     </label>
-                                                </Col>
-                                                <Col sm="2" md="2" lg="2" className="p-0">
+                                                  </Col>
+                                                  <Col sm="5" md="5" lg="5" className="p-0">
                                                     <div> Group By View</div>
                                                     <label className="switch me-2" htmlFor={`GroupByViewCheckbox${index}`}>
                                                         <input checked={items?.GroupByView} onChange={(e: any) => {
@@ -198,9 +200,11 @@ const AddConfiguration = (props: any) => {
                                                             type="checkbox" id={`GroupByViewCheckbox${index}`} />
                                                         {items?.GroupByView === true ? <div className="slider round" style={{ backgroundColor: `${portfolioColor}`, borderColor: `${portfolioColor}` }}></div> : <div className="slider round"></div>}
                                                     </label>
-                                                </Col>
-                                                <Col sm="1" md="1" lg="1" className="text-end p-0">
+                                                  </Col>
+                                                  <Col sm="2" md="2" lg="2" className="text-end">
                                                     {index != 0 && <a className="pull-right hreflink" title="Remove webpart" onClick={(e) => RemoveWebpart(items, index)}><span className="svg__iconbox svg__icon--cross "></span></a>}
+                                                  </Col>
+                                                  </Row>
                                                 </Col>
                                             </Row>
                                             <Row className="Metadatapannel mb-2">
@@ -232,13 +236,16 @@ const AddConfiguration = (props: any) => {
                                                         styles={{ dropdown: { width: '100%' } }}
                                                     />
                                                 </Col>
-                                                <Col sm="3" md="3" lg="3">
+                                                
+                                                    <Col md="6"  className="p-0">
+                                                        <Row>
+                                                    <Col sm="6" md="6" lg="6" className="p-0">
                                                     <div className="form-check form-check-inline m-4">
                                                         <input type="checkbox" checked={items?.IsDefaultTile} className="form-check-input me-1" onClick={(e: any) => SelectedTile(e.target.checked, items, index)} />
                                                         <label className="form-check-label">Default Tile</label>
                                                     </div>
                                                 </Col>
-                                                <Col sm="3" md="3" lg="3">
+                                                <Col sm="6" md="6" lg="6" className="p-0">
                                                     <div className="form-check form-check-inline m-4">
                                                         <input type="checkbox" checked={items?.IsShowTile} className="form-check-input me-1" onChange={(e: any) => {
                                                             const updatedItems = [...NewItem]; updatedItems[index] = { ...items, IsShowTile: e.target.checked, };
@@ -247,6 +254,10 @@ const AddConfiguration = (props: any) => {
                                                         <label className="form-check-label">Show Tile</label>
                                                     </div>
                                                 </Col>
+                                                </Row>
+                                                    </Col>
+                                                
+                                           
 
                                             </Row>
                                         </div>
