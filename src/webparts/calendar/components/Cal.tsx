@@ -437,6 +437,7 @@ const App = (props: any) => {
     { key: "Design", text: "Design" },
     { key: "HR", text: "HR" },
     { key: "Admin", text: "Admin" },
+    { key: "Management", text: "Management" },
     { key: "JTM (Junior Task Manager)", text: "JTM (Junior Task Manager)" }
   ];
   const openm = () => {
