@@ -288,8 +288,9 @@ function TasksTable(props: any) {
                   result.chekbox = false;
                   result.descriptionsSearch = '';
                   result.commentsSearch = "";
-                  result.DueDate = moment(result.DueDate).format("DD/MM/YYYY");
+                  // result.DueDate = moment(result.DueDate).format("DD/MM/YYYY");
                   result.DisplayDueDate = moment(result.DueDate).format("DD/MM/YYYY");
+                  result.DisplayCreateDate = moment(result.Created).format("DD/MM/YYYY");
                   if (result.DisplayDueDate == "Invalid date" || "") {
                     result.DisplayDueDate = result.DisplayDueDate.replaceAll(
                       "Invalid date",
@@ -303,7 +304,7 @@ function TasksTable(props: any) {
                     );
                   }
                   result.SmartPriority = globalCommon.calculateSmartPriority(result);
-                  result.DisplayCreateDate = moment(result.Created).format("DD/MM/YYYY");
+                
                   result.PercentComplete = (
                     result.PercentComplete * 100
                   ).toFixed(0);

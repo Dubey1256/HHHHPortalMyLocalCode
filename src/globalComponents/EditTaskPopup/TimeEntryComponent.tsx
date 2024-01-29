@@ -2781,7 +2781,7 @@ const TimeEntryPopup = (item: any)=> {
                       <div className="input-group">
 
                         <div className="d-flex w-100 mb-1">
-                          <button className="btnCol btn-primary px-2" title='Month' onClick={() => changeDateDec("month", PopupType)}><svg xmlns="http://www.w3.org/2000/svg" width="58" height="32" viewBox="0 0 65 37" fill="#fff">
+                          <button className="btnCol btn-primary px-2" title='Minus one month' onClick={() => changeDateDec("month", PopupType)}><svg xmlns="http://www.w3.org/2000/svg" width="58" height="32" viewBox="0 0 65 37" fill="#fff">
                             <line x1="35.0975" y1="19.9826" x2="52.7924" y2="2.29386" stroke="#fff" stroke-width="5" />
                             <line x1="52.9436" y1="34.5654" x2="35.2546" y2="16.8708" stroke="#fff" stroke-width="5" />
                             <line x1="18.7682" y1="19.9826" x2="36.4631" y2="2.29386" stroke="#fff" stroke-width="5" />
@@ -2789,17 +2789,17 @@ const TimeEntryPopup = (item: any)=> {
                             <line x1="2.43884" y1="19.9826" x2="20.1337" y2="2.29386" stroke="#fff" stroke-width="5" />
                             <line x1="20.2849" y1="34.5654" x2="2.5959" y2="16.8708" stroke="#fff" stroke-width="5" />
                           </svg></button>
-                          <button className="btnCol btn-primary mx-1" title='Week' onClick={() => changeDateDec("week", PopupType)}><MdKeyboardDoubleArrowLeft></MdKeyboardDoubleArrowLeft></button>
-                          <button className="btnCol btn-primary mx-1" title='Day' onClick={() => changeDateDec("Date", PopupType)}><MdKeyboardArrowLeft></MdKeyboardArrowLeft></button>
+                          <button className="btnCol btn-primary mx-1" title='Minus one week' onClick={() => changeDateDec("week", PopupType)}><MdKeyboardDoubleArrowLeft></MdKeyboardDoubleArrowLeft></button>
+                          <button className="btnCol btn-primary mx-1" title='Minus one day' onClick={() => changeDateDec("Date", PopupType)}><MdKeyboardArrowLeft></MdKeyboardArrowLeft></button>
                           <DatePicker
                             className="form-control"
                             selected={(PopupType == 'EditTime' || PopupType == 'CopyTime') ? editeddata != undefined ? editeddata : myDatee : myDatee}
                             onChange={handleDatedue}
                             dateFormat="EEE, dd MMM yyyy"
                           />
-                          <button onClick={() => changeDate("Date", PopupType)} title='Day' className="btnCol btn-primary mx-1" ><MdKeyboardArrowRight></MdKeyboardArrowRight></button>
-                          <button className="btnCol btn-primary mx-1" title='Week' onClick={() => changeDate("week", PopupType)}><MdKeyboardDoubleArrowRight></MdKeyboardDoubleArrowRight></button>
-                          <button className="btnCol btn-primary px-2" title='Month' onClick={() => changeDate("month", PopupType)}><svg xmlns="http://www.w3.org/2000/svg" width="58" height="32" viewBox="0 0 65 37" fill="#fff">
+                          <button onClick={() => changeDate("Date", PopupType)} title='Plus one day' className="btnCol btn-primary mx-1" ><MdKeyboardArrowRight></MdKeyboardArrowRight></button>
+                          <button className="btnCol btn-primary mx-1" title='Plus one week' onClick={() => changeDate("week", PopupType)}><MdKeyboardDoubleArrowRight></MdKeyboardDoubleArrowRight></button>
+                          <button className="btnCol btn-primary px-2" title='Plus one month' onClick={() => changeDate("month", PopupType)}><svg xmlns="http://www.w3.org/2000/svg" width="58" height="32" viewBox="0 0 65 37" fill="#fff">
                             <line x1="23.0121" y1="16.6118" x2="5.31719" y2="34.3006" stroke="#fff" stroke-width="5" />
                             <line x1="5.16599" y1="2.02901" x2="22.855" y2="19.7236" stroke="#fff" stroke-width="5" />
                             <line x1="39.3414" y1="16.6118" x2="21.6465" y2="34.3006" stroke="#fff" stroke-width="5" />
