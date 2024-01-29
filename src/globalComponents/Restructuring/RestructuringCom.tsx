@@ -2074,7 +2074,7 @@ const RestructuringCom = (props: any, ref: any) => {
                 let checkchild: any = 0;
                 if (items.subRows != undefined) {
                   items.subRows?.map((items: any) => {
-                    if ((props?.queryItems?.Item_x0020_Type == "Feature" || props?.queryItems?.Item_x0020_Type == "SubComponent" || props?.queryItems?.Item_x0020_Type == "Component" || props?.queryItems != undefined || props?.queryItems != null) && checkPortfoliosAlrt
+                    if ((props?.queryItems?.Item_x0020_Type == "Feature" || props?.queryItems?.Item_x0020_Type == "SubComponent" || props?.queryItems?.Item_x0020_Type == "Component") && props?.queryItems != undefined && props?.queryItems != null && checkPortfoliosAlrt
                     ) {
                       if (items.TaskType?.Id === 3) {
                         topCompo = false;
@@ -2103,7 +2103,7 @@ const RestructuringCom = (props: any, ref: any) => {
                   setQuery4TopIcon("Activity");
                   checkPortfoliosAlrt = false;
                 }
-                if ((props?.queryItems?.Item_x0020_Type == "Feature" || props?.queryItems?.Item_x0020_Type == "SubComponent" || props?.queryItems?.Item_x0020_Type == "Component" || props?.queryItems != undefined || props?.queryItems != null) && (items?.TaskType?.Id==1)  && checkPortfoliosAlrt && items?.subRows?.length === 0) {
+                if ((props?.queryItems?.Item_x0020_Type == "Feature" || props?.queryItems?.Item_x0020_Type == "SubComponent" || props?.queryItems?.Item_x0020_Type == "Component") && (items?.TaskType?.Id==1) && props?.queryItems != undefined && props?.queryItems != null && checkPortfoliosAlrt && items?.subRows?.length === 0) {
                   topCompo = false;
                   setQuery4TopIcon("");
                   checkPortfoliosAlrt = false;
@@ -5152,15 +5152,16 @@ if (newItemBackUp?.Item_x0020_Type == 'Sprint' || newItemBackUp == null) {
                   <div className="mainParentSec">
                     <div className="reStuMainTiles">
                       <div className="reStuTile">
+                      <div className="text-center">
                       {obj?.Title != "Others" ? (
                           obj?.siteIcon?.length === 1 ? (
-                            <div className="Dyicons text-center">
+                            <div className="Dyicons">
                               {obj.siteIcon}
                             </div>
                           ) : (
-                            <div className="text-center">
+                            
                               <img className="workmember" src={obj?.siteIcon} />
-                            </div>
+                          
                           )
                         ) : (
                           ""
@@ -5197,13 +5198,14 @@ if (newItemBackUp?.Item_x0020_Type == 'Sprint' || newItemBackUp == null) {
                       )
                     )}
                         
-                      </a>
+                      </a></div>
                     </div></div>
                    
                     {obj?.newSubChild ? (
                       <>
                         <div className="reStuMainTiles">
                         <div className="reStuTile">
+                        <div className="text-center">
                         {obj?.newSubChild?.siteIcon === "S" ||
                             obj?.newSubChild?.siteIcon === "F" ? (
                               <span className="Dyicons me-1">
@@ -5245,6 +5247,7 @@ if (newItemBackUp?.Item_x0020_Type == 'Sprint' || newItemBackUp == null) {
                             
                           </a>
                           </div>
+                          </div>
                         </div>
                     
                       </>
@@ -5255,6 +5258,7 @@ if (newItemBackUp?.Item_x0020_Type == 'Sprint' || newItemBackUp == null) {
                       <>
                         <div className="reStuMainTiles">
                         <div className="reStuTile">
+                        <div className="text-center">
                         {obj?.newSubChild?.newFeatChild?.siteIcon ===
                             "F" ? (
                               <span className="Dyicons me-1">
@@ -5297,7 +5301,7 @@ if (newItemBackUp?.Item_x0020_Type == 'Sprint' || newItemBackUp == null) {
                      ""
                     ) : obj?.newSubChild?.newFeatChild?.Title}
                             
-                          </a>
+                          </a></div>
                             </div>
                         </div>
                        
@@ -5309,6 +5313,7 @@ if (newItemBackUp?.Item_x0020_Type == 'Sprint' || newItemBackUp == null) {
                       <>
                         <div className="reStuMainTiles">
                         <div className="reStuTile">
+                        <div className="text-center">
                         <img
                               className="workmember"
                               src={
@@ -5348,7 +5353,7 @@ if (newItemBackUp?.Item_x0020_Type == 'Sprint' || newItemBackUp == null) {
                           ?.newWrkChild != null ? (
                      ""
                     ) : obj?.newSubChild?.newFeatChild?.newActChild?.Title}
-                          </a>
+                          </a></div>
                             </div>
                         </div>
                       
@@ -5361,6 +5366,7 @@ if (newItemBackUp?.Item_x0020_Type == 'Sprint' || newItemBackUp == null) {
                       <>
                         <div className="reStuMainTiles">
                         <div className="reStuTile">
+                        <div className="text-center">
                         <img
                               className="workmember"
                               src={
@@ -5402,7 +5408,7 @@ if (newItemBackUp?.Item_x0020_Type == 'Sprint' || newItemBackUp == null) {
                     ) :  obj?.newSubChild?.newFeatChild?.newActChild
                     ?.newWrkChild?.Title}
                            
-                          </a>
+                          </a></div>
                           </div>
                         </div>
                       
@@ -5415,6 +5421,7 @@ if (newItemBackUp?.Item_x0020_Type == 'Sprint' || newItemBackUp == null) {
                       <>
                         <div className="reStuMainTiles">
                         <div className="reStuTile">
+                        <div className="text-center">
                         <img
                               className="workmember"
                               src={
@@ -5453,7 +5460,7 @@ if (newItemBackUp?.Item_x0020_Type == 'Sprint' || newItemBackUp == null) {
                               obj?.newSubChild?.newFeatChild?.newActChild
                                 ?.newWrkChild?.newTskChild?.Title
                             }
-                          </a>
+                          </a></div>
                           </div>
                         </div>
                       </>
@@ -5474,6 +5481,7 @@ if (newItemBackUp?.Item_x0020_Type == 'Sprint' || newItemBackUp == null) {
                   <div className="mainParentSec">
                     <div className="reStuMainTiles">
                     <div className="reStuTile">
+                      <div className="text-center">
                     {obj?.Title != "Others" ? (
                           obj?.siteIcon?.length === 1 ? (
                             <span className="Dyicons">{obj?.siteIcon}</span>
@@ -5513,7 +5521,7 @@ if (newItemBackUp?.Item_x0020_Type == 'Sprint' || newItemBackUp == null) {
                     ) :  (obj?.Title != "Others" ? obj?.Title : "Others")} */}
                         
                         
-                      </a>
+                      </a></div>
                       </div>
                     </div>
                     {obj?.newSubChild ? (
@@ -5521,6 +5529,7 @@ if (newItemBackUp?.Item_x0020_Type == 'Sprint' || newItemBackUp == null) {
                         
                         <div className="reStuMainTiles">
                         <div className="reStuTile">
+                        <div className="text-center">
                         {obj?.newSubChild?.siteIcon === "S" ||
                             obj?.newSubChild?.siteIcon === "F" ? (
                               <span className="Dyicons">
@@ -5559,6 +5568,7 @@ if (newItemBackUp?.Item_x0020_Type == 'Sprint' || newItemBackUp == null) {
                             {/* {obj?.newSubChild?.Title} */}
                           </a>
                           </div>
+                          </div>
                         </div>
                         
                       </>
@@ -5569,6 +5579,7 @@ if (newItemBackUp?.Item_x0020_Type == 'Sprint' || newItemBackUp == null) {
                       <>
                         <div className="reStuMainTiles">
                         <div className="reStuTile">
+                        <div className="text-center">
                         {obj?.newSubChild?.newFeatChild?.siteIcon ===
                             "F"  ? (
                               <span className="Dyicons">
@@ -5608,6 +5619,7 @@ if (newItemBackUp?.Item_x0020_Type == 'Sprint' || newItemBackUp == null) {
                             {/* {obj?.newSubChild?.newFeatChild?.Title} */}
                           </a>
                           </div>
+                          </div>
                         </div>
                       
                       </>
@@ -5618,6 +5630,7 @@ if (newItemBackUp?.Item_x0020_Type == 'Sprint' || newItemBackUp == null) {
                       <>
                         <div className="reStuMainTiles">
                         <div className="reStuTile">
+                        <div className="text-center">
                         <img
                               className="workmember"
                               src={
@@ -5653,7 +5666,7 @@ if (newItemBackUp?.Item_x0020_Type == 'Sprint' || newItemBackUp == null) {
                             {/* <div className="alignCenter">{obj?.newSubChild?.newFeatChild?.newActChild?.TaskID}</div> */}
                            
                             {/* {obj?.newSubChild?.newFeatChild?.newActChild?.Title} */}
-                          </a></div>
+                          </a></div></div>
                         </div>
                        
                       </>
@@ -5666,6 +5679,7 @@ if (newItemBackUp?.Item_x0020_Type == 'Sprint' || newItemBackUp == null) {
                         
                         <div className="reStuMainTiles">
                         <div className="reStuTile">
+                        <div className="text-center">
                         <img
                               className="workmember"
                               src={
@@ -5704,7 +5718,7 @@ if (newItemBackUp?.Item_x0020_Type == 'Sprint' || newItemBackUp == null) {
                               obj?.newSubChild?.newFeatChild?.newActChild
                                 ?.newWrkChild?.Title
                             } */}
-                          </a></div>
+                          </a></div></div>
                         </div>
                       </>
                     ) : (
@@ -5716,6 +5730,7 @@ if (newItemBackUp?.Item_x0020_Type == 'Sprint' || newItemBackUp == null) {
                         
                         <div className="reStuMainTiles">
                         <div className="reStuTile">
+                        <div className="text-center">
                         <img
                               className="workmember"
                               src={
@@ -5755,7 +5770,7 @@ if (newItemBackUp?.Item_x0020_Type == 'Sprint' || newItemBackUp == null) {
                               obj?.newSubChild?.newFeatChild?.newActChild
                                 ?.newWrkChild?.newTskChild?.Title
                             } */}
-                          </a></div>
+                          </a></div></div>
                         </div>
                       </>
                     ) : (
@@ -5779,16 +5794,17 @@ if (newItemBackUp?.Item_x0020_Type == 'Sprint' || newItemBackUp == null) {
                                 restructureItem[0]?.siteType
                           }
                         >
-                          {
-                            newItemBackUp?.Item_x0020_Type != "Task" ?
-                            (newItemBackUp?.TaskType?.Id == 1 || newItemBackUp?.TaskType?.Id == 3 ? items?.TaskID : (newItemBackUp?.TaskType?.Id == 2 ? items?.Id : ``) ) : (newItemBackUp?.TaskType?.Id == 1 ? (items?.TaskType?.Id == 2 ? (`${newItemBackUp?.TaskID}-T${items?.Id}`) :
-                             (`${items?.TaskType?.Id == 3 ? (`${newItemBackUp?.TaskID}-W`) : ('') }`)) : (newItemBackUp?.TaskType?.Id == 3 ? (`${newItemBackUp?.TaskID}-T${items?.Id}`) : ''))
-                          }
+                        
                           {newItemBackUp?.Item_x0020_Type === "Component" && (items?.Item_x0020_Type === "Component" || items?.Item_x0020_Type === "SubComponent" || items?.Item_x0020_Type === "Feature") ?  <span className="Dyicons"> S </span> : 
                           (newItemBackUp?.Item_x0020_Type == "SubComponent" && (items?.Item_x0020_Type === "Component" || items?.Item_x0020_Type === "SubComponent" || items?.Item_x0020_Type === "Feature") ? <span className="Dyicons">F</span> : 
                           items?.Item_x0020_Type === "Task" ? <span><img className="workmember" src={items?.siteIcon} /> </span>
                            : 
                             "")
+                          }
+                            {
+                            newItemBackUp?.Item_x0020_Type != "Task" ?
+                            (newItemBackUp?.TaskType?.Id == 1 || newItemBackUp?.TaskType?.Id == 3 ? items?.TaskID : (newItemBackUp?.TaskType?.Id == 2 ? items?.Id : ``) ) : (newItemBackUp?.TaskType?.Id == 1 ? (items?.TaskType?.Id == 2 ? (`${newItemBackUp?.TaskID}-T${items?.Id}`) :
+                             (`${items?.TaskType?.Id == 3 ? (`${newItemBackUp?.TaskID}-W`) : ('') }`)) : (newItemBackUp?.TaskType?.Id == 3 ? (`${newItemBackUp?.TaskID}-T${items?.Id}`) : ''))
                           }
                           {items?.Title}
                         </a>
@@ -6234,8 +6250,9 @@ if (newItemBackUp?.Item_x0020_Type == 'Sprint' || newItemBackUp == null) {
                   <div className="mainParentSec">
                     <div className="reStuMainTiles">
                     <div className="reStuTile">
+                    <div className="text-center">
                     {
-                          <div className="Dyicons text-center">
+                          <div className="Dyicons">
                               {obj.Item_x0020_Type == 'Project' ? "P" : "S"}
                             </div>
                             }
@@ -6258,7 +6275,7 @@ if (newItemBackUp?.Item_x0020_Type == 'Sprint' || newItemBackUp == null) {
                       <div className="alignCenter">{obj?.Title}</div>
                     )}
                           
-                      </a>
+                      </a></div>
                       </div>
                     </div>
                     
@@ -6266,6 +6283,7 @@ if (newItemBackUp?.Item_x0020_Type == 'Sprint' || newItemBackUp == null) {
                       <>
                         <div className="reStuMainTiles">
                         <div className="reStuTile">
+                        <div className="text-center">
                         {
                               <span className="Dyicons me-1">
                                 {obj?.newSubChild?.Item_x0020_Type == 'Project' ? "P" : "S"}
@@ -6283,7 +6301,7 @@ if (newItemBackUp?.Item_x0020_Type == 'Sprint' || newItemBackUp == null) {
                             {/* <div className="alignCenter">{obj?.newSubChild?.TaskID}</div> */}
                            
                             {obj?.newSubChild?.Title}
-                          </a>
+                          </a></div>
                           </div>
                         </div>
                       </>
@@ -6304,7 +6322,7 @@ if (newItemBackUp?.Item_x0020_Type == 'Sprint' || newItemBackUp == null) {
                   <div className="mainParentSec">
                     <div className="reStuMainTiles">
                     <div className="reStuTile">
-                      
+                    <div className="text-center">
                     <span className="Dyicons">{obj?.Item_x0020_Type == 'Project' ? "P" : "S"}</span>
                     <ReactPopperTooltipSingleLevel ShareWebId={obj?.TaskID} row={obj} AllListId={props?.contextValue} singleLevel={true} masterTaskData={props?.AllMasterTasksData} AllSitesTaskData={props?.AllSitesTaskData} />
                          
@@ -6317,9 +6335,7 @@ if (newItemBackUp?.Item_x0020_Type == 'Sprint' || newItemBackUp == null) {
                                 obj?.Id
                         }
                       >
-                        {/* <div className="alignCenter">{obj?.TaskID}</div> */}
-                        {/* { obj?.Title} */}
-                      </a>
+                      </a></div>
                       </div>
                     </div>
                     {obj?.newSubChild ? (
@@ -6327,6 +6343,7 @@ if (newItemBackUp?.Item_x0020_Type == 'Sprint' || newItemBackUp == null) {
                         
                         <div className="reStuMainTiles">
                         <div className="reStuTile">
+                        <div className="text-center">
                         <span className="Dyicons">
                                 {obj?.newSubChild?.Item_x0020_Type == 'Project' ? "P" : "S"}
                               </span>
@@ -6344,7 +6361,7 @@ if (newItemBackUp?.Item_x0020_Type == 'Sprint' || newItemBackUp == null) {
                         {/* <div className="alignCenter">{obj?.newSubChild?.TaskID}</div> */}
                             
                             {/* {obj?.newSubChild?.Title} */}
-                          </a>
+                          </a></div>
                           </div>
                         </div>
                       </>
@@ -6508,8 +6525,9 @@ if (newItemBackUp?.Item_x0020_Type == 'Sprint' || newItemBackUp == null) {
                   <div className="mainParentSec">
                     <div className="reStuMainTiles">
                     <div className="reStuTile">
-                    {  obj?.Item_x0020_Type == 'Project' ? <div className="Dyicons text-center">P</div> : (obj?.Item_x0020_Type == "Sprint" ? 
-                            <div className="Dyicons text-center">X</div> : <span>
+                    <div className="text-center">
+                    {  obj?.Item_x0020_Type == 'Project' ? <div className="Dyicons">P</div> : (obj?.Item_x0020_Type == "Sprint" ? 
+                            <div className="Dyicons">X</div> : <span>
                             <img
                             className="workmember"
                               src={obj?.SiteIcon}
@@ -6536,15 +6554,16 @@ if (newItemBackUp?.Item_x0020_Type == 'Sprint' || newItemBackUp == null) {
                       <>{obj?.Title}</>
                     )}
                           
-                      </a>
+                      </a></div>
                       </div>
                     </div>
                     {obj?.newSubChild ? (
                       <>
                         <div className="reStuMainTiles">
                         <div className="reStuTile">
-                        {  obj?.newSubChild?.Item_x0020_Type == 'Project' ? <div className="Dyicons text-center">P</div> : (obj?.newSubChild?.Item_x0020_Type == "Sprint" ? 
-                            <div className="Dyicons text-center">X</div> : <span>
+                        <div className="text-center">
+                        {  obj?.newSubChild?.Item_x0020_Type == 'Project' ? <div className="Dyicons">P</div> : (obj?.newSubChild?.Item_x0020_Type == "Sprint" ? 
+                            <div className="Dyicons">X</div> : <span>
                             <img className="workmember"
                               src={obj?.newSubChild?.SiteIcon}
                             />
@@ -6570,7 +6589,7 @@ if (newItemBackUp?.Item_x0020_Type == 'Sprint' || newItemBackUp == null) {
                       <>{obj?.newSubChild?.Title}</>
                     )}
                             
-                          </a>
+                          </a></div>
                           </div>
                         </div>
                       </>
@@ -6581,8 +6600,9 @@ if (newItemBackUp?.Item_x0020_Type == 'Sprint' || newItemBackUp == null) {
                       <>
                         <div className="reStuMainTiles">
                         <div className="reStuTile">
-                        {  obj?.newSubChild?.feature?.Item_x0020_Type == 'Project' ? <div className="Dyicons text-center">P</div> : (obj?.newSubChild?.feature?.Item_x0020_Type == "Sprint" ? 
-                            <div className="Dyicons text-center">X</div> : <span>
+                        <div className="text-center">
+                        {  obj?.newSubChild?.feature?.Item_x0020_Type == 'Project' ? <div className="Dyicons">P</div> : (obj?.newSubChild?.feature?.Item_x0020_Type == "Sprint" ? 
+                            <div className="Dyicons">X</div> : <span>
                             <img className="workmember"
                               src={obj?.newSubChild?.feature?.SiteIcon}
                             />
@@ -6609,7 +6629,7 @@ if (newItemBackUp?.Item_x0020_Type == 'Sprint' || newItemBackUp == null) {
                     ) : (
                       <div className="alignCenter">{obj?.newSubChild?.feature?.Title}</div>
                     )}
-                          </a>
+                          </a></div>
                           </div>
                         </div>
                       </>
@@ -6620,8 +6640,9 @@ if (newItemBackUp?.Item_x0020_Type == 'Sprint' || newItemBackUp == null) {
                       <>
                         <div className="reStuMainTiles">
                         <div className="reStuTile">
-                        {  obj?.newSubChild?.feature?.activity?.Item_x0020_Type == 'Project' ? <div className="Dyicons text-center">P</div> : (obj?.newSubChild?.feature?.activity?.Item_x0020_Type == "Sprint" ? 
-                            <div className="Dyicons text-center">X</div> : <span>
+                        <div className="text-center">
+                        {  obj?.newSubChild?.feature?.activity?.Item_x0020_Type == 'Project' ? <div className="Dyicons">P</div> : (obj?.newSubChild?.feature?.activity?.Item_x0020_Type == "Sprint" ? 
+                            <div className="Dyicons">X</div> : <span>
                             <img className="workmember"
                               src={obj?.newSubChild?.feature?.activity?.SiteIcon}
                             />
@@ -6643,7 +6664,7 @@ if (newItemBackUp?.Item_x0020_Type == 'Sprint' || newItemBackUp == null) {
                             {/* <div className="alignCenter">{obj?.newSubChild?.feature?.activity?.TaskID}</div> */}
                       
                             {obj?.newSubChild?.feature?.activity?.Title}
-                          </a>
+                          </a></div>
                           </div>
                         </div>
                       </>
@@ -6664,9 +6685,9 @@ if (newItemBackUp?.Item_x0020_Type == 'Sprint' || newItemBackUp == null) {
                   <div className="mainParentSec">
                     <div className="reStuMainTiles">
                     <div className="reStuTile">
-                      
-                    {  obj?.Item_x0020_Type == 'Project' ? <div className="Dyicons text-center">P</div> : (obj?.Item_x0020_Type == "Sprint" ? 
-                            <div className="Dyicons text-center">X</div> : <span>
+                    <div className="text-center">
+                    {  obj?.Item_x0020_Type == 'Project' ? <div className="Dyicons">P</div> : (obj?.Item_x0020_Type == "Sprint" ? 
+                            <div className="Dyicons">X</div> : <span>
                             <img
                             className="workmember"
                               src={obj?.SiteIcon}
@@ -6683,9 +6704,7 @@ if (newItemBackUp?.Item_x0020_Type == 'Sprint' || newItemBackUp == null) {
                                 obj?.Id
                         }
                       >
-                         {/* <div className="alignCenter">{obj?.TaskID}</div> */}
-                        {/* { obj?.Title} */}
-                      </a>
+                      </a></div>
                       </div>
                     </div>
                     {obj?.newSubChild ? (
@@ -6693,8 +6712,9 @@ if (newItemBackUp?.Item_x0020_Type == 'Sprint' || newItemBackUp == null) {
                         
                         <div className="reStuMainTiles">
                         <div className="reStuTile">
-                        {  obj?.newSubChild?.Item_x0020_Type == 'Project' ? <div className="Dyicons text-center">P</div> : (obj?.newSubChild?.Item_x0020_Type == "Sprint" ? 
-                            <div className="Dyicons text-center">X</div> : <span>
+                        <div className="text-center">
+                        {  obj?.newSubChild?.Item_x0020_Type == 'Project' ? <div className="Dyicons">P</div> : (obj?.newSubChild?.Item_x0020_Type == "Sprint" ? 
+                            <div className="Dyicons">X</div> : <span>
                             <img className="workmember"
                               src={obj?.newSubChild?.SiteIcon}
                             />
@@ -6709,12 +6729,8 @@ if (newItemBackUp?.Item_x0020_Type == 'Sprint' || newItemBackUp == null) {
                                     "/SitePages/Project-Management.aspx?ProjectId" +
                                     obj?.newSubChild?.Id
                             }
-                            className=""
                           >
-                         {/* <div className="alignCenter">{obj?.newSubChild?.TaskID}</div> */}
-                              
-                            {/* {obj?.newSubChild?.Title} */}
-                          </a>
+                          </a></div>
                           </div>
                         </div>
                       </>
@@ -6725,8 +6741,9 @@ if (newItemBackUp?.Item_x0020_Type == 'Sprint' || newItemBackUp == null) {
                       <>
                         <div className="reStuMainTiles">
                         <div className="reStuTile">
-                        {  obj?.newSubChild?.feature?.Item_x0020_Type == 'Project' ? <div className="Dyicons text-center">P</div> : (obj?.newSubChild?.feature?.Item_x0020_Type == "Sprint" ? 
-                            <div className="Dyicons text-center">X</div> : <span>
+                        <div className="text-center">
+                        {  obj?.newSubChild?.feature?.Item_x0020_Type == 'Project' ? <div className="Dyicons">P</div> : (obj?.newSubChild?.feature?.Item_x0020_Type == "Sprint" ? 
+                            <div className="Dyicons">X</div> : <span>
                             <img className="workmember"
                               src={obj?.newSubChild?.feature?.SiteIcon}
                             />
@@ -6745,15 +6762,13 @@ if (newItemBackUp?.Item_x0020_Type == 'Sprint' || newItemBackUp == null) {
                             }
                             className=""
                           >
-                            {/* <div className="alignCenter">{obj?.newSubChild?.feature?.TaskID}</div> */}
-                      
                           {obj?.newSubChild?.feature?.activity != undefined &&
                     obj?.newSubChild?.feature?.activity != null ? (
                      ""
                     ) : (
                       <div className="alignCenter">{obj?.newSubChild?.feature?.Title}</div>
                     )}
-                          </a>
+                          </a></div>
                           </div>
                         </div>
                       </>
@@ -6764,8 +6779,9 @@ if (newItemBackUp?.Item_x0020_Type == 'Sprint' || newItemBackUp == null) {
                       <>
                         <div className="reStuMainTiles">
                         <div className="reStuTile">
-                        {  obj?.newSubChild?.feature?.activity?.Item_x0020_Type == 'Project' ? <div className="Dyicons text-center">P</div> : (obj?.newSubChild?.feature?.activity?.Item_x0020_Type == "Sprint" ? 
-                            <div className="Dyicons text-center">X</div> : <span>
+                        <div className="text-center">
+                        {  obj?.newSubChild?.feature?.activity?.Item_x0020_Type == 'Project' ? <div className="Dyicons">P</div> : (obj?.newSubChild?.feature?.activity?.Item_x0020_Type == "Sprint" ? 
+                            <div className="Dyicons">X</div> : <span>
                             <img
                             className="workmember"
                               src={obj?.newSubChild?.feature?.activity?.SiteIcon}
@@ -6788,7 +6804,7 @@ if (newItemBackUp?.Item_x0020_Type == 'Sprint' || newItemBackUp == null) {
                             {/* <div className="alignCenter">{obj?.newSubChild?.feature?.activity?.TaskID}</div> */}
                        
                             {obj?.newSubChild?.feature?.activity?.Title}
-                          </a>
+                          </a></div>
                           </div>
                         </div>
                       </>
