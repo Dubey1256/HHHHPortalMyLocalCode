@@ -66,7 +66,6 @@ export const GetCurrentUserData = (RequiredData: any): Promise<any> => {
             const allUsersData: any = await GetAllUsersData(RequiredData);
             let ApproversData: any = [];
             let CurrentUserData: object = {};
-
             if (allUsersData?.length > 0) {
                 allUsersData?.map((UserItem: any) => {
                     if (UserItem.AssingedToUserId == currentUserId) {
@@ -86,7 +85,6 @@ export const GetCurrentUserData = (RequiredData: any): Promise<any> => {
                 CurrentUserId: currentUserId,
                 ApproversData: ApproversData,
             };
-
             resolve(UserDataObject);
         } catch (error) {
             reject(error);
@@ -233,7 +231,7 @@ export const UpdateTaskStatusFunction = async (RequiredData: any) => {
         // }
     }
     if (Status == 2) {
-        let FeedBackData: any = UpdateFeedbackJSON({ ItemDetails: ItemDetails, SmartLightStatus: "Reject"});
+        let FeedBackData: any = await UpdateFeedbackJSON({ ItemDetails: ItemDetails, SmartLightStatus: "Reject" });
         UpdateDataJSON.TeamMembersId = {
             results:
                 ReceiveRejectedTaskUserId?.length > 0 ? ReceiveRejectedTaskUserId : []
@@ -242,10 +240,8 @@ export const UpdateTaskStatusFunction = async (RequiredData: any) => {
             results:
                 ReceiveRejectedTaskUserId?.length > 0 ? ReceiveRejectedTaskUserId : []
         };
-        UpdateDataJSON.FeedBack = {
-            results:
-                FeedBackData?.length > 0 ? JSON.stringify(FeedBackData) : []
-        };
+        UpdateDataJSON.FeedBack = FeedBackData?.length > 0 ? JSON.stringify(FeedBackData) : [];
+
         try {
             // const emailComponent = <EmailComponent
             //     AllTaskUser={AllTaskUsersData}
@@ -264,16 +260,13 @@ export const UpdateTaskStatusFunction = async (RequiredData: any) => {
 
     }
     if (Status == 3) {
-
         let FeedBackData: any = UpdateFeedbackJSON({ ItemDetails: ItemDetails, SmartLightStatus: "Approved" });
 
         UpdateDataJSON.AssignedToId = {
             results: []
         };
-        UpdateDataJSON.FeedBack = {
-            results:
-                FeedBackData?.length > 0 ? JSON.stringify(FeedBackData) : []
-        };
+        UpdateDataJSON.FeedBack = FeedBackData?.length > 0 ? JSON.stringify(FeedBackData) : []
+
         // const emailComponent = <EmailComponent
         //     AllTaskUser={AllTaskUsersData}
         //     CurrentUser={CurrentUserData}
@@ -445,36 +438,64 @@ export const SendMSTeamsNotification = async (RequiredData: any) => {
 
 
 }
+// export const UpdateFeedbackJSON = async (RequiredData: any) => {
+//     const { ItemDetails, SmartLightStatus } = RequiredData || {};
+//     let feedback: any = []
+//     if (ItemDetails.FeedBack?.length > 0) {
+//         let FeedbackData: any = JSON.parse(ItemDetails.FeedBack);
+//         feedback = FeedbackData;
+//     }
+//     feedback?.map((items: any) => {
+//         if (items?.FeedBackDescriptions != undefined && items?.FeedBackDescriptions?.length > 0) {
+//             items?.FeedBackDescriptions?.map((feedback: any) => {
+//                 if (feedback?.Subtext != undefined) {
+//                     feedback?.Subtext?.map((subtext: any) => {
+//                         if (subtext?.isShowLight === "") {
+//                             subtext.isShowLight = SmartLightStatus
+//                         } else {
+//                             subtext.isShowLight = SmartLightStatus
+//                         }
+//                     })
+//                 }
+//                 if (feedback.isShowLight === "") {
+//                     feedback.isShowLight = SmartLightStatus
+//                 } else {
+//                     feedback.isShowLight = SmartLightStatus
+//                 }
+//             })
+//         }
+//     })
+//     return feedback;
+// };
+
 export const UpdateFeedbackJSON = async (RequiredData: any) => {
     const { ItemDetails, SmartLightStatus } = RequiredData || {};
-    let feedback: any = []
+    let feedback = [];
     if (ItemDetails.FeedBack?.length > 0) {
-        let FeedbackData: any = JSON.parse(ItemDetails.FeedBack);
-        feedback = FeedbackData;
+        const feedbackData = JSON.parse(ItemDetails.FeedBack);
+        feedback = feedbackData.map((items: any) => {
+            if (items?.FeedBackDescriptions != undefined && items?.FeedBackDescriptions?.length > 0) {
+                items.FeedBackDescriptions = items.FeedBackDescriptions.map((feedbackItem: any) => {
+                    feedbackItem.Subtext = feedbackItem.Subtext?.map((subtext: any) => ({
+                        ...subtext,
+                        isShowLight: SmartLightStatus
+                    }));
+                    return {
+                        ...feedbackItem,
+                        isShowLight: SmartLightStatus
+                    };
+                });
+            }
+            return {
+                ...items,
+                isShowLight: SmartLightStatus
+            };
+        });
     }
-    feedback?.map((items: any) => {
-        if (items?.FeedBackDescriptions != undefined && items?.FeedBackDescriptions?.length > 0) {
-            items?.FeedBackDescriptions?.map((feedback: any) => {
-                if (feedback?.Subtext != undefined) {
-                    feedback?.Subtext?.map((subtext: any) => {
-                        if (subtext?.isShowLight === "") {
-                            subtext.isShowLight = SmartLightStatus
-                        } else {
-                            subtext.isShowLight = SmartLightStatus
-                        }
-                    })
-                }
-                if (feedback.isShowLight === "") {
-                    feedback.isShowLight = SmartLightStatus
-                } else {
-                    feedback.isShowLight = SmartLightStatus
-                }
-            })
-        }
-    })
-    console.log(feedback);
+
     return feedback;
 };
+
 
 export const UpdateItemDetails = (RequiredData: any): Promise<any> => {
     return new Promise(async (resolve, reject) => {
@@ -505,7 +526,7 @@ export const UpdateItemDetails = (RequiredData: any): Promise<any> => {
             }
             if (UpdatedData?.AssignedTo?.length > 0) {
                 assignedUserIds = UpdatedData?.AssignedTo?.map((user: any) => user.Id);
-                SendUpdatedData.TeamMembers = AllTaskUsersData.filter((userItem: any) => assignedUserIds?.includes(userItem.AssingedToUserId));
+                SendUpdatedData.AssignedTo = AllTaskUsersData.filter((userItem: any) => assignedUserIds?.includes(userItem.AssingedToUserId));
             }
             if (UpdatedData.PercentComplete != undefined && UpdatedData.PercentComplete != null) {
                 SendUpdatedData.PercentComplete = UpdatedData.PercentComplete * 100;
@@ -514,7 +535,7 @@ export const UpdateItemDetails = (RequiredData: any): Promise<any> => {
             SendUpdatedData.TaskCategories = UpdatedData.TaskCategories;
             SendUpdatedData.IsTodaysTask = UpdatedData.IsTodaysTask;
             SendUpdatedData.CompletedDate = UpdatedData.CompletedDate;
-            resolve(UpdatedData);
+            resolve(SendUpdatedData);
         } catch (error) {
             console.log("Error in update Item Details Function", error.message);
             reject(error);
