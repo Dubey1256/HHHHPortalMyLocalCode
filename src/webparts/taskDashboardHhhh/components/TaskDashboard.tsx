@@ -836,7 +836,7 @@ const TaskDashboard = (props: any) => {
                 ),
             },
             {
-                internalHeader: "%",
+                internalHeader: "% ",
                 accessor: "PercentComplete",
                 style: { width: '42px' },
                 showSortIcon: true,

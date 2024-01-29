@@ -2189,10 +2189,9 @@ export const loadAllSiteTasks = async (allListId?: any|null, filter?: any|null) 
                     task.SmartPriority;
                     task.TaskTypeValue = '';
                     task.projectPriorityOnHover = '';
-                    task["SiteIcon"] = site?.Item_x005F_x0020_Cover?.Url;
                     task.taskPriorityOnHover = task?.PriorityRank;
                     task.showFormulaOnHover;
-
+                    task["SiteIcon"] = site?.Item_x005F_x0020_Cover?.Url;
                     if (task.PercentComplete != undefined) {
                         task.PercentComplete = (task.PercentComplete * 100).toFixed(0);
                     }
@@ -2230,7 +2229,6 @@ export const loadAllSiteTasks = async (allListId?: any|null, filter?: any|null) 
                         task.IsSCProtected = false;
                         task.IsSCProtectedStatus = "";
                     }
-                    task["SiteIcon"] = site?.Item_x005F_x0020_Cover?.Url;
                     task.portfolioItemsSearch = site.Title;
                     task.TaskID = GetTaskId(task);
                 })

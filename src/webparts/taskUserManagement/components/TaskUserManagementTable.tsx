@@ -828,15 +828,17 @@ const TaskUserManagementTable = ({ TaskUsersListData, TaskGroupsListData, baseUr
                                         <input className='form-control' type="text" defaultValue={memberToUpdate?.Suffix} onChange={(e: any) => setSuffix(e.target.value)} />
                                     </div>
                                 </Col>
-                                <Col>
+                                <Col md={2}>
                                     <div className='input-group class-input'>
                                         <label className='form-label full-width fw-semibold'>User Name:</label>
-                                        <PeoplePicker context={context} titleText="" personSelectionLimit={1} showHiddenInUI={false}
+                                        <div className="w-100">
+                                        <PeoplePicker  context={context} titleText="" personSelectionLimit={1} showHiddenInUI={false}
                                             principalTypes={[PrincipalType.User]} resolveDelay={1000} onChange={(items) => AssignedToUser(items)}
                                             defaultSelectedUsers={email ? [email] : []} />
+                                            </div>
                                     </div>
                                 </Col>
-                                <Col>
+                                <Col md={2}>
                                     <div className='input-group'>
                                         <label className='form-label full-width fw-semibold'>Group: </label>
                                         <select className='full-width' id="sites" defaultValue={memberToUpdate?.UserGroup?.Id} onChange={(e: any) => setUserGroup(e.target.value)}>
@@ -860,20 +862,7 @@ const TaskUserManagementTable = ({ TaskUsersListData, TaskGroupsListData, baseUr
                                             {uniqueCategories.map((elem: any) => <option value={elem.Title}>{elem.Title}</option>)}
                                         </select>
                                     </div></Col>
-                                <div className='col'>
-                                    <div className='input-group class-input'>
-                                        <label className='form-label full-width fw-semibold'>Approver:</label>
-                                        <PeoplePicker context={context} titleText="" styles={{
-                                            input: {
-                                                border: '1px solid #ccc'
-                                            },
-                                        }}
-                                            personSelectionLimit={4} showHiddenInUI={false} principalTypes=
-                                            {[PrincipalType.User]} resolveDelay={1000} onChange={(items) => ApproverFunction(items)}
-                                            defaultSelectedUsers={emails.length > 0 ? emails : []} />
-                                    </div>
-                                </div>
-                                <Col md={2} sm={1}>
+                                    <Col md={2} sm={1}>
                                     <div className='input-group'>
                                         <label className='form-label full-width fw-semibold'>Team: </label>
                                         <select className='full-width' id="sites" defaultValue={memberToUpdate?.Team} onChange={(e: any) => setUserTeam(e.target.value)}
@@ -888,6 +877,23 @@ const TaskUserManagementTable = ({ TaskUsersListData, TaskGroupsListData, baseUr
                                         </select>
                                     </div>
                                 </Col>
+                                <Col md={5} className='ps-1 pe-1'>
+                                    <div className='input-group class-input'>
+                                        <label className='form-label full-width fw-semibold'>Approver:</label>
+                                        <div className='w-100'>
+                                        <PeoplePicker context={context} titleText="" 
+                                        // styles={{
+                                        //     input: {
+                                        //         border: '1px solid #ccc'
+                                        //     },
+                                        // }}
+                                            personSelectionLimit={4} showHiddenInUI={false} principalTypes=
+                                            {[PrincipalType.User]} resolveDelay={1000} onChange={(items) => ApproverFunction(items)}
+                                            defaultSelectedUsers={emails.length > 0 ? emails : []} />
+                                            </div>
+                                    </div>
+                                </Col>
+                               
                             </Row>
 
                             <Row className='mb-2'>

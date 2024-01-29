@@ -153,7 +153,7 @@ const AddConfiguration = (props: any) => {
                 type={PanelType.medium}>
                 <div className='border container modal-body p-1 mb-1'>
                     <Row className="Metadatapannel p-2 mb-2">
-                        <Col sm="6" md="6" lg="6">
+                        <Col sm="12" md="12" lg="12">
                             <label className='form-label full-width'>Dashboard Title</label>
                             <input className='form-control' type='text' placeholder="Dashboard Title" value={DashboardTitle} onChange={(e) => setDashboardTitle(e.target.value)} />
                         </Col>
@@ -166,7 +166,7 @@ const AddConfiguration = (props: any) => {
                                     <>
                                         <div key={index} className='border p-2 mb-2'>
                                             <Row className="Metadatapannel mb-2">
-                                                <Col sm="4" md="4" lg="4">
+                                                <Col sm="6" md="6" lg="6">
                                                     <label className='form-label full-width'>WebPart Title</label>
                                                     <input className='form-control' type='text' placeholder="Name"
                                                         value={items?.WebpartTitle} onChange={(e) => {
@@ -187,7 +187,7 @@ const AddConfiguration = (props: any) => {
                                                         {items?.ShowWebpart === true ? <div className="slider round" style={{ backgroundColor: `${portfolioColor}`, borderColor: `${portfolioColor}` }}></div> : <div className="slider round"></div>}
                                                     </label>
                                                 </Col>
-                                                <Col sm="3" md="3" lg="3">
+                                                <Col sm="2" md="2" lg="2" className="p-0">
                                                     <div> Group By View</div>
                                                     <label className="switch me-2" htmlFor={`GroupByViewCheckbox${index}`}>
                                                         <input checked={items?.GroupByView} onChange={(e: any) => {
@@ -199,7 +199,7 @@ const AddConfiguration = (props: any) => {
                                                         {items?.GroupByView === true ? <div className="slider round" style={{ backgroundColor: `${portfolioColor}`, borderColor: `${portfolioColor}` }}></div> : <div className="slider round"></div>}
                                                     </label>
                                                 </Col>
-                                                <Col sm="2" md="2" lg="2">
+                                                <Col sm="1" md="1" lg="1" className="text-end p-0">
                                                     {index != 0 && <a className="pull-right hreflink" title="Remove webpart" onClick={(e) => RemoveWebpart(items, index)}><span className="svg__iconbox svg__icon--cross "></span></a>}
                                                 </Col>
                                             </Row>
@@ -225,20 +225,20 @@ const AddConfiguration = (props: any) => {
                                                 </Col>
                                             </Row>
                                             <Row className="Metadatapannel">
-                                                <Col sm="4" md="4" lg="4">
+                                                <Col sm="6" md="6" lg="6">
                                                     <label className='form-label full-width'>Select Filter</label>
                                                     <Dropdown id="Filtes" options={[{ key: '', text: '' }, ...(SmartFav?.map((item: any) => ({ key: item?.UpdatedId, text: item?.Title })) || [])]} selectedKey={items?.smartFevId}
                                                         onChange={(e, option) => handleSelectFilterChange(option?.key, index, items)}
                                                         styles={{ dropdown: { width: '100%' } }}
                                                     />
                                                 </Col>
-                                                <Col sm="4" md="4" lg="4">
+                                                <Col sm="3" md="3" lg="3">
                                                     <div className="form-check form-check-inline m-4">
                                                         <input type="checkbox" checked={items?.IsDefaultTile} className="form-check-input me-1" onClick={(e: any) => SelectedTile(e.target.checked, items, index)} />
                                                         <label className="form-check-label">Default Tile</label>
                                                     </div>
                                                 </Col>
-                                                <Col sm="4" md="4" lg="4">
+                                                <Col sm="3" md="3" lg="3">
                                                     <div className="form-check form-check-inline m-4">
                                                         <input type="checkbox" checked={items?.IsShowTile} className="form-check-input me-1" onChange={(e: any) => {
                                                             const updatedItems = [...NewItem]; updatedItems[index] = { ...items, IsShowTile: e.target.checked, };

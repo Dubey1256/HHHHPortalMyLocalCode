@@ -56,7 +56,7 @@ const CreateActivity = (props: any) => {
   const [selectedItem, setSelectedItem]: any = React.useState({});
   const [TaskAssignedTo, setTaskAssignedTo] = React.useState([]);
   const [TaskTeamMembers, setTaskTeamMembers] = React.useState([]);
-  const [selectPriority, setselectPriority] = React.useState("");
+  const [selectPriority, setselectPriority] = React.useState("4");
   const [SearchedCategoryData, setSearchedCategoryData] = React.useState([]);
   // const [ClientCategoriesData, setClientCategoriesData] = React.useState<any>(
   //     []
