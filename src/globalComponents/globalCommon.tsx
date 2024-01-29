@@ -2383,10 +2383,15 @@ export const deepCopy = (obj: any, originalReferences = new WeakMap()) => {
     return copy;
 }
 
-export const openUsersDashboard = (siteUrl ?:any|undefined,AssignedUserId?:any|undefined) =>{
-    if(AssignedUserId!=undefined){
-        window?.open(`${siteUrl}/SitePages/TaskDashboard.aspx?UserId=${AssignedUserId}`,'_blank')
-    }else{
-        window?.open(`${siteUrl}/SitePages/TaskDashboard.aspx`,'_blank')
-    }
-}
+export const openUsersDashboard = (siteUrl ?:any|undefined,AssignedUserId?:any|undefined, AssignedUserTitle?:any|undefined,AllTaskUsers?:any|undefined) =>{
+    let AssignedToUserId:any=AssignedUserId
+      if(AllTaskUsers?.length>0){
+          let AssignToUserDetail=AllTaskUsers?.find((user:any)=>user?.AssingedToUser?.Title===AssignedUserTitle )
+          AssignedToUserId= AssignToUserDetail?.AssingedToUser?.Id
+      }
+      if(AssignedToUserId!=undefined){
+          window?.open(`${siteUrl}/SitePages/TaskDashboard.aspx?UserId=${AssignedToUserId}`,'_blank')
+      }else{
+          window?.open(`${siteUrl}/SitePages/TaskDashboard.aspx`,'_blank')
+      }
+  }
