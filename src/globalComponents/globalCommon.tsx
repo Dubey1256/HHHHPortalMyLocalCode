@@ -2186,20 +2186,15 @@ export const loadAllSiteTasks = async (allListId?: any|null, filter?: any|null) 
                     task.siteType = site.Title;
                     task.listId = site.listId;
                     task.siteUrl = site.siteUrl.Url;
-<<<<<<< HEAD
-=======
                     task.SmartPriority;
                     task.TaskTypeValue = '';
                     task.projectPriorityOnHover = '';
                     task.taskPriorityOnHover = task?.PriorityRank;
                     task.showFormulaOnHover;
->>>>>>> a57ac1f4b690992f66447af3a3bdb6b1e99adc22
                     task["SiteIcon"] = site?.Item_x005F_x0020_Cover?.Url;
                     if (task.PercentComplete != undefined) {
                         task.PercentComplete = (task.PercentComplete * 100).toFixed(0);
                     }
-<<<<<<< HEAD
-=======
                     if (task?.Portfolio?.Id != undefined) {
                         task.portfolio = task?.Portfolio;
                         task.PortfolioTitle = task?.Portfolio?.Title;
@@ -2236,7 +2231,6 @@ export const loadAllSiteTasks = async (allListId?: any|null, filter?: any|null) 
                     }
                     task.portfolioItemsSearch = site.Title;
                     task.TaskID = GetTaskId(task);
->>>>>>> a57ac1f4b690992f66447af3a3bdb6b1e99adc22
                 })
                 AllSiteTasks = [...AllSiteTasks, ...data];
             } catch (error) {
@@ -2389,10 +2383,15 @@ export const deepCopy = (obj: any, originalReferences = new WeakMap()) => {
     return copy;
 }
 
-export const openUsersDashboard = (siteUrl ?:any|undefined,AssignedUserId?:any|undefined) =>{
-    if(AssignedUserId!=undefined){
-        window?.open(`${siteUrl}/SitePages/TaskDashboard.aspx?UserId=${AssignedUserId}`,'_blank')
-    }else{
-        window?.open(`${siteUrl}/SitePages/TaskDashboard.aspx`,'_blank')
-    }
-}
+export const openUsersDashboard = (siteUrl ?:any|undefined,AssignedUserId?:any|undefined, AssignedUserTitle?:any|undefined,AllTaskUsers?:any|undefined) =>{
+    let AssignedToUserId:any=AssignedUserId
+      if(AllTaskUsers?.length>0){
+          let AssignToUserDetail=AllTaskUsers?.find((user:any)=>user?.AssingedToUser?.Title===AssignedUserTitle )
+          AssignedToUserId= AssignToUserDetail?.AssingedToUser?.Id
+      }
+      if(AssignedToUserId!=undefined){
+          window?.open(`${siteUrl}/SitePages/TaskDashboard.aspx?UserId=${AssignedToUserId}`,'_blank')
+      }else{
+          window?.open(`${siteUrl}/SitePages/TaskDashboard.aspx`,'_blank')
+      }
+  }
