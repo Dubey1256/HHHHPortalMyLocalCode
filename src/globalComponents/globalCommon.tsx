@@ -2186,15 +2186,20 @@ export const loadAllSiteTasks = async (allListId?: any|null, filter?: any|null) 
                     task.siteType = site.Title;
                     task.listId = site.listId;
                     task.siteUrl = site.siteUrl.Url;
+<<<<<<< HEAD
+=======
                     task.SmartPriority;
                     task.TaskTypeValue = '';
                     task.projectPriorityOnHover = '';
                     task.taskPriorityOnHover = task?.PriorityRank;
                     task.showFormulaOnHover;
+>>>>>>> a57ac1f4b690992f66447af3a3bdb6b1e99adc22
                     task["SiteIcon"] = site?.Item_x005F_x0020_Cover?.Url;
                     if (task.PercentComplete != undefined) {
                         task.PercentComplete = (task.PercentComplete * 100).toFixed(0);
                     }
+<<<<<<< HEAD
+=======
                     if (task?.Portfolio?.Id != undefined) {
                         task.portfolio = task?.Portfolio;
                         task.PortfolioTitle = task?.Portfolio?.Title;
@@ -2231,6 +2236,7 @@ export const loadAllSiteTasks = async (allListId?: any|null, filter?: any|null) 
                     }
                     task.portfolioItemsSearch = site.Title;
                     task.TaskID = GetTaskId(task);
+>>>>>>> a57ac1f4b690992f66447af3a3bdb6b1e99adc22
                 })
                 AllSiteTasks = [...AllSiteTasks, ...data];
             } catch (error) {
