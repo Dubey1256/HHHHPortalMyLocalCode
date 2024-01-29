@@ -49,7 +49,8 @@ export interface IHtmlEditorProps {
                         link: 
                         {
                           defaultTargetOption: '_blank',
-                        } 
+                        },
+                        remove:{title:"Remove Formatting"}
                       }}
                   />
                 );
