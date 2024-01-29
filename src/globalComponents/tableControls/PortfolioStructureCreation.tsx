@@ -18,7 +18,6 @@ export interface IStructureCreationProps {
 
 export interface IStructureCreationState {
     isModalOpen: boolean;
-    deleteShortDescription : boolean;
     AllFilteredAvailableComoponent: any;
     Portfolio_x0020_Type: string;
     textTitle: string;
@@ -41,6 +40,7 @@ export interface IStructureCreationState {
     PortfolioTypeId: any,
     defaultPortfolioType: any,
     disablebutton:boolean
+    ButtonClicked:any;
 }
 
 const dragItem: any = {}
@@ -50,8 +50,8 @@ export class PortfolioStructureCreationCard extends React.Component<IStructureCr
         super(props);
         this.state = {
             isModalOpen: false,
-            deleteShortDescription : true,
             disablebutton: false,
+            ButtonClicked:false,
             AllFilteredAvailableComoponent: [],
             Portfolio_x0020_Type: 'Component',
             textTitle: '',
@@ -216,7 +216,7 @@ export class PortfolioStructureCreationCard extends React.Component<IStructureCr
 
         return isFolderExists;
     }
-
+   
     private async GetFolderID(folderName: any) {
         let web = new Web(this.state.PropValue.siteUrl);
         let folderDeatils = [];
@@ -249,11 +249,14 @@ export class PortfolioStructureCreationCard extends React.Component<IStructureCr
     private CreateOpenType = '';
     private IconUrl = '';
     private GetportfoliofeatureIdCount = 0;
-
+   
     CreateFolder = async (Type: any) => {
-
+        this.setState({
+            ButtonClicked: true
+        })
         await this.LoadPortfolioitemParentId(undefined, undefined, undefined);
         this.LoadSPComponents();
+       
         let folderURL = '';
         if (this.Portfolio_x0020_Type == 'Component') {
             folderURL = (this.state.webServerRelativeUrl + '/Documents/COMPONENT-PORTFOLIO').toLowerCase();
@@ -271,7 +274,9 @@ export class PortfolioStructureCreationCard extends React.Component<IStructureCr
             let isFolderExists = await this.GetOrCreateFolder(this.folderName);
             if (isFolderExists) {
                 await this.GetFolderID(this.folderName);
-                this.createComponent(Type);
+               
+                 this.createComponent(Type);
+                
             }
         }
 
@@ -689,14 +694,10 @@ export class PortfolioStructureCreationCard extends React.Component<IStructureCr
 
     handleChildItemSD = (e: any, index: any) => {
         let ChildItemTitle = this.state.ChildItemTitle;
-        ChildItemTitle[index].Child[0].Short_x0020_Description_x0020_On = e != null ? e.target.value : e;
+        ChildItemTitle[index].Child[0].Short_x0020_Description_x0020_On = e.target.value;
         this.setState({ ChildItemTitle });
         console.log(this.state.ChildItemTitle);
-     if(e == null){
-         this.setState({
-            deleteShortDescription : false,
-         })
-     }
+
     }
 
     RemoveFeedbackColumn = (index: any, type: any) => {
@@ -795,7 +796,7 @@ export class PortfolioStructureCreationCard extends React.Component<IStructureCr
                                 >
                                     Create & Open
                                 </button>
-                                <button type="button" className="btn btn-default" onClick={() => this.CreateFolder('Create')}
+                                <button type="button" disabled={this.state.ButtonClicked} className="btn btn-default" onClick={() => this.CreateFolder('Create')}
                                 >
                                     Create
                                 </button>
@@ -870,35 +871,33 @@ export class PortfolioStructureCreationCard extends React.Component<IStructureCr
                                                                     </>
                                                                 }
                                                             </div>
-                                                            <div className="d-flex mb-3">
+                                                            <div className="d-flex">
                                                                 <div className="col input-group">
                                                                     <input className="form-control full_width mb-10" type="text" value={this.state.ChildItemTitle[index].Title} onChange={(e) => this.handleChildItemInput(e, index)}
                                                                         placeholder="Enter Child Item Title" ng-required="true" />
                                                                 </div>
                                                             </div>
-                                                            {
-                                                                this.state.deleteShortDescription &&
-                                                                <div className="row mb-2">
+                                                            <div className="row mt-3">
                                                                 {item.Child.length > 0 &&
                                                                     <div ng-repeat="items in item.Child">
-                                                                        <label className="fw-semibold  titleclrgreen ">Short Description 
-                                                                            <span className='svg__icon--cross svg__iconbox dark pull-right' onClick={()=>this.handleChildItemSD(null, index)}></span></label>
+                                                                        <label className="fw-semibold  titleclrgreen ">Short
+                                                                            Description </label>
                                                                         <div className="col">
                                                                             <textarea className='full-width' rows={4}
                                                                                 value={this.state.ChildItemTitle[index].Child[0].Short_x0020_Description_x0020_On} onChange={(e) => this.handleChildItemSD(e, index)}></textarea>
                                                                         </div>
                                                                     </div>
                                                                 }
-                                                                 </div>
-                                                            }
-                                                            
+
+
+                                                            </div>
                                                         </div>
                                                     </div>
                                                     {index == 0 &&
                                                         <div className="col-sm-12  ">
-                                                            <TeamConfigurationCard ItemInfo={this.state.SelectedItem} AllListId={this.state.PropValue} parentCallback={this.DDComponentCallBack}  />
+                                                            {/* <TeamConfigurationCard ItemInfo={this.state.SelectedItem} Sitel={this.state.PropValue} parentCallback={this.DDComponentCallBack}  />
                                                             <div className="clearfix">
-                                                            </div>
+                                                            </div> */}
                                                         </div>
                                                     }
                                                 </div>
