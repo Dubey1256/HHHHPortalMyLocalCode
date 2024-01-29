@@ -5,7 +5,7 @@ import EmailNotificationMail from "./EditTaskPopup/EmailNotificationMail";
 import * as Moment from "moment";
 import EmailComponent from "./EmailComponents";
 
-
+import { renderToStaticMarkup } from 'react-dom/server';
 
 // this is used for getting page context 
 
@@ -157,6 +157,7 @@ export const UpdateTaskStatusFunction = async (RequiredData: any) => {
     let ApproverIds: any = GetTaskUsersData?.ApproversData?.map((person: any) => person.Id);
     let UniqueIds = TaskCategoriesIds.filter((number: any, index: any, array: any) => array.indexOf(number) === index);
     let ReceiveRejectedTaskUserId: any = [];
+
     if (ItemDetails?.Approvee?.length > 0) {
         ReceiveRejectedTaskUserId = ItemDetails?.Approvee?.Id;
     } else {
@@ -164,7 +165,10 @@ export const UpdateTaskStatusFunction = async (RequiredData: any) => {
     }
     if (Status == 1) {
         if (UniqueIds?.length > 0) {
-            UniqueIds.push(227)
+            if (UniqueIds?.includes(227)) {
+            } else {
+                UniqueIds.push(227)
+            }
         } else {
             UniqueIds = [227]
         }
@@ -181,17 +185,55 @@ export const UpdateTaskStatusFunction = async (RequiredData: any) => {
             results:
                 ApproverIds?.length > 0 ? ApproverIds : []
         };
+        const sendEmailNotification = async () => {
+            return new Promise(async (resolve, reject) => {
+                try {
+                    const emailComponent = <EmailComponent
+                        AllTaskUser={AllTaskUsersData}
+                        CurrentUser={CurrentUserData}
+                        CreatedApprovalTask={true}
+                        items={ItemDetails}
+                        Context={Context}
+                        callBack={() => console.log("Dummy FUnction")}
+                        statusUpdateMailSendStatus={false}
+                        IsEmailCategoryTask={true}
+                    />;
+                    const emailHTML = renderToStaticMarkup(emailComponent);
+                    resolve(emailHTML);
+                } catch (error) {
+                    console.log("Send Email Notification", error.message);
+                    reject(error);
+                }
+            });
+        };
 
-        <EmailComponent
-            AllTaskUser={AllTaskUsersData}
-            CurrentUser={CurrentUserData}
-            CreatedApprovalTask={true}
-            items={ItemDetails}
-            Context={Context}
-            callBack={() => console.log("Dummy FUnction")}
-        />
+        // Example usage
+        sendEmailNotification()
+            .then((emailHTML) => {
+                console.log("Email HTML:", emailHTML);
+            })
+            .catch((error) => {
+                console.error("Error sending email notification:", error);
+            });
+        // try {
+        //     const emailComponent = <EmailComponent
+        //         AllTaskUser={AllTaskUsersData}
+        //         CurrentUser={CurrentUserData}
+        //         CreatedApprovalTask={true}
+        //         items={ItemDetails}
+        //         Context={Context}
+        //         callBack={() => console.log("Dummy FUnction")}
+        //         statusUpdateMailSendStatus={false}
+        //         IsEmailCategoryTask={true}
+        //     />;
+        //     const emailHTML = renderToStaticMarkup(emailComponent);
+        //     return emailHTML;
+        // } catch (error) {
+        //     console.log("Send Email Notification", error.message);
+        // }
     }
     if (Status == 2) {
+        let FeedBackData: any = UpdateFeedbackJSON({ ItemDetails: ItemDetails, SmartLightStatus: "Reject"});
         UpdateDataJSON.TeamMembersId = {
             results:
                 ReceiveRejectedTaskUserId?.length > 0 ? ReceiveRejectedTaskUserId : []
@@ -200,36 +242,60 @@ export const UpdateTaskStatusFunction = async (RequiredData: any) => {
             results:
                 ReceiveRejectedTaskUserId?.length > 0 ? ReceiveRejectedTaskUserId : []
         };
-        <EmailComponent
-            AllTaskUser={AllTaskUsersData}
-            CurrentUser={CurrentUserData}
-            CreatedApprovalTask={false}
-            items={ItemDetails}
-            Context={Context}
-            ApprovalTaskStatus={false}
-            callBack={() => console.log("Dummy FUnction")}
-        />
+        UpdateDataJSON.FeedBack = {
+            results:
+                FeedBackData?.length > 0 ? JSON.stringify(FeedBackData) : []
+        };
+        try {
+            // const emailComponent = <EmailComponent
+            //     AllTaskUser={AllTaskUsersData}
+            //     CurrentUser={CurrentUserData}
+            //     CreatedApprovalTask={false}
+            //     items={ItemDetails}
+            //     Context={Context}
+            //     ApprovalTaskStatus={true}
+            //     callBack={() => console.log("Dummy FUnction")}
+            // />;
+            // const emailHTML = renderToStaticMarkup(emailComponent);
+            // return emailHTML;
+        } catch (error) {
+            console.log("Send Email Notification", error.message);
+        }
+
     }
     if (Status == 3) {
-        <EmailComponent
-            AllTaskUser={AllTaskUsersData}
-            CurrentUser={CurrentUserData}
-            CreatedApprovalTask={false}
-            items={ItemDetails}
-            Context={Context}
-            ApprovalTaskStatus={true}
-            callBack={() => console.log("Dummy FUnction")}
-        />
+
+        let FeedBackData: any = UpdateFeedbackJSON({ ItemDetails: ItemDetails, SmartLightStatus: "Approved" });
+
         UpdateDataJSON.AssignedToId = {
             results: []
         };
+        UpdateDataJSON.FeedBack = {
+            results:
+                FeedBackData?.length > 0 ? JSON.stringify(FeedBackData) : []
+        };
+        // const emailComponent = <EmailComponent
+        //     AllTaskUser={AllTaskUsersData}
+        //     CurrentUser={CurrentUserData}
+        //     CreatedApprovalTask={false}
+        //     items={ItemDetails}
+        //     Context={Context}
+        //     ApprovalTaskStatus={true}
+        //     callBack={() => console.log("Dummy FUnction")}
+        // />;
+        // const emailHTML = renderToStaticMarkup(emailComponent);
+        // return emailHTML;
     }
 
 
 
     if (Status <= 5 && Status >= 90) {
         if (CheckImmediateCategoryTask || CheckEmailCategoryTask) {
-            <EmailNotificationMail emailStatus={true} items={ItemDetails} statusValue={Status} Context={Context} />
+            try {
+                <EmailNotificationMail emailStatus={true} items={ItemDetails} statusValue={Status} Context={Context} />
+            } catch (error) {
+                console.log("Send Email Notification", error.message)
+            }
         }
     }
     if (Status == 10) {
@@ -246,39 +312,14 @@ export const UpdateTaskStatusFunction = async (RequiredData: any) => {
             StatusValue: Status,
         }
         let RequiredChangedData: any = await AssignedToWorkingMember(RequiredDataForCall);
-        let AssignedToIds: any = [];
-        let ReceiversEmails: any = [];
-        let ReceiversName: any = "";
-
-        if (Status == 70) {
-            RequiredChangedData?.RestDev?.map((ItemData: any) => {
-                AssignedToIds.push(ItemData.Id);
-                ReceiversEmails.push(ItemData.Email);
-                if (ReceiversName?.length > 3) {
-                    ReceiversName = "Team";
-                } else {
-                    ReceiversName = ItemData.Title;
-                }
-            })
-        } else {
-            RequiredChangedData?.QAs?.map((QAItemData: any) => {
-                AssignedToIds.push(QAItemData.Id);
-                ReceiversEmails.push(QAItemData.Email);
-                if (ReceiversName?.length > 3) {
-                    ReceiversName = "Team";
-                } else {
-                    ReceiversName = QAItemData.Title;
-                }
-            })
-        }
         UpdateDataJSON.AssignedToId = {
             results:
-                AssignedToIds?.length > 0 ? AssignedToIds : []
+                RequiredChangedData?.AssignedToUserIds?.length > 0 ? RequiredChangedData?.AssignedToUserIds : []
         };
 
         let SentMSTeamsData: any = {
-            ReceiversEmails: ReceiversEmails,
-            ReceiversName: ReceiversName,
+            ReceiversEmails: RequiredChangedData?.ReceiversEmails,
+            ReceiversName: RequiredChangedData?.ReceiversName,
             TaskCategories: TaskCategories,
             SendMSTeamMessage: RequiredChangedData?.SendMSTeamMessage,
             ItemDetails: ItemDetails,
@@ -318,48 +359,50 @@ export const UpdateTaskStatusFunction = async (RequiredData: any) => {
         UpdateDataJSON: UpdateDataJSON,
         ListId: ItemDetails?.listId,
         ListSiteURL: RequiredListIds?.siteUrl,
-        ItemId: ItemDetails?.Id
+        ItemId: ItemDetails?.Id,
+        AllTaskUsersData: AllTaskUsersData
     }
-    UpdateItemDetails(DataForUpdate);
+    let UpdatedData: any = await UpdateItemDetails(DataForUpdate);
+    return UpdatedData;
 }
 
 export const AssignedToWorkingMember = (RequiredData: any) => {
-    const AssignedUser = RequiredData?.TeamMembers || [];
-    const AllTaskUsersData = RequiredData?.AllTaskUsersData || [];
-    let SendMSTeamMessage: string = '';
-    const Status = RequiredData?.StatusValue;
-    const ReceiversData = AssignedUser.reduce((acc: any, TaggedUser: any) => {
-        const matchedUser = AllTaskUsersData.find((user: any) => user.AssingedToUserId === TaggedUser.Id);
-        if (matchedUser) {
-            const isQA = matchedUser.TimeCategory === "QA";
-            const targetArray = isQA && Status === 80 ? acc.QAs : acc.RestDev;
+    const AssignedUser: any[] = RequiredData?.TeamMembers || [];
+    const AllTaskUsersData: any[] = RequiredData?.AllTaskUsersData || [];
+    const Status: any = RequiredData?.StatusValue;
+
+    let SendUserName: any = '';
+    let SendMSTeamMessage: any = '';
+    let AssignedToIds: any[] = [];
+    let sendUserEmails: any[] = [];
+    let PrepareAllData: any[] = [];
+    if (AssignedUser.length > 0) {
+        const assignedUserIds: any = AssignedUser.map((user: any) => user.Id);
+        const filteredUsers: any = AllTaskUsersData.filter((userItem: any) => assignedUserIds?.includes(userItem.AssingedToUserId));
+        if (Status == 80) {
+            PrepareAllData = filteredUsers.filter((userItem: any) => userItem.TimeCategory === "QA");
+            SendMSTeamMessage = `Below task has been set to 80%, please review it.`
+        } else if (Status == 70) {
+            PrepareAllData = filteredUsers.filter((userItem: any) => userItem.TimeCategory !== "QA");
+            SendMSTeamMessage = `Below task has been re-opened. Please review it and take necessary action on priority basis.`
         }
-        return acc;
-    }, {
-        SendUserName: '',
-        AssignedToUserIds: [],
-        ReceiversEmails: [],
-        QAs: [],
-        RestDev: []
-    });
-    if (Status == 80) {
-        SendMSTeamMessage = `Below task has been set to 80%, please review it.`
+        PrepareAllData.forEach((filteredData: any) => {
+            AssignedToIds.push(filteredData.AssingedToUserId);
+            sendUserEmails.push(filteredData.Email);
+            SendUserName = (SendUserName.length > 3) ? "Team" : filteredData.Title;
+        });
     }
-    if (Status == 70) {
-        SendMSTeamMessage = `Below task has been re-opened. Please review it and take necessary action on priority basis.`
-    }
-    return {
-        ReceiversName: ReceiversData.SendUserName,
-        ReceiversEmails: ReceiversData.ReceiversEmails,
-        AssignedToUserIds: ReceiversData.AssignedToUserIds,
-        AllAssignedQAs: ReceiversData.QAs,
-        AllRestDev: ReceiversData.RestDev,
+
+    const ReturnDataObj: any = {
+        ReceiversName: SendUserName,
+        ReceiversEmails: sendUserEmails,
+        AssignedToUserIds: AssignedToIds,
         SendMSTeamMessage: SendMSTeamMessage,
         Status: Status
     };
+
+    return ReturnDataObj;
 };
-
-
 export const SendMSTeamsNotification = async (RequiredData: any) => {
     const ReceiversEmails = RequiredData.ReceiversEmails;
     const ReceiversName = RequiredData.ReceiversName;
@@ -402,22 +445,84 @@ export const SendMSTeamsNotification = async (RequiredData: any) => {
 
 
 }
-
-export const UpdateItemDetails = async (RequiredData: any) => {
-    const { UpdateDataJSON, ListId, ListSiteURL, ItemId } = RequiredData || {};
-    try {
-        const web = new Web(ListSiteURL);
-        await web.lists
-            .getById(ListId)
-            .items.getById(ItemId)
-            .update(UpdateDataJSON)
-            .then(async (res: any) => {
-                console.log(`Item Details Updated Successfully for ${ItemId}`);
-            })
-    } catch (error) {
-        console.log("Error in update Item Details Functions", error.message);
+export const UpdateFeedbackJSON = async (RequiredData: any) => {
+    const { ItemDetails, SmartLightStatus } = RequiredData || {};
+    let feedback: any = []
+    if (ItemDetails.FeedBack?.length > 0) {
+        let FeedbackData: any = JSON.parse(ItemDetails.FeedBack);
+        feedback = FeedbackData;
     }
-}
+    feedback?.map((items: any) => {
+        if (items?.FeedBackDescriptions != undefined && items?.FeedBackDescriptions?.length > 0) {
+            items?.FeedBackDescriptions?.map((feedback: any) => {
+                if (feedback?.Subtext != undefined) {
+                    feedback?.Subtext?.map((subtext: any) => {
+                        if (subtext?.isShowLight === "") {
+                            subtext.isShowLight = SmartLightStatus
+                        } else {
+                            subtext.isShowLight = SmartLightStatus
+                        }
+                    })
+                }
+                if (feedback.isShowLight === "") {
+                    feedback.isShowLight = SmartLightStatus
+                } else {
+                    feedback.isShowLight = SmartLightStatus
+                }
+            })
+        }
+    })
+    console.log(feedback);
+    return feedback;
+};
+
+export const UpdateItemDetails = (RequiredData: any): Promise<any> => {
+    return new Promise(async (resolve, reject) => {
+        const { UpdateDataJSON, ListId, ListSiteURL, ItemId, AllTaskUsersData } = RequiredData || {};
+        let assignedUserIds: any;
+        let UpdatedData: any = null;
+        let SendUpdatedData: any = {
+            PercentComplete: "",
+            TaskCategories: "",
+            TeamMembers: "",
+            AssignedTo: "",
+            IsTodaysTask: "",
+            CompletedDate: "",
+            FeedBack: ""
+        }
+        let query = "Id,Title,FeedBack,PriorityRank,Remark,Project/PriorityRank,Project/PortfolioStructureID,ParentTask/Id,ParentTask/Title,ParentTask/TaskID,TaskID,SmartInformation/Id,SmartInformation/Title,Project/Id,Project/Title,workingThisWeek,EstimatedTime,TaskLevel,TaskLevel,OffshoreImageUrl,OffshoreComments,SiteCompositionSettings,Sitestagging,Priority,Status,ItemRank,IsTodaysTask,Body,Portfolio/Id,Portfolio/Title,Portfolio/PortfolioStructureID,PercentComplete,Categories,StartDate,PriorityRank,DueDate,TaskType/Id,TaskType/Title,TaskType/Level,Created,Modified,Author/Id,Author/Title,Editor/Id,Editor/Title,TaskCategories/Id,TaskCategories/Title,AssignedTo/Id,AssignedTo/Title,TeamMembers/Id,TeamMembers/Title,ResponsibleTeam/Id,ResponsibleTeam/Title,ClientCategory/Id,ClientCategory/Title&$expand=AssignedTo,Project,ParentTask,SmartInformation,Author,Portfolio,Editor,TaskType,TeamMembers,ResponsibleTeam,TaskCategories,ClientCategory"
+        try {
+            const web = new Web(ListSiteURL);
+            const updatedItem = await web.lists
+                .getById(ListId)
+                .items.getById(ItemId)
+                .update(UpdateDataJSON);
+            UpdatedData = await updatedItem.item.select(query).get();
+            console.log(`Item Details Updated Successfully for ${ItemId}`);
+            if (UpdatedData?.TeamMembers?.length > 0) {
+                assignedUserIds = UpdatedData?.TeamMembers?.map((user: any) => user.Id);
+                SendUpdatedData.TeamMembers = AllTaskUsersData.filter((userItem: any) => assignedUserIds?.includes(userItem.AssingedToUserId));
+            }
+            if (UpdatedData?.AssignedTo?.length > 0) {
+                assignedUserIds = UpdatedData?.AssignedTo?.map((user: any) => user.Id);
+                SendUpdatedData.TeamMembers = AllTaskUsersData.filter((userItem: any) => assignedUserIds?.includes(userItem.AssingedToUserId));
+            }
+            if (UpdatedData.PercentComplete != undefined && UpdatedData.PercentComplete != null) {
+                SendUpdatedData.PercentComplete = UpdatedData.PercentComplete * 100;
+            }
+            SendUpdatedData.FeedBack = UpdatedData.FeedBack;
+            SendUpdatedData.TaskCategories = UpdatedData.TaskCategories;
+            SendUpdatedData.IsTodaysTask = UpdatedData.IsTodaysTask;
+            SendUpdatedData.CompletedDate = UpdatedData.CompletedDate;
+            resolve(UpdatedData);
+        } catch (error) {
+            console.log("Error in update Item Details Function", error.message);
+            reject(error);
+        }
+    });
+};
+
+
 
 
 

@@ -35,37 +35,40 @@ export default function FroalaCommnetBoxes(textItems: any) {
     let SmartLightPercentStatus: any = textItems.SmartLightPercentStatus;
     let SmartLightStatus: any = textItems.SmartLightStatus;
     useEffect(() => {
-        if (TextItems != undefined && TextItems.length > 0) {
+        if (TextItems != undefined && TextItems?.length > 0) {
             setState([]);
             let testItems: any = []
-            TextItems.map((item: any, index: any) => {
+            TextItems?.map((item: any, index: any) => {
                 if (index > 0) {
-                    if (item.ApproverData == undefined) {
-                        item.ApproverData = [];
-                    }
-                    item.taskIndex = index;
-                    testItems.push(item);
-
-                    testItems?.forEach((ele: any) => {
-                        if (ele.ApproverData != undefined && ele.ApproverData.length > 0) {
-                            ele.ApproverData?.forEach((ba: any) => {
-                                if (ba.isShowLight == 'Reject') {
-                                    ba.Status = 'Rejected by'
-                                }
-                                if (ba.isShowLight == 'Approve') {
-                                    ba.Status = 'Approved by '
-                                }
-                                if (ba.isShowLight == 'Maybe') {
-                                    ba.Status = 'For discussion with'
-                                }
-
-
-                            })
+                    if(typeof item == "object"){
+                        if (item?.ApproverData == undefined) {
+                            item.ApproverData = [];
                         }
-                    })
-                    setTexts(!Texts);
-                    IndexCount = IndexCount + 1;
-                    UpdatedFeedBackParentArray.push(item);
+                        item.taskIndex = index;
+                        testItems.push(item);
+    
+                        testItems?.forEach((ele: any) => {
+                            if (ele?.ApproverData != undefined && ele?.ApproverData?.length > 0) {
+                                ele.ApproverData?.forEach((ba: any) => {
+                                    if (ba.isShowLight == 'Reject') {
+                                        ba.Status = 'Rejected by'
+                                    }
+                                    if (ba.isShowLight == 'Approve') {
+                                        ba.Status = 'Approved by '
+                                    }
+                                    if (ba.isShowLight == 'Maybe') {
+                                        ba.Status = 'For discussion with'
+                                    }
+    
+    
+                                })
+                            }
+                        })
+                        setTexts(!Texts);
+                        IndexCount = IndexCount + 1;
+                        UpdatedFeedBackParentArray.push(item);
+                    }
+                   
                 }
             })
             setState((prev: any) => testItems);

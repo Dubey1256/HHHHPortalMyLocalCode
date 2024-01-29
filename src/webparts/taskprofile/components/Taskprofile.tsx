@@ -1974,7 +1974,7 @@ class Taskprofile extends React.Component<ITaskprofileProps, ITaskprofileState> 
                         <dd className='bg-Ff'>{this.state.Result["Status"]}<br></br>
                           {this.state.Result["ApproverHistory"] != undefined && this.state.Result["ApproverHistory"].length > 1 && this.state.Result["Categories"].includes("Approval") ?
                             <span style={{ fontSize: "smaller" }}>Approved by
-                              <img className="workmember" title={this.state.Result["ApproverHistory"][this.state.Result.ApproverHistory.length - 2]?.ApproverName} src={(this.state.Result?.ApproverHistory[this.state.Result?.ApproverHistory?.length - 2]?.ApproverImage != null) ? (this.state.Result.ApproverHistory[this.state.Result.ApproverHistory.length - 2]?.ApproverImage) : (this.state.Result?.ApproverHistory[this.state.Result.ApproverHistory.length - 2]?.ApproverSuffix)}></img></span>
+                              <img className="workmember" title={this.state.Result["ApproverHistory"][this.state.Result?.ApproverHistory.length - 2]?.ApproverName} src={(this.state.Result?.ApproverHistory[this.state.Result?.ApproverHistory?.length - 2]?.ApproverImage != null) ? (this.state.Result.ApproverHistory[this.state.Result.ApproverHistory.length - 2]?.ApproverImage) : (this.state.Result?.ApproverHistory[this.state.Result.ApproverHistory.length - 2]?.ApproverSuffix)}></img></span>
 
                             : null}</dd>
                       </dl>
@@ -2068,8 +2068,8 @@ class Taskprofile extends React.Component<ITaskprofileProps, ITaskprofileState> 
                         <dd className='bg-Ff alignCenter'>
                           {this.state.Result["Created"] != undefined && this.state.Result["Created"] != null ? moment(this.state.Result["Created"]).format("DD/MM/YYYY") : ""}
                           {this.state.Result["Author"] != null && this.state.Result["Author"].length > 0 &&
-                            <a title={this.state.Result["Author"][0].Title} className='alignCenter ms-1'>
-                              {this.state.Result["Author"][0].userImage !== "" && <img className="workmember" src={this.state.Result["Author"][0].userImage} ></img>}
+                            <a title={this.state.Result["Author"][0].Title} className='alignCenter ms-1' onClick={()=>globalCommon?.openUsersDashboard(AllListId?.siteUrl,this.state.Result["Author"][0]?.Id)}>
+                              {this.state.Result["Author"][0].userImage !== "" && <img  className="workmember" src={this.state.Result["Author"][0].userImage} ></img>}
                               {this.state.Result["Author"][0].userImage === "" && <span className="workmember">{this.state.Result["Author"][0].Suffix}</span>}
                             </a>
 
@@ -2222,7 +2222,7 @@ class Taskprofile extends React.Component<ITaskprofileProps, ITaskprofileState> 
 
 
                                 <a className='images' target="_blank" data-interception="off" href={imgData?.ImageUrl}>
-                                  <img alt={imgData?.ImageName} src={imgData?.ImageUrl}
+                                  <img  onClick={()=>globalCommon?.openUsersDashboard(AllListId?.siteUrl,undefined,imgData?.UserName,this?.taskUsers)} alt={imgData?.ImageName} src={imgData?.ImageUrl}
                                     onMouseOver={(e) => this.OpenModal(e, imgData)}
                                     onMouseOut={(e) => this.CloseModal(e)} ></img>
                                 </a>
@@ -2234,7 +2234,7 @@ class Taskprofile extends React.Component<ITaskprofileProps, ITaskprofileState> 
                                       <span >{imgData?.UploadeDate}</span>
                                       <span className='round px-1'>
                                         {imgData?.UserImage != null &&
-                                          <img className='align-self-start' title={imgData?.UserName} src={imgData?.UserImage} />
+                                          <img className='align-self-start' title={imgData?.UserName}  onClick={()=>globalCommon?.openUsersDashboard(AllListId?.siteUrl,undefined,imgData?.UserName,this?.taskUsers)}src={imgData?.UserImage} />
                                         }
                                       </span>
                                       {imgData?.Description != undefined && imgData?.Description != "" && <span title={imgData?.Description} className="mx-1" >
@@ -2363,7 +2363,7 @@ class Taskprofile extends React.Component<ITaskprofileProps, ITaskprofileState> 
                                                     <div className="">
                                                       <div className="d-flex p-0">
                                                         <div className="col-1 p-0 wid30">
-                                                          <img className="workmember" src={fbComment?.AuthorImage != undefined && fbComment?.AuthorImage != '' ?
+                                                          <img className="workmember"  onClick={()=>globalCommon?.openUsersDashboard(AllListId?.siteUrl,undefined,fbComment?.AuthorName,this?.taskUsers)}src={fbComment?.AuthorImage != undefined && fbComment?.AuthorImage != '' ?
                                                             fbComment.AuthorImage : "https://hhhhteams.sharepoint.com/sites/HHHH/SiteCollectionImages/ICONS/32/icon_user.jpg"} />
                                                         </div>
                                                         <div className="col-11 pe-0" >
@@ -2397,7 +2397,7 @@ class Taskprofile extends React.Component<ITaskprofileProps, ITaskprofileState> 
                                                           return (
                                                             <div className="d-flex border ms-3 p-2  mb-1">
                                                               <div className="col-1 p-0 wid30">
-                                                                <img className="workmember" src={replymessage?.AuthorImage != undefined && replymessage?.AuthorImage != '' ?
+                                                                <img className="workmember"onClick={()=>globalCommon?.openUsersDashboard(AllListId?.siteUrl,undefined,replymessage?.AuthorName,this?.taskUsers)} src={replymessage?.AuthorImage != undefined && replymessage?.AuthorImage != '' ?
                                                                   replymessage.AuthorImage : "https://hhhhteams.sharepoint.com/sites/HHHH/SiteCollectionImages/ICONS/32/icon_user.jpg"} />
                                                               </div>
                                                               <div className="col-11 pe-0" >
@@ -2526,7 +2526,7 @@ class Taskprofile extends React.Component<ITaskprofileProps, ITaskprofileState> 
                                                       <div className="">
                                                         <div className="d-flex p-0">
                                                           <div className="col-1 p-0 wid30">
-                                                            <img className="workmember" src={fbComment?.AuthorImage != undefined && fbComment?.AuthorImage != '' ?
+                                                            <img className="workmember"  onClick={()=>globalCommon?.openUsersDashboard(AllListId?.siteUrl,undefined,fbComment?.AuthorName,this?.taskUsers)} src={fbComment?.AuthorImage != undefined && fbComment?.AuthorImage != '' ?
                                                               fbComment.AuthorImage : "https://hhhhteams.sharepoint.com/sites/HHHH/SiteCollectionImages/ICONS/32/icon_user.jpg"} />
                                                           </div>
                                                           <div className="col-11 pad0" key={k}>
@@ -2560,7 +2560,7 @@ class Taskprofile extends React.Component<ITaskprofileProps, ITaskprofileState> 
                                                             return (
                                                               <div className="d-flex border ms-3 p-2  mb-1">
                                                                 <div className="col-1 p-0 wid30">
-                                                                  <img className="workmember" src={replymessage?.AuthorImage != undefined && replymessage?.AuthorImage != '' ?
+                                                                  <img className="workmember"   onClick={()=>globalCommon?.openUsersDashboard(AllListId?.siteUrl,undefined,replymessage?.AuthorName,this?.taskUsers)}src={replymessage?.AuthorImage != undefined && replymessage?.AuthorImage != '' ?
                                                                     replymessage.AuthorImage : "https://hhhhteams.sharepoint.com/sites/HHHH/SiteCollectionImages/ICONS/32/icon_user.jpg"} />
                                                                 </div>
                                                                 <div className="col-11 pe-0" >
