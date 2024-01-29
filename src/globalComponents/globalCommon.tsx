@@ -2189,10 +2189,9 @@ export const loadAllSiteTasks = async (allListId?: any|null, filter?: any|null) 
                     task.SmartPriority;
                     task.TaskTypeValue = '';
                     task.projectPriorityOnHover = '';
-                    task["SiteIcon"] = site?.Item_x005F_x0020_Cover?.Url;
                     task.taskPriorityOnHover = task?.PriorityRank;
                     task.showFormulaOnHover;
-
+                    task["SiteIcon"] = site?.Item_x005F_x0020_Cover?.Url;
                     if (task.PercentComplete != undefined) {
                         task.PercentComplete = (task.PercentComplete * 100).toFixed(0);
                     }
@@ -2230,7 +2229,6 @@ export const loadAllSiteTasks = async (allListId?: any|null, filter?: any|null) 
                         task.IsSCProtected = false;
                         task.IsSCProtectedStatus = "";
                     }
-                    task["SiteIcon"] = site?.Item_x005F_x0020_Cover?.Url;
                     task.portfolioItemsSearch = site.Title;
                     task.TaskID = GetTaskId(task);
                 })
@@ -2385,10 +2383,15 @@ export const deepCopy = (obj: any, originalReferences = new WeakMap()) => {
     return copy;
 }
 
-export const openUsersDashboard = (siteUrl ?:any|undefined,AssignedUserId?:any|undefined) =>{
-    if(AssignedUserId!=undefined){
-        window?.open(`${siteUrl}/SitePages/TaskDashboard.aspx?UserId=${AssignedUserId}`,'_blank')
-    }else{
-        window?.open(`${siteUrl}/SitePages/TaskDashboard.aspx`,'_blank')
-    }
-}
+export const openUsersDashboard = (siteUrl ?:any|undefined,AssignedUserId?:any|undefined, AssignedUserTitle?:any|undefined,AllTaskUsers?:any|undefined) =>{
+    let AssignedToUserId:any=AssignedUserId
+      if(AllTaskUsers?.length>0){
+          let AssignToUserDetail=AllTaskUsers?.find((user:any)=>user?.AssingedToUser?.Title===AssignedUserTitle )
+          AssignedToUserId= AssignToUserDetail?.AssingedToUser?.Id
+      }
+      if(AssignedToUserId!=undefined){
+          window?.open(`${siteUrl}/SitePages/TaskDashboard.aspx?UserId=${AssignedToUserId}`,'_blank')
+      }else{
+          window?.open(`${siteUrl}/SitePages/TaskDashboard.aspx`,'_blank')
+      }
+  }
