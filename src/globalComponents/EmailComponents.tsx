@@ -152,7 +152,7 @@ return (
         : <div style={{ marginTop: "11.25pt" }}>
           <div style={{ marginTop: "2pt" }}>Hi,</div>
           <div style={{ marginTop: "5pt" }}>your task has been Rejected by {props.CurrentUser[0]?.Title}, Please follow the below task link to have look..</div>
-          <div style={{ marginTop: "5pt" }}>Have a nice day { props?.items?.Approvee?.Title}.</div>
+          <div style={{ marginTop: "5pt" }}>Have a nice day {props?.items?.Approvee?.Title}.</div>
           <div style={{ marginTop: "10pt" }}>
             <a href={`${props.items["siteUrl"]}/SitePages/Task-Profile.aspx?taskId=${props.items.Id}&Site=${props?.items?.siteType}`} target="_blank" data-interception="off">{props.items["Title"]}</a><u></u><u></u>
           </div>
