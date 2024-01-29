@@ -542,6 +542,7 @@ const TimeEntryPopup = (item: any)=> {
         changeTime = changeTime - 15;
 
         if (changeTime < 0) {
+          alert('The value you entered is negative, and negative entries are not allowed')
           changeTime = 0;
         }
         setTimeInMinutes(changeTime);
@@ -556,6 +557,7 @@ const TimeEntryPopup = (item: any)=> {
         changeTime = changeTime - 60;
 
         if (changeTime < 0) {
+          alert('The value you entered is negative, and negative entries are not allowed')
           changeTime = 0;
         }
         if (changeTime != undefined) {
@@ -578,6 +580,10 @@ const TimeEntryPopup = (item: any)=> {
         }
 
         if (changeTime != undefined) {
+          if (changeTime < 0) {
+            alert('The value you entered is negative, and negative entries are not allowed')
+            changeTime = 0;
+          }
           var TimeInHour: any = changeTime / 60;
           setTimeInHours(TimeInHour.toFixed(2));
         }
@@ -586,12 +592,17 @@ const TimeEntryPopup = (item: any)=> {
       if (type === "EditTime" && items === "60") {
         changeTime = Number(changeTime);
         if (changeTime == 0) {
+          alert('The value you entered is negative, and negative entries are not allowed')
           changeTime = time.TaskTimeInMin - 60;
         } else {
           changeTime = changeTime - 60;
         }
 
         if (changeTime != undefined) {
+          if (changeTime < 0) {
+            alert('The value you entered is negative, and negative entries are not allowed')
+            changeTime = 0;
+          }
           var TimeInHour: any = changeTime / 60;
           setTimeInHours(TimeInHour.toFixed(2));
         }

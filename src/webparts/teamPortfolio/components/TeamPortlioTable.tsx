@@ -312,11 +312,11 @@ function TeamPortlioTable(SelectedProp: any) {
     };
 
     /// backGround Loade All Task Data /////
-    const LoadAllSiteTasksAllData = function () {
+    const LoadAllSiteTasksAllData = async function () {
         let AllSiteTasksDataBackGroundLoad: any = [];
         let Counter = 0;
         if (siteConfig != undefined && siteConfig.length > 0) {
-            map(siteConfig, async (config: any) => {
+            const fetchPromises = map(siteConfig, async (config: any) => {
                 let web = new Web(ContextValue.siteUrl);
                 let AllTasksMatches: any = [];
                 AllTasksMatches = await web.lists
@@ -534,6 +534,8 @@ function TeamPortlioTable(SelectedProp: any) {
                     }
                 }
             });
+            await Promise.all(fetchPromises)
+            return tasksDataLoadUpdate
         }
     };
     const smartTimeUseLocalStorage = (AllSiteTasksDataBackGroundLoad: any) => {
