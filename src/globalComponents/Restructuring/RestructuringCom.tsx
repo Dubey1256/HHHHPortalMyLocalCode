@@ -2,7 +2,6 @@ import React, { useEffect, useState, useRef, forwardRef } from "react";
 import { Web } from "sp-pnp-js";
 import { Panel, PanelType } from "office-ui-fabric-react";
 import Tooltip from "../Tooltip";
-import { BsArrowRightShort } from "react-icons/bs";
 import ReactPopperTooltipSingleLevel from "../Hierarchy-Popper-tooltipSilgleLevel/Hierarchy-Popper-tooltipSingleLevel";
 
 const RestructuringCom = (props: any, ref: any) => {
@@ -1480,6 +1479,7 @@ const RestructuringCom = (props: any, ref: any) => {
                     }
                     if (sub?.Title == restructureItem[0]?.Title && sub?.Id == restructureItem[0]?.Id && sub?.TaskType?.Id == restructureItem[0]?.TaskType?.Id) {
                             sub.isRestructureActive = false;
+                            obj.isRestructureActive = false;
                             newObj = {...obj,newSubChild:{...sub}}
                             newarrays?.push(obj);
                             setRestructuredItemarray(newarrays);
@@ -2074,7 +2074,7 @@ const RestructuringCom = (props: any, ref: any) => {
                 let checkchild: any = 0;
                 if (items.subRows != undefined) {
                   items.subRows?.map((items: any) => {
-                    if (props?.queryItems?.Item_x0020_Type == "Feature" && props?.queryItems != undefined && props?.queryItems != null && checkPortfoliosAlrt
+                    if ((props?.queryItems?.Item_x0020_Type == "Feature" || props?.queryItems?.Item_x0020_Type == "SubComponent" || props?.queryItems?.Item_x0020_Type == "Component" || props?.queryItems != undefined || props?.queryItems != null) && checkPortfoliosAlrt
                     ) {
                       if (items.TaskType?.Id === 3) {
                         topCompo = false;
@@ -2103,7 +2103,7 @@ const RestructuringCom = (props: any, ref: any) => {
                   setQuery4TopIcon("Activity");
                   checkPortfoliosAlrt = false;
                 }
-                if ((props?.queryItems?.Item_x0020_Type == "Feature" || props?.queryItems?.Item_x0020_Type == "SubComponent" || props?.queryItems?.Item_x0020_Type == "Component") && (items?.TaskType?.Id==1) && props?.queryItems != undefined && props?.queryItems != null && checkPortfoliosAlrt && items?.subRows?.length === 0) {
+                if ((props?.queryItems?.Item_x0020_Type == "Feature" || props?.queryItems?.Item_x0020_Type == "SubComponent" || props?.queryItems?.Item_x0020_Type == "Component" || props?.queryItems != undefined || props?.queryItems != null) && (items?.TaskType?.Id==1)  && checkPortfoliosAlrt && items?.subRows?.length === 0) {
                   topCompo = false;
                   setQuery4TopIcon("");
                   checkPortfoliosAlrt = false;
@@ -5199,15 +5199,7 @@ if (newItemBackUp?.Item_x0020_Type == 'Sprint' || newItemBackUp == null) {
                         
                       </a>
                     </div></div>
-                    {obj?.newSubChild != undefined &&
-                    obj?.newSubChild != null ? (
-                      <div className="alignCenter">
-                        
-                        <BsArrowRightShort />
-                      </div>
-                    ) : (
-                      ""
-                    )}
+                   
                     {obj?.newSubChild ? (
                       <>
                         <div className="reStuMainTiles">
@@ -5254,15 +5246,7 @@ if (newItemBackUp?.Item_x0020_Type == 'Sprint' || newItemBackUp == null) {
                           </a>
                           </div>
                         </div>
-                        {obj?.newSubChild?.newFeatChild != undefined &&
-                        obj?.newSubChild?.newFeatChild != null ? (
-                          <div className="alignCenter">
-                            
-                            <BsArrowRightShort />
-                          </div>
-                        ) : (
-                          ""
-                        )}
+                    
                       </>
                     ) : (
                       ""
@@ -5316,16 +5300,7 @@ if (newItemBackUp?.Item_x0020_Type == 'Sprint' || newItemBackUp == null) {
                           </a>
                             </div>
                         </div>
-                        {obj?.newSubChild?.newFeatChild?.newActChild !=
-                          undefined &&
-                        obj?.newSubChild?.newFeatChild?.newActChild != null ? (
-                          <div className="alignCenter">
-                            
-                            <BsArrowRightShort />
-                          </div>
-                        ) : (
-                          ""
-                        )}
+                       
                       </>
                     ) : (
                       ""
@@ -5376,17 +5351,7 @@ if (newItemBackUp?.Item_x0020_Type == 'Sprint' || newItemBackUp == null) {
                           </a>
                             </div>
                         </div>
-                        {obj?.newSubChild?.newFeatChild?.newActChild
-                          ?.newWrkChild != undefined &&
-                        obj?.newSubChild?.newFeatChild?.newActChild
-                          ?.newWrkChild != null ? (
-                          <div className="alignCenter">
-                            
-                            <BsArrowRightShort />
-                          </div>
-                        ) : (
-                          ""
-                        )}
+                      
                       </>
                     ) : (
                       ""
@@ -5440,17 +5405,7 @@ if (newItemBackUp?.Item_x0020_Type == 'Sprint' || newItemBackUp == null) {
                           </a>
                           </div>
                         </div>
-                        {obj?.newSubChild?.newFeatChild?.newActChild
-                          ?.newWrkChild?.newTskChild != undefined &&
-                        obj?.newSubChild?.newFeatChild?.newActChild?.newWrkChild
-                          ?.newTskChild != null ? (
-                          <div className="alignCenter">
-                            
-                            <BsArrowRightShort />
-                          </div>
-                        ) : (
-                          ""
-                        )}
+                      
                       </>
                     ) : (
                       ""
@@ -5561,10 +5516,6 @@ if (newItemBackUp?.Item_x0020_Type == 'Sprint' || newItemBackUp == null) {
                       </a>
                       </div>
                     </div>
-                    <div className="alignCenter">
-                      
-                      <BsArrowRightShort />
-                    </div>
                     {obj?.newSubChild ? (
                       <>
                         
@@ -5609,10 +5560,7 @@ if (newItemBackUp?.Item_x0020_Type == 'Sprint' || newItemBackUp == null) {
                           </a>
                           </div>
                         </div>
-                        <div className="alignCenter">
-                          
-                          <BsArrowRightShort />
-                        </div>
+                        
                       </>
                     ) : (
                       ""
@@ -5661,10 +5609,7 @@ if (newItemBackUp?.Item_x0020_Type == 'Sprint' || newItemBackUp == null) {
                           </a>
                           </div>
                         </div>
-                        <div className="alignCenter">
-                          
-                          <BsArrowRightShort />
-                        </div>
+                      
                       </>
                     ) : (
                       ""
@@ -5710,10 +5655,7 @@ if (newItemBackUp?.Item_x0020_Type == 'Sprint' || newItemBackUp == null) {
                             {/* {obj?.newSubChild?.newFeatChild?.newActChild?.Title} */}
                           </a></div>
                         </div>
-                        <div className="alignCenter">
-                          
-                          <BsArrowRightShort />
-                        </div>
+                       
                       </>
                     ) : (
                       ""
@@ -5763,10 +5705,6 @@ if (newItemBackUp?.Item_x0020_Type == 'Sprint' || newItemBackUp == null) {
                                 ?.newWrkChild?.Title
                             } */}
                           </a></div>
-                        </div>
-                        <div className="alignCenter">
-                          
-                          <BsArrowRightShort />
                         </div>
                       </>
                     ) : (
@@ -5818,10 +5756,6 @@ if (newItemBackUp?.Item_x0020_Type == 'Sprint' || newItemBackUp == null) {
                                 ?.newWrkChild?.newTskChild?.Title
                             } */}
                           </a></div>
-                        </div>
-                        <div className="alignCenter">
-                          
-                          <BsArrowRightShort />
                         </div>
                       </>
                     ) : (
@@ -6327,15 +6261,7 @@ if (newItemBackUp?.Item_x0020_Type == 'Sprint' || newItemBackUp == null) {
                       </a>
                       </div>
                     </div>
-                    {obj?.newSubChild != undefined &&
-                    obj?.newSubChild != null ? (
-                      <div className="alignCenter">
-                        
-                        <BsArrowRightShort />
-                      </div>
-                    ) : (
-                      ""
-                    )}
+                    
                     {obj?.newSubChild ? (
                       <>
                         <div className="reStuMainTiles">
@@ -6396,10 +6322,6 @@ if (newItemBackUp?.Item_x0020_Type == 'Sprint' || newItemBackUp == null) {
                       </a>
                       </div>
                     </div>
-                    <div className="alignCenter">
-                      
-                      <BsArrowRightShort />
-                    </div>
                     {obj?.newSubChild ? (
                       <>
                         
@@ -6424,10 +6346,6 @@ if (newItemBackUp?.Item_x0020_Type == 'Sprint' || newItemBackUp == null) {
                             {/* {obj?.newSubChild?.Title} */}
                           </a>
                           </div>
-                        </div>
-                        <div className="alignCenter">
-                          
-                          <BsArrowRightShort />
                         </div>
                       </>
                     ) : (
@@ -6621,15 +6539,6 @@ if (newItemBackUp?.Item_x0020_Type == 'Sprint' || newItemBackUp == null) {
                       </a>
                       </div>
                     </div>
-                    {/* {obj?.newSubChild != undefined &&
-                    obj?.newSubChild != null ? (
-                      <div className="alignCenter">
-                        
-                        <BsArrowRightShort />
-                      </div>
-                    ) : (
-                      ""
-                    )} */}
                     {obj?.newSubChild ? (
                       <>
                         <div className="reStuMainTiles">
@@ -6665,15 +6574,6 @@ if (newItemBackUp?.Item_x0020_Type == 'Sprint' || newItemBackUp == null) {
                           </div>
                         </div>
                       </>
-                    ) : (
-                      ""
-                    )}
-                    {obj?.newSubChild?.feature != undefined &&
-                    obj?.newSubChild?.feature != null ? (
-                      <div className="alignCenter">
-                        
-                        <BsArrowRightShort />
-                      </div>
                     ) : (
                       ""
                     )}
@@ -6716,15 +6616,6 @@ if (newItemBackUp?.Item_x0020_Type == 'Sprint' || newItemBackUp == null) {
                     ) : (
                       ""
                     )}
-                     {obj?.newSubChild?.feature?.activity != undefined &&
-                    obj?.newSubChild?.feature?.activity != null ? (
-                      <div className="alignCenter">
-                        
-                        <BsArrowRightShort />
-                      </div>
-                    ) : (
-                      ""
-                    )}
                      {obj?.newSubChild?.feature?.activity ? (
                       <>
                         <div className="reStuMainTiles">
@@ -6755,10 +6646,6 @@ if (newItemBackUp?.Item_x0020_Type == 'Sprint' || newItemBackUp == null) {
                           </a>
                           </div>
                         </div>
-                        <div className="alignCenter">
-                          
-                          <BsArrowRightShort />
-                        </div>
                       </>
                     ) : (
                       ""
@@ -6778,7 +6665,13 @@ if (newItemBackUp?.Item_x0020_Type == 'Sprint' || newItemBackUp == null) {
                     <div className="reStuMainTiles">
                     <div className="reStuTile">
                       
-                    <span className="Dyicons">{obj?.Item_x0020_Type == 'Project' ? "P" : "X"}</span>
+                    {  obj?.Item_x0020_Type == 'Project' ? <div className="Dyicons text-center">P</div> : (obj?.Item_x0020_Type == "Sprint" ? 
+                            <div className="Dyicons text-center">X</div> : <span>
+                            <img
+                            className="workmember"
+                              src={obj?.SiteIcon}
+                            />
+                          </span>)}
                     <ReactPopperTooltipSingleLevel ShareWebId={obj?.TaskID} row={obj} AllListId={props?.contextValue} singleLevel={true} masterTaskData={props?.AllMasterTasksData} AllSitesTaskData={props?.AllSitesTaskData} />
                          
                       <a
@@ -6795,18 +6688,18 @@ if (newItemBackUp?.Item_x0020_Type == 'Sprint' || newItemBackUp == null) {
                       </a>
                       </div>
                     </div>
-                    <div className="alignCenter">
-                      
-                      <BsArrowRightShort />
-                    </div>
                     {obj?.newSubChild ? (
                       <>
                         
                         <div className="reStuMainTiles">
                         <div className="reStuTile">
-                        <span className="Dyicons">
-                                {obj?.newSubChild?.Item_x0020_Type == 'Project' ? "P" : "X"}
-                              </span>
+                        {  obj?.newSubChild?.Item_x0020_Type == 'Project' ? <div className="Dyicons text-center">P</div> : (obj?.newSubChild?.Item_x0020_Type == "Sprint" ? 
+                            <div className="Dyicons text-center">X</div> : <span>
+                            <img className="workmember"
+                              src={obj?.newSubChild?.SiteIcon}
+                            />
+                          </span>)}
+                            
                         <ReactPopperTooltipSingleLevel ShareWebId={obj?.newSubChild?.TaskID} row={obj?.newSubChild} AllListId={props?.contextValue} singleLevel={true} masterTaskData={props?.AllMasterTasksData} AllSitesTaskData={props?.AllSitesTaskData} />
                          
                           <a
@@ -6823,10 +6716,6 @@ if (newItemBackUp?.Item_x0020_Type == 'Sprint' || newItemBackUp == null) {
                             {/* {obj?.newSubChild?.Title} */}
                           </a>
                           </div>
-                        </div>
-                        <div className="alignCenter">
-                          
-                          <BsArrowRightShort />
                         </div>
                       </>
                     ) : (
@@ -6867,10 +6756,6 @@ if (newItemBackUp?.Item_x0020_Type == 'Sprint' || newItemBackUp == null) {
                           </a>
                           </div>
                         </div>
-                        <div className="alignCenter">
-                          
-                          <BsArrowRightShort />
-                        </div>
                       </>
                     ) : (
                       ""
@@ -6905,10 +6790,6 @@ if (newItemBackUp?.Item_x0020_Type == 'Sprint' || newItemBackUp == null) {
                             {obj?.newSubChild?.feature?.activity?.Title}
                           </a>
                           </div>
-                        </div>
-                        <div className="alignCenter">
-                          
-                          <BsArrowRightShort />
                         </div>
                       </>
                     ) : (
