@@ -368,7 +368,7 @@ export const UpdateTaskStatusFunction = async (RequiredData: any) => {
         UpdateDataJSON.IsTodaysTask = false;
         UpdateDataJSON.workingThisWeek = false;
     }
-    if(Status == 100){
+    if (Status == 100) {
         UpdateDataJSON.Status = "Closed";
     }
     let DataForUpdate =
@@ -415,18 +415,13 @@ export const UpdateTaskCategoryFunction = async (RequiredData: any) => {
     let TaskCategoriesIds: any = FinalTaskCategory?.map((Item: any) => Item.Id);
     let TaskCategoriesTitles: string = FinalTaskCategory?.map((item: any) => item.Title).join(', ');
     let UpdateDataJSON: any = { TaskCategoriesId: { results: TaskCategoriesIds?.length > 0 ? TaskCategoriesIds : [] } };
-    UpdateDataJSON.AssignedToId = {
-        results: [32]
-    };
     let TaskStatusValue: any = ItemDetails?.PercentComplete !== undefined && ItemDetails?.PercentComplete !== null ? Number(ItemDetails?.PercentComplete) * 100 : 0;
 
     if ((CheckImmediateCategoryTask || CheckEmailCategoryTask) && (TaskStatusValue <= 5 && TaskStatusValue >= 90)) {
-        if (CheckImmediateCategoryTask || CheckEmailCategoryTask) {
-            try {
-                <EmailNotificationMail emailStatus={true} items={ItemDetails} statusValue={TaskStatusValue} Context={Context} />
-            } catch (error) {
-                console.log("Send Email Notification", error.message)
-            }
+        try {
+            <EmailNotificationMail emailStatus={true} items={ItemDetails} statusValue={TaskStatusValue} Context={Context} />
+        } catch (error) {
+            console.log("Send Email Notification", error.message)
         }
     }
 
