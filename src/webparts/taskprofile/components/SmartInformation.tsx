@@ -374,7 +374,7 @@ const SmartInformation = (props: any, ref: any) => {
     return (
       <>
          <div className='subheading'>
-          {popupEdit ? `Add SmartInformation - ${allValue?.Title}` : `Add SmartInformation - ${taskInfo?.Title}`}
+          {popupEdit ? `Edit SmartInformation - ${allValue?.Title}` : `Add SmartInformation - ${taskInfo?.Title}`}
          </div>
        <Tooltip ComponentId='3299' />
       </>
@@ -1203,7 +1203,7 @@ const SmartInformation = (props: any, ref: any) => {
               <div className='col-md-6'><input type="text" className="full-width mt-3" placeholder='Rename your document' value={allValue?.fileupload != "" ? allValue?.fileupload : ""}></input></div>
             </div>
             <footer className='mt-2 text-end' >
-              <button className='btn btn-primary mx-3 text-end ' onClick={(e) => onUploadDocumentFunction("uploadFile", "UploadDocument")}>upload</button>
+              <button className='btn btn-primary mx-3 text-end ' onClick={(e) => onUploadDocumentFunction("uploadFile", "UploadDocument")}>Upload</button>
               <Button className='btn btn-default text-end  btn btn-primary' onClick={() => closeDoc()}>
                 Cancel
               </Button> </footer>

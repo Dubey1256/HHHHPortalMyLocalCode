@@ -2169,7 +2169,7 @@ export const loadAllTimeEntry = async (timesheetListConfig: any) => {
 
     }
 }
-export const loadAllSiteTasks = async (allListId?: any | undefined, filter?: any | undefined) => {
+export const loadAllSiteTasks = async (allListId?: any|null, filter?: any|null) => {
     let query = "Id,Title,FeedBack,PriorityRank,Remark,Project/PriorityRank,Project/PortfolioStructureID,ParentTask/Id,ParentTask/Title,ParentTask/TaskID,TaskID,SmartInformation/Id,SmartInformation/Title,Project/Id,Project/Title,workingThisWeek,EstimatedTime,TaskLevel,TaskLevel,OffshoreImageUrl,OffshoreComments,SiteCompositionSettings,Sitestagging,Priority,Status,ItemRank,IsTodaysTask,Body,Portfolio/Id,Portfolio/Title,Portfolio/PortfolioStructureID,PercentComplete,Categories,StartDate,PriorityRank,DueDate,TaskType/Id,TaskType/Title,TaskType/Level,Created,Modified,Author/Id,Author/Title,Editor/Id,Editor/Title,TaskCategories/Id,TaskCategories/Title,AssignedTo/Id,AssignedTo/Title,TeamMembers/Id,TeamMembers/Title,ResponsibleTeam/Id,ResponsibleTeam/Title,ClientCategory/Id,ClientCategory/Title&$expand=AssignedTo,Project,ParentTask,SmartInformation,Author,Portfolio,Editor,TaskType,TeamMembers,ResponsibleTeam,TaskCategories,ClientCategory"
     if (filter != undefined) {
         query += `&$filter=${filter}`
@@ -2186,53 +2186,10 @@ export const loadAllSiteTasks = async (allListId?: any | undefined, filter?: any
                     task.siteType = site.Title;
                     task.listId = site.listId;
                     task.siteUrl = site.siteUrl.Url;
-                    task.SmartPriority;
-                    task.TaskTypeValue = '';
-                    task.projectPriorityOnHover = '';
                     task["SiteIcon"] = site?.Item_x005F_x0020_Cover?.Url;
-                    task.taskPriorityOnHover = task?.PriorityRank;
-                    task.showFormulaOnHover;
-
                     if (task.PercentComplete != undefined) {
                         task.PercentComplete = (task.PercentComplete * 100).toFixed(0);
                     }
-                    if (task?.Portfolio?.Id != undefined) {
-                        task.portfolio = task?.Portfolio;
-                        task.PortfolioTitle = task?.Portfolio?.Title;
-                    }
-                    let checkIsSCProtected: any = false;
-                    task.DisplayCreateDate = moment(task.Created).format("DD/MM/YYYY");
-                    task.descriptionsSearch = descriptionSearchData(task);
-                    if (task.Project) {
-                        task.ProjectTitle = task?.Project?.Title;
-                        task.ProjectId = task?.Project?.Id;
-                        task.projectStructerId =
-                            task?.Project?.PortfolioStructureID;
-                        const title = task?.Project?.Title || "";
-                        const dueDate = task?.DueDate;
-                        task.joinedData = [];
-                        if (title) task.joinedData.push(`Title: ${title}`);
-                        if (dueDate) task.joinedData.push(`Due Date: ${dueDate}`);
-                    }
-                    if (task?.SiteCompositionSettings != undefined) {
-                        let TempSCSettingsData: any = JSON.parse(task?.SiteCompositionSettings);
-                        if (TempSCSettingsData?.length > 0) {
-                            checkIsSCProtected = TempSCSettingsData[0].Protected;
-                        }
-                        task.compositionType = siteCompositionType(task?.SiteCompositionSettings);
-                    } else {
-                        task.compositionType = '';
-                    }
-                    if (checkIsSCProtected) {
-                        task.IsSCProtected = true;
-                        task.IsSCProtectedStatus = "Protected";
-                    } else {
-                        task.IsSCProtected = false;
-                        task.IsSCProtectedStatus = "";
-                    }
-                    task["SiteIcon"] = site?.Item_x005F_x0020_Cover?.Url;
-                    task.portfolioItemsSearch = site.Title;
-                    task.TaskID = GetTaskId(task);
                 })
                 AllSiteTasks = [...AllSiteTasks, ...data];
             } catch (error) {

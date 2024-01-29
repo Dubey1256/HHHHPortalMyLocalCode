@@ -359,7 +359,7 @@ export default function VersionHistory(props: any) {
             })
         }
 
-        if (itm?.Sitestagging != undefined) {
+        if (itm?.Sitestagging != undefined && itm?.Sitestagging != false) {
             try {
                 SitesTaggingArray = JSON.parse(itm?.Sitestagging)
                 SitesTaggingArray?.map((AllSCItem: any) => {
@@ -380,7 +380,7 @@ export default function VersionHistory(props: any) {
 
         return (
             <>
-                {(SitesTaggingArray != undefined && SitesTaggingArray != null) && <dl className={usedFor == "Site-Composition" ? "Sitecomposition" : "Sitecomposition"}>
+                {(SitesTaggingArray != undefined && SitesTaggingArray != null && SitesTaggingArray.length > 0) && <dl className={usedFor == "Site-Composition" ? "Sitecomposition" : "Sitecomposition"}>
                     <div className='dropdown'>
                         <div className="spxdropdown-menu" style={{ display: showComposition ? 'block' : 'none' }}>
                             <ul>
