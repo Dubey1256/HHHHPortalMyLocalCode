@@ -54,6 +54,7 @@ const RelevantDocuments = (props: any, ref: any) => {
 
     const callbackeditpopup = React.useCallback((EditdocumentsData: any) => {
         // loadAllSitesDocuments();
+
         console.log(EditdocumentsData)
 
         if (EditdocumentsData != undefined) {
@@ -95,81 +96,96 @@ const RelevantDocuments = (props: any, ref: any) => {
 
                 }
             }
+        }else{
+            setEditdocpanel(false);  
         }
 
 
 
     }, [])
-    const columns = useMemo<ColumnDef<unknown, unknown>[]>(() =>
-        [{
-            accessorFn: (row: any) => row?.FileLeafRef,
-            cell: ({ row, column, getValue }: any) => (
-                <div className='alignCenter columnFixedTitle p-0'>
-                      <span className={`alignIcon  svg__iconbox svg__icon--${row?.original?.docType}`} title={row?.original?.File_x0020_Type}></span>
-                    <a className='ms-1 wid90' target="_blank" href={`${row?.original?.EncodedAbsUrl}?web=1`}> {row?.original?.Title} </a>
-                </div>
-            ),
-            id: 'Title',
-            placeholder: 'File Name',
-            resetColumnFilters: false,
-            header: '',
-            size: 500,
-        },
-        {
-            accessorFn: (row: any) => row?.Modified,
-            cell: ({ row }: any) => (
-                <div> {row?.original.Modified !== null ? moment(row?.original.Modified).format("DD/MM/YYYY") : ""}
-                    <>
-                        <a href={`${myContextValue?.siteUrl}/SitePages/TaskDashboard.aspx?UserId=${row?.original?.Editor?.Id}&Name=${row?.original?.Editor?.Title}`}
-                            target="_blank" data-interception="off">
-                            <img title={row?.original?.Author?.Title} className="workmember ms-1" src={(row?.original?.EditorImage)} />
-                        </a>
+    const columns = useMemo<ColumnDef<any, unknown>[]>(() =>
+        [
+            {
+                accessorKey: "",
+                placeholder: "",
+                hasCheckbox: false,
+                hasCustomExpanded: false,
+                hasExpanded: false,
+                isHeaderNotAvlable: true,
+                size: 10,
+                id: 'Id',
+            },
+            {
+                accessorFn: (row) => row?.Title,
+                cell: ({ row }) => (
+                    <div className='alignCenter columnFixedTitle p-0'>
+                        <><a href={`${row?.original?.EncodedAbsUrl}?web=1`}>
+                            <span className={` svg__iconbox svg__icon--${row?.original?.File_x0020_Type}`} title={row?.original?.File_x0020_Type}></span></a>
+                            <a className='ms-1 wid90' target="_blank" href={`${row?.original?.EncodedAbsUrl}?web=1`}> {row?.original?.Title} </a>
+                        </>
+                    </div>
+                ),
+                id: 'Title',
+                placeholder: 'File Name',
+                resetColumnFilters: false,
+                header: '',
+                size: 500,
+            },
+            {
+                accessorFn: (row: any) => row?.Modified,
+                cell: ({ row }: any) => (
+                    <div> {row?.original.Modified !== null ? moment(row?.original.Modified).format("DD/MM/YYYY") : ""}
+                        <>
+                            <a href={`${myContextValue?.siteUrl}/SitePages/TaskDashboard.aspx?UserId=${row?.original?.Editor?.Id}&Name=${row?.original?.Editor?.Title}`}
+                                target="_blank" data-interception="off">
+                                <img title={row?.original?.Author?.Title} className="workmember ms-1" src={(row?.original?.EditorImage)} />
+                            </a>
 
-                    </>
-                </div>
-            ),
-            id: 'Modified',
-            placeholder: 'Modified',
-            resetColumnFilters: false,
-            header: '',
-            size: 115,
-        },
-        {
-            accessorFn: (row: any) => row?.Created,
-            cell: ({ row }: any) => (
-                <div>{row?.original.Created !== null ? moment(row?.original.Created).format("DD/MM/YYYY") : ""}
+                        </>
+                    </div>
+                ),
+                id: 'Modified',
+                placeholder: 'Modified',
+                resetColumnFilters: false,
+                header: '',
+                size: 115,
+            },
+            {
+                accessorFn: (row: any) => row?.Created,
+                cell: ({ row }: any) => (
+                    <div>{row?.original.Created !== null ? moment(row?.original.Created).format("DD/MM/YYYY") : ""}
 
 
-                    <>
-                        <a href={`${myContextValue?.siteUrl}/SitePages/TaskDashboard.aspx?UserId=${row?.original?.Author?.Id}&Name=${row?.original?.Author?.Title}`}
-                            target="_blank" data-interception="off">
-                            <img title={row?.original?.Author?.Title} className="workmember ms-1" src={(row?.original?.UserImage)} />
-                        </a>
+                        <>
+                            <a href={`${myContextValue?.siteUrl}/SitePages/TaskDashboard.aspx?UserId=${row?.original?.Author?.Id}&Name=${row?.original?.Author?.Title}`}
+                                target="_blank" data-interception="off">
+                                <img title={row?.original?.Author?.Title} className="workmember ms-1" src={(row?.original?.UserImage)} />
+                            </a>
 
-                    </>
+                        </>
 
 
-                </div>
+                    </div>
 
-            ),
-            id: 'Created',
-            placeholder: 'Created',
-            resetColumnFilters: false,
-            header: '',
-            size: 115,
-        },
-        {
-            accessorFn: "",
-            cell: ({ row }: any) => (
-                <span  title="Edit" className="svg__iconbox svg__icon--edit hreflink" onClick={() => editDocumentsLink(row?.original)}></span>
+                ),
+                id: 'Created',
+                placeholder: 'Created',
+                resetColumnFilters: false,
+                header: '',
+                size: 115,
+            },
+            {
+                accessorFn: "",
+                cell: ({ row }: any) => (
+                    <span title="Edit" className="svg__iconbox svg__icon--edit hreflink" onClick={() => editDocumentsLink(row?.original)}></span>
 
-            ),
-            id: 'CreatedDate',
-            placeholder: '',
-            resetColumnFilters: false,
-            header: '',
-            size: 42,
-        }
+                ),
+                id: 'CreatedDate',
+                placeholder: '',
+                resetColumnFilters: false,
+                header: '',
+                size: 42,
+            }
 
         ], [copykeyDocument?.length > 0 ? copykeyDocument : keyDocument]);
 
@@ -210,14 +226,15 @@ const RelevantDocuments = (props: any, ref: any) => {
                     <div className='card-header'>
                         <div className="card-title h5 d-flex justify-content-between align-items-center  mb-0">Key Documents<span><Tooltip ComponentId={'1298'} /></span></div>
                     </div>
-                  
-                        <div className='TableSection'>
-                            <div className='Alltable'>
-                                <div className='smart Key-documents'>
-                                    <div style={{ height: "214px", overflow: 'hidden' }}><GlobalCommanTable columns={columns} wrapperHeight="100%" data={copykeyDocument?.length > 0 ? copykeyDocument : keyDocument} callBackData={callBackData} /></div>
-                                </div>
+
+                    <div className='TableSection'>
+                        <div className='Alltable'>
+                            <div className='smart Key-documents'>
+                                <div style={{ height: "214px", overflow: 'hidden' }}><GlobalCommanTable columns={columns} wrapperHeight="100%" data={copykeyDocument?.length > 0 ? copykeyDocument : keyDocument} callBackData={callBackData} /></div>
                             </div>
                         </div>
+                    </div>
+
                     {copykeyDocument?.length < keyDocument?.length && copykeyDocument?.length > 0 && (
                         <button onClick={ShowData}>
                             Show More

@@ -2124,7 +2124,7 @@ const openCompareTool =()=>{
                         scale={1.0}
                         loadedClassName="loadedContent"
                       /> */}
-                      <GlobalCommanTable openCompareTool={openCompareTool}  bulkEditIcon={true} priorityRank={priorityRank} precentComplete={precentComplete}
+                      <GlobalCommanTable openCompareTool={openCompareTool}  showRestructureButton={true} showCompareButton={true} bulkEditIcon={true} priorityRank={priorityRank} precentComplete={precentComplete}
                       AllSitesTaskData={flatviewTasklist} masterTaskData={flatviewmastertask}
                         smartTimeTotalFunction={smartTimeTotal} SmartTimeIconShow={true}
                         portfolioTypeDataItemBackup={portfolioTypeDataItemBackup} taskTypeDataItemBackup={taskTypeDataItemBackup} flatViewDataAll={flatViewDataAll} setData={setData}
