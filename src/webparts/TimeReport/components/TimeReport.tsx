@@ -1439,7 +1439,7 @@ var ReportDate = new Date(a1)
         <section className='ContentSection'>
             <div className='row'>
             <div className="alignCenter">
-          <h2 className="heading">{headerChange != undefined && headerChange != null && headerChange != '' ? headerChange : 'Permission-Management'} </h2>
+          <h2 className="heading">{headerChange != undefined && headerChange != null && headerChange != '' ? headerChange : 'Time-Report'} </h2>
           <EditPage context={props?.ContextData} changeHeader={changeHeader} />
         </div>
                 <div className='col-sm-9 pe-0'>

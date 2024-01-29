@@ -46,7 +46,7 @@ const CreateWS = (props: any) => {
         Title: '',
         ItemRank: '',
         UniqueRank:'XYZabc',
-        Priority: props?.selectedItem?.NoteCall=="Task"?"":'4',
+        Priority: '4',
         DueDate: '',
         Description: [],
         AssignedTo: props?.selectedItem?.AssignedTo?.length > 0 ? props?.selectedItem?.AssignedTo : [],
