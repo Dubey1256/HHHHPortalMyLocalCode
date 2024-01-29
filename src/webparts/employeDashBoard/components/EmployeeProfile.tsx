@@ -293,6 +293,14 @@ const EmployeProfile = (props: any) => {
     else {
       MakeFinalData()
     }
+    try {
+      $("#spPageCanvasContent").removeClass();
+      $("#spPageCanvasContent").addClass("hundred");
+      $("#workbenchPageContent").removeClass();
+      $("#workbenchPageContent").addClass("hundred");
+    } catch (e) {
+      console.log(e);
+    }
   };
   const callbackFunction = () => {
     LoadAdminConfiguration(true)
