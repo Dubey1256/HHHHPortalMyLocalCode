@@ -2186,10 +2186,57 @@ export const loadAllSiteTasks = async (allListId?: any|null, filter?: any|null) 
                     task.siteType = site.Title;
                     task.listId = site.listId;
                     task.siteUrl = site.siteUrl.Url;
+<<<<<<< HEAD
+=======
+                    task.SmartPriority;
+                    task.TaskTypeValue = '';
+                    task.projectPriorityOnHover = '';
+                    task.taskPriorityOnHover = task?.PriorityRank;
+                    task.showFormulaOnHover;
+>>>>>>> a57ac1f4b690992f66447af3a3bdb6b1e99adc22
                     task["SiteIcon"] = site?.Item_x005F_x0020_Cover?.Url;
                     if (task.PercentComplete != undefined) {
                         task.PercentComplete = (task.PercentComplete * 100).toFixed(0);
                     }
+<<<<<<< HEAD
+=======
+                    if (task?.Portfolio?.Id != undefined) {
+                        task.portfolio = task?.Portfolio;
+                        task.PortfolioTitle = task?.Portfolio?.Title;
+                    }
+                    let checkIsSCProtected: any = false;
+                    task.DisplayCreateDate = moment(task.Created).format("DD/MM/YYYY");
+                    task.descriptionsSearch = descriptionSearchData(task);
+                    if (task.Project) {
+                        task.ProjectTitle = task?.Project?.Title;
+                        task.ProjectId = task?.Project?.Id;
+                        task.projectStructerId =
+                            task?.Project?.PortfolioStructureID;
+                        const title = task?.Project?.Title || "";
+                        const dueDate = task?.DueDate;
+                        task.joinedData = [];
+                        if (title) task.joinedData.push(`Title: ${title}`);
+                        if (dueDate) task.joinedData.push(`Due Date: ${dueDate}`);
+                    }
+                    if (task?.SiteCompositionSettings != undefined) {
+                        let TempSCSettingsData: any = JSON.parse(task?.SiteCompositionSettings);
+                        if (TempSCSettingsData?.length > 0) {
+                            checkIsSCProtected = TempSCSettingsData[0].Protected;
+                        }
+                        task.compositionType = siteCompositionType(task?.SiteCompositionSettings);
+                    } else {
+                        task.compositionType = '';
+                    }
+                    if (checkIsSCProtected) {
+                        task.IsSCProtected = true;
+                        task.IsSCProtectedStatus = "Protected";
+                    } else {
+                        task.IsSCProtected = false;
+                        task.IsSCProtectedStatus = "";
+                    }
+                    task.portfolioItemsSearch = site.Title;
+                    task.TaskID = GetTaskId(task);
+>>>>>>> a57ac1f4b690992f66447af3a3bdb6b1e99adc22
                 })
                 AllSiteTasks = [...AllSiteTasks, ...data];
             } catch (error) {

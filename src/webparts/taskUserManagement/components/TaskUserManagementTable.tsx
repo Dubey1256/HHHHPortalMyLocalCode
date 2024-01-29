@@ -18,7 +18,7 @@ import zIndex from '@material-ui/core/styles/zIndex';
 import CheckboxTree from 'react-checkbox-tree';
 import 'react-checkbox-tree/lib/react-checkbox-tree.css';
 import { FaChevronDown, FaChevronRight, FaMinusSquare, FaPlusSquare, FaSquare, FaCheckSquare } from 'react-icons/fa';
-import "./styles.css"
+import { Col, Container, Row } from "react-bootstrap";
 
 const TaskUserManagementTable = ({ TaskUsersListData, TaskGroupsListData, baseUrl, TaskUserListId, context, fetchAPIData, smartMetaDataItems }: any) => {
     const [data, setData] = React.useState<any>([]);
@@ -90,7 +90,7 @@ const TaskUserManagementTable = ({ TaskUsersListData, TaskGroupsListData, baseUr
             setAssignedToUser(memberToUpdate.AssingedToUser?.Id)
             // setApprover([memberToUpdate.Approver?.[0]?.Id])
             const Approvers: any = memberToUpdate?.Approver?.map((item: any) => item.Id)
-            setApprover([Approvers])
+            setApprover(Approvers)
             setUserTeam(memberToUpdate.Team)
         }
     }, [memberToUpdate]);
@@ -212,7 +212,9 @@ const TaskUserManagementTable = ({ TaskUsersListData, TaskGroupsListData, baseUr
                 AssingedToUserId: typeof assignedToUser === 'number' ? assignedToUser : (assignedToUser?.length > 0 ? assignedToUser[0]?.AssingedToUser?.Id : null),
                 // ApproverId: Array.isArray(approver) && approver.every(item => typeof item === 'number' && item != null)
                 //     ? { "results": approver } : (approver.length > 0 && approver[0] != null && approver[0].AssingedToUser?.Id != null) ? { "results": [approver[0].AssingedToUser.Id] } : { "results": [] },
-                ApproverId: Array.isArray(approver) && approver.length > 0 ? { "results": approver.map(app => app.AssingedToUser.Id) } : { "results": [] },
+                ApproverId: Array.isArray(approver) && approver.every(item => typeof item === 'number' && item != null)
+                ? { "results": approver } : Array.isArray(approver) && approver.length > 0 ? { "results": approver?.map(app => app?.AssingedToUser?.Id) } : { "results": [] },
+                // ApproverId: Array.isArray(approver) && approver.length > 0 ? { "results": approver?.map(app => app?.AssingedToUser?.Id) } : { "results": [] },
                 UserGroupId: userGroup ? parseInt(userGroup) : memberToUpdate?.UserGroup?.Id,
                 Team: userTeam ? userTeam : memberToUpdate.Team,
                 // Item_x0020_Cover: { "__metadata": { type: "SP.FieldUrlValue" }, Description: "Description", Url: imageUrl?.Item_x002d_Image != undefined ? imageUrl?.Item_x002d_Image?.Url : (imageUrl?.Item_x0020_Cover != undefined ? imageUrl?.Item_x0020_Cover?.Url : null) },
@@ -377,26 +379,29 @@ const TaskUserManagementTable = ({ TaskUsersListData, TaskGroupsListData, baseUr
                 id: "Title",
                 header: "",
                 placeholder: "Title",
-                sortDescFirst: false
+                // sortDescFirst: false
             },
             {
                 accessorKey: "SortOrder",
                 header: "",
                 placeholder: "SortOrder",
+                id: "SortOrder",
+                isColumnDefultSortingDesc: true,
                 filterFn: (row: any, columnId: any, filterValue: any) => {
                     return row?.original?.SortOrder == filterValue
                 },
             },
             {
-                accessorKey: "TaskId",
-                header: null,
+                // accessorKey: "TaskId",
+                // header: null,
                 cell: (info) => (<div className='pull-right alignCenter'>
                     <span onClick={() => handleUpdateClick(info.row.original)} className='svg__iconbox svg__icon--edit' title='Edit'></span>
                     <span onClick={() => handleDeleteClick(info.row.original)} className='svg__iconbox svg__icon--trash' title='Trash'></span>
                 </div>),
-                enableColumnFilter: false,
-                enableSorting: false,
-                Size: 60
+                id: "editIcon",
+                canSort: false,
+                placeholder: "",
+                size: 30,
             }
         ],
         [groupData]
@@ -756,15 +761,15 @@ const TaskUserManagementTable = ({ TaskUsersListData, TaskGroupsListData, baseUr
             >
                 <div className='modal-body'>
                     <div className="add-datapanel">
-                        <div className='input-group mb-1'>
+                        <div className='input-group'>
                             <label className='form-label full-width fw-semibold'>Title: </label>
                             <input className='form-control' type="text" defaultValue={itemToUpdate?.Title} onChange={(e: any) => setTitle(e.target.value)} />
                         </div>
-                        <div className='input-group mb-1'>
+                        <div className='input-group'>
                             <label className='form-label full-width fw-semibold'>Suffix: </label>
                             <input className='form-control' type="text" defaultValue={itemToUpdate?.Suffix} onChange={(e: any) => setSuffix(e.target.value)} />
                         </div>
-                        <div className='input-group mb-1'>
+                        <div className='input-group'>
                             <label className='form-label full-width fw-semibold'>Sort Order: </label>
                             <input className='form-control' type="text" defaultValue={itemToUpdate?.SortOrder} onChange={(e: any) => setSortOrder(e.target.value)} />
                         </div>
@@ -801,7 +806,7 @@ const TaskUserManagementTable = ({ TaskUsersListData, TaskGroupsListData, baseUr
                         </li>
                     </ul>
 
-                    <div className="tab-content p-3" id="myTabContent">
+                    <div className="tab-content p-3 task-user-mangement" id="myTabContent">
                         {/* Basic Information Tab */}
                         <div
                             className="tab-pane fade show active"
@@ -809,62 +814,58 @@ const TaskUserManagementTable = ({ TaskUsersListData, TaskGroupsListData, baseUr
                             role="tabpanel"
                             aria-labelledby="basic-info-tab"
                         >
-                            <div className="row mb-2">
-                                <div className='col-2'>
+                            <Row className='mb-2'>
+                                <Col md={2} sm={2}>
                                     <div className='input-group'>
                                         <label className='form-label full-width fw-semibold'>Title: </label>
                                         <input className='form-control' type="text" defaultValue={memberToUpdate?.Title} onChange={(e: any) => setTitle(e.target.value)} />
                                     </div>
-                                </div>
+                                </Col>
 
-                                <div className='col p-0'>
+                                <Col md={1} sm={1}>
                                     <div className='input-group'>
                                         <label className='form-label full-width fw-semibold'>Suffix: </label>
                                         <input className='form-control' type="text" defaultValue={memberToUpdate?.Suffix} onChange={(e: any) => setSuffix(e.target.value)} />
-                                    </div></div>
-                                <div className='col'>
-                                    <div className='input-group'>
+                                    </div>
+                                </Col>
+                                <Col md={2}>
+                                    <div className='input-group class-input'>
                                         <label className='form-label full-width fw-semibold'>User Name:</label>
-                                        <PeoplePicker context={context} titleText="" personSelectionLimit={1} showHiddenInUI={false}
+                                        <div className="w-100">
+                                        <PeoplePicker  context={context} titleText="" personSelectionLimit={1} showHiddenInUI={false}
                                             principalTypes={[PrincipalType.User]} resolveDelay={1000} onChange={(items) => AssignedToUser(items)}
                                             defaultSelectedUsers={email ? [email] : []} />
+                                            </div>
                                     </div>
-                                </div>
-                                <div className='col p-0'>
+                                </Col>
+                                <Col md={2}>
                                     <div className='input-group'>
                                         <label className='form-label full-width fw-semibold'>Group: </label>
-                                        <select className='form-control' id="sites" defaultValue={memberToUpdate?.UserGroup?.Id} onChange={(e: any) => setUserGroup(e.target.value)}>
+                                        <select className='full-width' id="sites" defaultValue={memberToUpdate?.UserGroup?.Id} onChange={(e: any) => setUserGroup(e.target.value)}>
                                             <option>Select</option>
                                             {TaskGroupsListData.map((elem: any) => <option value={elem?.Id}>{elem?.Title}</option>)}
                                         </select>
                                     </div>
-                                </div>
-                                <div className='col'>
+                                </Col>
+                                <Col md={1} sm={2}>
                                     <div className='input-group'>
                                         <label className='form-label full-width fw-semibold'>Sort Order: </label>
                                         <input className='form-control' type="text" defaultValue={memberToUpdate?.SortOrder} onChange={(e: any) => setSortOrder(e.target.value)} />
                                     </div>
-                                </div>
+                                </Col>
 
-                                <div className='col p-0'>
+                                <Col md={2} sm={2}>
                                     <div className='input-group'>
                                         <label className='form-label full-width fw-semibold'>Manage Categories: </label>
                                         <select className='full-width' id="sites" defaultValue={memberToUpdate?.TimeCategory} onChange={(e: any) => setUserCategory(e.target.value)}>
                                             <option>Select</option>
                                             {uniqueCategories.map((elem: any) => <option value={elem.Title}>{elem.Title}</option>)}
                                         </select>
-                                    </div></div>
-                                <div className='col'>
-                                    <div className='input-group'>
-                                        <label className='form-label full-width fw-semibold'>Approver:</label>
-                                        <PeoplePicker context={context} titleText="" personSelectionLimit={4} showHiddenInUI={false} principalTypes=
-                                            {[PrincipalType.User]} resolveDelay={1000} onChange={(items) => ApproverFunction(items)}
-                                            defaultSelectedUsers={emails.length > 0 ? emails : []}  />
-                                    </div></div>
-                                <div className='col p-0'>
+                                    </div></Col>
+                                    <Col md={2} sm={1}>
                                     <div className='input-group'>
                                         <label className='form-label full-width fw-semibold'>Team: </label>
-                                        <select className='form-control' id="sites" defaultValue={memberToUpdate?.Team} onChange={(e: any) => setUserTeam(e.target.value)}
+                                        <select className='full-width' id="sites" defaultValue={memberToUpdate?.Team} onChange={(e: any) => setUserTeam(e.target.value)}
                                         >
                                             <option>Select</option>
                                             <option value="SPFx">SPFx</option>
@@ -875,14 +876,31 @@ const TaskUserManagementTable = ({ TaskUsersListData, TaskGroupsListData, baseUr
                                             <option value="Design">Design</option>
                                         </select>
                                     </div>
-                                </div>
-                            </div>
+                                </Col>
+                                <Col md={5} className='ps-1 pe-1'>
+                                    <div className='input-group class-input'>
+                                        <label className='form-label full-width fw-semibold'>Approver:</label>
+                                        <div className='w-100'>
+                                        <PeoplePicker context={context} titleText="" 
+                                        // styles={{
+                                        //     input: {
+                                        //         border: '1px solid #ccc'
+                                        //     },
+                                        // }}
+                                            personSelectionLimit={4} showHiddenInUI={false} principalTypes=
+                                            {[PrincipalType.User]} resolveDelay={1000} onChange={(items) => ApproverFunction(items)}
+                                            defaultSelectedUsers={emails.length > 0 ? emails : []} />
+                                            </div>
+                                    </div>
+                                </Col>
+                               
+                            </Row>
 
-                            <div className="row mb-2">
-                                <div className='col-2'>
+                            <Row className='mb-2'>
+                                <Col md={2}>
                                     <div className='input-group'>
                                         <label className='form-label full-width fw-semibold'>Company: </label>
-                                        <div className='col'>
+                                        <Col>
                                             <div className='mb-1'>
                                                 <label className='SpfxCheckRadio'>
                                                     <input className='radio' type="radio" id="HHHH" name="company" value="HHHH" checked={selectedCompany === 'HHHH'} onChange={handleCompanyChange} />
@@ -893,14 +911,15 @@ const TaskUserManagementTable = ({ TaskUsersListData, TaskGroupsListData, baseUr
                                                     <input className='radio' type="radio" id="Smalsus" name="company" value="Smalsus" checked={selectedCompany === 'Smalsus'} onChange={handleCompanyChange} />
                                                     Smalsus Team</label>
                                             </div>
-                                        </div>
-                                    </div></div>
-                                <div className='col-md-4'>
+                                        </Col>
+                                    </div>
+                                </Col>
+                                <Col md={4} className='px-1'>
                                     <div className='input-group'>
                                         <label className='form-label full-width fw-semibold'>Roles: </label>
-                                        <div className='row'>
-                                            <div className='col-5 px-0'>
-                                                {['Component Teams', 'Service Teams', 'Component Creator', 'Component Editor', 'Task Creator'].map((role: any) => (
+                                        <Row>
+                                            <Col className='px-0'>
+                                                {['Component Teams', 'Service Teams'].map((role: any) => (
                                                     <React.Fragment key={role}>
                                                         <label className='SpfxCheckRadio mb-1' htmlFor={`role-${role}`}>
                                                             <input type="checkbox" className='form-check-input me-1' id={`role-${role}`} name="roles" value={role} checked={selectedRoles?.includes(role)}
@@ -909,8 +928,8 @@ const TaskUserManagementTable = ({ TaskUsersListData, TaskGroupsListData, baseUr
                                                             {role}</label>
                                                     </React.Fragment>
                                                 ))}
-                                            </div>
-                                            <div className='col'>
+                                            </Col>
+                                            <Col>
                                                 <div>
                                                     <label className='SpfxCheckRadio mb-1'>
                                                         <input type="checkbox" className='form-check-input me-1' id="IsActive" checked={isActive} onChange={(e) => setIsActive(e.target.checked)} />
@@ -922,17 +941,17 @@ const TaskUserManagementTable = ({ TaskUsersListData, TaskGroupsListData, baseUr
                                                         Task Notifications</label>
                                                 </div>
 
-                                            </div>
+                                            </Col>
 
-                                        </div>
+                                        </Row>
 
                                     </div>
-                                </div>
+                                </Col>
 
-                            </div>
-                            <div className='row'>
+                            </Row>
+                            <Row>
                                 <label className='form-label full-width fw-semibold'>Approval Type: </label>
-                                <div className='row'>
+                                <Row>
                                     <div className='mb-1'>
                                         <label className='SpfxCheckRadio' htmlFor="approveAll">
                                             <input type="radio" id="Approve All" className='radio' name="approvalType" value="Approve All" checked={selectedApprovalType === 'Approve All'} onChange={handleApprovalTypeChange} />
@@ -944,7 +963,7 @@ const TaskUserManagementTable = ({ TaskUsersListData, TaskGroupsListData, baseUr
                                             Case by Case</label>
 
                                     </div>
-                                    <div className='mb-1 row'>
+                                    <Row className='mb-2'>
                                         <label className='SpfxCheckRadio' htmlFor="approveSelected">
                                             <input type="radio" id="Approve Selected" className='radio' name="approvalType" value="Approve Selected" checked={selectedApprovalType === 'Approve Selected'} onChange={handleApprovalTypeChange} />
                                             Approve Selected</label>
@@ -992,10 +1011,10 @@ const TaskUserManagementTable = ({ TaskUsersListData, TaskGroupsListData, baseUr
                                                         ))} */}
                                             </>
                                             : ""}
-                                    </div>
+                                    </Row>
 
-                                </div>
-                            </div>
+                                </Row>
+                            </Row>
                         </div>
 
                         {/* Image Information Tab */}
