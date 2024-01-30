@@ -1799,6 +1799,7 @@ const ProjectManagementMain = (props: any) => {
                                   columns={column2} data={ProjectTableData} callBackData={callBackData}
                                   smartTimeTotalFunction={smartTimeTotal} SmartTimeIconShow={true}
                                   TaskUsers={AllUser} showHeader={true} expendedTrue={false}
+                                  showRestructureButton={true}
                                   showCreationAllButton={true}
                                   flatViewDataAll={flatViewDataAll}
                                   clickFlatView={clickFlatView} switchFlatViewData={switchFlatViewData}
