@@ -1798,7 +1798,7 @@ const TaskDashboard = (props: any) => {
         let taskUsersGroup = groupedUsers;
         let confirmation = confirm("Are you sure you want to share the working today task of all team members?")
         if (confirmation) {
-            var subject = "Today's Working Tasks of All Team";
+            var subject = `Today's Working Tasks of All Team Members: ${Moment(new Date()).zone('Asia/Kolkata').format('DD/MM/YYYY')}`;
             taskUsersGroup?.map((userGroup: any) => {
                 let teamsTaskBody: any = [];
                 if (userGroup.Title == "Junior Developer Team" || userGroup.Title == "Senior Developer Team" ||  userGroup.Title == "Mobile Team" || userGroup.Title == "Design Team" || userGroup.Title == "QA Team" || userGroup.Title == "Smalsus Lead Team" || userGroup.Title == "Business Analyst" || userGroup.Title == "Trainees") {
@@ -2259,7 +2259,7 @@ const TaskDashboard = (props: any) => {
 
                         {/* <label className='f-16 fw-semibold'>{`Shareweb Tasks - ${sharewebTasks?.length}`}</label>
                         <label className='f-16 fw-semibold'>{`Shareweb Tasks - ${sharewebTasks?.length}`}</label> */}
-                        {currentView == 'AllImmediateTasks' || currentView == 'AllEmailTasks' || currentView == 'AllPriorityTasks' || currentView == 'approverTask' || currentView == 'AllBottleNeck' || currentView == 'AllSitesTask' || currentView == 'sharewebTasks' ? <article className="row">
+                        {currentView == 'AllImmediateTasks' || currentView == 'AllEmailTasks' || currentView == 'AllPriorityTasks' || currentView == 'assignedApproverTasks' || currentView == 'AllBottleNeck' || currentView == 'AllSitesTask' || currentView == 'sharewebTasks' ? <article className="row">
                             <div>
                                 <div>
                                     <label className='f-16 fw-semibold'>{` ${NameTop} - ${value?.length}`}</label>
