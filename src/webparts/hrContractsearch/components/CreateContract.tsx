@@ -43,8 +43,6 @@ const CreateContract = (props: any) => {
          
    }, [])
 
-  
-
    const loadContactDetails=async()=>{
       const web = new Web(siteUrl);
       await web.lists.getById(props.AllListId.HR_EMPLOYEE_DETAILS_LIST_ID).items.select("Id,Title,ItemType,FirstName,FullName,Company,JobTitle,Item_x0020_Cover,EmployeeID/Title,StaffID,EmployeeID/Id").expand("EmployeeID").orderBy("Created",true).get()
@@ -100,10 +98,6 @@ const CreateContract = (props: any) => {
              console.log(err.message);
           });
          }
-   const closeAddTaskTimepopup = () => {
-      setCreatePopup(false)
-      props.callback()
-   }
 
    const onRenderSelectEmp =()=>{
       return (
@@ -153,6 +147,7 @@ const CreateContract = (props: any) => {
    const closeContractTypePopup=()=>{
       setContractType(false)
    }
+
    const createEmp = async () => {
       var contractNumber:any;
       var contractId:any;
@@ -222,21 +217,19 @@ const CreateContract = (props: any) => {
                contractNumber:contractNumber,
                ContractId:contractId 
               
-              }
-        )
+              })
        .then((res:any)=>{
          console.log(res);
          closeAddEmp()
          ResData = res.data
-          setOpenEditPopup(true)
-        
-         //props.closeContracts(res.data)
-         
+         setCreatePopup(false)
+         setOpenEditPopup(true)
        })
        .catch((err) => {
          console.log(err.message);
         });
-        }
+   }
+
    
     const saveContractType=(checkitem:any,type:any)=>{
       closeAddEmp()
@@ -264,11 +257,6 @@ const CreateContract = (props: any) => {
        }
       
      }
-     const callback=()=>{
-      setOpenEditPopup(false)
-      props.callback();
-     
-     }
      const ClosePopup = React.useCallback(() => {
       setCreateContactStatus(false);
     
@@ -280,7 +268,7 @@ const CreateContract = (props: any) => {
             type={PanelType.custom}
             customWidth={'750px'}
             isOpen={createPopup}
-            onDismiss={closeAddTaskTimepopup}
+            onDismiss={() => setCreatePopup(false)}
             isBlocking={false}
          >
             <div>
@@ -295,7 +283,7 @@ const CreateContract = (props: any) => {
                      <div className="input-group">
                         <label className="form-label full-width">Employee Name</label>
                         <input type="text" className="form-control" aria-label="Small" aria-describedby="inputGroup-sizing-sm" value={postData?.selectEmp}/>
-                        <span className="input-group-text" title="Status Popup"><span title="Edit Task" className="svg__iconbox svg__icon--editBox" onClick={()=>openAddEmployeePopup()}></span></span>
+                        {props.pageName !== "Recruiting-Tool" && <span className="input-group-text" title="Status Popup"><span title="Edit Task" className="svg__iconbox svg__icon--editBox" onClick={()=>openAddEmployeePopup()}></span></span>}
                      </div>
                   </div>
                   <div className="col-sm-4">
@@ -310,7 +298,7 @@ const CreateContract = (props: any) => {
                         <div className="col-sm-12 text-end mt-2">
                            {disabled == false && <button type="button" className="btn btn-primary ms-2" onClick={()=>setCreateContactStatus(true)}>Add New Employee</button>}
                            <button type="button" className="btn btn-primary ms-2" onClick={()=>createEmp()}>Create</button>
-                           <button type="button" className="btn btn-default ms-2" onClick={()=>closeAddTaskTimepopup()}>Cancel</button>
+                           <button type="button" className="btn btn-default ms-2" onClick={()=>setCreatePopup(false)}>Cancel</button>
                         </div>
                      </div>
                   </footer>
@@ -346,7 +334,7 @@ const CreateContract = (props: any) => {
          } </div>
            <footer>
                         <div className="col-sm-12 text-end">
-                           <button type="button" className="btn btn-primary ms-2" onClick={()=>saveContractType(postData.contractTypeItem,"contact")}>save</button>
+                           <button type="button" className="btn btn-primary ms-2" onClick={()=>saveContractType(postData.contractTypeItem,"contact")}>Save</button>
                            <button type="button" className="btn btn-default ms-2" onClick={()=>closeAddEmp()}>Cancel</button>
                         </div>
                   </footer>
@@ -382,7 +370,7 @@ const CreateContract = (props: any) => {
         </div>  
         <footer>
                         <div className="col-sm-12 text-end">
-                           <button type="button" className="btn btn-primary ms-2" onClick={()=>saveContractType(postData.contractTypeItem,"contract")}>save</button>
+                           <button type="button" className="btn btn-primary ms-2" onClick={()=>saveContractType(postData.contractTypeItem,"contract")}>Save</button>
                            <button type="button" className="btn btn-default ms-2" onClick={()=>closeContractTypePopup()}>Cancel</button>
                         </div>
                   </footer>
@@ -390,8 +378,7 @@ const CreateContract = (props: any) => {
       
 
          </Panel>
-
-         {openEditPopup && <EditContractPopup props={ResData} AllListId={props.AllListId} callback={callback} pageName={props?.pageName}></EditContractPopup>}
+         {openEditPopup && <EditContractPopup openPopup={openEditPopup} closePopup={() => setOpenEditPopup(false)} props={ResData} AllListId={props.AllListId} callback={() => props.callBack()} pageName={props?.pageName}></EditContractPopup>}
          {CreateContactStatus ? <CreateContactComponent callBack={ClosePopup}data={allContactData}/> : null}
       </>
    )

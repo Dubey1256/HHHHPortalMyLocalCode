@@ -31,12 +31,12 @@ export const docxUint8Array = async () => {
     return result
 }
 export const SendTeamMessage = async (mention_To: any, txtComment: any, Context: any) => {
-    let currentUser:any={}
+    let currentUser: any = {}
     try {
         let pageContent = await pageContext()
         let web = new Web(pageContent?.WebFullUrl);
         //let currentUser = await web.currentUser?.get()
-         currentUser.Email =  Context.pageContext._legacyPageContext.userPrincipalName
+        currentUser.Email = Context.pageContext._legacyPageContext.userPrincipalName
         // if (currentUser) {
         //     if (currentUser.Email?.length > 0) {
         //     } else {
@@ -1818,8 +1818,8 @@ export const GetServiceAndComponentAllData = async (Props: any) => {
         AllMasterTaskData = await web.lists
             .getById(Props.MasterTaskListID)
             .items
-            .select("ID", "Id", "Title", "PortfolioLevel","FeatureType/Title","FeatureType/Id", "PortfolioStructureID", "Comments", "ItemRank", "Portfolio_x0020_Type", "Parent/Id", "Parent/Title", "DueDate", "Created", "Body", "SiteCompositionSettings", "Sitestagging", "Item_x0020_Type", "Categories", "Short_x0020_Description_x0020_On", "PriorityRank", "Priority", "AssignedTo/Title", "TeamMembers/Id", "TeamMembers/Title", "ClientCategory/Id", "ClientCategory/Title", "PercentComplete", "ResponsibleTeam/Id", "Author/Id", "Author/Title", "ResponsibleTeam/Title", "PortfolioType/Id", "PortfolioType/Color", "PortfolioType/IdRange", "PortfolioType/Title", "AssignedTo/Id")
-            .expand("Parent", "PortfolioType", "FeatureType","AssignedTo", "Author", "ClientCategory", "TeamMembers", "ResponsibleTeam")
+            .select("ID", "Id", "Title", "PortfolioLevel", "FeatureType/Title", "FeatureType/Id", "PortfolioStructureID", "Comments", "ItemRank", "Portfolio_x0020_Type", "Parent/Id", "Parent/Title", "DueDate", "Created", "Body", "SiteCompositionSettings", "Sitestagging", "Item_x0020_Type", "Categories", "Short_x0020_Description_x0020_On", "PriorityRank", "Priority", "AssignedTo/Title", "TeamMembers/Id", "TeamMembers/Title", "ClientCategory/Id", "ClientCategory/Title", "PercentComplete", "ResponsibleTeam/Id", "Author/Id", "Author/Title", "ResponsibleTeam/Title", "PortfolioType/Id", "PortfolioType/Color", "PortfolioType/IdRange", "PortfolioType/Title", "AssignedTo/Id")
+            .expand("Parent", "PortfolioType", "FeatureType", "AssignedTo", "Author", "ClientCategory", "TeamMembers", "ResponsibleTeam")
             .getAll();
 
         // console.log("all Service and Coponent data form global Call=======", AllMasterTaskData);
@@ -1883,9 +1883,9 @@ export const GetServiceAndComponentAllData = async (Props: any) => {
                 result.SiteIconTitle = result?.Item_x0020_Type?.charAt(0);
             }
             result.FeatureTypeTitle = ''
-            if(result?.FeatureType?.Id!=undefined){
+            if (result?.FeatureType?.Id != undefined) {
                 result.FeatureTypeTitle = result?.FeatureType?.Title
-            }   
+            }
 
 
             result.descriptionsSearch = '';
@@ -2383,15 +2383,23 @@ export const deepCopy = (obj: any, originalReferences = new WeakMap()) => {
     return copy;
 }
 
-export const openUsersDashboard = (siteUrl ?:any|undefined,AssignedUserId?:any|undefined, AssignedUserTitle?:any|undefined,AllTaskUsers?:any|undefined) =>{
-    let AssignedToUserId:any=AssignedUserId
-      if(AllTaskUsers?.length>0){
-          let AssignToUserDetail=AllTaskUsers?.find((user:any)=>user?.AssingedToUser?.Title===AssignedUserTitle )
-          AssignedToUserId= AssignToUserDetail?.AssingedToUser?.Id
-      }
-      if(AssignedToUserId!=undefined){
-          window?.open(`${siteUrl}/SitePages/TaskDashboard.aspx?UserId=${AssignedToUserId}`,'_blank')
-      }else{
-          window?.open(`${siteUrl}/SitePages/TaskDashboard.aspx`,'_blank')
-      }
-  }
+export const openUsersDashboard = (siteUrl?: any | undefined, AssignedUserId?: any | undefined, AssignedUserTitle?: any | undefined, AllTaskUsers?: any | undefined) => {
+    let AssignedToUserId: any = AssignedUserId
+    if (AllTaskUsers?.length > 0) {
+        let AssignToUserDetail = AllTaskUsers?.find((user: any) => user?.AssingedToUser?.Title === AssignedUserTitle)
+        AssignedToUserId = AssignToUserDetail?.AssingedToUser?.Id
+    }
+    if (AssignedToUserId != undefined) {
+        window?.open(`${siteUrl}/SitePages/TaskDashboard.aspx?UserId=${AssignedToUserId}`, '_blank')
+    } else {
+        window?.open(`${siteUrl}/SitePages/TaskDashboard.aspx`, '_blank')
+    }
+}
+
+
+//   use csae for openUsersDashboard function
+// if have the AssignedUserId
+// 1. openUsersDashboard(siteUrl:"Https....................", AssignedUserId:Number )
+
+// if don't have the AssignedUserId
+// 1. openUsersDashboard(siteUrl:"Https....................", AssignedUserId:Undefined,  AssignedUserTitle:"UserName", AllTaskUsers=[alltaskuserData])
