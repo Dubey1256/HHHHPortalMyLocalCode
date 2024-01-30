@@ -204,11 +204,12 @@ const Header = () => {
             </span>
           </div>
         </div>
-        {DashboardConfig.map((items: any, index: any) => (
-          items?.TileName && (
-            activeTile === items?.TileName && <div><TaskStatusTbl activeTile={activeTile} /></div>
-          )
-        ))}
+        {
+          DashboardConfig?.length > 0 && <div><TaskStatusTbl activeTile={activeTile} /></div>
+        }
+        {/* {DashboardConfig.map((items: any, index: any) => (
+          activeTile === items?.TileName && <div><TaskStatusTbl activeTile={activeTile} /></div>
+        ))} */}
       </section>
       <span>
         {IsOpenTimeSheetPopup == true && <EmployeePieChart IsOpenTimeSheetPopup={IsOpenTimeSheetPopup} Call={() => { CallBack() }} />}
