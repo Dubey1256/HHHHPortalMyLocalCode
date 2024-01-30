@@ -3,7 +3,7 @@ import { Dropdown, Panel, PanelType } from 'office-ui-fabric-react';
 import { Web } from "sp-pnp-js";
 import { Col, Row } from "react-bootstrap";
 import Tooltip from "./Tooltip";
-let portfolioColor: any = '#057BD0';
+let portfolioColor: any = '#000066';
 const AddConfiguration = (props: any) => {
     let defaultConfig = { "WebpartTitle": '', "TileName": '', "ShowWebpart": '', "WebpartPosition": { "Row": 0, "Column": 0 }, "GroupByView": '', "Id": 1, "AdditonalHeader": false, "smartFevId": '' }
     const [NewItem, setNewItem]: any = React.useState<any>([defaultConfig]);
@@ -152,7 +152,7 @@ const AddConfiguration = (props: any) => {
                 isBlocking={false}
                 type={PanelType.medium}>
                 <div className='border container modal-body p-1 mb-1'>
-                    <Row className="Metadatapannel p-2 mb-2">
+                    <Row className="Metadatapannel p-2">
                         <Col sm="12" md="12" lg="12">
                             <label className='form-label full-width'>Dashboard Title</label>
                             <input className='form-control' type='text' placeholder="Dashboard Title" value={DashboardTitle} onChange={(e) => setDashboardTitle(e.target.value)} />
@@ -267,7 +267,7 @@ const AddConfiguration = (props: any) => {
                         </Col>
                     </Row>
                 </div>
-                <div className='mb-5'><a className="pull-right empCol hreflink" onClick={(e) => AddMorewebpart()}> +Add More </a></div>
+                <div className='mb-5'><a className="pull-right  hreflink" onClick={(e) => AddMorewebpart()}> +Add More </a></div>
                 <div className='modal-footer mt-2'>
                     <button className="btn btn-primary ms-1" onClick={SaveConfigPopup} disabled={DashboardTitle == '' || IsCheck == false}>Save</button>
                     <button className='btn btn-default ms-1' onClick={CloseConfiguationPopup}>Cancel</button>

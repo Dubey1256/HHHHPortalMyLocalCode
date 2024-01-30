@@ -1434,7 +1434,7 @@ const MeetingProfile = (props: any) => {
           <section>
             <div className='row'>
               <section className='col-sm-12 ps-0 Alltable'>
-                {resultData?.Sitestagging?.length > 0 && <MettingTable data={resultData.Sitestagging} AllListId={AllListId} />}
+                {resultData?.Sitestagging?.length > 0 && <MettingTable data={resultData.Sitestagging} AllListId={AllListId} MasterTaskListData={resultData}/>}
               </section></div>
 
 

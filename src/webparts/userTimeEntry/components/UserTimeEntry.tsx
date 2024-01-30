@@ -2130,7 +2130,7 @@ export default class UserTimeEntry extends React.Component<IUserTimeEntryProps, 
         size: 90,
         cell: (info: any) => <>
           <span className="d-flex">
-            <ReactPopperTooltipSingleLevel  AllListId={AllListId} ShareWebId={info?.row?.original?.DisplayTaskId} row={info?.row?.original} singleLevel={true} masterTaskData={AllPortfolios} AllSitesTaskData={AllSitesAllTasks} />
+            <ReactPopperTooltipSingleLevel AllListId={AllListId} ShareWebId={info?.row?.original?.DisplayTaskId} row={info?.row?.original} singleLevel={true} masterTaskData={AllPortfolios} AllSitesTaskData={AllSitesAllTasks} />
           </span>
         </>
       },
@@ -2497,7 +2497,7 @@ export default class UserTimeEntry extends React.Component<IUserTimeEntryProps, 
                     <label>Select All </label>
                   </span>
                   <summary><span className='fw-semibold f-15 fw-semibold'>Team members</span></summary>
-                  <hr style={{width:"98%", marginLeft:"30px"}}></hr>  
+                  <hr style={{ width: "98%", marginLeft: "30px" }}></hr>
                   <div style={{ display: "block" }}>
                     <div className="taskTeamBox ps-30 my-2">
                       {this.state.taskUsers != null && this.state.taskUsers.length > 0 && this.state.taskUsers.map((users: any, i: number) => {
@@ -2535,7 +2535,7 @@ export default class UserTimeEntry extends React.Component<IUserTimeEntryProps, 
                 </details>
                 <details className='m-0' open>
                   <summary><span className='fw-semibold f-15 fw-semibold'> Date</span> </summary>
-                  <hr style={{width:"98%", marginLeft:"30px"}}></hr>
+                  <hr style={{ width: "98%", marginLeft: "30px" }}></hr>
                   <Row className="ps-30 my-2">
                     <div>
                       <div className="col TimeReportDays">
@@ -2656,7 +2656,7 @@ export default class UserTimeEntry extends React.Component<IUserTimeEntryProps, 
                           }
                         </span>
                       </summary>
-                      <hr style={{width:"98%", marginLeft:"30px"}}></hr>  
+                      <hr style={{ width: "98%", marginLeft: "30px" }}></hr>
                       <div className="togglecontent my-2" style={{ display: "block", paddingLeft: "24px" }}>
                         <div className="smartSearch-Filter-Section">
                           <table width="100%" className="indicator_search">
@@ -2667,50 +2667,50 @@ export default class UserTimeEntry extends React.Component<IUserTimeEntryProps, 
                                 <td valign="top">
                                   <div className='row'>
                                     <div className='col-md-4'>
-                                    <div className='col-md-10'>
-                                      <label className='border-bottom full-width pb-1'>
-                                        <input id='chkAllCategory' defaultChecked={this.state.checkedAll} onClick={(e) => this.SelectAllCategories(e)} type="checkbox" className="form-check-input me-1" />
-                                        Client Category
-                                      </label>
-                                      <div className="custom-checkbox-tree">
-                                        <CheckboxTree
-                                          nodes={this.state.filterItems}
-                                          checked={this.state.checked}
-                                          expanded={this.state.expanded}
-                                          onCheck={checked => this.setState({ checked })}
-                                          onExpand={expanded => this.ExpandClientCategory(expanded)}
-                                          nativeCheckboxes={true}
-                                          showNodeIcon={false}
-                                          checkModel={'all'}
-                                          icons={{ expandOpen: <SlArrowDown />, expandClose: <SlArrowRight />, parentClose: null, parentOpen: null, leaf: null, }}
-                                        />
-                                      </div></div>
+                                      <div className='col-md-10'>
+                                        <label className='border-bottom full-width pb-1'>
+                                          <input id='chkAllCategory' defaultChecked={this.state.checkedAll} onClick={(e) => this.SelectAllCategories(e)} type="checkbox" className="form-check-input me-1" />
+                                          Client Category
+                                        </label>
+                                        <div className="custom-checkbox-tree">
+                                          <CheckboxTree
+                                            nodes={this.state.filterItems}
+                                            checked={this.state.checked}
+                                            expanded={this.state.expanded}
+                                            onCheck={checked => this.setState({ checked })}
+                                            onExpand={expanded => this.ExpandClientCategory(expanded)}
+                                            nativeCheckboxes={true}
+                                            showNodeIcon={false}
+                                            checkModel={'all'}
+                                            icons={{ expandOpen: <SlArrowDown />, expandClose: <SlArrowRight />, parentClose: null, parentOpen: null, leaf: null, }}
+                                          />
+                                        </div></div>
                                     </div>
                                     <div className='col-md-4'>
-                                    <div className='col-md-10'>
-                                      <label className='border-bottom full-width pb-1'>
-                                        <input type="checkbox" id='chkAllSites' defaultChecked={this.state.checkedAllSites} onClick={(e) => this.SelectAllSits(e)} className="form-check-input me-1" />
-                                        Sites
-                                      </label>
-                                      <div className="custom-checkbox-tree">
-                                        <CheckboxTree
-                                          nodes={this.state.filterSites}
-                                          checked={this.state.checkedSites}
-                                          expanded={this.state.expandedSites}
-                                          onCheck={checkedSites => this.setState({ checkedSites })}
-                                          onExpand={expandedSites => this.ExpandSite(expandedSites)}
-                                          nativeCheckboxes={true}
-                                          showNodeIcon={false}
-                                          checkModel={'all'}
-                                          icons={{
-                                            expandOpen: <SlArrowDown />,
-                                            expandClose: <SlArrowRight />,
-                                            parentClose: null,
-                                            parentOpen: null,
-                                            leaf: null,
-                                          }}
-                                        />
-                                      </div>
+                                      <div className='col-md-10'>
+                                        <label className='border-bottom full-width pb-1'>
+                                          <input type="checkbox" id='chkAllSites' defaultChecked={this.state.checkedAllSites} onClick={(e) => this.SelectAllSits(e)} className="form-check-input me-1" />
+                                          Sites
+                                        </label>
+                                        <div className="custom-checkbox-tree">
+                                          <CheckboxTree
+                                            nodes={this.state.filterSites}
+                                            checked={this.state.checkedSites}
+                                            expanded={this.state.expandedSites}
+                                            onCheck={checkedSites => this.setState({ checkedSites })}
+                                            onExpand={expandedSites => this.ExpandSite(expandedSites)}
+                                            nativeCheckboxes={true}
+                                            showNodeIcon={false}
+                                            checkModel={'all'}
+                                            icons={{
+                                              expandOpen: <SlArrowDown />,
+                                              expandClose: <SlArrowRight />,
+                                              parentClose: null,
+                                              parentOpen: null,
+                                              leaf: null,
+                                            }}
+                                          />
+                                        </div>
                                       </div>
                                     </div>
                                   </div>
@@ -2720,18 +2720,18 @@ export default class UserTimeEntry extends React.Component<IUserTimeEntryProps, 
                             </tbody>
                           </table>
                         </div>
-                       
+
                       </div>
                     </details>
                   </div>
                 </div>
                 <div className="col text-end mb-2">
-                    <button type="button" className="btnCol btn btn-primary me-1" onClick={(e) => this.LoadAllTimeSheetaData()}>
-                        Update Filters
-                    </button>
-                    <button type="button" className="btn btn-default me-1" onClick={() => this.ClearFilters()}>
-                        Clear Filters
-                    </button>
+                  <button type="button" className="btnCol btn btn-primary me-1" onClick={(e) => this.LoadAllTimeSheetaData()}>
+                    Update Filters
+                  </button>
+                  <button type="button" className="btn btn-default me-1" onClick={() => this.ClearFilters()}>
+                    Clear Filters
+                  </button>
                 </div>
               </Col>
             </Col>
