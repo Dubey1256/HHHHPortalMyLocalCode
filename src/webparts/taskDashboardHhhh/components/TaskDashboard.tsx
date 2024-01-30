@@ -338,6 +338,8 @@ const TaskDashboard = (props: any) => {
         const allTimeCategoryTime = timesheetDistribution.reduce((totals, start) => {
             const startDate = getStartingDate(start);
             const startDateMidnight = new Date(startDate.setHours(0, 0, 0, 0));
+            const endDate = getEndingDate(start);
+            const endDateMidnight = new Date(endDate.setHours(0, 0, 0, 0));
 
             const total = AllTaskTimeEntries?.reduce((acc: any, timeEntry: any) => {
                 if (timeEntry?.AdditionalTimeEntry) {
@@ -348,8 +350,9 @@ const TaskDashboard = (props: any) => {
                         const timeFillDate = new Date(+year, +month - 1, +day);
 
                         if (
-                            filledTime?.AuthorId === currentUserId &&
-                            timeFillDate.getTime() === startDateMidnight.getTime() &&
+                            filledTime?.AuthorId == currentUserId &&
+                            timeFillDate >= startDateMidnight &&
+                            timeFillDate <= endDateMidnight &&
                             timeEntry.taskDetails[0]
                         ) {
                             return taskAcc + parseFloat(filledTime.TaskTime);
@@ -1604,6 +1607,7 @@ const TaskDashboard = (props: any) => {
 
         let currentLoginUser = currentUserData?.Title;
         let CurrentUserSpace = currentLoginUser.replace(' ', '%20');
+        let currentDate = Moment(new Date()).format("DD/MM/YYYY")
         let body: any = '';
         let text = '';
         let to: any = [];
@@ -1683,77 +1687,73 @@ const TaskDashboard = (props: any) => {
             body = body.replaceAll('>,<', '><').replaceAll(',', '')
         }
         if (input == 'today time entries') {
-            var subject = currentLoginUser + `- ${selectedTimeReport} Time Entries`;
-            let timeSheetData = currentUserTimeEntryCalculation();
-            weeklyTimeReport.map((item: any) => {
-                if (item?.Categories == undefined || item.Categories == '')
-                    item.Categories = '';
-
-                text =
-                    '<tr>'
-                    + '<td style="line-height:18px;font-size:13px;padding:15px;;">' + item?.siteType + '</td>'
-                    + '<td style="line-height:18px;font-size:13px;padding:15px;;">' + item?.TaskID + '</td>'
-                    + '<td style="line-height:18px;font-size:13px;padding:15px;;">' + '<p style="margin-top:0px; margin-bottom:2px;font-size:14px; color:#333;">' + '<a href =' + item?.siteUrl + '/SitePages/Task-Profile.aspx?taskId=' + item?.Id + '&Site=' + item?.siteType + '><span style="font-size:13px; font-weight:600">' + item?.Title + '</span></a>' + '</p>' + '</td>'
-                    + '<td style="line-height:18px;font-size:13px;padding:15px;">' + item?.TaskTime + '</td>'
-                    + '<td style="line-height:18px;font-size:13px;padding:15px;">' + item?.Description + '</td>'
-                body1.push(text);
-
-            });
-            body =
-                `<table width="100%" align="center" cellpadding="0" cellspacing="0" style="border:1px solid #eee">
-            <thead>
-            <tr>
-            <th colspan="3" bgcolor="#eee" style="font-size:22px; padding:10px;"> Time report </th> 
-            </tr>
-            <tr>
-            <th colspan="3" align="center" valign="middle" style="font-size:18px; padding:10px;">
-            <p style="margin-top:0px; margin-bottom:5px">${currentLoginUser}</p>
-            </th>
-            </tr>
-            </thead>
-            <tbody style="border:1px solid #eee;">
-            <tr>
-            <th height="20" align="center" valign="middle" style="font-size:15px ; border-right:1px solid #eee; border-top: 1px solid #eee; padding: 5px 0px 0px 0px;">Today</th>
-            <th height="20" align="center" valign="middle" style="font-size:15px ; border-right:1px solid #eee; border-top: 1px solid #eee; padding: 5px 0px 0px 0px;">This week</th>
-            <th height="20" align="center" valign="middle" style="font-size:15px ; border-right:1px solid #eee; border-top: 1px solid #eee; padding: 5px 0px 0px 0px;">This Month</th>
-            </tr>
-            <tr>
-            <th height="20" align="center" valign="middle" style="font-size:14px ; border-right:1px solid #eee;padding: 0px 0px 5px 0px;">${timeSheetData.today} Hour</th>
-            <th height="20" align="center" valign="middle" style="font-size:14px ; border-right:1px solid #eee;padding: 0px 0px 5px 0px;">${timeSheetData.thisWeek} Hour</th>
-            <th height="20" align="center" valign="middle" style="font-size:14px ; border-right:1px solid #eee;padding: 0px 0px 5px 0px;">${timeSheetData.thisMonth} Hour</th>
-            </tr>
-            </tbody>
-            </table> `
-                + '<table style="border: 1px solid #ccc; margin-top:5px;" border="0" cellspacing="0" cellpadding="0" width="100%">'
-                + '<thead>'
-                + '<tr>'
-                + '<th align="left"  bgcolor="#f5f5f5" style="line-height:18px;font-size:15px;padding:15px;width:5%">'
-                + 'Site'
-                + '</th>'
-                + '<th align="left" style="line-height:18px;font-size:15px;padding:15px;width:10%" bgcolor="#f5f5f5">'
-                + 'Task ID'
-                + '</th>'
-                + '<th align="left" style="line-height:18px;font-size:15px;padding:15px;width:40%" bgcolor="#f5f5f5">'
-                + 'Title'
-                + '</th>'
-                + '<th align="left" style="line-height:18px;font-size:15px;padding:15px;width:5%" bgcolor="#f5f5f5">'
-                + 'Time'
-                + '</th>'
-                + '<th align="left" style="line-height:18px;font-size:15px;padding:15px;width:40%" bgcolor="#f5f5f5">'
-                + 'Description'
-                + '</th>'
-                + '</tr>'
-                + '</thead>'
-                + '<tbody>'
-                + '<tr>'
-                + body1
-                + '</tr>'
-                + '</tbody>'
-                + '</table>'
-                + '<p>' + '<a href =' + `${AllListId?.siteUrl}/SitePages/UserTimeEntry.aspx?userId=${currentUserId}` + '>Click here to open the Complete time entry' + '</a>' + '</p>'
-                + '<p>' + '<a href =' + `${AllListId?.siteUrl}/SitePages/TaskDashboard.aspx?UserId=` + currentUserId + '>' + 'Click here to open Task Dashboard of ' + currentLoginUser + '</a>' + '</p>'
-            body = body.replaceAll('>,<', '><').replaceAll(',', '')
-        }
+            // var subject = currentLoginUser + `- ${selectedTimeReport} Time Entries`;
+             let timeSheetData:any = currentUserTimeEntryCalculation();
+ 
+             var updatedCategoryTime:any = {};
+             for (const key in timeSheetData) {
+                 if (timeSheetData.hasOwnProperty(key)) {
+                   let newKey = key;
+               
+                   // Replace 'this month' with 'thisMonth'
+                   newKey = newKey.replace('this month', 'thisMonth');
+                   
+                   // Replace 'this week' with 'thisWeek'
+                   newKey = newKey.replace('this week', 'thisWeek');
+               
+                   updatedCategoryTime[newKey] = timeSheetData[key];
+                 }
+               }
+               var subject = "Daily Timesheet - " + currentLoginUser +  currentDate  +  '-' + (updatedCategoryTime.today) +'hours'
+             weeklyTimeReport.map((item: any) => {
+                 
+                     
+                     text =
+                     '<tr>' +
+                     '<td style="line-height:24px;font-size:13px;padding:15px;text-align:center">' + item?.siteType + '</td>'
+                     + '<td style="line-height:24px;font-size:13px;padding:15px;text-align:center">' + '<a href =' + item.siteUrl + '/SitePages/Project-Management.aspx?ProjectId=' + item.Project?.Id + '><span style="font-size:13px; font-weight:600">'+  (item?.Project == undefined?'':item?.Project.Title) + '</span></a>' + '</p>' +  '</td>'
+                     + '<td style="line-height:24px;font-size:13px;padding:15px;text-align:center">' + '<p style="margin-top:0px; margin-bottom:2px;font-size:14px; color:#333;">' + '<a href =' + item.siteUrl + '/SitePages/Portfolio-Profile..aspx?taskId=' + item?.Portfolio?.Id +'><span style="font-size:13px; font-weight:600">'+ (item.Portfolio == undefined?'':item.Portfolio.Title) +'</span></a>' + '</p>' + '</td>'
+                     + '<td style="line-height:24px;font-size:13px;padding:15px;text-align:center">' + '<p style="margin-top:0px; margin-bottom:2px;font-size:14px; color:#333;">' + '<a href =' + item.siteUrl + '/SitePages/Task-Profile.aspx?taskId=' + item.Id + '&Site=' + item.siteType + '><span style="font-size:13px; font-weight:600">' + item.Title + '</span></a>' + '</p>' + '</td>'
+                     + '<td style="line-height:24px;font-size:13px;padding:15px;text-align:center">' + item?.TaskTime + '</td>'
+                     + '<td style="line-height:24px;font-size:13px;padding:15px;text-align:center">' + item?.Description + '</td>'
+                     + '<td style="line-height:24px;font-size:13px;padding:15px;text-align:center">' + (item?.SmartPriority !== undefined ? item?.SmartPriority : '')+ '</td>'
+                     + '<td style="line-height:24px;font-size:13px;padding:15px;text-align:center">' + (item?.ClientCategory == undefined || item?.ClientCategory.length == 0?'':item?.ClientCategory.Title) + '</td>'
+                    
+                 body1.push(text);
+ 
+             });
+             body =
+                 `<table width="100%" align="center" cellpadding="0" cellspacing="0" border="0">
+             <thead>
+             <tr valign="middle" style="font-size:15px;"><td style="font-weight:600; padding: 5px 0px;width: 210px;">Username: </td><td style="padding: 5px 0px;"> <a style="text-decoration:none;" href='${AllListId?.siteUrl}/SitePages/TaskDashboard.aspx?UserId=${currentUserId}'>${currentLoginUser}</a></td></tr>
+             <tr valign="middle" style="font-size:15px;"><td style="font-weight:600; padding: 5px 0px;width: 210px;">Total hours today :</td><td style="padding: 5px 0px;">${updatedCategoryTime.today} Hours</td></tr>
+             <tr valign="middle" style="font-size:15px;"><td style="font-weight:600; padding: 5px 0px;width: 210px;">Total hours this week :</td><td style="padding: 5px 0px;">${updatedCategoryTime.thisWeek} Hours</td></tr>
+             <tr valign="middle" style="font-size:15px;"><td style="font-weight:600;padding: 5px 0px;width: 210px;">Total hours this month :</td><td style="padding: 5px 0px;">${updatedCategoryTime.thisMonth} Hours</td></tr>
+             <tr valign="middle" style="font-size:15px;"><td colspan="2" style="padding: 5px 0px;"><a style="text-decoration:none;" href ='${AllListId?.siteUrl}/SitePages/UserTimeEntry.aspx?userId=${currentUserId}'>Click here to open Online-Timesheet</a></td></tr>
+             </thead>
+             </table> `
+                 + '<table style="margin-top:20px;" cellspacing="0" cellpadding="0" width="100%" border="1">'
+                 + '<thead>'
+                 + '<tr>'
+                     + '<th style="line-height:24px;font-size:15px;padding:10px;border:1px solid #ccc;border-right:0px;" bgcolor="#f5f5f5">' + 'Site' + '</th>'
+                     + '<th style="line-height:24px;font-size:15px;padding:10px;border:1px solid #ccc;border-right:0px;" bgcolor="#f5f5f5">' + 'Project Title' + '</th>'
+                     + '<th style="line-height:24px;font-size:15px;padding:10px;border:1px solid #ccc;border-right:0px;" bgcolor="#f5f5f5">' + 'Component' + '</th>'
+                     + '<th style="line-height:24px;font-size:15px;padding:10px;border:1px solid #ccc;border-right:0px;" bgcolor="#f5f5f5">' + 'Task Name' + '</th>'
+                     + '<th style="line-height:24px;font-size:15px;padding:10px;border:1px solid #ccc;border-right:0px;" bgcolor="#f5f5f5">' + 'Time' + '</th>'
+                     + '<th style="line-height:24px;font-size:15px;padding:10px;border:1px solid #ccc;border-right:0px;" bgcolor="#f5f5f5">' + 'Time Entry Description' + '</th>'
+                     + '<th style="line-height:24px;font-size:15px;padding:10px;border:1px solid #ccc;border-right:0px;" bgcolor="#f5f5f5">' + 'Smart Priority' + '</th>'
+                     + '<th style="line-height:24px;font-size:15px;padding:10px;border:1px solid #ccc;" bgcolor="#f5f5f5">' + 'Client Category' + '</th>'
+                     + '</tr>'
+                 + '</thead>'
+                 + '<tbody>'
+                 + '<tr>'
+                 + body1
+                 + '</tr>'
+                 + '</tbody>'
+                 + '</table>'
+                 
+             body = body.replaceAll('>,<', '><').replaceAll(',', '')
+         }
 
 
 
