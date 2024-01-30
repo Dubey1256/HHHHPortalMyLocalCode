@@ -1,4 +1,4 @@
-import React, { } from "react";
+import React, { useEffect } from "react";
 import { myContextValue } from "../../../globalComponents/globalCommon";
 import ComingBirthday from "./comingBirthday";
 import MyNotes from "./MyNotes";
@@ -10,6 +10,7 @@ import GlobalCommanTable from "../../../globalComponents/GroupByReactTableCompon
 import ReactPopperTooltipSingleLevel from "../../../globalComponents/Hierarchy-Popper-tooltipSilgleLevel/Hierarchy-Popper-tooltipSingleLevel";
 import EmailComponenet from "../../taskprofile/components/emailComponent";
 import ManageConfigPopup from "../../../globalComponents/ManageConfigPopup";
+let Count = 0;
 let DashboardConfig: any = [];
 let DashboardConfigCopy: any = [];
 let AllapprovalTask: any = [];
@@ -53,10 +54,14 @@ const TaskStatusTbl = (Tile: any) => {
     flagApproval = true
     setapprovalTask(AllapprovalTask)
   }
-  if (ContextData?.DashboardConfig != undefined && ContextData?.DashboardConfig?.length > 0) {
-    DashboardConfig = ContextData?.DashboardConfig;
-    DashboardConfigCopy = [...DashboardConfig]
-  }
+
+  useEffect(() => {
+    Count += 1
+    if (ContextData?.DashboardConfig != undefined && ContextData?.DashboardConfig?.length > 0) {
+      DashboardConfig = ContextData?.DashboardConfig;
+      DashboardConfigCopy = [...DashboardConfig]
+    }
+  }, []);
   const generateDynamicColumns = (item: any) => {
     return [{
       accessorKey: "",
@@ -98,7 +103,7 @@ const TaskStatusTbl = (Tile: any) => {
             rel='noopener noreferrer' data-interception="off" > {row?.original?.Title}
           </a>
           {row?.original?.descriptionsSearch != null && row?.original?.descriptionsSearch != "" && (
-         <span className="alignIcon"> <InfoIconsToolTip Discription={row?.original?.descriptionsSearch} row={row?.original} /></span>
+            <span className="alignIcon"> <InfoIconsToolTip Discription={row?.original?.descriptionsSearch} row={row?.original} /></span>
           )}
         </div>
       ),
@@ -338,12 +343,12 @@ const TaskStatusTbl = (Tile: any) => {
               </div>
             </section>}
             {config.IsMyNotes == true && config?.ShowWebpart == true && config?.GroupByView == undefined &&
-              <div className="empAllSec notesSec clearfix">
+              <div className="empAllSec notesSec shadow-sm clearfix">
                 <MyNotes config={config} IsShowConfigBtn={IsShowConfigBtn} />
               </div>
             }
             {config.IsUpcomingBday == true && config?.ShowWebpart == true && config?.GroupByView == undefined &&
-              <div className="empAllSec birthSec clearfix">
+              <div className="empAllSec birthSec shadow-sm clearfix">
                 <ComingBirthday config={config} IsShowConfigBtn={IsShowConfigBtn} />
               </div>
             }
@@ -365,7 +370,7 @@ const TaskStatusTbl = (Tile: any) => {
   };
   return (
     <div>
-      {Tile.activeTile && generateDashboard()}
+      {Tile.activeTile != undefined && generateDashboard()}     
       <span>
         {editPopup && <EditTaskPopup Items={result} context={ContextData?.propsValue?.Context} AllListId={AllListId} Call={() => { CallBack() }} />}
       </span>

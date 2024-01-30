@@ -39,13 +39,13 @@ const CreateContactComponent = (props: any) => {
     let updateCallBack = props.userUpdateFunction;
     const searchedName = async (e: any) => {
         setListIsVisible(true);
-        let Key: any = e.target.value.toLowerCase();
+        let Key: any = e.target.value;
         let subString = Key.split(" ");
         setSearchKey({ ...searchKey, Title: subString[0] + " " + subString[1] })
         setSearchKey({ ...searchKey, FirstName: subString })
         const data: any = {
             nodes: listData.filter((items: any) =>
-                items.FullName?.toLowerCase().includes(Key)
+                items.FullName?.toLowerCase().includes(Key?.toLowerCase())
             ),
         };
         setSearchedDataName(data.nodes);
@@ -183,6 +183,8 @@ const CreateContactComponent = (props: any) => {
                                 }).catch((error:any)=>{
                                     console.log(error)
                                 })
+                            }else{
+                                setNewContact(true)   
                             }
                           
                         }).catch((error: any) => {

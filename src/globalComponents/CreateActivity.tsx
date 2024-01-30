@@ -56,7 +56,7 @@ const CreateActivity = (props: any) => {
   const [selectedItem, setSelectedItem]: any = React.useState({});
   const [TaskAssignedTo, setTaskAssignedTo] = React.useState([]);
   const [TaskTeamMembers, setTaskTeamMembers] = React.useState([]);
-  const [selectPriority, setselectPriority] = React.useState("");
+  const [selectPriority, setselectPriority] = React.useState("4");
   const [SearchedCategoryData, setSearchedCategoryData] = React.useState([]);
   // const [ClientCategoriesData, setClientCategoriesData] = React.useState<any>(
   //     []
@@ -119,14 +119,14 @@ const CreateActivity = (props: any) => {
     }
     setSelectedItem(props?.selectedItem);
     let targetDiv: any = document?.querySelector(".ms-Panel-main");
-    if (props?.portfolioTypeData?.Color != undefined) {
+    if (props?.selectedItem?.PortfolioType?.Color != undefined) { //Changes Made by Robin
       setTimeout(() => {
         if (targetDiv) {
           // Change the --SiteBlue variable for elements under the targetDiv
           // $('.ms-Panel-main').css('--SiteBlue', props?.selectedItem?.PortfolioType?.Color);
           $(".ms-Panel-main").css(
             "--SiteBlue",
-            props?.portfolioTypeData?.Color
+            props?.selectedItem?.PortfolioType?.Color    //Changes Made by Robin
           );
         }
       }, 1000);
@@ -135,8 +135,8 @@ const CreateActivity = (props: any) => {
   React.useEffect(() => {
     setTimeout(() => {
       const panelMain: any = document.querySelector(".ms-Panel-main");
-      if (panelMain && props?.portfolioTypeData?.Color) {
-        $(".ms-Panel-main").css("--SiteBlue", props?.portfolioTypeData?.Color); // Set the desired color value here
+      if (panelMain && props?.selectedItem?.PortfolioType?.Color) { //Changes Made by Robin
+        $(".ms-Panel-main").css("--SiteBlue", props?.selectedItem?.PortfolioType?.Color); // Set the desired color value here   //Changes Made by Robin
       }
     }, 2000);
   }, [IsComponentPicker]);
@@ -1956,7 +1956,7 @@ const CreateActivity = (props: any) => {
           onDismiss={() => closePopup("item")}
           isBlocking={false}
           // hasCloseButton={true}
-          className={`${props?.portfolioTypeData?.Color} widthPanel`}
+          className={`${props?.selectedItem?.PortfolioType?.Color} widthPanel`} //Changes Made by Robin
         >
           <div>
             <>{onRenderMainHtml}</>

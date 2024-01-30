@@ -312,11 +312,11 @@ function TeamPortlioTable(SelectedProp: any) {
     };
 
     /// backGround Loade All Task Data /////
-    const LoadAllSiteTasksAllData = function () {
+    const LoadAllSiteTasksAllData = async function () {
         let AllSiteTasksDataBackGroundLoad: any = [];
         let Counter = 0;
         if (siteConfig != undefined && siteConfig.length > 0) {
-            map(siteConfig, async (config: any) => {
+            const fetchPromises = map(siteConfig, async (config: any) => {
                 let web = new Web(ContextValue.siteUrl);
                 let AllTasksMatches: any = [];
                 AllTasksMatches = await web.lists
@@ -534,6 +534,8 @@ function TeamPortlioTable(SelectedProp: any) {
                     }
                 }
             });
+            await Promise.all(fetchPromises)
+            return tasksDataLoadUpdate
         }
     };
     const smartTimeUseLocalStorage = (AllSiteTasksDataBackGroundLoad: any) => {
@@ -553,8 +555,6 @@ function TeamPortlioTable(SelectedProp: any) {
             return AllSiteTasksDataBackGroundLoad;
         }
     };
-
-
     // * page loade Task Data Only * ///////
     const LoadAllSiteTasks = function () {
         let AllTasksData: any = [];
@@ -757,6 +757,7 @@ function TeamPortlioTable(SelectedProp: any) {
                             AllTasksData.push(result);
                         });
                         setAllSiteTasksData(AllTasksData);
+                        countTaskAWTLevel(AllTasksData, '');
                         // let taskBackup = JSON.parse(JSON.stringify(AllTasksData));
                         // allTaskDataFlatLoadeViewBackup = JSON.parse(JSON.stringify(AllTasksData))
                         try {
@@ -987,7 +988,7 @@ function TeamPortlioTable(SelectedProp: any) {
         if (AllMetadata.length > 0 && portfolioTypeData.length > 0) {
             GetComponents();
             LoadAllSiteTasks();
-            LoadAllSiteTasksAllData();
+            // LoadAllSiteTasksAllData();
         }
     }, [AllMetadata.length > 0 && portfolioTypeData.length > 0])
 
@@ -1014,14 +1015,16 @@ function TeamPortlioTable(SelectedProp: any) {
                     }
                 })
             }
-            countAllTasksData = countAllTasksData?.filter((ele: any, ind: any, arr: any) => {
-                const isDuplicate = arr.findIndex((elem: any) => {
-                    return (elem.ID === ele.ID || elem.Id === ele.Id) && elem.siteType === ele.siteType;
-                }) !== ind
-                return !isDuplicate;
-            })
-            countTaskAWTLevel(countAllTasksData, '');
+            countTaskAWTLevel(allTaskDataFlatLoadeViewBackup, '');
+            // countAllTasksData = countAllTasksData?.filter((ele: any, ind: any, arr: any) => {
+            //     const isDuplicate = arr.findIndex((elem: any) => {
+            //         return (elem.ID === ele.ID || elem.Id === ele.Id) && elem.siteType === ele.siteType;
+            //     }) !== ind
+            //     return !isDuplicate;
+            // })
+            // countTaskAWTLevel(countAllTasksData, '');
             console.log("dataAllGrupingdataAllGrupingdataAllGrupingdataAllGruping ========", dataAllGruping);
+            setLoaded(true);
             rerender();
         }
     }
@@ -1328,6 +1331,7 @@ function TeamPortlioTable(SelectedProp: any) {
 
     const countTaskAWTLevel = (countTaskAWTLevel: any, afterFilter: any) => {
         if (countTaskAWTLevel.length > 0 && afterFilter !== true) {
+            taskTypeDataItem?.filter((taskLevelcount: any) => { taskLevelcount[taskLevelcount.Title + 'number'] = 0 });
             countTaskAWTLevel?.map((result: any) => {
                 taskTypeDataItem?.map((type: any) => {
                     if (result?.TaskType?.Title === type.Title) {
@@ -1376,6 +1380,12 @@ function TeamPortlioTable(SelectedProp: any) {
                 dataAllGrupingBackup = JSON.parse(JSON.stringify(dataAllGruping));
             } catch (error) {
                 console.log('Json parse error filterDataAfterUpdate function');
+            }
+        } else {
+            try {
+                dataAllGrupingBackup = JSON.parse(JSON.stringify(componentData));
+            } catch (error) {
+
             }
         }
         smartAllFilterData?.map((filterItem: any) => {
@@ -1970,19 +1980,14 @@ function TeamPortlioTable(SelectedProp: any) {
     };
     const onRenderCustomHeaderMain1 = () => {
         return (
-            <div className="d-flex full-width pb-1">
-                <div
-                    style={{
-                        marginRight: "auto",
-                        fontSize: "20px",
-                        fontWeight: "600",
-                        marginLeft: "20px",
-                    }}
-                >
-                    <span>{`Create Component `}</span>
+            <>
+                <div className="subheading alignCenter">
+                    <>
+                        {checkedList != null && checkedList != undefined && checkedList?.SiteIconTitle != undefined && checkedList?.SiteIconTitle != null ? <span className="Dyicons me-2" >{checkedList?.SiteIconTitle}</span> : ''} {`${checkedList != null && checkedList != undefined && checkedList?.Title != undefined && checkedList?.Title != null ? checkedList?.Title
+                            + '- Create Child Component' : 'Create Component'}`}</>
                 </div>
                 <Tooltip ComponentId={checkedList?.Id} />
-            </div>
+            </>
         );
     };
 
@@ -2285,18 +2290,6 @@ function TeamPortlioTable(SelectedProp: any) {
         setOpenCompareToolPopup(true);
     }
     /////end////////////
-
-
-    // React.useEffect(() => {
-    //     const checkbox: any = document.querySelector('input[type="checkbox"]');
-    //     checkbox.addEventListener('change', function () {
-    //         if (checkbox.indeterminate) {
-    //             checkbox.style.backgroundColor = '#ffcc00'; // Change this to your desired color
-    //         } else {
-    //             checkbox.style.backgroundColor = ''; // Reset the background color for checked/unchecked state
-    //         }
-    //     });
-    // }, [])
     //-------------------------------------------------------------End---------------------------------------------------------------------------------
 
 
@@ -2339,7 +2332,7 @@ function TeamPortlioTable(SelectedProp: any) {
                     </h2>
                 </div>
                 <div className="togglecontent mt-1">
-                    {filterCounters == true ? <TeamSmartFilter AllSiteTasksDataLoadAll={AllSiteTasksDataLoadAll} IsUpdated={IsUpdated} IsSmartfavorite={IsSmartfavorite} IsSmartfavoriteId={IsSmartfavoriteId} ProjectData={ProjectData} portfolioTypeData={portfolioTypeData} setLoaded={setLoaded} AllSiteTasksData={AllSiteTasksData} AllMasterTasksData={AllMasterTasksData} SelectedProp={SelectedProp.SelectedProp} ContextValue={ContextValue} smartFiltercallBackData={smartFiltercallBackData} portfolioColor={portfolioColor} /> : ''}
+                    {filterCounters == true ? <TeamSmartFilter LoadAllSiteTasksAllData={LoadAllSiteTasksAllData} AllSiteTasksDataLoadAll={AllSiteTasksDataLoadAll} IsUpdated={IsUpdated} IsSmartfavorite={IsSmartfavorite} IsSmartfavoriteId={IsSmartfavoriteId} ProjectData={ProjectData} portfolioTypeData={portfolioTypeData} setLoaded={setLoaded} AllSiteTasksData={AllSiteTasksData} AllMasterTasksData={AllMasterTasksData} SelectedProp={SelectedProp.SelectedProp} ContextValue={ContextValue} smartFiltercallBackData={smartFiltercallBackData} portfolioColor={portfolioColor} /> : ''}
                 </div>
             </section>
             <section className="Tabl1eContentSection row taskprofilepagegreen">
@@ -2373,7 +2366,7 @@ function TeamPortlioTable(SelectedProp: any) {
                 />
             </Panel>
 
-            {openCompareToolPopup && <CompareTool isOpen={openCompareToolPopup} compareToolCallBack={compareToolCallBack} compareData={childRef?.current?.table?.getSelectedRowModel()?.flatRows} contextValue={SelectedProp?.NextProp}/>}
+            {openCompareToolPopup && <CompareTool isOpen={openCompareToolPopup} compareToolCallBack={compareToolCallBack} compareData={childRef?.current?.table?.getSelectedRowModel()?.flatRows} contextValue={SelectedProp?.SelectedProp} />}
 
             <Panel
                 onRenderHeader={onRenderCustomHeaderMain}

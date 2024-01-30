@@ -24,6 +24,7 @@ const EmployeProfileMain = (props: any) => {
     const[createContractPopup,setCreateContractPopup]=useState(false);
     const [hrUpdateData, setHrUpdateData]: any = useState()
     const [EditContactStatus, setEditContactStatus] = useState(false);
+    const urlQuery = new URLSearchParams(window.location.search)
     useEffect(() => {
         const params = new URLSearchParams(window.location.search);
         if (props?.props.Context.pageContext.web.absoluteUrl.toLowerCase().includes("hr")) {
@@ -73,6 +74,7 @@ const EmployeProfileMain = (props: any) => {
             HrGmbhEmployeDeatails(employeeId)
         }
     }, [])
+
     const EmployeeDetails = async (Id: any) => {
         try {
             let web = new Web(allListId?.siteUrl);
@@ -181,7 +183,7 @@ const EmployeProfileMain = (props: any) => {
         try {
             let web = new Web(allListId?.siteUrl);
             await web.lists.getById(allListId?.ContractListID)
-                .items.select("Id,Title,Author/Title,Editor/Title,startDate,endDate,ContractSigned,ContractChanged,GrossSalary,PersonnelNumber,ContractId,typeOfContract,Type_OfContract/Id,Type_OfContract/Title,WorkingHours,FolderID,contractNumber,SmartInformation/Id,SmartInformation/Title,EmployeeID/Id,EmployeeID/Title,EmployeeID/Name,HHHHStaff/Id,HHHHStaff/FullName")
+                .items.select("Id,Title,Author/Title,Editor/Title,startDate,endDate,ContractSigned,ContractChanged,GrossSalary,PersonnelNumber,ContractId,typeOfContract,Type_OfContract/Id,Type_OfContract/Title,WorkingHours,FolderID,ContractId,SmartInformation/Id,SmartInformation/Title,EmployeeID/Id,EmployeeID/Title,EmployeeID/Name,HHHHStaff/Id,HHHHStaff/FullName")
                 .expand("Author,Editor,EmployeeID,HHHHStaff,SmartInformation,Type_OfContract").filter("HHHHStaff/ID eq " + Id).get().then((hrContractdata: any) => {
                     console.log(hrContractdata);
                     hrContractdata?.map((hrContractdata: any) => {
@@ -201,7 +203,7 @@ const EmployeProfileMain = (props: any) => {
     }
 
 
-    const columns: any = React.useMemo<ColumnDef<unknown, unknown>[]>(() =>
+    const columns: any = React.useMemo<ColumnDef<any, unknown>[]>(() =>
         [
             {
                 accessorKey: "",
@@ -213,7 +215,14 @@ const EmployeProfileMain = (props: any) => {
                 size: 25,
                 id: 'Id',
             },
-            { accessorKey: "contractNumber", placeholder: "Contract No.", header: "", size: 100, },
+            {
+                accessorFn: (row: any) => row?.ContractId,
+                id: 'Contract ID',
+                header: '',
+                placeholder: "Contract ID",
+                size: 110,
+               
+            },
             {
                 accessorFn: (row: any) => row?.Title,
                 cell: ({ row }: any) => (
@@ -509,7 +518,7 @@ const EmployeProfileMain = (props: any) => {
                             <div className='siteBdrBottom siteColor alignCenter sectionHead mb-2 p-0'>
                                 Contract Details
                            
-                                <button type='button' className='btnCol btn btn-primary ml-auto mb-2' onClick={()=>setCreateContractPopup(true)}>Create-Contract</button>
+                                <button type='button' className='btnCol btn btn-primary ml-auto mb-2' onClick={() => setCreateContractPopup(true)}>Create-Contract</button>
                             
                             </div>
                             <div className='Alltable'>
@@ -521,7 +530,7 @@ const EmployeProfileMain = (props: any) => {
                 </div> : <Information EmployeeData={EmployeeData} siteTaggedHR={siteTaggedHR} />}
                 {EditContactStatus ? <HHHHEditComponent props={EmployeeData} callBack={ClosePopup} /> : null}
             </div>
-            {createContractPopup && <CreateContract  closeContracts={callBackData} AllListId={allListId}updateData={EmployeeData}pageName="Recruiting-Tool" />}
+            {createContractPopup && <CreateContract callBack={() => {HrContractDetails(urlQuery.get('employeeId')); setCreateContractPopup(false)}} closeContracts={callBackData} AllListId={allListId} updateData={EmployeeData} pageName="Recruiting-Tool" />}
         </myContextValue.Provider>
 
     )

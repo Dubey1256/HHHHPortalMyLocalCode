@@ -24,7 +24,7 @@ export class EventRecurrenceInfo extends React.Component<IEventRecurrenceInfoPro
     this._onRecurrenceFrequenceChange = this._onRecurrenceFrequenceChange.bind(this);
 
     this.state = {
-      selectedKey: 'daily',
+      selectedKey: props?.selectedKey,
       selectPatern: 'every',
       startDate: moment().toDate(),
       endDate: moment().endOf('month').toDate(),
@@ -34,7 +34,7 @@ export class EventRecurrenceInfo extends React.Component<IEventRecurrenceInfoPro
       disableNumberOcurrences: true,
       selectdateRangeOption: 'noDate',
       disableEndDate: true,
-      selectedRecurrenceRule: 'daily',
+      selectedRecurrenceRule: props?.selectedRecurrenceRule,
 
     };
   }
@@ -85,7 +85,7 @@ export class EventRecurrenceInfo extends React.Component<IEventRecurrenceInfoPro
 
         <div style={{ display: 'inline-block', verticalAlign: 'top' }}>
           <ChoiceGroup
-            label={ strings.recurrenceInformationLabel }
+            label={strings.recurrenceInformationLabel}
             selectedKey={this.state.selectedRecurrenceRule}
             options={[
               {
@@ -149,7 +149,7 @@ export class EventRecurrenceInfo extends React.Component<IEventRecurrenceInfoPro
             />
           )
         }
-         {
+        {
           this.state.selectedRecurrenceRule === 'yearly' && (
             <EventRecurrenceInfoYearly
               display={true}

@@ -177,7 +177,7 @@ export function CategoriesUpdate(taskValue: any) {
                     <span onClick={() => setCategoriesPopup(true)} title="Categories Items Popup" className="svg__iconbox svg__icon--setting hreflink"></span>
                 </div>
             </div>
-            {categoriesPopup && <Picker selectedCategoryData={selectedCategoryData} usedFor="Task-Popup" AllListId={taskValue?.ContextValue} CallBack={SelectCategoryCallBack} closePopupCallBack={smartCategoryPopup}/>}
+            {categoriesPopup && <Picker selectedCategoryData={selectedCategoryData} usedFor="Task-Popup" AllListId={taskValue?.ContextValue} CallBack={SelectCategoryCallBack} closePopupCallBack={smartCategoryPopup} />}
         </>
     )
 }
