@@ -78,7 +78,6 @@ export const GetCurrentUserData = (RequiredData: any): Promise<any> => {
                     }
                 });
             }
-
             let UserDataObject = {
                 CurrentUser: CurrentUserData,
                 AllUsersData: allUsersData,
@@ -138,11 +137,57 @@ const getSmartMetadataItemsByTaxType = function (
     return Items;
 };
 
+export const BulkUpdateTaskInfo = async (RequiredData: any) => {
+    const { ItemDetails, RequiredListIds, UpdatedData, Context } = RequiredData || {};
+    const GetTaskUsersData: any = await GetCurrentUserData({ ListId: RequiredListIds?.TaskUsertListID, ListSiteURL: RequiredListIds?.siteUrl, Context: Context })
+    const AllTaskUsersData = GetTaskUsersData?.AllUsersData;
+    let StatusUpdatedJSON: any = {};
+    let TaskCategoryUpdatedJSON: any = {};
+    if (UpdatedData?.Status != undefined && UpdatedData?.PercentComplete > 0) {
+        let RequiredData: any = {
+            ItemDetails: ItemDetails,
+            RequiredListIds: RequiredListIds,
+            Status: UpdatedData?.PercentComplete,
+            Context: Context,
+            usedFor: "BulkUpdate"
+        }
+        StatusUpdatedJSON = await UpdateTaskStatusFunction(RequiredData);
+    }
+    if (UpdatedData?.TaskCategories != undefined && UpdatedData?.TaskCategories?.length > 0) {
+        let RequiredData: any = {
+            ItemDetails: ItemDetails,
+            RequiredListIds: RequiredListIds,
+            TaskCategories: UpdatedData?.TaskCategories,
+            Context: Context,
+            usedFor: "BulkUpdate"
+        }
+        TaskCategoryUpdatedJSON = await UpdateTaskCategoryFunction(RequiredData);
+    }
+
+    let finalUpdateJSON: any = { ...StatusUpdatedJSON, ...TaskCategoryUpdatedJSON }
+    for (const key in StatusUpdatedJSON) {
+        if (TaskCategoryUpdatedJSON.hasOwnProperty(key)) {
+            delete finalUpdateJSON[key];
+        }
+    }
+
+    let DataForUpdate =
+    {
+        UpdateDataJSON: finalUpdateJSON,
+        ListId: ItemDetails?.listId,
+        ListSiteURL: RequiredListIds?.siteUrl,
+        ItemId: ItemDetails?.Id,
+        AllTaskUsersData: AllTaskUsersData
+    }
+    let UpdatedDataJSON: any = await UpdateItemDetails(DataForUpdate);
+    return UpdatedDataJSON;
+}
+
 
 // this function is used for the updating the task Status and perform all the operations regarding status changed
 
 export const UpdateTaskStatusFunction = async (RequiredData: any) => {
-    const { ItemDetails, RequiredListIds, Status, Context } = RequiredData || {}
+    const { ItemDetails, RequiredListIds, Status, Context, usedFor } = RequiredData || {}
     let CheckImmediateCategoryTask = ItemDetails.TaskCategories?.some((category: any) => category.Title === "Email Notification");
     let CheckEmailCategoryTask = ItemDetails.TaskCategories?.some((category: any) => category.Title === "Immediate");
     let CheckDesignCategoryTask = ItemDetails.TaskCategories?.some((category: any) => category.Title === "Design");
@@ -371,22 +416,29 @@ export const UpdateTaskStatusFunction = async (RequiredData: any) => {
     if (Status == 100) {
         UpdateDataJSON.Status = "Closed";
     }
-    let DataForUpdate =
-    {
-        UpdateDataJSON: UpdateDataJSON,
-        ListId: ItemDetails?.listId,
-        ListSiteURL: RequiredListIds?.siteUrl,
-        ItemId: ItemDetails?.Id,
-        AllTaskUsersData: AllTaskUsersData
+
+    if (usedFor !== "BulkUpdate") {
+        let DataForUpdate =
+        {
+            UpdateDataJSON: UpdateDataJSON,
+            ListId: ItemDetails?.listId,
+            ListSiteURL: RequiredListIds?.siteUrl,
+            ItemId: ItemDetails?.Id,
+            AllTaskUsersData: AllTaskUsersData
+        }
+        let UpdatedData: any = await UpdateItemDetails(DataForUpdate);
+        return UpdatedData;
+    } else {
+        return UpdateDataJSON;
     }
-    let UpdatedData: any = await UpdateItemDetails(DataForUpdate);
-    return UpdatedData;
+
+
 }
 
 // this function is used for the updating the task Categories and perform all the operations regarding Task Category changed
 
 export const UpdateTaskCategoryFunction = async (RequiredData: any) => {
-    const { ItemDetails, RequiredListIds, TaskCategories, Context } = RequiredData || {};
+    const { ItemDetails, RequiredListIds, TaskCategories, Context, usedFor } = RequiredData || {};
     let uniqueIds: any = {};
     let FinalTaskCategory: any = [];
     let UpdatedData: any;
@@ -432,9 +484,12 @@ export const UpdateTaskCategoryFunction = async (RequiredData: any) => {
     }
 
     if (CheckApprovalCategoryTask) {
-        let RequiredData: any = { ItemDetails: ItemDetails, RequiredListIds: RequiredListIds, Status: 1, Context: Context }
+        let RequiredData: any = { ItemDetails: ItemDetails, RequiredListIds: RequiredListIds, Status: 1, Context: Context, usedFor: usedFor }
         try {
             UpdatedData = await UpdateTaskStatusFunction(RequiredData);
+            if (usedFor === "BulkUpdate") {
+                UpdateDataJSON = UpdatedData;
+            }
         } catch (error) {
             console.log("Error", error.message);
         }
@@ -463,7 +518,7 @@ export const UpdateTaskCategoryFunction = async (RequiredData: any) => {
                 }
             })
         }
-        SendMSTeamsNotification(SentMSTeamsData);
+        await SendMSTeamsNotification(SentMSTeamsData);
     }
     if (CheckBottleneckCategoryTask) {
         let SentMSTeamsData: any = {
@@ -492,19 +547,20 @@ export const UpdateTaskCategoryFunction = async (RequiredData: any) => {
         SendMSTeamsNotification(SentMSTeamsData);
     }
 
-    let DataForUpdate =
-    {
-        UpdateDataJSON: UpdateDataJSON,
-        ListId: ItemDetails?.listId,
-        ListSiteURL: RequiredListIds?.siteUrl,
-        ItemId: ItemDetails?.Id,
-        AllTaskUsersData: AllTaskUsersData
+    if (usedFor !== "BulkUpdate") {
+        let DataForUpdate =
+        {
+            UpdateDataJSON: UpdateDataJSON,
+            ListId: ItemDetails?.listId,
+            ListSiteURL: RequiredListIds?.siteUrl,
+            ItemId: ItemDetails?.Id,
+            AllTaskUsersData: AllTaskUsersData
+        }
+        let UpdatedData: any = await UpdateItemDetails(DataForUpdate);
+        return UpdatedData;
+    } else {
+        return UpdateDataJSON;
     }
-    if (!CheckApprovalCategoryTask) {
-        UpdatedData = await UpdateItemDetails(DataForUpdate);
-    }
-
-    return UpdatedData;
 }
 
 
@@ -759,5 +815,30 @@ export const UpdateItemDetails = (RequiredData: any): Promise<any> => {
        ListSiteURL:"https.....................",
        TaxType : ["TaxType-1", "TaxType-2", ........]
     }
+
+4.  BulkUpdateTaskInfo(RequiredData);
+    RequiredData = { 
+        ItemDetails: Selected Item all Details as object,
+        RequiredListIds: AllListIdData, 
+        UpdateData: {PercentComplete : 5, TaskCategories:[{}.{}]}, 
+        Context: Context 
+    }
+
+5.  UpdateTaskStatusFunction(RequiredData);
+    RequiredData = { 
+        ItemDetails: Selected Item all Details as object,
+        RequiredListIds: AllListIdData, 
+        Status: , 
+        Context: Context 
+    }
+
+6.  UpdateTaskCategoryFunction(RequiredData);
+    RequiredData = { 
+        ItemDetails: Selected Item all Details as object,
+        RequiredListIds: AllListIdData, 
+        TaskCategories: [All Selected Categories with Id and Title], 
+        Context: Context 
+    }
+       
 
 **/}

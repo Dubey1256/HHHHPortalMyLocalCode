@@ -574,7 +574,7 @@ const AncTool = (props: any) => {
                                                         link: `${rootSiteName}${selectedPath.displayPath}/${fileName}?web=1`,
                                                         size: fileSize
                                                     }
-                                                    taggedDocument.link = file?.EncodedAbsUrl;
+                                                     taggedDocument.link = `${file?.EncodedAbsUrl}?web=1`;
                                                     // Update the document file here
                                                     let postData = {
                                                         [siteColName]: { "results": resultArray },
@@ -632,7 +632,7 @@ const AncTool = (props: any) => {
                                                             link: `${rootSiteName}${selectedPath.displayPath}/${fileName}?web=1`,
                                                             size: fileSize
                                                         }
-                                                        taggedDocument.link = file?.EncodedAbsUrl;
+                                                        taggedDocument.link = `${file?.EncodedAbsUrl}?web=1`;
                                                         // Update the document file here
                                                         let postData = {
                                                             [siteColName]: { "results": resultArray },
@@ -705,12 +705,18 @@ const AncTool = (props: any) => {
                 [siteColName]: { "results": resultArray },
                 PortfoliosId: { "results": file?.PortfoliosId != undefined ? file?.PortfoliosId : [] }
             }
+            let itemType = 'Task';
+            if(props?.item?.Item_x0020_Type != undefined){
+                itemType = props?.item?.Item_x0020_Type
+            }else if(props?.item?.TaskType?.Id != undefined){
+                itemType = props?.item?.TaskType?.Title
+            }
             await web.lists.getByTitle('Documents').items.getById(file.Id)
                 .update(PostData).then((updatedFile: any) => {
                     file[siteName].push({ Id: props?.item?.Id, Title: props?.item?.Title });
                     setAllReadytagged([...AllReadytagged, ...[file]])
                     props?.callBack()
-                    alert(`The file '${file?.Title}' has been successfully tagged to the task '${props?.item?.TaskId}'.`);
+                    alert(`The file '${file?.Title}' has been successfully tagged to the ${itemType} '${props?.item?.TaskId}'.`);
                     return file;
                 })
 
@@ -725,6 +731,12 @@ const AncTool = (props: any) => {
             if (siteColName != "PortfoliosId") {
                 PostData.PortfoliosId = { "results": file?.PortfoliosId != undefined ? file?.PortfoliosId : [] };
             }
+            let itemType = 'Task';
+            if(props?.item?.Item_x0020_Type != undefined){
+                itemType = props?.item?.Item_x0020_Type
+            }else if(props?.item?.TaskType?.Id != undefined){
+                itemType = props?.item?.TaskType?.Title
+            }
             let web = new Web(props?.AllListId?.siteUrl);
             await web.lists.getByTitle('Documents').items.getById(file.Id)
                 .update(PostData).then((updatedFile: any) => {
@@ -735,7 +747,7 @@ const AncTool = (props: any) => {
                         });
                     });
                     props?.callBack()
-                    alert(`The file '${file?.Title}' has been successfully untagged from the task '${props?.item?.TaskId}'.`);
+                    alert(`The file '${file?.Title}' has been successfully untagged from the ${itemType} '${props?.item?.TaskId}'.`);
                     return file;
                 })
 
@@ -825,7 +837,7 @@ const AncTool = (props: any) => {
                                     let resultArray: any = [];
                                     resultArray.push(props?.item?.Id);
                                     let siteColName = `${siteName}Id`;
-                                    taggedDocument.link = file.EncodedAbsUrl;
+                                    taggedDocument.link = `${file?.EncodedAbsUrl}?web=1`;
                                     // Update the document file here
                                     let postData = {
                                         [siteColName]: { "results": resultArray },
@@ -1319,9 +1331,9 @@ const AncTool = (props: any) => {
     return (
         <>
             <div className={ServicesTaskCheck ? "serviepannelgreena mb-3 card addconnect" : "mb-3 card addconnect"}>
-                <span className='card-header'>
+                <CardHeader>
                     <CardTitle className="h5 d-flex justify-content-between align-items-center  mb-0">Add & Connect Tool<span><Tooltip ComponentId='324' /></span></CardTitle>
-                </span>
+                </CardHeader>
                 <CardBody>
                     <Row>
                         <div className="alignCenter gap-2 justify-content-between">

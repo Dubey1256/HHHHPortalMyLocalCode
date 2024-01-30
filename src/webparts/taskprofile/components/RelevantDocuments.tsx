@@ -154,7 +154,7 @@ const RelevantDocuments = (props: any, ref: any) => {
                     </a>
                   </li>
                   <li>
-                    <a className='px-2' href={item?.File_x0020_Type == "aspx" ? `${item?.Url?.Url}` : `${item?.EncodedAbsUrl}?web=1`} target="_blank" data-interception="off"> <span>{item?.Title}</span></a>
+                    <a className='px-2' href={item?.File_x0020_Type == "aspx" ? `${item?.Url?.Url}` : `${item?.EncodedAbsUrl}?web=1`} target="_blank" data-interception="off"> <span>{item?.Title}.{item?.docType}</span></a>
                   </li>
                   <li className='ml-auto '>
                     <span title="Edit" className="svg__iconbox svg__icon--edit hreflink alignIcon" onClick={() => editDocumentsLink(item)}></span>
