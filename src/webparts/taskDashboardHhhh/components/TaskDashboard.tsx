@@ -1704,20 +1704,20 @@ const TaskDashboard = (props: any) => {
                    updatedCategoryTime[newKey] = timeSheetData[key];
                  }
                }
-               var subject = "Daily Timesheet - " + currentLoginUser +  currentDate  +  '-' + (updatedCategoryTime.today) +'hours'
+               var subject = "Daily Timesheet - " + currentLoginUser + '-'+  currentDate  +  '-' + (updatedCategoryTime.today) + 'hours'
              weeklyTimeReport.map((item: any) => {
                  
                      
                      text =
                      '<tr>' +
-                     '<td style="line-height:24px;font-size:13px;padding:15px;text-align:center">' + item?.siteType + '</td>'
-                     + '<td style="line-height:24px;font-size:13px;padding:15px;text-align:center">' + '<a href =' + item.siteUrl + '/SitePages/Project-Management.aspx?ProjectId=' + item.Project?.Id + '><span style="font-size:13px; font-weight:600">'+  (item?.Project == undefined?'':item?.Project.Title) + '</span></a>' + '</p>' +  '</td>'
-                     + '<td style="line-height:24px;font-size:13px;padding:15px;text-align:center">' + '<p style="margin-top:0px; margin-bottom:2px;font-size:14px; color:#333;">' + '<a href =' + item.siteUrl + '/SitePages/Portfolio-Profile..aspx?taskId=' + item?.Portfolio?.Id +'><span style="font-size:13px; font-weight:600">'+ (item.Portfolio == undefined?'':item.Portfolio.Title) +'</span></a>' + '</p>' + '</td>'
-                     + '<td style="line-height:24px;font-size:13px;padding:15px;text-align:center">' + '<p style="margin-top:0px; margin-bottom:2px;font-size:14px; color:#333;">' + '<a href =' + item.siteUrl + '/SitePages/Task-Profile.aspx?taskId=' + item.Id + '&Site=' + item.siteType + '><span style="font-size:13px; font-weight:600">' + item.Title + '</span></a>' + '</p>' + '</td>'
-                     + '<td style="line-height:24px;font-size:13px;padding:15px;text-align:center">' + item?.TaskTime + '</td>'
-                     + '<td style="line-height:24px;font-size:13px;padding:15px;text-align:center">' + item?.Description + '</td>'
-                     + '<td style="line-height:24px;font-size:13px;padding:15px;text-align:center">' + (item?.SmartPriority !== undefined ? item?.SmartPriority : '')+ '</td>'
-                     + '<td style="line-height:24px;font-size:13px;padding:15px;text-align:center">' + (item?.ClientCategory == undefined || item?.ClientCategory.length == 0?'':item?.ClientCategory.Title) + '</td>'
+                     '<td style="border:1px solid #ccc;border-right:0px;border-top:0px;line-height:24px;font-size:13px;padding:15px;text-align:center">' + item?.siteType + '</td>'
+                     + '<td style="border:1px solid #ccc;border-right:0px;border-top:0px;line-height:24px;font-size:13px;padding:15px;text-align:center">' + '<a href =' + item.siteUrl + '/SitePages/Project-Management.aspx?ProjectId=' + item.Project?.Id + '><span style="font-size:13px; font-weight:600">'+  (item?.Project == undefined?'':item?.Project.Title) + '</span></a>' + '</p>' +  '</td>'
+                     + '<td style="border:1px solid #ccc;border-right:0px;border-top:0px;line-height:24px;font-size:13px;padding:15px;text-align:center">' + '<p style="margin-top:0px; margin-bottom:2px;font-size:14px; color:#333;">' + '<a href =' + item.siteUrl + '/SitePages/Portfolio-Profile..aspx?taskId=' + item?.Portfolio?.Id +'><span style="font-size:13px; font-weight:600">'+ (item.Portfolio == undefined?'':item.Portfolio.Title) +'</span></a>' + '</p>' + '</td>'
+                     + '<td style="border:1px solid #ccc;border-right:0px;border-top:0px;line-height:24px;font-size:13px;padding:15px;text-align:center">' + '<p style="margin-top:0px; margin-bottom:2px;font-size:14px; color:#333;">' + '<a href =' + item.siteUrl + '/SitePages/Task-Profile.aspx?taskId=' + item.Id + '&Site=' + item.siteType + '><span style="font-size:13px; font-weight:600">' + item.Title + '</span></a>' + '</p>' + '</td>'
+                     + '<td style="border:1px solid #ccc;border-right:0px;border-top:0px;line-height:24px;font-size:13px;padding:15px;text-align:center">' + item?.TaskTime + '</td>'
+                     + '<td style="border:1px solid #ccc;border-right:0px;border-top:0px;line-height:24px;font-size:13px;padding:15px;text-align:center">' + item?.Description + '</td>'
+                     + '<td style="border:1px solid #ccc;border-right:0px;border-top:0px;line-height:24px;font-size:13px;padding:15px;text-align:center">' + (item?.SmartPriority !== undefined ? item?.SmartPriority : '')+ '</td>'
+                     + '<td style="border:1px solid #ccc;border-top:0px;line-height:24px;font-size:13px;padding:15px;text-align:center">' + (item?.ClientCategory == undefined || item?.ClientCategory.length == 0?'':item?.ClientCategory.Title) + '</td>'
                     
                  body1.push(text);
  
@@ -1732,7 +1732,7 @@ const TaskDashboard = (props: any) => {
              <tr valign="middle" style="font-size:15px;"><td colspan="2" style="padding: 5px 0px;"><a style="text-decoration:none;" href ='${AllListId?.siteUrl}/SitePages/UserTimeEntry.aspx?userId=${currentUserId}'>Click here to open Online-Timesheet</a></td></tr>
              </thead>
              </table> `
-                 + '<table style="margin-top:20px;" cellspacing="0" cellpadding="0" width="100%" border="1">'
+                 + '<table style="margin-top:20px;" cellspacing="0" cellpadding="0" width="100%" border="0">'
                  + '<thead>'
                  + '<tr>'
                      + '<th style="line-height:24px;font-size:15px;padding:10px;border:1px solid #ccc;border-right:0px;" bgcolor="#f5f5f5">' + 'Site' + '</th>'
