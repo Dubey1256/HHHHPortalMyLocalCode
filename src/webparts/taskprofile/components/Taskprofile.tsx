@@ -2222,7 +2222,7 @@ class Taskprofile extends React.Component<ITaskprofileProps, ITaskprofileState> 
 
 
                                 <a className='images' target="_blank" data-interception="off" href={imgData?.ImageUrl}>
-                                  <img  alt={imgData?.ImageName} src={imgData?.ImageUrl}
+                                  <img alt={imgData?.ImageName} src={imgData?.ImageUrl}
                                     onMouseOver={(e) => this.OpenModal(e, imgData)}
                                     onMouseOut={(e) => this.CloseModal(e)} ></img>
                                 </a>

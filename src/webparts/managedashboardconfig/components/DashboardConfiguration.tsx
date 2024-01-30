@@ -60,7 +60,7 @@ const DashboardConfiguration = (props: any) => {
                 placeholder: "Title",
                 resetColumnFilters: false,
                 header: "",
-                size: 50,
+                ///size: 50,
             },
             {
                 accessorFn: (row) => row?.Value,
@@ -76,7 +76,7 @@ const DashboardConfiguration = (props: any) => {
                 placeholder: "Dashboard_Id",
                 resetColumnFilters: false,
                 header: "",
-                size: 40,
+                size: 140,
             },
             {
                 cell: ({ row }) => (
@@ -91,7 +91,7 @@ const DashboardConfiguration = (props: any) => {
                 canSort: false,
                 placeholder: "",
                 header: "",
-                size: 30,
+                size: 50,
             },
         ],
         [WebpartConfig]
@@ -112,7 +112,7 @@ const DashboardConfiguration = (props: any) => {
         <>
             <h3 className="heading">Dashboard Landing Page
             </h3>
-            <div ><a className="pull-right empCol hreflink" onClick={(e) => AddNewConfig()}> Add New Dashboard </a>
+            <div ><a className="pull-right  hreflink" onClick={(e) => AddNewConfig()}> Add New Dashboard </a>
             </div>
             <div className="Alltable maXh-300" style={{ height: "300px" }}>
                 {WebpartConfig?.length > 0 && (

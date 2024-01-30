@@ -14,6 +14,7 @@ import { ColumnDef } from '@tanstack/react-table';
 import InfoIconsToolTip from '../../../globalComponents/InfoIconsToolTip/InfoIconsToolTip';
 import ReactPopperTooltipSingleLevel from '../../../globalComponents/Hierarchy-Popper-tooltipSilgleLevel/Hierarchy-Popper-tooltipSingleLevel';
 import PageLoader from '../../../globalComponents/pageLoader';
+import Tooltip from '../../../globalComponents/Tooltip';
 var AllUser: any = []
 var siteConfig: any = []
 var DataSiteIcon: any = []
@@ -246,15 +247,14 @@ const TagTaskToProjectPopup = (props: any) => {
         setLgShow(false);
     }
 
-    const onRenderCustomHeaderMain = (type: any) => {
+const onRenderCustomHeaderMain = (type: any) => {
         return (
-            <div className={"d-flex full-width pb-1"}>
+            <>
                 <div className='subheading'>
-                    <span className="siteColor">
                         {`Add Existing Tasks - ${props?.projectItem?.MeetingId ? props?.projectItem?.MeetingId : props?.projectItem?.PortfolioStructureID} ${props?.projectTitle}`}
-                    </span>
                 </div>
-            </div>
+                <Tooltip ComponentId="8902" />
+            </>
         )
     }
     const onRenderCustomFooterMain = () => {
