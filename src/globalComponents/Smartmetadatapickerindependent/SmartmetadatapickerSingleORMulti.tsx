@@ -8,7 +8,7 @@ const Smartmetadatapickerin = (props: any) => {
   let usedfor = props?.usedFor;
   const [opensmartmetapopup, setopensmartmetapopup] = useState(true);
   const [allsmartmetdata, setAllSmartMetadata] = useState([]);
-  const [selectedItems, setSelectedItems] = useState(props?.props[0] != undefined ? props?.props[0] : undefined);
+  const [selectedItems, setSelectedItems] = useState([props?.selectedFeaturedata != undefined ? props.selectedFeaturedata : undefined]);
   useEffect(() => {
     getSmartmetadata();
   }, []);

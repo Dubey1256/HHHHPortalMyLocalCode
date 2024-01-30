@@ -9,6 +9,6 @@ export interface IFeedbackProps {
   TaskUsertListID: string;
   SmartMetadataListID: string;
   LeaveCalenderListID:string;
-  SitePagesList:any;
   MasterTaskListID:string;
+  SitePagesList:string
 }

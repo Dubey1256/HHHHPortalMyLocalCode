@@ -312,16 +312,31 @@ const TeamSmartFilter = (item: any) => {
                 })
                 if (checkCallData === true) {
                     item?.setLoaded(false);
-                    item?.LoadAllSiteTasksAllData();
-                    setLoadeAllData(true);
+                    fetchAllDataAboveNinty();
+                } else {
+                    allTastsData = [];
+                    allTastsData = allTastsData.concat(AllSiteTasksDataLoadAll);
+                    FilterDataOnCheck();
+                    headerCountData();
                 }
+            } else {
+                allTastsData = [];
+                allTastsData = allTastsData.concat(AllSiteTasksDataLoadAll);
+                FilterDataOnCheck();
+                headerCountData();
             }
+        }
+    }, [itemsQueryBasedCall, filterGroupsData])
+    const fetchAllDataAboveNinty = async () => {
+        const fetchAllData = await item?.LoadAllSiteTasksAllData();
+        if (fetchAllData != undefined) {
+            setLoadeAllData(true);
             allTastsData = [];
-            allTastsData = allTastsData.concat(AllSiteTasksDataLoadAll);
+            allTastsData = allTastsData.concat(fetchAllData);
             FilterDataOnCheck();
             headerCountData();
         }
-    }, [itemsQueryBasedCall, filterGroupsData])
+    }
 
 
     let filterGroups: any = [{ Title: 'Type', values: [], checked: [], checkedObj: [], expanded: [], selectAllChecked: true, ValueLength: 0 },
@@ -2062,20 +2077,6 @@ const TeamSmartFilter = (item: any) => {
         //     loadAdminConfigurationsId(items?.Id);
         // }
         if (items.Id && filterSmaePage) {
-            if (item?.LoadAllSiteTasksAllData && loadeAllData === false) {
-                let CheckSatusGTNinty: any = filterGroupsData.filter((stat) => stat.Title === "Status")
-                const checkCallData: any = CheckSatusGTNinty[0]?.checkedObj?.some((elem: any) => {
-                    if (elem.Title === '90% Task completed' || elem.Title === '93% For Review' || elem.Title === '96% Follow-up later' || elem.Title === '99% Completed' || elem.Title === '99% Completed') {
-                        return true
-                    }
-                    return false
-                })
-                if (checkCallData === true) {
-                    item?.setLoaded(false);
-                    item?.LoadAllSiteTasksAllData();
-                    setLoadeAllData(true);
-                }
-            }
             allTastsData = [];
             allTastsData = allTastsData.concat(AllSiteTasksDataLoadAll);
             item?.setLoaded(false);
