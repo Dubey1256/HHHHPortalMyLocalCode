@@ -5,7 +5,6 @@ import { Web } from "sp-pnp-js";
 import Tooltip from '../../../globalComponents/Tooltip';
 
 const EditContractPopup = (props: any) => {
-    const [openPopup, setOpenPopup] = React.useState(false)
     const [EditData, setEditData] = React.useState<any>({})
     const [allContactData, setAllContactData] = React.useState([])
     const [addEmp, setaddEmp] = React.useState(false)
@@ -13,7 +12,6 @@ const EditContractPopup = (props: any) => {
     const [postData, setPostData] = React.useState({ Title: "", contractTypeItem: "", GrossSalary: "", startDate: "", endDate: '', PersonalNumber: '', ContractSigned: '', ContractChanged: '', selectEmp: '' });
     React.useEffect(() => {
         getData()
-        setOpenPopup(true)
         loadContactDetails();
     }, [])
     const loadContactDetails = async () => {
@@ -61,9 +59,10 @@ const EditContractPopup = (props: any) => {
             </>
         );
     };
-    const closeOpenPopup = () => {
-        setOpenPopup(false)
-        props.callback();
+    
+    const closeEditContractPopup = () => {
+            props?.closePopup();
+            props?.callback();
     }
 
     const deleteContract = async (childinew: any) => {
@@ -78,7 +77,7 @@ const EditContractPopup = (props: any) => {
                 .delete()
                 .then((i) => {
                     console.log(i);
-                    closeOpenPopup();
+                    closeEditContractPopup();
                 });
         }
     };
@@ -96,19 +95,13 @@ const EditContractPopup = (props: any) => {
         }).then((res: any) => {
             console.log(res)
             if (props?.pageName == 'Recruiting-Tool') {
-
-                closeOpenPopup();
-                props.callback(res.data)
-                setOpenPopup(false)
-              
-                let url = `https://hhhhteams.sharepoint.com/sites/HHHH/HR/SitePages/EmployeeInfo.aspx?employeeId=${contactDetailsId != undefined ? contactDetailsId : EditData?.HHHHStaff?.Id}`
-                window.open(url);
-
+                closeEditContractPopup(); 
+                // let url = `https://hhhhteams.sharepoint.com/sites/HHHH/HR/SitePages/EmployeeInfo.aspx?employeeId=${contactDetailsId != undefined ? contactDetailsId : EditData?.HHHHStaff?.Id}`
+                // window.open(url);
             }
-            else {
+            else{
                 props.callback(res.data)
-                setOpenPopup(false)
-                closeOpenPopup();
+                props?.closePopup();
             }
 
         })
@@ -150,7 +143,7 @@ const EditContractPopup = (props: any) => {
                                     onClick={() => saveData()}>
                                     Save
                                 </button>
-                                <button type="button" className="btn btn-default px-3">
+                                <button type="button" className="btn btn-default px-3" onClick={() => closeEditContractPopup()}>
                                     Cancel
                                 </button>
 
@@ -200,8 +193,8 @@ const EditContractPopup = (props: any) => {
                 <Panel
                     onRenderHeader={onRenderCustomHeader}
                     type={PanelType.medium}
-                    isOpen={openPopup}
-                    onDismiss={closeOpenPopup}
+                    isOpen={props?.openPopup}
+                    onDismiss={() => closeEditContractPopup()}
                     isBlocking={false}
                     onRenderFooter={onRenderCustomFooterMain}
                 >
@@ -322,7 +315,7 @@ const EditContractPopup = (props: any) => {
                             } </div>
                         <footer>
                             <div className="col-sm-12 text-end">
-                                <button type="button" className="btn btn-primary ms-2" onClick={() => saveContractType(postData.contractTypeItem, "contact")}>save</button>
+                                <button type="button" className="btn btn-primary ms-2" onClick={() => saveContractType(postData.contractTypeItem, "contact")}>Save</button>
                                 <button type="button" className="btn btn-default ms-2" onClick={() => closeAddEmp()}>Cancel</button>
                             </div>
                         </footer>

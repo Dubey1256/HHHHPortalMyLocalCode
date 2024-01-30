@@ -775,7 +775,7 @@ const TaskDashboard = (props: any) => {
                 resetColumnFilters: false,
                 resetSorting: false,
                 header: "",
-                size: 60,
+                size: 90,
                 cell: ({ row }: any) => (
                     <div draggable onDragStart={() => startDrag(row?.original, row?.original?.TaskID)}>
                         <InlineEditingcolumns AllListId={AllListId} type='Task' rowIndex={row?.index} callBack={inlineCallBack} TaskUsers={taskUsers} columnName='Priority' item={row?.original} />
@@ -1798,7 +1798,7 @@ const TaskDashboard = (props: any) => {
         let taskUsersGroup = groupedUsers;
         let confirmation = confirm("Are you sure you want to share the working today task of all team members?")
         if (confirmation) {
-            var subject = "Today's Working Tasks of All Team";
+            var subject = `Today's Working Tasks of All Team Members: ${Moment(new Date()).zone('Asia/Kolkata').format('DD/MM/YYYY')}`;
             taskUsersGroup?.map((userGroup: any) => {
                 let teamsTaskBody: any = [];
                 if (userGroup.Title == "Junior Developer Team" || userGroup.Title == "Senior Developer Team" ||  userGroup.Title == "Mobile Team" || userGroup.Title == "Design Team" || userGroup.Title == "QA Team" || userGroup.Title == "Smalsus Lead Team" || userGroup.Title == "Business Analyst" || userGroup.Title == "Trainees") {
@@ -2126,7 +2126,7 @@ const TaskDashboard = (props: any) => {
                                     </summary>
                                     <div className='AccordionContent'>
                                         {workingTodayTasks?.length > 0 ?
-                                            <div className='Alltable border-0 dashboardTable pb-5' style={{ maxHeight: "300px", height: '350px', overflow: 'hidden' }}>
+                                            <div className='Alltable border-0 dashboardTable'>
                                                 <>
                                                     <GlobalCommanTable AllListId={AllListId} wrapperHeight="100%" columns={columnsName} data={workingTodayTasks} callBackData={inlineCallBack} pageName={"ProjectOverview"} TaskUsers={taskUsers} showHeader={true} />
                                                 </>
@@ -2141,7 +2141,7 @@ const TaskDashboard = (props: any) => {
                                     <summary> Working This Week Tasks {'(' + thisWeekTasks?.length + ')'} </summary>
                                     <div className='AccordionContent'  >
                                         {thisWeekTasks?.length > 0 ?
-                                            <div className='Alltable border-0 dashboardTable pb-5' style={{ maxHeight: "300px", height: '350px', overflow: 'hidden' }}>
+                                            <div className='Alltable border-0 dashboardTable' >
                                                 <>
                                                     <GlobalCommanTable AllListId={AllListId} wrapperHeight="100%" columns={columnsName} data={thisWeekTasks} callBackData={inlineCallBack} pageName={"ProjectOverview"} TaskUsers={taskUsers} showHeader={true} />
                                                 </>
@@ -2154,7 +2154,7 @@ const TaskDashboard = (props: any) => {
                                     <summary>  Immediate Tasks {'(' + UserImmediateTasks.length + ')'} </summary>
                                     <div className='AccordionContent'>
                                         {UserImmediateTasks?.length > 0 ?
-                                            <div className='Alltable border-0 dashboardTable pb-5' style={{ maxHeight: "300px", height: '350px', overflow: 'hidden' }}>
+                                            <div className='Alltable border-0 dashboardTable'>
                                                 <>
                                                     <GlobalCommanTable AllListId={AllListId} wrapperHeight="100%" columns={columnsName} data={UserImmediateTasks} callBackData={inlineCallBack} pageName={"ProjectOverview"} TaskUsers={taskUsers} showHeader={true} />
                                                 </>
@@ -2168,7 +2168,7 @@ const TaskDashboard = (props: any) => {
                                     <summary>  Bottleneck Tasks {'(' + bottleneckTasks.length + ')'} </summary>
                                     <div className='AccordionContent'>
                                         {bottleneckTasks?.length > 0 ?
-                                            <div className='Alltable border-0 dashboardTable pb-5' style={{ maxHeight: "300px", height: '350px', overflow: 'hidden' }}>
+                                            <div className='Alltable border-0 dashboardTable '>
                                                 <>
                                                     <GlobalCommanTable AllListId={AllListId} wrapperHeight="100%" columns={columnsName} data={bottleneckTasks} callBackData={inlineCallBack} pageName={"ProjectOverview"} TaskUsers={taskUsers} showHeader={true} />
                                                 </>
@@ -2186,7 +2186,7 @@ const TaskDashboard = (props: any) => {
                                     <div className='AccordionContent' >
                                         {AllAssignedTasks?.length > 0 ?
                                             <>
-                                                <div className='Alltable border-0 dashboardTable pb-5 float-none' style={{ maxHeight: "300px", height: '350px', overflow: 'hidden' }}>
+                                                <div className='Alltable border-0 dashboardTable float-none' >
                                                     <>
                                                         <GlobalCommanTable AllListId={AllListId} wrapperHeight="100%" columns={columnsName} data={AllAssignedTasks} callBackData={inlineCallBack} pageName={"ProjectOverview"} TaskUsers={taskUsers} showHeader={true} />
                                                     </>
@@ -2238,7 +2238,7 @@ const TaskDashboard = (props: any) => {
                                                     </summary>
                                                 }
 
-                                                <div className='AccordionContent timeEntryReport' style={{ maxHeight: "300px", height: '350px', overflow: 'hidden' }} >
+                                                <div className='AccordionContent timeEntryReport'  >
                                                     {weeklyTimeReport?.length > 0 ?
                                                         <>
                                                             <GlobalCommanTable AllListId={AllListId} wrapperHeight="100%" columns={columnTimeReport} data={weeklyTimeReport} callBackData={inlineCallBack} pageName={"ProjectOverview"} TaskUsers={taskUsers} showHeader={true} />
@@ -2259,7 +2259,7 @@ const TaskDashboard = (props: any) => {
 
                         {/* <label className='f-16 fw-semibold'>{`Shareweb Tasks - ${sharewebTasks?.length}`}</label>
                         <label className='f-16 fw-semibold'>{`Shareweb Tasks - ${sharewebTasks?.length}`}</label> */}
-                        {currentView == 'AllImmediateTasks' || currentView == 'AllEmailTasks' || currentView == 'AllPriorityTasks' || currentView == 'approverTask' || currentView == 'AllBottleNeck' || currentView == 'AllSitesTask' || currentView == 'sharewebTasks' ? <article className="row">
+                        {currentView == 'AllImmediateTasks' || currentView == 'AllEmailTasks' || currentView == 'AllPriorityTasks' || currentView == 'assignedApproverTasks' || currentView == 'AllBottleNeck' || currentView == 'AllSitesTask' || currentView == 'sharewebTasks' ? <article className="row">
                             <div>
                                 <div>
                                     <label className='f-16 fw-semibold'>{` ${NameTop} - ${value?.length}`}</label>
