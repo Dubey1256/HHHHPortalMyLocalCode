@@ -424,7 +424,7 @@ const TaskDashboard = (props: any) => {
                         } else {
                             task.descriptionsSearch = '';
                         }
-                        task.PercentComplete = (task.PercentComplete * 100).toFixed(0);
+                        // task.PercentComplete = (task.PercentComplete * 100).toFixed(2);
                         task.DisplayDueDate =
                             task.DueDate != null
                                 ? Moment(task.DueDate).format("DD/MM/YYYY")
@@ -751,7 +751,6 @@ const TaskDashboard = (props: any) => {
                 resetColumnFilters: false,
                 resetSorting: false,
                 header: "",
-                size: 60,
             },
             {
                 accessorFn: (row) => row?.ClientCategorySearch,
@@ -764,7 +763,7 @@ const TaskDashboard = (props: any) => {
                 cell: ({ row }: any) => (
                     <div draggable onDragStart={() => startDrag(row?.original, row?.original?.TaskID)}>
                         <ShowClintCatogory clintData={row?.original} AllMetadata={AllMetadata} />
-                        {row?.original?.ClientCategorySearch}
+                   
                     </div>
                 ),
             },
@@ -2127,7 +2126,7 @@ const TaskDashboard = (props: any) => {
                                     </summary>
                                     <div className='AccordionContent'>
                                         {workingTodayTasks?.length > 0 ?
-                                            <div className='Alltable border-0 dashboardTable' style={{ maxHeight: "300px", height: '350px', overflow: 'hidden' }}>
+                                            <div className='Alltable border-0 dashboardTable pb-5' style={{ maxHeight: "300px", height: '350px', overflow: 'hidden' }}>
                                                 <>
                                                     <GlobalCommanTable AllListId={AllListId} wrapperHeight="100%" columns={columnsName} data={workingTodayTasks} callBackData={inlineCallBack} pageName={"ProjectOverview"} TaskUsers={taskUsers} showHeader={true} />
                                                 </>
@@ -2142,7 +2141,7 @@ const TaskDashboard = (props: any) => {
                                     <summary> Working This Week Tasks {'(' + thisWeekTasks?.length + ')'} </summary>
                                     <div className='AccordionContent'  >
                                         {thisWeekTasks?.length > 0 ?
-                                            <div className='Alltable border-0 dashboardTable' style={{ maxHeight: "300px", height: '350px', overflow: 'hidden' }}>
+                                            <div className='Alltable border-0 dashboardTable pb-5' style={{ maxHeight: "300px", height: '350px', overflow: 'hidden' }}>
                                                 <>
                                                     <GlobalCommanTable AllListId={AllListId} wrapperHeight="100%" columns={columnsName} data={thisWeekTasks} callBackData={inlineCallBack} pageName={"ProjectOverview"} TaskUsers={taskUsers} showHeader={true} />
                                                 </>
@@ -2155,7 +2154,7 @@ const TaskDashboard = (props: any) => {
                                     <summary>  Immediate Tasks {'(' + UserImmediateTasks.length + ')'} </summary>
                                     <div className='AccordionContent'>
                                         {UserImmediateTasks?.length > 0 ?
-                                            <div className='Alltable border-0 dashboardTable' style={{ maxHeight: "300px", height: '350px', overflow: 'hidden' }}>
+                                            <div className='Alltable border-0 dashboardTable pb-5' style={{ maxHeight: "300px", height: '350px', overflow: 'hidden' }}>
                                                 <>
                                                     <GlobalCommanTable AllListId={AllListId} wrapperHeight="100%" columns={columnsName} data={UserImmediateTasks} callBackData={inlineCallBack} pageName={"ProjectOverview"} TaskUsers={taskUsers} showHeader={true} />
                                                 </>
@@ -2169,7 +2168,7 @@ const TaskDashboard = (props: any) => {
                                     <summary>  Bottleneck Tasks {'(' + bottleneckTasks.length + ')'} </summary>
                                     <div className='AccordionContent'>
                                         {bottleneckTasks?.length > 0 ?
-                                            <div className='Alltable border-0 dashboardTable' style={{ maxHeight: "300px", height: '350px', overflow: 'hidden' }}>
+                                            <div className='Alltable border-0 dashboardTable pb-5' style={{ maxHeight: "300px", height: '350px', overflow: 'hidden' }}>
                                                 <>
                                                     <GlobalCommanTable AllListId={AllListId} wrapperHeight="100%" columns={columnsName} data={bottleneckTasks} callBackData={inlineCallBack} pageName={"ProjectOverview"} TaskUsers={taskUsers} showHeader={true} />
                                                 </>
@@ -2187,7 +2186,7 @@ const TaskDashboard = (props: any) => {
                                     <div className='AccordionContent' >
                                         {AllAssignedTasks?.length > 0 ?
                                             <>
-                                                <div className='Alltable border-0 dashboardTable float-none' style={{ maxHeight: "300px", height: '350px', overflow: 'hidden' }}>
+                                                <div className='Alltable border-0 dashboardTable pb-5 float-none' style={{ maxHeight: "300px", height: '350px', overflow: 'hidden' }}>
                                                     <>
                                                         <GlobalCommanTable AllListId={AllListId} wrapperHeight="100%" columns={columnsName} data={AllAssignedTasks} callBackData={inlineCallBack} pageName={"ProjectOverview"} TaskUsers={taskUsers} showHeader={true} />
                                                     </>
