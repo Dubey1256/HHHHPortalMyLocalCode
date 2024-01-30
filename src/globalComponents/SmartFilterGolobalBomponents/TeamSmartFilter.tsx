@@ -42,7 +42,6 @@ const TeamSmartFilter = (item: any) => {
     } catch (e) {
         console.log(e);
     }
-    const [loadeAllData, setLoadeAllData] = React.useState(false)
     const [PreSetPanelIsOpen, setPreSetPanelIsOpen] = React.useState(false);
     const [TaskUsersData, setTaskUsersData] = React.useState([]);
     const [AllUsers, setTaskUser] = React.useState([]);
@@ -302,41 +301,10 @@ const TeamSmartFilter = (item: any) => {
 
     React.useEffect(() => {
         if (filterGroupsData[0]?.checked?.length > 0 && itemsQueryBasedCall === true) {
-            if (item?.LoadAllSiteTasksAllData && loadeAllData === false) {
-                let CheckSatusGTNinty: any = filterGroupsData.filter((stat) => stat.Title === "Status")
-                const checkCallData: any = CheckSatusGTNinty[0]?.checkedObj?.some((elem: any) => {
-                    if (elem.Title === '90% Task completed' || elem.Title === '93% For Review' || elem.Title === '96% Follow-up later' || elem.Title === '99% Completed' || elem.Title === '99% Completed') {
-                        return true
-                    }
-                    return false
-                })
-                if (checkCallData === true) {
-                    item?.setLoaded(false);
-                    fetchAllDataAboveNinty();
-                } else {
-                    allTastsData = [];
-                    allTastsData = allTastsData.concat(AllSiteTasksDataLoadAll);
-                    FilterDataOnCheck();
-                    headerCountData();
-                }
-            } else {
-                allTastsData = [];
-                allTastsData = allTastsData.concat(AllSiteTasksDataLoadAll);
-                FilterDataOnCheck();
-                headerCountData();
-            }
-        }
-    }, [itemsQueryBasedCall, filterGroupsData])
-    const fetchAllDataAboveNinty = async () => {
-        const fetchAllData = await item?.LoadAllSiteTasksAllData();
-        if (fetchAllData != undefined) {
-            setLoadeAllData(true);
-            allTastsData = [];
-            allTastsData = allTastsData.concat(fetchAllData);
             FilterDataOnCheck();
             headerCountData();
         }
-    }
+    }, [itemsQueryBasedCall, filterGroupsData])
 
 
     let filterGroups: any = [{ Title: 'Type', values: [], checked: [], checkedObj: [], expanded: [], selectAllChecked: true, ValueLength: 0 },
@@ -691,7 +659,7 @@ const TeamSmartFilter = (item: any) => {
         headerCountData()
     }, [selectedProject, isCreatedDateSelected, isModifiedDateSelected, isDueDateSelected])
 
-    const onCheck = async (checked: any, index: any, event: any) => {
+    const onCheck = (checked: any, index: any, event: any) => {
         if (event == "filterSites") {
             let filterGroups = allStites;
             filterGroups[index].checked = checked;
@@ -713,20 +681,6 @@ const TeamSmartFilter = (item: any) => {
             if (filterGroups[index]?.values.length > 0) {
                 const childrenLength = filterGroups[index]?.values?.reduce((total: any, obj: any) => total + (obj?.children?.length || 0), 0) + (filterGroups[index]?.values?.length ? filterGroups[index]?.values?.length : 0);
                 filterGroups[index].selectAllChecked = childrenLength === checked?.length;
-            }
-
-            if (item?.LoadAllSiteTasksAllData && loadeAllData === false) {
-                const checkCallData: any = filterGroups[index].checkedObj.some((elem: any) => {
-                    if (elem.Title === '90% Task completed' || elem.Title === '93% For Review' || elem.Title === '96% Follow-up later' || elem.Title === '99% Completed' || elem.Title === '99% Completed') {
-                        return true
-                    }
-                    return false
-                })
-                if (checkCallData === true) {
-                    item?.setLoaded(false);
-                    await item?.LoadAllSiteTasksAllData();
-                    setLoadeAllData(true);
-                }
             }
             // ///end///
             setFilterGroups(filterGroups);
@@ -2077,8 +2031,6 @@ const TeamSmartFilter = (item: any) => {
         //     loadAdminConfigurationsId(items?.Id);
         // }
         if (items.Id && filterSmaePage) {
-            allTastsData = [];
-            allTastsData = allTastsData.concat(AllSiteTasksDataLoadAll);
             item?.setLoaded(false);
             setFlatView(true);
             setUpdatedSmartFilter(true);
