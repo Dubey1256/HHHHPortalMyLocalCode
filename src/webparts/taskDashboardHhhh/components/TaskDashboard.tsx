@@ -1113,7 +1113,7 @@ const TaskDashboard = (props: any) => {
                             title="Click To Edit Timesheet"
                         >
                             <span
-                                className="svg__iconbox svg__icon--clock"
+                                className="alignIcon  svg__iconbox svg__icon--clock"
                                 data-bs-toggle="tooltip"
                                 data-bs-placement="bottom"
                                 title="Click To Edit Timesheet"
@@ -1122,7 +1122,7 @@ const TaskDashboard = (props: any) => {
                         <span
                             title="Edit Task"
                             onClick={() => EditPopup(row?.original)}
-                            className="svg__iconbox svg__icon--edit hreflink"
+                            className="alignIcon  svg__iconbox svg__icon--edit hreflink"
                         ></span>
                     </>
                 ),
