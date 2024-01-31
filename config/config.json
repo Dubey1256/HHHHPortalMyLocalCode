@@ -298,11 +298,11 @@
         }
       ]
     },
-    "last-modidied-items-web-part": {
+    "last-modified-views-web-part": {
       "components": [
         {
-          "entrypoint": "./lib/webparts/lastModidiedItems/LastModidiedItemsWebPart.js",
-          "manifest": "./src/webparts/lastModidiedItems/LastModidiedItemsWebPart.manifest.json"
+          "entrypoint": "./lib/webparts/lastModifiedViews/LastModifiedViewsWebPart.js",
+          "manifest": "./src/webparts/lastModifiedViews/LastModifiedViewsWebPart.manifest.json"
         }
       ]
     },
@@ -359,6 +359,14 @@
         {
           "entrypoint": "./lib/webparts/taskUserManagement/TaskUserManagementWebPart.js",
           "manifest": "./src/webparts/taskUserManagement/TaskUserManagementWebPart.manifest.json"
+        }
+      ]
+    },
+    "load-mastertask-web-part": {
+      "components": [
+        {
+          "entrypoint": "./lib/webparts/loadMastertask/LoadMastertaskWebPart.js",
+          "manifest": "./src/webparts/loadMastertask/LoadMastertaskWebPart.manifest.json"
         }
       ]
     },
@@ -431,8 +439,8 @@
     "UpdateTopNavigationWebPartStrings": "lib/webparts/updateTopNavigation/loc/{locale}.js",
     "TaskDashboardHhhhWebPartStrings": "lib/webparts/taskDashboardHhhh/loc/{locale}.js",
     "CreatedByTablesWebPartStrings": "lib/webparts/createdByTables/loc/{locale}.js",
+     "LoadMastertaskWebPartStrings":"lib/webparts/loadMastertask/loc/{locale}.js",
     "CalendarWebPartStrings": "lib/webparts/calendar/loc/{locale}.js",
-    "LastModidiedItemsWebPartStrings": "lib/webparts/lastModidiedItems/loc/{locale}.js",
     "TeamleaderDashboardWebPartStrings": "lib/webparts/teamleaderDashboard/loc/{locale}.js",
     "TestWebPartWebPartStrings": "lib/webparts/ClientCategoryVerification/loc/{locale}.js",
     "RootDashboardWebPartStrings": "lib/webparts/rootDashboard/loc/{locale}.js",
@@ -443,6 +451,7 @@
     "MeetingOverviewWebPartStrings": "lib/webparts/meetingOverview/loc/{locale}.js",
     "HrContractSearchWebPartStrings": "lib/webparts/hrContractSearch/loc/{locale}.js",
     "ContactSearchWebPartStrings": "lib/webparts/contactSearch/loc/{locale}.js",
+    "LastModifiedViewsWebPartStrings": "lib/webparts/lastModifiedViews/loc/{locale}.js",
     "HrContractProfileWebPartStrings": "lib/webparts/hrContractProfile/loc/{locale}.js",
     "ManagedashboardconfigWebPartStrings": "lib/webparts/managedashboardconfig/loc/{locale}.js",
     "SMarttaskWebPartStrings": "lib/webparts/sMarttask/loc/{locale}.js"

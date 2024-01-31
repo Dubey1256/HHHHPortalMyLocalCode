@@ -8,34 +8,32 @@ import {
 import { BaseClientSideWebPart } from '@microsoft/sp-webpart-base';
 import { IReadonlyTheme } from '@microsoft/sp-component-base';
 
-import * as strings from 'SMarttaskWebPartStrings';
-import SMarttask from './components/SMarttask';
-import { ISMarttaskProps } from './components/ISMarttaskProps';
+import * as strings from 'LoadMastertaskWebPartStrings';
+import LoadMastertask from './components/LoadMastertask';
+import { ILoadMastertaskProps } from './components/ILoadMastertaskProps';
 
-export interface ISMarttaskWebPartProps {
+export interface ILoadMastertaskWebPartProps {
   description: string;
-  SmartMetadataListID:string;
-  MasterTaskListID:string;
-  context:any;
+  MasterTaskListID: 'ec34b38f-0669-480a-910c-f84e92e58adf';
 }
 
-export default class SMarttaskWebPart extends BaseClientSideWebPart<ISMarttaskWebPartProps> {
+export default class LoadMastertaskWebPart extends BaseClientSideWebPart<ILoadMastertaskWebPartProps> {
 
   private _isDarkTheme: boolean = false;
   private _environmentMessage: string = '';
 
   public render(): void {
-    const element: React.ReactElement<ISMarttaskProps> = React.createElement(
-      SMarttask,
+    const element: React.ReactElement<ILoadMastertaskProps> = React.createElement(
+      LoadMastertask,
       {
         description: this.properties.description,
         isDarkTheme: this._isDarkTheme,
+        Context: this.context,
         environmentMessage: this._environmentMessage,
+        siteUrl: this.context.pageContext.web.absoluteUrl,
         hasTeamsContext: !!this.context.sdks.microsoftTeams,
         userDisplayName: this.context.pageContext.user.displayName,
-        SmartMetadataListID:this.properties.SmartMetadataListID,
-        MasterTaskListID:this.properties.MasterTaskListID,
-        context:this.context,
+        MasterTaskListID: this.properties.MasterTaskListID
       }
     );
 
@@ -63,8 +61,9 @@ export default class SMarttaskWebPart extends BaseClientSideWebPart<ISMarttaskWe
               environmentMessage = this.context.isServedFromLocalhost ? strings.AppLocalEnvironmentOutlook : strings.AppOutlookEnvironment;
               break;
             case 'Teams': // running in Teams
-            default:
-              environmentMessage = strings.UnknownEnvironment;
+              break;
+              default:
+                throw new Error('Unknown host');
           }
 
           return environmentMessage;
@@ -113,13 +112,10 @@ export default class SMarttaskWebPart extends BaseClientSideWebPart<ISMarttaskWe
               groupFields: [
                 PropertyPaneTextField('description', {
                   label: strings.DescriptionFieldLabel
-                }), PropertyPaneTextField('SmartMetadataListID', {
-                  label:"SmartMetadataListID"
+                }),
+                PropertyPaneTextField('MasterTaskListID', {
+                  label: "MasterTaskListID"
                 })
-                , PropertyPaneTextField('MasterTaskListID', {
-                  label:" MasterTaskListID"
-                })
-               
               ]
             }
           ]
