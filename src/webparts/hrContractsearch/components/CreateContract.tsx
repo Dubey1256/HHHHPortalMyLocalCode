@@ -268,7 +268,7 @@ const CreateContract = (props: any) => {
             type={PanelType.custom}
             customWidth={'750px'}
             isOpen={createPopup}
-            onDismiss={() => setCreatePopup(false)}
+            onDismiss={() => {setCreatePopup(false); props?.closeContracts()}}
             isBlocking={false}
          >
             <div>
